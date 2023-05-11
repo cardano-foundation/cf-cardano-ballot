@@ -1,0 +1,211 @@
+@font-face {
+  font-family: "Roboto Bold";
+  font-style: normal;
+  font-weight: 700;
+  src: url(./commons/resources/fonts/Roboto-Bold.ttf) format("ttf");
+}
+
+@font-face {
+  font-family: "Roboto Regular";
+  font-style: normal;
+  font-weight: 500;
+  src: url(./commons/resources/fonts/Roboto-Regular.ttf) format("ttf");
+}
+
+@font-face {
+  font-family: "Roboto Light";
+  font-style: normal;
+  font-weight: 400;
+  src: url(./commons/resources/fonts/Roboto-Light.ttf) format("ttf");
+}
+
+:root {
+  --font-family-title: "Roboto Bold", sans-serif;
+  --font-family-text: "Roboto Regular", sans-serif;
+  --font-weight-normal: 400;
+  --font-weight-bold: 700;
+  --font-size-text: 16px;
+  --font-size-text-large: 18px;
+  --font-size-text-x-large: 20px;
+  --font-size-text-small: 14px;
+  --font-size-text-x-small: 12px;
+  --font-size-title: 24px;
+  --container-margin: auto;
+  --container-max-width: 1340px;
+  --menu-item-gap: 32px;
+  --row-6-to-5-col: calc(120% + 16.8px);
+  --text-color: #13152f;
+  --title-color: #98a2b3;
+  --text-color-pale: #667085;
+  --text-color-reverse: #ffffff;
+  --text-color-hover: #13152f;
+  --text-color-reverse-hover: #ffffff;
+  --color-green: #29744d;
+  --color-green-light: #438f68;
+  --color-green-pale: #438f6833;
+  --color-green-dark: #184c78;
+  --color-blue: #108aef;
+  --color-blue-dark: #13152f;
+  --color-red: #dd4343;
+  --color-yellow: #ffa800;
+  --color-black: #000000;
+  --border-color: #e3e5e9;
+  --linear-gradient-green: linear-gradient(263.55deg, #5a9c56 0%, #184c78 100%);
+  --menu-item-selected-text: #353945;
+  --menu-item-text: #b1b5c3;
+  --modal-background: #f7f7f7;
+  --body-background: #f7f7f7;
+  --footer-background-color: #13152f;
+  --footer-color: #98a2b3;
+  --copyright-background-color: #1f213a;
+  --footer-color-green: #29744d;
+  --shadow-raised: 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px rgba(0, 0, 0, 0.14), 0px 1px 3px rgba(0, 0, 0, 0.12);
+  --border-radius: 10px;
+  --border-radius-sm: 8px;
+  --background: #e9eaec;
+  @media screen and (max-width: 1400px) {
+    --container-max-width: calc(100% - 40px);
+    --menu-item-gap: 24px;
+  }
+
+  @media screen and (max-width: 1199px) {
+    --container-max-width: 960px;
+    --container-max-width: calc(100% - 40px);
+    --menu-item-gap: 10px;
+    --row-6-to-5-col: unset;
+  }
+
+  @media screen and (max-width: 991px) {
+    --container-max-width: 720px;
+    --container-max-width: calc(100% - 30px);
+  }
+
+  @media screen and (max-width: 767px) {
+    --font-size-text: 14px;
+    --font-size-text-x-large: 18px;
+    --font-size-text-large: 16px;
+    --font-size-text-small: 13px;
+    --font-size-text-x-small: 12px;
+    --font-size-title: 23px;
+    --container-max-width: 540px;
+    --container-max-width: calc(100% - 30px);
+  }
+
+  @media screen and (max-width: 575px) {
+    --font-size-text: 14px;
+    --font-size-text-x-large: 16px;
+    --font-size-text-large: 15px;
+    --font-size-text-small: 12px;
+    --font-size-text-x-small: 11px;
+    --font-size-title: 22px;
+    --container-max-width: calc(100% - 30px);
+  }
+}
+
+html {
+  font-size: var(--font-size-text);
+  scroll-behavior: smooth;
+  & > body {
+    scroll-behavior: smooth;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    font-family: var(--font-family-text);
+    font-weight: var(--font-weight-normal);
+    font-size: var(--font-size-text);
+    text-align: center;
+    background-color: #f7f7f7;
+    color: var(--text-color);
+
+    & > iframe {
+      pointer-events: none;
+    }
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-family-title);
+    margin-bottom: 0.5em;
+    font-weight: var(--font-weight-bold);
+    line-height: 1.5;
+    color: var(--text-color);
+  }
+
+  h1 {
+    font-size: 3rem;
+  }
+
+  h2 {
+    font-size: 2rem;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+  }
+
+  h4 {
+    font-size: 1rem;
+  }
+
+  h5 {
+    font-size: 0.83rem;
+  }
+
+  h6 {
+    font-size: 0.67rem;
+  }
+
+  p {
+    line-height: 1.5;
+    margin-bottom: 0.5rem;
+  }
+
+  span {
+    line-height: 1.15;
+  }
+
+  small {
+    font-size: var(--font-size-text-small);
+    line-height: 1.15;
+  }
+
+  a,
+  a:link,
+  a:hover,
+  a:visited {
+    text-decoration: none;
+    font-family: var(--font-family-title);
+    color: var(--text-color);
+  }
+
+  a:hover {
+    color: var(--text-color-hover);
+  }
+
+  button,
+  button:focus,
+  button:hover {
+    outline: none;
+  }
+
+  input,
+  input:focus,
+  input:hover {
+    outline: none;
+  }
+
+  ul,
+  li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+}

@@ -33,7 +33,7 @@
         "no-unused-vars": "off",
         "no-undef": "error",
         "indent": ["warn", 2],
-        "quotes": [2, "single", { "avoidEscape": true }],
+        "quotes": ["warn", "double"],
         "import/order": [
             "warn",
             {

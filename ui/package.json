@@ -6,11 +6,15 @@
   "repository": "https://github.com/cardano-foundation/cf-voting-app/app",
   "description": "Cardano Voting Application",
   "dependencies": {
+    "@emotion/react": "^11.11.0",
+    "@emotion/styled": "^11.11.0",
+    "@mui/material": "^5.13.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-router-dom": "^6.11.1",
     "react-scripts": "5.0.1",
-    "typescript": "^4.9.5",
     "sass": "^1.56.1",
+    "typescript": "^4.9.5",
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {

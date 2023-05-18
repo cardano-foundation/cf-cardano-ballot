@@ -1,3 +1,5 @@
+@import "commons/styles/colors.scss";
+
 @font-face {
   font-family: "Roboto Bold";
   font-style: normal;
@@ -20,7 +22,7 @@
 }
 
 :root {
-  --font-family-title: "Roboto Bold", sans-serif;
+  --font-family-title: "Roboto Bold", sans-serif !important;
   --font-family-text: "Roboto Regular", sans-serif;
   --font-weight-normal: 400;
   --font-weight-bold: 700;
@@ -34,11 +36,11 @@
   --container-max-width: 1340px;
   --menu-item-gap: 32px;
   --row-6-to-5-col: calc(120% + 16.8px);
-  --text-color: #13152f;
+  --text-color: #061D3C;
   --title-color: #98a2b3;
   --text-color-pale: #667085;
   --text-color-reverse: #ffffff;
-  --text-color-hover: #13152f;
+  --text-color-hover: #92FFC0;
   --text-color-reverse-hover: #ffffff;
   --color-green: #29744d;
   --color-green-light: #438f68;
@@ -118,7 +120,7 @@ html {
     font-weight: var(--font-weight-normal);
     font-size: var(--font-size-text);
     text-align: center;
-    background-color: #f7f7f7;
+    background-color: #F5F9FF;
     color: var(--text-color);
 
     & > iframe {

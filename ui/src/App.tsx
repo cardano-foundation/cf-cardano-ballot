@@ -1,18 +1,19 @@
-import React from 'react';
-import logo from './commons/resources/images/logo.svg';
-import './App.scss';
+import React from "react";
+import { BrowserRouter as Router } from "react-router-dom";
+import "./App.scss";
+import Content from "./components/layout/Content/Content";
+import Footer from "./components/layout/Footer/Footer";
+import Header from "./components/layout/Header/Header";
 
 function App() {
   return (
     <>
       <div className="App">
-        <header className="App-header"></header>
-        <img
-          src={logo}
-          className="App-logo"
-          alt="logo"
-        />
-        <h1>Cardano Voting App</h1>
+        <Header />
+        <Router>
+          <Content />
+        </Router>
+        <Footer />
       </div>
     </>
   );

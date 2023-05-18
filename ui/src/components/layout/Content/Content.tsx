@@ -4,12 +4,18 @@ import CssBaseline from "@mui/material/CssBaseline";
 
 export default function Content() {
   return (
-    <Box>
+    <Box
+    sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      minHeight: '70vh',
+    }}
+  >
       <CssBaseline />
       <Container
         component="main"
         maxWidth="lg"
-        sx={{ mt: 9, mb: 1 }}
+        sx={{ mt: 3, mb: 1 }}
       >
         <PageRouter />
       </Container>

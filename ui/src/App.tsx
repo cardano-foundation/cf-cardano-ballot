@@ -1,4 +1,5 @@
 import React from "react";
+import { BrowserRouter as Router } from "react-router-dom";
 import "./App.scss";
 import Content from "./components/layout/Content/Content";
 import Footer from "./components/layout/Footer/Footer";
@@ -9,7 +10,9 @@ function App() {
     <>
       <div className="App">
         <Header />
-        <Content />
+        <Router>
+          <Content />
+        </Router>
         <Footer />
       </div>
     </>

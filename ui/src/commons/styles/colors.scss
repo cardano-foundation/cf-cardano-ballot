@@ -1,0 +1,22 @@
+:root {
+  --color-primary: #030321;
+  --color-primary-rgb: 3, 3, 33;
+
+  --color-secondary: #363c4a;
+  --color-secondary-rgb: 54, 60, 74;
+
+  --color-light: #f6f6f6;
+
+  --text-color: var(--color-primary);
+  --text-color-rgb: var(--color-primary-rgb);
+
+  --color-light-grey: #eeeeee;
+  --color-medium-grey: #d9d9d9;
+  --color-dark-grey: #bbbbbb;
+
+  --color-accent-gradient: linear-gradient(
+    94.29deg,
+    #92ffc0 20.19%,
+    #00a5e6 119.98%
+  );
+}

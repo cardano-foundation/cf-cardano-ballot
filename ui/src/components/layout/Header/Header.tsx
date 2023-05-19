@@ -1,6 +1,6 @@
 import { Grid } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
-import { styled } from "@mui/material/styles";
+import { useTheme, styled } from "@mui/material/styles";
+import CountDownTimer from "../../CountDownTimer/CountDownTimer";
 
 const LogoImg = styled("img")(() => ({
   width: "230px",
@@ -18,7 +18,7 @@ const HeaderStyle = styled("header")(({ theme }) => ({
   position: "static",
   alignItems: "center",
   padding: theme.spacing(2),
-  justifyContent: "space-between"
+  justifyContent: "space-between",
 }));
 
 export default function Header() {
@@ -46,7 +46,7 @@ export default function Header() {
           xs={12}
           sm={"auto"}
         >
-          Time left to vote: 30 days, 16 hours, 5 minutes
+          Time left to vote: <CountDownTimer />
         </Grid>
       </Grid>
     </HeaderStyle>

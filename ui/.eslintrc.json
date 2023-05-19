@@ -29,7 +29,6 @@
         "@typescript-eslint/no-non-null-assertion": "off",
         "react/no-unescaped-entities": 0,
         "react/react-in-jsx-scope": "off",
-        "no-console": "error",
         "no-unused-vars": "off",
         "no-undef": "error",
         "indent": ["warn", 2],

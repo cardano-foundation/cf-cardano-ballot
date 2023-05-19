@@ -5,10 +5,10 @@ import { Grid, Container, Typography, Button } from "@mui/material";
 import DoneIcon from "@mui/icons-material/Done";
 import CloseIcon from "@mui/icons-material/Close";
 import DoDisturbIcon from "@mui/icons-material/DoDisturb";
+import CountDownTimer from "../../components/CountDownTimer/CountDownTimer";
 import OptionCard from "../../components/OptionCard/OptionCard";
 import { OptionItem } from "../../components/OptionCard/OptionCard.types";
 import "./Vote.scss";
-import { NoEncryption } from "@mui/icons-material";
 
 const items: OptionItem[] = [
   {
@@ -60,7 +60,7 @@ const Vote = () => {
                 fontWeight: 400,
               }}
             >
-              Time left to vote: 30 days, 16 hours, 5 minutes
+              Time left to vote:  <CountDownTimer />
             </Typography>
           </Grid>
 

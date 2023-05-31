@@ -6,6 +6,7 @@
   "repository": "https://github.com/cardano-foundation/cf-voting-app/app",
   "description": "Cardano Voting Application",
   "dependencies": {
+    "@cardano-foundation/cardano-connect-with-wallet": "^0.1.57",
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.11.16",

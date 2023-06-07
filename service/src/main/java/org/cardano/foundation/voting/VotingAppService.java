@@ -1,8 +1,7 @@
 package org.cardano.foundation.voting;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.setl.json.jackson.CanonicalFactory;
 import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.domain.SnapshotEpochType;
 import org.cardano.foundation.voting.domain.entity.Category;
 import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.domain.entity.Proposal;
@@ -22,6 +21,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import java.net.http.HttpClient;
 import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.Executor;
 
@@ -49,33 +49,33 @@ public class VotingAppService {
         return HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_1_1)
                 .followRedirects(HttpClient.Redirect.NORMAL)
-                .connectTimeout(Duration.ofSeconds(20))
+                .connectTimeout(Duration.ofSeconds(60))
                 .build();
     }
 
-    @Bean("canonical_object_mapper")
-    public ObjectMapper objectMapper() {
-        return new ObjectMapper(new CanonicalFactory()) {
-
-            // Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'jsonSchemaConverter' defined in class path resource [org/springframework/data/rest/webmvc/config/RepositoryRestMvcConfiguration.class]: Failed to instantiate [org.springframework.data.rest.webmvc.json.PersistentEntityToJsonSchemaConverter]: Factory method 'jsonSchemaConverter' threw exception with message: Failed copy(): io.setl.json.jackson.CanonicalFactory (version: 2.14.2) does not override copy(); it has to
-            // workaround: https://stackoverflow.com/questions/60608345/spring-boot-hateoas-and-custom-jacksonobjectmapper
-
-            @Override
-            public ObjectMapper copy() {
-                return this;
-            }
-
-        };
-    }
+//    @Bean("canonical_object_mapper")
+//    public ObjectMapper objectMapper() {
+//        return new ObjectMapper(new CanonicalFactory()) {
+//
+//            // Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'jsonSchemaConverter' defined in class path resource [org/springframework/data/rest/webmvc/config/RepositoryRestMvcConfiguration.class]: Failed to instantiate [org.springframework.data.rest.webmvc.json.PersistentEntityToJsonSchemaConverter]: Factory method 'jsonSchemaConverter' threw exception with message: Failed copy(): io.setl.json.jackson.CanonicalFactory (version: 2.14.2) does not override copy(); it has to
+//            // workaround: https://stackoverflow.com/questions/60608345/spring-boot-hateoas-and-custom-jacksonobjectmapper
+//
+//            @Override
+//            public ObjectMapper copy() {
+//                return this;
+//            }
+//
+//        };
+//    }
 
     @Bean
     public CommandLineRunner onStart(ReferenceDataService referenceDataService) {
         return (args) -> {
             log.info("CF Voting App initialisation...");
 
-            List<Event> events = referenceDataService.findEvents();
-            if (events.size() > 0) {
-                log.info("There is already event: {}", events.get(0));
+            Optional<Event> maybeVoltaireEvent = referenceDataService.findEventByName("Voltaire_Pre_Ratification");
+            if (maybeVoltaireEvent.isPresent()) {
+                log.info("There is already event: {}", maybeVoltaireEvent.orElseThrow());
 
                 log.info("CF Voting App initialisation completed.");
                 return;
@@ -85,8 +85,13 @@ public class VotingAppService {
 
             Event event = new Event();
             event.setId(UUID.randomUUID().toString());
-            event.setName("Voltaire Pre-Ratification");
+            event.setName("Voltaire_Pre_Ratification");
             event.setTeam("CF Team");
+            event.setStartSlot(415);
+            event.setEndSlot(420);
+            event.setSnapshotEpoch(410);
+            event.setSnapshotEpochType(SnapshotEpochType.EPOCH_END);
+
             event.setDescription("Pre-Ratification of the Voltaire era");
 
             Category preRatificationCategory = new Category();

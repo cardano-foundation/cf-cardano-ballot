@@ -8,21 +8,17 @@ import java.time.Instant;
 
 @Data
 @Builder
-// CIP-93 compatibility
-public class CastVoteRequest {
+public class BasicVoteReceipt {
 
     @NotNull
     @Builder.Default
-    private String uri = "/api/vote/cast";
+    private String uri = "/api/vote/receipt";
 
     @NotNull
     @Builder.Default
-    private String action = "CAST_VOTE";
+    private String action = "VOTE_RECEIPT";
 
     @NotNull
     private Instant timestamp;
-
-    @NotNull
-    private SignedVote signedVote;
 
 }

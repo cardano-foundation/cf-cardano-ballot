@@ -3,10 +3,7 @@ package org.cardano.foundation.voting.service;
 import org.springframework.stereotype.Service;
 
 @Service
-public class TransactionService {
+public class LeaderBoardService {
 
-    public void postL1Transaction(String rootHash) {
-
-    }
 
 }

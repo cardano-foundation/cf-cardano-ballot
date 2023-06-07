@@ -1,7 +1,9 @@
 package org.cardano.foundation.voting.domain;
 
+import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class VoteReceipt {
+@Builder
+public class CompleteVoteReceipt {
 }

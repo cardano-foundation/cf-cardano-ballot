@@ -23,18 +23,16 @@ public class VoteCommitmentService {
     private RootHashRepository rootHashRepository;
 
     @Transactional
-    public void storeLatestRootHash(Event event) {
+    public RootHash storeLatestRootHash(Event event) {
         log.info("Running posting root hash job...");
 
-        //List<Vote> allVotes = voteService.findAll();
+        List<Vote> allVotes = voteService.findAll(event);
 
         // create merkle tree from all votes
 
         // get root hash from the merkle tree
 
-        // commit root hash to Cardano as metadata transaction using BloxBean library
-
-        rootHashRepository.save(new RootHash(event.getId(), "new-root-hash"));
+        return rootHashRepository.save(new RootHash(event.getId(), "new-root-hash"));
     }
 
     /**

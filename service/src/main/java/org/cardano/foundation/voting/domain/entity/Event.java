@@ -1,11 +1,14 @@
 package org.cardano.foundation.voting.domain.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.cardano.foundation.voting.domain.SnapshotEpochType;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Table(name = "event")
@@ -34,6 +37,23 @@ public class Event extends AbstractTimestampEntity {
     @Nullable
     private String description;
 
+    @Column(name = "start_slot")
+    @NotNull
+    private int startSlot;
+
+    @Column(name = "end_slot")
+    @NotNull
+    private int endSlot;
+
+    @Column(name = "snapshot_epoch")
+    @NotNull
+    private int snapshotEpoch;
+
+    @Column(name = "snapshot_epoch_type")
+    @NotNull
+    @Builder.Default
+    private SnapshotEpochType snapshotEpochType = SnapshotEpochType.EPOCH_END;
+
     @OneToMany(
             mappedBy = "event",
             cascade = CascadeType.ALL,
@@ -42,5 +62,17 @@ public class Event extends AbstractTimestampEntity {
     )
     @Builder.Default
     private List<Category> categories = new ArrayList<>();
+
+    public Optional<Category> getCategory(String categoryId) {
+        return categories.stream().filter(category -> category.getId().equals(categoryId)).findFirst();
+    }
+
+    public Optional<Proposal> getProposal(String categoryId, String proposalId) {
+        return categories.stream().filter(category -> category.getId().equals(categoryId)).findFirst().flatMap(category -> category.getProposals().stream().filter(proposal -> proposal.getId().equals(proposalId)).findFirst());
+    }
+
+    public boolean isActive(int currentSlot) {
+        return currentSlot >= startSlot && currentSlot <= endSlot;
+    }
 
 }

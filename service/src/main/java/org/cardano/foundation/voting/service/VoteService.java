@@ -1,7 +1,7 @@
 package org.cardano.foundation.voting.service;
 
 import io.micrometer.core.annotation.Timed;
-import org.cardano.foundation.voting.domain.VoteReceipt;
+import org.cardano.foundation.voting.domain.BasicVoteReceipt;
 import org.cardano.foundation.voting.domain.VoteReceiptRequest;
 import org.cardano.foundation.voting.domain.CastVoteRequest;
 import org.cardano.foundation.voting.domain.entity.Event;
@@ -43,6 +43,7 @@ public class VoteService {
         // lookup event info from the reference data
         // stote vote in the db
         // store the vote in the merkle proof db
+        // do not allow vote casting if the vote has been cast already
 
         return true;
     }
@@ -50,7 +51,7 @@ public class VoteService {
     // get merkle proof of the vote along with vote information
 
     // TODO should the user sign vote receipt request via CIP-30 or we simply deliver this to anybody that wants this?
-    public Optional<VoteReceipt> voteReceipt(VoteReceiptRequest voteReceiptRequest) {
+    public Optional<BasicVoteReceipt> voteReceipt(VoteReceiptRequest voteReceiptRequest) {
         // find up latest merkle tree root hash
         // check vote if this matches with the root hash
 

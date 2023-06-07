@@ -1,4 +1,4 @@
-# cf-voting-app
+## Voltaire Voting App
 
 Voting Application to be used to Cardano Community to cast pre-rating votes for CIP-1694.
 
@@ -6,9 +6,6 @@ Voting Application to be used to Cardano Community to cast pre-rating votes for 
 [![License](https://img.shields.io:/github/license/cardano-foundation/cf-voting-app?label=license)](https://github.com/cardano-foundation/cf-voting-app/blob/master/LICENSE)
 ![Discord](https://img.shields.io/discord/1022471509173882950)
 
-## Voltaire Voting App
-
 ## Requirements
-
-- nodejs 14.x
-- java 17 LTS
+- Node.js 18.x LTS
+- Java 17 LTS

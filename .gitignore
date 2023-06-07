@@ -2,3 +2,6 @@
 
 # misc
 .DS_Store
+.idea
+db
+logs

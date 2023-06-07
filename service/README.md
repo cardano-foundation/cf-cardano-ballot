@@ -1,4 +1,6 @@
-# Cardano Voting - voting services
+# Cardano Backend App
 
-## Getting started
-Backend service setup goes here... 
+## Tech Stack
+- Spring Boot 3.0.x
+- Yaci-Store
+- Cardano-Client-Lib 5.x

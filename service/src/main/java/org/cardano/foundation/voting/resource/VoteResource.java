@@ -3,7 +3,10 @@ package org.cardano.foundation.voting.resource;
 import io.micrometer.core.annotation.Timed;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.domain.*;
+import org.cardano.foundation.voting.domain.CastVoteWeb3Request;
+import org.cardano.foundation.voting.domain.VerifyVoteWeb3Request;
+import org.cardano.foundation.voting.domain.VoteReceiptWeb3Request;
+import org.cardano.foundation.voting.domain.VoteVerificationReceipt;
 import org.cardano.foundation.voting.service.ReferenceDataService;
 import org.cardano.foundation.voting.service.VoteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
@@ -33,12 +35,12 @@ public class VoteResource {
                 .fold(problem -> {
                             return ResponseEntity.badRequest().body(problem);
                         },
-                        problem -> {
+                        vote -> {
                             return ResponseEntity.ok().build();
                         });
     }
 
-    @RequestMapping(value = "/receipt", method = GET, produces = "application/json")
+    @RequestMapping(value = "/receipt", method = POST, produces = "application/json")
     @Timed(value = "resource.vote.receipt", percentiles = { 0.3, 0.5, 0.95 })
     public ResponseEntity<?> getVoteReceipt(@RequestBody VoteReceiptWeb3Request voteReceiptRequest) {
         // check if vote has been cast
@@ -48,8 +50,8 @@ public class VoteResource {
                 .fold(problem -> {
                             return ResponseEntity.badRequest().body(problem);
                         },
-                        response -> {
-                            return ResponseEntity.ok(VoteReceipt.builder().build());
+                        voteReceipt -> {
+                            return ResponseEntity.ok().body(voteReceipt);
                         });
     }
 

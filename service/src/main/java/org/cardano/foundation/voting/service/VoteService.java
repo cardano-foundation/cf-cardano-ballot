@@ -107,7 +107,7 @@ public class VoteService {
         // find up latest merkle tree root hash
         // check vote if this matches with the root hash
 
-        var maybeVote = voteRepository.findByVoterStakingAddress(voteReceiptRequest.getStakeAddress());
+        var maybeVote = voteRepository.findByVoterStakingAddress(voteReceiptRequest.getVoterStakeAddress());
         if (maybeVote.isEmpty()) {
             return Either.left(Problem.builder().build());
         }

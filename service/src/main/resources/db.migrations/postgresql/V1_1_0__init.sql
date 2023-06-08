@@ -68,7 +68,7 @@ CREATE TABLE vote (
    cose_public_key VARCHAR(255) NOT NULL,
    voting_power BIGINT NOT NULL,
    network INT NOT NULL,
-   votedAtSlot BIGING NOT NULL,
+   voted_at_slot BIGINT NOT NULL,
 
    CONSTRAINT pk_vote PRIMARY KEY (vote)
 );

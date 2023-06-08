@@ -17,6 +17,6 @@ public class VoteReceiptWeb3Request extends Web3Request {
     private String categoryId;
 
     @NotNull
-    private String stakeAddress;
+    private String voterStakeAddress;
 
 }

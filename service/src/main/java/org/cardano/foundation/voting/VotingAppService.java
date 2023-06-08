@@ -1,5 +1,6 @@
 package org.cardano.foundation.voting;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.SnapshotEpochType;
 import org.cardano.foundation.voting.domain.entity.Category;
@@ -28,7 +29,7 @@ import java.util.concurrent.Executor;
 @SpringBootApplication
 @EnableJpaRepositories("org.cardano.foundation.voting.repository")
 @EntityScan(basePackages = "org.cardano.foundation.voting.domain.entity")
-@ComponentScan(basePackages = "org.cardano.foundation.voting.service")
+@ComponentScan(basePackages = { "org.cardano.foundation.voting.service", "org.cardano.foundation.voting.resource" })
 @EnableTransactionManagement
 @EnableScheduling
 @EnableAsync
@@ -51,6 +52,20 @@ public class VotingAppService {
                 .followRedirects(HttpClient.Redirect.NORMAL)
                 .connectTimeout(Duration.ofSeconds(60))
                 .build();
+    }
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        objectMapper.findAndRegisterModules();
+
+        log.info("Registered jackson modules:");
+        objectMapper.getRegisteredModuleIds().forEach(moduleId -> {
+            log.info("Module: {}", moduleId);
+        });
+
+        return objectMapper;
     }
 
 //    @Bean("canonical_object_mapper")
@@ -99,7 +114,6 @@ public class VotingAppService {
             preRatificationCategory.setName("Pre-Ratification");
             preRatificationCategory.setDescription("Pre-Ratification for CIP-1694");
             preRatificationCategory.setPresentationName("Pre-Ratification");
-            preRatificationCategory.setEvent(event);
 
             Proposal yesProposal = new Proposal();
             yesProposal.setId(UUID.randomUUID().toString());
@@ -119,6 +133,7 @@ public class VotingAppService {
             abstainProposal.setPresentationName("Abstain");
             abstainProposal.setCategory(preRatificationCategory);
 
+            preRatificationCategory.setEvent(event);
             preRatificationCategory.setProposals(List.of(yesProposal, noProposal, abstainProposal));
             event.setCategories(List.of(preRatificationCategory));
 

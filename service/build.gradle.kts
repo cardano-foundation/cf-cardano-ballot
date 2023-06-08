@@ -33,26 +33,31 @@ dependencies {
 	testCompileOnly("org.springframework.boot:spring-boot-starter-test")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-web")
+	testImplementation("org.springframework.boot:spring-boot-starter-test")
 
 	implementation("io.micrometer:micrometer-registry-atlas")
+	runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 
     implementation("org.flywaydb:flyway-core")
 
+	implementation("org.zalando:problem:0.27.1")
+	implementation("org.zalando:jackson-datatype-problem:0.27.1")
+
 	compileOnly("org.projectlombok:lombok")
-	runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 
     implementation("com.querydsl:querydsl-jpa")
     annotationProcessor("com.querydsl:querydsl-apt")
 
 	annotationProcessor("org.projectlombok:lombok")
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.testcontainers:junit-jupiter")
 
     implementation("com.bloxbean.cardano:cardano-client-crypto:0.4.3")
     implementation("com.bloxbean.cardano:cardano-client-address:0.4.3")
     implementation("com.bloxbean.cardano:cardano-client-metadata:0.4.3")
 
-    // for canonical json support in jackson -> https://github.com/setl/canonical-json
+	implementation("io.vavr:vavr:0.10.4")
+
+	// for canonical json support in jackson -> https://github.com/setl/canonical-json
     implementation("io.setl:canonical-json:2.3")
     implementation("com.networknt:json-schema-validator:1.0.82")
 

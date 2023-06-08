@@ -12,17 +12,15 @@ import java.time.Instant;
 public class CastVoteRequest {
 
     @NotNull
-    @Builder.Default
-    private String uri = "/api/vote/cast";
+    private String uri;
 
     @NotNull
-    @Builder.Default
-    private String action = "CAST_VOTE";
+    private String action;
 
     @NotNull
     private Instant timestamp;
 
     @NotNull
-    private SignedVote signedVote;
+    private SignedVote vote;
 
 }

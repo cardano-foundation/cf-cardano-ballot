@@ -31,7 +31,7 @@ public class ReferenceDataService {
     @Timed(value = "service.reference.storeEvent", percentiles = {0.3, 0.5, 0.95})
     @Transactional
     public Event storeEvent(Event event) {
-        return eventRepository.save(event);
+        return eventRepository.saveAndFlush(event);
     }
 
     public List<Event> findAllEvents() {

@@ -2,7 +2,6 @@ package org.cardano.foundation.voting.domain;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import org.cardano.foundation.voting.domain.Network;
 
 @Data
 public class SignedVote {
@@ -20,7 +19,7 @@ public class SignedVote {
     private String proposalId;
 
     @NotNull
-    private String votedAtSlot;
+    private long votedAtSlot;
 
     @NotNull
     private Network network;
@@ -29,9 +28,9 @@ public class SignedVote {
     private String voterStakeAddress; // stakeAddress
 
     @NotNull
-    private String coseSignature;
+    private String coseSignature; // hex serialised
 
     @NotNull
-    private String cosePublicKey;
+    private String cosePublicKey; // hex serialised
 
 }

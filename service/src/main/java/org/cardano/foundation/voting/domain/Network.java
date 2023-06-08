@@ -2,8 +2,10 @@ package org.cardano.foundation.voting.domain;
 
 public enum Network {
 
-    MAINNET("mainnet"),
-    PREPROD("preprod");
+    MAINNET("main"),
+    PREPROD("preprod"),
+    PREVIEW("preview"),
+    DEVNET("dev");
 
     private String network;
 

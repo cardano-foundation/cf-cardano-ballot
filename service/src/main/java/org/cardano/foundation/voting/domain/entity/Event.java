@@ -17,7 +17,6 @@ import java.util.Optional;
 @Builder
 @RequiredArgsConstructor
 @AllArgsConstructor
-@ToString
 public class Event extends AbstractTimestampEntity {
 
     @Id
@@ -39,11 +38,11 @@ public class Event extends AbstractTimestampEntity {
 
     @Column(name = "start_slot")
     @NotNull
-    private int startSlot;
+    private long startSlot;
 
     @Column(name = "end_slot")
     @NotNull
-    private int endSlot;
+    private long endSlot;
 
     @Column(name = "snapshot_epoch")
     @NotNull

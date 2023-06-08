@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.cardano.foundation.voting.domain.Network;
 
 @Data
 @NoArgsConstructor
@@ -41,5 +42,11 @@ public class Vote {
 
     @Column(name = "voting_power")
     private long votingPower;
+
+    @Column(name = "network")
+    private Network network;
+
+    @Column(name = "voted_at_slot")
+    private long votedAtSlot;
 
 }

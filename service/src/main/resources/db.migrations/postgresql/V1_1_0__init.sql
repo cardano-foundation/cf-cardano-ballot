@@ -72,3 +72,6 @@ CREATE TABLE vote (
 
    CONSTRAINT pk_vote PRIMARY KEY (vote)
 );
+
+CREATE INDEX idx_vote_stake_key
+    ON vote (voter_staking_address);

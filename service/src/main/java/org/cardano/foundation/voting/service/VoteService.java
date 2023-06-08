@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.zalando.problem.Problem;
 
 import java.util.List;
@@ -54,7 +53,7 @@ public class VoteService {
 
     @Transactional
     @Timed(value = "service.vote.castVote", percentiles = { 0.3, 0.5, 0.95 })
-    public Either<Problem, Vote> castVote(CastVoteRequest castVoteRequest) {
+    public Either<Problem, Vote> castVote(CastVoteWeb3Request castVoteRequest) {
         // lookup event info from the reference data
         // do not allow voting for events / proposals and categories that are invalid
         // stote vote in the db
@@ -96,7 +95,7 @@ public class VoteService {
     // TODO should the user sign vote receipt request via CIP-30 or we simply deliver this to anybody that wants this?
     @Transactional
     @Timed(value = "service.vote.voteReceipt", percentiles = { 0.3, 0.5, 0.95 })
-    public Either<Problem, VoteReceipt> voteReceipt(VoteReceiptRequest voteReceiptRequest) {
+    public Either<Problem, VoteReceipt> voteReceipt(VoteReceiptWeb3Request voteReceiptRequest) {
         // check in our db if we have vote receipt
         getRootHash(voteReceiptRequest.getEventId())
                 .map(rootHash -> {
@@ -108,12 +107,18 @@ public class VoteService {
         // find up latest merkle tree root hash
         // check vote if this matches with the root hash
 
-        return Either.right(VoteReceipt.builder().build());
+        var maybeVote = voteRepository.findByVoterStakingAddress(voteReceiptRequest.getStakeAddress());
+        if (maybeVote.isEmpty()) {
+            return Either.left(Problem.builder().build());
+        }
+        var vote = maybeVote.orElseThrow();
+
+        return Either.right(VoteReceipt.builder().vote(vote).build());
     }
 
     @Transactional
     @Timed(value = "service.vote.verifyVote", percentiles = { 0.3, 0.5, 0.95 })
-    public Either<Problem, VoteVerificationReceipt> verifyVote(VerifyVoteRequest verifyVoteRequest) {
+    public Either<Problem, VoteVerificationReceipt> verifyVote(VerifyVoteWeb3Request verifyVoteRequest) {
         getRootHash(verifyVoteRequest.getEventId())
                 .map(rootHash -> {
                     // verify proof of inclusion against root hash

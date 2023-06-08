@@ -17,3 +17,6 @@ public interface BlockchainDataService {
     Optional<Long> getVotingPower(String stakeAddress);
 
 }
+
+
+// -1000 slot + 1000

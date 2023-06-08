@@ -28,7 +28,7 @@ public class VoteResource {
 
     @RequestMapping(value = "/cast", method = POST, produces = "application/json")
     @Timed(value = "resource.vote.cast", percentiles = { 0.3, 0.5, 0.95 })
-    public ResponseEntity<?> castVote(@RequestBody CastVoteRequest castVoteRequest) {
+    public ResponseEntity<?> castVote(@RequestBody CastVoteWeb3Request castVoteRequest) {
         return voteService.castVote(castVoteRequest)
                 .fold(problem -> {
                             return ResponseEntity.badRequest().body(problem);
@@ -40,22 +40,22 @@ public class VoteResource {
 
     @RequestMapping(value = "/receipt", method = GET, produces = "application/json")
     @Timed(value = "resource.vote.receipt", percentiles = { 0.3, 0.5, 0.95 })
-    public ResponseEntity<?> getVoteReceipt(@Valid VoteReceiptRequest voteReceiptRequest) {
+    public ResponseEntity<?> getVoteReceipt(@RequestBody VoteReceiptWeb3Request voteReceiptRequest) {
         // check if vote has been cast
         // check if there is a basic receipt
 
         return voteService.voteReceipt(voteReceiptRequest)
-                .fold(request -> {
-                            return ResponseEntity.ok(VoteReceipt.builder().build());
-                        },
-                        problem -> {
+                .fold(problem -> {
                             return ResponseEntity.badRequest().body(problem);
+                        },
+                        response -> {
+                            return ResponseEntity.ok(VoteReceipt.builder().build());
                         });
     }
 
     @RequestMapping(value = "/verify", method = POST, produces = "application/json")
     @Timed(value = "resource.vote.verify", percentiles = { 0.3, 0.5, 0.95 })
-    public ResponseEntity<?> verifyVote(@Valid VerifyVoteRequest verifyVoteRequest) {
+    public ResponseEntity<?> verifyVote(@Valid VerifyVoteWeb3Request verifyVoteRequest) {
         // given verifyVoteRequest that contains merkle proof, we verify against our merkle root hash if this vote is valid
 
         return voteService.verifyVote(verifyVoteRequest)

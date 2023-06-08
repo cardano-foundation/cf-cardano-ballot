@@ -49,4 +49,6 @@ public class Vote {
     @Column(name = "voted_at_slot")
     private long votedAtSlot;
 
+    // TODO merkle proof once submitted to the chain
+
 }

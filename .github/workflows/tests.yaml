@@ -26,9 +26,7 @@ jobs:
           node-version: 18
 
       - name: 🧘‍♀️ Download dependencies
-        run: npm install
+        run: npm ci
 
       - name: 🎳 Run tests
         run: npm test
-    env:
-      EXPLORER_API_MAINNET_URL: ${{ secrets.EXPLORER_API_MAINNET_URL }}

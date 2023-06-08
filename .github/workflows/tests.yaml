@@ -1,4 +1,4 @@
-name: Run Explorer e2e Tests
+name: Run Explorer Cypress Tests
 on:
   push:
     branches-ignore:

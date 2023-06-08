@@ -26,7 +26,7 @@ jobs:
           node-version: 18
 
       - name: 🧘‍♀️ Download dependencies
-        run: npm ci
+        run: npm install
 
       - name: 🎳 Run tests
         run: npm test

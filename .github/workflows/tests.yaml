@@ -1,0 +1,36 @@
+name: Run Explorer Cypress Tests
+on:
+  push:
+    branches-ignore:
+      - "main"
+  pull_request:
+    branches-ignore:
+      - "main"
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⬇️ Checkout repository
+        uses: actions/checkout@v3
+
+      - name: 🦾 Create .env file
+        run: |
+          echo "PORT=3000" > .env
+          echo "REACT_APP_VERSION=$npm_package_version" >> .env
+
+      - name: 🫡 Setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16
+
+      - name: 🧘‍♀️ Download dependencies
+        run: |
+          cd ui
+          npm ci
+
+      - name: 🎳 Run tests
+        run: |
+          cd ui
+          npm test

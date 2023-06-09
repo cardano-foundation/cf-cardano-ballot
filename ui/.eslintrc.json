@@ -27,6 +27,7 @@
     "rules": {
         "@typescript-eslint/no-duplicate-enum-values": "error",
         "@typescript-eslint/no-non-null-assertion": "off",
+        "@typescript-eslint/no-explicit-any": "off",
         "react/no-unescaped-entities": 0,
         "react/react-in-jsx-scope": "off",
         "no-unused-vars": "off",

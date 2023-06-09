@@ -1,4 +1,4 @@
-name: Run Explorer Cypress Tests
+name: Run Voting App Cypress Tests
 on:
   push:
     branches-ignore:

@@ -102,6 +102,7 @@ const IntroSlides = ({ items }: SlideProps) => {
                       fontSize: "25px",
                       fontWeight: 700,
                       textTransform: "none",
+                      borderRadius: "16px !important",
                       color: '#fff !important',
                       fontFamily: "Roboto Bold",
                       backgroundColor: theme.palette.primary.main,

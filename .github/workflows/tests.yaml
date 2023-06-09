@@ -27,8 +27,10 @@ jobs:
 
       - name: 🧘‍♀️ Download dependencies
         run: |
+          cd ui
           npm ci
 
       - name: 🎳 Run tests
         run: |
+          cd ui
           npm test

@@ -20,8 +20,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
 
-import java.net.http.HttpClient;
-import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Executor;
@@ -48,14 +46,14 @@ public class VotingAppService {
         return new ThreadPoolTaskExecutor();
     }
 
-    @Bean
-    public HttpClient httpClient() {
-        return HttpClient.newBuilder()
-                .version(HttpClient.Version.HTTP_1_1)
-                .followRedirects(HttpClient.Redirect.NORMAL)
-                .connectTimeout(Duration.ofSeconds(60))
-                .build();
-    }
+//    @Bean
+//    public HttpClient httpClient() {
+//        return HttpClient.newBuilder()
+//                .version(HttpClient.Version.HTTP_1_1)
+//                .followRedirects(HttpClient.Redirect.NORMAL)
+//                .connectTimeout(Duration.ofSeconds(60))
+//                .build();
+//    }
 
     @Bean
     public ObjectMapper objectMapper() {

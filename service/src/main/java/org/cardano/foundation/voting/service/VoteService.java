@@ -103,7 +103,7 @@ public class VoteService {
             return Either.left(castVoteRequestBodyJsonE.getLeft());
         }
         var castVoteRequestBodyJson = castVoteRequestBodyJsonE.get();
-        var maybeNetwork = Network.fromString(castVoteRequestBodyJson.get("vote").get("network").asText());
+        var maybeNetwork = Network.fromName(castVoteRequestBodyJson.get("vote").get("network").asText());
         if (maybeNetwork.isEmpty()) {
             log.warn("Invalid network, network:{}", castVoteRequestBodyJson.asText());
 
@@ -200,7 +200,7 @@ public class VoteService {
                     .build());
         }
 
-        var maybeVotingPower = blockchainDataService.getVotingPower(network, event, stakeAddress);
+        var maybeVotingPower = blockchainDataService.getVotingPower(network, event.getSnapshotEpoch(), stakeAddress);
         if (maybeVotingPower.isEmpty()) {
             log.warn("Unrecognised voting power, stakeAddress:{}", stakeAddress);
 
@@ -209,7 +209,15 @@ public class VoteService {
                     .withStatus(INTERNAL_SERVER_ERROR)
                     .build());
         }
-        var votingPower = maybeVotingPower.orElseThrow();
+        long envelopeVotingPower = castVoteRequestBodyJson.get("vote").get("votingPower").asLong();
+        long actualVotingPower = maybeVotingPower.orElseThrow();
+        if (envelopeVotingPower != actualVotingPower) {
+            return Either.left(Problem.builder()
+                    .withTitle("Voting power mismatch, signed vote voting power:" + envelopeVotingPower + ", actual voting power:" + actualVotingPower)
+                    .withStatus(BAD_REQUEST)
+                    .build()
+            );
+        }
 
         if (voteRepository.findByEventIdAndCategoryIdAndVoterStakingAddress(event.getId(), category.getId(), stakeAddress).isPresent()) {
             log.warn("Cote already cast for the stake address: " + stakeAddress);
@@ -232,7 +240,7 @@ public class VoteService {
         vote.setNetwork(network);
         vote.setCoseSignature(vote.getCoseSignature());
         vote.setCosePublicKey(vote.getCosePublicKey());
-        vote.setVotingPower(votingPower);
+        vote.setVotingPower(actualVotingPower);
 
         return Either.right(voteRepository.saveAndFlush(vote));
     }
@@ -287,7 +295,7 @@ public class VoteService {
 
         var voteReceiptBodyJson = voteReceiptBodyJsonE.get();
 
-        var maybeNetwork = Network.fromString(voteReceiptBodyJson.get("request").get("network").asText());
+        var maybeNetwork = Network.fromName(voteReceiptBodyJson.get("request").get("network").asText());
         if (maybeNetwork.isEmpty()) {
             log.warn("Invalid network, network:{}", voteReceiptBodyJson.asText());
 
@@ -315,15 +323,15 @@ public class VoteService {
             log.warn("Unknown action, action:{}", actionText);
 
             return Either.left(Problem.builder()
-                    .withTitle("Action not found, expected action:" + Web3Action.CAST_VOTE.name())
+                    .withTitle("Action not found, expected action:" + Web3Action.VOTE_RECEIPT.name())
                     .withStatus(BAD_REQUEST)
                     .build()
             );
         }
         var action = maybeAction.orElseThrow();
-        if (action != Web3Action.CAST_VOTE) {
+        if (action != Web3Action.VOTE_RECEIPT) {
             return Either.left(Problem.builder()
-                    .withTitle("Cast Action not found, expected action:" + Web3Action.CAST_VOTE.name())
+                    .withTitle("Voter Receipt Action not found, expected action:" + Web3Action.VOTE_RECEIPT.name())
                     .withStatus(BAD_REQUEST)
                     .build()
             );

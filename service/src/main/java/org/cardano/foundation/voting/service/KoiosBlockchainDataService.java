@@ -4,7 +4,6 @@ import jakarta.annotation.PostConstruct;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.Network;
-import org.cardano.foundation.voting.domain.entity.Event;
 import org.springframework.stereotype.Service;
 import rest.koios.client.backend.factory.BackendFactory;
 import rest.koios.client.backend.factory.BackendService;
@@ -52,12 +51,12 @@ public class KoiosBlockchainDataService implements BlockchainDataService {
 
     @Override
     @SneakyThrows
-    public Optional<Long> getVotingPower(Network network, Event event, String stakeAddress) {
+    public Optional<Long> getVotingPower(Network network, int snapshotEpochNo, String stakeAddress) {
         if (network != this.network) {
             throw new IllegalArgumentException("Backend connected to different network!");
         }
 
-        var accountHistoryResponse = backendService.getAccountService().getAccountHistory(List.of(stakeAddress), event.getSnapshotEpoch(), EMPTY);
+        var accountHistoryResponse = backendService.getAccountService().getAccountHistory(List.of(stakeAddress), snapshotEpochNo, EMPTY);
         if (!accountHistoryResponse.isSuccessful()) {
             return Optional.empty();
         }
@@ -74,7 +73,7 @@ public class KoiosBlockchainDataService implements BlockchainDataService {
 
         var stakeAcc = stakeAccount.orElseThrow();
 
-        var historyInner = stakeAcc.getHistory().stream().filter(ah -> ah.getEpochNo() == event.getSnapshotEpoch()).findFirst();
+        var historyInner = stakeAcc.getHistory().stream().filter(ah -> ah.getEpochNo() == snapshotEpochNo).findFirst();
         if (historyInner.isEmpty()) {
             return Optional.empty();
         }

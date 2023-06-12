@@ -17,7 +17,7 @@ public enum Network {
         return Arrays.stream(Network.values()).map(network -> network.name().toLowerCase()).toList();
     }
 
-    public static Optional<Network> fromString(String networkText) {
+    public static Optional<Network> fromName(String networkText) {
         return Enums.getIfPresent(Network.class, networkText.toUpperCase()).toJavaUtil();
     }
 

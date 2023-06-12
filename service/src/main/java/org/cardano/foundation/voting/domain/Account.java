@@ -9,5 +9,6 @@ public class Account {
 
     private String stakeAddress;
     private long votingPower;
+    private Network network;
 
 }

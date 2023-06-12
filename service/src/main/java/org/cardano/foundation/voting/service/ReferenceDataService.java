@@ -1,8 +1,12 @@
 package org.cardano.foundation.voting.service;
 
 import io.micrometer.core.annotation.Timed;
+import org.cardano.foundation.voting.domain.entity.Category;
 import org.cardano.foundation.voting.domain.entity.Event;
+import org.cardano.foundation.voting.domain.entity.Proposal;
+import org.cardano.foundation.voting.repository.CategoryRepository;
 import org.cardano.foundation.voting.repository.EventRepository;
+import org.cardano.foundation.voting.repository.ProposalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,16 +20,28 @@ public class ReferenceDataService {
     @Autowired
     private EventRepository eventRepository;
 
-    @Timed(value = "service.reference.findEventById", percentiles = {0.3, 0.5, 0.95})
-    @Transactional
-    public Optional<Event> findEvent(String eventId) {
-        return eventRepository.findById(eventId);
-    }
+    @Autowired
+    private CategoryRepository categoryRepository;
+
+    @Autowired
+    private ProposalRepository proposalRepository;
 
     @Timed(value = "service.reference.findEventByName", percentiles = {0.3, 0.5, 0.95})
     @Transactional
-    public Optional<Event> findEventByName(String name) {
-        return eventRepository.findAll().stream().filter(event -> event.getName().equals(name)).findFirst();
+    public Optional<Event> findEventByName(String eventName) {
+        return eventRepository.findByName(eventName);
+    }
+
+    @Timed(value = "service.reference.findCategoryByName", percentiles = {0.3, 0.5, 0.95})
+    @Transactional
+    public Optional<Category> findCategoryByName(String eventName) {
+        return categoryRepository.findByName(eventName);
+    }
+
+    @Timed(value = "service.reference.findProposalByName", percentiles = {0.3, 0.5, 0.95})
+    @Transactional
+    public Optional<Proposal> findProposalByName(String eventName) {
+        return proposalRepository.findByName(eventName);
     }
 
     @Timed(value = "service.reference.storeEvent", percentiles = {0.3, 0.5, 0.95})

@@ -27,10 +27,4 @@ public class SignedVote {
     @NotNull
     private String voterStakeAddress; // stakeAddress
 
-    @NotNull
-    private String coseSignature; // hex serialised
-
-    @NotNull
-    private String cosePublicKey; // hex serialised
-
 }

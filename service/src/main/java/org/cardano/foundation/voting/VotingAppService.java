@@ -12,11 +12,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
 
 import java.net.http.HttpClient;
 import java.time.Duration;
@@ -33,6 +35,7 @@ import static org.cardano.foundation.voting.domain.SnapshotEpochType.EPOCH_END;
 @EnableTransactionManagement
 @EnableScheduling
 @EnableAsync
+@Import(SecurityProblemSupport.class)
 @Slf4j
 public class VotingAppService {
 
@@ -104,7 +107,7 @@ public class VotingAppService {
             event.setName("Voltaire_Pre_Ratification");
             event.setTeam("CF Team");
             event.setStartSlot(415);
-            event.setEndSlot(420);
+            event.setEndSlot(425);
             event.setSnapshotEpoch(410);
             event.setSnapshotEpochType(EPOCH_END);
 

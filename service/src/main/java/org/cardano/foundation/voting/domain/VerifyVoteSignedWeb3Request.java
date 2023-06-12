@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class VerifyVoteWeb3Request extends Web3Request {
+public class VerifyVoteSignedWeb3Request extends SignedWeb3Request {
 
     @NotNull
     private String eventId;

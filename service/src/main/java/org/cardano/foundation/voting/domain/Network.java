@@ -1,16 +1,24 @@
 package org.cardano.foundation.voting.domain;
 
+import com.google.common.base.Enums;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
 public enum Network {
 
-    MAINNET("main"),
-    PREPROD("preprod"),
-    PREVIEW("preview"),
-    DEVNET("dev");
+    MAIN,
+    PREPROD,
+    PREVIEW,
+    DEV;
 
-    private String network;
+    public static List<String> supportedNetworks() {
+        return Arrays.stream(Network.values()).map(network -> network.name().toLowerCase()).toList();
+    }
 
-    private Network(String network) {
-        this.network = network;
+    public static Optional<Network> fromString(String networkText) {
+        return Enums.getIfPresent(Network.class, networkText.toUpperCase()).toJavaUtil();
     }
 
 }

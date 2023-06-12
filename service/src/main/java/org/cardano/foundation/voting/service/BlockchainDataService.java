@@ -1,12 +1,15 @@
 package org.cardano.foundation.voting.service;
 
+import org.cardano.foundation.voting.domain.Network;
+import org.cardano.foundation.voting.domain.entity.Event;
+
 import java.util.Optional;
 
 public interface BlockchainDataService {
 
-    int getCurrentEpoch();
+    int getCurrentEpoch(Network network);
 
-    long getCurrentSlot();
+    long getCurrentAbsoluteSlot(Network network);
 
     /**
      * Get Voting Power as lovelaces
@@ -14,9 +17,6 @@ public interface BlockchainDataService {
      * @param stakeAddress
      * @return
      */
-    Optional<Long> getVotingPower(String stakeAddress);
+    Optional<Long> getVotingPower(Network network, Event event, String stakeAddress);
 
 }
-
-
-// -1000 slot + 1000

@@ -33,14 +33,19 @@ dependencies {
 	testCompileOnly("org.springframework.boot:spring-boot-starter-test")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springframework.boot:spring-boot-starter-security")
+
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 
 	implementation("io.micrometer:micrometer-registry-atlas")
 	runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 
+	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.6")
+
     implementation("org.flywaydb:flyway-core")
 
-	implementation("org.zalando:problem:0.27.1")
+	implementation("org.zalando:problem-spring-web:0.29.1")
+
 	implementation("org.zalando:jackson-datatype-problem:0.27.1")
 
 	compileOnly("org.projectlombok:lombok")
@@ -54,6 +59,8 @@ dependencies {
     implementation("com.bloxbean.cardano:cardano-client-crypto:0.4.3")
     implementation("com.bloxbean.cardano:cardano-client-address:0.4.3")
     implementation("com.bloxbean.cardano:cardano-client-metadata:0.4.3")
+
+	implementation("io.github.cardano-community", "koios-java-client", "1.17.2")
 
 	implementation("io.vavr:vavr:0.10.4")
 

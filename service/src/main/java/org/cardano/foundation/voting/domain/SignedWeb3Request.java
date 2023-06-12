@@ -8,18 +8,12 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public abstract class Web3Request {
+public abstract class SignedWeb3Request {
 
     @NotNull
-    protected String uri;
+    protected String cosePayload;
 
     @NotNull
-    protected Web3Action action;
-
-    @NotNull
-    protected String actionText;
-
-    @NotNull
-    protected long slot;
+    protected String cosePublicKey;
 
 }

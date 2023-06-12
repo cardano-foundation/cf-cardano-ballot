@@ -9,6 +9,7 @@ import java.util.Optional;
 @Repository
 public interface VoteRepository extends JpaRepository<Vote, String> {
 
-    Optional<Vote> findByVoterStakingAddress(String voterStakeAddress);
+    // TODO find by event and category as well, there maybe votes for other events and categories
+    Optional<Vote> findByEventIdAndCategoryIdAndVoterStakingAddress(String eventId, String categoryId, String voterStakeAddress);
 
 }

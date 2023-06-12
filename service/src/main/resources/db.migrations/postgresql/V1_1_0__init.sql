@@ -17,6 +17,9 @@ CREATE TABLE event (
    CONSTRAINT pk_event PRIMARY KEY (id)
 );
 
+CREATE INDEX idx_event_name
+    ON event (name);
+
 DROP TABLE IF NOT EXISTS category;
 
 CREATE TABLE category (
@@ -32,6 +35,9 @@ CREATE TABLE category (
    CONSTRAINT pk_category PRIMARY KEY (id)
 );
 
+CREATE INDEX idx_category_name
+    ON category (name);
+
 DROP TABLE IF NOT EXISTS proposal;
 
 CREATE TABLE proposal (
@@ -46,6 +52,9 @@ CREATE TABLE proposal (
 
    CONSTRAINT pk_proposal PRIMARY KEY (id)
 );
+
+CREATE INDEX idx_proposal_name
+    ON proposal (name);
 
 DROP TABLE IF NOT EXISTS root_hash;
 
@@ -74,4 +83,4 @@ CREATE TABLE vote (
 );
 
 CREATE INDEX idx_vote_stake_key
-    ON vote (voter_staking_address);
+    ON vote (event_id, category_id, voter_staking_address);

@@ -1,5 +1,6 @@
 import { createTheme } from '@mui/material/styles';
 import { red } from '@mui/material/colors';
+import componentsOverride from './overrides';
 
 const theme = createTheme({
   palette: {
@@ -14,5 +15,7 @@ const theme = createTheme({
     },
   },
 });
+
+theme.components = componentsOverride(theme);
 
 export default theme;

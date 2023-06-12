@@ -1,6 +1,14 @@
-import { Grid } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
-import { styled } from "@mui/material/styles";
+import { useEffect, useState } from "react";
+import { Grid, Typography } from "@mui/material";
+import { useTheme, styled } from "@mui/material/styles";
+import { useNavigate, useLocation } from "react-router-dom";
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
+import CountDownTimer from "../../CountDownTimer/CountDownTimer";
+import {
+  useCardano,
+  ConnectWalletButton,
+  getWalletIcon,
+} from "@cardano-foundation/cardano-connect-with-wallet";
 
 const LogoImg = styled("img")(() => ({
   width: "230px",
@@ -18,11 +26,89 @@ const HeaderStyle = styled("header")(({ theme }) => ({
   position: "static",
   alignItems: "center",
   padding: theme.spacing(2),
-  justifyContent: "space-between"
+  justifyContent: "space-between",
 }));
 
 export default function Header() {
   const theme = useTheme();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { stakeAddress, enabledWallet, disconnect } = useCardano();
+  const [walletIcon, setWalletIcon] = useState("");
+
+  useEffect(() => {
+    const init = async () => {
+      if (enabledWallet && enabledWallet.length) {
+        const walletIcon = getWalletIcon(enabledWallet);
+        setWalletIcon(walletIcon);
+      }
+    };
+    init();
+  }, [stakeAddress]);
+
+  const handleLogoClick = () => {
+    navigate("/");
+  };
+
+  const onConnectWallet = (walletName: any) => {
+    console.log(walletName);
+  };
+
+  const connectWalletButton = (
+    <>
+      <ConnectWalletButton
+        primaryColor={theme.palette.primary.main}
+        onConnect={(walletName) => onConnectWallet(walletName)}
+        onDisconnect={() => {
+          disconnect();
+          setWalletIcon("");
+        }}
+        alwaysVisibleWallets={["flint"]}
+        supportedWallets={[
+          "flint",
+          "eternl",
+          "nami",
+          "typhon",
+          "yoroi",
+          "nufi",
+          "gerowallet",
+        ]}
+        beforeComponent={
+          walletIcon.length ? (
+            <img
+              height={22}
+              width={22}
+              style={{ marginRight: "8px" }}
+              src={walletIcon}
+              alt=""
+            />
+          ) : (
+            <AccountBalanceWalletIcon
+              style={{ marginRight: "8px" }}
+              height={22}
+              width={22}
+            />
+          )
+        }
+        customCSS={`
+            width: 170px;
+            button { 
+                padding: 6px;
+                font-weight: 700;
+                line-height: 1.7142857142857142;
+                font-size: 0.875rem;
+                font-family: Helvetica Light,sans-serif;
+            }
+            span {
+                padding: 16px;                  
+                font-family: Helvetica Light,sans-serif;
+                font-size: 0.875rem;
+            }   
+        `}
+      />
+    </>
+  );
+
   return (
     <HeaderStyle>
       <Grid
@@ -38,6 +124,7 @@ export default function Header() {
         >
           <LogoImg
             src="/static/Cardano_Ballot_black.png"
+            onClick={handleLogoClick}
             sx={{ cursor: "pointer", ml: { xs: 0, sm: 1 } }}
           />
         </Grid>
@@ -46,7 +133,23 @@ export default function Header() {
           xs={12}
           sm={"auto"}
         >
-          Time left to vote: 30 days, 16 hours, 5 minutes
+          {location.pathname === "/vote" ? (
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              align="center"
+            >
+              {connectWalletButton}
+            </Typography>
+          ) : (
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              align="center"
+            >
+              Time left to vote: <CountDownTimer />
+            </Typography>
+          )}
         </Grid>
       </Grid>
     </HeaderStyle>

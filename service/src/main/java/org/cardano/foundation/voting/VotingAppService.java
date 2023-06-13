@@ -33,7 +33,7 @@ import static org.cardano.foundation.voting.domain.SnapshotEpochType.EPOCH_END;
 @EnableTransactionManagement
 @EnableScheduling
 @EnableAsync
-@Import(SecurityProblemSupport.class)
+//@Import(SecurityProblemSupport.class)
 @Slf4j
 public class VotingAppService {
 

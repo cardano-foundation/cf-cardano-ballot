@@ -69,12 +69,12 @@ public class KoiosBlockchainDataService implements BlockchainDataService {
 
     @SneakyThrows
     private int getCurrentEpoch() {
-        return backendService.getEpochService().getLatestEpochInfo().getValue().getEpochNo();
+        return backendService.getNetworkService().getChainTip().getValue().getEpochNo();
     }
 
     @SneakyThrows
     private long getCurrentAbsoluteSlot() {
-        return backendService.getBlockService().getLatestBlock().getValue().getAbsSlot().longValue();
+        return backendService.getNetworkService().getChainTip().getValue().getAbsSlot().longValue();
     }
 
     @Override

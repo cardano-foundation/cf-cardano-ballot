@@ -84,7 +84,6 @@ public class VoteService {
             log.warn("Address not found in the signed data");
 
             return Either.left(
-
                     Problem.builder()
                             .withTitle("Bech32 address not found in the signed data.")
                             .withStatus(BAD_REQUEST)
@@ -95,6 +94,7 @@ public class VoteService {
 
         var stakeAddressE = Bech32.decode(address);
         if (stakeAddressE.isLeft()) {
+            log.warn("Invalid bech32 address, address:{}", address);
             return Either.left(stakeAddressE.getLeft());
         }
         var stakeAddress = stakeAddressE.get();
@@ -103,6 +103,7 @@ public class VoteService {
         var castVoteRequestBodyJsonE = Json.decode(castVoteRequestBody);
         if (castVoteRequestBodyJsonE.isLeft()) {
             log.warn("Invalid json format, json:{}", castVoteRequestBody);
+
             return Either.left(castVoteRequestBodyJsonE.getLeft());
         }
         var castVoteRequestBodyJson = castVoteRequestBodyJsonE.get();
@@ -129,8 +130,6 @@ public class VoteService {
         }
         var blockchainData = blockchainDataE.get();
 
-        // TODO uri check using HttpServletRequest???
-        //var uri = castVoteRequestBodyJson.get("uri").asText();
         var actionText = castVoteRequestBodyJson.get("action").asText();
 
         var maybeAction = Enums.getIfPresent(Web3Action.class, actionText).toJavaUtil();

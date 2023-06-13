@@ -19,7 +19,7 @@ public class BlockchainDataResource {
     @Autowired
     private BlockchainDataService blockchainDataService;
 
-    @RequestMapping(value = "/{network}", method = GET, produces = "application/json")
+    @RequestMapping(value = "/tip/{network}", method = GET, produces = "application/json")
     @Timed(value = "resource.blockchain-data.get", percentiles = { 0.3, 0.5, 0.95 })
     public ResponseEntity<?> blockchainData(@PathVariable String network) {
         return blockchainDataService.getBlockchainData(network)

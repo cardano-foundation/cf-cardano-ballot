@@ -44,7 +44,7 @@ public class AccountService {
                     .withStatus(BAD_REQUEST)
                     .build());
         }
-        var event = maybeEvent.get();
+        var event = maybeEvent.orElseThrow();
 
         var votingPowerE = blockchainDataService.getVotingPower(network, event.getSnapshotEpoch(), stakeAddress);
         if (votingPowerE.isEmpty()) {

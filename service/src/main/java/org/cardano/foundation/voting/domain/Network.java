@@ -11,7 +11,7 @@ public enum Network {
     MAIN,
     PREPROD,
     PREVIEW,
-    DEV;
+    DEV; // locally hosted
 
     public static List<String> supportedNetworks() {
         return Arrays.stream(Network.values()).map(network -> network.name().toLowerCase()).toList();

@@ -18,13 +18,11 @@ public class ReferenceDataResource {
     @Autowired
     private ReferenceDataService referenceDataService;
 
-    @RequestMapping(value = "/event", method = POST, produces = "application/json")
+    @RequestMapping(value = "/event/{name}", method = POST, produces = "application/json")
     @Timed(value = "resource.reference.event", percentiles = { 0.3, 0.5, 0.95 } )
     public ResponseEntity<?> getEventByName(String name) {
         var maybeEvent = referenceDataService.findEventByName(name);
         if (maybeEvent.isEmpty()) {
-            // TODO make a better error e.g. using Zalando Problem
-            // https://github.com/zalando/problem
             return ResponseEntity.notFound().build();
         }
         var event = maybeEvent.get();

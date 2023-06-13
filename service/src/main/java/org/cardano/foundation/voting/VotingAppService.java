@@ -2,23 +2,23 @@ package org.cardano.foundation.voting;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.domain.Network;
 import org.cardano.foundation.voting.domain.entity.Category;
 import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.domain.entity.Proposal;
 import org.cardano.foundation.voting.service.ReferenceDataService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
 
 import java.util.List;
 import java.util.Optional;
@@ -46,15 +46,6 @@ public class VotingAppService {
         return new ThreadPoolTaskExecutor();
     }
 
-//    @Bean
-//    public HttpClient httpClient() {
-//        return HttpClient.newBuilder()
-//                .version(HttpClient.Version.HTTP_1_1)
-//                .followRedirects(HttpClient.Redirect.NORMAL)
-//                .connectTimeout(Duration.ofSeconds(60))
-//                .build();
-//    }
-
     @Bean
     public ObjectMapper objectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -67,6 +58,15 @@ public class VotingAppService {
         });
 
         return objectMapper;
+    }
+
+    @Bean
+    public Network network(@Value("${cardano.network:main}") String networkName) {
+        var network = Network.fromName(networkName).orElseThrow(() -> new RuntimeException("Invalid network name: " + networkName));
+
+        log.info("Configured backend network:{}", network);
+
+        return network;
     }
 
 //    @Bean("canonical_object_mapper")
@@ -86,6 +86,7 @@ public class VotingAppService {
 
     @Bean
     public CommandLineRunner onStart(ReferenceDataService referenceDataService) {
+
         return (args) -> {
             log.info("CF Voting App initialisation...");
 
@@ -104,9 +105,9 @@ public class VotingAppService {
             event.setId("5abcb6a2-f9a9-4617-b9ce-10b9dd290354");
             event.setName("Voltaire_Pre_Ratification");
             event.setTeam("CF Team");
-            event.setStartSlot(415);
-            event.setEndSlot(425);
-            event.setSnapshotEpoch(410);
+            event.setStartSlot(70);
+            event.setEndSlot(100);
+            event.setSnapshotEpoch(74);
             event.setSnapshotEpochType(EPOCH_END);
 
             event.setDescription("Pre-Ratification of the Voltaire era");

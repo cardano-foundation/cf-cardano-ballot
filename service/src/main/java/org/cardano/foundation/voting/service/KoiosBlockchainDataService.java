@@ -6,6 +6,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.BlockchainData;
 import org.cardano.foundation.voting.domain.Network;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 import rest.koios.client.backend.factory.BackendFactory;
@@ -22,8 +23,8 @@ import static rest.koios.client.backend.factory.options.Options.EMPTY;
 @Slf4j
 public class KoiosBlockchainDataService implements BlockchainDataService {
 
-    // TODO move to the config
-    private Network network = Network.PREPROD;
+    @Autowired
+    private Network network;
 
     private BackendService backendService;
 
@@ -31,6 +32,15 @@ public class KoiosBlockchainDataService implements BlockchainDataService {
     public void onStart() {
         if (network == Network.PREPROD) {
             this.backendService = BackendFactory.getKoiosPreprodService();
+        }
+        if (network == Network.MAIN) {
+            this.backendService = BackendFactory.getKoiosMainnetService();
+        }
+        if (network == Network.DEV) {
+            // TODO
+        }
+        if (network == Network.PREVIEW) {
+            this.backendService = BackendFactory.getKoiosPreviewService();
         }
     }
 

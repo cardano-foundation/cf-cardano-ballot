@@ -46,16 +46,16 @@ public class AccountService {
         }
         var event = maybeEvent.get();
 
-        var maybeVotingPower = blockchainDataService.getVotingPower(network, event.getSnapshotEpoch(), stakeAddress);
-        if (maybeVotingPower.isEmpty()) {
+        var votingPowerE = blockchainDataService.getVotingPower(network, event.getSnapshotEpoch(), stakeAddress);
+        if (votingPowerE.isEmpty()) {
             return Either.right(Optional.empty());
         }
-        var votingPower = maybeVotingPower.orElseThrow();
+
+        var maybeVotingPower = votingPowerE.get();
 
         return Either.right(Optional.of(Account.builder()
-                .network(network)
                 .stakeAddress(stakeAddress)
-                .votingPower(votingPower)
+                .votingPower(maybeVotingPower.orElse(0L))
                 .build()
                 )
         );

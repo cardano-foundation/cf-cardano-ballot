@@ -1,16 +1,21 @@
 package org.cardano.foundation.voting.service;
 
+import io.vavr.control.Either;
 import jakarta.annotation.PostConstruct;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.domain.BlockchainData;
 import org.cardano.foundation.voting.domain.Network;
 import org.springframework.stereotype.Service;
+import org.zalando.problem.Problem;
 import rest.koios.client.backend.factory.BackendFactory;
 import rest.koios.client.backend.factory.BackendService;
 
 import java.util.List;
 import java.util.Optional;
 
+import static org.zalando.problem.Status.BAD_REQUEST;
+import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 import static rest.koios.client.backend.factory.options.Options.EMPTY;
 
 @Service
@@ -30,55 +35,81 @@ public class KoiosBlockchainDataService implements BlockchainDataService {
     }
 
     @Override
-    @SneakyThrows
-    public int getCurrentEpoch(Network network) {
-        if (network != this.network) {
-            throw new IllegalArgumentException("Backend connected to different network!");
-        }
+    public Either<Problem, BlockchainData> getBlockchainData(String networkName) {
+        var maybeNetwork = Network.fromName(networkName);
+        if (maybeNetwork.isEmpty()) {
+            log.warn("Invalid network, network:{}", networkName);
 
-        return backendService.getEpochService().getLatestEpochInfo().getValue().getEpochNo();
+            return Either.left(Problem.builder()
+                    .withTitle("Invalid network, supported networks:" + Network.supportedNetworks())
+                    .withStatus(BAD_REQUEST)
+                    .build());
+        }
+        var network = maybeNetwork.orElseThrow();
+
+        return getBlockchainData(network);
     }
 
     @Override
-    @SneakyThrows
-    public long getCurrentAbsoluteSlot(Network network) {
+    public Either<Problem, BlockchainData> getBlockchainData(Network network) {
         if (network != this.network) {
-            throw new IllegalArgumentException("Backend connected to different network!");
+            return Either.left(Problem.builder()
+                    .withTitle("Backend configured with network:" + this.network)
+                    .withStatus(INTERNAL_SERVER_ERROR)
+                    .build());
         }
 
+        var blockchainData = BlockchainData.builder()
+                .epochNo(getCurrentEpoch())
+                .absoluteSlot(getCurrentAbsoluteSlot())
+                .build();
+
+        return Either.right(blockchainData);
+    }
+
+    @SneakyThrows
+    private int getCurrentEpoch() {
+        return backendService.getEpochService().getLatestEpochInfo().getValue().getEpochNo();
+    }
+
+    @SneakyThrows
+    private long getCurrentAbsoluteSlot() {
         return backendService.getBlockService().getLatestBlock().getValue().getAbsSlot().longValue();
     }
 
     @Override
     @SneakyThrows
-    public Optional<Long> getVotingPower(Network network, int snapshotEpochNo, String stakeAddress) {
+    public Either<Problem, Optional<Long>> getVotingPower(Network network, int snapshotEpochNo, String stakeAddress) {
         if (network != this.network) {
-            throw new IllegalArgumentException("Backend connected to different network!");
+            return Either.left(Problem.builder()
+                    .withTitle("Backend configured with network:" + this.network)
+                    .withStatus(INTERNAL_SERVER_ERROR)
+                    .build());
         }
 
         var accountHistoryResponse = backendService.getAccountService().getAccountHistory(List.of(stakeAddress), snapshotEpochNo, EMPTY);
         if (!accountHistoryResponse.isSuccessful()) {
-            return Optional.empty();
+            return Either.right(Optional.empty());
         }
 
         var historyList = accountHistoryResponse.getValue();
 
-        var stakeAccount = historyList.stream().filter(accountHistory -> accountHistory.getStakeAddress().equals(stakeAddress)).findFirst();
+        var maybeStakeAccount = historyList.stream().filter(accountHistory -> accountHistory.getStakeAddress().equals(stakeAddress)).findFirst();
 
-        if (stakeAccount.isEmpty()) {
+        if (maybeStakeAccount.isEmpty()) {
             log.warn("Unable to find stake account history for address: {}", stakeAddress);
 
-            return Optional.empty();
+            return Either.right(Optional.empty());
         }
 
-        var stakeAcc = stakeAccount.orElseThrow();
+        var stakeAccount = maybeStakeAccount.orElseThrow();
 
-        var historyInner = stakeAcc.getHistory().stream().filter(ah -> ah.getEpochNo() == snapshotEpochNo).findFirst();
+        var historyInner = stakeAccount.getHistory().stream().filter(ah -> ah.getEpochNo() == snapshotEpochNo).findFirst();
         if (historyInner.isEmpty()) {
-            return Optional.empty();
+            return Either.right(Optional.empty());
         }
 
-        return Optional.of(Long.parseLong(historyInner.orElseThrow().getActiveStake()));
+        return Either.right(Optional.of(Long.parseLong(historyInner.orElseThrow().getActiveStake())));
     }
 
 }

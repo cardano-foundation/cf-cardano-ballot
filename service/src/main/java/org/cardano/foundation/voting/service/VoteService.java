@@ -24,6 +24,7 @@ import org.zalando.problem.Problem;
 import java.util.List;
 import java.util.Optional;
 
+import static org.cardano.foundation.voting.domain.Web3Action.CAST_VOTE;
 import static org.cardanofoundation.cip30.Format.TEXT;
 import static org.zalando.problem.Status.*;
 
@@ -31,8 +32,7 @@ import static org.zalando.problem.Status.*;
 @Slf4j
 public class VoteService {
 
-    @Autowired
-    private ProposalRepository proposalRepository;
+    private final static int SLOT_BUFFER = 300;
 
     @Autowired
     private VoteRepository voteRepository;
@@ -42,6 +42,9 @@ public class VoteService {
 
     @Autowired
     private RootHashRepository rootHashRepository;
+
+    @Autowired
+    private ProposalRepository proposalRepository;
 
     @Autowired
     private BlockchainDataService blockchainDataService;
@@ -114,6 +117,18 @@ public class VoteService {
         }
         var network = maybeNetwork.orElseThrow();
 
+        var blockchainDataE = blockchainDataService.getBlockchainData(network);
+        if (blockchainDataE.isLeft()) {
+            log.error("Unable to get blockchain data for network:{}", network);
+            return Either.left(Problem
+                    .builder()
+                    .withTitle("Unable to get blockchain data for network:" + network)
+                    .withStatus(INTERNAL_SERVER_ERROR)
+                    .build()
+            );
+        }
+        var blockchainData = blockchainDataE.get();
+
         // TODO uri check using HttpServletRequest???
         //var uri = castVoteRequestBodyJson.get("uri").asText();
         var actionText = castVoteRequestBodyJson.get("action").asText();
@@ -123,15 +138,15 @@ public class VoteService {
             log.warn("Unknown action, action:{}", actionText);
 
             return Either.left(Problem.builder()
-                    .withTitle("Action not found, expected action:" + Web3Action.CAST_VOTE.name())
+                    .withTitle("Action not found, expected action:" + CAST_VOTE.name())
                     .withStatus(BAD_REQUEST)
                     .build()
             );
         }
         var action = maybeAction.orElseThrow();
-        if (action != Web3Action.CAST_VOTE) {
+        if (action != CAST_VOTE) {
             return Either.left(Problem.builder()
-                    .withTitle("Cast Action not found, expected action:" + Web3Action.CAST_VOTE.name())
+                    .withTitle("Cast Action not found, expected action:" + CAST_VOTE.name())
                     .withStatus(BAD_REQUEST)
                     .build()
             );
@@ -148,7 +163,7 @@ public class VoteService {
                     .build());
         }
         var event = maybeEvent.get();
-        if (event.isInActive(blockchainDataService.getCurrentAbsoluteSlot(network))) {
+        if (event.isInActive(blockchainData.getAbsoluteSlot())) {
             log.warn("Event is not active, eventName:{}", eventName);
 
             return Either.left(Problem.builder()
@@ -180,27 +195,32 @@ public class VoteService {
 
         var proposal = maybeProposal.orElseThrow();
 
-        var slot = castVoteRequestBodyJson.get("slot").asLong();
-        if (isSlotExpired(network, slot)) {
-            log.warn("Invalid request slot, slot:{}", slot);
+        var cip93Slot = castVoteRequestBodyJson.get("slot").asLong();
+        if (!isSlotValid(cip93Slot, blockchainData.getAbsoluteSlot())) {
+            log.warn("Invalid request slot, slot:{}", cip93Slot);
 
             return Either.left(Problem.builder()
-                    .withTitle("Invalid request slot, slot:" + slot)
+                    .withTitle("Invalid request slot, slot:" + cip93Slot)
                     .withStatus(BAD_REQUEST)
                     .build());
         }
 
-        var votedAt = castVoteRequestBodyJson.get("vote").get("votedAt").asLong();
-        if (isSlotExpired(network, votedAt)) {
-            log.warn("Invalid votedAt slot, votedAt slot:{}", votedAt);
+        var votedAtSlot = castVoteRequestBodyJson.get("vote").get("votedAt").asLong();
+        if (!isSlotValid(votedAtSlot, blockchainData.getAbsoluteSlot())) {
+            log.warn("Invalid votedAt slot, votedAt slot:{}", votedAtSlot);
 
             return Either.left(Problem.builder()
-                    .withTitle("Invalid votedAt slot, votedAt slot:" + votedAt)
+                    .withTitle("Invalid votedAt slot, votedAt slot:" + votedAtSlot)
                     .withStatus(BAD_REQUEST)
                     .build());
         }
 
-        var maybeVotingPower = blockchainDataService.getVotingPower(network, event.getSnapshotEpoch(), stakeAddress);
+        var votingPowerE = blockchainDataService.getVotingPower(network, event.getSnapshotEpoch(), stakeAddress);
+        if (votingPowerE.isLeft()) {
+            return Either.left(votingPowerE.getLeft());
+        }
+        var maybeVotingPower = votingPowerE.get();
+
         if (maybeVotingPower.isEmpty()) {
             log.warn("Unrecognised voting power, stakeAddress:{}", stakeAddress);
 
@@ -236,7 +256,7 @@ public class VoteService {
         vote.setCategoryId(category.getId());
         vote.setProposalId(proposal.getId());
         vote.setVoterStakingAddress(stakeAddress);
-        vote.setVotedAtSlot(votedAt);
+        vote.setVotedAtSlot(votedAtSlot);
         vote.setNetwork(network);
         vote.setCoseSignature(vote.getCoseSignature());
         vote.setCosePublicKey(vote.getCosePublicKey());
@@ -306,12 +326,24 @@ public class VoteService {
         }
         var network = maybeNetwork.orElseThrow();
 
-        var slot = voteReceiptBodyJson.get("slot").asLong();
-        if (isSlotExpired(network, slot)) {
-            log.warn("Invalid request slot, slot:{}", slot);
+        var blockchainDataE = blockchainDataService.getBlockchainData(network);
+        if (blockchainDataE.isLeft()) {
+            log.error("Unable to get blockchain data for network:{}", network);
+            return Either.left(Problem
+                    .builder()
+                    .withTitle("Unable to get blockchain data for network:" + network)
+                    .withStatus(INTERNAL_SERVER_ERROR)
+                    .build()
+            );
+        }
+        var blockchainData = blockchainDataE.get();
+
+        var cip93Slot = voteReceiptBodyJson.get("slot").asLong();
+        if (!isSlotValid(cip93Slot, blockchainData.getAbsoluteSlot())) {
+            log.warn("Invalid request slot, slot:{}", cip93Slot);
 
             return Either.left(Problem.builder()
-                    .withTitle("Invalid request slot for network, slot:" + slot)
+                    .withTitle("Invalid request slot for network, slot:" + cip93Slot)
                     .withStatus(BAD_REQUEST)
                     .build());
         }
@@ -375,8 +407,7 @@ public class VoteService {
         return Either.right(VoteReceipt.builder().vote(vote).build());
 
         // TODO
-        // 1. voter receipt with merkle proof
-        // 2. voter receipt without merkle proof
+        // voter receipt with merkle proof if it exists (only when committed to the L1 blockchain)
     }
 
     @Transactional
@@ -423,17 +454,11 @@ public class VoteService {
     }
 
     /**
-     * Return true if the vote is invalid for the network
-     *
-     * @param slot
-     * @return
+     * Return true if the slot is within permissible range
      */
-    protected boolean isSlotExpired(Network network, long slot) {
-        var currentSlot = blockchainDataService.getCurrentAbsoluteSlot(network);
-        var slotBuffer = 300; // 300 slots = 5 mins
-
-        var range = Range.from(Range.Bound.inclusive(currentSlot - slotBuffer))
-                .to(Range.Bound.inclusive(currentSlot + slotBuffer));
+    protected boolean isSlotValid(long slot, long currentSlot) {
+        var range = Range.from(Range.Bound.inclusive(currentSlot - SLOT_BUFFER))
+                .to(Range.Bound.inclusive(currentSlot + SLOT_BUFFER));
 
         return range.contains(slot);
     }

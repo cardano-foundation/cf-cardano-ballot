@@ -39,7 +39,8 @@ public class ReferenceDataResource {
                             .name(proposal.getName())
                             .description(proposal.getDescription())
                             .presentationName(proposal.getPresentationName())
-                            .build()).toList();
+                            .build())
+                    .toList();
 
                     return CategoryReference.builder()
                             .id(category.getId())

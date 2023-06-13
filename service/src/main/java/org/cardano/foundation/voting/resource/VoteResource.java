@@ -32,7 +32,7 @@ public class VoteResource {
 
     @RequestMapping(value = "/cast", method = POST, produces = "application/json")
     @Timed(value = "resource.vote.cast", percentiles = { 0.3, 0.5, 0.95 })
-    public ResponseEntity<?> castVote(@RequestBody CastVoteSignedWeb3Request castVoteRequest) throws AddressExcepion, JsonProcessingException {
+    public ResponseEntity<?> castVote(@RequestBody CastVoteSignedWeb3Request castVoteRequest) {
         return voteService.castVote(castVoteRequest)
                 .fold(problem -> {
                             return ResponseEntity.badRequest().body(problem);

@@ -11,7 +11,7 @@ import lombok.Setter;
 public abstract class SignedWeb3Request {
 
     @NotNull
-    protected String cosePayload;
+    protected String coseSignature;
 
     @NotNull
     protected String cosePublicKey;

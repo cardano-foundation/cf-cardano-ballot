@@ -71,7 +71,7 @@ public class VoteService {
     public Either<Problem, Vote> castVote(CastVoteSignedWeb3Request castVoteRequest) {
         // TODO check if vote is in the canonical form???
 
-        var cip30Verifier = new CIP30Verifier(castVoteRequest.getCosePayload(), castVoteRequest.getCosePublicKey());
+        var cip30Verifier = new CIP30Verifier(castVoteRequest.getCoseSignature(), castVoteRequest.getCosePublicKey());
         var cipVerificationResult = cip30Verifier.verify();
 
         if (!cipVerificationResult.isValid()) {
@@ -292,7 +292,7 @@ public class VoteService {
     @Transactional
     @Timed(value = "service.vote.voteReceipt", percentiles = { 0.3, 0.5, 0.95 })
     public Either<Problem, VoteReceipt> voteReceipt(VoteReceiptSignedWeb3Request voteReceiptRequest) {
-        var cip30Verifier = new CIP30Verifier(voteReceiptRequest.getCosePayload(), voteReceiptRequest.getCosePublicKey());
+        var cip30Verifier = new CIP30Verifier(voteReceiptRequest.getCoseSignature(), voteReceiptRequest.getCosePublicKey());
         var cipVerificationResult = cip30Verifier.verify();
 
         if (!cipVerificationResult.isValid()) {

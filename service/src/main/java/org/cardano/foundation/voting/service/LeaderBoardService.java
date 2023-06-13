@@ -19,6 +19,9 @@ public class LeaderBoardService {
     private ReferenceDataService referenceDataService;
 
     @Autowired
+    private BlockchainDataService blockchainDataService;
+
+    @Autowired
     private Network network;
 
     public Either<Problem, Leaderboard> getLeaderboard(String networkName, String eventName) {
@@ -51,10 +54,19 @@ public class LeaderBoardService {
                     .build()
             );
         }
+        var event = maybeEvent.orElseThrow();
+        var blockchainDataE = blockchainDataService.getBlockchainData(network);
+        if (blockchainDataE.isLeft()) {
+            return Either.left(blockchainDataE.getLeft());
+        }
+
+        var blockchainData = blockchainDataE.get();
+//        if (blockchainData.getAbsoluteSlot() > ) {
+//
+//        }
 
         // TODO: implement
         return Either.right(Leaderboard.builder().build());
     }
 
 }
-

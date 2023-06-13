@@ -47,6 +47,7 @@ public class ReferenceDataCreator {
         Event event = new Event();
         event.setId("5abcb6a2-f9a9-4617-b9ce-10b9dd290354");
         event.setName(EVENT_NAME);
+        event.setPresentationName("CIP-1694 Voltaire Pre-Ratification");
         event.setTeam("CF Team");
         event.setStartSlot(70);
         event.setEndSlot(100);

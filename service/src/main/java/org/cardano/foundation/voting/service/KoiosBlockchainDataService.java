@@ -56,16 +56,15 @@ public class KoiosBlockchainDataService implements BlockchainDataService {
                     .withStatus(BAD_REQUEST)
                     .build());
         }
-        var network = maybeNetwork.orElseThrow();
 
-        return getBlockchainData(network);
+        return getBlockchainData(maybeNetwork.orElseThrow());
     }
 
     @Override
     public Either<Problem, BlockchainData> getBlockchainData(Network network) {
         if (network != this.network) {
             return Either.left(Problem.builder()
-                    .withTitle("INVALID_NETWORK")
+                    .withTitle("WRONG_NETWORK")
                     .withDetail("Backend configured with network:" + this.network)
                     .withStatus(INTERNAL_SERVER_ERROR)
                     .build());
@@ -94,7 +93,7 @@ public class KoiosBlockchainDataService implements BlockchainDataService {
     public Either<Problem, Optional<Long>> getVotingPower(Network network, int snapshotEpochNo, String stakeAddress) {
         if (network != this.network) {
             return Either.left(Problem.builder()
-                    .withTitle("INVALID_NETWORK")
+                    .withTitle("WRONG_NETWORK")
                     .withDetail("Backend configured with network:" + this.network)
                     .withStatus(INTERNAL_SERVER_ERROR)
                     .build());
@@ -117,12 +116,12 @@ public class KoiosBlockchainDataService implements BlockchainDataService {
 
         var stakeAccount = maybeStakeAccount.orElseThrow();
 
-        var historyInner = stakeAccount.getHistory().stream().filter(ah -> ah.getEpochNo() == snapshotEpochNo).findFirst();
-        if (historyInner.isEmpty()) {
+        var maybeHistoryInner = stakeAccount.getHistory().stream().filter(ah -> ah.getEpochNo() == snapshotEpochNo).findFirst();
+        if (maybeHistoryInner.isEmpty()) {
             return Either.right(Optional.empty());
         }
 
-        return Either.right(Optional.of(Long.parseLong(historyInner.orElseThrow().getActiveStake())));
+        return Either.right(Optional.of(Long.parseLong(maybeHistoryInner.orElseThrow().getActiveStake())));
     }
 
 }

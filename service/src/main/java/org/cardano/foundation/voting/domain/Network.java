@@ -11,7 +11,7 @@ public enum Network {
     MAIN,
     PREPROD,
     PREVIEW,
-    DEV; // locally hosted
+    DEV; // e.g. locally hosted cardano-node
 
     public static List<String> supportedNetworks() {
         return Arrays.stream(Network.values()).map(network -> network.name().toLowerCase()).toList();

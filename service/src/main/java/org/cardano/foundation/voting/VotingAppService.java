@@ -3,11 +3,7 @@ package org.cardano.foundation.voting;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.Network;
-import org.cardano.foundation.voting.domain.entity.Category;
-import org.cardano.foundation.voting.domain.entity.Event;
-import org.cardano.foundation.voting.domain.entity.Proposal;
 import org.cardano.foundation.voting.service.ReferenceDataCreator;
-import org.cardano.foundation.voting.service.ReferenceDataService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -21,11 +17,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.Executor;
-
-import static org.cardano.foundation.voting.domain.SnapshotEpochType.EPOCH_END;
 
 @SpringBootApplication
 @EnableJpaRepositories("org.cardano.foundation.voting.repository")

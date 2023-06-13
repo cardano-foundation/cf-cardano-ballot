@@ -3,7 +3,6 @@ package org.cardano.foundation.voting.domain.reference;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.cardano.foundation.voting.domain.SnapshotEpochType;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -29,8 +28,6 @@ public class EventReference {
     private long endSlot;
 
     private int snapshotEpoch;
-
-    private SnapshotEpochType snapshotEpochType;
 
     private List<CategoryReference> categories;
 

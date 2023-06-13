@@ -60,7 +60,6 @@ public class ReferenceDataResource {
                 .startSlot(event.getStartSlot())
                 .endSlot(event.getEndSlot())
                 .snapshotEpoch(event.getSnapshotEpoch())
-                .snapshotEpochType(event.getSnapshotEpochType())
                 .categories(categories)
             .build());
     }

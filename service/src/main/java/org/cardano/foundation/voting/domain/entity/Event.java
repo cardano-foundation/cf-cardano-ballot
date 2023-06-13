@@ -3,7 +3,6 @@ package org.cardano.foundation.voting.domain.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import org.cardano.foundation.voting.domain.SnapshotEpochType;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -47,11 +46,6 @@ public class Event extends AbstractTimestampEntity {
     @Column(name = "snapshot_epoch")
     @NotNull
     private int snapshotEpoch;
-
-    @Column(name = "snapshot_epoch_type")
-    @NotNull
-    @Builder.Default
-    private SnapshotEpochType snapshotEpochType = SnapshotEpochType.EPOCH_END;
 
     @OneToMany(
             mappedBy = "event",

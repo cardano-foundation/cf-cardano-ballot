@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.cardano.foundation.voting.domain.Network.PREPROD;
-import static org.cardano.foundation.voting.domain.SnapshotEpochType.EPOCH_END;
 
 @Service
 @Slf4j
@@ -52,7 +51,6 @@ public class ReferenceDataCreator {
         event.setStartSlot(70);
         event.setEndSlot(100);
         event.setSnapshotEpoch(74);
-        event.setSnapshotEpochType(EPOCH_END);
 
         event.setDescription("Pre-Ratification of the Voltaire era");
 

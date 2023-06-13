@@ -8,6 +8,9 @@ import org.cardano.foundation.voting.domain.*;
 import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.domain.entity.RootHash;
 import org.cardano.foundation.voting.domain.entity.Vote;
+import org.cardano.foundation.voting.domain.request.CastVoteSignedWeb3Request;
+import org.cardano.foundation.voting.domain.request.VerifyVoteSignedWeb3Request;
+import org.cardano.foundation.voting.domain.request.VoteReceiptSignedWeb3Request;
 import org.cardano.foundation.voting.repository.ProposalRepository;
 import org.cardano.foundation.voting.repository.RootHashRepository;
 import org.cardano.foundation.voting.repository.VoteRepository;
@@ -412,12 +415,12 @@ public class VoteService {
     @Transactional
     @Timed(value = "service.vote.verifyVote", percentiles = { 0.3, 0.5, 0.95 })
     public Either<Problem, VoteVerificationReceipt> verifyVote(VerifyVoteSignedWeb3Request verifyVoteRequest) {
-        getRootHash(verifyVoteRequest.getEventId())
-                .map(rootHash -> {
-                    // verify proof of inclusion against root hash
-
-                    return true;
-                });
+//        getRootHash(verifyVoteRequest.getEventId())
+//                .map(rootHash -> {
+//                    // verify proof of inclusion against root hash
+//
+//                    return true;
+//                });
 
         // find up latest merkle tree root hash
         // check vote if this matches with the root hash

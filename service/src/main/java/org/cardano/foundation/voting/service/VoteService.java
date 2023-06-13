@@ -213,7 +213,7 @@ public class VoteService {
         var proposal = maybeProposal.orElseThrow();
 
         var cip93Slot = castVoteRequestBodyJson.get("slot").asLong();
-        if (!isSlotValid(cip93Slot, blockchainData.getAbsoluteSlot())) {
+        if (isSlotExpired(cip93Slot, blockchainData.getAbsoluteSlot())) {
             log.warn("Invalid request slot, slot:{}", cip93Slot);
 
             return Either.left(Problem.builder()
@@ -224,7 +224,7 @@ public class VoteService {
         }
 
         var votedAtSlot = castVoteRequestBodyJson.get("vote").get("votedAt").asLong();
-        if (!isSlotValid(votedAtSlot, blockchainData.getAbsoluteSlot())) {
+        if (isSlotExpired(votedAtSlot, blockchainData.getAbsoluteSlot())) {
             log.warn("Invalid votedAt slot, votedAt slot:{}", votedAtSlot);
 
             return Either.left(Problem.builder()
@@ -289,7 +289,6 @@ public class VoteService {
 
     // get merkle proof of the vote along with vote information
 
-    // TODO should the user sign vote receipt request via CIP-30 or we simply deliver this to anybody that wants this?
     @Transactional
     @Timed(value = "service.vote.voteReceipt", percentiles = { 0.3, 0.5, 0.95 })
     public Either<Problem, VoteReceipt> voteReceipt(VoteReceiptSignedWeb3Request voteReceiptRequest) {
@@ -297,12 +296,12 @@ public class VoteService {
         var cipVerificationResult = cip30Verifier.verify();
 
         if (!cipVerificationResult.isValid()) {
-            log.error("CIP30 data sign vote receipt verification failed!");
+            log.warn("CIP30 vote receipt verification failed!");
 
             return Either.left(
                     Problem.builder()
-                            .withTitle("INVALID_VOTE_RECEIPT_SIGNATURE")
-                            .withDetail("Invalid vote receipt cose signature!")
+                            .withTitle("INVALID_CIP30_DATA_SIGNATURE")
+                            .withDetail("Invalid vote receipt signature!")
                             .withStatus(BAD_REQUEST)
                             .build()
             );
@@ -365,7 +364,7 @@ public class VoteService {
         var blockchainData = blockchainDataE.get();
 
         var cip93Slot = voteReceiptBodyJson.get("slot").asLong();
-        if (!isSlotValid(cip93Slot, blockchainData.getAbsoluteSlot())) {
+        if (isSlotExpired(cip93Slot, blockchainData.getAbsoluteSlot())) {
             log.warn("Invalid request slot, slot:{}", cip93Slot);
 
             return Either.left(Problem.builder()
@@ -488,11 +487,11 @@ public class VoteService {
     /**
      * Return true if the slot is within permissible range
      */
-    protected boolean isSlotValid(long slot, long currentSlot) {
+    protected static boolean isSlotExpired(long slot, long currentSlot) {
         var range = Range.from(Range.Bound.inclusive(currentSlot - SLOT_BUFFER))
                 .to(Range.Bound.inclusive(currentSlot + SLOT_BUFFER));
 
-        return range.contains(slot);
+        return !range.contains(slot);
     }
 
 }

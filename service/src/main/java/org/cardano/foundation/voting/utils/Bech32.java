@@ -17,7 +17,8 @@ public final class Bech32 {
         } catch (AddressExcepion e) {
             return Either.left(
                     Problem.builder()
-                    .withTitle("Invalid bech32 address")
+                    .withTitle("INVALID_ADDRESS")
+                    .withDetail("Invalid bech32 address")
                     .withStatus(Status.BAD_REQUEST)
                     .withDetail(e.getMessage())
                     .build()

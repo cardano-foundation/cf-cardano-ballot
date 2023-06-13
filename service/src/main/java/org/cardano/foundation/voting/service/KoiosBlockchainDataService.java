@@ -51,7 +51,8 @@ public class KoiosBlockchainDataService implements BlockchainDataService {
             log.warn("Invalid network, network:{}", networkName);
 
             return Either.left(Problem.builder()
-                    .withTitle("Invalid network, supported networks:" + Network.supportedNetworks())
+                    .withTitle("INVALID_NETWORK")
+                    .withDetail("Invalid network, supported networks:" + Network.supportedNetworks())
                     .withStatus(BAD_REQUEST)
                     .build());
         }
@@ -64,7 +65,8 @@ public class KoiosBlockchainDataService implements BlockchainDataService {
     public Either<Problem, BlockchainData> getBlockchainData(Network network) {
         if (network != this.network) {
             return Either.left(Problem.builder()
-                    .withTitle("Backend configured with network:" + this.network)
+                    .withTitle("INVALID_NETWORK")
+                    .withDetail("Backend configured with network:" + this.network)
                     .withStatus(INTERNAL_SERVER_ERROR)
                     .build());
         }
@@ -92,7 +94,8 @@ public class KoiosBlockchainDataService implements BlockchainDataService {
     public Either<Problem, Optional<Long>> getVotingPower(Network network, int snapshotEpochNo, String stakeAddress) {
         if (network != this.network) {
             return Either.left(Problem.builder()
-                    .withTitle("Backend configured with network:" + this.network)
+                    .withTitle("INVALID_NETWORK")
+                    .withDetail("Backend configured with network:" + this.network)
                     .withStatus(INTERNAL_SERVER_ERROR)
                     .build());
         }

@@ -4,7 +4,10 @@ import com.google.common.base.Enums;
 import io.micrometer.core.annotation.Timed;
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.domain.*;
+import org.cardano.foundation.voting.domain.Network;
+import org.cardano.foundation.voting.domain.VoteReceipt;
+import org.cardano.foundation.voting.domain.VoteVerificationReceipt;
+import org.cardano.foundation.voting.domain.Web3Action;
 import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.domain.entity.RootHash;
 import org.cardano.foundation.voting.domain.entity.Vote;
@@ -76,7 +79,8 @@ public class VoteService {
 
             return Either.left(
                     Problem.builder()
-                        .withTitle("Invalid cast vote cose signature!")
+                        .withTitle("INVALID_CIP30_DATA_SIGNATURE")
+                        .withDetail("Invalid cast vote cose signature!")
                         .withStatus(BAD_REQUEST)
                     .build()
             );
@@ -88,7 +92,8 @@ public class VoteService {
 
             return Either.left(
                     Problem.builder()
-                            .withTitle("Bech32 address not found in the signed data.")
+                            .withTitle("ADDRESS_NOT_FOUND")
+                            .withDetail("Bech32 address not found in the signed data.")
                             .withStatus(BAD_REQUEST)
                             .build()
             );
@@ -98,6 +103,7 @@ public class VoteService {
         var stakeAddressE = Bech32.decode(address);
         if (stakeAddressE.isLeft()) {
             log.warn("Invalid bech32 address, address:{}", address);
+
             return Either.left(stakeAddressE.getLeft());
         }
         var stakeAddress = stakeAddressE.get();
@@ -115,7 +121,8 @@ public class VoteService {
             log.warn("Invalid network, network:{}", castVoteRequestBodyJson.asText());
 
             return Either.left(Problem.builder()
-                    .withTitle("Invalid network, supported networks:" + Network.supportedNetworks())
+                    .withTitle("INVALID_NETWORK")
+                    .withDetail("Invalid network, supported networks:" + Network.supportedNetworks())
                     .withStatus(BAD_REQUEST)
                     .build());
         }
@@ -126,7 +133,8 @@ public class VoteService {
             log.error("Unable to get blockchain data for network:{}", network);
             return Either.left(Problem
                     .builder()
-                    .withTitle("Unable to get blockchain data for network:" + network)
+                    .withTitle("INTERNAL_SERVER_ERROR")
+                    .withDetail("Unable to get blockchain data for network:" + network)
                     .withStatus(INTERNAL_SERVER_ERROR)
                     .build()
             );
@@ -140,7 +148,8 @@ public class VoteService {
             log.warn("Unknown action, action:{}", actionText);
 
             return Either.left(Problem.builder()
-                    .withTitle("Action not found, expected action:" + CAST_VOTE.name())
+                    .withTitle("ACTION_NOT_FOUND")
+                    .withDetail("Action not found, expected action:" + CAST_VOTE.name())
                     .withStatus(BAD_REQUEST)
                     .build()
             );
@@ -148,7 +157,8 @@ public class VoteService {
         var action = maybeAction.orElseThrow();
         if (action != CAST_VOTE) {
             return Either.left(Problem.builder()
-                    .withTitle("Cast Action not found, expected action:" + CAST_VOTE.name())
+                    .withTitle("INVALID_ACTION")
+                    .withDetail("Action is not CAST_VOTE, expected action:" + CAST_VOTE.name())
                     .withStatus(BAD_REQUEST)
                     .build()
             );
@@ -160,7 +170,8 @@ public class VoteService {
             log.warn("Unrecognised event, eventName:{}", eventName);
 
             return Either.left(Problem.builder()
-                    .withTitle("Unrecognised event, eventName:" + eventName)
+                    .withTitle("UNRECOGNISED_EVENT")
+                    .withDetail("Unrecognised event, eventName:" + eventName)
                     .withStatus(BAD_REQUEST)
                     .build());
         }
@@ -169,7 +180,8 @@ public class VoteService {
             log.warn("Event is not active, eventName:{}", eventName);
 
             return Either.left(Problem.builder()
-                    .withTitle("Event is not active, eventName:" + eventName)
+                    .withTitle("EVENT_IS_NOT_ACTIVE")
+                    .withDetail("Event is not active, eventName:" + eventName)
                     .withStatus(BAD_REQUEST)
                     .build());
         }
@@ -179,18 +191,21 @@ public class VoteService {
             log.warn("Unrecognised category, categoryName:{}", eventName);
 
             return Either.left(Problem.builder()
-                    .withTitle("Unrecognised category, categoryName:" + eventName)
+                    .withTitle("UNRECOGNISED_CATEGORY")
+                    .withDetail("Unrecognised category, categoryName:" + categoryName)
                     .withStatus(BAD_REQUEST)
                     .build());
         }
         var category = maybeCategory.orElseThrow();
 
-        var maybeProposal = proposalRepository.findByName(castVoteRequestBodyJson.get("vote").get("proposalName").asText());
+        String proposalName = castVoteRequestBodyJson.get("vote").get("proposalName").asText();
+        var maybeProposal = proposalRepository.findByName(proposalName);
         if (maybeProposal.isEmpty()) {
             log.warn("Unrecognised proposal, proposalName:{}", eventName);
 
             return Either.left(Problem.builder()
-                    .withTitle("Unrecognised proposal, proposalName:" + eventName)
+                    .withTitle("UNRECOGNISED_PROPOSAL")
+                    .withDetail("Unrecognised proposal, proposalName:" + proposalName)
                     .withStatus(BAD_REQUEST)
                     .build());
         }
@@ -202,7 +217,8 @@ public class VoteService {
             log.warn("Invalid request slot, slot:{}", cip93Slot);
 
             return Either.left(Problem.builder()
-                    .withTitle("Invalid request slot, slot:" + cip93Slot)
+                    .withTitle("INVALID_REQUEST_SLOT")
+                    .withDetail("Invalid request slot, slot:" + cip93Slot)
                     .withStatus(BAD_REQUEST)
                     .build());
         }
@@ -212,7 +228,8 @@ public class VoteService {
             log.warn("Invalid votedAt slot, votedAt slot:{}", votedAtSlot);
 
             return Either.left(Problem.builder()
-                    .withTitle("Invalid votedAt slot, votedAt slot:" + votedAtSlot)
+                    .withTitle("INVALID_VOTED_AT_SLOT")
+                    .withDetail("Invalid votedAt slot, votedAt slot:" + votedAtSlot)
                     .withStatus(BAD_REQUEST)
                     .build());
         }
@@ -227,7 +244,8 @@ public class VoteService {
             log.warn("Unrecognised voting power, stakeAddress:{}", stakeAddress);
 
             return Either.left(Problem.builder()
-                    .withTitle("Voting power not found for the address:" + stakeAddress)
+                    .withTitle("VOTING_POWER_NOT_FOUND")
+                    .withDetail("Voting power not found for the address:" + stakeAddress)
                     .withStatus(INTERNAL_SERVER_ERROR)
                     .build());
         }
@@ -235,7 +253,8 @@ public class VoteService {
         long actualVotingPower = maybeVotingPower.orElseThrow();
         if (envelopeVotingPower != actualVotingPower) {
             return Either.left(Problem.builder()
-                    .withTitle("Voting power mismatch, signed vote voting power:" + envelopeVotingPower + ", actual voting power:" + actualVotingPower)
+                    .withTitle("VOTING_POWER_MISMATCH")
+                    .withDetail("Voting power mismatch, signed voting power:" + envelopeVotingPower + ", actual voting power:" + actualVotingPower)
                     .withStatus(BAD_REQUEST)
                     .build()
             );
@@ -246,7 +265,8 @@ public class VoteService {
 
             return Either.left(
                     Problem.builder()
-                            .withTitle("Vote already cast for the stake address: " + stakeAddress)
+                            .withTitle("VOTE_ALREADY_CAST")
+                            .withDetail("Vote already cast for the stake address: " + stakeAddress)
                             .withStatus(BAD_REQUEST)
                             .build()
             );
@@ -281,7 +301,8 @@ public class VoteService {
 
             return Either.left(
                     Problem.builder()
-                            .withTitle("Invalid vote receipt cose signature!")
+                            .withTitle("INVALID_VOTE_RECEIPT_SIGNATURE")
+                            .withDetail("Invalid vote receipt cose signature!")
                             .withStatus(BAD_REQUEST)
                             .build()
             );
@@ -293,7 +314,8 @@ public class VoteService {
 
             return Either.left(
                     Problem.builder()
-                            .withTitle("Bech32 address not found in the signed data.")
+                            .withTitle("ADDRESS_NOT_FOUND")
+                            .withDetail("Bech32 address not found in the signed data.")
                             .withStatus(BAD_REQUEST)
                             .build()
             );
@@ -322,7 +344,8 @@ public class VoteService {
             log.warn("Invalid network, network:{}", voteReceiptBodyJson.asText());
 
             return Either.left(Problem.builder()
-                    .withTitle("Invalid network, supported networks:" + Network.supportedNetworks())
+                    .withTitle("INVALID_NETWORK")
+                    .withDetail("Invalid network, supported networks:" + Network.supportedNetworks())
                     .withStatus(BAD_REQUEST)
                     .build());
         }
@@ -333,7 +356,8 @@ public class VoteService {
             log.error("Unable to get blockchain data for network:{}", network);
             return Either.left(Problem
                     .builder()
-                    .withTitle("Unable to get blockchain data for network:" + network)
+                    .withTitle("INTERNAL_SERVER_ERROR")
+                    .withDetail("Unable to get blockchain data for network:" + network)
                     .withStatus(INTERNAL_SERVER_ERROR)
                     .build()
             );
@@ -345,7 +369,8 @@ public class VoteService {
             log.warn("Invalid request slot, slot:{}", cip93Slot);
 
             return Either.left(Problem.builder()
-                    .withTitle("Invalid request slot for network, slot:" + cip93Slot)
+                    .withTitle("INVALID_REQUEST_SLOT")
+                    .withDetail("Invalid request slot for network, slot:" + cip93Slot)
                     .withStatus(BAD_REQUEST)
                     .build());
         }
@@ -357,7 +382,8 @@ public class VoteService {
             log.warn("Unknown action, action:{}", actionText);
 
             return Either.left(Problem.builder()
-                    .withTitle("Action not found, expected action:" + Web3Action.VOTE_RECEIPT.name())
+                    .withTitle("UNKNOWN_ACTION")
+                    .withDetail("Action not found, expected action:" + Web3Action.VOTE_RECEIPT.name())
                     .withStatus(BAD_REQUEST)
                     .build()
             );
@@ -365,7 +391,8 @@ public class VoteService {
         var action = maybeAction.orElseThrow();
         if (action != Web3Action.VOTE_RECEIPT) {
             return Either.left(Problem.builder()
-                    .withTitle("Voter Receipt Action not found, expected action:" + Web3Action.VOTE_RECEIPT.name())
+                    .withTitle("INVALID_ACTION")
+                    .withDetail("Voter Receipt Action not found, expected action:" + Web3Action.VOTE_RECEIPT.name())
                     .withStatus(BAD_REQUEST)
                     .build()
             );
@@ -377,7 +404,8 @@ public class VoteService {
             log.warn("Unrecognised event, eventName:{}", eventName);
 
             return Either.left(Problem.builder()
-                    .withTitle("Unrecognised event, eventName:" + eventName)
+                    .withTitle("UNRECOGNISED_EVENT")
+                    .withDetail("Unrecognised event, eventName:" + eventName)
                     .withStatus(BAD_REQUEST)
                     .build());
         }
@@ -389,7 +417,8 @@ public class VoteService {
             log.warn("Unrecognised category, categoryName:{}", eventName);
 
             return Either.left(Problem.builder()
-                    .withTitle("Unrecognised category, categoryName:" + eventName)
+                    .withTitle("UNRECOGNISED_CATEGORY")
+                    .withDetail("Unrecognised category, categoryName:" + eventName)
                     .withStatus(BAD_REQUEST)
                     .build());
         }
@@ -399,7 +428,8 @@ public class VoteService {
         if (maybeVote.isEmpty()) {
             return Either.left(
                     Problem.builder()
-                            .withTitle("Not voted yet for stakeKey:" + stakeAddress)
+                            .withTitle("VOTE_NOT_FOUND")
+                            .withDetail("Not voted yet for stakeKey:" + stakeAddress)
                             .withStatus(NOT_FOUND)
                             .build()
             );

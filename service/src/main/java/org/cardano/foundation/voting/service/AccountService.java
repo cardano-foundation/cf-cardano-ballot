@@ -29,7 +29,8 @@ public class AccountService {
             log.warn("Invalid network, network:{}", networkName);
 
             return Either.left(Problem.builder()
-                    .withTitle("Invalid network, supported networks:" + Network.supportedNetworks())
+                    .withTitle("INVALID_NETWORK")
+                    .withDetail("Invalid network, supported networks:" + Network.supportedNetworks())
                     .withStatus(BAD_REQUEST)
                     .build());
         }
@@ -40,7 +41,8 @@ public class AccountService {
             log.warn("Unrecognised event, eventName:{}", eventName);
 
             return Either.left(Problem.builder()
-                    .withTitle("Unrecognised event, eventName:" + eventName)
+                    .withTitle("UNRECOGNISED_EVENT")
+                    .withDetail("Unrecognised event, eventName:" + eventName)
                     .withStatus(BAD_REQUEST)
                     .build());
         }

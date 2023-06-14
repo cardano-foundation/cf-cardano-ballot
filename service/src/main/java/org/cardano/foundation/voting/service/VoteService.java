@@ -251,6 +251,16 @@ public class VoteService {
         }
         long envelopeVotingPower = castVoteRequestBodyJson.get("vote").get("votingPower").asLong();
         long actualVotingPower = maybeVotingPower.orElseThrow();
+
+        if (envelopeVotingPower <= 0) {
+            return Either.left(Problem.builder()
+                    .withTitle("INVALID_VOTING_POWER")
+                    .withDetail("Voting power must be greater than 0, voting power:" + envelopeVotingPower)
+                    .withStatus(BAD_REQUEST)
+                    .build()
+            );
+        }
+
         if (envelopeVotingPower != actualVotingPower) {
             return Either.left(Problem.builder()
                     .withTitle("VOTING_POWER_MISMATCH")
@@ -435,7 +445,19 @@ public class VoteService {
         }
         var vote = maybeVote.orElseThrow();
 
-        return Either.right(VoteReceipt.builder().vote(vote).build());
+        return Either.right(VoteReceipt.builder()
+                .id(vote.getId())
+                .votingPower(vote.getVotingPower())
+                .votedAtSlot(vote.getVotedAtSlot())
+                .event(event.getName())
+                .category(category.getName())
+                .proposal(proposalRepository.findById(vote.getId()).orElseThrow().getName())
+                .coseSignature(vote.getCoseSignature())
+                .cosePublicKey(vote.getCosePublicKey())
+                .votedAtSlot(vote.getVotedAtSlot())
+                 .voterStakingAddress(vote.getVoterStakingAddress())
+                 .network(network)
+                .build());
 
         // TODO
         // voter receipt with merkle proof if it exists (only when committed to the L1 blockchain)

@@ -1,15 +1,17 @@
 package org.cardano.foundation.voting.service;
 
+import io.vavr.control.Either;
+import org.cardano.foundation.voting.domain.BlockchainData;
 import org.cardano.foundation.voting.domain.Network;
-import org.cardano.foundation.voting.domain.entity.Event;
+import org.zalando.problem.Problem;
 
 import java.util.Optional;
 
 public interface BlockchainDataService {
 
-    int getCurrentEpoch(Network network);
+    Either<Problem, BlockchainData> getBlockchainData(Network network);
 
-    long getCurrentAbsoluteSlot(Network network);
+    Either<Problem, BlockchainData> getBlockchainData(String network);
 
     /**
      * Get Voting Power as lovelaces
@@ -17,6 +19,6 @@ public interface BlockchainDataService {
      * @param stakeAddress
      * @return
      */
-    Optional<Long> getVotingPower(Network network, Event event, String stakeAddress);
+    Either<Problem, Optional<Long>> getVotingPower(Network network, int snapshotEpochNo, String stakeAddress);
 
 }

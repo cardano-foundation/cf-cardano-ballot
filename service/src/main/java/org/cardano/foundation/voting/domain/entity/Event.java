@@ -3,7 +3,6 @@ package org.cardano.foundation.voting.domain.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import org.cardano.foundation.voting.domain.SnapshotEpochType;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -36,22 +35,17 @@ public class Event extends AbstractTimestampEntity {
     @Nullable
     private String description;
 
-    @Column(name = "start_slot")
+    @Column(name = "start_epoch")
     @NotNull
-    private long startSlot;
+    private int startEpoch;
 
-    @Column(name = "end_slot")
+    @Column(name = "end_epoch")
     @NotNull
-    private long endSlot;
+    private int endEpoch;
 
     @Column(name = "snapshot_epoch")
     @NotNull
     private int snapshotEpoch;
-
-    @Column(name = "snapshot_epoch_type")
-    @NotNull
-    @Builder.Default
-    private SnapshotEpochType snapshotEpochType = SnapshotEpochType.EPOCH_END;
 
     @OneToMany(
             mappedBy = "event",
@@ -70,12 +64,12 @@ public class Event extends AbstractTimestampEntity {
         return categories.stream().filter(category -> category.getId().equals(categoryId)).findFirst().flatMap(category -> category.getProposals().stream().filter(proposal -> proposal.getId().equals(proposalId)).findFirst());
     }
 
-    public boolean isActive(long currentSlot) {
-        return currentSlot >= startSlot && currentSlot <= endSlot;
+    public boolean isActive(long epochNo) {
+        return epochNo >= startEpoch && epochNo <= endEpoch;
     }
 
-    public boolean isInActive(long currentSlot) {
-        return !isActive(currentSlot);
+    public boolean isInactive(long epochNo) {
+        return !isActive(epochNo);
     }
 
 }

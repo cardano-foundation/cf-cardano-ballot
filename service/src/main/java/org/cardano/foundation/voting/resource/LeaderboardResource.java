@@ -18,10 +18,13 @@ public class LeaderboardResource {
     @Autowired
     private LeaderBoardService leaderBoardService;
 
-    @RequestMapping(value = "/results", method = POST, produces = "application/json")
+    @RequestMapping(value = "/results/{network}/{event}", method = POST, produces = "application/json")
     @Timed(value = "resource.leaderboard.event", percentiles = { 0.3, 0.5, 0.95 })
-    public ResponseEntity<?> getLeaderBoard() {
-        return ResponseEntity.ok().build();
+    public ResponseEntity<?> getLeaderBoard(String network, String event) {
+        return leaderBoardService.getLeaderboard(network, event)
+                .fold(problem -> ResponseEntity.badRequest().body(problem),
+                        response -> ResponseEntity.ok().body(response)
+                );
     }
 
 }

@@ -1,4 +1,4 @@
-package org.cardano.foundation.voting.domain;
+package org.cardano.foundation.voting.domain.request;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -11,7 +11,7 @@ import lombok.Setter;
 public abstract class SignedWeb3Request {
 
     @NotNull
-    protected String cosePayload;
+    protected String coseSignature;
 
     @NotNull
     protected String cosePublicKey;

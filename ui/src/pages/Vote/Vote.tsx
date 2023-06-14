@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { VoteProps } from "./Vote.types";
+import { v4 as uuidv4 } from "uuid";
 import { useTheme } from "@mui/material/styles";
 import { Grid, Container, Typography, Button } from "@mui/material";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
@@ -9,6 +10,9 @@ import DoDisturbIcon from "@mui/icons-material/DoDisturb";
 import CountDownTimer from "../../components/CountDownTimer/CountDownTimer";
 import OptionCard from "../../components/OptionCard/OptionCard";
 import { OptionItem } from "../../components/OptionCard/OptionCard.types";
+import { JsonViewer } from "@textea/json-viewer";
+import { buildCanonicalVoteInputJson } from "../../commons/utils/voteUtils";
+import { eVoteService } from "../../commons/api/voteService";
 import "./Vote.scss";
 
 const items: OptionItem[] = [
@@ -29,20 +33,67 @@ const items: OptionItem[] = [
 const Vote = () => {
   const theme = useTheme();
   const { stakeAddress, isConnected, signMessage } = useCardano();
+  const [eVoteSign, setEVoteSign] = useState("");
+  const [eVoteSignKey, setEVoteSignKey] = useState("");
   const [isSigned, setIsSigned] = useState(false);
-  const handleSubmit = () => {
-    const requestVoteObject = {
-      // payload object
-      voter: stakeAddress
-    };
+  const [optionId, setOptionId] = useState("");
 
-    try {
-        // vote submission
-        console.log(requestVoteObject.voter);
+  //TODO:
+  //get Voting Power via Enpoint
+
+  //TODO:
+  //get Slot number from network
+
+  const canonicalVoteInput = useMemo(
+    () =>
+      buildCanonicalVoteInputJson({
+        option: optionId,
+        voter: stakeAddress,
+        voteId: uuidv4(),
+        //votingPower
+      }),
+    [isConnected, optionId, stakeAddress]
+  );
+
+  const generateCIP8EVoteSignature = async () => {
+    if (!isConnected) return;
+    await signMessage(canonicalVoteInput, (signature, key) => {
+      if (signature && signature.length) {
+        setEVoteSign(signature);
+        setEVoteSignKey(String(key));
+        setIsSigned(true);
+      }
+    });
+  };
+
+  const handleSubmit = async () => {
+    await generateCIP8EVoteSignature().then(() => {
+      const requestVoteObject = {
+        cosePublicKey: eVoteSignKey,
+        coseSignature: isConnected && eVoteSign,
+      };
+      console.log(requestVoteObject.cosePublicKey);
+      try {
+        eVoteService
+            .castAVoteWithDigitalSignature(requestVoteObject)
+            .then((data) => {
+                if (data.error && data.error.length) {
+                  console.log(data.error);
+                } else {
+                  console.log(data);
+                }
+            })
+            .catch((err) => {
+              console.log(err);
+            });
     } catch (e) {
       console.log(e);
     }
-};
+  });
+}
+
+  const signObject = isConnected ? JSON.parse(canonicalVoteInput) : null;
+
   return (
     <div className="vote">
       <Container>
@@ -88,6 +139,7 @@ const Vote = () => {
             <Button
               size="large"
               variant="contained"
+              disabled={isSigned}
               onClick={() => handleSubmit()}
               sx={{
                 marginTop: "0px !important",

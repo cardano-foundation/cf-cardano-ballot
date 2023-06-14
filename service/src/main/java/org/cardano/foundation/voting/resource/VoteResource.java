@@ -5,9 +5,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import io.micrometer.core.annotation.Timed;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.domain.*;
-import org.cardano.foundation.voting.domain.CastVoteSignedWeb3Request;
-import org.cardano.foundation.voting.domain.VoteReceiptSignedWeb3Request;
+import org.cardano.foundation.voting.domain.request.CastVoteSignedWeb3Request;
+import org.cardano.foundation.voting.domain.request.VerifyVoteSignedWeb3Request;
+import org.cardano.foundation.voting.domain.request.VoteReceiptSignedWeb3Request;
+import org.cardano.foundation.voting.domain.VoteVerificationReceipt;
 import org.cardano.foundation.voting.service.ReferenceDataService;
 import org.cardano.foundation.voting.service.VoteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ public class VoteResource {
 
     @RequestMapping(value = "/cast", method = POST, produces = "application/json")
     @Timed(value = "resource.vote.cast", percentiles = { 0.3, 0.5, 0.95 })
-    public ResponseEntity<?> castVote(@RequestBody CastVoteSignedWeb3Request castVoteRequest) throws AddressExcepion, JsonProcessingException {
+    public ResponseEntity<?> castVote(@RequestBody CastVoteSignedWeb3Request castVoteRequest) {
         return voteService.castVote(castVoteRequest)
                 .fold(problem -> {
                             return ResponseEntity.badRequest().body(problem);
@@ -44,9 +45,6 @@ public class VoteResource {
     @RequestMapping(value = "/receipt", method = POST, produces = "application/json")
     @Timed(value = "resource.vote.receipt", percentiles = { 0.3, 0.5, 0.95 })
     public ResponseEntity<?> getVoteReceipt(@RequestBody VoteReceiptSignedWeb3Request voteReceiptRequest) {
-        // check if vote has been cast
-        // check if there is a basic receipt
-
         return voteService.voteReceipt(voteReceiptRequest)
                 .fold(problem -> {
                             return ResponseEntity.badRequest().body(problem);

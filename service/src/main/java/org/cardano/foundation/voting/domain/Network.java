@@ -11,13 +11,13 @@ public enum Network {
     MAIN,
     PREPROD,
     PREVIEW,
-    DEV;
+    DEV; // e.g. locally hosted cardano-node
 
     public static List<String> supportedNetworks() {
         return Arrays.stream(Network.values()).map(network -> network.name().toLowerCase()).toList();
     }
 
-    public static Optional<Network> fromString(String networkText) {
+    public static Optional<Network> fromName(String networkText) {
         return Enums.getIfPresent(Network.class, networkText.toUpperCase()).toJavaUtil();
     }
 

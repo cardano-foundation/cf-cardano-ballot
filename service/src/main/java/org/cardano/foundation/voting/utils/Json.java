@@ -17,7 +17,8 @@ public final class Json {
         } catch (JsonProcessingException e) {
             return Either.left(
                     Problem.builder()
-                            .withTitle("Invalid json")
+                            .withTitle("INVALID_JSON")
+                            .withDetail("Invalid json:" + json)
                             .withStatus(Status.BAD_REQUEST)
                             .withDetail(e.getMessage())
                             .build()

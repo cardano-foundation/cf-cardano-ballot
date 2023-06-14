@@ -6,10 +6,9 @@ CREATE TABLE event (
     team VARCHAR(255) NOT NULL,
     presentation_name VARCHAR(255) NOT NULL,
     description VARCHAR(255),
-    start_slot BIGINT NOT NULL,
-    end_slot BIGINT NOT NULL,
+    start_epoch INT NOT NULL,
+    end_epoch INT NOT NULL,
     snapshot_epoch INT NOT NULL,
-    snapshot_epoch_type INT NOT NULL,
 
     create_datetime TIMESTAMP WITHOUT TIME ZONE,
     update_datetime TIMESTAMP WITHOUT TIME ZONE,

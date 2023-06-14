@@ -58,8 +58,8 @@ public class ReferenceDataResource {
                 .description(event.getDescription())
                 .presentationName(event.getPresentationName())
                 .team(event.getTeam())
-                .startSlot(event.getStartSlot())
-                .endSlot(event.getEndSlot())
+                .startSlot(event.getStartEpoch())
+                .endSlot(event.getEndEpoch())
                 .snapshotEpoch(event.getSnapshotEpoch())
                 .categories(categories)
             .build());

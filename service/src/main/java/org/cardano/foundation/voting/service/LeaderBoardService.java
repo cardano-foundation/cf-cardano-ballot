@@ -61,11 +61,15 @@ public class LeaderBoardService {
         }
 
         var blockchainData = blockchainDataE.get();
-//        if (blockchainData.getAbsoluteSlot() > ) {
-//
-//        }
+        if (blockchainData.getEpochNo() <= event.getEndEpoch()) {
+            return Either.left(Problem.builder()
+                    .withTitle("LEADER_BOARD_NOT_AVAILABLE")
+                    .withDetail("Voting not finished yet, event:" + event.getName())
+                    .withStatus(BAD_REQUEST)
+                    .build());
+        }
 
-        // TODO: implement
+        // TODO: implement this
         return Either.right(Leaderboard.builder().build());
     }
 

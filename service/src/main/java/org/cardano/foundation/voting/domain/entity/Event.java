@@ -35,13 +35,13 @@ public class Event extends AbstractTimestampEntity {
     @Nullable
     private String description;
 
-    @Column(name = "start_slot")
+    @Column(name = "start_epoch")
     @NotNull
-    private long startSlot;
+    private int startEpoch;
 
-    @Column(name = "end_slot")
+    @Column(name = "end_epoch")
     @NotNull
-    private long endSlot;
+    private int endEpoch;
 
     @Column(name = "snapshot_epoch")
     @NotNull
@@ -64,12 +64,12 @@ public class Event extends AbstractTimestampEntity {
         return categories.stream().filter(category -> category.getId().equals(categoryId)).findFirst().flatMap(category -> category.getProposals().stream().filter(proposal -> proposal.getId().equals(proposalId)).findFirst());
     }
 
-    public boolean isActive(long currentSlot) {
-        return currentSlot >= startSlot && currentSlot <= endSlot;
+    public boolean isActive(long epochNo) {
+        return epochNo >= startEpoch && epochNo <= endEpoch;
     }
 
-    public boolean isInActive(long currentSlot) {
-        return !isActive(currentSlot);
+    public boolean isInactive(long epochNo) {
+        return !isActive(epochNo);
     }
 
 }

@@ -23,9 +23,9 @@ public class EventReference {
     @Nullable
     private String description;
 
-    private long startSlot;
+    private int startSlot;
 
-    private long endSlot;
+    private int endSlot;
 
     private int snapshotEpoch;
 

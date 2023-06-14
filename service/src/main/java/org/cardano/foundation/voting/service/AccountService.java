@@ -12,6 +12,7 @@ import org.zalando.problem.Problem;
 import java.util.Optional;
 
 import static org.zalando.problem.Status.BAD_REQUEST;
+import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 
 @Service
 @Slf4j
@@ -22,6 +23,9 @@ public class AccountService {
 
     @Autowired
     private ReferenceDataService referenceDataService;
+
+    @Autowired
+    private Network network;
 
     public Either<Problem, Optional<Account>> findAccount(String networkName, String eventName, String stakeAddress) {
         var maybeNetwork = Network.fromName(networkName);
@@ -35,6 +39,14 @@ public class AccountService {
                     .build());
         }
         var network = maybeNetwork.orElseThrow();
+
+        if (network != this.network) {
+            return Either.left(Problem.builder()
+                    .withTitle("WRONG_NETWORK")
+                    .withDetail("Backend configured with network:" + this.network)
+                    .withStatus(INTERNAL_SERVER_ERROR)
+                    .build());
+        }
 
         var maybeEvent = referenceDataService.findEventByName(eventName);
         if (maybeEvent.isEmpty()) {

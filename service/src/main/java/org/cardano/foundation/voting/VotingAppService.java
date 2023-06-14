@@ -9,6 +9,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -25,6 +26,7 @@ import java.util.concurrent.Executor;
 @ComponentScan(basePackages = { "org.cardano.foundation.voting.service", "org.cardano.foundation.voting.resource" })
 @EnableTransactionManagement
 @EnableScheduling
+@EnableCaching
 @EnableAsync
 //@Import(SecurityProblemSupport.class)
 @Slf4j
@@ -55,7 +57,8 @@ public class VotingAppService {
 
     @Bean
     public Network network(@Value("${cardano.network:main}") String networkName) {
-        var network = Network.fromName(networkName).orElseThrow(() -> new RuntimeException("Invalid network name: " + networkName));
+        var network = Network.fromName(networkName)
+                .orElseThrow(() -> new RuntimeException("Invalid network name: " + networkName));
 
         log.info("Configured backend network:{}", network);
 

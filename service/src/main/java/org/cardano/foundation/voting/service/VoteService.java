@@ -176,7 +176,7 @@ public class VoteService {
                     .build());
         }
         var event = maybeEvent.get();
-        if (event.isInActive(blockchainData.getAbsoluteSlot())) {
+        if (event.isInactive(blockchainData.getEpochNo())) {
             log.warn("Event is not active, eventName:{}", eventName);
 
             return Either.left(Problem.builder()

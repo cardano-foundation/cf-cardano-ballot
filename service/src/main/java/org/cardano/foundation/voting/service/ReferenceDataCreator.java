@@ -49,9 +49,9 @@ public class ReferenceDataCreator {
         event.setName(EVENT_NAME);
         event.setPresentationName("CIP-1694 Voltaire Pre-Ratification");
         event.setTeam("CF Team");
-        event.setStartSlot(70);
-        event.setEndSlot(100);
-        event.setSnapshotEpoch(74);
+        event.setStartEpoch(70);
+        event.setEndEpoch(100);
+        event.setSnapshotEpoch(75);
 
         event.setDescription("Pre-Ratification of the Voltaire era");
 

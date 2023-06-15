@@ -1,9 +1,9 @@
 package org.cardano.foundation.voting.jobs;
 
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.service.ReferenceDataService;
-import org.cardano.foundation.voting.service.TransactionSubmissionService;
-import org.cardano.foundation.voting.service.VoteService;
+import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
+import org.cardano.foundation.voting.service.transaction_submit.TransactionSubmissionService;
+import org.cardano.foundation.voting.service.vote.DefaultVoteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 
@@ -11,7 +11,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 public class VoteCommitmentJob {
 
     @Autowired
-    private VoteService voteService;
+    private DefaultVoteService defaultVoteService;
 
     @Autowired
     private TransactionSubmissionService transactionSubmissionService;
@@ -24,7 +24,7 @@ public class VoteCommitmentJob {
         log.info("Running posting root hash job...");
 
         referenceDataService.findAllEvents().forEach(event -> {
-            var rootHash = voteService.storeLatestRootHash(event);
+            var rootHash = defaultVoteService.storeLatestRootHash(event);
 
             transactionSubmissionService.submitTransaction(event, rootHash.getRootHash());
         });

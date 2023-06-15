@@ -1,4 +1,4 @@
-package org.cardano.foundation.voting.domain.request;
+package org.cardano.foundation.voting.domain.web3.request;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;

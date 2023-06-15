@@ -1,7 +1,7 @@
-package org.cardano.foundation.voting.service;
+package org.cardano.foundation.voting.service.reference_data;
 
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.domain.Network;
+import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.entity.Category;
 import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.domain.entity.Proposal;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-import static org.cardano.foundation.voting.domain.Network.PREPROD;
+import static org.cardano.foundation.voting.domain.CardanoNetwork.PREPROD;
 
 @Service
 @Slf4j
@@ -23,7 +23,7 @@ public class ReferenceDataCreator {
     private ReferenceDataService referenceDataService;
 
     @Autowired
-    private Network network;
+    private CardanoNetwork cardanoNetwork;
 
     public void createReferenceData() {
         Optional<Event> maybeVoltaireEvent = referenceDataService.findEventByName(EVENT_NAME);
@@ -33,12 +33,12 @@ public class ReferenceDataCreator {
             return;
         }
 
-        if (network == PREPROD) {
+        if (cardanoNetwork == PREPROD) {
             createPreprodReferenceData();
             return;
         }
 
-        throw new RuntimeException("Unsupported network: " + network);
+        throw new RuntimeException("Unsupported network: " + cardanoNetwork);
     }
 
     private void createPreprodReferenceData() {

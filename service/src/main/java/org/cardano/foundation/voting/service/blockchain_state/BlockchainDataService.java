@@ -1,15 +1,17 @@
-package org.cardano.foundation.voting.service;
+package org.cardano.foundation.voting.service.blockchain_state;
 
 import io.vavr.control.Either;
 import org.cardano.foundation.voting.domain.BlockchainData;
-import org.cardano.foundation.voting.domain.Network;
+import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.zalando.problem.Problem;
 
 import java.util.Optional;
 
 public interface BlockchainDataService {
 
-    Either<Problem, BlockchainData> getBlockchainData(Network network);
+    Either<Problem, BlockchainData> getBlockchainData(CardanoNetwork cardanoNetwork);
+
+    BlockchainData getBlockchainData();
 
     Either<Problem, BlockchainData> getBlockchainData(String network);
 
@@ -19,6 +21,6 @@ public interface BlockchainDataService {
      * @param stakeAddress
      * @return
      */
-    Either<Problem, Optional<Long>> getVotingPower(Network network, int snapshotEpochNo, String stakeAddress);
+    Either<Problem, Optional<Long>> getVotingPower(CardanoNetwork cardanoNetwork, int snapshotEpochNo, String stakeAddress);
 
 }

@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.reference.CategoryReference;
 import org.cardano.foundation.voting.domain.reference.EventReference;
 import org.cardano.foundation.voting.domain.reference.ProposalReference;
-import org.cardano.foundation.voting.service.ReferenceDataService;
+import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;

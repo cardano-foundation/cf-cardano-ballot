@@ -1,4 +1,4 @@
-package org.cardano.foundation.voting.service;
+package org.cardano.foundation.voting.service.transaction_submit;
 
 import org.cardano.foundation.voting.domain.entity.Event;
 import org.springframework.stereotype.Service;

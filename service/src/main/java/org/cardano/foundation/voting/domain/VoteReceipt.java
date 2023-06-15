@@ -23,7 +23,7 @@ public class VoteReceipt {
 
     private long votingPower;
 
-    private Network network;
+    private CardanoNetwork cardanoNetwork;
 
     private long votedAtSlot;
 

@@ -1,11 +1,11 @@
-package org.cardano.foundation.voting.service;
+package org.cardano.foundation.voting.service.blockchain_state;
 
 import io.vavr.control.Either;
 import jakarta.annotation.PostConstruct;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.BlockchainData;
-import org.cardano.foundation.voting.domain.Network;
+import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
@@ -24,35 +24,35 @@ import static rest.koios.client.backend.factory.options.Options.EMPTY;
 public class KoiosBlockchainDataService implements BlockchainDataService {
 
     @Autowired
-    private Network network;
+    private CardanoNetwork cardanoNetwork;
 
     private BackendService backendService;
 
     @PostConstruct
     public void onStart() {
-        if (network == Network.PREPROD) {
+        if (cardanoNetwork == CardanoNetwork.PREPROD) {
             this.backendService = BackendFactory.getKoiosPreprodService();
         }
-        if (network == Network.MAIN) {
+        if (cardanoNetwork == CardanoNetwork.MAIN) {
             this.backendService = BackendFactory.getKoiosMainnetService();
         }
-        if (network == Network.DEV) {
+        if (cardanoNetwork == CardanoNetwork.DEV) {
             // TODO
         }
-        if (network == Network.PREVIEW) {
+        if (cardanoNetwork == CardanoNetwork.PREVIEW) {
             this.backendService = BackendFactory.getKoiosPreviewService();
         }
     }
 
     @Override
     public Either<Problem, BlockchainData> getBlockchainData(String networkName) {
-        var maybeNetwork = Network.fromName(networkName);
+        var maybeNetwork = CardanoNetwork.fromName(networkName);
         if (maybeNetwork.isEmpty()) {
             log.warn("Invalid network, network:{}", networkName);
 
             return Either.left(Problem.builder()
                     .withTitle("INVALID_NETWORK")
-                    .withDetail("Invalid network, supported networks:" + Network.supportedNetworks())
+                    .withDetail("Invalid network, supported networks:" + CardanoNetwork.supportedNetworks())
                     .withStatus(BAD_REQUEST)
                     .build());
         }
@@ -61,11 +61,11 @@ public class KoiosBlockchainDataService implements BlockchainDataService {
     }
 
     @Override
-    public Either<Problem, BlockchainData> getBlockchainData(Network network) {
-        if (network != this.network) {
+    public Either<Problem, BlockchainData> getBlockchainData(CardanoNetwork cardanoNetwork) {
+        if (cardanoNetwork != this.cardanoNetwork) {
             return Either.left(Problem.builder()
                     .withTitle("WRONG_NETWORK")
-                    .withDetail("Backend configured with network:" + this.network)
+                    .withDetail("Backend configured with network:" + this.cardanoNetwork)
                     .withStatus(INTERNAL_SERVER_ERROR)
                     .build());
         }
@@ -76,6 +76,11 @@ public class KoiosBlockchainDataService implements BlockchainDataService {
                 .build();
 
         return Either.right(blockchainData);
+    }
+
+    @Override
+    public BlockchainData getBlockchainData() {
+        return getBlockchainData(this.cardanoNetwork).getOrNull();
     }
 
     @SneakyThrows
@@ -90,11 +95,11 @@ public class KoiosBlockchainDataService implements BlockchainDataService {
 
     @Override
     @SneakyThrows
-    public Either<Problem, Optional<Long>> getVotingPower(Network network, int snapshotEpochNo, String stakeAddress) {
-        if (network != this.network) {
+    public Either<Problem, Optional<Long>> getVotingPower(CardanoNetwork cardanoNetwork, int snapshotEpochNo, String stakeAddress) {
+        if (cardanoNetwork != this.cardanoNetwork) {
             return Either.left(Problem.builder()
                     .withTitle("WRONG_NETWORK")
-                    .withDetail("Backend configured with network:" + this.network)
+                    .withDetail("Backend configured with network:" + this.cardanoNetwork)
                     .withStatus(INTERNAL_SERVER_ERROR)
                     .build());
         }

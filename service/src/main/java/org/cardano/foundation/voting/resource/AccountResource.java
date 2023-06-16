@@ -27,11 +27,11 @@ public class AccountResource {
     @RequestMapping(value = "/{network}/{event}/{stakeAddress}", method = GET, produces = "application/json")
     @Timed(value = "resource.account.find", percentiles = { 0.3, 0.5, 0.95 })
     public ResponseEntity<?> findAccount(@PathVariable String network, @PathVariable String event, @PathVariable String stakeAddress, Authentication authentication) {
-        JwtPrincipal jwtPrincipal = (JwtPrincipal) authentication.getPrincipal();
-
-        if (jwtPrincipal.isNotAllowed(stakeAddress)) {
-            return ResponseEntity.status(FORBIDDEN).build();
-        }
+//        JwtPrincipal jwtPrincipal = (JwtPrincipal) authentication.getPrincipal();
+//
+//        if (jwtPrincipal.isNotAllowed(stakeAddress)) {
+//            return ResponseEntity.status(FORBIDDEN).build();
+//        }
 
         return accountService.findAccount(network, event, stakeAddress)
                 .fold(problem -> {

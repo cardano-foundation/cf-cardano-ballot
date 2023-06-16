@@ -33,7 +33,8 @@ import java.util.Optional;
 import static org.cardano.foundation.voting.domain.web3.Web3Action.CAST_VOTE;
 import static org.cardanofoundation.cip30.Format.TEXT;
 import static org.cardanofoundation.cip30.ValidationError.UNKNOWN;
-import static org.zalando.problem.Status.*;
+import static org.zalando.problem.Status.BAD_REQUEST;
+import static org.zalando.problem.Status.NOT_FOUND;
 
 @Service
 @Slf4j
@@ -116,7 +117,7 @@ public class DefaultVoteService implements VoteService {
         }
         var stakeAddress = stakeAddressE.get();
 
-        var castVoteRequestBody = cip30VerificationResult.getCosePayload(TEXT);
+        var castVoteRequestBody = cip30VerificationResult.getMessage(TEXT);
         var castVoteRequestBodyJsonE = Json.decode(castVoteRequestBody);
         if (castVoteRequestBodyJsonE.isLeft()) {
             if (castVoteRequestBodyJsonE.isLeft()) {
@@ -189,7 +190,7 @@ public class DefaultVoteService implements VoteService {
                     .build());
         }
         var categoryName = castVoteRequestBodyJson.get("vote").get("categoryName").asText();
-        var maybeCategory = event.findCategory(categoryName);
+        var maybeCategory = event.findCategoryByName(categoryName);
         if (maybeCategory.isEmpty()) {
             log.warn("Unrecognised category, categoryName:{}", eventName);
 
@@ -241,50 +242,50 @@ public class DefaultVoteService implements VoteService {
             );
         }
 
-        var votingPowerE = blockchainDataService.getVotingPower(network, event.getSnapshotEpoch(), stakeAddress);
-        if (votingPowerE.isLeft()) {
-            return Either.left(votingPowerE.getLeft());
-        }
-        var maybeVotingPower = votingPowerE.get();
-
-        if (maybeVotingPower.isEmpty()) {
-            log.warn("Unrecognised voting power, stakeAddress:{}", stakeAddress);
-
-            return Either.left(Problem.builder()
-                    .withTitle("VOTING_POWER_NOT_FOUND")
-                    .withDetail("Voting power not found for the address:" + stakeAddress)
-                    .withStatus(INTERNAL_SERVER_ERROR)
-                    .build());
-        }
-        long envelopeVotingPower = castVoteRequestBodyJson.get("vote").get("votingPower").asLong();
-        long actualVotingPower = maybeVotingPower.orElseThrow();
-
-        if (envelopeVotingPower <= 0) {
-            return Either.left(Problem.builder()
-                    .withTitle("INVALID_VOTING_POWER")
-                    .withDetail("Voting power must be greater than 0, voting power:" + envelopeVotingPower)
-                    .withStatus(BAD_REQUEST)
-                    .build()
-            );
-        }
-
-        if (envelopeVotingPower != actualVotingPower) {
-            return Either.left(Problem.builder()
-                    .withTitle("VOTING_POWER_MISMATCH")
-                    .withDetail("Voting power mismatch, signed voting power:" + envelopeVotingPower + ", actual voting power:" + actualVotingPower)
-                    .withStatus(BAD_REQUEST)
-                    .build()
-            );
-        }
-        var stakeAddressInVote = castVoteRequestBodyJson.get("vote").get("stakeAddress").asText();
-        if (!stakeAddressInVote.trim().equalsIgnoreCase(stakeAddress.trim())) {
-            return Either.left(Problem.builder()
-                    .withTitle("STAKE_ADDRESS_MISMATCH")
-                    .withDetail("Stake address mismatch, signed stake address:" + stakeAddressInVote + ", actual stake address:" + stakeAddress)
-                    .withStatus(BAD_REQUEST)
-                    .build()
-            );
-        }
+//        var votingPowerE = blockchainDataService.getVotingPower(network, event.getSnapshotEpoch(), stakeAddress);
+//        if (votingPowerE.isLeft()) {
+//            return Either.left(votingPowerE.getLeft());
+//        }
+//        var maybeVotingPower = votingPowerE.get();
+//
+//        if (maybeVotingPower.isEmpty()) {
+//            log.warn("Unrecognised voting power, stakeAddress:{}", stakeAddress);
+//
+//            return Either.left(Problem.builder()
+//                    .withTitle("VOTING_POWER_NOT_FOUND")
+//                    .withDetail("Voting power not found for the address:" + stakeAddress)
+//                    .withStatus(INTERNAL_SERVER_ERROR)
+//                    .build());
+//        }
+//        long envelopeVotingPower = castVoteRequestBodyJson.get("vote").get("votingPower").asLong();
+//        long actualVotingPower = maybeVotingPower.orElseThrow();
+//
+//        if (envelopeVotingPower <= 0) {
+//            return Either.left(Problem.builder()
+//                    .withTitle("INVALID_VOTING_POWER")
+//                    .withDetail("Voting power must be greater than 0, voting power:" + envelopeVotingPower)
+//                    .withStatus(BAD_REQUEST)
+//                    .build()
+//            );
+//        }
+//
+//        if (envelopeVotingPower != actualVotingPower) {
+//            return Either.left(Problem.builder()
+//                    .withTitle("VOTING_POWER_MISMATCH")
+//                    .withDetail("Voting power mismatch, signed voting power:" + envelopeVotingPower + ", actual voting power:" + actualVotingPower)
+//                    .withStatus(BAD_REQUEST)
+//                    .build()
+//            );
+//        }
+//        var stakeAddressInVote = castVoteRequestBodyJson.get("vote").get("stakeAddress").asText();
+//        if (!stakeAddressInVote.trim().equalsIgnoreCase(stakeAddress.trim())) {
+//            return Either.left(Problem.builder()
+//                    .withTitle("STAKE_ADDRESS_MISMATCH")
+//                    .withDetail("Stake address mismatch, signed stake address:" + stakeAddressInVote + ", actual stake address:" + stakeAddress)
+//                    .withStatus(BAD_REQUEST)
+//                    .build()
+//            );
+//        }
 
         if (voteRepository.findByEventIdAndCategoryIdAndVoterStakingAddress(event.getId(), category.getId(), stakeAddress).isPresent()) {
             log.warn("Cote already cast for the stake address: " + stakeAddress);
@@ -316,9 +317,9 @@ public class DefaultVoteService implements VoteService {
         vote.setVoterStakingAddress(stakeAddress);
         vote.setVotedAtSlot(votedAtSlot);
         vote.setNetwork(network);
-        vote.setCoseSignature(vote.getCoseSignature());
-        vote.setCosePublicKey(vote.getCosePublicKey());
-        vote.setVotingPower(actualVotingPower);
+        vote.setCoseSignature(castVoteRequest.getCoseSignature());
+        vote.setCosePublicKey(castVoteRequest.getCosePublicKey());
+        vote.setVotingPower(1);
 
         return Either.right(voteRepository.saveAndFlush(vote));
     }

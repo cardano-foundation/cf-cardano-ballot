@@ -31,6 +31,11 @@ public class SpringSecurityConfiguration {
             // Add a filter to validate the tokens with every request
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 
+                .authorizeHttpRequests()
+                .requestMatchers("/api/**").permitAll()
+
+                .and()
+
             .authorizeHttpRequests()
             .requestMatchers("/api/auth/**").permitAll()
 

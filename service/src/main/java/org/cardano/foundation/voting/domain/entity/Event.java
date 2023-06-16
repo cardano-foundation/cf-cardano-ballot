@@ -56,8 +56,8 @@ public class Event extends AbstractTimestampEntity {
     @Builder.Default
     private List<Category> categories = new ArrayList<>();
 
-    public Optional<Category> findCategory(String categoryId) {
-        return categories.stream().filter(category -> category.getId().equals(categoryId)).findFirst();
+    public Optional<Category> findCategoryByName(String categoryName) {
+        return categories.stream().filter(category -> category.getName().equals(categoryName)).findFirst();
     }
 
     public Optional<Proposal> findProposal(String categoryId, String proposalId) {

@@ -62,6 +62,7 @@ dependencies {
     implementation("com.bloxbean.cardano:cardano-client-crypto:0.4.3")
     implementation("com.bloxbean.cardano:cardano-client-address:0.4.3")
     implementation("com.bloxbean.cardano:cardano-client-metadata:0.4.3")
+	implementation("com.bloxbean.cardano:cardano-client-cip30:0.4.3")
 
 	implementation("io.github.cardano-community", "koios-java-client", "1.17.2")
 

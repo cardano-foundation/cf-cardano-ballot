@@ -48,7 +48,7 @@ public class LoginService {
             );
         }
 
-        var jsonPayload = cip30VerificationResult.getCosePayload(TEXT);
+        var jsonPayload = cip30VerificationResult.getMessage(TEXT);
         var jsonPayloadE = Json.decode(jsonPayload);
         if (jsonPayloadE.isLeft()) {
             return Either.left(

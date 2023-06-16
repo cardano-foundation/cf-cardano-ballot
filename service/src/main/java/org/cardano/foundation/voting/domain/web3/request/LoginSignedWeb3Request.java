@@ -1,4 +1,4 @@
-package org.cardano.foundation.voting.domain.request;
+package org.cardano.foundation.voting.domain.web3.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +9,6 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @Builder
-public class VerifyVoteSignedWeb3Request extends SignedWeb3Request {
+public class LoginSignedWeb3Request extends SignedWeb3Request {
 
 }

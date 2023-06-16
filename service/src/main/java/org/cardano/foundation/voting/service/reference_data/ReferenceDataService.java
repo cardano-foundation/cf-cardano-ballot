@@ -1,4 +1,4 @@
-package org.cardano.foundation.voting.service;
+package org.cardano.foundation.voting.service.reference_data;
 
 import io.micrometer.core.annotation.Timed;
 import org.cardano.foundation.voting.domain.entity.Category;

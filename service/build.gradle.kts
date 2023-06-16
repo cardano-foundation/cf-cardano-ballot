@@ -31,9 +31,10 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-rest")
 	//implementation("org.springframework.boot:spring-boot-starter-jooq")
 	testCompileOnly("org.springframework.boot:spring-boot-starter-test")
+	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-web")
-	//implementation("org.springframework.boot:spring-boot-starter-security")
+	implementation("org.springframework.boot:spring-boot-starter-security")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 
@@ -50,7 +51,9 @@ dependencies {
 
 	compileOnly("org.projectlombok:lombok")
 
-    implementation("com.querydsl:querydsl-jpa")
+	implementation("com.nimbusds:nimbus-jose-jwt:9.30.2")
+
+	implementation("com.querydsl:querydsl-jpa")
     annotationProcessor("com.querydsl:querydsl-apt")
 
 	annotationProcessor("org.projectlombok:lombok")

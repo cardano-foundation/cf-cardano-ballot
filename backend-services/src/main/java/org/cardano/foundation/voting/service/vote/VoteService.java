@@ -6,7 +6,7 @@ import org.cardano.foundation.voting.domain.VoteReceipt;
 import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.domain.entity.RootHash;
 import org.cardano.foundation.voting.domain.entity.Vote;
-import org.cardano.foundation.voting.domain.web3.request.CastVoteSignedWeb3Request;
+import org.cardano.foundation.voting.domain.web3.SignedWeb3Request;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
@@ -25,7 +25,7 @@ public interface VoteService {
 
     @Transactional
     @Timed(value = "service.vote.castVote", percentiles = {0.3, 0.5, 0.95})
-    Either<Problem, Vote> castVote(CastVoteSignedWeb3Request castVoteRequest);
+    Either<Problem, Vote> castVote(SignedWeb3Request castVoteRequest);
 
     @Transactional
     @Timed(value = "service.vote.voteReceipt", percentiles = {0.3, 0.5, 0.95})

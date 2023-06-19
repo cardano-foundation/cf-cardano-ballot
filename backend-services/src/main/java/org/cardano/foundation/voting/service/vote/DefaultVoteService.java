@@ -10,7 +10,7 @@ import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.domain.entity.RootHash;
 import org.cardano.foundation.voting.domain.entity.Vote;
 import org.cardano.foundation.voting.domain.web3.Web3Action;
-import org.cardano.foundation.voting.domain.web3.request.CastVoteSignedWeb3Request;
+import org.cardano.foundation.voting.domain.web3.SignedWeb3Request;
 import org.cardano.foundation.voting.repository.ProposalRepository;
 import org.cardano.foundation.voting.repository.RootHashRepository;
 import org.cardano.foundation.voting.repository.VoteRepository;
@@ -77,7 +77,7 @@ public class DefaultVoteService implements VoteService {
     @Override
     @Transactional
     @Timed(value = "service.vote.castVote", percentiles = { 0.3, 0.5, 0.95 })
-    public Either<Problem, Vote> castVote(CastVoteSignedWeb3Request castVoteRequest) {
+    public Either<Problem, Vote> castVote(SignedWeb3Request castVoteRequest) {
         // TODO check if vote is in the canonical form???
 
         var cip30Verifier = new CIP30Verifier(castVoteRequest.getCoseSignature(), Optional.ofNullable(castVoteRequest.getCosePublicKey()));
@@ -242,51 +242,6 @@ public class DefaultVoteService implements VoteService {
             );
         }
 
-//        var votingPowerE = blockchainDataService.getVotingPower(network, event.getSnapshotEpoch(), stakeAddress);
-//        if (votingPowerE.isLeft()) {
-//            return Either.left(votingPowerE.getLeft());
-//        }
-//        var maybeVotingPower = votingPowerE.get();
-//
-//        if (maybeVotingPower.isEmpty()) {
-//            log.warn("Unrecognised voting power, stakeAddress:{}", stakeAddress);
-//
-//            return Either.left(Problem.builder()
-//                    .withTitle("VOTING_POWER_NOT_FOUND")
-//                    .withDetail("Voting power not found for the address:" + stakeAddress)
-//                    .withStatus(INTERNAL_SERVER_ERROR)
-//                    .build());
-//        }
-//        long envelopeVotingPower = castVoteRequestBodyJson.get("vote").get("votingPower").asLong();
-//        long actualVotingPower = maybeVotingPower.orElseThrow();
-//
-//        if (envelopeVotingPower <= 0) {
-//            return Either.left(Problem.builder()
-//                    .withTitle("INVALID_VOTING_POWER")
-//                    .withDetail("Voting power must be greater than 0, voting power:" + envelopeVotingPower)
-//                    .withStatus(BAD_REQUEST)
-//                    .build()
-//            );
-//        }
-//
-//        if (envelopeVotingPower != actualVotingPower) {
-//            return Either.left(Problem.builder()
-//                    .withTitle("VOTING_POWER_MISMATCH")
-//                    .withDetail("Voting power mismatch, signed voting power:" + envelopeVotingPower + ", actual voting power:" + actualVotingPower)
-//                    .withStatus(BAD_REQUEST)
-//                    .build()
-//            );
-//        }
-//        var stakeAddressInVote = castVoteRequestBodyJson.get("vote").get("stakeAddress").asText();
-//        if (!stakeAddressInVote.trim().equalsIgnoreCase(stakeAddress.trim())) {
-//            return Either.left(Problem.builder()
-//                    .withTitle("STAKE_ADDRESS_MISMATCH")
-//                    .withDetail("Stake address mismatch, signed stake address:" + stakeAddressInVote + ", actual stake address:" + stakeAddress)
-//                    .withStatus(BAD_REQUEST)
-//                    .build()
-//            );
-//        }
-
         if (voteRepository.findByEventIdAndCategoryIdAndVoterStakingAddress(event.getId(), category.getId(), stakeAddress).isPresent()) {
             log.warn("Cote already cast for the stake address: " + stakeAddress);
 
@@ -354,7 +309,7 @@ public class DefaultVoteService implements VoteService {
         }
         var category = maybeCategory.orElseThrow();
 
-        Optional<Vote> maybeVote = voteRepository.findByEventIdAndCategoryIdAndVoterStakingAddress(event.getId(), category.getId(), stakeAddress);
+        var maybeVote = voteRepository.findByEventIdAndCategoryIdAndVoterStakingAddress(event.getId(), category.getId(), stakeAddress);
         if (maybeVote.isEmpty()) {
             return Either.left(
                     Problem.builder()
@@ -368,7 +323,6 @@ public class DefaultVoteService implements VoteService {
 
         return Either.right(VoteReceipt.builder()
                 .id(vote.getId())
-                .votingPower(vote.getVotingPower())
                 .votedAtSlot(vote.getVotedAtSlot())
                 .event(event.getName())
                 .category(category.getName())

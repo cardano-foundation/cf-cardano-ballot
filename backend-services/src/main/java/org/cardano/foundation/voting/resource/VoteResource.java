@@ -2,7 +2,6 @@ package org.cardano.foundation.voting.resource;
 
 import io.micrometer.core.annotation.Timed;
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.domain.web3.request.CastVoteSignedWeb3Request;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
 import org.cardano.foundation.voting.service.security.JwtPrincipal;
 import org.cardano.foundation.voting.service.vote.VoteService;

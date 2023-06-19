@@ -21,8 +21,6 @@ public class VoteReceipt {
 
     private String cosePublicKey;
 
-    private long votingPower;
-
     private CardanoNetwork cardanoNetwork;
 
     private long votedAtSlot;

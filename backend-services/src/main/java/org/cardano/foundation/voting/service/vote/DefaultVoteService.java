@@ -7,22 +7,22 @@ import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.VoteReceipt;
 import org.cardano.foundation.voting.domain.entity.Event;
-import org.cardano.foundation.voting.domain.entity.RootHash;
 import org.cardano.foundation.voting.domain.entity.Vote;
-import org.cardano.foundation.voting.domain.web3.Web3Action;
 import org.cardano.foundation.voting.domain.web3.SignedWeb3Request;
+import org.cardano.foundation.voting.domain.web3.Web3Action;
+import org.cardano.foundation.voting.repository.MerkleTreeRepository;
 import org.cardano.foundation.voting.repository.ProposalRepository;
-import org.cardano.foundation.voting.repository.RootHashRepository;
 import org.cardano.foundation.voting.repository.VoteRepository;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataService;
 import org.cardano.foundation.voting.service.blockchain_state.SlotService;
+import org.cardano.foundation.voting.service.merkle_tree.MerkleProofJsonCreator;
+import org.cardano.foundation.voting.service.merkle_tree.VoteMerkleProofService;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
 import org.cardano.foundation.voting.utils.Bech32;
 import org.cardano.foundation.voting.utils.Json;
 import org.cardano.foundation.voting.utils.UUID;
 import org.cardanofoundation.cip30.CIP30Verifier;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
@@ -47,10 +47,10 @@ public class DefaultVoteService implements VoteService {
     private ReferenceDataService referenceDataService;
 
     @Autowired
-    private RootHashRepository rootHashRepository;
+    private ProposalRepository proposalRepository;
 
     @Autowired
-    private ProposalRepository proposalRepository;
+    private MerkleTreeRepository merkleTreeRepository;
 
     @Autowired
     private BlockchainDataService blockchainDataService;
@@ -58,20 +58,27 @@ public class DefaultVoteService implements VoteService {
     @Autowired
     private SlotService slotService;
 
-    @Override
-    @Transactional
-    public List<Vote> findAll(Event event) {
-        return voteRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"))
-                .stream().filter(vote -> vote.getEventId().equals(event.getId())).toList();
-    }
+    @Autowired
+    private VoteMerkleProofService voteMerkleProofService;
+
+    @Autowired
+    private MerkleProofJsonCreator merkleProofJsonCreator;
 
     @Override
     @Transactional
+    public List<Vote> findAll(Event event) {
+        return voteRepository.findAllByEventId(event.getId());
+    }
+
+    @Override
+    public Optional<Vote> findById(String voteId) {
+        return voteRepository.findById(voteId);
+    }
+
+    @Transactional
     @Timed(value = "service.vote.isVoteAlreadyCast", percentiles = { 0.3, 0.5, 0.95 })
-    public boolean isVoteCastingStillPossible(String eventId, String categoryId, String stakeAddress) {
-        // TODO
-        return false;
-        //return voteRepository.findByEventIdAndCategoryIdAndVoterStakingAddress(eventId, categoryId, stakeAddress).isPresent();
+    public boolean isVoteAlreadyCast(String eventId, String categoryId, String stakeAddress) {
+        return voteRepository.findByEventIdAndCategoryIdAndVoterStakingAddress(eventId, categoryId, stakeAddress).isPresent();
     }
 
     @Override
@@ -143,7 +150,7 @@ public class DefaultVoteService implements VoteService {
         }
         var network = maybeNetwork.orElseThrow();
 
-        var blockchainData = blockchainDataService.getBlockchainData();
+        var blockchainData = blockchainDataService.getChainTip();
 
         var actionText = castVoteRequestBodyJson.get("action").asText();
 
@@ -276,7 +283,9 @@ public class DefaultVoteService implements VoteService {
         vote.setCosePublicKey(castVoteRequest.getCosePublicKey());
         vote.setVotingPower(1);
 
-        return Either.right(voteRepository.saveAndFlush(vote));
+        var storedVote = voteRepository.saveAndFlush(vote);
+
+        return Either.right(storedVote);
     }
 
     // get merkle proof of the vote along with vote information
@@ -321,50 +330,35 @@ public class DefaultVoteService implements VoteService {
         }
         var vote = maybeVote.orElseThrow();
 
+        var maybeProposal = proposalRepository.findById(vote.getId());
+        if (maybeProposal.isEmpty()) {
+            return Either.left(
+                    Problem.builder()
+                            .withTitle("PROPOSAL_NOT_FOUND")
+                            .withDetail("Proposal not found for voteId:" + vote.getId())
+                            .withStatus(NOT_FOUND)
+                            .build()
+            );
+        }
+        var proposal = maybeProposal.orElseThrow();
+
+        var latestVoteMerkleProof = voteMerkleProofService.findLatestProof(vote);
+        // TODO
+
         return Either.right(VoteReceipt.builder()
                 .id(vote.getId())
                 .votedAtSlot(vote.getVotedAtSlot())
                 .event(event.getName())
                 .category(category.getName())
-                .proposal(proposalRepository.findById(vote.getId()).orElseThrow().getName())
+                .proposal(proposal.getName())
                 .coseSignature(vote.getCoseSignature())
                 .cosePublicKey(vote.getCosePublicKey())
                 .votedAtSlot(vote.getVotedAtSlot())
                 .voterStakingAddress(vote.getVoterStakingAddress())
                 .cardanoNetwork(vote.getNetwork())
-                .build());
-
-        // TODO
-        // voter receipt with merkle proof if it exists (only when committed to the L1 blockchain)
-    }
-
-    @Override
-    @Transactional
-    public RootHash storeLatestRootHash(Event event) {
-        log.info("Running posting root hash job...");
-
-        List<Vote> allVotes = findAll(event);
-
-        // create merkle tree from all votes
-
-        // get root hash from the merkle tree
-
-        return rootHashRepository.saveAndFlush(new RootHash(event.getId(), "new-root-hash"));
-    }
-
-    /**
-     * Retrieve latest root hash stored on chain as a serilised hex entry
-     * @return
-     */
-    @Override
-    @Transactional
-    public Optional<RootHash> getRootHash(String eventId) {
-        // find last merkle root hash
-
-        // access root hash from indexes metadata entries
-        // we listen on particular key in the metadata map
-
-        return rootHashRepository.findAll().stream().findFirst();
+                .status(latestVoteMerkleProof.isEmpty() ? VoteReceipt.Status.BASIC : VoteReceipt.Status.FULL)
+                .build()
+        );
     }
 
 }

@@ -7,6 +7,7 @@ import com.nimbusds.jose.crypto.Ed25519Verifier;
 import com.nimbusds.jose.jwk.OctetKeyPair;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import io.micrometer.core.annotation.Timed;
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
@@ -43,6 +44,7 @@ public class JwtService {
     @Value("${cardano.jwt.tokenValidityDurationHours}")
     private long tokenValidityDurationHours;
 
+    @Timed(value = "service.jwt.generate", percentiles = { 0.3, 0.5, 0.95 })
     public Either<Problem, String> generate(String stakeAddress) {
         var now = LocalDateTime.now(clock);
         try {
@@ -80,6 +82,7 @@ public class JwtService {
 
     }
 
+    @Timed(value = "service.jwt.verify", percentiles = { 0.3, 0.5, 0.95 })
     public Either<Problem, SignedJWT> verify(String token) {
         var publicJWK = cfJWTKey.toPublicJWK();
 

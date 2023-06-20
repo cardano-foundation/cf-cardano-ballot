@@ -18,7 +18,7 @@ public class SimpleSlotService implements SlotService {
     private CardanoNetwork cardanoNetwork;
 
     public boolean isSlotExpired(long slot) {
-        var currentAbsoluteSlot = blockchainDataService.getBlockchainData().getAbsoluteSlot();
+        var currentAbsoluteSlot = blockchainDataService.getChainTip().getAbsoluteSlot();
 
         var range = Range
                 .from(Bound.inclusive(currentAbsoluteSlot - SLOT_BUFFER))

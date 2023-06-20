@@ -9,7 +9,7 @@ public abstract class AbstractTimestampEntity {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "createdAt", nullable = false)
-    protected Date createdA;
+    protected Date createdAt;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updatedAt", nullable = false)
@@ -17,7 +17,7 @@ public abstract class AbstractTimestampEntity {
 
     @PrePersist
     protected void onCreate() {
-        updatedAt = createdA = new Date();
+        updatedAt = createdAt = new Date();
     }
 
     @PreUpdate

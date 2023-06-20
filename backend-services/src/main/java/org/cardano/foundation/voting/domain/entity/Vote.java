@@ -5,18 +5,24 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
+import org.cardanofoundation.cip30.CIP30Verifier;
 
-@Data
+import java.util.function.Function;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Getter
+@Setter
 @Table(name = "vote")
-@ToString
-public class Vote {
+public class Vote extends AbstractTimestampEntity {
+
+    public static final Function<Vote, byte[]> VOTE_SERIALISER = createSerialiserFunction();
 
     @Id
     @Column(name = "id")
@@ -49,6 +55,13 @@ public class Vote {
     @Column(name = "voted_at_slot")
     private long votedAtSlot;
 
-    // TODO merkle proof once submitted to the chain
+    private static Function<Vote, byte[]> createSerialiserFunction() {
+        return vote -> {
+            var cip30Verifier = new CIP30Verifier(vote.getCoseSignature(), vote.getCosePublicKey());
+            var verificationResult = cip30Verifier.verify();
+
+            return verificationResult.getMessage();
+        };
+    }
 
 }

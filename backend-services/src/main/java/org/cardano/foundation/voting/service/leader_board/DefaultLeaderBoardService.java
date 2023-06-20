@@ -58,7 +58,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
             );
         }
         var event = maybeEvent.orElseThrow();
-        var blockchainData = blockchainDataService.getBlockchainData();
+        var blockchainData = blockchainDataService.getChainTip();
 
         if (blockchainData.getEpochNo() <= event.getEndEpoch()) {
             return Either.left(Problem.builder()

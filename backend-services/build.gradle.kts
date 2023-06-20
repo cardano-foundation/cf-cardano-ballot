@@ -76,7 +76,7 @@ dependencies {
 
     implementation("com.google.guava:guava:31.1-jre")
 
-	//implementation("org.cardanofoundation:merkle-tree-java:0.0.5-SNAPSHOT") // TODO release to maven central
+	implementation("org.cardanofoundation:merkle-tree-java:0.0.6-SNAPSHOT") // TODO release to maven central
 }
 
 dependencyManagement {

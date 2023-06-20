@@ -5,8 +5,8 @@ import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.Account;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
-import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataService;
+import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
@@ -63,16 +63,11 @@ public class DefaultAccountService implements AccountService {
         }
         var event = maybeEvent.orElseThrow();
 
-        var votingPowerE = blockchainDataService.getVotingPower(network, event.getSnapshotEpoch(), stakeAddress);
-        if (votingPowerE.isEmpty()) {
-            return Either.right(Optional.empty());
-        }
-
-        var maybeVotingPower = votingPowerE.get();
+        var votingPower = blockchainDataService.getVotingPower(network, event.getSnapshotEpoch(), stakeAddress);
 
         return Either.right(Optional.of(Account.builder()
                 .stakeAddress(stakeAddress)
-                .votingPower(maybeVotingPower.orElse(0L))
+                .votingPower(votingPower)
                 .build()
                 )
         );

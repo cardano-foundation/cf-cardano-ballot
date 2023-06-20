@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class BlockchainData {
+public class ChainTip {
 
     private long absoluteSlot;
 

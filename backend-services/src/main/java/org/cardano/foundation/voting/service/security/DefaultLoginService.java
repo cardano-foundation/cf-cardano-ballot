@@ -1,10 +1,11 @@
 package org.cardano.foundation.voting.service.security;
 
 import com.google.common.base.Enums;
+import io.micrometer.core.annotation.Timed;
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.domain.web3.Web3Action;
 import org.cardano.foundation.voting.domain.web3.SignedWeb3Request;
+import org.cardano.foundation.voting.domain.web3.Web3Action;
 import org.cardano.foundation.voting.service.blockchain_state.SlotService;
 import org.cardano.foundation.voting.utils.Bech32;
 import org.cardano.foundation.voting.utils.Json;
@@ -32,6 +33,7 @@ public class DefaultLoginService implements LoginService {
     private SlotService slotService;
 
     @Override
+    @Timed(value = "service.auth.login", percentiles = { 0.3, 0.5, 0.95 })
     public Either<Problem, String> login(SignedWeb3Request loginRequest) {
         var cip30Verifier = new CIP30Verifier(loginRequest.getCoseSignature(), Optional.ofNullable(loginRequest.getCosePublicKey()));
 

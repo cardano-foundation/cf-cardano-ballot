@@ -23,6 +23,15 @@ public class VoteReceipt {
 
     private CardanoNetwork cardanoNetwork;
 
+    private Status status;
+
     private long votedAtSlot;
+
+//    private VoteMerkleProof merkleProof;
+
+    public enum Status {
+        BASIC, // without merkle proof committed to L1 yet
+        FULL // with merkle proof committed to L1
+    }
 
 }

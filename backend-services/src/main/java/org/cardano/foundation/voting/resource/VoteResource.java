@@ -2,6 +2,7 @@ package org.cardano.foundation.voting.resource;
 
 import io.micrometer.core.annotation.Timed;
 import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.domain.web3.SignedWeb3Request;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
 import org.cardano.foundation.voting.service.security.JwtPrincipal;
 import org.cardano.foundation.voting.service.vote.VoteService;
@@ -30,7 +31,7 @@ public class VoteResource {
 
     @RequestMapping(value = "/cast", method = POST, produces = "application/json")
     @Timed(value = "resource.vote.cast", percentiles = { 0.3, 0.5, 0.95 })
-    public ResponseEntity<?> castVote(@RequestBody CastVoteSignedWeb3Request castVoteRequest, Authentication authentication) {
+    public ResponseEntity<?> castVote(@RequestBody SignedWeb3Request castVoteRequest, Authentication authentication) {
         //JwtPrincipal jwtPrincipal = (JwtPrincipal) authentication.getPrincipal();
 
         return voteService.castVote(castVoteRequest)
@@ -45,11 +46,11 @@ public class VoteResource {
     @RequestMapping(value = "/receipt/{event}/{category}/{stakeAddress}", method = POST, produces = "application/json")
     @Timed(value = "resource.vote.receipt", percentiles = { 0.3, 0.5, 0.95 })
     public ResponseEntity<?> getVoteReceipt(String event, String category, String stakeAddress, Authentication authentication) {
-        JwtPrincipal jwtPrincipal = (JwtPrincipal) authentication.getPrincipal();
+//        JwtPrincipal jwtPrincipal = (JwtPrincipal) authentication.getPrincipal();
 
-        if (jwtPrincipal.isNotAllowed(stakeAddress)) {
-            return ResponseEntity.status(FORBIDDEN).build();
-        }
+//        if (jwtPrincipal.isNotAllowed(stakeAddress)) {
+//            return ResponseEntity.status(FORBIDDEN).build();
+//        }
 
         return voteService.voteReceipt(event, category, stakeAddress)
                 .fold(problem -> {

@@ -1,0 +1,25 @@
+package org.cardano.foundation.voting.service.merkle_tree;
+
+import io.micrometer.core.annotation.Timed;
+import org.cardano.foundation.voting.domain.entity.Vote;
+import org.cardano.foundation.voting.domain.entity.VoteMerkleProof;
+import org.cardano.foundation.voting.repository.VoteMerkleProofRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
+
+@Service
+public class VoteMerkleProofService {
+
+    @Autowired
+    private VoteMerkleProofRepository voteMerkleProofRepository;
+
+    @Transactional
+    @Timed(value = "service.merkle.find", percentiles = { 0.3, 0.5, 0.95 })
+    public Optional<VoteMerkleProof> findLatestProof(Vote vote) {
+        return voteMerkleProofRepository.findById(vote.getId());
+    }
+
+}

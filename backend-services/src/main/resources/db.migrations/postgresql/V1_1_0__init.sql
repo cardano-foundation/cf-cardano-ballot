@@ -55,15 +55,6 @@ CREATE TABLE proposal (
 CREATE INDEX idx_proposal_name
     ON proposal (name);
 
-DROP TABLE IF NOT EXISTS root_hash;
-
-CREATE TABLE root_hash (
-    event_id uuid NOT NULL,
-    root_hash VARCHAR(255) NOT NULL,
-
-   CONSTRAINT pk_root_hash PRIMARY KEY (event_id)
-);
-
 DROP TABLE IF NOT EXISTS vote;
 
 CREATE TABLE vote (
@@ -83,3 +74,20 @@ CREATE TABLE vote (
 
 CREATE INDEX idx_vote_stake_key
     ON vote (event_id, category_id, voter_staking_address);
+
+DROP TABLE IF NOT EXISTS vote_merkle_proof;
+
+CREATE TABLE vote_merkle_proof (
+   vote_id uuid NOT NULL,
+   root_hash VARCHAR(255) NOT NULL, -- merkle root hash as hex string
+   l1_transaction_hash VARCHAR(255) NOT NULL, -- transaction hash as hex string
+   absolute_slot BIGINT NOT NULL, -- absolute slot number
+   block_hash VARCHAR(255) NOT NULL, -- block hash as hex string
+   merkle_proof_json json NOT NULL, -- json representing actual merkle proof
+
+   CONSTRAINT pk_vote PRIMARY KEY (vote_id)
+);
+
+-- special index to help us find out all vote_merkle_proofs that took part in rolled back transaction
+CREATE INDEX idx_vote_merkle_proof_transaction_rollback
+    ON vote_merkle_proof (absolute_slot, block_hash);

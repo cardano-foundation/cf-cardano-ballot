@@ -83,7 +83,7 @@ CREATE TABLE vote_merkle_proof (
    l1_transaction_hash VARCHAR(255) NOT NULL, -- transaction hash as hex string
    absolute_slot BIGINT NOT NULL, -- absolute slot number
    block_hash VARCHAR(255) NOT NULL, -- block hash as hex string
-   merkle_proof_json json NOT NULL, -- json representing actual merkle proof
+   proof_items_json json NOT NULL, -- json representing actual merkle proof
 
    CONSTRAINT pk_vote PRIMARY KEY (vote_id)
 );

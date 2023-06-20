@@ -3,7 +3,6 @@ package org.cardano.foundation.voting.service.merkle_tree;
 import io.vavr.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.L1MerkleTree;
-import org.cardano.foundation.voting.domain.MerkleProof;
 import org.cardano.foundation.voting.domain.entity.Vote;
 import org.cardano.foundation.voting.domain.entity.VoteMerkleProof;
 import org.cardano.foundation.voting.repository.MerkleTreeRepository;
@@ -41,11 +40,12 @@ public class VoteCommitmentService {
     private VoteMerkleProofRepository voteMerkleProofRepository;
 
     @Autowired
-    private MerkleProofJsonCreator merkleProofJsonCreator;
+    private MerkleProofSerdeService merkleProofSerdeService;
 
     public void processVotesForAllEvents() {
         referenceDataService.findAllEvents().forEach(event -> {
-            var allVotes = voteService.findAll(event); // TODO caching or paging or both?
+            // this operation could be slow
+            var allVotes = voteService.findAll(event); // TODO caching or paging or both? Maybe we use Redis???
 
             var merkleTreeRoot = MerkleTree.fromList(allVotes, VOTE_SERIALISER);
 
@@ -64,27 +64,33 @@ public class VoteCommitmentService {
 
             // TODO we should probably store merkle proofs first for all votes we don't have merkle proofs yet
             // and then store merkle proofs for other votes as next priority
-            storeMerkleProof(merkleTreeRoot, allVotes, transactionHash);
+            generateAndStoreMerkleProofs(merkleTreeRoot, allVotes, transactionHash);
 
             // only if L1 transaction succeeds we store in our in merkle tree repository
             merkleTreeRepository.storeForEvent(event, new L1MerkleTree(merkleTreeRoot, merkleRootHash, transactionHash));
         });
     }
 
-    private void storeMerkleProof(MerkleElement<Vote> merkleTree, List<Vote> votes, String l1TransactionHash) {
+    private void generateAndStoreMerkleProofs(MerkleElement<Vote> merkleTree, List<Vote> votes, String l1TransactionHash) {
         log.info("Storing vote merkle proofs...");
 
         for (var vote : votes) {
-            var rawMerkleProof = MerkleTree.getProof(merkleTree, vote, VOTE_SERIALISER).map(Value::toJavaList);
-            var merkleRootHash = encodeHexString(merkleTree.itemHash());
-            var merkleProof = new MerkleProof(rawMerkleProof, merkleRootHash);
+            var maybeMerkleProof = MerkleTree.getProof(merkleTree, vote, VOTE_SERIALISER).map(Value::toJavaList);
 
-            var merkleJson = merkleProofJsonCreator.serialiseAsString(merkleProof);
+            if (maybeMerkleProof.isEmpty()) {
+                log.error("Merkle proof is empty for vote: {}, this should never happen", vote.getId());
+                continue;
+            }
+            var proofItems = maybeMerkleProof.orElseThrow();
+
+            var merkleRootHash = encodeHexString(merkleTree.itemHash());
+
+            var proofItemsJson = merkleProofSerdeService.serialiseAsString(proofItems);
 
             var voteMerkleProof = VoteMerkleProof.builder()
                     .voteId(vote.getId())
                     .rootHash(merkleRootHash)
-                    .merkleProofJson(merkleJson)
+                    .proofItemsJson(proofItemsJson)
                     .l1TransactionHash(l1TransactionHash)
                     .absoluteSlot(0) // TODO read from yaci-store indexer or some other way via mini protocols
                     .blockHash("") // TODO read from yaci-store indexer or some other way via mini protocols
@@ -94,37 +100,6 @@ public class VoteCommitmentService {
         }
 
         log.info("Storing of merkle proofs finished.");
-    }
-
-    public void storeAllVoteProofs() {
-        referenceDataService.findAllEvents().forEach(event -> {
-            var maybeMerkleTree = merkleTreeRepository.findByEvent(event);
-            if (maybeMerkleTree.isEmpty()) {
-                log.warn("Merkle tree not found for event: {}", event.getName());
-                return;
-            }
-            var l1MerkleTree = maybeMerkleTree.orElseThrow();
-            var transactionHash = l1MerkleTree.getTransactionHash();
-            var merkleTree = l1MerkleTree.getRoot();
-
-            voteService.findAll(event).forEach(vote -> {
-                var rawMerkleProof = MerkleTree.getProof(merkleTree, vote, VOTE_SERIALISER).map(Value::toJavaList);
-                var merkleRootHash = encodeHexString(merkleTree.itemHash());
-                var merkleProof = new MerkleProof(rawMerkleProof, merkleRootHash);
-
-                var merkleJson = merkleProofJsonCreator.serialiseAsString(merkleProof);
-
-                var voteMerkleProof = VoteMerkleProof.builder()
-                        .voteId(vote.getId())
-                        .rootHash(merkleRootHash)
-                        .merkleProofJson(merkleJson)
-                        .l1TransactionHash(transactionHash)
-                        .build();
-
-                voteMerkleProofRepository.saveAndFlush(voteMerkleProof);
-            });
-        });
-
     }
 
 }

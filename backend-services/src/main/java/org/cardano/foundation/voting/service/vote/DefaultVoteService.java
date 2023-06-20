@@ -1,5 +1,6 @@
 package org.cardano.foundation.voting.service.vote;
 
+import com.bloxbean.cardano.client.util.HexUtil;
 import com.google.common.base.Enums;
 import io.micrometer.core.annotation.Timed;
 import io.vavr.control.Either;
@@ -8,20 +9,22 @@ import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.VoteReceipt;
 import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.domain.entity.Vote;
+import org.cardano.foundation.voting.domain.entity.VoteMerkleProof;
 import org.cardano.foundation.voting.domain.web3.SignedWeb3Request;
 import org.cardano.foundation.voting.domain.web3.Web3Action;
-import org.cardano.foundation.voting.repository.MerkleTreeRepository;
 import org.cardano.foundation.voting.repository.ProposalRepository;
 import org.cardano.foundation.voting.repository.VoteRepository;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataService;
 import org.cardano.foundation.voting.service.blockchain_state.SlotService;
-import org.cardano.foundation.voting.service.merkle_tree.MerkleProofJsonCreator;
+import org.cardano.foundation.voting.service.merkle_tree.MerkleProofSerdeService;
 import org.cardano.foundation.voting.service.merkle_tree.VoteMerkleProofService;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
 import org.cardano.foundation.voting.utils.Bech32;
 import org.cardano.foundation.voting.utils.Json;
 import org.cardano.foundation.voting.utils.UUID;
 import org.cardanofoundation.cip30.CIP30Verifier;
+import org.cardanofoundation.merkle.ProofItem;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,9 +53,6 @@ public class DefaultVoteService implements VoteService {
     private ProposalRepository proposalRepository;
 
     @Autowired
-    private MerkleTreeRepository merkleTreeRepository;
-
-    @Autowired
     private BlockchainDataService blockchainDataService;
 
     @Autowired
@@ -62,7 +62,7 @@ public class DefaultVoteService implements VoteService {
     private VoteMerkleProofService voteMerkleProofService;
 
     @Autowired
-    private MerkleProofJsonCreator merkleProofJsonCreator;
+    private MerkleProofSerdeService merkleProofSerdeService;
 
     @Override
     @Transactional
@@ -343,22 +343,76 @@ public class DefaultVoteService implements VoteService {
         var proposal = maybeProposal.orElseThrow();
 
         var latestVoteMerkleProof = voteMerkleProofService.findLatestProof(vote);
-        // TODO
 
-        return Either.right(VoteReceipt.builder()
-                .id(vote.getId())
-                .votedAtSlot(vote.getVotedAtSlot())
-                .event(event.getName())
-                .category(category.getName())
-                .proposal(proposal.getName())
-                .coseSignature(vote.getCoseSignature())
-                .cosePublicKey(vote.getCosePublicKey())
-                .votedAtSlot(vote.getVotedAtSlot())
-                .voterStakingAddress(vote.getVoterStakingAddress())
-                .cardanoNetwork(vote.getNetwork())
-                .status(latestVoteMerkleProof.isEmpty() ? VoteReceipt.Status.BASIC : VoteReceipt.Status.FULL)
-                .build()
-        );
+        return latestVoteMerkleProof.map(proof -> {
+            log.info("Merkle proof found for voteId:{}", vote.getId());
+
+            return Either.<Problem, VoteReceipt>right(VoteReceipt.builder()
+                    .id(vote.getId())
+                    .votedAtSlot(vote.getVotedAtSlot())
+                    .event(event.getName())
+                    .category(category.getName())
+                    .proposal(proposal.getName())
+                    .coseSignature(vote.getCoseSignature())
+                    .cosePublicKey(vote.getCosePublicKey())
+                    .votedAtSlot(vote.getVotedAtSlot())
+                    .voterStakingAddress(vote.getVoterStakingAddress())
+                    .cardanoNetwork(vote.getNetwork())
+                    .status(VoteReceipt.Status.FULL)
+                    .merkleProof(convertMerkleProof(proof))
+                    .build()
+            );
+        }).orElseGet(() -> {
+            log.info("Merkle proof not found yet for voteId:{}", vote.getId());
+
+            return Either.right(VoteReceipt.builder()
+                    .id(vote.getId())
+                    .votedAtSlot(vote.getVotedAtSlot())
+                    .event(event.getName())
+                    .category(category.getName())
+                    .proposal(proposal.getName())
+                    .coseSignature(vote.getCoseSignature())
+                    .cosePublicKey(vote.getCosePublicKey())
+                    .votedAtSlot(vote.getVotedAtSlot())
+                    .voterStakingAddress(vote.getVoterStakingAddress())
+                    .cardanoNetwork(vote.getNetwork())
+                    .status(VoteReceipt.Status.BASIC)
+                    .build()
+            );
+        });
+    }
+
+    private VoteReceipt.MerkleProof convertMerkleProof(VoteMerkleProof proof) {
+        return VoteReceipt.MerkleProof.builder()
+                .blockHash(proof.getBlockHash())
+                .absoluteSlot(proof.getAbsoluteSlot())
+                .rootHash(proof.getRootHash())
+                .transactionHash(proof.getL1TransactionHash())
+                .steps(convertSteps(proof))
+                .build();
+
+    }
+
+    @NotNull
+    private List<VoteReceipt.MerkleProofItem> convertSteps(VoteMerkleProof proof) {
+        return merkleProofSerdeService.deserialise(proof.getProofItemsJson()).stream().map(item -> {
+
+            if (item instanceof ProofItem.Left pl) {
+                return VoteReceipt.MerkleProofItem.builder()
+                        .type(VoteReceipt.MerkleProofType.Left)
+                        .hash(HexUtil.encodeHexString(pl.hash()))
+                        .build();
+            }
+
+            if (item instanceof ProofItem.Right pr) {
+                return VoteReceipt.MerkleProofItem.builder()
+                        .type(VoteReceipt.MerkleProofType.Right)
+                        .hash(HexUtil.encodeHexString(pr.hash()))
+                        .build();
+            }
+
+            throw new RuntimeException("Unknown proof item type:" + item.getClass().getName());
+        }).toList();
     }
 
 }

@@ -32,8 +32,8 @@ public class VoteMerkleProof extends AbstractTimestampEntity {
     @Column(name = "block_hash")
     private String blockHash;
 
-    @Column(name = "merkle_proof_json")
-    private String merkleProofJson;
+    @Column(name = "proof_items_json")
+    private String proofItemsJson;
 
     @Column(name = "invalidated") // when there is a rollback event we soft delete it, invalidate the merkle proof
     private boolean invalidated;

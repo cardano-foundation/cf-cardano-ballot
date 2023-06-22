@@ -85,14 +85,17 @@ DROP TABLE IF NOT EXISTS vote_merkle_proof;
 
 CREATE TABLE vote_merkle_proof (
    vote_id uuid NOT NULL,
+   event_id VARCHAR(255) NOT NULL,
    root_hash VARCHAR(255) NOT NULL, -- merkle root hash as hex string
    l1_transaction_hash VARCHAR(255) NOT NULL, -- transaction hash as hex string
-   absolute_slot BIGINT NOT NULL, -- absolute slot number
-   block_hash VARCHAR(255) NOT NULL, -- block hash as hex string
    proof_items_json json NOT NULL, -- json representing actual merkle proof
 
    CONSTRAINT pk_vote PRIMARY KEY (vote_id)
 );
+
+-- special index to find out all vote_merkle_proofs that took part in a given event
+CREATE INDEX idx_vote_merkle_proof_vote_id_event_id
+    ON vote_merkle_proof (vote_id, event_id);
 
 -- special index to help us find out all vote_merkle_proofs that took part in rolled back transaction
 CREATE INDEX idx_vote_merkle_proof_transaction_rollback

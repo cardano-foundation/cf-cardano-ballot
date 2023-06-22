@@ -72,7 +72,11 @@ public class Event extends AbstractTimestampEntity {
     }
 
     public Optional<Proposal> findProposal(String categoryId, String proposalId) {
-        return categories.stream().filter(category -> category.getId().equals(categoryId)).findFirst().flatMap(category -> category.getProposals().stream().filter(proposal -> proposal.getId().equals(proposalId)).findFirst());
+        return categories.stream()
+                .filter(category -> category.getId().equals(categoryId))
+                .findFirst().flatMap(category -> category.getProposals().stream()
+                .filter(proposal -> proposal.getId().equals(proposalId))
+                .findFirst());
     }
 
 }

@@ -1,13 +1,7 @@
 package org.cardano.foundation.voting.config;
 
-import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataChainTipService;
-import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataMetadataService;
-import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataStakePoolService;
-import org.cardano.foundation.voting.service.blockchain_state.BlockchainTransactionSubmissionService;
-import org.cardano.foundation.voting.service.blockchain_state.blockfrost.BlockfrostBlockchainDataMetadataService;
-import org.cardano.foundation.voting.service.blockchain_state.blockfrost.BlockfrostBlockchainDataStakePoolService;
-import org.cardano.foundation.voting.service.blockchain_state.blockfrost.BlockfrostBlockchainDataTipService;
-import org.cardano.foundation.voting.service.blockchain_state.blockfrost.BlockfrostTransactionSubmissionService;
+import org.cardano.foundation.voting.service.blockchain_state.*;
+import org.cardano.foundation.voting.service.blockchain_state.blockfrost.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -32,6 +26,10 @@ public class BlockchainDataConfig {
     @Bean
     public BlockchainTransactionSubmissionService transactionSubmissionService() {
         return new BlockfrostTransactionSubmissionService();
+    }
+
+    public BlockchainDataTransactionDetailsService blockchainDataTransactionDetailsService() {
+        return new BlockfrostBlockchainDataTransactionDetailsService();
     }
 
 }

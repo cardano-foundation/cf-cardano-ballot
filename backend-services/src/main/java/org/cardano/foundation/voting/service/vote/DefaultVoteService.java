@@ -6,6 +6,7 @@ import io.micrometer.core.annotation.Timed;
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
+import org.cardano.foundation.voting.domain.TransactionDetails;
 import org.cardano.foundation.voting.domain.VoteReceipt;
 import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.domain.entity.Vote;
@@ -16,6 +17,7 @@ import org.cardano.foundation.voting.repository.ProposalRepository;
 import org.cardano.foundation.voting.repository.VoteRepository;
 import org.cardano.foundation.voting.service.ExpirationService;
 import org.cardano.foundation.voting.service.VotingPowerService;
+import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataTransactionDetailsService;
 import org.cardano.foundation.voting.service.merkle_tree.MerkleProofSerdeService;
 import org.cardano.foundation.voting.service.merkle_tree.VoteMerkleProofService;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
@@ -32,6 +34,8 @@ import org.zalando.problem.Problem;
 import java.util.List;
 import java.util.Optional;
 
+import static org.cardano.foundation.voting.domain.VoteReceipt.Status.FULL;
+import static org.cardano.foundation.voting.domain.VoteReceipt.Status.PARTIAL;
 import static org.cardano.foundation.voting.domain.web3.Web3Action.CAST_VOTE;
 import static org.cardanofoundation.cip30.Format.TEXT;
 import static org.cardanofoundation.cip30.ValidationError.UNKNOWN;
@@ -62,6 +66,9 @@ public class DefaultVoteService implements VoteService {
 
     @Autowired
     private VotingPowerService votingPowerService;
+
+    @Autowired
+    private BlockchainDataTransactionDetailsService blockchainDataTransactionDetailsService;
 
     @Override
     @Transactional
@@ -268,14 +275,25 @@ public class DefaultVoteService implements VoteService {
                             .build());
         }
 
-        var votingPower = votingPowerService.getVotingPower(event, stakeAddress);
-        if (votingPower == 0) {
-            log.warn("Voting power is 0 for the stake address: " + stakeAddress);
+        var blockchainVotingPower = votingPowerService.getVotingPower(event, stakeAddress);
+        if (blockchainVotingPower <= 0) {
+            log.warn("Voting power is less than equal 0 for the stake address: " + stakeAddress);
 
             return Either.left(
                     Problem.builder()
-                            .withTitle("VOTING_POWER_IS_ZERO")
-                            .withDetail("Voting power is 0 for the stake address: " + stakeAddress)
+                            .withTitle("INVALID_VOTING_POWER")
+                            .withDetail("Voting power is 0 or less for the stake address: " + stakeAddress)
+                            .withStatus(BAD_REQUEST)
+                            .build()
+            );
+        }
+
+        var cip93VotingPower = castVoteRequestBodyJson.get("vote").get("votingPower").asLong();
+        if (cip93VotingPower != blockchainVotingPower) {
+            return Either.left(
+                    Problem.builder()
+                            .withTitle("INVALID_VOTING_POWER")
+                            .withDetail("Voting power is not equal to blockchain voting power for the stake address: " + stakeAddress)
                             .withStatus(BAD_REQUEST)
                             .build()
             );
@@ -291,14 +309,12 @@ public class DefaultVoteService implements VoteService {
         vote.setNetwork(network);
         vote.setCoseSignature(castVoteRequest.getCoseSignature());
         vote.setCosePublicKey(castVoteRequest.getCosePublicKey());
-        vote.setVotingPower(votingPower);
+        vote.setVotingPower(blockchainVotingPower);
 
         var storedVote = voteRepository.saveAndFlush(vote);
 
         return Either.right(storedVote);
     }
-
-    // get merkle proof of the vote along with vote information
 
     @Override
     @Transactional
@@ -352,12 +368,15 @@ public class DefaultVoteService implements VoteService {
         }
         var proposal = maybeProposal.orElseThrow();
 
-
-
-        var latestVoteMerkleProof = voteMerkleProofService.findLatestProof(vote);
+        var latestVoteMerkleProof = voteMerkleProofService.findLatestProof(event.getId(), vote.getId());
 
         return latestVoteMerkleProof.map(proof -> {
-            log.info("Merkle proof found for voteId:{}", vote.getId());
+            log.info("Latest merkle proof found for voteId:{}", vote.getId());
+
+            var isL1CommitmentOnChain = blockchainDataTransactionDetailsService.getTransactionDetails(proof.getL1TransactionHash())
+                    .map(TransactionDetails::getFinalityScore);
+
+            var status = isL1CommitmentOnChain.isEmpty() ? PARTIAL : FULL;
 
             return Either.<Problem, VoteReceipt>right(VoteReceipt.builder()
                     .id(vote.getId())
@@ -370,7 +389,8 @@ public class DefaultVoteService implements VoteService {
                     .votedAtSlot(vote.getVotedAtSlot())
                     .voterStakingAddress(vote.getVoterStakingAddress())
                     .cardanoNetwork(vote.getNetwork())
-                    .status(VoteReceipt.Status.FULL)
+                    .status(status)
+                    .finalityScore(isL1CommitmentOnChain)
                     .merkleProof(convertMerkleProof(proof))
                     .build()
             );
@@ -396,8 +416,8 @@ public class DefaultVoteService implements VoteService {
 
     private VoteReceipt.MerkleProof convertMerkleProof(VoteMerkleProof proof) {
         return VoteReceipt.MerkleProof.builder()
-                .blockHash(proof.getBlockHash())
-                .absoluteSlot(proof.getAbsoluteSlot())
+                //.blockHash(proof.getBlockHash())
+                //.absoluteSlot(proof.getAbsoluteSlot())
                 .rootHash(proof.getRootHash())
                 .transactionHash(proof.getL1TransactionHash())
                 .steps(convertSteps(proof))

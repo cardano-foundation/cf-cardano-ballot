@@ -14,25 +14,44 @@ public class TransactionDetails {
 
     private int transactionsConfirmations;
 
-    private ConfirmationScore confirmationScore;
+    private FinalityScore finalityScore;
 
-    public enum ConfirmationScore {
-        LOW,
-        MEDIUM,
-        HIGH;
+    public enum FinalityScore {
 
+        LOW(0),
+        MEDIUM(1),
+        HIGH(2),
+        VERY_HIGH(3),
+        FINAL(4);
 
-        // TODO adjust this logic
-        public static ConfirmationScore fromConfirmations(int transactionsConfirmations) {
-            if (transactionsConfirmations < 10) {
-                return LOW;
+        private final int score;
+
+        FinalityScore(int score) {
+            this.score = score;
+        }
+
+        public int getScore() {
+            return score;
+        }
+
+        public static FinalityScore fromConfirmations(int transactionsConfirmations) {
+            if (transactionsConfirmations > 2160) {
+                return FinalityScore.FINAL;
             }
 
-            if (transactionsConfirmations < 100) {
+            if (transactionsConfirmations > 100) {
+                return VERY_HIGH;
+            }
+
+            if (transactionsConfirmations > 8) {
+                return HIGH;
+            }
+
+            if (transactionsConfirmations > 5) {
                 return MEDIUM;
             }
 
-            return HIGH;
+            return LOW;
         }
 
     }

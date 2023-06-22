@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Optional;
 
 @Data
 @Builder
@@ -29,10 +30,15 @@ public class VoteReceipt {
 
     private MerkleProof merkleProof;
 
+    private Optional<TransactionDetails.FinalityScore> finalityScore;
+
     private long votedAtSlot;
 
     public static enum Status {
         BASIC, // without merkle proof committed to L1 yet
+
+        PARTIAL, // there is a merkle proof but L1 commitment is not on chain yet
+
         FULL // with merkle proof committed to L1
     }
 
@@ -41,8 +47,8 @@ public class VoteReceipt {
     public static class MerkleProof {
 
         private String transactionHash;
-        private long absoluteSlot;
-        private String blockHash;
+        //private long absoluteSlot;
+        //private String blockHash;
         private String rootHash;
         private List<MerkleProofItem> steps;
 

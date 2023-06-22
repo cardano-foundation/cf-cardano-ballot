@@ -22,7 +22,7 @@ public class BlockfrostBlockchainDataTransactionDetailsService extends AbstractB
                     .absoluteSlot(trx.getSlot())
                     .blockHash(trx.getBlock())
                     .transactionsConfirmations(blockConfirmations)
-                    .confirmationScore(TransactionDetails.ConfirmationScore.fromConfirmations(blockConfirmations))
+                    .finalityScore(TransactionDetails.FinalityScore.fromConfirmations(blockConfirmations))
                     .build();
         });
     }

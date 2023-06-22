@@ -13,7 +13,7 @@ public class VotingPowerService {
 
     public long getVotingPower(Event event, String stakeAddress) {
         return switch (event.getEventType()) {
-            case PERSON_BASED -> 1L;
+            case USER_BASED -> 1L;
             case STAKE_BASED -> blockchainDataStakePoolService.getStakeAmount(event.getSnapshotEpoch(), stakeAddress).orElse(0L);
         };
     }

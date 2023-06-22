@@ -7,6 +7,7 @@ import org.cardano.foundation.voting.domain.entity.Proposal;
 import org.cardano.foundation.voting.repository.CategoryRepository;
 import org.cardano.foundation.voting.repository.EventRepository;
 import org.cardano.foundation.voting.repository.ProposalRepository;
+import org.cardano.foundation.voting.service.ExpirationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +26,9 @@ public class ReferenceDataService {
 
     @Autowired
     private ProposalRepository proposalRepository;
+
+    @Autowired
+    private ExpirationService expirationService;
 
     @Timed(value = "service.reference.findEventByName", percentiles = {0.3, 0.5, 0.95})
     @Transactional
@@ -52,6 +56,10 @@ public class ReferenceDataService {
 
     public List<Event> findAllEvents() {
         return eventRepository.findAll();
+    }
+
+    public List<Event> findAllActiveEvents() {
+        return eventRepository.findAll().stream().filter(event -> expirationService.isEventActive(event)).toList();
     }
 
 }

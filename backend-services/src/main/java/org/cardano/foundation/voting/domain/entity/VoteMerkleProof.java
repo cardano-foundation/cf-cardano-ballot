@@ -20,17 +20,14 @@ public class VoteMerkleProof extends AbstractTimestampEntity {
     @Column(name = "vote_id")
     private String voteId;
 
+    @Column(name = "event_id")
+    private String eventId;
+
     @Column(name = "root_hash")
     private String rootHash;
 
     @Column(name = "l1_transaction_hash")
     private String l1TransactionHash;
-
-    @Column(name = "absolute_slot")
-    private long absoluteSlot;
-
-    @Column(name = "block_hash")
-    private String blockHash;
 
     @Column(name = "proof_items_json")
     private String proofItemsJson;

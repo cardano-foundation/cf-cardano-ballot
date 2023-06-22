@@ -8,7 +8,7 @@ import org.cardano.foundation.voting.domain.entity.VoteMerkleProof;
 import org.cardano.foundation.voting.repository.MerkleTreeRepository;
 import org.cardano.foundation.voting.repository.VoteMerkleProofRepository;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
-import org.cardano.foundation.voting.service.transaction_submit.TransactionSubmissionService;
+import org.cardano.foundation.voting.service.transaction_submit.MerkleTreeRootsSubmissionService;
 import org.cardano.foundation.voting.service.vote.VoteService;
 import org.cardanofoundation.merkle.MerkleElement;
 import org.cardanofoundation.merkle.MerkleTree;
@@ -31,7 +31,7 @@ public class VoteCommitmentService {
     private VoteService voteService;
 
     @Autowired
-    private TransactionSubmissionService transactionSubmissionService;
+    private MerkleTreeRootsSubmissionService merkleTreeSubmissionService;
 
     @Autowired
     private ReferenceDataService referenceDataService;
@@ -54,7 +54,7 @@ public class VoteCommitmentService {
             log.info("Merkle root: {}", merkleRootHash);
 
                 // for a given event store on chain latest root hash
-            var transactionHash = transactionSubmissionService.submitTransaction(event, merkleRootHash);
+            var transactionHash = merkleTreeSubmissionService.submitMerkleTreesForAllEvents();
             // 36 hours to wait for L1 transaction to be confirmed // 100% sure
 
             // TODO rollback handling...?

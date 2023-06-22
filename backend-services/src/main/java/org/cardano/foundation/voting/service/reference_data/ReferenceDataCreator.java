@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.cardano.foundation.voting.domain.CardanoNetwork.PREPROD;
+import static org.cardano.foundation.voting.domain.EventType.STAKE_BASED;
 
 @Service
 @Slf4j
@@ -50,6 +51,7 @@ public class ReferenceDataCreator {
         event.setPresentationName("CIP-1694 Voltaire Pre-Ratification");
         event.setTeam("CF Team");
         event.setStartEpoch(70);
+        event.setEventType(STAKE_BASED);
         event.setEndEpoch(100);
         event.setSnapshotEpoch(75);
 

@@ -14,8 +14,8 @@ import org.cardano.foundation.voting.domain.web3.SignedWeb3Request;
 import org.cardano.foundation.voting.domain.web3.Web3Action;
 import org.cardano.foundation.voting.repository.ProposalRepository;
 import org.cardano.foundation.voting.repository.VoteRepository;
-import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataService;
-import org.cardano.foundation.voting.service.blockchain_state.SlotService;
+import org.cardano.foundation.voting.service.ExpirationService;
+import org.cardano.foundation.voting.service.VotingPowerService;
 import org.cardano.foundation.voting.service.merkle_tree.MerkleProofSerdeService;
 import org.cardano.foundation.voting.service.merkle_tree.VoteMerkleProofService;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
@@ -24,7 +24,6 @@ import org.cardano.foundation.voting.utils.Json;
 import org.cardano.foundation.voting.utils.UUID;
 import org.cardanofoundation.cip30.CIP30Verifier;
 import org.cardanofoundation.merkle.ProofItem;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,16 +52,16 @@ public class DefaultVoteService implements VoteService {
     private ProposalRepository proposalRepository;
 
     @Autowired
-    private BlockchainDataService blockchainDataService;
-
-    @Autowired
-    private SlotService slotService;
+    private ExpirationService expirationService;
 
     @Autowired
     private VoteMerkleProofService voteMerkleProofService;
 
     @Autowired
     private MerkleProofSerdeService merkleProofSerdeService;
+
+    @Autowired
+    private VotingPowerService votingPowerService;
 
     @Override
     @Transactional
@@ -150,8 +149,6 @@ public class DefaultVoteService implements VoteService {
         }
         var network = maybeNetwork.orElseThrow();
 
-        var blockchainData = blockchainDataService.getChainTip();
-
         var actionText = castVoteRequestBodyJson.get("action").asText();
 
         var maybeAction = Enums.getIfPresent(Web3Action.class, actionText).toJavaUtil();
@@ -187,7 +184,7 @@ public class DefaultVoteService implements VoteService {
                     .build());
         }
         var event = maybeEvent.get();
-        if (event.isInactive(blockchainData.getEpochNo())) {
+        if (expirationService.isEventInactive(event)) {
             log.warn("Event is not active, eventName:{}", eventName);
 
             return Either.left(Problem.builder()
@@ -224,7 +221,7 @@ public class DefaultVoteService implements VoteService {
         var proposal = maybeProposal.orElseThrow();
 
         var cip93Slot = castVoteRequestBodyJson.get("slot").asLong();
-        if (slotService.isSlotExpired(cip93Slot)) {
+        if (expirationService.isSlotExpired(cip93Slot)) {
             log.warn("Invalid request slot, slot:{}", cip93Slot);
 
             return Either.left(
@@ -237,7 +234,7 @@ public class DefaultVoteService implements VoteService {
         }
 
         var votedAtSlot = castVoteRequestBodyJson.get("vote").get("votedAt").asLong();
-        if (slotService.isSlotExpired(votedAtSlot)) {
+        if (expirationService.isSlotExpired(votedAtSlot)) {
             log.warn("Invalid votedAt slot, votedAt slot:{}", votedAtSlot);
 
             return Either.left(
@@ -271,6 +268,19 @@ public class DefaultVoteService implements VoteService {
                             .build());
         }
 
+        var votingPower = votingPowerService.getVotingPower(event, stakeAddress);
+        if (votingPower == 0) {
+            log.warn("Voting power is 0 for the stake address: " + stakeAddress);
+
+            return Either.left(
+                    Problem.builder()
+                            .withTitle("VOTING_POWER_IS_ZERO")
+                            .withDetail("Voting power is 0 for the stake address: " + stakeAddress)
+                            .withStatus(BAD_REQUEST)
+                            .build()
+            );
+        }
+
         Vote vote = new Vote();
         vote.setId(voteId);
         vote.setEventId(event.getId());
@@ -281,7 +291,7 @@ public class DefaultVoteService implements VoteService {
         vote.setNetwork(network);
         vote.setCoseSignature(castVoteRequest.getCoseSignature());
         vote.setCosePublicKey(castVoteRequest.getCosePublicKey());
-        vote.setVotingPower(1);
+        vote.setVotingPower(votingPower);
 
         var storedVote = voteRepository.saveAndFlush(vote);
 
@@ -342,6 +352,8 @@ public class DefaultVoteService implements VoteService {
         }
         var proposal = maybeProposal.orElseThrow();
 
+
+
         var latestVoteMerkleProof = voteMerkleProofService.findLatestProof(vote);
 
         return latestVoteMerkleProof.map(proof -> {
@@ -393,7 +405,6 @@ public class DefaultVoteService implements VoteService {
 
     }
 
-    @NotNull
     private List<VoteReceipt.MerkleProofItem> convertSteps(VoteMerkleProof proof) {
         return merkleProofSerdeService.deserialise(proof.getProofItemsJson()).stream().map(item -> {
 

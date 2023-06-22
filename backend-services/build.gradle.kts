@@ -35,6 +35,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-security")
+	//spring-boot-starter-rsocket
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 
@@ -64,7 +65,9 @@ dependencies {
     implementation("com.bloxbean.cardano:cardano-client-metadata:0.4.3")
 	implementation("com.bloxbean.cardano:cardano-client-cip30:0.4.3")
 
-	implementation("io.github.cardano-community", "koios-java-client", "1.17.2")
+	implementation("io.blockfrost:blockfrost-java:0.1.3")
+
+	implementation("com.bloxbean.cardano:cardano-client-lib:0.4.3")
 
 	implementation("io.vavr:vavr:0.10.4")
 

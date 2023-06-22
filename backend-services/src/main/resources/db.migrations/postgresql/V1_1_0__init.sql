@@ -4,11 +4,17 @@ CREATE TABLE event (
     id uuid NOT NULL,
     name VARCHAR(255) NOT NULL, -- human readable name
     team VARCHAR(255) NOT NULL,
-    presentation_name VARCHAR(255) NOT NULL,
+    presentation_name VARCHAR(255),
     description VARCHAR(255),
-    start_epoch INT NOT NULL,
-    end_epoch INT NOT NULL,
-    snapshot_epoch INT NOT NULL,
+    event_type INT NOT NULL,
+
+    start_epoch INT,
+    end_epoch INT,
+
+    start_slot INT,
+    end_slot INT,
+
+    snapshot_epoch INT,
 
     create_datetime TIMESTAMP WITHOUT TIME ZONE,
     update_datetime TIMESTAMP WITHOUT TIME ZONE,

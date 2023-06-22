@@ -6,7 +6,7 @@ import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.web3.SignedWeb3Request;
 import org.cardano.foundation.voting.domain.web3.Web3Action;
-import org.cardano.foundation.voting.service.blockchain_state.SlotService;
+import org.cardano.foundation.voting.service.ExpirationService;
 import org.cardano.foundation.voting.utils.Bech32;
 import org.cardano.foundation.voting.utils.Json;
 import org.cardanofoundation.cip30.CIP30Verifier;
@@ -30,7 +30,7 @@ public class DefaultLoginService implements LoginService {
     private JwtService jwtService;
 
     @Autowired
-    private SlotService slotService;
+    private ExpirationService expirationService;
 
     @Override
     @Timed(value = "service.auth.login", percentiles = { 0.3, 0.5, 0.95 })
@@ -65,7 +65,7 @@ public class DefaultLoginService implements LoginService {
         var jsonPayloadNode = jsonPayloadE.get();
         var slot = jsonPayloadNode.get("request").get("slot").asLong();
 
-        if (slotService.isSlotExpired(slot)) {
+        if (expirationService.isSlotExpired(slot)) {
             return Either.left(
                     Problem.builder()
                             .withTitle("EXPIRED_SLOT")

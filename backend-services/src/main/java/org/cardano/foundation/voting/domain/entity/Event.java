@@ -1,8 +1,8 @@
 package org.cardano.foundation.voting.domain.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.cardano.foundation.voting.domain.EventType;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -19,32 +19,43 @@ import java.util.Optional;
 public class Event extends AbstractTimestampEntity {
 
     @Id
-    @Column
+    @Column(nullable = false)
     private String id; // e.g. 90ed2df9-dd21-4567-90e2-e8f09b9c422c
 
-    @Column
+    @Column(nullable = false)
     private String team; // e.g. CF Team // TODO what about team spoofing - do we need that team has private / public key
 
-    @Column
+    @Column(nullable = false)
     private String name; // e.g. Voltaire_Pre_Ratification
 
-    @Column
+    @Column(nullable = false)
     private String presentationName; // e.g. Voltaire Pre-Ratification
+
+    @Column(name = "event_type", nullable = false)
+    private EventType eventType;
 
     @Column
     @Nullable
     private String description;
 
     @Column(name = "start_epoch")
-    @NotNull
+    @Nullable
     private int startEpoch;
 
     @Column(name = "end_epoch")
-    @NotNull
+    @Nullable
     private int endEpoch;
 
+    @Column(name = "start_slot")
+    @Nullable
+    private int startSlot;
+
+    @Column(name = "end_slot")
+    @Nullable
+    private int endSlot;
+
     @Column(name = "snapshot_epoch")
-    @NotNull
+    @Nullable
     private int snapshotEpoch;
 
     @OneToMany(
@@ -62,14 +73,6 @@ public class Event extends AbstractTimestampEntity {
 
     public Optional<Proposal> findProposal(String categoryId, String proposalId) {
         return categories.stream().filter(category -> category.getId().equals(categoryId)).findFirst().flatMap(category -> category.getProposals().stream().filter(proposal -> proposal.getId().equals(proposalId)).findFirst());
-    }
-
-    public boolean isActive(long epochNo) {
-        return epochNo >= startEpoch && epochNo <= endEpoch;
-    }
-
-    public boolean isInactive(long epochNo) {
-        return !isActive(epochNo);
     }
 
 }

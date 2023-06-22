@@ -2,7 +2,7 @@ package org.cardano.foundation.voting.resource;
 
 import io.micrometer.core.annotation.Timed;
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataService;
+import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataChainTipService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,12 +16,12 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 public class BlockchainDataResource {
 
     @Autowired
-    private BlockchainDataService blockchainDataService;
+    private BlockchainDataChainTipService blockchainDataChainTipService;
 
     @RequestMapping(value = "/tip", method = GET, produces = "application/json")
     @Timed(value = "resource.blockchain-data.get", percentiles = { 0.3, 0.5, 0.95 })
     public ResponseEntity<?> blockchainData() {
-        return ResponseEntity.ok(blockchainDataService.getChainTip());
+        return ResponseEntity.ok(blockchainDataChainTipService.getChainTip());
     }
 
 }

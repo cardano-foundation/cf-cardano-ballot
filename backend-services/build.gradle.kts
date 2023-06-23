@@ -60,14 +60,14 @@ dependencies {
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.testcontainers:junit-jupiter")
 
-    implementation("com.bloxbean.cardano:cardano-client-crypto:0.4.3")
-    implementation("com.bloxbean.cardano:cardano-client-address:0.4.3")
-    implementation("com.bloxbean.cardano:cardano-client-metadata:0.4.3")
-	implementation("com.bloxbean.cardano:cardano-client-cip30:0.4.3")
+    implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0-alpha.2")
+    implementation("com.bloxbean.cardano:cardano-client-address:0.5.0-alpha.2")
+    implementation("com.bloxbean.cardano:cardano-client-metadata:0.5.0-alpha.2")
+	implementation("com.bloxbean.cardano:cardano-client-quicktx:0.5.0-alpha.2")
+	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.0-alpha.2")
+	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0-alpha.2")
 
 	implementation("io.blockfrost:blockfrost-java:0.1.3")
-
-	implementation("com.bloxbean.cardano:cardano-client-lib:0.4.3")
 
 	implementation("io.vavr:vavr:0.10.4")
 

@@ -30,22 +30,22 @@ public class ReferenceDataService {
     @Autowired
     private ExpirationService expirationService;
 
-    @Timed(value = "service.reference.findEventByName", percentiles = {0.3, 0.5, 0.95})
+    @Timed(value = "service.reference.findEventById", percentiles = {0.3, 0.5, 0.95})
     @Transactional
-    public Optional<Event> findEventByName(String eventName) {
-        return eventRepository.findByName(eventName);
+    public Optional<Event> findEventById(String id) {
+        return eventRepository.findById(id);
     }
 
     @Timed(value = "service.reference.findCategoryByName", percentiles = {0.3, 0.5, 0.95})
     @Transactional
-    public Optional<Category> findCategoryByName(String eventName) {
-        return categoryRepository.findByName(eventName);
+    public Optional<Category> findCategoryByName(String name) {
+        return categoryRepository.findById(name);
     }
 
-    @Timed(value = "service.reference.findProposalByName", percentiles = {0.3, 0.5, 0.95})
+    @Timed(value = "service.reference.findProposalById", percentiles = {0.3, 0.5, 0.95})
     @Transactional
-    public Optional<Proposal> findProposalByName(String eventName) {
-        return proposalRepository.findByName(eventName);
+    public Optional<Proposal> findProposalById(String id) {
+        return proposalRepository.findById(id);
     }
 
     @Timed(value = "service.reference.storeEvent", percentiles = {0.3, 0.5, 0.95})

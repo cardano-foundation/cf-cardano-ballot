@@ -34,7 +34,7 @@ public class VotingAppService {
     public CommandLineRunner onStart(ReferenceDataCreator referenceDataCreator) {
 
         return (args) -> {
-            log.info("CF CIP-1964 Voting App initialisation...");
+            log.info("CF Voting App initialisation...");
 
             referenceDataCreator.createReferenceData();
 

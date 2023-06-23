@@ -10,6 +10,4 @@ import java.util.Optional;
 @Repository
 public interface EventRepository extends JpaRepository<Event, String> {
 
-    Optional<Event> findByName(String name);
-
 }

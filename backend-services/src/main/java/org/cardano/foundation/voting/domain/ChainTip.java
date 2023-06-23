@@ -13,4 +13,6 @@ public class ChainTip {
 
     private int epochNo;
 
+    private CardanoNetwork cardanoNetwork;
+
 }

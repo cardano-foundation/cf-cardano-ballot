@@ -2,8 +2,8 @@ package org.cardano.foundation.voting.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.cardano.foundation.voting.domain.SchemaVersion;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,22 +14,21 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "category")
-@ToString
 public class Category extends AbstractTimestampEntity {
 
     @Id
     @Column(name = "id")
     private String id;
 
-    @Column(name = "name")
-    private String name;
-
     @Column(name = "presentation_name")
     private String presentationName;
 
-    @Column(name = "description")
-    @Nullable
-    private String description;
+    @Column(name = "l1_transaction_hash")
+    private String l1TransactionHash;
+
+    @Column(name = "schema_version")
+    private SchemaVersion version;
+
 
     @ManyToOne(
             fetch = FetchType.EAGER, cascade = CascadeType.ALL

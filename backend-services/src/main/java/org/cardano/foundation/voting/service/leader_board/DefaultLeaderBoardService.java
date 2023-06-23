@@ -48,7 +48,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
                     .build());
         }
 
-        var maybeEvent = referenceDataService.findEventByName(eventName);
+        var maybeEvent = referenceDataService.findEventById(eventName);
         if (maybeEvent.isEmpty()) {
             return Either.left(Problem.builder()
                     .withTitle("UNRECOGNISED_EVENT")
@@ -62,7 +62,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
         if (!expirationService.isEventFinished(event)) {
             return Either.left(Problem.builder()
                     .withTitle("LEADER_BOARD_NOT_AVAILABLE")
-                    .withDetail("Voting not finished yet, event:" + event.getName())
+                    .withDetail("Voting not finished yet, event:" + event.getId())
                     .withStatus(BAD_REQUEST)
                     .build());
         }

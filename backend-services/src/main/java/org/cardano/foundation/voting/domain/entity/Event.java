@@ -3,6 +3,7 @@ package org.cardano.foundation.voting.domain.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.cardano.foundation.voting.domain.EventType;
+import org.cardano.foundation.voting.domain.SchemaVersion;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -18,15 +19,12 @@ import java.util.Optional;
 @AllArgsConstructor
 public class Event extends AbstractTimestampEntity {
 
-    @Id
     @Column(nullable = false)
-    private String id; // e.g. 90ed2df9-dd21-4567-90e2-e8f09b9c422c
+    @Id
+    private String id; // e.g. Voltaire_Pre_Ratification
 
     @Column(nullable = false)
     private String team; // e.g. CF Team // TODO what about team spoofing - do we need that team has private / public key
-
-    @Column(nullable = false)
-    private String name; // e.g. Voltaire_Pre_Ratification
 
     @Column(nullable = false)
     private String presentationName; // e.g. Voltaire Pre-Ratification
@@ -34,29 +32,32 @@ public class Event extends AbstractTimestampEntity {
     @Column(name = "event_type", nullable = false)
     private EventType eventType;
 
-    @Column
-    @Nullable
-    private String description;
-
     @Column(name = "start_epoch")
     @Nullable
-    private int startEpoch;
+    private Integer startEpoch;
 
     @Column(name = "end_epoch")
     @Nullable
-    private int endEpoch;
+    private Integer endEpoch;
 
     @Column(name = "start_slot")
     @Nullable
-    private int startSlot;
+    private Long startSlot;
 
     @Column(name = "end_slot")
     @Nullable
-    private int endSlot;
+    private Long endSlot;
 
     @Column(name = "snapshot_epoch")
     @Nullable
-    private int snapshotEpoch;
+    private Integer snapshotEpoch;
+
+    @Column(name = "l1_transaction_hash")
+    @Nullable
+    private String l1TransactionHash;
+
+    @Column(name = "schema_version")
+    private SchemaVersion version;
 
     @OneToMany(
             mappedBy = "event",
@@ -68,15 +69,7 @@ public class Event extends AbstractTimestampEntity {
     private List<Category> categories = new ArrayList<>();
 
     public Optional<Category> findCategoryByName(String categoryName) {
-        return categories.stream().filter(category -> category.getName().equals(categoryName)).findFirst();
-    }
-
-    public Optional<Proposal> findProposal(String categoryId, String proposalId) {
-        return categories.stream()
-                .filter(category -> category.getId().equals(categoryId))
-                .findFirst().flatMap(category -> category.getProposals().stream()
-                .filter(proposal -> proposal.getId().equals(proposalId))
-                .findFirst());
+        return categories.stream().filter(category -> category.getId().equals(categoryName)).findFirst();
     }
 
 }

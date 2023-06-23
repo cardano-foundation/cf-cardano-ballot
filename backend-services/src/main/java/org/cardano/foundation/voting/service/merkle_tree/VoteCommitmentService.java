@@ -69,7 +69,7 @@ public class VoteCommitmentService {
         log.info("Storing vote merkle proofs...");
 
         for (var l1MerkleCommitment : l1MerkleCommitments) {
-            log.info("Storing merkle proofs for event: {}", l1MerkleCommitment.event().getName());
+            log.info("Storing merkle proofs for event: {}", l1MerkleCommitment.event().getId());
 
             var root = l1MerkleCommitment.root();
 
@@ -94,7 +94,7 @@ public class VoteCommitmentService {
                 voteMerkleProofRepository.saveAndFlush(voteMerkleProof);
             }
 
-            log.info("Storing merkle proofs completed for event: {}", l1MerkleCommitment.event().getName());
+            log.info("Storing merkle proofs completed for event: {}", l1MerkleCommitment.event().getId());
         }
 
         log.info("Storing vote merkle proofs completed.");

@@ -25,9 +25,10 @@ public class BlockchainDataConfig {
 
     @Bean
     public BlockchainTransactionSubmissionService transactionSubmissionService() {
-        return new BlockfrostTransactionSubmissionService();
+        return new NoopTransactionSubmissionService();
     }
 
+    @Bean
     public BlockchainDataTransactionDetailsService blockchainDataTransactionDetailsService() {
         return new BlockfrostBlockchainDataTransactionDetailsService();
     }

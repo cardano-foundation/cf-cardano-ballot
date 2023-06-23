@@ -21,4 +21,12 @@ public enum CardanoNetwork {
         return Enums.getIfPresent(CardanoNetwork.class, networkText.toUpperCase()).toJavaUtil();
     }
 
+    public boolean isMainnetEnv() {
+        return this == MAIN;
+    }
+
+    public boolean isTestnetEnv() {
+        return !isMainnetEnv();
+    }
+
 }

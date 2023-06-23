@@ -34,8 +34,7 @@ import org.zalando.problem.Problem;
 import java.util.List;
 import java.util.Optional;
 
-import static org.cardano.foundation.voting.domain.VoteReceipt.Status.FULL;
-import static org.cardano.foundation.voting.domain.VoteReceipt.Status.PARTIAL;
+import static org.cardano.foundation.voting.domain.VoteReceipt.Status.*;
 import static org.cardano.foundation.voting.domain.web3.Web3Action.CAST_VOTE;
 import static org.cardanofoundation.cip30.Format.TEXT;
 import static org.cardanofoundation.cip30.ValidationError.UNKNOWN;
@@ -179,48 +178,48 @@ public class DefaultVoteService implements VoteService {
             );
         }
 
-        var eventName = castVoteRequestBodyJson.get("vote").get("eventName").asText();
-        var maybeEvent = referenceDataService.findEventByName(eventName);
+        var eventId = castVoteRequestBodyJson.get("vote").get("event").asText();
+        var maybeEvent = referenceDataService.findEventById(eventId);
         if (maybeEvent.isEmpty()) {
-            log.warn("Unrecognised event, eventName:{}", eventName);
+            log.warn("Unrecognised event, eventId:{}", eventId);
 
             return Either.left(Problem.builder()
                     .withTitle("UNRECOGNISED_EVENT")
-                    .withDetail("Unrecognised event, eventName:" + eventName)
+                    .withDetail("Unrecognised event, eventId:" + eventId)
                     .withStatus(BAD_REQUEST)
                     .build());
         }
         var event = maybeEvent.get();
         if (expirationService.isEventInactive(event)) {
-            log.warn("Event is not active, eventName:{}", eventName);
+            log.warn("Event is not active, eventId:{}", eventId);
 
             return Either.left(Problem.builder()
                     .withTitle("EVENT_IS_NOT_ACTIVE")
-                    .withDetail("Event is not active, eventName:" + eventName)
+                    .withDetail("Event is not active, eventId:" + eventId)
                     .withStatus(BAD_REQUEST)
                     .build());
         }
-        var categoryName = castVoteRequestBodyJson.get("vote").get("categoryName").asText();
-        var maybeCategory = event.findCategoryByName(categoryName);
+        var categoryId = castVoteRequestBodyJson.get("vote").get("category").asText();
+        var maybeCategory = event.findCategoryByName(categoryId);
         if (maybeCategory.isEmpty()) {
-            log.warn("Unrecognised category, categoryName:{}", eventName);
+            log.warn("Unrecognised category, categoryId:{}", eventId);
 
             return Either.left(Problem.builder()
                     .withTitle("UNRECOGNISED_CATEGORY")
-                    .withDetail("Unrecognised category, categoryName:" + categoryName)
+                    .withDetail("Unrecognised category, categoryId:" + categoryId)
                     .withStatus(BAD_REQUEST)
                     .build());
         }
         var category = maybeCategory.orElseThrow();
 
-        String proposalName = castVoteRequestBodyJson.get("vote").get("proposalName").asText();
-        var maybeProposal = proposalRepository.findByName(proposalName);
+        String proposalId = castVoteRequestBodyJson.get("vote").get("proposal").asText();
+        var maybeProposal = proposalRepository.findById(proposalId);
         if (maybeProposal.isEmpty()) {
-            log.warn("Unrecognised proposal, proposalName:{}", eventName);
+            log.warn("Unrecognised proposal, proposalId:{}", eventId);
 
             return Either.left(Problem.builder()
                     .withTitle("UNRECOGNISED_PROPOSAL")
-                    .withDetail("Unrecognised proposal, proposalName:" + proposalName)
+                    .withDetail("Unrecognised proposal, proposalId:" + proposalId)
                     .withStatus(BAD_REQUEST)
                     .build());
         }
@@ -288,8 +287,8 @@ public class DefaultVoteService implements VoteService {
             );
         }
 
-        var cip93VotingPower = castVoteRequestBodyJson.get("vote").get("votingPower").asLong();
-        if (cip93VotingPower != blockchainVotingPower) {
+        var signedVotingPower = castVoteRequestBodyJson.get("vote").get("votingPower").asLong();
+        if (signedVotingPower != blockchainVotingPower) {
             return Either.left(
                     Problem.builder()
                             .withTitle("INVALID_VOTING_POWER")
@@ -320,7 +319,7 @@ public class DefaultVoteService implements VoteService {
     @Transactional
     @Timed(value = "service.vote.voteReceipt", percentiles = { 0.3, 0.5, 0.95 })
     public Either<Problem, VoteReceipt> voteReceipt(String eventName, String categoryName, String stakeAddress) {
-        var maybeEvent = referenceDataService.findEventByName(eventName);
+        var maybeEvent = referenceDataService.findEventById(eventName);
         if (maybeEvent.isEmpty()) {
             log.warn("Unrecognised event, event:{}", eventName);
 
@@ -381,9 +380,9 @@ public class DefaultVoteService implements VoteService {
             return Either.<Problem, VoteReceipt>right(VoteReceipt.builder()
                     .id(vote.getId())
                     .votedAtSlot(vote.getVotedAtSlot())
-                    .event(event.getName())
-                    .category(category.getName())
-                    .proposal(proposal.getName())
+                    .event(event.getId())
+                    .category(category.getId())
+                    .proposal(proposal.getId())
                     .coseSignature(vote.getCoseSignature())
                     .cosePublicKey(vote.getCosePublicKey())
                     .votedAtSlot(vote.getVotedAtSlot())
@@ -400,15 +399,16 @@ public class DefaultVoteService implements VoteService {
             return Either.right(VoteReceipt.builder()
                     .id(vote.getId())
                     .votedAtSlot(vote.getVotedAtSlot())
-                    .event(event.getName())
-                    .category(category.getName())
-                    .proposal(proposal.getName())
+                    .event(event.getId())
+                    .category(category.getId())
+                    .proposal(proposal.getId())
+                    .proposalText(proposal.getProposalDetails().getPresentationName())
                     .coseSignature(vote.getCoseSignature())
                     .cosePublicKey(vote.getCosePublicKey())
                     .votedAtSlot(vote.getVotedAtSlot())
                     .voterStakingAddress(vote.getVoterStakingAddress())
                     .cardanoNetwork(vote.getNetwork())
-                    .status(VoteReceipt.Status.BASIC)
+                    .status(BASIC)
                     .build()
             );
         });

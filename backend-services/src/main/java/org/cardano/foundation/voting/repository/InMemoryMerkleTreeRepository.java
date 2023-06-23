@@ -14,12 +14,12 @@ public class InMemoryMerkleTreeRepository implements MerkleTreeRepository {
 
     @Override
     public Optional<L1MerkleTree> findByEvent(Event event) {
-        return Optional.ofNullable(merkleTrees.get(event.getName()));
+        return Optional.ofNullable(merkleTrees.get(event.getId()));
     }
 
     @Override
     public void storeForEvent(Event event, L1MerkleTree l1MerkleTree) {
-        merkleTrees.put(event.getName(), l1MerkleTree);
+        merkleTrees.put(event.getId(), l1MerkleTree);
     }
 
 }

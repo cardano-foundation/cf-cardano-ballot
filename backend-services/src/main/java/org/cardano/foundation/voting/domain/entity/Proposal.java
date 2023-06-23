@@ -3,8 +3,6 @@ package org.cardano.foundation.voting.domain.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import javax.annotation.Nullable;
-
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -12,18 +10,11 @@ import javax.annotation.Nullable;
 @Table(name = "proposal")
 @Getter
 @Setter
-@ToString
 public class Proposal extends AbstractTimestampEntity {
 
     @Id
     @Column
     private String id;
-
-    @Column
-    private String name;
-
-    @Column
-    private String presentationName;
 
     @ManyToOne(
             fetch = FetchType.EAGER,
@@ -32,8 +23,10 @@ public class Proposal extends AbstractTimestampEntity {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @Column
-    @Nullable
-    private String description;
+    @OneToOne(cascade = {CascadeType.ALL})
+    @JoinColumn(name = "proposal_details_id")
+    private ProposalDetails proposalDetails;
 
 }
+
+

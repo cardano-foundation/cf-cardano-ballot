@@ -2,17 +2,22 @@ package org.cardano.foundation.voting.service.reference_data;
 
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
+import org.cardano.foundation.voting.domain.SchemaVersion;
 import org.cardano.foundation.voting.domain.entity.Category;
 import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.domain.entity.Proposal;
+import org.cardano.foundation.voting.domain.entity.ProposalDetails;
+import org.cardano.foundation.voting.repository.ProposalDetailsRepository;
+import org.cardano.foundation.voting.service.transaction_submit.L1SubmissionService;
+import org.cardano.foundation.voting.service.verification.VerificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.UUID;
 
-import static org.cardano.foundation.voting.domain.CardanoNetwork.PREPROD;
 import static org.cardano.foundation.voting.domain.EventType.STAKE_BASED;
+import static org.cardano.foundation.voting.domain.SchemaVersion.V1;
 
 @Service
 @Slf4j
@@ -24,66 +29,96 @@ public class ReferenceDataCreator {
     private ReferenceDataService referenceDataService;
 
     @Autowired
+    private ProposalDetailsRepository proposalDetailsRepository;
+
+    @Autowired
+    private L1SubmissionService l1SubmissionService;
+
+    @Autowired
+    private VerificationService verificationService;
+
+    @Autowired
     private CardanoNetwork cardanoNetwork;
 
     public void createReferenceData() {
-        Optional<Event> maybeVoltaireEvent = referenceDataService.findEventByName(EVENT_NAME);
+        // TODO we have to expect on chain that there can be many events with this name
+        var maybeEvent = referenceDataService.findEventById(EVENT_NAME);
 
-        if (maybeVoltaireEvent.isPresent()) {
-            log.info("There is already event: {}", maybeVoltaireEvent.orElseThrow());
-            return;
+        if (maybeEvent.isPresent()) {
+            log.info("There is already event: {}", maybeEvent.orElseThrow());
+
+            if (verificationService.verifyEvent(maybeEvent.get())) {
+                log.info("Event is verified.");
+                return;
+            } else {
+                log.info("Event is not verified");
+                return;
+            }
         }
 
-        if (cardanoNetwork == PREPROD) {
-            createPreprodReferenceData();
-            return;
+        switch (cardanoNetwork) {
+            case PREPROD -> createPreprodReferenceData();
+            default -> throw new RuntimeException("Unsupported network: " + cardanoNetwork);
         }
-
-        throw new RuntimeException("Unsupported network: " + cardanoNetwork);
     }
 
     private void createPreprodReferenceData() {
         log.info("Creating event along with proposals...");
 
+        String yesProposalId = UUID.randomUUID().toString();
+        String noProposalId = UUID.randomUUID().toString();
+        String abstainProposalId = UUID.randomUUID().toString();
+
+        var yesProposalDetail = new ProposalDetails(yesProposalId, "Yes");
+        var noProposalDetail = new ProposalDetails(noProposalId, "No");
+        var abstainProposalDetail = new ProposalDetails(abstainProposalId, "Abstain");
+
+        // proposal details may contain PII data and will be managed in centralised databases (this can be in the future Fluree, IAGON, Github, etc.)
+        yesProposalDetail = proposalDetailsRepository.saveAndFlush(yesProposalDetail);
+        noProposalDetail = proposalDetailsRepository.saveAndFlush(noProposalDetail);
+        abstainProposalDetail = proposalDetailsRepository.saveAndFlush(abstainProposalDetail);
+
         Event event = new Event();
-        event.setId("5abcb6a2-f9a9-4617-b9ce-10b9dd290354");
-        event.setName(EVENT_NAME);
+        event.setId(EVENT_NAME);
+        event.setVersion(V1);
         event.setPresentationName("CIP-1694 Voltaire Pre-Ratification");
-        event.setTeam("CF Team");
+        event.setTeam("CF & IOG");
         event.setStartEpoch(70);
         event.setEventType(STAKE_BASED);
-        event.setEndEpoch(100);
+        event.setEndEpoch(90);
         event.setSnapshotEpoch(75);
 
-        event.setDescription("Pre-Ratification of the Voltaire era");
-
         Category preRatificationCategory = new Category();
-        preRatificationCategory.setId("e969729d-ab08-4ca3-a17d-13f3a8b8c0ab");
-        preRatificationCategory.setName("Pre-Ratification");
-        preRatificationCategory.setDescription("Pre-Ratification for CIP-1694");
-        preRatificationCategory.setPresentationName("Pre-Ratification");
+        preRatificationCategory.setId("Pre-Ratification");
+        preRatificationCategory.setPresentationName("Pre Ratification");
+        preRatificationCategory.setVersion(V1);
 
         Proposal yesProposal = new Proposal();
-        yesProposal.setId("ffb9fd11-b82b-4766-bcd5-b8e7b760624a");
-        yesProposal.setName("YES");
-        yesProposal.setPresentationName("Yes");
+        yesProposal.setId(yesProposalId);
+        yesProposal.setProposalDetails(yesProposalDetail);
         yesProposal.setCategory(preRatificationCategory);
 
         Proposal noProposal = new Proposal();
-        noProposal.setId("ffb9fd11-b82b-4766-bcd5-b8e7b760624b");
-        noProposal.setName("NO");
-        noProposal.setPresentationName("No");
+        noProposal.setId(noProposalId);
+        noProposal.setProposalDetails(noProposalDetail);
         noProposal.setCategory(preRatificationCategory);
 
         Proposal abstainProposal = new Proposal();
-        abstainProposal.setId("ffb9fd11-b82b-4766-bcd5-b8e7b760624c");
-        abstainProposal.setName("ABSTAIN");
-        abstainProposal.setPresentationName("Abstain");
+        abstainProposal.setId(abstainProposalId);
+        abstainProposal.setProposalDetails(abstainProposalDetail);
         abstainProposal.setCategory(preRatificationCategory);
 
         preRatificationCategory.setEvent(event);
         preRatificationCategory.setProposals(List.of(yesProposal, noProposal, abstainProposal));
         event.setCategories(List.of(preRatificationCategory));
+
+        for (Category category : event.getCategories()) {
+            var l1Hash = l1SubmissionService.submitCategory(category);
+            category.setL1TransactionHash(l1Hash);
+        }
+
+        var transactionHash = l1SubmissionService.submitEvent(event);
+        event.setL1TransactionHash(transactionHash);
 
         referenceDataService.storeEvent(event);
     }

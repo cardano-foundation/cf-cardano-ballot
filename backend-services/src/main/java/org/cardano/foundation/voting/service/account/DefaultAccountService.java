@@ -5,6 +5,7 @@ import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.Account;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
+import org.cardano.foundation.voting.domain.EventType;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataStakePoolService;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +52,7 @@ public class DefaultAccountService implements AccountService {
                     .build());
         }
 
-        var maybeEvent = referenceDataService.findEventByName(eventName);
+        var maybeEvent = referenceDataService.findEventById(eventName);
         if (maybeEvent.isEmpty()) {
             log.warn("Unrecognised event, eventName:{}", eventName);
 
@@ -62,6 +63,14 @@ public class DefaultAccountService implements AccountService {
                     .build());
         }
         var event = maybeEvent.orElseThrow();
+
+        if (event.getEventType() != EventType.STAKE_BASED) {
+            return Either.left(Problem.builder()
+                    .withTitle("EVENT_NOT_STAKE_BASED")
+                    .withDetail("Event is not stake based, event:" + event)
+                    .withStatus(BAD_REQUEST)
+                    .build());
+        }
 
         var votingPower = blockchainDataStakePoolService.getStakeAmount(event.getSnapshotEpoch(), stakeAddress);
 

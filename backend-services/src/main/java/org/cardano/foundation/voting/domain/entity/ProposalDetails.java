@@ -20,6 +20,12 @@ public class ProposalDetails extends AbstractTimestampEntity {
     @Column(name = "id", nullable = false)
     private String id;
 
+    @Column(name = "name", nullable = false)
+    private String name;
+
+    @Column(name = "event_id", nullable = false)
+    private String eventId;
+
     @Column(name = "presentation_name", nullable = false)
     private String presentationName;
 

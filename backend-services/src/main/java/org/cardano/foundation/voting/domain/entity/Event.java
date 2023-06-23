@@ -29,6 +29,10 @@ public class Event extends AbstractTimestampEntity {
     @Column(nullable = false)
     private String presentationName; // e.g. Voltaire Pre-Ratification
 
+    @Column(name = "gdpr_protection", nullable = false)
+    @Builder.Default
+    private boolean gdprProtection = true; // GDPR protection is enabled by default and it protects proposal ids not being stored on chain
+
     @Column(name = "event_type", nullable = false)
     private EventType eventType;
 

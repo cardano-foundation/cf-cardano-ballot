@@ -59,8 +59,8 @@ public class L1SubmissionService {
         return sendMetadataTransaction(metadataSerialiser.serialise(event));
     }
 
-    public String submitCategory(Category category) {
-        return sendMetadataTransaction(metadataSerialiser.serialise(category));
+    public String submitCategory(Event event, Category category) {
+        return sendMetadataTransaction(metadataSerialiser.serialise(event, category));
     }
 
     @SneakyThrows
@@ -81,6 +81,8 @@ public class L1SubmissionService {
                 .serialize();
 
         log.info("Submitting transaction: {}", HexUtil.encodeHexString(serialisedTx));
+
+        log.info("Tx Metadata: {}", metadataMap.toJson());
 
         return transactionSubmissionService.submitTransaction(serialisedTx);
     }

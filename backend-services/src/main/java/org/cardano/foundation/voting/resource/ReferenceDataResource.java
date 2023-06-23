@@ -37,7 +37,7 @@ public class ReferenceDataResource {
 
         var categories = event.getCategories().stream().map(category -> {
             var proposals = category.getProposals().stream().map(proposal -> ProposalReference.builder()
-                            .id(proposal.getId())
+                            .id(event.getId())
                             .presentationName(proposal.getProposalDetails().getPresentationName())
                             .build())
                     .toList();
@@ -55,6 +55,7 @@ public class ReferenceDataResource {
                 .presentationName(event.getPresentationName())
                 .team(event.getTeam())
                 .eventType(event.getEventType())
+                .gdprProtection(event.isGdprProtection())
                 .startEpoch(Optional.ofNullable(event.getStartEpoch()))
                 .endEpoch(Optional.ofNullable(event.getEndEpoch()))
                 .startSlot(Optional.ofNullable(event.getStartSlot()))

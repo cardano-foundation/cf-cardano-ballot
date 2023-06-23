@@ -28,6 +28,7 @@ CREATE TABLE category (
     presentation_name VARCHAR(255) NOT NULL,
     event_id VARCHAR(255) NOT NULL REFERENCES event(id),
     schema_version VARCHAR(255) NOT NULL,
+    gdpr_protection BOOLEAN NOT NULL,
 
     create_datetime TIMESTAMP WITHOUT TIME ZONE,
     update_datetime TIMESTAMP WITHOUT TIME ZONE,
@@ -51,6 +52,8 @@ CREATE TABLE proposal (
 
 CREATE TABLE proposal_details (
     id uuid NOT NULL, -- PII protection, on chain we are not allowed to store human readable names
+    event_id VARCHAR(255) NOT NULL REFERENCES event(id),
+    name VARCHAR(255) NOT NULL,
     presentation_name VARCHAR(255) NOT NULL,
 
     create_datetime TIMESTAMP WITHOUT TIME ZONE,

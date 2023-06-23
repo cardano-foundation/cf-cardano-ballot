@@ -21,6 +21,8 @@ public class EventReference {
 
     private EventType eventType;
 
+    private boolean gdprProtection;
+
     private Optional<Long> startSlot;
 
     private Optional<Long> endSlot;

@@ -2,7 +2,6 @@ package org.cardano.foundation.voting.service.reference_data;
 
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
-import org.cardano.foundation.voting.domain.SchemaVersion;
 import org.cardano.foundation.voting.domain.entity.Category;
 import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.domain.entity.Proposal;
@@ -65,13 +64,13 @@ public class ReferenceDataCreator {
     private void createPreprodReferenceData() {
         log.info("Creating event along with proposals...");
 
-        String yesProposalId = UUID.randomUUID().toString();
-        String noProposalId = UUID.randomUUID().toString();
-        String abstainProposalId = UUID.randomUUID().toString();
+        var yesId = UUID.randomUUID().toString();
+        var noId = UUID.randomUUID().toString();
+        var abstainId = UUID.randomUUID().toString();
 
-        var yesProposalDetail = new ProposalDetails(yesProposalId, "Yes");
-        var noProposalDetail = new ProposalDetails(noProposalId, "No");
-        var abstainProposalDetail = new ProposalDetails(abstainProposalId, "Abstain");
+        var yesProposalDetail = new ProposalDetails(yesId, "YES", EVENT_NAME, "Yes");
+        var noProposalDetail = new ProposalDetails(noId, "NO", EVENT_NAME, "No");
+        var abstainProposalDetail = new ProposalDetails(abstainId, "ABSTAIN", EVENT_NAME, "Abstain");
 
         // proposal details may contain PII data and will be managed in centralised databases (this can be in the future Fluree, IAGON, Github, etc.)
         yesProposalDetail = proposalDetailsRepository.saveAndFlush(yesProposalDetail);
@@ -87,6 +86,7 @@ public class ReferenceDataCreator {
         event.setEventType(STAKE_BASED);
         event.setEndEpoch(90);
         event.setSnapshotEpoch(75);
+        event.setGdprProtection(false); // we don't need GDPR protection for pre-ratification voting
 
         Category preRatificationCategory = new Category();
         preRatificationCategory.setId("Pre-Ratification");
@@ -94,17 +94,17 @@ public class ReferenceDataCreator {
         preRatificationCategory.setVersion(V1);
 
         Proposal yesProposal = new Proposal();
-        yesProposal.setId(yesProposalId);
+        yesProposal.setId(yesId);
         yesProposal.setProposalDetails(yesProposalDetail);
         yesProposal.setCategory(preRatificationCategory);
 
         Proposal noProposal = new Proposal();
-        noProposal.setId(noProposalId);
+        noProposal.setId(noId);
         noProposal.setProposalDetails(noProposalDetail);
         noProposal.setCategory(preRatificationCategory);
 
         Proposal abstainProposal = new Proposal();
-        abstainProposal.setId(abstainProposalId);
+        abstainProposal.setId(abstainId);
         abstainProposal.setProposalDetails(abstainProposalDetail);
         abstainProposal.setCategory(preRatificationCategory);
 
@@ -113,7 +113,7 @@ public class ReferenceDataCreator {
         event.setCategories(List.of(preRatificationCategory));
 
         for (Category category : event.getCategories()) {
-            var l1Hash = l1SubmissionService.submitCategory(category);
+            var l1Hash = l1SubmissionService.submitCategory(event, category);
             category.setL1TransactionHash(l1Hash);
         }
 

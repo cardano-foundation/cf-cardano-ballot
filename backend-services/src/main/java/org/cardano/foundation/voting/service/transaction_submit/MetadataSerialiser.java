@@ -46,12 +46,13 @@ public class MetadataSerialiser {
         return map;
     }
 
-    public MetadataMap serialise(Category category) {
+    public MetadataMap serialise(Event event, Category category) {
         var map = MetadataBuilder.createMap();
 
         map.put("type", "CategoryRegistration");
 
         map.put("name", category.getId());
+        map.put("event_id", category.getEvent().getId());
         map.put("presentation_name", category.getPresentationName());
         map.put("schema_version", category.getVersion().getSemVer());
 
@@ -63,7 +64,13 @@ public class MetadataSerialiser {
 
         for (var proposal : category.getProposals()) {
             var proposalMap = MetadataBuilder.createMap();
-            proposalMap.put("id", proposal.getId());
+
+            if (event.isGdprProtection()) {
+                proposalMap.put("id", proposal.getId());
+            } else {
+                proposalMap.put("id", proposal.getId());
+                proposalMap.put("name", proposal.getProposalDetails().getName());
+            }
 
             proposalsList.add(proposalMap);
         }

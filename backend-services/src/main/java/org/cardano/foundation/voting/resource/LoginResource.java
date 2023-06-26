@@ -1,6 +1,7 @@
 package org.cardano.foundation.voting.resource;
 
 import io.micrometer.core.annotation.Timed;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.web3.SignedWeb3Request;
 import org.cardano.foundation.voting.service.security.DefaultLoginService;
@@ -25,7 +26,7 @@ public class LoginResource {
 
     @RequestMapping(value = "/login", method = POST, produces = "application/json")
     @Timed(value = "resource.auth.login", percentiles = { 0.3, 0.5, 0.95 })
-    public ResponseEntity<?> login(@RequestBody SignedWeb3Request loginRequest)  {
+    public ResponseEntity<?> login(@RequestBody @Valid SignedWeb3Request loginRequest)  {
         return loginService.login(loginRequest)
                 .fold(problem -> {
                         return ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem);

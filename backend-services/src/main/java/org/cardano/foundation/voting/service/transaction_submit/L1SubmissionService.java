@@ -3,6 +3,9 @@ package org.cardano.foundation.voting.service.transaction_submit;
 import com.bloxbean.cardano.client.account.Account;
 import com.bloxbean.cardano.client.api.model.Amount;
 import com.bloxbean.cardano.client.backend.api.BackendService;
+import com.bloxbean.cardano.client.cip.cip30.CIP30DataSigner;
+import com.bloxbean.cardano.client.cip.cip30.DataSignature;
+import com.bloxbean.cardano.client.common.cbor.CborSerializationUtil;
 import com.bloxbean.cardano.client.function.helper.SignerProviders;
 import com.bloxbean.cardano.client.metadata.Metadata;
 import com.bloxbean.cardano.client.metadata.MetadataBuilder;
@@ -15,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.L1MerkleCommitment;
 import org.cardano.foundation.voting.domain.entity.Category;
 import org.cardano.foundation.voting.domain.entity.Event;
+import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataChainTipService;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataTransactionDetailsService;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainTransactionSubmissionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +27,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import static org.cardano.foundation.voting.service.transaction_submit.EventType.*;
 
 @Service
 @Slf4j
@@ -34,6 +40,9 @@ public class L1SubmissionService {
 //  TODO how to make it more generic that we can submit transactions via this interface, this will be when Yaci is integrated
     @Autowired
     private BlockchainTransactionSubmissionService transactionSubmissionService;
+
+    @Autowired
+    private BlockchainDataChainTipService blockchainDataChainTipService;
 
     @Autowired
     private BackendService backendService;
@@ -48,26 +57,61 @@ public class L1SubmissionService {
     @Value("${l1.transaction.metadata.label:12345}")
     private int metadataLabel;
 
-    @Value("${cardano-client-lib.timeout.in.minutes:1}")
-    private int transactionTimeoutInMinutes;
-
     public String submitMerkleCommitments(List<L1MerkleCommitment> l1MerkleCommitments) {
-        return sendMetadataTransaction(metadataSerialiser.serialise(l1MerkleCommitments));
+        long absoluteSlot = blockchainDataChainTipService.getChainTip().getAbsoluteSlot();
+
+        MetadataMap eventMetadataMap = metadataSerialiser.serialise(l1MerkleCommitments, absoluteSlot);
+        Metadata metadata = serialiseMetadata(eventMetadataMap, COMMITMENTS);
+        byte[] txData = serialiseTransaction(metadata);
+
+        return transactionSubmissionService.submitTransaction(txData);
     }
 
     public String submitEvent(Event event) {
-        return sendMetadataTransaction(metadataSerialiser.serialise(event));
+        long absoluteSlot = blockchainDataChainTipService.getChainTip().getAbsoluteSlot();
+
+        MetadataMap eventMetadataMap = metadataSerialiser.serialise(event, absoluteSlot);
+        Metadata metadata = serialiseMetadata(eventMetadataMap, EVENT_REGISTRATION);
+
+        byte[] txData = serialiseTransaction(metadata);
+
+        return transactionSubmissionService.submitTransaction(txData);
     }
 
     public String submitCategory(Event event, Category category) {
-        return sendMetadataTransaction(metadataSerialiser.serialise(event, category));
+        long absoluteSlot = blockchainDataChainTipService.getChainTip().getAbsoluteSlot();
+
+        MetadataMap eventMetadataMap = metadataSerialiser.serialise(event, category, absoluteSlot);
+        Metadata metadata = serialiseMetadata(eventMetadataMap, CATEGORY_REGISTRATION);
+        byte[] txData = serialiseTransaction(metadata);
+
+        return transactionSubmissionService.submitTransaction(txData);
     }
 
     @SneakyThrows
-    private String sendMetadataTransaction(MetadataMap metadataMap) {
-        Metadata metadata = MetadataBuilder.createMetadata();
-        metadata.put(metadataLabel, metadataMap);
+    protected Metadata serialiseMetadata(MetadataMap childMetadata, EventType metadataType) {
+        var stakeAddress = organiserAccount.stakeAddress();
 
+        byte[] data = CborSerializationUtil.serialize(childMetadata.getMap());
+        DataSignature dataSignature = CIP30DataSigner.INSTANCE.signData(stakeAddress.getBytes(), data, organiserAccount);
+
+        var envelope = MetadataBuilder.createMap();
+        envelope.put("type", metadataType.name());
+        envelope.put("signature", dataSignature.signature());
+        envelope.put("key", dataSignature.key());
+
+        Metadata metadata = MetadataBuilder.createMetadata();
+        metadata.put(metadataLabel, envelope);
+
+        log.info("Metadata envelope:{}", envelope.toJson());
+
+        log.info("Full metadata:{}", HexUtil.encodeHexString(metadata.serialize()));
+
+        return metadata;
+    }
+
+    @SneakyThrows
+    protected byte[] serialiseTransaction(Metadata metadata) {
         QuickTxBuilder quickTxBuilder = new QuickTxBuilder(backendService);
 
         Tx tx = new Tx()
@@ -75,16 +119,10 @@ public class L1SubmissionService {
                 .attachMetadata(metadata)
                 .from(organiserAccount.baseAddress());
 
-        var serialisedTx = quickTxBuilder.compose(tx)
+        return quickTxBuilder.compose(tx)
                 .withSigner(SignerProviders.signerFrom(organiserAccount))
                 .buildAndSign()
                 .serialize();
-
-        log.info("Submitting transaction: {}", HexUtil.encodeHexString(serialisedTx));
-
-        log.info("Tx Metadata: {}", metadataMap.toJson());
-
-        return transactionSubmissionService.submitTransaction(serialisedTx);
     }
 
 }

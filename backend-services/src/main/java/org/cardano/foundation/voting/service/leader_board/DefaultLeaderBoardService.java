@@ -6,6 +6,7 @@ import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.Leaderboard;
 import org.cardano.foundation.voting.service.ExpirationService;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
+import org.cardano.foundation.voting.utils.Enums;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
@@ -28,7 +29,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
 
     @Override
     public Either<Problem, Leaderboard> getLeaderboard(String networkName, String eventName) {
-        var maybeNetwork = CardanoNetwork.fromName(networkName);
+        var maybeNetwork = Enums.getIfPresent(CardanoNetwork.class, networkName);
         if (maybeNetwork.isEmpty()) {
             log.warn("Invalid network, network:{}", networkName);
 

@@ -20,7 +20,7 @@ public interface VoteService {
     // TODO is this ok to assume uuid4 to be globally unique across all events
     Optional<Vote> findById(String voteId);
 
-    boolean isVoteAlreadyCast(String event, String category, String stakeAddress);
+    Either<Problem, Boolean> isVoteCastingStillPossible(String event, String voteId);
 
     Either<Problem, Vote> castVote(SignedWeb3Request castVoteRequest);
 

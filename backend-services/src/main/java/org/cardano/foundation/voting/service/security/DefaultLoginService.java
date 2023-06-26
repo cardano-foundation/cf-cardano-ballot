@@ -1,14 +1,16 @@
 package org.cardano.foundation.voting.service.security;
 
-import com.google.common.base.Enums;
 import io.micrometer.core.annotation.Timed;
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.web3.SignedWeb3Request;
 import org.cardano.foundation.voting.domain.web3.Web3Action;
 import org.cardano.foundation.voting.service.ExpirationService;
+import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
 import org.cardano.foundation.voting.utils.Bech32;
-import org.cardano.foundation.voting.utils.Json;
+import org.cardano.foundation.voting.utils.Enums;
+import org.cardano.foundation.voting.service.JsonService;
 import org.cardanofoundation.cip30.CIP30Verifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,15 @@ public class DefaultLoginService implements LoginService {
     @Autowired
     private ExpirationService expirationService;
 
+    @Autowired
+    private ReferenceDataService referenceDataService;
+
+    @Autowired
+    private JsonService jsonService;
+
+    @Autowired
+    private CardanoNetwork network;
+
     @Override
     @Timed(value = "service.auth.login", percentiles = { 0.3, 0.5, 0.95 })
     public Either<Problem, String> login(SignedWeb3Request loginRequest) {
@@ -51,8 +62,7 @@ public class DefaultLoginService implements LoginService {
             );
         }
 
-        var jsonPayload = cip30VerificationResult.getMessage(TEXT);
-        var jsonPayloadE = Json.decode(jsonPayload);
+        var jsonPayloadE = jsonService.decodeCIP93LoginEnvelope(cip30VerificationResult.getMessage(TEXT));
         if (jsonPayloadE.isLeft()) {
             return Either.left(
                     Problem.builder()
@@ -62,8 +72,8 @@ public class DefaultLoginService implements LoginService {
                             .build()
             );
         }
-        var jsonPayloadNode = jsonPayloadE.get();
-        var slot = jsonPayloadNode.get("request").get("slot").asLong();
+        var cip93LoginEnvelope = jsonPayloadE.get();
+        var slot = cip93LoginEnvelope.getSlot();
 
         if (expirationService.isSlotExpired(slot)) {
             return Either.left(
@@ -75,8 +85,8 @@ public class DefaultLoginService implements LoginService {
             );
         }
 
-        var actionText = jsonPayloadNode.get("action").asText();
-        var maybeAction = Enums.getIfPresent(Web3Action.class, actionText).toJavaUtil();
+        var actionText = cip93LoginEnvelope.getAction();
+        var maybeAction = Enums.getIfPresent(Web3Action.class, actionText);
         if (maybeAction.isEmpty()) {
             log.warn("Unknown action, action:{}", actionText);
 
@@ -96,6 +106,29 @@ public class DefaultLoginService implements LoginService {
                     .withStatus(BAD_REQUEST)
                     .build()
             );
+        }
+
+        var maybeNetwork = Enums.getIfPresent(CardanoNetwork.class, cip93LoginEnvelope.getData().getNetwork());
+        if (maybeNetwork.isEmpty()) {
+            log.warn("Invalid network, network:{}", cip93LoginEnvelope.getData().getNetwork());
+
+            return Either.left(Problem.builder()
+                    .withTitle("INVALID_NETWORK")
+                    .withDetail("Invalid network, supported networks:" + CardanoNetwork.supportedNetworks())
+                    .withStatus(BAD_REQUEST)
+                    .build());
+        }
+        String event = cip93LoginEnvelope.getData().getEvent();
+
+        var maybeEvent = referenceDataService.findEventById(event);
+        if (maybeEvent.isEmpty()) {
+            log.warn("Event not found, event:{}", event);
+
+            return Either.left(Problem.builder()
+                    .withTitle("EVENT_NOT_FOUND")
+                    .withDetail("Event not found, event:" + event)
+                    .withStatus(BAD_REQUEST)
+                    .build());
         }
 
         var maybeAddress = cip30VerificationResult.getAddress();

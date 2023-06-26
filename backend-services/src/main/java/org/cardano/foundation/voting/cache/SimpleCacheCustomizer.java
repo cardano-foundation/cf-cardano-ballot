@@ -1,4 +1,4 @@
-package org.cardano.foundation.voting.service;
+package org.cardano.foundation.voting.cache;
 
 import org.springframework.boot.autoconfigure.cache.CacheManagerCustomizer;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;

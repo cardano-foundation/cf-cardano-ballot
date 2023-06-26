@@ -17,7 +17,6 @@ public class SignedWeb3Request {
     @NotNull
     protected String coseSignature;
 
-    @NotNull
     protected String cosePublicKey;
 
 }

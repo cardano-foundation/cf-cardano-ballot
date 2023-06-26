@@ -2,7 +2,6 @@ package org.cardano.foundation.voting.service.transaction_submit;
 
 import com.bloxbean.cardano.client.metadata.MetadataBuilder;
 import com.bloxbean.cardano.client.metadata.MetadataMap;
-import com.bloxbean.cardano.client.metadata.cbor.CBORMetadataList;
 import com.bloxbean.cardano.client.util.HexUtil;
 import org.cardano.foundation.voting.domain.L1MerkleCommitment;
 import org.cardano.foundation.voting.domain.entity.Category;
@@ -18,15 +17,16 @@ import static org.cardano.foundation.voting.domain.EventType.USER_BASED;
 @Service
 public class MetadataSerialiser {
 
-    public MetadataMap serialise(Event event) {
+    public MetadataMap serialise(Event event, long slot) {
         var map = MetadataBuilder.createMap();
 
-        map.put("type", "EventRegistration");
+        map.put("type", EventType.EVENT_REGISTRATION.name() );
 
         map.put("name", event.getId());
         map.put("presentation_name", event.getPresentationName());
         map.put("team", event.getTeam());
         map.put("schema_version", event.getVersion().getSemVer());
+        map.put("slot", BigInteger.valueOf(slot));
 
         if (event.getEventType() == STAKE_BASED) {
             //noinspection ConstantConditions
@@ -46,15 +46,16 @@ public class MetadataSerialiser {
         return map;
     }
 
-    public MetadataMap serialise(Event event, Category category) {
+    public MetadataMap serialise(Event event, Category category, long slot) {
         var map = MetadataBuilder.createMap();
 
-        map.put("type", "CategoryRegistration");
+        map.put("type", EventType.CATEGORY_REGISTRATION.name());
 
         map.put("name", category.getId());
         map.put("event_id", category.getEvent().getId());
         map.put("presentation_name", category.getPresentationName());
         map.put("schema_version", category.getVersion().getSemVer());
+        map.put("slot", BigInteger.valueOf(slot));
 
         if (category.getProposals().isEmpty()) {
             throw new RuntimeException("Category " + category.getId() + " has no proposals!");
@@ -75,15 +76,16 @@ public class MetadataSerialiser {
             proposalsList.add(proposalMap);
         }
 
-        map.put("proposals", (CBORMetadataList) proposalsList);
+        map.put("proposals", proposalsList);
 
         return map;
     }
 
-    public MetadataMap serialise(List<L1MerkleCommitment> l1MerkleCommitments) {
+    public MetadataMap serialise(List<L1MerkleCommitment> l1MerkleCommitments, long slot) {
         var map = MetadataBuilder.createMap();
 
-        map.put("type", "VotesCommitment");
+        map.put("type", EventType.COMMITMENTS.name());
+        map.put("slot", BigInteger.valueOf(slot));
 
         for (var l1MerkleCommitment : l1MerkleCommitments) {
             var l1CommitmentMap = MetadataBuilder.createMap();

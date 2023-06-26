@@ -1,10 +1,7 @@
 package org.cardano.foundation.voting.domain;
 
-import com.google.common.base.Enums;
-
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 public enum CardanoNetwork {
 
@@ -15,18 +12,6 @@ public enum CardanoNetwork {
 
     public static List<String> supportedNetworks() {
         return Arrays.stream(CardanoNetwork.values()).map(network -> network.name().toLowerCase()).toList();
-    }
-
-    public static Optional<CardanoNetwork> fromName(String networkText) {
-        return Enums.getIfPresent(CardanoNetwork.class, networkText.toUpperCase()).toJavaUtil();
-    }
-
-    public boolean isMainnetEnv() {
-        return this == MAIN;
-    }
-
-    public boolean isTestnetEnv() {
-        return !isMainnetEnv();
     }
 
 }

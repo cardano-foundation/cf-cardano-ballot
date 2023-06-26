@@ -16,7 +16,7 @@ public class VoteMerkleProofService {
     private VoteMerkleProofRepository voteMerkleProofRepository;
 
     @Transactional
-    @Timed(value = "service.merkle.find", percentiles = { 0.3, 0.5, 0.95 })
+    @Timed(value = "service.merkle.findLatestProof", percentiles = { 0.3, 0.5, 0.95 })
     public Optional<VoteMerkleProof> findLatestProof(String eventId, String voteId) {
         return voteMerkleProofRepository.findLatestProof(eventId, voteId);
     }

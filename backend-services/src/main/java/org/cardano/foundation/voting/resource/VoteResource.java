@@ -1,10 +1,10 @@
 package org.cardano.foundation.voting.resource;
 
 import io.micrometer.core.annotation.Timed;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.web3.SignedWeb3Request;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
-import org.cardano.foundation.voting.service.security.JwtPrincipal;
 import org.cardano.foundation.voting.service.vote.VoteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Objects;
 
-import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
@@ -31,7 +30,7 @@ public class VoteResource {
 
     @RequestMapping(value = "/cast", method = POST, produces = "application/json")
     @Timed(value = "resource.vote.cast", percentiles = { 0.3, 0.5, 0.95 })
-    public ResponseEntity<?> castVote(@RequestBody SignedWeb3Request castVoteRequest, Authentication authentication) {
+    public ResponseEntity<?> castVote(@RequestBody @Valid SignedWeb3Request castVoteRequest, Authentication authentication) {
         //JwtPrincipal jwtPrincipal = (JwtPrincipal) authentication.getPrincipal();
 
         return voteService.castVote(castVoteRequest)
@@ -53,6 +52,24 @@ public class VoteResource {
 //        }
 
         return voteService.voteReceipt(event, category, stakeAddress)
+                .fold(problem -> {
+                            return ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem);
+                        },
+                        voteReceipt -> {
+                            return ResponseEntity.ok().body(voteReceipt);
+                        });
+    }
+
+    @RequestMapping(value = "/casting-available/{event}/{vote}", method = POST, produces = "application/json")
+    @Timed(value = "resource.vote.receipt", percentiles = { 0.3, 0.5, 0.95 })
+    public ResponseEntity<?> isVoteCastingStillPossible(String event, String vote, Authentication authentication) {
+//        JwtPrincipal jwtPrincipal = (JwtPrincipal) authentication.getPrincipal();
+
+//        if (jwtPrincipal.isNotAllowed(stakeAddress)) {
+//            return ResponseEntity.status(FORBIDDEN).build();
+//        }
+
+        return voteService.isVoteCastingStillPossible(event, vote)
                 .fold(problem -> {
                             return ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem);
                         },

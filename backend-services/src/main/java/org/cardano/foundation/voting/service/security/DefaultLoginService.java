@@ -4,18 +4,20 @@ import io.micrometer.core.annotation.Timed;
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
+import org.cardano.foundation.voting.domain.Role;
 import org.cardano.foundation.voting.domain.web3.SignedWeb3Request;
 import org.cardano.foundation.voting.domain.web3.Web3Action;
 import org.cardano.foundation.voting.service.ExpirationService;
+import org.cardano.foundation.voting.service.JsonService;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
 import org.cardano.foundation.voting.utils.Bech32;
 import org.cardano.foundation.voting.utils.Enums;
-import org.cardano.foundation.voting.service.JsonService;
 import org.cardanofoundation.cip30.CIP30Verifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 import static org.cardano.foundation.voting.domain.web3.Web3Action.CAST_VOTE;
@@ -151,6 +153,19 @@ public class DefaultLoginService implements LoginService {
 
             return Either.left(stakeAddressE.getLeft());
         }
+
+        var maybeRole = Enums.getIfPresent(Role.class, cip93LoginEnvelope.getData().getRole());
+        if (maybeRole.isEmpty()) {
+            log.warn("Invalid role, role:{}", cip93LoginEnvelope.getData().getRole());
+
+            return Either.left(Problem.builder()
+                    .withTitle("INVALID_ROLE")
+                    .withDetail("Invalid role, supported roles:" + Arrays.asList(Role.values()))
+                    .withStatus(BAD_REQUEST)
+                    .build());
+        }
+
+
 
         var stakeAddress = stakeAddressE.get();
 

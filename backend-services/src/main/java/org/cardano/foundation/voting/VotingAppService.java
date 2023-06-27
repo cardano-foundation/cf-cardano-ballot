@@ -26,20 +26,21 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Slf4j
 public class VotingAppService {
 
-    public static void main(String[] args) {
+	public static void main(String[] args) {
 		SpringApplication.run(VotingAppService.class, args);
 	}
 
-    @Bean
-    public CommandLineRunner onStart(ReferenceDataCreator referenceDataCreator) {
+	@Bean
+	public CommandLineRunner onStart(ReferenceDataCreator referenceDataCreator) {
 
-        return (args) -> {
-            log.info("CF Voting App initialisation...");
+		return (args) -> {
+			log.info("CF Voting App initialisation...");
 
-            referenceDataCreator.createReferenceData();
+			referenceDataCreator.createReferenceData();
 
-            log.info("CF Voting App initialisation completed.");
-        };
-    }
+			log.info("CF Voting App initialisation completed.");
+		};
+	}
+
 
 }

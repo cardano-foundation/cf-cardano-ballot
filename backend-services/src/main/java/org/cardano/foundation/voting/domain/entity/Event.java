@@ -2,7 +2,7 @@ package org.cardano.foundation.voting.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.cardano.foundation.voting.domain.EventType;
+import org.cardano.foundation.voting.domain.VotingEventType;
 import org.cardano.foundation.voting.domain.SchemaVersion;
 
 import javax.annotation.Nullable;
@@ -29,12 +29,8 @@ public class Event extends AbstractTimestampEntity {
     @Column(nullable = false)
     private String presentationName; // e.g. Voltaire Pre-Ratification
 
-    @Column(name = "gdpr_protection", nullable = false)
-    @Builder.Default
-    private boolean gdprProtection = true; // GDPR protection is enabled by default and it protects proposal ids not being stored on chain
-
     @Column(name = "event_type", nullable = false)
-    private EventType eventType;
+    private VotingEventType votingEventType;
 
     @Column(name = "start_epoch")
     @Nullable

@@ -13,7 +13,7 @@ public class CardanoConfig {
 
     @Bean
     public CardanoNetwork network(@Value("${cardano.network:main}") String networkName) {
-        var network = Enums.getIfPresent(CardanoNetwork.class, networkName)
+        var network = Enums.getIfPresent(CardanoNetwork.class, networkName.toUpperCase())
                 .orElseThrow(() -> new RuntimeException("Invalid network name: " + networkName));
 
         log.info("Configured backend network:{}", network);

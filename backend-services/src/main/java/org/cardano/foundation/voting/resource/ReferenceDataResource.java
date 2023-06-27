@@ -2,17 +2,12 @@ package org.cardano.foundation.voting.resource;
 
 import io.micrometer.core.annotation.Timed;
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.domain.reference.CategoryReference;
-import org.cardano.foundation.voting.domain.reference.EventReference;
-import org.cardano.foundation.voting.domain.reference.ProposalReference;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Optional;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
@@ -27,43 +22,9 @@ public class ReferenceDataResource {
     @RequestMapping(value = "/event/{name}", method = GET, produces = "application/json")
     @Timed(value = "resource.reference.event", percentiles = { 0.3, 0.5, 0.95 } )
     public ResponseEntity<?> getEventByName(@PathVariable String name) {
-        var maybeEvent = referenceDataService.findEventById(name);
-        if (maybeEvent.isEmpty()) {
-            log.warn("Event with name {} not found", name);
-
-            return ResponseEntity.notFound().build();
-        }
-        var event = maybeEvent.get();
-
-        var categories = event.getCategories().stream().map(category -> {
-            var proposals = category.getProposals().stream().map(proposal -> ProposalReference.builder()
-                            .id(event.getId())
-                            .presentationName(proposal.getProposalDetails().getPresentationName())
-                            .build())
-                    .toList();
-
-                    return CategoryReference.builder()
-                            .id(category.getId())
-                            .presentationName(category.getPresentationName())
-                            .proposals(proposals)
-                            .build();
-                }
-        ).toList();
-
-        return ResponseEntity.ok(EventReference.builder()
-                .id(event.getId())
-                .presentationName(event.getPresentationName())
-                .team(event.getTeam())
-                .eventType(event.getEventType())
-                .gdprProtection(event.isGdprProtection())
-                .startEpoch(Optional.ofNullable(event.getStartEpoch()))
-                .endEpoch(Optional.ofNullable(event.getEndEpoch()))
-                .startSlot(Optional.ofNullable(event.getStartSlot()))
-                .endSlot(Optional.ofNullable(event.getEndSlot()))
-                .snapshotEpoch(Optional.ofNullable(event.getSnapshotEpoch()))
-                .categories(categories)
-
-            .build());
+        return referenceDataService.findEventReference(name)
+                .map(eventReference -> ResponseEntity.ok().body(eventReference)
+                ).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
 }

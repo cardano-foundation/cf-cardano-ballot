@@ -8,6 +8,6 @@ import lombok.Data;
 public class Account {
 
     private String stakeAddress;
-    private long votingPower;
+    private Long votingPower;
 
 }

@@ -7,5 +7,7 @@ import org.zalando.problem.Problem;
 import java.util.Optional;
 
 public interface AccountService {
-    Either<Problem, Optional<Account>> findAccount(String networkName, String eventName, String stakeAddress);
+
+    Either<Problem, Optional<Account>> findAccount(String eventName, String stakeAddress);
+
 }

@@ -20,6 +20,10 @@ public class Category extends AbstractTimestampEntity {
     @Column(name = "id")
     private String id;
 
+    @Column(name = "gdpr_protection")
+    @Builder.Default
+    private boolean gdprProtection = true;
+
     @Column(name = "presentation_name")
     private String presentationName;
 

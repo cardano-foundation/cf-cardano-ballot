@@ -15,8 +15,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
-import static org.cardano.foundation.voting.domain.EventType.STAKE_BASED;
 import static org.cardano.foundation.voting.domain.SchemaVersion.V1;
+import static org.cardano.foundation.voting.domain.VotingEventType.STAKE_BASED;
 
 @Service
 @Slf4j
@@ -83,12 +83,12 @@ public class ReferenceDataCreator {
         event.setPresentationName("CIP-1694 Voltaire Pre-Ratification");
         event.setTeam("CF & IOG");
         event.setStartEpoch(70);
-        event.setEventType(STAKE_BASED);
+        event.setVotingEventType(STAKE_BASED);
         event.setEndEpoch(90);
         event.setSnapshotEpoch(75);
-        event.setGdprProtection(false); // we don't need GDPR protection for pre-ratification voting
 
         Category preRatificationCategory = new Category();
+        preRatificationCategory.setGdprProtection(false);
         preRatificationCategory.setId("Pre-Ratification");
         preRatificationCategory.setPresentationName("Pre Ratification");
         preRatificationCategory.setVersion(V1);
@@ -111,14 +111,6 @@ public class ReferenceDataCreator {
         preRatificationCategory.setEvent(event);
         preRatificationCategory.setProposals(List.of(yesProposal, noProposal, abstainProposal));
         event.setCategories(List.of(preRatificationCategory));
-
-        for (Category category : event.getCategories()) {
-            var l1Hash = l1SubmissionService.submitCategory(event, category);
-            category.setL1TransactionHash(l1Hash);
-        }
-
-        var transactionHash = l1SubmissionService.submitEvent(event);
-        event.setL1TransactionHash(transactionHash);
 
         referenceDataService.storeEvent(event);
     }

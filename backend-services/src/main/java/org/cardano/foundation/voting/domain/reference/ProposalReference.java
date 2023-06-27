@@ -11,6 +11,8 @@ public class ProposalReference {
 
     private String id;
 
+    private String name;
+
     private String presentationName;
 
 }

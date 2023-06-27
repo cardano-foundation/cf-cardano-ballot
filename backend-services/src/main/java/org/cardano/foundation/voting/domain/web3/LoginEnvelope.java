@@ -1,4 +1,4 @@
-package org.cardano.foundation.voting.domain;
+package org.cardano.foundation.voting.domain.web3;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -9,5 +9,6 @@ public class LoginEnvelope {
 
     private String event;
     private String network;
+    private String role;
 
 }

@@ -3,7 +3,7 @@ package org.cardano.foundation.voting.domain.reference;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.cardano.foundation.voting.domain.EventType;
+import org.cardano.foundation.voting.domain.VotingEventType;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,7 +19,7 @@ public class EventReference {
 
     private String presentationName; // e.g. Voltaire Pre-Ratification
 
-    private EventType eventType;
+    private VotingEventType votingEventType;
 
     private boolean gdprProtection;
 

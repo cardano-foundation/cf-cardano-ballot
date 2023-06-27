@@ -39,7 +39,6 @@ dependencies {
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 
-	implementation("io.micrometer:micrometer-registry-atlas")
 	runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 
 	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.6")
@@ -51,13 +50,13 @@ dependencies {
 	implementation("org.zalando:jackson-datatype-problem:0.27.1")
 
 	compileOnly("org.projectlombok:lombok")
+	annotationProcessor("org.projectlombok:lombok")
 
 	implementation("com.nimbusds:nimbus-jose-jwt:9.30.2")
 
 	implementation("com.querydsl:querydsl-jpa")
     annotationProcessor("com.querydsl:querydsl-apt")
 
-	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.testcontainers:junit-jupiter")
 
     implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0-alpha.3")
@@ -76,8 +75,6 @@ dependencies {
     implementation("com.networknt:json-schema-validator:1.0.82")
 
 	implementation("org.postgresql:postgresql")
-
-    implementation("com.google.guava:guava:31.1-jre")
 
 	implementation("org.cardanofoundation:merkle-tree-java:0.0.6-SNAPSHOT") // TODO release to maven central
 }

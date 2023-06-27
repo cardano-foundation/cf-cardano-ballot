@@ -13,6 +13,8 @@ public class CategoryReference {
 
     private String id;
 
+    private boolean gdprProtection;
+
     private String presentationName;
 
     private List<ProposalReference> proposals;

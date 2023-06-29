@@ -16,16 +16,15 @@ public class Proposal extends AbstractTimestampEntity {
     @Column
     private String id;
 
+    @Column(name = "name", nullable = false)
+    private String name;
+
     @ManyToOne(
             fetch = FetchType.EAGER,
             cascade = CascadeType.ALL
     )
     @JoinColumn(name = "category_id")
     private Category category;
-
-    @OneToOne(cascade = {CascadeType.ALL})
-    @JoinColumn(name = "proposal_details_id")
-    private ProposalDetails proposalDetails;
 
 }
 

@@ -2,8 +2,8 @@ package org.cardano.foundation.voting.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.cardano.foundation.voting.domain.VotingEventType;
 import org.cardano.foundation.voting.domain.SchemaVersion;
+import org.cardano.foundation.voting.domain.VotingEventType;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -24,10 +24,7 @@ public class Event extends AbstractTimestampEntity {
     private String id; // e.g. Voltaire_Pre_Ratification
 
     @Column(nullable = false)
-    private String team; // e.g. CF Team // TODO what about team spoofing - do we need that team has private / public key
-
-    @Column(nullable = false)
-    private String presentationName; // e.g. Voltaire Pre-Ratification
+    private String team; // e.g. CF Team
 
     @Column(name = "event_type", nullable = false)
     private VotingEventType votingEventType;
@@ -51,10 +48,6 @@ public class Event extends AbstractTimestampEntity {
     @Column(name = "snapshot_epoch")
     @Nullable
     private Integer snapshotEpoch;
-
-    @Column(name = "l1_transaction_hash")
-    @Nullable
-    private String l1TransactionHash;
 
     @Column(name = "schema_version")
     private SchemaVersion version;

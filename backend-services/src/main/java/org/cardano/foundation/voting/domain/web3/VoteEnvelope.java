@@ -13,7 +13,7 @@ public class VoteEnvelope {
     private String category;
     private String proposal;
     private String network;
-    private String votedAt;
+    private long votedAt;
     private long votingPower;
 
 }

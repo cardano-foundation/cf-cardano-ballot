@@ -15,6 +15,7 @@ import org.cardano.foundation.voting.domain.web3.Web3Action;
 import org.cardano.foundation.voting.repository.ProposalRepository;
 import org.cardano.foundation.voting.repository.VoteRepository;
 import org.cardano.foundation.voting.service.ExpirationService;
+import org.cardano.foundation.voting.service.JsonService;
 import org.cardano.foundation.voting.service.VotingPowerService;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataTransactionDetailsService;
 import org.cardano.foundation.voting.service.merkle_tree.MerkleProofSerdeService;
@@ -22,7 +23,6 @@ import org.cardano.foundation.voting.service.merkle_tree.VoteMerkleProofService;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
 import org.cardano.foundation.voting.utils.Bech32;
 import org.cardano.foundation.voting.utils.Enums;
-import org.cardano.foundation.voting.service.JsonService;
 import org.cardano.foundation.voting.utils.UUID;
 import org.cardanofoundation.cip30.CIP30Verifier;
 import org.cardanofoundation.merkle.ProofItem;
@@ -86,7 +86,7 @@ public class DefaultVoteService implements VoteService {
     @Transactional
     @Timed(value = "service.vote.isVoteCastingStillPossible", percentiles = { 0.3, 0.5, 0.95 })
     public Either<Problem, Boolean> isVoteCastingStillPossible(String eventId, String voteId) {
-        var maybeEvent = referenceDataService.findEventById(eventId);
+        var maybeEvent = referenceDataService.findEventByName(eventId);
         if (maybeEvent.isEmpty()) {
             return Either.left(Problem.builder()
                     .withTitle("EVENT_NOT_FOUND")
@@ -230,7 +230,7 @@ public class DefaultVoteService implements VoteService {
         }
 
         var eventId = cip90VoteEnvelope.getData().getEvent();
-        var maybeEvent = referenceDataService.findEventById(eventId);
+        var maybeEvent = referenceDataService.findEventByName(eventId);
         if (maybeEvent.isEmpty()) {
             log.warn("Unrecognised event, eventId:{}", eventId);
 
@@ -290,7 +290,7 @@ public class DefaultVoteService implements VoteService {
             );
         }
 
-        var votedAtSlot = Long.parseLong(cip90VoteEnvelope.getData().getVotedAt());
+        var votedAtSlot = cip90VoteEnvelope.getData().getVotedAt();
         if (expirationService.isSlotExpired(votedAtSlot)) {
             log.warn("Invalid votedAt slot, votedAt slot:{}", votedAtSlot);
 
@@ -397,7 +397,7 @@ public class DefaultVoteService implements VoteService {
     @Transactional
     @Timed(value = "service.vote.voteReceipt", percentiles = { 0.3, 0.5, 0.95 })
     public Either<Problem, VoteReceipt> voteReceipt(String eventName, String categoryName, String stakeAddress) {
-        var maybeEvent = referenceDataService.findEventById(eventName);
+        var maybeEvent = referenceDataService.findEventByName(eventName);
         if (maybeEvent.isEmpty()) {
             log.warn("Unrecognised event, event:{}", eventName);
 
@@ -480,7 +480,7 @@ public class DefaultVoteService implements VoteService {
                     .event(event.getId())
                     .category(category.getId())
                     .proposal(proposal.getId())
-                    .proposalText(proposal.getProposalDetails().getPresentationName())
+                    .proposalText(proposal.getName())
                     .coseSignature(vote.getCoseSignature())
                     .cosePublicKey(vote.getCosePublicKey())
                     .votedAtSlot(vote.getVotedAtSlot())

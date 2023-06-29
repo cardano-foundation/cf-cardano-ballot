@@ -1,11 +1,11 @@
 package org.cardano.foundation.voting.service.transaction_submit;
 
 import com.bloxbean.cardano.client.account.Account;
+import com.bloxbean.cardano.client.address.Address;
 import com.bloxbean.cardano.client.api.model.Amount;
 import com.bloxbean.cardano.client.backend.api.BackendService;
 import com.bloxbean.cardano.client.cip.cip30.CIP30DataSigner;
 import com.bloxbean.cardano.client.cip.cip30.DataSignature;
-import com.bloxbean.cardano.client.common.cbor.CborSerializationUtil;
 import com.bloxbean.cardano.client.function.helper.SignerProviders;
 import com.bloxbean.cardano.client.metadata.Metadata;
 import com.bloxbean.cardano.client.metadata.MetadataBuilder;
@@ -13,10 +13,12 @@ import com.bloxbean.cardano.client.metadata.MetadataMap;
 import com.bloxbean.cardano.client.quicktx.QuickTxBuilder;
 import com.bloxbean.cardano.client.quicktx.Tx;
 import com.bloxbean.cardano.client.util.HexUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.L1MerkleCommitment;
-import org.cardano.foundation.voting.domain.OnChainEventType;
+import org.cardano.foundation.voting.domain.metadata.OnChainEventType;
+import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataChainTipService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,17 +26,24 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static org.cardano.foundation.voting.domain.OnChainEventType.COMMITMENTS;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.cardano.foundation.voting.domain.metadata.OnChainEventType.COMMITMENTS;
 
 @Service
 @Slf4j
 public class L1TransactionCreator {
 
     @Autowired
+    private BlockchainDataChainTipService blockchainDataChainTipService;
+
+    @Autowired
     private BackendService backendService;
 
     @Autowired
     private MetadataSerialiser metadataSerialiser;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired
     @Qualifier("organiser_account")
@@ -44,7 +53,8 @@ public class L1TransactionCreator {
     private int metadataLabel;
 
     public byte[] submitMerkleCommitments(List<L1MerkleCommitment> l1MerkleCommitments) {
-        MetadataMap eventMetadataMap = metadataSerialiser.serialise(l1MerkleCommitments);
+        var chainTip = blockchainDataChainTipService.getChainTip();
+        MetadataMap eventMetadataMap = metadataSerialiser.serialise(l1MerkleCommitments, chainTip.getAbsoluteSlot());
         Metadata metadata = serialiseMetadata(eventMetadataMap, COMMITMENTS);
 
         return serialiseTransaction(metadata);
@@ -52,15 +62,17 @@ public class L1TransactionCreator {
 
     @SneakyThrows
     protected Metadata serialiseMetadata(MetadataMap childMetadata, OnChainEventType onChainEventType) {
-        var stakeAddress = organiserAccount.stakeAddress();
+        byte[] data = childMetadata.toJson().getBytes(UTF_8);
 
-        byte[] data = CborSerializationUtil.serialize(childMetadata.getMap());
-        DataSignature dataSignature = CIP30DataSigner.INSTANCE.signData(stakeAddress.getBytes(), data, organiserAccount);
+        var stakeAddress = organiserAccount.stakeAddress();
+        var stakeAddressAccount = new Address(stakeAddress);
+        DataSignature dataSignature = CIP30DataSigner.INSTANCE.signData(stakeAddressAccount.getBytes(), data, organiserAccount);
 
         var envelope = MetadataBuilder.createMap();
         envelope.put("type", onChainEventType.name());
         envelope.put("signature", dataSignature.signature());
         envelope.put("key", dataSignature.key());
+        envelope.put("format", "CIP-30");
 
         Metadata metadata = MetadataBuilder.createMetadata();
         metadata.put(metadataLabel, envelope);

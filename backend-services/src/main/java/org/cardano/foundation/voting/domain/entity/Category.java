@@ -24,12 +24,6 @@ public class Category extends AbstractTimestampEntity {
     @Builder.Default
     private boolean gdprProtection = true;
 
-    @Column(name = "presentation_name")
-    private String presentationName;
-
-    @Column(name = "l1_transaction_hash")
-    private String l1TransactionHash;
-
     @Column(name = "schema_version")
     private SchemaVersion version;
 

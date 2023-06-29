@@ -11,7 +11,14 @@ public class ThreadPoolsConfig {
 
     @Bean(name = "threadPoolTaskExecutor")
     public Executor threadPoolTaskExecutor() {
-        return new ThreadPoolTaskExecutor();
+        ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
+        threadPoolTaskExecutor.setQueueCapacity(5);
+
+        threadPoolTaskExecutor.setCorePoolSize(2);
+
+        threadPoolTaskExecutor.setMaxPoolSize(3);
+
+        return threadPoolTaskExecutor;
     }
 
 }

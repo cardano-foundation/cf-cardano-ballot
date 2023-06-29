@@ -49,7 +49,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
                     .build());
         }
 
-        var maybeEvent = referenceDataService.findEventById(eventName);
+        var maybeEvent = referenceDataService.findEventByName(eventName);
         if (maybeEvent.isEmpty()) {
             return Either.left(Problem.builder()
                     .withTitle("UNRECOGNISED_EVENT")

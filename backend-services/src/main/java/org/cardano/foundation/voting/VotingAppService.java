@@ -1,7 +1,6 @@
 package org.cardano.foundation.voting;
 
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.service.reference_data.ReferenceDataCreator;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -18,7 +17,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
 @EnableJpaRepositories("org.cardano.foundation.voting.repository")
 @EntityScan(basePackages = "org.cardano.foundation.voting.domain.entity")
-@ComponentScan(basePackages = { "org.cardano.foundation.voting.repository", "org.cardano.foundation.voting.service", "org.cardano.foundation.voting.resource", "org.cardano.foundation.voting.config" })
+@ComponentScan(basePackages = { "org.cardano.foundation.voting.repository", "org.cardano.foundation.voting.service", "org.cardano.foundation.voting.resource", "org.cardano.foundation.voting.config", "org.cardano.foundation.voting.jobs" })
 @EnableTransactionManagement
 @EnableScheduling
 @EnableCaching
@@ -31,12 +30,12 @@ public class VotingAppService {
 	}
 
 	@Bean
-	public CommandLineRunner onStart(ReferenceDataCreator referenceDataCreator) {
+	public CommandLineRunner onStart() {
 
 		return (args) -> {
 			log.info("CF Voting App initialisation...");
 
-			referenceDataCreator.createReferenceData();
+			//referenceDataCreator.createReferenceData();
 
 			log.info("CF Voting App initialisation completed.");
 		};

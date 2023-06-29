@@ -122,7 +122,7 @@ public class DefaultLoginService implements LoginService {
         }
         String event = cip93LoginEnvelope.getData().getEvent();
 
-        var maybeEvent = referenceDataService.findEventById(event);
+        var maybeEvent = referenceDataService.findEventByName(event);
         if (maybeEvent.isEmpty()) {
             log.warn("Event not found, event:{}", event);
 
@@ -146,6 +146,7 @@ public class DefaultLoginService implements LoginService {
             );
         }
         var addressBytes = maybeAddress.orElseThrow();
+        log.info("address:{}", new String(addressBytes));
 
         var stakeAddressE = Bech32.decode(addressBytes);
         if (stakeAddressE.isLeft()) {

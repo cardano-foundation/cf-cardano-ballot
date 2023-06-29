@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class VoteCommitmentJob {
+public class VoteCommitmentJob implements Runnable {
 
     @Autowired
     private VoteCommitmentService voteCommitmentService;
@@ -19,18 +19,17 @@ public class VoteCommitmentJob {
     @Async
     public void onStart() {
         log.info("On startup...");
-        processVotesForAllEvents();
+        run();
         log.info("On startup...done.");
     }
 
+    @Override
     @Scheduled(cron = "0 0/30 * * * ?")
-    public void processVotesForAllEvents() {
+    public void run() {
         log.info("Starting VoteCommitmentJob...");
-        log.info("Processing events...");
 
         voteCommitmentService.processVotesForAllEvents();
 
         log.info("Finished processing events and all votes...");
     }
-
 }

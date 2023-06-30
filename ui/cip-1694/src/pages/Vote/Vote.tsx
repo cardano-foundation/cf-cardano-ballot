@@ -39,38 +39,18 @@ const Vote = () => {
   const [isSigned, setIsSigned] = useState(false);
   const [optionId, setOptionId] = useState("");
 
-
-  //TODO:
-  //get reference from Endpoint
-  //http://localhost:8080/api/reference/event/CIP-1694_Pre_Ratification_9D06
-
-  //TODO:
-  //get Voting Power via Endpoint
-  //http://localhost:8080/api/account/CIP-1694_Pre_Ratification_9D06/stake_test1urcnqgzt2x8hpsvej4zfudehahknm8lux894pmqwg5qshgcrn346q
-
-  //TODO:
-  //get Slot number from network
-  //http://localhost:8080/api/blockchain/tip
-
   //TODO usecases:
   //Voting power is not available - User not staking.. Can not vote. We need to have error popup.
   //Voting can be submitted twice till onchain submission
-
-  //TODO Voter receipt
   //get Voter receipt from Endpoint
-  //
-
-  //TODO User not valid after 2 hours
-
-
+  //User not valid after 2 hours
 
   const canonicalVoteInput = useMemo(
     () =>
       buildCanonicalVoteInputJson({
         option: optionId,
         voter: stakeAddress,
-        voteId: uuidv4(),
-        //votingPower
+        voteId: uuidv4()
       }),
     [isConnected, optionId, stakeAddress]
   );

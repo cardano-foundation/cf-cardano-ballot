@@ -1,5 +1,10 @@
 import { canonicalize } from "json-canonicalize";
-import { TARGET_NETWORK } from "../constants/appConstants";
+import {
+  TARGET_NETWORK,
+  EVENT_ID,
+  CATEGORY_ID,
+} from "../constants/appConstants";
+import { eVoteService } from "../api/voteService";
 
 function sanitize(value: any) {
   if (value === null || typeof value === "undefined") {
@@ -9,8 +14,28 @@ function sanitize(value: any) {
   }
 }
 
-export const slotFromTimestamp = (date: Date) => {
-  return Math.floor(date.getTime() / 1000 - 1660003200);
+export const slotFromTimestamp = async () => {
+  try {
+    const response = await eVoteService.getSlotNumber();
+    console.log(response.absoluteSlot);
+    return response.absoluteSlot;
+  } catch (e: any) {
+    if (e.response === 400) {
+      console.log(e);
+    }
+  }
+};
+
+export const votingPowerOfUser = async () => {
+  try {
+    const response = await eVoteService.getVotingPower();
+    console.log(response.votingPower);
+    return response.votingPower;
+  } catch (e: any) {
+    if (e.response === 400) {
+      console.log(e);
+    }
+  }
 };
 
 export const buildCanonicalVoteInputJson = (voteInput: {
@@ -21,18 +46,19 @@ export const buildCanonicalVoteInputJson = (voteInput: {
   const startOfCurrentDay = new Date();
   startOfCurrentDay.setUTCMinutes(0, 0, 0);
   return canonicalize({
-    uri: "https://example.com/vote",
+    uri: "https://evoting.cardano.org/voltaire",
     action: "CAST_VOTE",
-    actionText: "Submit Vote",
-    slot: `${slotFromTimestamp(startOfCurrentDay)}`, // not a string
-    vote: {
-      voteId: sanitize(voteInput.voteId),
-      stakeAddress: sanitize(voteInput.voter),
-      eventName: "CIP-1694-Pre-Ratification",
-      categoryName: "Pre-Ratification",
-      proposalName: sanitize(voteInput.option),
+    actionText: "Cast Vote",
+    slot: slotFromTimestamp(), // not a string
+    data: {
+      id: sanitize(voteInput.voteId),
+      address: sanitize(voteInput.voter),
+      event: EVENT_ID,
+      category: CATEGORY_ID,
+      proposal: sanitize(voteInput.option),
       network: TARGET_NETWORK,
-      votedAt: `${slotFromTimestamp(startOfCurrentDay)}`,
+      votedAt: slotFromTimestamp(),
+      votingPower: votingPowerOfUser(),
     },
   });
 };

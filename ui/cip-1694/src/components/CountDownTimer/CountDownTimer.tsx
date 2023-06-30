@@ -11,8 +11,7 @@ export default function CountDownTimer() {
 
   return (
     <div data-testid="count-down-timer">
-      <span>{days} days</span>, <span>{hours} hours</span>,{" "}
-      <span>{minutes} minutes</span>, <span>{seconds} secs</span>
+      <span>{days} days</span>, <span>{hours} hours</span>, <span>{minutes} minutes</span>, <span>{seconds} secs</span>
     </div>
   );
 }

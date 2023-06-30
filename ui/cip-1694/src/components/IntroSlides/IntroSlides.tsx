@@ -1,3 +1,4 @@
+import React from "react";
 import { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Navigation } from "swiper";
@@ -53,7 +54,7 @@ const IntroSlides = ({ items }: SlideProps) => {
         onSwiper={(swiper) => setSwiper(swiper)}
         onSlideChange={() => (swiper ? setActiveIndex(swiper.realIndex) : null)}
         slidesPerView={1}
-        navigation={true}
+        navigation={false}
         autoplay={{
           delay: 3000,
           disableOnInteraction: false,

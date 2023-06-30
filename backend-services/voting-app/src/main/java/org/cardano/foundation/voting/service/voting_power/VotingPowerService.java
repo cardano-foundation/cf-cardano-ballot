@@ -1,4 +1,4 @@
-package org.cardano.foundation.voting.service;
+package org.cardano.foundation.voting.service.voting_power;
 
 import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataStakePoolService;

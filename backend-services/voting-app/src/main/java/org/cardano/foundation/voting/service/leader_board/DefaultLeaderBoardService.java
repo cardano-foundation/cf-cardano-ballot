@@ -4,7 +4,7 @@ import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.Leaderboard;
-import org.cardano.foundation.voting.service.ExpirationService;
+import org.cardano.foundation.voting.service.expire.ExpirationService;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
 import org.cardano.foundation.voting.utils.Enums;
 import org.springframework.beans.factory.annotation.Autowired;

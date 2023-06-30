@@ -8,7 +8,7 @@ import org.cardano.foundation.voting.domain.entity.Proposal;
 import org.cardano.foundation.voting.repository.CategoryRepository;
 import org.cardano.foundation.voting.repository.EventRepository;
 import org.cardano.foundation.voting.repository.ProposalRepository;
-import org.cardano.foundation.voting.service.ExpirationService;
+import org.cardano.foundation.voting.service.expire.ExpirationService;
 import org.cardano.foundation.voting.service.i18n.LocalisationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,10 +36,16 @@ public class ReferenceDataService {
     @Autowired
     private LocalisationService localisationService;
 
-    @Timed(value = "service.reference.findEventByName", percentiles = {0.3, 0.5, 0.95})
+    @Timed(value = "service.reference.findValidEventByName", percentiles = {0.3, 0.5, 0.95})
     @Transactional
     public Optional<Event> findValidEventByName(String name) {
         return eventRepository.findById(name).filter(Event::isValid);
+    }
+
+    @Timed(value = "service.reference.findEventByName", percentiles = {0.3, 0.5, 0.95})
+    @Transactional
+    public Optional<Event> findEventByName(String name) {
+        return eventRepository.findById(name);
     }
 
     @Timed(value = "service.reference.findCategoryByName", percentiles = {0.3, 0.5, 0.95})
@@ -54,6 +60,12 @@ public class ReferenceDataService {
         return proposalRepository.findById(id);
     }
 
+    @Timed(value = "service.reference.findProposalByName", percentiles = {0.3, 0.5, 0.95})
+    @Transactional
+    public Optional<Proposal> findProposalByName(String name) {
+        return proposalRepository.findProposalByName(name);
+    }
+
     @Timed(value = "service.reference.storeEvent", percentiles = {0.3, 0.5, 0.95})
     @Transactional
     public Event storeEvent(Event event) {
@@ -65,14 +77,15 @@ public class ReferenceDataService {
     public List<Event> findAllValidEvents() {
         return eventRepository.findAll()
                 .stream()
-                .filter(event -> event.isValid())
+                .filter(Event::isValid)
                 .toList();
     }
 
     @Timed(value = "service.reference.findAllActiveEvents", percentiles = {0.3, 0.5, 0.95})
     @Transactional
     public List<Event> findAllActiveEvents() {
-        return eventRepository.findAll().stream().filter(event -> expirationService.isEventActive(event)).toList();
+        return findAllValidEvents().stream()
+                .filter(event -> expirationService.isEventActive(event)).toList();
     }
 
     @Timed(value = "service.reference.storeCategory", percentiles = {0.3, 0.5, 0.95})

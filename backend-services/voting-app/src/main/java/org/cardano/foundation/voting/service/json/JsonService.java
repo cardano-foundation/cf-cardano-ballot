@@ -1,4 +1,4 @@
-package org.cardano.foundation.voting.service;
+package org.cardano.foundation.voting.service.json;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;

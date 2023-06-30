@@ -8,7 +8,7 @@ import org.cardano.foundation.voting.domain.entity.Category;
 import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.domain.entity.Proposal;
 import org.cardano.foundation.voting.domain.metadata.OnChainEventType;
-import org.cardano.foundation.voting.service.JsonService;
+import org.cardano.foundation.voting.service.json.JsonService;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
 import org.cardano.foundation.voting.utils.Bech32;
 import org.cardano.foundation.voting.utils.ChunkedMetadataParser;
@@ -199,7 +199,7 @@ public class MetadataProcessor {
         }
         var categoryRegistration = maybeCategoryRegistration.orElseThrow();
 
-        var maybeStoredEvent = referenceDataService.findValidEventByName(categoryRegistration.getEvent());
+        var maybeStoredEvent = referenceDataService.findEventByName(categoryRegistration.getEvent());
         if (maybeStoredEvent.isEmpty()) {
             log.info("Event not found, ignoring category registration ignoring id: {}", id);
 

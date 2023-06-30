@@ -8,19 +8,19 @@ import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.TransactionDetails;
 import org.cardano.foundation.voting.domain.VoteReceipt;
 import org.cardano.foundation.voting.domain.entity.Event;
+import org.cardano.foundation.voting.domain.entity.Proposal;
 import org.cardano.foundation.voting.domain.entity.Vote;
 import org.cardano.foundation.voting.domain.entity.VoteMerkleProof;
 import org.cardano.foundation.voting.domain.web3.SignedWeb3Request;
 import org.cardano.foundation.voting.domain.web3.Web3Action;
-import org.cardano.foundation.voting.repository.ProposalRepository;
 import org.cardano.foundation.voting.repository.VoteRepository;
-import org.cardano.foundation.voting.service.ExpirationService;
-import org.cardano.foundation.voting.service.JsonService;
-import org.cardano.foundation.voting.service.VotingPowerService;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataTransactionDetailsService;
+import org.cardano.foundation.voting.service.expire.ExpirationService;
+import org.cardano.foundation.voting.service.json.JsonService;
 import org.cardano.foundation.voting.service.merkle_tree.MerkleProofSerdeService;
 import org.cardano.foundation.voting.service.merkle_tree.VoteMerkleProofService;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
+import org.cardano.foundation.voting.service.voting_power.VotingPowerService;
 import org.cardano.foundation.voting.utils.Bech32;
 import org.cardano.foundation.voting.utils.Enums;
 import org.cardano.foundation.voting.utils.UUID;
@@ -50,9 +50,6 @@ public class DefaultVoteService implements VoteService {
 
     @Autowired
     private ReferenceDataService referenceDataService;
-
-    @Autowired
-    private ProposalRepository proposalRepository;
 
     @Autowired
     private ExpirationService expirationService;
@@ -263,19 +260,36 @@ public class DefaultVoteService implements VoteService {
         }
         var category = maybeCategory.orElseThrow();
 
-        String proposalId = cip90VoteEnvelope.getData().getProposal();
-        var maybeProposal = proposalRepository.findById(proposalId);
-        if (maybeProposal.isEmpty()) {
-            log.warn("Unrecognised proposal, proposalId:{}", eventId);
+        var proposalIdOrName = cip90VoteEnvelope.getData().getProposal();
 
-            return Either.left(Problem.builder()
-                    .withTitle("UNRECOGNISED_PROPOSAL")
-                    .withDetail("Unrecognised proposal, proposalId:" + proposalId)
-                    .withStatus(BAD_REQUEST)
-                    .build());
+        log.info("Category GDPR protection: {}", category.isGdprProtection());
+
+        Proposal proposal = null;
+        if (category.isGdprProtection()) {
+            var maybeProposal = referenceDataService.findProposalById(proposalIdOrName);
+            if (maybeProposal.isEmpty()) {
+                log.warn("Unrecognised proposal, proposalId:{}", eventId);
+
+                return Either.left(Problem.builder()
+                        .withTitle("UNRECOGNISED_PROPOSAL")
+                        .withDetail("Unrecognised proposal, proposal:" + proposalIdOrName)
+                        .withStatus(BAD_REQUEST)
+                        .build());
+            }
+            proposal = maybeProposal.orElseThrow();
+        } else {
+            var maybeProposal = referenceDataService.findProposalByName(proposalIdOrName);
+            if (maybeProposal.isEmpty()) {
+                log.warn("Unrecognised proposal, proposalId:{}", eventId);
+
+                return Either.left(Problem.builder()
+                        .withTitle("UNRECOGNISED_PROPOSAL")
+                        .withDetail("Unrecognised proposal, proposal:" + proposalIdOrName)
+                        .withStatus(BAD_REQUEST)
+                        .build());
+            }
+            proposal = maybeProposal.orElseThrow();
         }
-
-        var proposal = maybeProposal.orElseThrow();
 
         var cip93Slot = cip90VoteEnvelope.getSlot();
         if (expirationService.isSlotExpired(cip93Slot)) {
@@ -433,7 +447,7 @@ public class DefaultVoteService implements VoteService {
         }
         var vote = maybeVote.orElseThrow();
 
-        var maybeProposal = proposalRepository.findById(vote.getId());
+        var maybeProposal = referenceDataService.findProposalById(vote.getProposalId());
         if (maybeProposal.isEmpty()) {
             return Either.left(
                     Problem.builder()

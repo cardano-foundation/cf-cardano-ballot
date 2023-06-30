@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.L1MerkleCommitment;
 import org.cardano.foundation.voting.domain.entity.VoteMerkleProof;
 import org.cardano.foundation.voting.repository.VoteMerkleProofRepository;
-import org.cardano.foundation.voting.service.MerkleTreeService;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
 import org.cardano.foundation.voting.service.transaction_submit.L1SubmissionService;
 import org.cardano.foundation.voting.service.vote.VoteService;

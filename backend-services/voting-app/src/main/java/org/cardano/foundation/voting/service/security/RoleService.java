@@ -4,7 +4,7 @@ import com.bloxbean.cardano.client.account.Account;
 import io.vavr.control.Either;
 import org.cardano.foundation.voting.domain.Role;
 import org.cardano.foundation.voting.domain.web3.SignedWeb3Request;
-import org.cardano.foundation.voting.service.JsonService;
+import org.cardano.foundation.voting.service.json.JsonService;
 import org.cardano.foundation.voting.utils.Bech32;
 import org.cardano.foundation.voting.utils.Enums;
 import org.cardanofoundation.cip30.CIP30Verifier;

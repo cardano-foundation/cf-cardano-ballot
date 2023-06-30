@@ -6,7 +6,7 @@ import org.cardano.foundation.voting.domain.reference.CategoryReference;
 import org.cardano.foundation.voting.domain.reference.EventReference;
 import org.cardano.foundation.voting.domain.reference.ProposalReference;
 import org.cardano.foundation.voting.repository.EventRepository;
-import org.cardano.foundation.voting.service.ExpirationService;
+import org.cardano.foundation.voting.service.expire.ExpirationService;
 import org.cardano.foundation.voting.service.i18n.LocalisationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -65,4 +65,27 @@ public class Event extends AbstractTimestampEntity {
         return categories.stream().filter(category -> category.getId().equals(categoryName)).findFirst();
     }
 
+    public boolean isValid() {
+        if (votingEventType == VotingEventType.STAKE_BASED) {
+            if (startEpoch == null || endEpoch == null || snapshotEpoch == null) {
+                return false;
+            }
+        }
+        if (votingEventType == VotingEventType.USER_BASED) {
+            if (startSlot == null || endSlot == null) {
+                return false;
+            }
+        }
+        if (categories.isEmpty()) {
+            return false;
+        }
+        var anyCategoryInvalid = categories.stream().anyMatch(category -> !category.isValid());
+
+        if (anyCategoryInvalid) {
+            return false;
+        }
+
+        return true;
+    }
+
 }

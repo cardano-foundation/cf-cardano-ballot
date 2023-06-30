@@ -122,7 +122,7 @@ public class DefaultLoginService implements LoginService {
         }
         String event = cip93LoginEnvelope.getData().getEvent();
 
-        var maybeEvent = referenceDataService.findEventByName(event);
+        var maybeEvent = referenceDataService.findValidEventByName(event);
         if (maybeEvent.isEmpty()) {
             log.warn("Event not found, event:{}", event);
 

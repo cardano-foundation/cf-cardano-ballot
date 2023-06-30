@@ -27,6 +27,11 @@ public class LocalisationService {
             return "CIP-1694 Pre-Ratification";
         }
 
+        // TODO should we introduce a class type for this?
+        if (name.startsWith("CIP-1694_Pre_Ratification")) {
+            return "CIP-1694 Pre-Ratification";
+        }
+
         return "";
     }
 

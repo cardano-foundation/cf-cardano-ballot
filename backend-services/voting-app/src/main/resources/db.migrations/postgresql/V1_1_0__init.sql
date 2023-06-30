@@ -14,8 +14,8 @@ CREATE TABLE event (
 
     snapshot_epoch INT,
 
-    create_datetime TIMESTAMP WITHOUT TIME ZONE,
-    update_datetime TIMESTAMP WITHOUT TIME ZONE,
+    created_at TIMESTAMP WITHOUT TIME ZONE,
+    updated_at TIMESTAMP WITHOUT TIME ZONE,
 
    CONSTRAINT pk_event PRIMARY KEY (id)
 );
@@ -28,8 +28,8 @@ CREATE TABLE category (
     schema_version VARCHAR(255) NOT NULL,
     gdpr_protection BOOLEAN NOT NULL,
 
-    create_datetime TIMESTAMP WITHOUT TIME ZONE,
-    update_datetime TIMESTAMP WITHOUT TIME ZONE,
+    created_at TIMESTAMP WITHOUT TIME ZONE,
+    updated_at TIMESTAMP WITHOUT TIME ZONE,
 
    CONSTRAINT pk_category PRIMARY KEY (id)
 );
@@ -41,8 +41,8 @@ CREATE TABLE proposal (
     name VARCHAR(255 NOT NULL, -- PII protection, on chain we are not allowed to store human readable names
     category_id VARCHAR(255) NOT NULL REFERENCES category(id),
 
-    create_datetime TIMESTAMP WITHOUT TIME ZONE,
-    update_datetime TIMESTAMP WITHOUT TIME ZONE,
+    created_at TIMESTAMP WITHOUT TIME ZONE,
+    updated_at TIMESTAMP WITHOUT TIME ZONE,
 
    CONSTRAINT pk_proposal PRIMARY KEY (id)
 );
@@ -61,6 +61,9 @@ CREATE TABLE vote (
    network INT NOT NULL,
    voted_at_slot BIGINT NOT NULL,
 
+   created_at TIMESTAMP WITHOUT TIME ZONE,
+   updated_at TIMESTAMP WITHOUT TIME ZONE,
+
    CONSTRAINT pk_vote PRIMARY KEY (vote)
 );
 
@@ -76,6 +79,9 @@ CREATE TABLE vote_merkle_proof (
    root_hash VARCHAR(255) NOT NULL, -- merkle root hash as hex string
    l1_transaction_hash VARCHAR(255) NOT NULL, -- transaction hash as hex string
    proof_items_json json NOT NULL, -- json representing actual merkle proof
+
+   created_at TIMESTAMP WITHOUT TIME ZONE,
+   updated_at TIMESTAMP WITHOUT TIME ZONE,
 
    CONSTRAINT pk_vote PRIMARY KEY (vote_id)
 );

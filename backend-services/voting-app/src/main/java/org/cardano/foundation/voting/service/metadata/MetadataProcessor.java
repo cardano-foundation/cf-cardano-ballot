@@ -135,7 +135,7 @@ public class MetadataProcessor {
         }
         var eventRegistration = maybeEventRegistration.orElseThrow();
 
-        var maybeStoredEvent = referenceDataService.findEventByName(eventRegistration.getName());
+        var maybeStoredEvent = referenceDataService.findValidEventByName(eventRegistration.getName());
         if (maybeStoredEvent.isPresent()) {
             log.info("Event already found, ignoring id:{}", id);
 
@@ -199,7 +199,7 @@ public class MetadataProcessor {
         }
         var categoryRegistration = maybeCategoryRegistration.orElseThrow();
 
-        var maybeStoredEvent = referenceDataService.findEventByName(categoryRegistration.getEvent());
+        var maybeStoredEvent = referenceDataService.findValidEventByName(categoryRegistration.getEvent());
         if (maybeStoredEvent.isEmpty()) {
             log.info("Event not found, ignoring category registration ignoring id: {}", id);
 

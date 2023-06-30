@@ -21,8 +21,6 @@ public class EventReference {
 
     private VotingEventType votingEventType;
 
-    private boolean gdprProtection;
-
     private Optional<Long> startSlot;
 
     private Optional<Long> endSlot;
@@ -32,6 +30,8 @@ public class EventReference {
     private Optional<Integer> endEpoch;
 
     private Optional<Integer> snapshotEpoch;
+
+    private boolean isActive;
 
     private List<CategoryReference> categories;
 

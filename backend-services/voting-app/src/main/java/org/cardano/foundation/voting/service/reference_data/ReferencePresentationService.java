@@ -1,19 +1,25 @@
 package org.cardano.foundation.voting.service.reference_data;
 
 import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.domain.reference.CategoryReference;
 import org.cardano.foundation.voting.domain.reference.EventReference;
 import org.cardano.foundation.voting.domain.reference.ProposalReference;
+import org.cardano.foundation.voting.repository.EventRepository;
+import org.cardano.foundation.voting.service.ExpirationService;
 import org.cardano.foundation.voting.service.i18n.LocalisationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
 @Service
 @Slf4j
 public class ReferencePresentationService {
+    @Autowired
+    private EventRepository eventRepository;
 
     @Autowired
     private ReferenceDataService referenceDataService;
@@ -21,8 +27,11 @@ public class ReferencePresentationService {
     @Autowired
     private LocalisationService localisationService;
 
+    @Autowired
+    private ExpirationService expirationService;
+
     public Optional<EventReference> findEventReference(String name, Locale locale) {
-        return referenceDataService.findEventByName(name).map(event -> {
+        return referenceDataService.findValidEventByName(name).map(event -> {
             var categories = event.getCategories().stream().map(category -> {
                         var proposals = category.getProposals().stream().map(proposal -> ProposalReference.builder()
                                         .id(proposal.getId())
@@ -51,8 +60,13 @@ public class ReferencePresentationService {
                     .endSlot(Optional.ofNullable(event.getEndSlot()))
                     .snapshotEpoch(Optional.ofNullable(event.getSnapshotEpoch()))
                     .categories(categories)
+                    .isActive(expirationService.isEventActive(event))
                     .build();
         });
+    }
+
+    public List<String> eventsIds() {
+        return referenceDataService.findAllValidEvents().stream().map(Event::getId).toList();
     }
 
 }

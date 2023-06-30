@@ -38,8 +38,8 @@ public class ReferenceDataService {
 
     @Timed(value = "service.reference.findEventByName", percentiles = {0.3, 0.5, 0.95})
     @Transactional
-    public Optional<Event> findEventByName(String name) {
-        return eventRepository.findById(name);
+    public Optional<Event> findValidEventByName(String name) {
+        return eventRepository.findById(name).filter(Event::isValid);
     }
 
     @Timed(value = "service.reference.findCategoryByName", percentiles = {0.3, 0.5, 0.95})
@@ -60,10 +60,13 @@ public class ReferenceDataService {
         return eventRepository.saveAndFlush(event);
     }
 
-    @Timed(value = "service.reference.findAllEvents", percentiles = {0.3, 0.5, 0.95})
+    @Timed(value = "service.reference.findAllValidEvents", percentiles = {0.3, 0.5, 0.95})
     @Transactional
-    public List<Event> findAllEvents() {
-        return eventRepository.findAll();
+    public List<Event> findAllValidEvents() {
+        return eventRepository.findAll()
+                .stream()
+                .filter(event -> event.isValid())
+                .toList();
     }
 
     @Timed(value = "service.reference.findAllActiveEvents", percentiles = {0.3, 0.5, 0.95})
@@ -75,7 +78,6 @@ public class ReferenceDataService {
     @Timed(value = "service.reference.storeCategory", percentiles = {0.3, 0.5, 0.95})
     @Transactional
     public Category storeCategory(Category category) {
-
         return categoryRepository.saveAndFlush(category);
     }
 

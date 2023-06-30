@@ -27,7 +27,6 @@ public class Category extends AbstractTimestampEntity {
     @Column(name = "schema_version")
     private SchemaVersion version;
 
-
     @ManyToOne(
             fetch = FetchType.EAGER, cascade = CascadeType.ALL
     )
@@ -42,5 +41,9 @@ public class Category extends AbstractTimestampEntity {
     )
     @Builder.Default
     private List<Proposal> proposals =  new ArrayList<>();
+
+    public boolean isValid() {
+        return proposals.size() > 1;
+    }
 
 }

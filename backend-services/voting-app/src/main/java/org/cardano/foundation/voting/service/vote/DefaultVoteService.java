@@ -86,7 +86,7 @@ public class DefaultVoteService implements VoteService {
     @Transactional
     @Timed(value = "service.vote.isVoteCastingStillPossible", percentiles = { 0.3, 0.5, 0.95 })
     public Either<Problem, Boolean> isVoteCastingStillPossible(String eventId, String voteId) {
-        var maybeEvent = referenceDataService.findEventByName(eventId);
+        var maybeEvent = referenceDataService.findValidEventByName(eventId);
         if (maybeEvent.isEmpty()) {
             return Either.left(Problem.builder()
                     .withTitle("EVENT_NOT_FOUND")
@@ -230,7 +230,7 @@ public class DefaultVoteService implements VoteService {
         }
 
         var eventId = cip90VoteEnvelope.getData().getEvent();
-        var maybeEvent = referenceDataService.findEventByName(eventId);
+        var maybeEvent = referenceDataService.findValidEventByName(eventId);
         if (maybeEvent.isEmpty()) {
             log.warn("Unrecognised event, eventId:{}", eventId);
 
@@ -397,7 +397,7 @@ public class DefaultVoteService implements VoteService {
     @Transactional
     @Timed(value = "service.vote.voteReceipt", percentiles = { 0.3, 0.5, 0.95 })
     public Either<Problem, VoteReceipt> voteReceipt(String eventName, String categoryName, String stakeAddress) {
-        var maybeEvent = referenceDataService.findEventByName(eventName);
+        var maybeEvent = referenceDataService.findValidEventByName(eventName);
         if (maybeEvent.isEmpty()) {
             log.warn("Unrecognised event, event:{}", eventName);
 

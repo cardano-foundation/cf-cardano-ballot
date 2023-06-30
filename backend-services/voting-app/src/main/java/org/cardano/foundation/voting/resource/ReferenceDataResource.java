@@ -29,4 +29,9 @@ public class ReferenceDataResource {
                 ).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @RequestMapping(value = "/event", method = GET, produces = "application/json")
+    @Timed(value = "resource.reference.events", percentiles = { 0.3, 0.5, 0.95 } )
+    public ResponseEntity<?> events() {
+        return ResponseEntity.ok(referencePresentationService.eventsIds());
+    }
 }

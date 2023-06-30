@@ -28,9 +28,11 @@ jobs:
       - name: 🧘‍♀️ Download dependencies
         run: |
           cd ui
+          cd cip-1694
           npm ci
 
       - name: 🎳 Run tests
         run: |
           cd ui
+          cd cip-1694
           npm test

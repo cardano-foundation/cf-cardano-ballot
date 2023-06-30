@@ -14,14 +14,14 @@ public class CategoryRegistrationEnvelope {
     private String name;
     private String event;
     private String schemaVersion;
-    private byte[] gdprProtection;
+    private String gdprProtection;
 
     private List<ProposalEnvelope> proposals;
 
     private long creationSlot;
 
     public boolean isGdprProtection() {
-        return gdprProtection[0] == 1;
+        return Boolean.parseBoolean(gdprProtection);
     }
 
 }

@@ -73,6 +73,7 @@ public class L1TransactionCreator {
         envelope.put("signature", dataSignature.signature());
         envelope.put("key", dataSignature.key());
         envelope.put("format", "CIP-30");
+        envelope.put("subFormat", "JSON"); // format in which actual CIP-30 data part is in
 
         Metadata metadata = MetadataBuilder.createMetadata();
         metadata.put(metadataLabel, envelope);

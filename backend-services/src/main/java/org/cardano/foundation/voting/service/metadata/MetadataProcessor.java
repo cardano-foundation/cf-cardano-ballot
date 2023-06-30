@@ -11,6 +11,7 @@ import org.cardano.foundation.voting.domain.metadata.OnChainEventType;
 import org.cardano.foundation.voting.service.JsonService;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
 import org.cardano.foundation.voting.utils.Bech32;
+import org.cardano.foundation.voting.utils.ChunkedMetadataParser;
 import org.cardano.foundation.voting.utils.Enums;
 import org.cardanofoundation.cip30.CIP30Verifier;
 import org.cardanofoundation.util.Hashing;
@@ -51,8 +52,23 @@ public class MetadataProcessor {
                 continue;
             }
             var onChainEvenType = maybeOnChainVotingEventType.orElseThrow();
-            var signature = parseArrayStringMetadata((List<String>) onChainMetadataEvent.get("signature"));
-            var key = parseArrayStringMetadata((List<String>) onChainMetadataEvent.get("key"));
+
+            var maybeSignature = Optional.ofNullable(onChainMetadataEvent.get("signature"))
+                    .filter(obj -> obj instanceof List)
+                    .map(obj -> (List) obj)
+                    .map(ChunkedMetadataParser::parseArrayStringMetadata);
+            var maybeKey = Optional.ofNullable(onChainMetadataEvent.get("key"))
+                    .filter(obj -> obj instanceof List)
+                    .map(obj -> (List) obj)
+                    .map(ChunkedMetadataParser::parseArrayStringMetadata);
+
+            if (maybeSignature.isEmpty() || maybeKey.isEmpty()) {
+                log.warn("Missing signature or key from on chain event: {}", onChainMetadataEvent);
+                continue;
+            }
+
+            var signature = maybeSignature.orElseThrow();
+            var key = maybeKey.orElseThrow();
 
             if (onChainEvenType == EVENT_REGISTRATION) {
                 try {
@@ -90,6 +106,7 @@ public class MetadataProcessor {
         var maybeEventAddress = cip30VerificationResult.getAddress().flatMap(addrBytes -> Bech32.decode(addrBytes).toJavaOptional());
         if (maybeEventAddress.isEmpty()) {
             log.info("Address not found or invalid, ignoring id:{}", id);
+
             return Optional.empty();
         }
         var eventAddress = maybeEventAddress.orElseThrow();
@@ -99,9 +116,10 @@ public class MetadataProcessor {
 
         // is it worth to verify the public key as well?
         // TODO: verify the public key
-        // cip30VerificationResult.getEd25519PublicKey();
+        cip30VerificationResult.getEd25519PublicKey();
 
-        log.info("json body:{}", cip30VerificationResult.getMessage(TEXT));
+        String message = cip30VerificationResult.getMessage(TEXT);
+        log.info("json body:{}", message);
 
         var orgAccountStakeAddress = account.stakeAddress();
         if (!orgAccountStakeAddress.equals(eventAddress)) {
@@ -109,7 +127,7 @@ public class MetadataProcessor {
             return Optional.empty();
         }
 
-        var maybeEventRegistration = jsonService.decodeEventRegistrationEnvelope(cip30VerificationResult.getMessage(TEXT)).toJavaOptional();
+        var maybeEventRegistration = jsonService.decodeEventRegistrationEnvelope(message).toJavaOptional();
         if (maybeEventRegistration.isEmpty()) {
             log.info("Event registration invalid, ignoring id:{}", id);
 
@@ -166,23 +184,20 @@ public class MetadataProcessor {
 
         var orgAccountStakeAddress = account.stakeAddress();
         if (!orgAccountStakeAddress.equals(eventAddress)) {
+            log.warn("Addresses mismatch, orgAccountStakeAddress: {}, eventAddress:{}", orgAccountStakeAddress, eventAddress);
             return Optional.empty();
         }
 
-        var maybeCategoryRegistration = jsonService.decodeCategoryRegistrationEnvelope(cip30VerificationResult.getMessage(TEXT)).toJavaOptional();
+        String message = cip30VerificationResult.getMessage(TEXT);
+        log.info("json body:{}", message);
+
+        var maybeCategoryRegistration = jsonService.decodeCategoryRegistrationEnvelope(message).toJavaOptional();
         if (maybeCategoryRegistration.isEmpty()) {
             log.info("Category registration invalid, ignoring id: {}", id);
 
             return Optional.empty();
         }
         var categoryRegistration = maybeCategoryRegistration.orElseThrow();
-
-        var maybeCategory = referenceDataService.findCategoryByName(categoryRegistration.getName());
-        if (maybeCategory.isPresent()) {
-            log.info("Category already found, ignoring id: {}", id);
-
-            return Optional.empty();
-        }
 
         var maybeStoredEvent = referenceDataService.findEventByName(categoryRegistration.getEvent());
         if (maybeStoredEvent.isEmpty()) {
@@ -191,6 +206,13 @@ public class MetadataProcessor {
             return Optional.empty();
         }
         var event = maybeStoredEvent.orElseThrow();
+
+        var maybeCategory = referenceDataService.findCategoryByName(categoryRegistration.getName());
+        if (maybeCategory.isPresent()) {
+            log.info("Category already found, ignoring id: {}", id);
+
+            return Optional.empty();
+        }
 
         var category = new Category();
         category.setId(categoryRegistration.getName());

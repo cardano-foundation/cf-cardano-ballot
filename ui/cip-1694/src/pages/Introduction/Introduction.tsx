@@ -1,3 +1,4 @@
+import React from "react";
 import "./Introduction.scss";
 import IntroSlides from "../../components/IntroSlides/IntroSlides";
 import { SlideItem } from "../../components/IntroSlides/IntroSlides.types";

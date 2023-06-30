@@ -1,3 +1,4 @@
+import React from "react";
 import { useMemo, useState } from "react";
 import { VoteProps } from "./Vote.types";
 import { v4 as uuidv4 } from "uuid";

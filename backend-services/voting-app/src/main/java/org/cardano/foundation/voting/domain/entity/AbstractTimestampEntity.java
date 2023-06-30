@@ -1,6 +1,8 @@
 package org.cardano.foundation.voting.domain.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Date;
 
@@ -9,11 +11,11 @@ public abstract class AbstractTimestampEntity {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "createdAt", nullable = false)
-    protected Date createdAt;
+    protected Date createdAt = new Date();
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updatedAt", nullable = false)
-    private Date updatedAt;
+    private Date updatedAt = new Date();
 
     @PrePersist
     protected void onCreate() {

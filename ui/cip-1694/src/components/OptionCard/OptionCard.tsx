@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { useTheme } from "@mui/material/styles";
 import { OptionProps } from "./OptionCard.types";
 import { Grid, Typography } from "@mui/material";

@@ -5,3 +5,6 @@
 .idea
 db
 logs
+build
+.gradle
+*.log

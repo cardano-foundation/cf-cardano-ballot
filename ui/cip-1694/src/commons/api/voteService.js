@@ -41,7 +41,7 @@ const getVotingPower = async () => {
     );
 }
 
-export const eVoteService = {
+export const voteService = {
     getEventById: getEventById,
     castAVoteWithDigitalSignature: castAVoteWithDigitalSignature,
     getSlotNumber: getSlotNumber,

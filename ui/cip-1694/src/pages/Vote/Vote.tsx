@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useMemo, useState } from "react";
 import { VoteProps } from "./Vote.types";
 import { v4 as uuidv4 } from "uuid";
@@ -13,7 +13,7 @@ import OptionCard from "../../components/OptionCard/OptionCard";
 import { OptionItem } from "../../components/OptionCard/OptionCard.types";
 import { JsonViewer } from "@textea/json-viewer";
 import { buildCanonicalVoteInputJson } from "../../commons/utils/voteUtils";
-import { eVoteService } from "../../commons/api/voteService";
+import { voteService } from "../../commons/api/voteService";
 import "./Vote.scss";
 
 const items: OptionItem[] = [
@@ -31,13 +31,18 @@ const items: OptionItem[] = [
   },
 ];
 
+interface SignedMessage {
+  signature: string,
+  key: string
+}
+
 const Vote = () => {
   const theme = useTheme();
   const { stakeAddress, isConnected, signMessage } = useCardano();
-  const [eVoteSign, setEVoteSign] = useState("");
-  const [eVoteSignKey, setEVoteSignKey] = useState("");
-  const [isSigned, setIsSigned] = useState(false);
+  const [isSigned, setIsSigned] = useState<boolean>(false);
   const [optionId, setOptionId] = useState("");
+  const [absoluteSlot, setAbsoluteSlot] = useState("");
+  const [votingPower, setVotingPower] = useState("");
 
   //TODO usecases:
   //Voting power is not available - User not staking.. Can not vote. We need to have error popup.
@@ -45,50 +50,62 @@ const Vote = () => {
   //get Voter receipt from Endpoint
   //User not valid after 2 hours
 
+  useEffect(() => {
+    slotFromTimestamp();
+    votingPowerOfUser();
+  }, []);
+
+  const slotFromTimestamp = async () => {
+    const response = await voteService.getSlotNumber();
+    setAbsoluteSlot(response?.absoluteSlot || null);
+  };
+
+  const votingPowerOfUser = async () => {
+    const response = await voteService.getVotingPower();
+    setVotingPower(response.votingPower || null);
+  };
+
   const canonicalVoteInput = useMemo(
     () =>
       buildCanonicalVoteInputJson({
         option: optionId,
         voter: stakeAddress,
-        voteId: uuidv4()
+        voteId: uuidv4(),
+        slotNumber: absoluteSlot,
+        votePower: votingPower,
       }),
-    [isConnected, optionId, stakeAddress]
+    [isConnected, optionId, stakeAddress, absoluteSlot, votingPower]
   );
 
-  const generateCIP8EVoteSignature = async () => {
-    if (!isConnected) return;
-    await signMessage(canonicalVoteInput, (signature, key) => {
-      if (signature && signature.length) {
-        setEVoteSign(signature);
-        setEVoteSignKey(String(key));
-        setIsSigned(true);
-      }
-    });
-  };
-
   const handleSubmit = async () => {
-    await generateCIP8EVoteSignature().then(() => {
-      const requestVoteObject = {
-        cosePublicKey: eVoteSignKey,
-        coseSignature: isConnected && eVoteSign,
-      };
-      console.log(requestVoteObject.cosePublicKey);
-      try {
-        eVoteService
+    if (!isConnected && votingPower === null) return;
+  signMessage(canonicalVoteInput, async (signature, key) => {
+    try {
+        const requestVoteObject = {
+          cosePublicKey: key,
+          coseSignature: isConnected && signature,
+        };
+  
+        try {
+          voteService
             .castAVoteWithDigitalSignature(requestVoteObject)
             .then((data) => {
-                if (data.error && data.error.length) {
-                  console.log(data.error);
-                } else {
-                  console.log(data);
-                }
+              if (data.error && data.error.length) {
+                console.log(data.error);
+              } else {
+                console.log(data);
+              }
             })
             .catch((err) => {
               console.log(err);
             });
-    } catch (e) {
-      console.log(e);
+        } catch (e) {
+          console.log(e);
+        }
+      } catch (error) {
+        //todo error log
     }
+
   });
 }
 

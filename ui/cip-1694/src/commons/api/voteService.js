@@ -3,7 +3,17 @@ import {
     doRequest,
     METHODS,
 } from '../handlers/httpHandler';
-import { CAST_VOTE_URL } from '../constants/appConstants';
+import { EVENT_BY_ID_REFERENCE_URL, CAST_VOTE_URL, BLOCKCHAIN_TIP_URL, VOTING_POWER_URL } from '../constants/appConstants';
+
+const getEventById = async (eventId) => {
+    return await doRequest(
+        METHODS.GET,
+        `${EVENT_BY_ID_REFERENCE_URL}/${eventId}`,
+        {
+            ...DEFAULT_CONTENT_TYPE_HEADERS,
+        }
+    );
+};
 
 const castAVoteWithDigitalSignature = async (jsonRequest) => {
     return await doRequest(
@@ -15,6 +25,25 @@ const castAVoteWithDigitalSignature = async (jsonRequest) => {
     );
 };
 
-export const eVoteService = {
-    castAVoteWithDigitalSignature: castAVoteWithDigitalSignature
+const getSlotNumber = async () => {
+    return await doRequest(
+        METHODS.GET,
+        `${BLOCKCHAIN_TIP_URL}`,
+        { ...DEFAULT_CONTENT_TYPE_HEADERS }
+    );
+};
+
+const getVotingPower = async () => {
+    return await doRequest(
+        METHODS.GET,
+        `${VOTING_POWER_URL}`,
+        { ...DEFAULT_CONTENT_TYPE_HEADERS }
+    );
+}
+
+export const voteService = {
+    getEventById: getEventById,
+    castAVoteWithDigitalSignature: castAVoteWithDigitalSignature,
+    getSlotNumber: getSlotNumber,
+    getVotingPower: getVotingPower
 };

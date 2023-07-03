@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useMemo, useState } from "react";
 import { VoteProps } from "./Vote.types";
 import { v4 as uuidv4 } from "uuid";
@@ -13,7 +13,7 @@ import OptionCard from "../../components/OptionCard/OptionCard";
 import { OptionItem } from "../../components/OptionCard/OptionCard.types";
 import { JsonViewer } from "@textea/json-viewer";
 import { buildCanonicalVoteInputJson } from "../../commons/utils/voteUtils";
-import { eVoteService } from "../../commons/api/voteService";
+import { voteService } from "../../commons/api/voteService";
 import "./Vote.scss";
 
 const items: OptionItem[] = [
@@ -31,38 +31,43 @@ const items: OptionItem[] = [
   },
 ];
 
+interface SignedMessage {
+  signature: string,
+  key: string
+}
+
 const Vote = () => {
   const theme = useTheme();
   const { stakeAddress, isConnected, signMessage } = useCardano();
-  const [eVoteSign, setEVoteSign] = useState("");
-  const [eVoteSignKey, setEVoteSignKey] = useState("");
-  const [isSigned, setIsSigned] = useState(false);
+  const [isSigned, setIsSigned] = useState<boolean>(false);
   const [optionId, setOptionId] = useState("");
-
-
-  //TODO:
-  //get reference from Endpoint
-  //http://localhost:8080/api/reference/event/CIP-1694_Pre_Ratification_9D06
-
-  //TODO:
-  //get Voting Power via Endpoint
-  //http://localhost:8080/api/account/CIP-1694_Pre_Ratification_9D06/stake_test1urcnqgzt2x8hpsvej4zfudehahknm8lux894pmqwg5qshgcrn346q
-
-  //TODO:
-  //get Slot number from network
-  //http://localhost:8080/api/blockchain/tip
+  const [absoluteSlot, setAbsoluteSlot] = useState("");
+  const [votingPower, setVotingPower] = useState("");
 
   //TODO usecases:
   //Voting power is not available - User not staking.. Can not vote. We need to have error popup.
   //Voting can be submitted twice till onchain submission
-
-  //TODO Voter receipt
   //get Voter receipt from Endpoint
-  //
+  //User not valid after 2 hours
 
-  //TODO User not valid after 2 hours
+  useEffect(() => {
+    slotFromTimestamp();
+    votingPowerOfUser();
+  }, []);
 
+  const slotFromTimestamp = async () => {
+    const response = await voteService.getSlotNumber();
+    setAbsoluteSlot(response?.absoluteSlot || null);
+  };
 
+  const votingPowerOfUser = async () => {
+    const response = await voteService.getVotingPower();
+    setVotingPower(response.votingPower || null);
+  };
+
+  const onChangeOption = (option: string) => {
+    setOptionId(option);
+  };
 
   const canonicalVoteInput = useMemo(
     () =>
@@ -70,45 +75,41 @@ const Vote = () => {
         option: optionId,
         voter: stakeAddress,
         voteId: uuidv4(),
-        //votingPower
+        slotNumber: absoluteSlot,
+        votePower: votingPower,
       }),
-    [isConnected, optionId, stakeAddress]
+    [isConnected, optionId, stakeAddress, absoluteSlot, votingPower]
   );
 
-  const generateCIP8EVoteSignature = async () => {
-    if (!isConnected) return;
-    await signMessage(canonicalVoteInput, (signature, key) => {
-      if (signature && signature.length) {
-        setEVoteSign(signature);
-        setEVoteSignKey(String(key));
-        setIsSigned(true);
-      }
-    });
-  };
-
   const handleSubmit = async () => {
-    await generateCIP8EVoteSignature().then(() => {
-      const requestVoteObject = {
-        cosePublicKey: eVoteSignKey,
-        coseSignature: isConnected && eVoteSign,
-      };
-      console.log(requestVoteObject.cosePublicKey);
-      try {
-        eVoteService
+    if (!isConnected && votingPower === null) return;
+  signMessage(canonicalVoteInput, async (signature, key) => {
+    try {
+        const requestVoteObject = {
+          cosePublicKey: key,
+          coseSignature: isConnected && signature,
+        };
+  
+        try {
+          voteService
             .castAVoteWithDigitalSignature(requestVoteObject)
             .then((data) => {
-                if (data.error && data.error.length) {
-                  console.log(data.error);
-                } else {
-                  console.log(data);
-                }
+              if (data.error && data.error.length) {
+                console.log(data.error);
+              } else {
+                console.log(data);
+              }
             })
             .catch((err) => {
               console.log(err);
             });
-    } catch (e) {
-      console.log(e);
+        } catch (e) {
+          console.log(e);
+        }
+      } catch (error) {
+        //todo error log
     }
+
   });
 }
 
@@ -152,14 +153,14 @@ const Vote = () => {
           </Grid>
 
           <Grid item>
-            <OptionCard items={items} />
+            <OptionCard items={items} onChangeOption={onChangeOption}/>
           </Grid>
 
           <Grid item>
             <Button
               size="large"
               variant="contained"
-              disabled={isSigned}
+              disabled={!isConnected || votingPower === null || optionId === ""}
               onClick={() => handleSubmit()}
               sx={{
                 marginTop: "0px !important",
@@ -173,7 +174,7 @@ const Vote = () => {
                 backgroundColor: theme.palette.primary.main,
               }}
             >
-              Submit Your Vote
+              {!isConnected ? 'Connect wallet to vote' : 'Submit Your Vote'}
             </Button>
           </Grid>
         </Grid>

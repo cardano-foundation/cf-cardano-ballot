@@ -1,38 +1,34 @@
 import { canonicalize } from "json-canonicalize";
-import { TARGET_NETWORK } from "../constants/appConstants";
-
-function sanitize(value: any) {
-  if (value === null || typeof value === "undefined") {
-    return "";
-  } else {
-    return value;
-  }
-}
-
-export const slotFromTimestamp = (date: Date) => {
-  return Math.floor(date.getTime() / 1000 - 1660003200);
-};
+import {
+  TARGET_NETWORK,
+  EVENT_ID,
+  CATEGORY_ID,
+} from "../constants/appConstants";
 
 export const buildCanonicalVoteInputJson = (voteInput: {
   option: any;
   voteId: any;
   voter: any;
+  slotNumber: string;
+  votePower: string;
 }) => {
   const startOfCurrentDay = new Date();
   startOfCurrentDay.setUTCMinutes(0, 0, 0);
   return canonicalize({
-    uri: "https://example.com/vote",
+    uri: "https://evoting.cardano.org/voltaire",
     action: "CAST_VOTE",
-    actionText: "Submit Vote",
-    slot: `${slotFromTimestamp(startOfCurrentDay)}`, // not a string
-    vote: {
-      voteId: sanitize(voteInput.voteId),
-      stakeAddress: sanitize(voteInput.voter),
-      eventName: "CIP-1694-Pre-Ratification",
-      categoryName: "Pre-Ratification",
-      proposalName: sanitize(voteInput.option),
+    actionText: "Cast Vote",
+    slot: voteInput.slotNumber,
+    data: {
+      voteId: voteInput.voteId,
+      address: voteInput.voter,
+      event: EVENT_ID,
+      category: CATEGORY_ID,
+      proposal: voteInput.option, //TODO: need an api agreement
+      proposalText: voteInput.option,
       network: TARGET_NETWORK,
-      votedAt: `${slotFromTimestamp(startOfCurrentDay)}`,
+      votedAt: voteInput.slotNumber,
+      votingPower: voteInput.votePower,
     },
   });
 };

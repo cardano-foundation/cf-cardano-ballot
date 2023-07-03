@@ -21,9 +21,13 @@ const items = [
   },
 ];
 
+const onChangeOption = (option: string) => {
+  return option
+}
+
 describe('<OptionCard />', () => {
   it('renders', () => {
     cy.fixture('items.json').as('items');
-    cy.mount(<OptionCard items={items}/>);
+    cy.mount(<OptionCard items={items} onChangeOption={onChangeOption}/>);
   })
 })

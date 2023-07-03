@@ -5,6 +5,7 @@ interface OptionItem {
 
 interface OptionProps {
   items: OptionItem[];
+  onChangeOption: (option: string) => void;
 }
 
 export type { OptionItem, OptionProps };

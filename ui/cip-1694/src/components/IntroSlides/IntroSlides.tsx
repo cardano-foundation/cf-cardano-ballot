@@ -109,7 +109,7 @@ const IntroSlides = ({ items }: SlideProps) => {
                       backgroundColor: theme.palette.primary.main,
                     }}
                   >
-                    Ready to vote?
+                    Connect wallet to vote
                   </Button>
                 </Grid>
                 <Grid item>

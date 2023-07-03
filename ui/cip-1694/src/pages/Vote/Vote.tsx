@@ -65,6 +65,10 @@ const Vote = () => {
     setVotingPower(response.votingPower || null);
   };
 
+  const onChangeOption = (option: string) => {
+    setOptionId(option);
+  };
+
   const canonicalVoteInput = useMemo(
     () =>
       buildCanonicalVoteInputJson({
@@ -149,14 +153,14 @@ const Vote = () => {
           </Grid>
 
           <Grid item>
-            <OptionCard items={items} />
+            <OptionCard items={items} onChangeOption={onChangeOption}/>
           </Grid>
 
           <Grid item>
             <Button
               size="large"
               variant="contained"
-              disabled={isSigned}
+              disabled={!isConnected || votingPower === null || optionId === ""}
               onClick={() => handleSubmit()}
               sx={{
                 marginTop: "0px !important",
@@ -170,7 +174,7 @@ const Vote = () => {
                 backgroundColor: theme.palette.primary.main,
               }}
             >
-              Submit Your Vote
+              {!isConnected ? 'Connect wallet to vote' : 'Submit Your Vote'}
             </Button>
           </Grid>
         </Grid>

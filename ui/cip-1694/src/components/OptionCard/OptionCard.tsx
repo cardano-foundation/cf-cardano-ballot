@@ -3,13 +3,12 @@ import { useTheme } from "@mui/material/styles";
 import { OptionProps } from "./OptionCard.types";
 import { Grid, Typography } from "@mui/material";
 import ToggleButton from "@mui/material/ToggleButton";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import "./OptionCard.scss";
 
-import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
-
-export default function OptionCard({ items }: OptionProps) {
+export default function OptionCard({ items, onChangeOption }: OptionProps) {
   const theme = useTheme();
-  const [alignment, setAlignment] = React.useState("web");
+  const [alignment, setAlignment] = React.useState("");
   const [selected, setSelected] = React.useState(false);
 
   const handleChange = (
@@ -17,6 +16,7 @@ export default function OptionCard({ items }: OptionProps) {
     newAlignment: string
   ) => {
     setAlignment(newAlignment);
+    onChangeOption(newAlignment);
   };
 
   return (
@@ -38,7 +38,7 @@ export default function OptionCard({ items }: OptionProps) {
             value={alignment}
             exclusive
             onChange={handleChange}
-            aria-label="Platform"
+            aria-label="cip-1694 poll options"
             className={selected ? "option-card-selected" : "option-card-group"}
           >
             <ToggleButton

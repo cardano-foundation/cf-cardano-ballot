@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -135,7 +136,7 @@ public class MetadataProcessor {
         }
         var eventRegistration = maybeEventRegistration.orElseThrow();
 
-        var maybeStoredEvent = referenceDataService.findValidEventByName(eventRegistration.getName());
+        var maybeStoredEvent = referenceDataService.findEventByName(eventRegistration.getName());
         if (maybeStoredEvent.isPresent()) {
             log.info("Event already found, ignoring id:{}", id);
 

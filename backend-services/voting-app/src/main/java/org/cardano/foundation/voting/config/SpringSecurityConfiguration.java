@@ -36,13 +36,17 @@ public class SpringSecurityConfiguration {
 
                 .and()
 
-            .authorizeHttpRequests()
+                .authorizeHttpRequests()
             .requestMatchers("/api/auth/**").permitAll()
 
             .and()
 
             .authorizeHttpRequests()
             .requestMatchers("/api/blockchain-data/**").permitAll()
+                .and()
+
+            .authorizeHttpRequests()
+            .requestMatchers("/api/vote/**").permitAll()
 
             .and()
 

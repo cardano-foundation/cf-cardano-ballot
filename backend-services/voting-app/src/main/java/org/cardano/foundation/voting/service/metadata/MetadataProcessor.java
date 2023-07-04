@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.bloxbean.cardano.client.crypto.Blake2bUtil.blake2bHash224;
 import static org.cardano.foundation.voting.domain.metadata.OnChainEventType.CATEGORY_REGISTRATION;
 import static org.cardano.foundation.voting.domain.metadata.OnChainEventType.EVENT_REGISTRATION;
 import static org.cardanofoundation.cip30.Format.HEX;
@@ -100,7 +101,7 @@ public class MetadataProcessor {
     }
 
     private Optional<Event> processEventRegistration(String signature, String key, Map payload) {
-        var id = HexUtil.encodeHexString(Blake2bUtil.blake2bHash256(HexUtil.decodeHexString(signature)));
+        var id = HexUtil.encodeHexString(blake2bHash224(HexUtil.decodeHexString(signature)));
         log.info("Processing event registration, hash: {}", id);
 
         var cip30Parser = new CIP30Verifier(signature, Optional.ofNullable(key));
@@ -165,7 +166,7 @@ public class MetadataProcessor {
     }
 
     private Optional<Category> processCategoryRegistration(String signature, String key, Map payload) {
-        var id = HexUtil.encodeHexString(Blake2bUtil.blake2bHash256(HexUtil.decodeHexString(signature)));
+        var id = HexUtil.encodeHexString(Blake2bUtil.blake2bHash224(HexUtil.decodeHexString(signature)));
 
         log.info("Processing category registration id: {}", id);
 
@@ -216,7 +217,7 @@ public class MetadataProcessor {
 
         var maybeCategory = referenceDataService.findCategoryByName(categoryRegistration.getName());
         if (maybeCategory.isPresent()) {
-            log.info("Category already found, ignoring id: {}", id);
+            log.info("Category already found, ignoring name: {}", categoryRegistration.getName());
 
             return Optional.empty();
         }

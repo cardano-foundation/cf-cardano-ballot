@@ -1,5 +1,7 @@
 package org.cardano.foundation.voting.service.metadata;
 
+import com.bloxbean.cardano.client.common.cbor.CborSerializationUtil;
+import com.bloxbean.cardano.client.metadata.helper.MetadataToJsonNoSchemaConverter;
 import com.bloxbean.cardano.client.util.JsonUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.micrometer.core.annotation.Timed;
@@ -49,6 +51,8 @@ public class MetadataService {
                 continueFetching = false;
             }
             page++;
+
+            // MetadataToJsonNoSchemaConverter.
 
             //var onchainMetadataEvents = storeMetadataEvents(metadataLabelString, maps);
             metadataProcessor.processMetadataEvents(maps);

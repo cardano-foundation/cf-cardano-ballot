@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import static com.bloxbean.cardano.client.crypto.Blake2bUtil.blake2bHash256;
+import static com.bloxbean.cardano.client.crypto.Blake2bUtil.blake2bHash224;
 import static org.cardano.foundation.voting.domain.OnChainEventType.CATEGORY_REGISTRATION;
 import static org.cardano.foundation.voting.domain.OnChainEventType.EVENT_REGISTRATION;
 
@@ -75,8 +75,10 @@ public class L1TransactionCreator {
         var stakeAddress = organiserAccount.stakeAddress();
         var stakeAddressAccount = new Address(stakeAddress);
 
+        // CBORMetadata.deserialize(childMetadata.getMap()
+
         var data = CborSerializationUtil.serialize(childMetadata.getMap());
-        var hashedData = blake2bHash256(data);
+        var hashedData = blake2bHash224(data);
 
         DataSignature dataSignature = CIP30DataSigner.INSTANCE.signData(
                 stakeAddressAccount.getBytes(), hashedData,

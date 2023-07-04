@@ -2,13 +2,15 @@ package org.cardano.foundation.voting.shell;
 
 import org.cardano.foundation.voting.domain.*;
 import org.cardano.foundation.voting.service.transaction_submit.L1SubmissionService;
-import org.cardano.foundation.voting.utils.UUID;
+import org.cardano.foundation.voting.utils.MoreUUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 
 import java.util.List;
+
+import static org.cardano.foundation.voting.utils.MoreUUID.shortUUID;
 
 @ShellComponent
 public class CFVotingAdminCommands {
@@ -21,7 +23,7 @@ public class CFVotingAdminCommands {
     @ShellMethod(key = "create-cip-1694-event", value = "Create a CIP-1694 voting event")
     public String createVoltairePreRatificationEvent() {
         CreateEventCommand createEventCommand = CreateEventCommand.builder()
-                .id(EVENT_NAME + "_" + UUID.shortUUID(4))
+                .id(EVENT_NAME + "_" + shortUUID(4))
                 .startEpoch(70)
                 .endEpoch(90)
                 .snapshotEpoch(77)
@@ -55,7 +57,7 @@ public class CFVotingAdminCommands {
                 .build();
 
         CreateCategoryCommand createCategoryCommand = CreateCategoryCommand.builder()
-                .id(EVENT_NAME)
+                .id(String.format("%s_%s", EVENT_NAME, event.substring(event.length() - 4)))
                 .event(event)
                 .gdprProtection(false)
                 .schemaVersion(SchemaVersion.V1)

@@ -14,14 +14,18 @@ public class CategoryRegistrationEnvelope {
     private String name;
     private String event;
     private String schemaVersion;
-    private String gdprProtection;
-
-    private List<ProposalEnvelope> proposals;
 
     private long creationSlot;
 
-    public boolean isGdprProtection() {
-        return Boolean.parseBoolean(gdprProtection);
-    }
+    @Builder.Default
+    private boolean gdprProtection = true; // TODO what should be the default?
+
+    @Builder.Default
+    private boolean allowVoteChanging = false;
+
+    @Builder.Default
+    private boolean categoryResultsWhileVoting = false;
+
+    private List<ProposalEnvelope> proposals;
 
 }

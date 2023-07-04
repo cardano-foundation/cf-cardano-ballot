@@ -11,60 +11,72 @@ import java.math.BigInteger;
 
 import static org.cardano.foundation.voting.domain.VotingEventType.STAKE_BASED;
 import static org.cardano.foundation.voting.domain.VotingEventType.USER_BASED;
+import static org.cardano.foundation.voting.utils.MoreBoolean.toBigInteger;
 
 @Service
 public class MetadataSerialiser {
 
-    public MetadataMap serialise(CreateEventCommand event, long slot) {
+    public MetadataMap serialise(CreateEventCommand createEventCommand, long slot) {
         var map = MetadataBuilder.createMap();
 
         map.put("type", OnChainEventType.EVENT_REGISTRATION.name());
 
-        map.put("name", event.getId());
-        map.put("team", event.getTeam());
-        map.put("votingEventType", event.getVotingEventType().name());
-        map.put("schemaVersion", event.getVersion().getSemVer());
+        map.put("name", createEventCommand.getId());
+        map.put("team", createEventCommand.getTeam());
+        map.put("votingEventType", createEventCommand.getVotingEventType().name());
+        map.put("schemaVersion", createEventCommand.getVersion().getSemVer());
         map.put("creationSlot", BigInteger.valueOf(slot));
 
-        if (event.getVotingEventType() == STAKE_BASED) {
+        if (createEventCommand.getVotingEventType() == STAKE_BASED) {
             //noinspection ConstantConditions
-            map.put("startEpoch", BigInteger.valueOf(event.getStartEpoch()));
+            map.put("startEpoch", BigInteger.valueOf(createEventCommand.getStartEpoch()));
             //noinspection ConstantConditions
-            map.put("endEpoch", BigInteger.valueOf(event.getEndEpoch()));
+            map.put("endEpoch", BigInteger.valueOf(createEventCommand.getEndEpoch()));
             //noinspection ConstantConditions
-            map.put("snapshotEpoch", BigInteger.valueOf(event.getSnapshotEpoch()));
+            map.put("snapshotEpoch", BigInteger.valueOf(createEventCommand.getSnapshotEpoch()));
         }
-        if (event.getVotingEventType() == USER_BASED) {
+        if (createEventCommand.getVotingEventType() == USER_BASED) {
             //noinspection ConstantConditions
-            map.put("startSlot", BigInteger.valueOf(event.getStartSlot()));
+            map.put("startSlot", BigInteger.valueOf(createEventCommand.getStartSlot()));
             //noinspection ConstantConditions
-            map.put("endSlot", BigInteger.valueOf(event.getEndSlot()));
+            map.put("endSlot", BigInteger.valueOf(createEventCommand.getEndSlot()));
         }
+
+        map.put("options", createEventOptions(createEventCommand));
 
         return map;
     }
 
-    public MetadataMap serialise(CreateCategoryCommand category, long slot) {
+    private static MetadataMap createEventOptions(CreateEventCommand createEventCommand) {
+        var optionsMap = MetadataBuilder.createMap();
+        optionsMap.put("allowVoteChanging", toBigInteger(createEventCommand.isAllowVoteChanging()));
+        optionsMap.put("categoryResultsWhileVoting", toBigInteger(createEventCommand.isCategoryResultsWhileVoting()));
+
+        return optionsMap;
+    }
+
+    public MetadataMap serialise(CreateCategoryCommand createCategoryCommand, long slot) {
         var map = MetadataBuilder.createMap();
 
         map.put("type", OnChainEventType.CATEGORY_REGISTRATION.name());
 
-        map.put("name", category.getId());
-        map.put("event", category.getEvent());
-        map.put("gdprProtection", Boolean.toString(category.isGdprProtection()));
-        map.put("schemaVersion", category.getSchemaVersion().getSemVer());
-        map.put("creationSlot", BigInteger.valueOf(slot));
+        map.put("name", createCategoryCommand.getId());
+        map.put("event", createCategoryCommand.getEvent());
 
-        if (category.getProposals().isEmpty()) {
-            throw new RuntimeException("Category " + category.getId() + " has no proposals!");
+        map.put("schemaVersion", createCategoryCommand.getSchemaVersion().getSemVer());
+        map.put("creationSlot", BigInteger.valueOf(slot));
+        map.put("options", createCategoryOptions(createCategoryCommand));
+
+        if (createCategoryCommand.getProposals().isEmpty()) {
+            throw new RuntimeException("Category " + createCategoryCommand.getId() + " has no proposals!");
         }
 
         var proposalsList = MetadataBuilder.createList();
 
-        for (var proposal : category.getProposals()) {
+        for (var proposal : createCategoryCommand.getProposals()) {
             var proposalMap = MetadataBuilder.createMap();
 
-            if (category.isGdprProtection()) {
+            if (createCategoryCommand.isGdprProtection()) {
                 proposalMap.put("id", proposal.getId());
             } else {
                 proposalMap.put("id", proposal.getId());
@@ -77,6 +89,13 @@ public class MetadataSerialiser {
         map.put("proposals", proposalsList);
 
         return map;
+    }
+
+    private static MetadataMap createCategoryOptions(CreateCategoryCommand createCategoryCommand) {
+        var optionsMap = MetadataBuilder.createMap();
+        optionsMap.put("gdprProtection", toBigInteger(createCategoryCommand.isGdprProtection()));
+
+        return optionsMap;
     }
 
 }

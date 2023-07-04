@@ -1,7 +1,6 @@
 package org.cardano.foundation.voting.service.reference_data;
 
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.domain.reference.CategoryReference;
 import org.cardano.foundation.voting.domain.reference.EventReference;
 import org.cardano.foundation.voting.domain.reference.ProposalReference;
@@ -13,11 +12,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
 @Slf4j
 public class ReferencePresentationService {
+
     @Autowired
     private EventRepository eventRepository;
 
@@ -65,8 +66,13 @@ public class ReferencePresentationService {
         });
     }
 
-    public List<String> eventsIds() {
-        return referenceDataService.findAllValidEvents().stream().map(Event::getId).toList();
+    public List<Map<String, Object>> eventsData() {
+        return referenceDataService.findAllValidEvents().stream().map(e -> {
+            return Map.<String, Object>of(
+                    "name", e.getId(),
+                    "active", expirationService.isEventActive(e)
+            );
+        }).toList();
     }
 
 }

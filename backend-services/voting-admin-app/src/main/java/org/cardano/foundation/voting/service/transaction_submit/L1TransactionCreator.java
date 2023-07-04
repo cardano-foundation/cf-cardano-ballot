@@ -6,6 +6,7 @@ import com.bloxbean.cardano.client.api.model.Amount;
 import com.bloxbean.cardano.client.backend.api.BackendService;
 import com.bloxbean.cardano.client.cip.cip30.CIP30DataSigner;
 import com.bloxbean.cardano.client.cip.cip30.DataSignature;
+import com.bloxbean.cardano.client.common.cbor.CborSerializationUtil;
 import com.bloxbean.cardano.client.function.helper.SignerProviders;
 import com.bloxbean.cardano.client.metadata.Metadata;
 import com.bloxbean.cardano.client.metadata.MetadataBuilder;
@@ -24,7 +25,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
+import static com.bloxbean.cardano.client.crypto.Blake2bUtil.blake2bHash256;
 import static org.cardano.foundation.voting.domain.OnChainEventType.CATEGORY_REGISTRATION;
 import static org.cardano.foundation.voting.domain.OnChainEventType.EVENT_REGISTRATION;
 
@@ -74,16 +75,24 @@ public class L1TransactionCreator {
         var stakeAddress = organiserAccount.stakeAddress();
         var stakeAddressAccount = new Address(stakeAddress);
 
-        byte[] data = childMetadata.toJson().getBytes(UTF_8);
+        var data = CborSerializationUtil.serialize(childMetadata.getMap());
+        var hashedData = blake2bHash256(data);
 
-        DataSignature dataSignature = CIP30DataSigner.INSTANCE.signData(stakeAddressAccount.getBytes(), data, organiserAccount);
+        DataSignature dataSignature = CIP30DataSigner.INSTANCE.signData(
+                stakeAddressAccount.getBytes(), hashedData,
+                organiserAccount.stakeHdKeyPair().getPrivateKey().getKeyData(),
+                organiserAccount.stakeHdKeyPair().getPublicKey().getKeyData()
+        );
 
         var envelope = MetadataBuilder.createMap();
         envelope.put("type", metadataType.name());
-        envelope.put("signature", dataSignature.signature());
-        envelope.put("key", dataSignature.key());
+        envelope.put("signature", dataSignature.signature()); // CIP-30
+        envelope.put("key", dataSignature.key()); // CIP-30
+        envelope.put("signatureType", "HASH_ONLY"); // CIP-30 extension
+        envelope.put("payload", childMetadata); // CIP-30 extension, do we need to split it manually?
+
         envelope.put("format", "CIP-30");
-        envelope.put("subFormat", "JSON"); // format in which actual CIP-30 data part is in
+        envelope.put("subFormat", "CBOR"); // format in which actual CIP-30 data part is in
 
         Metadata metadata = MetadataBuilder.createMetadata();
         metadata.put(metadataLabel, envelope);

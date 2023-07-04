@@ -4,15 +4,14 @@ import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.Leaderboard;
+import org.cardano.foundation.voting.repository.VoteRepository;
 import org.cardano.foundation.voting.service.expire.ExpirationService;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
-import org.cardano.foundation.voting.utils.Enums;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 
 import static org.zalando.problem.Status.BAD_REQUEST;
-import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 
 @Service
 @Slf4j
@@ -27,49 +26,68 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
     @Autowired
     private CardanoNetwork cardanoNetwork;
 
+    @Autowired
+    private VoteRepository voteRepository;
+
     @Override
-    public Either<Problem, Leaderboard> getLeaderboard(String networkName, String eventName) {
-        var maybeNetwork = Enums.getIfPresent(CardanoNetwork.class, networkName);
-        if (maybeNetwork.isEmpty()) {
-            log.warn("Invalid network, network:{}", networkName);
-
-            return Either.left(Problem.builder()
-                    .withTitle("INVALID_NETWORK")
-                    .withDetail("Invalid network, supported networks:" + CardanoNetwork.supportedNetworks())
-                    .withStatus(BAD_REQUEST)
-                    .build());
-        }
-        var network = maybeNetwork.orElseThrow();
-
-        if (network != this.cardanoNetwork) {
-            return Either.left(Problem.builder()
-                    .withTitle("WRONG_NETWORK")
-                    .withDetail("Backend configured with network:" + this.cardanoNetwork)
-                    .withStatus(INTERNAL_SERVER_ERROR)
-                    .build());
-        }
-
-        var maybeEvent = referenceDataService.findValidEventByName(eventName);
+    public Either<Problem, Leaderboard.ByEvent> getEventLeaderboard(String event) {
+        var maybeEvent = referenceDataService.findValidEventByName(event);
         if (maybeEvent.isEmpty()) {
             return Either.left(Problem.builder()
                     .withTitle("UNRECOGNISED_EVENT")
-                    .withDetail("Unrecognised event, eventName:" + eventName)
+                    .withDetail("Unrecognised event, event:" + event)
                     .withStatus(BAD_REQUEST)
                     .build()
             );
         }
-        var event = maybeEvent.orElseThrow();
+        var e = maybeEvent.orElseThrow();
 
-        if (!expirationService.isEventFinished(event)) {
+        var votes = voteRepository.countAllByEventId(event);
+
+        return Either.right(Leaderboard.ByEvent.builder()
+                .event(event)
+                //.votes(votes)
+                .build()
+        );
+    }
+
+    @Override
+    public Either<Problem, Leaderboard.ByCategory> getCategoryLeaderboard(String event, String category) {
+        var maybeEvent = referenceDataService.findValidEventByName(event);
+        if (maybeEvent.isEmpty()) {
             return Either.left(Problem.builder()
-                    .withTitle("LEADER_BOARD_NOT_AVAILABLE")
-                    .withDetail("Voting not finished yet, event:" + event.getId())
+                    .withTitle("UNRECOGNISED_EVENT")
+                    .withDetail("Unrecognised event, event:" + event)
                     .withStatus(BAD_REQUEST)
-                    .build());
+                    .build()
+            );
+        }
+        var e = maybeEvent.orElseThrow();
+
+        var maybeCategory = e.findCategoryByName(category);
+
+        if (maybeCategory.isEmpty()) {
+            return Either.left(Problem.builder()
+                    .withTitle("UNRECOGNISED_CATEGORY")
+                    .withDetail("Unrecognised category, category:" + category)
+                    .withStatus(BAD_REQUEST)
+                    .build()
+            );
+        }
+
+        if (!expirationService.isEventFinished(e) && !e.isCategoryResultsWhileVoting()) {
+            return Either.left(Problem.builder()
+                    .withTitle("VOTING_RESULTS_NOT_AVAILABLE")
+                    .withDetail("Voting results not yet available, category:" + category)
+                    .withStatus(BAD_REQUEST)
+                    .build()
+            );
         }
 
         // TODO: implement this
-        return Either.right(Leaderboard.builder().build());
+        return Either.right(Leaderboard.ByCategory.builder()
+                .build()
+        );
     }
 
 }

@@ -41,6 +41,16 @@ public class VoteCommitmentService {
 
     public void processVotesForAllEvents() {
         var l1MerkleCommitments = getL1MerkleCommitments();
+        if (l1MerkleCommitments.isEmpty()) {
+            log.info("No l1 commitments to process.");
+            return;
+        }
+
+        // Event maybe active but it makes no sense spamming L1 when there are no votes to process
+        if (l1MerkleCommitments.stream().allMatch(l1MerkleCommitment -> l1MerkleCommitment.votes().isEmpty())) {
+            log.info("No votes to process.");
+            return;
+        }
 
         var l1TransactionHash = l1SubmissionService.submitMerkleCommitments(l1MerkleCommitments);
 

@@ -24,10 +24,12 @@ public class CFVotingAdminCommands {
                 .id(EVENT_NAME + "_" + UUID.shortUUID(4))
                 .startEpoch(70)
                 .endEpoch(90)
-                .snapshotEpoch(75)
+                .snapshotEpoch(77)
                 .team("CF & IOG")
                 .votingEventType(VotingEventType.STAKE_BASED)
                 .version(SchemaVersion.V1)
+                .allowVoteChanging(false)
+                .categoryResultsWhileVoting(false)
                 .build();
 
         l1SubmissionService.submitEvent(createEventCommand);

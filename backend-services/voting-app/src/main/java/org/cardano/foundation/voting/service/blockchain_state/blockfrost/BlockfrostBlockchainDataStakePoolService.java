@@ -22,6 +22,9 @@ public class BlockfrostBlockchainDataStakePoolService extends AbstractBlockfrost
 
                     return Optional.of(stakeAmount);
                 }
+                if (accountHistory.size() < 100) {
+                    return maybeStakeAmount;
+                }
                 page++;
             } while (true);
         } catch (APIException e) {

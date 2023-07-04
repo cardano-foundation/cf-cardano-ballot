@@ -29,6 +29,14 @@ public class Event extends AbstractTimestampEntity {
     @Column(name = "event_type", nullable = false)
     private VotingEventType votingEventType;
 
+    @Builder.Default
+    @Column(name = "allow_vote_changing")
+    private boolean allowVoteChanging = false;
+
+    @Builder.Default
+    @Column(name = "category_results_while_voting")
+    private boolean categoryResultsWhileVoting = false;
+
     @Column(name = "start_epoch")
     @Nullable
     private Integer startEpoch;
@@ -87,5 +95,6 @@ public class Event extends AbstractTimestampEntity {
 
         return true;
     }
+
 
 }

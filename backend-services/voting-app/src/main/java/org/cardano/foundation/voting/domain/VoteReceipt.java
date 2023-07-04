@@ -3,6 +3,7 @@ package org.cardano.foundation.voting.domain;
 import lombok.Builder;
 import lombok.Data;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,9 +40,9 @@ public class VoteReceipt {
     public static enum Status {
         BASIC, // without merkle proof committed to L1 yet
 
-        PARTIAL, // there is a merkle proof but L1 commitment is not on chain yet
+        PARTIAL, // there is a merkle proof but L1 commitment is not visible on chain yet or already rolled back
 
-        FULL // with merkle proof committed to L1
+        FULL // with merkle proof committed to L1 and visible on chain
     }
 
     @Data
@@ -49,8 +50,8 @@ public class VoteReceipt {
     public static class MerkleProof {
 
         private String transactionHash;
-        //private long absoluteSlot;
-        //private String blockHash;
+        private Optional<Long> absoluteSlot;
+        private Optional<String> blockHash;
         private String rootHash;
         private List<MerkleProofItem> steps;
 

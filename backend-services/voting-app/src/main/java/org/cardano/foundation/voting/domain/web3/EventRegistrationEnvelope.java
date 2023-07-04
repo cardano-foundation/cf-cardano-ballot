@@ -17,6 +17,10 @@ public class EventRegistrationEnvelope {
     private String schemaVersion;
     private long creationSlot;
 
+    private boolean allowVoteChanging;
+
+    private boolean categoryResultsWhileVoting;
+
     private VotingEventType votingEventType;
 
     @Nullable private Integer startEpoch;

@@ -1,4 +1,4 @@
-package org.cardano.foundation.voting.domain;//package org.cardano.foundation.voting.domain.web3;
+package org.cardano.foundation.voting.domain;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -16,7 +16,10 @@ public class CreateEventCommand {
     private String team; // e.g. CF Team // TODO what about team spoofing - do we need that team has private / public key
 
     @Builder.Default
-    private boolean gdprProtection = true; // GDPR protection is enabled by default and it protects proposal ids not being stored on chain
+    private boolean allowVoteChanging = false; // until merkle root is committed to the chain, do we allow vote changing?
+
+    @Builder.Default
+    private boolean categoryResultsWhileVoting = false; // until voting is finished, do we actually allow people to see results within category?
 
     private VotingEventType votingEventType;
 
@@ -35,6 +38,7 @@ public class CreateEventCommand {
     @Nullable
     private Integer snapshotEpoch;
 
-    private SchemaVersion version;
+    @Builder.Default
+    private SchemaVersion version = SchemaVersion.V1;
 
 }

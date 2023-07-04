@@ -1,6 +1,7 @@
 package org.cardano.foundation.voting.service.metadata;
 
 import com.bloxbean.cardano.client.account.Account;
+import com.bloxbean.cardano.client.crypto.Blake2bUtil;
 import com.bloxbean.cardano.client.util.HexUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.SchemaVersion;
@@ -8,26 +9,24 @@ import org.cardano.foundation.voting.domain.entity.Category;
 import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.domain.entity.Proposal;
 import org.cardano.foundation.voting.domain.metadata.OnChainEventType;
-import org.cardano.foundation.voting.service.json.JsonService;
+import org.cardano.foundation.voting.service.cbor.CborService;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
 import org.cardano.foundation.voting.utils.Bech32;
 import org.cardano.foundation.voting.utils.ChunkedMetadataParser;
 import org.cardano.foundation.voting.utils.Enums;
 import org.cardanofoundation.cip30.CIP30Verifier;
-import org.cardanofoundation.util.Hashing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import static org.cardano.foundation.voting.domain.metadata.OnChainEventType.CATEGORY_REGISTRATION;
 import static org.cardano.foundation.voting.domain.metadata.OnChainEventType.EVENT_REGISTRATION;
-import static org.cardano.foundation.voting.utils.ChunkedMetadataParser.parseArrayStringMetadata;
-import static org.cardanofoundation.cip30.Format.TEXT;
+import static org.cardanofoundation.cip30.Format.HEX;
 
 @Service
 @Slf4j
@@ -37,11 +36,14 @@ public class MetadataProcessor {
     private ReferenceDataService referenceDataService;
 
     @Autowired
-    private JsonService jsonService;
+    private CborService cborService;
 
     @Autowired
     @Qualifier("organiser_account")
     private Account account;
+
+    @Value("${bind.on.event.ids}")
+    private List<String> bindOnEventIds;
 
     public void processMetadataEvents(List<Map> onChainMetadataEvents) {
         log.info("on chain events:{}", onChainMetadataEvents);
@@ -58,22 +60,27 @@ public class MetadataProcessor {
                     .filter(obj -> obj instanceof List)
                     .map(obj -> (List) obj)
                     .map(ChunkedMetadataParser::parseArrayStringMetadata);
+
             var maybeKey = Optional.ofNullable(onChainMetadataEvent.get("key"))
                     .filter(obj -> obj instanceof List)
                     .map(obj -> (List) obj)
                     .map(ChunkedMetadataParser::parseArrayStringMetadata);
 
-            if (maybeSignature.isEmpty() || maybeKey.isEmpty()) {
-                log.warn("Missing signature or key from on chain event: {}", onChainMetadataEvent);
+            var maybePayload =  Optional.ofNullable(onChainMetadataEvent.get("payload"))
+                    .map(obj -> (Map) obj);
+
+            if (maybeSignature.isEmpty() || maybeKey.isEmpty() || maybePayload.isEmpty()) {
+                log.warn("Missing signature, key or payload from on chain event: {}", onChainMetadataEvent);
                 continue;
             }
 
             var signature = maybeSignature.orElseThrow();
             var key = maybeKey.orElseThrow();
+            var payload = maybePayload.orElseThrow();
 
             if (onChainEvenType == EVENT_REGISTRATION) {
                 try {
-                    processEventRegistration(signature, key).ifPresent(event -> {
+                    processEventRegistration(signature, key, payload).ifPresent(event -> {
                         log.info("Event registration processed: {}", event.getId());
                     });
                 } catch (Exception e) {
@@ -82,7 +89,7 @@ public class MetadataProcessor {
             }
             if (onChainEvenType == CATEGORY_REGISTRATION) {
                 try {
-                    processCategoryRegistration(signature, key).ifPresent(category -> {
+                    processCategoryRegistration(signature, key, payload).ifPresent(category -> {
                         log.info("Category registration processed: {}", category.getId());
                     });
                 } catch (Exception e) {
@@ -92,8 +99,8 @@ public class MetadataProcessor {
         }
     }
 
-    private Optional<Event> processEventRegistration(String signature, String key) {
-        var id = HexUtil.encodeHexString(Hashing.sha2_256(signature));
+    private Optional<Event> processEventRegistration(String signature, String key, Map payload) {
+        var id = HexUtil.encodeHexString(Blake2bUtil.blake2bHash256(HexUtil.decodeHexString(signature)));
         log.info("Processing event registration, hash: {}", id);
 
         var cip30Parser = new CIP30Verifier(signature, Optional.ofNullable(key));
@@ -113,14 +120,7 @@ public class MetadataProcessor {
         var eventAddress = maybeEventAddress.orElseThrow();
         log.info("eventAddress:{}", eventAddress);
 
-        log.info("Ed25519PublicKey:{}", HexUtil.encodeHexString(cip30VerificationResult.getEd25519PublicKey()));
-
-        // is it worth to verify the public key as well?
-        // TODO: verify the public key
-        cip30VerificationResult.getEd25519PublicKey();
-
-        String message = cip30VerificationResult.getMessage(TEXT);
-        log.info("json body:{}", message);
+        String blake2b_256PayloadHash = cip30VerificationResult.getMessage(HEX);
 
         var orgAccountStakeAddress = account.stakeAddress();
         if (!orgAccountStakeAddress.equals(eventAddress)) {
@@ -128,13 +128,19 @@ public class MetadataProcessor {
             return Optional.empty();
         }
 
-        var maybeEventRegistration = jsonService.decodeEventRegistrationEnvelope(message).toJavaOptional();
+        var maybeEventRegistration = cborService.decodeEventRegistrationEnvelope(blake2b_256PayloadHash, payload).toJavaOptional();
         if (maybeEventRegistration.isEmpty()) {
             log.info("Event registration invalid, ignoring id:{}", id);
 
             return Optional.empty();
         }
         var eventRegistration = maybeEventRegistration.orElseThrow();
+
+        if (!bindOnEventIds.contains(eventRegistration.getName())) {
+            log.info("Event NOT found in bindOnEventIds, ignoring id:{}", id);
+
+            return Optional.empty();
+        }
 
         var maybeStoredEvent = referenceDataService.findEventByName(eventRegistration.getName());
         if (maybeStoredEvent.isPresent()) {
@@ -158,8 +164,8 @@ public class MetadataProcessor {
         return Optional.of(referenceDataService.storeEvent(event));
     }
 
-    private Optional<Category> processCategoryRegistration(String signature, String key) {
-        var id = HexUtil.encodeHexString(Hashing.sha2_256(signature));
+    private Optional<Category> processCategoryRegistration(String signature, String key, Map payload) {
+        var id = HexUtil.encodeHexString(Blake2bUtil.blake2bHash256(HexUtil.decodeHexString(signature)));
 
         log.info("Processing category registration id: {}", id);
 
@@ -177,28 +183,28 @@ public class MetadataProcessor {
         }
         var eventAddress = maybeEventAddress.orElseThrow();
 
-        log.info("Ed25519PublicKey:{}", HexUtil.encodeHexString(cip30VerificationResult.getEd25519PublicKey()));
-
-        // is it worth to verify the public key as well?
-        // TODO: verify the public key
-        // cip30VerificationResult.getEd25519PublicKey();
-
         var orgAccountStakeAddress = account.stakeAddress();
         if (!orgAccountStakeAddress.equals(eventAddress)) {
             log.warn("Addresses mismatch, orgAccountStakeAddress: {}, eventAddress:{}", orgAccountStakeAddress, eventAddress);
+
             return Optional.empty();
         }
 
-        String message = cip30VerificationResult.getMessage(TEXT);
-        log.info("json body:{}", message);
+        String hexString = cip30VerificationResult.getMessage(HEX);
 
-        var maybeCategoryRegistration = jsonService.decodeCategoryRegistrationEnvelope(message).toJavaOptional();
+        var maybeCategoryRegistration = cborService.decodeCategoryRegistrationEnvelope(hexString, payload).toJavaOptional();
         if (maybeCategoryRegistration.isEmpty()) {
             log.info("Category registration invalid, ignoring id: {}", id);
 
             return Optional.empty();
         }
         var categoryRegistration = maybeCategoryRegistration.orElseThrow();
+
+        if (!bindOnEventIds.contains(categoryRegistration.getEvent())) {
+            log.info("Event in category NOT found in bindOnEventIds, ignoring id:{}", id);
+
+            return Optional.empty();
+        }
 
         var maybeStoredEvent = referenceDataService.findEventByName(categoryRegistration.getEvent());
         if (maybeStoredEvent.isEmpty()) {

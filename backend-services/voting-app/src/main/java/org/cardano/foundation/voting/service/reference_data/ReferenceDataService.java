@@ -64,8 +64,8 @@ public class ReferenceDataService {
 
     @Timed(value = "service.reference.findProposalByName", percentiles = {0.3, 0.5, 0.95})
     @Transactional
-    public Optional<Proposal> findProposalByName(String name) {
-        return proposalRepository.findProposalByName(name);
+    public Optional<Proposal> findProposalByName(Category category, String name) {
+        return proposalRepository.findProposalByName(category.getId(), name);
     }
 
     @Timed(value = "service.reference.storeEvent", percentiles = {0.3, 0.5, 0.95})

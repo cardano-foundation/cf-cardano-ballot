@@ -278,7 +278,7 @@ public class DefaultVoteService implements VoteService {
             }
             proposal = maybeProposal.orElseThrow();
         } else {
-            var maybeProposal = referenceDataService.findProposalByName(proposalIdOrName);
+            var maybeProposal = referenceDataService.findProposalByName(category, proposalIdOrName);
             if (maybeProposal.isEmpty()) {
                 log.warn("Unrecognised proposal, proposalId:{}", eventId);
 

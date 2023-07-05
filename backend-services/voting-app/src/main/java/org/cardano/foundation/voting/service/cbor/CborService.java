@@ -6,7 +6,7 @@ import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.VotingEventType;
 import org.cardano.foundation.voting.domain.VotingPowerAsset;
-import org.cardano.foundation.voting.domain.metadata.OnChainEventType;
+import org.cardano.foundation.voting.domain.OnChainEventType;
 import org.cardano.foundation.voting.domain.web3.CategoryRegistrationEnvelope;
 import org.cardano.foundation.voting.domain.web3.EventRegistrationEnvelope;
 import org.cardano.foundation.voting.domain.web3.ProposalEnvelope;
@@ -21,7 +21,6 @@ import java.util.Optional;
 
 import static org.cardano.foundation.voting.domain.VotingEventType.BALANCE_BASED;
 import static org.cardano.foundation.voting.domain.VotingEventType.STAKE_BASED;
-import static org.cardano.foundation.voting.domain.VotingPowerAsset.ADA;
 import static org.cardano.foundation.voting.utils.MoreBoolean.fromBigInteger;
 import static org.zalando.problem.Status.BAD_REQUEST;
 import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;

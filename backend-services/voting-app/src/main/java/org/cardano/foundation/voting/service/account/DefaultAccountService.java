@@ -16,7 +16,6 @@ import java.util.Optional;
 
 import static org.cardano.foundation.voting.domain.VotingEventType.BALANCE_BASED;
 import static org.cardano.foundation.voting.domain.VotingEventType.STAKE_BASED;
-import static org.cardano.foundation.voting.domain.VotingPowerAsset.ADA;
 import static org.zalando.problem.Status.BAD_REQUEST;
 
 @Service
@@ -71,7 +70,7 @@ public class DefaultAccountService implements AccountService {
         return Either.right(Optional.of(Account.builder()
                 .stakeAddress(stakeAddress)
                 .votingPower(votingPower.map(String::valueOf).orElse(null))
-                .votingPowerAsset(ADA)
+                .votingPowerAsset(event.getVotingPowerAsset())
                 .build())
         );
     }

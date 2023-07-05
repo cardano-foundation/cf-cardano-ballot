@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.cardano.foundation.voting.domain.VotingEventType;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,18 +22,25 @@ public class EventReference {
 
     private VotingEventType votingEventType;
 
-    private Optional<Long> startSlot;
+    @Builder.Default
+    private Optional<Long> startSlot = Optional.empty();
 
-    private Optional<Long> endSlot;
+    @Builder.Default
+    private Optional<Long> endSlot = Optional.empty();
 
-    private Optional<Integer> startEpoch;
+    @Builder.Default
+    private Optional<Integer> startEpoch = Optional.empty();
 
-    private Optional<Integer> endEpoch;
+    @Builder.Default
+    private Optional<Integer> endEpoch = Optional.empty();
 
-    private Optional<Integer> snapshotEpoch;
+    @Builder.Default
+    private Optional<Integer> snapshotEpoch = Optional.empty();
 
-    private boolean isActive;
+    @Builder.Default
+    private boolean isActive = false;
 
-    private List<CategoryReference> categories;
+    @Builder.Default
+    private List<CategoryReference> categories = new ArrayList<>();
 
 }

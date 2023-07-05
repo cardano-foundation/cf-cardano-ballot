@@ -1,4 +1,4 @@
-package org.cardano.foundation.voting.domain.metadata;
+package org.cardano.foundation.voting.domain;
 
 public enum OnChainEventType {
 

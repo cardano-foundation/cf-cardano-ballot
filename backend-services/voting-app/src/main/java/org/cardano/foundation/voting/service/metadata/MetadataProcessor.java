@@ -13,7 +13,7 @@ import org.cardano.foundation.voting.domain.TransactionMetadataLabelCbor;
 import org.cardano.foundation.voting.domain.entity.Category;
 import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.domain.entity.Proposal;
-import org.cardano.foundation.voting.domain.metadata.OnChainEventType;
+import org.cardano.foundation.voting.domain.OnChainEventType;
 import org.cardano.foundation.voting.service.cbor.CborService;
 import org.cardano.foundation.voting.service.json.JsonService;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
@@ -32,8 +32,8 @@ import java.util.Optional;
 
 import static com.bloxbean.cardano.client.crypto.Blake2bUtil.blake2bHash224;
 import static com.bloxbean.cardano.client.util.HexUtil.decodeHexString;
-import static org.cardano.foundation.voting.domain.metadata.OnChainEventType.CATEGORY_REGISTRATION;
-import static org.cardano.foundation.voting.domain.metadata.OnChainEventType.EVENT_REGISTRATION;
+import static org.cardano.foundation.voting.domain.OnChainEventType.CATEGORY_REGISTRATION;
+import static org.cardano.foundation.voting.domain.OnChainEventType.EVENT_REGISTRATION;
 import static org.cardanofoundation.cip30.Format.HEX;
 
 @Service

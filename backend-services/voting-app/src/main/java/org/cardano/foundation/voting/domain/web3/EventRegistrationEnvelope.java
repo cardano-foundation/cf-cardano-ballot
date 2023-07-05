@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import org.cardano.foundation.voting.domain.VotingEventType;
 import org.cardano.foundation.voting.domain.VotingPowerAsset;
-import org.cardano.foundation.voting.domain.metadata.OnChainEventType;
+import org.cardano.foundation.voting.domain.OnChainEventType;
 
 import java.util.Optional;
 

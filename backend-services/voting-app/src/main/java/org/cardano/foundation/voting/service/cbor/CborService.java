@@ -1,5 +1,6 @@
 package org.cardano.foundation.voting.service.cbor;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.VotingEventType;
@@ -11,8 +12,8 @@ import org.cardano.foundation.voting.utils.Enums;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.cardano.foundation.voting.utils.MoreBoolean.fromInteger;
@@ -23,14 +24,11 @@ import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 @Slf4j
 public class CborService {
 
-    public Either<Problem, CategoryRegistrationEnvelope> decodeCategoryRegistrationEnvelope(String hexString, Map payload) {
+    public Either<Problem, CategoryRegistrationEnvelope> decodeCategoryRegistrationEnvelope(String hexString, JsonNode payload) {
         try {
-//            var cborData = CborSerializationUtil.deserialize(HexUtil.decodeHexString(hexString));
-//            var cborDataMap = (Map) cborData;
-
             // TODO perform signature check against hash
 
-            var maybeOnchainEventType = Enums.getIfPresent(OnChainEventType.class, (String) payload.get("type"));
+            var maybeOnchainEventType = Enums.getIfPresent(OnChainEventType.class, payload.get("type").asText());
 
             if (maybeOnchainEventType.isEmpty() || maybeOnchainEventType.orElseThrow() != OnChainEventType.CATEGORY_REGISTRATION) {
                 return Either.left(
@@ -41,7 +39,7 @@ public class CborService {
                                 .build());
             }
 
-            var maybeName = Optional.ofNullable((String) payload.get("name"));
+            var maybeName = Optional.ofNullable(payload.get("name").asText());
             if (maybeName.isEmpty()) {
                 return Either.left(
                         Problem.builder()
@@ -51,7 +49,7 @@ public class CborService {
                                 .build());
             }
 
-            var maybeEvent = Optional.ofNullable((String) payload.get("event"));
+            var maybeEvent = Optional.ofNullable(payload.get("event").asText());
             if (maybeEvent.isEmpty()) {
                 return Either.left(
                         Problem.builder()
@@ -61,7 +59,7 @@ public class CborService {
                                 .build());
             }
 
-            var maybeCreationSlot = Optional.ofNullable((Integer) payload.get("creationSlot"));
+            var maybeCreationSlot = Optional.ofNullable(payload.get("creationSlot")).map(JsonNode::asLong);
             if (maybeCreationSlot.isEmpty()) {
                 return Either.left(
                         Problem.builder()
@@ -71,7 +69,7 @@ public class CborService {
                                 .build());
             }
 
-            var maybeOptions = Optional.ofNullable((Map) payload.get("options"));
+            var maybeOptions = Optional.ofNullable(payload.get("options"));
             if (maybeOptions.isEmpty()) {
                 return Either.left(
                         Problem.builder()
@@ -82,7 +80,7 @@ public class CborService {
             }
             var options = maybeOptions.orElseThrow();
 
-            var maybeProposals = Optional.ofNullable((List) payload.get("proposals"));
+            var maybeProposals = Optional.ofNullable(payload.get("proposals"));
             if (maybeProposals.isEmpty() || maybeProposals.orElseThrow().isEmpty()) {
                 return Either.left(
                         Problem.builder()
@@ -92,7 +90,7 @@ public class CborService {
                                 .build());
             }
 
-            boolean isGdprProtection = fromInteger((Integer) options.get("gdprProtection"));
+            boolean isGdprProtection = fromInteger(options.get("gdprProtection").asInt());
             var categoryRegistration = CategoryRegistrationEnvelope.builder()
                     .type(maybeOnchainEventType.orElseThrow())
                     .name(maybeName.orElseThrow())
@@ -100,7 +98,7 @@ public class CborService {
                     .creationSlot(maybeCreationSlot.orElseThrow())
                     .gdprProtection(isGdprProtection)
                     .proposals(readProposalsEnvelope(maybeProposals.orElseThrow(), isGdprProtection))
-                    .schemaVersion((String) payload.get("schemaVersion"))
+                    .schemaVersion(payload.get("schemaVersion").asText())
                     .build();
 
             return Either.right(categoryRegistration);
@@ -116,12 +114,9 @@ public class CborService {
         }
     }
 
-    public Either<Problem, EventRegistrationEnvelope> decodeEventRegistrationEnvelope(String hexString, Map payload) {
+    public Either<Problem, EventRegistrationEnvelope> decodeEventRegistrationEnvelope(String hexString, JsonNode payload) {
         try {
-//            var cborData = CborSerializationUtil.deserialize(HexUtil.decodeHexString(hexString));
-//            var cborDataMap = (Map) cborData;
-
-            var maybeOnchainEventType = Enums.getIfPresent(OnChainEventType.class, (String) payload.get("type"));
+            var maybeOnchainEventType = Enums.getIfPresent(OnChainEventType.class, payload.get("type").asText());
             if (maybeOnchainEventType.isEmpty() || maybeOnchainEventType.orElseThrow() != OnChainEventType.EVENT_REGISTRATION) {
                 return Either.left(
                         Problem.builder()
@@ -131,7 +126,7 @@ public class CborService {
                                 .build());
             }
 
-            var maybeTeam = Optional.ofNullable((String) payload.get("team"));
+            var maybeTeam = Optional.ofNullable(payload.get("team").asText());
             if (maybeTeam.isEmpty()) {
                 return Either.left(
                         Problem.builder()
@@ -141,7 +136,7 @@ public class CborService {
                                 .build());
             }
 
-            var maybeCreationSlot = Optional.ofNullable((Integer) payload.get("creationSlot"));
+            var maybeCreationSlot = Optional.ofNullable(payload.get("creationSlot")).map(JsonNode::asLong);
             if (maybeCreationSlot.isEmpty()) {
                 return Either.left(
                         Problem.builder()
@@ -151,7 +146,7 @@ public class CborService {
                                 .build());
             }
 
-            var maybeVotingEventType = Enums.getIfPresent(VotingEventType.class, (String) payload.get("votingEventType"));
+            var maybeVotingEventType = Enums.getIfPresent(VotingEventType.class, payload.get("votingEventType").asText());
             if (maybeVotingEventType.isEmpty()) {
                 return Either.left(
                         Problem.builder()
@@ -164,14 +159,14 @@ public class CborService {
             var votingEventType = maybeVotingEventType.orElseThrow();
 
             var eventRegistrationEnvelopeBuilder = EventRegistrationEnvelope.builder()
-                    .name((String) payload.get("name"))
+                    .name(payload.get("name").asText())
                     .type(OnChainEventType.EVENT_REGISTRATION)
                     .team(maybeTeam.orElseThrow())
                     .creationSlot(maybeCreationSlot.orElseThrow())
                     .votingEventType(votingEventType);
 
             if (votingEventType == VotingEventType.STAKE_BASED) {
-                var maybeStartEpoch = Optional.ofNullable((Integer) payload.get("startEpoch"));
+                var maybeStartEpoch = Optional.ofNullable(payload.get("startEpoch")).map(JsonNode::asInt);
                 if (maybeStartEpoch.isEmpty()) {
                     return Either.left(
                             Problem.builder()
@@ -180,7 +175,7 @@ public class CborService {
                                     .withStatus(BAD_REQUEST)
                                     .build());
                 }
-                var maybeEndEpoch = Optional.ofNullable((Integer) payload.get("endEpoch"));
+                var maybeEndEpoch = Optional.ofNullable(payload.get("endEpoch")).map(JsonNode::asInt);;
                 if (maybeEndEpoch.isEmpty()) {
                     return Either.left(
                             Problem.builder()
@@ -190,7 +185,7 @@ public class CborService {
                                     .build());
                 }
 
-                var maybeSnapshotEpoch = Optional.ofNullable((Integer) payload.get("snapshotEpoch"));
+                var maybeSnapshotEpoch = Optional.ofNullable(payload.get("snapshotEpoch")).map(JsonNode::asInt);
                 if (maybeSnapshotEpoch.isEmpty()) {
                     return Either.left(
                             Problem.builder()
@@ -200,13 +195,13 @@ public class CborService {
                                     .build());
                 }
 
-                eventRegistrationEnvelopeBuilder.startEpoch(maybeStartEpoch.orElseThrow());
-                eventRegistrationEnvelopeBuilder.endEpoch(maybeEndEpoch.orElseThrow());
-                eventRegistrationEnvelopeBuilder.snapshotEpoch(maybeSnapshotEpoch.orElseThrow());
+                eventRegistrationEnvelopeBuilder.startEpoch(maybeStartEpoch);
+                eventRegistrationEnvelopeBuilder.endEpoch(maybeEndEpoch);
+                eventRegistrationEnvelopeBuilder.snapshotEpoch(maybeSnapshotEpoch);
             }
 
             if (votingEventType == VotingEventType.USER_BASED) {
-                var maybeStartSlot = Optional.ofNullable((Integer) payload.get("startSlot"));
+                var maybeStartSlot = Optional.ofNullable(payload.get("startSlot")).map(JsonNode::asLong);
                 if (maybeStartSlot.isEmpty()) {
                     return Either.left(
                             Problem.builder()
@@ -215,7 +210,7 @@ public class CborService {
                                     .withStatus(BAD_REQUEST)
                                     .build());
                 }
-                var maybeEndSlot = Optional.ofNullable((Integer) payload.get("endSlot"));
+                var maybeEndSlot = Optional.ofNullable(payload.get("endSlot")).map(JsonNode::asLong);
                 if (maybeEndSlot.isEmpty()) {
                     return Either.left(
                             Problem.builder()
@@ -225,11 +220,11 @@ public class CborService {
                                     .build());
                 }
 
-                eventRegistrationEnvelopeBuilder.startSlot(maybeStartSlot.orElseThrow().longValue());
-                eventRegistrationEnvelopeBuilder.endSlot(maybeEndSlot.orElseThrow().longValue());
+                eventRegistrationEnvelopeBuilder.startSlot(maybeStartSlot);
+                eventRegistrationEnvelopeBuilder.endSlot(maybeEndSlot);
             }
 
-            var maybeOptions = Optional.ofNullable((Map) payload.get("options"));
+            var maybeOptions = Optional.ofNullable(payload.get("options"));
             if (maybeOptions.isEmpty()) {
                 return Either.left(
                         Problem.builder()
@@ -240,9 +235,9 @@ public class CborService {
             }
             var options = maybeOptions.orElseThrow();
 
-            eventRegistrationEnvelopeBuilder.allowVoteChanging(fromInteger((Integer) options.get("allowVoteChanging")));
-            eventRegistrationEnvelopeBuilder.categoryResultsWhileVoting(fromInteger((Integer) options.get("categoryResultsWhileVoting")));
-            eventRegistrationEnvelopeBuilder.schemaVersion((String) payload.get("schemaVersion"));
+            eventRegistrationEnvelopeBuilder.allowVoteChanging(fromInteger(options.get("allowVoteChanging").asInt()));
+            eventRegistrationEnvelopeBuilder.categoryResultsWhileVoting(fromInteger(options.get("categoryResultsWhileVoting").asInt()));
+            eventRegistrationEnvelopeBuilder.schemaVersion(payload.get("schemaVersion").asText());
 
             return Either.right(eventRegistrationEnvelopeBuilder.build());
         } catch (Exception e) {
@@ -257,19 +252,23 @@ public class CborService {
         }
     }
 
-    private List<ProposalEnvelope> readProposalsEnvelope(List proposals, boolean isGdprProtection) {
-        return proposals.stream().map(obj -> {
-            var map = (Map) obj;
+    private static List<ProposalEnvelope> readProposalsEnvelope(JsonNode proposalsNode, boolean isGdprProtection) {
+        var proposals = new ArrayList<ProposalEnvelope>();
+
+        for (var it = proposalsNode.elements(); it.hasNext();) {
+            var element = it.next();
 
             var proposalEnvelopeBuilder = ProposalEnvelope.builder()
-                    .id((String) map.get("id"));
+                    .id(element.get("id").asText());
 
             if (!isGdprProtection) {
-                proposalEnvelopeBuilder.name((String) map.get("name"));
+                proposalEnvelopeBuilder.name(element.get("name").asText());
             }
 
-            return proposalEnvelopeBuilder.build();
-        }).toList();
+            proposals.add(proposalEnvelopeBuilder.build());
+        }
+
+        return proposals;
     }
 
 }

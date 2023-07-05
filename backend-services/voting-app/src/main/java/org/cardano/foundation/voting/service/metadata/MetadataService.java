@@ -46,16 +46,16 @@ public class MetadataService {
         int page = 1;
         do {
             String metadataLabelString = String.valueOf(metadataLabel);
-            var maps = blockchainDataMetadataService.fetchMetadataForLabel(metadataLabelString, PAGE_SIZE, page);
-            if (maps.size() < PAGE_SIZE) {
+            var transactionMetadataLabelCbors = blockchainDataMetadataService.fetchMetadataForLabel(metadataLabelString, PAGE_SIZE, page);
+            if (transactionMetadataLabelCbors.size() < PAGE_SIZE) {
                 continueFetching = false;
             }
             page++;
 
             // MetadataToJsonNoSchemaConverter.
 
-            //var onchainMetadataEvents = storeMetadataEvents(metadataLabelString, maps);
-            metadataProcessor.processMetadataEvents(maps);
+            //var onchainMetadataEvents = storeMetadataEvents(metadataLabelString, transactionMetadataLabelCbors);
+            metadataProcessor.processMetadataEvents(transactionMetadataLabelCbors);
 
         } while (continueFetching);
     }

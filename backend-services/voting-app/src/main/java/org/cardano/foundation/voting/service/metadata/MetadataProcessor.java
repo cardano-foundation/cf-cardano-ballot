@@ -2,17 +2,20 @@ package org.cardano.foundation.voting.service.metadata;
 
 import com.bloxbean.cardano.client.account.Account;
 import com.bloxbean.cardano.client.crypto.Blake2bUtil;
+import com.bloxbean.cardano.client.metadata.cbor.CBORMetadata;
 import com.bloxbean.cardano.client.util.HexUtil;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.SchemaVersion;
+import org.cardano.foundation.voting.domain.TransactionMetadataLabelCbor;
 import org.cardano.foundation.voting.domain.entity.Category;
 import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.domain.entity.Proposal;
 import org.cardano.foundation.voting.domain.metadata.OnChainEventType;
 import org.cardano.foundation.voting.service.cbor.CborService;
+import org.cardano.foundation.voting.service.json.JsonService;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
 import org.cardano.foundation.voting.utils.Bech32;
-import org.cardano.foundation.voting.utils.ChunkedMetadataParser;
 import org.cardano.foundation.voting.utils.Enums;
 import org.cardanofoundation.cip30.CIP30Verifier;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +24,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.bloxbean.cardano.client.crypto.Blake2bUtil.blake2bHash224;
+import static com.bloxbean.cardano.client.util.HexUtil.decodeHexString;
 import static org.cardano.foundation.voting.domain.metadata.OnChainEventType.CATEGORY_REGISTRATION;
 import static org.cardano.foundation.voting.domain.metadata.OnChainEventType.EVENT_REGISTRATION;
+import static org.cardano.foundation.voting.utils.ChunkedMetadataParser.parseArrayStringMetadata;
 import static org.cardanofoundation.cip30.Format.HEX;
 
 @Service
@@ -46,38 +50,48 @@ public class MetadataProcessor {
     @Value("${bind.on.event.ids}")
     private List<String> bindOnEventIds;
 
-    public void processMetadataEvents(List<Map> onChainMetadataEvents) {
-        log.info("on chain events:{}", onChainMetadataEvents);
+    @Autowired
+    private JsonService jsonService;
+
+    @Value("${l1.transaction.metadata.label:12345}")
+    private int metadataLabel;
+
+    public void processMetadataEvents(List<TransactionMetadataLabelCbor> onChainMetadataEvents) {
+        log.info("On chain events:{}", onChainMetadataEvents);
 
         for (var onChainMetadataEvent : onChainMetadataEvents) {
-            var maybeOnChainVotingEventType = Enums.getIfPresent(OnChainEventType.class, (String) onChainMetadataEvent.get("type"));
+            log.info(onChainMetadataEvent.getCborMetadata());
+            var cbormetadataasBytes= decodeHexString(onChainMetadataEvent.getCborMetadata().replace("\\x", ""));
+
+            var onchainEventJsonNodeE = jsonService.decode(CBORMetadata.deserialize(cbormetadataasBytes).toJson());
+            if (onchainEventJsonNodeE.isEmpty()) {
+                continue;
+            }
+            if (!onchainEventJsonNodeE.get().has(String.valueOf(metadataLabel))) {
+                continue;
+            }
+
+            var onchainEventJsonNode = onchainEventJsonNodeE.get().get(String.valueOf(metadataLabel));
+
+            var maybeOnChainVotingEventType = Enums.getIfPresent(OnChainEventType.class, onchainEventJsonNode.get("type").asText());
             if (maybeOnChainVotingEventType.isEmpty()) {
-                log.warn("Unknown onChainEvenType chain event maybeOnChainVotingEventType: {}", onChainMetadataEvent.get("type"));
+                log.warn("Unknown onChainEvenType chain event maybeOnChainVotingEventType: {}", onchainEventJsonNode.get("type").asText());
                 continue;
             }
             var onChainEvenType = maybeOnChainVotingEventType.orElseThrow();
 
-            var maybeSignature = Optional.ofNullable(onChainMetadataEvent.get("signature"))
-                    .filter(obj -> obj instanceof List)
-                    .map(obj -> (List) obj)
-                    .map(ChunkedMetadataParser::parseArrayStringMetadata);
-
-            var maybeKey = Optional.ofNullable(onChainMetadataEvent.get("key"))
-                    .filter(obj -> obj instanceof List)
-                    .map(obj -> (List) obj)
-                    .map(ChunkedMetadataParser::parseArrayStringMetadata);
-
-            var maybePayload =  Optional.ofNullable(onChainMetadataEvent.get("payload"))
-                    .map(obj -> (Map) obj);
+            var maybeSignature = parseArrayStringMetadata(onchainEventJsonNode.get("signature"));
+            var maybeKey = parseArrayStringMetadata(onchainEventJsonNode.get("key"));
+            var maybePayload =  Optional.ofNullable(onchainEventJsonNode.get("payload"));
 
             if (maybeSignature.isEmpty() || maybeKey.isEmpty() || maybePayload.isEmpty()) {
                 log.warn("Missing signature, key or payload from on chain event: {}", onChainMetadataEvent);
                 continue;
             }
 
-            var signature = maybeSignature.orElseThrow();
-            var key = maybeKey.orElseThrow();
-            var payload = maybePayload.orElseThrow();
+            var signature = maybeSignature.get();
+            var key = maybeKey.get();
+            var payload = maybePayload.get();
 
             if (onChainEvenType == EVENT_REGISTRATION) {
                 try {
@@ -100,8 +114,8 @@ public class MetadataProcessor {
         }
     }
 
-    private Optional<Event> processEventRegistration(String signature, String key, Map payload) {
-        var id = HexUtil.encodeHexString(blake2bHash224(HexUtil.decodeHexString(signature)));
+    private Optional<Event> processEventRegistration(String signature, String key, JsonNode payload) {
+        var id = HexUtil.encodeHexString(blake2bHash224(decodeHexString(signature)));
         log.info("Processing event registration, hash: {}", id);
 
         var cip30Parser = new CIP30Verifier(signature, Optional.ofNullable(key));
@@ -121,7 +135,7 @@ public class MetadataProcessor {
         var eventAddress = maybeEventAddress.orElseThrow();
         log.info("eventAddress:{}", eventAddress);
 
-        String blake2b_256PayloadHash = cip30VerificationResult.getMessage(HEX);
+        String blake2bPayloadHash = cip30VerificationResult.getMessage(HEX);
 
         var orgAccountStakeAddress = account.stakeAddress();
         if (!orgAccountStakeAddress.equals(eventAddress)) {
@@ -129,7 +143,7 @@ public class MetadataProcessor {
             return Optional.empty();
         }
 
-        var maybeEventRegistration = cborService.decodeEventRegistrationEnvelope(blake2b_256PayloadHash, payload).toJavaOptional();
+        var maybeEventRegistration = cborService.decodeEventRegistrationEnvelope(blake2bPayloadHash, payload).toJavaOptional();
         if (maybeEventRegistration.isEmpty()) {
             log.info("Event registration invalid, ignoring id:{}", id);
 
@@ -155,18 +169,21 @@ public class MetadataProcessor {
         event.setVersion(event.getVersion());
         event.setTeam(eventRegistration.getTeam());
         event.setVersion(SchemaVersion.fromText(eventRegistration.getSchemaVersion()).orElseThrow());
-        event.setStartEpoch(eventRegistration.getStartEpoch());
-        event.setEndEpoch(eventRegistration.getEndEpoch());
+
+        eventRegistration.getStartEpoch().ifPresent(event::setStartEpoch);
+        eventRegistration.getEndEpoch().ifPresent(event::setEndEpoch);
+        eventRegistration.getSnapshotEpoch().ifPresent(event::setSnapshotEpoch);
+
         event.setVotingEventType(eventRegistration.getVotingEventType());
-        event.setSnapshotEpoch(eventRegistration.getSnapshotEpoch());
-        event.setStartSlot(eventRegistration.getStartSlot());
-        event.setEndEpoch(eventRegistration.getEndEpoch());
+
+        eventRegistration.getStartSlot().ifPresent(event::setStartSlot);
+        eventRegistration.getEndSlot().ifPresent(event::setEndSlot);
 
         return Optional.of(referenceDataService.storeEvent(event));
     }
 
-    private Optional<Category> processCategoryRegistration(String signature, String key, Map payload) {
-        var id = HexUtil.encodeHexString(Blake2bUtil.blake2bHash224(HexUtil.decodeHexString(signature)));
+    private Optional<Category> processCategoryRegistration(String signature, String key, JsonNode payload) {
+        var id = HexUtil.encodeHexString(Blake2bUtil.blake2bHash224(decodeHexString(signature)));
 
         log.info("Processing category registration id: {}", id);
 

@@ -81,7 +81,7 @@ public class DefaultLoginService implements LoginService {
             return Either.left(
                     Problem.builder()
                             .withTitle("EXPIRED_SLOT")
-                            .withDetail("Login's envelope slot is expired!")
+                            .withDetail("CIP-93 envelope slot is expired!")
                             .withStatus(BAD_REQUEST)
                             .build()
             );

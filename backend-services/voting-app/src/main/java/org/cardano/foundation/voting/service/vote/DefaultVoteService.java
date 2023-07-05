@@ -298,7 +298,7 @@ public class DefaultVoteService implements VoteService {
             return Either.left(
                     Problem.builder()
                             .withTitle("EXPIRED_SLOT")
-                            .withDetail("Login's envelope slot is expired!")
+                            .withDetail("CIP-93's envelope slot is expired!")
                             .withStatus(BAD_REQUEST)
                             .build()
             );
@@ -311,7 +311,7 @@ public class DefaultVoteService implements VoteService {
             return Either.left(
                     Problem.builder()
                             .withTitle("EXPIRED_SLOT")
-                            .withDetail("Login's envelope slot is expired!")
+                            .withDetail("votedAt slot is expired!")
                             .withStatus(BAD_REQUEST)
                             .build()
             );

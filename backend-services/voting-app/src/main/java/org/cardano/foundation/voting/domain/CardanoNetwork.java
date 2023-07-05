@@ -14,4 +14,12 @@ public enum CardanoNetwork {
         return Arrays.stream(CardanoNetwork.values()).map(network -> network.name().toLowerCase()).toList();
     }
 
+    public boolean isTestnet() {
+        return !isMainnet();
+    }
+
+    public boolean isMainnet() {
+        return this == MAIN;
+    }
+
 }

@@ -50,8 +50,11 @@ dependencies {
 
 	implementation("org.zalando:jackson-datatype-problem:0.27.1")
 
-	compileOnly("org.projectlombok:lombok")
-	annotationProcessor("org.projectlombok:lombok")
+	compileOnly("org.projectlombok:lombok:1.18.28")
+	annotationProcessor("org.projectlombok:lombok:1.18.28")
+
+	testCompileOnly("org.projectlombok:lombok:1.18.28")
+	testAnnotationProcessor("org.projectlombok:lombok:1.18.28")
 
 	implementation("com.nimbusds:nimbus-jose-jwt:9.30.2")
 

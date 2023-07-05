@@ -1,26 +1,12 @@
 package org.cardano.foundation.voting.service.metadata;
 
-import com.bloxbean.cardano.client.common.cbor.CborSerializationUtil;
-import com.bloxbean.cardano.client.metadata.helper.MetadataToJsonNoSchemaConverter;
-import com.bloxbean.cardano.client.util.JsonUtil;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.micrometer.core.annotation.Timed;
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.domain.entity.OnchainMetadata;
-import org.cardano.foundation.voting.domain.metadata.OnChainEventType;
 import org.cardano.foundation.voting.repository.MetadataRepository;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataMetadataService;
-import org.cardano.foundation.voting.utils.Enums;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.bloxbean.cardano.client.util.HexUtil.encodeHexString;
-import static org.cardano.foundation.voting.utils.ChunkedMetadataParser.parseArrayStringMetadata;
-import static org.cardanofoundation.util.Hashing.sha2_256;
 
 @Service
 @Slf4j

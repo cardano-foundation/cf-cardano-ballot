@@ -30,7 +30,6 @@ public class Leaderboard {
 
     }
 
-    //@Projection(name = "votes", types = { Leaderboard.Votes.class } )
     public record Votes(long votes, long votingPower) { }
 
 }

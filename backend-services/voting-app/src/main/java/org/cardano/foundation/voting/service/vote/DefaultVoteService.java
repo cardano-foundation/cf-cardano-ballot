@@ -14,6 +14,7 @@ import org.cardano.foundation.voting.domain.entity.VoteMerkleProof;
 import org.cardano.foundation.voting.domain.web3.SignedWeb3Request;
 import org.cardano.foundation.voting.domain.web3.Web3Action;
 import org.cardano.foundation.voting.repository.VoteRepository;
+import org.cardano.foundation.voting.service.address.StakeAddressVerificationService;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataTransactionDetailsService;
 import org.cardano.foundation.voting.service.expire.ExpirationService;
 import org.cardano.foundation.voting.service.json.JsonService;
@@ -35,7 +36,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.cardano.foundation.voting.domain.VoteReceipt.Status.*;
+import static org.cardano.foundation.voting.domain.VotingPowerFormat.ADA;
 import static org.cardano.foundation.voting.domain.web3.Web3Action.CAST_VOTE;
+import static org.cardano.foundation.voting.utils.MoreNumber.isNumeric;
 import static org.cardanofoundation.cip30.Format.TEXT;
 import static org.cardanofoundation.cip30.ValidationError.UNKNOWN;
 import static org.zalando.problem.Status.BAD_REQUEST;
@@ -65,6 +68,9 @@ public class DefaultVoteService implements VoteService {
 
     @Autowired
     private JsonService jsonService;
+
+    @Autowired
+    private StakeAddressVerificationService stakeAddressVerificationService;
 
     @Autowired
     private BlockchainDataTransactionDetailsService blockchainDataTransactionDetailsService;
@@ -167,6 +173,11 @@ public class DefaultVoteService implements VoteService {
             return Either.left(stakeAddressE.getLeft());
         }
         var stakeAddress = stakeAddressE.get();
+
+        var passedStakeAddressE = stakeAddressVerificationService.checkStakeAddress(stakeAddress);
+        if (passedStakeAddressE.isLeft()) {
+            return Either.left(passedStakeAddressE.getLeft());
+        }
 
         var castVoteRequestBodyJsonE = jsonService.decodeCIP93VoteEnvelope(cip30VerificationResult.getMessage(TEXT));
         if (castVoteRequestBodyJsonE.isLeft()) {
@@ -386,7 +397,17 @@ public class DefaultVoteService implements VoteService {
             );
         }
 
-        var signedVotingPower = cip90VoteEnvelope.getData().getVotingPower();
+        if (!isNumeric(cip90VoteEnvelope.getData().getVotingPower())) {
+            return Either.left(
+                    Problem.builder()
+                            .withTitle("INVALID_VOTING_POWER")
+                            .withDetail("Voting power is not numeric for the stake address: " + stakeAddress)
+                            .withStatus(BAD_REQUEST)
+                            .build()
+            );
+        }
+
+        var signedVotingPower = Long.parseLong(cip90VoteEnvelope.getData().getVotingPower());
         if (signedVotingPower != blockchainVotingPower) {
             return Either.left(
                     Problem.builder()
@@ -417,6 +438,11 @@ public class DefaultVoteService implements VoteService {
     @Transactional
     @Timed(value = "service.vote.voteReceipt", percentiles = { 0.3, 0.5, 0.95 })
     public Either<Problem, VoteReceipt> voteReceipt(String eventName, String categoryName, String stakeAddress) {
+        var passedStakeAddressE = stakeAddressVerificationService.checkStakeAddress(stakeAddress);
+        if (passedStakeAddressE.isLeft()) {
+            return Either.left(passedStakeAddressE.getLeft());
+        }
+
         var maybeEvent = referenceDataService.findValidEventByName(eventName);
         if (maybeEvent.isEmpty()) {
             log.warn("Unrecognised event, event:{}", eventName);
@@ -485,6 +511,8 @@ public class DefaultVoteService implements VoteService {
                     .cosePublicKey(vote.getCosePublicKey())
                     .votedAtSlot(vote.getVotedAtSlot())
                     .voterStakingAddress(vote.getVoterStakingAddress())
+                    .votingPower(String.valueOf(vote.getVotingPower()))
+                    .votingPowerFormat(ADA)
                     .cardanoNetwork(vote.getNetwork())
                     .status(status)
                     .finalityScore(isL1CommitmentOnChain)
@@ -505,6 +533,8 @@ public class DefaultVoteService implements VoteService {
                     .cosePublicKey(vote.getCosePublicKey())
                     .votedAtSlot(vote.getVotedAtSlot())
                     .voterStakingAddress(vote.getVoterStakingAddress())
+                    .votingPower(String.valueOf(vote.getVotingPower()))
+                    .votingPowerFormat(ADA)
                     .cardanoNetwork(vote.getNetwork())
                     .status(BASIC)
                     .build()

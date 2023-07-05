@@ -75,8 +75,6 @@ public class L1TransactionCreator {
         var stakeAddress = organiserAccount.stakeAddress();
         var stakeAddressAccount = new Address(stakeAddress);
 
-        // CBORMetadata.deserialize(childMetadata.getMap()
-
         var data = CborSerializationUtil.serialize(childMetadata.getMap());
         var hashedData = blake2bHash224(data);
 

@@ -18,7 +18,7 @@ public class BlockfrostBlockchainDataStakePoolService extends AbstractBlockfrost
 
                 var maybeStakeAmount = getStakeAmount(epochNo, accountHistory);
                 if (maybeStakeAmount.isPresent()) {
-                    var stakeAmount = maybeStakeAmount.orElseThrow();
+                    long stakeAmount = maybeStakeAmount.orElseThrow();
 
                     return Optional.of(stakeAmount);
                 }

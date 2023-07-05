@@ -21,6 +21,10 @@ public class VoteReceipt {
 
     private String proposalText;
 
+    private String votingPower;
+
+    private VotingPowerFormat votingPowerFormat;
+
     private String voterStakingAddress;
 
     private String coseSignature;

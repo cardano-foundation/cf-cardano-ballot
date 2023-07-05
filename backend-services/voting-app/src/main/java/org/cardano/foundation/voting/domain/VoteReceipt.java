@@ -3,7 +3,6 @@ package org.cardano.foundation.voting.domain;
 import lombok.Builder;
 import lombok.Data;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,8 +21,6 @@ public class VoteReceipt {
     private String proposalText;
 
     private String votingPower;
-
-    private VotingPowerFormat votingPowerFormat;
 
     private String voterStakingAddress;
 
@@ -45,6 +42,8 @@ public class VoteReceipt {
         BASIC, // without merkle proof committed to L1 yet
 
         PARTIAL, // there is a merkle proof but L1 commitment is not visible on chain yet or already rolled back
+
+        ROLLBACK, // with merkle proof committed to L1 but on L1 there has been a rollback
 
         FULL // with merkle proof committed to L1 and visible on chain
     }

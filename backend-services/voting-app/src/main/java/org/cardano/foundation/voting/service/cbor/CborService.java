@@ -5,6 +5,7 @@ import com.bloxbean.cardano.client.metadata.cbor.CBORMetadataMap;
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.VotingEventType;
+import org.cardano.foundation.voting.domain.VotingPowerAsset;
 import org.cardano.foundation.voting.domain.metadata.OnChainEventType;
 import org.cardano.foundation.voting.domain.web3.CategoryRegistrationEnvelope;
 import org.cardano.foundation.voting.domain.web3.EventRegistrationEnvelope;
@@ -18,6 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.cardano.foundation.voting.domain.VotingEventType.BALANCE_BASED;
+import static org.cardano.foundation.voting.domain.VotingEventType.STAKE_BASED;
+import static org.cardano.foundation.voting.domain.VotingPowerAsset.ADA;
 import static org.cardano.foundation.voting.utils.MoreBoolean.fromBigInteger;
 import static org.zalando.problem.Status.BAD_REQUEST;
 import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
@@ -160,14 +164,28 @@ public class CborService {
 
             var votingEventType = maybeVotingEventType.orElseThrow();
 
+            // TODO remove VotingPowerAsset.ADA assumption
+            var maybeVotingPowerAsset = Enums.getIfPresent(VotingPowerAsset.class, (String) payload.get("votingPowerAsset"));
+            if (List.of(STAKE_BASED, BALANCE_BASED).contains(votingEventType)) {
+                if (maybeVotingPowerAsset.isEmpty()) {
+                    return Either.left(
+                            Problem.builder()
+                                    .withTitle("INVALID_EVENT_REGISTRATION")
+                                    .withDetail("Invalid event registration event, missing votingPowerAsset field.")
+                                    .withStatus(BAD_REQUEST)
+                                    .build());
+                }
+            }
+
             var eventRegistrationEnvelopeBuilder = EventRegistrationEnvelope.builder()
                     .name((String)payload.get("name"))
                     .type(OnChainEventType.EVENT_REGISTRATION)
                     .team(maybeTeam.orElseThrow())
                     .creationSlot(maybeCreationSlot.orElseThrow())
+                    .votingPowerAsset(maybeVotingPowerAsset)
                     .votingEventType(votingEventType);
 
-            if (votingEventType == VotingEventType.STAKE_BASED) {
+            if (List.of(STAKE_BASED, BALANCE_BASED).contains(votingEventType)) {
                 var maybeStartEpoch = Optional.ofNullable(payload.get("startEpoch")).map(obj -> ((BigInteger) obj).intValue());
                 if (maybeStartEpoch.isEmpty()) {
                     return Either.left(
@@ -193,6 +211,24 @@ public class CborService {
                             Problem.builder()
                                     .withTitle("INVALID_EVENT_REGISTRATION")
                                     .withDetail("Invalid event registration event, missing snapshotEpoch field.")
+                                    .withStatus(BAD_REQUEST)
+                                    .build());
+                }
+
+                if (maybeStartEpoch.orElseThrow() > maybeEndEpoch.orElseThrow()) {
+                    return Either.left(
+                            Problem.builder()
+                                    .withTitle("INVALID_EVENT_REGISTRATION")
+                                    .withDetail("Invalid event registration event, startEpoch must be less than endEpoch.")
+                                    .withStatus(BAD_REQUEST)
+                                    .build());
+                }
+
+                if (maybeSnapshotEpoch.orElseThrow() >= maybeStartEpoch.orElseThrow()) {
+                    return Either.left(
+                            Problem.builder()
+                                    .withTitle("INVALID_EVENT_REGISTRATION")
+                                    .withDetail("Invalid event registration event, snapshotEpoch must be less than startEpoch.")
                                     .withStatus(BAD_REQUEST)
                                     .build());
                 }

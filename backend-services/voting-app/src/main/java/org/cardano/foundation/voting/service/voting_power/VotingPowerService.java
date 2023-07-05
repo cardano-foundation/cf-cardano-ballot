@@ -13,8 +13,9 @@ public class VotingPowerService {
 
     public long getVotingPower(Event event, String stakeAddress) {
         return switch (event.getVotingEventType()) {
-            case USER_BASED -> 1L;
+            case USER_BASED -> throw new RuntimeException("voting power for USER_BASED events is not supported!");
             case STAKE_BASED -> blockchainDataStakePoolService.getStakeAmount(event.getSnapshotEpoch(), stakeAddress).orElse(0L);
+            case BALANCE_BASED -> blockchainDataStakePoolService.getBalanceAmount(event.getSnapshotEpoch(), stakeAddress).orElse(0L);
         };
     }
 

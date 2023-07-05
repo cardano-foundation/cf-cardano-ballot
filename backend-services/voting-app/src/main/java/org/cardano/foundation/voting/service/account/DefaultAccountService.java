@@ -4,7 +4,6 @@ package org.cardano.foundation.voting.service.account;
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.Account;
-import org.cardano.foundation.voting.domain.VotingEventType;
 import org.cardano.foundation.voting.service.address.StakeAddressVerificationService;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataStakePoolService;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
@@ -12,9 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 
+import java.util.List;
 import java.util.Optional;
 
-import static org.cardano.foundation.voting.domain.VotingPowerFormat.ADA;
+import static org.cardano.foundation.voting.domain.VotingEventType.BALANCE_BASED;
+import static org.cardano.foundation.voting.domain.VotingEventType.STAKE_BASED;
+import static org.cardano.foundation.voting.domain.VotingPowerAsset.ADA;
 import static org.zalando.problem.Status.BAD_REQUEST;
 
 @Service
@@ -49,15 +51,15 @@ public class DefaultAccountService implements AccountService {
             return Either.left(stakeAddressE.getLeft());
         }
 
-        if (event.getVotingEventType() != VotingEventType.STAKE_BASED) {
+        if (!List.of(STAKE_BASED, BALANCE_BASED).contains(event.getVotingEventType())) {
             return Either.left(Problem.builder()
-                    .withTitle("EVENT_NOT_STAKE_BASED")
-                    .withDetail("Event is not stake based, event:" + event)
+                    .withTitle("ONLY_STAKE_AND_BALANCE_BASED_EVENTS_SUPPORTED")
+                    .withDetail("Only stake and balance based events are supported, event:" + event)
                     .withStatus(BAD_REQUEST)
                     .build());
         }
 
-        var votingPowerInAda = blockchainDataStakePoolService.getStakeAmount(event.getSnapshotEpoch(), stakeAddress)
+        var votingPower = blockchainDataStakePoolService.getStakeAmount(event.getSnapshotEpoch(), stakeAddress)
                 .map(votingPowerAmount -> {
                     if (votingPowerAmount < 1_000_000L) {
                         return 0L;
@@ -68,8 +70,8 @@ public class DefaultAccountService implements AccountService {
 
         return Either.right(Optional.of(Account.builder()
                 .stakeAddress(stakeAddress)
-                .votingPower(votingPowerInAda.map(String::valueOf).orElse(null))
-                .votingPowerFormat(ADA)
+                .votingPower(votingPower.map(String::valueOf).orElse(null))
+                .votingPowerAsset(ADA)
                 .build())
         );
     }

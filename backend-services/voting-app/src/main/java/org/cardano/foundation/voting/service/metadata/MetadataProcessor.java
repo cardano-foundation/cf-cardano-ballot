@@ -154,13 +154,13 @@ public class MetadataProcessor {
             return Optional.empty();
         }
 
-        var maybeEventRegistration = cborService.decodeEventRegistrationEnvelope(payload).toJavaOptional();
-        if (maybeEventRegistration.isEmpty()) {
-            log.info("Event registration invalid, ignoring id:{}", id);
+        var maybeEventRegistration = cborService.decodeEventRegistrationEnvelope(payload);
+        if (maybeEventRegistration.isLeft()) {
+            log.info("Event registration invalid, reason:{} :{}", maybeEventRegistration.getLeft().getDetail(), id);
 
             return Optional.empty();
         }
-        var eventRegistration = maybeEventRegistration.orElseThrow();
+        var eventRegistration = maybeEventRegistration.get();
 
         if (!bindOnEventIds.contains(eventRegistration.getName())) {
             log.info("Event NOT found in bindOnEventIds, ignoring id:{}", id);
@@ -184,6 +184,7 @@ public class MetadataProcessor {
         eventRegistration.getStartEpoch().ifPresent(event::setStartEpoch);
         eventRegistration.getEndEpoch().ifPresent(event::setEndEpoch);
         eventRegistration.getSnapshotEpoch().ifPresent(event::setSnapshotEpoch);
+        eventRegistration.getVotingPowerAsset().ifPresent(event::setVotingPowerAsset);
 
         event.setVotingEventType(eventRegistration.getVotingEventType());
 

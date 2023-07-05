@@ -17,19 +17,19 @@ import lombok.*;
 public class VoteMerkleProof extends AbstractTimestampEntity {
 
     @Id
-    @Column(name = "vote_id")
+    @Column(name = "vote_id", nullable = false)
     private String voteId;
 
-    @Column(name = "event_id")
+    @Column(name = "event_id", nullable = false)
     private String eventId;
 
-    @Column(name = "root_hash")
+    @Column(name = "root_hash", nullable = false)
     private String rootHash;
 
-    @Column(name = "l1_transaction_hash")
+    @Column(name = "l1_transaction_hash", nullable = false)
     private String l1TransactionHash;
 
-    @Column(name = "proof_items_json")
+    @Column(name = "proof_items_json", nullable = false)
     private String proofItemsJson;
 
     @Column(name = "invalidated") // when there is a rollback event we soft delete it, invalidate the merkle proof

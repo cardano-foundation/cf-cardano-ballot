@@ -9,6 +9,6 @@ public class Account {
 
     private String stakeAddress;
     private String votingPower;
-    private VotingPowerFormat votingPowerFormat;
+    private VotingPowerAsset votingPowerAsset;
 
 }

@@ -2,7 +2,6 @@ package org.cardano.foundation.voting.service.metadata;
 
 import io.micrometer.core.annotation.Timed;
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.repository.MetadataRepository;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataMetadataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

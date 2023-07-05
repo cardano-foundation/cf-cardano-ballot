@@ -3,6 +3,7 @@ package org.cardano.foundation.voting.domain.web3;
 import lombok.Builder;
 import lombok.Getter;
 import org.cardano.foundation.voting.domain.VotingEventType;
+import org.cardano.foundation.voting.domain.VotingPowerAsset;
 import org.cardano.foundation.voting.domain.metadata.OnChainEventType;
 
 import java.util.Optional;
@@ -22,6 +23,9 @@ public class EventRegistrationEnvelope {
     private boolean categoryResultsWhileVoting;
 
     private VotingEventType votingEventType;
+
+    @Builder.Default
+    private Optional<VotingPowerAsset> votingPowerAsset = Optional.empty();
 
     @Builder.Default
     private Optional<Integer> startEpoch = Optional.empty();

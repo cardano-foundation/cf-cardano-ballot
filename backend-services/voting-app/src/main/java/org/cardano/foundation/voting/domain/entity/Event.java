@@ -4,11 +4,15 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.cardano.foundation.voting.domain.SchemaVersion;
 import org.cardano.foundation.voting.domain.VotingEventType;
+import org.cardano.foundation.voting.domain.VotingPowerAsset;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static org.cardano.foundation.voting.domain.VotingEventType.BALANCE_BASED;
+import static org.cardano.foundation.voting.domain.VotingEventType.STAKE_BASED;
 
 @Entity
 @Table(name = "event")
@@ -28,6 +32,10 @@ public class Event extends AbstractTimestampEntity {
 
     @Column(name = "event_type", nullable = false)
     private VotingEventType votingEventType;
+
+    @Column(name = "voting_power_asset")
+    @Nullable
+    private VotingPowerAsset votingPowerAsset;
 
     @Builder.Default
     @Column(name = "allow_vote_changing")
@@ -74,8 +82,8 @@ public class Event extends AbstractTimestampEntity {
     }
 
     public boolean isValid() {
-        if (votingEventType == VotingEventType.STAKE_BASED) {
-            if (startEpoch == null || endEpoch == null || snapshotEpoch == null) {
+        if (List.of(STAKE_BASED, BALANCE_BASED).contains(votingEventType)) {
+            if (startEpoch == null || endEpoch == null || snapshotEpoch == null || votingPowerAsset == null) {
                 return false;
             }
         }

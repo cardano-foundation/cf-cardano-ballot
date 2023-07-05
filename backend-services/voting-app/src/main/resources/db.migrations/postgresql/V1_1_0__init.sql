@@ -8,6 +8,8 @@ CREATE TABLE event (
     allow_vote_changing BOOL, -- TODO default false
     category_results_while_voting BOOL, -- TODO default false
 
+    voting_power_asset INT,
+
     start_epoch INT,
     end_epoch INT,
 
@@ -59,7 +61,7 @@ CREATE TABLE vote (
    voter_staking_address VARCHAR(255) NOT NULL,
    cose_signature text NOT NULL,
    cose_public_key text NOT NULL,
-   voting_power BIGINT NOT NULL,
+   voting_power BIGINT,
    network INT NOT NULL,
    voted_at_slot BIGINT NOT NULL,
 

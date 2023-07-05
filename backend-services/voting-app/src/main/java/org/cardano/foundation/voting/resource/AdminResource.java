@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.concurrent.Executor;
 
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -26,11 +26,13 @@ public class AdminResource {
 
     // TODO authorisation for admin, e.g. via HTTP BASIC AUTH or JWT
 
-    @RequestMapping(value = "/full-metadata-scan", method = GET, produces = "application/json")
+    @RequestMapping(value = "/full-metadata-scan", method = POST, produces = "application/json")
     public ResponseEntity<?> processAllMetadataEvents() {
         log.info("Received full metadata scan signal...");
 
         executor.execute(() -> metadataService.processAllMetadataEvents());
+
+        log.info("Full metadata scan signal completed.");
 
         return ResponseEntity.ok().build();
     }

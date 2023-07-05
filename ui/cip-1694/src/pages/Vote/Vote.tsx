@@ -7,11 +7,12 @@ import { Grid, Container, Typography, Button } from "@mui/material";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 import DoneIcon from "@mui/icons-material/Done";
 import CloseIcon from "@mui/icons-material/Close";
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import DoDisturbIcon from "@mui/icons-material/DoDisturb";
+import toast from "react-hot-toast";
 import CountDownTimer from "../../components/CountDownTimer/CountDownTimer";
 import OptionCard from "../../components/OptionCard/OptionCard";
 import { OptionItem } from "../../components/OptionCard/OptionCard.types";
-import { JsonViewer } from "@textea/json-viewer";
 import { buildCanonicalVoteInputJson } from "../../commons/utils/voteUtils";
 import { voteService } from "../../commons/api/voteService";
 import "./Vote.scss";
@@ -32,8 +33,8 @@ const items: OptionItem[] = [
 ];
 
 interface SignedMessage {
-  signature: string,
-  key: string
+  signature: string;
+  key: string;
 }
 
 const Vote = () => {
@@ -53,6 +54,7 @@ const Vote = () => {
   useEffect(() => {
     slotFromTimestamp();
     votingPowerOfUser();
+    !isConnected && notify("Connect your wallet to vote")
   }, []);
 
   const slotFromTimestamp = async () => {
@@ -62,17 +64,21 @@ const Vote = () => {
 
   const votingPowerOfUser = async () => {
     const response = await voteService.getVotingPower();
-    setVotingPower(response.votingPower || null);
+    const votingPower = response.votingPower;
+    const votingPowerFormat = response.votingPowerFormat;
+    setVotingPower(votingPower || null);
   };
 
   const onChangeOption = (option: string) => {
     setOptionId(option);
   };
 
+  const notify = (message: string) => toast(message);
+
   const canonicalVoteInput = useMemo(
     () =>
       buildCanonicalVoteInputJson({
-        option: optionId,
+        option: optionId.toUpperCase(),
         voter: stakeAddress,
         voteId: uuidv4(),
         slotNumber: absoluteSlot,
@@ -83,35 +89,42 @@ const Vote = () => {
 
   const handleSubmit = async () => {
     if (!isConnected && votingPower === null) return;
-  signMessage(canonicalVoteInput, async (signature, key) => {
-    try {
+    signMessage(canonicalVoteInput, async (signature, key) => {
+      try {
         const requestVoteObject = {
           cosePublicKey: key,
           coseSignature: isConnected && signature,
         };
-  
+
         try {
           voteService
             .castAVoteWithDigitalSignature(requestVoteObject)
             .then((data) => {
-              if (data.error && data.error.length) {
-                console.log(data.error);
+              if (
+                data.status === 400 &&
+                data.title === "INVALID_VOTING_POWER"
+              ) {
+                notify("To cast a vote, Voting Power should be more than 0");
+              } else if (
+                data.status === 400 &&
+                data.title === "EXPIRED_SLOT"
+              ) {
+                notify("CIP-93's envelope slot is expired!");
               } else {
-                console.log(data);
+                notify("You vote has been successfully submitted!");
               }
             })
             .catch((err) => {
-              console.log(err);
+              notify(err);
             });
         } catch (e) {
           console.log(e);
         }
       } catch (error) {
         //todo error log
-    }
-
-  });
-}
+      }
+    });
+  };
 
   const signObject = isConnected ? JSON.parse(canonicalVoteInput) : null;
 
@@ -153,9 +166,11 @@ const Vote = () => {
           </Grid>
 
           <Grid item>
-            <OptionCard items={items} onChangeOption={onChangeOption}/>
+            <OptionCard
+              items={items}
+              onChangeOption={onChangeOption}
+            />
           </Grid>
-
           <Grid item>
             <Button
               size="large"
@@ -174,7 +189,7 @@ const Vote = () => {
                 backgroundColor: theme.palette.primary.main,
               }}
             >
-              {!isConnected ? 'Connect wallet to vote' : 'Submit Your Vote'}
+            {!isConnected ? "Connect wallet to vote" : "Submit Your Vote"}
             </Button>
           </Grid>
         </Grid>

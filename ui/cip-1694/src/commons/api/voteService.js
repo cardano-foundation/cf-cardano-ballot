@@ -21,7 +21,7 @@ const castAVoteWithDigitalSignature = async (jsonRequest) => {
         `${CAST_VOTE_URL}`,
         { ...DEFAULT_CONTENT_TYPE_HEADERS },
         JSON.stringify(jsonRequest),
-        true
+        false
     );
 };
 

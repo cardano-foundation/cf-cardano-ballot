@@ -398,7 +398,7 @@ public class DefaultVoteService implements VoteService {
         vote.setCosePublicKey(castVoteRequest.getCosePublicKey());
 
         if (List.of(STAKE_BASED, BALANCE_BASED).contains(event.getVotingEventType())) {
-            var blockchainVotingPower = votingPowerService.getVotingPower(event, stakeAddress);
+            var blockchainVotingPower = votingPowerService.getVotingPower(event, stakeAddress).orElse(-1L);
             if (blockchainVotingPower <= 0) {
                 log.warn("Voting power is less than equal 0 for the stake address: " + stakeAddress);
 
@@ -415,7 +415,7 @@ public class DefaultVoteService implements VoteService {
                 return Either.left(
                         Problem.builder()
                                 .withTitle("INVALID_VOTING_POWER")
-                                .withDetail("Voting power is not numeric for the stake address: " + stakeAddress)
+                                .withDetail("CIP-93's envelope votingPower is not numeric for the stake address: " + stakeAddress)
                                 .withStatus(BAD_REQUEST)
                                 .build()
                 );
@@ -430,6 +430,7 @@ public class DefaultVoteService implements VoteService {
                                 .build()
                 );
             }
+
             vote.setVotingPower(blockchainVotingPower);
         }
 

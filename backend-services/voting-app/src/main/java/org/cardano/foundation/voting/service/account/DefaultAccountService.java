@@ -5,8 +5,8 @@ import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.Account;
 import org.cardano.foundation.voting.service.address.StakeAddressVerificationService;
-import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataStakePoolService;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
+import org.cardano.foundation.voting.service.voting_power.VotingPowerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
@@ -23,10 +23,10 @@ import static org.zalando.problem.Status.BAD_REQUEST;
 public class DefaultAccountService implements AccountService {
 
     @Autowired
-    private BlockchainDataStakePoolService blockchainDataStakePoolService;
+    private ReferenceDataService referenceDataService;
 
     @Autowired
-    private ReferenceDataService referenceDataService;
+    private VotingPowerService votingPowerService;
 
     @Autowired
     private StakeAddressVerificationService stakeAddressVerificationService;
@@ -58,14 +58,7 @@ public class DefaultAccountService implements AccountService {
                     .build());
         }
 
-        var votingPower = blockchainDataStakePoolService.getStakeAmount(event.getSnapshotEpoch(), stakeAddress)
-                .map(votingPowerAmount -> {
-                    if (votingPowerAmount < 1_000_000L) {
-                        return 0L;
-                    }
-
-                    return votingPowerAmount / 1_000_000L;
-                });
+        Optional<Long> votingPower = votingPowerService.getVotingPower(event, stakeAddress);
 
         return Either.right(Optional.of(Account.builder()
                 .stakeAddress(stakeAddress)

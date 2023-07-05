@@ -8,7 +8,7 @@ import { SlideProps } from "./IntroSlides.types";
 import { styled, useTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { Grid, Container, Typography, Button } from "@mui/material";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 import "./IntroSlides.scss";
 import "swiper/css/navigation";
 
@@ -96,7 +96,7 @@ const IntroSlides = ({ items }: SlideProps) => {
                     size="large"
                     component={Link}
                     variant="contained"
-                    to={{ pathname: `/vote`}}
+                    to={{ pathname: `/vote` }}
                     sx={{
                       marginTop: "0px !important",
                       height: { xs: "50px", sm: "60px", lg: "70px" },
@@ -104,7 +104,7 @@ const IntroSlides = ({ items }: SlideProps) => {
                       fontWeight: 700,
                       textTransform: "none",
                       borderRadius: "16px !important",
-                      color: '#fff !important',
+                      color: "#fff !important",
                       fontFamily: "Roboto Bold",
                       backgroundColor: theme.palette.primary.main,
                     }}

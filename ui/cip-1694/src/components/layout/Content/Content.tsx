@@ -9,14 +9,14 @@ export default function Content() {
     sx={{
       display: 'flex',
       flexDirection: 'column',
-      minHeight: '70vh',
+      minHeight: '60vh',
     }}
   >
       <CssBaseline />
       <Container
         component="main"
         maxWidth="lg"
-        sx={{ mt: 3, mb: 1 }}
+        sx={{ mt: 2, mb: 1 }}
       >
         <PageRouter />
       </Container>

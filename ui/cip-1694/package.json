@@ -1,6 +1,6 @@
 {
   "name": "cardanovoting",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "private": true,
   "author": "Cardano Foundation Team",
   "repository": "https://github.com/cardano-foundation/cf-voting-app/app",
@@ -19,6 +19,7 @@
     "moment": "^2.29.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-hot-toast": "^2.4.1",
     "react-redux": "^8.0.7",
     "react-router-dom": "^6.11.1",
     "react-scripts": "5.0.1",

@@ -21,16 +21,22 @@ public class MetadataSerialiser {
         map.put("schemaVersion", SchemaVersion.V1.getSemVer());
         map.put("creationSlot", BigInteger.valueOf(slot));
 
+        boolean addedAnyValues = false;
+
+        var l1CommitmentMap = MetadataBuilder.createMap();
         for (var l1MerkleCommitment : l1MerkleCommitments) {
-            var l1CommitmentMap = MetadataBuilder.createMap();
+
+            if (l1MerkleCommitment.votes().isEmpty()) {
+                continue;
+            }
 
             var l1Map = MetadataBuilder.createMap();
             l1Map.put("hash", HexUtil.encodeHexString(l1MerkleCommitment.root().itemHash()));
 
             l1CommitmentMap.put(l1MerkleCommitment.event().getId(), l1Map);
-
-            map.put("commitments", l1CommitmentMap);
         }
+
+        map.put("commitments", l1CommitmentMap);
 
         return map;
     }

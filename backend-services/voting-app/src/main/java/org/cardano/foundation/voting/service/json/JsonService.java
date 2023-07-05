@@ -2,6 +2,7 @@ package org.cardano.foundation.voting.service.json;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,23 @@ public final class JsonService {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    public Either<Problem, JsonNode> decode(String json) {
+        try {
+            return Either.right(objectMapper.readTree(json));
+        } catch (JsonProcessingException e) {
+            log.warn("Invalid json:{}", json, e);
+
+            return Either.left(
+                    Problem.builder()
+                            .withTitle("INVALID_JSON")
+                            .withDetail("Invalid json:" + json)
+                            .withStatus(BAD_REQUEST)
+                            .withDetail(e.getMessage())
+                            .build()
+            );
+        }
+    }
 
     public Either<Problem, CIP93Envelope<VoteEnvelope>> decodeCIP93VoteEnvelope(String json) {
         try {

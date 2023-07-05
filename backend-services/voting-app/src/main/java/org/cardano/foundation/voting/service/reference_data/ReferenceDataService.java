@@ -11,6 +11,7 @@ import org.cardano.foundation.voting.repository.ProposalRepository;
 import org.cardano.foundation.voting.service.expire.ExpirationService;
 import org.cardano.foundation.voting.service.i18n.LocalisationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +36,7 @@ public class ReferenceDataService {
 
     @Autowired
     private LocalisationService localisationService;
+
 
     @Timed(value = "service.reference.findValidEventByName", percentiles = {0.3, 0.5, 0.95})
     @Transactional
@@ -62,8 +64,8 @@ public class ReferenceDataService {
 
     @Timed(value = "service.reference.findProposalByName", percentiles = {0.3, 0.5, 0.95})
     @Transactional
-    public Optional<Proposal> findProposalByName(String name) {
-        return proposalRepository.findProposalByName(name);
+    public Optional<Proposal> findProposalByName(Category category, String name) {
+        return proposalRepository.findProposalByName(category.getId(), name);
     }
 
     @Timed(value = "service.reference.storeEvent", percentiles = {0.3, 0.5, 0.95})

@@ -7,6 +7,7 @@ import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.Role;
 import org.cardano.foundation.voting.domain.web3.SignedWeb3Request;
 import org.cardano.foundation.voting.domain.web3.Web3Action;
+import org.cardano.foundation.voting.service.address.StakeAddressVerificationService;
 import org.cardano.foundation.voting.service.expire.ExpirationService;
 import org.cardano.foundation.voting.service.json.JsonService;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
@@ -41,6 +42,9 @@ public class DefaultLoginService implements LoginService {
 
     @Autowired
     private JsonService jsonService;
+
+    @Autowired
+    private StakeAddressVerificationService stakeAddressVerificationService;
 
     @Autowired
     private CardanoNetwork network;
@@ -81,7 +85,7 @@ public class DefaultLoginService implements LoginService {
             return Either.left(
                     Problem.builder()
                             .withTitle("EXPIRED_SLOT")
-                            .withDetail("Login's envelope slot is expired!")
+                            .withDetail("CIP-93 envelope slot is expired!")
                             .withStatus(BAD_REQUEST)
                             .build()
             );
@@ -154,6 +158,12 @@ public class DefaultLoginService implements LoginService {
 
             return Either.left(stakeAddressE.getLeft());
         }
+        var stakeAddress = stakeAddressE.get();
+
+        var passedStakeAddressE = stakeAddressVerificationService.checkStakeAddress(stakeAddress);
+        if (passedStakeAddressE.isLeft()) {
+            return Either.left(passedStakeAddressE.getLeft());
+        }
 
         var maybeRole = Enums.getIfPresent(Role.class, cip93LoginEnvelope.getData().getRole());
         if (maybeRole.isEmpty()) {
@@ -165,10 +175,6 @@ public class DefaultLoginService implements LoginService {
                     .withStatus(BAD_REQUEST)
                     .build());
         }
-
-
-
-        var stakeAddress = stakeAddressE.get();
 
         return jwtService.generate(stakeAddress);
     }

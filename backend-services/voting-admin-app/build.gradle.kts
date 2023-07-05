@@ -28,8 +28,11 @@ dependencies {
 
 	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.6")
 
-	compileOnly("org.projectlombok:lombok:1.18.26")
-	annotationProcessor("org.projectlombok:lombok:1.18.26")
+	compileOnly("org.projectlombok:lombok:1.18.28")
+	annotationProcessor("org.projectlombok:lombok:1.18.28")
+
+	testCompileOnly("org.projectlombok:lombok:1.18.28")
+	testAnnotationProcessor("org.projectlombok:lombok:1.18.28")
 
 	testImplementation("org.testcontainers:junit-jupiter")
 

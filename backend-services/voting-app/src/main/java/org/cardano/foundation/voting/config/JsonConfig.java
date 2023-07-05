@@ -25,19 +25,4 @@ public class JsonConfig {
         return objectMapper;
     }
 
-//    @Bean("canonical_object_mapper")
-//    public ObjectMapper objectMapper() {
-//        return new ObjectMapper(new CanonicalFactory()) {
-//
-//            // Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'jsonSchemaConverter' defined in class path resource [org/springframework/data/rest/webmvc/config/RepositoryRestMvcConfiguration.class]: Failed to instantiate [org.springframework.data.rest.webmvc.json.PersistentEntityToJsonSchemaConverter]: Factory method 'jsonSchemaConverter' threw exception with message: Failed copy(): io.setl.json.jackson.CanonicalFactory (version: 2.14.2) does not override copy(); it has to
-//            // workaround: https://stackoverflow.com/questions/60608345/spring-boot-hateoas-and-custom-jacksonobjectmapper
-//
-//            @Override
-//            public ObjectMapper copy() {
-//                return this;
-//            }
-//
-//        };
-//    }
-
 }

@@ -5,7 +5,7 @@ import lombok.Getter;
 import org.cardano.foundation.voting.domain.VotingEventType;
 import org.cardano.foundation.voting.domain.metadata.OnChainEventType;
 
-import javax.annotation.Nullable;
+import java.util.Optional;
 
 @Getter
 @Builder
@@ -17,16 +17,25 @@ public class EventRegistrationEnvelope {
     private String schemaVersion;
     private long creationSlot;
 
+    private boolean allowVoteChanging;
+
+    private boolean categoryResultsWhileVoting;
+
     private VotingEventType votingEventType;
 
-    @Nullable private Integer startEpoch;
+    @Builder.Default
+    private Optional<Integer> startEpoch = Optional.empty();
 
-    @Nullable private Integer endEpoch;
+    @Builder.Default
+    private Optional<Integer> endEpoch = Optional.empty();
 
-    @Nullable private Long startSlot;
+    @Builder.Default
+    private Optional<Long> startSlot = Optional.empty();
 
-    @Nullable private Long endSlot;
+    @Builder.Default
+    private Optional<Long> endSlot = Optional.empty();
 
-    @Nullable private Integer snapshotEpoch;
+    @Builder.Default
+    private Optional<Integer> snapshotEpoch = Optional.empty();
 
 }

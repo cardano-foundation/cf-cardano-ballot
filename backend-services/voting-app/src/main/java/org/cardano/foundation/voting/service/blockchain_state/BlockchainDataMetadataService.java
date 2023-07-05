@@ -1,10 +1,11 @@
 package org.cardano.foundation.voting.service.blockchain_state;
 
+import org.cardano.foundation.voting.domain.TransactionMetadataLabelCbor;
+
 import java.util.List;
-import java.util.Map;
 
 public interface BlockchainDataMetadataService {
 
-    List<Map> fetchMetadataForLabel(String metadataLabel, int pageSize, int page);
+    List<TransactionMetadataLabelCbor> fetchMetadataForLabel(String metadataLabel, int pageSize, int page);
 
 }

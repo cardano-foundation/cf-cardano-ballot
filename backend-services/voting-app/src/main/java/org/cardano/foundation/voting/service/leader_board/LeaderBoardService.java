@@ -6,6 +6,8 @@ import org.zalando.problem.Problem;
 
 public interface LeaderBoardService {
 
-    Either<Problem, Leaderboard> getLeaderboard(String networkName, String eventName);
+    Either<Problem, Leaderboard.ByEvent> getEventLeaderboard(String event);
+
+    Either<Problem, Leaderboard.ByCategory> getCategoryLeaderboard(String event, String category);
 
 }

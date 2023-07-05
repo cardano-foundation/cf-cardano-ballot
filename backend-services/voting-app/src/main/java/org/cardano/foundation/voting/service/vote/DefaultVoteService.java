@@ -14,6 +14,7 @@ import org.cardano.foundation.voting.domain.entity.VoteMerkleProof;
 import org.cardano.foundation.voting.domain.web3.SignedWeb3Request;
 import org.cardano.foundation.voting.domain.web3.Web3Action;
 import org.cardano.foundation.voting.repository.VoteRepository;
+import org.cardano.foundation.voting.service.address.StakeAddressVerificationService;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataTransactionDetailsService;
 import org.cardano.foundation.voting.service.expire.ExpirationService;
 import org.cardano.foundation.voting.service.json.JsonService;
@@ -35,7 +36,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.cardano.foundation.voting.domain.VoteReceipt.Status.*;
+import static org.cardano.foundation.voting.domain.VotingPowerFormat.ADA;
 import static org.cardano.foundation.voting.domain.web3.Web3Action.CAST_VOTE;
+import static org.cardano.foundation.voting.utils.MoreNumber.isNumeric;
 import static org.cardanofoundation.cip30.Format.TEXT;
 import static org.cardanofoundation.cip30.ValidationError.UNKNOWN;
 import static org.zalando.problem.Status.BAD_REQUEST;
@@ -65,6 +68,9 @@ public class DefaultVoteService implements VoteService {
 
     @Autowired
     private JsonService jsonService;
+
+    @Autowired
+    private StakeAddressVerificationService stakeAddressVerificationService;
 
     @Autowired
     private BlockchainDataTransactionDetailsService blockchainDataTransactionDetailsService;
@@ -167,6 +173,11 @@ public class DefaultVoteService implements VoteService {
             return Either.left(stakeAddressE.getLeft());
         }
         var stakeAddress = stakeAddressE.get();
+
+        var passedStakeAddressE = stakeAddressVerificationService.checkStakeAddress(stakeAddress);
+        if (passedStakeAddressE.isLeft()) {
+            return Either.left(passedStakeAddressE.getLeft());
+        }
 
         var castVoteRequestBodyJsonE = jsonService.decodeCIP93VoteEnvelope(cip30VerificationResult.getMessage(TEXT));
         if (castVoteRequestBodyJsonE.isLeft()) {
@@ -278,7 +289,7 @@ public class DefaultVoteService implements VoteService {
             }
             proposal = maybeProposal.orElseThrow();
         } else {
-            var maybeProposal = referenceDataService.findProposalByName(proposalIdOrName);
+            var maybeProposal = referenceDataService.findProposalByName(category, proposalIdOrName);
             if (maybeProposal.isEmpty()) {
                 log.warn("Unrecognised proposal, proposalId:{}", eventId);
 
@@ -298,7 +309,7 @@ public class DefaultVoteService implements VoteService {
             return Either.left(
                     Problem.builder()
                             .withTitle("EXPIRED_SLOT")
-                            .withDetail("Login's envelope slot is expired!")
+                            .withDetail("CIP-93's envelope slot is expired!")
                             .withStatus(BAD_REQUEST)
                             .build()
             );
@@ -311,7 +322,7 @@ public class DefaultVoteService implements VoteService {
             return Either.left(
                     Problem.builder()
                             .withTitle("EXPIRED_SLOT")
-                            .withDetail("Login's envelope slot is expired!")
+                            .withDetail("votedAt slot is expired!")
                             .withStatus(BAD_REQUEST)
                             .build()
             );
@@ -340,6 +351,17 @@ public class DefaultVoteService implements VoteService {
 
         var maybeExistingVote = voteRepository.findByEventIdAndCategoryIdAndVoterStakingAddress(event.getId(), category.getId(), stakeAddress);
         if (maybeExistingVote.isPresent()) {
+
+            if (!event.isAllowVoteChanging()) {
+                return Either.left(Problem.builder()
+                        .withTitle("VOTE_CANNOT_BE_CHANGED")
+                        .withDetail("Vote cannot be changed for the stake address: " + stakeAddress + ", within category: " + category.getId() + ", for event: " + eventId)
+                        .withStatus(BAD_REQUEST)
+                        .build()
+                );
+            }
+            var existingVote = maybeExistingVote.orElseThrow();
+
             var maybeLatestProof = voteMerkleProofService.findLatestProof(eventId, maybeExistingVote.orElseThrow().getId());
             if (maybeLatestProof.isPresent()) {
                 log.warn("Cannot change existing vote for the stake address: " + stakeAddress, ", within category: " + category.getId() + ", for event: " + eventId);
@@ -352,17 +374,12 @@ public class DefaultVoteService implements VoteService {
                                 .build()
                 );
             }
-            var existingVote = maybeExistingVote.orElseThrow();
             existingVote.setId(existingVote.getId());
-            existingVote.setEventId(event.getId());
-            existingVote.setCategoryId(category.getId());
             existingVote.setProposalId(proposal.getId());
-            existingVote.setVoterStakingAddress(stakeAddress);
             existingVote.setVotedAtSlot(votedAtSlot);
             existingVote.setNetwork(network);
             existingVote.setCoseSignature(castVoteRequest.getCoseSignature());
             existingVote.setCosePublicKey(castVoteRequest.getCosePublicKey());
-            existingVote.setVotingPower(existingVote.getVotingPower());
 
             return Either.right(voteRepository.saveAndFlush(existingVote));
         }
@@ -380,7 +397,17 @@ public class DefaultVoteService implements VoteService {
             );
         }
 
-        var signedVotingPower = cip90VoteEnvelope.getData().getVotingPower();
+        if (!isNumeric(cip90VoteEnvelope.getData().getVotingPower())) {
+            return Either.left(
+                    Problem.builder()
+                            .withTitle("INVALID_VOTING_POWER")
+                            .withDetail("Voting power is not numeric for the stake address: " + stakeAddress)
+                            .withStatus(BAD_REQUEST)
+                            .build()
+            );
+        }
+
+        var signedVotingPower = Long.parseLong(cip90VoteEnvelope.getData().getVotingPower());
         if (signedVotingPower != blockchainVotingPower) {
             return Either.left(
                     Problem.builder()
@@ -411,6 +438,11 @@ public class DefaultVoteService implements VoteService {
     @Transactional
     @Timed(value = "service.vote.voteReceipt", percentiles = { 0.3, 0.5, 0.95 })
     public Either<Problem, VoteReceipt> voteReceipt(String eventName, String categoryName, String stakeAddress) {
+        var passedStakeAddressE = stakeAddressVerificationService.checkStakeAddress(stakeAddress);
+        if (passedStakeAddressE.isLeft()) {
+            return Either.left(passedStakeAddressE.getLeft());
+        }
+
         var maybeEvent = referenceDataService.findValidEventByName(eventName);
         if (maybeEvent.isEmpty()) {
             log.warn("Unrecognised event, event:{}", eventName);
@@ -464,8 +496,8 @@ public class DefaultVoteService implements VoteService {
         return latestVoteMerkleProof.map(proof -> {
             log.info("Latest merkle proof found for voteId:{}", vote.getId());
 
-            var isL1CommitmentOnChain = blockchainDataTransactionDetailsService.getTransactionDetails(proof.getL1TransactionHash())
-                    .map(TransactionDetails::getFinalityScore);
+            var td = blockchainDataTransactionDetailsService.getTransactionDetails(proof.getL1TransactionHash());
+            var isL1CommitmentOnChain = td.map(TransactionDetails::getFinalityScore);
 
             var status = isL1CommitmentOnChain.isEmpty() ? PARTIAL : FULL;
 
@@ -479,10 +511,12 @@ public class DefaultVoteService implements VoteService {
                     .cosePublicKey(vote.getCosePublicKey())
                     .votedAtSlot(vote.getVotedAtSlot())
                     .voterStakingAddress(vote.getVoterStakingAddress())
+                    .votingPower(String.valueOf(vote.getVotingPower()))
+                    .votingPowerFormat(ADA)
                     .cardanoNetwork(vote.getNetwork())
                     .status(status)
                     .finalityScore(isL1CommitmentOnChain)
-                    .merkleProof(convertMerkleProof(proof))
+                    .merkleProof(convertMerkleProof(proof, td))
                     .build()
             );
         }).orElseGet(() -> {
@@ -499,6 +533,8 @@ public class DefaultVoteService implements VoteService {
                     .cosePublicKey(vote.getCosePublicKey())
                     .votedAtSlot(vote.getVotedAtSlot())
                     .voterStakingAddress(vote.getVoterStakingAddress())
+                    .votingPower(String.valueOf(vote.getVotingPower()))
+                    .votingPowerFormat(ADA)
                     .cardanoNetwork(vote.getNetwork())
                     .status(BASIC)
                     .build()
@@ -506,10 +542,10 @@ public class DefaultVoteService implements VoteService {
         });
     }
 
-    private VoteReceipt.MerkleProof convertMerkleProof(VoteMerkleProof proof) {
+    private VoteReceipt.MerkleProof convertMerkleProof(VoteMerkleProof proof, Optional<TransactionDetails> transactionDetails) {
         return VoteReceipt.MerkleProof.builder()
-                //.blockHash(proof.getBlockHash())
-                //.absoluteSlot(proof.getAbsoluteSlot())
+                .blockHash(transactionDetails.map(TransactionDetails::getBlockHash))
+                .absoluteSlot(transactionDetails.map(TransactionDetails::getAbsoluteSlot))
                 .rootHash(proof.getRootHash())
                 .transactionHash(proof.getL1TransactionHash())
                 .steps(convertSteps(proof))

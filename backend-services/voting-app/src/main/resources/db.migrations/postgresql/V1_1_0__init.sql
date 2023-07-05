@@ -5,6 +5,8 @@ CREATE TABLE event (
     team VARCHAR(255) NOT NULL,
     schema_version VARCHAR(255) NOT NULL,
     event_type INT NOT NULL,
+    allow_vote_changing BOOL, -- TODO default false
+    category_results_while_voting BOOL, -- TODO default false
 
     start_epoch INT,
     end_epoch INT,
@@ -79,6 +81,8 @@ CREATE TABLE vote_merkle_proof (
    root_hash VARCHAR(255) NOT NULL, -- merkle root hash as hex string
    l1_transaction_hash VARCHAR(255) NOT NULL, -- transaction hash as hex string
    proof_items_json json NOT NULL, -- json representing actual merkle proof
+   absolute_slot BIGINT,
+   block_hash VARCHAR(255), -- block hash as hex string
 
    created_at TIMESTAMP WITHOUT TIME ZONE,
    updated_at TIMESTAMP WITHOUT TIME ZONE,
@@ -91,19 +95,19 @@ CREATE INDEX idx_vote_merkle_proof_vote_id_event_id
     ON vote_merkle_proof (vote_id, event_d);
 
 -- special index to help us find out all vote_merkle_proofs that took part in rolled back transaction
---CREATE INDEX idx_vote_merkle_proof_transaction_rollback
---    ON vote_merkle_proof (absolute_slot, block_hash);
+CREATE INDEX idx_vote_merkle_proof_transaction_rollback
+    ON vote_merkle_proof (absolute_slot);
 
-DROP TABLE IF NOT EXISTS on_chain_metadata;
-
--- benefit of storing vote merkle proof is that upon restart of app voter's receipt can be served from local db
-CREATE TABLE on_chain_metadata (
-   id VARCHAR(255) NOT NULL,
-   onchain_event_type VARCHAR(255) NOT NULL,
-   metadata_label VARCHAR(255) NOT NULL,
-   address VARCHAR(255) NOT NULL,
-   signature text NOT NULL,
-   key text NOT NULL
-
-   CONSTRAINT pk_on_chain_metadata PRIMARY KEY (id)
-);
+--DROP TABLE IF NOT EXISTS on_chain_metadata;
+--
+---- benefit of storing vote merkle proof is that upon restart of app voter's receipt can be served from local db
+--CREATE TABLE on_chain_metadata (
+--   id VARCHAR(255) NOT NULL,
+--   onchain_event_type VARCHAR(255) NOT NULL,
+--   metadata_label VARCHAR(255) NOT NULL,
+--   address VARCHAR(255) NOT NULL,
+--   signature text NOT NULL,
+--   key text NOT NULL
+--
+--   CONSTRAINT pk_on_chain_metadata PRIMARY KEY (id)
+--);

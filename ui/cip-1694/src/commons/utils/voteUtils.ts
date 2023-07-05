@@ -20,12 +20,11 @@ export const buildCanonicalVoteInputJson = (voteInput: {
     actionText: "Cast Vote",
     slot: voteInput.slotNumber,
     data: {
-      voteId: voteInput.voteId,
+      id: voteInput.voteId,
       address: voteInput.voter,
       event: EVENT_ID,
       category: CATEGORY_ID,
-      proposal: voteInput.option, //TODO: need an api agreement
-      proposalText: voteInput.option,
+      proposal: voteInput.option,
       network: TARGET_NETWORK,
       votedAt: voteInput.slotNumber,
       votingPower: voteInput.votePower,

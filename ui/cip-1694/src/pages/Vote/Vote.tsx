@@ -11,7 +11,6 @@ import DoDisturbIcon from "@mui/icons-material/DoDisturb";
 import CountDownTimer from "../../components/CountDownTimer/CountDownTimer";
 import OptionCard from "../../components/OptionCard/OptionCard";
 import { OptionItem } from "../../components/OptionCard/OptionCard.types";
-import { JsonViewer } from "@textea/json-viewer";
 import { buildCanonicalVoteInputJson } from "../../commons/utils/voteUtils";
 import { voteService } from "../../commons/api/voteService";
 import "./Vote.scss";
@@ -32,8 +31,8 @@ const items: OptionItem[] = [
 ];
 
 interface SignedMessage {
-  signature: string,
-  key: string
+  signature: string;
+  key: string;
 }
 
 const Vote = () => {
@@ -62,7 +61,9 @@ const Vote = () => {
 
   const votingPowerOfUser = async () => {
     const response = await voteService.getVotingPower();
-    setVotingPower(response.votingPower || null);
+    const votingPower = response.votingPower;
+    const votingPowerFormat = response.votingPowerFormat;
+    setVotingPower(votingPower || null);
   };
 
   const onChangeOption = (option: string) => {
@@ -72,7 +73,7 @@ const Vote = () => {
   const canonicalVoteInput = useMemo(
     () =>
       buildCanonicalVoteInputJson({
-        option: optionId,
+        option: optionId.toUpperCase(),
         voter: stakeAddress,
         voteId: uuidv4(),
         slotNumber: absoluteSlot,
@@ -83,13 +84,13 @@ const Vote = () => {
 
   const handleSubmit = async () => {
     if (!isConnected && votingPower === null) return;
-  signMessage(canonicalVoteInput, async (signature, key) => {
-    try {
+    signMessage(canonicalVoteInput, async (signature, key) => {
+      try {
         const requestVoteObject = {
           cosePublicKey: key,
           coseSignature: isConnected && signature,
         };
-  
+
         try {
           voteService
             .castAVoteWithDigitalSignature(requestVoteObject)
@@ -108,10 +109,9 @@ const Vote = () => {
         }
       } catch (error) {
         //todo error log
-    }
-
-  });
-}
+      }
+    });
+  };
 
   const signObject = isConnected ? JSON.parse(canonicalVoteInput) : null;
 
@@ -153,9 +153,11 @@ const Vote = () => {
           </Grid>
 
           <Grid item>
-            <OptionCard items={items} onChangeOption={onChangeOption}/>
+            <OptionCard
+              items={items}
+              onChangeOption={onChangeOption}
+            />
           </Grid>
-
           <Grid item>
             <Button
               size="large"
@@ -174,7 +176,7 @@ const Vote = () => {
                 backgroundColor: theme.palette.primary.main,
               }}
             >
-              {!isConnected ? 'Connect wallet to vote' : 'Submit Your Vote'}
+              {!isConnected ? "Connect wallet to vote" : "Submit Your Vote"}
             </Button>
           </Grid>
         </Grid>

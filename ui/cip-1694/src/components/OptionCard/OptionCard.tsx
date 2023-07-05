@@ -4,6 +4,7 @@ import { OptionProps } from "./OptionCard.types";
 import { Grid, Typography } from "@mui/material";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import Zoom from "@mui/material/Zoom";
 import "./OptionCard.scss";
 
 export default function OptionCard({ items, onChangeOption }: OptionProps) {
@@ -33,36 +34,43 @@ export default function OptionCard({ items, onChangeOption }: OptionProps) {
           sx={{ m: theme.spacing(2, 4, 2, 2) }}
           key={index}
         >
-          <ToggleButtonGroup
-            color="primary"
-            value={alignment}
-            exclusive
-            onChange={handleChange}
-            aria-label="cip-1694 poll options"
-            className={selected ? "option-card-selected" : "option-card-group"}
+          <Zoom
+            in
+            timeout={250}
           >
-            <ToggleButton
-              value={option.label}
-              className="option-card"
+            <ToggleButtonGroup
+              color="primary"
+              value={alignment}
+              exclusive
+              onChange={handleChange}
+              aria-label="cip-1694 poll options"
+              className={
+                selected ? "option-card-selected" : "option-card-group"
+              }
             >
-              <Grid
-                container
-                direction="column"
-                justifyContent="center"
-                alignItems="center"
+              <ToggleButton
+                value={option.label}
+                className="option-card"
               >
-                <Grid item>
-                  <Typography component="div">{option.icon}</Typography>
-                  <Typography
-                    component="div"
-                    variant="h5"
-                  >
-                    {option.label}
-                  </Typography>
+                <Grid
+                  container
+                  direction="column"
+                  justifyContent="center"
+                  alignItems="center"
+                >
+                  <Grid item>
+                    <Typography component="div">{option.icon}</Typography>
+                    <Typography
+                      component="div"
+                      variant="h5"
+                    >
+                      {option.label}
+                    </Typography>
+                  </Grid>
                 </Grid>
-              </Grid>
-            </ToggleButton>
-          </ToggleButtonGroup>
+              </ToggleButton>
+            </ToggleButtonGroup>
+          </Zoom>
         </Grid>
       ))}
     </Grid>

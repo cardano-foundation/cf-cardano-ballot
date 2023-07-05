@@ -7,7 +7,9 @@ import { Grid, Container, Typography, Button } from "@mui/material";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 import DoneIcon from "@mui/icons-material/Done";
 import CloseIcon from "@mui/icons-material/Close";
+import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import DoDisturbIcon from "@mui/icons-material/DoDisturb";
+import toast from "react-hot-toast";
 import CountDownTimer from "../../components/CountDownTimer/CountDownTimer";
 import OptionCard from "../../components/OptionCard/OptionCard";
 import { OptionItem } from "../../components/OptionCard/OptionCard.types";
@@ -52,6 +54,7 @@ const Vote = () => {
   useEffect(() => {
     slotFromTimestamp();
     votingPowerOfUser();
+    !isConnected && notify("Connect your wallet to vote")
   }, []);
 
   const slotFromTimestamp = async () => {
@@ -69,6 +72,8 @@ const Vote = () => {
   const onChangeOption = (option: string) => {
     setOptionId(option);
   };
+
+  const notify = (message: string) => toast(message);
 
   const canonicalVoteInput = useMemo(
     () =>
@@ -95,14 +100,22 @@ const Vote = () => {
           voteService
             .castAVoteWithDigitalSignature(requestVoteObject)
             .then((data) => {
-              if (data.error && data.error.length) {
-                console.log(data.error);
+              if (
+                data.status === 400 &&
+                data.title === "INVALID_VOTING_POWER"
+              ) {
+                notify("To cast a vote, Voting Power should be more than 0");
+              } else if (
+                data.status === 400 &&
+                data.title === "EXPIRED_SLOT"
+              ) {
+                notify("CIP-93's envelope slot is expired!");
               } else {
-                console.log(data);
+                notify("You vote has been successfully submitted!");
               }
             })
             .catch((err) => {
-              console.log(err);
+              notify(err);
             });
         } catch (e) {
           console.log(e);
@@ -176,7 +189,7 @@ const Vote = () => {
                 backgroundColor: theme.palette.primary.main,
               }}
             >
-              {!isConnected ? "Connect wallet to vote" : "Submit Your Vote"}
+            {!isConnected ? "Connect wallet to vote" : "Submit Your Vote"}
             </Button>
           </Grid>
         </Grid>

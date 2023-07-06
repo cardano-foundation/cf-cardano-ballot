@@ -36,7 +36,7 @@ public class VoteReceipt {
 
     private Optional<TransactionDetails.FinalityScore> finalityScore;
 
-    private long votedAtSlot;
+    private String votedAtSlot;
 
     public static enum Status {
         BASIC, // without merkle proof committed to L1 yet

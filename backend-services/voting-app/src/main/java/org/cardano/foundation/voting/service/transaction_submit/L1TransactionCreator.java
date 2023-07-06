@@ -51,7 +51,7 @@ public class L1TransactionCreator {
     private Account organiserAccount;
 
     @Value("${l1.transaction.metadata.label:12345}")
-    private int metadataLabel;
+    private long metadataLabel;
 
     public byte[] submitMerkleCommitments(List<L1MerkleCommitment> l1MerkleCommitments) {
         var chainTip = blockchainDataChainTipService.getChainTip();

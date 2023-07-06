@@ -304,7 +304,19 @@ public class DefaultVoteService implements VoteService {
             proposal = maybeProposal.orElseThrow();
         }
 
-        var cip93Slot = cip90VoteEnvelope.getSlot();
+        var cip93SlotStr = cip90VoteEnvelope.getSlot();
+
+        if (!isNumeric(cip93SlotStr)) {
+            return Either.left(
+                    Problem.builder()
+                            .withTitle("INVALID_SLOT")
+                            .withDetail("CIP-93 envelope slot is not numeric!")
+                            .withStatus(BAD_REQUEST)
+                            .build()
+            );
+        }
+        var cip93Slot = Long.parseLong(cip93SlotStr);
+
         if (expirationService.isSlotExpired(cip93Slot)) {
             log.warn("Invalid request slot, slot:{}", cip93Slot);
 
@@ -317,7 +329,18 @@ public class DefaultVoteService implements VoteService {
             );
         }
 
-        var votedAtSlot = cip90VoteEnvelope.getData().getVotedAt();
+        var votedAtSlotStr = cip90VoteEnvelope.getData().getVotedAt();
+        if (!isNumeric(votedAtSlotStr)) {
+            return Either.left(
+                    Problem.builder()
+                            .withTitle("INVALID_SLOT")
+                            .withDetail("Vote's votedAt slot is not numeric!")
+                            .withStatus(BAD_REQUEST)
+                            .build()
+            );
+        }
+        var votedAtSlot = Long.parseLong(votedAtSlotStr);
+
         if (expirationService.isSlotExpired(votedAtSlot)) {
             log.warn("Invalid votedAt slot, votedAt slot:{}", votedAtSlot);
 

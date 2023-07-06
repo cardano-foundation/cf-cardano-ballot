@@ -10,7 +10,7 @@ public class CIP93Envelope<T> {
     private String uri;
     private String action;
     private String actionText;
-    private long slot;
+    private String slot;
     private T data;
 
 }

@@ -16,7 +16,7 @@ public class VoteEnvelope {
     private String proposal;
     private String proposalText;
     private String network;
-    private long votedAt;
+    private String votedAt;
 
     @Nullable
     private String votingPower;

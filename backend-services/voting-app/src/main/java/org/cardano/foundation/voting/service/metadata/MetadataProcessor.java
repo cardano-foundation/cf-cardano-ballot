@@ -57,7 +57,7 @@ public class MetadataProcessor {
     private JsonService jsonService;
 
     @Value("${l1.transaction.metadata.label:12345}")
-    private int metadataLabel;
+    private long metadataLabel;
 
     public void processMetadataEvents(List<TransactionMetadataLabelCbor> onChainMetadataEvents) {
         log.info("On chain events:{}", onChainMetadataEvents);

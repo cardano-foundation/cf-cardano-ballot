@@ -41,7 +41,7 @@ public class VoteReceipt {
     public static enum Status {
         BASIC, // without merkle proof committed to L1 yet
 
-        PARTIAL, // there is a merkle proof but L1 commitment is not visible on chain yet or already rolled back
+        PARTIAL, // there is a merkle proof but L1 commitment is not visible on chain yet
 
         ROLLBACK, // with merkle proof committed to L1 but on L1 there has been a rollback
 

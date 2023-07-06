@@ -41,7 +41,7 @@ interface SignedMessage {
 const Vote = () => {
   const theme = useTheme();
   const { stakeAddress, isConnected, signMessage } = useCardano();
-  const [isSigned, setIsSigned] = useState<boolean>(false);
+  const [isDisabled, setIsDisabled] = useState<boolean>(false);
   const [optionId, setOptionId] = useState("");
   const [absoluteSlot, setAbsoluteSlot] = useState("");
   const [votingPower, setVotingPower] = useState("");
@@ -53,31 +53,21 @@ const Vote = () => {
   //User not valid after 2 hours
 
   useEffect(() => {
-    slotFromTimestamp();
-    votingPowerOfUser();
+    initialise();
   }, []);
 
-  const slotFromTimestamp = async () => {
-    const response = await voteService.getSlotNumber();
-    setAbsoluteSlot(response?.absoluteSlot || null);
-  };
-
-  const votingPowerOfUser = async () => {
-    if (isConnected && stakeAddress) {
-      const response = await voteService.getVotingPower(EVENT_ID, stakeAddress);
-      const votingPower = response.votingPower;
-      const votingPowerFormat = response.votingPowerFormat;
-      setVotingPower(votingPower || null);
-    } else {
-      notify("Connect your wallet to vote");
-    }
+  const initialise = () => {
+    (!isConnected || optionId === "") && setIsDisabled(true);
   };
 
   const onChangeOption = (option: string) => {
-    setOptionId(option);
+    if (option !== null) {
+      setOptionId(option);
+      setIsDisabled(false);
+    } else {
+      setIsDisabled(true);
+    }
   };
-
-  const notify = (message: string) => toast(message);
 
   const canonicalVoteInput = useMemo(
     () =>
@@ -90,43 +80,63 @@ const Vote = () => {
       }),
     [isConnected, optionId, stakeAddress, absoluteSlot, votingPower]
   );
+  
+  const notify = (message: string) => toast(message);
 
   const handleSubmit = async () => {
-    if (!isConnected && votingPower === "") {
+    if (!isConnected) {
       notify("Connect your wallet to vote");
-    }
-    signMessage(canonicalVoteInput, async (signature, key) => {
-      try {
-        const requestVoteObject = {
-          cosePublicKey: key,
-          coseSignature: isConnected && signature,
-        };
+    } else if (isConnected) {
+      await voteService.getSlotNumber().then((response) => {
+        setAbsoluteSlot(response?.absoluteSlot || null);
+        if (isConnected && stakeAddress) {
+          voteService.getVotingPower(EVENT_ID, stakeAddress)
+            .then((response) => {
+              const votingPower = response.votingPower;
+              setVotingPower(votingPower || null);
+              signMessage(canonicalVoteInput, async (signature, key) => {
+                try {
+                  const requestVoteObject = {
+                    cosePublicKey: key,
+                    coseSignature: isConnected && signature,
+                  };
 
-        try {
-          voteService
-            .castAVoteWithDigitalSignature(requestVoteObject)
-            .then((data) => {
-              if (
-                data.status === 400 &&
-                data.title === "INVALID_VOTING_POWER"
-              ) {
-                notify("To cast a vote, Voting Power should be more than 0");
-              } else if (data.status === 400 && data.title === "EXPIRED_SLOT") {
-                notify("CIP-93's envelope slot is expired!");
-              } else {
-                notify("You vote has been successfully submitted!");
-              }
-            })
-            .catch((err) => {
-              notify(err);
+                  try {
+                    voteService
+                      .castAVoteWithDigitalSignature(requestVoteObject)
+                      .then((data) => {
+                        if (
+                          data.status === 400 &&
+                          data.title === "INVALID_VOTING_POWER"
+                        ) {
+                          notify(
+                            "To cast a vote, Voting Power should be more than 0"
+                          );
+                        } else if (
+                          data.status === 400 &&
+                          data.title === "EXPIRED_SLOT"
+                        ) {
+                          notify("CIP-93's envelope slot is expired!");
+                        } else {
+                          notify("You vote has been successfully submitted!");
+                          setOptionId("");
+                          setIsDisabled(true);
+                        }
+                      })
+                      .catch((err) => {
+                        notify(err);
+                      });
+                  } catch (e) {
+                    console.log(e);
+                  }
+                } catch (error) {
+                  console.log(error);
+                }
+              });
             });
-        } catch (e) {
-          console.log(e);
         }
-      } catch (error) {
-        //todo error log
-      }
-    });
+      });
+    }
   };
 
   const signObject = isConnected ? JSON.parse(canonicalVoteInput) : null;
@@ -178,7 +188,7 @@ const Vote = () => {
             <Button
               size="large"
               variant="contained"
-              disabled={!isConnected || votingPower === null || optionId === ""}
+              disabled={isDisabled}
               onClick={() => handleSubmit()}
               sx={{
                 marginTop: "0px !important",

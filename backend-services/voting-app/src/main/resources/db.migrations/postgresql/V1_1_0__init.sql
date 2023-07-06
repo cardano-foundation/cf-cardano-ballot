@@ -60,7 +60,7 @@ CREATE TABLE vote (
    proposal_id VARCHAR(255) NOT NULL,
    voter_staking_address VARCHAR(255) NOT NULL,
    cose_signature text NOT NULL,
-   cose_public_key text NOT NULL,
+   cose_public_key VARCHAR(255) NOT NULL,
    voting_power BIGINT,
    network INT NOT NULL,
    voted_at_slot BIGINT NOT NULL,
@@ -99,17 +99,3 @@ CREATE INDEX idx_vote_merkle_proof_vote_id_event_id
 -- special index to help us find out all vote_merkle_proofs that took part in rolled back transaction
 CREATE INDEX idx_vote_merkle_proof_transaction_rollback
     ON vote_merkle_proof (absolute_slot);
-
---DROP TABLE IF NOT EXISTS on_chain_metadata;
---
----- benefit of storing vote merkle proof is that upon restart of app voter's receipt can be served from local db
---CREATE TABLE on_chain_metadata (
---   id VARCHAR(255) NOT NULL,
---   onchain_event_type VARCHAR(255) NOT NULL,
---   metadata_label VARCHAR(255) NOT NULL,
---   address VARCHAR(255) NOT NULL,
---   signature text NOT NULL,
---   key text NOT NULL
---
---   CONSTRAINT pk_on_chain_metadata PRIMARY KEY (id)
---);

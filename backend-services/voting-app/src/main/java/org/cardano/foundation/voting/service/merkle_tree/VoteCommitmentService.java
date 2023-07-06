@@ -4,7 +4,6 @@ import io.vavr.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.L1MerkleCommitment;
 import org.cardano.foundation.voting.domain.entity.VoteMerkleProof;
-import org.cardano.foundation.voting.repository.VoteMerkleProofRepository;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
 import org.cardano.foundation.voting.service.transaction_submit.L1SubmissionService;
 import org.cardano.foundation.voting.service.vote.VoteService;
@@ -34,7 +33,7 @@ public class VoteCommitmentService {
     private ReferenceDataService referenceDataService;
 
     @Autowired
-    private VoteMerkleProofRepository voteMerkleProofRepository;
+    private VoteMerkleProofService voteMerkleProofService;
 
     @Autowired
     private MerkleProofSerdeService merkleProofSerdeService;
@@ -95,12 +94,14 @@ public class VoteCommitmentService {
 
                 var voteMerkleProof = VoteMerkleProof.builder()
                         .voteId(vote.getId())
+                        .eventId(vote.getEventId())
                         .rootHash(merkleRootHash)
                         .proofItemsJson(proofItemsJson)
                         .l1TransactionHash(l1TransactionHash)
+                        .invalidated(false)
                         .build();
 
-                voteMerkleProofRepository.saveAndFlush(voteMerkleProof);
+                voteMerkleProofService.store(voteMerkleProof);
             }
 
             log.info("Storing merkle proofs completed for event: {}", l1MerkleCommitment.event().getId());

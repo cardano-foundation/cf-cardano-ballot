@@ -21,4 +21,10 @@ public class VoteMerkleProofService {
         return voteMerkleProofRepository.findLatestProof(eventId, voteId);
     }
 
+    @Transactional
+    @Timed(value = "service.merkle.store", percentiles = { 0.3, 0.5, 0.95 })
+    public VoteMerkleProof store(VoteMerkleProof voteMerkleProof) {
+        return voteMerkleProofRepository.saveAndFlush(voteMerkleProof);
+    }
+
 }

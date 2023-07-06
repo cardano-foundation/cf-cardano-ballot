@@ -16,6 +16,7 @@ import { OptionItem } from "../../components/OptionCard/OptionCard.types";
 import { buildCanonicalVoteInputJson } from "../../commons/utils/voteUtils";
 import { voteService } from "../../commons/api/voteService";
 import "./Vote.scss";
+import { EVENT_ID } from "../../commons/constants/appConstants";
 
 const items: OptionItem[] = [
   {
@@ -54,7 +55,6 @@ const Vote = () => {
   useEffect(() => {
     slotFromTimestamp();
     votingPowerOfUser();
-    !isConnected && notify("Connect your wallet to vote")
   }, []);
 
   const slotFromTimestamp = async () => {
@@ -63,10 +63,14 @@ const Vote = () => {
   };
 
   const votingPowerOfUser = async () => {
-    const response = await voteService.getVotingPower();
-    const votingPower = response.votingPower;
-    const votingPowerFormat = response.votingPowerFormat;
-    setVotingPower(votingPower || null);
+    if (isConnected && stakeAddress) {
+      const response = await voteService.getVotingPower(EVENT_ID, stakeAddress);
+      const votingPower = response.votingPower;
+      const votingPowerFormat = response.votingPowerFormat;
+      setVotingPower(votingPower || null);
+    } else {
+      notify("Connect your wallet to vote");
+    }
   };
 
   const onChangeOption = (option: string) => {
@@ -78,7 +82,7 @@ const Vote = () => {
   const canonicalVoteInput = useMemo(
     () =>
       buildCanonicalVoteInputJson({
-        option: optionId.toUpperCase(),
+        option: optionId?.toUpperCase(),
         voter: stakeAddress,
         voteId: uuidv4(),
         slotNumber: absoluteSlot,
@@ -88,7 +92,9 @@ const Vote = () => {
   );
 
   const handleSubmit = async () => {
-    if (!isConnected && votingPower === null) return;
+    if (!isConnected && votingPower === "") {
+      notify("Connect your wallet to vote");
+    }
     signMessage(canonicalVoteInput, async (signature, key) => {
       try {
         const requestVoteObject = {
@@ -105,10 +111,7 @@ const Vote = () => {
                 data.title === "INVALID_VOTING_POWER"
               ) {
                 notify("To cast a vote, Voting Power should be more than 0");
-              } else if (
-                data.status === 400 &&
-                data.title === "EXPIRED_SLOT"
-              ) {
+              } else if (data.status === 400 && data.title === "EXPIRED_SLOT") {
                 notify("CIP-93's envelope slot is expired!");
               } else {
                 notify("You vote has been successfully submitted!");
@@ -189,7 +192,7 @@ const Vote = () => {
                 backgroundColor: theme.palette.primary.main,
               }}
             >
-            {!isConnected ? "Connect wallet to vote" : "Submit Your Vote"}
+              {!isConnected ? "Connect wallet to vote" : "Submit Your Vote"}
             </Button>
           </Grid>
         </Grid>

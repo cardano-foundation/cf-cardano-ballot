@@ -26,7 +26,7 @@ public class MerkleProofSerdeService {
 
         // this is not a mistake an empty proof items is also a valid proof pointing to the root of the tree
         if (proofItems.isEmpty()) {
-            root.putNull("steps");
+            root.putArray("steps");
 
             return root;
         }
@@ -58,9 +58,9 @@ public class MerkleProofSerdeService {
     public List<ProofItem> deserialise(String proofItemJson) {
         var root = objectMapper.readTree(proofItemJson);
 
-        var steps = (ArrayNode) root.get("steps");
+        var steps = root.get("steps");
 
-        if (steps.isNull()) {
+        if (!steps.isArray()) {
             return List.of();
         }
 

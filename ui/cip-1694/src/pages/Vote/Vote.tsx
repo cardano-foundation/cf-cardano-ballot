@@ -7,14 +7,18 @@ import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 import DoneIcon from "@mui/icons-material/Done";
 import CloseIcon from "@mui/icons-material/Close";
 import DoDisturbIcon from "@mui/icons-material/DoDisturb";
+import ReceiptIcon from "@mui/icons-material/Receipt";
 import toast from "react-hot-toast";
 import CountDownTimer from "../../components/CountDownTimer/CountDownTimer";
 import OptionCard from "../../components/OptionCard/OptionCard";
 import { OptionItem } from "../../components/OptionCard/OptionCard.types";
+import SidePage from "../../components/layout/SidePage/SidePage";
 import { buildCanonicalVoteInputJson } from "../../commons/utils/voteUtils";
 import { voteService } from "../../commons/api/voteService";
+import VoteReceipt from "./VoteReceipt";
 import "./Vote.scss";
 import { EVENT_ID } from "../../commons/constants/appConstants";
+import { useToggle } from "../../commons/hooks/useToggle";
 
 const items: OptionItem[] = [
   {
@@ -38,6 +42,7 @@ const Vote = () => {
   const [optionId, setOptionId] = useState("");
   const [absoluteSlot, setAbsoluteSlot] = useState("");
   const [votingPower, setVotingPower] = useState("");
+  const [isToggledReceipt, toggleReceipt] = useToggle(false);
 
   useEffect(() => {
     initialise();
@@ -193,28 +198,64 @@ const Vote = () => {
             />
           </Grid>
           <Grid item>
-            <Button
-              size="large"
-              variant="contained"
-              disabled={isDisabled}
-              onClick={() => handleSubmit()}
-              sx={{
-                marginTop: "0px !important",
-                height: { xs: "50px", sm: "60px", lg: "70px" },
-                fontSize: "25px",
-                fontWeight: 700,
-                textTransform: "none",
-                borderRadius: "16px !important",
-                color: "#fff !important",
-                fontFamily: "Roboto Bold",
-                backgroundColor: theme.palette.primary.main,
-              }}
+            <Grid
+              container
+              direction="row"
+              justifyContent={"center"}
             >
-              {!isConnected ? "Connect wallet to vote" : "Submit Your Vote"}
-            </Button>
+              <Grid item sx={{ m: theme.spacing(2) }}>
+                <Button
+                  size="large"
+                  variant="contained"
+                  disabled={isDisabled}
+                  onClick={() => handleSubmit()}
+                  sx={{
+                    marginTop: "0px !important",
+                    height: { xs: "50px", sm: "60px", lg: "70px" },
+                    fontSize: "25px",
+                    fontWeight: 700,
+                    textTransform: "none",
+                    borderRadius: "16px !important",
+                    color: "#fff !important",
+                    fontFamily: "Roboto Bold",
+                    backgroundColor: theme.palette.primary.main,
+                  }}
+                >
+                  {!isConnected ? "Connect wallet to vote" : "Submit Your Vote"}
+                </Button>
+              </Grid>
+              <Grid item sx={{ m: theme.spacing(2) }}>
+                <Button
+                  variant="contained"
+                  onClick={() => toggleReceipt(true)}
+                  aria-label="Receipt"
+                  sx={{
+                    marginTop: "0px !important",
+                    height: { xs: "50px", sm: "60px", lg: "70px" },
+                    fontSize: "25px",
+                    fontWeight: 700,
+                    textTransform: "none",
+                    borderRadius: "16px !important",
+                    color: "#fff !important",
+                    fontFamily: "Roboto Bold",
+                    backgroundColor: theme.palette.primary.main,
+                  }}
+                  startIcon={<ReceiptIcon />}
+                >
+                  View Receipt
+                </Button>
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
       </Container>
+      <SidePage
+        anchor="right"
+        open={isToggledReceipt}
+        setOpen={toggleReceipt}
+      >
+        <VoteReceipt />
+      </SidePage>
     </div>
   );
 };

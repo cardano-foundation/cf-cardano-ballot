@@ -1,22 +1,24 @@
 import React, { useEffect } from "react";
 import { useMemo, useState } from "react";
-import { VoteProps } from "./Vote.types";
 import { v4 as uuidv4 } from "uuid";
 import { useTheme } from "@mui/material/styles";
 import { Grid, Container, Typography, Button } from "@mui/material";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 import DoneIcon from "@mui/icons-material/Done";
 import CloseIcon from "@mui/icons-material/Close";
-import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import DoDisturbIcon from "@mui/icons-material/DoDisturb";
+import ReceiptIcon from "@mui/icons-material/Receipt";
 import toast from "react-hot-toast";
 import CountDownTimer from "../../components/CountDownTimer/CountDownTimer";
 import OptionCard from "../../components/OptionCard/OptionCard";
 import { OptionItem } from "../../components/OptionCard/OptionCard.types";
+import SidePage from "../../components/layout/SidePage/SidePage";
 import { buildCanonicalVoteInputJson } from "../../commons/utils/voteUtils";
 import { voteService } from "../../commons/api/voteService";
+import VoteReceipt from "./VoteReceipt";
 import "./Vote.scss";
 import { EVENT_ID } from "../../commons/constants/appConstants";
+import { useToggle } from "../../commons/hooks/useToggle";
 
 const items: OptionItem[] = [
   {
@@ -33,51 +35,31 @@ const items: OptionItem[] = [
   },
 ];
 
-interface SignedMessage {
-  signature: string;
-  key: string;
-}
-
 const Vote = () => {
   const theme = useTheme();
   const { stakeAddress, isConnected, signMessage } = useCardano();
-  const [isSigned, setIsSigned] = useState<boolean>(false);
+  const [isDisabled, setIsDisabled] = useState<boolean>(false);
   const [optionId, setOptionId] = useState("");
   const [absoluteSlot, setAbsoluteSlot] = useState("");
   const [votingPower, setVotingPower] = useState("");
-
-  //TODO usecases:
-  //Voting power is not available - User not staking.. Can not vote. We need to have error popup.
-  //Voting can be submitted twice till onchain submission
-  //get Voter receipt from Endpoint
-  //User not valid after 2 hours
+  const [isToggledReceipt, toggleReceipt] = useToggle(false);
 
   useEffect(() => {
-    slotFromTimestamp();
-    votingPowerOfUser();
+    initialise();
   }, []);
 
-  const slotFromTimestamp = async () => {
-    const response = await voteService.getSlotNumber();
-    setAbsoluteSlot(response?.absoluteSlot || null);
-  };
-
-  const votingPowerOfUser = async () => {
-    if (isConnected && stakeAddress) {
-      const response = await voteService.getVotingPower(EVENT_ID, stakeAddress);
-      const votingPower = response.votingPower;
-      const votingPowerFormat = response.votingPowerFormat;
-      setVotingPower(votingPower || null);
-    } else {
-      notify("Connect your wallet to vote");
-    }
+  const initialise = () => {
+    (!isConnected || optionId === "") && setIsDisabled(true);
   };
 
   const onChangeOption = (option: string) => {
-    setOptionId(option);
+    if (option !== null) {
+      setOptionId(option);
+      setIsDisabled(false);
+    } else {
+      setIsDisabled(true);
+    }
   };
-
-  const notify = (message: string) => toast(message);
 
   const canonicalVoteInput = useMemo(
     () =>
@@ -91,45 +73,86 @@ const Vote = () => {
     [isConnected, optionId, stakeAddress, absoluteSlot, votingPower]
   );
 
+  const notify = (message: string) => toast(message);
+
   const handleSubmit = async () => {
-    if (!isConnected && votingPower === "") {
+    if (!isConnected) {
       notify("Connect your wallet to vote");
-    }
-    signMessage(canonicalVoteInput, async (signature, key) => {
-      try {
-        const requestVoteObject = {
-          cosePublicKey: key,
-          coseSignature: isConnected && signature,
-        };
-
-        try {
+    } else if (isConnected) {
+      voteService.getSlotNumber().then((response) => {
+        const absoluteSlot = response?.absoluteSlot.toString();
+        setAbsoluteSlot(absoluteSlot);
+        if (isConnected && stakeAddress) {
           voteService
-            .castAVoteWithDigitalSignature(requestVoteObject)
-            .then((data) => {
-              if (
-                data.status === 400 &&
-                data.title === "INVALID_VOTING_POWER"
-              ) {
-                notify("To cast a vote, Voting Power should be more than 0");
-              } else if (data.status === 400 && data.title === "EXPIRED_SLOT") {
-                notify("CIP-93's envelope slot is expired!");
-              } else {
-                notify("You vote has been successfully submitted!");
-              }
-            })
-            .catch((err) => {
-              notify(err);
-            });
-        } catch (e) {
-          console.log(e);
-        }
-      } catch (error) {
-        //todo error log
-      }
-    });
-  };
+            .getVotingPower(EVENT_ID, stakeAddress)
+            .then((response) => {
+              const votingPower = response.votingPower;
+              if (absoluteSlot !== "" && votingPower !== "") {
+                const canonicalVoteInput = buildCanonicalVoteInputJson({
+                  option: optionId?.toUpperCase(),
+                  voter: stakeAddress,
+                  voteId: uuidv4(),
+                  slotNumber: absoluteSlot,
+                  votePower: votingPower,
+                });
+                signMessage(canonicalVoteInput, async (signature, key) => {
+                  try {
+                    const requestVoteObject = {
+                      cosePublicKey: key,
+                      coseSignature: isConnected && signature,
+                    };
 
-  const signObject = isConnected ? JSON.parse(canonicalVoteInput) : null;
+                    try {
+                      voteService
+                        .castAVoteWithDigitalSignature(requestVoteObject)
+                        .then((data) => {
+                          if (
+                            data.status === 400 &&
+                            data.title === "INVALID_VOTING_POWER"
+                          ) {
+                            notify(
+                              "To cast a vote, Voting Power should be more than 0"
+                            );
+                            setOptionId("");
+                            setIsDisabled(true);
+                          } else if (
+                            data.status === 400 &&
+                            data.title === "EXPIRED_SLOT"
+                          ) {
+                            notify("CIP-93's envelope slot is expired!");
+                            setOptionId("");
+                            setIsDisabled(true);
+                          } else if (
+                            data.status == 400 &&
+                            data.title === "VOTE_CANNOT_BE_CHANGED"
+                          ) {
+                            notify(
+                              "You have already voted! Vote cannot be changed for this stake address"
+                            );
+                            setOptionId("");
+                            setIsDisabled(true);
+                          } else {
+                            notify("You vote has been successfully submitted!");
+                            setOptionId("");
+                            setIsDisabled(true);
+                          }
+                        })
+                        .catch((err) => {
+                          notify(err);
+                        });
+                    } catch (e) {
+                      console.log(e);
+                    }
+                  } catch (error) {
+                    console.log(error);
+                  }
+                });
+              }
+            });
+        }
+      });
+    }
+  };
 
   return (
     <div className="vote">
@@ -175,28 +198,64 @@ const Vote = () => {
             />
           </Grid>
           <Grid item>
-            <Button
-              size="large"
-              variant="contained"
-              disabled={!isConnected || votingPower === null || optionId === ""}
-              onClick={() => handleSubmit()}
-              sx={{
-                marginTop: "0px !important",
-                height: { xs: "50px", sm: "60px", lg: "70px" },
-                fontSize: "25px",
-                fontWeight: 700,
-                textTransform: "none",
-                borderRadius: "16px !important",
-                color: "#fff !important",
-                fontFamily: "Roboto Bold",
-                backgroundColor: theme.palette.primary.main,
-              }}
+            <Grid
+              container
+              direction="row"
+              justifyContent={"center"}
             >
-              {!isConnected ? "Connect wallet to vote" : "Submit Your Vote"}
-            </Button>
+              <Grid item sx={{ m: theme.spacing(2) }}>
+                <Button
+                  size="large"
+                  variant="contained"
+                  disabled={isDisabled}
+                  onClick={() => handleSubmit()}
+                  sx={{
+                    marginTop: "0px !important",
+                    height: { xs: "50px", sm: "60px", lg: "70px" },
+                    fontSize: "25px",
+                    fontWeight: 700,
+                    textTransform: "none",
+                    borderRadius: "16px !important",
+                    color: "#fff !important",
+                    fontFamily: "Roboto Bold",
+                    backgroundColor: theme.palette.primary.main,
+                  }}
+                >
+                  {!isConnected ? "Connect wallet to vote" : "Submit Your Vote"}
+                </Button>
+              </Grid>
+              <Grid item sx={{ m: theme.spacing(2) }}>
+                <Button
+                  variant="contained"
+                  onClick={() => toggleReceipt(true)}
+                  aria-label="Receipt"
+                  sx={{
+                    marginTop: "0px !important",
+                    height: { xs: "50px", sm: "60px", lg: "70px" },
+                    fontSize: "25px",
+                    fontWeight: 700,
+                    textTransform: "none",
+                    borderRadius: "16px !important",
+                    color: "#fff !important",
+                    fontFamily: "Roboto Bold",
+                    backgroundColor: theme.palette.primary.main,
+                  }}
+                  startIcon={<ReceiptIcon />}
+                >
+                  View Receipt
+                </Button>
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
       </Container>
+      <SidePage
+        anchor="right"
+        open={isToggledReceipt}
+        setOpen={toggleReceipt}
+      >
+        <VoteReceipt />
+      </SidePage>
     </div>
   );
 };

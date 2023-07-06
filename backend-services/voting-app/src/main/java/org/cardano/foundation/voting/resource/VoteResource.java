@@ -9,12 +9,14 @@ import org.cardano.foundation.voting.service.vote.VoteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Objects;
 
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
@@ -42,9 +44,9 @@ public class VoteResource {
                         });
     }
 
-    @RequestMapping(value = "/receipt/{event}/{category}/{stakeAddress}", method = POST, produces = "application/json")
+    @RequestMapping(value = "/receipt/{event}/{category}/{stakeAddress}", method = GET, produces = "application/json")
     @Timed(value = "resource.vote.receipt", percentiles = { 0.3, 0.5, 0.95 })
-    public ResponseEntity<?> getVoteReceipt(String event, String category, String stakeAddress, Authentication authentication) {
+    public ResponseEntity<?> getVoteReceipt(@PathVariable String event, @PathVariable String category, @PathVariable String stakeAddress, Authentication authentication) {
 //        JwtPrincipal jwtPrincipal = (JwtPrincipal) authentication.getPrincipal();
 
 //        if (jwtPrincipal.isNotAllowed(stakeAddress)) {
@@ -60,9 +62,9 @@ public class VoteResource {
                         });
     }
 
-    @RequestMapping(value = "/casting-available/{event}/{vote}", method = POST, produces = "application/json")
+    @RequestMapping(value = "/casting-available/{event}/{vote}", method = GET, produces = "application/json")
     @Timed(value = "resource.vote.receipt", percentiles = { 0.3, 0.5, 0.95 })
-    public ResponseEntity<?> isVoteCastingStillPossible(String event, String vote, Authentication authentication) {
+    public ResponseEntity<?> isVoteCastingStillPossible(@PathVariable String event, @PathVariable String vote, Authentication authentication) {
 //        JwtPrincipal jwtPrincipal = (JwtPrincipal) authentication.getPrincipal();
 
 //        if (jwtPrincipal.isNotAllowed(stakeAddress)) {

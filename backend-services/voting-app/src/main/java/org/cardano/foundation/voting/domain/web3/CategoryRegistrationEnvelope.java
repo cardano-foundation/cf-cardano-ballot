@@ -2,7 +2,7 @@ package org.cardano.foundation.voting.domain.web3;
 
 import lombok.Builder;
 import lombok.Getter;
-import org.cardano.foundation.voting.domain.metadata.OnChainEventType;
+import org.cardano.foundation.voting.domain.OnChainEventType;
 
 import java.util.List;
 

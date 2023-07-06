@@ -3,6 +3,8 @@ package org.cardano.foundation.voting.domain.web3;
 import lombok.Builder;
 import lombok.Getter;
 
+import javax.annotation.Nullable;
+
 @Builder
 @Getter
 public class VoteEnvelope {
@@ -14,7 +16,9 @@ public class VoteEnvelope {
     private String proposal;
     private String proposalText;
     private String network;
-    private long votedAt;
+    private String votedAt;
+
+    @Nullable
     private String votingPower;
 
 }

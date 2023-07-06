@@ -8,9 +8,9 @@ import org.cardano.foundation.voting.domain.OnChainEventType;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
+import java.util.List;
 
-import static org.cardano.foundation.voting.domain.VotingEventType.STAKE_BASED;
-import static org.cardano.foundation.voting.domain.VotingEventType.USER_BASED;
+import static org.cardano.foundation.voting.domain.VotingEventType.*;
 import static org.cardano.foundation.voting.utils.MoreBoolean.toBigInteger;
 
 @Service
@@ -27,19 +27,15 @@ public class MetadataSerialiser {
         map.put("schemaVersion", createEventCommand.getVersion().getSemVer());
         map.put("creationSlot", BigInteger.valueOf(slot));
 
-        if (createEventCommand.getVotingEventType() == STAKE_BASED) {
-            //noinspection ConstantConditions
-            map.put("startEpoch", BigInteger.valueOf(createEventCommand.getStartEpoch()));
-            //noinspection ConstantConditions
-            map.put("endEpoch", BigInteger.valueOf(createEventCommand.getEndEpoch()));
-            //noinspection ConstantConditions
-            map.put("snapshotEpoch", BigInteger.valueOf(createEventCommand.getSnapshotEpoch()));
+        if (List.of(STAKE_BASED, BALANCE_BASED).contains(createEventCommand.getVotingEventType())) {
+            map.put("startEpoch", BigInteger.valueOf(createEventCommand.getStartEpoch().orElseThrow()));
+            map.put("endEpoch", BigInteger.valueOf(createEventCommand.getEndEpoch().orElseThrow()));
+            map.put("snapshotEpoch", BigInteger.valueOf(createEventCommand.getSnapshotEpoch().orElseThrow()));
+            map.put("votingPowerAsset", createEventCommand.getVotingPowerAsset().orElseThrow().name());
         }
         if (createEventCommand.getVotingEventType() == USER_BASED) {
-            //noinspection ConstantConditions
-            map.put("startSlot", BigInteger.valueOf(createEventCommand.getStartSlot()));
-            //noinspection ConstantConditions
-            map.put("endSlot", BigInteger.valueOf(createEventCommand.getEndSlot()));
+            map.put("startSlot", BigInteger.valueOf(createEventCommand.getStartSlot().orElseThrow()));
+            map.put("endSlot", BigInteger.valueOf(createEventCommand.getEndSlot().orElseThrow()));
         }
 
         map.put("options", createEventOptions(createEventCommand));

@@ -13,7 +13,7 @@ import org.cardano.foundation.voting.domain.TransactionMetadataLabelCbor;
 import org.cardano.foundation.voting.domain.entity.Category;
 import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.domain.entity.Proposal;
-import org.cardano.foundation.voting.domain.metadata.OnChainEventType;
+import org.cardano.foundation.voting.domain.OnChainEventType;
 import org.cardano.foundation.voting.service.cbor.CborService;
 import org.cardano.foundation.voting.service.json.JsonService;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
@@ -32,8 +32,8 @@ import java.util.Optional;
 
 import static com.bloxbean.cardano.client.crypto.Blake2bUtil.blake2bHash224;
 import static com.bloxbean.cardano.client.util.HexUtil.decodeHexString;
-import static org.cardano.foundation.voting.domain.metadata.OnChainEventType.CATEGORY_REGISTRATION;
-import static org.cardano.foundation.voting.domain.metadata.OnChainEventType.EVENT_REGISTRATION;
+import static org.cardano.foundation.voting.domain.OnChainEventType.CATEGORY_REGISTRATION;
+import static org.cardano.foundation.voting.domain.OnChainEventType.EVENT_REGISTRATION;
 import static org.cardanofoundation.cip30.Format.HEX;
 
 @Service
@@ -57,7 +57,7 @@ public class MetadataProcessor {
     private JsonService jsonService;
 
     @Value("${l1.transaction.metadata.label:12345}")
-    private int metadataLabel;
+    private long metadataLabel;
 
     public void processMetadataEvents(List<TransactionMetadataLabelCbor> onChainMetadataEvents) {
         log.info("On chain events:{}", onChainMetadataEvents);
@@ -154,13 +154,13 @@ public class MetadataProcessor {
             return Optional.empty();
         }
 
-        var maybeEventRegistration = cborService.decodeEventRegistrationEnvelope(payload).toJavaOptional();
-        if (maybeEventRegistration.isEmpty()) {
-            log.info("Event registration invalid, ignoring id:{}", id);
+        var maybeEventRegistration = cborService.decodeEventRegistrationEnvelope(payload);
+        if (maybeEventRegistration.isLeft()) {
+            log.info("Event registration invalid, reason:{} :{}", maybeEventRegistration.getLeft().getDetail(), id);
 
             return Optional.empty();
         }
-        var eventRegistration = maybeEventRegistration.orElseThrow();
+        var eventRegistration = maybeEventRegistration.get();
 
         if (!bindOnEventIds.contains(eventRegistration.getName())) {
             log.info("Event NOT found in bindOnEventIds, ignoring id:{}", id);
@@ -184,6 +184,7 @@ public class MetadataProcessor {
         eventRegistration.getStartEpoch().ifPresent(event::setStartEpoch);
         eventRegistration.getEndEpoch().ifPresent(event::setEndEpoch);
         eventRegistration.getSnapshotEpoch().ifPresent(event::setSnapshotEpoch);
+        eventRegistration.getVotingPowerAsset().ifPresent(event::setVotingPowerAsset);
 
         event.setVotingEventType(eventRegistration.getVotingEventType());
 

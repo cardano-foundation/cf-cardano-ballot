@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.cardano.foundation.voting.domain.VoteReceipt.Status.*;
-import static org.cardano.foundation.voting.domain.VotingPowerFormat.ADA;
+import static org.cardano.foundation.voting.domain.VotingEventType.*;
 import static org.cardano.foundation.voting.domain.web3.Web3Action.CAST_VOTE;
 import static org.cardano.foundation.voting.utils.MoreNumber.isNumeric;
 import static org.cardanofoundation.cip30.Format.TEXT;
@@ -249,6 +249,7 @@ public class DefaultVoteService implements VoteService {
                     .build());
         }
         var event = maybeEvent.get();
+
         if (expirationService.isEventInactive(event)) {
             log.warn("Event is not active, eventId:{}", eventId);
 
@@ -258,6 +259,7 @@ public class DefaultVoteService implements VoteService {
                     .withStatus(BAD_REQUEST)
                     .build());
         }
+
         var categoryId = cip90VoteEnvelope.getData().getCategory();
         var maybeCategory = event.findCategoryByName(categoryId);
         if (maybeCategory.isEmpty()) {
@@ -302,7 +304,19 @@ public class DefaultVoteService implements VoteService {
             proposal = maybeProposal.orElseThrow();
         }
 
-        var cip93Slot = cip90VoteEnvelope.getSlot();
+        var cip93SlotStr = cip90VoteEnvelope.getSlot();
+
+        if (!isNumeric(cip93SlotStr)) {
+            return Either.left(
+                    Problem.builder()
+                            .withTitle("INVALID_SLOT")
+                            .withDetail("CIP-93 envelope slot is not numeric!")
+                            .withStatus(BAD_REQUEST)
+                            .build()
+            );
+        }
+        var cip93Slot = Long.parseLong(cip93SlotStr);
+
         if (expirationService.isSlotExpired(cip93Slot)) {
             log.warn("Invalid request slot, slot:{}", cip93Slot);
 
@@ -315,7 +329,18 @@ public class DefaultVoteService implements VoteService {
             );
         }
 
-        var votedAtSlot = cip90VoteEnvelope.getData().getVotedAt();
+        var votedAtSlotStr = cip90VoteEnvelope.getData().getVotedAt();
+        if (!isNumeric(votedAtSlotStr)) {
+            return Either.left(
+                    Problem.builder()
+                            .withTitle("INVALID_SLOT")
+                            .withDetail("Vote's votedAt slot is not numeric!")
+                            .withStatus(BAD_REQUEST)
+                            .build()
+            );
+        }
+        var votedAtSlot = Long.parseLong(votedAtSlotStr);
+
         if (expirationService.isSlotExpired(votedAtSlot)) {
             log.warn("Invalid votedAt slot, votedAt slot:{}", votedAtSlot);
 
@@ -384,42 +409,7 @@ public class DefaultVoteService implements VoteService {
             return Either.right(voteRepository.saveAndFlush(existingVote));
         }
 
-        var blockchainVotingPower = votingPowerService.getVotingPower(event, stakeAddress);
-        if (blockchainVotingPower <= 0) {
-            log.warn("Voting power is less than equal 0 for the stake address: " + stakeAddress);
-
-            return Either.left(
-                    Problem.builder()
-                            .withTitle("INVALID_VOTING_POWER")
-                            .withDetail("Voting power is 0 or less for the stake address: " + stakeAddress)
-                            .withStatus(BAD_REQUEST)
-                            .build()
-            );
-        }
-
-        if (!isNumeric(cip90VoteEnvelope.getData().getVotingPower())) {
-            return Either.left(
-                    Problem.builder()
-                            .withTitle("INVALID_VOTING_POWER")
-                            .withDetail("Voting power is not numeric for the stake address: " + stakeAddress)
-                            .withStatus(BAD_REQUEST)
-                            .build()
-            );
-        }
-
-        var signedVotingPower = Long.parseLong(cip90VoteEnvelope.getData().getVotingPower());
-        if (signedVotingPower != blockchainVotingPower) {
-            return Either.left(
-                    Problem.builder()
-                            .withTitle("VOTING_POWER_MISMATCH")
-                            .withDetail("Signed voting power is not equal to blockchain voting power for the stake address: " + stakeAddress)
-                            .withStatus(BAD_REQUEST)
-                            .build()
-            );
-        }
-
-
-        Vote vote = new Vote();
+        var vote = new Vote();
         vote.setId(voteId);
         vote.setEventId(event.getId());
         vote.setCategoryId(category.getId());
@@ -429,7 +419,55 @@ public class DefaultVoteService implements VoteService {
         vote.setNetwork(network);
         vote.setCoseSignature(castVoteRequest.getCoseSignature());
         vote.setCosePublicKey(castVoteRequest.getCosePublicKey());
-        vote.setVotingPower(blockchainVotingPower);
+
+        if (List.of(STAKE_BASED, BALANCE_BASED).contains(event.getVotingEventType())) {
+            var blockchainVotingPower = votingPowerService.getVotingPower(event, stakeAddress).orElse(-1L);
+            if (blockchainVotingPower <= 0) {
+                log.warn("Voting power is less than equal 0 for the stake address: " + stakeAddress);
+
+                return Either.left(
+                        Problem.builder()
+                                .withTitle("INVALID_VOTING_POWER")
+                                .withDetail("Voting power is 0 or less for the stake address: " + stakeAddress)
+                                .withStatus(BAD_REQUEST)
+                                .build()
+                );
+            }
+
+            if (!isNumeric(cip90VoteEnvelope.getData().getVotingPower())) {
+                return Either.left(
+                        Problem.builder()
+                                .withTitle("INVALID_VOTING_POWER")
+                                .withDetail("CIP-93's envelope votingPower is not numeric for the stake address: " + stakeAddress)
+                                .withStatus(BAD_REQUEST)
+                                .build()
+                );
+            }
+            var signedVotingPower = Long.parseLong(cip90VoteEnvelope.getData().getVotingPower());
+            if (signedVotingPower != blockchainVotingPower) {
+                return Either.left(
+                        Problem.builder()
+                                .withTitle("VOTING_POWER_MISMATCH")
+                                .withDetail("Signed voting power is not equal to blockchain voting power for the stake address: " + stakeAddress)
+                                .withStatus(BAD_REQUEST)
+                                .build()
+                );
+            }
+
+            vote.setVotingPower(blockchainVotingPower);
+        }
+
+        if (event.getVotingEventType() == USER_BASED) {
+            if (vote.getVotingPower() != null) {
+                return Either.left(
+                        Problem.builder()
+                                .withTitle("VOTING_POWER_NOT_SUPPORTED")
+                                .withDetail("Voting power makes no sense for USER_BASED events, please remove it from the vote envelope.")
+                                .withStatus(BAD_REQUEST)
+                                .build()
+                );
+            }
+        }
 
         return Either.right(voteRepository.saveAndFlush(vote));
     }
@@ -499,22 +537,18 @@ public class DefaultVoteService implements VoteService {
             var td = blockchainDataTransactionDetailsService.getTransactionDetails(proof.getL1TransactionHash());
             var isL1CommitmentOnChain = td.map(TransactionDetails::getFinalityScore);
 
-            var status = isL1CommitmentOnChain.isEmpty() ? PARTIAL : FULL;
-
             return Either.<Problem, VoteReceipt>right(VoteReceipt.builder()
                     .id(vote.getId())
-                    .votedAtSlot(vote.getVotedAtSlot())
                     .event(event.getId())
                     .category(category.getId())
                     .proposal(proposal.getId())
                     .coseSignature(vote.getCoseSignature())
                     .cosePublicKey(vote.getCosePublicKey())
-                    .votedAtSlot(vote.getVotedAtSlot())
+                    .votedAtSlot(Long.valueOf(vote.getVotedAtSlot()).toString())
                     .voterStakingAddress(vote.getVoterStakingAddress())
-                    .votingPower(String.valueOf(vote.getVotingPower()))
-                    .votingPowerFormat(ADA)
+                    .votingPower(Optional.ofNullable(vote.getVotingPower()).map(String::valueOf).orElse(null))
                     .cardanoNetwork(vote.getNetwork())
-                    .status(status)
+                    .status(readMerkleProofStatus(proof, isL1CommitmentOnChain))
                     .finalityScore(isL1CommitmentOnChain)
                     .merkleProof(convertMerkleProof(proof, td))
                     .build()
@@ -524,22 +558,28 @@ public class DefaultVoteService implements VoteService {
 
             return Either.right(VoteReceipt.builder()
                     .id(vote.getId())
-                    .votedAtSlot(vote.getVotedAtSlot())
                     .event(event.getId())
                     .category(category.getId())
                     .proposal(proposal.getId())
                     .proposalText(proposal.getName())
                     .coseSignature(vote.getCoseSignature())
                     .cosePublicKey(vote.getCosePublicKey())
-                    .votedAtSlot(vote.getVotedAtSlot())
+                    .votedAtSlot(Long.valueOf(vote.getVotedAtSlot()).toString())
                     .voterStakingAddress(vote.getVoterStakingAddress())
-                    .votingPower(String.valueOf(vote.getVotingPower()))
-                    .votingPowerFormat(ADA)
+                    .votingPower(Optional.ofNullable(vote.getVotingPower()).map(String::valueOf).orElse(null))
                     .cardanoNetwork(vote.getNetwork())
                     .status(BASIC)
                     .build()
             );
         });
+    }
+
+    private static VoteReceipt.Status readMerkleProofStatus(VoteMerkleProof merkleProof, Optional<TransactionDetails.FinalityScore> isL1CommitmentOnChain) {
+        if (merkleProof.isInvalidated()) {
+            return ROLLBACK;
+        }
+
+        return isL1CommitmentOnChain.isEmpty() ? PARTIAL : FULL;
     }
 
     private VoteReceipt.MerkleProof convertMerkleProof(VoteMerkleProof proof, Optional<TransactionDetails> transactionDetails) {

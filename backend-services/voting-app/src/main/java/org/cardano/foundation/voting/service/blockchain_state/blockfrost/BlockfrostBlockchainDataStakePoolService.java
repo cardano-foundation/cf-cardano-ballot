@@ -36,6 +36,11 @@ public class BlockfrostBlockchainDataStakePoolService extends AbstractBlockfrost
         throw new IllegalStateException("Failed to get stake amount for epoch " + epochNo + " and stake address " + stakeAddress);
     }
 
+    @Override
+    public Optional<Long> getBalanceAmount(int epochNo, String stakeAddress) {
+        throw new RuntimeException("not yet implemented");
+    }
+
     private static Optional<Long> getStakeAmount(int epochNo, List<AccountHistory> accountHistory) {
         return accountHistory.stream()
                 .filter(accountHistoryItem -> accountHistoryItem.getActiveEpoch() == epochNo)

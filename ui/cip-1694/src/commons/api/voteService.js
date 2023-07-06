@@ -33,10 +33,10 @@ const getSlotNumber = async () => {
     );
 };
 
-const getVotingPower = async () => {
+const getVotingPower = async (eventId, stakeAddress) => {
     return await doRequest(
         METHODS.GET,
-        `${VOTING_POWER_URL}`,
+        `${VOTING_POWER_URL}/${eventId}/${stakeAddress}`,
         { ...DEFAULT_CONTENT_TYPE_HEADERS }
     );
 }

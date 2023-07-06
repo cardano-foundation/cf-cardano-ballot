@@ -7,6 +7,10 @@ import org.cardano.foundation.voting.service.blockchain_state.BlockchainTransact
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
+import static org.cardano.foundation.voting.domain.VotingEventType.*;
+
 @Service
 @Slf4j
 public class L1SubmissionService {
@@ -18,9 +22,36 @@ public class L1SubmissionService {
     private L1TransactionCreator l1TransactionCreator;
 
     public String submitEvent(CreateEventCommand event) {
+        checkEventCorrectness(event);
+
         byte[] txData = l1TransactionCreator.submitEvent(event);
 
         return transactionSubmissionService.submitTransaction(txData);
+    }
+
+    private void checkEventCorrectness(CreateEventCommand event) {
+        if (List.of(STAKE_BASED, BALANCE_BASED).contains(event.getVotingEventType())) {
+            if (event.getStartEpoch().orElseThrow(() -> new RuntimeException("startEpoch required")) > event.getEndEpoch().orElseThrow(() -> new RuntimeException("endEpoch required"))) {
+                throw new IllegalArgumentException("Event start time must be before end time");
+            }
+            if (event.getSnapshotEpoch().orElseThrow(() -> new RuntimeException("snapshotEpoch required")) >= event.getStartEpoch().orElseThrow(() -> new RuntimeException("startEpoch required!"))) {
+                throw new IllegalArgumentException("Event snapshot time must be before start time");
+            }
+
+            if (event.getVotingPowerAsset().isEmpty()) {
+                throw new IllegalArgumentException("Event voting power asset must be specified!");
+            }
+        }
+
+        if (event.getVotingEventType() == USER_BASED) {
+            if (event.getVotingPowerAsset().isPresent()) {
+                throw new IllegalArgumentException("Event voting power asset must not be specified!");
+            }
+            if (event.getStartEpoch().orElseThrow(() -> new RuntimeException("startSlot required!")) > event.getEndSlot().orElseThrow(() -> new RuntimeException("endSlot required!"))) {
+                throw new IllegalArgumentException("Event start time must be before end time!");
+            }
+        }
+
     }
 
     public String submitCategory(CreateCategoryCommand category) {

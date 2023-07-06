@@ -23,6 +23,7 @@ import java.util.Optional;
 
 import static org.cardano.foundation.voting.domain.web3.Web3Action.CAST_VOTE;
 import static org.cardano.foundation.voting.domain.web3.Web3Action.LOGIN;
+import static org.cardano.foundation.voting.utils.MoreNumber.isNumeric;
 import static org.cardanofoundation.cip30.Format.TEXT;
 import static org.cardanofoundation.cip30.ValidationError.UNKNOWN;
 import static org.zalando.problem.Status.BAD_REQUEST;
@@ -79,9 +80,19 @@ public class DefaultLoginService implements LoginService {
             );
         }
         var cip93LoginEnvelope = jsonPayloadE.get();
-        var slot = cip93LoginEnvelope.getSlot();
+        var slotStr = cip93LoginEnvelope.getSlot();
 
-        if (expirationService.isSlotExpired(slot)) {
+        if (!isNumeric(slotStr)) {
+            return Either.left(
+                    Problem.builder()
+                            .withTitle("INVALID_SLOT")
+                            .withDetail("CIP-93 envelope slot is not numeric!")
+                            .withStatus(BAD_REQUEST)
+                            .build()
+            );
+        }
+
+        if (expirationService.isSlotExpired(Long.parseLong(slotStr))) {
             return Either.left(
                     Problem.builder()
                             .withTitle("EXPIRED_SLOT")

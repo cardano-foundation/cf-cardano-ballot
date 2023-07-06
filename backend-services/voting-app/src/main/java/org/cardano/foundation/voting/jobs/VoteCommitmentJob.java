@@ -24,7 +24,8 @@ public class VoteCommitmentJob implements Runnable {
     }
 
     @Override
-    @Scheduled(cron = "0 0/30 * * * ?")
+    //@Scheduled(cron = "0 0/30 * * * ?")
+    @Scheduled(fixedRateString = "PT30M")
     public void run() {
         log.info("Starting VoteCommitmentJob...");
 
@@ -32,4 +33,5 @@ public class VoteCommitmentJob implements Runnable {
 
         log.info("Finished processing events and all votes...");
     }
+
 }

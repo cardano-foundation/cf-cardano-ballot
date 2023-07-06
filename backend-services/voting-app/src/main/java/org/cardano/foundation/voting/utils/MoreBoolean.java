@@ -12,8 +12,4 @@ public final class MoreBoolean {
         return val.equals(BigInteger.ONE);
     }
 
-    public static boolean fromInteger(Integer val) {
-        return val.equals(1);
-    }
-
 }

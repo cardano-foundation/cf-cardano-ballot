@@ -14,7 +14,7 @@ public class ProcessRecentMetadataJob implements Runnable {
     private MetadataService metadataService;
 
     @Override
-    @Scheduled(fixedDelayString = "PT5M", initialDelayString = "PT1M")
+    @Scheduled(fixedDelayString = "PT5M", initialDelayString = "PT0M")
     public void run() {
         log.info("Starting ProcessRecentMetadataJob...");
         metadataService.processRecentMetadataEvents();

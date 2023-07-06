@@ -17,20 +17,20 @@ import java.util.List;
 public class Category extends AbstractTimestampEntity {
 
     @Id
-    @Column(name = "id")
+    @Column(name = "id", nullable = false)
     private String id;
 
-    @Column(name = "gdpr_protection")
+    @Column(name = "gdpr_protection", nullable = false)
     @Builder.Default
     private boolean gdprProtection = true;
 
-    @Column(name = "schema_version")
+    @Column(name = "schema_version", nullable = false)
     private SchemaVersion version;
 
     @ManyToOne(
             fetch = FetchType.EAGER, cascade = CascadeType.ALL
     )
-    @JoinColumn(name = "event_id")
+    @JoinColumn(name = "event_id", nullable = false)
     private Event event;
 
     @OneToMany(

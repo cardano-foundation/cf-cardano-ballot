@@ -6,4 +6,6 @@ public interface BlockchainDataStakePoolService {
 
     Optional<Long> getStakeAmount(int epochNo, String stakeAddress);
 
+    Optional<Long> getBalanceAmount(int epochNo, String stakeAddress);
+
 }

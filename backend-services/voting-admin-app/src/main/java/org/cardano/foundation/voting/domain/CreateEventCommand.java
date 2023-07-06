@@ -4,7 +4,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 
-import javax.annotation.Nullable;
+import java.util.Optional;
+
+import static org.cardano.foundation.voting.domain.VotingPowerAsset.ADA;
 
 @Getter
 @Builder
@@ -21,22 +23,26 @@ public class CreateEventCommand {
     @Builder.Default
     private boolean categoryResultsWhileVoting = false; // until voting is finished, do we actually allow people to see results within category?
 
-    private VotingEventType votingEventType;
+    @Builder.Default
+    private VotingEventType votingEventType = VotingEventType.STAKE_BASED;
 
-    @Nullable
-    private Integer startEpoch;
+    @Builder.Default
+    private Optional<VotingPowerAsset> votingPowerAsset = Optional.of(ADA); // this field makes sense only for stake based voting
 
-    @Nullable
-    private Integer endEpoch;
+    @Builder.Default
+    private Optional<Integer> startEpoch = Optional.empty();
 
-    @Nullable
-    private Long startSlot;
+    @Builder.Default
+    private Optional<Integer> endEpoch = Optional.empty();
 
-    @Nullable
-    private Long endSlot;
+    @Builder.Default
+    private Optional<Long> startSlot = Optional.empty();
 
-    @Nullable
-    private Integer snapshotEpoch;
+    @Builder.Default
+    private Optional<Long> endSlot = Optional.empty();
+
+    @Builder.Default
+    private Optional<Integer> snapshotEpoch = Optional.empty();
 
     @Builder.Default
     private SchemaVersion version = SchemaVersion.V1;

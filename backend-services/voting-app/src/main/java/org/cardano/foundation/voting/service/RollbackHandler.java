@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 public class RollbackHandler {
 
     @Value("${l1.transaction.metadata.label:12345}")
-    private int metadataLabel;
+    private long metadataLabel;
 
     @Autowired
     private VoteMerkleProofRepository voteMerkleProofRepository;

@@ -4,17 +4,18 @@ package org.cardano.foundation.voting.service.account;
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.Account;
-import org.cardano.foundation.voting.domain.VotingEventType;
 import org.cardano.foundation.voting.service.address.StakeAddressVerificationService;
-import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataStakePoolService;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
+import org.cardano.foundation.voting.service.voting_power.VotingPowerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 
+import java.util.List;
 import java.util.Optional;
 
-import static org.cardano.foundation.voting.domain.VotingPowerFormat.ADA;
+import static org.cardano.foundation.voting.domain.VotingEventType.BALANCE_BASED;
+import static org.cardano.foundation.voting.domain.VotingEventType.STAKE_BASED;
 import static org.zalando.problem.Status.BAD_REQUEST;
 
 @Service
@@ -22,10 +23,10 @@ import static org.zalando.problem.Status.BAD_REQUEST;
 public class DefaultAccountService implements AccountService {
 
     @Autowired
-    private BlockchainDataStakePoolService blockchainDataStakePoolService;
+    private ReferenceDataService referenceDataService;
 
     @Autowired
-    private ReferenceDataService referenceDataService;
+    private VotingPowerService votingPowerService;
 
     @Autowired
     private StakeAddressVerificationService stakeAddressVerificationService;
@@ -49,27 +50,20 @@ public class DefaultAccountService implements AccountService {
             return Either.left(stakeAddressE.getLeft());
         }
 
-        if (event.getVotingEventType() != VotingEventType.STAKE_BASED) {
+        if (!List.of(STAKE_BASED, BALANCE_BASED).contains(event.getVotingEventType())) {
             return Either.left(Problem.builder()
-                    .withTitle("EVENT_NOT_STAKE_BASED")
-                    .withDetail("Event is not stake based, event:" + event)
+                    .withTitle("ONLY_STAKE_AND_BALANCE_BASED_EVENTS_SUPPORTED")
+                    .withDetail("Only stake and balance based events are supported, event:" + event)
                     .withStatus(BAD_REQUEST)
                     .build());
         }
 
-        var votingPowerInAda = blockchainDataStakePoolService.getStakeAmount(event.getSnapshotEpoch(), stakeAddress)
-                .map(votingPowerAmount -> {
-                    if (votingPowerAmount < 1_000_000L) {
-                        return 0L;
-                    }
-
-                    return votingPowerAmount / 1_000_000L;
-                });
+        Optional<Long> votingPower = votingPowerService.getVotingPower(event, stakeAddress);
 
         return Either.right(Optional.of(Account.builder()
                 .stakeAddress(stakeAddress)
-                .votingPower(votingPowerInAda.map(String::valueOf).orElse(null))
-                .votingPowerFormat(ADA)
+                .votingPower(votingPower.map(String::valueOf).orElse(null))
+                .votingPowerAsset(event.getVotingPowerAsset())
                 .build())
         );
     }

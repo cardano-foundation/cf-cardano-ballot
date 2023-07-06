@@ -19,7 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.L1MerkleCommitment;
-import org.cardano.foundation.voting.domain.metadata.OnChainEventType;
+import org.cardano.foundation.voting.domain.OnChainEventType;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataChainTipService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -28,7 +28,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static org.cardano.foundation.voting.domain.metadata.OnChainEventType.COMMITMENTS;
+import static org.cardano.foundation.voting.domain.OnChainEventType.COMMITMENTS;
 
 @Service
 @Slf4j
@@ -51,7 +51,7 @@ public class L1TransactionCreator {
     private Account organiserAccount;
 
     @Value("${l1.transaction.metadata.label:12345}")
-    private int metadataLabel;
+    private long metadataLabel;
 
     public byte[] submitMerkleCommitments(List<L1MerkleCommitment> l1MerkleCommitments) {
         var chainTip = blockchainDataChainTipService.getChainTip();

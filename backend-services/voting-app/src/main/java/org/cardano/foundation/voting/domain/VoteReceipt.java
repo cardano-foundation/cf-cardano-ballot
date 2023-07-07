@@ -18,8 +18,6 @@ public class VoteReceipt {
 
     private String proposal;
 
-    private String proposalText;
-
     private String votingPower;
 
     private String voterStakingAddress;

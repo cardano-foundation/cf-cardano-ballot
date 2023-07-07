@@ -19,7 +19,7 @@ public class VoteCommitmentJob implements Runnable {
     @Async
     public void onStart() {
         log.info("On startup...");
-        run();
+        //run();
         log.info("On startup...done.");
     }
 

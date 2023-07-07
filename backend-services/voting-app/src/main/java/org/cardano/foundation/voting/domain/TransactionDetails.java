@@ -35,7 +35,7 @@ public class TransactionDetails {
         }
 
         public static FinalityScore fromConfirmations(int transactionsConfirmations) {
-            if (transactionsConfirmations > 2160) {
+            if (transactionsConfirmations > 2160) { // 1,5 days
                 return FinalityScore.FINAL;
             }
 
@@ -43,11 +43,11 @@ public class TransactionDetails {
                 return VERY_HIGH;
             }
 
-            if (transactionsConfirmations > 8) {
+            if (transactionsConfirmations >= 8) {
                 return HIGH;
             }
 
-            if (transactionsConfirmations > 5) {
+            if (transactionsConfirmations >= 4) {
                 return MEDIUM;
             }
 

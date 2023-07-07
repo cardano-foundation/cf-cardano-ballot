@@ -47,9 +47,6 @@ public class Vote extends AbstractTimestampEntity {
     @Nullable
     private Long votingPower; // makes sense only for STAKE_BASED or BALANCE_BASED events
 
-    @Column(name = "network", nullable = false)
-    private CardanoNetwork network;
-
     @Column(name = "voted_at_slot", nullable = false)
     private long votedAtSlot;
 

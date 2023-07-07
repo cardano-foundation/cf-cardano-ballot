@@ -402,7 +402,6 @@ public class DefaultVoteService implements VoteService {
             existingVote.setId(existingVote.getId());
             existingVote.setProposalId(proposal.getId());
             existingVote.setVotedAtSlot(votedAtSlot);
-            existingVote.setNetwork(network);
             existingVote.setCoseSignature(castVoteRequest.getCoseSignature());
             existingVote.setCosePublicKey(castVoteRequest.getCosePublicKey());
 
@@ -416,7 +415,6 @@ public class DefaultVoteService implements VoteService {
         vote.setProposalId(proposal.getId());
         vote.setVoterStakingAddress(stakeAddress);
         vote.setVotedAtSlot(votedAtSlot);
-        vote.setNetwork(network);
         vote.setCoseSignature(castVoteRequest.getCoseSignature());
         vote.setCosePublicKey(castVoteRequest.getCosePublicKey());
 
@@ -528,6 +526,7 @@ public class DefaultVoteService implements VoteService {
             );
         }
         var proposal = maybeProposal.orElseThrow();
+        var proposalIdOrName = category.isGdprProtection() ? proposal.getId() : proposal.getName();
 
         var latestVoteMerkleProof = voteMerkleProofService.findLatestProof(event.getId(), vote.getId());
 
@@ -541,13 +540,12 @@ public class DefaultVoteService implements VoteService {
                     .id(vote.getId())
                     .event(event.getId())
                     .category(category.getId())
-                    .proposal(proposal.getId())
+                    .proposal(proposalIdOrName)
                     .coseSignature(vote.getCoseSignature())
                     .cosePublicKey(vote.getCosePublicKey())
                     .votedAtSlot(Long.valueOf(vote.getVotedAtSlot()).toString())
                     .voterStakingAddress(vote.getVoterStakingAddress())
                     .votingPower(Optional.ofNullable(vote.getVotingPower()).map(String::valueOf).orElse(null))
-                    .cardanoNetwork(vote.getNetwork())
                     .status(readMerkleProofStatus(proof, isL1CommitmentOnChain))
                     .finalityScore(isL1CommitmentOnChain)
                     .merkleProof(convertMerkleProof(proof, td))
@@ -560,14 +558,12 @@ public class DefaultVoteService implements VoteService {
                     .id(vote.getId())
                     .event(event.getId())
                     .category(category.getId())
-                    .proposal(proposal.getId())
-                    .proposalText(proposal.getName())
+                    .proposal(proposalIdOrName)
                     .coseSignature(vote.getCoseSignature())
                     .cosePublicKey(vote.getCosePublicKey())
                     .votedAtSlot(Long.valueOf(vote.getVotedAtSlot()).toString())
                     .voterStakingAddress(vote.getVoterStakingAddress())
                     .votingPower(Optional.ofNullable(vote.getVotingPower()).map(String::valueOf).orElse(null))
-                    .cardanoNetwork(vote.getNetwork())
                     .status(BASIC)
                     .build()
             );

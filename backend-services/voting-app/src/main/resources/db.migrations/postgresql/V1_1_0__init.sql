@@ -62,7 +62,6 @@ CREATE TABLE vote (
    cose_signature text NOT NULL,
    cose_public_key VARCHAR(255) NOT NULL,
    voting_power BIGINT,
-   network INT NOT NULL,
    voted_at_slot BIGINT NOT NULL,
 
    created_at TIMESTAMP WITHOUT TIME ZONE,

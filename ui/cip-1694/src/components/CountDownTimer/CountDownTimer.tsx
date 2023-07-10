@@ -1,6 +1,5 @@
-import moment from "moment";
-import React from "react";
-import { useTimer } from "react-timer-hook";
+import moment from 'moment';
+import { useTimer } from 'react-timer-hook';
 
 export default function CountDownTimer() {
   const time = new Date();

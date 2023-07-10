@@ -1,10 +1,9 @@
-import React from "react";
-import { BrowserRouter as Router } from "react-router-dom";
-import "./App.scss";
-import Content from "./components/common/Content/Content";
-import Footer from "./components/common/Footer/Footer";
-import Header from "./components/common/Header/Header";
-import { Toaster } from "react-hot-toast";
+import React, { BrowserRouter as Router } from 'react-router-dom';
+import './App.scss';
+import { Toaster } from 'react-hot-toast';
+import Content from './components/common/Content/Content';
+import Footer from './components/common/Footer/Footer';
+import Header from './components/common/Header/Header';
 
 function App() {
   return (
@@ -16,11 +15,11 @@ function App() {
           <Footer />
           <Toaster
             toastOptions={{
-              className: "",
+              className: '',
               style: {
-                borderRadius: "10px",
-                background: "#030321",
-                color: "#fff",
+                borderRadius: '10px',
+                background: '#030321',
+                color: '#fff',
               },
             }}
           />

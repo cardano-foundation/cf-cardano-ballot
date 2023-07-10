@@ -1,17 +1,16 @@
-import React from "react";
-import { PageRouter } from "../../../commons/routes";
-import { Box, Container } from "@mui/material";
-import CssBaseline from "@mui/material/CssBaseline";
+import { Box, Container } from '@mui/material';
+import CssBaseline from '@mui/material/CssBaseline';
+import { PageRouter } from '../../../commons/routes';
 
 export default function Content() {
   return (
     <Box
-    sx={{
-      display: 'flex',
-      flexDirection: 'column',
-      minHeight: '60vh',
-    }}
-  >
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '60vh',
+      }}
+    >
       <CssBaseline />
       <Container
         component="main"

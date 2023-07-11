@@ -2,7 +2,6 @@ package org.cardano.foundation.voting.service.leader_board;
 
 import com.google.common.collect.Iterables;
 import io.vavr.control.Either;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.Leaderboard;
@@ -15,8 +14,7 @@ import org.zalando.problem.Problem;
 
 import java.util.Map;
 
-import static org.zalando.problem.Status.BAD_REQUEST;
-import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
+import static org.zalando.problem.Status.*;
 
 @Service
 @Slf4j
@@ -63,7 +61,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
         return Either.right(Leaderboard.ByEvent.builder()
                 .event(event)
                 .totalVotesCount(voteCount)
-                .totalVotingPower(votingPower)
+                .totalVotingPower(String.valueOf(votingPower))
                 .build()
         );
     }
@@ -94,21 +92,22 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
         }
         var cat = maybeCategory.orElseThrow();
 
-        // TODO uncomment
 //        if (!expirationService.isEventFinished(e) && !e.isCategoryResultsWhileVoting()) {
 //            return Either.left(Problem.builder()
 //                    .withTitle("VOTING_RESULTS_NOT_AVAILABLE")
 //                    .withDetail("Voting results not yet available, category:" + category)
-//                    .withStatus(BAD_REQUEST)
+//                    .withStatus(FORBIDDEN)
 //                    .build()
 //            );
 //        }
 
         return Either.right(Leaderboard.ByCategory.builder()
                 .category(cat.getId())
-                        .proposals(Map.of("YES", new Leaderboard.Votes(10, 3_000),
-                                "NO", new Leaderboard.Votes(10, 2_000),
-                                "ABSTAIN", new Leaderboard.Votes(10, 1_000)))
+                        .proposals(
+                                Map.of(
+                                "YES", new Leaderboard.Votes(10, String.valueOf(3_000L * 1_000_000L)),
+                                "NO", new Leaderboard.Votes(10, String.valueOf(2_000 * 1_000_000L)),
+                                "ABSTAIN", new Leaderboard.Votes(10, String.valueOf(1_000 * 1_000_000L))))
                 .build()
         );
     }

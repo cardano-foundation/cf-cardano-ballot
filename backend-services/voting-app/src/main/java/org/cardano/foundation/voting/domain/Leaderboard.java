@@ -27,10 +27,10 @@ public class Leaderboard {
 
         private String event;
         private long totalVotesCount;
-        private long totalVotingPower;
+        private String totalVotingPower;
 
     }
 
-    public record Votes(long votes, long votingPower) { }
+    public record Votes(long votes, String votingPower) { }
 
 }

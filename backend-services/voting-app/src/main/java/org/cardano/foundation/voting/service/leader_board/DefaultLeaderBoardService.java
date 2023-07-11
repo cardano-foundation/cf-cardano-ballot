@@ -1,5 +1,6 @@
 package org.cardano.foundation.voting.service.leader_board;
 
+import com.bloxbean.cardano.client.common.ADAConversionUtil;
 import com.google.common.collect.Iterables;
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +15,9 @@ import org.zalando.problem.Problem;
 
 import java.util.Map;
 
-import static org.zalando.problem.Status.*;
+import static java.util.stream.Collectors.toMap;
+import static org.zalando.problem.Status.BAD_REQUEST;
+import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 
 @Service
 @Slf4j
@@ -28,7 +31,6 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
 
     @Autowired
     private CardanoNetwork cardanoNetwork;
-
     @Autowired
     private VoteRepository voteRepository;
 
@@ -59,7 +61,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
         var voteCount = eventVoteCount.getTotalVoteCount();
 
         return Either.right(Leaderboard.ByEvent.builder()
-                .event(event)
+                .event(e.getId())
                 .totalVotesCount(voteCount)
                 .totalVotingPower(String.valueOf(votingPower))
                 .build()
@@ -90,7 +92,18 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
                     .build()
             );
         }
-        var cat = maybeCategory.orElseThrow();
+        var c = maybeCategory.orElseThrow();
+
+        var votes = voteRepository.countAllByEventId(event, c.getId());
+
+        var proposalResults = Map.<String, Leaderboard.Votes>of();
+        if (c.isGdprProtection()) {
+            proposalResults = votes.stream()
+                    .collect(toMap(VoteRepository.EventCategoryVoteCount::getProposalId, v -> new Leaderboard.Votes(v.getTotalVoteCount(), String.valueOf(v.getTotalVotingPower()))));
+        } else {
+            proposalResults = votes.stream()
+                    .collect(toMap(VoteRepository.EventCategoryVoteCount::getProposalName, v -> new Leaderboard.Votes(v.getTotalVoteCount(), String.valueOf(v.getTotalVotingPower()))));
+        }
 
 //        if (!expirationService.isEventFinished(e) && !e.isCategoryResultsWhileVoting()) {
 //            return Either.left(Problem.builder()
@@ -101,13 +114,19 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
 //            );
 //        }
 
+//        return Either.right(Leaderboard.ByCategory.builder()
+//                .category(c.getId())
+//                .proposals(proposalResults)
+//                .build()
+//        );
+
         return Either.right(Leaderboard.ByCategory.builder()
-                .category(cat.getId())
+                .category(c.getId())
                         .proposals(
                                 Map.of(
-                                "YES", new Leaderboard.Votes(10, String.valueOf(3_000L * 1_000_000L)),
-                                "NO", new Leaderboard.Votes(10, String.valueOf(2_000 * 1_000_000L)),
-                                "ABSTAIN", new Leaderboard.Votes(10, String.valueOf(1_000 * 1_000_000L))))
+                                "YES", new Leaderboard.Votes(5, String.valueOf(ADAConversionUtil.adaToLovelace(3_000))),
+                                "NO", new Leaderboard.Votes(10, String.valueOf(ADAConversionUtil.adaToLovelace(2_000))),
+                                "ABSTAIN", new Leaderboard.Votes(5,  String.valueOf(ADAConversionUtil.adaToLovelace(1_000)))))
                 .build()
         );
     }

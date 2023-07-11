@@ -18,7 +18,7 @@ public class CreateEventCommand {
     private String team; // e.g. CF Team // TODO what about team spoofing - do we need that team has private / public key
 
     @Builder.Default
-    private boolean allowVoteChanging = false; // until merkle root is committed to the chain, do we allow vote changing?
+    private boolean allowVoteChanging = false; // until merkle root is committed to the chain, we could allow vote changing
 
     @Builder.Default
     private boolean categoryResultsWhileVoting = false; // until voting is finished, do we actually allow people to see results within category?

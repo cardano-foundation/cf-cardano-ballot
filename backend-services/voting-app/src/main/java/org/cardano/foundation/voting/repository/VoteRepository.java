@@ -19,9 +19,24 @@ public interface VoteRepository extends JpaRepository<Vote, String> {
     @Query("SELECT COUNT(v) as totalVoteCount, SUM(v.votingPower) as totalVotingPower FROM Vote v WHERE v.eventId = ?1")
     List<EventVoteCount> countAllByEventId(String eventId);
 
+    @Query("SELECT p.id as proposalId, p.name as proposalName, COUNT(v) as totalVoteCount, SUM(v.votingPower) as totalVotingPower FROM Vote v, Proposal p WHERE v.proposalId = p.id AND v.eventId = ?1 AND v.categoryId = ?2 GROUP BY p.id")
+    List<EventCategoryVoteCount> countAllByEventId(String eventId, String categoryId);
+
     interface EventVoteCount {
         long getTotalVoteCount();
         long getTotalVotingPower();
+    }
+
+    interface EventCategoryVoteCount {
+
+        String getProposalId();
+
+        String getProposalName();
+
+        long getTotalVoteCount();
+
+        long getTotalVotingPower();
+
     }
 
 }

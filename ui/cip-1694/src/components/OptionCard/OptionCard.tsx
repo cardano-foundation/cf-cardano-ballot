@@ -1,4 +1,4 @@
-import { useState, MouseEvent } from 'react';
+import React, { useState, MouseEvent } from 'react';
 import { useTheme } from '@mui/material/styles';
 import { Grid, Typography } from '@mui/material';
 import ToggleButton from '@mui/material/ToggleButton';
@@ -12,7 +12,7 @@ export default function OptionCard({ items, onChangeOption }: OptionProps) {
   const [alignment, setAlignment] = useState('');
   const [selected] = useState(false);
 
-  const handleChange = (event: MouseEvent<HTMLElement>, newAlignment: string) => {
+  const handleChange = (_event: MouseEvent<HTMLElement>, newAlignment: string) => {
     setAlignment(newAlignment);
     onChangeOption(newAlignment);
   };

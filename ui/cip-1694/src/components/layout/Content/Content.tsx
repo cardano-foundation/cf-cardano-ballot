@@ -1,3 +1,4 @@
+import React from 'react';
 import { Box, Container } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import { PageRouter } from '../../../commons/routes';

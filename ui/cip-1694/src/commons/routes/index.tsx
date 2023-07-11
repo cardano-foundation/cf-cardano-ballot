@@ -10,6 +10,7 @@ export const PAGE_PATH = '/';
 
 export const ROUTES = {
   INTRO: `${PAGE_PATH}`,
+  // TODO: won't you get '//vote' here?
   VOTE: `${PAGE_PATH}/vote`
 };
 

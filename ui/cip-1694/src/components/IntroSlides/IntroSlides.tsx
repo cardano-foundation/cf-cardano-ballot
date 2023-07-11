@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Navigation, Autoplay } from 'swiper';
 import { Swiper as SwiperClass } from 'swiper/types';
@@ -10,6 +10,7 @@ import { SlideProps } from './IntroSlides.types';
 import './IntroSlides.scss';
 import 'swiper/css/navigation';
 
+// TODO: let's deside on the approach we use? either classes or inline ones?
 const ContentStyle = styled('div')(({ theme }) => ({
   display: 'flex',
   justifyContent: 'flex-left',
@@ -40,6 +41,7 @@ const HeroStyleImg = styled('img')(({ theme }) => ({
   },
 }));
 
+// TODO: could we rename this to be more a generic one? just "slides"?
 const IntroSlides = ({ items }: SlideProps) => {
   const [swiper, setSwiper] = useState<SwiperClass | undefined>(undefined);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -94,6 +96,7 @@ const IntroSlides = ({ items }: SlideProps) => {
                     size="large"
                     component={Link}
                     variant="contained"
+                    // TODO: move to routes const?
                     to={{ pathname: '/vote' }}
                     sx={{
                       marginTop: '0px !important',

@@ -1,6 +1,8 @@
 package org.cardano.foundation.voting.service.leader_board;
 
+import com.google.common.collect.Iterables;
 import io.vavr.control.Either;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.Leaderboard;
@@ -11,7 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 
+import java.util.Map;
+
 import static org.zalando.problem.Status.BAD_REQUEST;
+import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 
 @Service
 @Slf4j
@@ -43,10 +48,22 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
         var e = maybeEvent.orElseThrow();
 
         var votes = voteRepository.countAllByEventId(event);
+        if (votes.isEmpty()) {
+            return Either.left(Problem.builder()
+                    .withTitle("INTERNAL_ERROR")
+                    .withDetail("No votes for event, event:" + event)
+                    .withStatus(INTERNAL_SERVER_ERROR)
+                    .build()
+            );
+        }
+        var eventVoteCount = Iterables.getOnlyElement(votes);
+        var votingPower = eventVoteCount.getTotalVotingPower();
+        var voteCount = eventVoteCount.getTotalVoteCount();
 
         return Either.right(Leaderboard.ByEvent.builder()
                 .event(event)
-                //.votes(votes)
+                .totalVotesCount(voteCount)
+                .totalVotingPower(votingPower)
                 .build()
         );
     }
@@ -62,6 +79,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
                     .build()
             );
         }
+
         var e = maybeEvent.orElseThrow();
 
         var maybeCategory = e.findCategoryByName(category);
@@ -74,18 +92,23 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
                     .build()
             );
         }
+        var cat = maybeCategory.orElseThrow();
 
-        if (!expirationService.isEventFinished(e) && !e.isCategoryResultsWhileVoting()) {
-            return Either.left(Problem.builder()
-                    .withTitle("VOTING_RESULTS_NOT_AVAILABLE")
-                    .withDetail("Voting results not yet available, category:" + category)
-                    .withStatus(BAD_REQUEST)
-                    .build()
-            );
-        }
+        // TODO uncomment
+//        if (!expirationService.isEventFinished(e) && !e.isCategoryResultsWhileVoting()) {
+//            return Either.left(Problem.builder()
+//                    .withTitle("VOTING_RESULTS_NOT_AVAILABLE")
+//                    .withDetail("Voting results not yet available, category:" + category)
+//                    .withStatus(BAD_REQUEST)
+//                    .build()
+//            );
+//        }
 
-        // TODO: implement this
         return Either.right(Leaderboard.ByCategory.builder()
+                .category(cat.getId())
+                        .proposals(Map.of("YES", new Leaderboard.Votes(10, 3_000),
+                                "NO", new Leaderboard.Votes(10, 2_000),
+                                "ABSTAIN", new Leaderboard.Votes(10, 1_000)))
                 .build()
         );
     }

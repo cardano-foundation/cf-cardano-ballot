@@ -11,9 +11,9 @@ import org.cardano.foundation.voting.service.address.StakeAddressVerificationSer
 import org.cardano.foundation.voting.service.expire.ExpirationService;
 import org.cardano.foundation.voting.service.json.JsonService;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
-import org.cardano.foundation.voting.utils.Bech32;
 import org.cardano.foundation.voting.utils.Enums;
 import org.cardanofoundation.cip30.CIP30Verifier;
+import org.cardanofoundation.cip30.MessageFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
@@ -24,7 +24,7 @@ import java.util.Optional;
 import static org.cardano.foundation.voting.domain.web3.Web3Action.CAST_VOTE;
 import static org.cardano.foundation.voting.domain.web3.Web3Action.LOGIN;
 import static org.cardano.foundation.voting.utils.MoreNumber.isNumeric;
-import static org.cardanofoundation.cip30.Format.TEXT;
+import static org.cardanofoundation.cip30.AddressFormat.TEXT;
 import static org.cardanofoundation.cip30.ValidationError.UNKNOWN;
 import static org.zalando.problem.Status.BAD_REQUEST;
 
@@ -69,7 +69,7 @@ public class DefaultLoginService implements LoginService {
             );
         }
 
-        var jsonPayloadE = jsonService.decodeCIP93LoginEnvelope(cip30VerificationResult.getMessage(TEXT));
+        var jsonPayloadE = jsonService.decodeCIP93LoginEnvelope(cip30VerificationResult.getMessage(MessageFormat.TEXT));
         if (jsonPayloadE.isLeft()) {
             return Either.left(
                     Problem.builder()
@@ -148,7 +148,7 @@ public class DefaultLoginService implements LoginService {
                     .build());
         }
 
-        var maybeAddress = cip30VerificationResult.getAddress();
+        var maybeAddress = cip30VerificationResult.getAddress(TEXT);
         if (maybeAddress.isEmpty()) {
             log.warn("Address not found in the signed data");
 
@@ -160,20 +160,16 @@ public class DefaultLoginService implements LoginService {
                             .build()
             );
         }
-        var addressBytes = maybeAddress.orElseThrow();
-        log.info("address:{}", new String(addressBytes));
+        var stakeAddress = maybeAddress.orElseThrow();
 
-        var stakeAddressE = Bech32.decode(addressBytes);
-        if (stakeAddressE.isLeft()) {
-            log.warn("Invalid bech32 address, addressBytes:{}", addressBytes);
-
-            return Either.left(stakeAddressE.getLeft());
+        var stakeAddressCheckE = stakeAddressVerificationService.checkIfAddressIsStakeAddress(stakeAddress);
+        if (stakeAddressCheckE.isLeft()) {
+            return Either.left(stakeAddressCheckE.getLeft());
         }
-        var stakeAddress = stakeAddressE.get();
 
-        var passedStakeAddressE = stakeAddressVerificationService.checkStakeAddress(stakeAddress);
-        if (passedStakeAddressE.isLeft()) {
-            return Either.left(passedStakeAddressE.getLeft());
+        var stakeAddressNetworkCheck = stakeAddressVerificationService.checkStakeAddressNetwork(stakeAddress);
+        if (stakeAddressNetworkCheck.isLeft()) {
+            return Either.left(stakeAddressNetworkCheck.getLeft());
         }
 
         var maybeRole = Enums.getIfPresent(Role.class, cip93LoginEnvelope.getData().getRole());

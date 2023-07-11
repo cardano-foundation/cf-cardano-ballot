@@ -22,9 +22,9 @@ import org.cardano.foundation.voting.service.merkle_tree.MerkleProofSerdeService
 import org.cardano.foundation.voting.service.merkle_tree.VoteMerkleProofService;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
 import org.cardano.foundation.voting.service.voting_power.VotingPowerService;
-import org.cardano.foundation.voting.utils.Bech32;
 import org.cardano.foundation.voting.utils.Enums;
 import org.cardano.foundation.voting.utils.UUID;
+import org.cardanofoundation.cip30.AddressFormat;
 import org.cardanofoundation.cip30.CIP30Verifier;
 import org.cardanofoundation.merkle.ProofItem;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +39,7 @@ import static org.cardano.foundation.voting.domain.VoteReceipt.Status.*;
 import static org.cardano.foundation.voting.domain.VotingEventType.*;
 import static org.cardano.foundation.voting.domain.web3.Web3Action.CAST_VOTE;
 import static org.cardano.foundation.voting.utils.MoreNumber.isNumeric;
-import static org.cardanofoundation.cip30.Format.TEXT;
+import static org.cardanofoundation.cip30.MessageFormat.TEXT;
 import static org.cardanofoundation.cip30.ValidationError.UNKNOWN;
 import static org.zalando.problem.Status.BAD_REQUEST;
 import static org.zalando.problem.Status.NOT_FOUND;
@@ -152,7 +152,7 @@ public class DefaultVoteService implements VoteService {
             );
         }
 
-        var maybeAddress = cip30VerificationResult.getAddress();
+        var maybeAddress = cip30VerificationResult.getAddress(AddressFormat.TEXT);
         if (maybeAddress.isEmpty()) {
             log.warn("Address not found in the signed data");
 
@@ -164,19 +164,16 @@ public class DefaultVoteService implements VoteService {
                             .build()
             );
         }
-        var address = maybeAddress.orElseThrow();
+        var stakeAddress = maybeAddress.orElseThrow();
 
-        var stakeAddressE = Bech32.decode(address);
-        if (stakeAddressE.isLeft()) {
-            log.warn("Invalid bech32 address, address:{}", address);
-
-            return Either.left(stakeAddressE.getLeft());
+        var stakeAddressCheckE = stakeAddressVerificationService.checkIfAddressIsStakeAddress(stakeAddress);
+        if (stakeAddressCheckE.isLeft()) {
+            return Either.left(stakeAddressCheckE.getLeft());
         }
-        var stakeAddress = stakeAddressE.get();
 
-        var passedStakeAddressE = stakeAddressVerificationService.checkStakeAddress(stakeAddress);
-        if (passedStakeAddressE.isLeft()) {
-            return Either.left(passedStakeAddressE.getLeft());
+        var stakeAddressNetworkCheck = stakeAddressVerificationService.checkStakeAddressNetwork(stakeAddress);
+        if (stakeAddressNetworkCheck.isLeft()) {
+            return Either.left(stakeAddressNetworkCheck.getLeft());
         }
 
         var castVoteRequestBodyJsonE = jsonService.decodeCIP93VoteEnvelope(cip30VerificationResult.getMessage(TEXT));
@@ -474,9 +471,14 @@ public class DefaultVoteService implements VoteService {
     @Transactional
     @Timed(value = "service.vote.voteReceipt", percentiles = { 0.3, 0.5, 0.95 })
     public Either<Problem, VoteReceipt> voteReceipt(String eventName, String categoryName, String stakeAddress) {
-        var passedStakeAddressE = stakeAddressVerificationService.checkStakeAddress(stakeAddress);
-        if (passedStakeAddressE.isLeft()) {
-            return Either.left(passedStakeAddressE.getLeft());
+        var stakeAddressCheckE = stakeAddressVerificationService.checkIfAddressIsStakeAddress(stakeAddress);
+        if (stakeAddressCheckE.isLeft()) {
+            return Either.left(stakeAddressCheckE.getLeft());
+        }
+
+        var stakeAddressNetworkCheck = stakeAddressVerificationService.checkStakeAddressNetwork(stakeAddress);
+        if (stakeAddressNetworkCheck.isLeft()) {
+            return Either.left(stakeAddressNetworkCheck.getLeft());
         }
 
         var maybeEvent = referenceDataService.findValidEventByName(eventName);

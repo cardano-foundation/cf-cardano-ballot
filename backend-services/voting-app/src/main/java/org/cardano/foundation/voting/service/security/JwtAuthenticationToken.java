@@ -8,6 +8,7 @@ import java.util.Collection;
 
 public class JwtAuthenticationToken extends AbstractAuthenticationToken {
 
+
     private final JwtPrincipal principal;
 
     public JwtAuthenticationToken(JwtPrincipal principal, Collection<? extends GrantedAuthority> authorities) {

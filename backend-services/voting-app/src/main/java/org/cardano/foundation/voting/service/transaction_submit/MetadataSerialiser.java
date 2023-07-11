@@ -30,7 +30,6 @@ public class MetadataSerialiser {
 
             var l1Map = MetadataBuilder.createMap();
             l1Map.put("hash", HexUtil.encodeHexString(l1MerkleCommitment.root().itemHash()));
-            l1Map.put("voteCount", BigInteger.valueOf(l1MerkleCommitment.votes().size()));
 
             l1CommitmentMap.put(l1MerkleCommitment.event().getId(), l1Map);
         }

@@ -5,9 +5,10 @@ import io.vavr.control.Either;
 import org.cardano.foundation.voting.domain.Role;
 import org.cardano.foundation.voting.domain.web3.SignedWeb3Request;
 import org.cardano.foundation.voting.service.json.JsonService;
-import org.cardano.foundation.voting.utils.Bech32;
 import org.cardano.foundation.voting.utils.Enums;
+import org.cardanofoundation.cip30.AddressFormat;
 import org.cardanofoundation.cip30.CIP30Verifier;
+import org.cardanofoundation.cip30.MessageFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,6 @@ import org.zalando.problem.Problem;
 
 import java.util.Optional;
 
-import static org.cardanofoundation.cip30.Format.TEXT;
 import static org.zalando.problem.Status.BAD_REQUEST;
 
 @Service
@@ -42,7 +42,7 @@ public class RoleService {
             );
         }
 
-        var maybeCip93LoginEnvelope = jsonService.decodeCIP93LoginEnvelope(cip30VerificationResult.getMessage(TEXT));
+        var maybeCip93LoginEnvelope = jsonService.decodeCIP93LoginEnvelope(cip30VerificationResult.getMessage(MessageFormat.TEXT));
         if (maybeCip93LoginEnvelope.isEmpty()) {
             return Either.left(
                     Problem.builder()
@@ -68,7 +68,7 @@ public class RoleService {
             return Either.right(Role.VOTER);
         }
 
-        var maybeAddress = cip30VerificationResult.getAddress();
+        var maybeAddress = cip30VerificationResult.getAddress(AddressFormat.TEXT);
         if (maybeAddress.isEmpty()) {
             return Either.left(
                     Problem.builder()
@@ -79,19 +79,9 @@ public class RoleService {
             );
         }
 
-        var bech32StakeAddressE = Bech32.decode(cip30VerificationResult.getAddress().orElseThrow());
-        if (bech32StakeAddressE.isEmpty()) {
-            return Either.left(
-                    Problem.builder()
-                            .withTitle("INVALID_ADDRESS")
-                            .withDetail("Invalid bech32 address")
-                            .withStatus(BAD_REQUEST)
-                            .build()
-            );
-        }
-        var cip93LoginStakeAddress = bech32StakeAddressE.get();
+        var stakeAddress = maybeAddress.orElseThrow();
 
-        boolean isOrganiser = organiserAccount.stakeAddress().equals(cip93LoginStakeAddress);
+        boolean isOrganiser = organiserAccount.stakeAddress().equals(stakeAddress);
 
         if (isOrganiser) {
             return Either.right(Role.ORGANISER);

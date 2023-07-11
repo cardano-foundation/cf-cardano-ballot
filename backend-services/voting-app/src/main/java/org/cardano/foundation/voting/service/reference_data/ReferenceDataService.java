@@ -37,7 +37,6 @@ public class ReferenceDataService {
     @Autowired
     private LocalisationService localisationService;
 
-
     @Timed(value = "service.reference.findValidEventByName", percentiles = {0.3, 0.5, 0.95})
     @Transactional
     public Optional<Event> findValidEventByName(String name) {

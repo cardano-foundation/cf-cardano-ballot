@@ -2,6 +2,6 @@ package org.cardano.foundation.voting.domain;
 
 public enum VotingPowerAsset {
 
-    ADA
+    ADA // actually votingPower is in lovelaces
 
 }

@@ -19,6 +19,7 @@ import VoteReceipt from "./VoteReceipt";
 import "./Vote.scss";
 import { EVENT_ID } from "../../commons/constants/appConstants";
 import { useToggle } from "../../commons/hooks/useToggle";
+import ConnectWalletModal from "../../components/ConnectWalletModal/ConnectWalletModal";
 
 const items: OptionItem[] = [
   {
@@ -39,6 +40,8 @@ const Vote = () => {
   const theme = useTheme();
   const { stakeAddress, isConnected, signMessage } = useCardano();
   const [isDisabled, setIsDisabled] = useState<boolean>(false);
+  const [showVoteReceipt, setShowVoteReceipt] = useState<boolean>(false);
+  const [openAuthDialog, setOpenAuthDialog] = useState<boolean>(false);
   const [optionId, setOptionId] = useState("");
   const [absoluteSlot, setAbsoluteSlot] = useState("");
   const [votingPower, setVotingPower] = useState("");
@@ -49,7 +52,8 @@ const Vote = () => {
   }, []);
 
   const initialise = () => {
-    (!isConnected || optionId === "") && setIsDisabled(true);
+    optionId === "" && setIsDisabled(true);
+    (!isConnected && showVoteReceipt) && setShowVoteReceipt(true);
   };
 
   const onChangeOption = (option: string) => {
@@ -61,23 +65,20 @@ const Vote = () => {
     }
   };
 
-  const canonicalVoteInput = useMemo(
-    () =>
-      buildCanonicalVoteInputJson({
-        option: optionId?.toUpperCase(),
-        voter: stakeAddress,
-        voteId: uuidv4(),
-        slotNumber: absoluteSlot,
-        votePower: votingPower,
-      }),
-    [isConnected, optionId, stakeAddress, absoluteSlot, votingPower]
-  );
+  const handleCloseAuthDialog = () => {
+    setOpenAuthDialog(false);
+  };
+
+  const onConnectWallet = () => {
+    setOpenAuthDialog(false);
+    notify("Wallet Connected!");
+  };
 
   const notify = (message: string) => toast(message);
 
   const handleSubmit = async () => {
     if (!isConnected) {
-      notify("Connect your wallet to vote");
+      setOpenAuthDialog(true);
     } else if (isConnected) {
       voteService.getSlotNumber().then((response) => {
         const absoluteSlot = response?.absoluteSlot.toString();
@@ -134,7 +135,7 @@ const Vote = () => {
                           } else {
                             notify("You vote has been successfully submitted!");
                             setOptionId("");
-                            setIsDisabled(true);
+                            setShowVoteReceipt(true);
                           }
                         })
                         .catch((err) => {
@@ -203,47 +204,59 @@ const Vote = () => {
               direction="row"
               justifyContent={"center"}
             >
-              <Grid item sx={{ m: theme.spacing(2) }}>
-                <Button
-                  size="large"
-                  variant="contained"
-                  disabled={isDisabled}
-                  onClick={() => handleSubmit()}
-                  sx={{
-                    marginTop: "0px !important",
-                    height: { xs: "50px", sm: "60px", lg: "70px" },
-                    fontSize: "25px",
-                    fontWeight: 700,
-                    textTransform: "none",
-                    borderRadius: "16px !important",
-                    color: "#fff !important",
-                    fontFamily: "Roboto Bold",
-                    backgroundColor: theme.palette.primary.main,
-                  }}
-                >
-                  {!isConnected ? "Connect wallet to vote" : "Submit Your Vote"}
-                </Button>
+              <Grid
+                item
+                sx={{ m: theme.spacing(2) }}
+              >
+                {!showVoteReceipt && (
+                  <Button
+                    size="large"
+                    variant="contained"
+                    disabled={isDisabled}
+                    onClick={() => handleSubmit()}
+                    sx={{
+                      marginTop: "0px !important",
+                      height: { xs: "50px", sm: "60px", lg: "70px" },
+                      fontSize: "25px",
+                      fontWeight: 700,
+                      textTransform: "none",
+                      borderRadius: "16px !important",
+                      color: "#fff !important",
+                      fontFamily: "Roboto Bold",
+                      backgroundColor: theme.palette.primary.main,
+                    }}
+                  >
+                    {!isConnected
+                      ? "Connect wallet to vote"
+                      : "Submit Your Vote"}
+                  </Button>
+                )}
               </Grid>
-              <Grid item sx={{ m: theme.spacing(2) }}>
-                <Button
-                  variant="contained"
-                  onClick={() => toggleReceipt(true)}
-                  aria-label="Receipt"
-                  sx={{
-                    marginTop: "0px !important",
-                    height: { xs: "50px", sm: "60px", lg: "70px" },
-                    fontSize: "25px",
-                    fontWeight: 700,
-                    textTransform: "none",
-                    borderRadius: "16px !important",
-                    color: "#fff !important",
-                    fontFamily: "Roboto Bold",
-                    backgroundColor: theme.palette.primary.main,
-                  }}
-                  startIcon={<ReceiptIcon />}
-                >
-                  View Receipt
-                </Button>
+              <Grid
+                item
+                sx={{ m: theme.spacing(2) }}
+              >
+                {showVoteReceipt && (
+                  <Button
+                    variant="contained"
+                    onClick={() => toggleReceipt(true)}
+                    aria-label="Receipt"
+                    sx={{
+                      marginTop: "0px !important",
+                      height: { xs: "50px", sm: "60px", lg: "70px" },
+                      fontSize: "25px",
+                      fontWeight: 700,
+                      textTransform: "none",
+                      borderRadius: "16px !important",
+                      color: "#fff !important",
+                      fontFamily: "Roboto Bold",
+                      backgroundColor: theme.palette.primary.main,
+                    }}
+                    startIcon={<ReceiptIcon />}
+                  >
+                    View Receipt
+                  </Button>
+                )}
               </Grid>
             </Grid>
           </Grid>
@@ -256,6 +269,16 @@ const Vote = () => {
       >
         <VoteReceipt />
       </SidePage>
+      <ConnectWalletModal
+        openStatus={openAuthDialog}
+        onCloseFn={handleCloseAuthDialog}
+        name="connect-wallet-list"
+        id="connect-wallet-list"
+        title="Choose your preferred wallet to connect"
+        action="true"
+        buttonLabel="Close"
+        onConnectWallet={onConnectWallet}
+      />
     </div>
   );
 };

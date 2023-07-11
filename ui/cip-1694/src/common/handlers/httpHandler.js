@@ -73,6 +73,7 @@ async function getErrorMessage(response) {
   }
 }
 
+// TODO: types?
 export function responseErrorsHandler() {
   return {
     parse(errors) {

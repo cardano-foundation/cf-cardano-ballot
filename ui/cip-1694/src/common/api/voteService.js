@@ -22,6 +22,7 @@ const castAVoteWithDigitalSignature = async (jsonRequest) => {
   );
 };
 
+// TODO: could we add types for all the services?
 const getSlotNumber = async () => {
   return await doRequest(METHODS.GET, `${BLOCKCHAIN_TIP_URL}`, { ...DEFAULT_CONTENT_TYPE_HEADERS });
 };

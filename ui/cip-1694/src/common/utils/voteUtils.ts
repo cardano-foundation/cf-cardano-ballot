@@ -15,6 +15,7 @@ export const buildCanonicalVoteInputJson = (voteInput: {
   const startOfCurrentDay = new Date();
   startOfCurrentDay.setUTCMinutes(0, 0, 0);
   return canonicalize({
+    // TOOD: move to const/env file/ config file, also the link seems to be broken
     uri: 'https://evoting.cardano.org/voltaire',
     action: 'CAST_VOTE',
     actionText: 'Cast Vote',

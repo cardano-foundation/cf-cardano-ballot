@@ -1,4 +1,4 @@
-import { MouseEvent, KeyboardEvent, Fragment } from 'react';
+import React, { MouseEvent, KeyboardEvent, Fragment } from 'react';
 import Drawer from '@mui/material/Drawer';
 import { SidePageProps } from './SidePage.types';
 

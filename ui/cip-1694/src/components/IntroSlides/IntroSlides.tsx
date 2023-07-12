@@ -33,12 +33,12 @@ const QuestionStyle = styled("div")(({ theme }) => ({
 
 const HeroStyleImg = styled("img")(({ theme }) => ({
   top: 0,
-  width: 500,
-  height: 500,
+  width: 600,
+  height: 700,
   objectFit: "cover",
   borderRadius: 16,
   [theme.breakpoints.up("md")]: {
-    maxWidth: 420,
+    maxWidth: 450,
   },
 }));
 

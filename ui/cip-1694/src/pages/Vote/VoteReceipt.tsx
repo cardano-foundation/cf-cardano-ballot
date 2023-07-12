@@ -63,7 +63,7 @@ const VoteReceipt = () => {
                   <ListItemIcon>
                     <StarIcon sx={{ color: "orange" }} />
                   </ListItemIcon>
-                  <ListItemText primary="Get Access Token and Store in session" />
+                  <ListItemText primary="Access Token, Session storage, Redux persistance" />
                 </ListItemButton>
               </ListItem>
 
@@ -72,7 +72,7 @@ const VoteReceipt = () => {
                   <ListItemIcon>
                     <StarIcon sx={{ color: "orange" }} />
                   </ListItemIcon>
-                  <ListItemText primary="Poll Stats Implementation" />
+                  <ListItemText primary="Leaderboard and Winning results" />
                 </ListItemButton>
               </ListItem>
               <ListItem disablePadding>
@@ -88,7 +88,7 @@ const VoteReceipt = () => {
                   <ListItemIcon>
                     <StarIcon sx={{ color: "orange" }} />
                   </ListItemIcon>
-                  <ListItemText primary="Verification App" />
+                  <ListItemText primary="On-Chain Verification App" />
                 </ListItemButton>
               </ListItem>
 
@@ -116,7 +116,7 @@ const VoteReceipt = () => {
             xs={6}
           >
             <Typography variant="subtitle1">
-              Your digital Receipt goes here...
+              In future, digital Receipt goes here...
             </Typography>
           </Grid>
         </Grid>

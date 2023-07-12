@@ -1,24 +1,24 @@
-@import "commons/styles/colors.scss";
+@import "common/styles/colors.scss";
 
 @font-face {
   font-family: "Roboto Bold";
   font-style: normal;
   font-weight: 700;
-  src: url(./commons/resources/fonts/Roboto-Bold.ttf) format("ttf");
+  src: url(./common/resources/fonts/Roboto-Bold.ttf) format("ttf");
 }
 
 @font-face {
   font-family: "Roboto Regular";
   font-style: normal;
   font-weight: 500;
-  src: url(./commons/resources/fonts/Roboto-Regular.ttf) format("ttf");
+  src: url(./common/resources/fonts/Roboto-Regular.ttf) format("ttf");
 }
 
 @font-face {
   font-family: "Roboto Light";
   font-style: normal;
   font-weight: 400;
-  src: url(./commons/resources/fonts/Roboto-Light.ttf) format("ttf");
+  src: url(./common/resources/fonts/Roboto-Light.ttf) format("ttf");
 }
 
 :root {

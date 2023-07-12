@@ -1,9 +1,9 @@
 import React from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import "./App.scss";
-import Content from "./components/layout/Content/Content";
-import Footer from "./components/layout/Footer/Footer";
-import Header from "./components/layout/Header/Header";
+import Content from "./components/common/Content/Content";
+import Footer from "./components/common/Footer/Footer";
+import Header from "./components/common/Header/Header";
 import { Toaster } from "react-hot-toast";
 
 function App() {

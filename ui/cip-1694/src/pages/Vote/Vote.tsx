@@ -12,13 +12,13 @@ import toast from "react-hot-toast";
 import CountDownTimer from "../../components/CountDownTimer/CountDownTimer";
 import OptionCard from "../../components/OptionCard/OptionCard";
 import { OptionItem } from "../../components/OptionCard/OptionCard.types";
-import SidePage from "../../components/layout/SidePage/SidePage";
-import { buildCanonicalVoteInputJson } from "../../commons/utils/voteUtils";
-import { voteService } from "../../commons/api/voteService";
+import SidePage from "../../components/common/SidePage/SidePage";
+import { buildCanonicalVoteInputJson } from "../../common/utils/voteUtils";
+import { voteService } from "../../common/api/voteService";
 import VoteReceipt from "./VoteReceipt";
 import "./Vote.scss";
-import { EVENT_ID } from "../../commons/constants/appConstants";
-import { useToggle } from "../../commons/hooks/useToggle";
+import { EVENT_ID } from "../../common/constants/appConstants";
+import { useToggle } from "../../common/hooks/useToggle";
 import ConnectWalletModal from "../../components/ConnectWalletModal/ConnectWalletModal";
 
 const items: OptionItem[] = [

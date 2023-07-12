@@ -173,6 +173,7 @@ const Vote = () => {
                 textAlign: 'left',
                 fontWeight: 400,
               }}
+              component={'div'}
             >
               Time left to vote: <CountDownTimer />
             </Typography>
@@ -223,7 +224,7 @@ const Vote = () => {
                 {showVoteReceipt && (
                   <Button
                     variant="contained"
-                    onClick={() => toggleReceipt(true)}
+                    onClick={() => toggleReceipt()}
                     aria-label="Receipt"
                     sx={{
                       marginTop: '0px !important',

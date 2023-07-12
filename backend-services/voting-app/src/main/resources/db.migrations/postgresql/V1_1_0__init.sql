@@ -30,7 +30,7 @@ CREATE TABLE category (
     id VARCHAR(255) NOT NULL, -- human readable name, should never contain PII data
     event_id VARCHAR(255) NOT NULL REFERENCES event(id),
     schema_version VARCHAR(255) NOT NULL,
-    gdpr_protection BOOLEAN NOT NULL,
+    gdpr_protection BOOL NOT NULL,
 
     created_at TIMESTAMP WITHOUT TIME ZONE,
     updated_at TIMESTAMP WITHOUT TIME ZONE,
@@ -62,7 +62,6 @@ CREATE TABLE vote (
    cose_signature text NOT NULL,
    cose_public_key VARCHAR(255) NOT NULL,
    voting_power BIGINT,
-   network INT NOT NULL,
    voted_at_slot BIGINT NOT NULL,
 
    created_at TIMESTAMP WITHOUT TIME ZONE,
@@ -85,6 +84,7 @@ CREATE TABLE vote_merkle_proof (
    proof_items_json json NOT NULL, -- json representing actual merkle proof
    absolute_slot BIGINT,
    block_hash VARCHAR(255), -- block hash as hex string
+   invalidated BOOL NOT NULL,
 
    created_at TIMESTAMP WITHOUT TIME ZONE,
    updated_at TIMESTAMP WITHOUT TIME ZONE,

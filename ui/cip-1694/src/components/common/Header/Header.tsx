@@ -63,6 +63,7 @@ export default function Header() {
         onDisconnect={() => {
           disconnect();
           setWalletIcon("");
+          
         }}
         alwaysVisibleWallets={["flint"]}
         supportedWallets={[

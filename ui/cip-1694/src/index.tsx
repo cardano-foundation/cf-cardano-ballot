@@ -2,7 +2,7 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
-import theme from './commons/styles/theme';
+import theme from './common/styles/theme';
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import "./index.scss";

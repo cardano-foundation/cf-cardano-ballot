@@ -26,7 +26,8 @@ public class Leaderboard {
     public static class ByEvent {
 
         private String event;
-        private Votes votes;
+        private long totalVotesCount;
+        private long totalVotingPower;
 
     }
 

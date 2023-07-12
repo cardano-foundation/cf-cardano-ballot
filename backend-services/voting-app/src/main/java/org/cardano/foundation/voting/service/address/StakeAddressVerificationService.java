@@ -1,5 +1,7 @@
 package org.cardano.foundation.voting.service.address;
 
+import com.bloxbean.cardano.client.address.Address;
+import com.bloxbean.cardano.client.util.HexUtil;
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
@@ -18,7 +20,33 @@ public class StakeAddressVerificationService {
     @Autowired
     private CardanoNetwork cardanoNetwork;
 
-    public Either<Problem, Boolean> checkStakeAddress(String stakeAddress) {
+    public Either<Problem, Boolean> checkIfAddressIsStakeAddress(String address) {
+        if (!address.startsWith("stake")) {
+            return Either.left(Problem.builder()
+                    .withTitle("NOT_STAKE_ADDRESS")
+                    .withDetail("Address is not a stakeAddress, address:" + address)
+                    .withStatus(BAD_REQUEST)
+                    .build());
+        }
+
+        return Either.right(true);
+    }
+
+    public Either<Problem, Boolean> checkIfAddressIsStakeAddress(byte[] address) {
+        var addr = new Address(address);
+
+        if (!addr.isStakeKeyHashInDelegationPart()) {
+            return Either.left(Problem.builder()
+                    .withTitle("NOT_STAKE_ADDRESS")
+                    .withDetail("Address is not a stakeAddress, address:" + HexUtil.encodeHexString(address))
+                    .withStatus(BAD_REQUEST)
+                    .build());
+        }
+
+        return Either.right(true);
+    }
+
+    public Either<Problem, Boolean> checkStakeAddressNetwork(String stakeAddress) {
         if (isMainnet(stakeAddress) && cardanoNetwork.isMainnet()) {
             return Either.right(true);
         }

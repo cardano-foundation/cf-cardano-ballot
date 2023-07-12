@@ -36,15 +36,16 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-security")
 
-	//spring-boot-starter-rsocket
-
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 
 	runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 
-	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.6")
+	// TODO release to maven central
+	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.9-SNAPSHOT")
 
     implementation("org.flywaydb:flyway-core")
+
+	implementation("com.google.guava:guava:32.1.1-jre")
 
 	implementation("org.zalando:problem-spring-web:0.29.1")
 
@@ -78,7 +79,8 @@ dependencies {
 
 	implementation("org.postgresql:postgresql")
 
-	implementation("org.cardanofoundation:merkle-tree-java:0.0.6-SNAPSHOT") // TODO release to maven central
+	// TODO release to maven central
+	implementation("org.cardanofoundation:merkle-tree-java:0.0.6-SNAPSHOT")
 }
 
 dependencyManagement {

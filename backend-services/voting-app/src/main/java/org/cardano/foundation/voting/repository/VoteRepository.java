@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -17,7 +16,12 @@ public interface VoteRepository extends JpaRepository<Vote, String> {
 
     Optional<Vote> findByEventIdAndCategoryIdAndVoterStakingAddress(String eventId, String categoryId, String voterStakeAddress);
 
-    @Query("SELECT COUNT(v), SUM(v.votingPower) FROM Vote v WHERE v.eventId = ?1")
-    Map<String, Object> countAllByEventId(String eventId);
+    @Query("SELECT COUNT(v) as totalVoteCount, SUM(v.votingPower) as totalVotingPower FROM Vote v WHERE v.eventId = ?1")
+    List<EventVoteCount> countAllByEventId(String eventId);
+
+    interface EventVoteCount {
+        long getTotalVoteCount();
+        long getTotalVotingPower();
+    }
 
 }

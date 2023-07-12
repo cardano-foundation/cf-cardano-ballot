@@ -8,19 +8,20 @@ import com.bloxbean.cardano.client.metadata.cbor.CBORMetadataMap;
 import com.bloxbean.cardano.client.util.HexUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.domain.OnChainEventType;
 import org.cardano.foundation.voting.domain.SchemaVersion;
 import org.cardano.foundation.voting.domain.TransactionMetadataLabelCbor;
 import org.cardano.foundation.voting.domain.entity.Category;
 import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.domain.entity.Proposal;
-import org.cardano.foundation.voting.domain.OnChainEventType;
 import org.cardano.foundation.voting.service.cbor.CborService;
 import org.cardano.foundation.voting.service.json.JsonService;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
-import org.cardano.foundation.voting.utils.Bech32;
 import org.cardano.foundation.voting.utils.ChunkedMetadataParser;
 import org.cardano.foundation.voting.utils.Enums;
+import org.cardanofoundation.cip30.AddressFormat;
 import org.cardanofoundation.cip30.CIP30Verifier;
+import org.cardanofoundation.cip30.MessageFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,7 +35,7 @@ import static com.bloxbean.cardano.client.crypto.Blake2bUtil.blake2bHash224;
 import static com.bloxbean.cardano.client.util.HexUtil.decodeHexString;
 import static org.cardano.foundation.voting.domain.OnChainEventType.CATEGORY_REGISTRATION;
 import static org.cardano.foundation.voting.domain.OnChainEventType.EVENT_REGISTRATION;
-import static org.cardanofoundation.cip30.Format.HEX;
+import static org.cardanofoundation.cip30.MessageFormat.HEX;
 
 @Service
 @Slf4j
@@ -130,7 +131,7 @@ public class MetadataProcessor {
             return Optional.empty();
         }
 
-        var maybeEventAddress = cip30VerificationResult.getAddress().flatMap(addrBytes -> Bech32.decode(addrBytes).toJavaOptional());
+        var maybeEventAddress = cip30VerificationResult.getAddress(AddressFormat.TEXT);
         if (maybeEventAddress.isEmpty()) {
             log.info("Address not found or invalid, ignoring id:{}", id);
 
@@ -207,7 +208,7 @@ public class MetadataProcessor {
 
             return Optional.empty();
         }
-        var maybeEventAddress = cip30VerificationResult.getAddress().flatMap(addrBytes -> Bech32.decode(addrBytes).toJavaOptional());
+        var maybeEventAddress = cip30VerificationResult.getAddress(AddressFormat.TEXT);
         if (maybeEventAddress.isEmpty()) {
             log.info("Address not found or invalid, ignoring id: {}", id);
             return Optional.empty();
@@ -221,7 +222,7 @@ public class MetadataProcessor {
             return Optional.empty();
         }
 
-        var signaturePayloadHexString = Optional.ofNullable(cip30VerificationResult.getMessage(HEX)).orElse("");
+        var signaturePayloadHexString = Optional.ofNullable(cip30VerificationResult.getMessage(MessageFormat.HEX)).orElse("");
         var payloadHexString = HexUtil.encodeHexString(Blake2bUtil.blake2bHash224(CborSerializationUtil.serialize(payload.getMap())));
 
         if (!signaturePayloadHexString.equals(payloadHexString)) {

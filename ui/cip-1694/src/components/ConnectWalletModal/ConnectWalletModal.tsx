@@ -107,6 +107,3 @@ const ConnectWalletModal = (props: {
 };
 
 export default ConnectWalletModal;
-function MuiGrid(MuiGrid: any) {
-  throw new Error("Function not implemented.");
-}

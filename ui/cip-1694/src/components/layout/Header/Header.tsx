@@ -125,6 +125,7 @@ export default function Header() {
               variant="body2"
               color="text.secondary"
               align="center"
+              component={'div'}
             >
               {connectWalletButton}
             </Typography>
@@ -133,6 +134,7 @@ export default function Header() {
               variant="body2"
               color="text.secondary"
               align="center"
+              component={'span'}
             >
               Time left to vote: <CountDownTimer />
             </Typography>

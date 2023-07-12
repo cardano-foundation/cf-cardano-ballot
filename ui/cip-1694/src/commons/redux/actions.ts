@@ -1,6 +1,6 @@
 import {REDUX_ERROR, SET_USER, SET_USER_IS_VERIFIED} from './actionTypes';
 
-export const setUser = (user) => (dispatch) => {
+export const setUser = (user: any) => (dispatch: any) => {
   try {
     dispatch({
       type: SET_USER,
@@ -14,7 +14,7 @@ export const setUser = (user) => (dispatch) => {
   }
 };
 
-export const setUserIsVerified = (isVerified) => (dispatch) => {
+export const setUserIsVerified = (isVerified: any) => (dispatch: any) => {
   try {
     dispatch({
       type: SET_USER_IS_VERIFIED,

@@ -18,6 +18,8 @@ import VoteReceipt from './VoteReceipt';
 import './Vote.scss';
 import { EVENT_ID } from '../../commons/constants/appConstants';
 import { useToggle } from '../../commons/hooks/useToggle';
+import { ChainTip } from '../../types/backend-services-types';
+import { HttpError } from '../../commons/handlers/httpHandler';
 
 const items: OptionItem[] = [
   {
@@ -62,58 +64,70 @@ const Vote = () => {
   const notify = (message: string) => toast(message);
 
   const handleSubmit = async () => {
+    if (!EVENT_ID) {
+      console.log('EVENT_ID is not provided');
+      return;
+    }
     if (!isConnected) {
       notify('Connect your wallet to vote');
-    } else if (isConnected) {
-      const slotNumberResponse = await voteService.getSlotNumber();
+      return;
+    }
+    const slotNumberResponse = (await voteService.getSlotNumber()) as ChainTip;
 
-      const absoluteSlot = slotNumberResponse?.absoluteSlot.toString();
-      if (isConnected && stakeAddress) {
-        const { votingPower } = await voteService.getVotingPower(EVENT_ID, stakeAddress);
-        if (absoluteSlot !== '' && votingPower !== '') {
-          const canonicalVoteInput = buildCanonicalVoteInputJson({
-            option: optionId?.toUpperCase(),
-            voter: stakeAddress,
-            voteId: uuidv4(),
-            slotNumber: absoluteSlot,
-            votePower: votingPower,
-          });
-          signMessage(canonicalVoteInput, async (signature, key) => {
-            const requestVoteObject = {
-              cosePublicKey: key,
-              coseSignature: isConnected && signature,
-            };
-            try {
-              const data = await voteService.castAVoteWithDigitalSignature(requestVoteObject);
-
-              if (data.status === 400 && data.title === 'INVALID_VOTING_POWER') {
-                notify('To cast a vote, Voting Power should be more than 0');
-                setOptionId('');
-                setIsDisabled(true);
-              } else if (data.status === 400 && data.title === 'EXPIRED_SLOT') {
-                notify("CIP-93's envelope slot is expired!");
-                setOptionId('');
-                setIsDisabled(true);
-              } else if (data.status == 400 && data.title === 'VOTE_CANNOT_BE_CHANGED') {
-                notify('You have already voted! Vote cannot be changed for this stake address');
-                setOptionId('');
-                setIsDisabled(true);
-              } else {
-                notify('You vote has been successfully submitted!');
-                setOptionId('');
-                setIsDisabled(true);
-              }
-            } catch (error) {
-              if (error instanceof Error) {
-                notify(error.message);
-                console.log(error.message);
-              } else {
-                console.log(error);
-              }
+    const absoluteSlot = slotNumberResponse?.absoluteSlot.toString();
+    if (!isConnected || !stakeAddress) return;
+    let votingPower;
+    try {
+      votingPower = (await voteService.getVotingPower(EVENT_ID, stakeAddress)) as number;
+    } catch (error) {
+      if (error instanceof Error || error instanceof HttpError) {
+        console.log('Failed to fetch votingPower', error?.message);
+      } else console.log('Failed to fetch votingPower', error);
+      return;
+    }
+    if (absoluteSlot !== '' && votingPower) {
+      const canonicalVoteInput = buildCanonicalVoteInputJson({
+        option: optionId?.toUpperCase(),
+        voter: stakeAddress,
+        voteId: uuidv4(),
+        slotNumber: absoluteSlot,
+        votePower: votingPower,
+      });
+      signMessage(canonicalVoteInput, async (signature, key) => {
+        const requestVoteObject = {
+          cosePublicKey: key as string,
+          coseSignature: signature,
+        };
+        try {
+          await voteService.castAVoteWithDigitalSignature(requestVoteObject);
+        } catch (error) {
+          if (error instanceof HttpError) {
+            if (error.code === 400 && error.message === 'INVALID_VOTING_POWER') {
+              notify('To cast a vote, Voting Power should be more than 0');
+              setOptionId('');
+              setIsDisabled(true);
+            } else if (error.code === 400 && error.message === 'EXPIRED_SLOT') {
+              notify("CIP-93's envelope slot is expired!");
+              setOptionId('');
+              setIsDisabled(true);
+            } else if (error.code == 400 && error.message === 'VOTE_CANNOT_BE_CHANGED') {
+              notify('You have already voted! Vote cannot be changed for this stake address');
+              setOptionId('');
+              setIsDisabled(true);
+            } else {
+              notify('You vote has been successfully submitted!');
+              setOptionId('');
+              setIsDisabled(true);
             }
-          });
+          }
+          if (error instanceof Error) {
+            notify(error.message);
+            console.log(error.message);
+          } else {
+            console.log(error);
+          }
         }
-      }
+      });
     }
   };
 
@@ -148,6 +162,7 @@ const Vote = () => {
                 textAlign: 'left',
                 fontWeight: 400,
               }}
+              component={'div'}
             >
               Time left to vote: <CountDownTimer />
             </Typography>
@@ -195,7 +210,7 @@ const Vote = () => {
               >
                 <Button
                   variant="contained"
-                  onClick={() => toggleReceipt(true)}
+                  onClick={() => toggleReceipt()}
                   aria-label="Receipt"
                   sx={{
                     marginTop: '0px !important',

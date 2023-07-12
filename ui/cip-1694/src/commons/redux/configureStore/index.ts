@@ -16,8 +16,7 @@ const persistedReducer = persistReducer(userPersistConfig, userSessionReducer);
 export const store = configureStore({
   reducer: persistedReducer,
   devTools: process.env.NODE_ENV !== 'production',
-  middleware: [thunk],
-  reduxReset,
+  middleware: [thunk, reduxReset],
 });
 
 export const persistor = persistStore(store);

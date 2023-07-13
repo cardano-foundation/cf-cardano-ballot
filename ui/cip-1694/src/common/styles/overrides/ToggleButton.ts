@@ -1,5 +1,7 @@
+import { createTheme } from '@mui/material';
+
 // TODO: lets' scope these under the component folder?
-export default function ToggleButton(theme) {
+export default function toggleButton(theme: ReturnType<typeof createTheme>) {
   return {
     MuiToggleButton: {
       styleOverrides: {

@@ -23,7 +23,7 @@
   "rules": {
     "@typescript-eslint/no-duplicate-enum-values": "error",
     "@typescript-eslint/no-non-null-assertion": "off",
-    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-explicit-any": "error",
     "react/no-unescaped-entities": 0,
     "react/react-in-jsx-scope": "off",
     "unicorn/prefer-module": "off",

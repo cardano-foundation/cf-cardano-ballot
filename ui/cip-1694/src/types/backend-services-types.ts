@@ -768,7 +768,6 @@ export interface Problem {
 
 export interface Serializable {
 }
-
 export interface MerkleElement<T> {
     empty: boolean;
 }

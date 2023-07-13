@@ -2,7 +2,7 @@ import { USER_SESSION_KEY } from '../constants/localConstants';
 // import { store } from '../store';
 // import { CLEAR_SESSION } from '../store/actionTypes';
 
-export const saveUserInSession = (session: any) =>
+export const saveUserInSession = (session: object) =>
   sessionStorage.setItem(USER_SESSION_KEY, JSON.stringify(session));
 
 export const loadUserInSession = () => {

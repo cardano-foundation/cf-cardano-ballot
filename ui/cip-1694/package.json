@@ -50,14 +50,11 @@
     "@types/react-dom": "^18.2.4",
     "cypress": "^12.14.0",
     "eslint-plugin-cypress": "^2.13.3",
-    "husky": "^8.0.0",
-    "lint-staged": "11.1.4",
     "path-exists-cli": "^2.0.0",
     "process": "^0.11.10",
     "sort-package-json": "^2.5.1"
   },
   "scripts": {
-    "prepare": "cd .. && cd .. && husky install ui/.husky",
     "buildTSTypesFromBEServices": "cd ../../backend-services/voting-app/ && ./gradlew buildAndCopyTypescriptTypes",
     "safeBuildTSTypesFromBEServices": "path-exists ../cip-1694/src/types/backend-services-types.ts && echo 'backend-services-types.ts exists' || npm run buildTSTypesFromBEServices",
     "preinstall": "npm run safeBuildTSTypesFromBEServices",

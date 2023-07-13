@@ -22,6 +22,12 @@ import { ChainTip } from '../../types/backend-services-types';
 import { HttpError } from '../../common/handlers/httpHandler';
 import ConnectWalletModal from '../../components/ConnectWalletModal/ConnectWalletModal';
 
+const errorsMap = {
+  INVALID_VOTING_POWER: 'To cast a vote, Voting Power should be more than 0',
+  EXPIRED_SLOT: "CIP-93's envelope slot is expired!",
+  VOTE_CANNOT_BE_CHANGED: 'You have already voted! Vote cannot be changed for this stake address',
+};
+
 const items: OptionItem[] = [
   {
     label: 'Yes',
@@ -100,9 +106,8 @@ const Vote = () => {
       } else console.log('Failed to fetch votingPower', error);
       return;
     }
-    if (absoluteSlot !== '' && votingPower !== '') {
-      return;
-    }
+    if (absoluteSlot === '') return;
+
     const canonicalVoteInput = buildCanonicalVoteInputJson({
       option: optionId?.toUpperCase(),
       voter: stakeAddress,
@@ -111,33 +116,28 @@ const Vote = () => {
       votePower: votingPower,
     });
     signMessage(canonicalVoteInput, async (signature, key) => {
+      // TODO: castAVoteWithDigitalSignature are incompatible with requestVoteObject
+      if (typeof key === 'undefined') return;
+
       const requestVoteObject = {
         cosePublicKey: key,
         coseSignature: isConnected && signature,
       };
 
       try {
-        const { status, title } = await voteService.castAVoteWithDigitalSignature(requestVoteObject);
-        if (status === 400 && title === 'INVALID_VOTING_POWER') {
-          notify('To cast a vote, Voting Power should be more than 0');
-          setOptionId('');
-          setIsDisabled(true);
-        } else if (status === 400 && title === 'EXPIRED_SLOT') {
-          notify("CIP-93's envelope slot is expired!");
-          setOptionId('');
-          setIsDisabled(true);
-        } else if (status == 400 && title === 'VOTE_CANNOT_BE_CHANGED') {
-          notify('You have already voted! Vote cannot be changed for this stake address');
-          setOptionId('');
-          setIsDisabled(true);
-        } else {
-          notify('You vote has been successfully submitted!');
-          setOptionId('');
-          setShowVoteReceipt(true);
-        }
+        await voteService.castAVoteWithDigitalSignature(requestVoteObject);
+        notify('You vote has been successfully submitted!');
+        setOptionId('');
+        setShowVoteReceipt(true);
       } catch (error) {
-        notify(error);
-        console.log('Failed to cast e vote', error);
+        if (error instanceof HttpError && error.code === 400) {
+          notify(errorsMap[error?.message as keyof typeof errorsMap] || error?.message);
+          setOptionId('');
+          setIsDisabled(true);
+        } else if (error instanceof Error) {
+          notify(error?.message);
+          console.log('Failed to cast e vote', error);
+        }
       }
     });
   };
@@ -260,7 +260,7 @@ const Vote = () => {
         name="connect-wallet-list"
         id="connect-wallet-list"
         title="Choose your preferred wallet to connect"
-        action="true"
+        action
         buttonLabel="Close"
         onConnectWallet={onConnectWallet}
       />

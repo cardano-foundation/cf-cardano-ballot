@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React,{ useEffect, useState } from 'react';
 import { Grid, Typography } from '@mui/material';
 import { useTheme, styled } from '@mui/material/styles';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -45,7 +45,7 @@ export default function Header() {
     navigate('/');
   };
 
-  const onConnectWallet = (walletName: any) => {
+  const onConnectWallet = (walletName: string) => {
     console.log(walletName);
   };
 

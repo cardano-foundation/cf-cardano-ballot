@@ -13,13 +13,14 @@ export const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    setSession: (state, action: PayloadAction<{ session: any }>) => {
-      state = {
+    setSession: (state, action: PayloadAction<{ session: object }>) => {
+      return {
+        ...initialState,
         ...action.payload.session,
         isLoggedIn: true,
       };
     },
-    setUser: (state, action: PayloadAction<{ user: any }>) => {
+    setUser: (state, action: PayloadAction<{ user: object }>) => {
       state.user = action.payload.user;
     },
     setUserIsVerified: (state, action: PayloadAction<{ isVerified: boolean }>) => {
@@ -29,7 +30,7 @@ export const userSlice = createSlice({
       state.error = action.payload.error;
     },
     clearSession: (state, action: PayloadAction<{ termsAndPrivacy: boolean }>) => {
-      state = {
+      return {
         ...initialState,
         termsAndPrivacy: action.payload.termsAndPrivacy,
       };

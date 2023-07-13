@@ -1,11 +1,11 @@
-import moment from 'moment';
 import React from 'react';
+import moment from 'moment';
 import { useTimer } from 'react-timer-hook';
 
 export default function CountDownTimer() {
   const time = new Date();
   const endTime = moment('09-01-2023', 'MM-DD-YYYY'); // summit date
-  time.setSeconds(time.getSeconds() +  endTime.diff(time, 'seconds')); // time left for summit date
+  time.setSeconds(time.getSeconds() + endTime.diff(time, 'seconds')); // time left for summit date
 
   const { seconds, minutes, hours, days } = useTimer({ expiryTimestamp: time });
 

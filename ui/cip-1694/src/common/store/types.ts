@@ -3,5 +3,5 @@ export interface UserState {
   isVerified: boolean;
   termsAndPrivacy: boolean;
   error: string;
-  user?: any;
+  user?: object;
 }

@@ -1,18 +1,12 @@
-import * as React from "react";
-import Drawer from "@mui/material/Drawer";
-import { SidePageProps } from "./SidePage.types";
+import React, { MouseEvent, KeyboardEvent, Fragment } from 'react';
+import Drawer from '@mui/material/Drawer';
+import { SidePageProps } from './SidePage.types';
 
-export default function SidePage({
-  children,
-  anchor,
-  open,
-  setOpen,
-}: SidePageProps) {
-  const toggleDrawer = (event: React.KeyboardEvent | React.MouseEvent) => {
+export default function SidePage({ children, anchor, open, setOpen }: SidePageProps) {
+  const toggleDrawer = (event: KeyboardEvent | MouseEvent) => {
     if (
-      event.type === "keydown" &&
-      ((event as React.KeyboardEvent).key === "Tab" ||
-        (event as React.KeyboardEvent).key === "Shift")
+      event.type === 'keydown' &&
+      ((event as KeyboardEvent).key === 'Tab' || (event as KeyboardEvent).key === 'Shift')
     ) {
       return;
     }
@@ -20,7 +14,7 @@ export default function SidePage({
   };
 
   return (
-    <React.Fragment key={anchor}>
+    <Fragment key={anchor}>
       <Drawer
         anchor={anchor}
         open={open}
@@ -28,6 +22,6 @@ export default function SidePage({
       >
         {children}
       </Drawer>
-    </React.Fragment>
+    </Fragment>
   );
 }

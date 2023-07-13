@@ -1,47 +1,47 @@
-import React from "react";
-import { useState } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination, Navigation } from "swiper";
-import { Autoplay } from "swiper";
-import { Swiper as SwiperClass } from "swiper/types";
-import { SlideProps } from "./IntroSlides.types";
-import { styled, useTheme } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
-import { Grid, Container, Typography, Button } from "@mui/material";
-import { Link } from "react-router-dom";
-import "./IntroSlides.scss";
-import "swiper/css/navigation";
+import React, { useState } from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Pagination, Navigation, Autoplay } from 'swiper';
+import { Swiper as SwiperClass } from 'swiper/types';
+import { styled, useTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import { Grid, Container, Typography, Button } from '@mui/material';
+import { Link } from 'react-router-dom';
+import { SlideProps } from './IntroSlides.types';
+import './IntroSlides.scss';
+import 'swiper/css/navigation';
 
-const ContentStyle = styled("div")(({ theme }) => ({
-  display: "flex",
-  justifyContent: "flex-left",
-  flexDirection: "column",
+// TODO: let's deside on the approach we use? either classes or inline ones?
+const ContentStyle = styled('div')(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'flex-left',
+  flexDirection: 'column',
   padding: theme.spacing(2, 0),
-  [theme.breakpoints.up("md")]: {
-    alignItems: "flex-start",
+  [theme.breakpoints.up('md')]: {
+    alignItems: 'flex-start',
     padding: theme.spacing(5, 0, 0, 5),
   },
 }));
 
-const QuestionStyle = styled("div")(({ theme }) => ({
+const QuestionStyle = styled('div')(({ theme }) => ({
   maxWidth: 530,
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "flex-left",
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'flex-left',
   margin: theme.spacing(2, 0, 2, 2),
 }));
 
-const HeroStyleImg = styled("img")(({ theme }) => ({
+const HeroStyleImg = styled('img')(({ theme }) => ({
   top: 0,
   width: 500,
   height: 500,
-  objectFit: "cover",
+  objectFit: 'cover',
   borderRadius: 16,
-  [theme.breakpoints.up("md")]: {
+  [theme.breakpoints.up('md')]: {
     maxWidth: 420,
   },
 }));
 
+// TODO: could we rename this to be more a generic one? just "slides"?
 const IntroSlides = ({ items }: SlideProps) => {
   const [swiper, setSwiper] = useState<SwiperClass | undefined>(undefined);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -51,7 +51,7 @@ const IntroSlides = ({ items }: SlideProps) => {
     <div className="slides">
       <Swiper
         className="swiper-container"
-        onSwiper={(swiper) => setSwiper(swiper)}
+        onSwiper={setSwiper}
         onSlideChange={() => (swiper ? setActiveIndex(swiper.realIndex) : null)}
         slidesPerView={1}
         navigation={false}
@@ -68,8 +68,8 @@ const IntroSlides = ({ items }: SlideProps) => {
             <Container>
               <Grid
                 container
-                direction={{ xs: "column", sm: "row" }}
-                justifyContent={{ xs: "center", sm: "flex-start" }}
+                direction={{ xs: 'column', sm: 'row' }}
+                justifyContent={{ xs: 'center', sm: 'flex-start' }}
                 alignItems="center"
                 spacing={5}
               >
@@ -78,8 +78,8 @@ const IntroSlides = ({ items }: SlideProps) => {
                     <Typography
                       variant="h2"
                       sx={{
-                        color: "text.primary",
-                        textAlign: "left",
+                        color: 'text.primary',
+                        textAlign: 'left',
                         fontWeight: 600,
                       }}
                     >
@@ -87,7 +87,7 @@ const IntroSlides = ({ items }: SlideProps) => {
                     </Typography>
                     <Typography
                       variant="body1"
-                      sx={{ color: "text.secondary", textAlign: "left" }}
+                      sx={{ color: 'text.secondary', textAlign: 'left' }}
                     >
                       {slide.description}
                     </Typography>
@@ -96,16 +96,17 @@ const IntroSlides = ({ items }: SlideProps) => {
                     size="large"
                     component={Link}
                     variant="contained"
-                    to={{ pathname: `/vote` }}
+                    // TODO: move to routes const?
+                    to={{ pathname: '/vote' }}
                     sx={{
-                      marginTop: "0px !important",
-                      height: { xs: "50px", sm: "60px", lg: "70px" },
-                      fontSize: "25px",
+                      marginTop: '0px !important',
+                      height: { xs: '50px', sm: '60px', lg: '70px' },
+                      fontSize: '25px',
                       fontWeight: 700,
-                      textTransform: "none",
-                      borderRadius: "16px !important",
-                      color: "#fff !important",
-                      fontFamily: "Roboto Bold",
+                      textTransform: 'none',
+                      borderRadius: '16px !important',
+                      color: '#fff !important',
+                      fontFamily: 'Roboto Bold',
                       backgroundColor: theme.palette.primary.main,
                     }}
                   >
@@ -129,9 +130,7 @@ const IntroSlides = ({ items }: SlideProps) => {
         {items.map((_, index) => (
           <div
             key={index}
-            className={
-              activeIndex === index ? "page-indicator-active" : "page-indicator"
-            }
+            className={activeIndex === index ? 'page-indicator-active' : 'page-indicator'}
           />
         ))}
       </div>

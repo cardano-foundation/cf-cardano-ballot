@@ -42,7 +42,7 @@ export default function Footer() {
       >
         <Container maxWidth="lg">
           <Typography variant="body1">
-            Cardano Ballot V2
+            CIP-1694 Voting Application.
           </Typography>
           <Copyright />
         </Container>

@@ -1,5 +1,5 @@
 import React from "react";
-import { PageRouter } from "../../../commons/routes";
+import { PageRouter } from "../../../common/routes";
 import { Box, Container } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
 

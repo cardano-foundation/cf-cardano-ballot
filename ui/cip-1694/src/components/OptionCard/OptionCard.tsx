@@ -1,18 +1,21 @@
-import React, { useState, MouseEvent } from 'react';
-import { useTheme } from '@mui/material/styles';
-import { Grid, Typography } from '@mui/material';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import Zoom from '@mui/material/Zoom';
-import { OptionProps } from './OptionCard.types';
-import './OptionCard.scss';
+import React from "react";
+import { useTheme } from "@mui/material/styles";
+import { OptionProps } from "./OptionCard.types";
+import { Grid, Typography } from "@mui/material";
+import ToggleButton from "@mui/material/ToggleButton";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import Zoom from "@mui/material/Zoom";
+import "./OptionCard.scss";
 
 export default function OptionCard({ items, onChangeOption }: OptionProps) {
   const theme = useTheme();
-  const [alignment, setAlignment] = useState('');
-  const [selected] = useState(false);
+  const [alignment, setAlignment] = React.useState("");
+  const [selected, setSelected] = React.useState(false);
 
-  const handleChange = (_event: MouseEvent<HTMLElement>, newAlignment: string) => {
+  const handleChange = (
+    event: React.MouseEvent<HTMLElement>,
+    newAlignment: string
+  ) => {
     setAlignment(newAlignment);
     onChangeOption(newAlignment);
   };
@@ -21,7 +24,7 @@ export default function OptionCard({ items, onChangeOption }: OptionProps) {
     <Grid
       container
       direction="row"
-      justifyContent={'center'}
+      justifyContent={"center"}
     >
       {items.map((option, index) => (
         <Grid
@@ -41,7 +44,9 @@ export default function OptionCard({ items, onChangeOption }: OptionProps) {
               exclusive
               onChange={handleChange}
               aria-label="cip-1694 poll options"
-              className={selected ? 'option-card-selected' : 'option-card-group'}
+              className={
+                selected ? "option-card-selected" : "option-card-group"
+              }
             >
               <ToggleButton
                 value={option.label}

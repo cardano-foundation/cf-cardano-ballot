@@ -1,5 +1,7 @@
-import toggleButton from './ToggleButton';
+import ToggleButton from "./ToggleButton";
 
 export default function ComponentsOverrides(theme) {
-  return Object.assign(toggleButton(theme));
+    return Object.assign(
+        ToggleButton(theme)
+    );
 }

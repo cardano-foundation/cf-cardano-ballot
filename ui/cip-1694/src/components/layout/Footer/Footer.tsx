@@ -1,4 +1,5 @@
-import React from 'react';
+import React from "react";
+import { useTheme } from "@mui/material/styles";
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -9,16 +10,19 @@ function Copyright() {
     <Typography
       variant="body2"
       color="text.secondary"
-      align="center"
-    >
-      {'Copyright © '}
+      align="center">
+      {"Copyright © "}
       {new Date().getFullYear()}
-      <span color="inherit">. All rights reserved.</span>
+      <span
+        color="inherit">
+        . All rights reserved.
+      </span>
     </Typography>
   );
 }
 
 export default function Footer() {
+  const theme = useTheme();
   return (
     <Box
       sx={{
@@ -33,11 +37,13 @@ export default function Footer() {
         sx={{
           py: 3,
           px: 2,
-          mt: 'auto',
+          mt: 'auto'
         }}
       >
         <Container maxWidth="lg">
-          <Typography variant="body1">Cardano Ballot V2</Typography>
+          <Typography variant="body1">
+            Cardano Ballot V2
+          </Typography>
           <Copyright />
         </Container>
       </Box>

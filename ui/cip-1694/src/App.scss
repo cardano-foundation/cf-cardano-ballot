@@ -2,7 +2,6 @@
   text-align: center;
 }
 
-// TODO: does it makes sense to nest these selectors? eg : .App { &_logo ... }?
 .App-logo {
   height: 20vmin;
   pointer-events: none;
@@ -18,6 +17,5 @@
 }
 
 .App-link {
-  // TODO: let's define the color scheme via css variables?
   color: rgb(112, 76, 182);
 }

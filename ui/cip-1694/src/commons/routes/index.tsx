@@ -2,15 +2,14 @@ import React from 'react';
 import {
   Route,
   Routes
-} from 'react-router-dom';
-import IntroductionPage from '../../pages/Introduction/Introduction';
-import VotePage from '../../pages/Vote/Vote';
+} from "react-router-dom";
+import IntroductionPage from "../../pages/Introduction/Introduction";
+import VotePage from "../../pages/Vote/Vote";
 
 export const PAGE_PATH = '/';
 
 export const ROUTES = {
   INTRO: `${PAGE_PATH}`,
-  // TODO: won't you get '//vote' here?
   VOTE: `${PAGE_PATH}/vote`
 };
 

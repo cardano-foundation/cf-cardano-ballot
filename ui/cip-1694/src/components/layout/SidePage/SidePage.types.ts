@@ -1,4 +1,4 @@
-type Anchor = 'top' | 'left' | 'bottom' | 'right';
+type Anchor = "top" | "left" | "bottom" | "right";
 
 interface SidePageProps {
   children: any;

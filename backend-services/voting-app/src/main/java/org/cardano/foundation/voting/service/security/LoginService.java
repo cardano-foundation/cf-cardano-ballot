@@ -8,4 +8,6 @@ public interface LoginService {
 
     Either<Problem, String> login(SignedWeb3Request loginRequest);
 
+    //Either<Problem, Boolean> checkTokenExpiration(String accessToken);
+
 }

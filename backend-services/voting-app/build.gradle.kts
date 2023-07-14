@@ -1,9 +1,14 @@
+import cz.habarta.typescript.generator.JsonLibrary
+import cz.habarta.typescript.generator.TypeScriptFileType
+import cz.habarta.typescript.generator.TypeScriptOutputKind
+
 plugins {
 	java
 	id("org.springframework.boot") version "3.0.7"
 	id("io.spring.dependency-management") version "1.1.0"
 	id("org.graalvm.buildtools.native") version "0.9.22"
     id("org.flywaydb.flyway") version "9.8.1"
+	id("cz.habarta.typescript-generator") version "3.2.1263"
 }
 
 group = "org.cardano.foundation"
@@ -48,7 +53,6 @@ dependencies {
 	implementation("com.google.guava:guava:32.1.1-jre")
 
 	implementation("org.zalando:problem-spring-web:0.29.1")
-
 	implementation("org.zalando:jackson-datatype-problem:0.27.1")
 
 	compileOnly("org.projectlombok:lombok:1.18.28")
@@ -91,4 +95,30 @@ dependencyManagement {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+tasks {
+    generateTypeScript {
+        jsonLibrary = JsonLibrary.jackson2
+        outputKind = TypeScriptOutputKind.module
+        outputFileType = TypeScriptFileType.implementationFile
+		classPatterns = listOf(
+			"org.zalando.problem.Problem",
+			"io.vavr.control.Either",
+			"java.lang.Object",
+			"java.lang.Number",
+			"java.lang.Long",
+			"java.util.Optional",
+			"java.math.BigInteger",
+			"org.cardano.foundation.voting.service.**",
+			"org.cardano.foundation.voting.domain.**"
+		).toMutableList()
+		outputFile = "build/typescript-generator/backend-services-types.ts"
+    }
+}
+
+tasks.register<Copy>("buildAndCopyTypescriptTypes") {
+	dependsOn(tasks.generateTypeScript)
+    from(layout.buildDirectory.file("typescript-generator/backend-services-types.ts"))
+    into(layout.projectDirectory.dir("../../ui/cip-1694/src/types"))
 }

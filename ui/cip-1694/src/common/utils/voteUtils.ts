@@ -1,33 +1,32 @@
-import { canonicalize } from "json-canonicalize";
-import {
-  TARGET_NETWORK,
-  EVENT_ID,
-  CATEGORY_ID,
-} from "../constants/appConstants";
+import { canonicalize } from 'json-canonicalize';
+import { TARGET_NETWORK, EVENT_ID, CATEGORY_ID } from '../constants/appConstants';
 
-export const buildCanonicalVoteInputJson = (voteInput: {
-  option: any;
-  voteId: any;
-  voter: any;
+type voteInput = {
+  option: string;
+  voteId: string;
+  voter: string;
   slotNumber: string;
-  votePower: string;
-}) => {
+  votePower: number;
+};
+
+export const buildCanonicalVoteInputJson = ({ option, voteId, voter, slotNumber, votePower }: voteInput) => {
   const startOfCurrentDay = new Date();
   startOfCurrentDay.setUTCMinutes(0, 0, 0);
   return canonicalize({
-    uri: "https://evoting.cardano.org/voltaire",
-    action: "CAST_VOTE",
-    actionText: "Cast Vote",
-    slot: voteInput.slotNumber,
+    // TOOD: move to const/env file/ config file, also the link seems to be broken
+    uri: 'https://evoting.cardano.org/voltaire',
+    action: 'CAST_VOTE',
+    actionText: 'Cast Vote',
+    slot: slotNumber,
     data: {
-      id: voteInput.voteId,
-      address: voteInput.voter,
+      id: voteId,
+      address: voter,
       event: EVENT_ID,
       category: CATEGORY_ID,
-      proposal: voteInput.option,
+      proposal: option,
       network: TARGET_NETWORK,
-      votedAt: voteInput.slotNumber,
-      votingPower: voteInput.votePower,
+      votedAt: slotNumber,
+      votingPower: votePower,
     },
   });
 };

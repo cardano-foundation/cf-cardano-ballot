@@ -1,6 +1,8 @@
+import React from 'react';
+
 interface OptionItem {
   label: string;
-  icon: any;
+  icon: React.ReactElement | null;
 }
 
 interface OptionProps {

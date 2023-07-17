@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import Grid from "@mui/material/Grid";
-import { Typography, Container } from "@mui/material";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import StarIcon from "@mui/icons-material/Star";
+import React from 'react';
+import Grid from '@mui/material/Grid';
+import { Typography, Container } from '@mui/material';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import StarIcon from '@mui/icons-material/Star';
 
 const VoteReceipt = () => {
   return (
@@ -31,9 +31,7 @@ const VoteReceipt = () => {
             item
             xs={6}
           >
-            <Typography variant="h5">
-              CIP 1694 Pre Ratification Event
-            </Typography>
+            <Typography variant="h5">CIP 1694 Pre Ratification Event</Typography>
           </Grid>
           <Grid
             item
@@ -46,13 +44,13 @@ const VoteReceipt = () => {
             xs={6}
           >
             <List
-              sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
+              sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
               aria-label="contacts"
             >
               <ListItem disablePadding>
                 <ListItemButton>
                   <ListItemIcon>
-                    <StarIcon sx={{ color: "blue" }} />
+                    <StarIcon sx={{ color: 'blue' }} />
                   </ListItemIcon>
                   <ListItemText primary="Vote Receipt Implementation" />
                 </ListItemButton>
@@ -61,7 +59,7 @@ const VoteReceipt = () => {
               <ListItem disablePadding>
                 <ListItemButton>
                   <ListItemIcon>
-                    <StarIcon sx={{ color: "orange" }} />
+                    <StarIcon sx={{ color: 'orange' }} />
                   </ListItemIcon>
                   <ListItemText primary="Access Token, Session storage, Redux persistance" />
                 </ListItemButton>
@@ -70,7 +68,7 @@ const VoteReceipt = () => {
               <ListItem disablePadding>
                 <ListItemButton>
                   <ListItemIcon>
-                    <StarIcon sx={{ color: "orange" }} />
+                    <StarIcon sx={{ color: 'orange' }} />
                   </ListItemIcon>
                   <ListItemText primary="Leaderboard and Winning results" />
                 </ListItemButton>
@@ -78,7 +76,7 @@ const VoteReceipt = () => {
               <ListItem disablePadding>
                 <ListItemButton>
                   <ListItemIcon>
-                    <StarIcon sx={{ color: "orange" }} />
+                    <StarIcon sx={{ color: 'orange' }} />
                   </ListItemIcon>
                   <ListItemText primary="Formatting Lovelaces" />
                 </ListItemButton>
@@ -86,7 +84,7 @@ const VoteReceipt = () => {
               <ListItem disablePadding>
                 <ListItemButton>
                   <ListItemIcon>
-                    <StarIcon sx={{ color: "orange" }} />
+                    <StarIcon sx={{ color: 'orange' }} />
                   </ListItemIcon>
                   <ListItemText primary="On-Chain Verification App" />
                 </ListItemButton>
@@ -95,7 +93,7 @@ const VoteReceipt = () => {
               <ListItem disablePadding>
                 <ListItemButton>
                   <ListItemIcon>
-                    <StarIcon sx={{ color: "orange" }} />
+                    <StarIcon sx={{ color: 'orange' }} />
                   </ListItemIcon>
                   <ListItemText primary="Cypress component testing" />
                 </ListItemButton>
@@ -104,7 +102,7 @@ const VoteReceipt = () => {
               <ListItem disablePadding>
                 <ListItemButton>
                   <ListItemIcon>
-                    <StarIcon sx={{ color: "orange" }} />
+                    <StarIcon sx={{ color: 'orange' }} />
                   </ListItemIcon>
                   <ListItemText primary="Cypress e2e testing" />
                 </ListItemButton>
@@ -115,9 +113,7 @@ const VoteReceipt = () => {
             item
             xs={6}
           >
-            <Typography variant="subtitle1">
-              In future, digital Receipt goes here...
-            </Typography>
+            <Typography variant="subtitle1">In future, digital Receipt goes here...</Typography>
           </Grid>
         </Grid>
       </Container>

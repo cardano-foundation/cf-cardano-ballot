@@ -174,7 +174,7 @@ async function execute<T>(
   body?: string,
   useAuth?: boolean
 ) {
-  // TODO: useAuth is not used in executeRequest?
+  // FIXME: useAuth is not used in executeRequest?
   console.log(useAuth);
   return await executeRequest<T>(url, method, headers, body).catch((err) => {
     throw err;

@@ -1,0 +1,33 @@
+.container {
+  align-items: center;
+  display: flex;
+  height: 69px;
+
+  .content {
+    align-items: center;
+    display: flex;
+  }
+
+  .logo {
+    height: 29px;
+    cursor: pointer;
+  }
+
+  .button {
+    padding: 15px 25px;
+    text-transform: none;
+    color: #061d3c;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: normal;
+
+    :global(.MuiButton-startIcon) {
+      margin-right: 10px;
+      margin-left: 0px;
+    }
+
+    &.activeRoute {
+      text-decoration: underline;
+    }
+  }
+}

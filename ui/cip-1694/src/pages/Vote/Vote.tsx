@@ -8,7 +8,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import DoDisturbIcon from '@mui/icons-material/DoDisturb';
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import toast from 'react-hot-toast';
-import CountDownTimer from '../../components/CountDownTimer/CountDownTimer';
+import CountDownTimer from 'components/CountDownTimer/CountDownTimer';
 import OptionCard from '../../components/OptionCard/OptionCard';
 import { OptionItem } from '../../components/OptionCard/OptionCard.types';
 import SidePage from '../../components/common/SidePage/SidePage';
@@ -116,7 +116,7 @@ const Vote = () => {
       votePower: votingPower,
     });
     signMessage(canonicalVoteInput, async (signature, key) => {
-      // TODO: castAVoteWithDigitalSignature are incompatible with requestVoteObject
+      // FIXME: castAVoteWithDigitalSignature are incompatible with requestVoteObject
       if (typeof key === 'undefined') return;
 
       const requestVoteObject = {
@@ -175,7 +175,7 @@ const Vote = () => {
               }}
               component={'div'}
             >
-              Time left to vote: <CountDownTimer />
+              <CountDownTimer />
             </Typography>
           </Grid>
 

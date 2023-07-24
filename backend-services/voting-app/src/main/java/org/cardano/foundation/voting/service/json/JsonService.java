@@ -39,7 +39,8 @@ public final class JsonService {
 
     public Either<Problem, CIP93Envelope<VoteEnvelope>> decodeCIP93VoteEnvelope(String json) {
         try {
-            return Either.right(objectMapper.readValue(json, new TypeReference<>() { }));
+            System.out.println(json);
+            return Either.right(objectMapper.readValue(json, new TypeReference<CIP93Envelope<VoteEnvelope>>() { }));
         } catch (JsonProcessingException e) {
             log.warn("Invalid json:{}", json, e);
 

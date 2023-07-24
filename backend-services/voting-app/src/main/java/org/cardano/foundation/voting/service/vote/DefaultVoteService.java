@@ -137,7 +137,7 @@ public class DefaultVoteService implements VoteService {
     public Either<Problem, Vote> castVote(SignedWeb3Request castVoteRequest) {
         // TODO check if vote is in the canonical form???
 
-        var cip30Verifier = new CIP30Verifier(castVoteRequest.getCoseSignature(), Optional.ofNullable(castVoteRequest.getCosePublicKey()));
+        var cip30Verifier = new CIP30Verifier(castVoteRequest.getCoseSignature(), castVoteRequest.getCosePublicKey());
         var cip30VerificationResult = cip30Verifier.verify();
 
         if (!cip30VerificationResult.isValid()) {
@@ -400,7 +400,7 @@ public class DefaultVoteService implements VoteService {
             existingVote.setProposalId(proposal.getId());
             existingVote.setVotedAtSlot(votedAtSlot);
             existingVote.setCoseSignature(castVoteRequest.getCoseSignature());
-            existingVote.setCosePublicKey(castVoteRequest.getCosePublicKey());
+            existingVote.setCosePublicKey(castVoteRequest.getCosePublicKey().orElse(null));
 
             return Either.right(voteRepository.saveAndFlush(existingVote));
         }
@@ -413,7 +413,7 @@ public class DefaultVoteService implements VoteService {
         vote.setVoterStakingAddress(stakeAddress);
         vote.setVotedAtSlot(votedAtSlot);
         vote.setCoseSignature(castVoteRequest.getCoseSignature());
-        vote.setCosePublicKey(castVoteRequest.getCosePublicKey());
+        vote.setCosePublicKey(castVoteRequest.getCosePublicKey().orElse(null));
 
         if (List.of(STAKE_BASED, BALANCE_BASED).contains(event.getVotingEventType())) {
             var blockchainVotingPower = votingPowerService.getVotingPower(event, stakeAddress).orElse(-1L);

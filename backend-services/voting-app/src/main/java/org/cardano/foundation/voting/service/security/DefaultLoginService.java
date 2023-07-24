@@ -53,7 +53,7 @@ public class DefaultLoginService implements LoginService {
     @Override
     @Timed(value = "service.auth.login", percentiles = { 0.3, 0.5, 0.95 })
     public Either<Problem, String> login(SignedWeb3Request loginRequest) {
-        var cip30Verifier = new CIP30Verifier(loginRequest.getCoseSignature(), Optional.ofNullable(loginRequest.getCosePublicKey()));
+        var cip30Verifier = new CIP30Verifier(loginRequest.getCoseSignature(), loginRequest.getCosePublicKey());
 
         var cip30VerificationResult = cip30Verifier.verify();
         if (!cip30VerificationResult.isValid()) {

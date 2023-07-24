@@ -35,7 +35,7 @@ public class Event extends AbstractTimestampEntity {
 
     @Column(name = "voting_power_asset")
     @Nullable
-    private VotingPowerAsset votingPowerAsset;
+    private VotingPowerAsset votingPowerAsset; // voting power asset is only needed for stake based voting events
 
     @Builder.Default
     @Column(name = "allow_vote_changing")
@@ -46,23 +46,23 @@ public class Event extends AbstractTimestampEntity {
     private boolean categoryResultsWhileVoting = false;
 
     @Column(name = "start_epoch")
-    @Nullable
+    @Nullable // startEpoch is only needed for stake based voting events
     private Integer startEpoch;
 
     @Column(name = "end_epoch")
-    @Nullable
+    @Nullable // endEpoch is only needed for stake based voting events
     private Integer endEpoch;
 
     @Column(name = "start_slot")
-    @Nullable
+    @Nullable // startSlot is only needed for user based voting events
     private Long startSlot;
 
     @Column(name = "end_slot")
-    @Nullable
+    @Nullable // endSlot is only needed for user based voting events
     private Long endSlot;
 
     @Column(name = "snapshot_epoch")
-    @Nullable
+    @Nullable // snapshotEpoch is only needed for stake based voting events
     private Integer snapshotEpoch;
 
     @Column(name = "schema_version")

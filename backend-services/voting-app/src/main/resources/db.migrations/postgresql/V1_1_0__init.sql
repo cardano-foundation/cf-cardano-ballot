@@ -60,7 +60,7 @@ CREATE TABLE vote (
    proposal_id VARCHAR(255) NOT NULL,
    voter_staking_address VARCHAR(255) NOT NULL,
    cose_signature text NOT NULL,
-   cose_public_key VARCHAR(255) NOT NULL,
+   cose_public_key VARCHAR(255),
    voting_power BIGINT,
    voted_at_slot BIGINT NOT NULL,
 

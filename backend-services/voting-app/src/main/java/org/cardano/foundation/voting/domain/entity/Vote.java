@@ -1,11 +1,13 @@
 package org.cardano.foundation.voting.domain.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardanofoundation.cip30.CIP30Verifier;
 
 import javax.annotation.Nullable;
@@ -40,7 +42,8 @@ public class Vote extends AbstractTimestampEntity {
     @Column(name = "cose_signature", nullable = false, columnDefinition = "text", length = 2048)
     private String coseSignature;
 
-    @Column(name = "cose_public_key", nullable = false)
+    @Column(name = "cose_public_key")
+    @Nullable
     private String cosePublicKey;
 
     @Column(name = "voting_power")

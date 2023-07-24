@@ -6,7 +6,7 @@ type voteInput = {
   voteId: string;
   voter: string;
   slotNumber: string;
-  votePower: number;
+  votePower: string;
 };
 
 export const buildCanonicalVoteInputJson = ({ option, voteId, voter, slotNumber, votePower }: voteInput) => {

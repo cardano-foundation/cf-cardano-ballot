@@ -400,7 +400,7 @@ public class DefaultVoteService implements VoteService {
             existingVote.setProposalId(proposal.getId());
             existingVote.setVotedAtSlot(votedAtSlot);
             existingVote.setCoseSignature(castVoteRequest.getCoseSignature());
-            existingVote.setCosePublicKey(castVoteRequest.getCosePublicKey().orElse(null));
+            existingVote.setCosePublicKey(castVoteRequest.getCosePublicKey());
 
             return Either.right(voteRepository.saveAndFlush(existingVote));
         }
@@ -413,7 +413,7 @@ public class DefaultVoteService implements VoteService {
         vote.setVoterStakingAddress(stakeAddress);
         vote.setVotedAtSlot(votedAtSlot);
         vote.setCoseSignature(castVoteRequest.getCoseSignature());
-        vote.setCosePublicKey(castVoteRequest.getCosePublicKey().orElse(null));
+        vote.setCosePublicKey(castVoteRequest.getCosePublicKey());
 
         if (List.of(STAKE_BASED, BALANCE_BASED).contains(event.getVotingEventType())) {
             var blockchainVotingPower = votingPowerService.getVotingPower(event, stakeAddress).orElse(-1L);
@@ -429,7 +429,7 @@ public class DefaultVoteService implements VoteService {
                 );
             }
 
-            if (!isNumeric(cip90VoteEnvelope.getData().getVotingPower())) {
+            if (!isNumeric(cip90VoteEnvelope.getData().getVotingPower().orElseThrow())) {
                 return Either.left(
                         Problem.builder()
                                 .withTitle("INVALID_VOTING_POWER")
@@ -438,7 +438,7 @@ public class DefaultVoteService implements VoteService {
                                 .build()
                 );
             }
-            var signedVotingPower = Long.parseLong(cip90VoteEnvelope.getData().getVotingPower());
+            var signedVotingPower = Long.parseLong(cip90VoteEnvelope.getData().getVotingPower().orElseThrow());
             if (signedVotingPower != blockchainVotingPower) {
                 return Either.left(
                         Problem.builder()
@@ -449,11 +449,11 @@ public class DefaultVoteService implements VoteService {
                 );
             }
 
-            vote.setVotingPower(blockchainVotingPower);
+            vote.setVotingPower(Optional.of(blockchainVotingPower));
         }
 
         if (event.getVotingEventType() == USER_BASED) {
-            if (vote.getVotingPower() != null) {
+            if (vote.getVotingPower().isEmpty()) {
                 return Either.left(
                         Problem.builder()
                                 .withTitle("VOTING_POWER_NOT_SUPPORTED")

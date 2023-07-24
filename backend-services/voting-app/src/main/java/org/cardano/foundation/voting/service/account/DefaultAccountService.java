@@ -67,7 +67,7 @@ public class DefaultAccountService implements AccountService {
 
         return Either.right(Optional.of(Account.builder()
                 .stakeAddress(stakeAddress)
-                .votingPower(votingPower.map(String::valueOf).orElse(null))
+                .votingPower(votingPower.map(String::valueOf))
                 .votingPowerAsset(event.getVotingPowerAsset())
                 .build())
         );

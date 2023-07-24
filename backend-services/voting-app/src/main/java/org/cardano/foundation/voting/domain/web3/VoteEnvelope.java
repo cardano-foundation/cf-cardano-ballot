@@ -3,7 +3,7 @@ package org.cardano.foundation.voting.domain.web3;
 import lombok.Builder;
 import lombok.Getter;
 
-import javax.annotation.Nullable;
+import java.util.Optional;
 
 @Builder
 @Getter
@@ -14,12 +14,12 @@ public class VoteEnvelope {
     private String event;
     private String category;
     private String proposal;
-    @Nullable
-    private String proposalText;
+    @Builder.Default
+    private Optional<String> proposalText = Optional.empty(); // proposal text is only available for GDPR sensitive events, e.g. where proposal is simply an ID
     private String network;
     private String votedAt;
 
-    @Nullable
-    private String votingPower;
+    @Builder.Default
+    private Optional<String> votingPower = Optional.empty(); // voting power is only available for STAKE_BASED or BALANCE_BASED events
 
 }

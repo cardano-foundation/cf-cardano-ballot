@@ -182,15 +182,15 @@ public class MetadataProcessor {
         event.setTeam(eventRegistration.getTeam());
         event.setVersion(SchemaVersion.fromText(eventRegistration.getSchemaVersion()).orElseThrow());
 
-        eventRegistration.getStartEpoch().ifPresent(event::setStartEpoch);
-        eventRegistration.getEndEpoch().ifPresent(event::setEndEpoch);
-        eventRegistration.getSnapshotEpoch().ifPresent(event::setSnapshotEpoch);
-        eventRegistration.getVotingPowerAsset().ifPresent(event::setVotingPowerAsset);
+        event.setStartEpoch(eventRegistration.getStartEpoch());
+        event.setEndEpoch(eventRegistration.getEndEpoch());
+        event.setSnapshotEpoch(eventRegistration.getSnapshotEpoch());
+        event.setVotingPowerAsset(eventRegistration.getVotingPowerAsset());
 
         event.setVotingEventType(eventRegistration.getVotingEventType());
 
-        eventRegistration.getStartSlot().ifPresent(event::setStartSlot);
-        eventRegistration.getEndSlot().ifPresent(event::setEndSlot);
+        event.setStartSlot(eventRegistration.getStartSlot());
+        event.setEndSlot(eventRegistration.getEndSlot());
 
         return Optional.of(referenceDataService.storeEvent(event));
     }

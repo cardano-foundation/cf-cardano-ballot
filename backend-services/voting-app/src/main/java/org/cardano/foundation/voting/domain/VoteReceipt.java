@@ -24,7 +24,8 @@ public class VoteReceipt {
 
     private String coseSignature;
 
-    private String cosePublicKey;
+    @Builder.Default
+    private Optional<String> cosePublicKey = Optional.empty();
 
     private CardanoNetwork cardanoNetwork;
 
@@ -32,7 +33,8 @@ public class VoteReceipt {
 
     private MerkleProof merkleProof;
 
-    private Optional<TransactionDetails.FinalityScore> finalityScore;
+    @Builder.Default
+    private Optional<TransactionDetails.FinalityScore> finalityScore = Optional.empty();
 
     private String votedAtSlot;
 
@@ -51,9 +53,12 @@ public class VoteReceipt {
     public static class MerkleProof {
 
         private String transactionHash;
-        private Optional<Long> absoluteSlot;
-        private Optional<String> blockHash;
+        @Builder.Default
+        private Optional<Long> absoluteSlot = Optional.empty();
+        @Builder.Default
+        private Optional<String> blockHash = Optional.empty();
         private String rootHash;
+
         private List<MerkleProofItem> steps;
 
     }

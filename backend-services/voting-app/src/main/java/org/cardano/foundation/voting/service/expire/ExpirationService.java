@@ -41,8 +41,8 @@ public class ExpirationService {
         var epochNo = chainTip.getEpochNo();
 
         return switch (event.getVotingEventType()) {
-            case USER_BASED -> (absoluteSlot >= event.getStartSlot() && absoluteSlot <= event.getEndSlot());
-            case STAKE_BASED, BALANCE_BASED ->  (epochNo >= event.getStartEpoch() && epochNo <= event.getEndEpoch());
+            case USER_BASED -> (absoluteSlot >= event.getStartSlot().orElseThrow() && absoluteSlot <= event.getEndSlot().orElseThrow());
+            case STAKE_BASED, BALANCE_BASED ->  (epochNo >= event.getStartEpoch().orElseThrow() && epochNo <= event.getEndEpoch().orElseThrow());
         };
     }
 
@@ -53,8 +53,8 @@ public class ExpirationService {
         var epochNo = chainTip.getEpochNo();
 
         return switch (event.getVotingEventType()) {
-            case USER_BASED -> (absoluteSlot > event.getEndSlot());
-            case STAKE_BASED, BALANCE_BASED -> (epochNo  > event.getEndEpoch());
+            case USER_BASED -> (absoluteSlot > event.getEndSlot().orElseThrow());
+            case STAKE_BASED, BALANCE_BASED -> (epochNo  > event.getEndEpoch().orElseThrow());
         };
     }
 

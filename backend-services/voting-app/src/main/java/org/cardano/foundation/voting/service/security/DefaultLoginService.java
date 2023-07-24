@@ -28,6 +28,10 @@ import static org.cardanofoundation.cip30.AddressFormat.TEXT;
 import static org.cardanofoundation.cip30.ValidationError.UNKNOWN;
 import static org.zalando.problem.Status.BAD_REQUEST;
 
+// USER ERROR
+// DEVELOPER ERROR -> API // HTTP 4xx
+// FRONTEND_DEV ERROR || INTERNAL SERVER ERROR -> API // HTTP 5xx
+
 @Service
 @Slf4j
 public class DefaultLoginService implements LoginService {

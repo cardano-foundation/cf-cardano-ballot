@@ -5,7 +5,7 @@ import {
   BLOCKCHAIN_TIP_URL,
   VOTING_POWER_URL,
 } from '../constants/appConstants';
-import { Problem, SignedWeb3Request, Vote, Event, ChainTip } from '../../types/backend-services-types';
+import { Problem, SignedWeb3Request, Vote, Event, ChainTip, Account } from '../../types/backend-services-types';
 
 const getEventById = async (eventId: Event['id']) =>
   await doRequest<Vote>(HttpMethods.GET, `${EVENT_BY_ID_REFERENCE_URL}/${eventId}`, {
@@ -26,7 +26,7 @@ const getSlotNumber = async () => {
 };
 
 const getVotingPower = async (eventId: Event['id'], stakeAddress: string) => {
-  return await doRequest<number>(HttpMethods.GET, `${VOTING_POWER_URL}/${eventId}/${stakeAddress}`, {
+  return await doRequest<Account>(HttpMethods.GET, `${VOTING_POWER_URL}/${eventId}/${stakeAddress}`, {
     ...DEFAULT_CONTENT_TYPE_HEADERS,
   });
 };

@@ -18,7 +18,7 @@ import VoteReceipt from './VoteReceipt';
 import './Vote.scss';
 import { EVENT_ID } from '../../common/constants/appConstants';
 import { useToggle } from '../../common/hooks/useToggle';
-import { ChainTip } from '../../types/backend-services-types';
+import { Account, ChainTip } from '../../types/backend-services-types';
 import { HttpError } from '../../common/handlers/httpHandler';
 import ConnectWalletModal from '../../components/ConnectWalletModal/ConnectWalletModal';
 
@@ -99,7 +99,7 @@ const Vote = () => {
 
     let votingPower;
     try {
-      votingPower = (await voteService.getVotingPower(EVENT_ID, stakeAddress)) as number;
+      ({ votingPower } = (await voteService.getVotingPower(EVENT_ID, stakeAddress)) as Account);
     } catch (error) {
       if (error instanceof Error || error instanceof HttpError) {
         console.log('Failed to fetch votingPower', error?.message);

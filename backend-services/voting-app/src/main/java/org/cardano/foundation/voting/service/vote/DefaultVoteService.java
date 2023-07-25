@@ -38,6 +38,7 @@ import java.util.Optional;
 import static org.cardano.foundation.voting.domain.VoteReceipt.Status.*;
 import static org.cardano.foundation.voting.domain.VotingEventType.*;
 import static org.cardano.foundation.voting.domain.web3.Web3Action.CAST_VOTE;
+import static org.cardano.foundation.voting.domain.web3.Web3Action.VIEW_VOTE_RECEIPT;
 import static org.cardano.foundation.voting.utils.MoreNumber.isNumeric;
 import static org.cardanofoundation.cip30.MessageFormat.TEXT;
 import static org.cardanofoundation.cip30.ValidationError.UNKNOWN;
@@ -144,7 +145,7 @@ public class DefaultVoteService implements VoteService {
         var cip30VerificationResult = cip30Verifier.verify();
 
         if (!cip30VerificationResult.isValid()) {
-            log.warn("CIP30 data sign for casting vote verification failed, validationError:{}", cip30VerificationResult.getValidationError().orElse(UNKNOWN));
+            log.warn("CIP-30 data sign for casting vote verification failed, validationError:{}", cip30VerificationResult.getValidationError().orElse(UNKNOWN));
 
             return Either.left(
                     Problem.builder()
@@ -191,10 +192,10 @@ public class DefaultVoteService implements VoteService {
                 );
             }
         }
-        var cip90VoteEnvelope = castVoteRequestBodyJsonE.get();
-        var maybeNetwork = Enums.getIfPresent(CardanoNetwork.class, cip90VoteEnvelope.getData().getNetwork());
+        var cip93VoteEnvelope = castVoteRequestBodyJsonE.get();
+        var maybeNetwork = Enums.getIfPresent(CardanoNetwork.class, cip93VoteEnvelope.getData().getNetwork());
         if (maybeNetwork.isEmpty()) {
-            log.warn("Invalid network, network:{}", cip90VoteEnvelope.getData().getNetwork());
+            log.warn("Invalid network, network:{}", cip93VoteEnvelope.getData().getNetwork());
 
             return Either.left(Problem.builder()
                     .withTitle("INVALID_NETWORK")
@@ -206,7 +207,7 @@ public class DefaultVoteService implements VoteService {
         var network = maybeNetwork.orElseThrow();
 
         if (network != cardanoNetwork) {
-            log.warn("Invalid network, network:{}", cip90VoteEnvelope.getData().getNetwork());
+            log.warn("Invalid network, network:{}", cip93VoteEnvelope.getData().getNetwork());
 
             return Either.left(Problem.builder()
                     .withTitle("NETWORK_MISMATCH")
@@ -215,16 +216,16 @@ public class DefaultVoteService implements VoteService {
                     .build());
         }
 
-        String cip30StakeAddress = cip90VoteEnvelope.getData().getAddress();
+        String cip30StakeAddress = cip93VoteEnvelope.getData().getAddress();
         if (!stakeAddress.equals(cip30StakeAddress)) {
             return Either.left(Problem.builder()
-                    .withTitle("INVALID_STAKE_ADDRESS")
+                    .withTitle("STAKE_ADDRESS_MISMATCH")
                     .withDetail("Invalid stake address, expected stakeAddress:" + stakeAddress + ", actual stakeAddress:" + cip30StakeAddress)
                     .withStatus(BAD_REQUEST)
                     .build());
         }
 
-        var actionText = cip90VoteEnvelope.getAction();
+        var actionText = cip93VoteEnvelope.getAction();
 
         var maybeAction = Enums.getIfPresent(Web3Action.class, actionText);
         if (maybeAction.isEmpty()) {
@@ -232,7 +233,7 @@ public class DefaultVoteService implements VoteService {
 
             return Either.left(Problem.builder()
                     .withTitle("ACTION_NOT_FOUND")
-                    .withDetail("Action not found, expected action:" + CAST_VOTE.name())
+                    .withDetail("Action not found!")
                     .withStatus(BAD_REQUEST)
                     .build()
             );
@@ -247,7 +248,7 @@ public class DefaultVoteService implements VoteService {
             );
         }
 
-        var eventId = cip90VoteEnvelope.getData().getEvent();
+        var eventId = cip93VoteEnvelope.getData().getEvent();
         var maybeEvent = referenceDataService.findValidEventByName(eventId);
         if (maybeEvent.isEmpty()) {
             log.warn("Unrecognised event, eventId:{}", eventId);
@@ -265,12 +266,12 @@ public class DefaultVoteService implements VoteService {
 
             return Either.left(Problem.builder()
                     .withTitle("EVENT_IS_NOT_ACTIVE")
-                    .withDetail("Event is not active, eventId:" + eventId)
+                    .withDetail("Event is not active (not started or already finished), eventId:" + eventId)
                     .withStatus(BAD_REQUEST)
                     .build());
         }
 
-        var categoryId = cip90VoteEnvelope.getData().getCategory();
+        var categoryId = cip93VoteEnvelope.getData().getCategory();
         var maybeCategory = event.findCategoryByName(categoryId);
         if (maybeCategory.isEmpty()) {
             log.warn("Unrecognised category, categoryId:{}", eventId);
@@ -283,7 +284,7 @@ public class DefaultVoteService implements VoteService {
         }
         var category = maybeCategory.orElseThrow();
 
-        var proposalIdOrName = cip90VoteEnvelope.getData().getProposal();
+        var proposalIdOrName = cip93VoteEnvelope.getData().getProposal();
 
         log.info("Category GDPR protection: {}", category.isGdprProtection());
 
@@ -314,7 +315,7 @@ public class DefaultVoteService implements VoteService {
             proposal = maybeProposal.orElseThrow();
         }
 
-        var cip93SlotStr = cip90VoteEnvelope.getSlot();
+        var cip93SlotStr = cip93VoteEnvelope.getSlot();
 
         if (!isNumeric(cip93SlotStr)) {
             return Either.left(
@@ -339,7 +340,7 @@ public class DefaultVoteService implements VoteService {
             );
         }
 
-        var votedAtSlotStr = cip90VoteEnvelope.getData().getVotedAt();
+        var votedAtSlotStr = cip93VoteEnvelope.getData().getVotedAt();
         if (!isNumeric(votedAtSlotStr)) {
             return Either.left(
                     Problem.builder()
@@ -374,7 +375,7 @@ public class DefaultVoteService implements VoteService {
             );
         }
 
-        String voteId = cip90VoteEnvelope.getData().getId();
+        String voteId = cip93VoteEnvelope.getData().getId();
         if (!UUID.isUUIDv4(voteId)) {
             return Either.left(
                     Problem.builder()
@@ -442,7 +443,7 @@ public class DefaultVoteService implements VoteService {
                 );
             }
 
-            if (!isNumeric(cip90VoteEnvelope.getData().getVotingPower().orElseThrow())) {
+            if (!isNumeric(cip93VoteEnvelope.getData().getVotingPower().orElseThrow())) {
                 return Either.left(
                         Problem.builder()
                                 .withTitle("INVALID_VOTING_POWER")
@@ -451,7 +452,7 @@ public class DefaultVoteService implements VoteService {
                                 .build()
                 );
             }
-            var signedVotingPower = Long.parseLong(cip90VoteEnvelope.getData().getVotingPower().orElseThrow());
+            var signedVotingPower = Long.parseLong(cip93VoteEnvelope.getData().getVotingPower().orElseThrow());
             if (signedVotingPower != blockchainVotingPower) {
                 return Either.left(
                         Problem.builder()
@@ -483,7 +484,42 @@ public class DefaultVoteService implements VoteService {
     @Override
     @Transactional
     @Timed(value = "service.vote.voteReceipt", percentiles = { 0.3, 0.5, 0.95 })
-    public Either<Problem, VoteReceipt> voteReceipt(String eventName, String categoryName, String stakeAddress) {
+    public Either<Problem, VoteReceipt> voteReceipt(SignedWeb3Request viewVoteReceiptSignedWeb3Request) {
+        log.info("Fetching voter's receipt for the signed data: {}", viewVoteReceiptSignedWeb3Request);
+
+        var cip30Verifier = new CIP30Verifier(
+            viewVoteReceiptSignedWeb3Request.getCoseSignature(),
+            viewVoteReceiptSignedWeb3Request.getCosePublicKey()
+        );
+
+        var cip30VerificationResult = cip30Verifier.verify();
+
+        if (!cip30VerificationResult.isValid()) {
+            log.warn("CIP-30 data sign for viewing voter's receipt failed, validationError:{}", cip30VerificationResult.getValidationError().orElse(UNKNOWN));
+
+            return Either.left(
+                    Problem.builder()
+                            .withTitle("INVALID_CIP30_DATA_SIGNATURE")
+                            .withDetail("Invalid cast vote cose signature!")
+                            .withStatus(BAD_REQUEST)
+                            .build()
+            );
+        }
+
+        var maybeAddress = cip30VerificationResult.getAddress(AddressFormat.TEXT);
+        if (maybeAddress.isEmpty()) {
+            log.warn("Address not found in the signed data");
+
+            return Either.left(
+                    Problem.builder()
+                            .withTitle("ADDRESS_NOT_FOUND")
+                            .withDetail("Bech32 address not found in the signed data.")
+                            .withStatus(BAD_REQUEST)
+                            .build()
+            );
+        }
+        var stakeAddress = maybeAddress.orElseThrow();
+
         var stakeAddressCheckE = stakeAddressVerificationService.checkIfAddressIsStakeAddress(stakeAddress);
         if (stakeAddressCheckE.isLeft()) {
             return Either.left(stakeAddressCheckE.getLeft());
@@ -494,25 +530,95 @@ public class DefaultVoteService implements VoteService {
             return Either.left(stakeAddressNetworkCheck.getLeft());
         }
 
-        var maybeEvent = referenceDataService.findValidEventByName(eventName);
-        if (maybeEvent.isEmpty()) {
-            log.warn("Unrecognised event, event:{}", eventName);
+        var viewVoteReceiptEnvelope = jsonService.decodeCIP93ViewVoteReceiptEnvelope(cip30VerificationResult.getMessage(TEXT));
+        if (viewVoteReceiptEnvelope.isLeft()) {
+            if (viewVoteReceiptEnvelope.isLeft()) {
+                return Either.left(
+                        Problem.builder()
+                                .withTitle("INVALID_CIP30_DATA_SIGNATURE")
+                                .withDetail("Invalid view vote receipt signature!")
+                                .withStatus(BAD_REQUEST)
+                                .build()
+                );
+            }
+        }
+        var cip93ViewVoteReceiptEnvelope = viewVoteReceiptEnvelope.get();
+        var maybeNetwork = Enums.getIfPresent(CardanoNetwork.class, cip93ViewVoteReceiptEnvelope.getData().getNetwork());
+        if (maybeNetwork.isEmpty()) {
+            log.warn("Invalid network, network:{}", cip93ViewVoteReceiptEnvelope.getData().getNetwork());
 
             return Either.left(Problem.builder()
-                    .withTitle("UNRECOGNISED_EVENT")
-                    .withDetail("Unrecognised event, event:" + eventName)
+                    .withTitle("INVALID_NETWORK")
+                    .withDetail("Invalid network, supported networks:" + CardanoNetwork.supportedNetworks())
                     .withStatus(BAD_REQUEST)
                     .build());
         }
-        var event  = maybeEvent.orElseThrow();
 
-        var maybeCategory = referenceDataService.findCategoryByName(categoryName);
+        var network = maybeNetwork.orElseThrow();
+
+        if (network != cardanoNetwork) {
+            log.warn("Invalid network, network:{}", cip93ViewVoteReceiptEnvelope.getData().getNetwork());
+
+            return Either.left(Problem.builder()
+                    .withTitle("NETWORK_MISMATCH")
+                    .withDetail("Invalid network, backed configured with network:" + cardanoNetwork + ", however request is with network:" + network)
+                    .withStatus(BAD_REQUEST)
+                    .build());
+        }
+
+        String cip30StakeAddress = cip93ViewVoteReceiptEnvelope.getData().getAddress();
+        if (!stakeAddress.equals(cip30StakeAddress)) {
+            return Either.left(Problem.builder()
+                    .withTitle("STAKE_ADDRESS_MISMATCH")
+                    .withDetail("Invalid stake address, expected stakeAddress:" + stakeAddress + ", actual stakeAddress:" + cip30StakeAddress)
+                    .withStatus(BAD_REQUEST)
+                    .build());
+        }
+
+        var actionText = cip93ViewVoteReceiptEnvelope.getAction();
+
+        var maybeAction = Enums.getIfPresent(Web3Action.class, actionText);
+        if (maybeAction.isEmpty()) {
+            log.warn("Unknown action, action:{}", actionText);
+
+            return Either.left(Problem.builder()
+                    .withTitle("ACTION_NOT_FOUND")
+                    .withDetail("Action not found!")
+                    .withStatus(BAD_REQUEST)
+                    .build()
+            );
+        }
+        var action = maybeAction.orElseThrow();
+        if (action != VIEW_VOTE_RECEIPT) {
+            return Either.left(Problem.builder()
+                    .withTitle("INVALID_ACTION")
+                    .withDetail("Action is not VIEW_VOTE_RECEIPT, action:" + action.name())
+                    .withStatus(BAD_REQUEST)
+                    .build()
+            );
+        }
+
+        var eventId = cip93ViewVoteReceiptEnvelope.getData().getEvent();
+        var maybeEvent = referenceDataService.findValidEventByName(eventId);
+        if (maybeEvent.isEmpty()) {
+            log.warn("Unrecognised event, eventId:{}", eventId);
+
+            return Either.left(Problem.builder()
+                    .withTitle("UNRECOGNISED_EVENT")
+                    .withDetail("Unrecognised event, eventId:" + eventId)
+                    .withStatus(BAD_REQUEST)
+                    .build());
+        }
+        var event = maybeEvent.get();
+
+        var categoryId = cip93ViewVoteReceiptEnvelope.getData().getCategory();
+        var maybeCategory = event.findCategoryByName(categoryId);
         if (maybeCategory.isEmpty()) {
-            log.warn("Unrecognised category, category:{}", categoryName);
+            log.warn("Unrecognised category, categoryId:{}", eventId);
 
             return Either.left(Problem.builder()
                     .withTitle("UNRECOGNISED_CATEGORY")
-                    .withDetail("Unrecognised category, category:" + categoryName)
+                    .withDetail("Unrecognised category, categoryId:" + categoryId)
                     .withStatus(BAD_REQUEST)
                     .build());
         }

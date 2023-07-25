@@ -8,7 +8,6 @@ import org.cardano.foundation.voting.service.reference_data.ReferenceDataService
 import org.cardano.foundation.voting.service.vote.VoteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,9 +31,7 @@ public class VoteResource {
 
     @RequestMapping(value = "/cast", method = POST, produces = "application/json")
     @Timed(value = "resource.vote.cast", percentiles = { 0.3, 0.5, 0.95 })
-    public ResponseEntity<?> castVote(@RequestBody @Valid SignedWeb3Request castVoteRequest, Authentication authentication) {
-        //JwtPrincipal jwtPrincipal = (JwtPrincipal) authentication.getPrincipal();
-
+    public ResponseEntity<?> castVote(@RequestBody @Valid SignedWeb3Request castVoteRequest) {
         return voteService.castVote(castVoteRequest)
                 .fold(problem -> {
                             return ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem);
@@ -44,16 +41,10 @@ public class VoteResource {
                         });
     }
 
-    @RequestMapping(value = "/receipt/{event}/{category}/{stakeAddress}", method = GET, produces = "application/json")
+    @RequestMapping(value = "/receipt", method = POST, produces = "application/json")
     @Timed(value = "resource.vote.receipt", percentiles = { 0.3, 0.5, 0.95 })
-    public ResponseEntity<?> getVoteReceipt(@PathVariable String event, @PathVariable String category, @PathVariable String stakeAddress, Authentication authentication) {
-//        JwtPrincipal jwtPrincipal = (JwtPrincipal) authentication.getPrincipal();
-
-//        if (jwtPrincipal.isNotAllowed(stakeAddress)) {
-//            return ResponseEntity.status(FORBIDDEN).build();
-//        }
-
-        return voteService.voteReceipt(event, category, stakeAddress)
+    public ResponseEntity<?> getVoteReceipt(@RequestBody @Valid SignedWeb3Request viewVoteReceiptRequest) {
+        return voteService.voteReceipt(viewVoteReceiptRequest)
                 .fold(problem -> {
                             return ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem);
                         },
@@ -64,13 +55,7 @@ public class VoteResource {
 
     @RequestMapping(value = "/casting-available/{event}/{vote}", method = GET, produces = "application/json")
     @Timed(value = "resource.vote.receipt", percentiles = { 0.3, 0.5, 0.95 })
-    public ResponseEntity<?> isVoteCastingStillPossible(@PathVariable String event, @PathVariable String vote, Authentication authentication) {
-//        JwtPrincipal jwtPrincipal = (JwtPrincipal) authentication.getPrincipal();
-
-//        if (jwtPrincipal.isNotAllowed(stakeAddress)) {
-//            return ResponseEntity.status(FORBIDDEN).build();
-//        }
-
+    public ResponseEntity<?> isVoteCastingStillPossible(@PathVariable String event, @PathVariable String vote) {
         return voteService.isVoteCastingStillPossible(event, vote)
                 .fold(problem -> {
                             return ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem);

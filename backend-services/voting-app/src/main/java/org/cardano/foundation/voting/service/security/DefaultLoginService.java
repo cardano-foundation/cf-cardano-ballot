@@ -59,7 +59,7 @@ public class DefaultLoginService implements LoginService {
         var cip30VerificationResult = cip30Verifier.verify();
         if (!cip30VerificationResult.isValid()) {
             var validationError = cip30VerificationResult.getValidationError().orElse(UNKNOWN);
-            log.warn("CIP30 data sign for casting vote verification failed, validationError:{}", validationError);
+            log.warn("CIP-30 data sign for casting vote verification failed, validationError:{}", validationError);
 
             return Either.left(
                     Problem.builder()
@@ -110,7 +110,7 @@ public class DefaultLoginService implements LoginService {
 
             return Either.left(Problem.builder()
                     .withTitle("ACTION_NOT_FOUND")
-                    .withDetail("Action not found, expected action:" + CAST_VOTE.name())
+                    .withDetail("Action not found!")
                     .withStatus(BAD_REQUEST)
                     .build()
             );

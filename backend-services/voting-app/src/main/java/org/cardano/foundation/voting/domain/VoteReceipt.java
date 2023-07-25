@@ -36,7 +36,7 @@ public class VoteReceipt {
 
     private String votedAtSlot;
 
-    public static enum Status {
+    public enum Status {
         BASIC, // without merkle proof committed to L1 yet
 
         PARTIAL, // there is a merkle proof but L1 commitment is not visible on chain yet
@@ -70,7 +70,7 @@ public class VoteReceipt {
 
     }
 
-    public static enum MerkleProofType {
+    public enum MerkleProofType {
         Left, Right
     }
 

@@ -24,6 +24,6 @@ public interface VoteService {
 
     Either<Problem, Vote> castVote(SignedWeb3Request castVoteRequest);
 
-    Either<Problem, VoteReceipt> voteReceipt(String event, String category, String stakeAddress);
+    Either<Problem, VoteReceipt> voteReceipt(SignedWeb3Request viewVoteReceiptRequest);
 
 }

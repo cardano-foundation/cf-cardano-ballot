@@ -36,7 +36,7 @@ public class RoleService {
             return Either.left(
                     Problem.builder()
                             .withTitle("INVALID_CIP30_DATA_SIGNATURE")
-                            .withDetail("CIP30 data signature verification failed")
+                            .withDetail("CIP-30 data signature verification failed")
                             .withStatus(BAD_REQUEST)
                             .build()
             );

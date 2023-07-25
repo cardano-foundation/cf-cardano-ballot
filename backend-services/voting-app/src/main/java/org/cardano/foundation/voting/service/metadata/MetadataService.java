@@ -119,7 +119,7 @@ public class MetadataService {
 
             return Either.left(Problem.builder()
                     .withTitle("ACTION_NOT_FOUND")
-                    .withDetail("Action not found, expected action:" + FULL_METADATA_SCAN.name())
+                    .withDetail("Action not found!")
                     .withStatus(BAD_REQUEST)
                     .build()
             );

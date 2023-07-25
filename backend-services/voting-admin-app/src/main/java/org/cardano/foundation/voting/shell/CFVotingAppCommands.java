@@ -50,7 +50,6 @@ public class CFVotingAppCommands {
     public String votingAppFullMetadataScan() throws IOException, InterruptedException, DataSignError {
         log.info("Invoking full metadata scan on voting-app...");
 
-
         String uri = votingAppBaseUrl + "/api/admin/full-metadata-scan";
 
         var stakeAddress = organiserAccount.stakeAddress();
@@ -77,8 +76,6 @@ public class CFVotingAppCommands {
         var httpPostRequestBody = objectMapper.createObjectNode();
         httpPostRequestBody.put("coseSignature", dataSignature.signature());
         httpPostRequestBody.put("cosePublicKey", dataSignature.key());
-
-        System.out.println(httpPostRequestBody.toPrettyString());
 
         var metadataScanRequest = HttpRequest.newBuilder()
                 .uri(URI.create(uri))

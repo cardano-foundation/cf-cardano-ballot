@@ -4,7 +4,6 @@ import com.bloxbean.cardano.client.common.ADAConversionUtil;
 import com.google.common.collect.Iterables;
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.Leaderboard;
 import org.cardano.foundation.voting.repository.VoteRepository;
 import org.cardano.foundation.voting.service.expire.ExpirationService;
@@ -29,8 +28,6 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
     @Autowired
     private ExpirationService expirationService;
 
-    @Autowired
-    private CardanoNetwork cardanoNetwork;
     @Autowired
     private VoteRepository voteRepository;
 
@@ -105,6 +102,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
                     .collect(toMap(VoteRepository.EventCategoryVoteCount::getProposalName, v -> new Leaderboard.Votes(v.getTotalVoteCount(), String.valueOf(v.getTotalVotingPower()))));
         }
 
+        // TODO uncomment this when frontend is ready
 //        if (!expirationService.isEventFinished(e) && !e.isCategoryResultsWhileVoting()) {
 //            return Either.left(Problem.builder()
 //                    .withTitle("VOTING_RESULTS_NOT_AVAILABLE")

@@ -34,7 +34,6 @@ public class BlockchainDataResource {
         return ResponseEntity.ok(blockchainDataChainTipService.getChainTip());
     }
 
-
     @RequestMapping(value = "/submit", method = POST, produces = "application/json")
     @Timed(value = "resource.blockchain.submit", percentiles = { 0.3, 0.5, 0.95 })
     public ResponseEntity<?> submit(@RequestBody TxBody txBody) {
@@ -44,3 +43,4 @@ public class BlockchainDataResource {
     }
 
 }
+

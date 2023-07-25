@@ -67,6 +67,9 @@ public class DefaultVoteService implements VoteService {
     private VotingPowerService votingPowerService;
 
     @Autowired
+    private CardanoNetwork cardanoNetwork;
+
+    @Autowired
     private JsonService jsonService;
 
     @Autowired
@@ -200,6 +203,18 @@ public class DefaultVoteService implements VoteService {
                     .build());
         }
 
+        var network = maybeNetwork.orElseThrow();
+
+        if (network != cardanoNetwork) {
+            log.warn("Invalid network, network:{}", cip90VoteEnvelope.getData().getNetwork());
+
+            return Either.left(Problem.builder()
+                    .withTitle("NETWORK_MISMATCH")
+                    .withDetail("Invalid network, backed configured with network:" + cardanoNetwork + ", however request is with network:" + network)
+                    .withStatus(BAD_REQUEST)
+                    .build());
+        }
+
         String cip30StakeAddress = cip90VoteEnvelope.getData().getAddress();
         if (!stakeAddress.equals(cip30StakeAddress)) {
             return Either.left(Problem.builder()
@@ -208,8 +223,6 @@ public class DefaultVoteService implements VoteService {
                     .withStatus(BAD_REQUEST)
                     .build());
         }
-
-        var network = maybeNetwork.orElseThrow();
 
         var actionText = cip90VoteEnvelope.getAction();
 

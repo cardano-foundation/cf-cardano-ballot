@@ -27,8 +27,6 @@ public class VoteReceipt {
     @Builder.Default
     private Optional<String> cosePublicKey = Optional.empty();
 
-    private CardanoNetwork cardanoNetwork;
-
     private Status status;
 
     private MerkleProof merkleProof;

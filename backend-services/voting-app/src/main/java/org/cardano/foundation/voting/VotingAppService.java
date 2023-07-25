@@ -33,13 +33,8 @@ public class VotingAppService {
 	public CommandLineRunner onStart() {
 
 		return (args) -> {
-			log.info("CF Voting App initialisation...");
-
-			//referenceDataCreator.createReferenceData();
-
-			log.info("CF Voting App initialisation completed.");
+			log.info("Voting App Service started.");
 		};
 	}
-
 
 }

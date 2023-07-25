@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 
 import java.util.Arrays;
-import java.util.Optional;
 
 import static org.cardano.foundation.voting.domain.web3.Web3Action.CAST_VOTE;
 import static org.cardano.foundation.voting.domain.web3.Web3Action.LOGIN;
@@ -27,10 +26,6 @@ import static org.cardano.foundation.voting.utils.MoreNumber.isNumeric;
 import static org.cardanofoundation.cip30.AddressFormat.TEXT;
 import static org.cardanofoundation.cip30.ValidationError.UNKNOWN;
 import static org.zalando.problem.Status.BAD_REQUEST;
-
-// USER ERROR
-// DEVELOPER ERROR -> API // HTTP 4xx
-// FRONTEND_DEV ERROR || INTERNAL SERVER ERROR -> API // HTTP 5xx
 
 @Service
 @Slf4j
@@ -52,7 +47,9 @@ public class DefaultLoginService implements LoginService {
     private StakeAddressVerificationService stakeAddressVerificationService;
 
     @Autowired
-    private CardanoNetwork network;
+    private CardanoNetwork cardanoNetwork;
+
+    // voter receipt MUST be protected - could be protected with JWT or with CIP-93 envelope
 
     @Override
     @Timed(value = "service.auth.login", percentiles = { 0.3, 0.5, 0.95 })
@@ -139,6 +136,19 @@ public class DefaultLoginService implements LoginService {
                     .withStatus(BAD_REQUEST)
                     .build());
         }
+
+        var network = maybeNetwork.orElseThrow();
+
+        if (network != cardanoNetwork) {
+            log.warn("Invalid network, network:{}", cip93LoginEnvelope.getData().getNetwork());
+
+            return Either.left(Problem.builder()
+                    .withTitle("NETWORK_MISMATCH")
+                    .withDetail("Invalid network, backed configured with network:" + cardanoNetwork + ", however request is with network:" + network)
+                    .withStatus(BAD_REQUEST)
+                    .build());
+        }
+
         String event = cip93LoginEnvelope.getData().getEvent();
 
         var maybeEvent = referenceDataService.findValidEventByName(event);

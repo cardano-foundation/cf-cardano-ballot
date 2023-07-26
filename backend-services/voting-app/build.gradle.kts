@@ -65,7 +65,11 @@ dependencies {
 
 	testImplementation("org.testcontainers:junit-jupiter")
 
-    implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0-alpha.4")
+	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0-alpha.4")
+
+	implementation("com.bloxbean.cardano:yaci:0.2.0-beta2")
+
+	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0-alpha.4")
     implementation("com.bloxbean.cardano:cardano-client-address:0.5.0-alpha.4")
     implementation("com.bloxbean.cardano:cardano-client-metadata:0.5.0-alpha.4")
 	implementation("com.bloxbean.cardano:cardano-client-quicktx:0.5.0-alpha.4")

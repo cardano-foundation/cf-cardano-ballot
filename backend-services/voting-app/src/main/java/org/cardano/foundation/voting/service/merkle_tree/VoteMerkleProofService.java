@@ -27,4 +27,11 @@ public class VoteMerkleProofService {
         return voteMerkleProofRepository.saveAndFlush(voteMerkleProof);
     }
 
+    @Transactional
+    @Timed(value = "service.merkle.softDeleteAllProofsAfterSlot", percentiles = { 0.3, 0.5, 0.95 })
+    public void softDeleteAllProofsAfterSlot(long slot) {
+        voteMerkleProofRepository.invalidateMerkleProofsAfterSlot(slot);
+        voteMerkleProofRepository.flush();
+    }
+
 }

@@ -1,4 +1,4 @@
-import React, { useState, MouseEvent } from 'react';
+import React, { useState, MouseEvent, useEffect } from 'react';
 import cn from 'classnames';
 import { Grid, Typography } from '@mui/material';
 import ToggleButton from '@mui/material/ToggleButton';
@@ -6,14 +6,20 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { OptionProps } from './OptionCard.types';
 import styles from './OptionCard.module.scss';
 
-export const OptionCard = ({ items, onChangeOption, disabled }: OptionProps) => {
-  const [active, setActive] = useState('');
+export const OptionCard = ({ items, onChangeOption, disabled, selectedOption }: OptionProps) => {
+  const [active, setActive] = useState(selectedOption || '');
 
   const handleChange = (_event: MouseEvent<HTMLElement>, _active: string | null) => {
     if (disabled) return;
     setActive(_active);
     onChangeOption(_active);
   };
+
+  useEffect(() => {
+    if (selectedOption) {
+      setActive(selectedOption);
+    }
+  }, [selectedOption]);
 
   return (
     <Grid
@@ -23,6 +29,7 @@ export const OptionCard = ({ items, onChangeOption, disabled }: OptionProps) => 
       width={'flex'}
     >
       <ToggleButtonGroup
+        disabled={disabled}
         sx={{ width: '100%' }}
         color="primary"
         value={active}
@@ -48,7 +55,7 @@ export const OptionCard = ({ items, onChangeOption, disabled }: OptionProps) => 
                 component="div"
                 variant="h5"
               >
-                {option.label}
+                {(option.label[0].toUpperCase() + option.label.slice(1))}
               </Typography>
             </Grid>
           </ToggleButton>

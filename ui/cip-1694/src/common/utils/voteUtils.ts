@@ -9,7 +9,13 @@ type voteInput = {
   votePower: string;
 };
 
-export const buildCanonicalVoteInputJson = ({ option, voteId, voter, slotNumber, votePower }: voteInput) => {
+export const buildCanonicalVoteInputJson = ({
+  option,
+  voteId,
+  voter,
+  slotNumber,
+  votePower,
+}: voteInput): ReturnType<typeof canonicalize> => {
   const startOfCurrentDay = new Date();
   startOfCurrentDay.setUTCMinutes(0, 0, 0);
   return canonicalize({
@@ -30,3 +36,25 @@ export const buildCanonicalVoteInputJson = ({ option, voteId, voter, slotNumber,
     },
   });
 };
+
+type votereceiptInput = {
+  voter: string;
+  slotNumber: string;
+};
+
+export const buildCanonicalVoteReceiptInputJson = ({
+  voter,
+  slotNumber,
+}: votereceiptInput): ReturnType<typeof canonicalize> =>
+  canonicalize({
+    uri: 'https://evoting.cardano.org/voltaire',
+    action: 'VIEW_VOTE_RECEIPT',
+    actionText: 'View Vote Receipt',
+    slot: slotNumber,
+    data: {
+      address: voter,
+      event: EVENT_ID,
+      category: CATEGORY_ID,
+      network: TARGET_NETWORK,
+    },
+  });

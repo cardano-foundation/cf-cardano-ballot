@@ -54,8 +54,10 @@ type AnuthorizedResponse = {
   fault?: { faultstring?: string };
   message?: string;
   Error?: string | Error;
+  title?: string;
 } & Response;
-async function getErrorMessage(response: AnuthorizedResponse): Promise<string> {
+
+const getErrorMessage = (response: AnuthorizedResponse): string => {
   if (response.error) {
     return response.error_description ? response.error_description : response.error;
   } else if (response.errors && response.errors.length > 0) {
@@ -68,6 +70,8 @@ async function getErrorMessage(response: AnuthorizedResponse): Promise<string> {
     return messages.toString();
   } else if (response.fault && response.fault.faultstring) {
     return response.fault.faultstring;
+  } else if (response.title) {
+    return response.title;
   } else if (response.message) {
     try {
       const errors = JSON.parse(response.message);
@@ -84,7 +88,7 @@ async function getErrorMessage(response: AnuthorizedResponse): Promise<string> {
   } else {
     return '' + response;
   }
-}
+};
 
 export function responseErrorsHandler() {
   return {
@@ -108,20 +112,23 @@ export function responseHandlerDelegate<T>() {
 
   return {
     async parse(response: Response | AnuthorizedResponse): Promise<T | never> {
-      let json!: T & Errors;
+      let parsedResponse!: T & Errors;
 
+      const contentType = response.headers.get(Headers.CONTENT_TYPE.toLowerCase());
+      const isJson = contentType && contentType.indexOf(MediaTypes.APPLICATION_JSON) !== -1;
       try {
-        json = await response.json();
-      } catch (err) {
+        parsedResponse = await response[isJson ? 'json' : 'text']();
         if (response.status !== 200) {
-          throw new HttpError(401, response.url, await getErrorMessage(response));
+          throw new HttpError(401, response.url, getErrorMessage(parsedResponse));
         }
+      } catch (error) {
+        throw new Error(error?.message);
       }
 
-      if (typeof json === 'object' && 'errors' in json && json.errors.length >= 1) {
-        throw new HttpError(400, response.url, errorsHandler.parse(json.errors));
+      if (parsedResponse?.errors?.length >= 1) {
+        throw new HttpError(400, response.url, errorsHandler.parse(parsedResponse.errors));
       } else {
-        return json;
+        return parsedResponse;
       }
     },
   };

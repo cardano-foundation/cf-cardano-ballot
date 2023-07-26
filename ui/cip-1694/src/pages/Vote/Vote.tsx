@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import toast from 'react-hot-toast';
 import cn from 'classnames';
@@ -10,13 +10,19 @@ import DoDisturbIcon from '@mui/icons-material/DoDisturb';
 import ReceiptIcon from '@mui/icons-material/ReceiptLongOutlined';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import CountDownTimer from 'components/CountDownTimer/CountDownTimer';
-import { setIsConnectWalletModalVisible, setIsVoteSubmittedModalVisible } from 'common/store/userSlice';
-import { Account, ChainTip } from 'types/backend-services-types';
+import {
+  setIsConnectWalletModalVisible,
+  setIsReceiptFetched,
+  setIsVoteSubmittedModalVisible,
+  setVoteReceipt,
+} from 'common/store/userSlice';
+import { Account, SignedWeb3Request } from 'types/backend-services-types';
+import { RootState } from 'common/store';
 import { OptionCard } from '../../components/OptionCard/OptionCard';
 import { OptionItem } from '../../components/OptionCard/OptionCard.types';
 import SidePage from '../../components/common/SidePage/SidePage';
-import { buildCanonicalVoteInputJson } from '../../common/utils/voteUtils';
-import { voteService } from '../../common/api/voteService';
+import { buildCanonicalVoteInputJson, buildCanonicalVoteReceiptInputJson } from '../../common/utils/voteUtils';
+import * as voteService from '../../common/api/voteService';
 import { EVENT_ID } from '../../common/constants/appConstants';
 import { useToggle } from '../../common/hooks/useToggle';
 import { HttpError } from '../../common/handlers/httpHandler';
@@ -31,46 +37,90 @@ const errorsMap = {
 
 const items: OptionItem[] = [
   {
-    label: 'Yes',
+    label: 'yes',
     icon: <DoneIcon sx={{ fontSize: 52, color: '#39486C' }} />,
   },
   {
-    label: 'No',
+    label: 'no',
     icon: <CloseIcon sx={{ fontSize: 52, color: '#39486C' }} />,
   },
   {
-    label: 'Abstain',
+    label: 'abstain',
     icon: <DoDisturbIcon sx={{ fontSize: 52, color: '#39486C' }} />,
   },
 ];
 
 const Vote = () => {
   const { stakeAddress, isConnected, signMessage } = useCardano();
-  const [isDisabled, setIsDisabled] = useState<boolean>(false);
-  const [showVoteReceipt, setShowVoteReceipt] = useState<boolean>(false);
+  const receipt = useSelector((state: RootState) => state.user.receipt);
+  const isReceiptFetched = useSelector((state: RootState) => state.user.isReceiptFetched);
+  const [absoluteSlot, setAbsoluteSlot] = useState<number>();
   const [optionId, setOptionId] = useState('');
   const [isToggledReceipt, toggleReceipt] = useToggle(false);
   const dispatch = useDispatch();
 
-  const initialise = () => {
-    optionId === '' && setIsDisabled(true);
-    !isConnected && showVoteReceipt && setShowVoteReceipt(true);
-  };
+  const getSignedMessagePromise = useCallback(
+    async (message: string): Promise<SignedWeb3Request> =>
+      new Promise((resolve, reject) => {
+        signMessage(
+          message,
+          (signature, key) => resolve({ coseSignature: signature, cosePublicKey: key || '' }),
+          (error: Error) => reject(error)
+        );
+      }),
+    [signMessage]
+  );
 
-  useEffect(() => {
-    initialise();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  const fetchReceipt = useCallback(async () => {
+    try {
+      const requestVoteObjectPayload = await getSignedMessagePromise(
+        buildCanonicalVoteReceiptInputJson({
+          voter: stakeAddress,
+          slotNumber: absoluteSlot.toString(),
+        })
+      );
+      const receiptResponse = await voteService.getVoteReceipt(requestVoteObjectPayload);
+      if ('id' in receiptResponse) {
+        dispatch(setVoteReceipt({ receipt: receiptResponse }));
+      } else {
+        const message = `Failed to fetch receipt', ${receiptResponse?.title}, ${receiptResponse?.detail}`;
+        console.log(message);
+      }
+      dispatch(setIsReceiptFetched({ isFetched: true }));
+    } catch (error) {
+      if (error?.message === 'VOTE_NOT_FOUND') {
+        dispatch(setVoteReceipt({ receipt: null }));
+        dispatch(setIsReceiptFetched({ isFetched: true }));
+        return;
+      }
+      const message = `Failed to fetch receipt, ${error?.info || error?.message || error?.toString()}`;
+      toast.error(message);
+      console.log(message);
+    }
+  }, [absoluteSlot, dispatch, getSignedMessagePromise, stakeAddress]);
+
+  const init = useCallback(async () => {
+    try {
+      setAbsoluteSlot((await voteService.getSlotNumber())?.absoluteSlot);
+    } catch (error) {
+      console.log('Failed to fecth slot number', error?.message);
+    }
   }, []);
 
-  const notify = (message: string) => toast(message);
-
-  const onChangeOption = (option: string) => {
-    if (option !== null) {
-      setOptionId(option);
-      setIsDisabled(false);
-    } else {
-      setIsDisabled(true);
+  useEffect(() => {
+    if (isConnected) {
+      init();
     }
+  }, [init, isConnected]);
+
+  useEffect(() => {
+    if (absoluteSlot) {
+      fetchReceipt();
+    }
+  }, [absoluteSlot, fetchReceipt]);
+
+  const onChangeOption = (option: string | null) => {
+    setOptionId(option);
   };
 
   const handleSubmit = async () => {
@@ -84,20 +134,16 @@ const Vote = () => {
       return;
     }
 
-    let absoluteSlot: ChainTip['absoluteSlot'];
-    try {
-      ({ absoluteSlot } = await voteService.getSlotNumber());
-    } catch (error) {
-      console.log('Failed to fecth slot number', error?.message);
-    }
-
     let votingPower: Account['votingPower'];
     try {
       ({ votingPower } = await voteService.getVotingPower(EVENT_ID, stakeAddress));
     } catch (error) {
-      if (error instanceof Error || error instanceof HttpError) {
-        console.log('Failed to fetch votingPower', error?.message);
-      } else console.log('Failed to fetch votingPower', error);
+      const message = `Failed to fetch votingPower ${
+        error instanceof Error || error instanceof HttpError ? error?.message : error
+      }`;
+
+      console.log(message);
+      toast.error(message);
       return;
     }
 
@@ -108,28 +154,21 @@ const Vote = () => {
       slotNumber: absoluteSlot.toString(),
       votePower: votingPower,
     });
-    signMessage(canonicalVoteInput, async (signature, key) => {
-      const requestVoteObject = {
-        cosePublicKey: key || '',
-        coseSignature: signature,
-      };
 
-      try {
-        await voteService.castAVoteWithDigitalSignature(requestVoteObject);
-        dispatch(setIsVoteSubmittedModalVisible({ isVisible: true }));
+    try {
+      const requestVoteObject = await getSignedMessagePromise(canonicalVoteInput);
+      await voteService.castAVoteWithDigitalSignature(requestVoteObject);
+      dispatch(setIsVoteSubmittedModalVisible({ isVisible: true }));
+      await fetchReceipt();
+    } catch (error) {
+      if (error instanceof HttpError && error.code === 400) {
+        toast.error(errorsMap[error?.message as keyof typeof errorsMap] || error?.message);
         setOptionId('');
-        setShowVoteReceipt(true);
-      } catch (error) {
-        if (error instanceof HttpError && error.code === 400) {
-          notify(errorsMap[error?.message as keyof typeof errorsMap] || error?.message);
-          setOptionId('');
-          setIsDisabled(true);
-        } else if (error instanceof Error) {
-          notify(error?.message);
-          console.log('Failed to cast e vote', error);
-        }
+      } else if (error instanceof Error) {
+        toast.error(error?.message || error.toString());
+        console.log('Failed to cast e vote', error);
       }
-    });
+    }
   };
 
   return (
@@ -168,7 +207,8 @@ const Vote = () => {
         </Grid>
         <Grid item>
           <OptionCard
-            disabled={showVoteReceipt}
+            selectedOption={receipt?.proposal?.toLowerCase()}
+            disabled={!!receipt}
             items={items}
             onChangeOption={onChangeOption}
           />
@@ -180,12 +220,12 @@ const Vote = () => {
             justifyContent={'center'}
           >
             <Grid item>
-              {!showVoteReceipt ? (
+              {!receipt?.id ? (
                 <Button
-                  className={cn(styles.button, { [styles.disabled]: isDisabled && isConnected })}
+                  className={cn(styles.button, { [styles.disabled]: (!optionId && isConnected) || !isReceiptFetched })}
                   size="large"
                   variant="contained"
-                  disabled={isDisabled && isConnected}
+                  disabled={!optionId && isConnected}
                   onClick={() => handleSubmit()}
                   sx={{}}
                 >

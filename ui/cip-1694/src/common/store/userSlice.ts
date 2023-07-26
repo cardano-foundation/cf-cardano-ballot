@@ -1,42 +1,43 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
+import { VoteReceipt } from 'types/backend-services-types';
 import { UserState } from './types';
 
 const initialState: UserState = {
-  isLoggedIn: false,
-  isVerified: false,
-  termsAndPrivacy: false,
-  error: '',
+  isConnectWalletModalVisible: false,
+  isVoteSubmittedModalVisible: false,
+  connectedWallet: '',
+  isReceiptFetched: false,
+  receipt: null,
 };
 
 export const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    setSession: (state, action: PayloadAction<{ session: object }>) => {
-      return {
-        ...initialState,
-        ...action.payload.session,
-        isLoggedIn: true,
-      };
+    setIsConnectWalletModalVisible: (state, action: PayloadAction<{ isVisible: boolean }>) => {
+      state.isConnectWalletModalVisible = action.payload.isVisible;
     },
-    setUser: (state, action: PayloadAction<{ user: object }>) => {
-      state.user = action.payload.user;
+    setIsVoteSubmittedModalVisible: (state, action: PayloadAction<{ isVisible: boolean }>) => {
+      state.isVoteSubmittedModalVisible = action.payload.isVisible;
     },
-    setUserIsVerified: (state, action: PayloadAction<{ isVerified: boolean }>) => {
-      state.isVerified = action.payload.isVerified;
+    setConnectedWallet: (state, action: PayloadAction<{ wallet: string }>) => {
+      state.connectedWallet = action.payload.wallet;
     },
-    reduxError: (state, action: PayloadAction<{ error: string }>) => {
-      state.error = action.payload.error;
+    setVoteReceipt: (state, action: PayloadAction<{ receipt: VoteReceipt }>) => {
+      state.receipt = action.payload.receipt;
     },
-    clearSession: (state, action: PayloadAction<{ termsAndPrivacy: boolean }>) => {
-      return {
-        ...initialState,
-        termsAndPrivacy: action.payload.termsAndPrivacy,
-      };
+    setIsReceiptFetched: (state, action: PayloadAction<{ isFetched: boolean }>) => {
+      state.isReceiptFetched = action.payload.isFetched;
     },
   },
 });
 
-export const { setSession, setUser, setUserIsVerified, reduxError, clearSession } = userSlice.actions;
+export const {
+  setIsConnectWalletModalVisible,
+  setIsVoteSubmittedModalVisible,
+  setConnectedWallet,
+  setVoteReceipt,
+  setIsReceiptFetched,
+} = userSlice.actions;
 export default userSlice.reducer;

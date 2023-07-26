@@ -1,96 +1,114 @@
 import React from 'react';
 import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { Box, Button, styled } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { useTheme } from '@mui/material/styles';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 import { ConnectWalletList } from '@cardano-foundation/cardano-connect-with-wallet';
-
-const ConnectGrid = styled(Grid)(({ theme }) => ({
-  width: '100%',
-  ...theme.typography.body2,
-  '& [role="separator"]': {
-    margin: theme.spacing(0, 2),
-  },
-}));
+import { SUPPORTED_WALLETS, ALWAYS_VISIBLE_WALLETS } from 'common/constants/appConstants';
+import styles from './ConnectWalletModal.module.scss';
 
 type ConnectWalletModalProps = {
   name: string;
   id: string;
   openStatus: boolean;
   title: string;
-  action: boolean;
+  description: string;
   onConnectWallet: () => void;
   onCloseFn: () => void;
-  buttonLabel: string;
 };
 
-const ConnectWalletModal = (props: ConnectWalletModalProps) => {
+export const ConnectWalletModal = (props: ConnectWalletModalProps) => {
   const theme = useTheme();
-  const { name, id, openStatus, title, action, onConnectWallet, onCloseFn, buttonLabel } = props;
+  const { name, id, openStatus, title, description, onConnectWallet, onCloseFn } = props;
+  const supportedWallets = SUPPORTED_WALLETS;
+  const alwaysVisibleWallets = ALWAYS_VISIBLE_WALLETS;
 
   return (
     <Dialog
       open={openStatus}
-      onClose={onCloseFn}
       aria-labelledby={name}
+      PaperProps={{ sx: { width: '400px', borderRadius: '16px' } }}
     >
-      <DialogTitle id={id}>{title}</DialogTitle>
-      <DialogContent>
+      <DialogTitle
+        className={styles.dialogTitle}
+        id={id}
+      >
+        {title}
+        <IconButton
+          aria-label="close"
+          onClick={onCloseFn}
+          className={styles.closeBtn}
+        >
+          <CloseIcon className={styles.closeIcon} />
+        </IconButton>
+      </DialogTitle>
+      <DialogContent className={styles.dialogContent}>
         <DialogContentText component={'div'}>
-          <ConnectGrid
+          <Grid
             container
             direction="column"
             justifyContent="center"
             alignItems="center"
+            gap={'25px'}
           >
             <Grid
               item
-              xs={6}
+              width="100%"
             >
-              <Box>
+              <Typography
+                className={styles.description}
+                component="div"
+                variant="h5"
+              >
+                {description}
+              </Typography>
+            </Grid>
+            <Grid
+              item
+              width="100%"
+            >
+              <Box width="100%">
                 <ConnectWalletList
-                  borderRadius={15}
-                  supportedWallets={['flint', 'nami', 'eternl', 'typhon', 'yoroi']}
-                  alwaysVisibleWallets={['flint']}
+                  supportedWallets={supportedWallets}
+                  alwaysVisibleWallets={alwaysVisibleWallets}
                   primaryColor={theme.palette.primary.main}
                   onConnect={onConnectWallet}
                   customCSS={`
-                    width: 170px;
-                    button {
-                        padding: 6px;
-                        font-weight: 700;
-                        line-height: 1.7142857142857142;
-                        font-size: 0.875rem;
-                        font-family: Helvetica Light,sans-serif;
-                    }
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                    max-width: 100%;
+                    width: 100%;
                     span {
-                        padding: 16px;
-                        font-family: Helvetica Light,sans-serif;
-                        font-size: 0.875rem;
+                      background: #F5F9FF !important;
+                      border-radius: 8px !important;
+                      border: 1px solid #BBB !important;
+                      color: #39486C !important;
+                      font-size: 16px !important;
+                      font-style: normal;
+                      font-weight: 400 !important;
+                      height: 54px !important;
+                      line-height: 22px !important;
+                      padding: 20px;
+                      gap: 14px;
+                      : hover {
+                        border: 1px solid #1D439B !important;
+                        background: rgba(29, 67, 155, 0.10) !important;
+                        box-shadow: 2px 2px 5px 0px rgba(29, 67, 155, 0.25);
+                      }
                     }
                   `}
                 />
               </Box>
             </Grid>
-          </ConnectGrid>
+          </Grid>
         </DialogContentText>
       </DialogContent>
-      {action && (
-        <DialogActions>
-          <Button
-            autoFocus
-            onClick={onCloseFn}
-          >
-            {buttonLabel}
-          </Button>
-        </DialogActions>
-      )}
     </Dialog>
   );
 };
-
-export default ConnectWalletModal;

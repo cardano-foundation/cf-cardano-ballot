@@ -54,8 +54,10 @@ type AnuthorizedResponse = {
   fault?: { faultstring?: string };
   message?: string;
   Error?: string | Error;
+  title?: string;
 } & Response;
-async function getErrorMessage(response: AnuthorizedResponse): Promise<string> {
+
+const getErrorMessage = (response: AnuthorizedResponse): string => {
   if (response.error) {
     return response.error_description ? response.error_description : response.error;
   } else if (response.errors && response.errors.length > 0) {
@@ -68,6 +70,8 @@ async function getErrorMessage(response: AnuthorizedResponse): Promise<string> {
     return messages.toString();
   } else if (response.fault && response.fault.faultstring) {
     return response.fault.faultstring;
+  } else if (response.title) {
+    return response.title;
   } else if (response.message) {
     try {
       const errors = JSON.parse(response.message);
@@ -84,7 +88,7 @@ async function getErrorMessage(response: AnuthorizedResponse): Promise<string> {
   } else {
     return '' + response;
   }
-}
+};
 
 export function responseErrorsHandler() {
   return {
@@ -100,42 +104,31 @@ export function responseErrorsHandler() {
   };
 }
 
-type NoContentResponse = { status: number; message: string };
+// type NoContentResponse = { status: number; message: string };
 type Errors = { errors: Array<{ errorCode: string }> } & Omit<Response, 'errors'>;
 
 export function responseHandlerDelegate<T>() {
   const errorsHandler = responseErrorsHandler();
 
   return {
-    async parse(response: Response | AnuthorizedResponse): Promise<T | NoContentResponse | never> {
-      let json!: T & Errors;
+    async parse(response: Response | AnuthorizedResponse): Promise<T | never> {
+      let parsedResponse!: T & Errors;
 
-      if (response.status === 204) {
-        return {
-          status: 204,
-          message: 'Success',
-        };
-      }
-
+      const contentType = response.headers.get(Headers.CONTENT_TYPE.toLowerCase());
+      const isJson = contentType && contentType.indexOf(MediaTypes.APPLICATION_JSON) !== -1;
       try {
-        json = await response.json();
-      } catch (err) {
+        parsedResponse = await response[isJson ? 'json' : 'text']();
         if (response.status !== 200) {
-          throw new HttpError(401, response.url, await getErrorMessage(response));
+          throw new HttpError(401, response.url, getErrorMessage(parsedResponse));
         }
+      } catch (error) {
+        throw new Error(error?.message);
       }
 
-      if (json === undefined && response.status === 200) {
-        return {
-          status: 200,
-          message: 'Success',
-        };
-      }
-
-      if (typeof json === 'object' && 'errors' in json && json.errors.length >= 1) {
-        throw new HttpError(400, response.url, errorsHandler.parse(json.errors));
+      if (parsedResponse?.errors?.length >= 1) {
+        throw new HttpError(400, response.url, errorsHandler.parse(parsedResponse.errors));
       } else {
-        return json;
+        return parsedResponse;
       }
     },
   };
@@ -174,7 +167,7 @@ async function execute<T>(
   body?: string,
   useAuth?: boolean
 ) {
-  // TODO: useAuth is not used in executeRequest?
+  // FIXME: useAuth is not used in executeRequest?
   console.log(useAuth);
   return await executeRequest<T>(url, method, headers, body).catch((err) => {
     throw err;

@@ -1,6 +1,6 @@
 import React from 'react';
-import IntroSlides from '../../components/IntroSlides/IntroSlides';
-import { SlideItem } from '../../components/IntroSlides/IntroSlides.types';
+import { Slides } from '../../components/common/Slides/Slides';
+import { SlideItem } from '../../components/common/Slides/Slides.types';
 import './Introduction.scss';
 
 const Introduction = () => {
@@ -11,21 +11,9 @@ const Introduction = () => {
       description:
         'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magnaaliqua. Sit amet justo donec enim diam vulputate.',
     },
-    {
-      image: '/static/brazil-cip-1694.jpeg',
-      title: 'What is CIP-1694 voting?',
-      description:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magnaaliqua. Sit amet justo donec enim diam vulputate.',
-    },
-    {
-      image: '/static/ci-1694-tokyo.jpeg',
-      title: 'What is CIP-1694 voting?',
-      description:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magnaaliqua. Sit amet justo donec enim diam vulputate.',
-    },
   ];
 
-  return <IntroSlides items={items} />;
+  return <Slides items={items} />;
 };
 
 export default Introduction;

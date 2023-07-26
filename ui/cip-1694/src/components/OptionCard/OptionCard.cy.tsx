@@ -4,19 +4,20 @@ import React from 'react';
 import DoneIcon from '@mui/icons-material/Done';
 import CloseIcon from '@mui/icons-material/Close';
 import DoDisturbIcon from '@mui/icons-material/DoDisturb';
-import OptionCard from './OptionCard';
+import { OptionCard } from './OptionCard';
+import { OptionItem } from './OptionCard.types';
 
-const items = [
+const items: OptionItem[] = [
   {
-    label: 'Yes',
+    label: 'yes',
     icon: <DoneIcon />,
   },
   {
-    label: 'No',
+    label: 'no',
     icon: <CloseIcon />,
   },
   {
-    label: 'Abstain',
+    label: 'abstain',
     icon: <DoDisturbIcon />,
   },
 ];
@@ -30,6 +31,7 @@ describe('<OptionCard />', () => {
     cy.fixture('items.json').as('items');
     cy.mount(
       <OptionCard
+        selectedOption="Yes"
         items={items}
         onChangeOption={onChangeOption}
       />

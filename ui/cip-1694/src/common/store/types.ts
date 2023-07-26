@@ -1,7 +1,13 @@
+import { VoteReceipt } from 'types/backend-services-types';
+
 export interface UserState {
-  isLoggedIn: boolean;
-  isVerified: boolean;
-  termsAndPrivacy: boolean;
-  error: string;
-  user?: object;
+  isConnectWalletModalVisible: boolean;
+  isVoteSubmittedModalVisible: boolean;
+  connectedWallet: string;
+  isReceiptFetched: boolean;
+  receipt: VoteReceipt | null;
+}
+
+export interface State {
+  user: UserState;
 }

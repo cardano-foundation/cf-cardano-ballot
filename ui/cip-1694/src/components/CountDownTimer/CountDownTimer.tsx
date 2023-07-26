@@ -1,17 +1,18 @@
 import React from 'react';
 import moment from 'moment';
-import { useTimer } from 'react-timer-hook';
+import { EVENT_END_TIME, EVENT_END_TIME_FORMAT } from 'common/constants/appConstants';
+import styles from './CountDownTimer.module.scss';
 
 export default function CountDownTimer() {
-  const time = new Date();
-  const endTime = moment('09-01-2023', 'MM-DD-YYYY'); // summit date
-  time.setSeconds(time.getSeconds() + endTime.diff(time, 'seconds')); // time left for summit date
-
-  const { seconds, minutes, hours, days } = useTimer({ expiryTimestamp: time });
+  const date = EVENT_END_TIME;
+  const endTime = moment(date, EVENT_END_TIME_FORMAT).format('D MMMM YYYY, h:mm a');
 
   return (
-    <div data-testid="count-down-timer">
-      <span>{days} days</span>, <span>{hours} hours</span>, <span>{minutes} minutes</span>, <span>{seconds} secs</span>
-    </div>
+    <span
+      className={styles.container}
+      data-testid="count-down-timer"
+    >
+      Voting closes: <b>{endTime}</b>
+    </span>
   );
 }

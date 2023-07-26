@@ -1,20 +1,18 @@
 import React, { useState, MouseEvent } from 'react';
-import { useTheme } from '@mui/material/styles';
+import cn from 'classnames';
 import { Grid, Typography } from '@mui/material';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import Zoom from '@mui/material/Zoom';
 import { OptionProps } from './OptionCard.types';
-import './OptionCard.scss';
+import styles from './OptionCard.module.scss';
 
-export default function OptionCard({ items, onChangeOption }: OptionProps) {
-  const theme = useTheme();
-  const [alignment, setAlignment] = useState('');
-  const [selected] = useState(false);
+export const OptionCard = ({ items, onChangeOption, disabled }: OptionProps) => {
+  const [active, setActive] = useState('');
 
-  const handleChange = (_event: MouseEvent<HTMLElement>, newAlignment: string) => {
-    setAlignment(newAlignment);
-    onChangeOption(newAlignment);
+  const handleChange = (_event: MouseEvent<HTMLElement>, _active: string | null) => {
+    if (disabled) return;
+    setActive(_active);
+    onChangeOption(_active);
   };
 
   return (
@@ -22,52 +20,40 @@ export default function OptionCard({ items, onChangeOption }: OptionProps) {
       container
       direction="row"
       justifyContent={'center'}
+      width={'flex'}
     >
-      {items.map((option, index) => (
-        <Grid
-          item
-          xs={12}
-          sm={3}
-          sx={{ m: theme.spacing(2, 4, 2, 2) }}
-          key={index}
-        >
-          <Zoom
-            in
-            timeout={250}
+      <ToggleButtonGroup
+        sx={{ width: '100%' }}
+        color="primary"
+        value={active}
+        exclusive
+        onChange={handleChange}
+        aria-label="cip-1694 poll options"
+        className={styles.optionCardGrouo}
+      >
+        {items.map((option) => (
+          <ToggleButton
+            value={option.label}
+            className={cn(styles.optionCard, { [styles.selected]: active === option.label })}
+            key={option.label}
           >
-            <ToggleButtonGroup
-              color="primary"
-              value={alignment}
-              exclusive
-              onChange={handleChange}
-              aria-label="cip-1694 poll options"
-              className={selected ? 'option-card-selected' : 'option-card-group'}
+            <Grid
+              item
+              sm={4}
+              xs={12}
             >
-              <ToggleButton
-                value={option.label}
-                className="option-card"
+              <Typography component="div">{option.icon}</Typography>
+              <Typography
+                className={styles.label}
+                component="div"
+                variant="h5"
               >
-                <Grid
-                  container
-                  direction="column"
-                  justifyContent="center"
-                  alignItems="center"
-                >
-                  <Grid item>
-                    <Typography component="div">{option.icon}</Typography>
-                    <Typography
-                      component="div"
-                      variant="h5"
-                    >
-                      {option.label}
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </ToggleButton>
-            </ToggleButtonGroup>
-          </Zoom>
-        </Grid>
-      ))}
+                {option.label}
+              </Typography>
+            </Grid>
+          </ToggleButton>
+        ))}
+      </ToggleButtonGroup>
     </Grid>
   );
-}
+};

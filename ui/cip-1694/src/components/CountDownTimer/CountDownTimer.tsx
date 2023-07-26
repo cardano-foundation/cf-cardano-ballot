@@ -1,9 +1,18 @@
 import React from 'react';
 import moment from 'moment';
-import styles from './CountDownTimer.module.scss'
+import { EVENT_END_TIME, EVENT_END_TIME_FORMAT } from 'common/constants/appConstants';
+import styles from './CountDownTimer.module.scss';
 
 export default function CountDownTimer() {
-  const endTime = moment('09-01-2023', 'MM-DD-YYYY').format('D MMMM YYYY, h:mm a'); // summit date
+  const date = EVENT_END_TIME;
+  const endTime = moment(date, EVENT_END_TIME_FORMAT).format('D MMMM YYYY, h:mm a');
 
-  return <div className={styles.container} data-testid="count-down-timer">Voting closes: <b>{endTime}</b></div>;
+  return (
+    <span
+      className={styles.container}
+      data-testid="count-down-timer"
+    >
+      Voting closes: <b>{endTime}</b>
+    </span>
+  );
 }

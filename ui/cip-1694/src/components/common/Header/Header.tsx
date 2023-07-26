@@ -5,7 +5,7 @@ import { Grid, Typography, Button } from '@mui/material';
 import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined';
 import LeaderboardIcon from '@mui/icons-material/Leaderboard';
 import { ROUTES } from 'common/routes';
-import { ConnectWallet } from './ConnectWallet';
+import { ConnectWalletButton } from './ConnectWalletButton';
 import styles from './Header.module.scss';
 
 export const Header = () => {
@@ -64,7 +64,7 @@ export const Header = () => {
           align="center"
           component={'div'}
         >
-          <ConnectWallet />
+          <ConnectWalletButton />
         </Typography>
       </Grid>
     </Grid>

@@ -1,36 +1,17 @@
 import React from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import { ReactComponent as Discord } from 'common/resources/images/discord-icon.svg';
+import { ReactComponent as DiscordIcon } from 'common/resources/images/discord-icon.svg';
 import styles from './Footer.module.scss';
 
 const Copyright = () => (
-  <Typography
-    variant="body2"
-    color="text.secondary"
-    align="center"
-    sx={{
-      color: '#39486C',
-      fontSize: '16px',
-      fontStyle: 'normal',
-      fontWeight: '400',
-      lineHeight: 'normal',
-    }}
-  >
+  <Typography className={styles.copyright}>
     <span color="inherit">© {new Date().getFullYear()} CIP-1694 Ratification. All rights reserved.</span>
   </Typography>
 );
 
 export const Footer = () => (
-  <Box
-    sx={{
-      display: 'flex',
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      height: '85px',
-    }}
-  >
+  <Box className={styles.footer}>
     <Copyright />
     <Box
       sx={{
@@ -48,7 +29,7 @@ export const Footer = () => (
         Version 1.01&nbsp;<span className={styles.underline}>(Status)</span>
       </span>
       <span className={styles.link}>
-        <Discord />
+        <DiscordIcon />
       </span>
     </Box>
   </Box>

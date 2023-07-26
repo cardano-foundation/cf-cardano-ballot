@@ -100,22 +100,15 @@ export function responseErrorsHandler() {
   };
 }
 
-type NoContentResponse = { status: number; message: string };
+// type NoContentResponse = { status: number; message: string };
 type Errors = { errors: Array<{ errorCode: string }> } & Omit<Response, 'errors'>;
 
 export function responseHandlerDelegate<T>() {
   const errorsHandler = responseErrorsHandler();
 
   return {
-    async parse(response: Response | AnuthorizedResponse): Promise<T | NoContentResponse | never> {
+    async parse(response: Response | AnuthorizedResponse): Promise<T | never> {
       let json!: T & Errors;
-
-      if (response.status === 204) {
-        return {
-          status: 204,
-          message: 'Success',
-        };
-      }
 
       try {
         json = await response.json();
@@ -123,13 +116,6 @@ export function responseHandlerDelegate<T>() {
         if (response.status !== 200) {
           throw new HttpError(401, response.url, await getErrorMessage(response));
         }
-      }
-
-      if (json === undefined && response.status === 200) {
-        return {
-          status: 200,
-          message: 'Success',
-        };
       }
 
       if (typeof json === 'object' && 'errors' in json && json.errors.length >= 1) {

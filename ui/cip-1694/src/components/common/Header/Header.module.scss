@@ -9,17 +9,17 @@
   }
 
   .logo {
-    height: 29px;
     cursor: pointer;
+    height: 29px;
   }
 
   .button {
-    padding: 15px 25px;
-    text-transform: none;
     color: #061d3c;
     font-size: 16px;
     font-weight: 600;
     line-height: normal;
+    padding: 15px 25px;
+    text-transform: none;
 
     :global(.MuiButton-startIcon) {
       margin-right: 10px;
@@ -30,4 +30,29 @@
       text-decoration: underline;
     }
   }
+}
+
+.walletIcon {
+  height: 22px;
+  margin-right: 10px;
+  width: 22px;
+}
+
+.arrowIcon {
+  color: #bbbbbb;
+}
+
+.connectButton {
+  background: #061d3c !important;
+  border-radius: 8px !important;
+  color: #f5f9ff !important;
+  font-size: 16px !important;
+  font-style: normal !important;
+  font-weight: 600 !important;
+  height: 49px !important;
+  line-height: normal !important;
+  margin-left: 10px !important;
+  text-transform: unset !important;
+  white-space: nowrap !important;
+  width: 179px !important;
 }

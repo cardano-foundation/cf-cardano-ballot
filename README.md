@@ -16,10 +16,37 @@ Voltaire Voting Applications to be used by Cardano Community to cast CIP-1694 pr
 - Docker-Compose
 
 ## Running (Development)
+
+- create `.env` file on the same level as `.env.development`
+
 ```shell
-docker-compose up -d
+brew install maven
 ```
+
+```shell
+git clone git@github.com:cardano-foundation/merkle-tree-java.git
+mvn clean install
+```
+
+```shell
+git clone https://github.com/cardano-foundation/cip30-data-signature-parser
+mvn install clean
+```
+
+```shell
+cd cf-voting-app
+rm -rf db
+docker-compose rm
+docker-compose up
+```
+
+```shell
+cd cf-voting-app/backend-services/voting-app
 ./gradlew bootRun
+```
+
+```shell
+npm run start
 ```
 
 ## Repository Structure

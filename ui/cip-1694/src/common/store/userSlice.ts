@@ -3,40 +3,26 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import { UserState } from './types';
 
 const initialState: UserState = {
-  isLoggedIn: false,
-  isVerified: false,
-  termsAndPrivacy: false,
-  error: '',
+  isConnectWalletModalVisible: false,
+  isVoteSubmittedModalVisible: false,
+  connectedWallet: '',
 };
 
 export const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    setSession: (state, action: PayloadAction<{ session: object }>) => {
-      return {
-        ...initialState,
-        ...action.payload.session,
-        isLoggedIn: true,
-      };
+    setIsConnectWalletModalVisible: (state, action: PayloadAction<{ isVisible: boolean }>) => {
+      state.isConnectWalletModalVisible = action.payload.isVisible;
     },
-    setUser: (state, action: PayloadAction<{ user: object }>) => {
-      state.user = action.payload.user;
+    setIsVoteSubmittedModalVisible: (state, action: PayloadAction<{ isVisible: boolean }>) => {
+      state.isVoteSubmittedModalVisible = action.payload.isVisible;
     },
-    setUserIsVerified: (state, action: PayloadAction<{ isVerified: boolean }>) => {
-      state.isVerified = action.payload.isVerified;
-    },
-    reduxError: (state, action: PayloadAction<{ error: string }>) => {
-      state.error = action.payload.error;
-    },
-    clearSession: (state, action: PayloadAction<{ termsAndPrivacy: boolean }>) => {
-      return {
-        ...initialState,
-        termsAndPrivacy: action.payload.termsAndPrivacy,
-      };
+    setConnectedWallet: (state, action: PayloadAction<{ wallet: string }>) => {
+      state.connectedWallet = action.payload.wallet;
     },
   },
 });
 
-export const { setSession, setUser, setUserIsVerified, reduxError, clearSession } = userSlice.actions;
+export const { setIsConnectWalletModalVisible, setIsVoteSubmittedModalVisible, setConnectedWallet } = userSlice.actions;
 export default userSlice.reducer;

@@ -8,6 +8,7 @@ interface OptionItem {
 interface OptionProps {
   items: OptionItem[];
   onChangeOption: (option: string) => void;
+  disabled?: boolean;
 }
 
 export type { OptionItem, OptionProps };

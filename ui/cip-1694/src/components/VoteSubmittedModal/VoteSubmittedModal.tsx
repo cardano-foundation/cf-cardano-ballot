@@ -1,0 +1,85 @@
+import React from 'react';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import { Box, Button, Typography } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import styles from './VoteSubmittedModal.module.scss';
+
+type VoteSubmittedModalProps = {
+  name: string;
+  id: string;
+  openStatus: boolean;
+  title: string;
+  description: string | React.ReactNode;
+  onCloseFn: () => void;
+};
+
+export const VoteSubmittedModal = (props: VoteSubmittedModalProps) => {
+  const { name, id, openStatus, title, description, onCloseFn } = props;
+
+  return (
+    <Dialog
+      open={openStatus}
+      aria-labelledby={name}
+      PaperProps={{ sx: { width: '400px', borderRadius: '16px' } }}
+    >
+      <DialogTitle
+        className={styles.dialogTitle}
+        id={id}
+      >
+        {title}
+        <IconButton
+          aria-label="close"
+          onClick={onCloseFn}
+          className={styles.closeBtn}
+        >
+          <CloseIcon className={styles.closeIcon} />
+        </IconButton>
+      </DialogTitle>
+      <DialogContent className={styles.dialogContent}>
+        <DialogContentText component={'div'}>
+          <Grid
+            container
+            direction="column"
+            justifyContent="center"
+            alignItems="center"
+            gap={'25px'}
+          >
+            <Grid
+              item
+              width="100%"
+            >
+              <Typography
+                className={styles.description}
+                component="div"
+                variant="h5"
+              >
+                {description}
+              </Typography>
+            </Grid>
+            <Grid
+              item
+              width="100%"
+            >
+              <Box width="100%">
+                <Button
+                  className={styles.button}
+                  size="large"
+                  variant="contained"
+                  onClick={() => onCloseFn()}
+                  sx={{}}
+                >
+                  Done
+                </Button>
+              </Box>
+            </Grid>
+          </Grid>
+        </DialogContentText>
+      </DialogContent>
+    </Dialog>
+  );
+};

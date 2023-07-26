@@ -1,7 +1,9 @@
 export interface UserState {
-  isLoggedIn: boolean;
-  isVerified: boolean;
-  termsAndPrivacy: boolean;
-  error: string;
-  user?: object;
+  isConnectWalletModalVisible: boolean;
+  isVoteSubmittedModalVisible: boolean;
+  connectedWallet: string;
+}
+
+export interface State {
+  user: UserState;
 }

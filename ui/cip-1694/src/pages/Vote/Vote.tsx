@@ -1,26 +1,27 @@
 import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
-import { useTheme } from '@mui/material/styles';
-import { Grid, Container, Typography, Button } from '@mui/material';
-import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
+import toast from 'react-hot-toast';
+import cn from 'classnames';
+import { Grid, Typography, Button } from '@mui/material';
 import DoneIcon from '@mui/icons-material/Done';
 import CloseIcon from '@mui/icons-material/Close';
 import DoDisturbIcon from '@mui/icons-material/DoDisturb';
-import ReceiptIcon from '@mui/icons-material/Receipt';
-import toast from 'react-hot-toast';
+import ReceiptIcon from '@mui/icons-material/ReceiptLongOutlined';
+import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import CountDownTimer from 'components/CountDownTimer/CountDownTimer';
-import OptionCard from '../../components/OptionCard/OptionCard';
+import { setIsConnectWalletModalVisible, setIsVoteSubmittedModalVisible } from 'common/store/userSlice';
+import { Account, ChainTip } from 'types/backend-services-types';
+import { OptionCard } from '../../components/OptionCard/OptionCard';
 import { OptionItem } from '../../components/OptionCard/OptionCard.types';
 import SidePage from '../../components/common/SidePage/SidePage';
 import { buildCanonicalVoteInputJson } from '../../common/utils/voteUtils';
 import { voteService } from '../../common/api/voteService';
-import VoteReceipt from './VoteReceipt';
-import './Vote.scss';
 import { EVENT_ID } from '../../common/constants/appConstants';
 import { useToggle } from '../../common/hooks/useToggle';
-import { Account, ChainTip } from '../../types/backend-services-types';
 import { HttpError } from '../../common/handlers/httpHandler';
-import ConnectWalletModal from '../../components/ConnectWalletModal/ConnectWalletModal';
+import VoteReceipt from './VoteReceipt';
+import styles from './Vote.module.scss';
 
 const errorsMap = {
   INVALID_VOTING_POWER: 'To cast a vote, Voting Power should be more than 0',
@@ -31,26 +32,25 @@ const errorsMap = {
 const items: OptionItem[] = [
   {
     label: 'Yes',
-    icon: <DoneIcon />,
+    icon: <DoneIcon sx={{ fontSize: 52, color: '#39486C' }} />,
   },
   {
     label: 'No',
-    icon: <CloseIcon />,
+    icon: <CloseIcon sx={{ fontSize: 52, color: '#39486C' }} />,
   },
   {
     label: 'Abstain',
-    icon: <DoDisturbIcon />,
+    icon: <DoDisturbIcon sx={{ fontSize: 52, color: '#39486C' }} />,
   },
 ];
 
 const Vote = () => {
-  const theme = useTheme();
   const { stakeAddress, isConnected, signMessage } = useCardano();
   const [isDisabled, setIsDisabled] = useState<boolean>(false);
   const [showVoteReceipt, setShowVoteReceipt] = useState<boolean>(false);
-  const [openAuthDialog, setOpenAuthDialog] = useState<boolean>(false);
   const [optionId, setOptionId] = useState('');
   const [isToggledReceipt, toggleReceipt] = useToggle(false);
+  const dispatch = useDispatch();
 
   const initialise = () => {
     optionId === '' && setIsDisabled(true);
@@ -73,15 +73,6 @@ const Vote = () => {
     }
   };
 
-  const handleCloseAuthDialog = () => {
-    setOpenAuthDialog(false);
-  };
-
-  const onConnectWallet = () => {
-    setOpenAuthDialog(false);
-    notify('Wallet Connected!');
-  };
-
   const handleSubmit = async () => {
     if (!EVENT_ID) {
       console.log('EVENT_ID is not provided');
@@ -89,44 +80,43 @@ const Vote = () => {
     }
 
     if (!isConnected) {
-      setOpenAuthDialog(true);
+      dispatch(setIsConnectWalletModalVisible({ isVisible: true }));
       return;
     }
-    const slotNumberResponse = (await voteService.getSlotNumber()) as ChainTip;
 
-    const absoluteSlot = slotNumberResponse?.absoluteSlot.toString();
-    if (!isConnected || !stakeAddress) return;
-
-    let votingPower;
+    let absoluteSlot: ChainTip['absoluteSlot'];
     try {
-      ({ votingPower } = (await voteService.getVotingPower(EVENT_ID, stakeAddress)) as Account);
+      ({ absoluteSlot } = await voteService.getSlotNumber());
+    } catch (error) {
+      console.log('Failed to fecth slot number', error?.message);
+    }
+
+    let votingPower: Account['votingPower'];
+    try {
+      ({ votingPower } = await voteService.getVotingPower(EVENT_ID, stakeAddress));
     } catch (error) {
       if (error instanceof Error || error instanceof HttpError) {
         console.log('Failed to fetch votingPower', error?.message);
       } else console.log('Failed to fetch votingPower', error);
       return;
     }
-    if (absoluteSlot === '') return;
 
     const canonicalVoteInput = buildCanonicalVoteInputJson({
       option: optionId?.toUpperCase(),
       voter: stakeAddress,
       voteId: uuidv4(),
-      slotNumber: absoluteSlot,
+      slotNumber: absoluteSlot.toString(),
       votePower: votingPower,
     });
     signMessage(canonicalVoteInput, async (signature, key) => {
-      // FIXME: castAVoteWithDigitalSignature are incompatible with requestVoteObject
-      if (typeof key === 'undefined') return;
-
       const requestVoteObject = {
-        cosePublicKey: key,
-        coseSignature: isConnected && signature,
+        cosePublicKey: key || '',
+        coseSignature: signature,
       };
 
       try {
         await voteService.castAVoteWithDigitalSignature(requestVoteObject);
-        notify('You vote has been successfully submitted!');
+        dispatch(setIsVoteSubmittedModalVisible({ isVisible: true }));
         setOptionId('');
         setShowVoteReceipt(true);
       } catch (error) {
@@ -143,110 +133,79 @@ const Vote = () => {
   };
 
   return (
-    <div className="vote">
-      <Container>
-        <Grid
-          container
-          direction="column"
-          justifyContent="left"
-          alignItems="left"
-          spacing={5}
-        >
-          <Grid item>
-            <Typography
-              variant="h5"
-              sx={{
-                color: 'text.primary',
-                textAlign: 'left',
-                fontWeight: 600,
-                fontSize: 28,
-              }}
-            >
-              Do you want CIP-1694 that will allow On-Chain Governance, implemented on the Cardano Blockchain?
-            </Typography>
-          </Grid>
-          <Grid item>
-            <Typography
-              variant="body1"
-              sx={{
-                color: 'text.primary',
-                textAlign: 'left',
-                fontWeight: 400,
-              }}
-              component={'div'}
-            >
-              <CountDownTimer />
-            </Typography>
-          </Grid>
-
-          <Grid item>
-            <OptionCard
-              items={items}
-              onChangeOption={onChangeOption}
-            />
-          </Grid>
-          <Grid item>
-            <Grid
-              container
-              direction="row"
-              justifyContent={'center'}
-            >
-              <Grid
-                item
-                sx={{ m: theme.spacing(2) }}
-              >
-                {!showVoteReceipt && (
-                  <Button
-                    size="large"
-                    variant="contained"
-                    disabled={isDisabled}
-                    onClick={() => handleSubmit()}
-                    sx={{
-                      marginTop: '0px !important',
-                      height: { xs: '50px', sm: '60px', lg: '70px' },
-                      fontSize: '25px',
-                      fontWeight: 700,
-                      textTransform: 'none',
-                      borderRadius: '16px !important',
-                      color: '#fff !important',
-                      fontFamily: 'Roboto Bold',
-                      backgroundColor: theme.palette.primary.main,
-                    }}
-                  >
-                    {!isConnected ? 'Connect wallet to vote' : 'Submit Your Vote'}
-                  </Button>
-                )}
-              </Grid>
-              <Grid
-                item
-                sx={{ m: theme.spacing(2) }}
-              >
-                {showVoteReceipt && (
-                  <Button
-                    variant="contained"
-                    onClick={() => toggleReceipt()}
-                    aria-label="Receipt"
-                    sx={{
-                      marginTop: '0px !important',
-                      height: { xs: '50px', sm: '60px', lg: '70px' },
-                      fontSize: '25px',
-                      fontWeight: 700,
-                      textTransform: 'none',
-                      borderRadius: '16px !important',
-                      color: '#fff !important',
-                      fontFamily: 'Roboto Bold',
-                      backgroundColor: theme.palette.primary.main,
-                    }}
-                    startIcon={<ReceiptIcon />}
-                  >
-                    View Receipt
-                  </Button>
-                )}
-              </Grid>
+    <div className={styles.vote}>
+      <Grid
+        container
+        direction="column"
+        justifyContent="left"
+        alignItems="left"
+        spacing={0}
+      >
+        <Grid item>
+          <Typography
+            variant="h5"
+            className={styles.title}
+          >
+            CIP-1694 vote
+          </Typography>
+        </Grid>
+        <Grid item>
+          <Typography
+            sx={{
+              mb: '24px',
+            }}
+          >
+            <CountDownTimer />
+          </Typography>
+        </Grid>
+        <Grid item>
+          <Typography
+            variant="h5"
+            className={styles.description}
+          >
+            Do you want CIP-1694 that will allow On-Chain Governance, implemented on the Cardano Blockchain?
+          </Typography>
+        </Grid>
+        <Grid item>
+          <OptionCard
+            disabled={showVoteReceipt}
+            items={items}
+            onChangeOption={onChangeOption}
+          />
+        </Grid>
+        <Grid item>
+          <Grid
+            container
+            direction="row"
+            justifyContent={'center'}
+          >
+            <Grid item>
+              {!showVoteReceipt ? (
+                <Button
+                  className={cn(styles.button, { [styles.disabled]: isDisabled && isConnected })}
+                  size="large"
+                  variant="contained"
+                  disabled={isDisabled && isConnected}
+                  onClick={() => handleSubmit()}
+                  sx={{}}
+                >
+                  {!isConnected ? 'Connect wallet to vote' : 'Submit Your Vote'}
+                </Button>
+              ) : (
+                <Button
+                  className={cn(styles.button, styles.secondary)}
+                  variant="contained"
+                  onClick={() => toggleReceipt()}
+                  aria-label="Receipt"
+                  startIcon={<ReceiptIcon />}
+                >
+                  Vote receipt
+                </Button>
+              )}
             </Grid>
           </Grid>
         </Grid>
-      </Container>
+      </Grid>
       <SidePage
         anchor="right"
         open={isToggledReceipt}
@@ -254,16 +213,6 @@ const Vote = () => {
       >
         <VoteReceipt />
       </SidePage>
-      <ConnectWalletModal
-        openStatus={openAuthDialog}
-        onCloseFn={handleCloseAuthDialog}
-        name="connect-wallet-list"
-        id="connect-wallet-list"
-        title="Choose your preferred wallet to connect"
-        action
-        buttonLabel="Close"
-        onConnectWallet={onConnectWallet}
-      />
     </div>
   );
 };

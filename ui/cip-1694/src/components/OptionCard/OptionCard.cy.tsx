@@ -4,7 +4,7 @@ import React from 'react';
 import DoneIcon from '@mui/icons-material/Done';
 import CloseIcon from '@mui/icons-material/Close';
 import DoDisturbIcon from '@mui/icons-material/DoDisturb';
-import OptionCard from './OptionCard';
+import { OptionCard } from './OptionCard';
 
 const items = [
   {

@@ -11,8 +11,8 @@ public class ChainTip {
 
     private long absoluteSlot;
 
-    private int epochNo;
+    private String hash;
 
-    private CardanoNetwork cardanoNetwork;
+    private int epochNo;
 
 }

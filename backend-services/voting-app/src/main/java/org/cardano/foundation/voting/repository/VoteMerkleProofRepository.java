@@ -2,7 +2,9 @@ package org.cardano.foundation.voting.repository;
 
 import org.cardano.foundation.voting.domain.entity.VoteMerkleProof;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -10,7 +12,11 @@ import java.util.Optional;
 @Repository
 public interface VoteMerkleProofRepository extends JpaRepository<VoteMerkleProof, String> {
 
-    @Query("SELECT vmp FROM VoteMerkleProof vmp WHERE vmp.eventId = ?1 AND vmp.voteId = ?2 ORDER BY vmp.createdAt DESC")
-    Optional<VoteMerkleProof> findLatestProof(String eventId, String voteId);
+    @Query("SELECT vmp FROM VoteMerkleProof vmp WHERE vmp.eventId = :eventId AND vmp.voteId = :voteId ORDER BY vmp.createdAt DESC")
+    Optional<VoteMerkleProof> findLatestProof(@Param("eventId") String eventId, @Param("voteId") String voteId);
+
+    @Query("UPDATE VoteMerkleProof vmp SET vmp.invalidated = true")
+    @Modifying
+    void invalidateMerkleProofsAfterSlot(@Param("slot") long slot);
 
 }

@@ -9,17 +9,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class BlockfrostBlockchainDataTipService extends AbstractBlockfrostService implements BlockchainDataChainTipService {
 
-    @Autowired
-    private CardanoNetwork cardanoNetwork;
-
     @Override
     public ChainTip getChainTip() {
         var block = latestBlock();
+        var hash = block.getHash();
 
         return ChainTip.builder()
                 .epochNo(block.getEpoch())
                 .absoluteSlot(block.getSlot())
-                .cardanoNetwork(cardanoNetwork)
+                .hash(hash)
                 .build();
     }
 

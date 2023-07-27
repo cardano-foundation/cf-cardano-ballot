@@ -22,7 +22,7 @@ public class TransactionDetails {
         MEDIUM(1),
         HIGH(2),
         VERY_HIGH(3),
-        FINAL(4);
+        FINAL(4); // TRANSACTION IS FINAL(!) - NO ROLLBACK POSSIBLE
 
         private final int score;
 

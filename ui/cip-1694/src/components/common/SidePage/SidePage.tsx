@@ -1,6 +1,7 @@
 import React, { MouseEvent, KeyboardEvent, Fragment } from 'react';
 import Drawer from '@mui/material/Drawer';
 import { SidePageProps } from './SidePage.types';
+import styles from './SidePage.module.scss';
 
 export default function SidePage({ children, anchor, open, setOpen }: SidePageProps) {
   const toggleDrawer = (event: KeyboardEvent | MouseEvent) => {
@@ -16,6 +17,7 @@ export default function SidePage({ children, anchor, open, setOpen }: SidePagePr
   return (
     <Fragment key={anchor}>
       <Drawer
+        classes={{ paper: styles.root }}
         anchor={anchor}
         open={open}
         onClose={toggleDrawer}

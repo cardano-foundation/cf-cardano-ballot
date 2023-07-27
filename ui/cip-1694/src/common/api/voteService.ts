@@ -26,8 +26,7 @@ export const castAVoteWithDigitalSignature = async (jsonRequest: SignedWeb3Reque
     HttpMethods.POST,
     CAST_VOTE_URL,
     DEFAULT_CONTENT_TYPE_HEADERS,
-    JSON.stringify(jsonRequest),
-    false
+    JSON.stringify(jsonRequest)
   );
 
 export const getSlotNumber = async () => {

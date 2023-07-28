@@ -666,7 +666,7 @@ public class DefaultVoteService implements VoteService {
                     .cosePublicKey(vote.getCosePublicKey())
                     .votedAtSlot(Long.valueOf(vote.getVotedAtSlot()).toString())
                     .voterStakingAddress(vote.getVoterStakingAddress())
-                    .votingPower(Optional.ofNullable(vote.getVotingPower()).map(String::valueOf).orElse(null))
+                    .votingPower(vote.getVotingPower().map(String::valueOf).orElse(null))
                     .status(readMerkleProofStatus(proof, isL1CommitmentOnChain))
                     .finalityScore(isL1CommitmentOnChain)
                     .merkleProof(convertMerkleProof(proof, td))

@@ -160,58 +160,49 @@ async function executeRequest<T>(
   return responseHandler.parse(await fetch(requestUri, request));
 }
 
-async function execute<T>(
-  url: string,
-  method: HttpMethods,
-  headers: Partial<contentTypeHeaders>,
-  body?: string,
-  useAuth?: boolean
-) {
-  // FIXME: useAuth is not used in executeRequest?
-  console.log(useAuth);
+async function execute<T>(url: string, method: HttpMethods, headers: Partial<contentTypeHeaders>, body?: string) {
   return await executeRequest<T>(url, method, headers, body).catch((err) => {
     throw err;
   });
 }
 
-export function get<T>(url: string, headers: Partial<contentTypeHeaders>, useAuth?: boolean) {
-  return execute<T>(url, HttpMethods.GET, headers, undefined, useAuth);
+export function get<T>(url: string, headers: Partial<contentTypeHeaders>) {
+  return execute<T>(url, HttpMethods.GET, headers, undefined);
 }
 
-export function post<T>(url: string, headers: Partial<contentTypeHeaders>, body?: string, useAuth?: boolean) {
-  return execute<T>(url, HttpMethods.POST, headers, body, useAuth);
+export function post<T>(url: string, headers: Partial<contentTypeHeaders>, body?: string) {
+  return execute<T>(url, HttpMethods.POST, headers, body);
 }
 
-export function remove<T>(url: string, headers: Partial<contentTypeHeaders>, useAuth?: boolean) {
-  return execute<T>(url, HttpMethods.DELETE, headers, undefined, useAuth);
+export function remove<T>(url: string, headers: Partial<contentTypeHeaders>) {
+  return execute<T>(url, HttpMethods.DELETE, headers, undefined);
 }
 
-export function put<T>(url: string, headers: Partial<contentTypeHeaders>, body?: string, useAuth?: boolean) {
-  return execute<T>(url, HttpMethods.PUT, headers, body, useAuth);
+export function put<T>(url: string, headers: Partial<contentTypeHeaders>, body?: string) {
+  return execute<T>(url, HttpMethods.PUT, headers, body);
 }
 
-export function patch<T>(url: string, headers: Partial<contentTypeHeaders>, body?: string, useAuth?: boolean) {
-  return execute<T>(url, HttpMethods.PATCH, headers, body, useAuth);
+export function patch<T>(url: string, headers: Partial<contentTypeHeaders>, body?: string) {
+  return execute<T>(url, HttpMethods.PATCH, headers, body);
 }
 
 export const doRequest = async <T>(
   method: HttpMethods,
   url: string,
   headers: Partial<contentTypeHeaders>,
-  body?: string,
-  useAuth = false
+  body?: string
 ) => {
   const allHeaders = headers || DEFAULT_CONTENT_TYPE_HEADERS;
 
   if (method === HttpMethods.POST) {
-    return await post<T>(url, allHeaders, body, useAuth);
+    return await post<T>(url, allHeaders, body);
   } else if (method === HttpMethods.PUT) {
-    return await put<T>(url, allHeaders, body, useAuth);
+    return await put<T>(url, allHeaders, body);
   } else if (method === HttpMethods.DELETE) {
-    return await remove<T>(url, allHeaders, useAuth);
+    return await remove<T>(url, allHeaders);
   } else if (method === HttpMethods.PATCH) {
-    return await patch<T>(url, allHeaders, body, useAuth);
+    return await patch<T>(url, allHeaders, body);
   } else {
-    return await get<T>(url, allHeaders, useAuth);
+    return await get<T>(url, allHeaders);
   }
 };

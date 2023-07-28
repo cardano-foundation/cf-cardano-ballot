@@ -1,15 +1,14 @@
 import React from 'react';
+import { Proposal } from 'types/types';
 
-interface OptionItem {
-  label: 'yes' | 'no' | 'abstain';
+export interface OptionItem {
+  label: Proposal;
   icon: React.ReactElement | null;
 }
 
-interface OptionProps {
+export interface OptionProps {
   items: OptionItem[];
   onChangeOption: (option: string) => void;
   disabled?: boolean;
   selectedOption: string;
 }
-
-export type { OptionItem, OptionProps };

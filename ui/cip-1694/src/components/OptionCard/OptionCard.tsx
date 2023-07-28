@@ -1,5 +1,6 @@
 import React, { useState, MouseEvent, useEffect } from 'react';
 import cn from 'classnames';
+import { capitalize } from 'lodash';
 import { Grid, Typography } from '@mui/material';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
@@ -55,7 +56,7 @@ export const OptionCard = ({ items, onChangeOption, disabled, selectedOption }: 
                 component="div"
                 variant="h5"
               >
-                {(option.label[0].toUpperCase() + option.label.slice(1))}
+                {capitalize(option.label)}
               </Typography>
             </Grid>
           </ToggleButton>

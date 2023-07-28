@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, matchPath, useLocation, useNavigate } from 'react-router-dom';
 import cn from 'classnames';
+import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import { Grid, Typography, Button } from '@mui/material';
 import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined';
 import LeaderboardIcon from '@mui/icons-material/Leaderboard';
@@ -9,6 +10,7 @@ import { ConnectWalletButton } from './ConnectWalletButton';
 import styles from './Header.module.scss';
 
 export const Header = () => {
+  const { isConnected } = useCardano();
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
@@ -53,7 +55,9 @@ export const Header = () => {
           Your vote
         </Button>
         <Button
-          className={styles.button}
+          component={Link}
+          to={isConnected ? ROUTES.LEADERBOARD : undefined}
+          className={cn(styles.button, { [styles.activeRoute]: !!matchPath(pathname, ROUTES.LEADERBOARD) })}
           startIcon={<LeaderboardIcon />}
         >
           Leaderboard

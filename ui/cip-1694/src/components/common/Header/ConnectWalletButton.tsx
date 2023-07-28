@@ -10,7 +10,12 @@ import {
   ConnectWalletButton as CFConnectWalletButton,
   getWalletIcon,
 } from '@cardano-foundation/cardano-connect-with-wallet';
-import { setConnectedWallet, setIsConnectWalletModalVisible } from 'common/store/userSlice';
+import {
+  setConnectedWallet,
+  setIsConnectWalletModalVisible,
+  setIsReceiptFetched,
+  setVoteReceipt,
+} from 'common/store/userSlice';
 import { ALWAYS_VISIBLE_WALLETS, SUPPORTED_WALLETS } from 'common/constants/appConstants';
 import { RootState } from 'common/store';
 import styles from './Header.module.scss';
@@ -45,6 +50,13 @@ export const ConnectWalletButton = () => {
     dispatch(setIsConnectWalletModalVisible({ isVisible: false }));
   };
 
+  const onDisconnectWallet = () => {
+    disconnect();
+    dispatch(setConnectedWallet({ wallet: '' }));
+    dispatch(setVoteReceipt({ receipt: null }));
+    dispatch(setIsReceiptFetched({ isFetched: false }));
+  };
+
   return !connectedWallet ? (
     <Button
       size="large"
@@ -60,10 +72,7 @@ export const ConnectWalletButton = () => {
       label="Connect wallet"
       borderRadius={8}
       onConnect={onConnectWallet}
-      onDisconnect={() => {
-        disconnect();
-        dispatch(setConnectedWallet({ wallet: '' }));
-      }}
+      onDisconnect={onDisconnectWallet}
       alwaysVisibleWallets={alwaysVisibleWallets}
       supportedWallets={supportedWallets}
       beforeComponent={

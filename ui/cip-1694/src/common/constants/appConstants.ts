@@ -4,6 +4,7 @@ export const CAST_VOTE_URL = process.env.REACT_APP_CAST_VOTE_URL;
 export const VOTE_RECEIPT_URL = process.env.REACT_APP_VOTE_RECEIPT_URL;
 export const BLOCKCHAIN_TIP_URL = process.env.REACT_APP_BLOCKCHAIN_TIP_URL;
 export const VOTING_POWER_URL = process.env.REACT_APP_VOTING_POWER_URL;
+export const LEADERBOARD_URL = process.env.REACT_APP_LEADERBOARD_URL;
 
 // config vars
 export const TARGET_NETWORK = process.env.REACT_APP_TARGET_NETWORK;

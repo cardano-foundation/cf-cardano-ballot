@@ -1,0 +1,42 @@
+.leaderboard {
+  padding-top: 30px;
+  .title {
+    color: #061d3c;
+    font-size: 56px;
+    font-weight: 600;
+    line-height: normal;
+    margin-bottom: 40px;
+    text-align: left;
+  }
+
+  .optionTitle {
+    color: #061d3c !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    line-height: 22px !important;
+    letter-spacing: 0em !important;
+  }
+
+  .statTitle {
+    font-size: 16px !important;
+    color: #061d3c !important;
+    font-weight: 400 !important;
+  }
+  .divider {
+    height: 1px;
+    background: #bbbbbb;
+  }
+  .proposalRect {
+    width: 32px;
+    height: 22px;
+    &[data-proposal='yes'] {
+      background: #43e4b7;
+    }
+    &[data-proposal='no'] {
+      background: #ffbc5c;
+    }
+    &[data-proposal='abstain'] {
+      background: #1d439b;
+    }
+  }
+}

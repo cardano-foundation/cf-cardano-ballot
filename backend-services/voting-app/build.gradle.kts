@@ -42,6 +42,8 @@ dependencies {
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 
+	runtimeOnly("org.springframework.boot:spring-boot-properties-migrator")
+
 	runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 
 	// TODO release to maven central

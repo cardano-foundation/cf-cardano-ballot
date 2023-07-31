@@ -9,6 +9,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.service.merkle_tree.VoteMerkleProofService;
+import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,9 @@ public class RollbackHandler {
     private VoteMerkleProofService voteMerkleProofService;
 
     @Autowired
+    private ReferenceDataService referenceDataService;
+
+    @Autowired
     private Point wellKnownPointForNetwork;
 
     @Autowired
@@ -52,6 +56,7 @@ public class RollbackHandler {
             public void onRollback(Point point) {
                 var slot = point.getSlot();
 
+                referenceDataService.rollbackReferenceDataAfterSlot(slot);
                 voteMerkleProofService.softDeleteAllProofsAfterSlot(slot);
             }
 

@@ -43,7 +43,7 @@ public class MetadataService {
     private BlockchainDataMetadataService blockchainDataMetadataService;
 
     @Autowired
-    private MetadataProcessor metadataProcessor;
+    private CustomMetadataProcessor customMetadataProcessor;
 
     @Autowired
     private ExpirationService expirationService;
@@ -207,7 +207,7 @@ public class MetadataService {
             }
             page++;
 
-            metadataProcessor.processMetadataEvents(transactionMetadataLabelCbors);
+            customMetadataProcessor.processMetadataEvents(transactionMetadataLabelCbors);
 
         } while (continueFetching);
 
@@ -218,9 +218,8 @@ public class MetadataService {
     public void processRecentMetadataEvents() {
         log.info("processRecentMetadataEvents for metadata label {}", metadataLabel);
         var transactionMetadataLabelCbors = blockchainDataMetadataService.fetchMetadataForLabel(String.valueOf(metadataLabel), PAGE_SIZE, 1);
-        log.info("transactionMetadataLabelCbors: {}", transactionMetadataLabelCbors);
 
-        metadataProcessor.processMetadataEvents(transactionMetadataLabelCbors);
+        customMetadataProcessor.processMetadataEvents(transactionMetadataLabelCbors);
 
         log.info("processRecentMetadataEvents for metadata label {} completed.", metadataLabel);
     }

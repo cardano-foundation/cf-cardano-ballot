@@ -15,7 +15,7 @@ public interface VoteMerkleProofRepository extends JpaRepository<VoteMerkleProof
     @Query("SELECT vmp FROM VoteMerkleProof vmp WHERE vmp.eventId = :eventId AND vmp.voteId = :voteId ORDER BY vmp.createdAt DESC")
     Optional<VoteMerkleProof> findLatestProof(@Param("eventId") String eventId, @Param("voteId") String voteId);
 
-    @Query("UPDATE VoteMerkleProof vmp SET vmp.invalidated = true")
+    @Query("UPDATE VoteMerkleProof vmp SET vmp.invalidated = true where vmp.absoluteSlot > :slot")
     @Modifying
     void invalidateMerkleProofsAfterSlot(@Param("slot") long slot);
 

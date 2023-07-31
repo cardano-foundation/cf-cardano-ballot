@@ -1,8 +1,7 @@
 package org.cardano.foundation.voting.domain;
 
-public enum Role {
+public enum VotingPowerAsset {
 
-    VOTER,
-    ORGANISER
+    ADA
 
 }

@@ -9,9 +9,7 @@ import org.cardano.foundation.voting.repository.CategoryRepository;
 import org.cardano.foundation.voting.repository.EventRepository;
 import org.cardano.foundation.voting.repository.ProposalRepository;
 import org.cardano.foundation.voting.service.expire.ExpirationService;
-import org.cardano.foundation.voting.service.i18n.LocalisationService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,9 +31,6 @@ public class ReferenceDataService {
 
     @Autowired
     private ExpirationService expirationService;
-
-    @Autowired
-    private LocalisationService localisationService;
 
     @Timed(value = "service.reference.findValidEventByName", percentiles = {0.3, 0.5, 0.95})
     @Transactional
@@ -93,6 +88,18 @@ public class ReferenceDataService {
     @Transactional
     public Category storeCategory(Category category) {
         return categoryRepository.saveAndFlush(category);
+    }
+
+    @Timed(value = "service.reference.rollback", percentiles = {0.3, 0.5, 0.95})
+    @Transactional
+    public void rollbackReferenceDataAfterSlot(long slot) {
+        eventRepository.deleteAllAfterSlot(slot);
+        categoryRepository.deleteAllAfterSlot(slot);
+        proposalRepository.deleteAllAfterSlot(slot);
+
+        eventRepository.flush();
+        categoryRepository.flush();
+        proposalRepository.flush();
     }
 
 }

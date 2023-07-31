@@ -42,6 +42,9 @@ public class Category extends AbstractTimestampEntity {
     @Builder.Default
     private List<Proposal> proposals =  new ArrayList<>();
 
+    @Column(name = "absolute_slot")
+    private long absoluteSlot;
+
     public boolean isValid() {
         return proposals.size() > 1;
     }

@@ -31,8 +31,6 @@ public class CborService {
 
     public Either<Problem, CategoryRegistrationEnvelope> decodeCategoryRegistrationEnvelope(CBORMetadataMap payload) {
         try {
-            // TODO perform signature check against hash
-
             var maybeOnchainEventType = Enums.getIfPresent(OnChainEventType.class, (String) payload.get("type"));
 
             if (maybeOnchainEventType.isEmpty() || maybeOnchainEventType.orElseThrow() != OnChainEventType.CATEGORY_REGISTRATION) {

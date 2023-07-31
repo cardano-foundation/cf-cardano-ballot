@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import pick from 'lodash/pick';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
@@ -9,6 +9,7 @@ import { Button, IconButton, Typography, debounce } from '@mui/material';
 import QrCodeIcon from '@mui/icons-material/QrCode';
 import CloseIcon from '@mui/icons-material/Close';
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
+import { setIsVerifyVoteModalVisible } from 'common/store/userSlice';
 import { RootState } from 'common/store';
 import styles from './VoteReceipt.module.scss';
 import { ReceiptItem } from './ReceipItem';
@@ -35,12 +36,15 @@ const Toast = ({ message }: { message: string }) => (
 export const VoteReceipt = ({ setOpen }: VoteReceiptProps) => {
   const receipt = useSelector((state: RootState) => state.user.receipt);
   const [isVerified] = useState(false);
+  const dispatch = useDispatch();
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedToast = useCallback(debounce(toast, 300), []);
 
   const onItemClick = useCallback(() => {
     debouncedToast(<Toast message="Copied to clipboard" />);
-  }, [debouncedToast]);
+    dispatch(setIsVerifyVoteModalVisible({ isVisible: true }));
+  }, [debouncedToast, dispatch]);
 
   const recordFieldsToDisplay = pick(receipt, fieldsToDisplay);
 

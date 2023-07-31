@@ -14,6 +14,7 @@ import CountDownTimer from 'components/CountDownTimer/CountDownTimer';
 import {
   setIsConnectWalletModalVisible,
   setIsReceiptFetched,
+  setIsVerifyVoteModalVisible,
   setIsVoteSubmittedModalVisible,
   setVoteReceipt,
 } from 'common/store/userSlice';
@@ -31,6 +32,7 @@ import { EVENT_ID } from '../../common/constants/appConstants';
 import { useToggle } from '../../common/hooks/useToggle';
 import { HttpError } from '../../common/handlers/httpHandler';
 import styles from './Vote.module.scss';
+import { VerifyVoteModal } from './components/VerifyVote/VerifyVote';
 
 const errorsMap = {
   INVALID_VOTING_POWER: 'To cast a vote, Voting Power should be more than 0',
@@ -61,6 +63,7 @@ const Vote = () => {
   const receipt = useSelector((state: RootState) => state.user.receipt);
   const isReceiptFetched = useSelector((state: RootState) => state.user.isReceiptFetched);
   const isVoteSubmittedModalVisible = useSelector((state: RootState) => state.user.isVoteSubmittedModalVisible);
+  const isVerifyVoteModalVisible = useSelector((state: RootState) => state.user.isVerifyVoteModalVisible);
   const [absoluteSlot, setAbsoluteSlot] = useState<number>();
   const [optionId, setOptionId] = useState('');
   const [voteSubmitted, setVoteSubmitted] = useState(false);
@@ -297,6 +300,14 @@ const Vote = () => {
             Make sure to check back on <b>{endTime}</b> to see the results!
           </>
         }
+      />
+      <VerifyVoteModal
+        openStatus={isVerifyVoteModalVisible}
+        onCloseFn={() => {
+          dispatch(setIsVerifyVoteModalVisible({ isVisible: false }));
+        }}
+        name="vote-verify-modal"
+        id="vote-verify-modal"
       />
     </>
   );

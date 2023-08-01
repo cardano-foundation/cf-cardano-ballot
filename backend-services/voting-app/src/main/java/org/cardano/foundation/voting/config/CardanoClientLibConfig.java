@@ -20,6 +20,10 @@ public class CardanoClientLibConfig {
         if ("BLOCKFROST".equalsIgnoreCase(ccliBackendType)) {
             return new BFBackendService(blockfrostUrl, blockfrostApiKey);
         }
+        // TODO talk to Satya how to make it work
+        if ("YACI".equalsIgnoreCase(ccliBackendType)) {
+            throw new RuntimeException("YACI backend not supported yet.");
+        }
 
         throw new RuntimeException("Add more CCL backends...");
     }

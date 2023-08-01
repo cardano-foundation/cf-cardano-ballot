@@ -1,34 +1,17 @@
 package org.cardano.foundation.voting.service.rollback;
 
-import com.bloxbean.cardano.yaci.core.common.NetworkType;
-import com.bloxbean.cardano.yaci.core.model.Block;
-import com.bloxbean.cardano.yaci.core.protocol.chainsync.messages.Point;
-import com.bloxbean.cardano.yaci.helper.BlockSync;
-import com.bloxbean.cardano.yaci.helper.listener.BlockChainDataListener;
-import jakarta.annotation.PostConstruct;
+import com.bloxbean.cardano.yaci.store.events.RollbackEvent;
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.service.merkle_tree.VoteMerkleProofService;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-@Service
 @Slf4j
+@Service
 public class RollbackHandler {
-
-    @Value("${l1.transaction.metadata.label:12345}")
-    private long metadataLabel;
-
-    @Value("${cardano.node.ip}")
-    private String cardanoNodeIp;
-
-    @Value("${cardano.node.port}")
-    private int cardanoNodePort;
-
-    @Autowired
-    private CardanoNetwork cardanoNetwork;
 
     @Autowired
     private VoteMerkleProofService voteMerkleProofService;
@@ -36,32 +19,17 @@ public class RollbackHandler {
     @Autowired
     private ReferenceDataService referenceDataService;
 
-    @Autowired
-    private Point wellKnownPointForNetwork;
+    @EventListener
+    @Transactional
+    public void handleRollbackEvent(RollbackEvent rollbackEvent) {
+        log.info("Rollback, event:{}", rollbackEvent);
 
-    @Autowired
-    private NetworkType networkType;
+        long rollbackToSlot = rollbackEvent.getRollbackTo().getSlot();
 
-    @PostConstruct
-    public void init() {
-        BlockSync blockSync = new BlockSync(cardanoNodeIp, cardanoNodePort, networkType.getProtocolMagic(), wellKnownPointForNetwork);
-        blockSync.startSyncFromTip(new BlockChainDataListener() {
+        referenceDataService.rollbackReferenceDataAfterSlot(rollbackToSlot);
+        voteMerkleProofService.softDeleteAllProofsAfterSlot(rollbackToSlot);
 
-            @Override
-            public void onBlock(Block block) {
-                log.info("Block's slot:{}, hash:{}, blockNo:{}", block.getHeader().getHeaderBody().getSlot(), block.getHeader().getHeaderBody().getBlockHash(), block.getHeader().getHeaderBody().getBlockNumber());
-            }
-
-            @Override
-            public void onRollback(Point point) {
-                var slot = point.getSlot();
-
-                referenceDataService.rollbackReferenceDataAfterSlot(slot);
-                voteMerkleProofService.softDeleteAllProofsAfterSlot(slot);
-            }
-
-        });
+        log.info("Rollbacked handled.");
     }
-
 
 }

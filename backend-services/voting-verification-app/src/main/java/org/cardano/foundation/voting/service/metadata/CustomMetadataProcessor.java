@@ -61,6 +61,7 @@ public class CustomMetadataProcessor {
     @EventListener
     @Transactional
     public void handleMetadataEvent(TxMetadataEvent event) {
+        log.debug("Received metadata event: {}", event);
         try {
             event.getTxMetadataList().stream()
                     .filter(txMetadataLabel -> txMetadataLabel.getLabel().equalsIgnoreCase(String.valueOf(metadataLabel)))

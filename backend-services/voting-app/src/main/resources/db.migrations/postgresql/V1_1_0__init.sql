@@ -13,10 +13,12 @@ CREATE TABLE event (
     start_epoch INT,
     end_epoch INT,
 
-    start_slot INT,
-    end_slot INT,
+    start_slot BIGINT,
+    end_slot BIGINT,
 
     snapshot_epoch INT,
+
+    absolute_slot BIGINT,
 
     created_at TIMESTAMP WITHOUT TIME ZONE,
     updated_at TIMESTAMP WITHOUT TIME ZONE,
@@ -32,6 +34,8 @@ CREATE TABLE category (
     schema_version VARCHAR(255) NOT NULL,
     gdpr_protection BOOL NOT NULL,
 
+    absolute_slot BIGINT,
+
     created_at TIMESTAMP WITHOUT TIME ZONE,
     updated_at TIMESTAMP WITHOUT TIME ZONE,
 
@@ -44,6 +48,8 @@ CREATE TABLE proposal (
     id uuid NOT NULL, -- PII protection, on chain we are not allowed to store human readable names
     name VARCHAR(255 NOT NULL, -- PII protection, on chain we are not allowed to store human readable names
     category_id VARCHAR(255) NOT NULL REFERENCES category(id),
+
+    absolute_slot BIGINT,
 
     created_at TIMESTAMP WITHOUT TIME ZONE,
     updated_at TIMESTAMP WITHOUT TIME ZONE,
@@ -63,6 +69,8 @@ CREATE TABLE vote (
    cose_public_key VARCHAR(255),
    voting_power BIGINT,
    voted_at_slot BIGINT NOT NULL,
+
+   absolute_slot BIGINT,
 
    created_at TIMESTAMP WITHOUT TIME ZONE,
    updated_at TIMESTAMP WITHOUT TIME ZONE,

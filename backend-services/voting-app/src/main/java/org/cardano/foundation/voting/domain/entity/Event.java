@@ -83,6 +83,9 @@ public class Event extends AbstractTimestampEntity {
     @Builder.Default
     private List<Category> categories = new ArrayList<>();
 
+    @Column(name = "absolute_slot")
+    private long absoluteSlot;
+
     public Optional<Category> findCategoryByName(String categoryName) {
         return categories.stream().filter(category -> category.getId().equals(categoryName)).findFirst();
     }
@@ -214,5 +217,12 @@ public class Event extends AbstractTimestampEntity {
         return true;
     }
 
+    public void setAbsoluteSlot(long absoluteSlot) {
+        this.absoluteSlot = absoluteSlot;
+    }
+
+    public long getAbsoluteSlot() {
+        return absoluteSlot;
+    }
 
 }

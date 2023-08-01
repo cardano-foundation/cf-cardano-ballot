@@ -55,23 +55,6 @@ public final class JsonService {
         }
     }
 
-    public Either<Problem, CIP93Envelope<LoginEnvelope>> decodeCIP93LoginEnvelope(String json) {
-        try {
-            return Either.right(objectMapper.readValue(json, new TypeReference<>() { }));
-        } catch (JsonProcessingException e) {
-            log.warn("Invalid json:{}", json, e);
-
-            return Either.left(
-                    Problem.builder()
-                            .withTitle("INVALID_JSON")
-                            .withDetail("Invalid json:" + json)
-                            .withStatus(BAD_REQUEST)
-                            .withDetail(e.getMessage())
-                            .build()
-            );
-        }
-    }
-
     public Either<Problem, CIP93Envelope<FullMetadataScanEnvelope>> decodeFullMetadataScanEnvelope(String json) {
         try {
             return Either.right(objectMapper.readValue(json, new TypeReference<>() {}));

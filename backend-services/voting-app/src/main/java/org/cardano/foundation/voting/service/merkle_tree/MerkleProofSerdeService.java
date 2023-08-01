@@ -19,7 +19,7 @@ import static com.bloxbean.cardano.client.util.HexUtil.encodeHexString;
 public class MerkleProofSerdeService {
 
     @Autowired
-    private ObjectMapper objectMapper;
+    protected ObjectMapper objectMapper;
 
     public JsonNode serialise(List<ProofItem> proofItems) {
         var root = objectMapper.createObjectNode();
@@ -78,7 +78,7 @@ public class MerkleProofSerdeService {
             return new ProofItem.Left(decodeHexString(item.get("Left").asText()));
         }
         if (item.has("Right")) {
-            return new ProofItem.Left(decodeHexString(item.get("Right").asText()));
+            return new ProofItem.Right(decodeHexString(item.get("Right").asText()));
         }
 
         throw new IllegalArgumentException("Invalid proof item: " + item);

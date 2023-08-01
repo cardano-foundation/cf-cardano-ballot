@@ -131,7 +131,7 @@ public class Vote extends AbstractTimestampEntity {
             var cip30Verifier = new CIP30Verifier(vote.getCoseSignature(), vote.getCosePublicKey());
             var verificationResult = cip30Verifier.verify();
 
-            return verificationResult.getMessage();
+            return Optional.ofNullable(verificationResult.getMessage()).orElse(new byte[0]);
         };
     }
 

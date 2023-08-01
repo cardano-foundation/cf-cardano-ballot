@@ -1,45 +1,47 @@
 package org.cardano.foundation.voting.service.metadata;
 
-import com.bloxbean.cardano.client.account.Account;
+import co.nstant.in.cbor.CborException;
 import com.bloxbean.cardano.client.common.cbor.CborSerializationUtil;
 import com.bloxbean.cardano.client.crypto.Blake2bUtil;
 import com.bloxbean.cardano.client.metadata.cbor.CBORMetadata;
 import com.bloxbean.cardano.client.metadata.cbor.CBORMetadataMap;
 import com.bloxbean.cardano.client.util.HexUtil;
+import com.bloxbean.cardano.yaci.store.metadata.domain.TxMetadataEvent;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.OnChainEventType;
 import org.cardano.foundation.voting.domain.SchemaVersion;
-import org.cardano.foundation.voting.domain.TransactionMetadataLabelCbor;
 import org.cardano.foundation.voting.domain.entity.Category;
 import org.cardano.foundation.voting.domain.entity.Event;
+import org.cardano.foundation.voting.domain.entity.MerkleRootHash;
 import org.cardano.foundation.voting.domain.entity.Proposal;
 import org.cardano.foundation.voting.service.cbor.CborService;
-import org.cardano.foundation.voting.service.json.JsonService;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
 import org.cardano.foundation.voting.utils.ChunkedMetadataParser;
 import org.cardano.foundation.voting.utils.Enums;
-import org.cardanofoundation.cip30.AddressFormat;
 import org.cardanofoundation.cip30.CIP30Verifier;
-import org.cardanofoundation.cip30.MessageFormat;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static com.bloxbean.cardano.client.crypto.Blake2bUtil.blake2bHash224;
 import static com.bloxbean.cardano.client.util.HexUtil.decodeHexString;
-import static org.cardano.foundation.voting.domain.OnChainEventType.CATEGORY_REGISTRATION;
-import static org.cardano.foundation.voting.domain.OnChainEventType.EVENT_REGISTRATION;
+import static org.cardano.foundation.voting.domain.OnChainEventType.*;
+import static org.cardanofoundation.cip30.AddressFormat.TEXT;
 import static org.cardanofoundation.cip30.MessageFormat.HEX;
 
 @Service
 @Slf4j
-public class MetadataProcessor {
+@Primary
+public class CustomMetadataProcessor {
 
     @Autowired
     private ReferenceDataService referenceDataService;
@@ -47,24 +49,31 @@ public class MetadataProcessor {
     @Autowired
     private CborService cborService;
 
-    @Autowired
-    @Qualifier("organiser_account")
-    private Account organiserAccount;
-
     @Value("${bind.on.event.ids}")
     private List<String> bindOnEventIds;
-
-    @Autowired
-    private JsonService jsonService;
 
     @Value("${l1.transaction.metadata.label:12345}")
     private long metadataLabel;
 
-    public void processMetadataEvents(List<TransactionMetadataLabelCbor> onChainMetadataEvents) {
-        log.info("On chain events:{}", onChainMetadataEvents);
+    @Value("${organiser.account.stakeAddress}")
+    private String organiserStakeAccount;
 
-        for (var onChainMetadataEvent : onChainMetadataEvents) {
-            var cborBytes= decodeHexString(onChainMetadataEvent.getCborMetadata().replace("\\x", ""));
+    @EventListener
+    @Transactional
+    public void handleMetadataEvent(TxMetadataEvent event) {
+        try {
+            event.getTxMetadataList().stream()
+                    .filter(txMetadataLabel -> txMetadataLabel.getLabel().equalsIgnoreCase(String.valueOf(metadataLabel)))
+                    // TODO Cbor from txEvent when  yaci-store supports it
+                    .forEach(txEvent -> processMetadataEvent(txEvent.getSlot(), txEvent.getBody()));
+        } catch (Exception e) {
+            log.warn("Error processing metadata event", e);
+        }
+    }
+
+    @SneakyThrows
+    public void processMetadataEvent(long slot, String txCbor)  {
+            var cborBytes = decodeHexString(txCbor.replace("\\x", ""));
 
             var cborMetadata = CBORMetadata.deserialize(cborBytes);
 
@@ -75,30 +84,30 @@ public class MetadataProcessor {
             Optional<CBORMetadataMap> maybePayloadCborMap = Optional.ofNullable(envelopeCborMap.get("payload")).map(o -> (CBORMetadataMap) o);
 
             if (maybeSignatureHexString.isEmpty()) {
-                log.warn("Missing signature from on chain event: {}", onChainMetadataEvent);
-                continue;
+                log.warn("Missing signature from on chain event: {}", txCbor);
+                return;
             }
 
             if (maybeKeyHexString.isEmpty()) {
-                log.warn("Missing key from on chain event: {}", onChainMetadataEvent);
-                continue;
+                log.warn("Missing key from on chain event: {}", txCbor);
+                return;
             }
 
             if (maybePayloadCborMap.isEmpty()) {
-                log.warn("Missing payload from on chain event: {}", onChainMetadataEvent);
-                continue;
+                log.warn("Missing payload from on chain event: {}", txCbor);
+                return;
             }
 
             var maybeOnChainVotingEventType = Enums.getIfPresent(OnChainEventType.class, ((String)envelopeCborMap.get("type")));
             if (maybeOnChainVotingEventType.isEmpty()) {
                 log.warn("Unknown onChainEvenType chain event type: {}", envelopeCborMap.get("type"));
-                continue;
+                return;
             }
             var onChainEvenType = maybeOnChainVotingEventType.orElseThrow();
 
             if (onChainEvenType == EVENT_REGISTRATION) {
                 try {
-                    processEventRegistration(maybeSignatureHexString.orElseThrow(), maybeKeyHexString.orElseThrow(), maybePayloadCborMap.orElseThrow()).ifPresent(event -> {
+                    processEventRegistration(slot, maybeSignatureHexString.orElseThrow(), maybeKeyHexString.orElseThrow(), maybePayloadCborMap.orElseThrow()).ifPresent(event -> {
                         log.info("Event registration processed: {}", event.getId());
                     });
                 } catch (Exception e) {
@@ -106,20 +115,18 @@ public class MetadataProcessor {
                 }
             }
             if (onChainEvenType == CATEGORY_REGISTRATION) {
-                try {
-                    processCategoryRegistration(maybeSignatureHexString.orElseThrow(), maybeKeyHexString.orElseThrow(), maybePayloadCborMap.orElseThrow()).ifPresent(category -> {
-                        log.info("Category registration processed: {}", category.getId());
-                    });
-                } catch (Exception e) {
-                    log.warn("Unable to process onChainEvenType chain CATEGORY_REGISTRATION", e);
-                }
+                processCategoryRegistration(slot, maybeSignatureHexString.orElseThrow(), maybeKeyHexString.orElseThrow(), maybePayloadCborMap.orElseThrow()).ifPresent(category -> {
+                    log.info("Category registration processed: {}", category.getId());
+                });
             }
-        }
+            if (onChainEvenType == COMMITMENTS) {
+                    processCommitments(slot, maybeSignatureHexString.orElseThrow(), maybeKeyHexString.orElseThrow(), maybePayloadCborMap.orElseThrow()).ifPresent(merkleRootHashes -> {
+                        log.info("On chain commitments processed: {}", merkleRootHashes);
+                    });
+            }
     }
 
-
-    @SneakyThrows
-    private Optional<Event> processEventRegistration(String signatureHexString, String keyHexString, CBORMetadataMap payload) {
+    private Optional<Event> processEventRegistration(long slot, String signatureHexString, String keyHexString, CBORMetadataMap payload) throws CborException {
         var id = HexUtil.encodeHexString(blake2bHash224(decodeHexString(signatureHexString)));
         log.info("Processing event registration, hash: {}", id);
 
@@ -131,7 +138,7 @@ public class MetadataProcessor {
             return Optional.empty();
         }
 
-        var maybeEventAddress = cip30VerificationResult.getAddress(AddressFormat.TEXT);
+        var maybeEventAddress = cip30VerificationResult.getAddress(TEXT);
         if (maybeEventAddress.isEmpty()) {
             log.info("Address not found or invalid, ignoring id:{}", id);
 
@@ -149,9 +156,8 @@ public class MetadataProcessor {
             return Optional.empty();
         }
 
-        var orgAccountStakeAddress = organiserAccount.stakeAddress();
-        if (!orgAccountStakeAddress.equals(eventAddress)) {
-            log.warn("Addresses mismatch, orgAccountStakeAddress: {}, eventAddress:{}", orgAccountStakeAddress, eventAddress);
+        if (!organiserStakeAccount.equals(eventAddress)) {
+            log.warn("Addresses mismatch, orgAccountStakeAddress: {}, eventAddress:{}", organiserStakeAccount, eventAddress);
             return Optional.empty();
         }
 
@@ -192,11 +198,12 @@ public class MetadataProcessor {
         event.setStartSlot(eventRegistration.getStartSlot());
         event.setEndSlot(eventRegistration.getEndSlot());
 
+        event.setAbsoluteSlot(slot);
+
         return Optional.of(referenceDataService.storeEvent(event));
     }
 
-    @SneakyThrows
-    private Optional<Category> processCategoryRegistration(String signature, String key, CBORMetadataMap payload) {
+    private Optional<Category> processCategoryRegistration(long slot, String signature, String key, CBORMetadataMap payload) throws CborException {
         var id = HexUtil.encodeHexString(Blake2bUtil.blake2bHash224(decodeHexString(signature)));
 
         log.info("Processing category registration id: {}", id);
@@ -208,21 +215,20 @@ public class MetadataProcessor {
 
             return Optional.empty();
         }
-        var maybeEventAddress = cip30VerificationResult.getAddress(AddressFormat.TEXT);
+        var maybeEventAddress = cip30VerificationResult.getAddress(TEXT);
         if (maybeEventAddress.isEmpty()) {
             log.info("Address not found or invalid, ignoring id: {}", id);
             return Optional.empty();
         }
         var eventAddress = maybeEventAddress.orElseThrow();
 
-        var orgAccountStakeAddress = organiserAccount.stakeAddress();
-        if (!orgAccountStakeAddress.equals(eventAddress)) {
-            log.warn("Addresses mismatch, orgAccountStakeAddress: {}, eventAddress:{}", orgAccountStakeAddress, eventAddress);
+        if (!organiserStakeAccount.equals(eventAddress)) {
+            log.warn("Addresses mismatch, orgAccountStakeAddress: {}, eventAddress:{}", organiserStakeAccount, eventAddress);
 
             return Optional.empty();
         }
 
-        var signaturePayloadHexString = Optional.ofNullable(cip30VerificationResult.getMessage(MessageFormat.HEX)).orElse("");
+        var signaturePayloadHexString = Optional.ofNullable(cip30VerificationResult.getMessage(HEX)).orElse("");
         var payloadHexString = HexUtil.encodeHexString(Blake2bUtil.blake2bHash224(CborSerializationUtil.serialize(payload.getMap())));
 
         if (!signaturePayloadHexString.equals(payloadHexString)) {
@@ -264,18 +270,100 @@ public class MetadataProcessor {
         category.setId(categoryRegistration.getName());
         category.setVersion(SchemaVersion.fromText(categoryRegistration.getSchemaVersion()).orElseThrow());
         category.setGdprProtection(categoryRegistration.isGdprProtection());
+        category.setAbsoluteSlot(slot);
         category.setEvent(event);
 
         var proposals = categoryRegistration.getProposals().stream().map(proposalEnvelope -> Proposal.builder()
                 .id(proposalEnvelope.getId())
                 .name(proposalEnvelope.getName())
                 .category(category)
+                .absoluteSlot(slot)
                 .build()
         ).toList();
 
         category.setProposals(proposals);
 
         return Optional.of(referenceDataService.storeCategory(category));
+    }
+
+    private Optional<List<MerkleRootHash>> processCommitments(long slot, String signature, String key, CBORMetadataMap payload) throws CborException {
+        var id = HexUtil.encodeHexString(Blake2bUtil.blake2bHash224(decodeHexString(signature)));
+
+        log.info("Processing category registration id: {}", id);
+
+        var cip30Parser = new CIP30Verifier(signature, Optional.ofNullable(key));
+        var cip30VerificationResult = cip30Parser.verify();
+        if (!cip30VerificationResult.isValid()) {
+            log.info("Signature invalid, ignoring id: {}", id);
+
+            return Optional.empty();
+        }
+        var maybeEventAddress = cip30VerificationResult.getAddress(TEXT);
+        if (maybeEventAddress.isEmpty()) {
+            log.info("Address not found or invalid, ignoring id: {}", id);
+            return Optional.empty();
+        }
+        var eventAddress = maybeEventAddress.orElseThrow();
+
+        if (!organiserStakeAccount.equals(eventAddress)) {
+            log.warn("Addresses mismatch, orgAccountStakeAddress: {}, eventAddress:{}", organiserStakeAccount, eventAddress);
+
+            return Optional.empty();
+        }
+
+        var signaturePayloadHexString = Optional.ofNullable(cip30VerificationResult.getMessage(HEX)).orElse("");
+        var payloadHexString = HexUtil.encodeHexString(Blake2bUtil.blake2bHash224(CborSerializationUtil.serialize(payload.getMap())));
+
+        if (!signaturePayloadHexString.equals(payloadHexString)) {
+            log.warn("Payload hash mismatch, signaturePayloadHexString: {}, payloadHexString:{}", signaturePayloadHexString, payloadHexString);
+
+            return Optional.empty();
+        }
+
+        var maybeCommitmentsEnvelope = cborService.decodeCommitmentsEnvelope(payload).toJavaOptional();
+        if (maybeCommitmentsEnvelope.isEmpty()) {
+            log.info("Category registration invalid, ignoring id: {}", id);
+
+            return Optional.empty();
+        }
+        var commitmentsEnvelope = maybeCommitmentsEnvelope.orElseThrow();
+
+        var merkleRootHashes = new ArrayList<MerkleRootHash>();
+        for (var eventId : commitmentsEnvelope.getCommitments().keySet()) {
+            if (!bindOnEventIds.contains(eventId)) {
+                // we have to remove commitments which we are not actively serving / running
+                if (commitmentsEnvelope.removeCommitment(eventId)) {
+                    log.info("Commitment removed for event id: {}", eventId);
+                }
+                continue;
+            }
+
+            var maybeStoredEvent = referenceDataService.findEventByName(eventId);
+            if (maybeStoredEvent.isEmpty()) {
+                log.info("Event not found, ignoring commitment, id: {}", eventId);
+                continue;
+            }
+
+            var maybeEventCommitment = commitmentsEnvelope.getCommitment(eventId);
+            if (maybeEventCommitment.isEmpty()) {
+                log.info("Commitment not found, ignoring commitment, id: {}", eventId);
+                continue;
+            }
+
+            merkleRootHashes.add(MerkleRootHash.builder()
+                    .eventId(eventId)
+                    .merkleRootHash(maybeEventCommitment.orElseThrow())
+                    .absoluteSlot(slot)
+                    .build());
+        }
+
+        if (merkleRootHashes.isEmpty()) {
+            log.info("No actual commitments (merkle root hashes) found in the actual on-chain COMMITMENTS event.");
+
+            return Optional.empty();
+        }
+
+        return Optional.of(referenceDataService.storeCommitments(merkleRootHashes));
     }
 
 }

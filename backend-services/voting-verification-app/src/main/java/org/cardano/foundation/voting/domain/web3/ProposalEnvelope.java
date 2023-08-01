@@ -5,10 +5,9 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class LoginEnvelope {
+public class ProposalEnvelope {
 
-    private String event;
-    private String network;
-    private String role;
+    private String id;
+    private String name;
 
 }

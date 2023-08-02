@@ -6,6 +6,7 @@ import { UserState } from './types';
 const initialState: UserState = {
   isConnectWalletModalVisible: false,
   isVoteSubmittedModalVisible: false,
+  isVerifyVoteModalVisible: false,
   connectedWallet: '',
   isReceiptFetched: false,
   receipt: null,
@@ -30,6 +31,9 @@ export const userSlice = createSlice({
     setIsReceiptFetched: (state, action: PayloadAction<{ isFetched: boolean }>) => {
       state.isReceiptFetched = action.payload.isFetched;
     },
+    setIsVerifyVoteModalVisible: (state, action: PayloadAction<{ isVisible: boolean }>) => {
+      state.isVerifyVoteModalVisible = action.payload.isVisible;
+    },
   },
 });
 
@@ -39,5 +43,6 @@ export const {
   setConnectedWallet,
   setVoteReceipt,
   setIsReceiptFetched,
+  setIsVerifyVoteModalVisible,
 } = userSlice.actions;
 export default userSlice.reducer;

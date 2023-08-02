@@ -2,7 +2,6 @@
 @import 'swiper/css/autoplay';
 
 .slides {
-  flex: 1;
   display: flex;
   :global {
     .swiper-slide {
@@ -85,13 +84,19 @@
   }
 }
 
+.sliderWrapper {
+  justify-content: flex-start !important;
+}
+
+.swiperContainer {
+  width: 100%;
+}
+
 .title {
   color: #061d3c !important;
-  font-size: 56px !important;
   font-weight: 500 !important;
   letter-spacing: normal !important;
   margin-bottom: 12px !important;
-  text-align: left !important;
 }
 
 .description {
@@ -99,7 +104,6 @@
   font-size: 16px !important;
   font-weight: 400 !important;
   line-height: 22px !important;
-  margin-bottom: 40px !important;
   text-align: left !important;
 }
 
@@ -119,7 +123,8 @@
 
 .heroStyleImg {
   border-radius: 16px;
-  height: 550px;
+  display: block;
+  height: auto;
   object-fit: contain;
-  width: 550px;
+  width: 100%;
 }

@@ -1,58 +1,21 @@
 .container {
-  align-items: center;
-  display: flex;
-  height: 69px;
-
-  .content {
-    align-items: center;
-    display: flex;
-  }
-
-  .logo {
-    cursor: pointer;
-    height: 29px;
-  }
-
-  .button {
-    color: #061d3c;
-    font-size: 16px;
-    font-weight: 500;
-    line-height: normal;
-    padding: 15px 25px;
-    text-transform: none;
-
-    :global(.MuiButton-startIcon) {
-      margin-right: 10px;
-      margin-left: 0px;
-    }
-
-    &.activeRoute {
-      text-decoration: underline;
-    }
-  }
+  align-items: center !important;
+  display: flex !important;
 }
 
-.walletIcon {
-  height: 22px;
-  margin-right: 10px;
-  width: 22px;
+.logo {
+  cursor: pointer !important;
+  height: 29px !important;
 }
 
-.arrowIcon {
-  color: #bbbbbb;
-}
-
-.connectButton {
-  background: #061d3c !important;
-  border-radius: 8px !important;
-  color: #f5f9ff !important;
-  font-size: 16px !important;
-  font-style: normal !important;
-  font-weight: 500 !important;
-  height: 49px !important;
-  line-height: normal !important;
-  margin-left: 10px !important;
-  text-transform: unset !important;
-  white-space: nowrap !important;
-  width: 179px !important;
+.menuButton {
+  border: 1px solid #bbbbbb !important;
+  cursor: pointer;
+  min-height: 32px !important;
+  min-width: 32px !important;
+  padding: 0 !important;
+  .menuIcon {
+    font-size: 21px !important;
+    color: #061d3c !important;
+  }
 }

@@ -1,11 +1,12 @@
 import 'swiper/css/navigation';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import cn from 'classnames';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Navigation, Autoplay } from 'swiper';
 import { Swiper as SwiperClass } from 'swiper/types';
 import CssBaseline from '@mui/material/CssBaseline';
-import { Grid, Container, Typography, Button } from '@mui/material';
+import { Grid, Container, Typography, Button, Box } from '@mui/material';
 import { ROUTES } from 'common/routes';
 import CountDownTimer from 'components/CountDownTimer/CountDownTimer';
 import { SlideProps } from './Slides.types';
@@ -16,9 +17,15 @@ export const Slides = ({ items }: SlideProps) => {
   const [activeIndex, setActiveIndex] = useState(0);
 
   return (
-    <div className={styles.slides}>
+    <Box
+      margin={{
+        xs: '0px',
+        md: '43px 0px',
+      }}
+      className={styles.slides}
+    >
       <Swiper
-        className="swiper-container"
+        className={cn('swiper-container', styles.swiperContainer)}
         onSwiper={setSwiper}
         onSlideChange={() => (swiper ? setActiveIndex(swiper.realIndex) : undefined)}
         slidesPerView={1}
@@ -31,15 +38,20 @@ export const Slides = ({ items }: SlideProps) => {
         modules={[Autoplay, Pagination, Navigation]}
       >
         {items.map((slide, index) => (
-          <SwiperSlide key={index}>
+          <SwiperSlide
+            className={styles.sliderWrapper}
+            key={index}
+          >
             <CssBaseline />
             <Container disableGutters>
               <Grid
+                marginTop={{ xs: '5px', md: '0px' }}
                 container
-                direction={{ xs: 'column', sm: 'row' }}
-                justifyContent={{ xs: 'center', sm: 'flex-start' }}
-                alignItems="center"
-                columnSpacing="46px"
+                direction={{ xs: 'column-reverse', md: 'row' }}
+                justifyContent={{ xs: 'center', md: 'flex-start' }}
+                alignItems={{ xs: 'flex-start', md: 'center' }}
+                columnSpacing={{ md: '46px' }}
+                gap={{ xs: '25px', md: '0px' }}
               >
                 <Grid
                   container
@@ -52,6 +64,14 @@ export const Slides = ({ items }: SlideProps) => {
                   <Typography
                     variant="h2"
                     className={styles.title}
+                    fontSize={{
+                      xs: '28px',
+                      md: '56px',
+                    }}
+                    lineHeight={{
+                      xs: '33px',
+                      md: '65px',
+                    }}
                   >
                     {slide.title}
                   </Typography>
@@ -60,12 +80,20 @@ export const Slides = ({ items }: SlideProps) => {
                     sx={{
                       mb: '24px',
                     }}
+                    fontSize={{
+                      xs: '16px',
+                      md: '18px',
+                    }}
                   >
                     <CountDownTimer />
                   </Typography>
                   <Typography
                     variant="body1"
                     className={styles.description}
+                    marginBottom={{
+                      xs: '25px',
+                      md: '40px',
+                    }}
                   >
                     {slide.description}
                   </Typography>
@@ -82,6 +110,8 @@ export const Slides = ({ items }: SlideProps) => {
                 <Grid
                   item
                   xs={6}
+                  height="auto"
+                  width={{ xs: '100%', md: '550px' }}
                 >
                   <img
                     className={styles.heroStyleImg}
@@ -104,6 +134,6 @@ export const Slides = ({ items }: SlideProps) => {
           ))}
         </div>
       )}
-    </div>
+    </Box>
   );
 };

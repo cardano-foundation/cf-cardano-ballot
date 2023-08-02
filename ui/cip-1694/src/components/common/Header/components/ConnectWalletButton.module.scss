@@ -1,0 +1,34 @@
+.walletIcon {
+  height: 22px;
+  width: 22px;
+}
+
+.arrowIcon {
+  color: #bbbbbb;
+  &.isMobileMenu {
+    position: absolute;
+    right: 15px;
+  }
+}
+
+.connectButton {
+  background: #061d3c !important;
+  border-radius: 8px !important;
+  color: #f5f9ff !important;
+  font-size: 16px !important;
+  font-style: normal !important;
+  font-weight: 500 !important;
+  height: 49px !important;
+  line-height: normal !important;
+  text-transform: unset !important;
+  white-space: nowrap !important;
+  width: 179px !important;
+  gap: 10px !important;
+
+  &.isMobileMenu {
+    width: 100% !important;
+    justify-content: flex-start !important;
+    padding-left: 25px !important;
+    padding-right: 25px !important;
+  }
+}

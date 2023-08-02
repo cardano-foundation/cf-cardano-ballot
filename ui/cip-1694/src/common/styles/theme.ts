@@ -3,6 +3,15 @@ import { red } from '@mui/material/colors';
 import componentsOverride from './overrides';
 
 const theme = createTheme({
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 391,
+      md: 900,
+      lg: 1200,
+      xl: 1536,
+    },
+  },
   palette: {
     primary: {
       main: '#061D3C',

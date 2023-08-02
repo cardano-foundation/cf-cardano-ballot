@@ -2,6 +2,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
+import cn from 'classnames';
 import { Button } from '@mui/material';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -18,9 +19,9 @@ import {
 } from 'common/store/userSlice';
 import { ALWAYS_VISIBLE_WALLETS, SUPPORTED_WALLETS } from 'common/constants/appConstants';
 import { RootState } from 'common/store';
-import styles from './Header.module.scss';
+import styles from './ConnectWalletButton.module.scss';
 
-export const ConnectWalletButton = () => {
+export const ConnectWalletButton = ({ isMobileMenu = false }) => {
   const { disconnect, stakeAddress, enabledWallet } = useCardano();
   const dispatch = useDispatch();
   const connectedWallet = useSelector((state: RootState) => state.user.connectedWallet);
@@ -61,7 +62,7 @@ export const ConnectWalletButton = () => {
     <Button
       size="large"
       variant="contained"
-      className={styles.connectButton}
+      className={cn(styles.connectButton, { [styles.isMobileMenu]: isMobileMenu })}
       onClick={() => dispatch(setIsConnectWalletModalVisible({ isVisible: true }))}
     >
       <AccountBalanceWalletIcon className={styles.walletIcon} />
@@ -82,10 +83,12 @@ export const ConnectWalletButton = () => {
           alt="wallet-icon"
         />
       }
-      afterComponent={<KeyboardArrowDownIcon className={styles.arrowIcon} />}
+      afterComponent={
+        <KeyboardArrowDownIcon className={cn(styles.arrowIcon, { [styles.isMobileMenu]: isMobileMenu })} />
+      }
       customCSS={`
-        width: 170px;
-        margin-left: 10px;
+        width: ${isMobileMenu ? '170px' : '100%'};
+        padding-top: 0;
         button {
           background: transparent !important;
           color: #061D3C !important;

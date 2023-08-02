@@ -1,4 +1,5 @@
 import React from 'react';
+import { Grid } from '@mui/material';
 import styles from './Layout.module.scss';
 
 type LayoutProps = {
@@ -6,7 +7,20 @@ type LayoutProps = {
 };
 
 export const Layout = ({ children }: LayoutProps) => (
-  <div className={styles.container}>
-    <div className={styles.content}>{children}</div>
-  </div>
+  <Grid
+    container
+    direction={{ xs: 'column', md: 'row' }}
+    justifyContent={'center'}
+    className={styles.container}
+    padding={{ xs: '0 20px 20px 20px', md: '0px 40px' }}
+  >
+    <Grid
+      flex={{ xs: '1', md: 'none' }}
+      className={styles.content}
+      maxWidth="100%"
+      width={{ xs: '100%', md: '1146px' }}
+    >
+      {children}
+    </Grid>
+  </Grid>
 );

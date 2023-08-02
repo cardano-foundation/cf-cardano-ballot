@@ -1,76 +1,91 @@
-import React from 'react';
-import { Link, matchPath, useLocation, useNavigate } from 'react-router-dom';
-import cn from 'classnames';
-import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
-import { Grid, Typography, Button } from '@mui/material';
-import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined';
-import LeaderboardIcon from '@mui/icons-material/Leaderboard';
-import { ROUTES } from 'common/routes';
-import { ConnectWalletButton } from './ConnectWalletButton';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Grid, Button } from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
 import styles from './Header.module.scss';
+import { HeaderActions } from './components/HeaderActions';
+import { MobileModal } from '../MobileModal/MobileModal';
+import { Footer } from '../Footer/Footer';
 
 export const Header = () => {
-  const { isConnected } = useCardano();
   const navigate = useNavigate();
-  const { pathname } = useLocation();
+  const [isMobileMenuVisible, setIsMobileMenuVisible] = useState(false);
 
   const handleLogoClick = () => {
     navigate('/');
   };
 
   return (
-    <Grid
-      container
-      direction={{ xs: 'column', sm: 'row' }}
-      justifyContent={{ sm: 'center', md: 'space-between' }}
-      alignItems="center"
-      className={styles.container}
-    >
+    <>
       <Grid
-        item
-        xs={12}
-        sm={'auto'}
-        className={styles.content}
+        container
+        direction={{ xs: 'column', md: 'row' }}
+        justifyContent={{ xs: 'center', sm: 'space-between' }}
+        className={styles.container}
+        alignContent={{ xs: 'space-between', sm: 'center' }}
+        justifySelf={{
+          xs: 'flex-start',
+        }}
+        height={{ xs: '69px', sm: 'auto', md: '69px' }}
+        marginBottom={{ sm: '40px', md: '0px' }}
       >
-        <img
-          className={styles.logo}
-          src="/static/Cardano_Ballot_black.png"
-          onClick={handleLogoClick}
-        />
+        <Grid
+          item
+          xs={12}
+          sm="auto"
+          display="flex"
+          className={styles.content}
+          alignItems="center"
+          marginBottom={{ xs: '0px', sm: '15px', md: '0px' }}
+          marginTop={{ xs: '0px', sm: '15px', md: '0px' }}
+        >
+          <img
+            className={styles.logo}
+            src="/static/Cardano_Ballot_black.png"
+            onClick={handleLogoClick}
+          />
+        </Grid>
+        <Grid display={{ xs: 'none', sm: 'flex' }}>
+          <HeaderActions />
+        </Grid>
+        <Grid
+          display={{ xs: 'block', sm: 'none' }}
+          item
+          sm="auto"
+          gap="15px"
+          alignItems="center"
+          justifyContent="flex-end"
+        >
+          <Button
+            className={styles.menuButton}
+            size="large"
+            variant="outlined"
+            onClick={() => setIsMobileMenuVisible(true)}
+          >
+            <MenuIcon className={styles.menuIcon} />
+          </Button>
+        </Grid>
       </Grid>
-      <Grid
-        item
-        xs={12}
-        sm={'auto'}
-        className={styles.content}
-        gap={'15px'}
-        justifyContent={'flex-end'}
+      <MobileModal
+        openStatus={isMobileMenuVisible}
+        onCloseFn={() => setIsMobileMenuVisible(false)}
+        name="mobile-menu"
+        id="mobile-menu"
+        title="Menu"
       >
-        <Button
-          component={Link}
-          to={ROUTES.VOTE}
-          className={cn(styles.button, { [styles.activeRoute]: !!matchPath(pathname, ROUTES.VOTE) })}
-          startIcon={<CheckBoxOutlinedIcon />}
+        <Grid
+          container
+          flex="1"
+          direction="column"
+          justifyContent="space-between"
         >
-          Your vote
-        </Button>
-        <Button
-          component={Link}
-          to={isConnected ? ROUTES.LEADERBOARD : undefined}
-          className={cn(styles.button, { [styles.activeRoute]: !!matchPath(pathname, ROUTES.LEADERBOARD) })}
-          startIcon={<LeaderboardIcon />}
-        >
-          Leaderboard
-        </Button>
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          align="center"
-          component={'div'}
-        >
-          <ConnectWalletButton />
-        </Typography>
-      </Grid>
-    </Grid>
+          <HeaderActions
+            onClick={() => setIsMobileMenuVisible(false)}
+            isMobileMenu
+          />
+          <Footer isMobileMenu />
+        </Grid>
+      </MobileModal>
+    </>
   );
 };

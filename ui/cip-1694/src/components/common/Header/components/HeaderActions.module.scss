@@ -1,0 +1,36 @@
+.button {
+  color: #061d3c !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  line-height: normal !important;
+  padding: 15px 25px !important;
+  text-transform: none !important;
+  height: 49px !important;
+  width: 100% !important;
+  justify-content: left !important;
+
+  :global(.MuiButton-startIcon) {
+    margin-right: 10px !important;
+    margin-left: 0px !important;
+  }
+
+  &.activeRoute {
+    text-decoration: underline;
+  }
+}
+
+.walletButtonWrapper {
+  :global {
+    #connect-wallet-dropdown {
+      width: 100%;
+      min-width: 100%;
+    }
+
+    #connect-wallet-button {
+      justify-content: flex-start;
+      padding-left: 25px;
+      padding-right: 25px;
+      gap: 10px;
+    }
+  }
+}

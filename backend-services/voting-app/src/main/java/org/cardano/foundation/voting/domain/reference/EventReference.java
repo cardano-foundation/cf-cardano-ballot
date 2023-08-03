@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.cardano.foundation.voting.domain.VotingEventType;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +32,13 @@ public class EventReference {
     @Builder.Default
     private Optional<Integer> startEpoch = Optional.empty();
 
+    private ZonedDateTime eventStart;
+
+    private ZonedDateTime eventEnd;
+
+    @Builder.Default
+    private Optional<ZonedDateTime> snapshotTime = Optional.empty();
+
     @Builder.Default
     private Optional<Integer> endEpoch = Optional.empty();
 
@@ -39,6 +47,9 @@ public class EventReference {
 
     @Builder.Default
     private boolean isActive = false;
+
+    @Builder.Default
+    private boolean isFinished = false;
 
     @Builder.Default
     private List<CategoryReference> categories = new ArrayList<>();

@@ -51,8 +51,7 @@ public class ProcessRecentMetadataJob implements Runnable {
                 try {
                     var transactionMetadataLabelCbors = event.getTxMetadataList().stream()
                             .filter(txMetadataLabel -> txMetadataLabel.getLabel().equalsIgnoreCase(String.valueOf(metadataLabel)))
-                            // TODO Cbor from txEvent when  yaci-store supports it
-                            .map(txEvent -> new TransactionMetadataLabelCbor(txEvent.getTxHash(), txEvent.getSlot(), txEvent.getBody()))
+                            .map(txEvent -> new TransactionMetadataLabelCbor(txEvent.getTxHash(), txEvent.getSlot(), txEvent.getCbor()))
                             .toList();
 
                     if (transactionMetadataLabelCbors.isEmpty()) {

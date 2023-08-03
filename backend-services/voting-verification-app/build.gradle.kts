@@ -62,9 +62,6 @@ dependencies {
 
 	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0-alpha.4")
 
-	implementation("com.bloxbean.cardano:yaci-store-spring-boot-starter:0.0.10")
-	implementation("com.bloxbean.cardano:yaci-store-metadata-spring-boot-starter:0.0.10")
-
 	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0-alpha.4")
     implementation("com.bloxbean.cardano:cardano-client-address:0.5.0-alpha.4")
     implementation("com.bloxbean.cardano:cardano-client-metadata:0.5.0-alpha.4")

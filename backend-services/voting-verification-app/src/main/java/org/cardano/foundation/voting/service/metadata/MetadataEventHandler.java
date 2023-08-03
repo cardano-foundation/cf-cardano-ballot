@@ -25,8 +25,7 @@ public class MetadataEventHandler {
         try {
             event.getTxMetadataList().stream()
                     .filter(txMetadataLabel -> txMetadataLabel.getLabel().equalsIgnoreCase(String.valueOf(metadataLabel)))
-                    // TODO Cbor from txEvent when  yaci-store supports it
-                    .forEach(txEvent -> customMetadataProcessor.processMetadataEvent(txEvent.getSlot(), txEvent.getBody()));
+                    .forEach(txEvent -> customMetadataProcessor.processMetadataEvent(txEvent.getSlot(), txEvent.getCbor()));
         } catch (Exception e) {
             log.warn("Error processing metadata event", e);
         }

@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import toast from 'react-hot-toast';
-import moment from 'moment';
 import cn from 'classnames';
 import { Grid, Typography, Button } from '@mui/material';
 import DoneIcon from '@mui/icons-material/Done';
@@ -16,11 +15,11 @@ import {
   setIsReceiptFetched,
   setIsVerifyVoteModalVisible,
   setIsVoteSubmittedModalVisible,
+  setSelectedProposal,
   setVoteReceipt,
 } from 'common/store/userSlice';
 import { Account, SignedWeb3Request } from 'types/backend-services-types';
 import { RootState } from 'common/store';
-import { EVENT_END_TIME, EVENT_END_TIME_FORMAT } from 'common/constants/appConstants';
 import { VoteReceipt } from 'pages/Vote/components/VoteReceipt/VoteReceipt';
 import { VoteSubmittedModal } from 'components/VoteSubmittedModal/VoteSubmittedModal';
 import { OptionCard } from '../../components/OptionCard/OptionCard';
@@ -28,7 +27,7 @@ import { OptionItem } from '../../components/OptionCard/OptionCard.types';
 import SidePage from '../../components/common/SidePage/SidePage';
 import { buildCanonicalVoteInputJson, buildCanonicalVoteReceiptInputJson } from '../../common/utils/voteUtils';
 import * as voteService from '../../common/api/voteService';
-import { EVENT_ID } from '../../common/constants/appConstants';
+import { env } from '../../env';
 import { useToggle } from '../../common/hooks/useToggle';
 import { HttpError } from '../../common/handlers/httpHandler';
 import styles from './Vote.module.scss';
@@ -56,16 +55,15 @@ const items: OptionItem[] = [
 ];
 
 const Vote = () => {
-  const date = EVENT_END_TIME;
-
-  const endTime = moment(date, EVENT_END_TIME_FORMAT).format('MMMM Do');
   const { stakeAddress, isConnected, signMessage } = useCardano();
   const receipt = useSelector((state: RootState) => state.user.receipt);
+  const event = useSelector((state: RootState) => state.user.event);
   const isReceiptFetched = useSelector((state: RootState) => state.user.isReceiptFetched);
   const isVoteSubmittedModalVisible = useSelector((state: RootState) => state.user.isVoteSubmittedModalVisible);
   const isVerifyVoteModalVisible = useSelector((state: RootState) => state.user.isVerifyVoteModalVisible);
   const [absoluteSlot, setAbsoluteSlot] = useState<number>();
-  const [optionId, setOptionId] = useState('');
+  const savedProposal = useSelector((state: RootState) => state.user.proposal);
+  const [optionId, setOptionId] = useState(savedProposal || '');
   const [voteSubmitted, setVoteSubmitted] = useState(false);
   const [savedVoteObjectPayload, setSavedvoteObjectPayload] = useState<SignedWeb3Request>();
   const [isToggledReceipt, toggleReceipt] = useToggle(false);
@@ -103,6 +101,7 @@ const Vote = () => {
         const receiptResponse = await voteService.getVoteReceipt(voteObjectPayload);
         if ('id' in receiptResponse) {
           dispatch(setVoteReceipt({ receipt: receiptResponse }));
+          dispatch(setSelectedProposal({ proposal: receiptResponse.proposal }));
         } else {
           const message = `Failed to fetch receipt', ${receiptResponse?.title}, ${receiptResponse?.detail}`;
           console.log(message);
@@ -142,10 +141,10 @@ const Vote = () => {
   }, [init, isConnected]);
 
   useEffect(() => {
-    if (absoluteSlot) {
+    if (absoluteSlot && !savedProposal) {
       fetchReceipt();
     }
-  }, [absoluteSlot, fetchReceipt]);
+  }, [absoluteSlot, fetchReceipt, savedProposal]);
 
   const onChangeOption = (option: string | null) => {
     setOptionId(option);
@@ -153,7 +152,7 @@ const Vote = () => {
   };
 
   const handleSubmit = async () => {
-    if (!EVENT_ID) {
+    if (!env.EVENT_ID) {
       console.log('EVENT_ID is not provided');
       return;
     }
@@ -165,7 +164,7 @@ const Vote = () => {
 
     let votingPower: Account['votingPower'];
     try {
-      ({ votingPower } = await voteService.getVotingPower(EVENT_ID, stakeAddress));
+      ({ votingPower } = await voteService.getVotingPower(env.EVENT_ID, stakeAddress));
     } catch (error) {
       const message = `Failed to fetch votingPower ${
         error instanceof Error || error instanceof HttpError ? error?.message : error
@@ -215,7 +214,7 @@ const Vote = () => {
               variant="h5"
               className={styles.title}
             >
-              CIP-1694 vote
+              {event?.presentationName}
             </Typography>
           </Grid>
           <Grid item>
@@ -224,7 +223,7 @@ const Vote = () => {
                 mb: '24px',
               }}
             >
-              <CountDownTimer />
+              <CountDownTimer endTime={event?.eventEnd} />
             </Typography>
           </Grid>
           <Grid item>
@@ -237,8 +236,8 @@ const Vote = () => {
           </Grid>
           <Grid item>
             <OptionCard
-              selectedOption={receipt?.proposal?.toLowerCase()}
-              disabled={!!receipt || voteSubmitted || (isConnected && !isReceiptFetched)}
+              selectedOption={savedProposal?.toLowerCase()}
+              disabled={!!receipt || voteSubmitted || (isConnected && !isReceiptFetched) || !event?.active}
               items={items}
               onChangeOption={onChangeOption}
             />
@@ -283,7 +282,10 @@ const Vote = () => {
           open={isToggledReceipt}
           setOpen={toggleReceipt}
         >
-          <VoteReceipt setOpen={toggleReceipt} />
+          <VoteReceipt
+            fetchReceipt={fetchReceipt}
+            setOpen={toggleReceipt}
+          />
         </SidePage>
       </div>
       <VoteSubmittedModal
@@ -297,7 +299,7 @@ const Vote = () => {
         description={
           <>
             <div style={{ marginBottom: '10px' }}>Thank you, your vote has been submitted.</div>
-            Make sure to check back on <b>{endTime}</b> to see the results!
+            Make sure to check back on <b>{event?.eventEnd?.toString()}</b> to see the results!
           </>
         }
       />

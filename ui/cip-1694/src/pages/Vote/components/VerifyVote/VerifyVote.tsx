@@ -1,17 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import cn from 'classnames';
+import React from 'react';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { Box, Button, TextareaAutosize, Typography } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import { VoteReceipt } from 'types/backend-services-types';
 import styles from './VerifyVote.module.scss';
-import { Loader } from '../Loader/Loader';
 import { QRCode } from '../QRCode/QRCode';
 
 type VoteSubmittedModalProps = {
@@ -23,28 +20,6 @@ type VoteSubmittedModalProps = {
 
 export const VerifyVoteModal = (props: VoteSubmittedModalProps) => {
   const { name, id, openStatus, onCloseFn } = props;
-  const [isVerified, setIsVerified] = useState(false);
-  const [isVerifying, setIsVerifying] = useState(false);
-  const [coseSignature, setCoseSignature] = useState<VoteReceipt['coseSignature']>('');
-
-  useEffect(() => {
-    if (openStatus) {
-      setIsVerifying(false);
-      setIsVerified(false);
-      setCoseSignature('');
-    }
-  }, [openStatus]);
-
-  const onVerify = () => {
-    // TODO: implement verification
-    setIsVerifying(true);
-    setTimeout(() => {
-      setIsVerified(true);
-      setIsVerifying(false);
-    }, 2000);
-  };
-
-  const isDisabled = !coseSignature || isVerifying;
 
   return (
     <Dialog
@@ -56,13 +31,7 @@ export const VerifyVoteModal = (props: VoteSubmittedModalProps) => {
         className={styles.dialogTitle}
         id={id}
       >
-        {isVerified ? (
-          <>
-            Vote verified <CheckCircleOutlineIcon className={styles.checkIcon} />
-          </>
-        ) : (
-          'Verify your vote'
-        )}
+        Vote verified <CheckCircleOutlineIcon className={styles.checkIcon} />
         <IconButton
           aria-label="close"
           onClick={onCloseFn}
@@ -89,9 +58,7 @@ export const VerifyVoteModal = (props: VoteSubmittedModalProps) => {
                 component="div"
                 variant="h5"
               >
-                {isVerified
-                  ? 'Your vote has been successfully verified. Click the link or scan the QR code to view the transaction.'
-                  : 'To authenticate your vote, please copy and paste your Cose Signature into the input field below. After this, click on the "Verify" button to complete the verification process.'}
+                Your vote has been successfully verified. Click the link or scan the QR code to view the transaction.
               </Typography>
             </Grid>
             <Grid
@@ -99,46 +66,35 @@ export const VerifyVoteModal = (props: VoteSubmittedModalProps) => {
               width="100%"
               container
             >
-              {!isVerified ? (
-                <TextareaAutosize
-                  disabled={isVerifying || isVerified}
-                  className={styles.textArea}
-                  onChange={(e) => setCoseSignature(e.target.value)}
-                  maxRows={4}
-                  aria-label="cose signature"
-                  placeholder="Paste your cose signature here"
-                />
-              ) : (
+              <Grid
+                item
+                container
+                direction="row"
+                gap="18px"
+                wrap="nowrap"
+                sx={{ height: '160px' }}
+              >
                 <Grid
+                  xs={6}
                   item
-                  container
-                  direction="row"
-                  gap="18px"
-                  wrap="nowrap"
                   sx={{ height: '160px' }}
                 >
-                  <Grid
-                    xs={6}
-                    item
-                    sx={{ height: '160px' }}
+                  <Button
+                    className={styles.viewTxBtn}
+                    size="large"
+                    variant="outlined"
+                    onClick={() => console.log('show tx details...')}
                   >
-                    <Button
-                      className={styles.viewTxBtn}
-                      size="large"
-                      variant="outlined"
-                      onClick={() => console.log('show tx details...')}
-                    >
-                      View transaction details
-                    </Button>
-                  </Grid>
-                  <Grid
-                    xs={6}
-                    item
-                  >
-                    <QRCode data="qrCodeData" />
-                  </Grid>
+                    View transaction details
+                  </Button>
                 </Grid>
-              )}
+                <Grid
+                  xs={6}
+                  item
+                >
+                  <QRCode data="qrCodeData" />
+                </Grid>
+              </Grid>
             </Grid>
             <Grid
               item
@@ -146,14 +102,13 @@ export const VerifyVoteModal = (props: VoteSubmittedModalProps) => {
             >
               <Box width="100%">
                 <Button
-                  disabled={isDisabled}
-                  className={cn(styles.button, { [styles.disabled]: isDisabled, [styles.loading]: isVerifying })}
+                  className={styles.button}
                   size="large"
                   variant="contained"
-                  onClick={isVerified ? onCloseFn : onVerify}
+                  onClick={onCloseFn}
                   sx={{}}
                 >
-                  {isVerifying ? <Loader /> : isVerified ? 'Done' : 'Verify'}
+                  Done
                 </Button>
               </Box>
             </Grid>

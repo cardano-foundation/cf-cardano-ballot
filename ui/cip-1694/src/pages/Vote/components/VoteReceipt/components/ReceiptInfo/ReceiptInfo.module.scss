@@ -1,0 +1,29 @@
+.ctaButton {
+  border: none !important;
+  background: #39486c1a !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+  &:hover {
+    background: darken(#39486c1a, 100%) !important;
+  }
+  .ctaIcon {
+    font-size: 24px !important;
+    color: #39486c !important;
+  }
+}
+
+[data-finalityscore='HIGH'],
+[data-finalityscore='VERY_HIGH'],
+[data-finalityscore='FINAL'] {
+  color: #00662b;
+}
+
+[data-finalityscore='MEDIUM'] {
+  color: #8f5300;
+}
+
+[data-finalityscore='LOW'] {
+  color: #cc0e00;
+}

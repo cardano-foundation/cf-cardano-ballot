@@ -26,6 +26,7 @@ export const HeaderActions = ({ isMobileMenu = false, onClick }: HeaderActionsPr
       alignItems="center"
       justifyContent="flex-end"
       direction={{ xs: 'column', md: 'row' }}
+      container
     >
       <Grid
         width={{ xs: '100% !important', sm: 'auto !important' }}

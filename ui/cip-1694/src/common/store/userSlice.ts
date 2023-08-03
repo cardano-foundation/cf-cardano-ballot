@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import { VoteReceipt } from 'types/backend-services-types';
+import { VoteReceipt, EventReference } from 'types/backend-services-types';
 import { UserState } from './types';
 
 const initialState: UserState = {
@@ -10,6 +10,8 @@ const initialState: UserState = {
   connectedWallet: '',
   isReceiptFetched: false,
   receipt: null,
+  proposal: null,
+  event: null,
 };
 
 export const userSlice = createSlice({
@@ -34,6 +36,12 @@ export const userSlice = createSlice({
     setIsVerifyVoteModalVisible: (state, action: PayloadAction<{ isVisible: boolean }>) => {
       state.isVerifyVoteModalVisible = action.payload.isVisible;
     },
+    setSelectedProposal: (state, action: PayloadAction<{ proposal: VoteReceipt['proposal'] }>) => {
+      state.proposal = action.payload.proposal;
+    },
+    setEventData: (state, action: PayloadAction<{ event: EventReference }>) => {
+      state.event = action.payload.event;
+    },
   },
 });
 
@@ -44,5 +52,7 @@ export const {
   setVoteReceipt,
   setIsReceiptFetched,
   setIsVerifyVoteModalVisible,
+  setSelectedProposal,
+  setEventData,
 } = userSlice.actions;
 export default userSlice.reducer;

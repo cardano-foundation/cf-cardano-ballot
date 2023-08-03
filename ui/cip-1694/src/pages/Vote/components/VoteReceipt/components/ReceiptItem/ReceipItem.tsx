@@ -4,12 +4,17 @@ import Grid from '@mui/material/Grid';
 import { IconButton, Tooltip, Typography } from '@mui/material';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded';
-import styles from './VoteReceipt.module.scss';
-import { FieldsToDisplayArrayKeys, labelTransformerMap, valueTransformerMap } from './utils';
+import {
+  AdvancedFullFieldsToDisplayArrayKeys,
+  FieldsToDisplayArrayKeys,
+  labelTransformerMap,
+  valueTransformerMap,
+} from '../../utils';
+import styles from '../../VoteReceipt.module.scss';
 
 type VoteReceiptProps = {
   onItemClick: (value: string) => void;
-  name: FieldsToDisplayArrayKeys;
+  name: FieldsToDisplayArrayKeys | AdvancedFullFieldsToDisplayArrayKeys;
   value: string;
 };
 
@@ -59,30 +64,32 @@ export const ReceiptItem = ({ name, value, onItemClick }: VoteReceiptProps) => (
         </Grid>
       </Typography>
     </Grid>
-    <CopyToClipboard
-      text={value}
-      onCopy={onItemClick}
+    <Grid
+      container
+      alignItems="center"
+      gap="8px"
+      className={styles.input}
+      item
     >
-      <Grid
-        container
-        alignItems="center"
-        gap="8px"
-        className={styles.input}
-        item
+      <Typography
+        className={styles.inputText}
+        variant="h4"
       >
-        <Typography
-          className={styles.inputText}
-          variant="h4"
+        {valueTransformerMap[name]?.(value) || value}
+      </Typography>
+      {name === 'voteProof' && (
+        <CopyToClipboard
+          text={value}
+          onCopy={onItemClick}
         >
-          {valueTransformerMap[name]?.(value) || value}
-        </Typography>
-        <IconButton
-          data-receiptkey={name}
-          className={styles.inputIconButton}
-        >
-          <ContentCopyRoundedIcon className={styles.inputIcon} />
-        </IconButton>
-      </Grid>
-    </CopyToClipboard>
+          <IconButton
+            data-receiptkey={name}
+            className={styles.inputIconButton}
+          >
+            <ContentCopyRoundedIcon className={styles.inputIcon} />
+          </IconButton>
+        </CopyToClipboard>
+      )}
+    </Grid>
   </>
 );

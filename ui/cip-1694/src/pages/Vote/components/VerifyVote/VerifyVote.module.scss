@@ -34,7 +34,9 @@
   position: absolute !important;
   right: 10px !important;
   top: 10px !important;
-
+  &:hover {
+    background: darken(#eee, 5%) !important;
+  }
   .closeIcon {
     color: #061d3c !important;
   }
@@ -71,6 +73,11 @@
   letter-spacing: 0em !important;
   line-height: 19px !important;
   text-transform: none !important;
+  &:hover {
+    background: rgba(29, 67, 155, 0.1) !important;
+    border: 1px solid #1d439b !important;
+    box-shadow: 2px 2px 5px 0px rgba(29, 67, 155, 0.25) !important;
+  }
 }
 
 .button {
@@ -86,12 +93,23 @@
   white-space: nowrap !important;
   width: 100% !important;
   box-shadow: none !important;
+  &:hover {
+    background: darken(#1d439b, 10%) !important;
+  }
   &.disabled {
     background: #bbbbbb !important;
     color: #39486c !important;
+    &:hover {
+      background: #bbbbbb !important;
+      color: #39486c !important;
+    }
   }
   &.loading {
     background: #39486c !important;
     color: #f5f9ff !important;
+    &:hover {
+      background: #39486c !important;
+      color: #f5f9ff !important;
+    }
   }
 }

@@ -1,0 +1,23 @@
+.toast {
+  align-items: center;
+  background: #061d3c;
+  display: flex;
+  gap: 8px;
+
+  .toastIcon {
+    font-size: 19px !important;
+    color: #f5f9ff !important;
+  }
+
+  .divider {
+    height: 22px;
+    width: 1px;
+    background: #f5f9ffa6;
+  }
+
+  .toastClose {
+    font-size: 16px;
+    color: #f5f9ff;
+    margin-left: -8px;
+  }
+}

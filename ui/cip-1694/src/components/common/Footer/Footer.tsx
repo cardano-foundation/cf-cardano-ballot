@@ -7,8 +7,14 @@ import styles from './Footer.module.scss';
 const Copyright = () => (
   <Typography className={styles.copyright}>
     <span color="inherit">
-      © {new Date().getFullYear()} <Box display={{ xs: 'none', md: 'inline' }}>CIP-1694</Box> Ratification. All rights
-      reserved.
+      © {new Date().getFullYear()}{' '}
+      <Box
+        component={'span'}
+        display={{ xs: 'none', md: 'inline' }}
+      >
+        CIP-1694
+      </Box>{' '}
+      Ratification. All rights reserved.
     </span>
   </Typography>
 );

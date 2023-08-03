@@ -9,7 +9,7 @@ import { useTheme } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import { ConnectWalletList } from '@cardano-foundation/cardano-connect-with-wallet';
-import { SUPPORTED_WALLETS, ALWAYS_VISIBLE_WALLETS } from 'common/constants/appConstants';
+import { env } from 'env';
 import styles from './ConnectWalletModal.module.scss';
 
 type ConnectWalletModalProps = {
@@ -25,8 +25,8 @@ type ConnectWalletModalProps = {
 export const ConnectWalletModal = (props: ConnectWalletModalProps) => {
   const theme = useTheme();
   const { name, id, openStatus, title, description, onConnectWallet, onCloseFn } = props;
-  const supportedWallets = SUPPORTED_WALLETS;
-  const alwaysVisibleWallets = ALWAYS_VISIBLE_WALLETS;
+  const supportedWallets = env.SUPPORTED_WALLETS;
+  const alwaysVisibleWallets = env.ALWAYS_VISIBLE_WALLETS;
 
   return (
     <Dialog

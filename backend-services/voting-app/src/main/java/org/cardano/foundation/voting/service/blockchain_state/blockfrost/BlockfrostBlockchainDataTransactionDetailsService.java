@@ -16,8 +16,6 @@ public class BlockfrostBlockchainDataTransactionDetailsService extends AbstractB
     public Optional<TransactionDetails> getTransactionDetails(String transactionHash) {
         return getTransaction(transactionHash).map(trx -> {
 
-            // TODO how to extreact witness signature from transaction?
-
             var blockConfirmations = getBlockInSlot(trx).getConfirmations();
 
             return TransactionDetails.builder()

@@ -51,13 +51,21 @@ public class VoteCommitmentService {
             return;
         }
 
-        var l1TransactionHash = l1SubmissionService.submitMerkleCommitments(l1MerkleCommitments);
+        var l1TransactionDataE = l1SubmissionService.submitMerkleCommitments(l1MerkleCommitments);
+        if (l1TransactionDataE.isEmpty()) {
+            log.error("Transaction submission failed, issue:{}, will try to submit again in some time...", l1TransactionDataE.swap().get());
+            return;
+        }
+
+        var l1SubmissionData = l1TransactionDataE.get();
+        var l1TransactionHash = l1SubmissionData.txHash();
+        var l1TransactionSlot = l1SubmissionData.slot();
 
         // we only need hash, we don't need to wait for transaction to be confirmed
         // voter's receipt will contain merkle proof confirmation data
-        merkleTreeService.storeAll(l1MerkleCommitments, l1TransactionHash);
+        merkleTreeService.storeAll(l1MerkleCommitments, l1TransactionHash, l1TransactionSlot);
 
-        generateAndStoreMerkleProofs(l1MerkleCommitments, l1TransactionHash);
+        generateAndStoreMerkleProofs(l1MerkleCommitments, l1TransactionHash, l1TransactionSlot);
     }
 
     private List<L1MerkleCommitment> getL1MerkleCommitments() {
@@ -73,7 +81,7 @@ public class VoteCommitmentService {
                 .toList();
     }
 
-    private void generateAndStoreMerkleProofs(List<L1MerkleCommitment> l1MerkleCommitments, String l1TransactionHash) {
+    private void generateAndStoreMerkleProofs(List<L1MerkleCommitment> l1MerkleCommitments, String l1TransactionHash, long l1TransactionSlot) {
         log.info("Storing vote merkle proofs...");
 
         for (var l1MerkleCommitment : l1MerkleCommitments) {
@@ -96,6 +104,7 @@ public class VoteCommitmentService {
                         .voteId(vote.getId())
                         .eventId(vote.getEventId())
                         .rootHash(merkleRootHash)
+                        .absoluteSlot(l1TransactionSlot)
                         .proofItemsJson(proofItemsJson)
                         .l1TransactionHash(l1TransactionHash)
                         .invalidated(false)

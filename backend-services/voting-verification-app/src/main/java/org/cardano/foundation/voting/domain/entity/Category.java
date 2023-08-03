@@ -46,7 +46,7 @@ public class Category extends AbstractTimestampEntity {
         return proposals.size() > 1;
     }
 
-    @Column(name = "absolute_slot")
+    @Column(name = "absolute_slot", nullable = false)
     private long absoluteSlot;
 
 }

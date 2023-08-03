@@ -35,7 +35,7 @@ public class VoteMerkleProof extends AbstractTimestampEntity {
     @Column(name = "invalidated") // when there is a rollback event we soft delete it, invalidate the merkle proof
     private boolean invalidated;
 
-    @Column(name = "absolute_slot")
-    private long absoluteSlot;
+    @Column(name = "absolute_slot", nullable = false)
+    private Long absoluteSlot;
 
 }

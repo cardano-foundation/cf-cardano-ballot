@@ -18,7 +18,7 @@ CREATE TABLE event (
 
     snapshot_epoch INT,
 
-    absolute_slot BIGINT,
+    absolute_slot BIGINT NOT NULL,
 
     created_at TIMESTAMP WITHOUT TIME ZONE,
     updated_at TIMESTAMP WITHOUT TIME ZONE,
@@ -34,7 +34,7 @@ CREATE TABLE category (
     schema_version VARCHAR(256) NOT NULL,
     gdpr_protection BOOL NOT NULL,
 
-    absolute_slot BIGINT,
+    absolute_slot BIGINT NOT NULL,
 
     created_at TIMESTAMP WITHOUT TIME ZONE,
     updated_at TIMESTAMP WITHOUT TIME ZONE,
@@ -49,12 +49,12 @@ CREATE TABLE proposal (
     name VARCHAR(256) NOT NULL, -- PII protection, on chain we are not allowed to store human readable names
     category_id VARCHAR(256) NOT NULL REFERENCES category(id),
 
-    absolute_slot BIGINT,
+    absolute_slot BIGINT NOT NULL,
 
     created_at TIMESTAMP WITHOUT TIME ZONE,
     updated_at TIMESTAMP WITHOUT TIME ZONE,
 
-   CONSTRAINT pk_proposal PRIMARY KEY (id)
+    CONSTRAINT pk_proposal PRIMARY KEY (id)
 );
 
 DROP TABLE IF NOT EXISTS merkle_root_hash;
@@ -63,7 +63,7 @@ CREATE TABLE merkle_root_hash (
     root_hash VARCHAR(256) NOT NULL,  -- merkle root hash
     event_id VARCHAR(256) NOT NULL, -- human readable name, should never contain PII data
 
-    absolute_slot BIGINT,
+    absolute_slot BIGINT NOT NULL,
 
     created_at TIMESTAMP WITHOUT TIME ZONE,
     updated_at TIMESTAMP WITHOUT TIME ZONE,

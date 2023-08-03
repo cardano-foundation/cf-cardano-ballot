@@ -23,10 +23,10 @@ public class Proposal extends AbstractTimestampEntity {
             fetch = FetchType.EAGER,
             cascade = CascadeType.ALL
     )
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    @Column(name = "absolute_slot")
+    @Column(name = "absolute_slot", nullable = false)
     private long absoluteSlot;
 
 }

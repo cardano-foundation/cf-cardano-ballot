@@ -54,11 +54,13 @@ public class Event extends AbstractTimestampEntity {
     private Integer startEpoch;
 
     @Column(name = "end_epoch")
+    @Nullable
     // endEpoch is only needed for stake based voting events
     private Integer endEpoch;
 
     @Column(name = "start_slot")
     //startSlot is only needed for user based voting events
+    @Nullable
     private Long startSlot;
 
     @Column(name = "end_slot")
@@ -71,10 +73,10 @@ public class Event extends AbstractTimestampEntity {
     @Nullable
     private Integer snapshotEpoch;
 
-    @Column(name = "schema_version")
+    @Column(name = "schema_version", nullable = false)
     private SchemaVersion version;
 
-    @Column(name = "absolute_slot")
+    @Column(name = "absolute_slot", nullable = false)
     private long absoluteSlot;
 
     @OneToMany(
@@ -194,6 +196,14 @@ public class Event extends AbstractTimestampEntity {
         this.categories = categories;
     }
 
+    public void setAbsoluteSlot(long absoluteSlot) {
+        this.absoluteSlot = absoluteSlot;
+    }
+
+    public long getAbsoluteSlot() {
+        return absoluteSlot;
+    }
+
     public boolean isValid() {
         if (List.of(STAKE_BASED, BALANCE_BASED).contains(votingEventType)) {
             if (getStartEpoch().isEmpty() || getEndEpoch().isEmpty() || getSnapshotEpoch().isEmpty() || getVotingPowerAsset().isEmpty()) {
@@ -215,14 +225,6 @@ public class Event extends AbstractTimestampEntity {
         }
 
         return true;
-    }
-
-    public void setAbsoluteSlot(long absoluteSlot) {
-        this.absoluteSlot = absoluteSlot;
-    }
-
-    public long getAbsoluteSlot() {
-        return absoluteSlot;
     }
 
 }

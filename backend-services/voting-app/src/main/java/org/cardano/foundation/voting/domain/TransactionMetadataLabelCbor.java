@@ -14,6 +14,10 @@ import lombok.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class TransactionMetadataLabelCbor {
+
     private String txHash;
+    private long slot;
     private String cborMetadata;
+
 }
+

@@ -3,8 +3,8 @@ package org.cardano.foundation.voting.config;
 import org.cardano.foundation.voting.service.blockchain_state.*;
 import org.cardano.foundation.voting.service.blockchain_state.blockfrost.BlockfrostBlockchainDataMetadataService;
 import org.cardano.foundation.voting.service.blockchain_state.blockfrost.BlockfrostBlockchainDataStakePoolService;
-import org.cardano.foundation.voting.service.blockchain_state.blockfrost.BlockfrostBlockchainDataTipService;
-import org.cardano.foundation.voting.service.blockchain_state.blockfrost.BlockfrostBlockchainDataTransactionDetailsService;
+import org.cardano.foundation.voting.service.blockchain_state.yaci.YaciBlockchainDataChainTipService;
+import org.cardano.foundation.voting.service.blockchain_state.yaci.YaciTransactionDetailsBlockchainDataService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -13,7 +13,7 @@ public class BlockchainDataConfig {
 
     @Bean
     public BlockchainDataChainTipService blockchainDataChainTipService() {
-        return new BlockfrostBlockchainDataTipService();
+        return new YaciBlockchainDataChainTipService();
     }
 
     @Bean
@@ -34,7 +34,7 @@ public class BlockchainDataConfig {
 
     @Bean
     public BlockchainDataTransactionDetailsService blockchainDataTransactionDetailsService() {
-        return new BlockfrostBlockchainDataTransactionDetailsService();
+        return new YaciTransactionDetailsBlockchainDataService();
     }
 
 }

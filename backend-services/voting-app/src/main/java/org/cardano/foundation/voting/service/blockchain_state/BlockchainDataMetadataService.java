@@ -4,11 +4,15 @@ import org.cardano.foundation.voting.domain.TransactionDetails;
 import org.cardano.foundation.voting.domain.TransactionMetadataLabelCbor;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface BlockchainDataMetadataService {
 
-    List<TransactionMetadataLabelCbor> fetchMetadataForLabel(String metadataLabel, int pageSize, int page, TransactionDetails.FinalityScore finalityScore);
+    default List<TransactionMetadataLabelCbor> fetchMetadataForLabel(String metadataLabel,
+                                                                     int pageSize,
+                                                                     int page,
+                                                                     TransactionDetails.FinalityScore finalityScore) {
+        return List.of();
+    };
 
 }
 

@@ -1,6 +1,7 @@
 package org.cardano.foundation.voting.service.expire;
 
 import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.domain.ChainTip;
 import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataChainTipService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,12 +52,13 @@ public class ExpirationService {
             return false;
         }
 
-        var currentAbsoluteSlot = chainTipE.get().getAbsoluteSlot();
-        var epochNo = chainTipE.get().getEpochNo();
+        ChainTip chainTip = chainTipE.get();
+        var currentAbsoluteSlot = chainTip.getAbsoluteSlot();
+        var epochNo = chainTip.getEpochNo();
 
         return switch (event.getVotingEventType()) {
-            case USER_BASED -> (currentAbsoluteSlot >= event.getStartSlot().orElseThrow() && currentAbsoluteSlot <= event.getEndSlot().orElseThrow());
             case STAKE_BASED, BALANCE_BASED ->  (epochNo >= event.getStartEpoch().orElseThrow() && epochNo <= event.getEndEpoch().orElseThrow());
+            case USER_BASED -> (currentAbsoluteSlot >= event.getStartSlot().orElseThrow() && currentAbsoluteSlot <= event.getEndSlot().orElseThrow());
         };
     }
 
@@ -68,12 +70,13 @@ public class ExpirationService {
             return false;
         }
 
-        var currentAbsoluteSlot = chainTipE.get().getAbsoluteSlot();
-        var epochNo = chainTipE.get().getEpochNo();
+        ChainTip chainTip = chainTipE.get();
+        var currentAbsoluteSlot = chainTip.getAbsoluteSlot();
+        var epochNo = chainTip.getEpochNo();
 
         return switch (event.getVotingEventType()) {
+            case STAKE_BASED, BALANCE_BASED -> (epochNo > event.getEndEpoch().orElseThrow());
             case USER_BASED -> (currentAbsoluteSlot > event.getEndSlot().orElseThrow());
-            case STAKE_BASED, BALANCE_BASED -> (epochNo  > event.getEndEpoch().orElseThrow());
         };
     }
 

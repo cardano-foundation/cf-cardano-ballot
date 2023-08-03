@@ -80,7 +80,6 @@ dependencies {
 	implementation("com.bloxbean.cardano:yaci-store-blocks-spring-boot-starter:0.0.11-beta2-SNAPSHOT")
 	implementation("com.bloxbean.cardano:yaci-store-transaction-spring-boot-starter:0.0.11-beta2-SNAPSHOT")
 	implementation("com.bloxbean.cardano:yaci-store-metadata-spring-boot-starter:0.0.11-beta2-SNAPSHOT")
-	implementation("com.bloxbean.cardano:yaci-store-utxo-spring-boot-starter:0.0.11-beta2-SNAPSHOT")
 
 	implementation("io.blockfrost:blockfrost-java:0.1.3")
 

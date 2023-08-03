@@ -18,7 +18,7 @@ public class BlockchainDataConfig {
 
     @Bean
     public BlockchainDataMetadataService blockchainDataMetadataService() {
-        return new BlockfrostBlockchainDataMetadataService();
+        return new BlockchainDataMetadataService() { };
     }
 
     @Bean

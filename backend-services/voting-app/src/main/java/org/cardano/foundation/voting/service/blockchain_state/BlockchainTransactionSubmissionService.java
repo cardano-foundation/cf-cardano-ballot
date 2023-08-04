@@ -5,6 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 
 public interface BlockchainTransactionSubmissionService {
 
+    /**
+     * Submit transaction and return transaction  hash.
+     *
+     * @param txData
+     * @return transaction hash
+     */
     String submitTransaction(byte[] txData);
 
     @Slf4j

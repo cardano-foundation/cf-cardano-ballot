@@ -16,7 +16,13 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
 @EnableJpaRepositories("org.cardano.foundation.voting.repository")
 @EntityScan(basePackages = "org.cardano.foundation.voting.domain.entity")
-@ComponentScan(basePackages = { "org.cardano.foundation.voting.repository", "org.cardano.foundation.voting.service", "org.cardano.foundation.voting.resource", "org.cardano.foundation.voting.config", "org.cardano.foundation.voting.jobs" })
+@ComponentScan(basePackages = {
+		"org.cardano.foundation.voting.repository",
+		"org.cardano.foundation.voting.service",
+		"org.cardano.foundation.voting.resource",
+		"org.cardano.foundation.voting.config",
+		"org.cardano.foundation.voting.jobs"
+})
 @EnableTransactionManagement
 @EnableScheduling
 @EnableAsync
@@ -29,7 +35,6 @@ public class VotingAppService {
 
 	@Bean
 	public CommandLineRunner onStart() {
-
 		return (args) -> {
 			log.info("Voting App Service started.");
 		};

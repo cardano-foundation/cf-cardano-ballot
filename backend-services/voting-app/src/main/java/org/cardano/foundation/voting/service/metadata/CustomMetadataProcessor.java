@@ -15,8 +15,8 @@ import org.cardano.foundation.voting.domain.TransactionMetadataLabelCbor;
 import org.cardano.foundation.voting.domain.entity.Category;
 import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.domain.entity.Proposal;
+import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataTransactionDetailsService;
 import org.cardano.foundation.voting.service.cbor.CborService;
-import org.cardano.foundation.voting.service.json.JsonService;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
 import org.cardano.foundation.voting.utils.ChunkedMetadataParser;
 import org.cardano.foundation.voting.utils.Enums;
@@ -51,11 +51,11 @@ public class CustomMetadataProcessor {
     @Qualifier("organiser_account")
     private Account organiserAccount;
 
+    @Autowired
+    private BlockchainDataTransactionDetailsService blockchainDataTransactionDetailsService;
+
     @Value("${bind.on.event.ids}")
     private List<String> bindOnEventIds;
-
-    @Autowired
-    private JsonService jsonService;
 
     @Value("${l1.transaction.metadata.label:12345}")
     private long metadataLabel;
@@ -65,15 +65,15 @@ public class CustomMetadataProcessor {
 
         for (var onChainMetadataEvent : onChainMetadataEvents) {
             try {
-                processEvent(onChainMetadataEvent);
+                processEvent(onChainMetadataEvent.getSlot(), onChainMetadataEvent.getCborMetadata(), onChainMetadataEvent.getTxHash());
             } catch (Exception e) {
                 log.warn("Error processing on chain event: {}", onChainMetadataEvent, e);
             }
         }
     }
 
-    private void processEvent(TransactionMetadataLabelCbor onChainMetadataEvent) throws CborException {
-        var cborBytes = decodeHexString(onChainMetadataEvent.getCborMetadata().replace("\\x", ""));
+    private void processEvent(long slot, String txCbor, String txHash) throws CborException {
+        var cborBytes = decodeHexString(txCbor.replace("\\x", ""));
 
         var cborMetadata = CBORMetadata.deserialize(cborBytes);
 
@@ -84,17 +84,17 @@ public class CustomMetadataProcessor {
         Optional<CBORMetadataMap> maybePayloadCborMap = Optional.ofNullable(envelopeCborMap.get("payload")).map(o -> (CBORMetadataMap) o);
 
         if (maybeSignatureHexString.isEmpty()) {
-            log.warn("Missing signature from on chain event: {}", onChainMetadataEvent);
+            log.warn("Missing signature from on chain event: {}", txCbor);
             return;
         }
 
         if (maybeKeyHexString.isEmpty()) {
-            log.warn("Missing key from on chain event: {}", onChainMetadataEvent);
+            log.warn("Missing key from on chain event: {}", txCbor);
             return;
         }
 
         if (maybePayloadCborMap.isEmpty()) {
-            log.warn("Missing payload from on chain event: {}", onChainMetadataEvent);
+            log.warn("Missing payload from on chain event: {}", txCbor);
             return;
         }
 
@@ -106,19 +106,19 @@ public class CustomMetadataProcessor {
         var onChainEvenType = maybeOnChainVotingEventType.orElseThrow();
 
         if (onChainEvenType == EVENT_REGISTRATION) {
-            processEventRegistration(maybeSignatureHexString.orElseThrow(), maybeKeyHexString.orElseThrow(), maybePayloadCborMap.orElseThrow()).ifPresent(event -> {
+            processEventRegistration(maybeSignatureHexString.orElseThrow(), maybeKeyHexString.orElseThrow(), maybePayloadCborMap.orElseThrow(), slot).ifPresent(event -> {
                 log.info("Event registration processed: {}", event.getId());
             });
         }
         if (onChainEvenType == CATEGORY_REGISTRATION) {
-            processCategoryRegistration(maybeSignatureHexString.orElseThrow(), maybeKeyHexString.orElseThrow(), maybePayloadCborMap.orElseThrow()).ifPresent(category -> {
+            processCategoryRegistration(maybeSignatureHexString.orElseThrow(), maybeKeyHexString.orElseThrow(), maybePayloadCborMap.orElseThrow(), slot).ifPresent(category -> {
                 log.info("Category registration processed: {}", category.getId());
             });
         }
     }
 
     @SneakyThrows
-    private Optional<Event> processEventRegistration(String signatureHexString, String keyHexString, CBORMetadataMap payload) {
+    private Optional<Event> processEventRegistration(String signatureHexString, String keyHexString, CBORMetadataMap payload, long txSlot) {
         var id = HexUtil.encodeHexString(blake2bHash224(decodeHexString(signatureHexString)));
         log.info("Processing event registration, hash: {}", id);
 
@@ -191,12 +191,12 @@ public class CustomMetadataProcessor {
         event.setStartSlot(eventRegistration.getStartSlot());
         event.setEndSlot(eventRegistration.getEndSlot());
 
-        event.setAbsoluteSlot(eventRegistration.getCreationSlot());
+        event.setAbsoluteSlot(txSlot);
 
         return Optional.of(referenceDataService.storeEvent(event));
     }
 
-    private Optional<Category> processCategoryRegistration(String signature, String key, CBORMetadataMap payload) throws CborException {
+    private Optional<Category> processCategoryRegistration(String signature, String key, CBORMetadataMap payload, long txSlot) throws CborException {
         var id = HexUtil.encodeHexString(Blake2bUtil.blake2bHash224(decodeHexString(signature)));
 
         log.info("Processing category registration id: {}", id);
@@ -264,14 +264,14 @@ public class CustomMetadataProcessor {
         category.setId(categoryRegistration.getName());
         category.setVersion(SchemaVersion.fromText(categoryRegistration.getSchemaVersion()).orElseThrow());
         category.setGdprProtection(categoryRegistration.isGdprProtection());
-        category.setAbsoluteSlot(categoryRegistration.getCreationSlot());
+        category.setAbsoluteSlot(txSlot);
         category.setEvent(event);
 
         var proposals = categoryRegistration.getProposals().stream().map(proposalEnvelope -> Proposal.builder()
                 .id(proposalEnvelope.getId())
                 .name(proposalEnvelope.getName())
                 .category(category)
-                .absoluteSlot(categoryRegistration.getCreationSlot()) // there is no separate transaction for proposals registration
+                .absoluteSlot(txSlot) // same as category
                 .build()
         ).toList();
 

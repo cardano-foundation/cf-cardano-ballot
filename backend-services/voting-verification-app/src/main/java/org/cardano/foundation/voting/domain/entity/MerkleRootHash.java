@@ -24,7 +24,7 @@ public class MerkleRootHash extends AbstractTimestampEntity {
     @Column(name = "event_id", nullable = false)
     private String eventId;
 
-    @Column(name = "absolute_slot")
+    @Column(name = "absolute_slot", nullable = false)
     private long absoluteSlot;
 
 }

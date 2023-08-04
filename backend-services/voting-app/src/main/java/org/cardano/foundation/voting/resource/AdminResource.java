@@ -3,7 +3,7 @@ package org.cardano.foundation.voting.resource;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.web3.SignedWeb3Request;
-import org.cardano.foundation.voting.service.metadata.MetadataService;
+import org.cardano.foundation.voting.service.metadata.CustomMetadataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +21,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 public class AdminResource {
 
     @Autowired
-    private MetadataService metadataService;
+    private CustomMetadataService customMetadataService;
 
     @Autowired
     @Qualifier("threadPoolTaskExecutor")
@@ -32,7 +32,7 @@ public class AdminResource {
         log.info("Received full metadata scan signal...");
 
         executor.execute(() -> {
-            var result = metadataService.processAllMetadataEvents(fullMetadataScanRequest);
+            var result = customMetadataService.processAllMetadataEvents(fullMetadataScanRequest);
             if (result.isLeft()) {
                 var problem = result.getLeft();
                 log.error("Error processing full metadata scan: {}", problem);

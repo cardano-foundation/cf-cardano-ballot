@@ -88,7 +88,9 @@ public class L1TransactionCreator {
         envelope.put("type", metadataType.name());
         envelope.put("signature", dataSignature.signature()); // CIP-30
         envelope.put("key", dataSignature.key()); // CIP-30
-        envelope.put("signatureType", "HASH_ONLY"); // CIP-30 extension
+        envelope.put("signatureType", "HASH_ONLY"); // potential CIP-30 extension
+        envelope.put("hashType", "BLAKE2B_224"); // potential CIP-30 extension
+
         envelope.put("payload", childMetadata); // CIP-30 extension, do we need to split it manually?
 
         envelope.put("format", "CIP-30");

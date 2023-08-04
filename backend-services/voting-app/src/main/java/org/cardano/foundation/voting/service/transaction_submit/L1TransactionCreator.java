@@ -16,6 +16,7 @@ import com.bloxbean.cardano.client.quicktx.QuickTxBuilder;
 import com.bloxbean.cardano.client.quicktx.Tx;
 import com.bloxbean.cardano.client.util.HexUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.vavr.control.Either;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.L1MerkleCommitment;
@@ -25,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.zalando.problem.Problem;
 
 import java.util.List;
 
@@ -53,12 +55,15 @@ public class L1TransactionCreator {
     @Value("${l1.transaction.metadata.label:12345}")
     private long metadataLabel;
 
-    public byte[] submitMerkleCommitments(List<L1MerkleCommitment> l1MerkleCommitments) {
-        var chainTip = blockchainDataChainTipService.getChainTip();
-        MetadataMap eventMetadataMap = metadataSerialiser.serialise(l1MerkleCommitments, chainTip.getAbsoluteSlot());
-        Metadata metadata = serialiseMetadata(eventMetadataMap, COMMITMENTS);
+    public Either<Problem, byte[]> submitMerkleCommitments(List<L1MerkleCommitment> l1MerkleCommitments) {
+        return blockchainDataChainTipService.getChainTip().map(chainTip -> {
+            var absoluteSlot = chainTip.getAbsoluteSlot();
 
-        return serialiseTransaction(metadata);
+            MetadataMap eventMetadataMap = metadataSerialiser.serialise(l1MerkleCommitments, absoluteSlot);
+            Metadata metadata = serialiseMetadata(eventMetadataMap, COMMITMENTS);
+
+            return serialiseTransaction(metadata);
+        });
     }
 
     @SneakyThrows
@@ -80,7 +85,8 @@ public class L1TransactionCreator {
         envelope.put("key", dataSignature.key()); // CIP-30
 
         envelope.put("payload", childMetadata);
-        envelope.put("signatureType", "HASH_ONLY"); // CIP-30 extension
+        envelope.put("signatureType", "HASH_ONLY"); // potential CIP-30 extension
+        envelope.put("hashType", "BLAKE2B_224"); // potential CIP-30 extension
 
         envelope.put("format", "CIP-30");
         envelope.put("subFormat", "CBOR");

@@ -1,5 +1,7 @@
 package org.cardano.foundation.voting.service.expire;
 
+import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.domain.ChainTip;
 import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataChainTipService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +10,7 @@ import org.springframework.data.domain.Range;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class ExpirationService {
 
     @Autowired
@@ -17,7 +20,14 @@ public class ExpirationService {
     private long expirationSlotBuffer;
 
     public boolean isSlotInRange(long slot) {
-        var currentAbsoluteSlot = blockchainDataChainTipService.getChainTip().getAbsoluteSlot();
+        var chainTipE = blockchainDataChainTipService.getChainTip();
+        if (chainTipE.isEmpty()) {
+            log.warn("Slot maybe NOT expired but we have no way to check this since we have no chain tip access.");
+
+            return false;
+        }
+
+        var currentAbsoluteSlot = chainTipE.get().getAbsoluteSlot();
 
         var range = Range
                 .from(Range.Bound.inclusive(currentAbsoluteSlot - expirationSlotBuffer))
@@ -35,26 +45,38 @@ public class ExpirationService {
     }
 
     public boolean isEventActive(Event event) {
-        var chainTip = blockchainDataChainTipService.getChainTip();
+        var chainTipE = blockchainDataChainTipService.getChainTip();
+        if (chainTipE.isEmpty()) {
+            log.warn("Slot maybe NOT expired but we have no way to check this since we have no chain tip access.");
 
-        var absoluteSlot = chainTip.getAbsoluteSlot();
+            return false;
+        }
+
+        ChainTip chainTip = chainTipE.get();
+        var currentAbsoluteSlot = chainTip.getAbsoluteSlot();
         var epochNo = chainTip.getEpochNo();
 
         return switch (event.getVotingEventType()) {
-            case USER_BASED -> (absoluteSlot >= event.getStartSlot().orElseThrow() && absoluteSlot <= event.getEndSlot().orElseThrow());
             case STAKE_BASED, BALANCE_BASED ->  (epochNo >= event.getStartEpoch().orElseThrow() && epochNo <= event.getEndEpoch().orElseThrow());
+            case USER_BASED -> (currentAbsoluteSlot >= event.getStartSlot().orElseThrow() && currentAbsoluteSlot <= event.getEndSlot().orElseThrow());
         };
     }
 
     public boolean isEventFinished(Event event) {
-        var chainTip = blockchainDataChainTipService.getChainTip();
+        var chainTipE = blockchainDataChainTipService.getChainTip();
+        if (chainTipE.isEmpty()) {
+            log.warn("Slot maybe NOT expired but we have no way to check this since we have no chain tip access.");
 
-        var absoluteSlot = chainTip.getAbsoluteSlot();
+            return false;
+        }
+
+        ChainTip chainTip = chainTipE.get();
+        var currentAbsoluteSlot = chainTip.getAbsoluteSlot();
         var epochNo = chainTip.getEpochNo();
 
         return switch (event.getVotingEventType()) {
-            case USER_BASED -> (absoluteSlot > event.getEndSlot().orElseThrow());
-            case STAKE_BASED, BALANCE_BASED -> (epochNo  > event.getEndEpoch().orElseThrow());
+            case STAKE_BASED, BALANCE_BASED -> (epochNo > event.getEndEpoch().orElseThrow());
+            case USER_BASED -> (currentAbsoluteSlot > event.getEndSlot().orElseThrow());
         };
     }
 

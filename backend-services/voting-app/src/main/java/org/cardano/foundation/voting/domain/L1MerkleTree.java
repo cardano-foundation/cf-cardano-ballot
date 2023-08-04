@@ -1,6 +1,7 @@
 package org.cardano.foundation.voting.domain;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import org.cardano.foundation.voting.domain.entity.Vote;
 import org.cardanofoundation.merkle.MerkleElement;
@@ -10,10 +11,12 @@ import org.cardanofoundation.merkle.MerkleElement;
  */
 @AllArgsConstructor
 @Getter
+@Builder
 public class L1MerkleTree {
 
     private MerkleElement<Vote> root;
     private String rootHash;
     private String transactionHash;
+    private long absoluteSlot;
 
 }

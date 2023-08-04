@@ -18,7 +18,7 @@ CREATE TABLE event (
 
     snapshot_epoch INT,
 
-    absolute_slot BIGINT,
+    absolute_slot BIGINT NOT NULL,
 
     created_at TIMESTAMP WITHOUT TIME ZONE,
     updated_at TIMESTAMP WITHOUT TIME ZONE,
@@ -34,7 +34,7 @@ CREATE TABLE category (
     schema_version VARCHAR(255) NOT NULL,
     gdpr_protection BOOL NOT NULL,
 
-    absolute_slot BIGINT,
+    absolute_slot BIGINT NOT NULL,
 
     created_at TIMESTAMP WITHOUT TIME ZONE,
     updated_at TIMESTAMP WITHOUT TIME ZONE,
@@ -49,7 +49,7 @@ CREATE TABLE proposal (
     name VARCHAR(255 NOT NULL, -- PII protection, on chain we are not allowed to store human readable names
     category_id VARCHAR(255) NOT NULL REFERENCES category(id),
 
-    absolute_slot BIGINT,
+    absolute_slot BIGINT NOT NULL,
 
     created_at TIMESTAMP WITHOUT TIME ZONE,
     updated_at TIMESTAMP WITHOUT TIME ZONE,
@@ -70,7 +70,7 @@ CREATE TABLE vote (
    voting_power BIGINT,
    voted_at_slot BIGINT NOT NULL,
 
-   absolute_slot BIGINT,
+   absolute_slot BIGINT NOT NULL,
 
    created_at TIMESTAMP WITHOUT TIME ZONE,
    updated_at TIMESTAMP WITHOUT TIME ZONE,
@@ -90,8 +90,7 @@ CREATE TABLE vote_merkle_proof (
    root_hash VARCHAR(255) NOT NULL, -- merkle root hash as hex string
    l1_transaction_hash VARCHAR(255) NOT NULL, -- transaction hash as hex string
    proof_items_json json NOT NULL, -- json representing actual merkle proof
-   absolute_slot BIGINT,
-   block_hash VARCHAR(255), -- block hash as hex string
+   absolute_slot BIGINT NOT NULL,
    invalidated BOOL NOT NULL,
 
    created_at TIMESTAMP WITHOUT TIME ZONE,

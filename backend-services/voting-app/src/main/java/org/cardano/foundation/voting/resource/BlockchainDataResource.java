@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
+import java.util.Objects;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
@@ -31,7 +32,9 @@ public class BlockchainDataResource {
     @RequestMapping(value = "/tip", method = GET, produces = "application/json")
     @Timed(value = "resource.blockchain.tip", percentiles = { 0.3, 0.5, 0.95 })
     public ResponseEntity<?> tip() {
-        return ResponseEntity.ok(blockchainDataChainTipService.getChainTip());
+        return blockchainDataChainTipService.getChainTip()
+                .fold(problem -> ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem),
+                        chainTip -> ResponseEntity.ok().body(chainTip));
     }
 
     @RequestMapping(value = "/submit", method = POST, produces = "application/json")

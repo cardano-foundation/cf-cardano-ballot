@@ -5,11 +5,13 @@ import io.micrometer.core.annotation.Timed;
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
+import org.cardano.foundation.voting.domain.TransactionMetadataLabelCbor;
 import org.cardano.foundation.voting.domain.web3.SignedWeb3Request;
 import org.cardano.foundation.voting.domain.web3.Web3Action;
 import org.cardano.foundation.voting.repository.EventRepository;
 import org.cardano.foundation.voting.service.address.StakeAddressVerificationService;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataMetadataService;
+import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataTransactionDetailsService;
 import org.cardano.foundation.voting.service.expire.ExpirationService;
 import org.cardano.foundation.voting.service.json.JsonService;
 import org.cardano.foundation.voting.utils.Enums;
@@ -21,6 +23,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 
+import java.util.List;
+
+import static org.cardano.foundation.voting.domain.TransactionDetails.FinalityScore.FINAL;
+import static org.cardano.foundation.voting.domain.TransactionDetails.FinalityScore.VERY_HIGH;
 import static org.cardano.foundation.voting.domain.web3.Web3Action.FULL_METADATA_SCAN;
 import static org.cardano.foundation.voting.utils.MoreNumber.isNumeric;
 import static org.cardanofoundation.cip30.MessageFormat.TEXT;
@@ -29,7 +35,7 @@ import static org.zalando.problem.Status.BAD_REQUEST;
 
 @Service
 @Slf4j
-public class MetadataService {
+public class CustomMetadataService {
 
     private final static int PAGE_SIZE = 100;
 
@@ -41,6 +47,9 @@ public class MetadataService {
 
     @Autowired
     private BlockchainDataMetadataService blockchainDataMetadataService;
+
+    @Autowired
+    private BlockchainDataTransactionDetailsService blockchainDataTransactionDetailsService;
 
     @Autowired
     private CustomMetadataProcessor customMetadataProcessor;
@@ -201,7 +210,7 @@ public class MetadataService {
         boolean continueFetching = true;
         int page = 1;
         do {
-            var transactionMetadataLabelCbors = blockchainDataMetadataService.fetchMetadataForLabel(String.valueOf(metadataLabel), PAGE_SIZE, page);
+            var transactionMetadataLabelCbors = blockchainDataMetadataService.fetchMetadataForLabel(String.valueOf(metadataLabel), PAGE_SIZE, page, FINAL);
             if (transactionMetadataLabelCbors.size() < PAGE_SIZE) {
                 continueFetching = false;
             }
@@ -217,7 +226,23 @@ public class MetadataService {
     @Timed(value = "resource.metadata.recent.scan", percentiles = { 0.3, 0.5, 0.95 })
     public void processRecentMetadataEvents() {
         log.info("processRecentMetadataEvents for metadata label {}", metadataLabel);
-        var transactionMetadataLabelCbors = blockchainDataMetadataService.fetchMetadataForLabel(String.valueOf(metadataLabel), PAGE_SIZE, 1);
+        var metadataLabelString = String.valueOf(metadataLabel);
+
+        var transactionMetadataLabelCbors = blockchainDataMetadataService.fetchMetadataForLabel(metadataLabelString, PAGE_SIZE, 1, VERY_HIGH);
+
+        if (transactionMetadataLabelCbors.isEmpty()) {
+            log.info("No recent metadata events for metadata label {}", metadataLabel);
+            return;
+        }
+
+        customMetadataProcessor.processMetadataEvents(transactionMetadataLabelCbors);
+
+        log.info("processRecentMetadataEvents for metadata label {} completed.", metadataLabel);
+    }
+
+    @Timed(value = "resource.metadata.passthrough", percentiles = { 0.3, 0.5, 0.95 })
+    public void processRecentMetadataEventsPassThrough(List<TransactionMetadataLabelCbor> transactionMetadataLabelCbors) {
+        log.info("processRecentMetadataEvents for metadata label {}", metadataLabel);
 
         customMetadataProcessor.processMetadataEvents(transactionMetadataLabelCbors);
 

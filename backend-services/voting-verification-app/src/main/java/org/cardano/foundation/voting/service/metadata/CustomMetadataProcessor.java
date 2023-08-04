@@ -58,20 +58,6 @@ public class CustomMetadataProcessor {
     @Value("${organiser.account.stakeAddress}")
     private String organiserStakeAccount;
 
-    @EventListener
-    @Transactional
-    public void handleMetadataEvent(TxMetadataEvent event) {
-        log.debug("Received metadata event: {}", event);
-        try {
-            event.getTxMetadataList().stream()
-                    .filter(txMetadataLabel -> txMetadataLabel.getLabel().equalsIgnoreCase(String.valueOf(metadataLabel)))
-                    // TODO Cbor from txEvent when  yaci-store supports it
-                    .forEach(txEvent -> processMetadataEvent(txEvent.getSlot(), txEvent.getBody()));
-        } catch (Exception e) {
-            log.warn("Error processing metadata event", e);
-        }
-    }
-
     @SneakyThrows
     public void processMetadataEvent(long slot, String txCbor)  {
             var cborBytes = decodeHexString(txCbor.replace("\\x", ""));
@@ -127,7 +113,10 @@ public class CustomMetadataProcessor {
             }
     }
 
-    private Optional<Event> processEventRegistration(long slot, String signatureHexString, String keyHexString, CBORMetadataMap payload) throws CborException {
+    private Optional<Event> processEventRegistration(long slot,
+                                                     String signatureHexString,
+                                                     String keyHexString,
+                                                     CBORMetadataMap payload) throws CborException {
         var id = HexUtil.encodeHexString(blake2bHash224(decodeHexString(signatureHexString)));
         log.info("Processing event registration, hash: {}", id);
 

@@ -11,6 +11,7 @@ import java.util.Map;
 @Builder
 public class Leaderboard {
 
+
     // per category
     @Builder
     @Getter

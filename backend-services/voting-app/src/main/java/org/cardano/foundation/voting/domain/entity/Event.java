@@ -43,6 +43,12 @@ public class Event extends AbstractTimestampEntity {
     @Builder.Default
     private Boolean allowVoteChanging = false;
 
+//  TODO CF Summit 2023
+//  @Column(name = "general_results_while_voting")
+//  @Nullable
+//  @Builder.Default
+//  private Boolean globalResultsWhileVoting = false;
+
     @Column(name = "category_results_while_voting")
     @Nullable
     @Builder.Default

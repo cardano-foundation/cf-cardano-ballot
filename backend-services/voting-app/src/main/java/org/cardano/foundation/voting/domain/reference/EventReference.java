@@ -32,9 +32,11 @@ public class EventReference {
     @Builder.Default
     private Optional<Integer> startEpoch = Optional.empty();
 
-    private ZonedDateTime eventStart;
+    @Builder.Default
+    private Optional<ZonedDateTime> eventStart = Optional.empty();
 
-    private ZonedDateTime eventEnd;
+    @Builder.Default
+    private Optional<ZonedDateTime> eventEnd = Optional.empty();
 
     @Builder.Default
     private Optional<ZonedDateTime> snapshotTime = Optional.empty();

@@ -1,6 +1,5 @@
 package org.cardano.foundation.voting.service.leader_board;
 
-import com.bloxbean.cardano.client.common.ADAConversionUtil;
 import com.google.common.collect.Iterables;
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
@@ -15,8 +14,7 @@ import org.zalando.problem.Problem;
 import java.util.Map;
 
 import static java.util.stream.Collectors.toMap;
-import static org.zalando.problem.Status.BAD_REQUEST;
-import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
+import static org.zalando.problem.Status.*;
 
 @Service
 @Slf4j
@@ -91,6 +89,15 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
         }
         var c = maybeCategory.orElseThrow();
 
+        if (!expirationService.isEventFinished(e) && !e.isCategoryResultsWhileVoting()) {
+            return Either.left(Problem.builder()
+                    .withTitle("VOTING_RESULTS_NOT_AVAILABLE")
+                    .withDetail("Voting results not yet available, category:" + category)
+                    .withStatus(FORBIDDEN)
+                    .build()
+            );
+        }
+
         var votes = voteRepository.countAllByEventId(event, c.getId());
 
         var proposalResults = Map.<String, Leaderboard.Votes>of();
@@ -102,29 +109,9 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
                     .collect(toMap(VoteRepository.EventCategoryVoteCount::getProposalName, v -> new Leaderboard.Votes(v.getTotalVoteCount(), String.valueOf(v.getTotalVotingPower()))));
         }
 
-        // TODO uncomment this when frontend is ready
-//        if (!expirationService.isEventFinished(e) && !e.isCategoryResultsWhileVoting()) {
-//            return Either.left(Problem.builder()
-//                    .withTitle("VOTING_RESULTS_NOT_AVAILABLE")
-//                    .withDetail("Voting results not yet available, category:" + category)
-//                    .withStatus(FORBIDDEN)
-//                    .build()
-//            );
-//        }
-
-//        return Either.right(Leaderboard.ByCategory.builder()
-//                .category(c.getId())
-//                .proposals(proposalResults)
-//                .build()
-//        );
-
         return Either.right(Leaderboard.ByCategory.builder()
                 .category(c.getId())
-                        .proposals(
-                                Map.of(
-                                "YES", new Leaderboard.Votes(5, String.valueOf(ADAConversionUtil.adaToLovelace(3_000))),
-                                "NO", new Leaderboard.Votes(10, String.valueOf(ADAConversionUtil.adaToLovelace(2_000))),
-                                "ABSTAIN", new Leaderboard.Votes(5,  String.valueOf(ADAConversionUtil.adaToLovelace(1_000)))))
+                .proposals(proposalResults)
                 .build()
         );
     }

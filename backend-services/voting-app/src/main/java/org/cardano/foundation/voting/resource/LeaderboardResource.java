@@ -4,7 +4,7 @@ import com.bloxbean.cardano.client.common.ADAConversionUtil;
 import io.micrometer.core.annotation.Timed;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.Leaderboard;
-import org.cardano.foundation.voting.service.leader_board.DefaultLeaderBoardService;
+import org.cardano.foundation.voting.service.leader_board.LeaderBoardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,7 +23,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 public class LeaderboardResource {
 
     @Autowired
-    private DefaultLeaderBoardService leaderBoardService;
+    private LeaderBoardService leaderBoardService;
 
     @RequestMapping(value = "/{event}", method = GET, produces = "application/json")
     @Timed(value = "resource.leaderboard.event", percentiles = { 0.3, 0.5, 0.95 })

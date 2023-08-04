@@ -72,7 +72,7 @@ public class ReferencePresentationService {
                 case STAKE_BASED, BALANCE_BASED -> {
                     eventBuilder.eventStart(customEpochService.getEpochStartTimeBasedOnEpochNo(event.getStartEpoch().orElseThrow()));
                     eventBuilder.eventEnd(customEpochService.getEpochEndTime(event.getEndEpoch().orElseThrow()));
-                    eventBuilder.snapshotTime(Optional.of(customEpochService.getEpochEndTime(event.getSnapshotEpoch().orElseThrow())));
+                    eventBuilder.snapshotTime(customEpochService.getEpochEndTime(event.getSnapshotEpoch().orElseThrow()));
                 }
                 case USER_BASED -> {
                     eventBuilder.eventStart(customEpochService.getEpochStartTimeBasedOnAbsoluteSlot(event.getStartSlot().orElseThrow()));

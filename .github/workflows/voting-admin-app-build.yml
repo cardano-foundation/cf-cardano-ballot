@@ -1,4 +1,4 @@
-name: Voting Verification App Build
+name: Voting Admin App Build
 
 on:
   push:

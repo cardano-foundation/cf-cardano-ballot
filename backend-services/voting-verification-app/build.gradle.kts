@@ -60,6 +60,8 @@ dependencies {
 
 	testImplementation("org.testcontainers:junit-jupiter")
 
+	runtimeOnly("com.h2database:h2")
+
 	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0-alpha.4")
 
 	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0-alpha.4")

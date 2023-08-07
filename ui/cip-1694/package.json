@@ -64,7 +64,7 @@
   "scripts": {
     "buildTSTypesFromBEServices": "cd ../../backend-services/voting-app/ && ./gradlew buildAndCopyTypescriptTypes && cd ../../backend-services/voting-verification-app/ && ./gradlew buildAndCopyTypescriptTypes;",
     "safeBuildTSTypesFromBEServices": "path-exists ../cip-1694/src/types/backend-services-types.ts && echo 'backend-services-types.ts exists' || npm run buildTSTypesFromBEServices",
-    "preinstall": "npm run buildTSTypesFromBEServices",
+    "preinstall": "npm run safeBuildTSTypesFromBEServices",
     "prestart": "npm run safeBuildTSTypesFromBEServices",
     "start": "react-scripts start",
     "prebuild": "npm run safeBuildTSTypesFromBEServices",

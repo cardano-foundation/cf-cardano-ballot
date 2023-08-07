@@ -8,6 +8,7 @@ import { PageRouter } from 'common/routes';
 import { RootState } from 'common/store';
 import { setIsConnectWalletModalVisible } from 'common/store/userSlice';
 import styles from './Content.module.scss';
+import { Toast } from '../Toast/Toast';
 
 export default function Content() {
   const isConnectWalletModalVisible = useSelector((state: RootState) => state.user.isConnectWalletModalVisible);
@@ -19,7 +20,7 @@ export default function Content() {
   // FIXME: triggered multiple times on connect
   const onConnectWallet = () => {
     dispatch(setIsConnectWalletModalVisible({ isVisible: false }));
-    debouncedToast('Wallet Connected!');
+    debouncedToast(<Toast message="Wallet Connected!" />);
   };
 
   return (

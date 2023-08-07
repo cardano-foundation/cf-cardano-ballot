@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { capitalize } from 'lodash';
 import cn from 'classnames';
 import { PieChart } from 'react-minimal-pie-chart';
@@ -7,6 +8,7 @@ import { Grid, Typography } from '@mui/material';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import { ByCategory } from 'types/backend-services-types';
 import { ROUTES } from 'common/routes';
+import { RootState } from 'common/store';
 import * as leaderboardService from 'common/api/leaderboardService';
 import { proposalColorsMap, proposalOptions } from './utils';
 import { StatsTile } from './components/StatsTile';
@@ -17,11 +19,13 @@ const getPercentage = (value: number, total: number) => (value * 100) / total;
 export const Leaderboard = () => {
   const navigate = useNavigate();
   const { isConnected } = useCardano();
+  const event = useSelector((state: RootState) => state.user.event);
+  const eventHasntStarted = !event?.active && !event?.finished;
   const [stats, setStats] = useState<ByCategory['proposals']>();
 
   useEffect(() => {
-    if (!isConnected) navigate(ROUTES.INTRO);
-  }, [isConnected, navigate]);
+    if (!isConnected || eventHasntStarted || !event?.finished) navigate(ROUTES.INTRO);
+  }, [event?.finished, eventHasntStarted, isConnected, navigate]);
 
   const init = useCallback(async () => {
     try {

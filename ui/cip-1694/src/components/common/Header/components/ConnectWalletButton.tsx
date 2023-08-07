@@ -6,6 +6,7 @@ import cn from 'classnames';
 import { Button } from '@mui/material';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import {
   useCardano,
   ConnectWalletButton as CFConnectWalletButton,
@@ -18,6 +19,7 @@ import {
   setVoteReceipt,
 } from 'common/store/userSlice';
 import { env } from 'env';
+import { Toast } from 'components/common/Toast/Toast';
 import { RootState } from 'common/store';
 import styles from './ConnectWalletButton.module.scss';
 
@@ -32,7 +34,12 @@ export const ConnectWalletButton = ({ isMobileMenu = false }) => {
   // TODO: move to providers level and throw?
   useEffect(() => {
     if (supportedWallets.length === 0) {
-      toast('No supported wallets specified!');
+      toast(
+        <Toast
+          message="No supported wallets specified!"
+          icon={<ErrorOutlineIcon style={{ color: '#cc0e00' }} />}
+        />
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -46,8 +53,7 @@ export const ConnectWalletButton = ({ isMobileMenu = false }) => {
     init();
   }, [dispatch, enabledWallet, stakeAddress]);
 
-  const onConnectWallet = (walletName: string) => {
-    console.log(walletName);
+  const onConnectWallet = () => {
     dispatch(setIsConnectWalletModalVisible({ isVisible: false }));
   };
 

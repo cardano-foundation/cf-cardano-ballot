@@ -10,12 +10,13 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { Grid, Container, Typography, Button, Box } from '@mui/material';
 import { RootState } from 'common/store';
 import { ROUTES } from 'common/routes';
-import CountDownTimer from 'components/CountDownTimer/CountDownTimer';
+import { EventTime } from 'components/EventTime/EventTime';
 import { SlideProps } from './Slides.types';
 import styles from './Slides.module.scss';
 
 export const Slides = ({ items }: SlideProps) => {
-  const event = useSelector((state: RootState) => state.user.event);
+  const event = useSelector((state: RootState) => state.user.event)
+  const eventHasntStarted = !event?.active && !event?.finished;
   const [swiper, setSwiper] = useState<SwiperClass | undefined>(undefined);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -88,7 +89,12 @@ export const Slides = ({ items }: SlideProps) => {
                       md: '18px',
                     }}
                   >
-                    <CountDownTimer endTime={event?.eventEnd} />
+                    <EventTime
+                      eventHasntStarted={eventHasntStarted}
+                      eventHasFinished={event?.finished}
+                      endTime={event?.eventEnd}
+                      startTime={event?.eventStart}
+                    />
                   </Typography>
                   <Typography
                     variant="body1"
@@ -105,9 +111,9 @@ export const Slides = ({ items }: SlideProps) => {
                     component={Link}
                     variant="contained"
                     className={styles.button}
-                    to={{ pathname: ROUTES.VOTE }}
+                    to={{ pathname: ROUTES[event?.finished ? 'LEADERBOARD' : 'VOTE'] }}
                   >
-                    Get started
+                    {eventHasntStarted ? 'View the vote' : event?.finished ? 'See the results' : 'Get started'}
                   </Button>
                 </Grid>
                 <Grid

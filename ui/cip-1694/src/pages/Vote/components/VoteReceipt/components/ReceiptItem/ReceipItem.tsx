@@ -1,5 +1,6 @@
 import React from 'react';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
+import cn from 'classnames';
 import Grid from '@mui/material/Grid';
 import { IconButton, Tooltip, Typography } from '@mui/material';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
@@ -75,7 +76,23 @@ export const ReceiptItem = ({ name, value, onItemClick }: VoteReceiptProps) => (
         className={styles.inputText}
         variant="h4"
       >
-        {valueTransformerMap[name]?.(value) || value}
+        {name === 'id' || name === 'voterStakingAddress' ? (
+          <Tooltip
+            classes={{ tooltip: cn(styles.tooltip, styles.tooltipFullWidth) }}
+            title={
+              <Typography
+                className={styles.tooltipDescription}
+                variant="h4"
+              >
+                {value}
+              </Typography>
+            }
+          >
+            <span>asd{valueTransformerMap[name]?.(value) || value}</span>
+          </Tooltip>
+        ) : (
+          valueTransformerMap[name]?.(value) || value
+        )}
       </Typography>
       {name === 'voteProof' && (
         <CopyToClipboard

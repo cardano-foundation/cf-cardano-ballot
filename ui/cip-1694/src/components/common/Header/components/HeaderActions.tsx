@@ -12,9 +12,16 @@ import styles from './HeaderActions.module.scss';
 type HeaderActionsProps = {
   onClick?: () => void;
   isMobileMenu?: boolean;
+  showNavigationItems?: boolean;
+  hideLeaderboard?: boolean;
 };
 
-export const HeaderActions = ({ isMobileMenu = false, onClick }: HeaderActionsProps) => {
+export const HeaderActions = ({
+  isMobileMenu = false,
+  onClick,
+  showNavigationItems,
+  hideLeaderboard,
+}: HeaderActionsProps) => {
   const { isConnected } = useCardano();
   const { pathname } = useLocation();
 
@@ -28,37 +35,43 @@ export const HeaderActions = ({ isMobileMenu = false, onClick }: HeaderActionsPr
       direction={{ xs: 'column', md: 'row' }}
       container
     >
-      <Grid
-        width={{ xs: '100% !important', sm: 'auto !important' }}
-        container
-      >
-        <Button
-          onClick={onClick}
-          component={Link}
-          to={ROUTES.VOTE}
-          className={cn(styles.button, { [styles.activeRoute]: !!matchPath(pathname, ROUTES.VOTE) })}
-          startIcon={<CheckBoxOutlinedIcon />}
-        >
-          Your vote
-        </Button>
-      </Grid>
-      <Grid
-        width={{ xs: '100% !important', sm: 'auto !important' }}
-        container
-      >
-        <Button
-          onClick={onClick}
-          sx={{ xs: { width: '100% !important' }, sm: { width: 'auto !important' } }}
-          component={Link}
-          to={isConnected ? ROUTES.LEADERBOARD : undefined}
-          className={cn(styles.button, { [styles.activeRoute]: !!matchPath(pathname, ROUTES.LEADERBOARD) })}
-          startIcon={<LeaderboardIcon />}
-        >
-          Leaderboard
-        </Button>
-      </Grid>
+      {showNavigationItems && (
+        <>
+          <Grid
+            width={{ xs: '100% !important', sm: 'auto !important' }}
+            container
+          >
+            <Button
+              onClick={onClick}
+              component={Link}
+              to={ROUTES.VOTE}
+              className={cn(styles.button, { [styles.activeRoute]: !!matchPath(pathname, ROUTES.VOTE) })}
+              startIcon={<CheckBoxOutlinedIcon />}
+            >
+              Your vote
+            </Button>
+          </Grid>
+          {!hideLeaderboard && (
+            <Grid
+              width={{ xs: '100% !important', sm: 'auto !important' }}
+              container
+            >
+              <Button
+                onClick={onClick}
+                sx={{ xs: { width: '100% !important' }, sm: { width: 'auto !important' } }}
+                component={Link}
+                to={isConnected ? ROUTES.LEADERBOARD : undefined}
+                className={cn(styles.button, { [styles.activeRoute]: !!matchPath(pathname, ROUTES.LEADERBOARD) })}
+                startIcon={<LeaderboardIcon />}
+              >
+                Leaderboard
+              </Button>
+            </Grid>
+          )}
+        </>
+      )}
       <Typography
-        className={cn({ [styles.walletButtonWrapper]: isMobileMenu })}
+        className={cn(styles.walletButtonWrapper, { [styles.walletButtonWrapperMobile]: isMobileMenu })}
         variant="body2"
         color="text.secondary"
         align="center"

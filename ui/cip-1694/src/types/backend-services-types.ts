@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-// Generated using typescript-generator version 3.2.1263 on 2023-08-03 21:01:18.
+// Generated using typescript-generator version 3.2.1263 on 2023-08-07 17:31:33.
 
 export interface Either<L, R> extends Value<R>, Serializable {
     left: L;
@@ -26,6 +26,19 @@ export interface ChainTip {
 export interface ChainTipBuilder {
 }
 
+export interface EraData {
+    startAbsoluteSlot: number;
+    endAbsoluteSlot: number;
+    epochStartBlock: number;
+    epochEndBlock: number;
+    epochStartTime: number;
+    epochEndTime: number;
+    startEpochNo: number;
+    endEpochNo: number;
+    previousEra?: Era;
+    nextEra?: Era;
+}
+
 export interface L1MerkleCommitment {
     votes: Vote[];
     root: MerkleElement<Vote>;
@@ -36,6 +49,15 @@ export interface L1MerkleTree {
     root: MerkleElement<Vote>;
     rootHash: string;
     transactionHash: string;
+    absoluteSlot: number;
+}
+
+export interface L1MerkleTreeBuilder {
+}
+
+export interface L1SubmissionData {
+    txHash: string;
+    slot: number;
 }
 
 export interface Leaderboard {
@@ -79,6 +101,7 @@ export interface TransactionDetailsBuilder {
 
 export interface TransactionMetadataLabelCbor {
     tx_hash: string;
+    slot: number;
     cbor_metadata: string;
 }
 
@@ -219,8 +242,8 @@ export interface EventReference {
     startSlot?: number;
     endSlot?: number;
     startEpoch?: number;
-    eventStart: Date;
-    eventEnd: Date;
+    eventStart?: Date;
+    eventEnd?: Date;
     snapshotTime?: Date;
     endEpoch?: number;
     snapshotEpoch?: number;
@@ -352,7 +375,7 @@ export interface StakeAddressVerificationService__BeanDefinitions {
 }
 
 export interface BlockchainDataChainTipService {
-    chainTip: ChainTip;
+    chainTip: Either<Problem, ChainTip>;
 }
 
 export interface BlockchainDataMetadataService {
@@ -397,6 +420,15 @@ export interface CardanoSubmitApiBlockchainTransactionSubmissionService__Autowir
 export interface CardanoSubmitApiBlockchainTransactionSubmissionService__BeanDefinitions {
 }
 
+export interface YaciBlockchainDataChainTipService extends BlockchainDataChainTipService {
+}
+
+export interface YaciBlockchainDataMetadataService extends BlockchainDataMetadataService {
+}
+
+export interface YaciTransactionDetailsBlockchainDataService extends BlockchainDataTransactionDetailsService {
+}
+
 export interface CborService {
 }
 
@@ -410,6 +442,15 @@ export interface CustomEpochService__Autowiring {
 }
 
 export interface CustomEpochService__BeanDefinitions {
+}
+
+export interface CustomEraService {
+}
+
+export interface CustomEraService__Autowiring {
+}
+
+export interface CustomEraService__BeanDefinitions {
 }
 
 export interface ExpirationService {
@@ -493,13 +534,13 @@ export interface CustomMetadataProcessor__Autowiring {
 export interface CustomMetadataProcessor__BeanDefinitions {
 }
 
-export interface MetadataService {
+export interface CustomMetadataService {
 }
 
-export interface MetadataService__Autowiring {
+export interface CustomMetadataService__Autowiring {
 }
 
-export interface MetadataService__BeanDefinitions {
+export interface CustomMetadataService__BeanDefinitions {
 }
 
 export interface ReferenceDataService {
@@ -529,6 +570,15 @@ export interface RollbackHandler__Autowiring {
 export interface RollbackHandler__BeanDefinitions {
 }
 
+export interface DefaultTransactionSubmissionService extends TransactionSubmissionService {
+}
+
+export interface DefaultTransactionSubmissionService__Autowiring {
+}
+
+export interface DefaultTransactionSubmissionService__BeanDefinitions {
+}
+
 export interface L1SubmissionService {
 }
 
@@ -551,6 +601,9 @@ export interface MetadataSerialiser {
 }
 
 export interface MetadataSerialiser__BeanDefinitions {
+}
+
+export interface TransactionSubmissionService {
 }
 
 export interface DefaultVoteService extends VoteService {
@@ -602,8 +655,8 @@ export interface Value<T> extends Iterable<T> {
     empty: boolean;
     singleValued: boolean;
     orNull: T;
-    async: boolean;
     lazy: boolean;
+    async: boolean;
 }
 
 export interface Comparable<T> {
@@ -613,6 +666,8 @@ export interface Iterable<T> {
 }
 
 export type CardanoNetwork = "MAIN" | "PREPROD" | "PREVIEW" | "DEV";
+
+export type IngestionStrategy = "PUSH" | "PULL";
 
 export type OnChainEventType = "COMMITMENTS" | "EVENT_REGISTRATION" | "CATEGORY_REGISTRATION";
 
@@ -629,3 +684,5 @@ export type VotingEventType = "USER_BASED" | "STAKE_BASED" | "BALANCE_BASED";
 export type VotingPowerAsset = "ADA";
 
 export type Web3Action = "CAST_VOTE" | "VIEW_VOTE_RECEIPT" | "FULL_METADATA_SCAN";
+
+export type Era = "Byron" | "Shelley" | "Allegra" | "Mary" | "Alonzo" | "Babbage";

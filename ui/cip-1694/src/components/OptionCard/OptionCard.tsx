@@ -26,31 +26,42 @@ export const OptionCard = ({ items, onChangeOption, disabled, selectedOption }: 
     <Grid
       container
       direction="row"
-      justifyContent={'center'}
-      width={'flex'}
+      justifyContent="center"
+      width="flex"
+      margin={{ md: '40px 0px', xs: '25px 0px' }}
     >
       <ToggleButtonGroup
         disabled={disabled}
-        sx={{ width: '100%' }}
+        sx={{ width: '100%', flexDirection: { xs: 'column', md: 'row' }, gap: { xs: '20px', md: '51px' } }}
         color="primary"
         value={active}
         exclusive
         onChange={handleChange}
         aria-label="cip-1694 poll options"
-        className={styles.optionCardGrouo}
       >
         {items.map((option) => (
           <ToggleButton
+            sx={{
+              height: { xs: '62px', md: '138px' },
+              borderRadius: { xs: '8px !important', md: '16px !important' },
+              padding: '0px 20px',
+              maxWidth: 'auto',
+            }}
             value={option.label}
             className={cn(styles.optionCard, { [styles.selected]: active === option.label })}
             key={option.label}
           >
             <Grid
               item
-              sm={4}
+              md={4}
               xs={12}
+              container
+              direction={{ xs: 'row', md: 'column' }}
+              gap="15px"
+              justifyContent={{ md: 'center', xs: 'flex-start' }}
+              alignItems="center"
             >
-              <Typography component="div">{option.icon}</Typography>
+              {option.icon}
               <Typography
                 className={styles.label}
                 component="div"

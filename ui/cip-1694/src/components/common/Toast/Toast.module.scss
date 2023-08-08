@@ -3,6 +3,8 @@
   background: #061d3c;
   display: flex;
   gap: 8px;
+  padding-top: 10px;
+  padding-bottom: 10px;
 
   .toastIcon {
     font-size: 19px !important;
@@ -10,7 +12,7 @@
   }
 
   .divider {
-    height: 22px;
+    height: 100%;
     width: 1px;
     background: #f5f9ffa6;
   }

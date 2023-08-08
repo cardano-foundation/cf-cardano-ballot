@@ -1,30 +1,24 @@
-.optionCardGrouo {
-  gap: 51px;
-  margin: 40px 0;
-  .optionCard {
-    border-radius: 16px !important;
-    border: 1px solid transparent !important;
-    box-shadow: 2px 2px 5px 0px rgba(6, 29, 60, 0.25) !important;
-    display: flex;
-    flex-direction: column;
-    height: 138px;
-    margin: 0px !important;
-    width: 100%;
+.optionCard {
+  border: 1px solid transparent !important;
+  box-shadow: 2px 2px 5px 0px rgba(6, 29, 60, 0.25) !important;
+  display: flex;
+  flex-direction: column;
+  margin: 0px !important;
+  width: 100%;
 
-    &.selected,
-    &:hover,
-    &:active {
-      background: rgba(29, 67, 155, 0.1) !important;
-      border: 1px solid #1d439b !important;
-      box-shadow: 2px 2px 5px 0px rgba(29, 67, 155, 0.25) !important;
-    }
+  &.selected,
+  &:hover,
+  &:active {
+    background: rgba(29, 67, 155, 0.1) !important;
+    border: 1px solid #1d439b !important;
+    box-shadow: 2px 2px 5px 0px rgba(29, 67, 155, 0.25) !important;
   }
+}
 
-  .label {
-    color: #39486C;
-    font-size: 18px;
-    font-weight: 500;
-    line-height: normal;
-    text-transform: none;
-  }
+.label {
+  color: #39486c !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  line-height: normal !important;
+  text-transform: none !important;
 }

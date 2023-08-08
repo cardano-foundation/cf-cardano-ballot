@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { Grid, Button } from '@mui/material';
+import { Grid, Button, Typography } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { RootState } from 'common/store';
 import { HeaderActions } from './components/HeaderActions';
@@ -25,42 +25,43 @@ export const Header = () => {
       <Grid
         container
         direction={{ xs: 'column', md: 'row' }}
-        justifyContent={{ xs: 'center', sm: 'space-between' }}
+        justifyContent={{ xs: 'center', md: 'space-between' }}
         className={styles.container}
-        alignContent={{ xs: 'space-between', sm: 'center' }}
+        alignContent={{ xs: 'space-between', md: 'center' }}
         justifySelf={{
           xs: 'flex-start',
         }}
-        height={{ xs: '69px', sm: 'auto', md: '69px' }}
-        marginBottom={{ sm: '40px', md: '0px' }}
+        height={{ xs: '69px', md: '69px' }}
       >
         <Grid
           item
           xs={12}
-          sm="auto"
+          md="auto"
           display="flex"
           className={styles.content}
           alignItems="center"
-          marginBottom={{ xs: '0px', sm: '15px', md: '0px' }}
-          marginTop={{ xs: '0px', sm: '15px', md: '0px' }}
+          marginBottom={{ xs: '0px', md: '0px' }}
+          marginTop={{ xs: '0px', md: '0px' }}
         >
-          <span
+          <Typography
+            lineHeight={{ sx: '23px', md: '29px' }}
+            fontSize={{ sx: '20px', md: '24px' }}
             onClick={handleLogoClick}
             className={styles.logo}
           >
             CIP-1694 Ratification
-          </span>
+          </Typography>
         </Grid>
-        <Grid display={{ xs: 'none', sm: 'flex' }}>
+        <Grid display={{ xs: 'none', md: 'flex' }}>
           <HeaderActions
             showNavigationItems={!eventHasntStarted}
             hideLeaderboard={!event?.finished}
           />
         </Grid>
         <Grid
-          display={{ xs: 'block', sm: 'none' }}
+          display={{ xs: 'block', md: 'none' }}
           item
-          sm="auto"
+          md="auto"
           gap="15px"
           alignItems="center"
           justifyContent="flex-end"

@@ -94,7 +94,8 @@ export const VoteReceipt = ({ setOpen, fetchReceipt }: VoteReceiptProps) => {
       justifyContent="center"
       alignItems="center"
       spacing={0}
-      sx={{ padding: '30px', paddingTop: '50px', width: '550px' }}
+      maxWidth="100%"
+      sx={{ padding: { xs: '20px', md: '30px' }, paddingTop: '50px', width: '550px' }}
     >
       <IconButton
         aria-label="close"
@@ -157,7 +158,7 @@ export const VoteReceipt = ({ setOpen, fetchReceipt }: VoteReceiptProps) => {
             aria-controls="panel1a-content"
             id="panel1a-header"
           >
-            <Typography style={{ fontSize: '16px', fontWeight: '500' }}>Show advanced information</Typography>
+            <Typography style={{ fontSize: '16px', fontWeight: '600' }}>Show advanced information</Typography>
           </AccordionSummary>
           <AccordionDetails sx={{ padding: '0px' }}>
             {Object.entries(moreFieldsToDisplay).map(([key, value]: [AdvancedFullFieldsToDisplayArrayKeys, string]) => (

@@ -3,13 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { capitalize } from 'lodash';
 import cn from 'classnames';
+import toast from 'react-hot-toast';
 import { PieChart } from 'react-minimal-pie-chart';
 import { Grid, Typography } from '@mui/material';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import { ByCategory } from 'types/backend-services-types';
 import { ROUTES } from 'common/routes';
 import { RootState } from 'common/store';
 import * as leaderboardService from 'common/api/leaderboardService';
+import { Toast } from 'components/common/Toast/Toast';
 import { proposalColorsMap, proposalOptions } from './utils';
 import { StatsTile } from './components/StatsTile';
 import styles from './Leaderboard.module.scss';
@@ -31,7 +34,14 @@ export const Leaderboard = () => {
     try {
       setStats((await leaderboardService.getStats())?.proposals);
     } catch (error) {
-      console.log('Failed to fecth stats', error?.message);
+      const message = `Failed to fecth stats: ${error?.message || error?.toString()}`;
+      console.log(message);
+      toast(
+        <Toast
+          message={message}
+          icon={<ErrorOutlineIcon style={{ color: '#cc0e00' }} />}
+        />
+      );
     }
   }, []);
 
@@ -46,6 +56,7 @@ export const Leaderboard = () => {
   return (
     <div className={styles.leaderboard}>
       <Grid
+        paddingTop={{ xs: '20px', md: '30px' }}
         container
         direction="column"
         justifyContent="left"
@@ -56,6 +67,15 @@ export const Leaderboard = () => {
           <Typography
             variant="h5"
             className={styles.title}
+            fontSize={{
+              xs: '28px',
+              md: '56px',
+            }}
+            lineHeight={{
+              xs: '33px',
+              md: '65px',
+            }}
+            marginBottom={{ md: '40px', xs: '25px' }}
           >
             Leaderboard
           </Typography>
@@ -63,13 +83,13 @@ export const Leaderboard = () => {
         <Grid
           container
           spacing={0}
-          gridRow={{ sm: 6, xs: 12 }}
-          gap="46px"
-          wrap="nowrap"
+          gridRow={{ md: 6, xs: 12 }}
+          gap={{ md: '46px', xs: '25px' }}
+          sx={{ flexWrap: { md: 'nowrap', xs: 'wrap' } }}
         >
           <StatsTile
-            title="Current voting stats"
-            summary={<span>{statsSum}</span>}
+            title="Poll stats"
+            summary={<span style={{ color: '#061d3c' }}>{statsSum}</span>}
           >
             <Grid
               container
@@ -121,14 +141,14 @@ export const Leaderboard = () => {
           </StatsTile>
           <StatsTile
             title="Current voting stats"
-            summary={<span>{statsSum}</span>}
+            summary={<span style={{ color: '#061d3c' }}>{statsSum}</span>}
           >
             <Grid
               container
-              direction="row"
-              gridRow={{ sm: 6, xs: 12 }}
-              wrap="nowrap"
-              sx={{ marginTop: '8px' }}
+              direction={{ md: 'row', xs: 'column-reverse' }}
+              gridRow={{ md: 6, xs: 12 }}
+              sx={{ flexWrap: { md: 'nowrap', xs: 'wrap' }, marginTop: { md: '8px', xs: '25px' } }}
+              gap={{ xs: '25px', md: 'none' }}
             >
               <Grid
                 container
@@ -163,7 +183,7 @@ export const Leaderboard = () => {
               <Grid
                 item
                 container
-                justifyContent="space-between"
+                justifyContent={{ md: 'space-between', xs: 'center' }}
               >
                 <PieChart
                   style={{ height: '200px', width: '200px' }}

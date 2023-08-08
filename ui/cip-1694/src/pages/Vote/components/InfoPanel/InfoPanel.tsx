@@ -1,6 +1,7 @@
 import React from 'react';
 import Grid from '@mui/material/Grid';
 import cn from 'classnames';
+import { Box } from '@mui/material';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import GppBadOutlinedIcon from '@mui/icons-material/GppBadOutlined';
@@ -49,8 +50,26 @@ export const InfoPanel = ({ icon, title, cta, description, type }: InfoPanelProp
   <Grid
     gap="16px"
     className={cn(styles.infoPanel, { [styles[type?.toLowerCase()]]: type })}
+    container
+    direction={{ xs: 'column', sm: 'row' }}
+    flexWrap="nowrap"
   >
-    {icon || IconsMap[type]}
+    <Grid
+      gap="0"
+      item
+      display={{ xs: 'flex', sm: 'none' }}
+      justifyContent="space-between"
+    >
+      <Grid item>{icon || IconsMap[type]}</Grid>
+      <Grid item>{cta}</Grid>
+    </Grid>
+
+    <Grid
+      display={{ xs: 'none', sm: 'flex' }}
+      item
+    >
+      {icon || IconsMap[type]}
+    </Grid>
     <Grid
       container
       direction="column"
@@ -62,7 +81,7 @@ export const InfoPanel = ({ icon, title, cta, description, type }: InfoPanelProp
         justifyContent="space-between"
       >
         <span className={styles.title}>{title}</span>
-        {cta}
+        <Box display={{ xs: 'none', sm: 'block' }}>{cta}</Box>
       </Grid>
       <Grid
         item

@@ -25,7 +25,7 @@ export const Footer = ({ isMobileMenu = false }) => (
       xs: '1px solid #bbb',
       md: 'none',
     }}
-    marginTop={{ xs: '60px', md: '0px' }}
+    marginTop={{ xs: '40px', md: '0px' }}
     paddingTop={{ xs: '40px', md: '0px' }}
     alignItems={{ xs: 'flex-start', md: 'center' }}
     flexDirection={{ xs: 'column', md: 'row' }}

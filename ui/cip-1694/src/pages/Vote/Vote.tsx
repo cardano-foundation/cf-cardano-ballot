@@ -47,15 +47,15 @@ const errorsMap = {
 const items: OptionItem[] = [
   {
     label: 'yes',
-    icon: <DoneIcon sx={{ fontSize: 52, color: '#39486C' }} />,
+    icon: <DoneIcon sx={{ fontSize: { xs: '30px', md: '52px' }, color: '#39486C' }} />,
   },
   {
     label: 'no',
-    icon: <CloseIcon sx={{ fontSize: 52, color: '#39486C' }} />,
+    icon: <CloseIcon sx={{ fontSize: { xs: '30px', md: '52px' }, color: '#39486C' }} />,
   },
   {
     label: 'abstain',
-    icon: <DoDisturbIcon sx={{ fontSize: 52, color: '#39486C' }} />,
+    icon: <DoDisturbIcon sx={{ fontSize: { xs: '30px', md: '52px' }, color: '#39486C' }} />,
   },
 ];
 
@@ -103,6 +103,12 @@ const Vote = () => {
         } else {
           const message = `Failed to fetch receipt', ${receiptResponse?.title}, ${receiptResponse?.detail}`;
           console.log(message);
+          toast(
+            <Toast
+              message={message}
+              icon={<ErrorOutlineIcon style={{ color: '#cc0e00' }} />}
+            />
+          );
         }
         dispatch(setIsReceiptFetched({ isFetched: true }));
         cb?.();
@@ -133,7 +139,14 @@ const Vote = () => {
     try {
       setAbsoluteSlot((await voteService.getSlotNumber())?.absoluteSlot);
     } catch (error) {
-      console.log('Failed to fecth slot number', error?.message);
+      const message = `Failed to fecth slot number: ${error?.message}`;
+      console.log(message);
+      toast(
+        <Toast
+          message={message}
+          icon={<ErrorOutlineIcon style={{ color: '#cc0e00' }} />}
+        />
+      );
     }
   }, []);
 
@@ -224,6 +237,7 @@ const Vote = () => {
     <>
       <div className={styles.vote}>
         <Grid
+          paddingTop={{ xs: '20px', md: '30px' }}
           container
           direction="column"
           justifyContent="left"
@@ -234,16 +248,20 @@ const Vote = () => {
             <Typography
               variant="h5"
               className={styles.title}
+              fontSize={{
+                xs: '28px',
+                md: '56px',
+              }}
+              lineHeight={{
+                xs: '33px',
+                md: '65px',
+              }}
             >
-              {event?.presentationName}
+              CIP-1694 Vote
             </Typography>
           </Grid>
           <Grid item>
-            <Typography
-              sx={{
-                mb: '24px',
-              }}
-            >
+            <Typography marginBottom={{ xs: '38px', md: '24px' }}>
               <EventTime
                 eventHasntStarted={eventHasntStarted}
                 eventHasFinished={event?.finished}
@@ -256,13 +274,15 @@ const Vote = () => {
             <Typography
               variant="h5"
               className={styles.description}
+              lineHeight={{ xs: '19px', md: '36px' }}
+              fontSize={{ xs: '16px', md: '28px' }}
             >
               Do you want CIP-1694 that will allow On-Chain Governance, implemented on the Cardano Blockchain?
             </Typography>
           </Grid>
           <Grid item>
             <OptionCard
-              selectedOption={savedProposal?.toLowerCase()}
+              selectedOption={isConnected && savedProposal?.toLowerCase()}
               disabled={cantSelectOptions}
               items={items}
               onChangeOption={onChangeOption}

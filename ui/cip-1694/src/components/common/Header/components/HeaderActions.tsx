@@ -29,7 +29,7 @@ export const HeaderActions = ({
     <Grid
       display="flex"
       item
-      gap={{ xs: '10px', sm: '15px' }}
+      gap={{ xs: '10px', md: '15px' }}
       alignItems="center"
       justifyContent="flex-end"
       direction={{ xs: 'column', md: 'row' }}
@@ -38,7 +38,7 @@ export const HeaderActions = ({
       {showNavigationItems && (
         <>
           <Grid
-            width={{ xs: '100% !important', sm: 'auto !important' }}
+            width={{ xs: '100% !important', md: 'auto !important' }}
             container
           >
             <Button
@@ -53,12 +53,12 @@ export const HeaderActions = ({
           </Grid>
           {!hideLeaderboard && (
             <Grid
-              width={{ xs: '100% !important', sm: 'auto !important' }}
+              width={{ xs: '100% !important', md: 'auto !important' }}
               container
             >
               <Button
                 onClick={onClick}
-                sx={{ xs: { width: '100% !important' }, sm: { width: 'auto !important' } }}
+                sx={{ xs: { width: '100% !important' }, md: { width: 'auto !important' } }}
                 component={Link}
                 to={isConnected ? ROUTES.LEADERBOARD : undefined}
                 className={cn(styles.button, { [styles.activeRoute]: !!matchPath(pathname, ROUTES.LEADERBOARD) })}
@@ -77,7 +77,7 @@ export const HeaderActions = ({
         align="center"
         component="div"
         marginLeft={{ xs: '0', md: '10px' }}
-        width={{ xs: '100%', sm: 'auto' }}
+        width={{ xs: '100%', md: 'auto' }}
       >
         <ConnectWalletButton isMobileMenu={isMobileMenu} />
       </Typography>

@@ -87,6 +87,9 @@
   background: #1d439b !important;
   padding: 12px 16px !important;
   margin: 0px !important;
+  &.tooltipFullWidth {
+    max-width: 100% !important;
+  }
   .tooltipTitle {
     font-size: 18px !important;
     font-weight: 500 !important;

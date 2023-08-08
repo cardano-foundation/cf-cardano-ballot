@@ -1,14 +1,19 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { Grid, Button } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import styles from './Header.module.scss';
+import { RootState } from 'common/store';
 import { HeaderActions } from './components/HeaderActions';
 import { MobileModal } from '../MobileModal/MobileModal';
 import { Footer } from '../Footer/Footer';
+import styles from './Header.module.scss';
 
 export const Header = () => {
   const navigate = useNavigate();
+  const event = useSelector((state: RootState) => state.user.event);
+  const eventHasntStarted = !event?.active && !event?.finished;
+
   const [isMobileMenuVisible, setIsMobileMenuVisible] = useState(false);
 
   const handleLogoClick = () => {
@@ -39,14 +44,18 @@ export const Header = () => {
           marginBottom={{ xs: '0px', sm: '15px', md: '0px' }}
           marginTop={{ xs: '0px', sm: '15px', md: '0px' }}
         >
-          <img
-            className={styles.logo}
-            src="/static/Cardano_Ballot_black.png"
+          <span
             onClick={handleLogoClick}
-          />
+            className={styles.logo}
+          >
+            CIP-1694 Ratification
+          </span>
         </Grid>
         <Grid display={{ xs: 'none', sm: 'flex' }}>
-          <HeaderActions />
+          <HeaderActions
+            showNavigationItems={!eventHasntStarted}
+            hideLeaderboard={!event?.finished}
+          />
         </Grid>
         <Grid
           display={{ xs: 'block', sm: 'none' }}
@@ -80,6 +89,8 @@ export const Header = () => {
           justifyContent="space-between"
         >
           <HeaderActions
+            hideLeaderboard={!event?.finished}
+            showNavigationItems={!eventHasntStarted}
             onClick={() => setIsMobileMenuVisible(false)}
             isMobileMenu
           />

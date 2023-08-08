@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-// Generated using typescript-generator version 3.2.1263 on 2023-08-03 21:01:21.
+// Generated using typescript-generator version 3.2.1263 on 2023-08-07 17:31:36.
 
 export interface Either<L, R> extends Value<R>, Serializable {
     left: L;
@@ -220,6 +220,15 @@ export interface CustomMetadataStorage__Autowiring {
 export interface CustomMetadataStorage__BeanDefinitions {
 }
 
+export interface MetadataEventHandler {
+}
+
+export interface MetadataEventHandler__Autowiring {
+}
+
+export interface MetadataEventHandler__BeanDefinitions {
+}
+
 export interface ReferenceDataService {
 }
 
@@ -265,8 +274,8 @@ export interface Value<T> extends Iterable<T> {
     empty: boolean;
     singleValued: boolean;
     orNull: T;
-    async: boolean;
     lazy: boolean;
+    async: boolean;
 }
 
 export interface TxMetadataStorage {

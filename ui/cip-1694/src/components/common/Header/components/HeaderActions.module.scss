@@ -22,8 +22,17 @@
 .walletButtonWrapper {
   :global {
     #connect-wallet-dropdown {
+      padding-top: 8px;
+    }
+  }
+}
+
+.walletButtonWrapperMobile {
+  :global {
+    #connect-wallet-dropdown {
       width: 100%;
       min-width: 100%;
+      padding-top: 0px;
     }
 
     #connect-wallet-button {

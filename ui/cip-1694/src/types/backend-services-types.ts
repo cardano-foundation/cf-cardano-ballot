@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-// Generated using typescript-generator version 3.2.1263 on 2023-07-13 01:33:28.
+// Generated using typescript-generator version 3.2.1263 on 2023-08-03 21:01:18.
 
 export interface Either<L, R> extends Value<R>, Serializable {
     left: L;
@@ -10,8 +10,8 @@ export interface Either<L, R> extends Value<R>, Serializable {
 
 export interface Account {
     stakeAddress: string;
-    votingPower: string;
-    votingPowerAsset: VotingPowerAsset;
+    votingPower?: string;
+    votingPowerAsset?: VotingPowerAsset;
 }
 
 export interface AccountBuilder {
@@ -19,8 +19,8 @@ export interface AccountBuilder {
 
 export interface ChainTip {
     absoluteSlot: number;
+    hash: string;
     epochNo: number;
-    cardanoNetwork: CardanoNetwork;
 }
 
 export interface ChainTipBuilder {
@@ -51,7 +51,8 @@ export interface ByCategoryBuilder {
 
 export interface ByEvent {
     event: string;
-    votes: Votes;
+    totalVotesCount: number;
+    totalVotingPower: string;
 }
 
 export interface ByEventBuilder {
@@ -62,7 +63,7 @@ export interface LeaderboardBuilder {
 
 export interface Votes {
     votes: number;
-    votingPower: number;
+    votingPower: string;
 }
 
 export interface TransactionDetails {
@@ -93,12 +94,10 @@ export interface VoteReceipt {
     event: string;
     category: string;
     proposal: string;
-    proposalText: string;
     votingPower: string;
     voterStakingAddress: string;
     coseSignature: string;
-    cosePublicKey: string;
-    cardanoNetwork: CardanoNetwork;
+    cosePublicKey?: string;
     status: Status;
     merkleProof: MerkleProof;
     finalityScore?: FinalityScore;
@@ -136,6 +135,7 @@ export interface Category extends AbstractTimestampEntity {
     version: SchemaVersion;
     event: Event;
     proposals: Proposal[];
+    absoluteSlot: number;
     valid: boolean;
 }
 
@@ -146,16 +146,17 @@ export interface Event extends AbstractTimestampEntity {
     id: string;
     team: string;
     votingEventType: VotingEventType;
-    votingPowerAsset: VotingPowerAsset;
+    votingPowerAsset?: VotingPowerAsset;
     allowVoteChanging: boolean;
     categoryResultsWhileVoting: boolean;
-    startEpoch: number;
-    endEpoch: number;
-    startSlot: number;
-    endSlot: number;
-    snapshotEpoch: number;
+    startEpoch?: number;
+    endEpoch?: number;
+    startSlot?: number;
+    endSlot?: number;
+    snapshotEpoch?: number;
     version: SchemaVersion;
     categories: Category[];
+    absoluteSlot: number;
     valid: boolean;
 }
 
@@ -166,6 +167,7 @@ export interface Proposal extends AbstractTimestampEntity {
     id: string;
     name: string;
     category: Category;
+    absoluteSlot: number;
 }
 
 export interface ProposalBuilder {
@@ -178,10 +180,12 @@ export interface Vote extends AbstractTimestampEntity {
     proposalId: string;
     voterStakingAddress: string;
     coseSignature: string;
-    cosePublicKey: string;
-    votingPower: number;
-    network: CardanoNetwork;
+    cosePublicKey?: string;
+    votingPower?: number;
     votedAtSlot: number;
+}
+
+export interface VoteBuilder {
 }
 
 export interface VoteMerkleProof extends AbstractTimestampEntity {
@@ -191,6 +195,7 @@ export interface VoteMerkleProof extends AbstractTimestampEntity {
     l1TransactionHash: string;
     proofItemsJson: string;
     invalidated: boolean;
+    absoluteSlot: number;
 }
 
 export interface VoteMerkleProofBuilder {
@@ -214,10 +219,14 @@ export interface EventReference {
     startSlot?: number;
     endSlot?: number;
     startEpoch?: number;
+    eventStart: Date;
+    eventEnd: Date;
+    snapshotTime?: Date;
     endEpoch?: number;
     snapshotEpoch?: number;
     categories: CategoryReference[];
     active: boolean;
+    finished: boolean;
 }
 
 export interface EventReferenceBuilder {
@@ -278,13 +287,9 @@ export interface EventRegistrationEnvelope {
 export interface EventRegistrationEnvelopeBuilder {
 }
 
-export interface LoginEnvelope {
-    event: string;
+export interface FullMetadataScanEnvelope {
+    address: string;
     network: string;
-    role: string;
-}
-
-export interface LoginEnvelopeBuilder {
 }
 
 export interface ProposalEnvelope {
@@ -297,10 +302,17 @@ export interface ProposalEnvelopeBuilder {
 
 export interface SignedWeb3Request {
     coseSignature: string;
-    cosePublicKey: string;
+    cosePublicKey?: string;
 }
 
 export interface SignedWeb3RequestBuilder {
+}
+
+export interface ViewVoteReceiptEnvelope {
+    address: string;
+    network: string;
+    event: string;
+    category: string;
 }
 
 export interface VoteEnvelope {
@@ -309,28 +321,13 @@ export interface VoteEnvelope {
     event: string;
     category: string;
     proposal: string;
-    proposalText: string;
+    proposalText?: string;
     network: string;
     votedAt: string;
-    votingPower: string;
+    votingPower?: string;
 }
 
 export interface VoteEnvelopeBuilder {
-}
-
-export interface RollbackHandler {
-}
-
-export interface RollbackHandler__Autowiring {
-}
-
-export interface RollbackHandler__BeanDefinitions {
-}
-
-export interface RollbackHandler__TestContext001_Autowiring {
-}
-
-export interface RollbackHandler__TestContext001_BeanDefinitions {
 }
 
 export interface AccountService {
@@ -345,12 +342,6 @@ export interface DefaultAccountService__Autowiring {
 export interface DefaultAccountService__BeanDefinitions {
 }
 
-export interface DefaultAccountService__TestContext001_Autowiring {
-}
-
-export interface DefaultAccountService__TestContext001_BeanDefinitions {
-}
-
 export interface StakeAddressVerificationService {
 }
 
@@ -358,12 +349,6 @@ export interface StakeAddressVerificationService__Autowiring {
 }
 
 export interface StakeAddressVerificationService__BeanDefinitions {
-}
-
-export interface StakeAddressVerificationService__TestContext001_Autowiring {
-}
-
-export interface StakeAddressVerificationService__TestContext001_BeanDefinitions {
 }
 
 export interface BlockchainDataChainTipService {
@@ -412,19 +397,19 @@ export interface CardanoSubmitApiBlockchainTransactionSubmissionService__Autowir
 export interface CardanoSubmitApiBlockchainTransactionSubmissionService__BeanDefinitions {
 }
 
-export interface CardanoSubmitApiBlockchainTransactionSubmissionService__TestContext001_Autowiring {
-}
-
-export interface CardanoSubmitApiBlockchainTransactionSubmissionService__TestContext001_BeanDefinitions {
-}
-
 export interface CborService {
 }
 
 export interface CborService__BeanDefinitions {
 }
 
-export interface CborService__TestContext001_BeanDefinitions {
+export interface CustomEpochService {
+}
+
+export interface CustomEpochService__Autowiring {
+}
+
+export interface CustomEpochService__BeanDefinitions {
 }
 
 export interface ExpirationService {
@@ -436,19 +421,10 @@ export interface ExpirationService__Autowiring {
 export interface ExpirationService__BeanDefinitions {
 }
 
-export interface ExpirationService__TestContext001_Autowiring {
-}
-
-export interface ExpirationService__TestContext001_BeanDefinitions {
-}
-
 export interface LocalisationService {
 }
 
 export interface LocalisationService__BeanDefinitions {
-}
-
-export interface LocalisationService__TestContext001_BeanDefinitions {
 }
 
 export interface JsonService {
@@ -460,12 +436,6 @@ export interface JsonService__Autowiring {
 export interface JsonService__BeanDefinitions {
 }
 
-export interface JsonService__TestContext001_Autowiring {
-}
-
-export interface JsonService__TestContext001_BeanDefinitions {
-}
-
 export interface DefaultLeaderBoardService extends LeaderBoardService {
 }
 
@@ -473,12 +443,6 @@ export interface DefaultLeaderBoardService__Autowiring {
 }
 
 export interface DefaultLeaderBoardService__BeanDefinitions {
-}
-
-export interface DefaultLeaderBoardService__TestContext001_Autowiring {
-}
-
-export interface DefaultLeaderBoardService__TestContext001_BeanDefinitions {
 }
 
 export interface LeaderBoardService {
@@ -493,12 +457,6 @@ export interface MerkleProofSerdeService__Autowiring {
 export interface MerkleProofSerdeService__BeanDefinitions {
 }
 
-export interface MerkleProofSerdeService__TestContext001_Autowiring {
-}
-
-export interface MerkleProofSerdeService__TestContext001_BeanDefinitions {
-}
-
 export interface MerkleTreeService {
 }
 
@@ -506,12 +464,6 @@ export interface MerkleTreeService__Autowiring {
 }
 
 export interface MerkleTreeService__BeanDefinitions {
-}
-
-export interface MerkleTreeService__TestContext001_Autowiring {
-}
-
-export interface MerkleTreeService__TestContext001_BeanDefinitions {
 }
 
 export interface VoteCommitmentService {
@@ -523,12 +475,6 @@ export interface VoteCommitmentService__Autowiring {
 export interface VoteCommitmentService__BeanDefinitions {
 }
 
-export interface VoteCommitmentService__TestContext001_Autowiring {
-}
-
-export interface VoteCommitmentService__TestContext001_BeanDefinitions {
-}
-
 export interface VoteMerkleProofService {
 }
 
@@ -538,25 +484,13 @@ export interface VoteMerkleProofService__Autowiring {
 export interface VoteMerkleProofService__BeanDefinitions {
 }
 
-export interface VoteMerkleProofService__TestContext001_Autowiring {
+export interface CustomMetadataProcessor {
 }
 
-export interface VoteMerkleProofService__TestContext001_BeanDefinitions {
+export interface CustomMetadataProcessor__Autowiring {
 }
 
-export interface MetadataProcessor {
-}
-
-export interface MetadataProcessor__Autowiring {
-}
-
-export interface MetadataProcessor__BeanDefinitions {
-}
-
-export interface MetadataProcessor__TestContext001_Autowiring {
-}
-
-export interface MetadataProcessor__TestContext001_BeanDefinitions {
+export interface CustomMetadataProcessor__BeanDefinitions {
 }
 
 export interface MetadataService {
@@ -568,12 +502,6 @@ export interface MetadataService__Autowiring {
 export interface MetadataService__BeanDefinitions {
 }
 
-export interface MetadataService__TestContext001_Autowiring {
-}
-
-export interface MetadataService__TestContext001_BeanDefinitions {
-}
-
 export interface ReferenceDataService {
 }
 
@@ -581,12 +509,6 @@ export interface ReferenceDataService__Autowiring {
 }
 
 export interface ReferenceDataService__BeanDefinitions {
-}
-
-export interface ReferenceDataService__TestContext001_Autowiring {
-}
-
-export interface ReferenceDataService__TestContext001_BeanDefinitions {
 }
 
 export interface ReferencePresentationService {
@@ -598,91 +520,13 @@ export interface ReferencePresentationService__Autowiring {
 export interface ReferencePresentationService__BeanDefinitions {
 }
 
-export interface ReferencePresentationService__TestContext001_Autowiring {
+export interface RollbackHandler {
 }
 
-export interface ReferencePresentationService__TestContext001_BeanDefinitions {
+export interface RollbackHandler__Autowiring {
 }
 
-export interface DefaultLoginService extends LoginService {
-}
-
-export interface DefaultLoginService__Autowiring {
-}
-
-export interface DefaultLoginService__BeanDefinitions {
-}
-
-export interface DefaultLoginService__TestContext001_Autowiring {
-}
-
-export interface DefaultLoginService__TestContext001_BeanDefinitions {
-}
-
-export interface JwtAuthenticationEntryPoint extends AuthenticationEntryPoint, Serializable {
-}
-
-export interface JwtAuthenticationEntryPoint__BeanDefinitions {
-}
-
-export interface JwtAuthenticationEntryPoint__TestContext001_BeanDefinitions {
-}
-
-export interface JwtAuthenticationToken extends AbstractAuthenticationToken {
-}
-
-export interface JwtFilter extends OncePerRequestFilter {
-    beanName: string;
-    servletContext: ServletContext;
-}
-
-export interface JwtFilter__Autowiring {
-}
-
-export interface JwtFilter__BeanDefinitions {
-}
-
-export interface JwtFilter__TestContext001_Autowiring {
-}
-
-export interface JwtFilter__TestContext001_BeanDefinitions {
-}
-
-export interface JwtPrincipal extends Principal, AuthenticatedPrincipal {
-    signedJWT: SignedJWT;
-}
-
-export interface JwtService {
-}
-
-export interface JwtService__Autowiring {
-}
-
-export interface JwtService__BeanDefinitions {
-}
-
-export interface JwtService__TestContext001_Autowiring {
-}
-
-export interface JwtService__TestContext001_BeanDefinitions {
-}
-
-export interface LoginService {
-}
-
-export interface RoleService {
-}
-
-export interface RoleService__Autowiring {
-}
-
-export interface RoleService__BeanDefinitions {
-}
-
-export interface RoleService__TestContext001_Autowiring {
-}
-
-export interface RoleService__TestContext001_BeanDefinitions {
+export interface RollbackHandler__BeanDefinitions {
 }
 
 export interface L1SubmissionService {
@@ -694,12 +538,6 @@ export interface L1SubmissionService__Autowiring {
 export interface L1SubmissionService__BeanDefinitions {
 }
 
-export interface L1SubmissionService__TestContext001_Autowiring {
-}
-
-export interface L1SubmissionService__TestContext001_BeanDefinitions {
-}
-
 export interface L1TransactionCreator {
 }
 
@@ -709,19 +547,10 @@ export interface L1TransactionCreator__Autowiring {
 export interface L1TransactionCreator__BeanDefinitions {
 }
 
-export interface L1TransactionCreator__TestContext001_Autowiring {
-}
-
-export interface L1TransactionCreator__TestContext001_BeanDefinitions {
-}
-
 export interface MetadataSerialiser {
 }
 
 export interface MetadataSerialiser__BeanDefinitions {
-}
-
-export interface MetadataSerialiser__TestContext001_BeanDefinitions {
 }
 
 export interface DefaultVoteService extends VoteService {
@@ -731,12 +560,6 @@ export interface DefaultVoteService__Autowiring {
 }
 
 export interface DefaultVoteService__BeanDefinitions {
-}
-
-export interface DefaultVoteService__TestContext001_Autowiring {
-}
-
-export interface DefaultVoteService__TestContext001_BeanDefinitions {
 }
 
 export interface VoteService {
@@ -751,12 +574,6 @@ export interface VotingPowerService__Autowiring {
 export interface VotingPowerService__BeanDefinitions {
 }
 
-export interface VotingPowerService__TestContext001_Autowiring {
-}
-
-export interface VotingPowerService__TestContext001_BeanDefinitions {
-}
-
 export interface Problem {
     instance: URI;
     type: URI;
@@ -768,75 +585,9 @@ export interface Problem {
 
 export interface Serializable {
 }
+
 export interface MerkleElement<T> {
     empty: boolean;
-}
-
-export interface AuthenticationEntryPoint {
-}
-
-export interface GrantedAuthority extends Serializable {
-    authority: string;
-}
-
-export interface AbstractAuthenticationToken extends Authentication, CredentialsContainer {
-}
-
-export interface Environment extends PropertyResolver {
-    activeProfiles: string[];
-    defaultProfiles: string[];
-}
-
-export interface FilterConfig {
-    servletContext: ServletContext;
-    filterName: string;
-    initParameterNames: Enumeration<string>;
-}
-
-export interface ServletContext {
-    classLoader: ClassLoader;
-    majorVersion: number;
-    minorVersion: number;
-    defaultSessionTrackingModes: SessionTrackingMode[];
-    effectiveSessionTrackingModes: SessionTrackingMode[];
-    requestCharacterEncoding: string;
-    responseCharacterEncoding: string;
-    attributeNames: Enumeration<string>;
-    contextPath: string;
-    servletRegistrations: { [index: string]: ServletRegistration };
-    /**
-     * @deprecated
-     */
-    servletNames: Enumeration<string>;
-    sessionTimeout: number;
-    filterRegistrations: { [index: string]: FilterRegistration };
-    servletContextName: string;
-    sessionCookieConfig: SessionCookieConfig;
-    jspConfigDescriptor: JspConfigDescriptor;
-    effectiveMinorVersion: number;
-    serverInfo: string;
-    /**
-     * @deprecated
-     */
-    servlets: Enumeration<Servlet>;
-    virtualServerName: string;
-    effectiveMajorVersion: number;
-    initParameterNames: Enumeration<string>;
-}
-
-export interface OncePerRequestFilter extends GenericFilterBean {
-}
-
-export interface SignedJWT extends JWSObject, JWT {
-    header: JWSHeader;
-}
-
-export interface Principal {
-    name: string;
-}
-
-export interface AuthenticatedPrincipal {
-    name: string;
 }
 
 export interface URI extends Comparable<URI>, Serializable {
@@ -849,217 +600,10 @@ export interface StatusType {
 
 export interface Value<T> extends Iterable<T> {
     empty: boolean;
-    orNull: T;
     singleValued: boolean;
-    lazy: boolean;
+    orNull: T;
     async: boolean;
-}
-
-export interface Authentication extends Principal, Serializable {
-    details: any;
-    authenticated: boolean;
-    authorities: GrantedAuthority[];
-    credentials: any;
-    principal: any;
-}
-
-export interface CredentialsContainer {
-}
-
-export interface PropertyResolver {
-}
-
-export interface Enumeration<E> {
-}
-
-export interface ClassLoader {
-}
-
-export interface ServletRegistration extends Registration {
-    mappings: string[];
-    runAsRole: string;
-}
-
-export interface FilterRegistration extends Registration {
-    servletNameMappings: string[];
-    urlPatternMappings: string[];
-}
-
-export interface SessionCookieConfig {
-    domain: string;
-    name: string;
-    path: string;
-    comment: string;
-    httpOnly: boolean;
-    secure: boolean;
-    maxAge: number;
-}
-
-export interface JspConfigDescriptor {
-    jspPropertyGroups: JspPropertyGroupDescriptor[];
-    taglibs: TaglibDescriptor[];
-}
-
-export interface Servlet {
-    servletConfig: ServletConfig;
-    servletInfo: string;
-}
-
-export interface GenericFilterBean extends Filter, BeanNameAware, EnvironmentAware, EnvironmentCapable, ServletContextAware, InitializingBean, DisposableBean {
-    filterConfig: FilterConfig;
-}
-
-export interface Payload extends Serializable {
-    origin: Origin;
-}
-
-export interface Base64URL extends Base64 {
-}
-
-export interface JWSHeader extends CommonSEHeader {
-    algorithm: JWSAlgorithm;
-    base64URLEncodePayload: boolean;
-}
-
-export interface JWTClaimsSet extends Serializable {
-    claims: { [index: string]: any };
-    expirationTime: Date;
-    notBeforeTime: Date;
-    issueTime: Date;
-    audience: string[];
-    subject: string;
-    jwtid: string;
-    issuer: string;
-}
-
-export interface JWSObject extends JOSEObject {
-    header: JWSHeader;
-    signature: Base64URL;
-    state: State;
-    signingInput: any;
-}
-
-export interface JWT extends Serializable {
-    header: Header;
-    jwtclaimsSet: JWTClaimsSet;
-    parsedParts: Base64URL[];
-    parsedString: string;
-}
-
-export interface Registration {
-    name: string;
-    className: string;
-    initParameters: { [index: string]: string };
-}
-
-export interface JspPropertyGroupDescriptor {
-    buffer: string;
-    deferredSyntaxAllowedAsLiteral: string;
-    trimDirectiveWhitespaces: string;
-    errorOnUndeclaredNamespace: string;
-    urlPatterns: string[];
-    elIgnored: string;
-    pageEncoding: string;
-    scriptingInvalid: string;
-    includePreludes: string[];
-    includeCodas: string[];
-    defaultContentType: string;
-    isXml: string;
-}
-
-export interface TaglibDescriptor {
-    taglibURI: string;
-    taglibLocation: string;
-}
-
-export interface ServletConfig {
-    servletContext: ServletContext;
-    servletName: string;
-    initParameterNames: Enumeration<string>;
-}
-
-export interface Filter {
-}
-
-export interface BeanNameAware extends Aware {
-}
-
-export interface EnvironmentAware extends Aware {
-}
-
-export interface EnvironmentCapable {
-    environment: Environment;
-}
-
-export interface ServletContextAware extends Aware {
-}
-
-export interface InitializingBean {
-}
-
-export interface DisposableBean {
-}
-
-export interface Base64 extends Serializable {
-}
-
-export interface JWK extends Serializable {
-    keyStore: KeyStore;
-    algorithm: Algorithm;
-    private: boolean;
-    x509CertSHA256Thumbprint: Base64URL;
-    requiredParams: { [index: string]: any };
-    keyOperations: KeyOperation[];
-    x509CertURL: URI;
-    /**
-     * @deprecated
-     */
-    x509CertThumbprint: Base64URL;
-    x509CertChain: Base64[];
-    expirationTime: Date;
-    notBeforeTime: Date;
-    issueTime: Date;
-    parsedX509CertChain: X509Certificate[];
-    keyUse: KeyUse;
-    keyID: string;
-    keyType: KeyType;
-}
-
-export interface JWSAlgorithm extends Algorithm {
-}
-
-export interface JOSEObjectType extends Serializable {
-    type: string;
-}
-
-export interface CommonSEHeader extends Header {
-    jwk: JWK;
-    x509CertSHA256Thumbprint: Base64URL;
-    x509CertURL: URI;
-    /**
-     * @deprecated
-     */
-    x509CertThumbprint: Base64URL;
-    x509CertChain: Base64[];
-    jwkurl: URI;
-    keyID: string;
-}
-
-export interface JOSEObject extends Serializable {
-    payload: Payload;
-    parsedParts: Base64URL[];
-    header: Header;
-    parsedString: string;
-}
-
-export interface Header extends Serializable {
-    customParams: { [index: string]: any };
-    parsedBase64URL: Base64URL;
-    algorithm: Algorithm;
-    contentType: string;
-    type: JOSEObjectType;
-    criticalParams: string[];
-    includedParams: string[];
+    lazy: boolean;
 }
 
 export interface Comparable<T> {
@@ -1068,86 +612,9 @@ export interface Comparable<T> {
 export interface Iterable<T> {
 }
 
-export interface Aware {
-}
-
-export interface KeyStore {
-    type: string;
-    provider: { [index: string]: any };
-}
-
-export interface Algorithm extends Serializable {
-    name: string;
-    requirement: Requirement;
-}
-
-export interface X509Certificate extends Certificate, X509Extension {
-    subjectX500Principal: X500Principal;
-    issuerX500Principal: X500Principal;
-    extendedKeyUsage: string[];
-    issuerAlternativeNames: any[][];
-    sigAlgName: string;
-    sigAlgParams: any;
-    tbscertificate: any;
-    /**
-     * @deprecated since 16
-     */
-    issuerDN: Principal;
-    /**
-     * @deprecated since 16
-     */
-    subjectDN: Principal;
-    sigAlgOID: string;
-    issuerUniqueID: boolean[];
-    subjectUniqueID: boolean[];
-    signature: any;
-    basicConstraints: number;
-    version: number;
-    subjectAlternativeNames: any[][];
-    serialNumber: number;
-    notAfter: Date;
-    notBefore: Date;
-    keyUsage: boolean[];
-}
-
-export interface KeyUse extends Serializable {
-    value: string;
-}
-
-export interface KeyType extends Serializable {
-    value: string;
-    requirement: Requirement;
-}
-
-export interface X500Principal extends Principal, Serializable {
-    encoded: any;
-}
-
-export interface PublicKey extends Key {
-}
-
-export interface Certificate extends Serializable {
-    type: string;
-    encoded: any;
-    publicKey: PublicKey;
-}
-
-export interface X509Extension {
-    criticalExtensionOIDs: string[];
-    nonCriticalExtensionOIDs: string[];
-}
-
-export interface Key extends Serializable {
-    algorithm: string;
-    encoded: any;
-    format: string;
-}
-
 export type CardanoNetwork = "MAIN" | "PREPROD" | "PREVIEW" | "DEV";
 
 export type OnChainEventType = "COMMITMENTS" | "EVENT_REGISTRATION" | "CATEGORY_REGISTRATION";
-
-export type Role = "VOTER" | "ORGANISER";
 
 export type SchemaVersion = "V1";
 
@@ -1161,14 +628,4 @@ export type VotingEventType = "USER_BASED" | "STAKE_BASED" | "BALANCE_BASED";
 
 export type VotingPowerAsset = "ADA";
 
-export type Web3Action = "LOGIN" | "CAST_VOTE";
-
-export type SessionTrackingMode = "COOKIE" | "URL" | "SSL";
-
-export type State = "UNSIGNED" | "SIGNED" | "VERIFIED";
-
-export type Origin = "JSON" | "STRING" | "BYTE_ARRAY" | "BASE64URL" | "JWS_OBJECT" | "SIGNED_JWT";
-
-export type KeyOperation = "SIGN" | "VERIFY" | "ENCRYPT" | "DECRYPT" | "WRAP_KEY" | "UNWRAP_KEY" | "DERIVE_KEY" | "DERIVE_BITS";
-
-export type Requirement = "REQUIRED" | "RECOMMENDED" | "OPTIONAL";
+export type Web3Action = "CAST_VOTE" | "VIEW_VOTE_RECEIPT" | "FULL_METADATA_SCAN";

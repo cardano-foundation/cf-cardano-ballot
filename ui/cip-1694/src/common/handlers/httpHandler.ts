@@ -119,7 +119,11 @@ export function responseHandlerDelegate<T>() {
       try {
         parsedResponse = await response[isJson ? 'json' : 'text']();
         if (response.status !== 200) {
-          throw new HttpError(401, response.url, getErrorMessage(parsedResponse));
+          throw new HttpError(
+            response.status,
+            response.url,
+            response.status === 500 ? 'Oops, something went wrong...' : getErrorMessage(parsedResponse)
+          );
         }
       } catch (error) {
         throw new Error(error?.message);

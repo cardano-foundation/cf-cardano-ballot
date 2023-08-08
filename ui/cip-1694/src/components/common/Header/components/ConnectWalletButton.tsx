@@ -17,7 +17,7 @@ import {
   setIsReceiptFetched,
   setVoteReceipt,
 } from 'common/store/userSlice';
-import { ALWAYS_VISIBLE_WALLETS, SUPPORTED_WALLETS } from 'common/constants/appConstants';
+import { env } from 'env';
 import { RootState } from 'common/store';
 import styles from './ConnectWalletButton.module.scss';
 
@@ -26,8 +26,8 @@ export const ConnectWalletButton = ({ isMobileMenu = false }) => {
   const dispatch = useDispatch();
   const connectedWallet = useSelector((state: RootState) => state.user.connectedWallet);
 
-  const supportedWallets = SUPPORTED_WALLETS;
-  const alwaysVisibleWallets = ALWAYS_VISIBLE_WALLETS;
+  const supportedWallets = env.SUPPORTED_WALLETS;
+  const alwaysVisibleWallets = env.ALWAYS_VISIBLE_WALLETS;
 
   // TODO: move to providers level and throw?
   useEffect(() => {

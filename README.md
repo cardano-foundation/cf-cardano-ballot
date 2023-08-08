@@ -45,6 +45,12 @@ cd cf-voting-app/backend-services/voting-app
 ./gradlew bootRun
 ```
 
+
+```shell
+cd cf-voting-app/backend-services/voting-verification-app
+SERVER_PORT=8888 ./gradlew bootRun
+```
+
 ```shell
 npm run start
 ```

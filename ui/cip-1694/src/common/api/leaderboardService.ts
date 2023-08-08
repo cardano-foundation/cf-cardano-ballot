@@ -1,8 +1,8 @@
 import { DEFAULT_CONTENT_TYPE_HEADERS, doRequest, HttpMethods } from '../handlers/httpHandler';
-import { LEADERBOARD_URL, EVENT_ID, CATEGORY_ID } from '../constants/appConstants';
+import { env } from '../../env';
 import { ByCategory } from '../../types/backend-services-types';
 
 export const getStats = async () =>
-  await doRequest<ByCategory>(HttpMethods.GET, `${LEADERBOARD_URL}/${EVENT_ID}/${CATEGORY_ID}`, {
+  await doRequest<ByCategory>(HttpMethods.GET, `${env.LEADERBOARD_URL}/${env.EVENT_ID}/${env.CATEGORY_ID}`, {
     ...DEFAULT_CONTENT_TYPE_HEADERS,
   });

@@ -1,5 +1,5 @@
 import { canonicalize } from 'json-canonicalize';
-import { TARGET_NETWORK, EVENT_ID, CATEGORY_ID } from '../constants/appConstants';
+import { env } from '../../env';
 
 type voteInput = {
   option: string;
@@ -27,10 +27,10 @@ export const buildCanonicalVoteInputJson = ({
     data: {
       id: voteId,
       address: voter,
-      event: EVENT_ID,
-      category: CATEGORY_ID,
+      event: env.EVENT_ID,
+      category: env.CATEGORY_ID,
       proposal: option,
-      network: TARGET_NETWORK,
+      network: env.TARGET_NETWORK,
       votedAt: slotNumber,
       votingPower: votePower,
     },
@@ -53,8 +53,8 @@ export const buildCanonicalVoteReceiptInputJson = ({
     slot: slotNumber,
     data: {
       address: voter,
-      event: EVENT_ID,
-      category: CATEGORY_ID,
-      network: TARGET_NETWORK,
+      event: env.EVENT_ID,
+      category: env.CATEGORY_ID,
+      network: env.TARGET_NETWORK,
     },
   });

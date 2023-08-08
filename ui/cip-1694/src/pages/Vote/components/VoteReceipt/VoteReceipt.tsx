@@ -1,52 +1,91 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import pick from 'lodash/pick';
-import { CopyToClipboard } from 'react-copy-to-clipboard';
-import cn from 'classnames';
 import Grid from '@mui/material/Grid';
-import { Button, IconButton, Typography, debounce } from '@mui/material';
-import QrCodeIcon from '@mui/icons-material/QrCode';
+import { IconButton, Typography, debounce, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
-import { setIsVerifyVoteModalVisible } from 'common/store/userSlice';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import * as verificationService from 'common/api/verificationService';
 import { RootState } from 'common/store';
+import { setIsVerifyVoteModalVisible } from 'common/store/userSlice';
+import { Toast } from 'components/common/Toast/Toast';
+import {
+  AdvancedFullFieldsToDisplayArrayKeys,
+  FieldsToDisplayArrayKeys,
+  advancedFieldsToDisplay,
+  advancedFullFieldsToDisplay,
+  generalFieldsToDisplay,
+} from './utils';
+import { ReceiptItem } from './components/ReceiptItem/ReceipItem';
+import { ReceiptInfo } from './components/ReceiptInfo/ReceiptInfo';
 import styles from './VoteReceipt.module.scss';
-import { ReceiptItem } from './ReceipItem';
-import { FieldsToDisplayArrayKeys, fieldsToDisplay } from './utils';
 
 type VoteReceiptProps = {
   setOpen: () => void;
+  fetchReceipt: () => void;
 };
 
-const Toast = ({ message }: { message: string }) => (
-  <div className={styles.toast}>
-    <CheckCircleOutlineOutlinedIcon className={styles.toastIcon} />
-    <span>{message}</span>
-    <span className={styles.divider} />
-    <IconButton
-      aria-label="close"
-      onClick={() => toast.dismiss()}
-    >
-      <CloseIcon className={styles.toastClose} />
-    </IconButton>
-  </div>
-);
-
-export const VoteReceipt = ({ setOpen }: VoteReceiptProps) => {
-  const receipt = useSelector((state: RootState) => state.user.receipt);
-  const [isVerified] = useState(false);
+export const VoteReceipt = ({ setOpen, fetchReceipt }: VoteReceiptProps) => {
   const dispatch = useDispatch();
+  const receipt = useSelector((state: RootState) => state.user.receipt);
+  const [isVerified, setIsVerified] = useState(false);
+
+  const verifyVote = useCallback(async () => {
+    try {
+      const {
+        merkleProof: { rootHash = '', steps = [] } = {},
+        coseSignature: voteCoseSignature,
+        cosePublicKey: voteCosePublicKey,
+      } = receipt;
+
+      const verified = await verificationService.verifyVote({
+        rootHash,
+        voteCoseSignature,
+        voteCosePublicKey,
+        steps,
+      });
+      if (typeof verified === 'boolean') {
+        setIsVerified(isVerified);
+      }
+    } catch (error) {
+      console.log('Failed to verify vote', error?.message);
+      toast(
+        <Toast
+          message={error?.message}
+          icon={<ErrorOutlineIcon style={{ color: '#cc0e00' }} />}
+        />
+      );
+    }
+  }, [isVerified, receipt]);
+
+  useEffect(() => {
+    if (!isVerified && receipt?.status === 'FULL') {
+      verifyVote();
+    }
+  }, [isVerified, receipt?.status, verifyVote]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedToast = useCallback(debounce(toast, 300), []);
 
   const onItemClick = useCallback(() => {
     debouncedToast(<Toast message="Copied to clipboard" />);
-    dispatch(setIsVerifyVoteModalVisible({ isVisible: true }));
-  }, [debouncedToast, dispatch]);
+  }, [debouncedToast]);
 
-  const recordFieldsToDisplay = pick(receipt, fieldsToDisplay);
+  const fieldsToDisplay = pick(receipt, generalFieldsToDisplay);
+  const moreFieldsToDisplay = pick(
+    {
+      ...receipt,
+      voteProof: {
+        rootHash: receipt?.merkleProof?.rootHash,
+        steps: receipt?.merkleProof?.steps,
+        coseSignature: receipt.coseSignature,
+        cosePublicKey: receipt.cosePublicKey,
+      },
+    },
+    receipt.status === 'FULL' ? advancedFullFieldsToDisplay : advancedFieldsToDisplay
+  );
 
   return (
     <Grid
@@ -86,39 +125,12 @@ export const VoteReceipt = ({ setOpen }: VoteReceiptProps) => {
         container
         gap="12px"
       >
-        {isVerified ? (
-          <>
-            <Button
-              disabled
-              className={cn(styles.button, styles.success)}
-              size="large"
-              variant="contained"
-            >
-              Verified
-            </Button>
-            <Button
-              className={styles.qrButton}
-              size="large"
-              variant="outlined"
-              onClick={() => console.log('show verified modal...')}
-            >
-              <QrCodeIcon className={styles.qrIcon} />
-            </Button>
-          </>
-        ) : (
-          <CopyToClipboard
-            text={recordFieldsToDisplay['coseSignature']}
-            onCopy={onItemClick}
-          >
-            <Button
-              className={styles.button}
-              size="large"
-              variant="contained"
-            >
-              Copy signature and verify
-            </Button>
-          </CopyToClipboard>
-        )}
+        <ReceiptInfo
+          fetchReceipt={fetchReceipt}
+          showVerifiedModal={() => dispatch(setIsVerifyVoteModalVisible({ isVisible: true }))}
+          receipt={receipt}
+          isVerified={isVerified}
+        />
       </Grid>
       <Grid
         item
@@ -129,12 +141,33 @@ export const VoteReceipt = ({ setOpen }: VoteReceiptProps) => {
         alignItems="start"
         spacing={0}
       >
-        {Object.entries(recordFieldsToDisplay).map(([key, value]: [FieldsToDisplayArrayKeys, string]) => (
+        {Object.entries(fieldsToDisplay).map(([key, value]: [FieldsToDisplayArrayKeys, string]) => (
           <ReceiptItem
             key={key}
             {...{ name: key, value, onItemClick }}
           />
         ))}
+        <Accordion
+          TransitionProps={{ unmountOnExit: true }}
+          className={styles.accordion}
+        >
+          <AccordionSummary
+            className={styles.showMoreBtn}
+            expandIcon={<ExpandMoreIcon className={styles.arrowIcon} />}
+            aria-controls="panel1a-content"
+            id="panel1a-header"
+          >
+            <Typography style={{ fontSize: '16px', fontWeight: '500' }}>Show advanced information</Typography>
+          </AccordionSummary>
+          <AccordionDetails sx={{ padding: '0px' }}>
+            {Object.entries(moreFieldsToDisplay).map(([key, value]: [AdvancedFullFieldsToDisplayArrayKeys, string]) => (
+              <ReceiptItem
+                key={key}
+                {...{ name: key, value, onItemClick }}
+              />
+            ))}
+          </AccordionDetails>
+        </Accordion>
       </Grid>
     </Grid>
   );

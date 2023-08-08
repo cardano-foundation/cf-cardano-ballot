@@ -1,5 +1,6 @@
 import 'swiper/css/navigation';
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import cn from 'classnames';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -7,12 +8,14 @@ import { Pagination, Navigation, Autoplay } from 'swiper';
 import { Swiper as SwiperClass } from 'swiper/types';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Grid, Container, Typography, Button, Box } from '@mui/material';
+import { RootState } from 'common/store';
 import { ROUTES } from 'common/routes';
 import CountDownTimer from 'components/CountDownTimer/CountDownTimer';
 import { SlideProps } from './Slides.types';
 import styles from './Slides.module.scss';
 
 export const Slides = ({ items }: SlideProps) => {
+  const event = useSelector((state: RootState) => state.user.event);
   const [swiper, setSwiper] = useState<SwiperClass | undefined>(undefined);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -85,7 +88,7 @@ export const Slides = ({ items }: SlideProps) => {
                       md: '18px',
                     }}
                   >
-                    <CountDownTimer />
+                    <CountDownTimer endTime={event?.eventEnd} />
                   </Typography>
                   <Typography
                     variant="body1"

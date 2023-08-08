@@ -12,9 +12,10 @@ export const StatsTile = ({ title, summary, children }: StatsTilePorps) => {
   return (
     <Grid
       xs={12}
-      sm={6}
+      md={6}
       item
       className={styles.optionCard}
+      padding={{ md: '30px', xs: '20px' }}
     >
       <Grid
         container
@@ -30,6 +31,10 @@ export const StatsTile = ({ title, summary, children }: StatsTilePorps) => {
         </Typography>
         <Typography
           variant="h5"
+          sx={{
+            fontSize: { md: '40px', xs: '28px' },
+            lineHeight: { md: '47px', xs: '32px' },
+          }}
           className={styles.optionSummary}
         >
           {summary}

@@ -116,7 +116,7 @@ export const ConnectWalletButton = ({ isMobileMenu = false }) => {
           max-height: 49px;
           font-size: 16px;
           font-style: normal;
-          font-weight: 500;
+          font-weight: 600;
           line-height: normal;
         }
         :hover button {

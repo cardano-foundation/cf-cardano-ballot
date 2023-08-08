@@ -10,11 +10,6 @@ import {
   VoteReceipt,
 } from '../../types/backend-services-types';
 
-export const getEventById = async (eventId: Event['id']) =>
-  await doRequest<Vote>(HttpMethods.GET, `${env.EVENT_BY_ID_REFERENCE_URL}/${eventId}`, {
-    ...DEFAULT_CONTENT_TYPE_HEADERS,
-  });
-
 export const castAVoteWithDigitalSignature = async (jsonRequest: SignedWeb3Request) =>
   await doRequest<Problem | Vote>(
     HttpMethods.POST,

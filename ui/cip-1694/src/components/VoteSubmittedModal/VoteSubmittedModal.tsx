@@ -28,6 +28,7 @@ export const VoteSubmittedModal = (props: VoteSubmittedModalProps) => {
       PaperProps={{ sx: { width: '400px', borderRadius: '16px' } }}
     >
       <DialogTitle
+        sx={{ padding: { xs: '20px', ms: '30px 30px 20px 30px' } }}
         className={styles.dialogTitle}
         id={id}
       >
@@ -40,7 +41,10 @@ export const VoteSubmittedModal = (props: VoteSubmittedModalProps) => {
           <CloseIcon className={styles.closeIcon} />
         </IconButton>
       </DialogTitle>
-      <DialogContent className={styles.dialogContent}>
+      <DialogContent
+        sx={{ padding: { xs: '20px', ms: '0px 30px 30px 30px' } }}
+        className={styles.dialogContent}
+      >
         <DialogContentText component={'div'}>
           <Grid
             container

@@ -161,7 +161,6 @@ public class CborService {
 
             var votingEventType = maybeVotingEventType.orElseThrow();
 
-            // TODO remove VotingPowerAsset.ADA assumption
             var maybeVotingPowerAsset = Enums.getIfPresent(VotingPowerAsset.class, (String) payload.get("votingPowerAsset"));
             if (List.of(STAKE_BASED, BALANCE_BASED).contains(votingEventType)) {
                 if (maybeVotingPowerAsset.isEmpty()) {

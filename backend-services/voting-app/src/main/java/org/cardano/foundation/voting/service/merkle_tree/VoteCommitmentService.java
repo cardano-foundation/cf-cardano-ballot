@@ -9,7 +9,10 @@ import org.cardano.foundation.voting.service.transaction_submit.L1SubmissionServ
 import org.cardano.foundation.voting.service.vote.VoteService;
 import org.cardanofoundation.merkle.MerkleTree;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
+import org.zalando.problem.Problem;
 
 import java.util.List;
 
@@ -18,6 +21,7 @@ import static org.cardano.foundation.voting.domain.entity.Vote.VOTE_SERIALISER;
 
 @Service
 @Slf4j
+@EnableAsync
 public class VoteCommitmentService {
 
     @Autowired
@@ -38,6 +42,7 @@ public class VoteCommitmentService {
     @Autowired
     private MerkleProofSerdeService merkleProofSerdeService;
 
+    @Async
     public void processVotesForAllEvents() {
         var l1MerkleCommitments = getL1MerkleCommitments();
         if (l1MerkleCommitments.isEmpty()) {
@@ -53,7 +58,9 @@ public class VoteCommitmentService {
 
         var l1TransactionDataE = l1SubmissionService.submitMerkleCommitments(l1MerkleCommitments);
         if (l1TransactionDataE.isEmpty()) {
-            log.error("Transaction submission failed, issue:{}, will try to submit again in some time...", l1TransactionDataE.swap().get());
+            var issue = l1TransactionDataE.swap().get();
+
+            log.error("Transaction submission failed, issue:{}, will try to submit again in some time...", issue.toString());
             return;
         }
 

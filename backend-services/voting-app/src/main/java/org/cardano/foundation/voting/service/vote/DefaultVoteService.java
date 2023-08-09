@@ -139,8 +139,6 @@ public class DefaultVoteService implements VoteService {
     @Transactional
     @Timed(value = "service.vote.castVote", percentiles = { 0.3, 0.5, 0.95 })
     public Either<Problem, Vote> castVote(SignedWeb3Request castVoteRequest) {
-        // TODO check if vote is in the canonical form???
-
         var cip30Verifier = new CIP30Verifier(castVoteRequest.getCoseSignature(), castVoteRequest.getCosePublicKey());
         var cip30VerificationResult = cip30Verifier.verify();
 
@@ -666,7 +664,7 @@ public class DefaultVoteService implements VoteService {
                     .cosePublicKey(vote.getCosePublicKey())
                     .votedAtSlot(Long.valueOf(vote.getVotedAtSlot()).toString())
                     .voterStakingAddress(vote.getVoterStakingAddress())
-                    .votingPower(vote.getVotingPower().map(String::valueOf).orElse(null))
+                    .votingPower(vote.getVotingPower().map(String::valueOf))
                     .status(readMerkleProofStatus(proof, isL1CommitmentOnChain))
                     .finalityScore(isL1CommitmentOnChain)
                     .merkleProof(convertMerkleProof(proof, td))
@@ -684,7 +682,7 @@ public class DefaultVoteService implements VoteService {
                     .cosePublicKey(vote.getCosePublicKey())
                     .votedAtSlot(Long.valueOf(vote.getVotedAtSlot()).toString())
                     .voterStakingAddress(vote.getVoterStakingAddress())
-                    .votingPower(Optional.ofNullable(vote.getVotingPower()).map(String::valueOf).orElse(null))
+                    .votingPower(vote.getVotingPower().map(String::valueOf))
                     .status(BASIC)
                     .build()
             );

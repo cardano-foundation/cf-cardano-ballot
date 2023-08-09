@@ -1,6 +1,5 @@
 package org.cardano.foundation.voting.service.transaction_submit;
 
-import com.bloxbean.cardano.client.transaction.util.TransactionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.L1SubmissionData;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataTransactionDetailsService;
@@ -38,8 +37,8 @@ public class DefaultTransactionSubmissionService implements TransactionSubmissio
     }
 
     @Override
-    public L1SubmissionData submitTransactionWithConfirmation(byte[] txData) throws TimeoutException {
-        var txHash = TransactionUtil.getTxHash(txData);
+    public L1SubmissionData submitTransactionWithConfirmation(byte[] txData) throws TimeoutException, InterruptedException {
+        var txHash = submitTransaction(txData);
 
         var start = LocalDateTime.now(clock);
 
@@ -50,14 +49,12 @@ public class DefaultTransactionSubmissionService implements TransactionSubmissio
             if (transactionDetails.isPresent()) {
                 return new L1SubmissionData(txHash, transactionDetails.get().getAbsoluteSlot());
             }
-            try {
-                Thread.sleep(sleepTimeInSeconds * 1000L);
-            } catch (InterruptedException e) {
-                log.warn("Interrupted while sleeping...", e);
-            }
+            log.info("Transaction not confirmed yet. Sleeping for {} seconds... until deadline:{}", sleepTimeInSeconds, future);
+
+            Thread.sleep(sleepTimeInSeconds * 1000L);
         }
 
-        throw new TimeoutException("Transaction not confirmed within timeout");
+        throw new TimeoutException("Transaction not confirmed within timeout!");
     }
 
 }

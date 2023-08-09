@@ -30,7 +30,7 @@ public class L1SubmissionService {
 
     private void checkEventCorrectness(CreateEventCommand event) {
         if (List.of(STAKE_BASED, BALANCE_BASED).contains(event.getVotingEventType())) {
-            if (event.getStartEpoch().orElseThrow(() -> new RuntimeException("startEpoch required")) > event.getEndEpoch().orElseThrow(() -> new RuntimeException("endEpoch required"))) {
+            if (event.getStartEpoch().orElseThrow(() -> new RuntimeException("startEpoch required")) > event.getEndEpoch().orElseThrow(() -> new RuntimeException("endEpoch required!"))) {
                 throw new IllegalArgumentException("Event start time must be before end time");
             }
             if (event.getSnapshotEpoch().orElseThrow(() -> new RuntimeException("snapshotEpoch required")) >= event.getStartEpoch().orElseThrow(() -> new RuntimeException("startEpoch required!"))) {

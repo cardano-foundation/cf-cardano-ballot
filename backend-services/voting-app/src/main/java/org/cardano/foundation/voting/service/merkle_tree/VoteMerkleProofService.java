@@ -1,6 +1,7 @@
 package org.cardano.foundation.voting.service.merkle_tree;
 
 import io.micrometer.core.annotation.Timed;
+import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.entity.VoteMerkleProof;
 import org.cardano.foundation.voting.repository.VoteMerkleProofRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class VoteMerkleProofService {
 
     @Autowired
@@ -30,6 +32,8 @@ public class VoteMerkleProofService {
     @Transactional
     @Timed(value = "service.merkle.softDeleteAllProofsAfterSlot", percentiles = { 0.3, 0.5, 0.95 })
     public void softDeleteAllProofsAfterSlot(long slot) {
+        log.info("Soft deleting all proofs after slot:{}", slot);
+
         voteMerkleProofRepository.invalidateMerkleProofsAfterSlot(slot);
         voteMerkleProofRepository.flush();
     }

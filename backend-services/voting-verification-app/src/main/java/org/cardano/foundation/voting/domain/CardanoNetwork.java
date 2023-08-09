@@ -8,11 +8,7 @@ public enum CardanoNetwork {
     MAIN, // main-net
     PREPROD, // preprod-net
     PREVIEW, // preview-net
-    DEV; // e.g. locally hosted cardano-node
-
-    public static List<String> supportedNetworks() {
-        return Arrays.stream(CardanoNetwork.values()).map(network -> network.name().toLowerCase()).toList();
-    }
+    DEV; // e.g. locally hosted cardano-node (Yaci-DevKit)
 
     public boolean isTestnet() {
         return !isMainnet();

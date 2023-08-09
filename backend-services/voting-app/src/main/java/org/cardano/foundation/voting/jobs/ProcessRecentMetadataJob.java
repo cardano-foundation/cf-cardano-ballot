@@ -8,6 +8,7 @@ import org.cardano.foundation.voting.service.metadata.CustomMetadataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +27,8 @@ public class ProcessRecentMetadataJob implements Runnable {
     private long metadataLabel;
 
     @Override
-    @Scheduled(fixedDelayString = "PT5M", initialDelayString = "PT0M")
+    @Scheduled(fixedDelayString = "${metadata.pooling.fixed.delay.string}", initialDelayString = "${metadata.pooling.initial.delay.string}")
+    @Async
     public void run() {
         switch (ingestionStrategy) {
             case PULL -> {

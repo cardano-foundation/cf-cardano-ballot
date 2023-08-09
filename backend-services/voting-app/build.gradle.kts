@@ -46,9 +46,6 @@ dependencies {
 
 	runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 
-	// TODO release to maven central
-	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.9-SNAPSHOT")
-
     implementation("org.flywaydb:flyway-core")
 
 	implementation("com.google.guava:guava:32.1.1-jre")
@@ -68,8 +65,6 @@ dependencies {
 	testImplementation("org.testcontainers:junit-jupiter")
 
 	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0-alpha.4")
-
-	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0-alpha.4")
     implementation("com.bloxbean.cardano:cardano-client-address:0.5.0-alpha.4")
     implementation("com.bloxbean.cardano:cardano-client-metadata:0.5.0-alpha.4")
 	implementation("com.bloxbean.cardano:cardano-client-quicktx:0.5.0-alpha.4")
@@ -85,12 +80,12 @@ dependencies {
 
 	implementation("io.vavr:vavr:0.10.4")
 
-    implementation("com.networknt:json-schema-validator:1.0.82")
-
 	implementation("org.postgresql:postgresql")
 
 	// TODO release to maven central
 	implementation("org.cardanofoundation:merkle-tree-java:0.0.6-SNAPSHOT")
+	// TODO release to maven central
+	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.9-SNAPSHOT")
 }
 
 dependencyManagement {

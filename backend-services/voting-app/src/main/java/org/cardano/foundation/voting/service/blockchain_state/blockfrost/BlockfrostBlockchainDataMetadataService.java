@@ -1,22 +1,37 @@
 package org.cardano.foundation.voting.service.blockchain_state.blockfrost;
 
+import io.blockfrost.sdk.api.MetadataService;
 import io.blockfrost.sdk.api.exception.APIException;
+import io.blockfrost.sdk.impl.MetadataServiceImpl;
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.TransactionDetails;
 import org.cardano.foundation.voting.domain.TransactionMetadataLabelCbor;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataMetadataService;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataTransactionDetailsService;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Optional;
 
 @Slf4j
-public class BlockfrostBlockchainDataMetadataService extends AbstractBlockfrostService implements BlockchainDataMetadataService {
+@RequiredArgsConstructor
+public class BlockfrostBlockchainDataMetadataService implements BlockchainDataMetadataService {
 
-    @Autowired
-    private BlockchainDataTransactionDetailsService blockchainDataTransactionDetailsService;
+
+    private final BlockchainDataTransactionDetailsService blockchainDataTransactionDetailsService;
+
+    private final String blockfrostProjectId;
+
+    private final String blockfrostUrl;
+
+    private MetadataService metadataService;
+
+    @PostConstruct
+    public void init() {
+        this.metadataService = new MetadataServiceImpl(blockfrostUrl, blockfrostProjectId);
+    }
 
     @Override
     @SneakyThrows

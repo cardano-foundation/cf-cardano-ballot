@@ -11,4 +11,6 @@ public class ChainTip {
 
     private long absoluteSlot;
 
+    private String hash;
+
 }

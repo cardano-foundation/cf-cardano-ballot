@@ -1,7 +1,6 @@
 package org.cardano.foundation.voting.service.blockchain_state.cardano_submit_api;
 
 import com.bloxbean.cardano.client.util.JsonUtil;
-import com.jayway.jsonpath.JsonPath;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainTransactionSubmissionService;

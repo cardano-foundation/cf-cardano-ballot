@@ -1,23 +1,20 @@
-package org.cardano.foundation.voting.service.blockchain_state.cardano_submit_api;
+package org.cardano.foundation.voting.service.blockchain_state;
 
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.service.blockchain_state.BlockchainTransactionSubmissionService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-@Service
 @Slf4j
+@RequiredArgsConstructor
 public class CardanoSubmitApiBlockchainTransactionSubmissionService implements BlockchainTransactionSubmissionService {
 
-    @Autowired
-    private HttpClient httpClient;
+    private final HttpClient httpClient;
 
     @Value("${cardano.tx.submit.api.url}")
     private String cardanoSubmitApiUrl;

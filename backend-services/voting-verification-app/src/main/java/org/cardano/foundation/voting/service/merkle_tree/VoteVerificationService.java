@@ -65,7 +65,8 @@ public class VoteVerificationService {
 
         var vote = new Vote(voteVerificationRequest.getVoteCoseSignature(), voteVerificationRequest.getVoteCosePublicKey());
 
-        boolean isVerified = MerkleTree.verifyProof(HexUtil.decodeHexString(root.getMerkleRootHash()), vote, steps, VOTE_SERIALISER);
+        byte[] rootHash = decodeHexString(root.getMerkleRootHash());
+        boolean isVerified = MerkleTree.verifyProof(rootHash, vote, steps, VOTE_SERIALISER);
 
         return Either.right(isVerified);
     }

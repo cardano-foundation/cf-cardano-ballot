@@ -15,7 +15,7 @@ public class CreateEventCommand {
 
     private String id; // e.g. Voltaire_Pre_Ratification
 
-    private String team; // e.g. CF Team // TODO what about team spoofing - do we need that team has private / public key
+    private String team;
 
     @Builder.Default
     private boolean allowVoteChanging = false; // until merkle root is committed to the chain, we could allow vote changing

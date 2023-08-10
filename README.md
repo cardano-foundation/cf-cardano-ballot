@@ -17,6 +17,9 @@ Voltaire Voting Applications to be used by Cardano Community to cast CIP-1694 pr
 
 ## Running (Development)
 
+By default all backend apps are working with Cardano Pre-Production network.
+
+
 - create `.env` file on the same level as `.env.development`
 
 ```shell
@@ -55,6 +58,21 @@ SERVER_PORT=8888 ./gradlew bootRun
 npm run start
 ```
 
+# Developing locally with Yaci DevKit
+If you want to develop using Yaci-DevKit (https://github.com/bloxbean/yaci-devkit) you have to start the backend applications in the special YACI_DEV_KIT DEV mode.
+
+```shell
+export SPRING_CONFIG_LOCATION=classpath:/application.properties,classpath:/application-dev--yaci-dev-kit.properties
+export SPRING_PROFILES_ACTIVE=dev--yaci-dev-kit
+
+java -jar cf-voting-admin-app.jar
+```
+
+This will effectively load `application.properties` and `application-dev-yaci-dev-kit.properties` file from the classpath 
+but values / properties in `application-dev-yaci-dev-kit.properties` will override the ones in `application.properties`.
+
+On start up of the app, you can verify if the right profile has been used, there should be a message related to that at the beginning.
+
 ## Repository Structure
-- service - contains java backend code needed for the frontend
+- service - contains JAVA backend services
 - ui - contains React.JS frontend code to cast votes / display voting results

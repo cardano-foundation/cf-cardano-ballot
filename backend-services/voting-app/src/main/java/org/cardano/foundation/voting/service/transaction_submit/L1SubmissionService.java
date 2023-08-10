@@ -26,7 +26,7 @@ public class L1SubmissionService {
 
         if (txDataE.isEmpty()) {
             return Either.left(Problem.builder()
-                    .withTitle("TRANSACTION_SUBMISSION__FAILED")
+                    .withTitle("TRANSACTION_SUBMISSION_FAILED")
                     .withDetail("Reason:" + txDataE.getLeft().getDetail())
                     .build());
         }
@@ -34,7 +34,9 @@ public class L1SubmissionService {
 
         try {
             return Either.right(transactionSubmissionService.submitTransactionWithConfirmation(txData));
-        } catch (TimeoutException e) {
+        } catch (TimeoutException | InterruptedException e) {
+            log.warn("Transaction submitted but timed out waiting for confirmation...", e);
+
             return Either.left(Problem.builder()
                     .withTitle("TRANSACTION_SUBMISSION_TIMEOUT")
                     .withDetail("Transaction submitted but timed out waiting for confirmation...")

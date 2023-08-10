@@ -4,14 +4,14 @@ module.exports = function (app) {
   app.use(
     '/api/verification/verify-vote',
     createProxyMiddleware({
-      target: 'http://localhost:8888',
+      target: 'http://localhost:9091',
       changeOrigin: true,
     })
   );
   app.use(
     '/api',
     createProxyMiddleware({
-      target: 'http://localhost:8080',
+      target: 'http://localhost:9090',
       changeOrigin: true,
     })
   );

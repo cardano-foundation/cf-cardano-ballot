@@ -19,6 +19,6 @@ public interface TransactionSubmissionService {
      * @param txData
      * @return
      */
-    L1SubmissionData submitTransactionWithConfirmation(byte[] txData) throws TimeoutException;
+    L1SubmissionData submitTransactionWithConfirmation(byte[] txData) throws TimeoutException, InterruptedException;
 
 }

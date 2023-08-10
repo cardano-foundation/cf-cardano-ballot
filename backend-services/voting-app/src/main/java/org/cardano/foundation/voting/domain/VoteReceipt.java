@@ -18,7 +18,8 @@ public class VoteReceipt {
 
     private String proposal;
 
-    private String votingPower;
+    @Builder.Default
+    private Optional<String> votingPower = Optional.empty();
 
     private String voterStakingAddress;
 

@@ -25,7 +25,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 })
 @EnableTransactionManagement
 @EnableScheduling
-@EnableAsync
 @Slf4j
 public class VotingVerificationAppService {
 

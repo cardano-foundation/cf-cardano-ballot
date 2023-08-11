@@ -34,7 +34,9 @@ public class VoteResource {
     public ResponseEntity<?> castVote(@RequestBody @Valid SignedWeb3Request castVoteRequest) {
         return voteService.castVote(castVoteRequest)
                 .fold(problem -> {
-                            return ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem);
+                            return ResponseEntity
+                                    .status(Objects.requireNonNull(problem.getStatus()).getStatusCode())
+                                    .body(problem);
                         },
                         vote -> {
                             return ResponseEntity.ok().build();
@@ -46,7 +48,9 @@ public class VoteResource {
     public ResponseEntity<?> getVoteReceipt(@RequestBody @Valid SignedWeb3Request viewVoteReceiptRequest) {
         return voteService.voteReceipt(viewVoteReceiptRequest)
                 .fold(problem -> {
-                            return ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem);
+                            return ResponseEntity
+                                    .status(Objects.requireNonNull(problem.getStatus()).getStatusCode())
+                                    .body(problem);
                         },
                         voteReceipt -> {
                             return ResponseEntity.ok().body(voteReceipt);
@@ -58,10 +62,13 @@ public class VoteResource {
     public ResponseEntity<?> isVoteCastingStillPossible(@PathVariable String event, @PathVariable String vote) {
         return voteService.isVoteCastingStillPossible(event, vote)
                 .fold(problem -> {
-                            return ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem);
+                            return ResponseEntity
+                                    .status(Objects.requireNonNull(problem.getStatus()).getStatusCode())
+                                    .body(problem);
                         },
                         voteReceipt -> {
-                            return ResponseEntity.ok().body(voteReceipt);
+                            return ResponseEntity.ok()
+                                    .body(voteReceipt);
                         });
     }
 

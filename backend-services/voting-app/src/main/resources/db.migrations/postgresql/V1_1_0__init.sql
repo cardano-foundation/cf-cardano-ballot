@@ -5,8 +5,9 @@ CREATE TABLE event (
     team VARCHAR(255) NOT NULL,
     schema_version VARCHAR(255) NOT NULL,
     event_type INT NOT NULL,
-    allow_vote_changing BOOL, -- TODO default false
-    category_results_while_voting BOOL, -- TODO default false
+    allow_vote_changing BOOL,
+    category_results_while_voting BOOL,
+    high_level_results_while_voting BOOL
 
     voting_power_asset INT,
 
@@ -93,7 +94,7 @@ CREATE TABLE vote_merkle_proof (
    l1_transaction_hash VARCHAR(255) NOT NULL, -- transaction hash as hex string
    proof_items_json json NOT NULL, -- json representing actual merkle proof
    absolute_slot BIGINT NOT NULL,
-   invalidated BOOL NOT NULL,
+   invalidated BOOL NOT NULL, -- TODO false by default
 
    created_at TIMESTAMP WITHOUT TIME ZONE,
    updated_at TIMESTAMP WITHOUT TIME ZONE,

@@ -179,6 +179,9 @@ public class CustomMetadataProcessor {
         event.setId(eventRegistration.getName());
         event.setVersion(event.getVersion());
         event.setTeam(eventRegistration.getTeam());
+        event.setCategoryResultsWhileVoting(eventRegistration.isCategoryResultsWhileVoting());
+        event.setHighLevelResultsWhileVoting(eventRegistration.isHighLevelResultsWhileVoting());
+
         event.setVersion(SchemaVersion.fromText(eventRegistration.getSchemaVersion()).orElseThrow());
 
         event.setStartEpoch(eventRegistration.getStartEpoch());

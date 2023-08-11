@@ -22,6 +22,8 @@ public class EventRegistrationEnvelope {
 
     private boolean categoryResultsWhileVoting;
 
+    private boolean highLevelResultsWhileVoting;
+
     private VotingEventType votingEventType;
 
     @Builder.Default

@@ -1,31 +1,23 @@
 package org.cardano.foundation.voting.service.blockchain_state;
 
+import com.bloxbean.cardano.client.common.ADAConversionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import java.util.Random;
 
 @Service
 @Slf4j
-public class DummyBlockchainDataStakePoolService implements BlockchainDataStakePoolService {
+public class FixedBlockchainDataStakePoolService implements BlockchainDataStakePoolService {
 
     @Override
     public Optional<Long> getStakeAmount(int epochNo, String stakeAddress) {
-        var r = new Random();
-
-        var randomStake = Math.abs(r.nextLong(45_000_000L));
-
-        return Optional.of(randomStake);
+        return Optional.of(ADAConversionUtil.adaToLovelace(1000L).longValue());
     }
 
     @Override
     public Optional<Long> getBalanceAmount(int epochNo, String stakeAddress) {
-        var r = new Random();
-
-        var randomStake = Math.abs(r.nextLong(45_000_000L));
-
-        return Optional.of(randomStake);
+        return Optional.of(ADAConversionUtil.adaToLovelace(1000).longValue());
     }
 
 }

@@ -24,6 +24,9 @@ public class CreateEventCommand {
     private boolean categoryResultsWhileVoting = false; // until voting is finished, do we actually allow people to see results within category?
 
     @Builder.Default
+    private boolean highLevelResultsWhileVoting = false; // until voting is finished are high level aggregates actually visible (e.g. total votes count)
+
+    @Builder.Default
     private VotingEventType votingEventType = VotingEventType.STAKE_BASED;
 
     @Builder.Default
@@ -45,6 +48,6 @@ public class CreateEventCommand {
     private Optional<Integer> snapshotEpoch = Optional.empty();
 
     @Builder.Default
-    private SchemaVersion version = SchemaVersion.V1;
+    private SchemaVersion schemaVersion = SchemaVersion.V1;
 
 }

@@ -14,7 +14,7 @@ import java.util.List;
 @Primary
 public class CustomMetadataStorage extends TxMetadataStorageImpl {
 
-    @Value("${l1.transaction.metadata.label:12345}")
+    @Value("${l1.transaction.metadata.label}")
     private long metadataLabel;
 
     public CustomMetadataStorage(TxMetadataLabelRepository metadataLabelRepository,

@@ -15,7 +15,7 @@ public class MetadataEventHandler {
     @Autowired
     private CustomMetadataProcessor customMetadataProcessor;
 
-    @Value("${l1.transaction.metadata.label:12345}")
+    @Value("${l1.transaction.metadata.label}")
     private long metadataLabel;
 
     @EventListener

@@ -52,7 +52,7 @@ public class L1TransactionCreator {
     @Qualifier("organiser_account")
     private Account organiserAccount;
 
-    @Value("${l1.transaction.metadata.label:12345}")
+    @Value("${l1.transaction.metadata.label}")
     private long metadataLabel;
 
     public Either<Problem, byte[]> submitMerkleCommitments(List<L1MerkleCommitment> l1MerkleCommitments) {

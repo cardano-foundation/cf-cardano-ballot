@@ -42,7 +42,7 @@ public class CustomMetadataService {
     @Autowired
     private EventRepository eventRepository;
 
-    @Value("${l1.transaction.metadata.label:12345}")
+    @Value("${l1.transaction.metadata.label}")
     private long metadataLabel;
 
     @Autowired

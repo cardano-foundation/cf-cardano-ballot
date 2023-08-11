@@ -23,7 +23,7 @@ public class ProcessRecentMetadataJob implements Runnable {
     @Value("${app.ingestion.strategy:PULL}")
     private IngestionStrategy ingestionStrategy;
 
-    @Value("${l1.transaction.metadata.label:12345}")
+    @Value("${l1.transaction.metadata.label}")
     private long metadataLabel;
 
     @Override

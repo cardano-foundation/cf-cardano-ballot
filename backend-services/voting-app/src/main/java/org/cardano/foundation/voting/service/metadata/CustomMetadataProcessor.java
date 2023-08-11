@@ -57,7 +57,7 @@ public class CustomMetadataProcessor {
     @Value("${bind.on.event.ids}")
     private List<String> bindOnEventIds;
 
-    @Value("${l1.transaction.metadata.label:12345}")
+    @Value("${l1.transaction.metadata.label}")
     private long metadataLabel;
 
     public void processMetadataEvents(List<TransactionMetadataLabelCbor> onChainMetadataEvents) {

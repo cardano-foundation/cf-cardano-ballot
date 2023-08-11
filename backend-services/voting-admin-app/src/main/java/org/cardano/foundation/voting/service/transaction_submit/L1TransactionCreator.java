@@ -49,7 +49,7 @@ public class L1TransactionCreator {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Value("${l1.transaction.metadata.label:12345}")
+    @Value("${l1.transaction.metadata.label}")
     private int metadataLabel;
 
     public byte[] submitEvent(CreateEventCommand event) {

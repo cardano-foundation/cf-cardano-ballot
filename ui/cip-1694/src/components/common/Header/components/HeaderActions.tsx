@@ -42,6 +42,7 @@ export const HeaderActions = ({
             container
           >
             <Button
+              data-testid="vote-link"
               onClick={onClick}
               component={Link}
               to={ROUTES.VOTE}
@@ -57,6 +58,7 @@ export const HeaderActions = ({
               container
             >
               <Button
+                data-testid="leaderboard-link"
                 onClick={onClick}
                 sx={{ xs: { width: '100% !important' }, md: { width: 'auto !important' } }}
                 component={Link}

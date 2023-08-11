@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
-import IntroductionPage from 'pages/Introduction/Introduction';
+import { IntroductionPage } from 'pages/Introduction/Introduction';
 import VotePage from 'pages/Vote/Vote';
 import { Leaderboard } from 'pages/Leaderboard/Leaderboard';
 
@@ -12,7 +12,7 @@ export const ROUTES = {
   LEADERBOARD: '/leaderboard',
 };
 
-export const PageRouter = () => (
+export const PageRoutes = () => (
   <Routes>
     <Route
       path={ROUTES.INTRO}

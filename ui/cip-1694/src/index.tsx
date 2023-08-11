@@ -6,10 +6,11 @@ import { ThemeProvider } from '@mui/material/styles';
 import reportWebVitals from './reportWebVitals';
 import { App } from './App';
 import theme from './common/styles/theme';
-import { store } from './common/store/index';
+import { setupStore } from './common/store/index';
 
 const container = document.getElementById('root')!;
 const root = createRoot(container);
+const store = setupStore();
 
 root.render(
   <Provider store={store}>

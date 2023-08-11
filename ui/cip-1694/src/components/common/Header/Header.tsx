@@ -23,6 +23,7 @@ export const Header = () => {
   return (
     <>
       <Grid
+        data-testid="header"
         container
         direction={{ xs: 'column', md: 'row' }}
         justifyContent={{ xs: 'center', md: 'space-between' }}
@@ -44,6 +45,7 @@ export const Header = () => {
           marginTop={{ xs: '0px', md: '0px' }}
         >
           <Typography
+            data-testid="header-logo"
             lineHeight={{ sx: '23px', md: '29px' }}
             fontSize={{ sx: '20px', md: '24px' }}
             onClick={handleLogoClick}

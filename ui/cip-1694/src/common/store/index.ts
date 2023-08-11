@@ -1,11 +1,18 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, PreloadedState, combineReducers } from '@reduxjs/toolkit';
 import userSessionReducer from './userSlice';
-import { State } from './types';
 
-export const store = configureStore<State>({
-  reducer: { user: userSessionReducer },
-  devTools: process.env.NODE_ENV !== 'production',
-});
+const rootReducer = combineReducers({
+  user: userSessionReducer
+})
 
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
+export const setupStore = (preloadedState?: PreloadedState<RootState>) => {
+  return configureStore({
+    reducer: rootReducer,
+    preloadedState,
+    devTools: process.env.NODE_ENV !== 'production',
+  });
+};
+
+export type RootState = ReturnType<typeof rootReducer>
+export type AppStore = ReturnType<typeof setupStore>
+export type AppDispatch = AppStore['dispatch']

@@ -35,9 +35,10 @@ public class CFVotingAdminCommands {
                 .votingPowerAsset(Optional.of(ADA))
                 .team("CF & IOG")
                 .votingEventType(VotingEventType.STAKE_BASED)
-                .version(SchemaVersion.V1)
+                .schemaVersion(SchemaVersion.V1)
                 .allowVoteChanging(false)
                 .categoryResultsWhileVoting(false)
+                .highLevelResultsWhileVoting(false)
                 .build();
 
         l1SubmissionService.submitEvent(createEventCommand);
@@ -50,17 +51,17 @@ public class CFVotingAdminCommands {
         log.info("Creating CIP-1694 category...");
 
         Proposal yesProposal = Proposal.builder()
-                .id(java.util.UUID.randomUUID().toString())
+                .id("e42f820f-5852-4c03-9d42-8cf4a4044a51")
                 .name("YES")
                 .build();
 
         Proposal noProposal = Proposal.builder()
-                .id(java.util.UUID.randomUUID().toString())
+                .id("3b40644b-3f6f-4c91-945e-4d612fa4f6cf")
                 .name("NO")
                 .build();
 
         Proposal abstainProposal = Proposal.builder()
-                .id(java.util.UUID.randomUUID().toString())
+                .id("a8f60f84-58bf-47b3-9582-5272fbdc6ff6")
                 .name("ABSTAIN")
                 .build();
 

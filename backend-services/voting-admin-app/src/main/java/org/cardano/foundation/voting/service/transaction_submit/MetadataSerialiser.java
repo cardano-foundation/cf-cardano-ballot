@@ -1,6 +1,7 @@
 package org.cardano.foundation.voting.service.transaction_submit;
 
 import com.bloxbean.cardano.client.metadata.MetadataBuilder;
+import com.bloxbean.cardano.client.metadata.MetadataList;
 import com.bloxbean.cardano.client.metadata.MetadataMap;
 import org.cardano.foundation.voting.domain.CreateCategoryCommand;
 import org.cardano.foundation.voting.domain.CreateEventCommand;
@@ -24,7 +25,7 @@ public class MetadataSerialiser {
         map.put("name", createEventCommand.getId());
         map.put("team", createEventCommand.getTeam());
         map.put("votingEventType", createEventCommand.getVotingEventType().name());
-        map.put("schemaVersion", createEventCommand.getVersion().getSemVer());
+        map.put("schemaVersion", createEventCommand.getSchemaVersion().getSemVer());
         map.put("creationSlot", BigInteger.valueOf(slot));
 
         if (List.of(STAKE_BASED, BALANCE_BASED).contains(createEventCommand.getVotingEventType())) {
@@ -47,6 +48,7 @@ public class MetadataSerialiser {
         var optionsMap = MetadataBuilder.createMap();
         optionsMap.put("allowVoteChanging", toBigInteger(createEventCommand.isAllowVoteChanging()));
         optionsMap.put("categoryResultsWhileVoting", toBigInteger(createEventCommand.isCategoryResultsWhileVoting()));
+        optionsMap.put("highLevelResultsWhiteVoting", toBigInteger(createEventCommand.isHighLevelResultsWhileVoting()));
 
         return optionsMap;
     }
@@ -67,6 +69,12 @@ public class MetadataSerialiser {
             throw new RuntimeException("Category " + createCategoryCommand.getId() + " has no proposals!");
         }
 
+        map.put("proposals", createProposals(createCategoryCommand));
+
+        return map;
+    }
+
+    private static MetadataList createProposals(CreateCategoryCommand createCategoryCommand) {
         var proposalsList = MetadataBuilder.createList();
 
         for (var proposal : createCategoryCommand.getProposals()) {
@@ -81,10 +89,7 @@ public class MetadataSerialiser {
 
             proposalsList.add(proposalMap);
         }
-
-        map.put("proposals", proposalsList);
-
-        return map;
+        return proposalsList;
     }
 
     private static MetadataMap createCategoryOptions(CreateCategoryCommand createCategoryCommand) {

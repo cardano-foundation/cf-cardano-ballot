@@ -333,6 +333,8 @@ public class CborService {
 
             eventRegistrationEnvelopeBuilder.allowVoteChanging(fromBigInteger(((BigInteger)options.get("allowVoteChanging"))));
             eventRegistrationEnvelopeBuilder.categoryResultsWhileVoting(fromBigInteger(((BigInteger)options.get("categoryResultsWhileVoting"))));
+            eventRegistrationEnvelopeBuilder.highLevelResultsWhileVoting(fromBigInteger(((BigInteger)options.get("highLevelResultsWhiteVoting"))));
+
             eventRegistrationEnvelopeBuilder.schemaVersion((String)payload.get("schemaVersion"));
 
             return Either.right(eventRegistrationEnvelopeBuilder.build());

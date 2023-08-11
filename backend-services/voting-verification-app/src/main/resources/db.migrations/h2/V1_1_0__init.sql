@@ -5,9 +5,9 @@ CREATE TABLE event (
     team VARCHAR(256) NOT NULL,
     schema_version VARCHAR(256) NOT NULL,
     event_type INT NOT NULL,
-    allow_vote_changing BOOL, -- TODO default false
-    category_results_while_voting BOOL, -- TODO default false
-
+    allow_vote_changing BOOL,
+    category_results_while_voting BOOL,
+    high_level_results_while_voting BOOL,
     voting_power_asset INT,
 
     start_epoch INT,

@@ -42,6 +42,15 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
         }
         var e = maybeEvent.orElseThrow();
 
+        if (!expirationService.isEventFinished(e) && !e.isHighLevelResultsWhileVoting()) {
+            return Either.left(Problem.builder()
+                    .withTitle("VOTING_RESULTS_NOT_AVAILABLE")
+                    .withDetail("High level voting results not available until voting event finishes.")
+                    .withStatus(FORBIDDEN)
+                    .build()
+            );
+        }
+
         var votes = voteRepository.countAllByEventId(event);
         if (votes.isEmpty()) {
             return Either.left(Problem.builder()
@@ -92,7 +101,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
         if (!expirationService.isEventFinished(e) && !e.isCategoryResultsWhileVoting()) {
             return Either.left(Problem.builder()
                     .withTitle("VOTING_RESULTS_NOT_AVAILABLE")
-                    .withDetail("Voting results not yet available, category:" + category)
+                    .withDetail("Voting results not available until event finishes, category:" + category)
                     .withStatus(FORBIDDEN)
                     .build()
             );

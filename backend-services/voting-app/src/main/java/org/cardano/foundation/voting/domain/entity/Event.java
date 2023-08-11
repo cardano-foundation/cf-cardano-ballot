@@ -1,9 +1,7 @@
 package org.cardano.foundation.voting.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.cardano.foundation.voting.domain.SchemaVersion;
 import org.cardano.foundation.voting.domain.VotingEventType;
 import org.cardano.foundation.voting.domain.VotingPowerAsset;
@@ -23,14 +21,20 @@ import static org.cardano.foundation.voting.domain.VotingEventType.STAKE_BASED;
 @AllArgsConstructor
 public class Event extends AbstractTimestampEntity {
 
+    @Getter
+    @Setter
     @Column(nullable = false)
     @Id
     private String id; // e.g. Voltaire_Pre_Ratification
 
     @Column(nullable = false)
+    @Getter
+    @Setter
     private String team; // e.g. CF Team
 
     @Column(name = "event_type", nullable = false)
+    @Getter
+    @Setter
     private VotingEventType votingEventType;
 
     @Column(name = "voting_power_asset")
@@ -43,16 +47,15 @@ public class Event extends AbstractTimestampEntity {
     @Builder.Default
     private Boolean allowVoteChanging = false;
 
-//  TODO CF Summit 2023
-//  @Column(name = "general_results_while_voting")
-//  @Nullable
-//  @Builder.Default
-//  private Boolean globalResultsWhileVoting = false;
-
     @Column(name = "category_results_while_voting")
     @Nullable
     @Builder.Default
     private Boolean categoryResultsWhileVoting = false;
+
+    @Column(name = "high_level_results_while_voting")
+    @Nullable
+    @Builder.Default
+    private Boolean highLevelResultsWhileVoting = false;
 
     @Column(name = "start_epoch")
     // startEpoch is only needed for stake based voting events
@@ -61,10 +64,12 @@ public class Event extends AbstractTimestampEntity {
 
     @Column(name = "end_epoch")
     // endEpoch is only needed for stake based voting events
+    @Nullable
     private Integer endEpoch;
 
     @Column(name = "start_slot")
     //startSlot is only needed for user based voting events
+    @Nullable
     private Long startSlot;
 
     @Column(name = "end_slot")
@@ -78,6 +83,8 @@ public class Event extends AbstractTimestampEntity {
     private Integer snapshotEpoch;
 
     @Column(name = "schema_version")
+    @Getter
+    @Setter
     private SchemaVersion version;
 
     @OneToMany(
@@ -87,37 +94,17 @@ public class Event extends AbstractTimestampEntity {
             orphanRemoval = true
     )
     @Builder.Default
+    @Getter
+    @Setter
     private List<Category> categories = new ArrayList<>();
 
     @Column(name = "absolute_slot")
+    @Getter
+    @Setter
     private long absoluteSlot;
 
     public Optional<Category> findCategoryByName(String categoryName) {
         return categories.stream().filter(category -> category.getId().equals(categoryName)).findFirst();
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getTeam() {
-        return team;
-    }
-
-    public void setTeam(String team) {
-        this.team = team;
-    }
-
-    public VotingEventType getVotingEventType() {
-        return votingEventType;
-    }
-
-    public void setVotingEventType(VotingEventType votingEventType) {
-        this.votingEventType = votingEventType;
     }
 
     public Optional<VotingPowerAsset> getVotingPowerAsset() {
@@ -142,6 +129,14 @@ public class Event extends AbstractTimestampEntity {
 
     public void setCategoryResultsWhileVoting(boolean categoryResultsWhileVoting) {
         this.categoryResultsWhileVoting = categoryResultsWhileVoting;
+    }
+
+    public boolean isHighLevelResultsWhileVoting() {
+        return Optional.ofNullable(highLevelResultsWhileVoting).orElse(false);
+    }
+
+    public void setHighLevelResultsWhileVoting(boolean highLevelResultsWhileVoting) {
+        this.highLevelResultsWhileVoting = highLevelResultsWhileVoting;
     }
 
     public Optional<Integer> getStartEpoch() {
@@ -184,22 +179,6 @@ public class Event extends AbstractTimestampEntity {
         this.snapshotEpoch = snapshotEpoch.orElse(null);
     }
 
-    public SchemaVersion getVersion() {
-        return version;
-    }
-
-    public void setVersion(SchemaVersion version) {
-        this.version = version;
-    }
-
-    public List<Category> getCategories() {
-        return categories;
-    }
-
-    public void setCategories(List<Category> categories) {
-        this.categories = categories;
-    }
-
     public boolean isValid() {
         if (List.of(STAKE_BASED, BALANCE_BASED).contains(votingEventType)) {
             if (getStartEpoch().isEmpty() || getEndEpoch().isEmpty() || getSnapshotEpoch().isEmpty() || getVotingPowerAsset().isEmpty()) {
@@ -221,14 +200,6 @@ public class Event extends AbstractTimestampEntity {
         }
 
         return true;
-    }
-
-    public void setAbsoluteSlot(long absoluteSlot) {
-        this.absoluteSlot = absoluteSlot;
-    }
-
-    public long getAbsoluteSlot() {
-        return absoluteSlot;
     }
 
 }

@@ -1,10 +1,7 @@
 package org.cardano.foundation.voting.domain.entity;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 @NoArgsConstructor
@@ -14,6 +11,7 @@ import lombok.*;
 @Setter
 @Builder
 @Table(name = "vote_merkle_proof")
+@ToString
 public class VoteMerkleProof extends AbstractTimestampEntity {
 
     @Id
@@ -29,7 +27,8 @@ public class VoteMerkleProof extends AbstractTimestampEntity {
     @Column(name = "l1_transaction_hash", nullable = false)
     private String l1TransactionHash;
 
-    @Column(name = "proof_items_json", nullable = false)
+    // TODO this could be more fancy and be in fact JSON / JSONB type: https://developer.okta.com/blog/2019/02/20/spring-boot-with-postgresql-flyway-jsonb
+    @Column(name = "proof_items_json", nullable = false, columnDefinition = "text", length = 1000000)
     private String proofItemsJson;
 
     @Column(name = "invalidated") // when there is a rollback event we soft delete it, invalidate the merkle proof

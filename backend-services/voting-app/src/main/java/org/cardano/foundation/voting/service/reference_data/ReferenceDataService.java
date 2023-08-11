@@ -93,13 +93,14 @@ public class ReferenceDataService {
     @Timed(value = "service.reference.rollback", percentiles = {0.3, 0.5, 0.95})
     @Transactional
     public void rollbackReferenceDataAfterSlot(long slot) {
-        eventRepository.deleteAllAfterSlot(slot);
-        categoryRepository.deleteAllAfterSlot(slot);
         proposalRepository.deleteAllAfterSlot(slot);
-
-        eventRepository.flush();
-        categoryRepository.flush();
         proposalRepository.flush();
+
+        categoryRepository.deleteAllAfterSlot(slot);
+        categoryRepository.flush();
+
+        eventRepository.deleteAllAfterSlot(slot);
+        eventRepository.flush();
     }
 
 }

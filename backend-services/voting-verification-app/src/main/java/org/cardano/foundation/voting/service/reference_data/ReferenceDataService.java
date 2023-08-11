@@ -95,13 +95,14 @@ public class ReferenceDataService {
     public void rollbackReferenceDataAfterSlot(long slot) {
         log.info("Rollback reference data after slot:{}", slot);
 
-        eventRepository.deleteAllAfterSlot(slot);
-        categoryRepository.deleteAllAfterSlot(slot);
         proposalRepository.deleteAllAfterSlot(slot);
-
-        eventRepository.flush();
-        categoryRepository.flush();
         proposalRepository.flush();
+
+        categoryRepository.deleteAllAfterSlot(slot);
+        categoryRepository.flush();
+
+        eventRepository.deleteAllAfterSlot(slot);
+        eventRepository.flush();
     }
 
 }

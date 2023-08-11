@@ -284,8 +284,6 @@ public class DefaultVoteService implements VoteService {
 
         var proposalIdOrName = cip93VoteEnvelope.getData().getProposal();
 
-        log.info("Category GDPR protection: {}", category.isGdprProtection());
-
         Proposal proposal = null;
         if (category.isGdprProtection()) {
             var maybeProposal = referenceDataService.findProposalById(proposalIdOrName);

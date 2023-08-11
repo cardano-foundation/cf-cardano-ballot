@@ -22,7 +22,7 @@ public class VoteCommitmentJob implements Runnable {
 
     @Override
     @Scheduled(cron = "${vote.commitment.cron.expression}")
-    @Async
+    @Async("asyncExecutor")
     public void run() {
         if (!isVoteCommitmentEnabled) {
             log.info("L1 votes commitment disabled on this instance.");

@@ -52,7 +52,7 @@ public class ExpirationService {
             return false;
         }
 
-        ChainTip chainTip = chainTipE.get();
+        var chainTip = chainTipE.get();
         var currentAbsoluteSlot = chainTip.getAbsoluteSlot();
         var epochNo = chainTip.getEpochNo();
 
@@ -70,7 +70,7 @@ public class ExpirationService {
             return false;
         }
 
-        ChainTip chainTip = chainTipE.get();
+        var chainTip = chainTipE.get();
         var currentAbsoluteSlot = chainTip.getAbsoluteSlot();
         var epochNo = chainTip.getEpochNo();
 

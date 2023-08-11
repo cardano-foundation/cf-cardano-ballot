@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor
-public class BackendServiceTransactionSubmissionService implements BlockchainTransactionSubmissionService {
+public class BackendServiceBlockchainTransactionSubmissionService implements BlockchainTransactionSubmissionService {
 
     private final BackendService backendService;
 

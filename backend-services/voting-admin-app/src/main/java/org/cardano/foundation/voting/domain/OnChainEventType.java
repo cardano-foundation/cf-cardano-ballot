@@ -5,6 +5,6 @@ public enum OnChainEventType {
     COMMITMENTS,
     EVENT_REGISTRATION,
     CATEGORY_REGISTRATION,
-    VOTE
+    VOTE_TALLY // TODO
 
 }

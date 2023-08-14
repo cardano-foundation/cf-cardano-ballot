@@ -68,7 +68,7 @@ CREATE TABLE vote (
    category_id VARCHAR(255) NOT NULL,
    proposal_id VARCHAR(255) NOT NULL,
    voter_staking_address VARCHAR(255) NOT NULL,
-   cose_signature text NOT NULL,
+   cose_signature TEXT NOT NULL,
    cose_public_key VARCHAR(255),
    voting_power BIGINT,
    voted_at_slot BIGINT NOT NULL,
@@ -92,9 +92,9 @@ CREATE TABLE vote_merkle_proof (
    event_id VARCHAR(255) NOT NULL,
    root_hash VARCHAR(255) NOT NULL, -- merkle root hash as hex string
    l1_transaction_hash VARCHAR(255) NOT NULL, -- transaction hash as hex string
-   proof_items_json json NOT NULL, -- json representing actual merkle proof
+   proof_items_json TEXT NOT NULL, -- json blob representing actual merkle proof
    absolute_slot BIGINT NOT NULL,
-   invalidated BOOL NOT NULL, -- TODO false by default
+   invalidated BOOL NOT NULL,
 
    created_at TIMESTAMP WITHOUT TIME ZONE,
    updated_at TIMESTAMP WITHOUT TIME ZONE,

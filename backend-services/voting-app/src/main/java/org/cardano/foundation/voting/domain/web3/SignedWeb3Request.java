@@ -1,10 +1,7 @@
 package org.cardano.foundation.voting.domain.web3;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Optional;
 
@@ -14,6 +11,7 @@ import java.util.Optional;
 @Setter
 @AllArgsConstructor
 @Builder
+@ToString
 public class SignedWeb3Request {
 
     @NotBlank

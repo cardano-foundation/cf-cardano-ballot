@@ -7,6 +7,7 @@ import com.bloxbean.cardano.client.crypto.Blake2bUtil;
 import com.bloxbean.cardano.client.metadata.cbor.CBORMetadata;
 import com.bloxbean.cardano.client.metadata.cbor.CBORMetadataMap;
 import com.bloxbean.cardano.client.util.HexUtil;
+import jakarta.annotation.PostConstruct;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.OnChainEventType;
@@ -59,6 +60,11 @@ public class CustomMetadataProcessor {
 
     @Value("${l1.transaction.metadata.label:12345}")
     private long metadataLabel;
+
+    @PostConstruct
+    public void init() {
+        log.info("bind.on.event.ids:{}", bindOnEventIds);
+    }
 
     public void processMetadataEvents(List<TransactionMetadataLabelCbor> onChainMetadataEvents) {
         log.info("On chain events:{}", onChainMetadataEvents);

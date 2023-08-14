@@ -26,9 +26,10 @@ public class ProcessRecentMetadataJob implements Runnable {
     @Value("${l1.transaction.metadata.label:12345}")
     private long metadataLabel;
 
+
     @Override
     @Scheduled(fixedDelayString = "${metadata.pooling.fixed.delay.string}", initialDelayString = "${metadata.pooling.initial.delay.string}")
-    @Async
+    @Async("asyncExecutor")
     public void run() {
         switch (ingestionStrategy) {
             case PULL -> {

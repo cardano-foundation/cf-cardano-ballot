@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
-import org.zalando.problem.Problem;
 
 import java.util.List;
 
@@ -42,7 +41,7 @@ public class VoteCommitmentService {
     @Autowired
     private MerkleProofSerdeService merkleProofSerdeService;
 
-    @Async
+    @Async("asyncExecutor")
     public void processVotesForAllEvents() {
         var l1MerkleCommitments = getL1MerkleCommitments();
         if (l1MerkleCommitments.isEmpty()) {
@@ -79,7 +78,9 @@ public class VoteCommitmentService {
         return referenceDataService.findAllActiveEvents().stream()
                 .map(event -> {
                     // TODO caching or paging or both? Maybe we use Redis???
+                    log.info("Loading votes from db...");
                     var allVotes = voteService.findAll(event);
+                    log.info("Loaded votes, count:{}", allVotes.size());
 
                     var root = MerkleTree.fromList(allVotes, VOTE_SERIALISER);
 

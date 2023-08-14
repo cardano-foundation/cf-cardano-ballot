@@ -24,12 +24,14 @@ public class AdminResource {
     private CustomMetadataService customMetadataService;
 
     @Autowired
-    @Qualifier("threadPoolTaskExecutor")
+    @Qualifier("taskExecutor")
     private Executor executor;
 
     @RequestMapping(value = "/full-metadata-scan", method = POST, produces = "application/json")
     public ResponseEntity<?> processAllMetadataEvents(@RequestBody @Valid SignedWeb3Request fullMetadataScanRequest) {
         log.info("Received full metadata scan signal...");
+
+        // TODO ideally we should first do authentication then execute the task
 
         executor.execute(() -> {
             var result = customMetadataService.processAllMetadataEvents(fullMetadataScanRequest);

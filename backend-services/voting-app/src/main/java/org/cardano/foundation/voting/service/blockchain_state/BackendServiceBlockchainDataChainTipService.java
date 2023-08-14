@@ -27,7 +27,8 @@ public class BackendServiceBlockchainDataChainTipService implements BlockchainDa
 
                 return Either.right(ChainTip.builder()
                         .hash(block.getHash())
-                        .epochNo(Optional.ofNullable(block.getEpoch()).orElse(-1)) // on Yaci-DevKit there is no epoch for now
+                        // TODO request for Satya to have epoch on block
+                        .epochNo(Optional.ofNullable(block.getEpoch()).orElse(2)) // on Yaci-DevKit there is no epoch for now
                         .absoluteSlot(block.getSlot())
                         .build());
             }

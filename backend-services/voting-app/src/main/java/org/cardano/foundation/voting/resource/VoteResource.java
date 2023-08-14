@@ -32,6 +32,8 @@ public class VoteResource {
     @RequestMapping(value = "/cast", method = POST, produces = "application/json")
     @Timed(value = "resource.vote.cast", percentiles = { 0.3, 0.5, 0.95 })
     public ResponseEntity<?> castVote(@RequestBody @Valid SignedWeb3Request castVoteRequest) {
+        log.info("Casting vote: {}", castVoteRequest);
+
         return voteService.castVote(castVoteRequest)
                 .fold(problem -> {
                             return ResponseEntity

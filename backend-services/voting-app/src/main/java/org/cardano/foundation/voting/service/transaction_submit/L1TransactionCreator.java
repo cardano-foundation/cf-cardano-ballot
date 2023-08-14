@@ -75,7 +75,8 @@ public class L1TransactionCreator {
         var hashedData = Blake2bUtil.blake2bHash224(data);
 
         DataSignature dataSignature = CIP30DataSigner.INSTANCE.signData(
-                stakeAddressAccount.getBytes(), hashedData,
+                stakeAddressAccount.getBytes(),
+                hashedData,
                 organiserAccount.stakeHdKeyPair().getPrivateKey().getKeyData(),
                 organiserAccount.stakeHdKeyPair().getPublicKey().getKeyData()
         );

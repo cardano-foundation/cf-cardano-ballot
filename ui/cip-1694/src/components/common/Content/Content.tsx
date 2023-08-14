@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Box, debounce } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ConnectWalletModal } from 'components/ConnectWalletModal/ConnectWalletModal';
-import { PageRouter } from 'common/routes';
+import { PageRoutes } from 'common/routes';
 import { RootState } from 'common/store';
 import { setIsConnectWalletModalVisible } from 'common/store/userSlice';
 import styles from './Content.module.scss';
@@ -26,7 +26,7 @@ export default function Content() {
   return (
     <Box className={styles.content}>
       <CssBaseline />
-      <PageRouter />
+      <PageRoutes />
       <ConnectWalletModal
         openStatus={isConnectWalletModalVisible}
         onCloseFn={() => {

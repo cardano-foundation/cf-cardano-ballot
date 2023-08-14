@@ -235,7 +235,10 @@ const Vote = () => {
 
   return (
     <>
-      <div className={styles.vote}>
+      <div
+        className={styles.vote}
+        data-testid="vote-page"
+      >
         <Grid
           paddingTop={{ xs: '20px', md: '30px' }}
           container

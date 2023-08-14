@@ -10,22 +10,27 @@ import {
   VoteReceipt,
 } from '../../types/backend-services-types';
 
+export const CAST_VOTE_URL = `${env.APP_SERVER_URL}/api/vote/cast`;
+export const VOTE_RECEIPT_URL = `${env.APP_SERVER_URL}/api/vote/receipt`;
+export const BLOCKCHAIN_TIP_URL = `${env.APP_SERVER_URL}/api/blockchain/tip`;
+export const VOTING_POWER_URL = `${env.APP_SERVER_URL}/api/account`;
+
 export const castAVoteWithDigitalSignature = async (jsonRequest: SignedWeb3Request) =>
   await doRequest<Problem | Vote>(
     HttpMethods.POST,
-    env.CAST_VOTE_URL,
+    CAST_VOTE_URL,
     DEFAULT_CONTENT_TYPE_HEADERS,
     JSON.stringify(jsonRequest)
   );
 
 export const getSlotNumber = async () => {
-  return await doRequest<ChainTip>(HttpMethods.GET, env.BLOCKCHAIN_TIP_URL, DEFAULT_CONTENT_TYPE_HEADERS);
+  return await doRequest<ChainTip>(HttpMethods.GET, BLOCKCHAIN_TIP_URL, DEFAULT_CONTENT_TYPE_HEADERS);
 };
 
 export const getVoteReceipt = async (jsonRequest: SignedWeb3Request) => {
   return await doRequest<Problem | VoteReceipt>(
     HttpMethods.POST,
-    env.VOTE_RECEIPT_URL,
+    VOTE_RECEIPT_URL,
     DEFAULT_CONTENT_TYPE_HEADERS,
     JSON.stringify(jsonRequest)
   );
@@ -34,7 +39,7 @@ export const getVoteReceipt = async (jsonRequest: SignedWeb3Request) => {
 export const getVotingPower = async (eventId: Event['id'], stakeAddress: string) => {
   return await doRequest<Account>(
     HttpMethods.GET,
-    `${env.VOTING_POWER_URL}/${eventId}/${stakeAddress}`,
+    `${VOTING_POWER_URL}/${eventId}/${stakeAddress}`,
     DEFAULT_CONTENT_TYPE_HEADERS
   );
 };

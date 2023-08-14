@@ -21,6 +21,11 @@
     "preserveConstEnums": true,
     "sourceMap": true,
     "emitDecoratorMetadata": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "paths": {
+      "common/*": ["./common/*"],
+      "src/*": ["./src/*"]
+    }
   }
 }

@@ -1,4 +1,3 @@
-import 'swiper/css/navigation';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -15,13 +14,14 @@ import { SlideProps } from './Slides.types';
 import styles from './Slides.module.scss';
 
 export const Slides = ({ items }: SlideProps) => {
-  const event = useSelector((state: RootState) => state.user.event)
+  const event = useSelector((state: RootState) => state.user.event);
   const eventHasntStarted = !event?.active && !event?.finished;
   const [swiper, setSwiper] = useState<SwiperClass | undefined>(undefined);
   const [activeIndex, setActiveIndex] = useState(0);
 
   return (
     <Box
+      data-testid="introduction-page"
       margin={{
         xs: '0px',
         md: '43px 0px',
@@ -68,6 +68,7 @@ export const Slides = ({ items }: SlideProps) => {
                   <Typography
                     variant="h2"
                     className={styles.title}
+                    data-testid="event-title"
                     fontSize={{
                       xs: '28px',
                       md: '56px',
@@ -99,6 +100,7 @@ export const Slides = ({ items }: SlideProps) => {
                   <Typography
                     variant="body1"
                     className={styles.description}
+                    data-testid="event-description"
                     marginBottom={{
                       xs: '25px',
                       md: '40px',
@@ -111,6 +113,7 @@ export const Slides = ({ items }: SlideProps) => {
                     component={Link}
                     variant="contained"
                     className={styles.button}
+                    data-testid="event-cta"
                     to={{ pathname: ROUTES[event?.finished ? 'LEADERBOARD' : 'VOTE'] }}
                   >
                     {eventHasntStarted ? 'View the vote' : event?.finished ? 'See the results' : 'Get started'}
@@ -124,6 +127,7 @@ export const Slides = ({ items }: SlideProps) => {
                 >
                   <img
                     className={styles.heroStyleImg}
+                    data-testid="event-image"
                     src={slide.image}
                     alt="cardano-summit-2022"
                   />

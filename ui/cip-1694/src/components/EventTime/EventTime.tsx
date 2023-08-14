@@ -11,7 +11,7 @@ type Props = {
 export const EventTime = ({ endTime, startTime, eventHasntStarted, eventHasFinished }: Props) => (
   <span
     className={styles.container}
-    data-testid="count-down-timer"
+    data-testid="event-time"
   >
     {eventHasntStarted ? (
       <>

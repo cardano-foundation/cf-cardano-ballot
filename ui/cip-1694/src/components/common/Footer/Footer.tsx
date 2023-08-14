@@ -6,7 +6,10 @@ import styles from './Footer.module.scss';
 
 const Copyright = () => (
   <Typography className={styles.copyright}>
-    <span color="inherit">
+    <span
+      data-testid="copyright"
+      color="inherit"
+    >
       © {new Date().getFullYear()}{' '}
       <Box
         component={'span'}
@@ -21,6 +24,7 @@ const Copyright = () => (
 
 export const Footer = ({ isMobileMenu = false }) => (
   <Box
+    data-testid="footer"
     borderTop={{
       xs: '1px solid #bbb',
       md: 'none',
@@ -46,19 +50,19 @@ export const Footer = ({ isMobileMenu = false }) => (
       }}
     >
       <span className={styles.link}>
-        <span className={styles.underline}>Terms & Conditions</span>
+        <span data-testid='t-and-c' className={styles.underline}>Terms & Conditions</span>
       </span>
       <span className={styles.link}>
-        <span className={styles.underline}>Privacy</span>
+        <span data-testid='privacy' className={styles.underline}>Privacy</span>
       </span>
-      <span className={styles.link}>
+      <span data-testid='status' className={styles.link}>
         Version 1.01&nbsp;<span className={styles.underline}>(Status)</span>
       </span>
       <Box
         marginTop={{ xs: '15px', md: '0px' }}
         marginLeft={{ xs: '-5px', md: '0px' }}
       >
-        <span className={styles.link}>
+        <span data-testid='discord' className={styles.link}>
           <DiscordIcon />
         </span>
       </Box>

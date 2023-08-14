@@ -18,10 +18,10 @@ import {
   setIsReceiptFetched,
   setVoteReceipt,
 } from 'common/store/userSlice';
-import { env } from 'env';
 import { Toast } from 'components/common/Toast/Toast';
 import { RootState } from 'common/store';
 import styles from './ConnectWalletButton.module.scss';
+import { env } from '../../../../env';
 
 export const ConnectWalletButton = ({ isMobileMenu = false }) => {
   const { disconnect, stakeAddress, enabledWallet } = useCardano();
@@ -29,7 +29,6 @@ export const ConnectWalletButton = ({ isMobileMenu = false }) => {
   const connectedWallet = useSelector((state: RootState) => state.user.connectedWallet);
 
   const supportedWallets = env.SUPPORTED_WALLETS;
-  const alwaysVisibleWallets = env.ALWAYS_VISIBLE_WALLETS;
 
   // TODO: move to providers level and throw?
   useEffect(() => {
@@ -70,17 +69,18 @@ export const ConnectWalletButton = ({ isMobileMenu = false }) => {
       variant="contained"
       className={cn(styles.connectButton, { [styles.isMobileMenu]: isMobileMenu })}
       onClick={() => dispatch(setIsConnectWalletModalVisible({ isVisible: true }))}
+      data-testid="connect-wallet-button"
     >
       <AccountBalanceWalletIcon className={styles.walletIcon} />
       <span>Connect wallet</span>
     </Button>
   ) : (
     <CFConnectWalletButton
+      data-testid="connected-wallet-button"
       label="Connect wallet"
       borderRadius={8}
       onConnect={onConnectWallet}
       onDisconnect={onDisconnectWallet}
-      alwaysVisibleWallets={alwaysVisibleWallets}
       supportedWallets={supportedWallets}
       beforeComponent={
         <img

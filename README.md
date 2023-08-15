@@ -89,10 +89,12 @@ cd cf-voting-app/backend-services/voting-app
 If you want to develop using Yaci-DevKit (https://github.com/bloxbean/yaci-devkit) you have to start the backend applications in the special YACI_DEV_KIT DEV mode.
 
 ```shell
+cd cf-voting-app/backend-services/voting-app
+
 export SPRING_CONFIG_LOCATION=classpath:/application.properties,classpath:/application-dev--yaci-dev-kit.properties
 export SPRING_PROFILES_ACTIVE=dev--yaci-dev-kit
 
-java -jar cf-voting-admin-app.jar
+./gradlew bootRun
 ```
 
 This will effectively load `application.properties` and `application-dev-yaci-dev-kit.properties` file from the classpath 

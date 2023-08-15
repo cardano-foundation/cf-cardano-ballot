@@ -89,6 +89,7 @@ export const VoteReceipt = ({ setOpen, fetchReceipt }: VoteReceiptProps) => {
 
   return (
     <Grid
+      data-testid="vote-receipt"
       container
       direction="column"
       justifyContent="center"
@@ -101,6 +102,7 @@ export const VoteReceipt = ({ setOpen, fetchReceipt }: VoteReceiptProps) => {
         aria-label="close"
         onClick={setOpen}
         className={styles.closeBtn}
+        data-testid="vote-receipt-close-button"
       >
         <CloseIcon className={styles.closeIcon} />
       </IconButton>

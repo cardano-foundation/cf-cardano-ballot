@@ -1,4 +1,6 @@
 import { canonicalize } from 'json-canonicalize';
+import { SignedWeb3Request } from 'types/backend-services-types';
+import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import { env } from '../../env';
 
 type voteInput = {
@@ -58,3 +60,14 @@ export const buildCanonicalVoteReceiptInputJson = ({
       network: env.TARGET_NETWORK,
     },
   });
+
+export const getSignedMessagePromise = (signMessage: ReturnType<typeof useCardano>['signMessage']) => {
+  return async (message: string): Promise<SignedWeb3Request> =>
+    new Promise((resolve, reject) => {
+      signMessage(
+        message,
+        (signature, key) => resolve({ coseSignature: signature, cosePublicKey: key || '' }),
+        (error: Error) => reject(error)
+      );
+    });
+};

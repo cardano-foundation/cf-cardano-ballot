@@ -1,5 +1,29 @@
-import { VoteReceipt, EventReference, ChainTip } from 'types/backend-services-types';
+import { VoteReceipt, EventReference, ChainTip, Account } from 'types/backend-services-types';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
+import { canonicalize } from 'json-canonicalize';
+
+export const canonicalVoteInputJsonMock = canonicalize({
+  action: 'CAST_VOTE',
+  actionText: 'Cast Vote',
+  data: {
+    address: 'stake_test1uqwcz0754wwpuhm6xhdpda6u9enyahaj5ynlc9ay5l4mlms4pyqyg',
+    category: 'CIP-1694_Pre_Ratification_4619',
+    event: 'CIP-1694_Pre_Ratification_4619',
+    id: 'ebff2758-7122-4007-899f-90eea0e236c0',
+    network: 'PREPROD',
+    proposal: 'YES',
+    votedAt: '36316814',
+    votingPower: '9997463457',
+  },
+  slot: '36316814',
+  uri: 'https://evoting.cardano.org/voltaire',
+});
+
+export const accountDataMock: Account = {
+  stakeAddress: 'stake_test1uqwcz0754wwpuhm6xhdpda6u9enyahaj5ynlc9ay5l4mlms4pyqyg',
+  votingPower: '9997463457',
+  votingPowerAsset: 'ADA',
+};
 
 export const chainTipMock: ChainTip = {
   absoluteSlot: 36004360,

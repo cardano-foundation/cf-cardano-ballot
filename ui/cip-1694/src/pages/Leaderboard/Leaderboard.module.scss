@@ -25,13 +25,13 @@
   .proposalRect {
     width: 32px;
     height: 22px;
-    &[data-proposal='yes'] {
+    &[data-proposal='YES'] {
       background: #43e4b7;
     }
-    &[data-proposal='no'] {
+    &[data-proposal='NO'] {
       background: #ffbc5c;
     }
-    &[data-proposal='abstain'] {
+    &[data-proposal='ABSTAIN'] {
       background: #1d439b;
     }
   }

@@ -7,22 +7,11 @@ import '@testing-library/jest-dom';
 import { expect } from '@jest/globals';
 import { screen, within, waitFor, fireEvent, cleanup } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
-import { rest } from 'msw';
-import { setupServer } from 'msw/node';
 import { ROUTES } from 'common/routes';
 import { UserState } from 'common/store/types';
-import { BLOCKCHAIN_TIP_URL } from 'common/api/voteService';
-import { EVENT_BY_ID_REFERENCE_URL } from 'common/api/referenceDataService';
 import { IntroductionPage, introItems } from 'pages/Introduction/Introduction';
 import { renderWithProviders } from '../../../../test/mockProviders';
-import {
-  eventMock_active,
-  chainTipMock,
-  useCardanoMock,
-  eventMock_notStarted,
-  eventMock_finished,
-} from '../../../../test/mocks';
-import { env } from '../../../env';
+import { eventMock_active, useCardanoMock, eventMock_notStarted, eventMock_finished } from '../../../../test/mocks';
 import { CustomRouter } from '../../../../test/CustomRouter';
 
 jest.mock('@cardano-foundation/cardano-connect-with-wallet', () => {
@@ -50,21 +39,6 @@ jest.mock('swiper', () => ({
   Navigation: () => null,
   Autoplay: () => null,
 }));
-
-export const handlers = [
-  rest.get(`${EVENT_BY_ID_REFERENCE_URL}/${env.EVENT_ID}`, (req, res, ctx) => {
-    return res(ctx.json(eventMock_active), ctx.delay(150));
-  }),
-  rest.get(`${BLOCKCHAIN_TIP_URL}`, (req, res, ctx) => {
-    return res(ctx.json(chainTipMock), ctx.delay(150));
-  }),
-];
-
-const server = setupServer(...handlers);
-
-beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
 
 describe('For ongoing event:', () => {
   beforeEach(() => {

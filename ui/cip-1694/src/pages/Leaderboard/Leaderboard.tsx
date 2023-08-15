@@ -1,21 +1,22 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { capitalize } from 'lodash';
 import cn from 'classnames';
 import toast from 'react-hot-toast';
 import { PieChart } from 'react-minimal-pie-chart';
 import { Grid, Typography } from '@mui/material';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
-import { ByCategory } from 'types/backend-services-types';
+import { ByCategory, ProposalReference } from 'types/backend-services-types';
 import { ROUTES } from 'common/routes';
 import { RootState } from 'common/store';
 import * as leaderboardService from 'common/api/leaderboardService';
 import { Toast } from 'components/common/Toast/Toast';
-import { proposalColorsMap, proposalOptions } from './utils';
+import { proposalColorsMap } from './utils';
 import { StatsTile } from './components/StatsTile';
+import { env } from '../../env';
 import styles from './Leaderboard.module.scss';
+import { StatItem } from './types';
 
 const getPercentage = (value: number, total: number) => (value * 100) / total;
 
@@ -50,6 +51,13 @@ export const Leaderboard = () => {
       init();
     }
   }, [init, isConnected]);
+
+  const statsItems: StatItem<ProposalReference['name']>[] = event?.categories
+    ?.find(({ id }) => id === env.CATEGORY_ID)
+    ?.proposals?.map(({ name, presentationName: label }) => ({
+      name,
+      label,
+    }));
 
   const statsSum = useMemo(() => stats && Object.values(stats)?.reduce((acc, { votes }) => (acc += votes), 0), [stats]);
 
@@ -115,8 +123,8 @@ export const Leaderboard = () => {
                   Number of votes
                 </Typography>
               </Grid>
-              {proposalOptions.map((proposal) => (
-                <React.Fragment key={proposal}>
+              {statsItems.map(({ label, name }) => (
+                <React.Fragment key={name}>
                   <div className={styles.divider} />
                   <Grid
                     container
@@ -126,13 +134,13 @@ export const Leaderboard = () => {
                       variant="h5"
                       className={cn(styles.optionTitle, styles.statTitle)}
                     >
-                      {capitalize(proposal)}
+                      {label}
                     </Typography>
                     <Typography
                       variant="h5"
                       className={cn(styles.optionTitle, styles.statTitle)}
                     >
-                      {stats?.[proposal.toUpperCase()]?.votes}
+                      {stats?.[name]?.votes}
                     </Typography>
                   </Grid>
                 </React.Fragment>
@@ -157,25 +165,23 @@ export const Leaderboard = () => {
                 direction="column"
                 gap="15px"
               >
-                {proposalOptions.map((proposal) => (
+                {statsItems.map(({ label, name }) => (
                   <Grid
                     container
-                    key={proposal}
+                    key={name}
                     gap="15px"
                   >
                     <div
                       className={styles.proposalRect}
-                      data-proposal={proposal}
+                      data-proposal={name}
                     />
                     <Typography
                       variant="h5"
                       className={cn(styles.optionTitle, styles.statTitle)}
                     >
-                      {capitalize(proposal)}
+                      {label}
                       <span style={{ color: '#BBBBBB' }}>&nbsp;-</span>
-                      <span style={{ color: '#39486C' }}>
-                        &nbsp;{getPercentage(stats?.[proposal.toUpperCase()]?.votes, statsSum)}%
-                      </span>
+                      <span style={{ color: '#39486C' }}>&nbsp;{getPercentage(stats?.[name]?.votes, statsSum)}%</span>
                     </Typography>
                   </Grid>
                 ))}
@@ -188,10 +194,10 @@ export const Leaderboard = () => {
                 <PieChart
                   style={{ height: '200px', width: '200px' }}
                   lineWidth={32}
-                  data={proposalOptions.map((proposal) => ({
-                    title: capitalize(proposal),
+                  data={statsItems.map(({ label, name }) => ({
+                    title: label,
                     value: 10,
-                    color: proposalColorsMap[proposal],
+                    color: proposalColorsMap[name],
                   }))}
                 />
               </Grid>

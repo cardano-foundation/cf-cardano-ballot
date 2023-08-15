@@ -23,7 +23,7 @@ export const VerifyVoteModal = (props: VoteSubmittedModalProps) => {
 
   return (
     <Dialog
-      open={openStatus}
+      open={!!openStatus}
       aria-labelledby={name}
       PaperProps={{ sx: { width: '400px', borderRadius: '16px' } }}
     >

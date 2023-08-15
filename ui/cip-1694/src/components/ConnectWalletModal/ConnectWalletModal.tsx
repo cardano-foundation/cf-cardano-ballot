@@ -30,7 +30,7 @@ export const ConnectWalletModal = (props: ConnectWalletModalProps) => {
   return (
     <Dialog
       data-testid="connected-wallet-modal"
-      open={openStatus}
+      open={!!openStatus}
       aria-labelledby={name}
       PaperProps={{ sx: { width: '400px', borderRadius: '16px' } }}
     >

@@ -2,6 +2,9 @@ module.exports = {
   roots: ['<rootDir>/src'],
   testTimeout: 60000,
   testEnvironment: 'jsdom',
+  globals: {
+    IS_REACT_ACT_ENVIRONMENT: true,
+  },
   setupFilesAfterEnv: ['./jest.setup.js'],
   transform: {
     '^.+\\.(ts|tsx)$': 'ts-jest',

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
@@ -22,21 +22,25 @@ import {
   setSelectedProposal,
   setVoteReceipt,
 } from 'common/store/userSlice';
-import { Account, SignedWeb3Request } from 'types/backend-services-types';
+import { Account, ProposalReference } from 'types/backend-services-types';
 import { RootState } from 'common/store';
 import { VoteReceipt } from 'pages/Vote/components/VoteReceipt/VoteReceipt';
 import { Toast } from 'components/common/Toast/Toast';
 import { VoteSubmittedModal } from 'components/VoteSubmittedModal/VoteSubmittedModal';
-import { OptionCard } from '../../components/OptionCard/OptionCard';
-import { OptionItem } from '../../components/OptionCard/OptionCard.types';
-import SidePage from '../../components/common/SidePage/SidePage';
-import { buildCanonicalVoteInputJson, buildCanonicalVoteReceiptInputJson } from '../../common/utils/voteUtils';
-import * as voteService from '../../common/api/voteService';
+import { OptionCard } from 'components/OptionCard/OptionCard';
+import { OptionItem } from 'components/OptionCard/OptionCard.types';
+import SidePage from 'components/common/SidePage/SidePage';
+import {
+  buildCanonicalVoteInputJson,
+  buildCanonicalVoteReceiptInputJson,
+  getSignedMessagePromise,
+} from 'common/utils/voteUtils';
+import * as voteService from 'common/api/voteService';
+import { useToggle } from 'common/hooks/useToggle';
+import { HttpError } from 'common/handlers/httpHandler';
 import { env } from '../../env';
-import { useToggle } from '../../common/hooks/useToggle';
-import { HttpError } from '../../common/handlers/httpHandler';
-import styles from './Vote.module.scss';
 import { VerifyVoteModal } from './components/VerifyVote/VerifyVote';
+import styles from './Vote.module.scss';
 
 const errorsMap = {
   INVALID_VOTING_POWER: 'To cast a vote, Voting Power should be more than 0',
@@ -44,22 +48,13 @@ const errorsMap = {
   VOTE_CANNOT_BE_CHANGED: 'You have already voted! Vote cannot be changed for this stake address',
 };
 
-const items: OptionItem[] = [
-  {
-    label: 'yes',
-    icon: <DoneIcon sx={{ fontSize: { xs: '30px', md: '52px' }, color: '#39486C' }} />,
-  },
-  {
-    label: 'no',
-    icon: <CloseIcon sx={{ fontSize: { xs: '30px', md: '52px' }, color: '#39486C' }} />,
-  },
-  {
-    label: 'abstain',
-    icon: <DoDisturbIcon sx={{ fontSize: { xs: '30px', md: '52px' }, color: '#39486C' }} />,
-  },
-];
+const iconsMap: Record<ProposalReference['name'], React.ReactElement | null> = {
+  YES: <DoneIcon sx={{ fontSize: { xs: '30px', md: '52px' }, color: '#39486C' }} />,
+  NO: <CloseIcon sx={{ fontSize: { xs: '30px', md: '52px' }, color: '#39486C' }} />,
+  ABSTAIN: <DoDisturbIcon sx={{ fontSize: { xs: '30px', md: '52px' }, color: '#39486C' }} />,
+};
 
-const Vote = () => {
+export const VotePage = () => {
   const { stakeAddress, isConnected, signMessage } = useCardano();
   const receipt = useSelector((state: RootState) => state.user.receipt);
   const event = useSelector((state: RootState) => state.user.event);
@@ -74,28 +69,25 @@ const Vote = () => {
   const [isToggledReceipt, toggleReceipt] = useToggle(false);
   const dispatch = useDispatch();
 
-  const getSignedMessagePromise = useCallback(
-    async (message: string): Promise<SignedWeb3Request> =>
-      new Promise((resolve, reject) => {
-        signMessage(
-          message,
-          (signature, key) => resolve({ coseSignature: signature, cosePublicKey: key || '' }),
-          (error: Error) => reject(error)
-        );
-      }),
-    [signMessage]
-  );
+  const items: OptionItem<ProposalReference['name']>[] = event?.categories
+    ?.find(({ id }) => id === env.CATEGORY_ID)
+    ?.proposals?.map(({ name, presentationName: label }) => ({
+      name,
+      label,
+      icon: iconsMap[name] || null,
+    }));
+
+  const signMessagePromisified = useMemo(() => getSignedMessagePromise(signMessage), [signMessage]);
 
   const fetchReceipt = useCallback(
     async (cb?: () => void) => {
       try {
-        const voteObjectPayload = await getSignedMessagePromise(
+        const voteObjectPayload = await signMessagePromisified(
           buildCanonicalVoteReceiptInputJson({
             voter: stakeAddress,
             slotNumber: absoluteSlot.toString(),
           })
         );
-
         const receiptResponse = await voteService.getVoteReceipt(voteObjectPayload);
         if ('id' in receiptResponse) {
           dispatch(setVoteReceipt({ receipt: receiptResponse }));
@@ -128,7 +120,7 @@ const Vote = () => {
         console.log(message);
       }
     },
-    [absoluteSlot, dispatch, getSignedMessagePromise, stakeAddress]
+    [absoluteSlot, dispatch, signMessagePromisified, stakeAddress]
   );
 
   const openReceiptDrawer = async () => {
@@ -202,7 +194,7 @@ const Vote = () => {
     });
 
     try {
-      const requestVoteObject = await getSignedMessagePromise(canonicalVoteInput);
+      const requestVoteObject = await signMessagePromisified(canonicalVoteInput);
       await voteService.castAVoteWithDigitalSignature(requestVoteObject);
       dispatch(setIsVoteSubmittedModalVisible({ isVisible: true }));
       setVoteSubmitted(true);
@@ -229,7 +221,7 @@ const Vote = () => {
 
   const cantSelectOptions =
     !!receipt || voteSubmitted || (isConnected && !isReceiptFetched) || eventHasntStarted || event?.finished;
-  const showViewReceiptButton = receipt?.id || voteSubmitted || (isConnected && event?.finished);
+  const showViewReceiptButton = receipt?.id || voteSubmitted || (isReceiptFetched && event?.finished);
   const showConnectButton = !isConnected && !eventHasntStarted;
   const showSubmitButton = isConnected && !eventHasntStarted && !event?.finished && !showViewReceiptButton;
 
@@ -249,6 +241,7 @@ const Vote = () => {
         >
           <Grid item>
             <Typography
+              data-testid="event-title"
               variant="h5"
               className={styles.title}
               fontSize={{
@@ -279,13 +272,14 @@ const Vote = () => {
               className={styles.description}
               lineHeight={{ xs: '19px', md: '36px' }}
               fontSize={{ xs: '16px', md: '28px' }}
+              data-testid="event-description"
             >
               Do you want CIP-1694 that will allow On-Chain Governance, implemented on the Cardano Blockchain?
             </Typography>
           </Grid>
           <Grid item>
             <OptionCard
-              selectedOption={isConnected && savedProposal?.toLowerCase()}
+              selectedOption={isConnected && savedProposal}
               disabled={cantSelectOptions}
               items={items}
               onChangeOption={onChangeOption}
@@ -312,6 +306,7 @@ const Vote = () => {
                     onClick={() => openReceiptDrawer()}
                     aria-label="Receipt"
                     startIcon={<ReceiptIcon />}
+                    data-testid="show-receipt-button"
                   >
                     Vote receipt
                   </Button>
@@ -322,6 +317,7 @@ const Vote = () => {
                     size="large"
                     variant="contained"
                     onClick={() => dispatch(setIsConnectWalletModalVisible({ isVisible: true }))}
+                    data-testid="proposal-connect-button"
                   >
                     {event?.finished ? 'Connect wallet to see your vote' : 'Connect wallet to vote'}
                   </Button>
@@ -335,8 +331,9 @@ const Vote = () => {
                     variant="contained"
                     disabled={!optionId || !isReceiptFetched}
                     onClick={() => handleSubmit()}
+                    data-testid="proposal-submit-button"
                   >
-                    Submit Your Vote
+                    Submit your vote
                   </Button>
                 )}
                 {eventHasntStarted && (
@@ -345,6 +342,7 @@ const Vote = () => {
                     size="large"
                     variant="contained"
                     disabled
+                    data-testid="event-hasnt-started-submit-button"
                   >
                     Submit your vote from {event?.eventStart && format(new Date(event?.eventStart), 'do MMMM')}
                   </Button>
@@ -356,6 +354,7 @@ const Vote = () => {
                     variant="contained"
                     component={Link}
                     to={ROUTES.LEADERBOARD}
+                    data-testid="view-results-button"
                   >
                     View the results
                   </Button>
@@ -402,5 +401,3 @@ const Vote = () => {
     </>
   );
 };
-
-export default Vote;

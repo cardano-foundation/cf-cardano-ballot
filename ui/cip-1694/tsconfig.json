@@ -26,6 +26,9 @@
     "paths": {
       "common/*": ["./common/*"],
       "src/*": ["./src/*"]
-    }
-  }
+    },
+    "typeRoots": ["node_modules/@types"],
+    "types": ["jest"]
+  },
+  "include": ["./src/**/*"]
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { IntroductionPage } from 'pages/Introduction/Introduction';
-import VotePage from 'pages/Vote/Vote';
+import { VotePage } from 'pages/Vote/Vote';
 import { Leaderboard } from 'pages/Leaderboard/Leaderboard';
 
 export const PAGE_PATH = '/';

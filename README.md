@@ -103,5 +103,5 @@ but values / properties in `application-dev-yaci-dev-kit.properties` will overri
 On start up of the app, you can verify if the right profile has been used, there should be a message related to that at the beginning.
 
 ## Repository Structure
-- service - contains JAVA backend services
+- backend-services - contains JAVA backend services
 - ui - contains React.JS frontend code to cast votes / display voting results

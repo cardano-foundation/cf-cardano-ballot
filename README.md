@@ -5,9 +5,9 @@ Voltaire Voting Applications to be used by Cardano Community to cast CIP-1694 pr
 [![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)
 ![Discord](https://img.shields.io/discord/1022471509173882950)
 
-[![Voting-App-Build](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/build.yml/badge.svg)](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/voting-app-build.yml)
-[![Voting-Verification-App-Build](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/build.yml/badge.svg)](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/voting-verification-app-build.yml)
-[![Voting-Admin-App-Build](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/build.yml/badge.svg)](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/voting-admin-app-build.yml)
+[![Voting-App-Build](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/build.yml/badge.svg)](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/voting-app-build.yml)&nbsp;
+[![Voting-Verification-App-Build](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/build.yml/badge.svg)](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/voting-verification-app-build.yml)&nbsp;
+[![Voting-Admin-App-Build](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/build.yml/badge.svg)](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/voting-admin-app-build.yml)&nbsp;
 
 ## Requirements
 - Node.js 18.x LTS

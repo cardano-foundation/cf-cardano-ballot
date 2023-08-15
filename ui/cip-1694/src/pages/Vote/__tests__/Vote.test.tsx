@@ -115,7 +115,7 @@ describe('For ongoing event:', () => {
     mockUseCardano.mockReset();
     mockUseCardano.mockReturnValue(useCardanoMock_notConnected);
 
-    const history = createMemoryHistory({ initialEntries: ['/vote'] });
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
 
     renderWithProviders(
       <CustomRouter history={history}>
@@ -157,7 +157,7 @@ describe('For ongoing event:', () => {
   test('should render connect wallet button and open connect wallet modal once clicked', async () => {
     mockUseCardano.mockReset();
     mockUseCardano.mockReturnValue(useCardanoMock_notConnected);
-    const history = createMemoryHistory({ initialEntries: ['/vote'] });
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
 
     const { store } = renderWithProviders(
       <CustomRouter history={history}>
@@ -179,7 +179,7 @@ describe('For ongoing event:', () => {
   test('should open connect wallet modal once option selected', async () => {
     mockUseCardano.mockReset();
     mockUseCardano.mockReturnValue(useCardanoMock_notConnected);
-    const history = createMemoryHistory({ initialEntries: ['/vote'] });
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
 
     const { store } = renderWithProviders(
       <CustomRouter history={history}>
@@ -202,7 +202,7 @@ describe('For ongoing event:', () => {
   });
 
   test('should display proper state when wallet is connected', async () => {
-    const history = createMemoryHistory({ initialEntries: ['/vote'] });
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
 
     renderWithProviders(
       <CustomRouter history={history}>
@@ -242,7 +242,7 @@ describe('For ongoing event:', () => {
   });
 
   test('should not submit vote if no option selected', async () => {
-    const history = createMemoryHistory({ initialEntries: ['/vote'] });
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
 
     renderWithProviders(
       <CustomRouter history={history}>
@@ -278,7 +278,7 @@ describe('For ongoing event:', () => {
     mockGetVotingPower.mockResolvedValue(accountDataMock);
     mockBuildCanonicalVoteInputJson.mockReset();
     mockBuildCanonicalVoteInputJson.mockReturnValue(canonicalVoteInputJsonMock);
-    const history = createMemoryHistory({ initialEntries: ['/vote'] });
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
 
     const { store } = renderWithProviders(
       <CustomRouter history={history}>
@@ -320,7 +320,7 @@ describe('For ongoing event:', () => {
     mockGetVotingPower.mockReset();
     mockGetVotingPower.mockResolvedValue(accountDataMock);
 
-    const history = createMemoryHistory({ initialEntries: ['/vote'] });
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
     const { store } = renderWithProviders(
       <CustomRouter history={history}>
         <VotePage />
@@ -361,7 +361,7 @@ describe('For ongoing event:', () => {
     mockGetVotingPower.mockReset();
     mockGetVotingPower.mockResolvedValue(accountDataMock);
 
-    const history = createMemoryHistory({ initialEntries: ['/vote'] });
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
     renderWithProviders(
       <CustomRouter history={history}>
         <VotePage />
@@ -397,7 +397,7 @@ describe("For the event that hasn't started yet", () => {
     mockUseCardano.mockReset();
     mockUseCardano.mockReturnValue(useCardanoMock_notConnected);
 
-    const history = createMemoryHistory({ initialEntries: ['/vote'] });
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
 
     renderWithProviders(
       <CustomRouter history={history}>
@@ -459,7 +459,7 @@ describe('For the event that has already finished', () => {
     mockUseCardano.mockReset();
     mockUseCardano.mockReturnValue(useCardanoMock_notConnected);
 
-    const history = createMemoryHistory({ initialEntries: ['/vote'] });
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
 
     renderWithProviders(
       <CustomRouter history={history}>
@@ -501,7 +501,7 @@ describe('For the event that has already finished', () => {
   test('should render connect wallet button and open connect wallet modal once clicked', async () => {
     mockUseCardano.mockReset();
     mockUseCardano.mockReturnValue(useCardanoMock_notConnected);
-    const history = createMemoryHistory({ initialEntries: ['/vote'] });
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
 
     const { store } = renderWithProviders(
       <CustomRouter history={history}>
@@ -521,7 +521,7 @@ describe('For the event that has already finished', () => {
   });
 
   test('should not open connect wallet modal once option selected', async () => {
-    const history = createMemoryHistory({ initialEntries: ['/vote'] });
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
 
     const { store } = renderWithProviders(
       <CustomRouter history={history}>
@@ -557,7 +557,7 @@ describe('For the event that has already finished', () => {
     );
     mockGetVotingPower.mockReset();
     mockGetVotingPower.mockResolvedValue(accountDataMock);
-    const history = createMemoryHistory({ initialEntries: ['/vote'] });
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
     const historyPushSpy = jest.spyOn(history, 'push');
 
     renderWithProviders(

@@ -50,7 +50,7 @@ describe('For ongoing event:', () => {
   });
 
   test('should display proper state', async () => {
-    const history = createMemoryHistory({ initialEntries: ['/'] });
+    const history = createMemoryHistory({ initialEntries: [ROUTES.INTRO] });
 
     renderWithProviders(
       <CustomRouter history={history}>
@@ -87,7 +87,7 @@ describe('For ongoing event:', () => {
   });
 
   test('should redirect to vote page', async () => {
-    const history = createMemoryHistory({ initialEntries: ['/'] });
+    const history = createMemoryHistory({ initialEntries: [ROUTES.INTRO] });
     const historyPushSpy = jest.spyOn(history, 'push');
 
     renderWithProviders(
@@ -116,7 +116,7 @@ describe("For the event that hasn't started yet", () => {
   });
 
   test('should display proper state', async () => {
-    const history = createMemoryHistory({ initialEntries: ['/'] });
+    const history = createMemoryHistory({ initialEntries: [ROUTES.INTRO] });
 
     renderWithProviders(
       <CustomRouter history={history}>
@@ -153,7 +153,7 @@ describe("For the event that hasn't started yet", () => {
   });
 
   test('should redirect to vote page', async () => {
-    const history = createMemoryHistory({ initialEntries: ['/'] });
+    const history = createMemoryHistory({ initialEntries: [ROUTES.INTRO] });
     const historyPushSpy = jest.spyOn(history, 'push');
 
     renderWithProviders(
@@ -182,7 +182,7 @@ describe('For the event that has already finished', () => {
   });
 
   test('should display proper state', async () => {
-    const history = createMemoryHistory({ initialEntries: ['/'] });
+    const history = createMemoryHistory({ initialEntries: [ROUTES.INTRO] });
 
     renderWithProviders(
       <CustomRouter history={history}>
@@ -219,7 +219,7 @@ describe('For the event that has already finished', () => {
   });
 
   test('should redirect to vote page', async () => {
-    const history = createMemoryHistory({ initialEntries: ['/'] });
+    const history = createMemoryHistory({ initialEntries: [ROUTES.INTRO] });
     const historyPushSpy = jest.spyOn(history, 'push');
 
     renderWithProviders(

@@ -12,13 +12,11 @@ import { ROUTES } from 'common/routes';
 import { RootState } from 'common/store';
 import * as leaderboardService from 'common/api/leaderboardService';
 import { Toast } from 'components/common/Toast/Toast';
-import { proposalColorsMap } from './utils';
+import { getPercentage, proposalColorsMap } from './utils';
 import { StatsTile } from './components/StatsTile';
 import { env } from '../../env';
 import styles from './Leaderboard.module.scss';
 import { StatItem } from './types';
-
-const getPercentage = (value: number, total: number) => (value * 100) / total;
 
 export const Leaderboard = () => {
   const navigate = useNavigate();
@@ -52,17 +50,21 @@ export const Leaderboard = () => {
     }
   }, [init, isConnected]);
 
-  const statsItems: StatItem<ProposalReference['name']>[] = event?.categories
-    ?.find(({ id }) => id === env.CATEGORY_ID)
-    ?.proposals?.map(({ name, presentationName: label }) => ({
-      name,
-      label,
-    }));
+  const statsItems: StatItem<ProposalReference['name']>[] =
+    event?.categories
+      ?.find(({ id }) => id === env.CATEGORY_ID)
+      ?.proposals?.map(({ name, presentationName: label }) => ({
+        name,
+        label,
+      })) || [];
 
   const statsSum = useMemo(() => stats && Object.values(stats)?.reduce((acc, { votes }) => (acc += votes), 0), [stats]);
 
   return (
-    <div className={styles.leaderboard}>
+    <div
+      data-testid="leaderboard-page"
+      className={styles.leaderboard}
+    >
       <Grid
         paddingTop={{ xs: '20px', md: '30px' }}
         container
@@ -84,6 +86,7 @@ export const Leaderboard = () => {
               md: '65px',
             }}
             marginBottom={{ md: '40px', xs: '25px' }}
+            data-testid="leaderboard-title"
           >
             Leaderboard
           </Typography>
@@ -97,6 +100,7 @@ export const Leaderboard = () => {
         >
           <StatsTile
             title="Poll stats"
+            dataTestId="poll-stats-tile"
             summary={<span style={{ color: '#061d3c' }}>{statsSum}</span>}
           >
             <Grid
@@ -129,6 +133,7 @@ export const Leaderboard = () => {
                   <Grid
                     container
                     justifyContent="space-between"
+                    data-testid="poll-stats-item"
                   >
                     <Typography
                       variant="h5"
@@ -150,6 +155,7 @@ export const Leaderboard = () => {
           <StatsTile
             title="Current voting stats"
             summary={<span style={{ color: '#061d3c' }}>{statsSum}</span>}
+            dataTestId="currently-voting-tile"
           >
             <Grid
               container
@@ -170,6 +176,7 @@ export const Leaderboard = () => {
                     container
                     key={name}
                     gap="15px"
+                    data-testid="currently-voting-item"
                   >
                     <div
                       className={styles.proposalRect}
@@ -180,8 +187,10 @@ export const Leaderboard = () => {
                       className={cn(styles.optionTitle, styles.statTitle)}
                     >
                       {label}
-                      <span style={{ color: '#BBBBBB' }}>&nbsp;-</span>
-                      <span style={{ color: '#39486C' }}>&nbsp;{getPercentage(stats?.[name]?.votes, statsSum)}%</span>
+                      <span style={{ color: '#BBBBBB' }}>{' - '}</span>
+                      <span style={{ color: '#39486C' }}>
+                        {getPercentage(stats?.[name]?.votes, statsSum).toFixed(2)}%
+                      </span>
                     </Typography>
                   </Grid>
                 ))}

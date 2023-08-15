@@ -1,6 +1,15 @@
-import { VoteReceipt, EventReference, ChainTip, Account } from 'types/backend-services-types';
+import { VoteReceipt, EventReference, ChainTip, Account, ByCategory } from 'types/backend-services-types';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import { canonicalize } from 'json-canonicalize';
+
+export const voteStats: ByCategory = {
+  category: '1694_Pre_Ratification_4619',
+  proposals: {
+    YES: { votes: 2134, votingPower: '123' },
+    NO: { votes: 700, votingPower: '123' },
+    ABSTAIN: { votes: 61, votingPower: '123' },
+  },
+};
 
 export const canonicalVoteInputJsonMock = canonicalize({
   action: 'CAST_VOTE',

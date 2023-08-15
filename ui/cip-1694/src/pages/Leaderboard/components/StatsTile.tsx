@@ -6,11 +6,13 @@ type StatsTilePorps = {
   title: string | React.ReactElement;
   summary: string | React.ReactElement;
   children: React.ReactNode;
+  dataTestId: string;
 };
 
-export const StatsTile = ({ title, summary, children }: StatsTilePorps) => {
+export const StatsTile = ({ title, summary, children, dataTestId }: StatsTilePorps) => {
   return (
     <Grid
+      data-testid={dataTestId}
       xs={12}
       md={6}
       item
@@ -26,6 +28,7 @@ export const StatsTile = ({ title, summary, children }: StatsTilePorps) => {
         <Typography
           variant="h5"
           className={styles.optionTitle}
+          data-testid="tile-title"
         >
           {title}
         </Typography>
@@ -36,6 +39,7 @@ export const StatsTile = ({ title, summary, children }: StatsTilePorps) => {
             lineHeight: { md: '47px', xs: '32px' },
           }}
           className={styles.optionSummary}
+          data-testid="tile-summary"
         >
           {summary}
         </Typography>

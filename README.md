@@ -3,7 +3,7 @@
 Voltaire Voting Applications to be used by Cardano Community to cast CIP-1694 pre-ratification vote. The applications are currently WIP (work in progress).
 
 [![Build](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/build.yml/badge.svg)](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/build.yml)
-[![License](https://img.shields.io:/github/license/cardano-foundation/cf-voting-app?label=license)](https://github.com/cardano-foundation/cf-voting-app/blob/master/LICENSE)
+[![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)
 ![Discord](https://img.shields.io/discord/1022471509173882950)
 
 ## Requirements

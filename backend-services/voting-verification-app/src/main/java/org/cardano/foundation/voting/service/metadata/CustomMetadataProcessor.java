@@ -281,7 +281,7 @@ public class CustomMetadataProcessor {
     private Optional<List<MerkleRootHash>> processCommitments(long slot, String signature, String key, CBORMetadataMap payload) throws CborException {
         var id = HexUtil.encodeHexString(Blake2bUtil.blake2bHash224(decodeHexString(signature)));
 
-        log.info("Processing category registration id: {}", id);
+        log.info("Processing on-chain commitments: {}", id);
 
         var cip30Parser = new CIP30Verifier(signature, Optional.ofNullable(key));
         var cip30VerificationResult = cip30Parser.verify();

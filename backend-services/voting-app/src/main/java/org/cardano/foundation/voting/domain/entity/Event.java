@@ -35,11 +35,13 @@ public class Event extends AbstractTimestampEntity {
     @Column(name = "event_type", nullable = false)
     @Getter
     @Setter
+    @Enumerated(EnumType.STRING)
     private VotingEventType votingEventType;
 
     @Column(name = "voting_power_asset")
     // voting power asset is only needed for stake based voting events
     @Nullable
+    @Enumerated(EnumType.STRING)
     private VotingPowerAsset votingPowerAsset;
 
     @Column(name = "allow_vote_changing")
@@ -85,6 +87,7 @@ public class Event extends AbstractTimestampEntity {
     @Column(name = "schema_version")
     @Getter
     @Setter
+    @Enumerated(EnumType.STRING)
     private SchemaVersion version;
 
     @OneToMany(

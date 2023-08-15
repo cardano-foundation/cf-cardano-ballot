@@ -1,15 +1,15 @@
-DROP TABLE IF NOT EXISTS event;
+DROP TABLE IF EXISTS event;
 
 CREATE TABLE event (
     id VARCHAR(255) NOT NULL, -- human readable name, should never contain PII data
     team VARCHAR(255) NOT NULL,
     schema_version VARCHAR(255) NOT NULL,
-    event_type INT NOT NULL,
+    event_type VARCHAR(255) NOT NULL,
     allow_vote_changing BOOL,
     category_results_while_voting BOOL,
-    high_level_results_while_voting BOOL
+    high_level_results_while_voting BOOL,
 
-    voting_power_asset INT,
+    voting_power_asset VARCHAR(255),
 
     start_epoch INT,
     end_epoch INT,
@@ -27,7 +27,7 @@ CREATE TABLE event (
    CONSTRAINT pk_event PRIMARY KEY (id)
 );
 
-DROP TABLE IF NOT EXISTS category;
+DROP TABLE IF EXISTS category;
 
 CREATE TABLE category (
     id VARCHAR(255) NOT NULL, -- human readable name, should never contain PII data
@@ -40,15 +40,15 @@ CREATE TABLE category (
     created_at TIMESTAMP WITHOUT TIME ZONE,
     updated_at TIMESTAMP WITHOUT TIME ZONE,
 
-   CONSTRAINT pk_category PRIMARY KEY (id)
+   CONSTRAINT pk_category PRIMARY KEY (id),
    CONSTRAINT fk_category_event_id FOREIGN KEY (event_id) REFERENCES event(id)
 );
 
-DROP TABLE IF NOT EXISTS proposal;
+DROP TABLE IF EXISTS proposal;
 
 CREATE TABLE proposal (
-    id uuid NOT NULL, -- PII protection, on chain we are not allowed to store human readable names
-    name VARCHAR(255 NOT NULL, -- PII protection, on chain we are not allowed to store human readable names
+    id VARCHAR(255) NOT NULL, -- PII protection, on chain we are not allowed to store human readable names
+    name VARCHAR(255) NOT NULL, -- PII protection, on chain we are not allowed to store human readable names
     category_id VARCHAR(255) NOT NULL,
 
     absolute_slot BIGINT NOT NULL,
@@ -56,39 +56,37 @@ CREATE TABLE proposal (
     created_at TIMESTAMP WITHOUT TIME ZONE,
     updated_at TIMESTAMP WITHOUT TIME ZONE,
 
-   CONSTRAINT pk_proposal PRIMARY KEY (id)
+   CONSTRAINT pk_proposal PRIMARY KEY (id),
    CONSTRAINT fk_proposal_category_id FOREIGN KEY (category_id) REFERENCES category(id)
 );
 
-DROP TABLE IF NOT EXISTS vote;
+DROP TABLE IF EXISTS vote;
 
 CREATE TABLE vote (
-   id uuid NOT NULL,
+   id VARCHAR(255) NOT NULL,
    event_id VARCHAR(255) NOT NULL,
    category_id VARCHAR(255) NOT NULL,
    proposal_id VARCHAR(255) NOT NULL,
-   voter_staking_address VARCHAR(255) NOT NULL,
+   voter_stake_address VARCHAR(255) NOT NULL,
    cose_signature TEXT NOT NULL,
    cose_public_key VARCHAR(255),
    voting_power BIGINT,
    voted_at_slot BIGINT NOT NULL,
 
-   absolute_slot BIGINT NOT NULL,
-
    created_at TIMESTAMP WITHOUT TIME ZONE,
    updated_at TIMESTAMP WITHOUT TIME ZONE,
 
-   CONSTRAINT pk_vote PRIMARY KEY (vote)
+   CONSTRAINT pk_vote PRIMARY KEY (id)
 );
 
 CREATE INDEX idx_vote_stake_key
-    ON vote (event_id, category_id, voter_staking_address);
+    ON vote (event_id, category_id, voter_stake_address);
 
-DROP TABLE IF NOT EXISTS vote_merkle_proof;
+DROP TABLE IF EXISTS vote_merkle_proof;
 
 -- benefit of storing vote merkle proof is that upon restart of app voter's receipt can be served from local db
 CREATE TABLE vote_merkle_proof (
-   vote_id uuid NOT NULL,
+   vote_id VARCHAR(255) NOT NULL,
    event_id VARCHAR(255) NOT NULL,
    root_hash VARCHAR(255) NOT NULL, -- merkle root hash as hex string
    l1_transaction_hash VARCHAR(255) NOT NULL, -- transaction hash as hex string
@@ -99,12 +97,12 @@ CREATE TABLE vote_merkle_proof (
    created_at TIMESTAMP WITHOUT TIME ZONE,
    updated_at TIMESTAMP WITHOUT TIME ZONE,
 
-   CONSTRAINT pk_vote PRIMARY KEY (vote_id)
+   CONSTRAINT pk_vote_merkle_proof PRIMARY KEY (vote_id)
 );
 
 -- special index to find out all vote_merkle_proofs that took part in a given event
 CREATE INDEX idx_vote_merkle_proof_vote_id_event_id
-    ON vote_merkle_proof (vote_id, event_d);
+    ON vote_merkle_proof (vote_id, event_id);
 
 -- special index to help us find out all vote_merkle_proofs that took part in rolled back transaction
 CREATE INDEX idx_vote_merkle_proof_transaction_rollback

@@ -48,7 +48,7 @@ public class MetadataSerialiser {
         var optionsMap = MetadataBuilder.createMap();
         optionsMap.put("allowVoteChanging", toBigInteger(createEventCommand.isAllowVoteChanging()));
         optionsMap.put("categoryResultsWhileVoting", toBigInteger(createEventCommand.isCategoryResultsWhileVoting()));
-        optionsMap.put("highLevelResultsWhiteVoting", toBigInteger(createEventCommand.isHighLevelResultsWhileVoting()));
+        optionsMap.put("highLevelResultsWhileVoting", toBigInteger(createEventCommand.isHighLevelResultsWhileVoting()));
 
         return optionsMap;
     }

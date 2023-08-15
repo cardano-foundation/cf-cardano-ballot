@@ -41,10 +41,10 @@ class MerkleProofSerdeServiceTest {
         var one = (ObjectNode) it.next();
         var two = (ObjectNode) it.next();
 
-        assertEquals("Right", one.fields().next().getKey());
+        assertEquals("R", one.fields().next().getKey());
         assertEquals("8e8a6cb359bb83f141498d96a80d7a9ce4c5558c115660820e0f2ac13555d934", one.fields().next().getValue().asText());
 
-        assertEquals("Right", two.fields().next().getKey());
+        assertEquals("R", two.fields().next().getKey());
         assertEquals("0e8bff5e9692bfd3ea08131384678d5bce2cf680e4dddfb488f4407b92ef7327", two.fields().next().getValue().asText());
     }
 
@@ -53,7 +53,7 @@ class MerkleProofSerdeServiceTest {
         MerkleProofSerdeService merkleProofSerdeService = new MerkleProofSerdeService();
         merkleProofSerdeService.objectMapper = new ObjectMapper();
 
-        var json = "{\"steps\":[{\"Right\":\"8e8a6cb359bb83f141498d96a80d7a9ce4c5558c115660820e0f2ac13555d934\"},{\"Right\":\"0e8bff5e9692bfd3ea08131384678d5bce2cf680e4dddfb488f4407b92ef7327\"}]}";
+        var json = "{\"steps\":[{\"R\":\"8e8a6cb359bb83f141498d96a80d7a9ce4c5558c115660820e0f2ac13555d934\"},{\"R\":\"0e8bff5e9692bfd3ea08131384678d5bce2cf680e4dddfb488f4407b92ef7327\"}]}";
 
         var items = merkleProofSerdeService.deserialise(json);
 

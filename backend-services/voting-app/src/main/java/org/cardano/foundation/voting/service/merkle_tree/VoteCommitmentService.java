@@ -12,7 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StopWatch;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.bloxbean.cardano.client.util.HexUtil.encodeHexString;
@@ -79,8 +81,11 @@ public class VoteCommitmentService {
                 .map(event -> {
                     // TODO caching or paging or both? Maybe we use Redis???
                     log.info("Loading votes from db...");
+                    var stopWatch = new StopWatch();
+                    stopWatch.start();
                     var allVotes = voteService.findAll(event);
-                    log.info("Loaded votes, count:{}", allVotes.size());
+                    stopWatch.stop();
+                    log.info("Loaded votes, count:{}, time: {} secs", allVotes.size(), stopWatch.getTotalTimeSeconds());
 
                     var root = MerkleTree.fromList(allVotes, VOTE_SERIALISER);
 
@@ -93,9 +98,16 @@ public class VoteCommitmentService {
         log.info("Storing vote merkle proofs...");
 
         for (var l1MerkleCommitment : l1MerkleCommitments) {
-            log.info("Storing merkle proofs for event: {}", l1MerkleCommitment.event().getId());
-
             var root = l1MerkleCommitment.root();
+
+            log.info("Generating merkle proofs, size:{} for votesCount:{}", l1MerkleCommitment.votes().size(), l1MerkleCommitment.votes().size());
+            var generateProofsStartStop = new StopWatch();
+
+            generateProofsStartStop.start();
+            var allProofs = new ArrayList<VoteMerkleProof>();
+            generateProofsStartStop.stop();
+
+            log.info("Generated merkle proofs, time: {} ms", generateProofsStartStop.getTotalTimeMillis());
 
             for (var vote : l1MerkleCommitment.votes()) {
                 var maybeMerkleProof = MerkleTree.getProof(root, vote, VOTE_SERIALISER).map(Value::toJavaList);
@@ -118,10 +130,15 @@ public class VoteCommitmentService {
                         .invalidated(false)
                         .build();
 
-                voteMerkleProofService.store(voteMerkleProof);
+                allProofs.add(voteMerkleProof);
             }
+            log.info("Storing merkle proofs for event: {}", l1MerkleCommitment.event().getId());
+            var storeProofsStartStop = new StopWatch();
+            storeProofsStartStop.start();
+            voteMerkleProofService.storeAll(allProofs);
+            storeProofsStartStop.stop();
 
-            log.info("Storing merkle proofs completed for event: {}", l1MerkleCommitment.event().getId());
+            log.info("Storing merkle proofs: {}, completed for event: {}, time: {} secs", l1MerkleCommitment.votes().size(), l1MerkleCommitment.event().getId(), storeProofsStartStop.getTotalTimeSeconds());
         }
 
         log.info("Storing vote merkle proofs completed.");

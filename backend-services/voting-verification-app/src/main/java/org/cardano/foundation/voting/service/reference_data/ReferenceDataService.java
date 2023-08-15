@@ -87,6 +87,7 @@ public class ReferenceDataService {
     @Timed(value = "service.reference.storeCommitments", percentiles = {0.3, 0.5, 0.95})
     @Transactional
     public List<MerkleRootHash> storeCommitments(List<MerkleRootHash> merkleRootHashes) {
+        log.info("Storing commitments:{}", merkleRootHashes);
         return merkleRootHashRepository.saveAllAndFlush(merkleRootHashes);
     }
 

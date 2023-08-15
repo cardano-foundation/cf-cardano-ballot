@@ -1,6 +1,5 @@
 package org.cardano.foundation.voting.service.merkle_tree;
 
-import com.bloxbean.cardano.client.util.HexUtil;
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.Vote;

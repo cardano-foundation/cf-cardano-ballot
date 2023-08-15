@@ -36,11 +36,11 @@ public class MerkleProofSerdeService {
         for (var proofItem : proofItems) {
             if (proofItem instanceof ProofItem.Left pl) {
                 array.addObject()
-                        .put("Left", encodeHexString(pl.getHash()));
+                        .put("L", encodeHexString(pl.getHash()));
             }
             if (proofItem instanceof ProofItem.Right pr) {
                 array.addObject()
-                        .put("Right", encodeHexString(pr.getHash()));
+                        .put("R", encodeHexString(pr.getHash()));
             }
         }
 
@@ -74,11 +74,11 @@ public class MerkleProofSerdeService {
     }
 
     private ProofItem deserialiseProofItem(JsonNode item) {
-        if (item.has("Left")) {
-            return new ProofItem.Left(decodeHexString(item.get("Left").asText()));
+        if (item.has("L")) {
+            return new ProofItem.Left(decodeHexString(item.get("L").asText()));
         }
-        if (item.has("Right")) {
-            return new ProofItem.Right(decodeHexString(item.get("Right").asText()));
+        if (item.has("R")) {
+            return new ProofItem.Right(decodeHexString(item.get("R").asText()));
         }
 
         throw new IllegalArgumentException("Invalid proof item: " + item);

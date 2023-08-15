@@ -7,6 +7,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.cardanofoundation.cip30.CIP30Verifier;
 
 import javax.annotation.Nullable;
@@ -18,6 +19,7 @@ import java.util.function.Function;
 @Entity
 @Table(name = "vote")
 @Builder
+@Slf4j
 public class Vote extends AbstractTimestampEntity {
 
     public static final Function<Vote, byte[]> VOTE_SERIALISER = createSerialiserFunction();
@@ -130,6 +132,12 @@ public class Vote extends AbstractTimestampEntity {
         return vote -> {
             var cip30Verifier = new CIP30Verifier(vote.getCoseSignature(), vote.getCosePublicKey());
             var verificationResult = cip30Verifier.verify();
+
+            if (!verificationResult.isValid()) {
+                log.info("Verifying vote failed: {}", verificationResult.getMessage());
+
+                return new byte[0];
+            }
 
             return Optional.ofNullable(verificationResult.getMessage()).orElse(new byte[0]);
         };

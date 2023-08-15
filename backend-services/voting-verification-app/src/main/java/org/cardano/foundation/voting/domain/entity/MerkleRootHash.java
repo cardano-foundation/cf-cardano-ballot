@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 public class MerkleRootHash extends AbstractTimestampEntity {
 
     @Id
-    @Column(name = "merkle_root_hash", nullable = false)
+    @Column(name = "id", nullable = false)
     private String merkleRootHash;
 
     @Column(name = "event_id", nullable = false)

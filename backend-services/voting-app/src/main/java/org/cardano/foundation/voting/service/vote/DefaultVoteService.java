@@ -23,7 +23,7 @@ import org.cardano.foundation.voting.service.merkle_tree.VoteMerkleProofService;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
 import org.cardano.foundation.voting.service.voting_power.VotingPowerService;
 import org.cardano.foundation.voting.utils.Enums;
-import org.cardano.foundation.voting.utils.UUID;
+import org.cardano.foundation.voting.utils.MoreUUID;
 import org.cardanofoundation.cip30.AddressFormat;
 import org.cardanofoundation.cip30.CIP30Verifier;
 import org.cardanofoundation.merkle.ProofItem;
@@ -372,7 +372,7 @@ public class DefaultVoteService implements VoteService {
         }
 
         String voteId = cip93VoteEnvelope.getData().getId();
-        if (!UUID.isUUIDv4(voteId)) {
+        if (!MoreUUID.isUUIDv4(voteId)) {
             return Either.left(
                     Problem.builder()
                             .withTitle("INVALID_VOTE_ID")

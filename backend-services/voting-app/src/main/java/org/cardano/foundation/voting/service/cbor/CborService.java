@@ -93,7 +93,7 @@ public class CborService {
                                 .build());
             }
 
-            boolean isGdprProtection = fromBigInteger((BigInteger) options.get("gdprProtection"));
+            boolean isGdprProtection = fromBigInteger((BigInteger) options.get("gdprProtection")).orElse(false);
             var categoryRegistration = CategoryRegistrationEnvelope.builder()
                     .type(maybeOnchainEventType.orElseThrow())
                     .name(maybeName.orElseThrow())
@@ -269,8 +269,10 @@ public class CborService {
             }
             var options = maybeOptions.orElseThrow();
 
-            eventRegistrationEnvelopeBuilder.allowVoteChanging(fromBigInteger(((BigInteger)options.get("allowVoteChanging"))));
-            eventRegistrationEnvelopeBuilder.categoryResultsWhileVoting(fromBigInteger(((BigInteger)options.get("categoryResultsWhileVoting"))));
+            eventRegistrationEnvelopeBuilder.allowVoteChanging(fromBigInteger(((BigInteger)options.get("allowVoteChanging"))).orElse(false));
+            eventRegistrationEnvelopeBuilder.categoryResultsWhileVoting(fromBigInteger(((BigInteger)options.get("categoryResultsWhileVoting"))).orElse(false));
+            eventRegistrationEnvelopeBuilder.highLevelResultsWhileVoting(fromBigInteger(((BigInteger)options.get("highLevelResultsWhileVoting"))).orElse(false));
+
             eventRegistrationEnvelopeBuilder.schemaVersion((String)payload.get("schemaVersion"));
 
             return Either.right(eventRegistrationEnvelopeBuilder.build());

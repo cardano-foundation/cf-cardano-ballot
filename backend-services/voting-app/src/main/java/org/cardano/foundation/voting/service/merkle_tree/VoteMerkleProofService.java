@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -27,6 +29,13 @@ public class VoteMerkleProofService {
     @Timed(value = "service.merkle.store", percentiles = { 0.3, 0.5, 0.95 })
     public VoteMerkleProof store(VoteMerkleProof voteMerkleProof) {
         return voteMerkleProofRepository.saveAndFlush(voteMerkleProof);
+    }
+
+    @Transactional
+    @Timed(value = "service.merkle.store.all", percentiles = { 0.3, 0.5, 0.95 })
+    public void storeAll(List<VoteMerkleProof> voteMerkleProofs) {
+        voteMerkleProofRepository.saveAll(voteMerkleProofs);
+        voteMerkleProofRepository.flush();
     }
 
     @Transactional

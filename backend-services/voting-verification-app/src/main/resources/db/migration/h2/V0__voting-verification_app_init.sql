@@ -1,14 +1,15 @@
-DROP TABLE IF NOT EXISTS event;
+DROP TABLE IF EXISTS event;
 
 CREATE TABLE event (
-    id VARCHAR(256) NOT NULL, -- human readable name, should never contain PII data
-    team VARCHAR(256) NOT NULL,
-    schema_version VARCHAR(256) NOT NULL,
-    event_type INT NOT NULL,
+    id VARCHAR(255) NOT NULL, -- human readable name, should never contain PII data
+    team VARCHAR(255) NOT NULL,
+    schema_version VARCHAR(255) NOT NULL,
+    event_type VARCHAR(255) NOT NULL,
     allow_vote_changing BOOL,
     category_results_while_voting BOOL,
     high_level_results_while_voting BOOL,
-    voting_power_asset INT,
+
+    voting_power_asset VARCHAR(255),
 
     start_epoch INT,
     end_epoch INT,
@@ -26,12 +27,12 @@ CREATE TABLE event (
    CONSTRAINT pk_event PRIMARY KEY (id)
 );
 
-DROP TABLE IF NOT EXISTS category;
+DROP TABLE IF EXISTS category;
 
 CREATE TABLE category (
-    id VARCHAR(256) NOT NULL, -- human readable name, should never contain PII data
-    event_id VARCHAR(256) NOT NULL,
-    schema_version VARCHAR(256) NOT NULL,
+    id VARCHAR(255) NOT NULL, -- human readable name, should never contain PII data
+    event_id VARCHAR(255) NOT NULL,
+    schema_version VARCHAR(255) NOT NULL,
     gdpr_protection BOOL NOT NULL,
 
     absolute_slot BIGINT NOT NULL,
@@ -43,26 +44,26 @@ CREATE TABLE category (
    CONSTRAINT fk_category_event_id FOREIGN KEY (event_id) REFERENCES event(id)
 );
 
-DROP TABLE IF NOT EXISTS proposal;
+DROP TABLE IF EXISTS proposal;
 
 CREATE TABLE proposal (
-    id uuid NOT NULL, -- PII protection, on chain we are not allowed to store human readable names
-    name VARCHAR(256) NOT NULL, -- PII protection, on chain we are not allowed to store human readable names
-    category_id VARCHAR(256) category(id),
+    id VARCHAR(255) NOT NULL, -- PII protection, on chain we are not allowed to store human readable names
+    name VARCHAR(255) NOT NULL, -- PII protection, on chain we are not allowed to store human readable names
+    category_id VARCHAR(255) NOT NULL,
 
     absolute_slot BIGINT NOT NULL,
 
     created_at TIMESTAMP WITHOUT TIME ZONE,
     updated_at TIMESTAMP WITHOUT TIME ZONE,
 
-    CONSTRAINT pk_proposal PRIMARY KEY (id),
-    CONSTRAINT fk_proposal_category_id FOREIGN KEY (category_id) REFERENCES category(id)
+   CONSTRAINT pk_proposal PRIMARY KEY (id),
+   CONSTRAINT fk_proposal_category_id FOREIGN KEY (category_id) REFERENCES category(id)
 );
 
-DROP TABLE IF NOT EXISTS merkle_root_hash;
+DROP TABLE IF EXISTS merkle_root_hash;
 
 CREATE TABLE merkle_root_hash (
-    root_hash VARCHAR(256) NOT NULL,  -- merkle root hash
+    id VARCHAR(256) NOT NULL,  -- merkle root hash
     event_id VARCHAR(256) NOT NULL, -- human readable name, should never contain PII data
 
     absolute_slot BIGINT NOT NULL,
@@ -74,4 +75,4 @@ CREATE TABLE merkle_root_hash (
 );
 
 CREATE INDEX idx_merkle_root_hash_rollback
-    ON vote_merkle_proof (absolute_slot);
+    ON merkle_root_hash(absolute_slot);

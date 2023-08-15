@@ -11,6 +11,8 @@ Voltaire Voting Applications to be used by Cardano Community to cast CIP-1694 pr
 
 [![Voting-Admin-App-Build](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/voting-admin-app-build.yml/badge.svg)](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/voting-admin-app-build.yml)
 
+[![UI-App-Build](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/ui-cypress-tests.yaml/badge.svg)](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/ui-cypress-tests.yaml)
+
 ## Requirements
 - Node.js 18.x LTS
 - Java 17 LTS

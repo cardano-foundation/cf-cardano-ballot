@@ -55,14 +55,34 @@ cd cf-voting-app/backend-services/voting-app
 ./gradlew bootRun
 ```
 
+this will launch main voting-app on port: 9090 by default.
 
 ```shell
 cd cf-voting-app/backend-services/voting-verification-app
+./gradlew bootRun
+```
+
+this will launch voting-verification-app on port: 9091 by default.
+
+binding PORT can be change via SERVER_PORT env variable.
+
+e.g. 
+```
 SERVER_PORT=8888 ./gradlew bootRun
 ```
 
 ```shell
 npm run start
+```
+
+# Building native image with GraalVM
+Applications are GraalVM compatible (https://www.graalvm.org/)
+
+```shell
+cd cf-voting-app/backend-services/voting-verification-app
+./gradlew nativeCompile
+cd cf-voting-app/backend-services/voting-app
+./gradlew nativeCompile
 ```
 
 # Developing locally with Yaci DevKit

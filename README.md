@@ -1,4 +1,4 @@
-## CF Cardano Ballot Apps
+## Cardano Foundation | Cardano Ballot
 
 Voltaire Voting Applications to be used by Cardano Community to cast CIP-1694 pre-ratification vote. The applications are currently WIP (work in progress).
 

@@ -2,7 +2,7 @@ import { DEFAULT_CONTENT_TYPE_HEADERS, doRequest, HttpMethods } from '../handler
 import { env } from '../../env';
 import { VoteVerificationRequest, Problem } from '../../types/verification-service-types';
 
-const VERIFICATION_URL = `${env.APP_SERVER_URL}/api/verification/verify-vote`;
+export const VERIFICATION_URL = `${env.APP_SERVER_URL}/api/verification/verify-vote`;
 
 export const verifyVote = async (payload: VoteVerificationRequest) =>
   await doRequest<Problem | boolean>(

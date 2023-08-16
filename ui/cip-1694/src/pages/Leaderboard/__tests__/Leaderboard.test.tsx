@@ -13,7 +13,7 @@ import { createMemoryHistory } from 'history';
 import capitalize from 'lodash/capitalize';
 import { ROUTES } from 'common/routes';
 import { UserState } from 'common/store/types';
-import { renderWithProviders } from '../../../../test/mockProviders';
+import { renderWithProviders } from 'test/mockProviders';
 import {
   useCardanoMock,
   eventMock_finished,
@@ -21,8 +21,8 @@ import {
   useCardanoMock_notConnected,
   eventMock_notStarted,
   eventMock_active,
-} from '../../../../test/mocks';
-import { CustomRouter } from '../../../../test/CustomRouter';
+} from 'test/mocks';
+import { CustomRouter } from 'test/CustomRouter';
 import { Leaderboard } from '../Leaderboard';
 import { proposalColorsMap, getPercentage } from '../utils';
 

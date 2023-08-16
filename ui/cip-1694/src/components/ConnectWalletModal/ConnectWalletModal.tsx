@@ -5,12 +5,12 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Box, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
-import { useTheme } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import { ConnectWalletList } from '@cardano-foundation/cardano-connect-with-wallet';
-import styles from './ConnectWalletModal.module.scss';
 import { env } from '../../env';
+import { connectWalletListCustomCss } from './utils';
+import styles from './ConnectWalletModal.module.scss';
 
 type ConnectWalletModalProps = {
   name: string;
@@ -19,12 +19,12 @@ type ConnectWalletModalProps = {
   title: string;
   description: string;
   onConnectWallet: () => void;
+  onConnectWalletError: () => void;
   onCloseFn: () => void;
 };
 
 export const ConnectWalletModal = (props: ConnectWalletModalProps) => {
-  const theme = useTheme();
-  const { name, id, openStatus, title, description, onConnectWallet, onCloseFn } = props;
+  const { name, id, openStatus, title, description, onConnectWallet, onConnectWalletError, onCloseFn } = props;
   const supportedWallets = env.SUPPORTED_WALLETS;
 
   return (
@@ -35,21 +35,23 @@ export const ConnectWalletModal = (props: ConnectWalletModalProps) => {
       PaperProps={{ sx: { width: '400px', borderRadius: '16px' } }}
     >
       <DialogTitle
-        sx={{ padding: { xs: '20px', ms: '30px 30px 20px 30px' } }}
+        sx={{ padding: { xs: '20px', md: '30px 30px 20px 30px' } }}
         className={styles.dialogTitle}
         id={id}
+        data-testid="connected-wallet-modal-title"
       >
         {title}
         <IconButton
           aria-label="close"
           onClick={onCloseFn}
           className={styles.closeBtn}
+          data-testid="connected-wallet-modal-close"
         >
           <CloseIcon className={styles.closeIcon} />
         </IconButton>
       </DialogTitle>
       <DialogContent
-        sx={{ padding: { xs: '20px', ms: '0px 30px 30px 30px' } }}
+        sx={{ padding: { xs: '20px', md: '0px 30px 30px 30px' } }}
         className={styles.dialogContent}
       >
         <DialogContentText component={'div'}>
@@ -68,6 +70,7 @@ export const ConnectWalletModal = (props: ConnectWalletModalProps) => {
                 className={styles.description}
                 component="div"
                 variant="h5"
+                data-testid="connected-wallet-modal-description"
               >
                 {description}
               </Typography>
@@ -79,33 +82,9 @@ export const ConnectWalletModal = (props: ConnectWalletModalProps) => {
               <Box width="100%">
                 <ConnectWalletList
                   supportedWallets={supportedWallets}
-                  primaryColor={theme.palette.primary.main}
                   onConnect={onConnectWallet}
-                  customCSS={`
-                    display: flex;
-                    flex-direction: column;
-                    gap: 10px;
-                    max-width: 100%;
-                    width: 100%;
-                    span {
-                      background: #F5F9FF !important;
-                      border-radius: 8px !important;
-                      border: 1px solid #BBB !important;
-                      color: #39486C !important;
-                      font-size: 16px !important;
-                      font-style: normal;
-                      font-weight: 400 !important;
-                      height: 54px !important;
-                      line-height: 22px !important;
-                      padding: 20px;
-                      gap: 14px;
-                      : hover {
-                        border: 1px solid #1D439B !important;
-                        background: rgba(29, 67, 155, 0.10) !important;
-                        box-shadow: 2px 2px 5px 0px rgba(29, 67, 155, 0.25);
-                      }
-                    }
-                  `}
+                  onConnectError={onConnectWalletError}
+                  customCSS={connectWalletListCustomCss}
                 />
               </Box>
             </Grid>

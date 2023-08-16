@@ -8,15 +8,15 @@ import { screen, within, waitFor, fireEvent, cleanup } from '@testing-library/re
 import { createMemoryHistory } from 'history';
 import { UserState } from 'common/store/types';
 import { ROUTES } from 'common/routes';
-import { renderWithProviders } from '../../../../../test/mockProviders';
+import { renderWithProviders } from 'test/mockProviders';
 import {
   eventMock_active,
   eventMock_finished,
   eventMock_notStarted,
   useCardanoMock,
   useCardanoMock_notConnected,
-} from '../../../../../test/mocks';
-import { CustomRouter } from '../../../../../test/CustomRouter';
+} from 'test/mocks';
+import { CustomRouter } from 'test/CustomRouter';
 import { Header } from '../Header';
 
 jest.mock('@cardano-foundation/cardano-connect-with-wallet', () => ({

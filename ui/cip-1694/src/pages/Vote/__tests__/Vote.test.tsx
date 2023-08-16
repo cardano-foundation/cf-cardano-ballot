@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-var */
 var mockUseCardano = jest.fn();
@@ -7,6 +8,7 @@ var mockBuildCanonicalVoteInputJson = jest.fn();
 var mockGetSignedMessagePromise = jest.fn();
 var mockGetSlotNumber = jest.fn();
 var mockGetVoteReceipt = jest.fn();
+var mockToast = jest.fn();
 /* eslint-disable import/imports-first */
 import 'whatwg-fetch';
 import '@testing-library/jest-dom';
@@ -17,11 +19,14 @@ import { createMemoryHistory } from 'history';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { format } from 'date-fns';
+import BlockIcon from '@mui/icons-material/Block';
 import { ROUTES } from 'common/routes';
 import { UserState } from 'common/store/types';
 import { EVENT_BY_ID_REFERENCE_URL } from 'common/api/referenceDataService';
 import { VotePage } from 'pages/Vote/Vote';
-import { renderWithProviders } from '../../../../test/mockProviders';
+import { Toast } from 'components/common/Toast/Toast';
+import { VERIFICATION_URL } from 'common/api/verificationService';
+import { renderWithProviders } from 'test/mockProviders';
 import {
   eventMock_active,
   chainTipMock,
@@ -32,9 +37,12 @@ import {
   VoteReceiptMock_Basic,
   eventMock_notStarted,
   eventMock_finished,
-} from '../../../../test/mocks';
+  VoteReceiptMock_Full_MediumAssurance,
+} from 'test/mocks';
+import { CustomRouter } from 'test/CustomRouter';
 import { env } from '../../../env';
-import { CustomRouter } from '../../../../test/CustomRouter';
+
+jest.mock('react-hot-toast', () => mockToast);
 
 jest.mock('@cardano-foundation/cardano-connect-with-wallet', () => {
   return {
@@ -91,6 +99,9 @@ jest.mock('common/utils/voteUtils', () => ({
 export const handlers = [
   rest.get(`${EVENT_BY_ID_REFERENCE_URL}/${env.EVENT_ID}`, (req, res, ctx) => {
     return res(ctx.json(eventMock_active), ctx.delay(150));
+  }),
+  rest.post(`${VERIFICATION_URL}`, (req, res, ctx) => {
+    return res(ctx.json(true), ctx.delay(150));
   }),
 ];
 
@@ -378,6 +389,56 @@ describe('For ongoing event:', () => {
 
     await waitFor(async () => {
       expect(screen.queryByTestId('vote-receipt')).toBeInTheDocument();
+    });
+  });
+
+  test('should handle error case of refetch receipt functionality', async () => {
+    const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
+    mockGetVoteReceipt.mockReset();
+    mockGetVoteReceipt.mockReturnValue(VoteReceiptMock_Full_MediumAssurance);
+    mockUseCardano.mockReset();
+    mockUseCardano.mockReturnValue({
+      ...useCardanoMock,
+      signMessage: mockSignMessage,
+    });
+    mockGetSignedMessagePromise.mockReset();
+    mockGetSignedMessagePromise.mockImplementation(
+      (signMessage: (message: string) => string) => async (message: string) => await signMessage(message)
+    );
+    mockGetVotingPower.mockReset();
+    mockGetVotingPower.mockResolvedValue(accountDataMock);
+
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
+    renderWithProviders(
+      <CustomRouter history={history}>
+        <VotePage />
+      </CustomRouter>,
+      { preloadedState: { user: { event: eventMock_active } as UserState } }
+    );
+
+    const votePage = await screen.findByTestId('vote-page');
+
+    expect(screen.queryByTestId('vote-receipt')).not.toBeInTheDocument();
+
+    const cta = await within(votePage).findByTestId('show-receipt-button');
+    fireEvent.click(cta);
+
+    const receipt = await screen.findByTestId('vote-receipt');
+    expect(receipt).toBeInTheDocument();
+
+    mockGetVoteReceipt.mockReset();
+    mockGetVoteReceipt.mockImplementation(async () => await Promise.reject('error'));
+
+    fireEvent.click(await within(receipt).findByTestId('refetch-receipt-button'));
+
+    await waitFor(async () => {
+      expect(mockToast).toBeCalledWith(
+        <Toast
+          message="Unable to refresh your vote receipt. Please try again"
+          error
+          icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
+        />
+      );
     });
   });
 });

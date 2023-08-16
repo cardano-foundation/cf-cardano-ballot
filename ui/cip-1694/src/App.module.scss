@@ -5,8 +5,11 @@ body {
 .toast {
   padding: 0 !important;
   border-radius: 8px !important;
-  background: #061d3c !important;
   color: #fff;
   min-width: auto !important;
   width: auto !important;
+  max-width: 450px !important;
+  & > div {
+    margin: 0px !important;
+  }
 }

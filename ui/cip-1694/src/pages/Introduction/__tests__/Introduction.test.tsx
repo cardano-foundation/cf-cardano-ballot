@@ -10,9 +10,9 @@ import { createMemoryHistory } from 'history';
 import { ROUTES } from 'common/routes';
 import { UserState } from 'common/store/types';
 import { IntroductionPage, introItems } from 'pages/Introduction/Introduction';
-import { renderWithProviders } from '../../../../test/mockProviders';
-import { eventMock_active, useCardanoMock, eventMock_notStarted, eventMock_finished } from '../../../../test/mocks';
-import { CustomRouter } from '../../../../test/CustomRouter';
+import { renderWithProviders } from 'test/mockProviders';
+import { eventMock_active, useCardanoMock, eventMock_notStarted, eventMock_finished } from 'test/mocks';
+import { CustomRouter } from 'test/CustomRouter';
 
 jest.mock('@cardano-foundation/cardano-connect-with-wallet', () => {
   return {

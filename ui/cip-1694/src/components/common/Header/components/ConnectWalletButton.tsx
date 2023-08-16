@@ -6,7 +6,7 @@ import cn from 'classnames';
 import { Button } from '@mui/material';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import BlockIcon from '@mui/icons-material/Block';
 import {
   useCardano,
   ConnectWalletButton as CFConnectWalletButton,
@@ -35,8 +35,9 @@ export const ConnectWalletButton = ({ isMobileMenu = false }) => {
     if (supportedWallets.length === 0) {
       toast(
         <Toast
-          message="No supported wallets specified!"
-          icon={<ErrorOutlineIcon style={{ color: '#cc0e00' }} />}
+          error
+          message="No supported wallets specified"
+          icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
         />
       );
     }

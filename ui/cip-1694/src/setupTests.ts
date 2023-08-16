@@ -1,3 +1,4 @@
+import mediaQuery from 'css-mediaquery';
 // jest-dom adds custom jest matchers for asserting on DOM nodes.
 // allows you to do things like:
 // expect(element).toHaveTextContent(/react/i)
@@ -10,8 +11,8 @@ import '@testing-library/jest-dom/jest-globals';
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: jest.fn().mockImplementation((query) => ({
-    matches: false,
-    media: query,
+    matches: mediaQuery.match(query, { width: 1440 }),
+    media: '',
     onchange: null,
     addListener: jest.fn(), // deprecated
     removeListener: jest.fn(), // deprecated

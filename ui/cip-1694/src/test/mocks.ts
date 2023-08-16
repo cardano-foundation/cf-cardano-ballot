@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { VoteReceipt, EventReference, ChainTip, Account, ByCategory } from 'types/backend-services-types';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import { canonicalize } from 'json-canonicalize';
@@ -164,4 +165,20 @@ export const VoteReceiptMock_Full_HighAssurance: VoteReceipt = {
   ...VoteReceiptMock_Basic,
   status: 'FULL',
   finalityScore: 'VERY_HIGH',
+};
+
+export const VoteReceiptNotFound: any = {
+  cause: null,
+  stackTrace: [],
+  type: 'about:blank',
+  title: 'VOTE_NOT_FOUND',
+  status: 'NOT_FOUND',
+  detail: 'Not voted yet for stakeKey:stake_test1uqwcz0754wwpuhm6xhdpda6u9enyahaj5ynlc9ay5l4mlms4pyqyg',
+  instance: null,
+  parameters: {},
+  message:
+    'VOTE_NOT_FOUND: Not voted yet for stakeKey:stake_test1uqwcz0754wwpuhm6xhdpda6u9enyahaj5ynlc9ay5l4mlms4pyqyg',
+  suppressed: [],
+  localizedMessage:
+    'VOTE_NOT_FOUND: Not voted yet for stakeKey:stake_test1uqwcz0754wwpuhm6xhdpda6u9enyahaj5ynlc9ay5l4mlms4pyqyg',
 };

@@ -102,5 +102,12 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "browser": {
+    "http": false,
+    "https": false
+  },
+  "msw": {
+    "workerDirectory": "public"
   }
 }

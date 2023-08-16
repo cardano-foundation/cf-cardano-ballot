@@ -1,4 +1,4 @@
-# Cardano Voting - voting react app
+# CIP-1694 | Pre-Ratification 
 
 <p align="left">
 <img alt="Tests" src="https://github.com/cardano-foundation/cf-voting-app/actions/workflows/tests.yaml/badge.svg" />

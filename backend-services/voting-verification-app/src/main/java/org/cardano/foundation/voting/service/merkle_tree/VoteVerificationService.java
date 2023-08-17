@@ -32,7 +32,7 @@ public class VoteVerificationService {
         var maybeRoot = merkleRootHashRepository.findById(voteVerificationRequest.getRootHash());
 
         if (maybeRoot.isEmpty()) {
-            log.info("No root hash in db found for {}", voteVerificationRequest.getRootHash());
+            log.info("No valid / approved root hash in db found for a given rootHash: {}", voteVerificationRequest.getRootHash());
 
             return Either.right(false);
         }

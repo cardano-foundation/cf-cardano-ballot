@@ -668,6 +668,7 @@ public class DefaultVoteService implements VoteService {
                     .merkleProof(convertMerkleProof(proof, td))
                     .build()
             );
+
         }).orElseGet(() -> {
             log.info("Merkle proof not found yet for voteId:{}", vote.getId());
 

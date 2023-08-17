@@ -4,14 +4,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.service.merkle_tree.VoteCommitmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StopWatch;
 
 @Slf4j
 @Service
-@EnableAsync
 public class VoteCommitmentJob implements Runnable {
 
     @Autowired
@@ -22,7 +20,6 @@ public class VoteCommitmentJob implements Runnable {
 
     @Override
     @Scheduled(cron = "${vote.commitment.cron.expression}")
-    @Async("asyncExecutor")
     public void run() {
         if (!isVoteCommitmentEnabled) {
             log.info("L1 votes commitment disabled on this instance.");
@@ -30,10 +27,12 @@ public class VoteCommitmentJob implements Runnable {
         }
 
         log.info("Starting VoteCommitmentJob...");
-
+        var startStop = new StopWatch();
+        startStop.start();
         voteCommitmentService.processVotesForAllEvents();
+        startStop.stop();
 
-        log.info("Finished processing events and all votes...");
+        log.info("VoteCommitmentJob completed, running time:{} secs", startStop.getTotalTimeSeconds());
     }
 
 }

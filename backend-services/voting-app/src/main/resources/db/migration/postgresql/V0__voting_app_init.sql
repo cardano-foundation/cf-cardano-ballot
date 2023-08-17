@@ -82,6 +82,12 @@ CREATE TABLE vote (
 CREATE INDEX idx_vote_stake_key
     ON vote (event_id, category_id, voter_stake_address);
 
+CREATE INDEX idx_vote_event_id
+    ON vote (event_id);
+
+CREATE INDEX idx_vote_event_id_category_id_proposal_id
+    ON vote (event_id, category_id, proposal_id);
+
 DROP TABLE IF EXISTS vote_merkle_proof;
 
 -- benefit of storing vote merkle proof is that upon restart of app voter's receipt can be served from local db

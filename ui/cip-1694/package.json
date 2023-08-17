@@ -34,6 +34,7 @@
     "redux-reset": "^0.3.0",
     "redux-thunk": "^2.4.2",
     "sass": "^1.56.1",
+    "source-map-explorer": "^2.5.3",
     "start-server-and-test": "^2.0.0",
     "swiper": "^9.3.1",
     "typescript": "^4.9.5",
@@ -75,6 +76,7 @@
     "whatwg-fetch": "^3.6.17"
   },
   "scripts": {
+    "analyze": "source-map-explorer 'build/static/js/*.js'",
     "start": "react-scripts start",
     "build": "REACT_APP_SERVER_URL= REACT_APP_TARGET_NETWORK= REACT_APP_EVENT_ID= REACT_APP_CATEGORY_ID= REACT_APP_SUPPORTED_WALLETS= npx react-inject-env build react-scripts build",
     "jest-test": "jest --config ./jest.config.js",

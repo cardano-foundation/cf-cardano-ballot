@@ -1,10 +1,11 @@
 import React from 'react';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import cn from 'classnames';
+import GppGoodOutlinedIcon from '@mui/icons-material/GppGoodOutlined';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, Typography, useMediaQuery, useTheme } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
@@ -19,6 +20,8 @@ type VoteSubmittedModalProps = {
 };
 
 export const VerifyVoteModal = (props: VoteSubmittedModalProps) => {
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.up('sm'));
   const { name, id, openStatus, onCloseFn } = props;
 
   return (
@@ -29,9 +32,14 @@ export const VerifyVoteModal = (props: VoteSubmittedModalProps) => {
     >
       <DialogTitle
         className={styles.dialogTitle}
+        padding={{ xs: '20px', sm: '30px 30px 20px 30px' }}
+        gap={{ xs: '8px', sm: '12px' }}
         id={id}
       >
-        Vote verified <CheckCircleOutlineIcon className={styles.checkIcon} />
+        Vote verified{' '}
+        <span className={styles.iconCircle}>
+          <GppGoodOutlinedIcon className={styles.checkIcon} />
+        </span>
         <IconButton
           aria-label="close"
           onClick={onCloseFn}
@@ -40,7 +48,10 @@ export const VerifyVoteModal = (props: VoteSubmittedModalProps) => {
           <CloseIcon className={styles.closeIcon} />
         </IconButton>
       </DialogTitle>
-      <DialogContent className={styles.dialogContent}>
+      <DialogContent
+        sx={{ padding: { xs: '20px', sm: '0px 30px 30px 30px' } }}
+        className={styles.dialogContent}
+      >
         <DialogContentText component={'div'}>
           <Grid
             container
@@ -69,18 +80,21 @@ export const VerifyVoteModal = (props: VoteSubmittedModalProps) => {
               <Grid
                 item
                 container
-                direction="row"
-                gap="18px"
+                direction={{ xs: 'column-reverse', sm: 'row' }}
+                gap={{ xs: '24px', sm: '18px' }}
                 wrap="nowrap"
-                sx={{ height: '160px' }}
+                height={{ xs: 'auto', sm: '160px' }}
+                justifyContent={'center'}
+                alignItems={'center'}
               >
                 <Grid
                   xs={6}
                   item
-                  sx={{ height: '160px' }}
+                  height={{ xs: 'auto', sm: '160px' }}
+                  width={{ xs: '100%', sm: 'auto' }}
                 >
                   <Button
-                    className={styles.viewTxBtn}
+                    className={cn(styles.viewTxBtn, { [styles.xs]: !isSmallScreen })}
                     size="large"
                     variant="outlined"
                     onClick={() => console.log('show tx details...')}
@@ -92,13 +106,17 @@ export const VerifyVoteModal = (props: VoteSubmittedModalProps) => {
                   xs={6}
                   item
                 >
-                  <QRCode data="qrCodeData" />
+                  <QRCode
+                    options={{ ...(isSmallScreen && { height: 160, width: 160 }) }}
+                    data="qrCodeData"
+                  />
                 </Grid>
               </Grid>
             </Grid>
             <Grid
               item
               width="100%"
+              marginTop={{ xs: '-12px', sm: '0xp' }}
             >
               <Box width="100%">
                 <Button

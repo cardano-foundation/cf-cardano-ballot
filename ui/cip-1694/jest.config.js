@@ -10,12 +10,13 @@ module.exports = {
     '^.+\\.(ts|tsx)$': 'ts-jest',
   },
   moduleNameMapper: {
-    '.*\\.(scss|sass|css|less)$': '<rootDir>/test/__mocks__/styleMock.js',
-    '.*\\.(jpg|jpeg|png|gif|eot|otf|webp|ttf|woff|woff2)$': '<rootDir>/test/__mocks__/fileMock.js',
-    '.*\\.svg*$': '<rootDir>/test/__mocks__/svgMock.js',
+    '.*\\.(scss|sass|css|less)$': '<rootDir>/src/test/__mocks__/styleMock.js',
+    '.*\\.(jpg|jpeg|png|gif|eot|otf|webp|ttf|woff|woff2)$': '<rootDir>/src/test/__mocks__/fileMock.js',
+    '.*\\.svg*$': '<rootDir>/src/test/__mocks__/svgMock.js',
     '^lodash-es$': 'lodash',
     '^common/(.*)': '<rootDir>/src/common/$1',
     '^pages/(.*)': '<rootDir>/src/pages/$1',
     '^components/(.*)': '<rootDir>/src/components/$1',
+    '^test/(.*)': '<rootDir>/src/test/$1',
   },
 };

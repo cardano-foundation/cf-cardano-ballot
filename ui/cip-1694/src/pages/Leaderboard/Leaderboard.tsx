@@ -5,7 +5,7 @@ import cn from 'classnames';
 import toast from 'react-hot-toast';
 import { PieChart } from 'react-minimal-pie-chart';
 import { Grid, Typography } from '@mui/material';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import BlockIcon from '@mui/icons-material/Block';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import { ByCategory, ProposalReference } from 'types/backend-services-types';
 import { ROUTES } from 'common/routes';
@@ -37,8 +37,8 @@ export const Leaderboard = () => {
       console.log(message);
       toast(
         <Toast
-          message={message}
-          icon={<ErrorOutlineIcon style={{ color: '#cc0e00' }} />}
+          message="Failed to fecth stats"
+          icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
         />
       );
     }

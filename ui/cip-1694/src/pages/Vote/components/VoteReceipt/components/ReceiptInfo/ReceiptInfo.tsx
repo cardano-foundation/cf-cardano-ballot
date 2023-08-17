@@ -1,6 +1,6 @@
 import React from 'react';
 import Grid from '@mui/material/Grid';
-import { Button, IconButton } from '@mui/material';
+import { Button, IconButton, useMediaQuery, useTheme } from '@mui/material';
 import QrCodeIcon from '@mui/icons-material/QrCode';
 import ReplayIcon from '@mui/icons-material/Replay';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
@@ -45,7 +45,7 @@ const StatusToInfoPanelDescription: Partial<Record<Status | 'VERIFIED', string>>
   BASIC:
     'Your vote has been successfully submitted. You might have to wait up to 30 minutes for this to be visible on chain. Please check back later to verify your vote.',
   // TODO: provide copy
-  VERIFIED: '  ',
+  VERIFIED: '',
 };
 
 const HIGHT_ASSURANCE =
@@ -60,14 +60,21 @@ const FullStatusToInfoPanelDescription: Record<FinalityScore, string> = {
   FINAL: HIGHT_ASSURANCE,
 };
 
+type FetchReceiptProps = {
+  cb?: () => void;
+  refetch?: boolean;
+};
 type ReceiptInfoProps = {
   isVerified: boolean;
-  fetchReceipt: () => void;
+  fetchReceipt: (props: FetchReceiptProps) => void;
   showVerifiedModal: () => void;
   receipt: VoteReceipt;
 };
 
 export const ReceiptInfo = ({ isVerified, fetchReceipt, receipt, showVerifiedModal }: ReceiptInfoProps) => {
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.up('sm'));
+
   const status = isVerified ? 'VERIFIED' : receipt.status;
   const finalityScore = ['VERY_HIGH', 'FINAL'].includes(receipt?.finalityScore) ? 'HIGH' : receipt?.finalityScore;
   const Title = StatusToInfoPanelTitle[status];
@@ -76,13 +83,17 @@ export const ReceiptInfo = ({ isVerified, fetchReceipt, receipt, showVerifiedMod
     <InfoPanel
       type={isVerified ? InfoPanelTypes.SUCCESS : StatusToInfoPanelType[receipt.status] || InfoPanelTypes.DEFAULT}
       title={<Title>{status === 'FULL' && <span data-finalityscore={finalityScore}>{finalityScore}</span>}</Title>}
-      description={StatusToInfoPanelDescription[status] || FullStatusToInfoPanelDescription[finalityScore]}
+      description={
+        isVerified ? '' : StatusToInfoPanelDescription[status] || FullStatusToInfoPanelDescription[finalityScore]
+      }
+      isSm={isSmallScreen}
       cta={
         <Button
           className={styles.ctaButton}
           size="large"
           variant="outlined"
-          onClick={!isVerified ? () => fetchReceipt() : () => showVerifiedModal()}
+          onClick={!isVerified ? () => fetchReceipt({ refetch: true }) : () => showVerifiedModal()}
+          data-testid="refetch-receipt-button"
         >
           {isVerified ? <QrCodeIcon className={styles.ctaIcon} /> : <ReplayIcon className={styles.ctaIcon} />}
         </Button>

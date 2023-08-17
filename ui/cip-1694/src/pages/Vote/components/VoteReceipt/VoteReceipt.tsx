@@ -5,7 +5,7 @@ import pick from 'lodash/pick';
 import Grid from '@mui/material/Grid';
 import { IconButton, Typography, debounce, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import BlockIcon from '@mui/icons-material/Block';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import * as verificationService from 'common/api/verificationService';
 import { RootState } from 'common/store';
@@ -24,7 +24,7 @@ import styles from './VoteReceipt.module.scss';
 
 type VoteReceiptProps = {
   setOpen: () => void;
-  fetchReceipt: () => void;
+  fetchReceipt: (props: { cb?: () => void; refetch?: boolean }) => void;
 };
 
 export const VoteReceipt = ({ setOpen, fetchReceipt }: VoteReceiptProps) => {
@@ -47,14 +47,15 @@ export const VoteReceipt = ({ setOpen, fetchReceipt }: VoteReceiptProps) => {
         steps,
       });
       if (typeof verified === 'boolean') {
-        setIsVerified(isVerified);
+        setIsVerified(verified);
       }
     } catch (error) {
       console.log('Failed to verify vote', error?.message);
       toast(
         <Toast
-          message={error?.message}
-          icon={<ErrorOutlineIcon style={{ color: '#cc0e00' }} />}
+          message="Unable to verify vote receipt. Please try again"
+          error
+          icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
         />
       );
     }

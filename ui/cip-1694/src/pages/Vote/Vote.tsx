@@ -10,7 +10,7 @@ import DoneIcon from '@mui/icons-material/Done';
 import CloseIcon from '@mui/icons-material/Close';
 import DoDisturbIcon from '@mui/icons-material/DoDisturb';
 import ReceiptIcon from '@mui/icons-material/ReceiptLongOutlined';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import BlockIcon from '@mui/icons-material/Block';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import { ROUTES } from 'common/routes';
 import { EventTime } from 'components/EventTime/EventTime';
@@ -80,7 +80,10 @@ export const VotePage = () => {
   const signMessagePromisified = useMemo(() => getSignedMessagePromise(signMessage), [signMessage]);
 
   const fetchReceipt = useCallback(
-    async (cb?: () => void) => {
+    async ({ cb, refetch = false }: { cb?: () => void; refetch?: boolean }) => {
+      const errorPrefix = refetch
+        ? 'Unable to refresh your vote receipt. Please try again'
+        : 'Unable to fetch your vote receipt. Please try again';
       try {
         const voteObjectPayload = await signMessagePromisified(
           buildCanonicalVoteReceiptInputJson({
@@ -93,12 +96,13 @@ export const VotePage = () => {
           dispatch(setVoteReceipt({ receipt: receiptResponse }));
           dispatch(setSelectedProposal({ proposal: receiptResponse.proposal }));
         } else {
-          const message = `Failed to fetch receipt', ${receiptResponse?.title}, ${receiptResponse?.detail}`;
+          const message = `${errorPrefix}', ${receiptResponse?.title}, ${receiptResponse?.detail}`;
           console.log(message);
           toast(
             <Toast
-              message={message}
-              icon={<ErrorOutlineIcon style={{ color: '#cc0e00' }} />}
+              message={errorPrefix}
+              error
+              icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
             />
           );
         }
@@ -110,11 +114,12 @@ export const VotePage = () => {
           dispatch(setIsReceiptFetched({ isFetched: true }));
           return;
         }
-        const message = `Failed to fetch receipt, ${error?.info || error?.message || error?.toString()}`;
+        const message = `${errorPrefix}, ${error?.info || error?.message || error?.toString()}`;
         toast(
           <Toast
-            message={message}
-            icon={<ErrorOutlineIcon style={{ color: '#cc0e00' }} />}
+            message={errorPrefix}
+            error
+            icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
           />
         );
         console.log(message);
@@ -124,7 +129,7 @@ export const VotePage = () => {
   );
 
   const openReceiptDrawer = async () => {
-    await fetchReceipt(toggleReceipt);
+    await fetchReceipt({ cb: toggleReceipt });
   };
 
   const init = useCallback(async () => {
@@ -135,8 +140,9 @@ export const VotePage = () => {
       console.log(message);
       toast(
         <Toast
-          message={message}
-          icon={<ErrorOutlineIcon style={{ color: '#cc0e00' }} />}
+          message="Failed to fecth slot number"
+          error
+          icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
         />
       );
     }
@@ -150,7 +156,7 @@ export const VotePage = () => {
 
   useEffect(() => {
     if (absoluteSlot && !savedProposal && !eventHasntStarted) {
-      fetchReceipt();
+      fetchReceipt({});
     }
   }, [absoluteSlot, fetchReceipt, savedProposal, eventHasntStarted]);
 
@@ -160,12 +166,11 @@ export const VotePage = () => {
   };
 
   const handleSubmit = async () => {
+    if (!isConnected) return;
     if (!env.EVENT_ID) {
       console.log('EVENT_ID is not provided');
       return;
     }
-
-    if (!isConnected) return;
 
     let votingPower: Account['votingPower'];
     try {
@@ -178,8 +183,9 @@ export const VotePage = () => {
       console.log(message);
       toast(
         <Toast
-          message={message}
-          icon={<ErrorOutlineIcon style={{ color: '#cc0e00' }} />}
+          error
+          message="Unable to submit your vote. Please try again"
+          icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
         />
       );
       return;
@@ -202,19 +208,22 @@ export const VotePage = () => {
       if (error instanceof HttpError && error.code === 400) {
         toast(
           <Toast
-            message={errorsMap[error?.message as keyof typeof errorsMap] || error?.message}
-            icon={<ErrorOutlineIcon style={{ color: '#cc0e00' }} />}
+            error
+            message="Unable to submit your vote. Please try again"
+            icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
           />
         );
         setOptionId('');
+        console.log('Failed to cast e vote', errorsMap[error?.message as keyof typeof errorsMap] || error?.message);
       } else if (error instanceof Error) {
         toast(
           <Toast
-            message={error?.message || error.toString()}
-            icon={<ErrorOutlineIcon style={{ color: '#cc0e00' }} />}
+            error
+            message="Unable to submit your vote. Please try again"
+            icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
           />
         );
-        console.log('Failed to cast e vote', error);
+        console.log('Failed to cast e vote', error?.message || error.toString());
       }
     }
   };

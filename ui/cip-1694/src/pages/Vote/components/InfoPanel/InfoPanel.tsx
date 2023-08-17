@@ -21,6 +21,7 @@ type InfoPanelProps = {
   cta: React.ReactNode;
   description?: React.ReactNode;
   type: InfoPanelTypes;
+  isSm?: boolean;
 };
 
 const IconsMap: Record<InfoPanelTypes, React.ReactElement> = {
@@ -46,7 +47,7 @@ const IconsMap: Record<InfoPanelTypes, React.ReactElement> = {
   ),
 };
 
-export const InfoPanel = ({ icon, title, cta, description, type }: InfoPanelProps) => (
+export const InfoPanel = ({ icon, title, cta, description, type, isSm }: InfoPanelProps) => (
   <Grid
     gap="16px"
     className={cn(styles.infoPanel, { [styles[type?.toLowerCase()]]: type })}
@@ -54,15 +55,17 @@ export const InfoPanel = ({ icon, title, cta, description, type }: InfoPanelProp
     direction={{ xs: 'column', sm: 'row' }}
     flexWrap="nowrap"
   >
-    <Grid
-      gap="0"
-      item
-      display={{ xs: 'flex', sm: 'none' }}
-      justifyContent="space-between"
-    >
-      <Grid item>{icon || IconsMap[type]}</Grid>
-      <Grid item>{cta}</Grid>
-    </Grid>
+    {!isSm && (
+      <Grid
+        gap="0"
+        item
+        display={{ xs: 'flex', sm: 'none' }}
+        justifyContent="space-between"
+      >
+        <Grid item>{icon || IconsMap[type]}</Grid>
+        <Grid item>{cta}</Grid>
+      </Grid>
+    )}
 
     <Grid
       display={{ xs: 'none', sm: 'flex' }}
@@ -81,7 +84,7 @@ export const InfoPanel = ({ icon, title, cta, description, type }: InfoPanelProp
         justifyContent="space-between"
       >
         <span className={styles.title}>{title}</span>
-        <Box display={{ xs: 'none', sm: 'block' }}>{cta}</Box>
+        {isSm && <Box>{cta}</Box>}
       </Grid>
       <Grid
         item

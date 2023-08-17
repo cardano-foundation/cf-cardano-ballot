@@ -6,14 +6,12 @@
   font-size: 28px !important;
   font-style: normal !important;
   font-weight: 600 !important;
-  gap: 12px;
   line-height: normal !important;
-  padding: 30px 30px 20px 30px !important;
 }
 
 .checkIcon {
-  color: #43e4b7 !important;
-  font-size: 28px !important;
+  color: #00662B !important;
+  font-size: 22px !important;
 }
 
 .description {
@@ -26,7 +24,6 @@
 
 .dialogContent {
   background: #f5f9ff !important;
-  padding: 0px 30px 30px 30px !important;
 }
 
 .closeBtn {
@@ -42,37 +39,31 @@
   }
 }
 
-.textArea {
-  background: #f5f9ff !important;
-  border-radius: 8px !important;
-  border: 1px solid #cccccc !important;
-  color: #39486c !important;
-  font-family: 'Roboto', sans-serif !important;
-  font-size: 16px !important;
-  font-weight: 400 !important;
-  letter-spacing: 0em !important;
-  line-height: 22px !important;
-  max-height: 185px !important;
-  min-height: 185px !important;
-  overflow: auto !important;
-  padding: 16px !important;
-  resize: none !important;
-  width: 100%;
-  &::placeholder {
-    color: #39486ca6 !important;
-  }
+.iconCircle {
+  align-items: center;
+  background: #00662b1a;
+  border-radius: 50%;
+  display: flex;
+  height: 33px;
+  justify-content: center;
+  width: 33px;
 }
+
 .viewTxBtn {
   background: #f5f9ff !important;
   border-radius: 8px !important;
   border: 1px solid #bbbbbb !important;
   color: #061d3c !important;
   font-size: 16px !important;
-  font-weight: 600 !important;
+  font-weight: 500 !important;
   height: 100% !important;
   letter-spacing: 0em !important;
   line-height: 19px !important;
   text-transform: none !important;
+  &.xs {
+    width: 100% !important;
+    height: 49px !important;
+  }
   &:hover {
     background: rgba(29, 67, 155, 0.1) !important;
     border: 1px solid #1d439b !important;
@@ -86,7 +77,7 @@
   color: #f5f9ff !important;
   font-size: 16px !important;
   font-style: normal !important;
-  font-weight: 600 !important;
+  font-weight: 500 !important;
   height: 49px !important;
   line-height: normal !important;
   text-transform: unset !important;

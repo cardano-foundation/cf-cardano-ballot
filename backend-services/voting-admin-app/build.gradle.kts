@@ -45,7 +45,7 @@ dependencies {
 
 	implementation("io.blockfrost:blockfrost-java:0.1.3")
 
-`	implementation("io.vavr:vavr:0.10.4")
+	implementation("io.vavr:vavr:0.10.4")
 
 	implementation("org.zalando:problem:0.27.1")
 	implementation("org.zalando:jackson-datatype-problem:0.27.1")

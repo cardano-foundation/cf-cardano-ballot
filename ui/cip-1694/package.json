@@ -76,9 +76,10 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "REACT_APP_SERVER_URL= REACT_APP_TARGET_NETWORK= REACT_APP_EVENT_ID= REACT_APP_CATEGORY_ID= REACT_APP_SUPPORTED_WALLETS= npx react-inject-env build react-scripts build",
+    "build": "react-scripts build",
     "jest-test": "jest --config ./jest.config.js",
     "jest-test:coverage": "jest --config ./jest.config.js --collect-coverage",
+    "react-inject-env": "react-inject-env set",
     "eject": "react-scripts eject",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",

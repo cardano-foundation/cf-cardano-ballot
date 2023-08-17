@@ -7,9 +7,9 @@ import { Leaderboard } from 'pages/Leaderboard/Leaderboard';
 export const PAGE_PATH = '/';
 
 export const ROUTES = {
-  INTRO: `${PAGE_PATH}`,
-  VOTE: '/vote',
-  LEADERBOARD: '/leaderboard',
+  INTRO: PAGE_PATH,
+  VOTE: `${PAGE_PATH}vote`,
+  LEADERBOARD: `${PAGE_PATH}leaderboard`,
 };
 
 export const PageRoutes = () => (

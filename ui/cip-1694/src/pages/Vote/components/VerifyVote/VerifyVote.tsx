@@ -24,6 +24,12 @@ export const VerifyVoteModal = (props: VoteSubmittedModalProps) => {
   const isSmallScreen = useMediaQuery(theme.breakpoints.up('sm'));
   const { name, id, openStatus, onCloseFn } = props;
 
+  const showTxDetails = () => {
+    // TODO: implement
+    console.log('show tx details...');
+  };
+  const qrCodeData = 'qrCodeData';
+
   return (
     <Dialog
       open={!!openStatus}
@@ -97,7 +103,7 @@ export const VerifyVoteModal = (props: VoteSubmittedModalProps) => {
                     className={cn(styles.viewTxBtn, { [styles.xs]: !isSmallScreen })}
                     size="large"
                     variant="outlined"
-                    onClick={() => console.log('show tx details...')}
+                    onClick={() => showTxDetails()}
                   >
                     View transaction details
                   </Button>
@@ -108,7 +114,7 @@ export const VerifyVoteModal = (props: VoteSubmittedModalProps) => {
                 >
                   <QRCode
                     options={{ ...(isSmallScreen && { height: 160, width: 160 }) }}
-                    data="qrCodeData"
+                    data={qrCodeData}
                   />
                 </Grid>
               </Grid>

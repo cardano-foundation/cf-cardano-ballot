@@ -71,7 +71,10 @@ e.g.
 SERVER_PORT=8888 ./gradlew bootRun
 ```
 
+use `setupProxy.js` to proxy services urls
+
 ```shell
+npm i
 npm run start
 ```
 

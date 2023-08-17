@@ -20,7 +20,9 @@ export const App = () => {
       const event = await referenceDataService.getEvent(env.EVENT_ID);
       dispatch(setEventData({ event }));
     } catch (error) {
-      console.log(`Failed to fetch event, ${error?.info || error?.message || error?.toString()}`);
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`Failed to fetch event, ${error?.info || error?.message || error?.toString()}`);
+      }
       toast(
         <Toast
           message="Failed to fetch event"

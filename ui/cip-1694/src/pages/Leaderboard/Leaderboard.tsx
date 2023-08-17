@@ -25,6 +25,7 @@ export const Leaderboard = () => {
   const eventHasntStarted = !event?.active && !event?.finished;
   const [stats, setStats] = useState<ByCategory['proposals']>();
 
+  // page should not be accessible in case the wallet is not connected, or the event is not finished yet
   useEffect(() => {
     if (!isConnected || eventHasntStarted || !event?.finished) navigate(ROUTES.INTRO);
   }, [event?.finished, eventHasntStarted, isConnected, navigate]);
@@ -34,7 +35,9 @@ export const Leaderboard = () => {
       setStats((await leaderboardService.getStats())?.proposals);
     } catch (error) {
       const message = `Failed to fecth stats: ${error?.message || error?.toString()}`;
-      console.log(message);
+      if (process.env.NODE_ENV === 'development') {
+        console.log(message);
+      }
       toast(
         <Toast
           message="Failed to fecth stats"

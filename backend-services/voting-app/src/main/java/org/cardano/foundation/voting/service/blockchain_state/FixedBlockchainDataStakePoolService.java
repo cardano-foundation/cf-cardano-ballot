@@ -3,7 +3,6 @@ package org.cardano.foundation.voting.service.blockchain_state;
 import com.bloxbean.cardano.client.common.ADAConversionUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 

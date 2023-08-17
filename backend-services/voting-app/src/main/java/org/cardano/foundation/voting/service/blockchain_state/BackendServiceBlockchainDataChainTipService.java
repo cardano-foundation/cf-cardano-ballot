@@ -39,6 +39,7 @@ public class BackendServiceBlockchainDataChainTipService implements BlockchainDa
                     .withStatus(INTERNAL_SERVER_ERROR)
                     .build()
             );
+
         } catch (Exception e) {
             return Either.left(Problem.builder()
                     .withTitle("CHAIN_TIP_NOT_FOUND")

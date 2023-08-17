@@ -1,0 +1,48 @@
+name: Run Voting App UI Tests
+on:
+  push:
+    branches-ignore:
+      - "main"
+  pull_request:
+    branches-ignore:
+      - "main"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      APP_SERVER_URL: ${{ secrets.APP_SERVER_URL }}
+      TARGET_NETWORK: ${{ secrets.TARGET_NETWORK }}
+      EVENT_ID: ${{ secrets.EVENT_ID }}
+      CATEGORY_ID: ${{ secrets.CATEGORY_ID }}
+      COMMIT_HASH: ${{ secrets.COMMIT_HASH }}
+      SUPPORTED_WALLETS: ${{ github.sha }}
+    steps:
+      - name: ⬇️ Checkout repository
+        uses: actions/checkout@v3
+
+      - name: 🫡 Setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 18
+
+      - name: 🧘‍♀️ Download dependencies
+        run: |
+          cd ui/cip-1694
+          npm i
+
+      - name: 🎳 Run tests
+        run: |
+          cd ui
+          cd cip-1694
+          npm run jest-test --env=node
+
+      - name: 🎳 Build
+        run: |
+          cd ui/cip-1694
+          npm run react-inject-env && npm run build
+
+      - name: Upload build
+        uses: actions/upload-artifact@v3
+        with:
+          path: ui/cip-1694/build

@@ -82,10 +82,8 @@ dependencies {
 
 	implementation("org.postgresql:postgresql")
 
-	// TODO release to maven central
-	implementation("org.cardanofoundation:merkle-tree-java:0.0.6-SNAPSHOT")
-	// TODO release to maven central
-	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.9-SNAPSHOT")
+	implementation("org.cardanofoundation:merkle-tree-java:0.0.6")
+	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.9")
 }
 
 dependencyManagement {

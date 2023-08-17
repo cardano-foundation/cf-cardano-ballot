@@ -44,9 +44,6 @@ dependencies {
 
 	runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 
-	// TODO release to maven central
-	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.9-SNAPSHOT")
-
     implementation("org.flywaydb:flyway-core")
 
 	implementation("com.google.guava:guava:32.1.1-jre")
@@ -80,10 +77,8 @@ dependencies {
 
 	implementation("io.vavr:vavr:0.10.4")
 
-    implementation("com.networknt:json-schema-validator:1.0.82")
-
-	// TODO release to maven central
-	implementation("org.cardanofoundation:merkle-tree-java:0.0.6-SNAPSHOT")
+	implementation("org.cardanofoundation:merkle-tree-java:0.0.6")
+	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.9")
 }
 
 dependencyManagement {

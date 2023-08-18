@@ -46,7 +46,7 @@ echo "Updating helm dependencies for main app"
 helm dependency update
 
 helm upgrade --install argocd -n argocd . \
-  --set git.targetRevision=HEAD \
+  --set git.targetRevision=feat/AddDeploymentModule \
   --set valueFile=values-dev-preprod.yaml \
   -f values-secrets.yaml \
   -f values-dev-preprod.yaml

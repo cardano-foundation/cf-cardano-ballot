@@ -1,6 +1,3 @@
-git:
-  targetRevision: feat/AddDeploymentModule
-
 argo-cd:
   server:
     ingress:

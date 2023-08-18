@@ -1,10 +1,7 @@
 package org.cardano.foundation.voting.domain;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +9,7 @@ import java.util.Optional;
 @Getter
 @Builder
 @Setter
+@ToString
 public class VoteVerificationRequest {
 
     @NotBlank
@@ -35,7 +33,7 @@ public class VoteVerificationRequest {
     }
 
     public enum MerkleProofType {
-        Left, Right
+        L, R
     }
 
 }

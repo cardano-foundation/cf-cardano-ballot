@@ -11,16 +11,16 @@ import java.util.function.Function;
 @Getter
 @Builder
 @AllArgsConstructor
-public class Vote {
+public class CoseWrappedVote {
 
-    public static final Function<Vote, byte[]> VOTE_SERIALISER = createSerialiserFunction();
+    public static final Function<CoseWrappedVote, byte[]> VOTE_SERIALISER = createSerialiserFunction();
 
     private String coseSignature;
 
     @Builder.Default
     private Optional<String> cosePublicKey = Optional.empty();
 
-    private static Function<Vote, byte[]> createSerialiserFunction() {
+    private static Function<CoseWrappedVote, byte[]> createSerialiserFunction() {
         return vote -> {
             var cip30Verifier = new CIP30Verifier(vote.getCoseSignature(), vote.getCosePublicKey());
             var verificationResult = cip30Verifier.verify();

@@ -27,11 +27,8 @@ repositories {
 	maven { url = uri("https://repo.spring.io/milestone") }
 }
 
-extra["testcontainersVersion"] = "1.17.6"
-
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
-	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-data-rest")
 	testCompileOnly("org.springframework.boot:spring-boot-starter-test")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
@@ -43,8 +40,6 @@ dependencies {
 	runtimeOnly("org.springframework.boot:spring-boot-properties-migrator")
 
 	runtimeOnly("io.micrometer:micrometer-registry-prometheus")
-
-    implementation("org.flywaydb:flyway-core")
 
 	implementation("com.google.guava:guava:32.1.1-jre")
 
@@ -60,31 +55,17 @@ dependencies {
 	implementation("com.querydsl:querydsl-jpa")
     annotationProcessor("com.querydsl:querydsl-apt")
 
-	testImplementation("org.testcontainers:junit-jupiter")
-
-	runtimeOnly("com.h2database:h2")
-
 	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0-alpha.4")
-
 	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0-alpha.4")
     implementation("com.bloxbean.cardano:cardano-client-address:0.5.0-alpha.4")
     implementation("com.bloxbean.cardano:cardano-client-metadata:0.5.0-alpha.4")
 	implementation("com.bloxbean.cardano:cardano-client-quicktx:0.5.0-alpha.4")
 	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0-alpha.4")
 
-	implementation("com.bloxbean.cardano:yaci-store-spring-boot-starter:0.0.11-beta4")
-	implementation("com.bloxbean.cardano:yaci-store-metadata-spring-boot-starter:0.0.11-beta4")
-
 	implementation("io.vavr:vavr:0.10.4")
 
 	implementation("org.cardanofoundation:merkle-tree-java:0.0.6")
-	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.9")
-}
-
-dependencyManagement {
-	imports {
-		mavenBom("org.testcontainers:testcontainers-bom:${property("testcontainersVersion")}")
-	}
+	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.10")
 }
 
 tasks.withType<Test> {

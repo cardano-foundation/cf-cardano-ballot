@@ -209,7 +209,7 @@ public class DefaultVoteService implements VoteService {
 
             return Either.left(Problem.builder()
                     .withTitle("NETWORK_MISMATCH")
-                    .withDetail("Invalid network, backed configured with network:" + cardanoNetwork + ", however request is with network:" + network)
+                    .withDetail("Invalid network, backend configured with network:" + cardanoNetwork + ", however request is with network:" + network)
                     .withStatus(BAD_REQUEST)
                     .build());
         }

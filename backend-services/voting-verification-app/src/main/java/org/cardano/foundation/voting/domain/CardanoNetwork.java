@@ -1,8 +1,5 @@
 package org.cardano.foundation.voting.domain;
 
-import java.util.Arrays;
-import java.util.List;
-
 public enum CardanoNetwork {
 
     MAIN, // main-net

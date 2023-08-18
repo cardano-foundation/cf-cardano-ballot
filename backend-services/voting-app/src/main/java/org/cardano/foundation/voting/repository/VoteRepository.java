@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,9 +26,11 @@ public interface VoteRepository extends JpaRepository<Vote, String> {
 
     interface EventVoteCount {
 
-        long getTotalVoteCount();
+        @Nullable
+        Long getTotalVoteCount();
 
-        long getTotalVotingPower();
+        @Nullable
+        Long getTotalVotingPower();
 
     }
 
@@ -37,9 +40,11 @@ public interface VoteRepository extends JpaRepository<Vote, String> {
 
         String getProposalName();
 
-        long getTotalVoteCount();
+        @Nullable
+        Long getTotalVoteCount();
 
-        long getTotalVotingPower();
+        @Nullable
+        Long getTotalVotingPower();
 
     }
 

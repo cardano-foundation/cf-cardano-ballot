@@ -14,6 +14,7 @@ import org.zalando.problem.Problem;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.toMap;
 import static org.zalando.problem.Status.*;
@@ -71,8 +72,8 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
 
         return Either.right(Leaderboard.ByEvent.builder()
                 .event(e.getId())
-                .totalVotesCount(voteCount)
-                .totalVotingPower(String.valueOf(votingPower))
+                .totalVotesCount(Optional.ofNullable(voteCount).orElse(0L))
+                .totalVotingPower(Optional.ofNullable(votingPower).map(String::valueOf).orElse("0"))
                 .build()
         );
     }
@@ -117,10 +118,20 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
         var proposalResults = Map.<String, Leaderboard.Votes>of();
         if (c.isGdprProtection()) {
             proposalResults = votes.stream()
-                    .collect(toMap(VoteRepository.EventCategoryVoteCount::getProposalId, v -> new Leaderboard.Votes(v.getTotalVoteCount(), String.valueOf(v.getTotalVotingPower()))));
+                    .collect(toMap(VoteRepository.EventCategoryVoteCount::getProposalId, v -> {
+                        var totalVotesCount = Optional.ofNullable(v.getTotalVoteCount()).orElse(0L);
+                        var totalVotingPower = Optional.ofNullable(v.getTotalVotingPower()).map(String::valueOf).orElse("0");
+
+                        return new Leaderboard.Votes(totalVotesCount, totalVotingPower);
+                    }));
         } else {
             proposalResults = votes.stream()
-                    .collect(toMap(VoteRepository.EventCategoryVoteCount::getProposalName, v -> new Leaderboard.Votes(v.getTotalVoteCount(), String.valueOf(v.getTotalVotingPower()))));
+                    .collect(toMap(VoteRepository.EventCategoryVoteCount::getProposalName, v -> {
+                        var totalVotesCount = Optional.ofNullable(v.getTotalVoteCount()).orElse(0L);
+                        var totalVotingPower = Optional.ofNullable(v.getTotalVotingPower()).map(String::valueOf).orElse("0");
+
+                        return new Leaderboard.Votes(totalVotesCount, totalVotingPower);
+                    }));
         }
 
         return Either.right(Leaderboard.ByCategory.builder()

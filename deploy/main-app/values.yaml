@@ -1,0 +1,28 @@
+git:
+  targetRevision: null
+
+# stage: one of [dev, uat, prod]
+stage: null
+
+# network: one of [mainnet, preprod, preview]
+network: null
+
+# domain: something like "grafana.dev.ggargiulo-clusters.eu-west-1.metadata.dev.cf-deployments.org"
+domain: null
+
+# Explorer Infra Parameters
+cf-cardano-ballot-infra:
+  # Whether Infra resources should be deployed.
+  enabled: true
+
+# Explorer Parameters
+cf-cardano-ballot:
+  # Whether the Explorer Resources should be deployed.
+  enabled: true
+
+grafana-dashboards:
+  enabled: true
+
+spec:
+  destination:
+    server: https://kubernetes.default.svc

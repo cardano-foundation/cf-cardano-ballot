@@ -14,7 +14,7 @@ spec:
   source:
     repoURL: git@github.com:cardano-foundation/cf-cardano-ballot.git
     targetRevision: {{ .Values.git.targetRevision | default "HEAD" }}
-    path: charts/cf-cardano-ballot-infra
+    path: deploy/cf-cardano-ballot-infra
     helm:
       {{- with index .Values "cf-cardano-ballot-infra" }}
       values: |

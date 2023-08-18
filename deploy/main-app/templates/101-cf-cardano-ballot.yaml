@@ -3,16 +3,16 @@
 #apiVersion: argoproj.io/v1alpha1
 #kind: Application
 #metadata:
-#  name: cf-explorer
+#  name: cf-cardano-ballot
 #  namespace: argocd
 #  finalizers:
 #    - resources-finalizer.argocd.argoproj.io
 #spec:
 #  project: default
 #  source:
-#    repoURL: git@github.com:cardano-foundation/cf-explorer.git
+#    repoURL: git@github.com:cardano-foundation/cf-cardano-ballot.git
 #    targetRevision: {{ .Values.git.targetRevision | default "HEAD" }}
-#    path: charts/cf-explorer
+#    path: charts/cf-cardano-ballot
 #    helm:
 #      parameters:
 #        - name: "domain"
@@ -21,7 +21,7 @@
 #          value: {{ .Values.network }}
 #      valueFiles:
 #      - values-{{ .Values.network }}.yaml
-#      {{- with index .Values "cf-explorer" "values" }}
+#      {{- with index .Values "cf-cardano-ballot" "values" }}
 #      values: |
 #{{ toYaml . | indent 8 }}
 #      {{- end }}
@@ -33,6 +33,6 @@
 #      - CreateNamespace=true
 #
 #  destination:
-#    namespace: cf-explorer
+#    namespace: cf-cardano-ballot
 #    server: {{ .Values.spec.destination.server }}
 #{{ end }}

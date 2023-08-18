@@ -10,19 +10,19 @@ if [ $? != 0 ]; then
   kubectl create ns argocd > /dev/null 2>&1
 fi
 
-echo "Checking cf-voting-app namespace existence"
-kubectl get ns cf-voting-app > /dev/null 2>&1
+echo "Checking cf-cardano-ballot namespace existence"
+kubectl get ns cf-cardano-ballot > /dev/null 2>&1
 
 if [ $? != 0 ]; then
-  echo "cf-voting-app namespace does not exist, creating..."
-  kubectl create ns cf-voting-app > /dev/null 2>&1
+  echo "cf-cardano-ballot namespace does not exist, creating..."
+  kubectl create ns cf-cardano-ballot > /dev/null 2>&1
 fi
 
 ## Create a Master Key
 # openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -nodes -out tls.crt -keyout tls.key
 
 ## DockerHub secret
-kubectl create secret -n cf-voting-app generic regcred \
+kubectl create secret -n cf-cardano-ballot generic regcred \
   --from-file=.dockerconfigjson=../../.keys/docker-cred.json \
   --type=kubernetes.io/dockerconfigjson \
   --save-config \

@@ -1,0 +1,34 @@
+# Git Specific configuration
+git:
+  # The target branch to point to. This can be set to a branch during chart development phase. Defaults to main
+  targetRevision: null
+
+# ArgoCD parameters
+argo-cd:
+  enabled: true
+  server:
+    extraArgs:
+      - --insecure
+    ingress:
+      enabled: true
+    config:
+      repositories: |
+        - url:  https://charts.bitnami.com/bitnami
+          name: bitnami
+          type: helm
+        - url:  https://prometheus-community.github.io/helm-charts
+          name: prometheus-community
+          type: helm
+        - url:  https://grafana.github.io/helm-charts
+          name: grafana
+          type: helm
+        - url: git@github.com:cardano-foundation/cf-cardano-ballot.git
+          sshPrivateKeySecret:
+            name: github-deploy-key
+            key: cf-cardano-ballot
+      resource.customizations: |
+        networking.k8s.io/Ingress:
+          health.lua: |
+            hs = {}
+            hs.status = "Healthy"
+            return hs

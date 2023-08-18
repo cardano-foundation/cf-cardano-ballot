@@ -1,0 +1,52 @@
+{{ with .Values.postgresql }}
+{{ if .enabled }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: "postgres-secrets"
+  namespace: {{ $.Release.Namespace }}
+type: Opaque
+data:
+  POSTGRES_USER: {{ .dbUser | default "cardano" | b64enc | quote }}
+  POSTGRES_HOST: {{ .dbHost | default "postgresql" | b64enc | quote }}
+  POSTGRES_PORT: {{ .dbPort | default "5432" | b64enc | quote }}
+  POSTGRES_DB: {{ .dbName | default "explorer_api" | b64enc | quote }}
+  POSTGRES_ADMIN_PASSWORD: {{ randAlphaNum 16 | b64enc | quote }}
+  POSTGRES_PASSWORD: {{ randAlphaNum 16 | b64enc | quote }}
+  POSTGRES_REPLICATION_PASSWORD: {{ randAlphaNum 16 | b64enc | quote }}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: postgresql
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://charts.bitnami.com/bitnami
+    targetRevision: 12.4.3
+    chart: postgresql
+    helm:
+      values: |
+        auth:
+          username: {{ .dbUser | default "cardano" }}
+          existingSecret: postgres-secrets
+          secretKeys:
+            adminPasswordKey: POSTGRES_ADMIN_PASSWORD
+            userPasswordKey: POSTGRES_PASSWORD
+            replicationPasswordKey: POSTGRES_REPLICATION_PASSWORD
+          database: {{ .dbName | default "explorer_api" }}
+        primary:
+          persistence:
+            size: {{ .dbSize | default "8Gi" }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+  destination:
+    namespace: {{ $.Release.Namespace }}
+    server: https://kubernetes.default.svc
+{{ end }}
+{{ end }}

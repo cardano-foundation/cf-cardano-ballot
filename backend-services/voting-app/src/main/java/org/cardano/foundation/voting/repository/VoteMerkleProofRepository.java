@@ -12,8 +12,8 @@ import java.util.Optional;
 @Repository
 public interface VoteMerkleProofRepository extends JpaRepository<VoteMerkleProof, String> {
 
-    @Query("SELECT vmp FROM VoteMerkleProof vmp WHERE vmp.eventId = :eventId AND vmp.voteId = :voteId ORDER BY vmp.absoluteSlot, vmp.createdAt DESC")
-    Optional<VoteMerkleProof> findLatestProof(@Param("eventId") String eventId, @Param("voteId") String voteId);
+    @Query("SELECT vmp FROM VoteMerkleProof vmp WHERE vmp.id = :id AND vmp.voteId = :voteId ORDER BY vmp.absoluteSlot, vmp.createdAt DESC")
+    Optional<VoteMerkleProof> findLatestProof(@Param("id") String eventId, @Param("voteId") String voteId);
 
     @Query("UPDATE VoteMerkleProof vmp SET vmp.invalidated = true where vmp.absoluteSlot > :slot")
     @Modifying

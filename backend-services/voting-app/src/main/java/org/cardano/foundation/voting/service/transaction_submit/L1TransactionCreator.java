@@ -19,9 +19,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.vavr.control.Either;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.domain.L1MerkleCommitment;
 import org.cardano.foundation.voting.domain.OnChainEventType;
-import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataChainTipService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,7 +37,7 @@ import static org.cardano.foundation.voting.domain.OnChainEventType.COMMITMENTS;
 public class L1TransactionCreator {
 
     @Autowired
-    private BlockchainDataChainTipService blockchainDataChainTipService;
+    private ChainFollowerClient chainFollowerClient;
 
     @Autowired
     private BackendService backendService;
@@ -56,8 +56,8 @@ public class L1TransactionCreator {
     private long metadataLabel;
 
     public Either<Problem, byte[]> submitMerkleCommitments(List<L1MerkleCommitment> l1MerkleCommitments) {
-        return blockchainDataChainTipService.getChainTip().map(chainTip -> {
-            var absoluteSlot = chainTip.getAbsoluteSlot();
+        return chainFollowerClient.getChainTip().map(chainTip -> {
+            var absoluteSlot = chainTip.absoluteSlot();
 
             MetadataMap eventMetadataMap = metadataSerialiser.serialise(l1MerkleCommitments, absoluteSlot);
             Metadata metadata = serialiseMetadata(eventMetadataMap, COMMITMENTS);

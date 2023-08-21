@@ -2,9 +2,9 @@ package org.cardano.foundation.voting.service.merkle_tree;
 
 import io.vavr.Value;
 import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.domain.L1MerkleCommitment;
 import org.cardano.foundation.voting.domain.entity.VoteMerkleProof;
-import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
 import org.cardano.foundation.voting.service.transaction_submit.L1SubmissionService;
 import org.cardano.foundation.voting.service.vote.VoteService;
 import org.cardanofoundation.merkle.MerkleTree;
@@ -31,7 +31,7 @@ public class VoteCommitmentService {
     private L1SubmissionService l1SubmissionService;
 
     @Autowired
-    private ReferenceDataService referenceDataService;
+    private ChainFollowerClient chainFollowerClient;
 
     @Autowired
     private VoteMerkleProofService voteMerkleProofService;
@@ -69,19 +69,29 @@ public class VoteCommitmentService {
     }
 
     private List<L1MerkleCommitment> getL1MerkleCommitments() {
-        return referenceDataService.findAllActiveEvents().stream()
+        var activeEventsE = chainFollowerClient.findAllActiveEvents();
+        if (activeEventsE.isEmpty()) {
+            var issue = activeEventsE.swap().get();
+
+            log.error("Failed to get active events, issue:{}, will try again in some time...", issue.toString());
+
+            return List.of();
+        }
+        var activeEvents = activeEventsE.get();
+
+        return activeEvents.stream()
                 .map(event -> {
                     // TODO caching or paging or both? Maybe we use Redis???
                     log.info("Loading votes from db...");
                     var stopWatch = new StopWatch();
                     stopWatch.start();
-                    var allVotes = voteService.findAll(event);
+                    var allVotes = voteService.findAll(event.id());
                     stopWatch.stop();
                     log.info("Loaded votes, count:{}, time: {} secs", allVotes.size(), stopWatch.getTotalTimeSeconds());
 
                     var root = MerkleTree.fromList(allVotes, VOTE_SERIALISER);
 
-                    return new L1MerkleCommitment(allVotes, root, event);
+                    return new L1MerkleCommitment(allVotes, root, event.id());
                 })
                 .toList();
     }
@@ -92,7 +102,7 @@ public class VoteCommitmentService {
         for (var l1MerkleCommitment : l1MerkleCommitments) {
             var root = l1MerkleCommitment.root();
 
-            log.info("Storing merkle proofs for event: {}", l1MerkleCommitment.event().getId());
+            log.info("Storing merkle proofs for event: {}", l1MerkleCommitment.eventId());
 
             var storeProofsStartStop = new StopWatch();
             storeProofsStartStop.start();
@@ -121,7 +131,7 @@ public class VoteCommitmentService {
             }
             storeProofsStartStop.stop();
 
-            log.info("Storing merkle proofs: {}, completed for event: {}, time: {} secs", l1MerkleCommitment.votes().size(), l1MerkleCommitment.event().getId(), storeProofsStartStop.getTotalTimeSeconds());
+            log.info("Storing merkle proofs: {}, completed for event: {}, time: {} secs", l1MerkleCommitment.votes().size(), l1MerkleCommitment.eventId(), storeProofsStartStop.getTotalTimeSeconds());
         }
 
         log.info("Storing vote merkle proofs for all events completed.");

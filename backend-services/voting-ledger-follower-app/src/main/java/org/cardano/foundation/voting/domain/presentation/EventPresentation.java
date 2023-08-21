@@ -1,4 +1,4 @@
-package org.cardano.foundation.voting.domain.reference;
+package org.cardano.foundation.voting.domain.presentation;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -13,7 +13,7 @@ import java.util.Optional;
 @Getter
 @Setter
 @Builder
-public class EventReference {
+public class EventPresentation {
 
     private String id; // e.g. Voltaire_Pre_Ratification
 
@@ -54,6 +54,18 @@ public class EventReference {
     private boolean isFinished = false;
 
     @Builder.Default
-    private List<CategoryReference> categories = new ArrayList<>();
+    private boolean isNotStarted = false;
+
+    @Builder.Default
+    private boolean isAllowVoteChanging = false;
+
+    @Builder.Default
+    private boolean isHighLevelResultsWhileVoting = false;
+
+    @Builder.Default
+    private boolean isCategoryResultsWhileVoting = false;
+
+    @Builder.Default
+    private List<CategoryPresentation> categories = new ArrayList<>();
 
 }

@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 		"org.cardano.foundation.voting.repository",
 		"org.cardano.foundation.voting.service",
 		"org.cardano.foundation.voting.resource",
+		"org.cardano.foundation.voting.handlers",
 		"org.cardano.foundation.voting.config",
 		"org.cardano.foundation.voting.jobs"
 })

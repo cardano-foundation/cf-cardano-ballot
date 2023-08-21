@@ -1,8 +1,8 @@
 package org.cardano.foundation.voting.service.transaction_submit;
 
 import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.domain.L1SubmissionData;
-import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataTransactionDetailsService;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainTransactionSubmissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,7 +20,7 @@ public class DefaultTransactionSubmissionService implements TransactionSubmissio
     private BlockchainTransactionSubmissionService transactionSubmissionService;
 
     @Autowired
-    private BlockchainDataTransactionDetailsService blockchainDataTransactionDetailsService;
+    private ChainFollowerClient chainFollowerClient;
 
     @Autowired
     private Clock clock;
@@ -45,13 +45,16 @@ public class DefaultTransactionSubmissionService implements TransactionSubmissio
         var future = start.plusMinutes(timeoutInMinutes);
 
         while (LocalDateTime.now(clock).isBefore(future)) {
-            var transactionDetails = blockchainDataTransactionDetailsService.getTransactionDetails(txHash);
-            if (transactionDetails.isPresent()) {
-                return new L1SubmissionData(txHash, transactionDetails.get().getAbsoluteSlot());
+            var transactionDetailsE = chainFollowerClient.getTransactionDetails(txHash);
+            if (transactionDetailsE.isEmpty() || transactionDetailsE.get().isEmpty()) {
+                log.warn("Transaction not found in chain follower yet. Sleeping for {} seconds... until deadline:{}", sleepTimeInSeconds, future);
+                Thread.sleep(sleepTimeInSeconds * 1000L);
+                continue;
             }
-            log.info("Transaction not confirmed yet. Sleeping for {} seconds... until deadline:{}", sleepTimeInSeconds, future);
 
-            Thread.sleep(sleepTimeInSeconds * 1000L);
+            var transactionDetails = transactionDetailsE.get().orElseThrow();
+
+            return new L1SubmissionData(txHash, transactionDetails.absoluteSlot());
         }
 
         throw new TimeoutException("Transaction not confirmed within timeout!");

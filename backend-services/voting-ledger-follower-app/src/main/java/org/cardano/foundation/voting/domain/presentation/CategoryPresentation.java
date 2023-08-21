@@ -1,4 +1,4 @@
-package org.cardano.foundation.voting.domain.reference;
+package org.cardano.foundation.voting.domain.presentation;
 
 import lombok.Builder;
 import lombok.Getter;

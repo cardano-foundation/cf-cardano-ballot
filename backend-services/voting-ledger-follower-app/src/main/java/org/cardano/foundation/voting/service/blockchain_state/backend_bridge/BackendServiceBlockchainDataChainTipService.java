@@ -4,6 +4,7 @@ import com.bloxbean.cardano.client.backend.api.BackendService;
 import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.ChainTip;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataChainTipService;
 import org.zalando.problem.Problem;
@@ -18,6 +19,8 @@ public class BackendServiceBlockchainDataChainTipService implements BlockchainDa
 
     private final BackendService backendService;
 
+    private final CardanoNetwork cardanoNetwork;
+
     @Override
     public Either<Problem, ChainTip> getChainTip() {
         try {
@@ -31,6 +34,7 @@ public class BackendServiceBlockchainDataChainTipService implements BlockchainDa
                         // TODO request for Satya to have epoch on block
                         .epochNo(Optional.ofNullable(block.getEpoch()).orElse(2)) // on Yaci-DevKit there is no epoch for now
                         .absoluteSlot(block.getSlot())
+                        .network(cardanoNetwork)
                         .build());
             }
 

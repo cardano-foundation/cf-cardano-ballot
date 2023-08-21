@@ -31,7 +31,6 @@ extra["testcontainersVersion"] = "1.17.6"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
-	implementation("org.springframework.boot:spring-boot-starter-cache")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-data-rest")
 	testCompileOnly("org.springframework.boot:spring-boot-starter-test")
@@ -69,11 +68,6 @@ dependencies {
 	implementation("com.bloxbean.cardano:cardano-client-quicktx:0.5.0-beta1")
 	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.0-beta1")
 	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0-beta1")
-
-	implementation("com.bloxbean.cardano:yaci-store-spring-boot-starter:0.0.11-beta4")
-	implementation("com.bloxbean.cardano:yaci-store-blocks-spring-boot-starter:0.0.11-beta4")
-	implementation("com.bloxbean.cardano:yaci-store-transaction-spring-boot-starter:0.0.11-beta4")
-	implementation("com.bloxbean.cardano:yaci-store-metadata-spring-boot-starter:0.0.11-beta4")
 
 	implementation("io.blockfrost:blockfrost-java:0.1.3")
 

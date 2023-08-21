@@ -11,6 +11,10 @@ public class Account {
 
     private String stakeAddress;
 
+    private AccountStatus accountStatus;
+
+    private int epochNo;
+
     @Builder.Default
     // it will be empty when user is not staking
     private Optional<String> votingPower = Optional.empty();
@@ -18,5 +22,12 @@ public class Account {
     @Builder.Default
     // it will be empty when user is not staking
     private Optional<VotingPowerAsset> votingPowerAsset = Optional.empty();
+
+    private CardanoNetwork network;
+
+    public enum AccountStatus {
+        ELIGIBLE,
+        NOT_ELIGIBLE
+    }
 
 }

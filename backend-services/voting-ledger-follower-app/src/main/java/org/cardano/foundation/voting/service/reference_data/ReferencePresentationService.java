@@ -1,9 +1,9 @@
 package org.cardano.foundation.voting.service.reference_data;
 
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.domain.reference.CategoryPresentation;
-import org.cardano.foundation.voting.domain.reference.EventPresentation;
-import org.cardano.foundation.voting.domain.reference.ProposalPresentation;
+import org.cardano.foundation.voting.domain.presentation.CategoryPresentation;
+import org.cardano.foundation.voting.domain.presentation.EventPresentation;
+import org.cardano.foundation.voting.domain.presentation.ProposalPresentation;
 import org.cardano.foundation.voting.repository.EventRepository;
 import org.cardano.foundation.voting.service.epoch.CustomEpochService;
 import org.cardano.foundation.voting.service.expire.ExpirationService;
@@ -65,8 +65,12 @@ public class ReferencePresentationService {
                     .endSlot(event.getEndSlot())
                     .snapshotEpoch(event.getSnapshotEpoch())
                     .categories(categories)
+                    .isNotStarted(expirationService.isEventNotStarted(event))
                     .isActive(expirationService.isEventActive(event))
-                    .isFinished(expirationService.isEventFinished(event));
+                    .isFinished(expirationService.isEventFinished(event))
+                    .isAllowVoteChanging(event.isAllowVoteChanging())
+                    .isHighLevelResultsWhileVoting(event.isHighLevelResultsWhileVoting())
+                    .isCategoryResultsWhileVoting(event.isCategoryResultsWhileVoting());
 
             switch (event.getVotingEventType()) {
                 case STAKE_BASED, BALANCE_BASED -> {
@@ -85,9 +89,11 @@ public class ReferencePresentationService {
     }
 
     public List<Map<String, Object>> eventsData() {
-        return referenceDataService.findAllValidEvents().stream().map(e -> Map.<String, Object>of(
-                "name", e.getId(),
-                "active", expirationService.isEventActive(e)
+        return referenceDataService.findAllValidEvents().stream().map(event -> Map.<String, Object>of(
+                "name", event.getId(),
+                "notStarted", expirationService.isEventNotStarted(event),
+                "finished", expirationService.isEventFinished(event),
+                "active", expirationService.isEventActive(event)
         )).toList();
     }
 

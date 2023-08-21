@@ -16,6 +16,8 @@ public class TransactionDetails {
 
     private FinalityScore finalityScore;
 
+    private CardanoNetwork network;
+
     public enum FinalityScore {
 
         LOW(0),

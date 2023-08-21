@@ -4,24 +4,19 @@ import com.bloxbean.cardano.client.util.HexUtil;
 import io.micrometer.core.annotation.Timed;
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
-import org.cardano.foundation.voting.domain.TransactionDetails;
 import org.cardano.foundation.voting.domain.VoteReceipt;
-import org.cardano.foundation.voting.domain.entity.Event;
-import org.cardano.foundation.voting.domain.entity.Proposal;
 import org.cardano.foundation.voting.domain.entity.Vote;
 import org.cardano.foundation.voting.domain.entity.VoteMerkleProof;
 import org.cardano.foundation.voting.domain.web3.SignedWeb3Request;
 import org.cardano.foundation.voting.domain.web3.Web3Action;
 import org.cardano.foundation.voting.repository.VoteRepository;
 import org.cardano.foundation.voting.service.address.StakeAddressVerificationService;
-import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataTransactionDetailsService;
 import org.cardano.foundation.voting.service.expire.ExpirationService;
 import org.cardano.foundation.voting.service.json.JsonService;
 import org.cardano.foundation.voting.service.merkle_tree.MerkleProofSerdeService;
 import org.cardano.foundation.voting.service.merkle_tree.VoteMerkleProofService;
-import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
-import org.cardano.foundation.voting.service.voting_power.VotingPowerService;
 import org.cardano.foundation.voting.utils.Enums;
 import org.cardano.foundation.voting.utils.MoreUUID;
 import org.cardanofoundation.cip30.AddressFormat;
@@ -35,6 +30,7 @@ import org.zalando.problem.Problem;
 import java.util.List;
 import java.util.Optional;
 
+import static org.cardano.foundation.voting.client.ChainFollowerClient.AccountStatus.NOT_ELIGIBLE;
 import static org.cardano.foundation.voting.domain.VoteReceipt.Status.*;
 import static org.cardano.foundation.voting.domain.VotingEventType.*;
 import static org.cardano.foundation.voting.domain.web3.Web3Action.CAST_VOTE;
@@ -42,21 +38,17 @@ import static org.cardano.foundation.voting.domain.web3.Web3Action.VIEW_VOTE_REC
 import static org.cardano.foundation.voting.utils.MoreNumber.isNumeric;
 import static org.cardanofoundation.cip30.MessageFormat.TEXT;
 import static org.cardanofoundation.cip30.ValidationError.UNKNOWN;
-import static org.zalando.problem.Status.BAD_REQUEST;
-import static org.zalando.problem.Status.NOT_FOUND;
+import static org.zalando.problem.Status.*;
 
 @Service
 @Slf4j
 public class DefaultVoteService implements VoteService {
 
     @Autowired
-    private VoteRepository voteRepository;
-
-    @Autowired
-    private ReferenceDataService referenceDataService;
-
-    @Autowired
     private ExpirationService expirationService;
+
+    @Autowired
+    private VoteRepository voteRepository;
 
     @Autowired
     private VoteMerkleProofService voteMerkleProofService;
@@ -65,7 +57,7 @@ public class DefaultVoteService implements VoteService {
     private MerkleProofSerdeService merkleProofSerdeService;
 
     @Autowired
-    private VotingPowerService votingPowerService;
+    private ChainFollowerClient chainFollowerClient;
 
     @Autowired
     private CardanoNetwork cardanoNetwork;
@@ -76,13 +68,10 @@ public class DefaultVoteService implements VoteService {
     @Autowired
     private StakeAddressVerificationService stakeAddressVerificationService;
 
-    @Autowired
-    private BlockchainDataTransactionDetailsService blockchainDataTransactionDetailsService;
-
     @Override
     @Transactional
-    public List<Vote> findAll(Event event) {
-        return voteRepository.findAllByEventId(event.getId());
+    public List<Vote> findAll(String eventId) {
+        return voteRepository.findAllByEventId(eventId);
     }
 
     @Override
@@ -93,21 +82,31 @@ public class DefaultVoteService implements VoteService {
     @Transactional
     @Timed(value = "service.vote.isVoteCastingStillPossible", percentiles = { 0.3, 0.5, 0.95 })
     public Either<Problem, Boolean> isVoteCastingStillPossible(String eventId, String voteId) {
-        var maybeEvent = referenceDataService.findValidEventByName(eventId);
-        if (maybeEvent.isEmpty()) {
+        var eventDetailsE = chainFollowerClient.getEventDetails(eventId);
+        if (eventDetailsE.isEmpty()) {
+            return Either.left(Problem.builder()
+                    .withTitle("ERROR_GETTING_EVENT_DETAILS")
+                    .withDetail("Unable to get event details from chain-tip follower service, event:" + eventId)
+                    .withStatus(INTERNAL_SERVER_ERROR)
+                    .build()
+            );
+        }
+
+        var maybeEventDetails = eventDetailsE.get();
+        if (maybeEventDetails.isEmpty()) {
             return Either.left(Problem.builder()
                     .withTitle("EVENT_NOT_FOUND")
-                    .withDetail("Event not found, eventId:" + eventId)
+                    .withDetail("Event not found, id:" + eventId)
                     .withStatus(BAD_REQUEST)
                     .build());
         }
-        var event = maybeEvent.orElseThrow();
+        var event = maybeEventDetails.orElseThrow();
 
-        boolean isInactive = expirationService.isEventInactive(event);
+        boolean isInactive = event.isEventInactive();
         if (isInactive) {
             return Either.left(Problem.builder()
                     .withTitle("EVENT_INACTIVE")
-                    .withDetail("Event is inactive, eventId:" + eventId)
+                    .withDetail("Event is inactive, id:" + eventId)
                     .withStatus(BAD_REQUEST)
                     .build());
         }
@@ -247,36 +246,46 @@ public class DefaultVoteService implements VoteService {
         }
 
         var eventId = cip93VoteEnvelope.getData().getEvent();
-        var maybeEvent = referenceDataService.findValidEventByName(eventId);
+
+        var eventDetailsE = chainFollowerClient.getEventDetails(eventId);
+        if (eventDetailsE.isEmpty()) {
+            return Either.left(Problem.builder()
+                    .withTitle("ERROR_GETTING_EVENT_DETAILS")
+                    .withDetail("Unable to get event details from chain-tip follower service, event:" + eventId)
+                    .withStatus(INTERNAL_SERVER_ERROR)
+                    .build()
+            );
+        }
+        var maybeEvent = eventDetailsE.get();
         if (maybeEvent.isEmpty()) {
-            log.warn("Unrecognised event, eventId:{}", eventId);
+            log.warn("Unrecognised event, id:{}", eventId);
 
             return Either.left(Problem.builder()
                     .withTitle("UNRECOGNISED_EVENT")
-                    .withDetail("Unrecognised event, eventId:" + eventId)
+                    .withDetail("Unrecognised event, id:" + eventId)
                     .withStatus(BAD_REQUEST)
                     .build());
         }
         var event = maybeEvent.get();
 
-        if (expirationService.isEventInactive(event)) {
-            log.warn("Event is not active, eventId:{}", eventId);
+        if (event.isEventInactive()) {
+            log.warn("Event is not active, id:{}", eventId);
 
             return Either.left(Problem.builder()
                     .withTitle("EVENT_IS_NOT_ACTIVE")
-                    .withDetail("Event is not active (not started or already finished), eventId:" + eventId)
+                    .withDetail("Event is not active (not started or already finished), id:" + eventId)
                     .withStatus(BAD_REQUEST)
                     .build());
         }
 
         var categoryId = cip93VoteEnvelope.getData().getCategory();
-        var maybeCategory = event.findCategoryByName(categoryId);
+        var maybeCategory = event.categoryDetailsById(categoryId);
         if (maybeCategory.isEmpty()) {
-            log.warn("Unrecognised category, categoryId:{}", eventId);
+            log.warn("Unrecognised category, id:{}", eventId);
 
             return Either.left(Problem.builder()
                     .withTitle("UNRECOGNISED_CATEGORY")
-                    .withDetail("Unrecognised category, categoryId:" + categoryId)
+                    .withDetail("Unrecognised category, id:" + categoryId)
                     .withStatus(BAD_REQUEST)
                     .build());
         }
@@ -284,9 +293,9 @@ public class DefaultVoteService implements VoteService {
 
         var proposalIdOrName = cip93VoteEnvelope.getData().getProposal();
 
-        Proposal proposal = null;
-        if (category.isGdprProtection()) {
-            var maybeProposal = referenceDataService.findProposalById(proposalIdOrName);
+        ChainFollowerClient.ProposalDetailsResponse proposal;
+        if (category.gdprProtection()) {
+            var maybeProposal = category.findProposalById(proposalIdOrName);
             if (maybeProposal.isEmpty()) {
                 log.warn("Unrecognised proposal, proposalId:{}", eventId);
 
@@ -298,7 +307,7 @@ public class DefaultVoteService implements VoteService {
             }
             proposal = maybeProposal.orElseThrow();
         } else {
-            var maybeProposal = referenceDataService.findProposalByName(category, proposalIdOrName);
+            var maybeProposal = category.findProposalByName(proposalIdOrName);
             if (maybeProposal.isEmpty()) {
                 log.warn("Unrecognised proposal, proposalId:{}", eventId);
 
@@ -324,7 +333,17 @@ public class DefaultVoteService implements VoteService {
         }
         var cip93Slot = Long.parseLong(cip93SlotStr);
 
-        if (expirationService.isSlotExpired(cip93Slot)) {
+        var isSlotExpiredE = expirationService.isSlotExpired(cip93Slot);
+        if (isSlotExpiredE.isEmpty()) {
+            return Either.left(Problem.builder()
+                    .withTitle("ERROR_GETTING_CHAIN_TIP")
+                    .withDetail("Unable to get chain tip from chain-tip follower service, reason: chain tip not available")
+                    .withStatus(INTERNAL_SERVER_ERROR)
+                    .build()
+            );
+        }
+        var isSlotExpired = isSlotExpiredE.get();
+        if (isSlotExpired) {
             log.warn("Invalid request slot, slot:{}", cip93Slot);
 
             return Either.left(
@@ -348,7 +367,18 @@ public class DefaultVoteService implements VoteService {
         }
         var votedAtSlot = Long.parseLong(votedAtSlotStr);
 
-        if (expirationService.isSlotExpired(votedAtSlot)) {
+        var isVotedAtSlotExpiredE = expirationService.isSlotExpired(votedAtSlot);
+        if (isSlotExpiredE.isEmpty()) {
+            return Either.left(Problem.builder()
+                    .withTitle("ERROR_GETTING_CHAIN_TIP")
+                    .withDetail("Unable to get chain tip from chain-tip follower service, reason: chain tip not available")
+                    .withStatus(INTERNAL_SERVER_ERROR)
+                    .build()
+            );
+        }
+        var isVotedAtSlotExpired = isVotedAtSlotExpiredE.get();
+
+        if (isVotedAtSlotExpired) {
             log.warn("Invalid votedAt slot, votedAt slot:{}", votedAtSlot);
 
             return Either.left(
@@ -381,13 +411,13 @@ public class DefaultVoteService implements VoteService {
                             .build());
         }
 
-        var maybeExistingVote = voteRepository.findByEventIdAndCategoryIdAndVoterStakingAddress(event.getId(), category.getId(), stakeAddress);
+        var maybeExistingVote = voteRepository.findByEventIdAndCategoryIdAndVoterStakingAddress(event.id(), category.id(), stakeAddress);
         if (maybeExistingVote.isPresent()) {
 
-            if (!event.isAllowVoteChanging()) {
+            if (!event.allowVoteChanging()) {
                 return Either.left(Problem.builder()
                         .withTitle("VOTE_CANNOT_BE_CHANGED")
-                        .withDetail("Vote cannot be changed for the stake address: " + stakeAddress + ", within category: " + category.getId() + ", for event: " + eventId)
+                        .withDetail("Vote cannot be changed for the stake address: " + stakeAddress + ", within category: " + category.id() + ", for event: " + eventId)
                         .withStatus(BAD_REQUEST)
                         .build()
                 );
@@ -396,18 +426,18 @@ public class DefaultVoteService implements VoteService {
 
             var maybeLatestProof = voteMerkleProofService.findLatestProof(eventId, maybeExistingVote.orElseThrow().getId());
             if (maybeLatestProof.isPresent()) {
-                log.warn("Cannot change existing vote for the stake address: " + stakeAddress, ", within category: " + category.getId() + ", for event: " + eventId);
+                log.warn("Cannot change existing vote for the stake address: " + stakeAddress, ", within category: " + category.id() + ", for event: " + eventId);
 
                 return Either.left(
                         Problem.builder()
                                 .withTitle("VOTE_CANNOT_BE_CHANGED")
-                                .withDetail("Vote cannot be changed for the stake address: " + stakeAddress + ", within category: " + category.getId() + ", for event: " + eventId)
+                                .withDetail("Vote cannot be changed for the stake address: " + stakeAddress + ", within category: " + category.id() + ", for event: " + eventId)
                                 .withStatus(BAD_REQUEST)
                                 .build()
                 );
             }
             existingVote.setId(existingVote.getId());
-            existingVote.setProposalId(proposal.getId());
+            existingVote.setProposalId(proposal.id());
             existingVote.setVotedAtSlot(votedAtSlot);
             existingVote.setCoseSignature(castVoteRequest.getCoseSignature());
             existingVote.setCosePublicKey(castVoteRequest.getCosePublicKey());
@@ -417,27 +447,62 @@ public class DefaultVoteService implements VoteService {
 
         var vote = new Vote();
         vote.setId(voteId);
-        vote.setEventId(event.getId());
-        vote.setCategoryId(category.getId());
-        vote.setProposalId(proposal.getId());
+        vote.setEventId(event.id());
+        vote.setCategoryId(category.id());
+        vote.setProposalId(proposal.id());
         vote.setVoterStakingAddress(stakeAddress);
         vote.setVotedAtSlot(votedAtSlot);
         vote.setCoseSignature(castVoteRequest.getCoseSignature());
         vote.setCosePublicKey(castVoteRequest.getCosePublicKey());
 
-        if (List.of(STAKE_BASED, BALANCE_BASED).contains(event.getVotingEventType())) {
-            var blockchainVotingPower = votingPowerService.getVotingPower(event, stakeAddress).orElse(-1L);
-            if (blockchainVotingPower <= 0) {
-                log.warn("Voting power is less than equal 0 for the stake address: " + stakeAddress);
+        if (List.of(STAKE_BASED, BALANCE_BASED).contains(event.votingEventType())) {
+            var accountE = chainFollowerClient.findAccount(eventId, stakeAddress);
+            if (accountE.isEmpty()) {
+                return Either.left(Problem.builder()
+                        .withTitle("ERROR_GETTING_ACCOUNT")
+                        .withDetail("Unable to get account from chain-tip follower service, stakeAddress:" + stakeAddress)
+                        .withStatus(INTERNAL_SERVER_ERROR)
+                        .build()
+                );
+            }
+            var maybeAccount = accountE.get();
+            if (maybeAccount.isEmpty()) {
+                log.warn("Account not found for the stake address: " + stakeAddress);
 
                 return Either.left(
                         Problem.builder()
-                                .withTitle("INVALID_VOTING_POWER")
-                                .withDetail("Voting power is 0 or less for the stake address: " + stakeAddress)
+                                .withTitle("ACCOUNT_NOT_FOUND")
+                                .withDetail("Account not found for the stake address:" + stakeAddress)
                                 .withStatus(BAD_REQUEST)
                                 .build()
                 );
             }
+            var account = maybeAccount.get();
+
+            if (account.accountStatus() == NOT_ELIGIBLE) {
+                log.warn("State account not eligible to vote, e.g. not staked or power is less than equal 0 for the stake address: " + stakeAddress);
+
+                return Either.left(
+                        Problem.builder()
+                                .withTitle("NOT_ELIGIBLE")
+                                .withDetail("State account not eligible to vote, e.g. account not staked at snapshot epoch or voting power is less than equal 0 for the stake address:" + stakeAddress)
+                                .withStatus(BAD_REQUEST)
+                                .build()
+                );
+            }
+
+            // if we are eligible then we will have voting power
+            var blockchainVotingPowerStr = account.votingPower().orElseThrow();
+            if (!isNumeric(blockchainVotingPowerStr)) {
+                return Either.left(
+                        Problem.builder()
+                                .withTitle("INVALID_VOTING_POWER")
+                                .withDetail("Invalid blockchain voting power for the stake address: " + stakeAddress)
+                                .withStatus(BAD_REQUEST)
+                                .build()
+                );
+            }
+            var blockchainVotingPower = Long.parseLong(blockchainVotingPowerStr);
 
             if (!isNumeric(cip93VoteEnvelope.getData().getVotingPower().orElseThrow())) {
                 return Either.left(
@@ -462,7 +527,7 @@ public class DefaultVoteService implements VoteService {
             vote.setVotingPower(Optional.of(blockchainVotingPower));
         }
 
-        if (event.getVotingEventType() == USER_BASED) {
+        if (event.votingEventType() == USER_BASED) {
             if (vote.getVotingPower().isEmpty()) {
                 return Either.left(
                         Problem.builder()
@@ -595,32 +660,41 @@ public class DefaultVoteService implements VoteService {
         }
 
         var eventId = cip93ViewVoteReceiptEnvelope.getData().getEvent();
-        var maybeEvent = referenceDataService.findValidEventByName(eventId);
+        var eventDetailsE = chainFollowerClient.getEventDetails(eventId);
+        if (eventDetailsE.isEmpty()) {
+            return Either.left(Problem.builder()
+                    .withTitle("ERROR_GETTING_EVENT_DETAILS")
+                    .withDetail("Unable to get event details from chain-tip follower service, event:" + eventId)
+                    .withStatus(INTERNAL_SERVER_ERROR)
+                    .build()
+            );
+        }
+        var maybeEvent = eventDetailsE.get();
         if (maybeEvent.isEmpty()) {
-            log.warn("Unrecognised event, eventId:{}", eventId);
+            log.warn("Unrecognised event, id:{}", eventId);
 
             return Either.left(Problem.builder()
                     .withTitle("UNRECOGNISED_EVENT")
-                    .withDetail("Unrecognised event, eventId:" + eventId)
+                    .withDetail("Unrecognised event, id:" + eventId)
                     .withStatus(BAD_REQUEST)
                     .build());
         }
         var event = maybeEvent.get();
 
         var categoryId = cip93ViewVoteReceiptEnvelope.getData().getCategory();
-        var maybeCategory = event.findCategoryByName(categoryId);
+        var maybeCategory = event.categoryDetailsById(categoryId);
         if (maybeCategory.isEmpty()) {
-            log.warn("Unrecognised category, categoryId:{}", eventId);
+            log.warn("Unrecognised category, id:{}", eventId);
 
             return Either.left(Problem.builder()
                     .withTitle("UNRECOGNISED_CATEGORY")
-                    .withDetail("Unrecognised category, categoryId:" + categoryId)
+                    .withDetail("Unrecognised category, id:" + categoryId)
                     .withStatus(BAD_REQUEST)
                     .build());
         }
         var category = maybeCategory.orElseThrow();
 
-        var maybeVote = voteRepository.findByEventIdAndCategoryIdAndVoterStakingAddress(event.getId(), category.getId(), stakeAddress);
+        var maybeVote = voteRepository.findByEventIdAndCategoryIdAndVoterStakingAddress(event.id(), category.id(), stakeAddress);
         if (maybeVote.isEmpty()) {
             return Either.left(
                     Problem.builder()
@@ -632,7 +706,7 @@ public class DefaultVoteService implements VoteService {
         }
         var vote = maybeVote.orElseThrow();
 
-        var maybeProposal = referenceDataService.findProposalById(vote.getProposalId());
+        var maybeProposal = category.findProposalById(vote.getProposalId());
         if (maybeProposal.isEmpty()) {
             return Either.left(
                     Problem.builder()
@@ -643,20 +717,29 @@ public class DefaultVoteService implements VoteService {
             );
         }
         var proposal = maybeProposal.orElseThrow();
-        var proposalIdOrName = category.isGdprProtection() ? proposal.getId() : proposal.getName();
+        var proposalIdOrName = category.gdprProtection() ? proposal.id() : proposal.name();
 
-        var latestVoteMerkleProof = voteMerkleProofService.findLatestProof(event.getId(), vote.getId());
+        var latestVoteMerkleProof = voteMerkleProofService.findLatestProof(event.id(), vote.getId());
 
         return latestVoteMerkleProof.map(proof -> {
             log.info("Latest merkle proof found for voteId:{}", vote.getId());
 
-            var td = blockchainDataTransactionDetailsService.getTransactionDetails(proof.getL1TransactionHash());
-            var isL1CommitmentOnChain = td.map(TransactionDetails::getFinalityScore);
+            var transactionDetailsE = chainFollowerClient.getTransactionDetails(proof.getL1TransactionHash());
+            if (transactionDetailsE.isEmpty()) {
+                return Either.<Problem, VoteReceipt>left(Problem.builder()
+                        .withTitle("ERROR_GETTING_TRANSACTION_DETAILS")
+                        .withDetail("Unable to get transaction details from chain-tip follower service, transactionHash:" + proof.getL1TransactionHash())
+                        .withStatus(INTERNAL_SERVER_ERROR)
+                        .build());
+            }
+            var maybeTransactionDetails = transactionDetailsE.get();
+
+            var isL1CommitmentOnChain = maybeTransactionDetails.map(ChainFollowerClient.TransactionDetailsResponse::finalityScore);
 
             return Either.<Problem, VoteReceipt>right(VoteReceipt.builder()
                     .id(vote.getId())
-                    .event(event.getId())
-                    .category(category.getId())
+                    .event(event.id())
+                    .category(category.id())
                     .proposal(proposalIdOrName)
                     .coseSignature(vote.getCoseSignature())
                     .cosePublicKey(vote.getCosePublicKey())
@@ -665,17 +748,16 @@ public class DefaultVoteService implements VoteService {
                     .votingPower(vote.getVotingPower().map(String::valueOf))
                     .status(readMerkleProofStatus(proof, isL1CommitmentOnChain))
                     .finalityScore(isL1CommitmentOnChain)
-                    .merkleProof(convertMerkleProof(proof, td))
-                    .build()
-            );
+                    .merkleProof(convertMerkleProof(proof, maybeTransactionDetails))
+                    .build());
 
         }).orElseGet(() -> {
             log.info("Merkle proof not found yet for voteId:{}", vote.getId());
 
-            return Either.right(VoteReceipt.builder()
+            return Either.<Problem, VoteReceipt>right(VoteReceipt.builder()
                     .id(vote.getId())
-                    .event(event.getId())
-                    .category(category.getId())
+                    .event(event.id())
+                    .category(category.id())
                     .proposal(proposalIdOrName)
                     .coseSignature(vote.getCoseSignature())
                     .cosePublicKey(vote.getCosePublicKey())
@@ -688,7 +770,7 @@ public class DefaultVoteService implements VoteService {
         });
     }
 
-    private static VoteReceipt.Status readMerkleProofStatus(VoteMerkleProof merkleProof, Optional<TransactionDetails.FinalityScore> isL1CommitmentOnChain) {
+    private static VoteReceipt.Status readMerkleProofStatus(VoteMerkleProof merkleProof, Optional<ChainFollowerClient.FinalityScore> isL1CommitmentOnChain) {
         if (merkleProof.isInvalidated()) {
             return ROLLBACK;
         }
@@ -696,10 +778,10 @@ public class DefaultVoteService implements VoteService {
         return isL1CommitmentOnChain.isEmpty() ? PARTIAL : FULL;
     }
 
-    private VoteReceipt.MerkleProof convertMerkleProof(VoteMerkleProof proof, Optional<TransactionDetails> transactionDetails) {
+    private VoteReceipt.MerkleProof convertMerkleProof(VoteMerkleProof proof, Optional<ChainFollowerClient.TransactionDetailsResponse> transactionDetails) {
         return VoteReceipt.MerkleProof.builder()
-                .blockHash(transactionDetails.map(TransactionDetails::getBlockHash))
-                .absoluteSlot(transactionDetails.map(TransactionDetails::getAbsoluteSlot))
+                .blockHash(transactionDetails.map(ChainFollowerClient.TransactionDetailsResponse::blockHash))
+                .absoluteSlot(transactionDetails.map(ChainFollowerClient.TransactionDetailsResponse::absoluteSlot))
                 .rootHash(proof.getRootHash())
                 .transactionHash(proof.getL1TransactionHash())
                 .steps(convertSteps(proof))

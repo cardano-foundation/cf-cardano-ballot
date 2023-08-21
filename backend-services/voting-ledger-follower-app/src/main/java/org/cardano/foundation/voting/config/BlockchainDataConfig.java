@@ -1,13 +1,14 @@
 package org.cardano.foundation.voting.config;
 
 import com.bloxbean.cardano.client.backend.api.BackendService;
-import org.cardano.foundation.voting.service.blockchain_state.*;
+import org.cardano.foundation.voting.domain.CardanoNetwork;
+import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataChainTipService;
+import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataStakePoolService;
+import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataTransactionDetailsService;
+import org.cardano.foundation.voting.service.blockchain_state.FixedBlockchainDataStakePoolService;
 import org.cardano.foundation.voting.service.blockchain_state.backend_bridge.BackendServiceBlockchainDataChainTipService;
 import org.cardano.foundation.voting.service.blockchain_state.backend_bridge.BackendServiceBlockchainDataStakePoolService;
 import org.cardano.foundation.voting.service.blockchain_state.backend_bridge.BackendServiceBlockchainDataTransactionDetailsService;
-import org.cardano.foundation.voting.service.blockchain_state.blockfrost.BlockfrostBlockchainDataMetadataService;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -16,28 +17,8 @@ import org.springframework.context.annotation.Profile;
 public class BlockchainDataConfig {
 
     @Bean
-    public BlockchainDataChainTipService blockchainDataChainTipService(BackendService backendService) {
-        return new BackendServiceBlockchainDataChainTipService(backendService);
-    }
-
-    @Bean
-    @ConditionalOnProperty(name = "app.ingestion.strategy", havingValue = "PUSH")
-    public BlockchainDataMetadataService pushBasedBlockchainDataMetadataService() {
-        return new BlockchainDataMetadataService() { }; // when app.ingestion.strategy is PUSH, we don't really need to have this service
-    }
-
-    @Bean
-    @ConditionalOnProperty(name = "app.ingestion.strategy", havingValue = "PULL") // when we are pull based we need BlockchainDataMetadataService
-    public BlockchainDataMetadataService pullBasedBlockchainDataMetadataService(
-            BlockchainDataTransactionDetailsService blockchainDataTransactionDetailsService,
-            @Value("${blockfrost.api.key}") String blockfrostProjectId,
-            @Value("${blockfrost.url}") String blockfrostUrl
-            ) {
-
-        return new BlockfrostBlockchainDataMetadataService(
-                blockchainDataTransactionDetailsService,
-                blockfrostProjectId,
-                blockfrostUrl);
+    public BlockchainDataChainTipService blockchainDataChainTipService(CardanoNetwork network, BackendService backendService) {
+        return new BackendServiceBlockchainDataChainTipService(backendService, network);
     }
 
     @Bean
@@ -53,8 +34,8 @@ public class BlockchainDataConfig {
     }
 
     @Bean
-    public BlockchainDataTransactionDetailsService blockchainDataTransactionDetailsService(BackendService backendService) {
-        return new BackendServiceBlockchainDataTransactionDetailsService(backendService);
+    public BlockchainDataTransactionDetailsService blockchainDataTransactionDetailsService(CardanoNetwork network, BackendService backendService) {
+        return new BackendServiceBlockchainDataTransactionDetailsService(backendService, network);
     }
 
 }

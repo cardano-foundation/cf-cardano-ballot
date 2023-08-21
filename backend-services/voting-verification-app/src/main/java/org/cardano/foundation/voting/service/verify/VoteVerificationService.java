@@ -5,7 +5,7 @@ import io.micrometer.core.annotation.Timed;
 import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.client.MerkleRootHashClient;
+import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.CoseWrappedVote;
 import org.cardano.foundation.voting.domain.VoteVerificationRequest;
@@ -29,7 +29,7 @@ import static org.zalando.problem.Status.BAD_REQUEST;
 @RequiredArgsConstructor
 public class VoteVerificationService {
 
-    private final MerkleRootHashClient merkleRootHashClient;
+    private final ChainFollowerClient chainFollowerClient;
 
     private final CardanoNetwork cardanoNetwork;
 
@@ -83,7 +83,7 @@ public class VoteVerificationService {
                         .build());
             }
 
-            var isPresent = merkleRootHashClient.isPresent(event, voteVerificationRequest.getRootHash());
+            var isPresent = chainFollowerClient.isMerkleProofPresent(event, voteVerificationRequest.getRootHash());
 
             if (!isPresent) {
                 return Either.right(false);

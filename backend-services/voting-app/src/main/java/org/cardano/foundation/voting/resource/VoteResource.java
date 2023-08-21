@@ -4,7 +4,6 @@ import io.micrometer.core.annotation.Timed;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.web3.SignedWeb3Request;
-import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
 import org.cardano.foundation.voting.service.vote.VoteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,9 +24,6 @@ public class VoteResource {
 
     @Autowired
     private VoteService voteService;
-
-    @Autowired
-    private ReferenceDataService referenceDataService;
 
     @RequestMapping(value = "/cast", method = POST, produces = "application/json")
     @Timed(value = "resource.vote.cast", percentiles = { 0.3, 0.5, 0.95 })

@@ -7,6 +7,7 @@ import com.bloxbean.cardano.client.backend.model.TransactionContent;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.TransactionDetails;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataTransactionDetailsService;
 
@@ -17,6 +18,8 @@ import java.util.Optional;
 public class BackendServiceBlockchainDataTransactionDetailsService implements BlockchainDataTransactionDetailsService {
 
     private final BackendService backendService;
+
+    private final CardanoNetwork network;
 
     @Override
     @SneakyThrows
@@ -33,6 +36,7 @@ public class BackendServiceBlockchainDataTransactionDetailsService implements Bl
                     .transactionHash(trx.getHash())
                     .transactionsConfirmations(txConfirmations)
                     .finalityScore(TransactionDetails.FinalityScore.fromConfirmations(txConfirmations))
+                    .network(network)
                     .absoluteSlot(trx.getSlot())
                     .blockHash(trx.getBlock())
                     .build()

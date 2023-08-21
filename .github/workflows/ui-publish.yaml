@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 env:
-  APP_NAME: ui/cip-1694
+  APP_NAME: voting-app-ui
   PRIVATE_DOCKER_REGISTRY_URL: ${{ secrets.GITLAB_DOCKER_REGISTRY_URL }}
   PRIVATE_DOCKER_REGISTRY_USER: Deploy-Token
   PRIVATE_DOCKER_REGISTRY_PASS: ${{ secrets.GITLAB_PKG_REGISTRY_TOKEN }}
@@ -65,7 +65,7 @@ jobs:
       - name: Build and Push docker image
         uses: docker/build-push-action@v4
         with:
-          context: backend-services/${{ env.APP_NAME }}
+          context: ui/cip-1694
           push: true
           tags: |
             ${{ env.DOCKER_LATEST_IMAGE_TAG }}

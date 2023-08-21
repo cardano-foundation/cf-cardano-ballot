@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - develop
+      - feat/AddDeploymentModule
   pull_request:
     types: [ opened, synchronize ]
   workflow_dispatch:
@@ -13,10 +13,6 @@ env:
   PRIVATE_DOCKER_REGISTRY_URL: ${{ secrets.GITLAB_DOCKER_REGISTRY_URL }}
   PRIVATE_DOCKER_REGISTRY_USER: Deploy-Token
   PRIVATE_DOCKER_REGISTRY_PASS: ${{ secrets.GITLAB_PKG_REGISTRY_TOKEN }}
-  PRIVATE_MVN_REGISTRY_TOKEN: ${{ secrets.GITLAB_PKG_REGISTRY_TOKEN }}
-  PRIVATE_MVN_REGISTRY_URL: ${{ secrets.GITLAB_MAVEN_REGISTRY_URL }}
-  PRIVATE_MVN_REGISTRY_USER: Deploy-Token
-  PRIVATE_MVN_REGISTRY_PASS: ${{ secrets.GITLAB_PKG_REGISTRY_TOKEN }}
 
 jobs:
   publish:
@@ -24,9 +20,6 @@ jobs:
       contents: read
       packages: write
     runs-on: self-hosted
-    if: |
-      "contains(github.event.head_commit.message, 'release-please--branches--main')" ||
-      ${{ github.event_name == 'pull_request' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -41,10 +34,6 @@ jobs:
       - name: Setup depends
         run: |
           pip install yq
-
-      - name: Setup maven settings.xml
-        run: |
-          envsubst < ./.m2/settings.default.xml.tpl > ./.m2/settings.xml
 
       - name: Set extra environment and metadata
         id: metadata

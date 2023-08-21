@@ -17,7 +17,6 @@ import { EventTime } from 'components/EventTime/EventTime';
 import {
   setIsConnectWalletModalVisible,
   setIsReceiptFetched,
-  setIsVerifyVoteModalVisible,
   setIsVoteSubmittedModalVisible,
   setSelectedProposal,
   setVoteReceipt,
@@ -39,7 +38,6 @@ import * as voteService from 'common/api/voteService';
 import { useToggle } from 'common/hooks/useToggle';
 import { HttpError } from 'common/handlers/httpHandler';
 import { env } from '../../env';
-import { VerifyVoteModal } from './components/VerifyVote/VerifyVote';
 import styles from './Vote.module.scss';
 
 const errorsMap = {
@@ -61,7 +59,6 @@ export const VotePage = () => {
   const eventHasntStarted = !event?.active && !event?.finished;
   const isReceiptFetched = useSelector((state: RootState) => state.user.isReceiptFetched);
   const isVoteSubmittedModalVisible = useSelector((state: RootState) => state.user.isVoteSubmittedModalVisible);
-  const isVerifyVoteModalVisible = useSelector((state: RootState) => state.user.isVerifyVoteModalVisible);
   const [absoluteSlot, setAbsoluteSlot] = useState<number>();
   const savedProposal = useSelector((state: RootState) => state.user.proposal);
   const [optionId, setOptionId] = useState(savedProposal || '');
@@ -407,14 +404,6 @@ export const VotePage = () => {
             see the results!
           </>
         }
-      />
-      <VerifyVoteModal
-        openStatus={isVerifyVoteModalVisible}
-        onCloseFn={() => {
-          dispatch(setIsVerifyVoteModalVisible({ isVisible: false }));
-        }}
-        name="vote-verify-modal"
-        id="vote-verify-modal"
       />
     </>
   );

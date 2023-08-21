@@ -17,7 +17,6 @@ import { EventTime } from 'components/EventTime/EventTime';
 import {
   setIsConnectWalletModalVisible,
   setIsReceiptFetched,
-  setIsVerifyVoteModalVisible,
   setIsVoteSubmittedModalVisible,
   setSelectedProposal,
   setVoteReceipt,
@@ -39,7 +38,6 @@ import * as voteService from 'common/api/voteService';
 import { useToggle } from 'common/hooks/useToggle';
 import { HttpError } from 'common/handlers/httpHandler';
 import { env } from '../../env';
-import { VerifyVoteModal } from './components/VerifyVote/VerifyVote';
 import styles from './Vote.module.scss';
 
 const errorsMap = {
@@ -61,7 +59,6 @@ export const VotePage = () => {
   const eventHasntStarted = !event?.active && !event?.finished;
   const isReceiptFetched = useSelector((state: RootState) => state.user.isReceiptFetched);
   const isVoteSubmittedModalVisible = useSelector((state: RootState) => state.user.isVoteSubmittedModalVisible);
-  const isVerifyVoteModalVisible = useSelector((state: RootState) => state.user.isVerifyVoteModalVisible);
   const [absoluteSlot, setAbsoluteSlot] = useState<number>();
   const savedProposal = useSelector((state: RootState) => state.user.proposal);
   const [optionId, setOptionId] = useState(savedProposal || '');
@@ -97,7 +94,9 @@ export const VotePage = () => {
           dispatch(setSelectedProposal({ proposal: receiptResponse.proposal }));
         } else {
           const message = `${errorPrefix}', ${receiptResponse?.title}, ${receiptResponse?.detail}`;
-          console.log(message);
+          if (process.env.NODE_ENV === 'development') {
+            console.log(message);
+          }
           toast(
             <Toast
               message={errorPrefix}
@@ -122,7 +121,9 @@ export const VotePage = () => {
             icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
           />
         );
-        console.log(message);
+        if (process.env.NODE_ENV === 'development') {
+          console.log(message);
+        }
       }
     },
     [absoluteSlot, dispatch, signMessagePromisified, stakeAddress]
@@ -137,7 +138,9 @@ export const VotePage = () => {
       setAbsoluteSlot((await voteService.getSlotNumber())?.absoluteSlot);
     } catch (error) {
       const message = `Failed to fecth slot number: ${error?.message}`;
-      console.log(message);
+      if (process.env.NODE_ENV === 'development') {
+        console.log(message);
+      }
       toast(
         <Toast
           message="Failed to fecth slot number"
@@ -154,6 +157,7 @@ export const VotePage = () => {
     }
   }, [init, isConnected]);
 
+  // fetch vote receipt if there is no saved selection and event is active or finished
   useEffect(() => {
     if (absoluteSlot && !savedProposal && !eventHasntStarted) {
       fetchReceipt({});
@@ -167,10 +171,6 @@ export const VotePage = () => {
 
   const handleSubmit = async () => {
     if (!isConnected) return;
-    if (!env.EVENT_ID) {
-      console.log('EVENT_ID is not provided');
-      return;
-    }
 
     let votingPower: Account['votingPower'];
     try {
@@ -180,7 +180,9 @@ export const VotePage = () => {
         error instanceof Error || error instanceof HttpError ? error?.message : error
       }`;
 
-      console.log(message);
+      if (process.env.NODE_ENV === 'development') {
+        console.log(message);
+      }
       toast(
         <Toast
           error
@@ -214,7 +216,9 @@ export const VotePage = () => {
           />
         );
         setOptionId('');
-        console.log('Failed to cast e vote', errorsMap[error?.message as keyof typeof errorsMap] || error?.message);
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Failed to cast e vote', errorsMap[error?.message as keyof typeof errorsMap] || error?.message);
+        }
       } else if (error instanceof Error) {
         toast(
           <Toast
@@ -223,7 +227,9 @@ export const VotePage = () => {
             icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
           />
         );
-        console.log('Failed to cast e vote', error?.message || error.toString());
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Failed to cast e vote', error?.message || error.toString());
+        }
       }
     }
   };
@@ -398,14 +404,6 @@ export const VotePage = () => {
             see the results!
           </>
         }
-      />
-      <VerifyVoteModal
-        openStatus={isVerifyVoteModalVisible}
-        onCloseFn={() => {
-          dispatch(setIsVerifyVoteModalVisible({ isVisible: false }));
-        }}
-        name="vote-verify-modal"
-        id="vote-verify-modal"
       />
     </>
   );

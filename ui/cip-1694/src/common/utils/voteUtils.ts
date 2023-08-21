@@ -21,7 +21,7 @@ export const buildCanonicalVoteInputJson = ({
   const startOfCurrentDay = new Date();
   startOfCurrentDay.setUTCMinutes(0, 0, 0);
   return canonicalize({
-    // TOOD: move to const/env file/ config file, also the link seems to be broken
+    // TODO: should this one be hardcoded?
     uri: 'https://evoting.cardano.org/voltaire',
     action: 'CAST_VOTE',
     actionText: 'Cast Vote',
@@ -49,6 +49,7 @@ export const buildCanonicalVoteReceiptInputJson = ({
   slotNumber,
 }: votereceiptInput): ReturnType<typeof canonicalize> =>
   canonicalize({
+    // TODO: should this one be hardcoded?
     uri: 'https://evoting.cardano.org/voltaire',
     action: 'VIEW_VOTE_RECEIPT',
     actionText: 'View Vote Receipt',

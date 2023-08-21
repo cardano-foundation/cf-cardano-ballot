@@ -50,7 +50,9 @@ export const VoteReceipt = ({ setOpen, fetchReceipt }: VoteReceiptProps) => {
         setIsVerified(verified);
       }
     } catch (error) {
-      console.log('Failed to verify vote', error?.message);
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Failed to verify vote', error?.message);
+      }
       toast(
         <Toast
           message="Unable to verify vote receipt. Please try again"
@@ -59,8 +61,9 @@ export const VoteReceipt = ({ setOpen, fetchReceipt }: VoteReceiptProps) => {
         />
       );
     }
-  }, [isVerified, receipt]);
+  }, [receipt]);
 
+  // verification is triggered immediately in case the status is 'FULL'
   useEffect(() => {
     if (!isVerified && receipt?.status === 'FULL') {
       verifyVote();

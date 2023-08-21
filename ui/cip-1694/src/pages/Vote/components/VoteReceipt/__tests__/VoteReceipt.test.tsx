@@ -79,4 +79,34 @@ describe('Vote receipt:', () => {
       });
     });
   });
+
+  describe('BASIC', () => {
+    test.todo('should render proper state');
+  });
+
+  describe('PARTIAL', () => {
+    test.todo('should render proper state');
+  });
+
+  describe('ROLLBACK', () => {
+    test.todo('should render proper state');
+  });
+
+  describe('FULL', () => {
+    describe('LOW', () => {
+      test.todo('should render proper state');
+    });
+    describe('MEDIUM', () => {
+      test.todo('should render proper state');
+    });
+    describe('HIGH', () => {
+      test.todo('should render proper state');
+    });
+    describe('VERIFIED', () => {
+      test.todo('should render proper state');
+    });
+    describe('verification modal', () => {
+      test.todo('should render proper state');
+    });
+  });
 });

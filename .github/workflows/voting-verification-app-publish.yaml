@@ -34,7 +34,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
 
       - name: Execute Gradle build
-        working-directory: backend-services/voting-app
+        working-directory: backend-services/voting-verification-app
         run: ./gradlew bootJar
 
       - name: Setup depends

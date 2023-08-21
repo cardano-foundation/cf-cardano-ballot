@@ -41,8 +41,8 @@ jobs:
         id: metadata
         run: |
           CURRENT_VERSION=$(cat version.txt)
-          DOCKER_IMAGE_NAME=voting-app
-          echo "DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME}" >> "$GITHUB_ENV"
+          APP_NAME=voting-app
+          echo "DOCKER_IMAGE_NAME=${APP_NAME}" >> "$GITHUB_ENV"
 
           if [ ${{github.event_name}} == "pull_request" ]
           then
@@ -59,17 +59,13 @@ jobs:
             fi
 
             echo "ARTIFACT_VERSION=${CURRENT_VERSION}" >> "$GITHUB_ENV"
-            echo "DOCKER_LATEST_IMAGE_TAG=${{ env.PRIVATE_DOCKER_REGISTRY_URL }}/${DOCKER_IMAGE_NAME}:latest" >> "$GITHUB_ENV"
+            echo "DOCKER_LATEST_IMAGE_TAG=${{ env.PRIVATE_DOCKER_REGISTRY_URL }}/${APP_NAME}:latest" >> "$GITHUB_ENV"
 
           fi
 
 
       - name: Docker Login
         uses: docker/login-action@v2
-        if: |
-          steps.metadata.outputs.BRANCH == 'main' ||
-          steps.metadata.outputs.DEVELOP_SNAPSHOT_OK == 'true' ||
-          github.event_name == 'pull_request'
         with:
           registry: ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}
           username: ${{ env.PRIVATE_DOCKER_REGISTRY_USER }}
@@ -80,13 +76,9 @@ jobs:
 
       - name: Build and Push docker image
         uses: docker/build-push-action@v4
-        if: |
-          steps.metadata.outputs.BRANCH == 'main' ||
-          steps.metadata.outputs.DEVELOP_SNAPSHOT_OK == 'true' ||
-          github.event_name == 'pull_request'
         with:
-          file: ./Dockerfile.local
-          context: .
+#          file: ./Dockerfile.local
+          context: backend-services/${APP_NAME}
           push: true
           tags: |
             ${{ env.DOCKER_LATEST_IMAGE_TAG }}

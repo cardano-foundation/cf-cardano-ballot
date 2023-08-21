@@ -36,12 +36,12 @@ dependencies {
 
 	testImplementation("org.testcontainers:junit-jupiter")
 
-    implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0-alpha.4")
-    implementation("com.bloxbean.cardano:cardano-client-address:0.5.0-alpha.4")
-    implementation("com.bloxbean.cardano:cardano-client-metadata:0.5.0-alpha.4")
-	implementation("com.bloxbean.cardano:cardano-client-quicktx:0.5.0-alpha.4")
-	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.0-alpha.4")
-	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0-alpha.4")
+    implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0-beta1")
+    implementation("com.bloxbean.cardano:cardano-client-address:0.5.0-beta1")
+    implementation("com.bloxbean.cardano:cardano-client-metadata:0.5.0-beta1")
+	implementation("com.bloxbean.cardano:cardano-client-quicktx:0.5.0-beta1")
+	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.0-beta1")
+	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0-beta1")
 
 	implementation("io.blockfrost:blockfrost-java:0.1.3")
 

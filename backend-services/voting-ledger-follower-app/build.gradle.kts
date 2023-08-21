@@ -58,7 +58,7 @@ dependencies {
 	implementation("com.querydsl:querydsl-jpa")
     annotationProcessor("com.querydsl:querydsl-apt")
 
-	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.0-alpha.4")
+	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.0-beta1")
 
 	implementation("com.bloxbean.cardano:yaci-store-spring-boot-starter:0.0.11-beta4")
 	implementation("com.bloxbean.cardano:yaci-store-blocks-spring-boot-starter:0.0.11-beta4")

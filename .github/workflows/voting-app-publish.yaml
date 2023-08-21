@@ -1,0 +1,102 @@
+name: Publish artifacts to (internal) Gitlab Packages
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    types: [ opened, synchronize ]
+  workflow_dispatch:
+
+env:
+  PRIVATE_DOCKER_REGISTRY_URL: ${{ secrets.GITLAB_DOCKER_REGISTRY_URL }}
+  PRIVATE_DOCKER_REGISTRY_USER: Deploy-Token
+  PRIVATE_DOCKER_REGISTRY_PASS: ${{ secrets.GITLAB_PKG_REGISTRY_TOKEN }}
+  PRIVATE_MVN_REGISTRY_TOKEN: ${{ secrets.GITLAB_PKG_REGISTRY_TOKEN }}
+  PRIVATE_MVN_REGISTRY_URL: ${{ secrets.GITLAB_MAVEN_REGISTRY_URL }}
+  PRIVATE_MVN_REGISTRY_USER: Deploy-Token
+  PRIVATE_MVN_REGISTRY_PASS: ${{ secrets.GITLAB_PKG_REGISTRY_TOKEN }}
+
+jobs:
+  publish:
+    permissions:
+      contents: read
+      packages: write
+    runs-on: self-hosted
+    if: |
+      "contains(github.event.head_commit.message, 'release-please--branches--main')" ||
+      ${{ github.event_name == 'pull_request' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup JDK 18
+        uses: actions/setup-java@v3
+        with:
+          java-version: '18'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Setup depends
+        run: |
+          pip install yq
+
+      - name: Setup maven settings.xml
+        run: |
+          envsubst < ./.m2/settings.default.xml.tpl > ./.m2/settings.xml
+
+      - name: Set extra environment and metadata
+        id: metadata
+        run: |
+          CURRENT_VERSION=$(xq -r .project.version pom.xml)
+          DOCKER_IMAGE_NAME=voting-app
+          echo "DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME}" >> "$GITHUB_ENV"
+
+          if [ ${{github.event_name}} == "pull_request" ]
+          then
+            PR_NUMBER=$(echo $GITHUB_REF | awk -F/ '{ print $3 }')
+            echo "ARTIFACT_VERSION=${CURRENT_VERSION}-PR${PR_NUMBER}" >> "$GITHUB_ENV"
+            echo "DOCKER_LATEST_IMAGE_TAG=" >> "$GITHUB_ENV"
+          else
+            # Make sure develop branch artifacts include SNAPSHOT
+            BRANCH=${GITHUB_REF##*/}
+            echo "BRANCH=${GITHUB_REF##*/}" >> "$GITHUB_OUTPUT"
+            if [[ "${BRANCH}" == "develop" ]] && [[ "${CURRENT_VERSION}" =~ .*-SNAPSHOT$ ]]
+            then
+              echo "DEVELOP_SNAPSHOT_OK=true" >> "$GITHUB_OUTPUT"
+            fi
+
+            echo "ARTIFACT_VERSION=${CURRENT_VERSION}" >> "$GITHUB_ENV"
+            echo "DOCKER_LATEST_IMAGE_TAG=${{ env.PRIVATE_DOCKER_REGISTRY_URL }}/${DOCKER_IMAGE_NAME}:latest" >> "$GITHUB_ENV"
+
+          fi
+
+
+      - name: Docker Login
+        uses: docker/login-action@v2
+        if: |
+          steps.metadata.outputs.BRANCH == 'main' ||
+          steps.metadata.outputs.DEVELOP_SNAPSHOT_OK == 'true' ||
+          github.event_name == 'pull_request'
+        with:
+          registry: ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}
+          username: ${{ env.PRIVATE_DOCKER_REGISTRY_USER }}
+          password: ${{ env.PRIVATE_DOCKER_REGISTRY_PASS }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build and Push docker image
+        uses: docker/build-push-action@v4
+        if: |
+          steps.metadata.outputs.BRANCH == 'main' ||
+          steps.metadata.outputs.DEVELOP_SNAPSHOT_OK == 'true' ||
+          github.event_name == 'pull_request'
+        with:
+          file: ./Dockerfile.local
+          context: .
+          push: true
+          tags: |
+            ${{ env.DOCKER_LATEST_IMAGE_TAG }}
+            ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}/${{ env.DOCKER_IMAGE_NAME }}:${{ env.ARTIFACT_VERSION }}

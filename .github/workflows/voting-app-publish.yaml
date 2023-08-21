@@ -34,6 +34,10 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
 
+      - name: Execute Gradle build
+        working-directory: backend-services/voting-app
+        run: ./gradlew bootJar
+
       - name: Setup depends
         run: |
           pip install yq

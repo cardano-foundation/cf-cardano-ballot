@@ -38,7 +38,7 @@ spec:
             adminPasswordKey: POSTGRES_ADMIN_PASSWORD
             userPasswordKey: POSTGRES_PASSWORD
             replicationPasswordKey: POSTGRES_REPLICATION_PASSWORD
-          database: {{ .dbName | default "explorer_api" }}
+          database: {{ .dbName | default "cip1694" }}
         primary:
           persistence:
             size: {{ .dbSize | default "8Gi" }}

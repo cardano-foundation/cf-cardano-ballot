@@ -19,6 +19,10 @@ spec:
           value: {{ .Values.domain }}
         - name: "network"
           value: {{ .Values.network }}
+      {{- with index .Values "cf-cardano-ballot-ui" "values" }}
+      values: |
+{{ toYaml . | indent 8 }}
+      {{- end }}
 
   syncPolicy:
     automated:

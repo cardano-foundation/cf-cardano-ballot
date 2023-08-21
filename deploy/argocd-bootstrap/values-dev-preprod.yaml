@@ -3,4 +3,3 @@ argo-cd:
     ingress:
       hosts:
         - argocd.dev.cf-cip1694-preprod.eu-west-1.metadata.dev.cf-deployments.org
-        - dev.cf-cip1694-preprod.eu-west-1.metadata.dev.cf-deployments.org

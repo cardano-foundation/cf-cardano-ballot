@@ -16,7 +16,7 @@ cf-cardano-ballot-infra:
   enabled: true
 
 # Explorer Parameters
-cf-cardano-ballot:
+cf-cardano-ballot-ui:
   # Whether the Explorer Resources should be deployed.
   enabled: true
 

@@ -10,14 +10,19 @@ network: null
 # domain: something like "grafana.dev.ggargiulo-clusters.eu-west-1.metadata.dev.cf-deployments.org"
 domain: null
 
-# Explorer Infra Parameters
+# Infra Parameters
 cf-cardano-ballot-infra:
   # Whether Infra resources should be deployed.
   enabled: true
 
-# Explorer Parameters
+# Ballot UI Parameters
 cf-cardano-ballot-ui:
-  # Whether the Explorer Resources should be deployed.
+  # Whether Resources should be deployed.
+  enabled: true
+
+# Ballot API Parameters
+cf-cardano-ballot-api:
+  # Whether Resources should be deployed.
   enabled: true
 
 grafana-dashboards:

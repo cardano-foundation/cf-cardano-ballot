@@ -12,3 +12,9 @@ cf-cardano-ballot-ui:
   values:
     image:
       tag: 0.0.1-SNAPSHOT-PR69
+
+cf-cardano-ballot-api:
+  enabled: true
+  values:
+    image:
+      tag: 0.0.1-SNAPSHOT-PR69

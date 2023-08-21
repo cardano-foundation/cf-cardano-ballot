@@ -1,4 +1,4 @@
-package org.cardano.foundation.voting.service.merkle_tree;
+package org.cardano.foundation.voting.service.verify;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.micrometer.core.annotation.Timed;

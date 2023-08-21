@@ -7,5 +7,7 @@ domain: dev.cf-cip1694-preprod.eu-west-1.metadata.dev.cf-deployments.org
 cf-cardano-ballot-infra:
   enabled: true
 
-cf-cardano-ballot:
+cf-cardano-ballot-ui:
   enabled: true
+  image:
+    tag: 0.0.1-SNAPSHOT-PR69

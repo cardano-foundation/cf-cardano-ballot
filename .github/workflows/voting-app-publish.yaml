@@ -10,6 +10,7 @@ on:
   workflow_dispatch:
 
 env:
+  APP_NAME: voting-app
   PRIVATE_DOCKER_REGISTRY_URL: ${{ secrets.GITLAB_DOCKER_REGISTRY_URL }}
   PRIVATE_DOCKER_REGISTRY_USER: Deploy-Token
   PRIVATE_DOCKER_REGISTRY_PASS: ${{ secrets.GITLAB_PKG_REGISTRY_TOKEN }}
@@ -41,8 +42,7 @@ jobs:
         id: metadata
         run: |
           CURRENT_VERSION=$(cat version.txt)
-          APP_NAME=voting-app
-          echo "DOCKER_IMAGE_NAME=${APP_NAME}" >> "$GITHUB_ENV"
+          echo "DOCKER_IMAGE_NAME=${{ env.APP_NAME }}" >> "$GITHUB_ENV"
 
           if [ ${{github.event_name}} == "pull_request" ]
           then
@@ -59,7 +59,7 @@ jobs:
             fi
 
             echo "ARTIFACT_VERSION=${CURRENT_VERSION}" >> "$GITHUB_ENV"
-            echo "DOCKER_LATEST_IMAGE_TAG=${{ env.PRIVATE_DOCKER_REGISTRY_URL }}/${APP_NAME}:latest" >> "$GITHUB_ENV"
+            echo "DOCKER_LATEST_IMAGE_TAG=${{ env.PRIVATE_DOCKER_REGISTRY_URL }}/${{ env.APP_NAME }}:latest" >> "$GITHUB_ENV"
 
           fi
 
@@ -78,7 +78,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
 #          file: ./Dockerfile.local
-          context: backend-services/${APP_NAME}
+          context: backend-services/${{ env.APP_NAME }}
           push: true
           tags: |
             ${{ env.DOCKER_LATEST_IMAGE_TAG }}

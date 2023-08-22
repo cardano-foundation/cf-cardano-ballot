@@ -61,7 +61,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
 
       - name: Execute Gradle build
-        working-directory: backend-services/voting-app
+        working-directory: backend-services/${{ env.APP_NAME }}
         run: ./gradlew bootJar
 
       - name: Docker Login
@@ -104,7 +104,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
 
       - name: Execute Gradle build
-        working-directory: backend-services/voting-app
+        working-directory: backend-services/${{ env.APP_NAME }}
         run: ./gradlew bootJar
 
       - name: Docker Login

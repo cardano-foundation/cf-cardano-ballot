@@ -1,5 +1,5 @@
 FROM node:18-alpine AS builder
-ENV NODE_ENV production
+ENV NODE_ENV development
 
 # Add a work directory
 WORKDIR /app

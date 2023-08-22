@@ -83,3 +83,46 @@ jobs:
           push: true
           tags: |
             ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}/${{ env.APP_NAME }}:${{ env.ARTIFACT_VERSION }}
+  
+
+  publish-voting-verification-app:
+    runs-on: ubuntu-latest
+    env:
+      APP_NAME: voting-verification-app
+    needs: build-version
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: 'true'
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
+      - name: Execute Gradle build
+        working-directory: backend-services/voting-app
+        run: ./gradlew bootJar
+
+      - name: Docker Login
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}
+          username: ${{ env.PRIVATE_DOCKER_REGISTRY_USER }}
+          password: ${{ env.PRIVATE_DOCKER_REGISTRY_PASS }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build and Push docker image
+        uses: docker/build-push-action@v4
+        env:
+          ARTIFACT_VERSION: ${{needs.build-version.outputs.ARTIFACT_VERSION}}
+        with:
+          context: backend-services/${{ env.APP_NAME }}
+          push: true
+          tags: |
+            ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}/${{ env.APP_NAME }}:${{ env.ARTIFACT_VERSION }}

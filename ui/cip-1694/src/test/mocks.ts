@@ -116,7 +116,7 @@ export const eventMock_finished: EventReference = {
 };
 
 export const VoteReceiptMock_Basic: VoteReceipt = {
-  id: 'e51fdf09...4c836052b4f0',
+  id: 'e51fdf09asdasdasdasdasd4c836052b4f0',
   event: 'CIP-1694_Pre_Ratifictaion-4619',
   proposal: 'YES',
   votingPower: '9,997k ADA',

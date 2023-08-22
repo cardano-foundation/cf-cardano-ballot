@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import pick from 'lodash/pick';
 import Grid from '@mui/material/Grid';
@@ -9,7 +9,6 @@ import BlockIcon from '@mui/icons-material/Block';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import * as verificationService from 'common/api/verificationService';
 import { RootState } from 'common/store';
-import { setIsVerifyVoteModalVisible } from 'common/store/userSlice';
 import { Toast } from 'components/common/Toast/Toast';
 import {
   AdvancedFullFieldsToDisplayArrayKeys,
@@ -28,7 +27,6 @@ type VoteReceiptProps = {
 };
 
 export const VoteReceipt = ({ setOpen, fetchReceipt }: VoteReceiptProps) => {
-  const dispatch = useDispatch();
   const receipt = useSelector((state: RootState) => state.user.receipt);
   const [isVerified, setIsVerified] = useState(false);
 
@@ -120,6 +118,7 @@ export const VoteReceipt = ({ setOpen, fetchReceipt }: VoteReceiptProps) => {
           className={styles.title}
           variant="h4"
           sx={{ marginBottom: '28px' }}
+          data-testid="vote-receipt-title"
         >
           Vote Receipt
         </Typography>
@@ -134,7 +133,6 @@ export const VoteReceipt = ({ setOpen, fetchReceipt }: VoteReceiptProps) => {
       >
         <ReceiptInfo
           fetchReceipt={fetchReceipt}
-          showVerifiedModal={() => dispatch(setIsVerifyVoteModalVisible({ isVisible: true }))}
           receipt={receipt}
           isVerified={isVerified}
         />
@@ -163,12 +161,14 @@ export const VoteReceipt = ({ setOpen, fetchReceipt }: VoteReceiptProps) => {
             expandIcon={<ExpandMoreIcon className={styles.arrowIcon} />}
             aria-controls="panel1a-content"
             id="panel1a-header"
+            data-testid="receipt-item-accordion"
           >
             <Typography style={{ fontSize: '16px', fontWeight: '600' }}>Show advanced information</Typography>
           </AccordionSummary>
           <AccordionDetails sx={{ padding: '0px' }}>
             {Object.entries(moreFieldsToDisplay).map(([key, value]: [AdvancedFullFieldsToDisplayArrayKeys, string]) => (
               <ReceiptItem
+                dataTestId="receipt-item-extended"
                 key={key}
                 {...{ name: key, value, onItemClick }}
               />

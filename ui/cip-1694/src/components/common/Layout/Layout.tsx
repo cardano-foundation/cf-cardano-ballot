@@ -13,6 +13,7 @@ export const Layout = ({ children }: LayoutProps) => (
     justifyContent={'center'}
     className={styles.container}
     padding={{ xs: '0 20px 20px 20px', md: '0px 40px' }}
+    data-testid="layout"
   >
     <Grid
       flex={{ xs: '1', md: 'none' }}

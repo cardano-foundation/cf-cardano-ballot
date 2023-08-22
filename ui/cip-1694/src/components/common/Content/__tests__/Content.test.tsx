@@ -58,8 +58,6 @@ describe('ConnectWalletModal', () => {
     cleanup();
   });
 
-  test.todo('PageRoutes');
-
   test('should display proper state for connect wallet modal, properly react to wallet on connect error scenario', async () => {
     mockConnectWalletList.mockImplementation(() => {
       return <span data-testid="connect-wallet-list" />;

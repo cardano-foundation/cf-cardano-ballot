@@ -17,9 +17,10 @@ type VoteReceiptProps = {
   onItemClick: (value: string) => void;
   name: FieldsToDisplayArrayKeys | AdvancedFullFieldsToDisplayArrayKeys;
   value: string;
+  dataTestId?: string;
 };
 
-export const ReceiptItem = ({ name, value, onItemClick }: VoteReceiptProps) => (
+export const ReceiptItem = ({ name, value, onItemClick, dataTestId = 'receipt-item' }: VoteReceiptProps) => (
   <>
     <Grid item>
       <Typography
@@ -32,7 +33,7 @@ export const ReceiptItem = ({ name, value, onItemClick }: VoteReceiptProps) => (
           gap={'10px'}
           alignItems="center"
         >
-          <span>{labelTransformerMap[name] || name}</span>
+          <span data-testid={`${dataTestId}-title`}>{labelTransformerMap[name] || name}</span>
           <Tooltip
             classes={{ tooltip: styles.tooltip }}
             title={
@@ -75,6 +76,7 @@ export const ReceiptItem = ({ name, value, onItemClick }: VoteReceiptProps) => (
       <Typography
         className={styles.inputText}
         variant="h4"
+        data-testid={`${dataTestId}-value`}
       >
         {name === 'id' || name === 'voterStakingAddress' ? (
           <Tooltip
@@ -88,7 +90,7 @@ export const ReceiptItem = ({ name, value, onItemClick }: VoteReceiptProps) => (
               </Typography>
             }
           >
-            <span>asd{valueTransformerMap[name]?.(value) || value}</span>
+            <span>{valueTransformerMap[name]?.(value) || value}</span>
           </Tooltip>
         ) : (
           valueTransformerMap[name]?.(value) || value

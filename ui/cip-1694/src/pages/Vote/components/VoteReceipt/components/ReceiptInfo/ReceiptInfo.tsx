@@ -67,11 +67,10 @@ type FetchReceiptProps = {
 type ReceiptInfoProps = {
   isVerified: boolean;
   fetchReceipt: (props: FetchReceiptProps) => void;
-  showVerifiedModal: () => void;
   receipt: VoteReceipt;
 };
 
-export const ReceiptInfo = ({ isVerified, fetchReceipt, receipt, showVerifiedModal }: ReceiptInfoProps) => {
+export const ReceiptInfo = ({ isVerified, fetchReceipt, receipt }: ReceiptInfoProps) => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.up('sm'));
 
@@ -92,7 +91,7 @@ export const ReceiptInfo = ({ isVerified, fetchReceipt, receipt, showVerifiedMod
           className={styles.ctaButton}
           size="large"
           variant="outlined"
-          onClick={!isVerified ? () => fetchReceipt({ refetch: true }) : () => showVerifiedModal()}
+          onClick={!isVerified ? () => fetchReceipt({ refetch: true }) : () => undefined}
           data-testid="refetch-receipt-button"
         >
           {isVerified ? <QrCodeIcon className={styles.ctaIcon} /> : <ReplayIcon className={styles.ctaIcon} />}

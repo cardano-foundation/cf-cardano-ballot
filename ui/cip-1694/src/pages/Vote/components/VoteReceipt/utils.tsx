@@ -36,15 +36,15 @@ export const labelTransformerMap: Record<FieldsToDisplayArrayKeys | AdvancedFull
   id: 'ID',
   event: 'Event',
   proposal: 'Proposal',
-  votingPower: 'Voting power',
-  voterStakingAddress: 'Voter staking address',
+  votingPower: 'Voting Power',
+  voterStakingAddress: 'Voter Staking Address',
   status: 'Status',
-  votedAtSlot: 'Voted at slot',
+  votedAtSlot: 'Voted at Slot',
   voteProof: 'Vote Proof',
 };
 
-const shortenString = (string: string, s: number, e: number) =>
-  `${string.slice(0, s)}...${string.slice(string.length - e, string.length - 1)}`;
+export const shortenString = (string: string, s: number, e: number) =>
+  `${string.slice(0, s)}...${string.slice(string.length - e, string.length)}`;
 
 export const valueTransformerMap: Partial<
   Record<

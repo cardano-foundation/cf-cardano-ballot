@@ -21,6 +21,7 @@ export default function SidePage({ children, anchor, open, setOpen }: SidePagePr
         anchor={anchor}
         open={open}
         onClose={toggleDrawer}
+        data-testid="side-drawer"
       >
         {children}
       </Drawer>

@@ -18,3 +18,9 @@ cf-cardano-ballot-api:
   values:
     image:
       tag: 0.0.1-SNAPSHOT-PR69
+
+cf-cardano-ballot-verification-api:
+  enabled: true
+  values:
+    image:
+      tag: 0.0.1-SNAPSHOT-PR69

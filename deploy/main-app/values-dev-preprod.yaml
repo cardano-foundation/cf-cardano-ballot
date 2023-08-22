@@ -24,3 +24,10 @@ cf-cardano-ballot-verification-api:
   values:
     image:
       tag: 0.0.1-SNAPSHOT-PR69
+
+cf-cardano-ballot-ledger-follower-api:
+  enabled: false
+  values:
+    image:
+      tag: 0.0.1-SNAPSHOT-PR69
+

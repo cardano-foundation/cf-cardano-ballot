@@ -30,6 +30,11 @@ cf-cardano-ballot-verification-api:
   # Whether Resources should be deployed.
   enabled: true
 
+# Ballot Ledger Follower API Parameters
+cf-cardano-ballot-ledger-follower-api:
+  # Whether Resources should be deployed.
+  enabled: true
+
 grafana-dashboards:
   enabled: true
 

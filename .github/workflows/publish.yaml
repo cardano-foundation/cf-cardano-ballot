@@ -48,10 +48,6 @@ jobs:
       APP_NAME: voting-app
     needs: build-version
     steps:
-      - env:
-          ARTIFACT_VERSION: ${{needs.build-version.outputs.ARTIFACT_VERSION}}
-        run: echo "Artifact Version = $ARTIFACT_VERSION"
-
       - name: Checkout
         uses: actions/checkout@v3
         with:
@@ -80,6 +76,8 @@ jobs:
 
       - name: Build and Push docker image
         uses: docker/build-push-action@v4
+        env:
+          ARTIFACT_VERSION: ${{needs.build-version.outputs.ARTIFACT_VERSION}}
         with:
           context: backend-services/${{ env.APP_NAME }}
           push: true

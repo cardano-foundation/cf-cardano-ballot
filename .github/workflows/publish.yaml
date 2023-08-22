@@ -1,4 +1,4 @@
-name: Publish ui docker image
+name: Build and Publish Docker images
 
 on:
   push:
@@ -9,48 +9,64 @@ on:
   workflow_dispatch:
 
 env:
-  APP_NAME: voting-app-ui
   PRIVATE_DOCKER_REGISTRY_URL: ${{ secrets.GITLAB_DOCKER_REGISTRY_URL }}
   PRIVATE_DOCKER_REGISTRY_USER: Deploy-Token
   PRIVATE_DOCKER_REGISTRY_PASS: ${{ secrets.GITLAB_PKG_REGISTRY_TOKEN }}
 
 jobs:
-  publish:
-    permissions:
-      contents: read
-      packages: write
+
+  build-version:
     runs-on: ubuntu-latest
+    outputs:
+      ARTIFACT_VERSION: ${{ steps.metadata.outputs.ARTIFACT_VERSION }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          submodules: 'true'
+
+      - name: Setup dependencies
+        run: |
+          pip install yq
 
       - name: Set extra environment and metadata
         id: metadata
         run: |
           CURRENT_VERSION=$(cat version.txt)
-          echo "DOCKER_IMAGE_NAME=${{ env.APP_NAME }}" >> "$GITHUB_ENV"
-
+          
           if [ ${{github.event_name}} == "pull_request" ]
           then
             PR_NUMBER=$(echo $GITHUB_REF | awk -F/ '{ print $3 }')
-            echo "ARTIFACT_VERSION=${CURRENT_VERSION}-PR${PR_NUMBER}" >> "$GITHUB_ENV"
-            echo "DOCKER_LATEST_IMAGE_TAG=" >> "$GITHUB_ENV"
+            echo "ARTIFACT_VERSION=${CURRENT_VERSION}-PR${PR_NUMBER}" >> "$GITHUB_OUTPUT"
           else
-            # Make sure develop branch artifacts include SNAPSHOT
             BRANCH=${GITHUB_REF##*/}
             echo "BRANCH=${GITHUB_REF##*/}" >> "$GITHUB_OUTPUT"
-            if [[ "${BRANCH}" == "develop" ]] && [[ "${CURRENT_VERSION}" =~ .*-SNAPSHOT$ ]]
-            then
-              echo "DEVELOP_SNAPSHOT_OK=true" >> "$GITHUB_OUTPUT"
-            fi
-
-            echo "ARTIFACT_VERSION=${CURRENT_VERSION}" >> "$GITHUB_ENV"
-            echo "DOCKER_LATEST_IMAGE_TAG=${{ env.PRIVATE_DOCKER_REGISTRY_URL }}/${{ env.APP_NAME }}:latest" >> "$GITHUB_ENV"
-
+            echo "ARTIFACT_VERSION=${CURRENT_VERSION}" >> "$GITHUB_OUTPUT"
           fi
+  
+  publish-voting-app:
+    runs-on: ubuntu-latest
+    env:
+      APP_NAME: voting-app
+    needs: build-version
+    steps:
+      - env:
+          ARTIFACT_VERSION: ${{needs.build-version.outputs.ARTIFACT_VERSION}}
+        run: echo "Artifact Version = $ARTIFACT_VERSION"
 
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: 'true'
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
+      - name: Execute Gradle build
+        working-directory: backend-services/voting-app
+        run: ./gradlew bootJar
 
       - name: Docker Login
         uses: docker/login-action@v2
@@ -65,8 +81,7 @@ jobs:
       - name: Build and Push docker image
         uses: docker/build-push-action@v4
         with:
-          context: ui/cip-1694
+          context: backend-services/${{ env.APP_NAME }}
           push: true
           tags: |
-            ${{ env.DOCKER_LATEST_IMAGE_TAG }}
             ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}/${{ env.DOCKER_IMAGE_NAME }}:${{ env.ARTIFACT_VERSION }}

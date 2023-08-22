@@ -9,9 +9,16 @@ module.exports = function (app) {
     })
   );
   app.use(
-    '/api',
+    '/api/vote/**',
     createProxyMiddleware({
       target: 'http://localhost:9090',
+      changeOrigin: true,
+    })
+  );
+  app.use(
+    '/api',
+    createProxyMiddleware({
+      target: 'http://localhost:9092',
       changeOrigin: true,
     })
   );

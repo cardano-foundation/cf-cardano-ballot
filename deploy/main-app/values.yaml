@@ -25,6 +25,11 @@ cf-cardano-ballot-api:
   # Whether Resources should be deployed.
   enabled: true
 
+# Ballot Verification API Parameters
+cf-cardano-ballot-verification-api:
+  # Whether Resources should be deployed.
+  enabled: true
+
 grafana-dashboards:
   enabled: true
 

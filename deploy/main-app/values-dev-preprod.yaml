@@ -8,7 +8,7 @@ cf-cardano-ballot-infra:
   enabled: true
 
 cf-cardano-ballot-ui:
-  enabled: false
+  enabled: true
   values:
     image:
       tag: 0.0.1-SNAPSHOT-PR69

@@ -84,4 +84,4 @@ jobs:
           context: backend-services/${{ env.APP_NAME }}
           push: true
           tags: |
-            ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}/${{ env.DOCKER_IMAGE_NAME }}:${{ env.ARTIFACT_VERSION }}
+            ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}/${{ env.APP_NAME }}:${{ env.ARTIFACT_VERSION }}

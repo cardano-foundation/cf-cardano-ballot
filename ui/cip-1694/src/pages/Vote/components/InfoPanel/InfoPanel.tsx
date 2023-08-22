@@ -54,6 +54,7 @@ export const InfoPanel = ({ icon, title, cta, description, type, isSm }: InfoPan
     container
     direction={{ xs: 'column', sm: 'row' }}
     flexWrap="nowrap"
+    data-testid="receipt-info"
   >
     {!isSm && (
       <Grid
@@ -83,14 +84,24 @@ export const InfoPanel = ({ icon, title, cta, description, type, isSm }: InfoPan
         container
         justifyContent="space-between"
       >
-        <span className={styles.title}>{title}</span>
+        <span
+          data-testid="receipt-info-title"
+          className={styles.title}
+        >
+          {title}
+        </span>
         {isSm && <Box>{cta}</Box>}
       </Grid>
       <Grid
         item
         justifyContent="space-between"
       >
-        <span className={styles.description}>{description}</span>
+        <span
+          data-testid="receipt-info-description"
+          className={styles.description}
+        >
+          {description}
+        </span>
       </Grid>
     </Grid>
   </Grid>

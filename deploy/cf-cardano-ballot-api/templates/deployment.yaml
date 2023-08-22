@@ -26,8 +26,35 @@ spec:
           env:
 #            - name: SPRING_PROFILES_ACTIVE
 #              value: {{ .springProfiles }}
+
             - name: CARDANO_NETWORK
               value: {{ .Values.network | default "preprod" | upper}}
+
+            - name: VOTING_METADATA_LABEL
+              value: {{ .Values.votingMetadataLabel | default "11113" | quote }}
+
+            - name: BLOCKFROST_URL
+              valueFrom:
+                secretKeyRef:
+                  name: blockfrost-secrets
+                  key: BLOCKFROST_URL
+            - name: BLOCKFROST_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: blockfrost-secrets
+                  key: BLOCKFROST_PASSWORD
+            - name: TX_SUBMIT_URL
+              valueFrom:
+                secretKeyRef:
+                  name: submit-api-secrets
+                  key: TX_SUBMIT_URL
+
+            - name: ORGANISER_MNEMONIC_PHRASE
+              valueFrom:
+                secretKeyRef:
+                  name: wallet-secrets
+                  key: WALLET_MNEMONIC
+
             - name: DB_URL
               valueFrom:
                 secretKeyRef:

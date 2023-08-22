@@ -18,8 +18,30 @@ if [ $? != 0 ]; then
   kubectl create ns cf-cardano-ballot > /dev/null 2>&1
 fi
 
-## Create a Master Key
-# openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -nodes -out tls.crt -keyout tls.key
+
+## Blockfrost secrets
+kubectl create secret -n cf-cardano-ballot generic blockfrost-secrets \
+  --from-env-file=../../.keys/blockfrost-secrets \
+  --save-config \
+  --dry-run=client \
+  -o yaml \
+  | kubectl apply -f -
+
+## Submit API secrets
+kubectl create secret -n cf-cardano-ballot generic submit-api-secrets \
+  --from-env-file=../../.keys/submit-api-secrets \
+  --save-config \
+  --dry-run=client \
+  -o yaml \
+  | kubectl apply -f -
+
+## Wallet Mnemonic secrets
+kubectl create secret -n cf-cardano-ballot generic wallet-secrets \
+  --from-env-file=../../.keys/wallet-secrets \
+  --save-config \
+  --dry-run=client \
+  -o yaml \
+  | kubectl apply -f -
 
 ## DockerHub secret
 kubectl create secret -n cf-cardano-ballot generic regcred \
@@ -30,7 +52,7 @@ kubectl create secret -n cf-cardano-ballot generic regcred \
   -o yaml \
   | kubectl apply -f -
 
-# Git Hub deploy key
+## Git Hub deploy key
 kubectl create secret generic github-deploy-key \
   --save-config \
   --dry-run=client \
@@ -38,6 +60,8 @@ kubectl create secret generic github-deploy-key \
   -n argocd \
   --from-file=../../.keys/cf-cardano-ballot \
   | kubectl apply -f -
+
+exit 0
 
 #echo "Fetching helm dependencies for main app"
 helm dependency build

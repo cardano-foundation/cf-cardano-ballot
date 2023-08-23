@@ -72,6 +72,15 @@ spec:
                 secretKeyRef:
                   name: postgres-secrets
                   key: POSTGRES_PASSWORD
+
+            - name: VOTE_COMMITMENT_ENABLED
+              value: {{ $instance.active | default "false" | quote }}
+
+            {{- if eq $instance.active = "true" }}
+            - name: VOTE_COMMITMENT_CRON_EXPRESSION
+              value: {{ $instance.voteCommitmentCronExpression | quote }}
+            {{- end }}
+
           ports:
             - name: http
               containerPort: {{ $.Values.service.port }}

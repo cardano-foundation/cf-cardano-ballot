@@ -18,10 +18,10 @@ cf-cardano-ballot-voting-api:
   values:
     instances:
       - name: passive
-        type: passive
+        active: "false"
         replicas: 2
       - name: active-hour
-        type: active
+        active: "true"
         voteCommitmentCronExpression: "*/120 * * * * *"
     image:
       tag: 0.0.1-SNAPSHOT-PR69

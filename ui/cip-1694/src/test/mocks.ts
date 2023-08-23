@@ -128,7 +128,7 @@ export const eventMock_active: EventPresentation = {
 export const eventMock_notStarted: EventPresentation = {
   ...eventMock_active,
   active: true,
-  notStarted: false,
+  notStarted: true,
   finished: false,
 };
 

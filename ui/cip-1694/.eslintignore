@@ -3,6 +3,5 @@
 *.cy.tsx
 *jest.config.js
 public/*
-cypress/*
 src/types/*.ts
 **/*.js

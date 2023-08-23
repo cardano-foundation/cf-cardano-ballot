@@ -6,7 +6,7 @@ WORKDIR /app
 # Cache and Install dependencies
 COPY package.json .
 RUN npm install --quiet --production
-RUN npm install --save-dev @babel/plugin-proposal-private-property-in-object
+RUN npm install --save-dev @babel/plugin-proposal-private-property-in-object --legacy-peer-deps
 # Copy app files
 COPY . .
 # Build the app

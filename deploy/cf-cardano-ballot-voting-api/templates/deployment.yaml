@@ -3,7 +3,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "voting-app.deploy-name" . }}-{{ $instance.name }}
+  name: {{ include "voting-app.fullname" . }}-{{ $instance.name }}
   labels:
     {{- include "voting-app.labels" . | nindent 4 }}
 spec:

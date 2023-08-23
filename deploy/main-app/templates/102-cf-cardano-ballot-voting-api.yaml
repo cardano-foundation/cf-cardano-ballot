@@ -1,9 +1,9 @@
-{{ if index .Values "cf-cardano-ballot-api" "enabled" }}
+{{ if index .Values "cf-cardano-ballot-voting-api" "enabled" }}
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: cf-cardano-ballot-api
+  name: cf-cardano-ballot-voting-api
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
@@ -12,14 +12,14 @@ spec:
   source:
     repoURL: git@github.com:cardano-foundation/cf-cardano-ballot.git
     targetRevision: {{ .Values.git.targetRevision | default "HEAD" }}
-    path: deploy/cf-cardano-ballot-api
+    path: deploy/cf-cardano-ballot-voting-api
     helm:
       parameters:
         - name: "domain"
           value: {{ .Values.domain }}
         - name: "network"
           value: {{ .Values.network }}
-      {{- with index .Values "cf-cardano-ballot-api" "values" }}
+      {{- with index .Values "cf-cardano-ballot-voting-api" "values" }}
       values: |
 {{ toYaml . | indent 8 }}
       {{- end }}

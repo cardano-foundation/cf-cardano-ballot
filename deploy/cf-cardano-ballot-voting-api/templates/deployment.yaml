@@ -1,7 +1,12 @@
+{{- range $instance := $.Values.instances }}
+{{- define "voting-app.deploy-name" -}}
+{{- printf "%s-%s" voting-app.name $instance.name }}
+{{- end }}
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "voting-app.fullname" . }}
+  name: {{ include "voting-app.deploy-name" . }}
   labels:
     {{- include "voting-app.labels" . | nindent 4 }}
 spec:

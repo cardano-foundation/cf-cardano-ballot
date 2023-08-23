@@ -13,9 +13,16 @@ cf-cardano-ballot-ui:
     image:
       tag: 0.0.1-SNAPSHOT-PR69
 
-cf-cardano-ballot-api:
+cf-cardano-ballot-voting-api:
   enabled: true
   values:
+    instances:
+      - name: passive
+        type: passive
+        replicas: 2
+      - name: active-hour
+        type: active
+        voteCommitmentCronExpression: "*/120 * * * * *"
     image:
       tag: 0.0.1-SNAPSHOT-PR69
 

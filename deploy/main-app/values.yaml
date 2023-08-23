@@ -21,7 +21,7 @@ cf-cardano-ballot-ui:
   enabled: true
 
 # Ballot API Parameters
-cf-cardano-ballot-api:
+cf-cardano-ballot-voting-api:
   # Whether Resources should be deployed.
   enabled: true
 

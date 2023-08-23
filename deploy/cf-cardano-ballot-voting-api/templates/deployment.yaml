@@ -1,0 +1,98 @@
+{{- range $instance := $.Values.instances }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "voting-app.fullname" $ }}-{{ $instance.name }}
+  labels:
+    {{- include "voting-app.labels" $ | nindent 4 }}
+spec:
+  replicas: {{ $.Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "voting-app.selectorLabels" $ | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "voting-app.selectorLabels" $ | nindent 8 }}
+    spec:
+      {{- with $.Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ $.Chart.Name }}
+          image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag | default $.Chart.AppVersion }}"
+#          command: ["bash", "-c", "sleep infinity"]
+          imagePullPolicy: {{ $.Values.image.pullPolicy }}
+          env:
+#            - name: SPRING_PROFILES_ACTIVE
+#              value: {{ .springProfiles }}
+
+            - name: CARDANO_NETWORK
+              value: {{ $.Values.network | default "preprod" | upper}}
+
+            - name: VOTING_METADATA_LABEL
+              value: {{ $.Values.votingMetadataLabel | default "11113" | quote }}
+
+            - name: BLOCKFROST_URL
+              valueFrom:
+                secretKeyRef:
+                  name: blockfrost-secrets
+                  key: BLOCKFROST_URL
+            - name: BLOCKFROST_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: blockfrost-secrets
+                  key: BLOCKFROST_PASSWORD
+            - name: TX_SUBMIT_URL
+              valueFrom:
+                secretKeyRef:
+                  name: submit-api-secrets
+                  key: TX_SUBMIT_URL
+
+            - name: ORGANISER_MNEMONIC_PHRASE
+              valueFrom:
+                secretKeyRef:
+                  name: wallet-secrets
+                  key: WALLET_MNEMONIC
+
+            - name: DB_URL
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: POSTGRES_URL
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: POSTGRES_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: POSTGRES_PASSWORD
+
+            - name: VOTE_COMMITMENT_ENABLED
+              value: {{ $instance.active | default "false" | quote }}
+
+            {{- if eq $instance.active "true" }}
+            - name: VOTE_COMMITMENT_CRON_EXPRESSION
+              value: {{ $instance.voteCommitmentCronExpression | quote }}
+            {{- end }}
+
+          ports:
+            - name: http
+              containerPort: {{ $.Values.service.port }}
+              protocol: TCP
+#          livenessProbe:
+#            httpGet:
+#              path: /
+#              port: http
+#          readinessProbe:
+#            httpGet:
+#              path: /
+#              port: http
+          resources:
+            {{- toYaml $.Values.resources | nindent 12 }}
+{{ end }}

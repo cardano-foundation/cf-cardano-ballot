@@ -3,12 +3,9 @@ ENV NODE_ENV production
 
 # Add a work directory
 WORKDIR /app
-# Cache and Install dependencies
-COPY package.json .
+COPY . .
 RUN npm install --quiet --production
 RUN npm install --save-dev @babel/plugin-proposal-private-property-in-object --legacy-peer-deps
-# Copy app files
-COPY . .
 # Build the app
 RUN npm run build
 

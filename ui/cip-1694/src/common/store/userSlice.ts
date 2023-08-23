@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import { VoteReceipt, EventReference } from 'types/backend-services-types';
+import { VoteReceipt } from 'types/voting-app-types';
+import { EventPresentation } from 'types/voting-ledger-follower-types';
 import { UserState } from './types';
 
 const initialState: UserState = {
@@ -35,7 +36,7 @@ export const userSlice = createSlice({
     setSelectedProposal: (state, action: PayloadAction<{ proposal: VoteReceipt['proposal'] }>) => {
       state.proposal = action.payload.proposal;
     },
-    setEventData: (state, action: PayloadAction<{ event: EventReference }>) => {
+    setEventData: (state, action: PayloadAction<{ event: EventPresentation }>) => {
       state.event = action.payload.event;
     },
   },

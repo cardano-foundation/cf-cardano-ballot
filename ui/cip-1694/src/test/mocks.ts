@@ -1,4 +1,6 @@
-import { VoteReceipt, EventReference, ChainTip, Account, ByCategory } from 'types/backend-services-types';
+import { VoteReceipt, ByCategory } from 'types/voting-app-types';
+import { EventPresentation, ChainTip, Account } from 'types/voting-ledger-follower-types';
+
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import { canonicalize } from 'json-canonicalize';
 
@@ -32,12 +34,16 @@ export const accountDataMock: Account = {
   stakeAddress: 'stake_test1uqwcz0754wwpuhm6xhdpda6u9enyahaj5ynlc9ay5l4mlms4pyqyg',
   votingPower: '9997463457',
   votingPowerAsset: 'ADA',
+  network: 'PREPROD',
+  accountStatus: 'ELIGIBLE',
+  epochNo: 1,
 };
 
 export const chainTipMock: ChainTip = {
   absoluteSlot: 36004360,
   epochNo: 87,
   hash: '22f30715e455ba4eb9d1333239c3508fae8f7c0c00a74859d3a55d26cd0e7289',
+  network: 'PREPROD',
 };
 
 export const useCardanoMock: ReturnType<typeof useCardano> = {
@@ -74,42 +80,59 @@ export const useCardanoMock_notConnected: ReturnType<typeof useCardano> = {
   enabledWallet: null,
 };
 
-export const eventMock_active: EventReference = {
-  active: true,
+export const eventMock_active: EventPresentation = {
+  id: 'CIP-1694_Pre_Ratification_4619',
+  team: 'CF & IOG',
+  presentationName: 'CIP-1694 Pre-Ratification',
+  votingEventType: 'STAKE_BASED',
+  startSlot: null,
+  endSlot: null,
+  startEpoch: 80,
+  eventStart: '2023-07-06T00:00:00Z' as unknown as Date,
+  eventEnd: '2023-09-23T23:59:59Z' as unknown as Date,
+  snapshotTime: '2023-07-05T23:59:59Z' as unknown as Date,
+  endEpoch: 95,
+  snapshotEpoch: 79,
   categories: [
     {
-      gdprProtection: false,
       id: 'CIP-1694_Pre_Ratification_4619',
+      gdprProtection: false,
       presentationName: 'CIP-1694 Pre-Ratification',
       proposals: [
-        { id: '00048bb6-028d-4f13-b3e5-d19deb22d2c2', name: 'YES', presentationName: 'Yes' },
-        { id: 'e858953c-37f2-4d1b-b844-c2e4b125fe23', name: 'NO', presentationName: 'No' },
-        { id: '6f05012e-081e-4746-ba53-1833ff995fe3', name: 'ABSTAIN', presentationName: 'Abstain' },
+        {
+          id: '00048bb6-028d-4f13-b3e5-d19deb22d2c2',
+          name: 'YES',
+          presentationName: 'Yes',
+        },
+        {
+          id: 'e858953c-37f2-4d1b-b844-c2e4b125fe23',
+          name: 'NO',
+          presentationName: 'No',
+        },
+        {
+          id: '6f05012e-081e-4746-ba53-1833ff995fe3',
+          name: 'ABSTAIN',
+          presentationName: 'Abstain',
+        },
       ],
     },
   ],
-  endEpoch: 95,
-  endSlot: null,
-  eventEnd: '2023-09-23T23:59:59Z' as unknown as Date,
-  eventStart: '2023-07-06T00:00:00Z' as unknown as Date,
+  active: true,
+  notStarted: false,
+  allowVoteChanging: false,
   finished: false,
-  id: 'CIP-1694_Pre_Ratification_4619',
-  presentationName: 'CIP-1694 Pre-Ratification',
-  snapshotEpoch: 79,
-  snapshotTime: '2023-07-05T23:59:59Z' as unknown as Date,
-  startEpoch: 80,
-  startSlot: null,
-  team: 'CF & IOG',
-  votingEventType: 'STAKE_BASED',
+  categoryResultsWhileVoting: false,
+  highLevelResultsWhileVoting: false,
 };
 
-export const eventMock_notStarted: EventReference = {
+export const eventMock_notStarted: EventPresentation = {
   ...eventMock_active,
-  active: false,
+  active: true,
+  notStarted: false,
   finished: false,
 };
 
-export const eventMock_finished: EventReference = {
+export const eventMock_finished: EventPresentation = {
   ...eventMock_active,
   active: false,
   finished: true,

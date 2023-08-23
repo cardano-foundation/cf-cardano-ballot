@@ -1,6 +1,6 @@
 import { JsonViewer } from '@textea/json-viewer';
 import React from 'react';
-import { MerkleProof, VoteReceipt } from 'types/backend-services-types';
+import { MerkleProof, VoteReceipt } from 'types/voting-app-types';
 
 export type RecordKeysToDisplay = Pick<
   VoteReceipt,

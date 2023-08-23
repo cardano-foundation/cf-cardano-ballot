@@ -4,7 +4,7 @@ import { Button, IconButton, useMediaQuery, useTheme } from '@mui/material';
 import QrCodeIcon from '@mui/icons-material/QrCode';
 import ReplayIcon from '@mui/icons-material/Replay';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import { FinalityScore, Status, VoteReceipt } from 'types/backend-services-types';
+import { FinalityScore, Status, VoteReceipt } from 'types/voting-app-types';
 import { InfoPanelTypes, InfoPanel } from '../../../InfoPanel/InfoPanel';
 import styles from './ReceiptInfo.module.scss';
 

@@ -15,7 +15,6 @@ import styles from './Slides.module.scss';
 
 export const Slides = ({ items }: SlideProps) => {
   const event = useSelector((state: RootState) => state.user.event);
-  const eventHasntStarted = !event?.active && !event?.finished;
   const [swiper, setSwiper] = useState<SwiperClass | undefined>(undefined);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -91,7 +90,7 @@ export const Slides = ({ items }: SlideProps) => {
                     }}
                   >
                     <EventTime
-                      eventHasntStarted={eventHasntStarted}
+                      eventHasntStarted={event?.notStarted}
                       eventHasFinished={event?.finished}
                       endTime={event?.eventEnd}
                       startTime={event?.eventStart}
@@ -116,7 +115,7 @@ export const Slides = ({ items }: SlideProps) => {
                     data-testid="event-cta"
                     to={{ pathname: ROUTES[event?.finished ? 'LEADERBOARD' : 'VOTE'] }}
                   >
-                    {eventHasntStarted ? 'View the vote' : event?.finished ? 'See the results' : 'Get started'}
+                    {event?.notStarted ? 'View the vote' : event?.finished ? 'See the results' : 'Get started'}
                   </Button>
                 </Grid>
                 <Grid

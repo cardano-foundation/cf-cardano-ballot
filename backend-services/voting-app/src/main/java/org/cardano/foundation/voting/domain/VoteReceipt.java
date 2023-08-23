@@ -2,6 +2,7 @@ package org.cardano.foundation.voting.domain;
 
 import lombok.Builder;
 import lombok.Data;
+import org.cardano.foundation.voting.client.ChainFollowerClient;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,7 +34,7 @@ public class VoteReceipt {
     private MerkleProof merkleProof;
 
     @Builder.Default
-    private Optional<TransactionDetails.FinalityScore> finalityScore = Optional.empty();
+    private Optional<ChainFollowerClient.FinalityScore> finalityScore = Optional.empty();
 
     private String votedAtSlot;
 

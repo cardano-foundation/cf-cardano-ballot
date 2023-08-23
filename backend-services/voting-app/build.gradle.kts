@@ -31,10 +31,8 @@ extra["testcontainersVersion"] = "1.17.6"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
-	implementation("org.springframework.boot:spring-boot-starter-cache")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-data-rest")
-	//implementation("org.springframework.boot:spring-boot-starter-jooq")
 	testCompileOnly("org.springframework.boot:spring-boot-starter-test")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -64,17 +62,12 @@ dependencies {
 
 	testImplementation("org.testcontainers:junit-jupiter")
 
-	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0-alpha.4")
-    implementation("com.bloxbean.cardano:cardano-client-address:0.5.0-alpha.4")
-    implementation("com.bloxbean.cardano:cardano-client-metadata:0.5.0-alpha.4")
-	implementation("com.bloxbean.cardano:cardano-client-quicktx:0.5.0-alpha.4")
-	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.0-alpha.4")
-	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0-alpha.4")
-
-	implementation("com.bloxbean.cardano:yaci-store-spring-boot-starter:0.0.11-beta4")
-	implementation("com.bloxbean.cardano:yaci-store-blocks-spring-boot-starter:0.0.11-beta4")
-	implementation("com.bloxbean.cardano:yaci-store-transaction-spring-boot-starter:0.0.11-beta4")
-	implementation("com.bloxbean.cardano:yaci-store-metadata-spring-boot-starter:0.0.11-beta4")
+	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0-beta1")
+    implementation("com.bloxbean.cardano:cardano-client-address:0.5.0-beta1")
+    implementation("com.bloxbean.cardano:cardano-client-metadata:0.5.0-beta1")
+	implementation("com.bloxbean.cardano:cardano-client-quicktx:0.5.0-beta1")
+	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.0-beta1")
+	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0-beta1")
 
 	implementation("io.blockfrost:blockfrost-java:0.1.3")
 
@@ -112,12 +105,12 @@ tasks {
 			"org.cardano.foundation.voting.service.**",
 			"org.cardano.foundation.voting.domain.**"
 		).toMutableList()
-		outputFile = "build/typescript-generator/backend-services-types.ts"
+		outputFile = "build/typescript-generator/voting-app-types.ts"
     }
 }
 
 tasks.register<Copy>("buildAndCopyTypescriptTypes") {
 	dependsOn(tasks.generateTypeScript)
-    from(layout.buildDirectory.file("typescript-generator/backend-services-types.ts"))
+    from(layout.buildDirectory.file("typescript-generator/voting-app-types.ts"))
     into(layout.projectDirectory.dir("../../ui/cip-1694/src/types"))
 }

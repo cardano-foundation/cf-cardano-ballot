@@ -21,7 +21,7 @@ import {
   setSelectedProposal,
   setVoteReceipt,
 } from 'common/store/userSlice';
-import { Account, ProposalReference } from 'types/backend-services-types';
+import { ProposalPresentation, Account } from 'types/voting-ledger-follower-types';
 import { RootState } from 'common/store';
 import { VoteReceipt } from 'pages/Vote/components/VoteReceipt/VoteReceipt';
 import { Toast } from 'components/common/Toast/Toast';
@@ -46,7 +46,7 @@ const errorsMap = {
   VOTE_CANNOT_BE_CHANGED: 'You have already voted! Vote cannot be changed for this stake address',
 };
 
-const iconsMap: Record<ProposalReference['name'], React.ReactElement | null> = {
+const iconsMap: Record<ProposalPresentation['name'], React.ReactElement | null> = {
   YES: <DoneIcon sx={{ fontSize: { xs: '30px', md: '52px' }, color: '#39486C' }} />,
   NO: <CloseIcon sx={{ fontSize: { xs: '30px', md: '52px' }, color: '#39486C' }} />,
   ABSTAIN: <DoDisturbIcon sx={{ fontSize: { xs: '30px', md: '52px' }, color: '#39486C' }} />,
@@ -56,7 +56,6 @@ export const VotePage = () => {
   const { stakeAddress, isConnected, signMessage } = useCardano();
   const receipt = useSelector((state: RootState) => state.user.receipt);
   const event = useSelector((state: RootState) => state.user.event);
-  const eventHasntStarted = !event?.active && !event?.finished;
   const isReceiptFetched = useSelector((state: RootState) => state.user.isReceiptFetched);
   const isVoteSubmittedModalVisible = useSelector((state: RootState) => state.user.isVoteSubmittedModalVisible);
   const [absoluteSlot, setAbsoluteSlot] = useState<number>();
@@ -66,7 +65,7 @@ export const VotePage = () => {
   const [isToggledReceipt, toggleReceipt] = useToggle(false);
   const dispatch = useDispatch();
 
-  const items: OptionItem<ProposalReference['name']>[] = event?.categories
+  const items: OptionItem<ProposalPresentation['name']>[] = event?.categories
     ?.find(({ id }) => id === env.CATEGORY_ID)
     ?.proposals?.map(({ name, presentationName: label }) => ({
       name,
@@ -159,10 +158,10 @@ export const VotePage = () => {
 
   // fetch vote receipt if there is no saved selection and event is active or finished
   useEffect(() => {
-    if (absoluteSlot && !savedProposal && !eventHasntStarted) {
+    if (absoluteSlot && !savedProposal && !event?.notStarted) {
       fetchReceipt({});
     }
-  }, [absoluteSlot, fetchReceipt, savedProposal, eventHasntStarted]);
+  }, [absoluteSlot, fetchReceipt, savedProposal, event?.notStarted]);
 
   const onChangeOption = (option: string | null) => {
     setOptionId(option);
@@ -235,10 +234,10 @@ export const VotePage = () => {
   };
 
   const cantSelectOptions =
-    !!receipt || voteSubmitted || (isConnected && !isReceiptFetched) || eventHasntStarted || event?.finished;
+    !!receipt || voteSubmitted || (isConnected && !isReceiptFetched) || event?.notStarted || event?.finished;
   const showViewReceiptButton = receipt?.id || voteSubmitted || (isReceiptFetched && event?.finished);
-  const showConnectButton = !isConnected && !eventHasntStarted;
-  const showSubmitButton = isConnected && !eventHasntStarted && !event?.finished && !showViewReceiptButton;
+  const showConnectButton = !isConnected && !event?.notStarted;
+  const showSubmitButton = isConnected && !event?.notStarted && !event?.finished && !showViewReceiptButton;
 
   return (
     <>
@@ -274,7 +273,7 @@ export const VotePage = () => {
           <Grid item>
             <Typography marginBottom={{ xs: '38px', md: '24px' }}>
               <EventTime
-                eventHasntStarted={eventHasntStarted}
+                eventHasntStarted={event?.notStarted}
                 eventHasFinished={event?.finished}
                 endTime={event?.eventEnd}
                 startTime={event?.eventStart}
@@ -351,7 +350,7 @@ export const VotePage = () => {
                     Submit your vote
                   </Button>
                 )}
-                {eventHasntStarted && (
+                {event?.notStarted && (
                   <Button
                     className={cn(styles.button, { [styles.disabled]: true })}
                     size="large"

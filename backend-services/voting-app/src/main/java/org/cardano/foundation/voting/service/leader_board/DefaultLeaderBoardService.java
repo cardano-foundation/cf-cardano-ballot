@@ -3,17 +3,15 @@ package org.cardano.foundation.voting.service.leader_board;
 import com.google.common.collect.Iterables;
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.domain.Leaderboard;
 import org.cardano.foundation.voting.repository.VoteRepository;
-import org.cardano.foundation.voting.service.expire.ExpirationService;
-import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 
 import java.util.Arrays;
-import java.util.Map;
 import java.util.Optional;
 
 import static java.util.stream.Collectors.toMap;
@@ -24,10 +22,7 @@ import static org.zalando.problem.Status.*;
 public class DefaultLeaderBoardService implements LeaderBoardService {
 
     @Autowired
-    private ReferenceDataService referenceDataService;
-
-    @Autowired
-    private ExpirationService expirationService;
+    private ChainFollowerClient chainFollowerClient;
 
     @Autowired
     private VoteRepository voteRepository;
@@ -37,8 +32,17 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
 
     @Override
     public Either<Problem, Leaderboard.ByEvent> getEventLeaderboard(String event) {
-        var maybeEvent = referenceDataService.findValidEventByName(event);
-        if (maybeEvent.isEmpty()) {
+        var eventDetailsE = chainFollowerClient.getEventDetails(event);
+        if (eventDetailsE.isEmpty()) {
+            return Either.left(Problem.builder()
+                    .withTitle("ERROR_GETTING_EVENT_DETAILS")
+                    .withDetail("Unable to get event details from chain-tip follower service, event:" + event)
+                    .withStatus(INTERNAL_SERVER_ERROR)
+                    .build()
+            );
+        }
+        var maybeEventDetails = eventDetailsE.get();
+        if (maybeEventDetails.isEmpty()) {
             return Either.left(Problem.builder()
                     .withTitle("UNRECOGNISED_EVENT")
                     .withDetail("Unrecognised event, event:" + event)
@@ -46,9 +50,9 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
                     .build()
             );
         }
-        var e = maybeEvent.orElseThrow();
+        var eventDetails = maybeEventDetails.orElseThrow();
 
-        if (!isDevEnv() && !expirationService.isEventFinished(e) && !e.isHighLevelResultsWhileVoting()) {
+        if (!isDevEnv() && eventDetails.finished() && eventDetails.highLevelResultsWhileVoting()) {
             return Either.left(Problem.builder()
                     .withTitle("VOTING_RESULTS_NOT_AVAILABLE")
                     .withDetail("High level voting results not available until voting event finishes.")
@@ -71,7 +75,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
         var voteCount = eventVoteCount.getTotalVoteCount();
 
         return Either.right(Leaderboard.ByEvent.builder()
-                .event(e.getId())
+                .event(eventDetails.id())
                 .totalVotesCount(Optional.ofNullable(voteCount).orElse(0L))
                 .totalVotingPower(Optional.ofNullable(votingPower).map(String::valueOf).orElse("0"))
                 .build()
@@ -80,8 +84,17 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
 
     @Override
     public Either<Problem, Leaderboard.ByCategory> getCategoryLeaderboard(String event, String category) {
-        var maybeEvent = referenceDataService.findValidEventByName(event);
-        if (maybeEvent.isEmpty()) {
+        var eventDetailsE = chainFollowerClient.getEventDetails(event);
+        if (eventDetailsE.isEmpty()) {
+            return Either.left(Problem.builder()
+                    .withTitle("ERROR_GETTING_EVENT_DETAILS")
+                    .withDetail("Unable to get event details from chain-tip follower service, event:" + event)
+                    .withStatus(INTERNAL_SERVER_ERROR)
+                    .build()
+            );
+        }
+        var maybeEventDetails = eventDetailsE.get();
+        if (maybeEventDetails.isEmpty()) {
             return Either.left(Problem.builder()
                     .withTitle("UNRECOGNISED_EVENT")
                     .withDetail("Unrecognised event, event:" + event)
@@ -89,10 +102,9 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
                     .build()
             );
         }
+        var eventDetails = maybeEventDetails.orElseThrow();
 
-        var e = maybeEvent.orElseThrow();
-
-        var maybeCategory = e.findCategoryByName(category);
+        var maybeCategory = eventDetails.categoryDetailsById(category);
 
         if (maybeCategory.isEmpty()) {
             return Either.left(Problem.builder()
@@ -102,40 +114,29 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
                     .build()
             );
         }
-        var c = maybeCategory.orElseThrow();
+        var categoryDetails = maybeCategory.orElseThrow();
 
-        if (!isDevEnv() && !expirationService.isEventFinished(e) && !e.isCategoryResultsWhileVoting()) {
+        if (!isDevEnv() && eventDetails.finished() && eventDetails.categoryResultsWhileVoting()) {
             return Either.left(Problem.builder()
                     .withTitle("VOTING_RESULTS_NOT_AVAILABLE")
-                    .withDetail("Voting results not available until event finishes, category:" + category)
+                    .withDetail("High level voting results not available until voting event finishes.")
                     .withStatus(FORBIDDEN)
                     .build()
             );
         }
 
-        var votes = voteRepository.countAllByEventId(event, c.getId());
+        var votes = voteRepository.countAllByEventId(event, categoryDetails.id());
 
-        var proposalResults = Map.<String, Leaderboard.Votes>of();
-        if (c.isGdprProtection()) {
-            proposalResults = votes.stream()
-                    .collect(toMap(VoteRepository.EventCategoryVoteCount::getProposalId, v -> {
-                        var totalVotesCount = Optional.ofNullable(v.getTotalVoteCount()).orElse(0L);
-                        var totalVotingPower = Optional.ofNullable(v.getTotalVotingPower()).map(String::valueOf).orElse("0");
+        var proposalResults = votes.stream()
+                .collect(toMap(VoteRepository.EventCategoryVoteCount::getProposalId, v -> {
+                    var totalVotesCount = Optional.ofNullable(v.getTotalVoteCount()).orElse(0L);
+                    var totalVotingPower = Optional.ofNullable(v.getTotalVotingPower()).map(String::valueOf).orElse("0");
 
-                        return new Leaderboard.Votes(totalVotesCount, totalVotingPower);
-                    }));
-        } else {
-            proposalResults = votes.stream()
-                    .collect(toMap(VoteRepository.EventCategoryVoteCount::getProposalName, v -> {
-                        var totalVotesCount = Optional.ofNullable(v.getTotalVoteCount()).orElse(0L);
-                        var totalVotingPower = Optional.ofNullable(v.getTotalVotingPower()).map(String::valueOf).orElse("0");
-
-                        return new Leaderboard.Votes(totalVotesCount, totalVotingPower);
-                    }));
-        }
+                    return new Leaderboard.Votes(totalVotesCount, totalVotingPower);
+                }));
 
         return Either.right(Leaderboard.ByCategory.builder()
-                .category(c.getId())
+                .category(categoryDetails.id())
                 .proposals(proposalResults)
                 .build()
         );

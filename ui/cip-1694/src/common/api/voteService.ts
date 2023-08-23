@@ -1,14 +1,7 @@
+import { EventPresentation, ChainTip, Account } from 'types/voting-ledger-follower-types';
+import { Problem, SignedWeb3Request, Vote, VoteReceipt } from 'types/voting-app-types';
 import { DEFAULT_CONTENT_TYPE_HEADERS, doRequest, HttpMethods } from '../handlers/httpHandler';
 import { env } from '../../env';
-import {
-  Problem,
-  SignedWeb3Request,
-  Vote,
-  Event,
-  ChainTip,
-  Account,
-  VoteReceipt,
-} from '../../types/backend-services-types';
 
 export const CAST_VOTE_URL = `${env.APP_SERVER_URL}/api/vote/cast`;
 export const VOTE_RECEIPT_URL = `${env.APP_SERVER_URL}/api/vote/receipt`;
@@ -36,7 +29,7 @@ export const getVoteReceipt = async (jsonRequest: SignedWeb3Request) => {
   );
 };
 
-export const getVotingPower = async (eventId: Event['id'], stakeAddress: string) => {
+export const getVotingPower = async (eventId: EventPresentation['id'], stakeAddress: string) => {
   return await doRequest<Account>(
     HttpMethods.GET,
     `${VOTING_POWER_URL}/${eventId}/${stakeAddress}`,

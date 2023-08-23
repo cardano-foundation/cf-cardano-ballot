@@ -1,83 +1,50 @@
 package org.cardano.foundation.voting.service.expire;
 
+import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.domain.ChainTip;
-import org.cardano.foundation.voting.domain.entity.Event;
-import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataChainTipService;
+import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Range;
 import org.springframework.stereotype.Service;
+import org.zalando.problem.Problem;
+
+import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 
 @Service
 @Slf4j
 public class ExpirationService {
 
     @Autowired
-    private BlockchainDataChainTipService blockchainDataChainTipService;
+    private ChainFollowerClient chainFollowerClient;
 
     @Value("${expiration.slot.buffer}")
     private long expirationSlotBuffer;
 
-    public boolean isSlotInRange(long slot) {
-        var chainTipE = blockchainDataChainTipService.getChainTip();
+    public Either<Problem, Boolean> isSlotInRange(long slot) {
+        var chainTipE = chainFollowerClient.getChainTip();
         if (chainTipE.isEmpty()) {
             log.warn("Slot maybe NOT expired but we have no way to check this since we have no chain tip access.");
 
-            return false;
+            return Either.left(Problem.builder()
+                    .withTitle("CHAIN_TIP_ERROR")
+                    .withDetail("Unable to get chain tip from chain-tip follower service, reason: chain tip not available")
+                    .withStatus(INTERNAL_SERVER_ERROR)
+                    .build());
         }
 
-        var currentAbsoluteSlot = chainTipE.get().getAbsoluteSlot();
+        var chainTip = chainTipE.get();
+        var currentAbsoluteSlot = chainTip.absoluteSlot();
 
         var range = Range
                 .from(Range.Bound.inclusive(currentAbsoluteSlot - expirationSlotBuffer))
                 .to(Range.Bound.inclusive(currentAbsoluteSlot + expirationSlotBuffer));
 
-        return range.contains(slot);
+        return Either.right(range.contains(slot));
     }
 
-    public boolean isSlotExpired(long slot) {
-        return !isSlotInRange(slot);
-    }
-
-    public boolean isEventInactive(Event event) {
-        return !isEventActive(event);
-    }
-
-    public boolean isEventActive(Event event) {
-        var chainTipE = blockchainDataChainTipService.getChainTip();
-        if (chainTipE.isEmpty()) {
-            log.warn("Slot maybe NOT expired but we have no way to check this since we have no chain tip access.");
-
-            return false;
-        }
-
-        var chainTip = chainTipE.get();
-        var currentAbsoluteSlot = chainTip.getAbsoluteSlot();
-        var epochNo = chainTip.getEpochNo();
-
-        return switch (event.getVotingEventType()) {
-            case STAKE_BASED, BALANCE_BASED ->  (epochNo >= event.getStartEpoch().orElseThrow() && epochNo <= event.getEndEpoch().orElseThrow());
-            case USER_BASED -> (currentAbsoluteSlot >= event.getStartSlot().orElseThrow() && currentAbsoluteSlot <= event.getEndSlot().orElseThrow());
-        };
-    }
-
-    public boolean isEventFinished(Event event) {
-        var chainTipE = blockchainDataChainTipService.getChainTip();
-        if (chainTipE.isEmpty()) {
-            log.warn("Slot maybe NOT expired but we have no way to check this since we have no chain tip access.");
-
-            return false;
-        }
-
-        var chainTip = chainTipE.get();
-        var currentAbsoluteSlot = chainTip.getAbsoluteSlot();
-        var epochNo = chainTip.getEpochNo();
-
-        return switch (event.getVotingEventType()) {
-            case STAKE_BASED, BALANCE_BASED -> (epochNo > event.getEndEpoch().orElseThrow());
-            case USER_BASED -> (currentAbsoluteSlot > event.getEndSlot().orElseThrow());
-        };
+    public Either<Problem, Boolean> isSlotExpired(long slot) {
+        return isSlotInRange(slot).map(isSlotInRange -> !isSlotInRange);
     }
 
 }

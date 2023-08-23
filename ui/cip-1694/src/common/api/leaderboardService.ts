@@ -1,6 +1,6 @@
+import { ByCategory } from 'types/voting-app-types';
 import { DEFAULT_CONTENT_TYPE_HEADERS, doRequest, HttpMethods } from '../handlers/httpHandler';
 import { env } from '../../env';
-import { ByCategory } from '../../types/backend-services-types';
 
 export const LEADERBOARD_URL = `${env.APP_SERVER_URL}/api/leaderboard`;
 

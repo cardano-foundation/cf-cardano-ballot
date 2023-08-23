@@ -7,6 +7,7 @@ import { IconButton, Typography, debounce, Accordion, AccordionSummary, Accordio
 import CloseIcon from '@mui/icons-material/Close';
 import BlockIcon from '@mui/icons-material/Block';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { VoteVerificationRequest } from 'types/voting-verification-app-types';
 import * as verificationService from 'common/api/verificationService';
 import { RootState } from 'common/store';
 import { Toast } from 'components/common/Toast/Toast';
@@ -42,7 +43,7 @@ export const VoteReceipt = ({ setOpen, fetchReceipt }: VoteReceiptProps) => {
         rootHash,
         voteCoseSignature,
         voteCosePublicKey,
-        steps,
+        steps: steps as unknown as VoteVerificationRequest['steps'],
       });
       if (typeof verified === 'boolean') {
         setIsVerified(verified);

@@ -20,7 +20,12 @@ export const Toast = ({
     className={cn(styles.toast, { [styles.error]: error })}
   >
     {icon || <CheckCircleOutlineOutlinedIcon className={styles.toastIcon} />}
-    <span className={styles.message}>{message}</span>
+    <span
+      data-testid="toast-message"
+      className={styles.message}
+    >
+      {message}
+    </span>
     <span className={styles.divider} />
     <IconButton
       className={styles.toastCloseBtn}

@@ -32,10 +32,12 @@ export const MobileModal = (props: VoteSubmittedModalProps) => {
           maxWidth: '100vw',
         },
       }}
+      data-testid="mobile-menu-modal"
     >
       <DialogTitle
         className={styles.dialogTitle}
         id={id}
+        data-testid="mobile-menu-title"
       >
         {title}
         <Button
@@ -43,11 +45,17 @@ export const MobileModal = (props: VoteSubmittedModalProps) => {
           size="large"
           variant="outlined"
           onClick={onCloseFn}
+          data-testid="mobile-menu-cta"
         >
           <CloseIcon className={styles.closeIcon} />
         </Button>
       </DialogTitle>
-      <DialogContent className={styles.dialogContent}>{children}</DialogContent>
+      <DialogContent
+        data-testid="mobile-menu-content"
+        className={styles.dialogContent}
+      >
+        {children}
+      </DialogContent>
     </Dialog>
   );
 };

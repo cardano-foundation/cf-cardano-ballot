@@ -61,8 +61,6 @@ kubectl create secret generic github-deploy-key \
   --from-file=../../.keys/cf-cardano-ballot \
   | kubectl apply -f -
 
-exit 0
-
 #echo "Fetching helm dependencies for main app"
 helm dependency build
 

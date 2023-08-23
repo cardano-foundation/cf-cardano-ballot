@@ -81,6 +81,9 @@ spec:
               value: {{ $instance.voteCommitmentCronExpression | quote }}
             {{- end }}
 
+            - name: LEDGER_FOLLOWER_APP_URL
+              value: {{ $.Values.ledgerFollowerAppUrl }}
+
           ports:
             - name: http
               containerPort: {{ $.Values.service.port }}

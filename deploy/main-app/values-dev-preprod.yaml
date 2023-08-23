@@ -5,16 +5,16 @@ network: preprod
 domain: dev.cf-cip1694-preprod.eu-west-1.metadata.dev.cf-deployments.org
 
 cf-cardano-ballot-infra:
-  enabled: true
+  enabled: false
 
 cf-cardano-ballot-ui:
-  enabled: true
+  enabled: false
   values:
     image:
       tag: 0.2.5
 
 cf-cardano-ballot-voting-api:
-  enabled: true
+  enabled: false
   values:
     instances:
       - name: passive
@@ -27,13 +27,13 @@ cf-cardano-ballot-voting-api:
       tag: 0.2.5
 
 cf-cardano-ballot-verification-api:
-  enabled: true
+  enabled: false
   values:
     image:
       tag: 0.2.5
 
 cf-cardano-ballot-ledger-follower-api:
-  enabled: true
+  enabled: false
   values:
     image:
       tag: 0.2.5

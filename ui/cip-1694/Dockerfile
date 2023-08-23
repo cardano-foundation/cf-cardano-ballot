@@ -3,8 +3,11 @@ ENV NODE_ENV production
 
 # Add a work directory
 WORKDIR /app
+# Cache and Install dependencies
+COPY package.json .
+RUN npm install --quiet --production
+# Copy app files
 COPY . .
-RUN npm install --production
 # Build the app
 RUN npm run build
 

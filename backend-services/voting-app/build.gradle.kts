@@ -105,12 +105,12 @@ tasks {
 			"org.cardano.foundation.voting.service.**",
 			"org.cardano.foundation.voting.domain.**"
 		).toMutableList()
-		outputFile = "build/typescript-generator/backend-services-types.ts"
+		outputFile = "build/typescript-generator/voting-app-types.ts"
     }
 }
 
 tasks.register<Copy>("buildAndCopyTypescriptTypes") {
 	dependsOn(tasks.generateTypeScript)
-    from(layout.buildDirectory.file("typescript-generator/backend-services-types.ts"))
+    from(layout.buildDirectory.file("typescript-generator/voting-app-types.ts"))
     into(layout.projectDirectory.dir("../../ui/cip-1694/src/types"))
 }

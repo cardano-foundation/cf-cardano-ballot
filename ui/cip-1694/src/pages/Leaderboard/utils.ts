@@ -1,6 +1,6 @@
-import { ProposalReference } from 'types/backend-services-types';
+import { ProposalPresentation } from 'types/voting-ledger-follower-types';
 
-export const proposalColorsMap: Record<ProposalReference['name'], string> = {
+export const proposalColorsMap: Record<ProposalPresentation['name'], string> = {
   YES: '#43E4B7',
   NO: '#FFBC5C',
   ABSTAIN: '#1D439B',

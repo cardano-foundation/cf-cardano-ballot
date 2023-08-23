@@ -7,7 +7,8 @@ import { PieChart } from 'react-minimal-pie-chart';
 import { Grid, Typography } from '@mui/material';
 import BlockIcon from '@mui/icons-material/Block';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
-import { ByCategory, ProposalReference } from 'types/backend-services-types';
+import { ByCategory } from 'types/voting-app-types';
+import { ProposalPresentation } from 'types/voting-ledger-follower-types';
 import { ROUTES } from 'common/routes';
 import { RootState } from 'common/store';
 import * as leaderboardService from 'common/api/leaderboardService';
@@ -22,12 +23,11 @@ export const Leaderboard = () => {
   const navigate = useNavigate();
   const { isConnected } = useCardano();
   const event = useSelector((state: RootState) => state.user.event);
-  const eventHasntStarted = !event?.active && !event?.finished;
   const [stats, setStats] = useState<ByCategory['proposals']>();
 
   useEffect(() => {
-    if (!isConnected || eventHasntStarted || !event?.finished) navigate(ROUTES.INTRO);
-  }, [event?.finished, eventHasntStarted, isConnected, navigate]);
+    if (!isConnected || event?.notStarted || !event?.finished) navigate(ROUTES.INTRO);
+  }, [event?.finished, event?.notStarted, isConnected, navigate]);
 
   const init = useCallback(async () => {
     try {
@@ -50,7 +50,7 @@ export const Leaderboard = () => {
     }
   }, [init, isConnected]);
 
-  const statsItems: StatItem<ProposalReference['name']>[] =
+  const statsItems: StatItem<ProposalPresentation['name']>[] =
     event?.categories
       ?.find(({ id }) => id === env.CATEGORY_ID)
       ?.proposals?.map(({ name, presentationName: label }) => ({

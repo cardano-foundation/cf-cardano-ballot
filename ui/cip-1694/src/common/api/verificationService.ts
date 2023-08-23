@@ -1,6 +1,6 @@
+import { VoteVerificationRequest, Problem } from 'types/voting-verification-app-types';
 import { DEFAULT_CONTENT_TYPE_HEADERS, doRequest, HttpMethods } from '../handlers/httpHandler';
 import { env } from '../../env';
-import { VoteVerificationRequest, Problem } from '../../types/verification-service-types';
 
 export const VERIFICATION_URL = `${env.APP_SERVER_URL}/api/verification/verify-vote`;
 

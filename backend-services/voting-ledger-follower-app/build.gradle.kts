@@ -1,6 +1,6 @@
-//import cz.habarta.typescript.generator.JsonLibrary
-//import cz.habarta.typescript.generator.TypeScriptFileType
-//import cz.habarta.typescript.generator.TypeScriptOutputKind
+import cz.habarta.typescript.generator.JsonLibrary
+import cz.habarta.typescript.generator.TypeScriptFileType
+import cz.habarta.typescript.generator.TypeScriptOutputKind
 
 plugins {
 	java
@@ -78,28 +78,28 @@ tasks.withType<Test> {
 	useJUnitPlatform()
 }
 
-//tasks {
-//    generateTypeScript {
-//        jsonLibrary = JsonLibrary.jackson2
-//        outputKind = TypeScriptOutputKind.module
-//        outputFileType = TypeScriptFileType.implementationFile
-//		classPatterns = listOf(
-//			"org.zalando.problem.Problem",
-//			"io.vavr.control.Either",
-//			"java.lang.Object",
-//			"java.lang.Number",
-//			"java.lang.Long",
-//			"java.util.Optional",
-//			"java.math.BigInteger",
-//			"org.cardano.foundation.voting.service.**",
-//			"org.cardano.foundation.voting.domain.**"
-//		).toMutableList()
-//		outputFile = "build/typescript-generator/backend-services-types.ts"
-//    }
-//}
-//
-//tasks.register<Copy>("buildAndCopyTypescriptTypes") {
-//	dependsOn(tasks.generateTypeScript)
-//    from(layout.buildDirectory.file("typescript-generator/backend-services-types.ts"))
-//    into(layout.projectDirectory.dir("../../ui/cip-1694/src/types"))
-//}
+tasks {
+    generateTypeScript {
+        jsonLibrary = JsonLibrary.jackson2
+        outputKind = TypeScriptOutputKind.module
+        outputFileType = TypeScriptFileType.implementationFile
+		classPatterns = listOf(
+			"org.zalando.problem.Problem",
+			"io.vavr.control.Either",
+			"java.lang.Object",
+			"java.lang.Number",
+			"java.lang.Long",
+			"java.util.Optional",
+			"java.math.BigInteger",
+			"org.cardano.foundation.voting.service.**",
+			"org.cardano.foundation.voting.domain.**"
+		).toMutableList()
+		outputFile = "build/typescript-generator/voting-ledger-follower-types.ts"
+    }
+}
+
+tasks.register<Copy>("buildAndCopyTypescriptTypes") {
+	dependsOn(tasks.generateTypeScript)
+    from(layout.buildDirectory.file("typescript-generator/voting-ledger-follower-types.ts"))
+    into(layout.projectDirectory.dir("../../ui/cip-1694/src/types"))
+}

@@ -3,7 +3,7 @@ import cn from 'classnames';
 import { Grid, Typography } from '@mui/material';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import { ProposalReference } from 'types/backend-services-types';
+import { ProposalPresentation } from 'types/voting-ledger-follower-types';
 import { OptionProps } from './OptionCard.types';
 import styles from './OptionCard.module.scss';
 
@@ -12,7 +12,7 @@ export const OptionCard = ({
   onChangeOption,
   disabled,
   selectedOption,
-}: OptionProps<ProposalReference['name']>) => {
+}: OptionProps<ProposalPresentation['name']>) => {
   const [active, setActive] = useState(selectedOption || '');
 
   const handleChange = (_event: MouseEvent<HTMLElement>, _active: string | null) => {
@@ -55,7 +55,7 @@ export const OptionCard = ({
             value={option.name}
             className={cn(styles.optionCard, { [styles.selected]: active === option.name })}
             key={option.label}
-            data-testid='option-card'
+            data-testid="option-card"
           >
             <Grid
               item

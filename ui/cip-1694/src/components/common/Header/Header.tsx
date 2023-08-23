@@ -12,8 +12,6 @@ import styles from './Header.module.scss';
 export const Header = () => {
   const navigate = useNavigate();
   const event = useSelector((state: RootState) => state.user.event);
-  const eventHasntStarted = !event?.active && !event?.finished;
-
   const [isMobileMenuVisible, setIsMobileMenuVisible] = useState(false);
 
   const handleLogoClick = () => {
@@ -56,7 +54,7 @@ export const Header = () => {
         </Grid>
         <Grid display={{ xs: 'none', md: 'flex' }}>
           <HeaderActions
-            showNavigationItems={!eventHasntStarted}
+            showNavigationItems={!event?.notStarted}
             hideLeaderboard={!event?.finished}
           />
         </Grid>
@@ -93,7 +91,7 @@ export const Header = () => {
         >
           <HeaderActions
             hideLeaderboard={!event?.finished}
-            showNavigationItems={!eventHasntStarted}
+            showNavigationItems={!event?.notStarted}
             onClick={() => setIsMobileMenuVisible(false)}
             isMobileMenu
           />

@@ -1,5 +1,5 @@
 import { canonicalize } from 'json-canonicalize';
-import { SignedWeb3Request } from 'types/backend-services-types';
+import { SignedWeb3Request } from 'types/voting-app-types';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import { env } from '../../env';
 

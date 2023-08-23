@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-// Generated using typescript-generator version 3.2.1263 on 2023-08-07 17:31:33.
+// Generated using typescript-generator version 3.2.1263 on 2023-08-23 10:07:24.
 
 export interface Either<L, R> extends Value<R>, Serializable {
     left: L;
@@ -10,8 +10,11 @@ export interface Either<L, R> extends Value<R>, Serializable {
 
 export interface Account {
     stakeAddress: string;
+    accountStatus: AccountStatus;
+    epochNo: number;
     votingPower?: string;
     votingPowerAsset?: VotingPowerAsset;
+    network: CardanoNetwork;
 }
 
 export interface AccountBuilder {
@@ -21,6 +24,7 @@ export interface ChainTip {
     absoluteSlot: number;
     hash: string;
     epochNo: number;
+    network: CardanoNetwork;
 }
 
 export interface ChainTipBuilder {
@@ -39,61 +43,13 @@ export interface EraData {
     nextEra?: Era;
 }
 
-export interface L1MerkleCommitment {
-    votes: Vote[];
-    root: MerkleElement<Vote>;
-    event: Event;
-}
-
-export interface L1MerkleTree {
-    root: MerkleElement<Vote>;
-    rootHash: string;
-    transactionHash: string;
-    absoluteSlot: number;
-}
-
-export interface L1MerkleTreeBuilder {
-}
-
-export interface L1SubmissionData {
-    txHash: string;
-    slot: number;
-}
-
-export interface Leaderboard {
-}
-
-export interface ByCategory {
-    category: string;
-    proposals: { [index: string]: Votes };
-}
-
-export interface ByCategoryBuilder {
-}
-
-export interface ByEvent {
-    event: string;
-    totalVotesCount: number;
-    totalVotingPower: string;
-}
-
-export interface ByEventBuilder {
-}
-
-export interface LeaderboardBuilder {
-}
-
-export interface Votes {
-    votes: number;
-    votingPower: string;
-}
-
 export interface TransactionDetails {
     transactionHash: string;
     absoluteSlot: number;
     blockHash: string;
     transactionsConfirmations: number;
     finalityScore: FinalityScore;
+    network: CardanoNetwork;
 }
 
 export interface TransactionDetailsBuilder {
@@ -106,47 +62,6 @@ export interface TransactionMetadataLabelCbor {
 }
 
 export interface TransactionMetadataLabelCborBuilder {
-}
-
-export interface TxBody {
-    txDataHex: string;
-}
-
-export interface VoteReceipt {
-    id: string;
-    event: string;
-    category: string;
-    proposal: string;
-    votingPower: string;
-    voterStakingAddress: string;
-    coseSignature: string;
-    cosePublicKey?: string;
-    status: Status;
-    merkleProof: MerkleProof;
-    finalityScore?: FinalityScore;
-    votedAtSlot: string;
-}
-
-export interface MerkleProof {
-    transactionHash: string;
-    absoluteSlot?: number;
-    blockHash?: string;
-    rootHash: string;
-    steps: MerkleProofItem[];
-}
-
-export interface MerkleProofBuilder {
-}
-
-export interface MerkleProofItem {
-    type: MerkleProofType;
-    hash: string;
-}
-
-export interface MerkleProofItemBuilder {
-}
-
-export interface VoteReceiptBuilder {
 }
 
 export interface AbstractTimestampEntity {
@@ -172,6 +87,7 @@ export interface Event extends AbstractTimestampEntity {
     votingPowerAsset?: VotingPowerAsset;
     allowVoteChanging: boolean;
     categoryResultsWhileVoting: boolean;
+    highLevelResultsWhileVoting: boolean;
     startEpoch?: number;
     endEpoch?: number;
     startSlot?: number;
@@ -186,6 +102,15 @@ export interface Event extends AbstractTimestampEntity {
 export interface EventBuilder {
 }
 
+export interface MerkleRootHash extends AbstractTimestampEntity {
+    merkleRootHash: string;
+    eventId: string;
+    absoluteSlot: number;
+}
+
+export interface MerkleRootHashBuilder {
+}
+
 export interface Proposal extends AbstractTimestampEntity {
     id: string;
     name: string;
@@ -196,45 +121,17 @@ export interface Proposal extends AbstractTimestampEntity {
 export interface ProposalBuilder {
 }
 
-export interface Vote extends AbstractTimestampEntity {
-    id: string;
-    eventId: string;
-    categoryId: string;
-    proposalId: string;
-    voterStakingAddress: string;
-    coseSignature: string;
-    cosePublicKey?: string;
-    votingPower?: number;
-    votedAtSlot: number;
-}
-
-export interface VoteBuilder {
-}
-
-export interface VoteMerkleProof extends AbstractTimestampEntity {
-    voteId: string;
-    eventId: string;
-    rootHash: string;
-    l1TransactionHash: string;
-    proofItemsJson: string;
-    invalidated: boolean;
-    absoluteSlot: number;
-}
-
-export interface VoteMerkleProofBuilder {
-}
-
-export interface CategoryReference {
+export interface CategoryPresentation {
     id: string;
     gdprProtection: boolean;
     presentationName: string;
-    proposals: ProposalReference[];
+    proposals: ProposalPresentation[];
 }
 
-export interface CategoryReferenceBuilder {
+export interface CategoryPresentationBuilder {
 }
 
-export interface EventReference {
+export interface EventPresentation {
     id: string;
     team: string;
     presentationName: string;
@@ -247,21 +144,25 @@ export interface EventReference {
     snapshotTime?: Date;
     endEpoch?: number;
     snapshotEpoch?: number;
-    categories: CategoryReference[];
+    categories: CategoryPresentation[];
     active: boolean;
+    categoryResultsWhileVoting: boolean;
+    highLevelResultsWhileVoting: boolean;
     finished: boolean;
+    notStarted: boolean;
+    allowVoteChanging: boolean;
 }
 
-export interface EventReferenceBuilder {
+export interface EventPresentationBuilder {
 }
 
-export interface ProposalReference {
+export interface ProposalPresentation {
     id: string;
     name: string;
     presentationName: string;
 }
 
-export interface ProposalReferenceBuilder {
+export interface ProposalPresentationBuilder {
 }
 
 export interface CIP93Envelope<T> {
@@ -290,6 +191,16 @@ export interface CategoryRegistrationEnvelope {
 export interface CategoryRegistrationEnvelopeBuilder {
 }
 
+export interface CommitmentsEnvelope {
+    type: OnChainEventType;
+    schemaVersion: string;
+    creationSlot: number;
+    commitments: { [index: string]: { [index: string]: string } };
+}
+
+export interface CommitmentsEnvelopeBuilder {
+}
+
 export interface EventRegistrationEnvelope {
     type: OnChainEventType;
     name: string;
@@ -298,6 +209,7 @@ export interface EventRegistrationEnvelope {
     creationSlot: number;
     allowVoteChanging: boolean;
     categoryResultsWhileVoting: boolean;
+    highLevelResultsWhileVoting: boolean;
     votingEventType: VotingEventType;
     votingPowerAsset?: VotingPowerAsset;
     startEpoch?: number;
@@ -331,35 +243,10 @@ export interface SignedWeb3Request {
 export interface SignedWeb3RequestBuilder {
 }
 
-export interface ViewVoteReceiptEnvelope {
-    address: string;
-    network: string;
-    event: string;
-    category: string;
-}
-
-export interface VoteEnvelope {
-    id: string;
-    address: string;
-    event: string;
-    category: string;
-    proposal: string;
-    proposalText?: string;
-    network: string;
-    votedAt: string;
-    votingPower?: string;
-}
-
-export interface VoteEnvelopeBuilder {
-}
-
 export interface AccountService {
 }
 
 export interface DefaultAccountService extends AccountService {
-}
-
-export interface DefaultAccountService__Autowiring {
 }
 
 export interface DefaultAccountService__BeanDefinitions {
@@ -378,55 +265,22 @@ export interface BlockchainDataChainTipService {
     chainTip: Either<Problem, ChainTip>;
 }
 
-export interface BlockchainDataMetadataService {
-}
-
 export interface BlockchainDataStakePoolService {
 }
 
 export interface BlockchainDataTransactionDetailsService {
 }
 
-export interface BlockchainTransactionSubmissionService {
+export interface FixedBlockchainDataStakePoolService extends BlockchainDataStakePoolService {
 }
 
-export interface Noop extends BlockchainTransactionSubmissionService {
+export interface BackendServiceBlockchainDataChainTipService extends BlockchainDataChainTipService {
 }
 
-export interface AbstractBlockfrostService {
+export interface BackendServiceBlockchainDataStakePoolService extends BlockchainDataStakePoolService {
 }
 
-export interface BlockfrostBlockchainDataMetadataService extends AbstractBlockfrostService, BlockchainDataMetadataService {
-}
-
-export interface BlockfrostBlockchainDataStakePoolService extends AbstractBlockfrostService, BlockchainDataStakePoolService {
-}
-
-export interface BlockfrostBlockchainDataTipService extends AbstractBlockfrostService, BlockchainDataChainTipService {
-}
-
-export interface BlockfrostBlockchainDataTransactionDetailsService extends AbstractBlockfrostService, BlockchainDataTransactionDetailsService {
-}
-
-export interface BlockfrostTransactionSubmissionService extends AbstractBlockfrostService, BlockchainTransactionSubmissionService {
-}
-
-export interface CardanoSubmitApiBlockchainTransactionSubmissionService extends BlockchainTransactionSubmissionService {
-}
-
-export interface CardanoSubmitApiBlockchainTransactionSubmissionService__Autowiring {
-}
-
-export interface CardanoSubmitApiBlockchainTransactionSubmissionService__BeanDefinitions {
-}
-
-export interface YaciBlockchainDataChainTipService extends BlockchainDataChainTipService {
-}
-
-export interface YaciBlockchainDataMetadataService extends BlockchainDataMetadataService {
-}
-
-export interface YaciTransactionDetailsBlockchainDataService extends BlockchainDataTransactionDetailsService {
+export interface BackendServiceBlockchainDataTransactionDetailsService extends BlockchainDataTransactionDetailsService {
 }
 
 export interface CborService {
@@ -477,54 +331,6 @@ export interface JsonService__Autowiring {
 export interface JsonService__BeanDefinitions {
 }
 
-export interface DefaultLeaderBoardService extends LeaderBoardService {
-}
-
-export interface DefaultLeaderBoardService__Autowiring {
-}
-
-export interface DefaultLeaderBoardService__BeanDefinitions {
-}
-
-export interface LeaderBoardService {
-}
-
-export interface MerkleProofSerdeService {
-}
-
-export interface MerkleProofSerdeService__Autowiring {
-}
-
-export interface MerkleProofSerdeService__BeanDefinitions {
-}
-
-export interface MerkleTreeService {
-}
-
-export interface MerkleTreeService__Autowiring {
-}
-
-export interface MerkleTreeService__BeanDefinitions {
-}
-
-export interface VoteCommitmentService {
-}
-
-export interface VoteCommitmentService__Autowiring {
-}
-
-export interface VoteCommitmentService__BeanDefinitions {
-}
-
-export interface VoteMerkleProofService {
-}
-
-export interface VoteMerkleProofService__Autowiring {
-}
-
-export interface VoteMerkleProofService__BeanDefinitions {
-}
-
 export interface CustomMetadataProcessor {
 }
 
@@ -570,52 +376,10 @@ export interface RollbackHandler__Autowiring {
 export interface RollbackHandler__BeanDefinitions {
 }
 
-export interface DefaultTransactionSubmissionService extends TransactionSubmissionService {
+export interface MerkleRootHashService {
 }
 
-export interface DefaultTransactionSubmissionService__Autowiring {
-}
-
-export interface DefaultTransactionSubmissionService__BeanDefinitions {
-}
-
-export interface L1SubmissionService {
-}
-
-export interface L1SubmissionService__Autowiring {
-}
-
-export interface L1SubmissionService__BeanDefinitions {
-}
-
-export interface L1TransactionCreator {
-}
-
-export interface L1TransactionCreator__Autowiring {
-}
-
-export interface L1TransactionCreator__BeanDefinitions {
-}
-
-export interface MetadataSerialiser {
-}
-
-export interface MetadataSerialiser__BeanDefinitions {
-}
-
-export interface TransactionSubmissionService {
-}
-
-export interface DefaultVoteService extends VoteService {
-}
-
-export interface DefaultVoteService__Autowiring {
-}
-
-export interface DefaultVoteService__BeanDefinitions {
-}
-
-export interface VoteService {
+export interface MerkleRootHashService__BeanDefinitions {
 }
 
 export interface VotingPowerService {
@@ -637,10 +401,6 @@ export interface Problem {
 }
 
 export interface Serializable {
-}
-
-export interface MerkleElement<T> {
-    empty: boolean;
 }
 
 export interface URI extends Comparable<URI>, Serializable {
@@ -665,19 +425,15 @@ export interface Comparable<T> {
 export interface Iterable<T> {
 }
 
-export type CardanoNetwork = "MAIN" | "PREPROD" | "PREVIEW" | "DEV";
+export type AccountStatus = "ELIGIBLE" | "NOT_ELIGIBLE";
 
-export type IngestionStrategy = "PUSH" | "PULL";
+export type CardanoNetwork = "MAIN" | "PREPROD" | "PREVIEW" | "DEV";
 
 export type OnChainEventType = "COMMITMENTS" | "EVENT_REGISTRATION" | "CATEGORY_REGISTRATION";
 
 export type SchemaVersion = "V1";
 
 export type FinalityScore = "LOW" | "MEDIUM" | "HIGH" | "VERY_HIGH" | "FINAL";
-
-export type MerkleProofType = "Left" | "Right";
-
-export type Status = "BASIC" | "PARTIAL" | "ROLLBACK" | "FULL";
 
 export type VotingEventType = "USER_BASED" | "STAKE_BASED" | "BALANCE_BASED";
 

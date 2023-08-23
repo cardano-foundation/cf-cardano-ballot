@@ -76,7 +76,7 @@ spec:
             - name: VOTE_COMMITMENT_ENABLED
               value: {{ $instance.active | default "false" | quote }}
 
-            {{- if eq $instance.active = "true" }}
+            {{- if eq $instance.active "true" }}
             - name: VOTE_COMMITMENT_CRON_EXPRESSION
               value: {{ $instance.voteCommitmentCronExpression | quote }}
             {{- end }}

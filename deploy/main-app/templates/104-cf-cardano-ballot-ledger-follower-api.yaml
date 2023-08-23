@@ -3,7 +3,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: cf-cardano-ballot-verification-api
+  name: cf-cardano-ballot-ledger-follower-api
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io

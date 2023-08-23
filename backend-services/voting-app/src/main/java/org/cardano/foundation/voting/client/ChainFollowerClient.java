@@ -1,7 +1,8 @@
 package org.cardano.foundation.voting.client;
 
 import io.vavr.control.Either;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.VotingEventType;
@@ -80,8 +81,24 @@ public class ChainFollowerClient {
         }
     }
 
-    public Either<Problem, List<EventDetailsResponse>> findAllActiveEvents() {
-        return Either.right(List.of());
+    public Either<Problem, List<EventSummary>> findAllActiveEvents() {
+        var url = String.format("%s/api/reference/event", ledgerFollowerBaseUrl);
+
+        try {
+            return Either.right(Optional.ofNullable(restTemplate.getForObject(url, EventSummaryList.class))
+                    .map(EventSummaryList::getEventSummaries).orElse(List.of()).stream().filter(EventSummary::active)
+                    .toList());
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == NOT_FOUND) {
+                return Either.right(List.of());
+            }
+
+            return Either.left(Problem.builder()
+                    .withTitle("REFERENCE_ERROR")
+                    .withDetail("Unable to get event details from chain-tip follower service, reason:" + e.getMessage())
+                    .withStatus(new HttpStatusAdapter(e.getStatusCode()))
+                    .build());
+        }
     }
 
     public Either<Problem, Optional<EventDetailsResponse>> getEventDetails(String eventId) {
@@ -115,6 +132,25 @@ public class ChainFollowerClient {
         public Optional<ProposalDetailsResponse> findProposalByName(String name) {
             return proposals.stream().filter(proposal -> proposal.name().equals(name)).findFirst();
         }
+
+    }
+
+    public record EventSummary(String name,
+                               boolean finished,
+                               boolean notStarted,
+                               boolean active) {
+
+        public boolean isEventInactive() {
+            return !active;
+        }
+
+    }
+
+    @AllArgsConstructor
+    @Getter
+    public class EventSummaryList {
+
+        private List<EventSummary> eventSummaries;
 
     }
 

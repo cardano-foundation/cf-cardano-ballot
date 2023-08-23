@@ -60,9 +60,10 @@ public class VoteVerificationService {
 
         try {
             var jsonNode = parseJson(cip30VerificationResult.getMessage(TEXT));
-            var event = jsonNode.get("event").asText();
+            var dataNode = jsonNode.get("data");
+            var event = dataNode.get("event").asText();
 
-            var voteNetwork = jsonNode.get("network").asText();
+            var voteNetwork = dataNode.get("network").asText();
             var maybeNetwork = Enums.getIfPresent(CardanoNetwork.class, voteNetwork);
             if (maybeNetwork.isEmpty()) {
                 return Either.left(Problem.builder()

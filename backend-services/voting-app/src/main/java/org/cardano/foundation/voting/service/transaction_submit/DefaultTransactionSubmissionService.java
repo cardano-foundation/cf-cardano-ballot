@@ -54,6 +54,8 @@ public class DefaultTransactionSubmissionService implements TransactionSubmissio
 
             var transactionDetails = transactionDetailsE.get().orElseThrow();
 
+            log.info("Transaction found, details:{}", transactionDetails);
+
             return new L1SubmissionData(txHash, transactionDetails.absoluteSlot());
         }
 

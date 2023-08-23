@@ -20,14 +20,14 @@ public class BlockchainDataConfig {
         return new BackendServiceBlockchainTransactionSubmissionService(backendService);
     }
 
-    @Bean
-    @Profile( value = "dev--preprod" )
-    public BlockchainTransactionSubmissionService noopCardanoSummitTransactionSubmissionService() {
-        return new BlockchainTransactionSubmissionService.Noop();
-    }
+//    @Bean
+//    @Profile( value = "dev--preprod" )
+//    public BlockchainTransactionSubmissionService noopCardanoSummitTransactionSubmissionService() {
+//        return new BlockchainTransactionSubmissionService.Noop();
+//    }
 
     @Bean
-    @Profile( value = "prod" )
+    @Profile( value = { "prod", "dev--preprod" } )
     public BlockchainTransactionSubmissionService cardanoSummitTransactionSubmissionService(HttpClient httpClient,
                                                                                             @Value("${cardano.tx.submit.api.url}") String cardanoSubmitApiUrl) {
         return new CardanoSubmitApiBlockchainTransactionSubmissionService(cardanoSubmitApiUrl, httpClient);

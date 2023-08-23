@@ -2,7 +2,9 @@ package org.cardano.foundation.voting.resource;
 
 import io.micrometer.core.annotation.Timed;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.VoteVerificationRequest;
 import org.cardano.foundation.voting.service.verify.VoteVerificationService;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +21,12 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @RestController
 @RequestMapping("/api/verification")
 @Slf4j
+@RequiredArgsConstructor
 public class VerificationResource {
 
-    private VoteVerificationService voteVerificationService;
+    private final VoteVerificationService voteVerificationService;
+
+    private final CardanoNetwork cardanoNetwork;
 
     @RequestMapping(value = "/verify-vote", method = POST, produces = "application/json")
     @Timed(value = "resource.verifyVote", percentiles = {0.3, 0.5, 0.95})
@@ -30,7 +35,10 @@ public class VerificationResource {
 
         return voteVerificationService.verifyVoteProof(voteVerificationRequest)
                 .fold(problem -> ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem),
-                        isVerified -> ResponseEntity.ok().body(Map.of("isVerified", isVerified))
+                        isVerified -> ResponseEntity.ok().body(Map
+                                .of("isVerified", isVerified,
+                                        "network", cardanoNetwork)
+                        )
                 );
     }
 

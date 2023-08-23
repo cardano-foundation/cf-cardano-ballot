@@ -17,7 +17,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/api/merkle_root_hash")
+@RequestMapping("/api/merkle-root-hash")
 @Slf4j
 public class MerkleRootHashResource {
 

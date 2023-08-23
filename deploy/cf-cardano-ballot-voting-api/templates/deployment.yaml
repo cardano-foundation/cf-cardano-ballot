@@ -1,7 +1,9 @@
+{{- range $instance := $.Values.instances }}
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "voting-app.fullname" . }}
+  name: {{ include "voting-app.fullname" . }}-{{ $instance.name }}
   labels:
     {{- include "voting-app.labels" . | nindent 4 }}
 spec:
@@ -84,3 +86,4 @@ spec:
 #              port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+{{- end }}

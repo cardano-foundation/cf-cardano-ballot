@@ -44,8 +44,8 @@ public class ExpirationService {
         var epochNo = chainTip.getEpochNo();
 
         return switch (event.getVotingEventType()) {
-            case STAKE_BASED, BALANCE_BASED -> (epochNo < event.getEndEpoch().orElseThrow());
-            case USER_BASED -> (currentAbsoluteSlot < event.getEndSlot().orElseThrow());
+            case STAKE_BASED, BALANCE_BASED -> (epochNo < event.getStartEpoch().orElseThrow());
+            case USER_BASED -> (currentAbsoluteSlot < event.getStartEpoch().orElseThrow());
         };
     }
 

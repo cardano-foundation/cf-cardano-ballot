@@ -1,40 +1,39 @@
-{{- $deployName := include "voting-app.fullname" . -}}
 {{- range $instance := $.Values.instances }}
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ $deployName }}-{{ $instance.name }}
+  name: {{ include "voting-app.fullname" $ }}-{{ $instance.name }}
   labels:
-    {{- include "voting-app.labels" . | nindent 4 }}
+    {{- include "voting-app.labels" $ | nindent 4 }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ $.Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "voting-app.selectorLabels" . | nindent 6 }}
+      {{- include "voting-app.selectorLabels" $ | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- include "voting-app.selectorLabels" . | nindent 8 }}
+        {{- include "voting-app.selectorLabels" $ | nindent 8 }}
     spec:
-      {{- with .Values.imagePullSecrets }}
+      {{- with $.Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
-        - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        - name: {{ $.Chart.Name }}
+          image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag | default $.Chart.AppVersion }}"
 #          command: ["bash", "-c", "sleep infinity"]
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          imagePullPolicy: {{ $.Values.image.pullPolicy }}
           env:
 #            - name: SPRING_PROFILES_ACTIVE
 #              value: {{ .springProfiles }}
 
             - name: CARDANO_NETWORK
-              value: {{ .Values.network | default "preprod" | upper}}
+              value: {{ $.Values.network | default "preprod" | upper}}
 
             - name: VOTING_METADATA_LABEL
-              value: {{ .Values.votingMetadataLabel | default "11113" | quote }}
+              value: {{ $.Values.votingMetadataLabel | default "11113" | quote }}
 
             - name: BLOCKFROST_URL
               valueFrom:
@@ -75,7 +74,7 @@ spec:
                   key: POSTGRES_PASSWORD
           ports:
             - name: http
-              containerPort: {{ .Values.service.port }}
+              containerPort: {{ $.Values.service.port }}
               protocol: TCP
 #          livenessProbe:
 #            httpGet:
@@ -86,5 +85,5 @@ spec:
 #              path: /
 #              port: http
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-{{- end }}
+            {{- toYaml $.Values.resources | nindent 12 }}
+{{ end }}

@@ -1,6 +1,3 @@
-{{- if .Values.ingress.enabled -}}
-{{- $fullName := include "voting-app.fullname" . -}}
-{{- $svcPort := .Values.service.port -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -26,4 +23,3 @@ spec:
   tls:
     - hosts:
         - "api.{{ .Values.domain }}"
-{{ end }}

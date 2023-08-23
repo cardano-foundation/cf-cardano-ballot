@@ -27,13 +27,13 @@ cf-cardano-ballot-voting-api:
       tag: 0.2.5
 
 cf-cardano-ballot-verification-api:
-  enabled: false
+  enabled: true
   values:
     image:
       tag: 0.2.5
 
 cf-cardano-ballot-ledger-follower-api:
-  enabled: false
+  enabled: true
   values:
     image:
       tag: 0.2.5

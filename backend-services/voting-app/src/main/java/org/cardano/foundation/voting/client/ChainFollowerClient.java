@@ -1,8 +1,6 @@
 package org.cardano.foundation.voting.client;
 
 import io.vavr.control.Either;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.VotingEventType;
@@ -15,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 import org.zalando.problem.Problem;
 import org.zalando.problem.spring.common.HttpStatusAdapter;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,7 +30,7 @@ public class ChainFollowerClient {
     private String ledgerFollowerBaseUrl;
 
     public Either<Problem, ChainTipResponse> getChainTip() {
-        var url = String.format("%s/api/chain-tip", ledgerFollowerBaseUrl);
+        var url = String.format("%s/api/blockchain/tip", ledgerFollowerBaseUrl);
 
         try {
             return Either.right(restTemplate.getForObject(url, ChainTipResponse.class));
@@ -64,7 +63,7 @@ public class ChainFollowerClient {
     }
 
     public Either<Problem, Optional<TransactionDetailsResponse>> getTransactionDetails(String txHash) {
-        var url = String.format("%s/api/api/blockchain/tx-details/{txHash}", ledgerFollowerBaseUrl);
+        var url = String.format("%s/api/blockchain/tx-details/{txHash}", ledgerFollowerBaseUrl);
 
         try {
             return Either.right(Optional.ofNullable(restTemplate.getForObject(url, TransactionDetailsResponse.class, txHash)));
@@ -85,9 +84,10 @@ public class ChainFollowerClient {
         var url = String.format("%s/api/reference/event", ledgerFollowerBaseUrl);
 
         try {
-            return Either.right(Optional.ofNullable(restTemplate.getForObject(url, EventSummaryList.class))
-                    .map(EventSummaryList::getEventSummaries).orElse(List.of()).stream().filter(EventSummary::active)
-                    .toList());
+            var allEventSummaries = Optional.ofNullable(restTemplate.getForObject(url, EventSummary[].class))
+                    .map(Arrays::asList).orElse(List.of());
+
+            return Either.right(allEventSummaries.stream().filter(EventSummary::active).toList());
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == NOT_FOUND) {
                 return Either.right(List.of());
@@ -143,14 +143,6 @@ public class ChainFollowerClient {
         public boolean isEventInactive() {
             return !active;
         }
-
-    }
-
-    @AllArgsConstructor
-    @Getter
-    public class EventSummaryList {
-
-        private List<EventSummary> eventSummaries;
 
     }
 

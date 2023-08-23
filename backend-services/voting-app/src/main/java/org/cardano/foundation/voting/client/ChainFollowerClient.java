@@ -135,7 +135,7 @@ public class ChainFollowerClient {
 
     }
 
-    public record EventSummary(String name,
+    public record EventSummary(String id,
                                boolean finished,
                                boolean notStarted,
                                boolean active) {

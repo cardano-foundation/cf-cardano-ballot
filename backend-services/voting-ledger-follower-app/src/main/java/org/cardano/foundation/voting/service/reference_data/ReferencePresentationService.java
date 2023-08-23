@@ -90,7 +90,7 @@ public class ReferencePresentationService {
 
     public List<Map<String, Object>> eventsData() {
         return referenceDataService.findAllValidEvents().stream().map(event -> Map.<String, Object>of(
-                "name", event.getId(),
+                "id", event.getId(),
                 "notStarted", expirationService.isEventNotStarted(event),
                 "finished", expirationService.isEventFinished(event),
                 "active", expirationService.isEventActive(event)

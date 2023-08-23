@@ -22,7 +22,7 @@ cf-cardano-ballot-voting-api:
         replicas: 2
       - name: active-hour
         active: "true"
-        voteCommitmentCronExpression: "*/120 * * * * *"
+        voteCommitmentCronExpression: "0 0/15 * * * ?"
     image:
       tag: 0.2.5
 

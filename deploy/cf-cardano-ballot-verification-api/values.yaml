@@ -26,3 +26,5 @@ resources: {}
   #   memory: 128Mi
 
 nodeSelector: {}
+
+corsAllowedOrigins: https://{{ .Values.domain }}

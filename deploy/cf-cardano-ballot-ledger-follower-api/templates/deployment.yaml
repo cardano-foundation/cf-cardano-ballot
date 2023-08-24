@@ -51,7 +51,7 @@ spec:
                   key: ORGANISER_STAKE_ADDRESS
 
             - name: CORS_ALLOWED_ORIGINS
-              value: {{ $.Values.domain }}
+              value: {{ tpl $.Values.corsAllowedOrigins $ }}
 
           ports:
             - name: http

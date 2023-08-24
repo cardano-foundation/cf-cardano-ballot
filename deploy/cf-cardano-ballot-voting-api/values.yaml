@@ -33,5 +33,6 @@ nodeSelector: {}
 diagnosticMode:
   enabled: false
 
+corsAllowedOrigins: https://{{ .Values.domain }}
 springProfiles: dev--preprod
 bindOnEventIds: CIP-1694_Pre_Ratification_4619

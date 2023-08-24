@@ -27,6 +27,8 @@ spec:
 #              value: {{ .springProfiles }}
             - name: CARDANO_NETWORK
               value: {{ .Values.network | default "preprod" | upper}}
+            - name: CORS_ALLOWED_ORIGINS
+              value: {{ $.Values.domain }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}

@@ -8,10 +8,10 @@ cf-cardano-ballot-infra:
   enabled: true
 
 cf-cardano-ballot-ui:
-  enabled: false
+  enabled: true
   values:
     image:
-      tag: 0.2.5
+      tag: 0.2.6-PR79
 
 cf-cardano-ballot-voting-api:
   enabled: true

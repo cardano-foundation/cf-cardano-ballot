@@ -23,11 +23,13 @@ spec:
       containers:
         - name: {{ $.Chart.Name }}
           image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag | default $.Chart.AppVersion }}"
-#          command: ["bash", "-c", "sleep infinity"]
+          {{- if .Values.diagnosticMode.enabled }}
+          command: ["bash", "-c", "sleep infinity"]
+          {{- end }}
           imagePullPolicy: {{ $.Values.image.pullPolicy }}
           env:
-#            - name: SPRING_PROFILES_ACTIVE
-#              value: {{ .springProfiles }}
+            - name: SPRING_PROFILES_ACTIVE
+              value: {{ $.Values.springProfiles }}
 
             - name: CARDANO_NETWORK
               value: {{ $.Values.network | default "preprod" | upper}}
@@ -72,6 +74,9 @@ spec:
                 secretKeyRef:
                   name: postgres-secrets
                   key: POSTGRES_PASSWORD
+
+            - name: BIND_ON_EVENT_IDS
+              value: {{ $.Values.bindOnEventIds }}
 
             - name: VOTE_COMMITMENT_ENABLED
               value: {{ $instance.active | default "false" | quote }}

@@ -29,3 +29,9 @@ resources: {}
   #   memory: 128Mi
 
 nodeSelector: {}
+
+diagnosticMode:
+  enabled: false
+
+springProfiles: dev--preprod
+bindOnEventIds: CIP-1694_Pre_Ratification_4619

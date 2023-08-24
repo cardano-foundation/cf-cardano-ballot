@@ -65,6 +65,8 @@ dependencies {
 	implementation("com.bloxbean.cardano:yaci-store-transaction-spring-boot-starter:0.0.11-beta4")
 	implementation("com.bloxbean.cardano:yaci-store-metadata-spring-boot-starter:0.0.11-beta4")
 
+	implementation("org.apache.commons:commons-lang3:3.12.0")
+
 	implementation("io.blockfrost:blockfrost-java:0.1.3")
 
 	implementation("io.vavr:vavr:0.10.4")

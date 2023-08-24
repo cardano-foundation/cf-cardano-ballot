@@ -41,14 +41,14 @@ public class ReferencePresentationService {
                         var proposals = category.getProposals().stream().map(proposal -> ProposalPresentation.builder()
                                         .id(proposal.getId())
                                         .name(proposal.getName())
-                                        .presentationName(localisationService.translate(name, proposal.getName(), locale))
+                                        .presentationName(localisationService.translate(name, proposal.getId(), proposal.getName(), locale))
                                         .build())
                                 .toList();
 
                         return CategoryPresentation.builder()
                                 .id(category.getId())
                                 .gdprProtection(category.isGdprProtection())
-                                .presentationName(localisationService.translate(name, category.getId(), locale))
+                                .presentationName(localisationService.translate(name, category.getId(), Optional.of(category.getId()), locale))
                                 .proposals(proposals)
                                 .build();
                     }
@@ -56,7 +56,7 @@ public class ReferencePresentationService {
 
             var eventBuilder = EventPresentation.builder()
                     .id(event.getId())
-                    .presentationName(localisationService.translate(name, event.getId(), locale))
+                    .presentationName(localisationService.translate(name, event.getId(), Optional.of(event.getId()), locale))
                     .team(event.getTeam())
                     .votingEventType(event.getVotingEventType())
                     .startEpoch(event.getStartEpoch())

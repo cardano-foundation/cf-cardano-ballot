@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.6](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.5...v0.2.6) (2023-08-23)
+
+
+### Bug Fixes
+
+* added missing workflow for follower app ([da4c50e](https://github.com/cardano-foundation/cf-cardano-ballot/commit/da4c50eb8356db6c60e616e9329f0f97839c0916))
+* vote commitment every 15 mins ([cc92ee4](https://github.com/cardano-foundation/cf-cardano-ballot/commit/cc92ee45282c65134e60a52ae03a0103098e7c9c))
+
 ## [0.2.5](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.4...v0.2.5) (2023-08-23)
 
 

@@ -9,7 +9,7 @@ RUN npm install --quiet --production
 # Copy app files
 COPY . .
 # Build the app
-RUN npm run react-inject-env && npm run build
+RUN npx react-inject-env set && npm run build
 
 # Bundle static assets with nginx
 FROM nginx:1.25.2-alpine as production

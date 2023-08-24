@@ -7,7 +7,11 @@ metadata:
   labels:
     {{- include "voting-app.labels" $ | nindent 4 }}
 spec:
-  replicas: {{ $.Values.replicaCount }}
+  {{- if eq $instance.active "true" }}
+  replicas: 1
+  {{- else }}
+  replicas: {{ $instance.replicas | default 1 }}
+  {{- end }}
   selector:
     matchLabels:
       {{- include "voting-app.selectorLabels" $ | nindent 6 }}

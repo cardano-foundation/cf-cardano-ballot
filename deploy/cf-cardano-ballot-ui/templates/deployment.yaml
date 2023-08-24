@@ -22,6 +22,17 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: REACT_APP_SERVER_URL
+              value: https://dev.cf-cip1694-preprod.eu-west-1.metadata.dev.cf-deployments.org/
+            - name: REACT_APP_TARGET_NETWORK
+              value: PREPROD
+            - name: REACT_APP_EVENT_ID
+              value: CIP-1694_Pre_Ratification_4619
+            - name: REACT_APP_CATEGORY_ID
+              value: CIP-1694_Pre_Ratification_4619
+            - name: REACT_APP_SUPPORTED_WALLETS
+              value: flint,eternl,nami,typhon,yoroi,nufi,gerowallet,lace
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}

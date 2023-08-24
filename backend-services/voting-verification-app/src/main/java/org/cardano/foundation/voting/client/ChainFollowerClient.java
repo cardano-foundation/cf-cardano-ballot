@@ -30,7 +30,6 @@ public class ChainFollowerClient {
         var merkleRootHashResponse = restTemplate.getForObject(url, MerkleRootHashResponse.class, eventId, merkleRootHash);
         log.info("Merkle root hash: {}, response: {}", merkleRootHash, merkleRootHashResponse);
 
-
         return Optional.ofNullable(merkleRootHashResponse)
                 .map(r -> {
                     if (network != r.network()) {

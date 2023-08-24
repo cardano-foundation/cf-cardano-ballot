@@ -46,8 +46,17 @@ public class L1SubmissionService {
             if (event.getVotingPowerAsset().isPresent()) {
                 throw new IllegalArgumentException("Event voting power asset must not be specified!");
             }
-            if (event.getStartEpoch().orElseThrow(() -> new RuntimeException("startSlot required!")) > event.getEndSlot().orElseThrow(() -> new RuntimeException("endSlot required!"))) {
-                throw new IllegalArgumentException("Event start time must be before end time!");
+            if (event.getStartSlot().orElseThrow(() -> new RuntimeException("startSlot required!")) > event.getEndSlot().orElseThrow(() -> new RuntimeException("endSlot required!"))) {
+                throw new IllegalArgumentException("Event start slot must be before end slot time!");
+            }
+            if (event.getStartEpoch().isPresent()) {
+                throw new IllegalArgumentException("Event's start epoch must not be specified for USER_BASED voting event!");
+            }
+            if (event.getEndEpoch().isPresent()) {
+                throw new IllegalArgumentException("Event's end epoch must not be specified for USER_BASED voting event!");
+            }
+            if (event.getSnapshotEpoch().isPresent()) {
+                throw new IllegalArgumentException("Event's snapshot epoch must not be specified for USER_BASED voting event!");
             }
         }
 

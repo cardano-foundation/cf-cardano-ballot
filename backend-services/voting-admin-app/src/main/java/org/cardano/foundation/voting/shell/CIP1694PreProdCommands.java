@@ -1,9 +1,12 @@
 package org.cardano.foundation.voting.shell;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.domain.*;
+import org.cardano.foundation.voting.domain.CardanoNetwork;
+import org.cardano.foundation.voting.domain.CreateCategoryCommand;
+import org.cardano.foundation.voting.domain.CreateEventCommand;
+import org.cardano.foundation.voting.domain.Proposal;
 import org.cardano.foundation.voting.service.transaction_submit.L1SubmissionService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
@@ -11,21 +14,30 @@ import org.springframework.shell.standard.ShellOption;
 import java.util.List;
 import java.util.Optional;
 
+import static org.cardano.foundation.voting.domain.CardanoNetwork.PREPROD;
+import static org.cardano.foundation.voting.domain.SchemaVersion.V1;
+import static org.cardano.foundation.voting.domain.VotingEventType.STAKE_BASED;
 import static org.cardano.foundation.voting.domain.VotingPowerAsset.ADA;
 import static org.cardano.foundation.voting.utils.MoreUUID.shortUUID;
 
 @ShellComponent
 @Slf4j
-public class CFVotingAdminCommands {
+@RequiredArgsConstructor
+public class CIP1694PreProdCommands {
 
     private final static String EVENT_NAME = "CIP-1694_Pre_Ratification";
 
-    @Autowired
-    private L1SubmissionService l1SubmissionService;
+    private final L1SubmissionService l1SubmissionService;
 
-    @ShellMethod(key = "create-cip-1694-event", value = "Create a CIP-1694 voting event")
+    private final CardanoNetwork network;
+
+    @ShellMethod(key = "create-cip-1694-event-pre-prod", value = "Create a CIP-1694 voting event on a PRE-PROD network.")
     public String createVoltairePreRatificationEvent() {
-        log.info("Creating CIP-1694 event...");
+        if (network != PREPROD) {
+            return "This command can only be run on PRE-PROD a network!";
+        }
+
+        log.info("Creating CIP-1694 event on PRE-PROD network...");
 
         CreateEventCommand createEventCommand = CreateEventCommand.builder()
                 .id(EVENT_NAME + "_" + shortUUID(4))
@@ -34,8 +46,8 @@ public class CFVotingAdminCommands {
                 .snapshotEpoch(Optional.of(79))
                 .votingPowerAsset(Optional.of(ADA))
                 .team("CF & IOG")
-                .votingEventType(VotingEventType.STAKE_BASED)
-                .schemaVersion(SchemaVersion.V1)
+                .votingEventType(STAKE_BASED)
+                .schemaVersion(V1)
                 .allowVoteChanging(false)
                 .categoryResultsWhileVoting(false)
                 .highLevelResultsWhileVoting(false)
@@ -46,8 +58,12 @@ public class CFVotingAdminCommands {
         return "Created CIP-1694 event: " + createEventCommand;
     }
 
-    @ShellMethod(key = "create-cip-1694-category", value = "Create a CIP-1694 category")
+    @ShellMethod(key = "create-cip-1694-category-pre-prod", value = "Create a CIP-1694 category on a PRE-PROD network.")
     public String createVoltairePreRatificationCategory(@ShellOption String event) {
+        if (network != PREPROD) {
+            return "This command can only be run on a PRE-PROD network!";
+        }
+
         log.info("Creating CIP-1694 category...");
 
         Proposal yesProposal = Proposal.builder()
@@ -69,7 +85,7 @@ public class CFVotingAdminCommands {
                 .id(String.format("%s_%s", EVENT_NAME, event.substring(event.length() - 4)))
                 .event(event)
                 .gdprProtection(false)
-                .schemaVersion(SchemaVersion.V1)
+                .schemaVersion(V1)
                 .proposals(List.of(yesProposal, noProposal, abstainProposal))
                 .build();
 

@@ -48,7 +48,7 @@ DROP TABLE IF EXISTS proposal;
 
 CREATE TABLE proposal (
     id VARCHAR(255) NOT NULL, -- PII protection, on chain we are not allowed to store human readable names
-    name VARCHAR(255) NOT NULL, -- PII protection, on chain we are not allowed to store human readable names
+    name VARCHAR(255), -- PII protection, on chain we are not allowed to store human readable names
     category_id VARCHAR(255) NOT NULL,
 
     absolute_slot BIGINT NOT NULL,

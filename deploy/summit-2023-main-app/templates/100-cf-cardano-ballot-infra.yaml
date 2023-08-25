@@ -1,0 +1,40 @@
+{{ if index .Values "cf-cardano-ballot-infra" "enabled" }}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cf-cardano-ballot-infra
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+spec:
+  project: default
+  source:
+    repoURL: git@github.com:cardano-foundation/cf-cardano-ballot.git
+    targetRevision: {{ .Values.git.targetRevision | default "HEAD" }}
+    path: deploy/cf-cardano-ballot-infra
+    helm:
+      {{- with index .Values "cf-cardano-ballot-infra" }}
+      values: |
+{{ toYaml . | indent 8 }}
+      {{- end }}
+
+  ignoreDifferences:
+    - group: "*"
+      kind: "Secret"
+      jqPathExpressions:
+        - '.data'
+
+  syncPolicy:
+    automated:
+      prune: true
+    syncOptions:
+      - CreateNamespace=true
+      - RespectIgnoreDifferences=true
+
+  destination:
+    namespace: cf-cardano-ballot
+    server: {{ .Values.spec.destination.server }}
+{{ end }}

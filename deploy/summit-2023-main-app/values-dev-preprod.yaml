@@ -1,0 +1,40 @@
+stage: dev
+
+network: preprod
+
+domain: dev.cf-summit-2023-preprod.eu-west-1.metadata.dev.cf-deployments.org
+
+cf-cardano-ballot-infra:
+  enabled: true
+
+cf-cardano-ballot-ui:
+  enabled: false
+  values:
+    image:
+      tag: 0.0.1-2
+
+cf-cardano-ballot-voting-api:
+  enabled: true
+  values:
+    instances:
+      - name: passive
+        active: "false"
+        replicas: 2
+      - name: active-hour
+        active: "true"
+        voteCommitmentCronExpression: "0 0/30 * * * *"
+    image:
+      tag: 0.2.6-PR79
+
+cf-cardano-ballot-verification-api:
+  enabled: true
+  values:
+    image:
+      tag: 0.2.6-PR79
+
+cf-cardano-ballot-ledger-follower-api:
+  enabled: true
+  values:
+    image:
+      tag: 0.2.6-PR79
+

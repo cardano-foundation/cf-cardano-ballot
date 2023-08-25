@@ -1,0 +1,43 @@
+git:
+  targetRevision: null
+
+# stage: one of [dev, uat, prod]
+stage: null
+
+# network: one of [mainnet, preprod, preview]
+network: null
+
+# domain: something like "grafana.dev.ggargiulo-clusters.eu-west-1.metadata.dev.cf-deployments.org"
+domain: null
+
+# Infra Parameters
+cf-cardano-ballot-infra:
+  # Whether Infra resources should be deployed.
+  enabled: true
+
+# Ballot UI Parameters
+cf-cardano-ballot-ui:
+  # Whether Resources should be deployed.
+  enabled: true
+
+# Ballot API Parameters
+cf-cardano-ballot-voting-api:
+  # Whether Resources should be deployed.
+  enabled: true
+
+# Ballot Verification API Parameters
+cf-cardano-ballot-verification-api:
+  # Whether Resources should be deployed.
+  enabled: true
+
+# Ballot Ledger Follower API Parameters
+cf-cardano-ballot-ledger-follower-api:
+  # Whether Resources should be deployed.
+  enabled: true
+
+grafana-dashboards:
+  enabled: true
+
+spec:
+  destination:
+    server: https://kubernetes.default.svc

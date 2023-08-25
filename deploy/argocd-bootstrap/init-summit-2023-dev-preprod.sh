@@ -58,7 +58,7 @@ kubectl create secret generic github-deploy-key \
   --dry-run=client \
   -o yaml \
   -n argocd \
-  --from-file=../../.keys/cf-summit-2023 \
+  --from-file=../../.keys/cf-cardano-ballot \
   | kubectl apply -f -
 
 #echo "Fetching helm dependencies for main app"
@@ -71,4 +71,4 @@ helm upgrade --install argocd -n argocd . \
   --set git.targetRevision=develop \
   --set valueFile=values-dev-preprod.yaml \
   -f values-secrets.yaml \
-  -f values-dev-preprod.yaml
+  -f values-summit-2023-dev-preprod.yaml

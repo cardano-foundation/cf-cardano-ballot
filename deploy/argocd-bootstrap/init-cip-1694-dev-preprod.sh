@@ -71,4 +71,4 @@ helm upgrade --install argocd -n argocd . \
   --set git.targetRevision=develop \
   --set valueFile=values-dev-preprod.yaml \
   -f values-secrets.yaml \
-  -f values-dev-preprod.yaml
+  -f values-cip-1694-dev-preprod.yaml

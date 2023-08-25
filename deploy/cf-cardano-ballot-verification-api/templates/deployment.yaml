@@ -27,17 +27,19 @@ spec:
 #              value: {{ .springProfiles }}
             - name: CARDANO_NETWORK
               value: {{ .Values.network | default "preprod" | upper}}
+            - name: CORS_ALLOWED_ORIGINS
+              value: {{ tpl $.Values.corsAllowedOrigins $ }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
+#          livenessProbe:
+#            httpGet:
+#              path: /
+#              port: http
+#          readinessProbe:
+#            httpGet:
+#              path: /
+#              port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

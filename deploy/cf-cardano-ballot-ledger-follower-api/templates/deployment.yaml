@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "voting-ledger-follower-app.fullname" . }}
+  labels:
+    {{- include "voting-ledger-follower-app.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "voting-ledger-follower-app.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "voting-ledger-follower-app.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          {{- if $.Values.diagnosticMode.enabled }}
+          command: ["bash", "-c", "sleep infinity"]
+          {{- end }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: {{ .Values.springProfiles }}
+            - name: CARDANO_NETWORK
+              value: {{ .Values.network | default "preprod" | upper}}
+            - name: VOTING_METADATA_LABEL
+              value: {{ $.Values.votingMetadataLabel | default "11113" | quote }}
+
+            - name: BLOCKFROST_URL
+              valueFrom:
+                secretKeyRef:
+                  name: blockfrost-secrets
+                  key: BLOCKFROST_URL
+            - name: BLOCKFROST_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: blockfrost-secrets
+                  key: BLOCKFROST_PASSWORD
+
+            - name: ORGANISER_STAKE_ADDRESS
+              valueFrom:
+                secretKeyRef:
+                  name: wallet-secrets
+                  key: ORGANISER_STAKE_ADDRESS
+
+            - name: CORS_ALLOWED_ORIGINS
+              value: {{ tpl $.Values.corsAllowedOrigins $ }}
+
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+#          livenessProbe:
+#            httpGet:
+#              path: /
+#              port: http
+#          readinessProbe:
+#            httpGet:
+#              path: /
+#              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}

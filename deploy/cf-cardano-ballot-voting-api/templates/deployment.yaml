@@ -7,7 +7,11 @@ metadata:
   labels:
     {{- include "voting-app.labels" $ | nindent 4 }}
 spec:
-  replicas: {{ $.Values.replicaCount }}
+  {{- if eq $instance.active "true" }}
+  replicas: 1
+  {{- else }}
+  replicas: {{ $instance.replicas | default 1 }}
+  {{- end }}
   selector:
     matchLabels:
       {{- include "voting-app.selectorLabels" $ | nindent 6 }}
@@ -23,14 +27,19 @@ spec:
       containers:
         - name: {{ $.Chart.Name }}
           image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag | default $.Chart.AppVersion }}"
-#          command: ["bash", "-c", "sleep infinity"]
+          {{- if $.Values.diagnosticMode.enabled }}
+          command: ["bash", "-c", "sleep infinity"]
+          {{- end }}
           imagePullPolicy: {{ $.Values.image.pullPolicy }}
           env:
-#            - name: SPRING_PROFILES_ACTIVE
-#              value: {{ .springProfiles }}
+            - name: SPRING_PROFILES_ACTIVE
+              value: {{ $.Values.springProfiles }}
 
             - name: CARDANO_NETWORK
               value: {{ $.Values.network | default "preprod" | upper}}
+
+            - name: CORS_ALLOWED_ORIGINS
+              value: {{ tpl $.Values.corsAllowedOrigins $ }}
 
             - name: VOTING_METADATA_LABEL
               value: {{ $.Values.votingMetadataLabel | default "11113" | quote }}
@@ -73,6 +82,9 @@ spec:
                   name: postgres-secrets
                   key: POSTGRES_PASSWORD
 
+            - name: BIND_ON_EVENT_IDS
+              value: {{ $.Values.bindOnEventIds }}
+
             - name: VOTE_COMMITMENT_ENABLED
               value: {{ $instance.active | default "false" | quote }}
 
@@ -80,6 +92,9 @@ spec:
             - name: VOTE_COMMITMENT_CRON_EXPRESSION
               value: {{ $instance.voteCommitmentCronExpression | quote }}
             {{- end }}
+
+            - name: LEDGER_FOLLOWER_APP_URL
+              value: {{ $.Values.ledgerFollowerAppUrl }}
 
           ports:
             - name: http

@@ -12,10 +12,13 @@ fullnameOverride: ""
 
 service:
   type: ClusterIP
-  port: 80
+  port: 9091
 
 ingress:
-  enabled: false
+  enabled: true
+
+
+ledgerFollowerAppUrl: http://cf-cardano-ballot-ledger-follower-api-voting-ledger-follower-ap:9090
 
 resources: {}
   # limits:
@@ -26,3 +29,10 @@ resources: {}
   #   memory: 128Mi
 
 nodeSelector: {}
+
+diagnosticMode:
+  enabled: false
+
+corsAllowedOrigins: https://{{ .Values.domain }}
+springProfiles: dev--preprod
+bindOnEventIds: CIP-1694_Pre_Ratification_4619

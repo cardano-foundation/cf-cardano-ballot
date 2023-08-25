@@ -9,6 +9,7 @@ import org.cardano.foundation.voting.service.blockchain_state.FixedBlockchainDat
 import org.cardano.foundation.voting.service.blockchain_state.backend_bridge.BackendServiceBlockchainDataChainTipService;
 import org.cardano.foundation.voting.service.blockchain_state.backend_bridge.BackendServiceBlockchainDataStakePoolService;
 import org.cardano.foundation.voting.service.blockchain_state.backend_bridge.BackendServiceBlockchainDataTransactionDetailsService;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -17,13 +18,14 @@ import org.springframework.context.annotation.Profile;
 public class BlockchainDataConfig {
 
     @Bean
-    public BlockchainDataChainTipService blockchainDataChainTipService(CardanoNetwork network, BackendService backendService) {
+    public BlockchainDataChainTipService blockchainDataChainTipService(CardanoNetwork network,
+                                                                       @Qualifier("yaci_blockfrost") BackendService backendService) {
         return new BackendServiceBlockchainDataChainTipService(backendService, network);
     }
 
     @Bean
     @Profile( value = { "prod", "dev--preprod"} )
-    public BlockchainDataStakePoolService blockchainDataStakePoolService(BackendService backendService) {
+    public BlockchainDataStakePoolService blockchainDataStakePoolService(@Qualifier("original_blockfrost") BackendService backendService) {
         return new BackendServiceBlockchainDataStakePoolService(backendService);
     }
 
@@ -34,7 +36,8 @@ public class BlockchainDataConfig {
     }
 
     @Bean
-    public BlockchainDataTransactionDetailsService blockchainDataTransactionDetailsService(CardanoNetwork network, BackendService backendService) {
+    public BlockchainDataTransactionDetailsService blockchainDataTransactionDetailsService(CardanoNetwork network,
+                                                                                           @Qualifier("yaci_blockfrost") BackendService backendService) {
         return new BackendServiceBlockchainDataTransactionDetailsService(backendService, network);
     }
 

@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import toast from 'react-hot-toast';
-import format from 'date-fns/format';
 import cn from 'classnames';
 import { Grid, Typography, Button } from '@mui/material';
 import DoneIcon from '@mui/icons-material/Done';
@@ -37,6 +36,7 @@ import {
 import * as voteService from 'common/api/voteService';
 import { useToggle } from 'common/hooks/useToggle';
 import { HttpError } from 'common/handlers/httpHandler';
+import { getDateAndMonth } from 'common/utils/dateUtils';
 import { env } from '../../env';
 import styles from './Vote.module.scss';
 
@@ -275,8 +275,8 @@ export const VotePage = () => {
               <EventTime
                 eventHasntStarted={event?.notStarted}
                 eventHasFinished={event?.finished}
-                endTime={event?.eventEnd}
-                startTime={event?.eventStart}
+                endTime={event?.eventEnd?.toString()}
+                startTime={event?.eventStart?.toString()}
               />
             </Typography>
           </Grid>
@@ -358,7 +358,7 @@ export const VotePage = () => {
                     disabled
                     data-testid="event-hasnt-started-submit-button"
                   >
-                    Submit your vote from {event?.eventStart && format(new Date(event?.eventStart), 'do MMMM')}
+                    Submit your vote from {event?.eventStart && getDateAndMonth(event?.eventStart?.toString())}
                   </Button>
                 )}
                 {isConnected && event?.finished && (
@@ -399,8 +399,8 @@ export const VotePage = () => {
         description={
           <>
             <div style={{ marginBottom: '10px' }}>Thank you, your vote has been submitted.</div>
-            Make sure to check back on <b>{event?.eventStart && format(new Date(event?.eventEnd), 'MMMM do ')}</b> to
-            see the results!
+            Make sure to check back on <b>{event?.eventStart && getDateAndMonth(event?.eventEnd?.toString())}</b> to see
+            the results!
           </>
         }
       />

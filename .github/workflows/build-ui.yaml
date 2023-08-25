@@ -35,7 +35,7 @@ jobs:
         run: |
           cd ui
           cd cip-1694
-          npm run jest-test --env=node
+          npm run test --env=node
 
       - name: 🎳 Build
         run: |

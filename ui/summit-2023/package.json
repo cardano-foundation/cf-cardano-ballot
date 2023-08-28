@@ -1,10 +1,10 @@
 {
-  "name": "cardanoballot",
+  "name": "summit2023",
   "version": "0.2.4",
   "private": true,
   "author": "Cardano Foundation Team",
   "repository": "https://github.com/cardano-foundation/cf-cardano-ballot",
-  "description": "Cardano Ballot",
+  "description": "Cardano Summit 2023",
   "dependencies": {
     "@cardano-foundation/cardano-connect-with-wallet": "^0.1.57",
     "@emotion/react": "^11.11.0",

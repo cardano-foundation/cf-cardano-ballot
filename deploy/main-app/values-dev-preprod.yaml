@@ -11,7 +11,7 @@ cf-cardano-ballot-ui:
   enabled: true
   values:
     image:
-      tag: 0.2.6-PR89
+      tag: 0.2.6-PR86
 
 cf-cardano-ballot-voting-api:
   enabled: true

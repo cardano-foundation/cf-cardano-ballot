@@ -1,11 +1,12 @@
 import React from 'react';
+import { formatUTCDate } from 'common/utils/dateUtils';
 import styles from './EventTime.module.scss';
 
 type Props = {
   eventHasntStarted?: boolean;
   eventHasFinished?: boolean;
-  endTime: Date;
-  startTime: Date;
+  endTime: string;
+  startTime: string;
 };
 
 export const EventTime = ({ endTime, startTime, eventHasntStarted, eventHasFinished }: Props) => (
@@ -17,12 +18,12 @@ export const EventTime = ({ endTime, startTime, eventHasntStarted, eventHasFinis
       <>
         Vote from:{' '}
         <b>
-          {startTime?.toString()} - {endTime?.toString()}
+          {formatUTCDate(startTime)} - {formatUTCDate(endTime)}
         </b>
       </>
     ) : (
       <>
-        {eventHasFinished ? 'The vote closed on' : 'Voting closes:'} <b>{endTime?.toString()}</b>
+        {eventHasFinished ? 'The vote closed on' : 'Voting closes:'} <b>{formatUTCDate(endTime)}</b>
       </>
     )}
   </span>

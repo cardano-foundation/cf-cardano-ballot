@@ -92,8 +92,8 @@ export const Slides = ({ items }: SlideProps) => {
                     <EventTime
                       eventHasntStarted={event?.notStarted}
                       eventHasFinished={event?.finished}
-                      endTime={event?.eventEnd}
-                      startTime={event?.eventStart}
+                      endTime={event?.eventEnd?.toString()}
+                      startTime={event?.eventStart?.toString()}
                     />
                   </Typography>
                   <Typography

@@ -18,7 +18,6 @@ import React from 'react';
 import { createMemoryHistory } from 'history';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { format } from 'date-fns';
 import BlockIcon from '@mui/icons-material/Block';
 import { ROUTES } from 'common/routes';
 import { UserState } from 'common/store/types';
@@ -26,6 +25,7 @@ import { EVENT_BY_ID_REFERENCE_URL } from 'common/api/referenceDataService';
 import { VotePage } from 'pages/Vote/Vote';
 import { Toast } from 'components/common/Toast/Toast';
 import { VERIFICATION_URL } from 'common/api/verificationService';
+import { formatUTCDate, getDateAndMonth } from 'common/utils/dateUtils';
 import { renderWithProviders } from 'test/mockProviders';
 import {
   eventMock_active,
@@ -145,7 +145,7 @@ describe('For ongoing event:', () => {
 
       const eventTime = await within(votePage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
-      expect(eventTime.textContent).toEqual(`Voting closes: ${eventMock_active.eventEnd}`);
+      expect(eventTime.textContent).toEqual(`Voting closes: ${formatUTCDate(eventMock_active.eventEnd.toString())}`);
 
       const eventDescription = await within(votePage).queryByTestId('event-description');
       expect(eventDescription).not.toBeNull();
@@ -232,7 +232,7 @@ describe('For ongoing event:', () => {
 
       const eventTime = await within(votePage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
-      expect(eventTime.textContent).toEqual(`Voting closes: ${eventMock_active.eventEnd}`);
+      expect(eventTime.textContent).toEqual(`Voting closes: ${formatUTCDate(eventMock_active.eventEnd.toString())}`);
 
       const eventDescription = await within(votePage).queryByTestId('event-description');
       expect(eventDescription).not.toBeNull();
@@ -478,7 +478,9 @@ describe("For the event that hasn't started yet", () => {
       const eventTime = await within(votePage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
       expect(eventTime.textContent).toEqual(
-        `Vote from: ${eventMock_notStarted.eventStart} - ${eventMock_notStarted.eventEnd}`
+        `Vote from: ${formatUTCDate(eventMock_notStarted.eventStart.toString())} - ${formatUTCDate(
+          eventMock_notStarted.eventEnd.toString()
+        )}`
       );
 
       const eventDescription = await within(votePage).queryByTestId('event-description');
@@ -499,7 +501,7 @@ describe("For the event that hasn't started yet", () => {
       const cta = await within(votePage).queryByTestId('event-hasnt-started-submit-button');
       expect(cta).not.toBeNull();
       expect(cta.textContent).toEqual(
-        `Submit your vote from ${format(new Date(eventMock_notStarted.eventStart), 'do MMMM')}`
+        `Submit your vote from ${getDateAndMonth(eventMock_notStarted.eventStart?.toString())}`
       );
     });
   });
@@ -539,7 +541,9 @@ describe('For the event that has already finished', () => {
 
       const eventTime = await within(votePage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
-      expect(eventTime.textContent).toEqual(`The vote closed on ${eventMock_finished.eventEnd}`);
+      expect(eventTime.textContent).toEqual(
+        `The vote closed on ${formatUTCDate(eventMock_finished.eventEnd.toString())}`
+      );
 
       const eventDescription = await within(votePage).queryByTestId('event-description');
       expect(eventDescription).not.toBeNull();

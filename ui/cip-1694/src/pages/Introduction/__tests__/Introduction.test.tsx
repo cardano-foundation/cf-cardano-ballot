@@ -13,6 +13,7 @@ import { IntroductionPage, introItems } from 'pages/Introduction/Introduction';
 import { renderWithProviders } from 'test/mockProviders';
 import { eventMock_active, useCardanoMock, eventMock_notStarted, eventMock_finished } from 'test/mocks';
 import { CustomRouter } from 'test/CustomRouter';
+import { formatUTCDate } from 'common/utils/dateUtils';
 
 jest.mock('@cardano-foundation/cardano-connect-with-wallet', () => {
   return {
@@ -69,7 +70,7 @@ describe('For ongoing event:', () => {
 
       const eventTime = await within(introductionPage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
-      expect(eventTime.textContent).toEqual(`Voting closes: ${eventMock_active.eventEnd}`);
+      expect(eventTime.textContent).toEqual(`Voting closes: ${formatUTCDate(eventMock_active.eventEnd.toString())}`);
 
       const eventDescription = await within(introductionPage).queryByTestId('event-description');
       expect(eventDescription).not.toBeNull();
@@ -135,7 +136,11 @@ describe("For the event that hasn't started yet", () => {
 
       const eventTime = await within(introductionPage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
-      expect(eventTime.textContent).toEqual(`Vote from: ${eventMock_active.eventStart} - ${eventMock_active.eventEnd}`);
+      expect(eventTime.textContent).toEqual(
+        `Vote from: ${formatUTCDate(eventMock_active.eventStart.toString())} - ${formatUTCDate(
+          eventMock_active.eventEnd.toString()
+        )}`
+      );
 
       const eventDescription = await within(introductionPage).queryByTestId('event-description');
       expect(eventDescription).not.toBeNull();
@@ -201,7 +206,9 @@ describe('For the event that has already finished', () => {
 
       const eventTime = await within(introductionPage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
-      expect(eventTime.textContent).toEqual(`The vote closed on ${eventMock_active.eventEnd}`);
+      expect(eventTime.textContent).toEqual(
+        `The vote closed on ${formatUTCDate(eventMock_active.eventEnd.toString())}`
+      );
 
       const eventDescription = await within(introductionPage).queryByTestId('event-description');
       expect(eventDescription).not.toBeNull();

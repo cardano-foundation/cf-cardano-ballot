@@ -37,13 +37,13 @@ public class VerificationResource {
     }
 
     @RequestMapping(value = "/mock/verify-vote", method = POST, produces = "application/json")
-    @Timed(value = "resource.verifyVote", percentiles = {0.3, 0.5, 0.95})
+    @Timed(value = "resource.mock.verifyVote", percentiles = {0.3, 0.5, 0.95})
     public ResponseEntity<?> verifyVoteMock(@RequestBody @Valid VoteVerificationRequest voteVerificationRequest) {
         log.info("Received vote verification mock request: {}", voteVerificationRequest);
 
         var flap = new Random().nextBoolean();
 
-        return ResponseEntity.ok().body(Map.of("isVerified", flap));
+        return ResponseEntity.ok().body(Map.of("isVerified", flap, "network", cardanoNetwork));
     }
 
 }

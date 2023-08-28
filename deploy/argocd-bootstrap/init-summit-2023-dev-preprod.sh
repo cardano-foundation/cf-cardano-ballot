@@ -10,17 +10,17 @@ if [ $? != 0 ]; then
   kubectl create ns argocd > /dev/null 2>&1
 fi
 
-echo "Checking cf-cardano-ballot namespace existence"
-kubectl get ns cf-cardano-ballot > /dev/null 2>&1
+echo "Checking cf-summit-2023 namespace existence"
+kubectl get ns cf-summit-2023 > /dev/null 2>&1
 
 if [ $? != 0 ]; then
-  echo "cf-cardano-ballot namespace does not exist, creating..."
-  kubectl create ns cf-cardano-ballot > /dev/null 2>&1
+  echo "cf-summit-2023 namespace does not exist, creating..."
+  kubectl create ns cf-summit-2023 > /dev/null 2>&1
 fi
 
 
 ## Blockfrost secrets
-kubectl create secret -n cf-cardano-ballot generic blockfrost-secrets \
+kubectl create secret -n cf-summit-2023 generic blockfrost-secrets \
   --from-env-file=../../.keys/blockfrost-secrets \
   --save-config \
   --dry-run=client \
@@ -28,7 +28,7 @@ kubectl create secret -n cf-cardano-ballot generic blockfrost-secrets \
   | kubectl apply -f -
 
 ## Submit API secrets
-kubectl create secret -n cf-cardano-ballot generic submit-api-secrets \
+kubectl create secret -n cf-summit-2023 generic submit-api-secrets \
   --from-env-file=../../.keys/submit-api-secrets \
   --save-config \
   --dry-run=client \
@@ -36,7 +36,7 @@ kubectl create secret -n cf-cardano-ballot generic submit-api-secrets \
   | kubectl apply -f -
 
 ## Wallet Mnemonic secrets
-kubectl create secret -n cf-cardano-ballot generic wallet-secrets \
+kubectl create secret -n cf-summit-2023 generic wallet-secrets \
   --from-env-file=../../.keys/wallet-secrets \
   --save-config \
   --dry-run=client \
@@ -44,7 +44,7 @@ kubectl create secret -n cf-cardano-ballot generic wallet-secrets \
   | kubectl apply -f -
 
 ## DockerHub secret
-kubectl create secret -n cf-cardano-ballot generic regcred \
+kubectl create secret -n cf-summit-2023 generic regcred \
   --from-file=.dockerconfigjson=../../.keys/docker-cred.json \
   --type=kubernetes.io/dockerconfigjson \
   --save-config \
@@ -71,4 +71,4 @@ helm upgrade --install argocd -n argocd . \
   --set git.targetRevision=develop \
   --set valueFile=values-dev-preprod.yaml \
   -f values-secrets.yaml \
-  -f values-dev-preprod.yaml
+  -f values-summit-2023-dev-preprod.yaml

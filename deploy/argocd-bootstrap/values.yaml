@@ -3,6 +3,8 @@ git:
   # The target branch to point to. This can be set to a branch during chart development phase. Defaults to main
   targetRevision: null
 
+mainAppPath: ""
+
 # ArgoCD parameters
 argo-cd:
   enabled: true

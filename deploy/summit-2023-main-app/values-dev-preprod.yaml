@@ -2,16 +2,16 @@ stage: dev
 
 network: preprod
 
-domain: dev.cf-cip1694-preprod.eu-west-1.metadata.dev.cf-deployments.org
+domain: dev.cf-summit-2023-preprod.eu-west-1.metadata.dev.cf-deployments.org
 
 cf-cardano-ballot-infra:
   enabled: true
 
 cf-cardano-ballot-ui:
-  enabled: true
+  enabled: false
   values:
     image:
-      tag: 0.2.7-PR92-preprod
+      tag: 0.0.1-2
 
 cf-cardano-ballot-voting-api:
   enabled: true

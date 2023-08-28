@@ -1,0 +1,7 @@
+mainAppPath: "deploy/summit-2023-main-app"
+
+argo-cd:
+  server:
+    ingress:
+      hosts:
+        - argocd.dev.cf-summit-2023-preprod.eu-west-1.metadata.dev.cf-deployments.org

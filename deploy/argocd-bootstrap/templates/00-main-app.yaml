@@ -11,7 +11,7 @@ spec:
   source:
     repoURL: git@github.com:cardano-foundation/cf-cardano-ballot.git
     targetRevision: {{ .Values.git.targetRevision | default "HEAD" }}
-    path: deploy/main-app
+    path: {{ .Values.mainAppPath }}
     helm:
       parameters:
         - name: "git.targetRevision"

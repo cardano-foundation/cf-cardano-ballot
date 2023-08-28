@@ -7,6 +7,8 @@ import lombok.Setter;
 import java.util.Date;
 
 @MappedSuperclass
+@Setter
+@Getter
 public abstract class AbstractTimestampEntity {
 
     @Temporal(TemporalType.TIMESTAMP)

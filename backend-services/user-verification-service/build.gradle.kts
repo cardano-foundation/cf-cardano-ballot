@@ -53,6 +53,10 @@ dependencies {
 	testCompileOnly("org.projectlombok:lombok:1.18.28")
 	testAnnotationProcessor("org.projectlombok:lombok:1.18.28")
 
+	implementation("com.twilio.sdk:twilio:9.11.0")
+
+	implementation("com.googlecode.libphonenumber:libphonenumber:8.13.19")
+
 	implementation("com.querydsl:querydsl-jpa")
     annotationProcessor("com.querydsl:querydsl-apt")
 
@@ -81,12 +85,12 @@ tasks {
 			"org.cardano.foundation.voting.service.**",
 			"org.cardano.foundation.voting.domain.**"
 		).toMutableList()
-		outputFile = "build/typescript-generator/voting-verification-app-types.ts"
+		outputFile = "build/typescript-generator/user-verification-app-types.ts"
     }
 }
 
 tasks.register<Copy>("buildAndCopyTypescriptTypes") {
 	dependsOn(tasks.generateTypeScript)
-    from(layout.buildDirectory.file("typescript-generator/voting-verification-app-types.ts"))
+    from(layout.buildDirectory.file("typescript-generator/user-verification-app-types.ts"))
     into(layout.projectDirectory.dir("../../ui/cip-1694/src/types"))
 }

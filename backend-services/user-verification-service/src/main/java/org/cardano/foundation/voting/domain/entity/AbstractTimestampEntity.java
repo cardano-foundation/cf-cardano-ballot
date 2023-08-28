@@ -4,27 +4,29 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @MappedSuperclass
+@Setter
+@Getter
 public abstract class AbstractTimestampEntity {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "createdAt", nullable = false)
-    protected Date createdAt = new Date();
+    protected LocalDateTime createdAt = LocalDateTime.now(); // TODO clock
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updatedAt", nullable = false)
-    private Date updatedAt = new Date();
+    private LocalDateTime updatedAt = LocalDateTime.now(); // TODO clock
 
     @PrePersist
     protected void onCreate() {
-        updatedAt = createdAt = new Date();
+        updatedAt = createdAt = LocalDateTime.now();
     }
 
     @PreUpdate
     protected void onUpdate() {
-        updatedAt = new Date();
+        updatedAt = LocalDateTime.now();
     }
 
 }

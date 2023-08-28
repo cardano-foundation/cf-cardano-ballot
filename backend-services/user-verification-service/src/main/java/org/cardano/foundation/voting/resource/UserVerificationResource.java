@@ -4,18 +4,19 @@ import io.micrometer.core.annotation.Timed;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.domain.CardanoNetwork;
-import org.cardano.foundation.voting.domain.UserVerificationRequest;
+import org.cardano.foundation.voting.domain.CheckVerificationRequest;
+import org.cardano.foundation.voting.domain.IsVerifiedRequest;
+import org.cardano.foundation.voting.domain.StartVerificationRequest;
 import org.cardano.foundation.voting.service.verify.UserVerificationService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
 import java.util.Objects;
-import java.util.Random;
 
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
@@ -26,30 +27,39 @@ public class UserVerificationResource {
 
     private final UserVerificationService userVerificationService;
 
-    private final CardanoNetwork cardanoNetwork;
+    @RequestMapping(value = "/start-verification", method = POST, produces = "application/json")
+    @Timed(value = "resource.startVerification", percentiles = {0.3, 0.5, 0.95})
+    public ResponseEntity<?> startVerification(@RequestBody @Valid StartVerificationRequest startVerificationRequest) {
+        log.info("Received startVerification request: {}", startVerificationRequest);
 
-    @RequestMapping(value = "/verify", method = POST, produces = "application/json")
-    @Timed(value = "resource.verifyUser", percentiles = {0.3, 0.5, 0.95})
-    public ResponseEntity<?> verifyUser(@RequestBody @Valid UserVerificationRequest userVerificationRequest) {
-        log.info("Received user verification request: {}", userVerificationRequest);
-
-        return userVerificationService.verify()
+        return userVerificationService.startVerification(startVerificationRequest)
                 .fold(problem -> ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem),
-                        isVerified -> ResponseEntity.ok().body(Map
-                                .of("isVerified", isVerified,
-                                        "network", cardanoNetwork)
-                        )
+                        userVerification -> ResponseEntity.ok().body(userVerification)
                 );
     }
 
-    @RequestMapping(value = "/mock/verify-user", method = POST, produces = "application/json")
-    @Timed(value = "resource.mock.verifyUser", percentiles = {0.3, 0.5, 0.95})
-    public ResponseEntity<?> verifyVoteMock(@RequestBody @Valid UserVerificationRequest userVerificationRequest) {
-        log.info("Received vote verification mock request: {}", userVerificationRequest);
+    @RequestMapping(value = "/check-verification", method = POST, produces = "application/json")
+    @Timed(value = "resource.checkVerification", percentiles = {0.3, 0.5, 0.95})
+    public ResponseEntity<?> checkVerification(@RequestBody @Valid CheckVerificationRequest checkVerificationRequest) {
+        log.info("Received checkVerification request: {}", checkVerificationRequest);
 
-        var flap = new Random().nextBoolean();
+        return userVerificationService.checkVerification(checkVerificationRequest)
+                .fold(problem -> ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem),
+                        userVerification -> ResponseEntity.ok().body(userVerification)
+                );
+    }
 
-        return ResponseEntity.ok().body(Map.of("isVerified", flap, "network", cardanoNetwork));
+    @RequestMapping(value = "/verified/{eventId}/{stakeAddress}", method = GET, produces = "application/json")
+    @Timed(value = "resource.isVerified", percentiles = {0.3, 0.5, 0.95})
+    public ResponseEntity<?> isVerified(@PathVariable("eventId") String eventId, @PathVariable("stakeAddress") String stakeAddress) {
+        var isVerifiedRequest = new IsVerifiedRequest(eventId, stakeAddress);
+
+        log.info("Received isVerified request: {}", isVerifiedRequest);
+
+        return userVerificationService.isVerified(isVerifiedRequest)
+                .fold(problem -> ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem),
+                        isVerifiedResponse -> ResponseEntity.ok().body(isVerifiedResponse)
+                );
     }
 
 }

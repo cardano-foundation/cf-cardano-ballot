@@ -1,6 +1,8 @@
 package org.cardano.foundation.voting;
 
+import com.twilio.Twilio;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,6 +11,7 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication(exclude = { SecurityAutoConfiguration.class })
 @EnableJpaRepositories("org.cardano.foundation.voting.repository")
@@ -16,10 +19,11 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @ComponentScan(basePackages = {
 		"org.cardano.foundation.voting.client",
 		"org.cardano.foundation.voting.service",
-
+		"org.cardano.foundation.voting.jobs",
 		"org.cardano.foundation.voting.resource",
 		"org.cardano.foundation.voting.config",
 })
+@EnableScheduling
 @Slf4j
 public class UserVerificationApp {
 

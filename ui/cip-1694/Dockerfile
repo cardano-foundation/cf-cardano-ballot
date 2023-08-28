@@ -13,6 +13,8 @@ ENV NODE_ENV="production" \
     REACT_APP_CATEGORY_ID="CIP-1694_Pre_Ratification_4619" \
     REACT_APP_SUPPORTED_WALLETS="flint,eternl,nami,typhon,yoroi,nufi,gerowallet,lace"
 
+RUN env
+
 # Add a work directory
 WORKDIR /app
 # Cache and Install dependencies

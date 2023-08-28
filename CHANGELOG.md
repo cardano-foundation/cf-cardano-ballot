@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.2.7](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.6...v0.2.7) (2023-08-28)
+
+
+### Features
+
+* CIP-1694 integration tests. ([#84](https://github.com/cardano-foundation/cf-cardano-ballot/issues/84)) ([b88eece](https://github.com/cardano-foundation/cf-cardano-ballot/commit/b88eece3bdc52ab0b56091d372f605c8a2865df0))
+* prepare CF Summit Voting 2023. ([#80](https://github.com/cardano-foundation/cf-cardano-ballot/issues/80)) ([da5ccba](https://github.com/cardano-foundation/cf-cardano-ballot/commit/da5ccbab55b112ca99861414447456ce28bd8482))
+* versions upgrade ([#87](https://github.com/cardano-foundation/cf-cardano-ballot/issues/87)) ([39eb247](https://github.com/cardano-foundation/cf-cardano-ballot/commit/39eb247fffbf666c35621b41df7d42c638268998))
+* yaci-blockfrost and original_blockfrost separation as well as ChainSyncService with HealthIndicator. ([#85](https://github.com/cardano-foundation/cf-cardano-ballot/issues/85)) ([9821d06](https://github.com/cardano-foundation/cf-cardano-ballot/commit/9821d0661107bf763b045015670e566a036e2381))
+
 ## [0.2.6](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.5...v0.2.6) (2023-08-23)
 
 

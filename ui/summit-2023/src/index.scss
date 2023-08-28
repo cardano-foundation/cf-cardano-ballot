@@ -1,0 +1,29 @@
+@import 'common/styles/colors.scss';
+
+// TODO: why can't we just load them externally? they would be a part of bundle itselft in this case, we could you really nice preload technique here
+@font-face {
+  font-family: 'Roboto Bold';
+  font-style: normal;
+  font-weight: 700;
+  src: url(./common/resources/fonts/Roboto-Bold.ttf) format('ttf');
+}
+
+@font-face {
+  font-family: 'Roboto Regular';
+  font-style: normal;
+  font-weight: 500;
+  src: url(./common/resources/fonts/Roboto-Regular.ttf) format('ttf');
+}
+
+@font-face {
+  font-family: 'Roboto Light';
+  font-style: normal;
+  font-weight: 400;
+  src: url(./common/resources/fonts/Roboto-Light.ttf) format('ttf');
+}
+body,
+html {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}

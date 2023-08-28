@@ -1,0 +1,39 @@
+body,
+html,
+#root,
+.App {
+  margin: 0;
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  position: relative;
+}
+.main-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.big-container {
+  @media (min-width: 1921px) {
+    max-width: 2800px !important;
+  }
+}
+.background-shape-1 {
+  position: absolute;
+  width: 750px;
+  height: 750px;
+  left: 13.63px;
+  top: -231px;
+  border-radius: 100px;
+  transform: rotate(21.27deg);
+  opacity: 0.6;
+  z-index: -1;
+
+  @media (max-width: 420px) {
+    display: none;
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "header": {
+    "menu": {
+      "categories": "Categories",
+      "leaderboard": "Leaderboard",
+      "userGuide": "User Guide"
+    },
+    "connectWalletButton": "Connect Wallet"
+  },
+  "landing": {
+    "title": "Vote for the Cardano Summit Awards",
+    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Tempor commodo ullamcorper a lacus vestibulum sed arcu non. Commodo elit at imperdiet dui accumsan.",
+    "getStartedButton": "Get Started",
+    "hexagon": {
+      "title": "CARDANO SUMMIT 2023"
+    }
+  },
+  "toast": {
+
+  }
+}

@@ -5,8 +5,8 @@ import { env } from '../../env';
 
 export const CAST_VOTE_URL = `${env.VOTING_APP_SERVER_URL}/api/vote/cast`;
 export const VOTE_RECEIPT_URL = `${env.VOTING_APP_SERVER_URL}/api/vote/receipt`;
-export const BLOCKCHAIN_TIP_URL = `${env.REACT_APP_VOTING_LEDGER_FOLLOWER_APP_SERVER_URL}/api/blockchain/tip`;
-export const VOTING_POWER_URL = `${env.REACT_APP_VOTING_LEDGER_FOLLOWER_APP_SERVER_URL}/api/account`;
+export const BLOCKCHAIN_TIP_URL = `${env.VOTING_LEDGER_FOLLOWER_APP_SERVER_URL}/api/blockchain/tip`;
+export const VOTING_POWER_URL = `${env.VOTING_LEDGER_FOLLOWER_APP_SERVER_URL}/api/account`;
 
 export const castAVoteWithDigitalSignature = async (jsonRequest: SignedWeb3Request) =>
   await doRequest<Problem | Vote>(

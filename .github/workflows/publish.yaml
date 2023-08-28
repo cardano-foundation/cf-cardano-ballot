@@ -202,5 +202,9 @@ jobs:
         with:
           context: ui/cip-1694
           push: true
+          secrets: |
+            "REACT_APP_VOTING_APP_SERVER_URL=${{ env.REACT_APP_VOTING_APP_SERVER_URL }}"
+            "REACT_APP_VOTING_LEDGER_FOLLOWER_APP_SERVER_URL=${{ env.REACT_APP_VOTING_LEDGER_FOLLOWER_APP_SERVER_URL }}"
+            "REACT_APP_VOTING_VERIFICATION_APP_SERVER_URL=${{ env.REACT_APP_VOTING_VERIFICATION_APP_SERVER_URL }}"
           tags: |
             ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}/${{ env.APP_NAME }}:${{ env.ARTIFACT_VERSION }}

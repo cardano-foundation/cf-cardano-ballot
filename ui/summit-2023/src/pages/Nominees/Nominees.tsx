@@ -6,6 +6,7 @@ import ViewListIcon from '@mui/icons-material/ViewList';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 
 import './Nominees.scss';
+import {eventBus} from '../../utils/EventBus';
 
 type CardItem = {
   id: number;
@@ -56,7 +57,6 @@ const Nominees = () => {
   const { id } = useParams();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const isLarger = useMediaQuery(theme.breakpoints.up('xxl'));
 
   const [listView, setListView] = useState<'grid' | 'list'>('grid');
   const [selectedViewType, setSelectedViewType] = useState<'grid' | 'list'>('grid');
@@ -85,12 +85,16 @@ const Nominees = () => {
     }
   }, [isVisible]);
 
+  const openConnectWalletModal = () => {
+    eventBus.publish('openConnectWalletModal');
+  };
+
   return (
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <Typography
-          className="nominees-title"
-          variant="h4"
+          className='nominees-title'
+          variant='h4'
         >
           {id}
         </Typography>
@@ -159,6 +163,7 @@ const Nominees = () => {
                       <Button
                         className="connect-wallet-button"
                         style={{ width: '214px', marginLeft: '30%' }}
+                        onClick={() => openConnectWalletModal()}
                       >
                         <AccountBalanceWalletIcon /> Connect Wallet
                       </Button>
@@ -180,6 +185,7 @@ const Nominees = () => {
                   <Button
                     className="connect-wallet-button"
                     fullWidth
+                    onClick={() => openConnectWalletModal()}
                   >
                     <AccountBalanceWalletIcon /> Connect Wallet
                   </Button>

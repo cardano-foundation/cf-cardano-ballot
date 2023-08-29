@@ -13,12 +13,16 @@ import org.cardano.foundation.voting.domain.IsVerifiedResponse;
 import org.cardano.foundation.voting.domain.StartVerificationRequest;
 import org.cardano.foundation.voting.domain.entity.UserVerification;
 import org.cardano.foundation.voting.repository.UserVerificationRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
 import java.util.Optional;
 
+import static org.cardano.foundation.voting.domain.entity.UserVerification.Channel.SMS;
+import static org.cardano.foundation.voting.domain.entity.UserVerification.Provider.TWILIO;
+import static org.cardano.foundation.voting.domain.entity.UserVerification.Status.PENDING;
 import static org.cardano.foundation.voting.domain.entity.UserVerification.Status.VERIFIED;
 import static org.zalando.problem.Status.BAD_REQUEST;
 
@@ -32,6 +36,9 @@ public class UserVerificationService {
     private final TwilioVerificationServiceGateway twilioVerificationServiceGateway;
 
     private final UserVerificationRepository userVerificationRepository;
+
+    @Value("${twilio.max.send.code.attempts:25}")
+    private final int maxSendCodeAttempts;
 
     @Transactional
     public Either<Problem, UserVerification> startVerification(StartVerificationRequest startVerificationRequest) {
@@ -81,14 +88,26 @@ public class UserVerificationService {
         var phoneNum = maybePhoneNum.orElseThrow();
 
         var twilioVerification = twilioVerificationServiceGateway.startVerification(phoneNum);
+        log.info("twilioVerification response object:{}", twilioVerification);
+
+        int sendCodeAttempts = twilioVerification.getSendCodeAttempts().size();
+        if (sendCodeAttempts > maxSendCodeAttempts) {
+            return Either.left(Problem.builder()
+                    .withTitle("MAX_SEND_CODE_ATTEMPTS_REACHED")
+                    .withDetail("Max send code attempts reached, phone number:" + startVerificationRequest.getPhoneNumber())
+                    .withStatus(BAD_REQUEST)
+                    .build());
+        }
 
         var userVerification = UserVerification.builder()
-                .channel(UserVerification.Channel.SMS)
-                .provider(UserVerification.Provider.TWILIO)
-                .status(UserVerification.Status.PENDING)
+                .eventId(startVerificationRequest.getEventId())
+                .channel(SMS)
+                .provider(TWILIO)
+                .status(PENDING)
                 .stakeAddress(startVerificationRequest.getStakeAddress())
                 .phoneNumber(startVerificationRequest.getPhoneNumber())
-                .eventId(startVerificationRequest.getEventId())
+                .createdAt(twilioVerification.getDateCreated().toLocalDateTime())
+                .updatedAt(twilioVerification.getDateUpdated().toLocalDateTime())
                 .build();
 
         return Either.right(userVerificationRepository.save(userVerification));
@@ -163,9 +182,11 @@ public class UserVerificationService {
         }
 
         var verificationCheck = twilioVerificationServiceGateway.checkVerification(phoneNum, checkVerificationRequest.getVerificationCode());
+        var isApproved = Optional.ofNullable(verificationCheck.getStatus()).map(status -> status.equalsIgnoreCase("APPROVED")).orElse(false);
 
-        if ("approved".equals(verificationCheck.getStatus())) {
+        if (isApproved) {
             userVerification.setStatus(VERIFIED);
+            userVerification.setUpdatedAt(verificationCheck.getDateUpdated().toLocalDateTime());
             userVerification.setPhoneNumber(Optional.empty()); // we do not want to store phone number, only temporary for the provider
 
             return Either.right(userVerificationRepository.save(userVerification));

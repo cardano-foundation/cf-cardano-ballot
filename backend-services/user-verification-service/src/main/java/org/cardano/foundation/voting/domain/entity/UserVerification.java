@@ -2,18 +2,20 @@ package org.cardano.foundation.voting.domain.entity;
 
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
 
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "user_verification")
-@Builder
 @Slf4j
+@SuperBuilder
+@NoArgsConstructor
 public class UserVerification extends AbstractTimestampEntity {
 
     @Id

@@ -9,7 +9,6 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
-
 service:
   type: ClusterIP
   port: 9092
@@ -27,4 +26,5 @@ resources: {}
 
 nodeSelector: {}
 
+ledgerFollowerAppUrl: http://cf-cardano-ballot-ledger-follower-api-voting-ledger-follower-ap:9090
 corsAllowedOrigins: https://{{ .Values.domain }}

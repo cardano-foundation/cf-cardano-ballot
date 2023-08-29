@@ -9,16 +9,12 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
-
 service:
   type: ClusterIP
   port: 9091
 
 ingress:
   enabled: true
-
-
-ledgerFollowerAppUrl: http://cf-cardano-ballot-ledger-follower-api-voting-ledger-follower-ap:9090
 
 resources: {}
   # limits:
@@ -33,6 +29,7 @@ nodeSelector: {}
 diagnosticMode:
   enabled: false
 
+ledgerFollowerAppUrl: http://cf-cardano-ballot-ledger-follower-api-voting-ledger-follower-ap:9090
 corsAllowedOrigins: https://{{ .Values.domain }}
 springProfiles: dev--preprod
 bindOnEventIds: CIP-1694_Pre_Ratification_4619

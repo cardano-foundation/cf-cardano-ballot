@@ -1,6 +1,6 @@
 ## Cardano Foundation | Cardano Ballot
 
-Voltaire Voting Applications to be used by Cardano Community to cast CIP-1694 pre-ratification vote. The applications are currently WIP (work in progress).
+A set of backend services and UI applications to facilitate CIP-1694 voting as well as Cardano Summit 2023 voting.
 
 [![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)
 ![Discord](https://img.shields.io/discord/1022471509173882950)
@@ -16,7 +16,7 @@ Voltaire Voting Applications to be used by Cardano Community to cast CIP-1694 pr
 ## Requirements
 - Node.js 18.x LTS
 - Java 17 LTS
-- Postgres DB 14.x
+- Postgres DB 14.x or H2 file db
 
 ## Requirements (Development)
 - Docker
@@ -26,21 +26,10 @@ Voltaire Voting Applications to be used by Cardano Community to cast CIP-1694 pr
 
 By default all backend apps are working with Cardano Pre-Production network.
 
-
 - create `.env` file on the same level as `.env.development`
 
 ```shell
 brew install maven
-```
-
-```shell
-git clone git@github.com:cardano-foundation/merkle-tree-java.git
-mvn clean install
-```
-
-```shell
-git clone https://github.com/cardano-foundation/cip30-data-signature-parser
-mvn install clean
 ```
 
 ```shell
@@ -51,18 +40,24 @@ docker-compose up
 ```
 
 ```shell
+cd cf-voting-app/backend-services/voting-ledger-follower-app
+./gradlew bootRun
+```
+this will launch main voting-ledger-follower-app on port: 9090 by default.
+
+```shell
 cd cf-voting-app/backend-services/voting-app
 ./gradlew bootRun
 ```
 
-this will launch main voting-app on port: 9090 by default.
+this will launch main voting-app on port: 9091 by default.
 
 ```shell
 cd cf-voting-app/backend-services/voting-verification-app
 ./gradlew bootRun
 ```
 
-this will launch voting-verification-app on port: 9091 by default.
+this will launch voting-verification-app on port: 9092 by default.
 
 binding PORT can be change via SERVER_PORT env variable.
 
@@ -79,7 +74,7 @@ npm run start
 ```
 
 # Building native image with GraalVM
-Applications are GraalVM compatible (https://www.graalvm.org/)
+Some applications should be GraalVM compatible (https://www.graalvm.org/)
 
 ```shell
 cd cf-voting-app/backend-services/voting-verification-app
@@ -92,7 +87,7 @@ cd cf-voting-app/backend-services/voting-app
 If you want to develop using Yaci-DevKit (https://github.com/bloxbean/yaci-devkit) you have to start the backend applications in the special YACI_DEV_KIT DEV mode.
 
 ```shell
-cd cf-voting-app/backend-services/voting-app
+cd cf-voting-app/backend-services/voting-ledger-follower-app
 
 export SPRING_CONFIG_LOCATION=classpath:/application.properties,classpath:/application-dev--yaci-dev-kit.properties
 export SPRING_PROFILES_ACTIVE=dev--yaci-dev-kit

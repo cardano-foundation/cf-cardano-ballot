@@ -9,6 +9,7 @@ import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.CoseWrappedVote;
 import org.cardano.foundation.voting.domain.VoteVerificationRequest;
+import org.cardano.foundation.voting.domain.VoteVerificationResult;
 import org.cardano.foundation.voting.utils.Enums;
 import org.cardanofoundation.cip30.CIP30Verifier;
 import org.cardanofoundation.merkle.MerkleTree;
@@ -34,7 +35,7 @@ public class VoteVerificationService {
     private final CardanoNetwork cardanoNetwork;
 
     @Timed(value = "service.verifyVote", percentiles = { 0.3, 0.5, 0.95 })
-    public Either<Problem, Boolean> verifyVoteProof(VoteVerificationRequest voteVerificationRequest) {
+    public Either<Problem, VoteVerificationResult> verifyVoteProof(VoteVerificationRequest voteVerificationRequest) {
         var maybeSteps = voteVerificationRequest.getSteps();
         if (maybeSteps.isEmpty()) {
             log.warn("Merkle proof steps not found for:{}", voteVerificationRequest);
@@ -87,7 +88,7 @@ public class VoteVerificationService {
             var isPresent = chainFollowerClient.isMerkleProofPresent(event, voteVerificationRequest.getRootHash());
 
             if (!isPresent) {
-                return Either.right(false);
+                return Either.right(new VoteVerificationResult(false, network));
             }
 
             var steps = io.vavr.collection.List.ofAll(deserialiseProofItems(maybeSteps.orElseThrow()));
@@ -97,7 +98,7 @@ public class VoteVerificationService {
             var rootHash = decodeHexString(voteVerificationRequest.getRootHash());
             var isVerified = MerkleTree.verifyProof(rootHash, vote, steps, VOTE_SERIALISER);
 
-            return Either.right(isVerified);
+            return Either.right(new VoteVerificationResult(isVerified, network));
         } catch (JsonProcessingException e) {
             return Either.left(Problem.builder()
                     .withTitle("INVALID_JSON")

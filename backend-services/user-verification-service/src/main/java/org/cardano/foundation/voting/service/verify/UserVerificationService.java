@@ -13,6 +13,7 @@ import org.cardano.foundation.voting.domain.IsVerifiedResponse;
 import org.cardano.foundation.voting.domain.StartVerificationRequest;
 import org.cardano.foundation.voting.domain.entity.UserVerification;
 import org.cardano.foundation.voting.repository.UserVerificationRepository;
+import org.cardano.foundation.voting.service.address.StakeAddressVerificationService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,11 +38,23 @@ public class UserVerificationService {
 
     private final UserVerificationRepository userVerificationRepository;
 
+    private final StakeAddressVerificationService stakeAddressVerificationService;
+
     @Value("${twilio.max.send.code.attempts:25}")
     private final int maxSendCodeAttempts;
 
     @Transactional
     public Either<Problem, UserVerification> startVerification(StartVerificationRequest startVerificationRequest) {
+        var stakeAddressCheckE = stakeAddressVerificationService.checkIfAddressIsStakeAddress(startVerificationRequest.getStakeAddress());
+        if (stakeAddressCheckE.isLeft()) {
+            return Either.left(stakeAddressCheckE.getLeft());
+        }
+
+        var stakeAddressNetworkCheck = stakeAddressVerificationService.checkStakeAddressNetwork(startVerificationRequest.getStakeAddress());
+        if (stakeAddressNetworkCheck.isLeft()) {
+            return Either.left(stakeAddressNetworkCheck.getLeft());
+        }
+
         var activeEventE = chainFollowerClient.findActiveEvent(startVerificationRequest.getEventId());
 
         if (activeEventE.isEmpty()) {
@@ -115,6 +128,16 @@ public class UserVerificationService {
 
     @Transactional
     public Either<Problem, UserVerification> checkVerification(CheckVerificationRequest checkVerificationRequest) {
+        var stakeAddressCheckE = stakeAddressVerificationService.checkIfAddressIsStakeAddress(checkVerificationRequest.getStakeAddress());
+        if (stakeAddressCheckE.isLeft()) {
+            return Either.left(stakeAddressCheckE.getLeft());
+        }
+
+        var stakeAddressNetworkCheck = stakeAddressVerificationService.checkStakeAddressNetwork(checkVerificationRequest.getStakeAddress());
+        if (stakeAddressNetworkCheck.isLeft()) {
+            return Either.left(stakeAddressNetworkCheck.getLeft());
+        }
+
         var activeEventE = chainFollowerClient.findActiveEvent(checkVerificationRequest.getEventId());
 
         if (activeEventE.isEmpty()) {

@@ -53,7 +53,7 @@ dependencies {
 	testCompileOnly("org.projectlombok:lombok:1.18.28")
 	testAnnotationProcessor("org.projectlombok:lombok:1.18.28")
 
-	implementation("com.twilio.sdk:twilio:9.11.0")
+	implementation("org.flywaydb:flyway-core")
 
 	implementation("com.googlecode.libphonenumber:libphonenumber:8.13.19")
 
@@ -61,6 +61,8 @@ dependencies {
     annotationProcessor("com.querydsl:querydsl-apt")
 
 	implementation("com.bloxbean.cardano:cardano-client-address:0.5.0-beta2")
+
+	implementation("software.amazon.awssdk:sns:2.20.136")
 
 	implementation("io.vavr:vavr:0.10.4")
 

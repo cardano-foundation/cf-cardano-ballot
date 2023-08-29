@@ -18,10 +18,12 @@ public abstract class AbstractTimestampEntity {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "createdAt", nullable = false)
+    @Builder.Default
     protected LocalDateTime createdAt = LocalDateTime.now(); // TODO clock
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "updatedAt", nullable = false)
+    @Builder.Default
     protected LocalDateTime updatedAt = LocalDateTime.now(); // TODO clock
 
     @PrePersist

@@ -1,8 +1,10 @@
 package org.cardano.foundation.voting.jobs;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.repository.UserVerificationRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -11,28 +13,43 @@ import java.time.LocalDateTime;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class PendingVerificationPhoneCleanupJob implements Runnable {
 
-    private final UserVerificationRepository userVerificationRepository;
+    @Autowired
+    private ChainFollowerClient chainFollowerClient;
 
-    private final Clock clock;
+    @Autowired
+    private UserVerificationRepository userVerificationRepository;
 
-    @Scheduled(fixedDelayString = "${phone.cleanup.job.interval:1H}")
+    @Autowired
+    private Clock clock;
+
+    @Value("${pending.verification.phone.expiration.time.hours}")
+    private int pendingVerificationPhoneExpirationTimeHours;
+
+    @Scheduled(cron = "${pending.verification.phone.cleanup.job.cron}")
     public void run() {
         log.info("Running pending phone cleanup job...");
 
-        userVerificationRepository.findAllPending().forEach(userVerification -> {
-            log.info("Deleting pending user verification: {}", userVerification);
+        var allEventsE = chainFollowerClient.findAllEvents();
 
-            var now = LocalDateTime.now(clock);
+        if (allEventsE.isEmpty()) {
+            log.warn("No events found in ledger follower, skipping pending phone cleanup job");
+            return;
+        }
 
-            // we delete all pending user verifications that are older than 1 day
-            if (now.isAfter(userVerification.getUpdatedAt().plusDays(1))) {
-                log.info("Deleting expired pending user verification: {}", userVerification);
+        var allEvents = allEventsE.get();
 
-                userVerificationRepository.delete(userVerification);
-            }
+        allEvents.forEach(eventSummary -> {
+            userVerificationRepository.findAllPending(eventSummary.id()).forEach(userVerification -> {
+                var now = LocalDateTime.now(clock);
+
+                if (now.isAfter(userVerification.getCreatedAt().plusHours(pendingVerificationPhoneExpirationTimeHours))) {
+                    log.info("Deleting expired pending user verification: {}", userVerification);
+
+                    userVerificationRepository.delete(userVerification);
+                }
+            });
         });
     }
 

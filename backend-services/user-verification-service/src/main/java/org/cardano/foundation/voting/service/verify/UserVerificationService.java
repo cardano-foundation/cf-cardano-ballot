@@ -4,7 +4,6 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 import io.vavr.control.Either;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.domain.CheckVerificationRequest;
@@ -14,34 +13,56 @@ import org.cardano.foundation.voting.domain.StartVerificationRequest;
 import org.cardano.foundation.voting.domain.entity.UserVerification;
 import org.cardano.foundation.voting.repository.UserVerificationRepository;
 import org.cardano.foundation.voting.service.address.StakeAddressVerificationService;
+import org.cardano.foundation.voting.service.sms.SMSService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
+import java.security.SecureRandom;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.util.HexFormat;
 import java.util.Optional;
 
+import static com.bloxbean.cardano.client.crypto.Blake2bUtil.blake2bHash256;
+import static com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.cardano.foundation.voting.domain.entity.UserVerification.Channel.SMS;
-import static org.cardano.foundation.voting.domain.entity.UserVerification.Provider.TWILIO;
+import static org.cardano.foundation.voting.domain.entity.UserVerification.Provider.AWS_SNS;
 import static org.cardano.foundation.voting.domain.entity.UserVerification.Status.PENDING;
 import static org.cardano.foundation.voting.domain.entity.UserVerification.Status.VERIFIED;
 import static org.zalando.problem.Status.BAD_REQUEST;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class UserVerificationService {
 
-    private final ChainFollowerClient chainFollowerClient;
+    @Autowired
+    private ChainFollowerClient chainFollowerClient;
 
-    private final TwilioVerificationServiceGateway twilioVerificationServiceGateway;
+    @Autowired
+    private SMSService smsService;
 
-    private final UserVerificationRepository userVerificationRepository;
 
-    private final StakeAddressVerificationService stakeAddressVerificationService;
+    @Autowired
+    private UserVerificationRepository userVerificationRepository;
 
-    @Value("${twilio.max.send.code.attempts:25}")
-    private final int maxSendCodeAttempts;
+
+    @Autowired
+    private StakeAddressVerificationService stakeAddressVerificationService;
+
+    @Autowired
+    private Clock clock;
+
+    @Value("${friendly.custom.name}")
+    private String friendlyCustomName;
+
+    @Value("${validation.expiration.time.minutes}")
+    private int validationExpirationTimeMinutes;
+
+    private final static SecureRandom SECURE_RANDOM = new SecureRandom();
 
     @Transactional
     public Either<Problem, UserVerification> startVerification(StartVerificationRequest startVerificationRequest) {
@@ -55,7 +76,7 @@ public class UserVerificationService {
             return Either.left(stakeAddressNetworkCheck.getLeft());
         }
 
-        var activeEventE = chainFollowerClient.findActiveEvent(startVerificationRequest.getEventId());
+        var activeEventE = chainFollowerClient.findEventById(startVerificationRequest.getEventId());
 
         if (activeEventE.isEmpty()) {
             log.error("Active event error:{}", activeEventE.getLeft());
@@ -100,30 +121,35 @@ public class UserVerificationService {
 
         var phoneNum = maybePhoneNum.orElseThrow();
 
-        var twilioVerification = twilioVerificationServiceGateway.startVerification(phoneNum);
-        log.info("twilioVerification response object:{}", twilioVerification);
+        var randomCode = SECURE_RANDOM.nextInt(100000, 999999);
 
-        int sendCodeAttempts = twilioVerification.getSendCodeAttempts().size();
-        if (sendCodeAttempts > maxSendCodeAttempts) {
-            return Either.left(Problem.builder()
-                    .withTitle("MAX_SEND_CODE_ATTEMPTS_REACHED")
-                    .withDetail("Max send code attempts reached, phone number:" + startVerificationRequest.getPhoneNumber())
-                    .withStatus(BAD_REQUEST)
-                    .build());
+        var textMsg = String.format("Verification Code: %s. %s", randomCode, friendlyCustomName).trim();
+
+        var smsVerificationResponseE = smsService.publishTextMessage(textMsg, phoneNum);
+
+        if (smsVerificationResponseE.isLeft()) {
+            return Either.left(smsVerificationResponseE.getLeft());
         }
+
+        var smsVerificationResponse = smsVerificationResponseE.get();
+
+        var formattedPhoneStr = PhoneNumberUtil.getInstance().format(phoneNum, INTERNATIONAL);
+        var phoneHash = HexFormat.of().formatHex(blake2bHash256(formattedPhoneStr.getBytes(UTF_8)));
+
+        log.info("SMS sent to:{} (blake2b 256 hash), SNS msgId:{}, code:{}", phoneHash, smsVerificationResponse.requestId(), randomCode);
 
         var userVerification = UserVerification.builder()
                 .eventId(startVerificationRequest.getEventId())
                 .channel(SMS)
-                .provider(TWILIO)
+                .provider(AWS_SNS)
                 .status(PENDING)
+                .phoneNumberHash(phoneHash)
                 .stakeAddress(startVerificationRequest.getStakeAddress())
-                .phoneNumber(startVerificationRequest.getPhoneNumber())
-                .createdAt(twilioVerification.getDateCreated().toLocalDateTime())
-                .updatedAt(twilioVerification.getDateUpdated().toLocalDateTime())
+                .verificationCode(String.valueOf(randomCode))
+                .requestId(smsVerificationResponse.requestId())
                 .build();
 
-        return Either.right(userVerificationRepository.save(userVerification));
+        return Either.right(userVerificationRepository.saveAndFlush(userVerification));
     }
 
     @Transactional
@@ -138,7 +164,7 @@ public class UserVerificationService {
             return Either.left(stakeAddressNetworkCheck.getLeft());
         }
 
-        var activeEventE = chainFollowerClient.findActiveEvent(checkVerificationRequest.getEventId());
+        var activeEventE = chainFollowerClient.findEventById(checkVerificationRequest.getEventId());
 
         if (activeEventE.isEmpty()) {
             log.error("Active event error:{}", activeEventE.getLeft());
@@ -169,33 +195,24 @@ public class UserVerificationService {
                     .build());
         }
 
-        var maybePhoneNum = isValidNumber(checkVerificationRequest.getPhoneNumber());
+        var maybePendingRequest = userVerificationRepository.findPendingVerificationsByEventIdAndStakeAddressAndRequestId(
+                checkVerificationRequest.getEventId(),
+                checkVerificationRequest.getStakeAddress(),
+                checkVerificationRequest.getRequestId()
+        );
 
-        if (maybePhoneNum.isEmpty()) {
-            log.error("Invalid phone number:{}", checkVerificationRequest.getPhoneNumber());
-
-            return Either.left(Problem.builder()
-                    .withTitle("INVALID_PHONE_NUMBER")
-                    .withDetail("Invalid phone number, phone number:" + checkVerificationRequest.getPhoneNumber())
-                    .withStatus(BAD_REQUEST)
-                    .build());
-        }
-
-        var phoneNum = maybePhoneNum.orElseThrow();
-
-        var maybeUserVerification = userVerificationRepository.findById(checkVerificationRequest.getStakeAddress());
-
-        if (maybeUserVerification.isEmpty()) {
+        if (maybePendingRequest.isEmpty()) {
             return Either.left(Problem.builder()
                     .withTitle("USER_VERIFICATION_NOT_FOUND")
                     .withDetail("User verification not found, stakeAddress:" + checkVerificationRequest.getStakeAddress())
                     .withStatus(BAD_REQUEST)
-                    .build());
+                    .build()
+            );
         }
 
-        var userVerification = maybeUserVerification.orElseThrow();
+        var pendingUserVerification = maybePendingRequest.orElseThrow();
 
-        if (userVerification.getStatus() == VERIFIED) {
+        if (pendingUserVerification.getStatus() == VERIFIED) {
             return Either.left(Problem.builder()
                     .withTitle("USER_VERIFICATION_ALREADY_VERIFIED")
                     .withDetail("User verification already verified, stakeAddress:" + checkVerificationRequest.getStakeAddress())
@@ -204,27 +221,35 @@ public class UserVerificationService {
             );
         }
 
-        var verificationCheck = twilioVerificationServiceGateway.checkVerification(phoneNum, checkVerificationRequest.getVerificationCode());
-        var isApproved = Optional.ofNullable(verificationCheck.getStatus()).map(status -> status.equalsIgnoreCase("APPROVED")).orElse(false);
+        var now = LocalDateTime.now(clock);
 
-        if (isApproved) {
-            userVerification.setStatus(VERIFIED);
-            userVerification.setUpdatedAt(verificationCheck.getDateUpdated().toLocalDateTime());
-            userVerification.setPhoneNumber(Optional.empty()); // we do not want to store phone number, only temporary for the provider
-
-            return Either.right(userVerificationRepository.save(userVerification));
+        var isValidVerificationCode = pendingUserVerification.getVerificationCode().trim().equals(checkVerificationRequest.getVerificationCode().trim());
+        if (!isValidVerificationCode) {
+            return Either.left(Problem.builder()
+                    .withTitle("INVALID_VERIFICATION_CODE")
+                    .withDetail("Invalid verification code, verificationCode:" + checkVerificationRequest.getVerificationCode())
+                    .withStatus(BAD_REQUEST)
+                    .build());
         }
 
-        return Either.left(Problem.builder()
-                .withTitle("INVALID_VERIFICATION_CODE")
-                .withDetail("Invalid verification code, verificationCode:" + checkVerificationRequest.getVerificationCode())
-                .withStatus(BAD_REQUEST)
-                .build());
+        boolean isCodeExpired = now.isAfter(pendingUserVerification.getCreatedAt().plusMinutes(validationExpirationTimeMinutes));
+        if (isCodeExpired) {
+                return Either.left(Problem.builder()
+                        .withTitle("VERIFICATION_EXPIRED")
+                        .withDetail(String.format("Verification code: %s expired for stakeAddress: %s", checkVerificationRequest.getVerificationCode(), checkVerificationRequest.getStakeAddress()))
+                        .withStatus(BAD_REQUEST)
+                        .build());
+        }
+
+        pendingUserVerification.setStatus(VERIFIED);
+        pendingUserVerification.setUpdatedAt(now);
+
+        return Either.right(userVerificationRepository.saveAndFlush(pendingUserVerification));
     }
 
     @Transactional
     public Either<Problem, IsVerifiedResponse> isVerified(IsVerifiedRequest isVerifiedRequest) {
-        var activeEventE = chainFollowerClient.findActiveEvent(isVerifiedRequest.getEventId());
+        var activeEventE = chainFollowerClient.findEventById(isVerifiedRequest.getEventId());
 
         if (activeEventE.isEmpty()) {
             log.error("Active event error:{}", activeEventE.getLeft());
@@ -255,15 +280,19 @@ public class UserVerificationService {
                     .build());
         }
 
-        var maybeUserVerification = userVerificationRepository.findById(isVerifiedRequest.getStakeAddress());
+        var maybeUserVerification = userVerificationRepository.findCompleted(
+                isVerifiedRequest.getEventId(),
+                isVerifiedRequest.getStakeAddress()
+        );
 
         if (maybeUserVerification.isEmpty()) {
-            log.warn("Completed or pending user verification not found for:{}", isVerifiedRequest.getStakeAddress());
+            log.info("Completed or pending user verification not found for:{}", isVerifiedRequest.getStakeAddress());
 
             return Either.right(new IsVerifiedResponse(false));
         }
 
         var userVerification = maybeUserVerification.orElseThrow();
+        log.info("Using verification:{}", userVerification);
 
         var status = userVerification.getStatus();
 

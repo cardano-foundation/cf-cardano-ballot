@@ -16,10 +16,10 @@ public class CheckVerificationRequest {
     private String eventId;
 
     @NotBlank
-    private String stakeAddress;
+    private String requestId;
 
     @NotBlank
-    private String phoneNumber;
+    private String stakeAddress;
 
     @NotBlank
     private String verificationCode;

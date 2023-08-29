@@ -26,20 +26,20 @@ public class ChainFollowerClient {
     @Value("${ledger.follower.app.base.url}")
     private String ledgerFollowerBaseUrl;
 
-    public Either<Problem, Optional<EventSummary>> findActiveEvent(String eventId) {
-        return findAllActiveEvents()
+    public Either<Problem, Optional<EventSummary>> findEventById(String eventId) {
+        return findAllEvents()
                 .map(eventSummaries -> eventSummaries.stream()
                         .filter(event -> event.id().equals(eventId)).findFirst());
     }
 
-    public Either<Problem, List<EventSummary>> findAllActiveEvents() {
+    public Either<Problem, List<EventSummary>> findAllEvents() {
         var url = String.format("%s/api/reference/event", ledgerFollowerBaseUrl);
 
         try {
             var allEventSummaries = Optional.ofNullable(restTemplate.getForObject(url, EventSummary[].class))
                     .map(Arrays::asList).orElse(List.of());
 
-            return Either.right(allEventSummaries.stream().filter(EventSummary::active).toList());
+            return Either.right(allEventSummaries);
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == NOT_FOUND) {
                 return Either.right(List.of());

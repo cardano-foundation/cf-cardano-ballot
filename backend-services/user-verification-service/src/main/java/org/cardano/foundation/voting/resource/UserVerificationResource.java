@@ -20,7 +20,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/user-verification")
 @Slf4j
 @RequiredArgsConstructor
 public class UserVerificationResource {
@@ -52,13 +52,15 @@ public class UserVerificationResource {
     @RequestMapping(value = "/verified/{eventId}/{stakeAddress}", method = GET, produces = "application/json")
     @Timed(value = "resource.isVerified", percentiles = {0.3, 0.5, 0.95})
     public ResponseEntity<?> isVerified(@PathVariable("eventId") String eventId, @PathVariable("stakeAddress") String stakeAddress) {
-        var isVerifiedRequest = new IsVerifiedRequest(eventId, stakeAddress);
+        var isVerifiedRequest = new IsVerifiedRequest(stakeAddress, eventId);
 
         log.info("Received isVerified request: {}", isVerifiedRequest);
 
         return userVerificationService.isVerified(isVerifiedRequest)
                 .fold(problem -> ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem),
-                        isVerifiedResponse -> ResponseEntity.ok().body(isVerifiedResponse)
+                        isVerifiedResponse -> {
+                            return ResponseEntity.ok().body(isVerifiedResponse);
+                        }
                 );
     }
 

@@ -1,53 +1,48 @@
 package org.cardano.foundation.voting.domain.entity;
 
-
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.annotation.Nullable;
-import java.util.Optional;
-
 @Entity
 @Table(name = "user_verification")
 @Slf4j
 @SuperBuilder
 @NoArgsConstructor
+@Getter
+@Setter
 public class UserVerification extends AbstractTimestampEntity {
 
     @Id
     @Column(name = "stake_address", nullable = false)
-    @Getter
-    @Setter
     private String stakeAddress;
 
     @Column(name = "event_id", nullable = false)
-    @Getter
-    @Setter
     private String eventId;
 
-    @Column(name = "phone_number")
-    @Nullable
-    private String phoneNumber;
+    @Column(name = "verification_code")
+    private String verificationCode;
+
+    @Column(name = "request_id")
+    private String requestId;
+
+    @Column(name = "phone_number_hash")
+    private String phoneNumberHash;
 
     @Column(name = "status", nullable = false)
-    @Getter
-    @Setter
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     private Status status = Status.NOT_REQUESTED;
 
     @Column(name = "provider", nullable = false)
-    @Getter
-    @Setter
     @Enumerated(EnumType.STRING)
     private Provider provider;
 
     @Column(name = "channel", nullable = false)
-    @Getter
-    @Setter
     @Enumerated(EnumType.STRING)
     private Channel channel;
 
@@ -62,15 +57,23 @@ public class UserVerification extends AbstractTimestampEntity {
     }
 
     public enum Provider {
-        TWILIO
+        TWILIO,
+        AWS_SNS
     }
 
-    public Optional<String> getPhoneNumber() {
-        return Optional.ofNullable(phoneNumber);
+    @Override
+    public String toString() {
+        return "UserVerification{" +
+                "stakeAddress='" + stakeAddress + '\'' +
+                ", eventId='" + eventId + '\'' +
+                ", verificationCode='" + verificationCode + '\'' +
+                ", requestId='" + requestId + '\'' +
+                ", phoneNumberHash='" + phoneNumberHash + '\'' +
+                ", status=" + status +
+                ", provider=" + provider +
+                ", channel=" + channel +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
     }
-
-    public void setPhoneNumber(Optional<String> phoneNumber) {
-        this.phoneNumber = phoneNumber.orElse(null);
-    }
-
 }

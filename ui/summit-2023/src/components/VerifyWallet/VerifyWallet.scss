@@ -1,0 +1,126 @@
+@import './src/common/styles/colors';
+
+.description {
+  color: var(--color-medium-grey);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 22px;
+}
+
+.optionItem {
+  border-radius: 8px;
+  border: 1px solid var(--color-light-blue);
+  background: var(--color-ultra-light-grey);
+  margin-top: 12px;
+  padding: 16px !important;
+  cursor: pointer;
+}
+
+.optionLabel {
+  color: var(--color-medium-grey);
+  font-size: 16px !important;
+  font-style: normal;
+  font-weight: 600 !important;
+  line-height: 22px;
+}
+
+.MuiListItemAvatar-root {
+  min-width: 24px !important;
+  margin-right: 13px;
+}
+
+.option-icon {
+  color: var(--color-ultra-dark-blue) !important;
+}
+
+.phone-number-input.MuiTelInput-TextField {
+  width: 100% !important;
+}
+
+.verify-number-button-cancel.MuiButtonBase-root {
+  display: flex;
+  width: 162px;
+  padding: 16px 24px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  border-radius: 8px;
+  background-color: transparent !important;
+  border: 1px solid var(--color-light-blue);
+  color: var(--color-medium-grey);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  text-transform: none;
+}
+
+.verify-number-button-continue.MuiButtonBase-root:hover,
+.verify-number-button-continue.MuiButtonBase-root {
+  display: flex;
+  width: 162px;
+  padding: 16px 24px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  border-radius: 8px;
+  background: var(--color-light-grey);
+  color: var(--color-light) !important;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  text-transform: none;
+}
+.verify-number-button-valid.MuiButtonBase-root:hover,
+.verify-number-button-valid.MuiButtonBase-root {
+  background: var(--color-light-green) !important;
+  color: var(--color-ultra-dark-blue) !important;
+}
+
+.confirm-phone-code-input {
+  width: 53px;
+  height: 58px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  border: 1px solid var(--color-light-grey);
+  background: var(--color-ultra-light-grey);
+  text-align: center;
+  outline: none;
+  color: var(--color-medium-grey);
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 22px; /* 122.222% */
+}
+
+.didnt-receive-label{
+  color: var(--color-dark-blue);
+  text-align: center;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600 !important;
+  line-height: 22px;
+  text-decoration-line: underline;
+  margin-top: 28px;
+}
+
+.verify-wallet-modal-description {
+  color: var(--color-medium-grey);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 22px;
+  span {
+    font-weight: 600 !important;
+  }
+}
+.secret-key-input {
+  width: 100%;
+}
+.secret-key-input > .MuiInputBase-root {
+  border-radius: 8px;
+  border: 1px solid var(--color-light-blue);
+  background: var(--color-ultra-light-grey);
+}

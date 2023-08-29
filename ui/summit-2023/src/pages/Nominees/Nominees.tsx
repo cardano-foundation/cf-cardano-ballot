@@ -162,7 +162,7 @@ const Nominees = () => {
                     >
                       <Button
                         className="connect-wallet-button"
-                        style={{ width: '214px', marginLeft: '30%' }}
+                        style={{ width: '214px' }}
                         onClick={() => openConnectWalletModal()}
                       >
                         <AccountBalanceWalletIcon /> Connect Wallet
@@ -181,7 +181,7 @@ const Nominees = () => {
                 >
                   Read more
                 </Button>
-                {!isMobile && listView === 'grid' ? (
+                {isMobile || listView === 'grid' ? (
                   <Button
                     className="connect-wallet-button"
                     fullWidth

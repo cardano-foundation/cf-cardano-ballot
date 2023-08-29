@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
-import { Box } from '@mui/material';
+import { Box, debounce } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import BlockIcon from '@mui/icons-material/Block';
 import { ConnectWalletModal } from 'components/ConnectWalletModal/ConnectWalletModal';
@@ -15,11 +15,14 @@ export const Content = () => {
   const isConnectWalletModalVisible = useSelector((state: RootState) => state.user.isConnectWalletModalVisible);
   const dispatch = useDispatch();
 
-  // FIXME: triggered multiple times on connect
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const debouncedToast = useCallback(debounce(toast), []);
+
+  // FIXME: triggered multiple times on connect for Flint wallet by @cardano-foundation/cardano-connect-with-wallet
   const onConnectWallet = useCallback(() => {
     dispatch(setIsConnectWalletModalVisible({ isVisible: false }));
-    toast(<Toast message="Wallet Connected!" />);
-  }, [dispatch]);
+    debouncedToast(<Toast message="Wallet Connected!" />);
+  }, [dispatch, debouncedToast]);
 
   const onConnectWalletError = useCallback(() => {
     toast(

@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-// Generated using typescript-generator version 3.2.1263 on 2023-08-23 10:07:24.
+// Generated using typescript-generator version 3.2.1263 on 2023-08-29 11:44:05.
 
 export interface Either<L, R> extends Value<R>, Serializable {
     left: L;
@@ -113,7 +113,7 @@ export interface MerkleRootHashBuilder {
 
 export interface Proposal extends AbstractTimestampEntity {
     id: string;
-    name: string;
+    name?: string;
     category: Category;
     absoluteSlot: number;
 }
@@ -146,10 +146,10 @@ export interface EventPresentation {
     snapshotEpoch?: number;
     categories: CategoryPresentation[];
     active: boolean;
-    categoryResultsWhileVoting: boolean;
     highLevelResultsWhileVoting: boolean;
-    finished: boolean;
+    categoryResultsWhileVoting: boolean;
     notStarted: boolean;
+    finished: boolean;
     allowVoteChanging: boolean;
 }
 
@@ -158,7 +158,7 @@ export interface EventPresentationBuilder {
 
 export interface ProposalPresentation {
     id: string;
-    name: string;
+    name?: string;
     presentationName: string;
 }
 
@@ -289,6 +289,22 @@ export interface CborService {
 export interface CborService__BeanDefinitions {
 }
 
+export interface ChainSyncService {
+    syncStatus: SyncStatus;
+}
+
+export interface SyncStatus {
+    isSynced: boolean;
+    diff?: number;
+    ex?: Exception;
+}
+
+export interface ChainSyncService__Autowiring {
+}
+
+export interface ChainSyncService__BeanDefinitions {
+}
+
 export interface CustomEpochService {
 }
 
@@ -314,6 +330,12 @@ export interface ExpirationService__Autowiring {
 }
 
 export interface ExpirationService__BeanDefinitions {
+}
+
+export interface YaciStoreTipHealthIndicator extends HealthIndicator {
+}
+
+export interface YaciStoreTipHealthIndicator__BeanDefinitions {
 }
 
 export interface LocalisationService {
@@ -403,6 +425,12 @@ export interface Problem {
 export interface Serializable {
 }
 
+export interface Exception extends Throwable {
+}
+
+export interface HealthIndicator extends HealthContributor {
+}
+
 export interface URI extends Comparable<URI>, Serializable {
 }
 
@@ -413,10 +441,32 @@ export interface StatusType {
 
 export interface Value<T> extends Iterable<T> {
     empty: boolean;
-    singleValued: boolean;
     orNull: T;
-    lazy: boolean;
+    singleValued: boolean;
     async: boolean;
+    lazy: boolean;
+}
+
+export interface Throwable extends Serializable {
+    cause: Throwable;
+    stackTrace: StackTraceElement[];
+    message: string;
+    suppressed: Throwable[];
+    localizedMessage: string;
+}
+
+export interface StackTraceElement extends Serializable {
+    classLoaderName: string;
+    moduleName: string;
+    moduleVersion: string;
+    methodName: string;
+    fileName: string;
+    lineNumber: number;
+    nativeMethod: boolean;
+    className: string;
+}
+
+export interface HealthContributor {
 }
 
 export interface Comparable<T> {

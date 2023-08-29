@@ -158,7 +158,7 @@ export const VotePage = () => {
 
   // fetch vote receipt if there is no saved selection and event is active or finished
   useEffect(() => {
-    if (absoluteSlot && !savedProposal && !event?.notStarted) {
+    if (absoluteSlot && !savedProposal && event?.notStarted === false) {
       fetchReceipt({});
     }
   }, [absoluteSlot, fetchReceipt, savedProposal, event?.notStarted]);

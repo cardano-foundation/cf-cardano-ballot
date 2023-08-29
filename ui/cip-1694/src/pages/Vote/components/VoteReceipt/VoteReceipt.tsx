@@ -45,8 +45,8 @@ export const VoteReceipt = ({ setOpen, fetchReceipt }: VoteReceiptProps) => {
         voteCosePublicKey,
         steps: steps as unknown as VoteVerificationRequest['steps'],
       });
-      if (typeof verified === 'boolean') {
-        setIsVerified(verified);
+      if ('isVerified' in verified && typeof verified?.isVerified === 'boolean') {
+        setIsVerified(verified?.isVerified);
       }
     } catch (error) {
       if (process.env.NODE_ENV === 'development') {

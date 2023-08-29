@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-// Generated using typescript-generator version 3.2.1263 on 2023-08-23 10:07:22.
+// Generated using typescript-generator version 3.2.1263 on 2023-08-29 11:44:03.
 
 export interface Either<L, R> extends Value<R>, Serializable {
     left: L;
@@ -34,6 +34,11 @@ export interface MerkleProofItemBuilder {
 export interface VoteVerificationRequestBuilder {
 }
 
+export interface VoteVerificationResult {
+    network: CardanoNetwork;
+    verified: boolean;
+}
+
 export interface VoteVerificationService {
 }
 
@@ -62,10 +67,10 @@ export interface StatusType {
 
 export interface Value<T> extends Iterable<T> {
     empty: boolean;
-    singleValued: boolean;
     orNull: T;
-    lazy: boolean;
+    singleValued: boolean;
     async: boolean;
+    lazy: boolean;
 }
 
 export interface Comparable<T> {

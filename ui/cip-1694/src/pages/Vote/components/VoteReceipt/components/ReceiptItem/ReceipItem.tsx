@@ -98,7 +98,7 @@ export const ReceiptItem = ({ name, value, onItemClick, dataTestId = 'receipt-it
       </Typography>
       {name === 'voteProof' && (
         <CopyToClipboard
-          text={value}
+          text={JSON.stringify(value)}
           onCopy={onItemClick}
         >
           <IconButton

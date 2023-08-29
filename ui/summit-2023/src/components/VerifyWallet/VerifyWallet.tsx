@@ -25,9 +25,9 @@ const VerifyWallet = (props:VerifyWalletProps) => {
 
     const [verifyOption, setVerifyOption] = useState<string | undefined>(undefined);
     const [defaultCountryCode, setDefaultCountryCode] = useState<MuiTelInputCountry | undefined>('ES');
+    const [discordKey, setDiscordKey] = useState<string>('');
     const [phone, setPhone] = useState<string>('');
     const [codes, setCodes] = useState(Array(6).fill(''));
-
     const [phoneCodeIsSent, setPhoneCodeIsSent] = useState<boolean>(false);
     const [checkImNotARobot, setCheckImNotARobot] = useState<boolean>(false);
     const [isPhoneInputDisabled, setIsPhoneInputDisabled] = useState<boolean>(false);
@@ -48,6 +48,13 @@ const VerifyWallet = (props:VerifyWalletProps) => {
         if (matchIsValidTel(phone) && checkImNotARobot){
             setPhoneCodeIsSent(true);
             setCheckImNotARobot(false);
+        }
+    };
+
+    const handleVerifyDiscordKey= () => {
+        if (discordKey !== ''){
+           // TODO: verify key
+            onVerify();
         }
     };
 
@@ -280,9 +287,28 @@ const VerifyWallet = (props:VerifyWalletProps) => {
                 4. Get the secret key from the chat with our WalletVerificationBot.
             </Typography>
             <TextField
+                value={discordKey}
                 className='secret-key-input'
                 label='Enter Secret Key'
+                onChange={(e) => setDiscordKey(e.target.value)}
             />
+            <Grid container style={{ marginTop: '35px' }}>
+                <Grid item xs={6}>
+                    <Button
+                        onClick={() => reset()}
+                        className='verify-number-button-cancel' fullWidth>
+                        Cancel
+                    </Button>
+                </Grid>
+                <Grid item xs={6}>
+                    <Button
+                        onClick={() => handleVerifyDiscordKey()}
+                        disabled={!discordKey.length}
+                        className={`verify-number-button-continue ${discordKey.length ? 'verify-number-button-valid' : ''}`} fullWidth>
+                        Verify
+                    </Button>
+                </Grid>
+            </Grid>
         </>
     }
 

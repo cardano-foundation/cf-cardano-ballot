@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.2.8](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.7...v0.2.8) (2023-08-29)
+
+
+### Features
+
+* init summit 2023 UI ([4270818](https://github.com/cardano-foundation/cf-cardano-ballot/commit/42708180b5bfc9d48eb0d12a838bfda20e66ec3b))
+
+
+### Bug Fixes
+
+* **cip-1694:** add debounce to the wallet on connect cb ([315ea98](https://github.com/cardano-foundation/cf-cardano-ballot/commit/315ea98b1bdbda8238fcf856f4c36d1cbacce379))
+* **cip-1694:** fix blockchain tip and voting power urls, hardcode verification service responce type, fix copy vote value ([740648d](https://github.com/cardano-foundation/cf-cardano-ballot/commit/740648d1bd9ec900cb74825a64cbdba90a707192))
+* **cip-1694:** wallet connected styling ([deca267](https://github.com/cardano-foundation/cf-cardano-ballot/commit/deca267060a3066f8442c75a0cf32735d6721467))
+* public service layer compatible with resource layer. ([#103](https://github.com/cardano-foundation/cf-cardano-ballot/issues/103)) ([670f2b8](https://github.com/cardano-foundation/cf-cardano-ballot/commit/670f2b8fe182468e433f79bc5a651363e9cd406b))
+* remove slides ([1da75e6](https://github.com/cardano-foundation/cf-cardano-ballot/commit/1da75e627f125e597d65192bcf74572420b352f4))
+* remove unused resources ([5c30a6f](https://github.com/cardano-foundation/cf-cardano-ballot/commit/5c30a6f74dd534ef5065eaf60d641dd6b6ef321a))
+* update hostnames after endpoints were moved ([#92](https://github.com/cardano-foundation/cf-cardano-ballot/issues/92)) ([8982367](https://github.com/cardano-foundation/cf-cardano-ballot/commit/898236719160e29d2d72e070fa3c9e70e6d927d7))
+* update readme ([bb74478](https://github.com/cardano-foundation/cf-cardano-ballot/commit/bb7447819300f02f2fa349ff71ec294f5405f8ac))
+* update to summit 2023 name ([a744db9](https://github.com/cardano-foundation/cf-cardano-ballot/commit/a744db904815ba4e696dadac92fdbf92906e9f1b))
+* updated hostnames after endpoints were moved ([8982367](https://github.com/cardano-foundation/cf-cardano-ballot/commit/898236719160e29d2d72e070fa3c9e70e6d927d7))
+
 ## [0.2.7](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.6...v0.2.7) (2023-08-28)
 
 

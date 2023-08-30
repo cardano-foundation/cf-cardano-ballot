@@ -16,7 +16,7 @@ env:
 jobs:
 
   build-version:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     outputs:
       ARTIFACT_VERSION: ${{ steps.metadata.outputs.ARTIFACT_VERSION }}
     steps:
@@ -43,7 +43,7 @@ jobs:
           fi
   
   publish-voting-ledger-follower-app:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     env:
       APP_NAME: voting-ledger-follower-app
     needs: build-version

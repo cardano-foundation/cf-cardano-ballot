@@ -55,6 +55,10 @@ const Nominees = () => {
     eventBus.publish('openConnectWalletModal');
   };
 
+  const handleActionButton = () => {
+    // TODO:
+  };
+
   return (
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
@@ -132,7 +136,7 @@ const Nominees = () => {
                         <Button
                           className={`${isConnected ? 'vote-nominee-button' : 'connect-wallet-button'}`}
                           style={{ width: 'auto' }}
-                          onClick={() => openConnectWalletModal()}
+                          onClick={() => isConnected ? handleActionButton() : openConnectWalletModal()}
                         >
                           {isConnected ? (
                             <>Vote for nominee</>
@@ -161,7 +165,7 @@ const Nominees = () => {
                     <Button
                       className={`${isConnected ? 'vote-nominee-button' : 'connect-wallet-button'}`}
                       fullWidth
-                      onClick={() => openConnectWalletModal()}
+                      onClick={() => isConnected ? handleActionButton() : openConnectWalletModal()}
                     >
                       {isConnected ? (
                         <>Vote for nominee</>

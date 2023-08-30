@@ -7,6 +7,7 @@ import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { Fade } from '@mui/material';
 import './Nominees.scss';
 import {eventBus} from '../../utils/EventBus';
+import {useCardano} from '@cardano-foundation/cardano-connect-with-wallet';
 
 type CardItem = {
   id: number;
@@ -60,6 +61,11 @@ const Nominees = () => {
 
   const [listView, setListView] = useState<'grid' | 'list'>('grid');
   const [isVisible, setIsVisible] = useState(true);
+
+  const { isConnected } = useCardano();
+
+  console.log('isConnected');
+  console.log(isConnected);
 
   useEffect(() => {
     if (isMobile) {
@@ -153,11 +159,13 @@ const Nominees = () => {
                             xs={2}
                         >
                           <Button
-                              className="connect-wallet-button"
+                              className={`${isConnected ? 'vote-nominee-button' :'connect-wallet-button'}`}
                               style={{ width: 'auto' }}
                               onClick={() => openConnectWalletModal()}
                           >
-                            <AccountBalanceWalletIcon /> Connect Wallet
+                            {
+                              isConnected ? <>Vote for nominee</> : <><AccountBalanceWalletIcon /> Connect Wallet</>
+                            }
                           </Button>
                         </Grid>
                     ) : null}
@@ -175,11 +183,13 @@ const Nominees = () => {
                   </Button>
                   {isMobile || listView === 'grid' ? (
                       <Button
-                          className="connect-wallet-button"
+                          className={`${isConnected ? 'vote-nominee-button'  :'connect-wallet-button'}`}
                           fullWidth
                           onClick={() => openConnectWalletModal()}
                       >
-                        <AccountBalanceWalletIcon /> Connect Wallet
+                        {
+                          isConnected ? <>Vote for nominee</> : <><AccountBalanceWalletIcon /> Connect Wallet</>
+                        }
                       </Button>
                   ) : null}
                 </CardContent>

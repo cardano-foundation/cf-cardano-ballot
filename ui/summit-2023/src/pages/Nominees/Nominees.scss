@@ -68,7 +68,8 @@
     text-transform: none;
   }
 
-  .connect-wallet-button {
+  .connect-wallet-button,
+  .vote-nominee-button {
     margin-top: 12px;
     display: flex;
     width: 98%;
@@ -77,13 +78,18 @@
     align-items: center;
     gap: 8px;
     border-radius: 8px;
-    background: var(--color-ultra-dark-blue) !important;
-
-    color: var(--color-light);
     font-size: 16px;
     font-style: normal;
     font-weight: 600;
     line-height: normal;
     text-transform: none;
+  }
+  .connect-wallet-button {
+    background: var(--color-ultra-dark-blue) !important;
+    color: var(--color-light);
+  }
+  .vote-nominee-button {
+    background: var(--color-light-green) !important;
+    color: var(--color-ultra-dark-blue);
   }
 }

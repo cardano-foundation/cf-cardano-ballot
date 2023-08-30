@@ -136,7 +136,7 @@ const Nominees = () => {
                         <Button
                           className={`${isConnected ? 'vote-nominee-button' : 'connect-wallet-button'}`}
                           style={{ width: 'auto' }}
-                          onClick={() => isConnected ? handleActionButton() : openConnectWalletModal()}
+                          onClick={() => (isConnected ? handleActionButton() : openConnectWalletModal())}
                         >
                           {isConnected ? (
                             <>Vote for nominee</>
@@ -165,7 +165,7 @@ const Nominees = () => {
                     <Button
                       className={`${isConnected ? 'vote-nominee-button' : 'connect-wallet-button'}`}
                       fullWidth
-                      onClick={() => isConnected ? handleActionButton() : openConnectWalletModal()}
+                      onClick={() => (isConnected ? handleActionButton() : openConnectWalletModal())}
                     >
                       {isConnected ? (
                         <>Vote for nominee</>

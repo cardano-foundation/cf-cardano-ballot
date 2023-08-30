@@ -107,8 +107,8 @@ export function responseErrorsHandler() {
 // type NoContentResponse = { status: number; message: string };
 type Errors = { errors: Array<{ errorCode: string }> } & Omit<Response, 'errors'>;
 
- export function responseHandlerDelegate<T>() {
- const errorsHandler = responseErrorsHandler();
+export function responseHandlerDelegate<T>() {
+  const errorsHandler = responseErrorsHandler();
 
   return {
     async parse(response: Response | AnuthorizedResponse): Promise<T | never> {
@@ -133,7 +133,7 @@ type Errors = { errors: Array<{ errorCode: string }> } & Omit<Response, 'errors'
         throw new HttpError(400, response.url, errorsHandler.parse(parsedResponse.errors));
       } else {
         return parsedResponse;
-      } 
+      }
     },
   };
 }

@@ -30,7 +30,7 @@ function App() {
       }
       toast(
         <Toast
-          message='Failed to fetch event'
+          message="Failed to fetch event"
           error
           icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
         />

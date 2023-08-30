@@ -178,9 +178,7 @@ const Header: React.FC = () => {
               justifyContent="space-between"
             >
               <Grid item>
-                <NavLink
-                  to="/"
-                >
+                <NavLink to="/">
                   <img
                     src="/static/cardano-ballot.png"
                     alt="Cardano Logo"

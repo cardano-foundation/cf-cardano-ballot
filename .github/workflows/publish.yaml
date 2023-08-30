@@ -16,7 +16,7 @@ env:
 jobs:
 
   build-version:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     outputs:
       ARTIFACT_VERSION: ${{ steps.metadata.outputs.ARTIFACT_VERSION }}
     steps:
@@ -43,7 +43,7 @@ jobs:
           fi
   
   publish-voting-app:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     env:
       APP_NAME: voting-app
     needs: build-version
@@ -73,7 +73,7 @@ jobs:
   
 
   publish-voting-ledger-follower-app:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     env:
       APP_NAME: voting-ledger-follower-app
     needs: build-version
@@ -103,7 +103,7 @@ jobs:
   
 
   publish-voting-verification-app:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     env:
       APP_NAME: voting-verification-app
     needs: build-version
@@ -133,7 +133,7 @@ jobs:
   
 
   publish-voting-app-ui:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     env:
       APP_NAME: voting-app-ui
     needs: build-version

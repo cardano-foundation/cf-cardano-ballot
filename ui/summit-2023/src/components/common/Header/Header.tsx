@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import {
   AppBar,
@@ -27,7 +27,7 @@ import { addressSlice, walletIcon } from '../../../utils/utils';
 import Modal from '../Modal/Modal';
 import ConnectWalletList from '../../ConnectWalletList/ConnectWalletList';
 import { VerifyWallet } from '../../VerifyWallet';
-import {eventBus} from '../../../utils/EventBus';
+import { eventBus } from '../../../utils/EventBus';
 
 const Header: React.FC = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -41,17 +41,17 @@ const Header: React.FC = () => {
   const [toastIsError, setToastIsError] = useState(false);
   const [toastOpen, setToastOpen] = useState(false);
 
-    useEffect(() => {
-        const openConnectWalletModal = () => {
-            setOpenAuthDialog(true)
-        };
+  useEffect(() => {
+    const openConnectWalletModal = () => {
+      setOpenAuthDialog(true);
+    };
 
-        eventBus.subscribe('openConnectWalletModal', openConnectWalletModal);
+    eventBus.subscribe('openConnectWalletModal', openConnectWalletModal);
 
-        return () => {
-            eventBus.unsubscribe('openConnectWalletModal', openConnectWalletModal);
-        };
-    }, []);
+    return () => {
+      eventBus.unsubscribe('openConnectWalletModal', openConnectWalletModal);
+    };
+  }, []);
 
   const handleCloseAuthDialog = () => {
     setOpenAuthDialog(false);

@@ -7,6 +7,7 @@ export const PAGE_PATH = '/';
 
 export const ROUTES = {
   INTRO: `${PAGE_PATH}`,
+  CATEGORIES: `${PAGE_PATH}categories`,
   NOMINEES: `${PAGE_PATH}nominees`,
   NOMINEES_BY_ID: `${PAGE_PATH}nominees/:id`,
 };
@@ -21,7 +22,7 @@ const PageRouter = () => {
         />
         <Route
           path={ROUTES.NOMINEES}
-          element={<Nominees />}
+          element={<Nominees />} // redirect to categories
         />
         <Route
           path={ROUTES.NOMINEES_BY_ID}

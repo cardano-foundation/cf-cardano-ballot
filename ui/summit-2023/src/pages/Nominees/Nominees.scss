@@ -93,3 +93,67 @@
     color: var(--color-ultra-dark-blue);
   }
 }
+
+.closeButton.MuiButtonBase-root {
+  background-color: var(--color-ultra-light-blue);
+}
+
+.closeButton.MuiButtonBase-root:hover {
+  background-color: var(--color-ultra-light-blue);
+  opacity: 0.9;
+}
+
+.visit-web-button.MuiButtonBase-root {
+  display: flex;
+  padding: 16px 24px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  background-color: transparent !important;
+  border-radius: 8px;
+  border: 1px solid var(--color-light-blue);
+
+  margin-top: 28px;
+  color: var(--color-medium-grey);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600 !important;
+  line-height: normal;
+  text-transform: none;
+}
+
+.nominee-slide-title {
+  color: var(--color-dark-grey);
+  font-size: 28px;
+  font-style: normal;
+  font-weight: 600 !important;
+  line-height: 36px;
+}
+
+.nominee-slide-subtitle {
+  color: var(--color-medium-grey);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400 !important;
+  line-height: 22px;
+}
+
+.nominee-social-button.MuiButtonBase-root:hover,
+.nominee-social-button.MuiButtonBase-root {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  fill: var(--color-ultra-light-grey) !important;
+  stroke-width: 1px !important;
+  stroke: var(--color-light-blue) !important;
+  border-radius: 50%;
+  border: 1px solid var(--color-light-blue);
+  background-color: transparent !important;
+}
+.nominee-slide-description {
+  color: var(--color-medium-grey);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400 !important;
+  line-height: 22px;
+}

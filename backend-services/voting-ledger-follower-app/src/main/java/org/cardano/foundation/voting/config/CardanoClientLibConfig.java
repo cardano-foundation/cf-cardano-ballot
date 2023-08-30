@@ -16,12 +16,16 @@ public class CardanoClientLibConfig {
     @Qualifier("original_blockfrost")
     public BackendService orgBackendService(@Value("${blockfrost.url}") String blockfrostUrl,
                                             @Value("${blockfrost.api.key}") String blockfrostApiKey) {
+        log.info("original_blockfrost");
+        log.info("blockfrostUrl: " + blockfrostUrl);
+        log.info("blockfrostApiKey: " + blockfrostApiKey);
         return new BFBackendService(blockfrostUrl, blockfrostApiKey);
     }
 
     @Bean
     @Qualifier("yaci_blockfrost")
     public BackendService yaciBackendService() {
+        log.info("yaci_blockfrost");
         return new BFBackendService("http://localhost:9090/yaci-api/", "");
     }
 

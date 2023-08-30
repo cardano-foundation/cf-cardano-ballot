@@ -1,7 +1,6 @@
 FROM openjdk:18-jdk-slim AS build
 WORKDIR /app
 COPY . /app
-RUN ./gradlew dependencies
 RUN ./gradlew clean bootJar -DskipTests
 
 FROM openjdk:18-jdk-slim

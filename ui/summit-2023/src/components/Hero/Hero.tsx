@@ -4,6 +4,7 @@ import PlayCircleOutlineRoundedIcon from '@mui/icons-material/PlayCircleOutlineR
 import { Hexagon } from '../common/Hexagon';
 import './Hero.scss';
 import { i18n } from '../../i18n';
+import { NavLink } from 'react-router-dom';
 
 const Hero: React.FC = () => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -57,7 +58,9 @@ const Hero: React.FC = () => {
             container
             justifyContent={isMobile ? 'center' : 'flex-start'}
           >
-            <Button className="get-started-button">{i18n.t('landing.getStartedButton')}</Button>
+            <NavLink to="/categories">
+              <Button className="get-started-button">{i18n.t('landing.getStartedButton')}</Button>
+            </NavLink>
           </Grid>
         </div>
       </Box>

@@ -1,28 +1,34 @@
 {
   "compilerOptions": {
-    "target": "es2020",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "es2020"
-    ],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
-    "module": "esnext",
-    "moduleResolution": "node",
+    "outDir": "./public/",
+    "rootDir": "./",
+    "baseUrl": "src",
     "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "react-jsx",
+    "noEmitOnError": false,
+    "composite": true,
+    "module": "es2020",
+    "target": "es2016",
+    "jsx": "react",
+    "allowJs": false,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "declaration": true,
+    "declarationMap": true,
+    "noImplicitAny": false,
+    "noUnusedParameters": false,
+    "noUnusedLocals": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "sourceMap": true,
+    "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "allowSyntheticDefaultImports": true,
+    "paths": {
+      "common/*": ["./common/*"],
+      "src/*": ["./src/*"]
+    },
+    "typeRoots": ["node_modules/@types"],
+    "types": ["jest"]
   },
-  "include": [
-    "src",
-    "node_modules/cypress/types/cypress-global-vars.d.ts"
-  ]
+  "include": ["src/**/*", "src/**/*.json"]
 }

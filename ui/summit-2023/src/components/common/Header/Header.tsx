@@ -26,7 +26,7 @@ import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import { addressSlice, walletIcon } from '../../../utils/utils';
 import Modal from '../Modal/Modal';
 import ConnectWalletList from '../../ConnectWalletList/ConnectWalletList';
-import {VerifyWallet} from '../../VerifyWallet';
+import { VerifyWallet } from '../../VerifyWallet';
 
 const Header: React.FC = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -70,18 +70,17 @@ const Header: React.FC = () => {
     }
   };
 
-    const handleOpenVerify = () => {
-        setVerifyModalIsOpen(true);
-    };
+  const handleOpenVerify = () => {
+    setVerifyModalIsOpen(true);
+  };
 
-
-    const handleCloseVerify = () => {
-        setVerifyModalIsOpen(false);
-    };
-    const onVerify = () => {
-        showToast('Your wallet has been verified');
-        handleCloseVerify();
-    };
+  const handleCloseVerify = () => {
+    setVerifyModalIsOpen(false);
+  };
+  const onVerify = () => {
+    showToast('Your wallet has been verified');
+    handleCloseVerify();
+  };
 
   const handleToastClose = (event?: Event | React.SyntheticEvent<any, Event>, reason?: string) => {
     if (reason === 'clickaway') {
@@ -166,15 +165,19 @@ const Header: React.FC = () => {
               justifyContent="space-between"
             >
               <Grid item>
-                <img
-                  src="/static/cardano-ballot.png"
-                  alt="Cardano Logo"
-                  style={{ flexGrow: 1, height: '40px' }}
-                />
+                <NavLink
+                  to="/"
+                >
+                  <img
+                    src="/static/cardano-ballot.png"
+                    alt="Cardano Logo"
+                    style={{ flexGrow: 1, height: '40px' }}
+                  />
+                </NavLink>
               </Grid>
               <Grid item>
                 <NavLink
-                  to="/categorias"
+                  to="/categories"
                   className="nav-link"
                 >
                   {i18n.t('header.menu.categories')}
@@ -257,23 +260,23 @@ const Header: React.FC = () => {
       </Drawer>
 
       <Modal
-        id='connect-wallet-modal'
+        id="connect-wallet-modal"
         isOpen={openAuthDialog}
-        name='connect-wallet-modal'
-        title='Connect wallet'
+        name="connect-wallet-modal"
+        title="Connect wallet"
         onClose={handleCloseAuthDialog}
       >
         <ConnectWalletList
-          description='In order to vote, first you will need to connect your wallet.'
+          description="In order to vote, first you will need to connect your wallet."
           onConnectWallet={onConnectWallet}
           onConnectError={onConnectWalletError}
         />
       </Modal>
       <Modal
-        id='verify-wallet-modal'
+        id="verify-wallet-modal"
         isOpen={verifyModalIsOpen}
-        name='verify-wallet-modal'
-        title='Verify your wallet'
+        name="verify-wallet-modal"
+        title="Verify your wallet"
         onClose={handleCloseVerify}
         disableBackdropClick={true}
       >

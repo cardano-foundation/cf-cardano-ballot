@@ -39,19 +39,7 @@ const dummyData: CardItem[] = [
     title: 'Nominee',
     description:
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Leo in vitae turpis massa sed elementum tempus. Et tortor consequat id porta nibh venenatis cras sed felis.',
-  },
-  {
-    id: 1,
-    title: 'Nominee',
-    description:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Leo in vitae turpis massa sed elementum tempus. Et tortor consequat id porta nibh venenatis cras sed felis.',
-  },
-  {
-    id: 1,
-    title: 'Nominee',
-    description:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Leo in vitae turpis massa sed elementum tempus. Et tortor consequat id porta nibh venenatis cras sed felis.',
-  },
+  }
 ];
 
 const Nominees = () => {
@@ -64,9 +52,6 @@ const Nominees = () => {
 
   const { isConnected } = useCardano();
 
-  console.log('isConnected');
-  console.log(isConnected);
-
   useEffect(() => {
     if (isMobile) {
       setListView('list');
@@ -74,6 +59,9 @@ const Nominees = () => {
   }, [isMobile]);
 
   const handleListView = (viewType: 'grid' | 'list') => {
+
+    if (listView === viewType) return;
+
     setIsVisible(false);
     setTimeout(() => {
       setListView(viewType);
@@ -118,6 +106,7 @@ const Nominees = () => {
       <Grid
         container
         spacing={3}
+        style={{ justifyContent: 'center' }}
       >
         {dummyData.map((item) => (
           <Grid

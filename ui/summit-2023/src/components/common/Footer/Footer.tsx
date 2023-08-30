@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppBar, Toolbar, Typography, Grid, Box } from '@mui/material';
+import { Typography, Grid, Box } from '@mui/material';
 import './Footer.scss';
 import discordLogo from '../../../common/resources/images/discord-icon.svg';
 

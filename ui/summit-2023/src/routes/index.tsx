@@ -1,11 +1,13 @@
 import React from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import { Home } from '../pages/Home';
+import { Categories } from '../pages/Categories';
 
 export const PAGE_PATH = '/';
 
 export const ROUTES = {
   INTRO: `${PAGE_PATH}`,
+  CATEGORIES: `${PAGE_PATH}categories`,
 };
 
 const PageRouter = () => {
@@ -15,6 +17,10 @@ const PageRouter = () => {
         <Route
           path={ROUTES.INTRO}
           element={<Home />}
+        />
+        <Route
+          path={ROUTES.CATEGORIES}
+          element={<Categories />}
         />
       </Routes>
     </>

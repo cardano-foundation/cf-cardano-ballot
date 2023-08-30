@@ -1,4 +1,4 @@
-import React, { useRef, RefObject, useState } from 'react';
+import React, { useRef, useState } from 'react';
 
 import {
     Button,
@@ -24,13 +24,13 @@ const VerifyWallet = (props:VerifyWalletProps) => {
     const { onVerify } = props;
 
     const [verifyOption, setVerifyOption] = useState<string | undefined>(undefined);
-    const [defaultCountryCode, setDefaultCountryCode] = useState<MuiTelInputCountry | undefined>('ES');
+    const [defaultCountryCode] = useState<MuiTelInputCountry | undefined>('ES');
     const [phone, setPhone] = useState<string>('');
     const [codes, setCodes] = useState(Array(6).fill(''));
 
     const [phoneCodeIsSent, setPhoneCodeIsSent] = useState<boolean>(false);
     const [checkImNotARobot, setCheckImNotARobot] = useState<boolean>(false);
-    const [isPhoneInputDisabled, setIsPhoneInputDisabled] = useState<boolean>(false);
+    const [isPhoneInputDisabled] = useState<boolean>(false);
 
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 

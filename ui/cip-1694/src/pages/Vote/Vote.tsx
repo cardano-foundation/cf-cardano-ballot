@@ -302,8 +302,10 @@ export const VotePage = () => {
           <Grid item>
             <Grid
               container
-              direction="row"
+              direction={{ xs: 'column', md: 'row' }}
               justifyContent={'center'}
+              gap={{ xs: '0px', md: '51px' }}
+              wrap="nowrap"
             >
               <Grid
                 justifyContent="center"
@@ -312,6 +314,18 @@ export const VotePage = () => {
                 container
                 gap="12px"
                 item
+                md={4}
+                xs={12}
+              />
+              <Grid
+                justifyContent="center"
+                alignItems="center"
+                direction="column"
+                container
+                gap="12px"
+                item
+                md={4}
+                xs={12}
               >
                 {showViewReceiptButton && (
                   <Button
@@ -374,6 +388,16 @@ export const VotePage = () => {
                   </Button>
                 )}
               </Grid>
+              <Grid
+                justifyContent="center"
+                alignItems="center"
+                direction="column"
+                container
+                gap="12px"
+                item
+                md={4}
+                xs={12}
+              />
             </Grid>
           </Grid>
         </Grid>

@@ -178,15 +178,19 @@ const Header: React.FC = () => {
               justifyContent="space-between"
             >
               <Grid item>
-                <img
-                  src="/static/cardano-ballot.png"
-                  alt="Cardano Logo"
-                  style={{ flexGrow: 1, height: '40px' }}
-                />
+                <NavLink
+                  to="/"
+                >
+                  <img
+                    src="/static/cardano-ballot.png"
+                    alt="Cardano Logo"
+                    style={{ flexGrow: 1, height: '40px' }}
+                  />
+                </NavLink>
               </Grid>
               <Grid item>
                 <NavLink
-                  to="/categorias"
+                  to="/categories"
                   className="nav-link"
                 >
                   {i18n.t('header.menu.categories')}

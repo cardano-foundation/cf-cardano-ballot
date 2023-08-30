@@ -322,7 +322,7 @@ describe('Vote receipt:', () => {
 
   describe('FULL', () => {
     test('should render proper state', async () => {
-      mockVerifyVote.mockImplementation(async () => await Promise.resolve(false));
+      mockVerifyVote.mockImplementation(async () => await Promise.resolve({ isVerified: false }));
       const JsonViewerContentMock = 'JsonViewerContent';
       mockJsonViewer.mockImplementation(() => <span>{JsonViewerContentMock}</span>);
       const fetchReceiptMock = jest.fn();
@@ -482,7 +482,7 @@ describe('Vote receipt:', () => {
     });
     describe('VERIFIED', () => {
       test('should render proper state', async () => {
-        mockVerifyVote.mockImplementation(async () => await Promise.resolve(true));
+        mockVerifyVote.mockImplementation(async () => await Promise.resolve({ isVerified: true }));
         const history = createMemoryHistory({ initialEntries: [ROUTES.INTRO] });
         await act(() =>
           renderWithProviders(
@@ -500,8 +500,10 @@ describe('Vote receipt:', () => {
         expect(voteReceipt).toBeInTheDocument();
 
         const receiptInfo = within(voteReceipt).queryByTestId('receipt-info');
-        expect(within(receiptInfo).queryByTestId('receipt-info-title')).toHaveTextContent('Verified');
-        expect(within(receiptInfo).queryByTestId('receipt-info-description')).toHaveTextContent('');
+        await waitFor(() => {
+          expect(within(receiptInfo).queryByTestId('receipt-info-title')).toHaveTextContent('Verified');
+          expect(within(receiptInfo).queryByTestId('receipt-info-description')).toHaveTextContent('');
+        });
       });
     });
   });

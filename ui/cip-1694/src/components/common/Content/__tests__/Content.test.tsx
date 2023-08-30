@@ -52,6 +52,11 @@ jest.mock('@cardano-foundation/cardano-connect-with-wallet', () => ({
   },
 }));
 
+jest.mock('@mui/material', () => ({
+  ...jest.requireActual('@mui/material'),
+  debounce: jest.fn((fn) => fn),
+}));
+
 describe('ConnectWalletModal', () => {
   beforeEach(() => {
     jest.clearAllMocks();

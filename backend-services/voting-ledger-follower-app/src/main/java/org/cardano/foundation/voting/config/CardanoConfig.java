@@ -10,6 +10,10 @@ import org.springframework.context.annotation.Configuration;
 @Slf4j
 public class CardanoConfig {
 
+    public CardanoConfig() {
+        log.info("hello");
+    }
+
     @Bean
     public CardanoNetwork network(@Value("${cardano.network:main}") CardanoNetwork network) {
         log.info("Configured backend network:{}", network);

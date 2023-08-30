@@ -1,6 +1,6 @@
 package org.cardano.foundation.voting.config;
-
 import com.bloxbean.cardano.client.backend.api.BackendService;
+import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataChainTipService;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataStakePoolService;
@@ -14,8 +14,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
+@Slf4j
 @Configuration
 public class BlockchainDataConfig {
+
+
+    public BlockchainDataConfig() {
+        log.info("hello");
+    }
 
     @Bean
     public BlockchainDataChainTipService blockchainDataChainTipService(CardanoNetwork network,

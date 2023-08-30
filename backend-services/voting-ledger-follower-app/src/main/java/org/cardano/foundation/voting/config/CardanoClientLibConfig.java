@@ -12,6 +12,10 @@ import org.springframework.context.annotation.Configuration;
 @Slf4j
 public class CardanoClientLibConfig {
 
+    public CardanoClientLibConfig() {
+        log.info("hello");
+    }
+
     @Bean
     @Qualifier("original_blockfrost")
     public BackendService orgBackendService(@Value("${blockfrost.url}") String blockfrostUrl,

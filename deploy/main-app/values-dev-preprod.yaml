@@ -36,5 +36,5 @@ cf-cardano-ballot-ledger-follower-api:
   enabled: true
   values:
     image:
-      tag: v0.2.9-PR107
+      tag: 0.2.9-PR107
 

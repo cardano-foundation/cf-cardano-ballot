@@ -4,7 +4,7 @@ import { useTheme, useMediaQuery, Typography, IconButton, Grid, Card, CardConten
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
-
+import { Fade } from '@mui/material';
 import './Nominees.scss';
 import {eventBus} from '../../utils/EventBus';
 
@@ -59,31 +59,21 @@ const Nominees = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [listView, setListView] = useState<'grid' | 'list'>('grid');
-  const [selectedViewType, setSelectedViewType] = useState<'grid' | 'list'>('grid');
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     if (isMobile) {
       setListView('list');
-      setSelectedViewType('list');
     }
   }, [isMobile]);
 
   const handleListView = (viewType: 'grid' | 'list') => {
-    setSelectedViewType(viewType);
     setIsVisible(false);
+    setTimeout(() => {
+      setListView(viewType);
+      setIsVisible(true);
+    }, 300);
   };
-
-  useEffect(() => {
-    if (!isVisible) {
-      const timer = setTimeout(() => {
-        setListView(selectedViewType);
-        setIsVisible(true);
-      }, 600);
-
-      return () => clearTimeout(timer);
-    }
-  }, [isVisible]);
 
   const openConnectWalletModal = () => {
     eventBus.publish('openConnectWalletModal');
@@ -112,6 +102,7 @@ const Nominees = () => {
 
       <Typography
         className="nominees-description"
+        style={{width: isMobile ? '360px' : '414px'}}
         variant="body1"
         gutterBottom
       >
@@ -128,70 +119,72 @@ const Nominees = () => {
             xs={!isMobile && listView === 'grid' ? 4 : 12}
             key={item.id}
           >
-            <Card
-              className={`nominee-card ${isVisible ? 'fade-in' : 'fade-out'}`}
-              style={{
-                padding: '8px',
-                width: listView === 'list' ? '100%' : '414px',
-                height: !isMobile && listView === 'list' ? '220px' : '370px',
-              }}
-            >
-              <CardContent>
-                <Typography
-                  className="nominee-title"
-                  variant="h5"
-                >
-                  {item.title}
-                </Typography>
-                <Grid container>
-                  <Grid
-                    item
-                    xs={!isMobile && listView === 'list' ? 9 : 12}
+            <Fade in={isVisible}>
+              <Card
+                  className={'nominee-card'}
+                  style={{
+                    padding: '8px',
+                    width: listView === 'list' ? '100%' : '414px',
+                    height: !isMobile && listView === 'list' ? '220px' : isMobile ? '440px' : '390px',
+                  }}
+              >
+                <CardContent>
+                  <Typography
+                      className="nominee-title"
+                      variant="h5"
                   >
-                    <Typography
-                      className="nominee-description"
-                      variant="body2"
-                    >
-                      {item.description}
-                    </Typography>
-                  </Grid>
-                  {!isMobile && listView === 'list' ? (
+                    {item.title}
+                  </Typography>
+                  <Grid container>
                     <Grid
-                      item
-                      xs={3}
+                        item
+                        xs={!isMobile && listView === 'list' ? 10 : 12}
                     >
+                      <Typography
+                          className="nominee-description"
+                          variant="body2"
+                      >
+                        {item.description}
+                      </Typography>
+                    </Grid>
+                    {!isMobile && listView === 'list' ? (
+                        <Grid
+                            item
+                            xs={2}
+                        >
+                          <Button
+                              className="connect-wallet-button"
+                              style={{ width: 'auto' }}
+                              onClick={() => openConnectWalletModal()}
+                          >
+                            <AccountBalanceWalletIcon /> Connect Wallet
+                          </Button>
+                        </Grid>
+                    ) : null}
+                  </Grid>
+
+                  <Button
+                      className="read-more-button"
+                      fullWidth
+                      style={{
+                        width: !isMobile && listView === 'list' ? '146px' : '98%',
+                        marginTop: !isMobile && listView === 'list' ? '15px' : '28px',
+                      }}
+                  >
+                    Read more
+                  </Button>
+                  {isMobile || listView === 'grid' ? (
                       <Button
-                        className="connect-wallet-button"
-                        style={{ width: '214px' }}
-                        onClick={() => openConnectWalletModal()}
+                          className="connect-wallet-button"
+                          fullWidth
+                          onClick={() => openConnectWalletModal()}
                       >
                         <AccountBalanceWalletIcon /> Connect Wallet
                       </Button>
-                    </Grid>
                   ) : null}
-                </Grid>
-
-                <Button
-                  className="read-more-button"
-                  fullWidth
-                  style={{
-                    width: !isMobile && listView === 'list' ? '146px' : '98%',
-                    marginTop: !isMobile && listView === 'list' ? '15px' : '28px',
-                  }}
-                >
-                  Read more
-                </Button>
-                {isMobile || listView === 'grid' ? (
-                  <Button
-                    className="connect-wallet-button"
-                    fullWidth
-                    onClick={() => openConnectWalletModal()}
-                  >
-                    <AccountBalanceWalletIcon /> Connect Wallet
-                  </Button>
-                ) : null}
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </Fade>
           </Grid>
         ))}
       </Grid>

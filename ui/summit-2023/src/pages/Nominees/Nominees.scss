@@ -14,32 +14,21 @@
 }
 
 .nominees-description {
-  width: 414px;
+  max-height: 110px;
   margin-bottom: 40px !important;
   color: var(--color-medium-grey);
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
-  line-height: 22px; /* 137.5% */
+  line-height: 22px;
+  word-break: break-word;
 }
 .nominee-card.MuiPaper-root {
   width: 414px;
-  height: 370px;
   flex-shrink: 0;
   border-radius: 16px;
   background: #fff;
   box-shadow: 2px 3px 10px 0px rgba(67, 70, 86, 0.45);
-
-  transition: all 0.3s ease-in-out;
-  opacity: 1;
-
-  &.fade-out {
-    opacity: 0;
-  }
-
-  &.fade-in {
-    opacity: 1;
-  }
 
   .nominee-title {
     color: var(--color-ultra-dark-blue);
@@ -50,6 +39,7 @@
   }
   .nominee-description {
     margin-top: 20px;
+    margin-right: 50px;
     color: var(--color-medium-grey);
     font-size: 16px;
     font-style: normal;

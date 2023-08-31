@@ -6,13 +6,13 @@ import { useDispatch } from 'react-redux';
 import toast, { Toaster } from 'react-hot-toast';
 import BlockIcon from '@mui/icons-material/Block';
 import { Toast } from './components/common/Toast/Toast';
-import { setEventData } from 'common/store/userSlice';
+import { setEventData } from './common/store/userSlice';
 import BackgroundPolygon1 from './common/resources/images/polygon1.svg';
 import { Box, Container, useMediaQuery, useTheme } from '@mui/material';
 import * as referenceDataService from './common/api/referenceDataService';
 import Header from './components/common/Header/Header';
 import { PageRouter } from './routes';
-import { env } from 'common/constants/env';
+import { env } from './common/constants/env';
 
 function App() {
   const theme = useTheme();

@@ -19,12 +19,11 @@ import ViewListIcon from '@mui/icons-material/ViewList';
 import { Fade } from '@mui/material';
 import './Categories.scss';
 import Grow from '@mui/material/Grow';
-import CATEGORY_IMAGES from 'common/resources/data/categoryImages.json';
+import CATEGORY_IMAGES from '../../common/resources/data/categoryImages.json';
 import { Link } from 'react-router-dom';
 import CardMedia from '@mui/material/CardMedia';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import CATEGORIES from 'common/resources/data/categoriesData.json';
-import { Category } from './Category.types';
+import CATEGORIES from '../../common/resources/data/categoriesData.json';
 
 const Categories = () => {
   const categories = CATEGORIES.data;
@@ -87,7 +86,7 @@ const Categories = () => {
         spacing={3}
         style={{ justifyContent: 'center' }}
       >
-        {categories.map((category: Category, index) => (
+        {categories.map((category, index) => (
           <Grid
             item
             xs={!isMobile && listView === 'grid' ? 4 : 12}
@@ -96,9 +95,9 @@ const Categories = () => {
             {listView === 'grid' || isMobile ? (
               <Fade in={isVisible}>
                 <Card
-                  className="categories-card"
-                  style={{
+                  sx={{
                     width: isMobile ? '100%' : '414px',
+                    borderRadius: 8
                   }}
                   key={category.id}
                 >
@@ -189,10 +188,9 @@ const Categories = () => {
                           }}
                         >
                           <Typography
-                            variant="h6"
+                            variant="h5"
                             sx={{
                               color: 'white',
-                              fontSize: '36px',
                               fontWeight: 600,
                               wordBreak: 'break-word',
                               maxWidth: '285px',
@@ -228,8 +226,7 @@ const Categories = () => {
             ) : (
               <Fade in={isVisible}>
                 <Card
-                  className="categories-card"
-                  style={{
+                  sx={{
                     width: listView === 'list' || isMobile ? '100%' : '414px',
                     height: '156px',
                   }}

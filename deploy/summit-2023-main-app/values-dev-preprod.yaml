@@ -11,7 +11,7 @@ cf-cardano-ballot-ui:
   enabled: false
   values:
     image:
-      tag: 0.0.1-2
+      tag: 0.2.10
 
 cf-cardano-ballot-voting-api:
   enabled: true
@@ -24,17 +24,17 @@ cf-cardano-ballot-voting-api:
         active: "true"
         voteCommitmentCronExpression: "0 0/30 * * * *"
     image:
-      tag: 0.2.6-PR79
+      tag: 0.2.10
 
 cf-cardano-ballot-verification-api:
   enabled: true
   values:
     image:
-      tag: 0.2.6-PR79
+      tag: 0.2.10
 
 cf-cardano-ballot-ledger-follower-api:
   enabled: true
   values:
     image:
-      tag: 0.2.6-PR79
+      tag: 0.2.10
 

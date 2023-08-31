@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CheckVerificationRequest;
 import org.cardano.foundation.voting.domain.IsVerifiedRequest;
 import org.cardano.foundation.voting.domain.StartVerificationRequest;
-import org.cardano.foundation.voting.service.verify.UserVerificationService;
+import org.cardano.foundation.voting.service.verify.SimpleUserVerificationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,14 +25,14 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @RequiredArgsConstructor
 public class UserVerificationResource {
 
-    private final UserVerificationService userVerificationService;
+    private final SimpleUserVerificationService simpleUserVerificationService;
 
     @RequestMapping(value = "/start-verification", method = POST, produces = "application/json")
     @Timed(value = "resource.startVerification", percentiles = {0.3, 0.5, 0.95})
     public ResponseEntity<?> startVerification(@RequestBody @Valid StartVerificationRequest startVerificationRequest) {
         log.info("Received startVerification request: {}", startVerificationRequest);
 
-        return userVerificationService.startVerification(startVerificationRequest)
+        return simpleUserVerificationService.startVerification(startVerificationRequest)
                 .fold(problem -> ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem),
                         userVerification -> ResponseEntity.ok().body(userVerification)
                 );
@@ -43,7 +43,7 @@ public class UserVerificationResource {
     public ResponseEntity<?> checkVerification(@RequestBody @Valid CheckVerificationRequest checkVerificationRequest) {
         log.info("Received checkVerification request: {}", checkVerificationRequest);
 
-        return userVerificationService.checkVerification(checkVerificationRequest)
+        return simpleUserVerificationService.checkVerification(checkVerificationRequest)
                 .fold(problem -> ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem),
                         userVerification -> ResponseEntity.ok().body(userVerification)
                 );
@@ -56,7 +56,7 @@ public class UserVerificationResource {
 
         log.info("Received isVerified request: {}", isVerifiedRequest);
 
-        return userVerificationService.isVerified(isVerifiedRequest)
+        return simpleUserVerificationService.isVerified(isVerifiedRequest)
                 .fold(problem -> ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem),
                         isVerifiedResponse -> {
                             return ResponseEntity.ok().body(isVerifiedResponse);

@@ -66,7 +66,8 @@ dependencies {
 
 	implementation("io.vavr:vavr:0.10.4")
 
-	implementation("org.postgresql:postgresql")
+	runtimeOnly("org.postgresql:postgresql")
+	runtimeOnly("com.h2database:h2")
 }
 
 tasks.withType<Test> {

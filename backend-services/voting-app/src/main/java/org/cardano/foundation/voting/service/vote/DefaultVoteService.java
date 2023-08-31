@@ -69,17 +69,18 @@ public class DefaultVoteService implements VoteService {
     private StakeAddressVerificationService stakeAddressVerificationService;
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Vote> findAll(String eventId) {
         return voteRepository.findAllByEventId(eventId);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Vote> findById(String voteId) {
         return voteRepository.findById(voteId);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Timed(value = "service.vote.isVoteCastingStillPossible", percentiles = { 0.3, 0.5, 0.95 })
     public Either<Problem, Boolean> isVoteCastingStillPossible(String eventId, String voteId) {
         var eventDetailsE = chainFollowerClient.getEventDetails(eventId);
@@ -543,7 +544,7 @@ public class DefaultVoteService implements VoteService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     @Timed(value = "service.vote.voteReceipt", percentiles = { 0.3, 0.5, 0.95 })
     public Either<Problem, VoteReceipt> voteReceipt(SignedWeb3Request viewVoteReceiptSignedWeb3Request) {
         log.info("Fetching voter's receipt for the signed data: {}", viewVoteReceiptSignedWeb3Request);

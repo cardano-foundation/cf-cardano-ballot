@@ -98,7 +98,7 @@ const Categories = () => {
                 <Card
                   className="categories-card"
                   style={{
-                    width: isMobile ? '340px' : '414px',
+                    width: isMobile ? '100%' : '414px',
                   }}
                   key={category.id}
                 >
@@ -230,7 +230,7 @@ const Categories = () => {
                 <Card
                   className="categories-card"
                   style={{
-                    width: isMobile ? '340px' : '414px',
+                    width: isMobile ? '100%' : '414px',
                   }}
                   key={category.id}
                 >

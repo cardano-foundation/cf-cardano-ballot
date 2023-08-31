@@ -37,7 +37,7 @@ spec:
             - name: YACI_STORE_CARDANO_SYNC_START_BLOCK_HASH
               value: {{ $.Values.yaci.startBlockHash }}
             - name: YACI_STORE_CARDANO_SYNC_START_SLOT
-              value: {{ $.Values.yaci.startSlotNumber }}
+              value: {{ $.Values.yaci.startSlotNumber | quote }}
 
             - name: BLOCKFROST_URL
               valueFrom:

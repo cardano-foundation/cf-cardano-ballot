@@ -71,6 +71,7 @@ dependencies {
 
 	implementation("io.vavr:vavr:0.10.4")
 
+	runtimeOnly("org.postgresql:postgresql")
 	runtimeOnly("com.h2database:h2")
 
 	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.9")

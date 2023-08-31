@@ -32,6 +32,8 @@ spec:
               value: {{ .Values.network | default "preprod" | upper}}
             - name: VOTING_METADATA_LABEL
               value: {{ $.Values.votingMetadataLabel | default "11113" | quote }}
+            - name: BIND_ON_EVENT_IDS
+              value: {{ $.Values.bindOnEventIds }}
 
             - name: BLOCKFROST_URL
               valueFrom:

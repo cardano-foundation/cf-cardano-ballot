@@ -34,4 +34,3 @@ diagnosticMode:
 ledgerFollowerAppUrl: http://cf-cardano-ballot-ledger-follower-api-voting-ledger-follower-ap:9090
 corsAllowedOrigins: https://{{ .Values.domain }}
 springProfiles: dev--preprod
-bindOnEventIds: CIP-1694_Pre_Ratification_4619

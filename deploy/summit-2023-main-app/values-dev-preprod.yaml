@@ -37,4 +37,5 @@ cf-cardano-ballot-ledger-follower-api:
   values:
     image:
       tag: 0.2.10
+    bindOnEventIds: CF_SUMMIT_2023_24DC
 

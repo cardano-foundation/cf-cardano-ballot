@@ -24,7 +24,7 @@ import { Link } from 'react-router-dom';
 import CardMedia from '@mui/material/CardMedia';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import CATEGORIES from 'common/resources/data/categoriesData.json';
-import {Category} from './Category.types';
+import { Category } from './Category.types';
 
 const Categories = () => {
   const categories = CATEGORIES.data;
@@ -226,7 +226,6 @@ const Categories = () => {
                 </Card>
               </Fade>
             ) : (
-
               <Fade in={isVisible}>
                 <Card
                   className="categories-card"
@@ -238,53 +237,52 @@ const Categories = () => {
                 >
                   <CardContent sx={{ display: 'flex', alignItems: 'center' }}>
                     <CardHeader
-                        avatar={
-                          <Avatar
-                              src={CATEGORY_IMAGES[index]}
-                              alt={category.presentationName}
-                              sx={{ width: 100, height: 100 }}
-                          />
-                        }
+                      avatar={
+                        <Avatar
+                          src={CATEGORY_IMAGES[index]}
+                          alt={category.presentationName}
+                          sx={{ width: 100, height: 100 }}
+                        />
+                      }
                     />
                     <Box sx={{ marginLeft: 2, display: 'flex', flexDirection: 'column' }}>
                       <Typography
-                          variant="h5"
-                          color="text.primary"
-                          fontWeight="700"
+                        variant="h5"
+                        color="text.primary"
+                        fontWeight="700"
                       >
                         {category.presentationName}
                       </Typography>
                       <Typography
-                          variant="body1"
-                          color="text.primary"
+                        variant="body1"
+                        color="text.primary"
                       >
                         {category.description}
                       </Typography>
                     </Box>
                     <Box sx={{ marginLeft: 'auto' }}>
                       <Button
-                          component={Link}
-                          to={{ pathname: `/nominees/${category.id}` }}
-                          state={{
-                            category,
-                          }}
-                          aria-label="View Nominees"
-                          variant="contained"
-                          size="large"
-                          sx={{
-                            color: 'text.primary',
-                            fontSize: 16,
-                            fontWeight: 700,
-                            textTransform: 'none',
-                            backgroundColor: '#acfcc5 !important',
-                            marginRight: '28px'
-                          }}
+                        component={Link}
+                        to={{ pathname: `/nominees/${category.id}` }}
+                        state={{
+                          category,
+                        }}
+                        aria-label="View Nominees"
+                        variant="contained"
+                        size="large"
+                        sx={{
+                          color: 'text.primary',
+                          fontSize: 16,
+                          fontWeight: 700,
+                          textTransform: 'none',
+                          backgroundColor: '#acfcc5 !important',
+                          marginRight: '28px',
+                        }}
                       >
                         View Nominees
                       </Button>
                     </Box>
                   </CardContent>
-
                 </Card>
               </Fade>
             )}

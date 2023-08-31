@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.10](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.9...v0.2.10) (2023-08-31)
+
+
+### Features
+
+* **cip-1694:** add t&c and privacy policy ([3d89a61](https://github.com/cardano-foundation/cf-cardano-ballot/commit/3d89a6121b9737c1d9f3f553e85470125dcac2d6))
+
+
+### Bug Fixes
+
+* **cip-1694:** change proxy port for leaderboard url, fix cta sizing on vote page ([d3d7bd2](https://github.com/cardano-foundation/cf-cardano-ballot/commit/d3d7bd236a3006eb28ee7bc0b74e7cc4caccdedb))
+
 ## [0.2.9](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.8...v0.2.9) (2023-08-29)
 
 

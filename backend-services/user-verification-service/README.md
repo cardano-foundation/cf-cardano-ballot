@@ -1,4 +1,4 @@
-## Voting Verification App
+User Verification App
 
 # Application Description
-Application to be used by the community / voters to independently verify and check vote proofs. 
+Application to be used to verify the user's identity using OTP (one time password) via SMS channel.

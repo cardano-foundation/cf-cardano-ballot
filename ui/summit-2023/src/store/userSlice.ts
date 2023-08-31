@@ -1,13 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import { VoteReceipt } from '../../types/voting-app-types';
-import { EventPresentation } from '../../types/voting-ledger-follower-types';
+import { VoteReceipt } from '../types/voting-app-types';
+import { EventPresentation } from '../types/voting-ledger-follower-types';
 import { UserState } from './types';
 
 const initialState: UserState = {
-  isConnectWalletModalVisible: false,
-  isVoteSubmittedModalVisible: false,
   connectedWallet: '',
+  walletIsVerified: false,
   isReceiptFetched: false,
   receipt: null,
   proposal: '',
@@ -18,14 +17,11 @@ export const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    setIsConnectWalletModalVisible: (state, action: PayloadAction<{ isVisible: boolean }>) => {
-      state.isConnectWalletModalVisible = action.payload.isVisible;
-    },
-    setIsVoteSubmittedModalVisible: (state, action: PayloadAction<{ isVisible: boolean }>) => {
-      state.isVoteSubmittedModalVisible = action.payload.isVisible;
-    },
     setConnectedWallet: (state, action: PayloadAction<{ wallet: string }>) => {
       state.connectedWallet = action.payload.wallet;
+    },
+    setWalletIsVerified: (state, action: PayloadAction<{ isVerified: string }>) => {
+      state.connectedWallet = action.payload.isVerified;
     },
     setVoteReceipt: (state, action: PayloadAction<{ receipt: VoteReceipt }>) => {
       state.receipt = action.payload.receipt;
@@ -42,13 +38,6 @@ export const userSlice = createSlice({
   },
 });
 
-export const {
-  setIsConnectWalletModalVisible,
-  setIsVoteSubmittedModalVisible,
-  setConnectedWallet,
-  setVoteReceipt,
-  setIsReceiptFetched,
-  setSelectedProposal,
-  setEventData,
-} = userSlice.actions;
+export const { setConnectedWallet, setVoteReceipt, setIsReceiptFetched, setSelectedProposal, setEventData } =
+  userSlice.actions;
 export default userSlice.reducer;

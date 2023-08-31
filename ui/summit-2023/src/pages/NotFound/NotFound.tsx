@@ -14,10 +14,12 @@ const NotFound = () => {
   return (
     <>
       <Box
+        px={20}
         sx={{
           display: 'flex',
-          flexDirection: { xs: 'column', sm: 'row' },
+          flexDirection: { xs: 'column', sm: 'row'},
           height: { xs: 'auto', sm: '400px' },
+
         }}
       >
         <Box
@@ -45,32 +47,37 @@ const NotFound = () => {
             and return to the home page, or you can use the navigation located at the top of the page to find your way
             around.
           </Typography>
-            <Box sx={{ display: 'flex', justifyContent: isMobile ? 'center' : 'start', marginTop: isMobile ? '60px' : '40px' }}>
-                <Button
-                    className="go-home-button"
-                    style={{ width: 'auto' }}
-                    onClick={() => navigate(ROUTES.INTRO)}
-                >
-                    Go home
-                </Button>
-            </Box>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: isMobile ? 'center' : 'start',
+              marginTop: isMobile ? '60px' : '40px',
+            }}
+          >
+            <Button
+              className="go-home-button"
+              style={{ width: 'auto' }}
+              onClick={() => navigate(ROUTES.INTRO)}
+            >
+              Go home
+            </Button>
+          </Box>
         </Box>
 
-          {
-              !isMobile ? <Box
-                  sx={{
-                      flex: '1',
-                      padding: '20px',
-                      order: { xs: '2', sm: '2' },
-                  }}
-              >
-                  <img
-                      style={{ width: isMobile ? '300px' : 'auto' }}
-                      src={errorImage}
-                  />
-              </Box> : null
-          }
-
+        {!isMobile ? (
+          <Box
+            sx={{
+              flex: '1',
+              padding: '20px',
+              order: { xs: '2', sm: '2' },
+            }}
+          >
+            <img
+              style={{ width: '450px' }}
+              src={errorImage}
+            />
+          </Box>
+        ) : null}
       </Box>
       <div style={{ marginTop: isMobile ? '0px' : isLarger ? '25%' : '15%' }} />
     </>

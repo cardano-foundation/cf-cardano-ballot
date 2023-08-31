@@ -1,10 +1,9 @@
-import { VoteReceipt } from '../../types/voting-app-types';
-import { EventPresentation } from '../../types/voting-ledger-follower-types';
+import { VoteReceipt } from '../types/voting-app-types';
+import { EventPresentation } from '../types/voting-ledger-follower-types';
 
 export interface UserState {
-  isConnectWalletModalVisible: boolean;
-  isVoteSubmittedModalVisible: boolean;
   connectedWallet: string;
+  walletIsVerified: boolean;
   isReceiptFetched: boolean;
   receipt: VoteReceipt | null;
   proposal: VoteReceipt['proposal'];

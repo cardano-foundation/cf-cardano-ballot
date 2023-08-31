@@ -25,14 +25,15 @@ import xIcon from '../../common/resources/images/x-icon.svg';
 import linkedinIcon from '../../common/resources/images/linkedin-icon.svg';
 import nominees from '../../common/resources/data/nominees.json';
 import { ROUTES } from '../../routes';
-
-import CATEGORIES from 'common/resources/data/categoriesData.json';
+import {useSelector} from 'react-redux';
+import {RootState} from '../../store';
 
 const Nominees = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const nominee_ids = CATEGORIES.data.map((c) => c.id);
-  if (!nominee_ids.includes(id)) navigate(ROUTES.NOT_FOUND);
+  const eventCache = useSelector((state: RootState) => state.user.event);
+  const categories_ids = eventCache.categories.map(e => e.id);
+  if (!categories_ids.includes(id)) navigate(ROUTES.NOT_FOUND);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));

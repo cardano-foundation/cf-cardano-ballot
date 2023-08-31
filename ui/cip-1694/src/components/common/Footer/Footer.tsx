@@ -3,6 +3,8 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { ReactComponent as DiscordIcon } from 'common/resources/images/discord-icon.svg';
 import styles from './Footer.module.scss';
+import TAndC from './resources/T&C.pdf';
+import Privacy from './resources/Privacy.pdf';
 
 const Copyright = () => (
   <Typography className={styles.copyright}>
@@ -50,19 +52,43 @@ export const Footer = ({ isMobileMenu = false }) => (
       }}
     >
       <span className={styles.link}>
-        <span data-testid='t-and-c' className={styles.underline}>Terms & Conditions</span>
+        <a
+          href={TAndC}
+          type="application/pdf"
+          data-testid="t-and-c"
+          className={styles.underline}
+          target="_blank"
+          rel="noreferrer"
+        >
+          Terms & Conditions
+        </a>
       </span>
       <span className={styles.link}>
-        <span data-testid='privacy' className={styles.underline}>Privacy</span>
+        <a
+          href={Privacy}
+          type="application/pdf"
+          data-testid="privacy"
+          className={styles.underline}
+          target="_blank"
+          rel="noreferrer"
+        >
+          Privacy
+        </a>
       </span>
-      <span data-testid='status' className={styles.link}>
+      <span
+        data-testid="status"
+        className={styles.link}
+      >
         Version 1.01&nbsp;<span className={styles.underline}>(Status)</span>
       </span>
       <Box
         marginTop={{ xs: '15px', md: '0px' }}
         marginLeft={{ xs: '-5px', md: '0px' }}
       >
-        <span data-testid='discord' className={styles.link}>
+        <span
+          data-testid="discord"
+          className={styles.link}
+        >
           <DiscordIcon />
         </span>
       </Box>

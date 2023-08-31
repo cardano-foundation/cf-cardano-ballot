@@ -113,4 +113,5 @@ tasks.register<Copy>("buildAndCopyTypescriptTypes") {
 	dependsOn(tasks.generateTypeScript)
     from(layout.buildDirectory.file("typescript-generator/voting-app-types.ts"))
     into(layout.projectDirectory.dir("../../ui/cip-1694/src/types"))
+	into(layout.projectDirectory.dir("../../ui/summit-2023/src/types"))
 }

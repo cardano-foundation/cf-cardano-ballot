@@ -1,6 +1,8 @@
 package org.cardano.foundation.voting.domain.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Date;
 

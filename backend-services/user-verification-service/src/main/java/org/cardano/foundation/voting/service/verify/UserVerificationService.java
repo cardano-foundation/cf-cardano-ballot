@@ -6,10 +6,7 @@ import com.google.i18n.phonenumbers.Phonenumber;
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
-import org.cardano.foundation.voting.domain.CheckVerificationRequest;
-import org.cardano.foundation.voting.domain.IsVerifiedRequest;
-import org.cardano.foundation.voting.domain.IsVerifiedResponse;
-import org.cardano.foundation.voting.domain.StartVerificationRequest;
+import org.cardano.foundation.voting.domain.*;
 import org.cardano.foundation.voting.domain.entity.UserVerification;
 import org.cardano.foundation.voting.repository.UserVerificationRepository;
 import org.cardano.foundation.voting.service.address.StakeAddressVerificationService;
@@ -69,7 +66,7 @@ public class UserVerificationService {
     private final static SecureRandom SECURE_RANDOM = new SecureRandom();
 
     @Transactional
-    public Either<Problem, UserVerification> startVerification(StartVerificationRequest startVerificationRequest) {
+    public Either<Problem, StartVerificationResponse> startVerification(StartVerificationRequest startVerificationRequest) {
         String eventId = startVerificationRequest.getEventId();
         String stakeAddress = startVerificationRequest.getStakeAddress();
 
@@ -173,6 +170,8 @@ public class UserVerificationService {
 
         log.info("SMS sent to:{} (blake2b 256 hash), SNS msgId:{}, code:{}", phoneHash, smsVerificationResponse.requestId(), randomVerificationCode);
 
+        var now = LocalDateTime.now(clock);
+
         var newUserVerification = UserVerification.builder()
                 .id(UUID.randomUUID().toString())
                 .eventId(eventId)
@@ -183,13 +182,24 @@ public class UserVerificationService {
                 .stakeAddress(stakeAddress)
                 .verificationCode(String.valueOf(randomVerificationCode))
                 .requestId(smsVerificationResponse.requestId())
+                .expiresAt(now.plusMinutes(validationExpirationTimeMinutes))
                 .build();
 
-        return Either.right(userVerificationRepository.saveAndFlush(newUserVerification));
+        var saved = userVerificationRepository.saveAndFlush(newUserVerification);
+
+        var startVerificationResponse = new StartVerificationResponse(
+                saved.getEventId(),
+                saved.getStakeAddress(),
+                saved.getRequestId(),
+                saved.getCreatedAt(),
+                saved.getExpiresAt()
+        );
+
+        return Either.right(startVerificationResponse);
     }
 
     @Transactional
-    public Either<Problem, UserVerification> checkVerification(CheckVerificationRequest checkVerificationRequest) {
+    public Either<Problem, IsVerifiedResponse> checkVerification(CheckVerificationRequest checkVerificationRequest) {
         String eventId = checkVerificationRequest.getEventId();
         String stakeAddress = checkVerificationRequest.getStakeAddress();
 
@@ -261,7 +271,7 @@ public class UserVerificationService {
 
         if (maybePendingRequest.isEmpty()) {
             return Either.left(Problem.builder()
-                    .withTitle("USER_VERIFICATION_NOT_FOUND")
+                    .withTitle("PENDING_USER_VERIFICATION_NOT_FOUND")
                     .withDetail("User verification not found, stakeAddress:" + stakeAddress)
                     .withStatus(BAD_REQUEST)
                     .build()
@@ -290,7 +300,7 @@ public class UserVerificationService {
                     .build());
         }
 
-        var isCodeExpired = now.isAfter(pendingUserVerification.getCreatedAt().plusMinutes(validationExpirationTimeMinutes));
+        var isCodeExpired = now.isAfter(pendingUserVerification.getExpiresAt());
         if (isCodeExpired) {
                 return Either.left(Problem.builder()
                         .withTitle("VERIFICATION_EXPIRED")
@@ -300,9 +310,12 @@ public class UserVerificationService {
         }
 
         pendingUserVerification.setStatus(VERIFIED);
+        pendingUserVerification.setPhoneNumberHash(Optional.empty()); // no need to keep this anymore
         pendingUserVerification.setUpdatedAt(now);
 
-        return Either.right(userVerificationRepository.saveAndFlush(pendingUserVerification));
+        var saved = userVerificationRepository.saveAndFlush(pendingUserVerification);
+
+        return Either.right(new IsVerifiedResponse(saved.getStatus() == VERIFIED));
     }
 
     @Transactional

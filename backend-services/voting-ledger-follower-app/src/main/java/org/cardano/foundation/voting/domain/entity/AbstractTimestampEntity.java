@@ -12,11 +12,11 @@ import java.util.Date;
 public abstract class AbstractTimestampEntity {
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "createdAt", nullable = false)
+    @Column(name = "created_at", nullable = false)
     protected Date createdAt = new Date();
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "updatedAt", nullable = false)
+    @Column(name = "updated_at", nullable = false)
     private Date updatedAt = new Date();
 
     @PrePersist

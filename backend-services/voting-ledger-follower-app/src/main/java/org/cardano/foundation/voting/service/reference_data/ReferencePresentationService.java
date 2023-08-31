@@ -21,9 +21,6 @@ import java.util.Optional;
 public class ReferencePresentationService {
 
     @Autowired
-    private EventRepository eventRepository;
-
-    @Autowired
     private ReferenceDataService referenceDataService;
 
     @Autowired

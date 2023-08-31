@@ -17,12 +17,12 @@ import java.time.LocalDateTime;
 public abstract class AbstractTimestampEntity {
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "createdAt", nullable = false)
+    @Column(name = "created_at", nullable = false)
     @Builder.Default
     protected LocalDateTime createdAt = LocalDateTime.now(); // TODO clock
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "updatedAt", nullable = false)
+    @Column(name = "updated_at", nullable = false)
     @Builder.Default
     protected LocalDateTime updatedAt = LocalDateTime.now(); // TODO clock
 

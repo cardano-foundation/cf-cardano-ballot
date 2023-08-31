@@ -8,8 +8,7 @@ import errorImage from '../../common/resources/images/404-error.svg';
 const NotFound = () => {
   const navigate = useNavigate();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const isLarger = useMediaQuery(theme.breakpoints.up('xxl'));
+  const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
 
   return (
     <>
@@ -19,29 +18,39 @@ const NotFound = () => {
           display: 'flex',
           flexDirection: { xs: 'column', sm: 'row'},
           height: { xs: 'auto', sm: '400px' },
-
+            paddingLeft: isTablet ? '0px' : '160px',
+            paddingRight: isTablet ? '0px' : '160px',
         }}
       >
         <Box
           sx={{
             flex: '1',
             padding: '20px',
-            marginRight: isMobile ? '0px' : '40px',
-            marginTop: !isMobile ? '10%' : '0px',
+            marginRight: isTablet  ? '0px' : '40px',
+            marginTop: !isTablet ? '10%' : '0px',
             order: { xs: '1', sm: '1' },
           }}
         >
           <Typography
             className="nominees-title"
             variant="h4"
+            sx={{
+                display: 'flex',
+                justifyContent: isTablet ? 'center' : 'start',
+            }}
           >
             Page Not Found
           </Typography>
           <Typography
             className="nominees-description"
-            style={{ width: isMobile ? '320px' : '550px', wordBreak: 'break-word' }}
+            style={{ width: isTablet ? 'auto' : '550px', wordBreak: 'break-word' }}
             variant="body1"
             gutterBottom
+            sx={{
+                display: 'flex',
+                justifyContent: isTablet ? 'center' : 'start',
+                marginTop: isTablet ? '60px' : '40px',
+            }}
           >
             Sorry, but it seems the page you're searching for doesn’t exist. Please feel free to click the button below
             and return to the home page, or you can use the navigation located at the top of the page to find your way
@@ -50,8 +59,8 @@ const NotFound = () => {
           <Box
             sx={{
               display: 'flex',
-              justifyContent: isMobile ? 'center' : 'start',
-              marginTop: isMobile ? '60px' : '40px',
+              justifyContent: isTablet ? 'center' : 'start',
+              marginTop: isTablet ? '0px' : '40px',
             }}
           >
             <Button
@@ -64,7 +73,7 @@ const NotFound = () => {
           </Box>
         </Box>
 
-        {!isMobile ? (
+        {!isTablet ? (
           <Box
             sx={{
               flex: '1',
@@ -79,7 +88,7 @@ const NotFound = () => {
           </Box>
         ) : null}
       </Box>
-      <div style={{ marginTop: isMobile ? '0px' : isLarger ? '25%' : '15%' }} />
+      <div style={{ marginTop: isTablet ? '0px' : '25%' }} />
     </>
   );
 };

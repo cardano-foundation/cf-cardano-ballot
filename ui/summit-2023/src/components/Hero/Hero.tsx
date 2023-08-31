@@ -33,7 +33,6 @@ const Hero: React.FC = () => {
         sx={{
           flex: '1',
           padding: '20px',
-          marginRight: isMobile ? '0px' : '40px',
           order: { xs: '1', sm: '1', md: '1' },
         }}
       >
@@ -44,19 +43,19 @@ const Hero: React.FC = () => {
           <Typography
             className="title"
             variant="h2"
-            style={{ textAlign: isMobile ? 'center' : 'left' }}
+            style={{ textAlign: isMobile || isTablet ? 'center' : 'left' }}
           >
             {i18n.t('landing.title')}
           </Typography>
           <Typography
             variant="body1"
-            style={{ textAlign: isMobile ? 'center' : 'left', marginTop: isMobile ? '40px' : '40px' }}
+            style={{ textAlign: isMobile || isTablet ? 'center' : 'left', marginTop: isMobile ? '40px' : '40px' }}
           >
             {i18n.t('landing.description')}
           </Typography>
           <Grid
             container
-            justifyContent={isMobile ? 'center' : 'flex-start'}
+            justifyContent={isMobile || isTablet ? 'center' : 'flex-start'}
           >
             <NavLink to="/categories">
               <Button className="get-started-button">{i18n.t('landing.getStartedButton')}</Button>

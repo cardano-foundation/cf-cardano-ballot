@@ -5,6 +5,7 @@ import io.micrometer.core.annotation.Timed;
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
+import org.cardano.foundation.voting.client.UserVerificationClient;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.VoteReceipt;
 import org.cardano.foundation.voting.domain.entity.Vote;
@@ -61,6 +62,9 @@ public class DefaultVoteService implements VoteService {
 
     @Autowired
     private CardanoNetwork cardanoNetwork;
+
+    @Autowired
+    private UserVerificationClient userVerificationClient;
 
     @Autowired
     private JsonService jsonService;
@@ -277,6 +281,30 @@ public class DefaultVoteService implements VoteService {
                     .withDetail("Event is not active (not started or already finished), id:" + eventId)
                     .withStatus(BAD_REQUEST)
                     .build());
+        }
+
+        // check which is specific for the USER_BASED event type
+        if (event.votingEventType() == USER_BASED) {
+            var userVerifiedE = userVerificationClient.isVerified(event.id(), stakeAddress);
+            if (userVerifiedE.isEmpty()) {
+                return Either.left(Problem.builder()
+                        .withTitle("ERROR_GETTING_USER_VERIFICATION_STATUS")
+                        .withDetail("Unable to get user verification status from user-verification service, reason: user verification service not available")
+                        .withStatus(INTERNAL_SERVER_ERROR)
+                        .build()
+                );
+            }
+            var userVerifiedResponse = userVerifiedE.get();
+
+            if (userVerifiedResponse.isNotYetVerified()) {
+                log.warn("User is not verified, id:{}", eventId);
+
+                return Either.left(Problem.builder()
+                        .withTitle("USER_IS_NOT_VERIFIED")
+                        .withDetail("User is not verified, id:" + eventId)
+                        .withStatus(BAD_REQUEST)
+                        .build());
+            }
         }
 
         var categoryId = cip93VoteEnvelope.getData().getCategory();

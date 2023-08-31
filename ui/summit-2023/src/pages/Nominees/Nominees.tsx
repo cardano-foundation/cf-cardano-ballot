@@ -22,7 +22,7 @@ import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import CloseIcon from '@mui/icons-material/Close';
 import xIcon from '../../common/resources/images/x-icon.svg';
 import linkedinIcon from '../../common/resources/images/linkedin-icon.svg';
-import nomineesFixture from '../../common/resources/data/nominees.json';
+import nominees from '../../common/resources/data/nominees.json';
 
 const Nominees = () => {
   const { id } = useParams();
@@ -94,7 +94,7 @@ const Nominees = () => {
         spacing={3}
         style={{ justifyContent: 'center' }}
       >
-        {nomineesFixture.map((item) => (
+        {nominees.map((item) => (
           <Grid
             item
             xs={!isMobile && listView === 'grid' ? 4 : 12}

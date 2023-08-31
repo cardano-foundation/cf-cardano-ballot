@@ -2,8 +2,8 @@ import { configureStore, PreloadedState, combineReducers } from '@reduxjs/toolki
 import userSessionReducer from './userSlice';
 
 const rootReducer = combineReducers({
-  user: userSessionReducer
-})
+  user: userSessionReducer,
+});
 
 export const setupStore = (preloadedState?: PreloadedState<RootState>) => {
   return configureStore({
@@ -13,6 +13,6 @@ export const setupStore = (preloadedState?: PreloadedState<RootState>) => {
   });
 };
 
-export type RootState = ReturnType<typeof rootReducer>
-export type AppStore = ReturnType<typeof setupStore>
-export type AppDispatch = AppStore['dispatch']
+export type RootState = ReturnType<typeof rootReducer>;
+export type AppStore = ReturnType<typeof setupStore>;
+export type AppDispatch = AppStore['dispatch'];

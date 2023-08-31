@@ -15,10 +15,10 @@ const store = setupStore();
 
 root.render(
   <Provider store={store}>
-  <ThemeProvider theme={theme}>
-    <CssBaseline />
-    <App />
-  </ThemeProvider>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <App />
+    </ThemeProvider>
   </Provider>
 );
 

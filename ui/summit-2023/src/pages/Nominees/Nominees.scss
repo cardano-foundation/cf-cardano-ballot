@@ -1,0 +1,159 @@
+.main-content {
+  align-items: normal;
+}
+
+.nominees-title {
+  color: var(--color-dark-grey);
+  font-size: 56px !important;
+  font-style: normal;
+  font-weight: 600 !important;
+  line-height: normal;
+}
+.nominees-title::first-letter {
+  text-transform: uppercase;
+}
+
+.nominees-description {
+  max-height: 110px;
+  margin-bottom: 40px !important;
+  color: var(--color-medium-grey);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 22px;
+  word-break: break-word;
+}
+.nominee-card.MuiPaper-root {
+  width: 414px;
+  flex-shrink: 0;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 2px 3px 10px 0px rgba(67, 70, 86, 0.45);
+
+  .nominee-title {
+    color: var(--color-ultra-dark-blue);
+    font-size: 36px;
+    font-style: normal;
+    font-weight: 600 !important;
+    line-height: normal;
+  }
+  .nominee-description {
+    margin-top: 20px;
+    margin-right: 50px;
+    color: var(--color-medium-grey);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 22px;
+  }
+
+  .read-more-button:hover,
+  .read-more-button {
+    display: flex;
+    width: 358px;
+    padding: 16px 24px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--color-light-blue) !important;
+    background-color: transparent !important;
+
+    color: var(--color-medium-grey);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600 !important;
+    line-height: normal;
+
+    text-transform: none;
+  }
+
+  .connect-wallet-button,
+  .vote-nominee-button {
+    margin-top: 12px;
+    display: flex;
+    width: 98%;
+    padding: 16px 24px 16px 16px !important;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    text-transform: none;
+  }
+  .connect-wallet-button {
+    background: var(--color-ultra-dark-blue) !important;
+    color: var(--color-light);
+  }
+  .vote-nominee-button {
+    background: var(--color-light-green) !important;
+    color: var(--color-ultra-dark-blue);
+  }
+}
+
+.closeButton.MuiButtonBase-root {
+  background-color: var(--color-ultra-light-blue);
+}
+
+.closeButton.MuiButtonBase-root:hover {
+  background-color: var(--color-ultra-light-blue);
+  opacity: 0.9;
+}
+
+.visit-web-button.MuiButtonBase-root {
+  display: flex;
+  padding: 16px 24px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  background-color: transparent !important;
+  border-radius: 8px;
+  border: 1px solid var(--color-light-blue);
+
+  margin-top: 28px;
+  color: var(--color-medium-grey);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600 !important;
+  line-height: normal;
+  text-transform: none;
+}
+
+.nominee-slide-title {
+  color: var(--color-dark-grey);
+  font-size: 28px;
+  font-style: normal;
+  font-weight: 600 !important;
+  line-height: 36px;
+}
+
+.nominee-slide-subtitle {
+  color: var(--color-medium-grey);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400 !important;
+  line-height: 22px;
+}
+
+.nominee-social-button.MuiButtonBase-root:hover,
+.nominee-social-button.MuiButtonBase-root {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  fill: var(--color-ultra-light-grey) !important;
+  stroke-width: 1px !important;
+  stroke: var(--color-light-blue) !important;
+  border-radius: 50%;
+  border: 1px solid var(--color-light-blue);
+  background-color: transparent !important;
+}
+.nominee-slide-description {
+  color: var(--color-medium-grey);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400 !important;
+  line-height: 22px;
+}

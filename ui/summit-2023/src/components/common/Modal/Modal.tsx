@@ -38,18 +38,18 @@ const Modal = (props: ModalProps) => {
         onClose();
       }}
       aria-labelledby={name}
-      maxWidth='sm'
+      maxWidth="sm"
       PaperComponent={StyledPaper}
     >
       <DialogTitle
         id={id}
         style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
       >
-        <Typography className='modal-title'>{title}</Typography>
+        <Typography className="modal-title">{title}</Typography>
         <IconButton
-          className='closeButton'
-          edge='end'
-          color='inherit'
+          className="closeButton"
+          edge="end"
+          color="inherit"
           onClick={onClose}
         >
           <CloseIcon />

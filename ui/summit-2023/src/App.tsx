@@ -6,15 +6,18 @@ import { useDispatch } from 'react-redux';
 import toast, { Toaster } from 'react-hot-toast';
 import BlockIcon from '@mui/icons-material/Block';
 import { Toast } from './components/common/Toast/Toast';
-import { setEventData } from './common/store/userSlice';
+import { setEventData } from 'common/store/userSlice';
 import BackgroundPolygon1 from './common/resources/images/polygon1.svg';
+import { Box, Container, useMediaQuery, useTheme } from '@mui/material';
 import * as referenceDataService from './common/api/referenceDataService';
-import { Box, Container } from '@mui/material';
 import Header from './components/common/Header/Header';
 import { PageRouter } from './routes';
-import { env } from './common/constants/env';
+import { env } from 'common/constants/env';
 
 function App() {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
   const dispatch = useDispatch();
   const fetchEvent = useCallback(async () => {
     try {
@@ -26,7 +29,7 @@ function App() {
       }
       toast(
         <Toast
-          message='Failed to fetch event'
+          message="Failed to fetch event"
           error
           icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
         />
@@ -45,7 +48,10 @@ function App() {
           alt="Background Shape"
           className="background-shape-1"
         />
-        <div className="App">
+        <div
+          className="App"
+          style={{ padding: isMobile ? '0px 0px' : '10px 52px' }}
+        >
           <Header />
           <div className="main-content">
             <Container

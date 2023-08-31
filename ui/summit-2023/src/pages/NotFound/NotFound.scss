@@ -1,0 +1,14 @@
+.go-home-button.MuiButtonBase-root {
+  display: inline-flex;
+  padding: 16px 24px;
+  align-items: flex-start;
+  gap: 10px;
+  border-radius: 8px;
+  background: var(--color-light-green) !important;
+
+  color: var(--color-ultra-dark-blue);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600 !important;
+  line-height: normal;
+}

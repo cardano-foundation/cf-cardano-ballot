@@ -12,6 +12,7 @@ import {
   Drawer,
   Container,
 } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
@@ -22,10 +23,17 @@ import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import CloseIcon from '@mui/icons-material/Close';
 import xIcon from '../../common/resources/images/x-icon.svg';
 import linkedinIcon from '../../common/resources/images/linkedin-icon.svg';
-import nomineesFixture from '../../common/resources/data/nominees.json';
+import nominees from '../../common/resources/data/nominees.json';
+import { ROUTES } from '../../routes';
+
+import CATEGORIES from 'common/resources/data/categoriesData.json';
 
 const Nominees = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const nominee_ids = CATEGORIES.data.map((c) => c.id);
+  if (!nominee_ids.includes(id)) navigate(ROUTES.NOT_FOUND);
+
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -94,7 +102,7 @@ const Nominees = () => {
         spacing={3}
         style={{ justifyContent: 'center' }}
       >
-        {nomineesFixture.map((item) => (
+        {nominees.map((item) => (
           <Grid
             item
             xs={!isMobile && listView === 'grid' ? 4 : 12}

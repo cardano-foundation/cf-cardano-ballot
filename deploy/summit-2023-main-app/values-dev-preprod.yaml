@@ -38,4 +38,6 @@ cf-summit-2023-ledger-follower-api:
     image:
       tag: v0.2.10-1-ge407d6a
     bindOnEventIds: CF_SUMMIT_2023_24DC
-
+    yaci:
+      startBlockHash: 69a01168a752b9f0aa3d1cd49d9a87fcffceb6738416c199740933fba002c922
+      startSlotNumber: 37194728

@@ -38,4 +38,4 @@ bindOnEventIds: CIP-1694_Pre_Ratification_4619
 
 yaci:
   startBlockHash: ca71d7941c316561c3b21d0f557f34d97a61f97a333c18ed5f2800d74b64e377
-  startSlotNumber: 32349482
+  startSlotNumber: "32349482"

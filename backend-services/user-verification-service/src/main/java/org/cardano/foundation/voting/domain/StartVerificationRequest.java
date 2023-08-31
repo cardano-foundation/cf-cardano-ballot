@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Locale;
+import java.util.Optional;
+
 @Getter
 @Builder
 @Setter
@@ -20,5 +23,8 @@ public class StartVerificationRequest {
 
     @NotBlank
     private String phoneNumber;
+
+    @Builder.Default
+    private Optional<Locale> locale = Optional.empty();
 
 }

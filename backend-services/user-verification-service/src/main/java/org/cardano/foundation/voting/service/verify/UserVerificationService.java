@@ -25,6 +25,7 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.HexFormat;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.bloxbean.cardano.client.crypto.Blake2bUtil.blake2bHash256;
 import static com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL;
@@ -62,21 +63,27 @@ public class UserVerificationService {
     @Value("${validation.expiration.time.minutes}")
     private int validationExpirationTimeMinutes;
 
+    @Value("${max.verification.attempts}")
+    private int maxVerificationAttempts;
+
     private final static SecureRandom SECURE_RANDOM = new SecureRandom();
 
     @Transactional
     public Either<Problem, UserVerification> startVerification(StartVerificationRequest startVerificationRequest) {
-        var stakeAddressCheckE = stakeAddressVerificationService.checkIfAddressIsStakeAddress(startVerificationRequest.getStakeAddress());
+        String eventId = startVerificationRequest.getEventId();
+        String stakeAddress = startVerificationRequest.getStakeAddress();
+
+        var stakeAddressCheckE = stakeAddressVerificationService.checkIfAddressIsStakeAddress(stakeAddress);
         if (stakeAddressCheckE.isLeft()) {
             return Either.left(stakeAddressCheckE.getLeft());
         }
 
-        var stakeAddressNetworkCheck = stakeAddressVerificationService.checkStakeAddressNetwork(startVerificationRequest.getStakeAddress());
+        var stakeAddressNetworkCheck = stakeAddressVerificationService.checkStakeAddressNetwork(stakeAddress);
         if (stakeAddressNetworkCheck.isLeft()) {
             return Either.left(stakeAddressNetworkCheck.getLeft());
         }
 
-        var activeEventE = chainFollowerClient.findEventById(startVerificationRequest.getEventId());
+        var activeEventE = chainFollowerClient.findEventById(eventId);
 
         if (activeEventE.isEmpty()) {
             log.error("Active event error:{}", activeEventE.getLeft());
@@ -86,11 +93,11 @@ public class UserVerificationService {
 
         var maybeEvent = activeEventE.get();
         if (maybeEvent.isEmpty()) {
-            log.error("Active event not found:{}", startVerificationRequest.getEventId());
+            log.warn("Active event not found:{}", eventId);
 
             return Either.left(Problem.builder()
                     .withTitle("EVENT_NOT_FOUND")
-                    .withDetail("Event not found, eventId:" + startVerificationRequest.getEventId())
+                    .withDetail("Event not found, eventId:" + eventId)
                     .withStatus(BAD_REQUEST)
                     .build());
         }
@@ -98,13 +105,32 @@ public class UserVerificationService {
         var event = maybeEvent.orElseThrow();
 
         if (event.finished()) {
-            log.error("Event already finished:{}", startVerificationRequest.getEventId());
+            log.warn("Event already finished:{}", eventId);
 
             return Either.left(Problem.builder()
                     .withTitle("EVENT_ALREADY_FINISHED")
-                    .withDetail("Event already finished, eventId:" + startVerificationRequest.getEventId())
+                    .withDetail("Event already finished, eventId:" + eventId)
                     .withStatus(BAD_REQUEST)
                     .build());
+        }
+
+        var maybeUserVerification = userVerificationRepository.findAllCompleted(
+                eventId,
+                stakeAddress
+        ).stream().findFirst();
+
+        if (maybeUserVerification.isPresent()) {
+            log.info("User verification already completed:{}", maybeUserVerification.orElseThrow());
+
+            var userVerification = maybeUserVerification.get();
+            if (userVerification.getStatus() == VERIFIED) {
+                return Either.left(Problem.builder()
+                        .withTitle("USER_ALREADY_VERIFIED")
+                        .withDetail("User already verified, stakeAddress:" + stakeAddress)
+                        .withStatus(BAD_REQUEST)
+                        .build()
+                );
+            }
         }
 
         var maybePhoneNum = isValidNumber(startVerificationRequest.getPhoneNumber());
@@ -120,10 +146,22 @@ public class UserVerificationService {
         }
 
         var phoneNum = maybePhoneNum.orElseThrow();
+        var formattedPhoneStr = PhoneNumberUtil.getInstance().format(phoneNum, INTERNATIONAL);
+        var phoneHash = HexFormat.of().formatHex(blake2bHash256(formattedPhoneStr.getBytes(UTF_8)));
 
-        var randomCode = SECURE_RANDOM.nextInt(100000, 999999);
+        int pendingPerStakeAddressCount = userVerificationRepository.findPendingPerStakeAddressPerPhoneCount(eventId, stakeAddress, phoneHash);
+        if (pendingPerStakeAddressCount > maxVerificationAttempts) {
+            return Either.left(Problem.builder()
+                    .withTitle("MAX_VERIFICATION_ATTEMPTS_REACHED")
+                    .withDetail(String.format("Max verification attempts reached for eventId:%s, stakeAddress:%s. Try again in 24 hours.", eventId, stakeAddress))
+                    .withStatus(BAD_REQUEST)
+                    .build());
+        }
 
-        var textMsg = String.format("Verification Code: %s. %s", randomCode, friendlyCustomName).trim();
+        var randomVerificationCode = SECURE_RANDOM.nextInt(100000, 999999);
+
+        // TODO localise?
+        var textMsg = String.format("Verification Code: %s. %s", randomVerificationCode, friendlyCustomName).trim();
 
         var smsVerificationResponseE = smsService.publishTextMessage(textMsg, phoneNum);
 
@@ -133,38 +171,39 @@ public class UserVerificationService {
 
         var smsVerificationResponse = smsVerificationResponseE.get();
 
-        var formattedPhoneStr = PhoneNumberUtil.getInstance().format(phoneNum, INTERNATIONAL);
-        var phoneHash = HexFormat.of().formatHex(blake2bHash256(formattedPhoneStr.getBytes(UTF_8)));
+        log.info("SMS sent to:{} (blake2b 256 hash), SNS msgId:{}, code:{}", phoneHash, smsVerificationResponse.requestId(), randomVerificationCode);
 
-        log.info("SMS sent to:{} (blake2b 256 hash), SNS msgId:{}, code:{}", phoneHash, smsVerificationResponse.requestId(), randomCode);
-
-        var userVerification = UserVerification.builder()
-                .eventId(startVerificationRequest.getEventId())
+        var newUserVerification = UserVerification.builder()
+                .id(UUID.randomUUID().toString())
+                .eventId(eventId)
                 .channel(SMS)
                 .provider(AWS_SNS)
                 .status(PENDING)
                 .phoneNumberHash(phoneHash)
-                .stakeAddress(startVerificationRequest.getStakeAddress())
-                .verificationCode(String.valueOf(randomCode))
+                .stakeAddress(stakeAddress)
+                .verificationCode(String.valueOf(randomVerificationCode))
                 .requestId(smsVerificationResponse.requestId())
                 .build();
 
-        return Either.right(userVerificationRepository.saveAndFlush(userVerification));
+        return Either.right(userVerificationRepository.saveAndFlush(newUserVerification));
     }
 
     @Transactional
     public Either<Problem, UserVerification> checkVerification(CheckVerificationRequest checkVerificationRequest) {
-        var stakeAddressCheckE = stakeAddressVerificationService.checkIfAddressIsStakeAddress(checkVerificationRequest.getStakeAddress());
+        String eventId = checkVerificationRequest.getEventId();
+        String stakeAddress = checkVerificationRequest.getStakeAddress();
+
+        var stakeAddressCheckE = stakeAddressVerificationService.checkIfAddressIsStakeAddress(stakeAddress);
         if (stakeAddressCheckE.isLeft()) {
             return Either.left(stakeAddressCheckE.getLeft());
         }
 
-        var stakeAddressNetworkCheck = stakeAddressVerificationService.checkStakeAddressNetwork(checkVerificationRequest.getStakeAddress());
+        var stakeAddressNetworkCheck = stakeAddressVerificationService.checkStakeAddressNetwork(stakeAddress);
         if (stakeAddressNetworkCheck.isLeft()) {
             return Either.left(stakeAddressNetworkCheck.getLeft());
         }
 
-        var activeEventE = chainFollowerClient.findEventById(checkVerificationRequest.getEventId());
+        var activeEventE = chainFollowerClient.findEventById(eventId);
 
         if (activeEventE.isEmpty()) {
             log.error("Active event error:{}", activeEventE.getLeft());
@@ -174,11 +213,11 @@ public class UserVerificationService {
 
         var maybeEvent = activeEventE.get();
         if (maybeEvent.isEmpty()) {
-            log.error("Active event not found:{}", checkVerificationRequest.getEventId());
+            log.error("Active event not found:{}", eventId);
 
             return Either.left(Problem.builder()
                     .withTitle("EVENT_NOT_FOUND")
-                    .withDetail("Event not found, eventId:" + checkVerificationRequest.getEventId())
+                    .withDetail("Event not found, eventId:" + eventId)
                     .withStatus(BAD_REQUEST)
                     .build());
         }
@@ -186,25 +225,44 @@ public class UserVerificationService {
         var event = maybeEvent.orElseThrow();
 
         if (event.finished()) {
-            log.error("Event already finished:{}", checkVerificationRequest.getEventId());
+            log.error("Event already finished:{}", eventId);
 
             return Either.left(Problem.builder()
                     .withTitle("EVENT_ALREADY_FINISHED")
-                    .withDetail("Event already finished, eventId:" + checkVerificationRequest.getEventId())
+                    .withDetail("Event already finished, eventId:" + eventId)
                     .withStatus(BAD_REQUEST)
                     .build());
         }
 
+        var maybeUserVerification = userVerificationRepository.findAllCompleted(
+                eventId,
+                stakeAddress
+        ).stream().findFirst();
+
+        if (maybeUserVerification.isPresent()) {
+            log.info("User verification already completed:{}", maybeUserVerification.orElseThrow());
+
+            var userVerification = maybeUserVerification.get();
+            if (userVerification.getStatus() == VERIFIED) {
+                return Either.left(Problem.builder()
+                        .withTitle("USER_ALREADY_VERIFIED")
+                        .withDetail("User already verified, stakeAddress:" + stakeAddress)
+                        .withStatus(BAD_REQUEST)
+                        .build()
+                );
+            }
+        }
+
         var maybePendingRequest = userVerificationRepository.findPendingVerificationsByEventIdAndStakeAddressAndRequestId(
-                checkVerificationRequest.getEventId(),
-                checkVerificationRequest.getStakeAddress(),
+                eventId,
+                stakeAddress,
                 checkVerificationRequest.getRequestId()
         );
 
         if (maybePendingRequest.isEmpty()) {
             return Either.left(Problem.builder()
                     .withTitle("USER_VERIFICATION_NOT_FOUND")
-                    .withDetail("User verification not found, stakeAddress:" + checkVerificationRequest.getStakeAddress())
+                    .withDetail("User verification not found, stakeAddress:" + stakeAddress)
                     .withStatus(BAD_REQUEST)
                     .build()
             );
@@ -215,7 +273,7 @@ public class UserVerificationService {
         if (pendingUserVerification.getStatus() == VERIFIED) {
             return Either.left(Problem.builder()
                     .withTitle("USER_VERIFICATION_ALREADY_VERIFIED")
-                    .withDetail("User verification already verified, stakeAddress:" + checkVerificationRequest.getStakeAddress())
+                    .withDetail("User verification already verified, stakeAddress:" + stakeAddress)
                     .withStatus(BAD_REQUEST)
                     .build()
             );
@@ -232,11 +290,11 @@ public class UserVerificationService {
                     .build());
         }
 
-        boolean isCodeExpired = now.isAfter(pendingUserVerification.getCreatedAt().plusMinutes(validationExpirationTimeMinutes));
+        var isCodeExpired = now.isAfter(pendingUserVerification.getCreatedAt().plusMinutes(validationExpirationTimeMinutes));
         if (isCodeExpired) {
                 return Either.left(Problem.builder()
                         .withTitle("VERIFICATION_EXPIRED")
-                        .withDetail(String.format("Verification code: %s expired for stakeAddress: %s", checkVerificationRequest.getVerificationCode(), checkVerificationRequest.getStakeAddress()))
+                        .withDetail(String.format("Verification code: %s expired for stakeAddress: %s", checkVerificationRequest.getVerificationCode(), stakeAddress))
                         .withStatus(BAD_REQUEST)
                         .build());
         }
@@ -280,10 +338,10 @@ public class UserVerificationService {
                     .build());
         }
 
-        var maybeUserVerification = userVerificationRepository.findCompleted(
+        var maybeUserVerification = userVerificationRepository.findAllCompleted(
                 isVerifiedRequest.getEventId(),
                 isVerifiedRequest.getStakeAddress()
-        );
+        ).stream().findFirst();
 
         if (maybeUserVerification.isEmpty()) {
             log.info("Completed or pending user verification not found for:{}", isVerifiedRequest.getStakeAddress());

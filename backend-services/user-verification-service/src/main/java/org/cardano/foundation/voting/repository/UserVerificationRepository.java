@@ -13,13 +13,13 @@ import java.util.Optional;
 public interface UserVerificationRepository extends JpaRepository<UserVerification, String> {
 
     @Query("SELECT uv FROM UserVerification uv WHERE uv.status = 'VERIFIED' AND uv.eventId = :eventId AND uv.stakeAddress = :stakeAddress")
-    Optional<UserVerification> findCompleted(@Param("eventId") String eventId, @Param("stakeAddress") String stakeAddress);
+    List<UserVerification> findAllCompleted(@Param("eventId") String eventId, @Param("stakeAddress") String stakeAddress);
 
     @Query("SELECT uv FROM UserVerification uv WHERE uv.status = 'PENDING' AND uv.eventId = :eventId")
     List<UserVerification> findAllPending(@Param("eventId") String eventId);
 
-    @Query("SELECT uv FROM UserVerification uv WHERE uv.status = 'PENDING' AND uv.eventId = :eventId AND uv.stakeAddress = :stakeAddress")
-    List<UserVerification> findPendingPerStakeAddress(@Param("eventId") String eventId, @Param("stakeAddress") String stakeAddress);
+    @Query("SELECT COUNT(*) FROM UserVerification uv WHERE uv.status = 'PENDING' AND uv.eventId = :eventId AND uv.stakeAddress = :stakeAddress AND uv.phoneNumberHash = :phoneNumberHash")
+    int findPendingPerStakeAddressPerPhoneCount(@Param("eventId") String eventId, @Param("stakeAddress") String stakeAddress, @Param("phoneNumberHash") String phoneNumberHash);
 
     @Query("SELECT uv FROM UserVerification uv WHERE uv.status = 'PENDING'" +
             " AND uv.eventId = :eventId" +

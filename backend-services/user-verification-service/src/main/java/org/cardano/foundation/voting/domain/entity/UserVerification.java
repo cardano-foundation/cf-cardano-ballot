@@ -18,6 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 public class UserVerification extends AbstractTimestampEntity {
 
     @Id
+    @Column(name = "id", nullable = false)
+    private String id;
+
     @Column(name = "stake_address", nullable = false)
     private String stakeAddress;
 

@@ -10,7 +10,7 @@ metadata:
 spec:
   endpoints:
     - path: /actuator/prometheus
-      port: api
+      port: http
   namespaceSelector:
     matchNames:
       - {{ $.Release.Namespace }}

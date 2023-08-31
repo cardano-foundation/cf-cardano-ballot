@@ -36,6 +36,6 @@ cf-summit-2023-ledger-follower-api:
   enabled: true
   values:
     image:
-      tag: 0.2.10
+      tag: v0.2.10-1-ge407d6a
     bindOnEventIds: CF_SUMMIT_2023_24DC
 

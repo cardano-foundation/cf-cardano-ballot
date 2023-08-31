@@ -4,16 +4,16 @@ network: preprod
 
 domain: dev.cf-summit-2023-preprod.eu-west-1.metadata.dev.cf-deployments.org
 
-cf-cardano-ballot-infra:
+cf-summit-2023-infra:
   enabled: true
 
-cf-cardano-ballot-ui:
+cf-summit-2023-ui:
   enabled: false
   values:
     image:
       tag: 0.2.10
 
-cf-cardano-ballot-voting-api:
+cf-summit-2023-voting-api:
   enabled: true
   values:
     instances:
@@ -26,13 +26,13 @@ cf-cardano-ballot-voting-api:
     image:
       tag: 0.2.10
 
-cf-cardano-ballot-verification-api:
+cf-summit-2023-verification-api:
   enabled: true
   values:
     image:
       tag: 0.2.10
 
-cf-cardano-ballot-ledger-follower-api:
+cf-summit-2023-ledger-follower-api:
   enabled: true
   values:
     image:

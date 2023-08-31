@@ -1,9 +1,9 @@
-{{ if index .Values "cf-cardano-ballot-verification-api" "enabled" }}
+{{ if index .Values "cf-summit-2023-verification-api" "enabled" }}
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: cf-cardano-ballot-verification-api
+  name: cf-summit-2023-verification-api
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
@@ -19,7 +19,7 @@ spec:
           value: {{ .Values.domain }}
         - name: "network"
           value: {{ .Values.network }}
-      {{- with index .Values "cf-cardano-ballot-verification-api" "values" }}
+      {{- with index .Values "cf-summit-2023-verification-api" "values" }}
       values: |
 {{ toYaml . | indent 8 }}
       {{- end }}
@@ -31,6 +31,6 @@ spec:
       - CreateNamespace=true
 
   destination:
-    namespace: cf-cardano-ballot
+    namespace: cf-summit-2023
     server: {{ .Values.spec.destination.server }}
 {{ end }}

@@ -93,7 +93,7 @@ const Categories = () => {
             xs={!isMobile && listView === 'grid' ? 4 : 12}
             key={category.id}
           >
-            {listView === 'grid' ? (
+            {listView === 'grid' || isMobile ? (
               <Fade in={isVisible}>
                 <Card
                   className="categories-card"
@@ -232,10 +232,11 @@ const Categories = () => {
                   className="categories-card"
                   style={{
                     width: listView === 'list' || isMobile ? '100%' : '414px',
+                    height: '156px',
                   }}
                   key={category.id}
                 >
-                  <CardContent sx={{ minHeight: '350px' }}>
+                  <CardContent sx={{ display: 'flex', alignItems: 'center' }}>
                     <CardHeader
                         avatar={
                           <Avatar
@@ -245,7 +246,7 @@ const Categories = () => {
                           />
                         }
                     />
-                    <Box m={1}>
+                    <Box sx={{ marginLeft: 2, display: 'flex', flexDirection: 'column' }}>
                       <Typography
                           variant="h5"
                           color="text.primary"
@@ -253,8 +254,6 @@ const Categories = () => {
                       >
                         {category.presentationName}
                       </Typography>
-                    </Box>
-                    <Box m={1}>
                       <Typography
                           variant="body1"
                           color="text.primary"
@@ -262,7 +261,7 @@ const Categories = () => {
                         {category.description}
                       </Typography>
                     </Box>
-                    <Box m={1}>
+                    <Box sx={{ marginLeft: 'auto' }}>
                       <Button
                           component={Link}
                           to={{ pathname: `/nominees/${category.id}` }}
@@ -278,12 +277,14 @@ const Categories = () => {
                             fontWeight: 700,
                             textTransform: 'none',
                             backgroundColor: '#acfcc5 !important',
+                            marginRight: '28px'
                           }}
                       >
                         View Nominees
                       </Button>
                     </Box>
                   </CardContent>
+
                 </Card>
               </Fade>
             )}

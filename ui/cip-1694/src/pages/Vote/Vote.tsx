@@ -65,7 +65,7 @@ export const VotePage = () => {
   const [isCastingAVote, setIsCastingAVote] = useState(false);
   const [optionId, setOptionId] = useState(savedProposal || '');
   const [isConfirmWithWalletSignatureModalVisible, setIsConfirmWithWalletSignatureModalVisible] = useState(
-    isConnected && stakeAddress && !savedProposal && event?.notStarted === false
+    absoluteSlot && stakeAddress && !savedProposal && event?.notStarted === false
   );
   const [voteSubmitted, setVoteSubmitted] = useState(false);
   const [isToggledReceipt, toggleReceipt] = useToggle(false);

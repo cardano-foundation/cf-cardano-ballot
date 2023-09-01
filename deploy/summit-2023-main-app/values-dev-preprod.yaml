@@ -38,7 +38,7 @@ cf-user-verification-service:
   enabled: true
   values:
     image:
-      tag: 0.2.10
+      tag: 0.2.11-PR88
     corsAllowedOrigins: http://localhost:3000
 
 cf-summit-2023-ledger-follower-api:

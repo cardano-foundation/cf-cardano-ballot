@@ -19,7 +19,7 @@ import { RootState } from './store';
 
 function App() {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
   const eventCache = useSelector((state: RootState) => state.user.event);
 
   const dispatch = useDispatch();
@@ -56,7 +56,7 @@ function App() {
         />
         <div
           className="App"
-          style={{ padding: isMobile ? '0px 0px' : '10px 52px' }}
+          style={{ padding: isTablet ? '0px 0px' : '10px 52px' }}
         >
           <Header />
           <div className="main-content">

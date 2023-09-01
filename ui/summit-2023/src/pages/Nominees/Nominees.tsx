@@ -115,7 +115,7 @@ const Nominees = () => {
                 style={{
                   padding: '8px',
                   width: listView === 'list' ? '100%' : '414px',
-                  height: !isMobile && listView === 'list' ? '220px' : isMobile ? '440px' : '390px',
+                  height: !isMobile && listView === 'list' ? 'auto' : isMobile ? '440px' : '390px',
                 }}
               >
                 <CardContent>

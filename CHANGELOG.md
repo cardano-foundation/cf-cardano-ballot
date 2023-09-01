@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.12](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.11...v0.2.12) (2023-09-01)
+
+
+### Bug Fixes
+
+* **cip-1694:** hide modals on vote not found ([77fe463](https://github.com/cardano-foundation/cf-cardano-ballot/commit/77fe4638269fbfdeba6aeb748e7fdd310cdf143f))
+
 ## [0.2.11](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.10...v0.2.11) (2023-09-01)
 
 

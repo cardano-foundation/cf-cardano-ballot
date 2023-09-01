@@ -5,12 +5,18 @@
 
 .categories-title {
   color: var(--color-dark-grey);
-  font-size: 28px !important;
+  font-size: 56px !important;
   font-style: normal;
   font-weight: 600 !important;
   line-height: normal;
 }
-
 .categories-title::first-letter {
   text-transform: uppercase;
+}
+
+.categories-card.MuiPaper-root {
+  flex-shrink: 0;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 2px 3px 10px 0px rgba(67, 70, 86, 0.45);
 }

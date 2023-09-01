@@ -8,7 +8,7 @@ const Footer: React.FC = () => {
     <Box
       mt={5}
       textAlign="center"
-      style={{ background: 'transparent', boxShadow: 'none', padding: '10px' }}
+      style={{ background: 'transparent', boxShadow: 'none', padding: '10px', bottom: '0 !important' }}
     >
       <Grid container>
         <Grid

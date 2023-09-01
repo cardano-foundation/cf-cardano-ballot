@@ -12,7 +12,7 @@ spec:
   source:
     repoURL: git@github.com:cardano-foundation/cf-cardano-ballot.git
     targetRevision: {{ .Values.git.targetRevision | default "HEAD" }}
-    path: deploy/cf-cardano-ballot-ledger-follower-api
+    path: deploy/cf-user-verification-service
     helm:
       parameters:
         - name: "domain"

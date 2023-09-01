@@ -101,7 +101,7 @@ const Categories = () => {
               <Fade in={isVisible}>
                 <Card
                   className="categories-card"
-                  style={{
+                  sx={{
                     width: isMobile ? '100%' : '414px',
                   }}
                   key={category.id}

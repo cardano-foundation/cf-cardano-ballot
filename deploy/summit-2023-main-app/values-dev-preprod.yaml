@@ -25,12 +25,14 @@ cf-summit-2023-voting-api:
         voteCommitmentCronExpression: "0 0/30 * * * *"
     image:
       tag: 0.2.10
+    corsAllowedOrigins: http://localhost:3000
 
 cf-summit-2023-verification-api:
   enabled: true
   values:
     image:
       tag: 0.2.10
+    corsAllowedOrigins: http://localhost:3000
 
 cf-summit-2023-ledger-follower-api:
   enabled: true
@@ -41,3 +43,4 @@ cf-summit-2023-ledger-follower-api:
     yaci:
       startBlockHash: 69a01168a752b9f0aa3d1cd49d9a87fcffceb6738416c199740933fba002c922
       startSlotNumber: "37194728"
+    corsAllowedOrigins: http://localhost:3000

@@ -1,9 +1,9 @@
-{{ if index .Values "cf-cardano-ballot-ui" "enabled" }}
+{{ if index .Values "cf-summit-2023-ui" "enabled" }}
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: cf-cardano-ballot-ui
+  name: cf-summit-2023-ui
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
@@ -31,6 +31,6 @@ spec:
       - CreateNamespace=true
 
   destination:
-    namespace: cf-cardano-ballot
+    namespace: cf-summit-2023
     server: {{ .Values.spec.destination.server }}
 {{ end }}

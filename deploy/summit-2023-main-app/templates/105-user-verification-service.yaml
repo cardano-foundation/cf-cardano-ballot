@@ -1,9 +1,9 @@
-{{ if index .Values "grafana-dashboards" "enabled" }}
+{{ if index .Values "cf-user-verification-service" "enabled" }}
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: grafana-dashboards
+  name: cf-user-verification-service
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
@@ -12,7 +12,17 @@ spec:
   source:
     repoURL: git@github.com:cardano-foundation/cf-cardano-ballot.git
     targetRevision: {{ .Values.git.targetRevision | default "HEAD" }}
-    path: deploy/grafana-dashboards
+    path: deploy/cf-user-verification-service
+    helm:
+      parameters:
+        - name: "domain"
+          value: {{ .Values.domain }}
+        - name: "network"
+          value: {{ .Values.network }}
+      {{- with index .Values "cf-user-verification-service" "values" }}
+      values: |
+{{ toYaml . | indent 8 }}
+      {{- end }}
 
   syncPolicy:
     automated:
@@ -21,6 +31,6 @@ spec:
       - CreateNamespace=true
 
   destination:
-    namespace: observe
+    namespace: cf-summit-2023
     server: {{ .Values.spec.destination.server }}
 {{ end }}

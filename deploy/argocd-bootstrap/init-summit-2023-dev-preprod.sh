@@ -52,6 +52,14 @@ kubectl create secret -n cf-summit-2023 generic regcred \
   -o yaml \
   | kubectl apply -f -
 
+## SNS Secrets
+kubectl create secret -n cf-summit-2023 generic sns-secrets \
+  --from-env-file=../../.keys/sns-secrets \
+  --save-config \
+  --dry-run=client \
+  -o yaml \
+  | kubectl apply -f -
+
 ## Git Hub deploy key
 kubectl create secret generic github-deploy-key \
   --save-config \
@@ -68,7 +76,7 @@ echo "Updating helm dependencies for main app"
 helm dependency update
 
 helm upgrade --install argocd -n argocd . \
-  --set git.targetRevision=develop \
+  --set git.targetRevision=infra-develop \
   --set valueFile=values-dev-preprod.yaml \
   -f values-secrets.yaml \
   -f values-summit-2023-dev-preprod.yaml

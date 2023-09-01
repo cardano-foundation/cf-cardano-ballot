@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "voting-verification-app.fullname" . }}
+  name: {{ include "user-verification-service.fullname" . }}
   labels:
-    {{- include "voting-verification-app.labels" . | nindent 4 }}
+    {{- include "user-verification-service.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "voting-verification-app.selectorLabels" . | nindent 6 }}
+      {{- include "user-verification-service.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- include "voting-verification-app.selectorLabels" . | nindent 8 }}
+        {{- include "user-verification-service.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -29,6 +29,25 @@ spec:
               value: {{ .Values.network | default "preprod" | upper}}
             - name: CORS_ALLOWED_ORIGINS
               value: {{ tpl $.Values.corsAllowedOrigins $ }}
+
+            - name: AWS_SNS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: sns-secrets
+                  key: AWS_SNS_ACCESS_KEY_ID
+
+            - name: AWS_SNS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: sns-secrets
+                  key: AWS_SNS_SECRET_ACCESS_KEY
+
+            - name: AWS_SNS_REGION
+              valueFrom:
+                secretKeyRef:
+                  name: sns-secrets
+                  key: AWS_SNS_REGION
+
             - name: LEDGER_FOLLOWER_APP_URL
               value: {{ $.Values.ledgerFollowerAppUrl }}
           ports:

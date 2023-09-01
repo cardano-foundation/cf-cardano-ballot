@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/voting-verification-app
+  repository: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/user-verification-service
   tag: "0.0.1"
   pullPolicy: Always
 
@@ -11,7 +11,7 @@ fullnameOverride: ""
 
 service:
   type: ClusterIP
-  port: 9092
+  port: 9093
 
 ingress:
   enabled: true

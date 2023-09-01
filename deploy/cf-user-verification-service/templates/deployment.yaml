@@ -29,6 +29,25 @@ spec:
               value: {{ .Values.network | default "preprod" | upper}}
             - name: CORS_ALLOWED_ORIGINS
               value: {{ tpl $.Values.corsAllowedOrigins $ }}
+
+            - name: AWS_SNS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: sns-secrets
+                  key: AWS_SNS_ACCESS_KEY_ID
+
+            - name: AWS_SNS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: sns-secrets
+                  key: AWS_SNS_SECRET_ACCESS_KEY
+
+            - name: AWS_SNS_REGION
+              valueFrom:
+                secretKeyRef:
+                  name: sns-secrets
+                  key: AWS_SNS_REGION
+
             - name: LEDGER_FOLLOWER_APP_URL
               value: {{ $.Values.ledgerFollowerAppUrl }}
           ports:

@@ -52,6 +52,14 @@ kubectl create secret -n cf-summit-2023 generic regcred \
   -o yaml \
   | kubectl apply -f -
 
+## SNS Secrets
+kubectl create secret -n cf-summit-2023 generic sns-secrets \
+  --from-env-file=../../.keys/sns-secrets \
+  --save-config \
+  --dry-run=client \
+  -o yaml \
+  | kubectl apply -f -
+
 ## Git Hub deploy key
 kubectl create secret generic github-deploy-key \
   --save-config \

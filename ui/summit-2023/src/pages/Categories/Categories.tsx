@@ -233,7 +233,7 @@ const Categories = () => {
               <Fade in={isVisible}>
                 <Card
                   className="categories-card"
-                  style={{
+                  sx={{
                     width: listView === 'list' || isMobile ? '100%' : '414px',
                     height: '156px',
                   }}

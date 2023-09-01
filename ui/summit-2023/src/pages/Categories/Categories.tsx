@@ -32,9 +32,6 @@ const Categories = () => {
 
   const categories = eventCache.categories || CATEGORIES.data;
 
-  console.log('categories');
-  console.log(categories);
-
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 

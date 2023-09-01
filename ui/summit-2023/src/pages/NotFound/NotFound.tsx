@@ -16,17 +16,17 @@ const NotFound = () => {
         px={20}
         sx={{
           display: 'flex',
-          flexDirection: { xs: 'column', sm: 'row'},
+          flexDirection: { xs: 'column', sm: 'row' },
           height: { xs: 'auto', sm: '400px' },
-            paddingLeft: isTablet ? '0px' : '160px',
-            paddingRight: isTablet ? '0px' : '160px',
+          paddingLeft: isTablet ? '0px' : '160px',
+          paddingRight: isTablet ? '0px' : '160px',
         }}
       >
         <Box
           sx={{
             flex: '1',
             padding: '20px',
-            marginRight: isTablet  ? '0px' : '40px',
+            marginRight: isTablet ? '0px' : '40px',
             marginTop: !isTablet ? '10%' : '0px',
             order: { xs: '1', sm: '1' },
           }}
@@ -35,21 +35,22 @@ const NotFound = () => {
             className="nominees-title"
             variant="h4"
             sx={{
-                display: 'flex',
-                justifyContent: isTablet ? 'center' : 'start',
+              display: 'flex',
+              justifyContent: isTablet ? 'center' : 'start',
             }}
           >
             Page Not Found
           </Typography>
           <Typography
             className="nominees-description"
-            style={{ width: isTablet ? 'auto' : '550px', wordBreak: 'break-word' }}
             variant="body1"
             gutterBottom
             sx={{
-                display: 'flex',
-                justifyContent: isTablet ? 'center' : 'start',
-                marginTop: isTablet ? '60px' : '40px',
+              display: 'flex',
+              justifyContent: isTablet ? 'center' : 'start',
+              marginTop: isTablet ? '60px' : '40px',
+              width: isTablet ? 'auto' : '550px',
+              wordBreak: 'break-word',
             }}
           >
             Sorry, but it seems the page you're searching for doesn’t exist. Please feel free to click the button below

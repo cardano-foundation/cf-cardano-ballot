@@ -3,7 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import { Home } from '../pages/Home';
 import { Nominees } from '../pages/Nominees';
 import { NotFound } from '../pages/NotFound';
-import { Categories } from '../pages/Categories/Categories';
+import { Categories } from '../pages/Categories';
 
 export const PAGE_PATH = '/';
 

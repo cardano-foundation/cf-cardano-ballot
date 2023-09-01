@@ -25,14 +25,14 @@ import xIcon from '../../common/resources/images/x-icon.svg';
 import linkedinIcon from '../../common/resources/images/linkedin-icon.svg';
 import nominees from '../../common/resources/data/nominees.json';
 import { ROUTES } from '../../routes';
-import {useSelector} from 'react-redux';
-import {RootState} from '../../store';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store';
 
 const Nominees = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const eventCache = useSelector((state: RootState) => state.user.event);
-  const categories_ids = eventCache.categories.map(e => e.id);
+  const categories_ids = eventCache.categories.map((e) => e.id);
   if (!categories_ids.includes(id)) navigate(ROUTES.NOT_FOUND);
 
   const theme = useTheme();

@@ -37,6 +37,7 @@ import * as voteService from 'common/api/voteService';
 import { useToggle } from 'common/hooks/useToggle';
 import { HttpError } from 'common/handlers/httpHandler';
 import { getDateAndMonth } from 'common/utils/dateUtils';
+import { capitalize } from 'lodash';
 import { env } from '../../env';
 import styles from './Vote.module.scss';
 import { ConfirmWithWalletSignatureModal } from './components/ConfirmWithWalletSignatureModal/ConfirmWithWalletSignatureModal';
@@ -79,9 +80,9 @@ export const VotePage = () => {
 
   const items: OptionItem<ProposalPresentation['name']>[] = event?.categories
     ?.find(({ id }) => id === env.CATEGORY_ID)
-    ?.proposals?.map(({ name, presentationName: label }) => ({
+    ?.proposals?.map(({ name }) => ({
       name,
-      label,
+      label: capitalize(name.toLowerCase()),
       icon: iconsMap[name] || null,
     }));
 

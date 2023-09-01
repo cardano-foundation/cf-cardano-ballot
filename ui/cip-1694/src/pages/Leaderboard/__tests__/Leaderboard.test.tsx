@@ -14,11 +14,7 @@ import capitalize from 'lodash/capitalize';
 import { ROUTES } from 'common/routes';
 import { UserState } from 'common/store/types';
 import { renderWithProviders } from 'test/mockProviders';
-import {
-  useCardanoMock,
-  eventMock_finished,
-  voteStats,
-} from 'test/mocks';
+import { useCardanoMock, eventMock_finished, voteStats } from 'test/mocks';
 import { CustomRouter } from 'test/CustomRouter';
 import { ByCategory } from 'types/voting-app-types';
 import { Leaderboard } from '../Leaderboard';
@@ -97,9 +93,9 @@ describe('For the event that has already finished', () => {
     const statsItems =
       eventMock_finished?.categories
         ?.find(({ id }) => id === 'CIP-1694_Pre_Ratification_4619')
-        ?.proposals?.map(({ name, presentationName: label }) => ({
+        ?.proposals?.map(({ name }) => ({
           name,
-          label,
+          label: capitalize(name.toLowerCase()),
         })) || [];
 
     await waitFor(async () => {

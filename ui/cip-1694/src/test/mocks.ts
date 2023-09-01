@@ -83,7 +83,6 @@ export const useCardanoMock_notConnected: ReturnType<typeof useCardano> = {
 export const eventMock_active: EventPresentation = {
   id: 'CIP-1694_Pre_Ratification_4619',
   team: 'CF & IOG',
-  presentationName: 'CIP-1694 Pre-Ratification',
   votingEventType: 'STAKE_BASED',
   startSlot: null,
   endSlot: null,
@@ -97,22 +96,18 @@ export const eventMock_active: EventPresentation = {
     {
       id: 'CIP-1694_Pre_Ratification_4619',
       gdprProtection: false,
-      presentationName: 'CIP-1694 Pre-Ratification',
       proposals: [
         {
           id: '00048bb6-028d-4f13-b3e5-d19deb22d2c2',
           name: 'YES',
-          presentationName: 'Yes',
         },
         {
           id: 'e858953c-37f2-4d1b-b844-c2e4b125fe23',
           name: 'NO',
-          presentationName: 'No',
         },
         {
           id: '6f05012e-081e-4746-ba53-1833ff995fe3',
           name: 'ABSTAIN',
-          presentationName: 'Abstain',
         },
       ],
     },

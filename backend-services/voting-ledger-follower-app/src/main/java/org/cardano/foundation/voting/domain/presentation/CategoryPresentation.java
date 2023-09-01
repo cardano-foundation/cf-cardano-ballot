@@ -16,8 +16,6 @@ public class CategoryPresentation {
 
     private boolean gdprProtection;
 
-    private String presentationName;
-
     @Builder.Default
     private List<ProposalPresentation> proposals = new ArrayList<>();
 

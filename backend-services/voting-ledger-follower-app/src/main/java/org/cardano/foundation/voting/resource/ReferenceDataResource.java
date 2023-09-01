@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Locale;
-
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @RestController
@@ -24,7 +22,7 @@ public class ReferenceDataResource {
     @RequestMapping(value = "/event/{name}", method = GET, produces = "application/json")
     @Timed(value = "resource.reference.event", percentiles = { 0.3, 0.5, 0.95 } )
     public ResponseEntity<?> getEventByName(@PathVariable String name) {
-        return referencePresentationService.findEventReference(name, Locale.ENGLISH) // TODO support additional languages via http headers
+        return referencePresentationService.findEventReference(name) // TODO support additional languages via http headers
                 .map(eventReference -> ResponseEntity.ok().body(eventReference)
                 ).orElseGet(() -> ResponseEntity.notFound().build());
     }

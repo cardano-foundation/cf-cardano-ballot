@@ -83,6 +83,7 @@ export const Slides = ({ items }: SlideProps) => {
                     component={'span'}
                     sx={{
                       mb: '24px',
+                      width: '100%',
                     }}
                     fontSize={{
                       xs: '16px',

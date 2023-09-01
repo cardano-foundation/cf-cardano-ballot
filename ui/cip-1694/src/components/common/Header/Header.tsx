@@ -53,10 +53,7 @@ export const Header = () => {
           </Typography>
         </Grid>
         <Grid display={{ xs: 'none', md: 'flex' }}>
-          <HeaderActions
-            showNavigationItems={!event?.notStarted}
-            hideLeaderboard={!event?.finished}
-          />
+          <HeaderActions showNavigationItems={!event?.notStarted} />
         </Grid>
         <Grid
           display={{ xs: 'block', md: 'none' }}
@@ -90,7 +87,6 @@ export const Header = () => {
           justifyContent="space-between"
         >
           <HeaderActions
-            hideLeaderboard={!event?.finished}
             showNavigationItems={!event?.notStarted}
             onClick={() => setIsMobileMenuVisible(false)}
             isMobileMenu

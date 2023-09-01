@@ -1,8 +1,19 @@
 .container {
   color: #1d439b;
+  display: flex;
+  flex-direction: row;
   font-style: normal;
   font-weight: 400;
+  gap: 5px;
+  letter-spacing: normal;
   line-height: 22px;
   text-align: left;
-  letter-spacing: normal;
+  width: 100%;
+}
+
+.skeleton {
+  display: flex;
+  flex: 1;
+  font-size: 18px;
+  max-width: 160px;
 }

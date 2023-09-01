@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import cn from 'classnames';
 import toast from 'react-hot-toast';
@@ -9,7 +8,6 @@ import BlockIcon from '@mui/icons-material/Block';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import { ByCategory } from 'types/voting-app-types';
 import { ProposalPresentation } from 'types/voting-ledger-follower-types';
-import { ROUTES } from 'common/routes';
 import { RootState } from 'common/store';
 import * as leaderboardService from 'common/api/leaderboardService';
 import { Toast } from 'components/common/Toast/Toast';
@@ -20,15 +18,9 @@ import styles from './Leaderboard.module.scss';
 import { StatItem } from './types';
 
 export const Leaderboard = () => {
-  const navigate = useNavigate();
   const { isConnected } = useCardano();
   const event = useSelector((state: RootState) => state.user.event);
   const [stats, setStats] = useState<ByCategory['proposals']>();
-
-  // page should not be accessible in case the wallet is not connected, or the event is not finished yet
-  useEffect(() => {
-    if (!isConnected || event?.notStarted || !event?.finished) navigate(ROUTES.INTRO);
-  }, [event?.finished, event?.notStarted, isConnected, navigate]);
 
   const init = useCallback(async () => {
     try {
@@ -47,11 +39,13 @@ export const Leaderboard = () => {
     }
   }, []);
 
+  const canViewResults = useMemo(() => isConnected && event?.finished === true, [event?.finished, isConnected]);
+
   useEffect(() => {
-    if (isConnected) {
+    if (canViewResults) {
       init();
     }
-  }, [init, isConnected]);
+  }, [init, canViewResults]);
 
   const statsItems: StatItem<ProposalPresentation['name']>[] =
     event?.categories
@@ -61,7 +55,14 @@ export const Leaderboard = () => {
         label,
       })) || [];
 
+  const placeholder = '--';
   const statsSum = useMemo(() => stats && Object.values(stats)?.reduce((acc, { votes }) => (acc += votes), 0), [stats]);
+
+  const chartData = statsItems.map(({ label, name }) => ({
+    title: label,
+    value: stats?.[name]?.votes,
+    color: proposalColorsMap[name],
+  }));
 
   return (
     <div
@@ -104,7 +105,7 @@ export const Leaderboard = () => {
           <StatsTile
             title="Poll stats"
             dataTestId="poll-stats-tile"
-            summary={<span style={{ color: '#061d3c' }}>{statsSum}</span>}
+            summary={<span style={{ color: '#061d3c' }}>{statsSum || placeholder}</span>}
           >
             <Grid
               container
@@ -148,7 +149,7 @@ export const Leaderboard = () => {
                       variant="h5"
                       className={cn(styles.optionTitle, styles.statTitle)}
                     >
-                      {stats?.[name]?.votes}
+                      {stats?.[name]?.votes || placeholder}
                     </Typography>
                   </Grid>
                 </React.Fragment>
@@ -157,7 +158,7 @@ export const Leaderboard = () => {
           </StatsTile>
           <StatsTile
             title="Current voting stats"
-            summary={<span style={{ color: '#061d3c' }}>{statsSum}</span>}
+            summary={<span style={{ color: '#061d3c' }}>{statsSum || placeholder}</span>}
             dataTestId="currently-voting-tile"
           >
             <Grid
@@ -190,10 +191,15 @@ export const Leaderboard = () => {
                       className={cn(styles.optionTitle, styles.statTitle)}
                     >
                       {label}
-                      <span style={{ color: '#BBBBBB' }}>{' - '}</span>
-                      <span style={{ color: '#39486C' }}>
-                        {getPercentage(stats?.[name]?.votes, statsSum).toFixed(2)}%
-                      </span>
+                      {stats && (
+                        <>
+                          <span style={{ color: '#BBBBBB' }}>{' - '}</span>
+
+                          <span style={{ color: '#39486C' }}>
+                            {getPercentage(stats?.[name]?.votes, statsSum).toFixed(2)}%
+                          </span>
+                        </>
+                      )}
                     </Typography>
                   </Grid>
                 ))}
@@ -206,11 +212,7 @@ export const Leaderboard = () => {
                 <PieChart
                   style={{ height: '200px', width: '200px' }}
                   lineWidth={32}
-                  data={statsItems.map(({ label, name }) => ({
-                    title: label,
-                    value: 10,
-                    color: proposalColorsMap[name],
-                  }))}
+                  data={stats ? chartData : [{ title: '', value: 1, color: '#BBBBBB' }]}
                 />
               </Grid>
             </Grid>

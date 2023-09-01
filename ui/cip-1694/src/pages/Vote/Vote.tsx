@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import toast from 'react-hot-toast';
 import cn from 'classnames';
-import { Grid, Typography, Button } from '@mui/material';
+import { Grid, Typography, Button, CircularProgress } from '@mui/material';
 import DoneIcon from '@mui/icons-material/Done';
 import CloseIcon from '@mui/icons-material/Close';
 import DoDisturbIcon from '@mui/icons-material/DoDisturb';
@@ -39,6 +39,7 @@ import { HttpError } from 'common/handlers/httpHandler';
 import { getDateAndMonth } from 'common/utils/dateUtils';
 import { env } from '../../env';
 import styles from './Vote.module.scss';
+import { ConfirmWithWalletSignatureModal } from './components/ConfirmWithWalletSignatureModal/ConfirmWithWalletSignatureModal';
 
 const errorsMap = {
   INVALID_VOTING_POWER: 'To cast a vote, Voting Power should be more than 0',
@@ -60,10 +61,20 @@ export const VotePage = () => {
   const isVoteSubmittedModalVisible = useSelector((state: RootState) => state.user.isVoteSubmittedModalVisible);
   const [absoluteSlot, setAbsoluteSlot] = useState<number>();
   const savedProposal = useSelector((state: RootState) => state.user.proposal);
+  const [isReceiptDrawerInitializing, setIsReceiptDrawerInitializing] = useState(false);
   const [optionId, setOptionId] = useState(savedProposal || '');
+  const [isConfirmWithWalletSignatureModalVisible, setIsConfirmWithWalletSignatureModalVisible] = useState(
+    isConnected && !savedProposal && event?.notStarted === false
+  );
   const [voteSubmitted, setVoteSubmitted] = useState(false);
   const [isToggledReceipt, toggleReceipt] = useToggle(false);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (absoluteSlot && !savedProposal && event?.notStarted === false) {
+      setIsConfirmWithWalletSignatureModalVisible(true);
+    }
+  }, [event?.notStarted, absoluteSlot, savedProposal]);
 
   const items: OptionItem<ProposalPresentation['name']>[] = event?.categories
     ?.find(({ id }) => id === env.CATEGORY_ID)
@@ -124,12 +135,19 @@ export const VotePage = () => {
           console.log(message);
         }
       }
+      setIsReceiptDrawerInitializing(false);
     },
     [absoluteSlot, dispatch, signMessagePromisified, stakeAddress]
   );
 
   const openReceiptDrawer = async () => {
-    await fetchReceipt({ cb: toggleReceipt });
+    setIsReceiptDrawerInitializing(true);
+    await fetchReceipt({
+      cb: () => {
+        toggleReceipt();
+        setIsReceiptDrawerInitializing(false);
+      },
+    });
   };
 
   const init = useCallback(async () => {
@@ -155,13 +173,6 @@ export const VotePage = () => {
       init();
     }
   }, [init, isConnected]);
-
-  // fetch vote receipt if there is no saved selection and event is active or finished
-  useEffect(() => {
-    if (absoluteSlot && !savedProposal && event?.notStarted === false) {
-      fetchReceipt({});
-    }
-  }, [absoluteSlot, fetchReceipt, savedProposal, event?.notStarted]);
 
   const onChangeOption = (option: string | null) => {
     setOptionId(option);
@@ -288,7 +299,7 @@ export const VotePage = () => {
               fontSize={{ xs: '16px', md: '28px' }}
               data-testid="event-description"
             >
-              Do you want CIP-1694 that will allow On-Chain Governance, implemented on the Cardano Blockchain?
+              (..)
             </Typography>
           </Grid>
           <Grid item>
@@ -335,8 +346,15 @@ export const VotePage = () => {
                     aria-label="Receipt"
                     startIcon={<ReceiptIcon />}
                     data-testid="show-receipt-button"
+                    disabled={isReceiptDrawerInitializing}
                   >
                     Vote receipt
+                    {isReceiptDrawerInitializing && (
+                      <CircularProgress
+                        size={20}
+                        sx={{ marginLeft: '10px' }}
+                      />
+                    )}
                   </Button>
                 )}
                 {showConnectButton && (
@@ -427,6 +445,14 @@ export const VotePage = () => {
             the results!
           </>
         }
+      />
+      <ConfirmWithWalletSignatureModal
+        openStatus={isConfirmWithWalletSignatureModalVisible}
+        onConfirm={() => fetchReceipt({ cb: () => setIsConfirmWithWalletSignatureModalVisible(false) })}
+        name="vote-submitted-modal"
+        id="vote-submitted-modal"
+        title="Wallet signature"
+        description="We need to check if you’ve already voted. Please confirm with your wallet signature."
       />
     </>
   );

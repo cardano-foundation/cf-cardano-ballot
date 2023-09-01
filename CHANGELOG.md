@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.13](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.12...v0.2.13) (2023-09-01)
+
+
+### Bug Fixes
+
+* **cip-1694:** uncomment logs ([dd975eb](https://github.com/cardano-foundation/cf-cardano-ballot/commit/dd975eb6ed4b82f5dc07c04a4c1ecf9e3aa8fa6f))
+* **cip-1694:** uncomment logs ([1561420](https://github.com/cardano-foundation/cf-cardano-ballot/commit/1561420bffb84ee5aa40722b543e60aa1a5ddf20))
+
 ## [0.2.12](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.11...v0.2.12) (2023-09-01)
 
 

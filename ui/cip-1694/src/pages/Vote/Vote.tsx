@@ -121,6 +121,8 @@ export const VotePage = () => {
         if (error?.message === 'VOTE_NOT_FOUND') {
           dispatch(setVoteReceipt({ receipt: null }));
           dispatch(setIsReceiptFetched({ isFetched: true }));
+          setIsReceiptDrawerInitializing(false);
+          setIsConfirmWithWalletSignatureModalVisible(false);
           return;
         }
         const message = `${errorPrefix}, ${error?.info || error?.message || error?.toString()}`;
@@ -136,6 +138,7 @@ export const VotePage = () => {
         }
       }
       setIsReceiptDrawerInitializing(false);
+      setIsConfirmWithWalletSignatureModalVisible(false);
     },
     [absoluteSlot, dispatch, signMessagePromisified, stakeAddress]
   );

@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.11](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.10...v0.2.11) (2023-09-01)
+
+
+### Features
+
+* **cip-1694:** add preloaders, confirmation modals ([1b61063](https://github.com/cardano-foundation/cf-cardano-ballot/commit/1b61063d829ad808da53d50054f600d51889250f))
+* event and category leaderboard availability check. ([e407d6a](https://github.com/cardano-foundation/cf-cardano-ballot/commit/e407d6a16c9474cdd9c5b7bd019ed5d3b0bab446))
+
 ## [0.2.10](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.9...v0.2.10) (2023-08-31)
 
 

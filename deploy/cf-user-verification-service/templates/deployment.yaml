@@ -35,11 +35,26 @@ spec:
             - name: DB_DIALECT
               value: "org.hibernate.dialect.PostgreSQLDialect"
 
-            - name: DB_URL
+            ## Postgres
+            - name: POSTGRES_HOST
               valueFrom:
                 secretKeyRef:
                   name: postgres-secrets
-                  key: POSTGRES_URL
+                  key: POSTGRES_HOST
+            - name: POSTGRES_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: POSTGRES_PORT
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: POSTGRES_DB
+            - name: DB_SCHEMA
+              value: {{ .Values.dbSchema | default "public" }}
+            - name: DB_URL
+              value: jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)?currentSchema=$(DB_SCHEMA)
             - name: DB_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -50,10 +65,8 @@ spec:
                 secretKeyRef:
                   name: postgres-secrets
                   key: POSTGRES_PASSWORD
-            - name: DB_SCHEMA
-              value: {{ .Values.dbSchema }}
 
-
+            ## SNS Text
             - name: AWS_SNS_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:

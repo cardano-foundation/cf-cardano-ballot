@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.14](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.13...v0.2.14) (2023-09-01)
+
+
+### Bug Fixes
+
+* **cip-1694:** wait for absolute slot to vote ([4baf24d](https://github.com/cardano-foundation/cf-cardano-ballot/commit/4baf24d68d00f8e5a9be8a9c070c82b9352da062))
+
 ## [0.2.13](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.12...v0.2.13) (2023-09-01)
 
 

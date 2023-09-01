@@ -62,6 +62,7 @@ export const VotePage = () => {
   const [absoluteSlot, setAbsoluteSlot] = useState<number>();
   const savedProposal = useSelector((state: RootState) => state.user.proposal);
   const [isReceiptDrawerInitializing, setIsReceiptDrawerInitializing] = useState(false);
+  const [isCastingAVote, setIsCastingAVote] = useState(false);
   const [optionId, setOptionId] = useState(savedProposal || '');
   const [isConfirmWithWalletSignatureModalVisible, setIsConfirmWithWalletSignatureModalVisible] = useState(
     isConnected && stakeAddress && !savedProposal && event?.notStarted === false
@@ -207,6 +208,7 @@ export const VotePage = () => {
     });
 
     try {
+      setIsCastingAVote(true);
       const requestVoteObject = await signMessagePromisified(canonicalVoteInput);
       await voteService.castAVoteWithDigitalSignature(requestVoteObject);
       dispatch(setIsVoteSubmittedModalVisible({ isVisible: true }));
@@ -233,6 +235,7 @@ export const VotePage = () => {
         console.log('Failed to cast e vote', error?.message || error.toString());
       }
     }
+    setIsCastingAVote(true);
   };
 
   const cantSelectOptions =
@@ -366,11 +369,17 @@ export const VotePage = () => {
                     })}
                     size="large"
                     variant="contained"
-                    disabled={!optionId || !isReceiptFetched}
+                    disabled={!optionId || !isReceiptFetched || isCastingAVote}
                     onClick={() => handleSubmit()}
                     data-testid="proposal-submit-button"
                   >
                     Submit your vote
+                    {isCastingAVote && (
+                      <CircularProgress
+                        size={20}
+                        sx={{ marginLeft: '10px' }}
+                      />
+                    )}
                   </Button>
                 )}
                 {event?.notStarted && (

@@ -64,17 +64,17 @@ export const VotePage = () => {
   const [isReceiptDrawerInitializing, setIsReceiptDrawerInitializing] = useState(false);
   const [optionId, setOptionId] = useState(savedProposal || '');
   const [isConfirmWithWalletSignatureModalVisible, setIsConfirmWithWalletSignatureModalVisible] = useState(
-    isConnected && !savedProposal && event?.notStarted === false
+    isConnected && stakeAddress && !savedProposal && event?.notStarted === false
   );
   const [voteSubmitted, setVoteSubmitted] = useState(false);
   const [isToggledReceipt, toggleReceipt] = useToggle(false);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (absoluteSlot && !savedProposal && event?.notStarted === false) {
+    if (absoluteSlot && stakeAddress && !savedProposal && event?.notStarted === false) {
       setIsConfirmWithWalletSignatureModalVisible(true);
     }
-  }, [event?.notStarted, absoluteSlot, savedProposal]);
+  }, [event?.notStarted, absoluteSlot, savedProposal, stakeAddress]);
 
   const items: OptionItem<ProposalPresentation['name']>[] = event?.categories
     ?.find(({ id }) => id === env.CATEGORY_ID)
@@ -104,9 +104,7 @@ export const VotePage = () => {
           dispatch(setSelectedProposal({ proposal: receiptResponse.proposal }));
         } else {
           const message = `${errorPrefix}', ${receiptResponse?.title}, ${receiptResponse?.detail}`;
-          if (process.env.NODE_ENV === 'development') {
-            console.log(message);
-          }
+          console.log(message);
           toast(
             <Toast
               message={errorPrefix}
@@ -133,9 +131,7 @@ export const VotePage = () => {
             icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
           />
         );
-        if (process.env.NODE_ENV === 'development') {
-          console.log(message);
-        }
+        console.log(message);
       }
       setIsReceiptDrawerInitializing(false);
       setIsConfirmWithWalletSignatureModalVisible(false);
@@ -158,9 +154,7 @@ export const VotePage = () => {
       setAbsoluteSlot((await voteService.getSlotNumber())?.absoluteSlot);
     } catch (error) {
       const message = `Failed to fecth slot number: ${error?.message}`;
-      if (process.env.NODE_ENV === 'development') {
-        console.log(message);
-      }
+      console.log(message);
       toast(
         <Toast
           message="Failed to fecth slot number"
@@ -193,9 +187,7 @@ export const VotePage = () => {
         error instanceof Error || error instanceof HttpError ? error?.message : error
       }`;
 
-      if (process.env.NODE_ENV === 'development') {
-        console.log(message);
-      }
+      console.log(message);
       toast(
         <Toast
           error
@@ -229,9 +221,7 @@ export const VotePage = () => {
           />
         );
         setOptionId('');
-        if (process.env.NODE_ENV === 'development') {
-          console.log('Failed to cast e vote', errorsMap[error?.message as keyof typeof errorsMap] || error?.message);
-        }
+        console.log('Failed to cast e vote', errorsMap[error?.message as keyof typeof errorsMap] || error?.message);
       } else if (error instanceof Error) {
         toast(
           <Toast
@@ -240,9 +230,7 @@ export const VotePage = () => {
             icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
           />
         );
-        if (process.env.NODE_ENV === 'development') {
-          console.log('Failed to cast e vote', error?.message || error.toString());
-        }
+        console.log('Failed to cast e vote', error?.message || error.toString());
       }
     }
   };

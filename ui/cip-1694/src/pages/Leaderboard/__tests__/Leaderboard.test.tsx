@@ -18,11 +18,9 @@ import {
   useCardanoMock,
   eventMock_finished,
   voteStats,
-  useCardanoMock_notConnected,
-  eventMock_notStarted,
-  eventMock_active,
 } from 'test/mocks';
 import { CustomRouter } from 'test/CustomRouter';
+import { ByCategory } from 'types/voting-app-types';
 import { Leaderboard } from '../Leaderboard';
 import { proposalColorsMap, getPercentage } from '../utils';
 
@@ -166,80 +164,10 @@ describe('For the event that has already finished', () => {
         lineWidth: 32,
         data: statsItems.map(({ label, name }) => ({
           title: label,
-          value: 10,
+          value: (voteStats.proposals?.[name as any] as unknown as ByCategory['proposals'])?.votes,
           color: proposalColorsMap[name],
         })),
       });
-    });
-  });
-
-  test('should redirect to intro page in case wallet is not connected', async () => {
-    mockUseCardano.mockReset();
-    mockUseCardano.mockReturnValue(useCardanoMock_notConnected);
-    const history = createMemoryHistory({ initialEntries: [ROUTES.LEADERBOARD] });
-
-    const historyPushSpy = jest.spyOn(history, 'push');
-    renderWithProviders(
-      <CustomRouter history={history}>
-        <Leaderboard />
-      </CustomRouter>,
-      { preloadedState: { user: { event: eventMock_finished } as UserState } }
-    );
-
-    await waitFor(async () => {
-      expect((historyPushSpy.mock.lastCall[0] as unknown as any).pathname).toEqual(ROUTES.INTRO);
-    });
-  });
-});
-
-describe("For the event that hasn't started yet", () => {
-  beforeEach(() => {
-    mockUseCardano.mockReturnValue(useCardanoMock);
-    mockGetStats.mockReturnValue(voteStats);
-  });
-  afterEach(() => {
-    jest.clearAllMocks();
-    cleanup();
-  });
-  test('should redirect to intro page', async () => {
-    const history = createMemoryHistory({ initialEntries: [ROUTES.LEADERBOARD] });
-
-    const historyPushSpy = jest.spyOn(history, 'push');
-    renderWithProviders(
-      <CustomRouter history={history}>
-        <Leaderboard />
-      </CustomRouter>,
-      { preloadedState: { user: { event: eventMock_notStarted } as UserState } }
-    );
-
-    await waitFor(async () => {
-      expect((historyPushSpy.mock.lastCall[0] as unknown as any).pathname).toEqual(ROUTES.INTRO);
-    });
-  });
-});
-
-describe('For the active event:', () => {
-  beforeEach(() => {
-    mockUseCardano.mockReturnValue(useCardanoMock);
-    mockGetStats.mockReturnValue(voteStats);
-  });
-  afterEach(() => {
-    jest.clearAllMocks();
-    cleanup();
-  });
-  test('should redirect to intro page', async () => {
-    const history = createMemoryHistory({ initialEntries: [ROUTES.LEADERBOARD] });
-
-    const historyPushSpy = jest.spyOn(history, 'push');
-    renderWithProviders(
-      <CustomRouter history={history}>
-        <Leaderboard />
-      </CustomRouter>,
-      { preloadedState: { user: { event: eventMock_active } as UserState } }
-    );
-
-    await waitFor(async () => {
-      expect((historyPushSpy.mock.lastCall[0] as unknown as any).pathname).toEqual(ROUTES.INTRO);
     });
   });
 });

@@ -322,7 +322,7 @@ describe('Vote receipt:', () => {
 
   describe('FULL', () => {
     test('should render proper state', async () => {
-      mockVerifyVote.mockImplementation(async () => await Promise.resolve({ isVerified: false }));
+      mockVerifyVote.mockImplementation(async () => await Promise.resolve({ verified: false }));
       const JsonViewerContentMock = 'JsonViewerContent';
       mockJsonViewer.mockImplementation(() => <span>{JsonViewerContentMock}</span>);
       const fetchReceiptMock = jest.fn();
@@ -482,7 +482,7 @@ describe('Vote receipt:', () => {
     });
     describe('VERIFIED', () => {
       test('should render proper state', async () => {
-        mockVerifyVote.mockImplementation(async () => await Promise.resolve({ isVerified: true }));
+        mockVerifyVote.mockImplementation(async () => await Promise.resolve({ verified: true }));
         const history = createMemoryHistory({ initialEntries: [ROUTES.INTRO] });
         await act(() =>
           renderWithProviders(

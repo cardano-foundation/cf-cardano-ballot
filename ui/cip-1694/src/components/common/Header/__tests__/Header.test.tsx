@@ -60,7 +60,7 @@ describe('For ongoing event:', () => {
       expect(headerLogo.textContent).toEqual('CIP-1694 Ratification');
 
       const leaderboardLink = await within(header).queryByTestId('leaderboard-link');
-      expect(leaderboardLink).toBeNull();
+      expect(leaderboardLink).not.toBeNull();
 
       const voteLink = await within(header).queryByTestId('vote-link');
       expect(voteLink).not.toBeNull();

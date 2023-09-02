@@ -50,6 +50,27 @@ describe('For ongoing event:', () => {
     cleanup();
   });
 
+  test('should display proper state when the event related data is loading', async () => {
+    const history = createMemoryHistory({ initialEntries: [ROUTES.INTRO] });
+
+    renderWithProviders(
+      <CustomRouter history={history}>
+        <IntroductionPage />
+      </CustomRouter>
+    );
+
+    await waitFor(async () => {
+      const introductionPage = await screen.queryByTestId('introduction-page');
+
+      const eventTime = await within(introductionPage).queryByTestId('event-time');
+      expect(eventTime).not.toBeNull();
+      expect(eventTime.textContent).toEqual('Voting closes: ');
+
+      const preloader = await within(introductionPage).queryByTestId('event-time-loader');
+      expect(preloader).not.toBeNull();
+    });
+  });
+
   test('should display proper state', async () => {
     const history = createMemoryHistory({ initialEntries: [ROUTES.INTRO] });
 

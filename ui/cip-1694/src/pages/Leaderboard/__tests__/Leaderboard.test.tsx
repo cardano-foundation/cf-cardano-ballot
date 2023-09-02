@@ -14,11 +14,7 @@ import capitalize from 'lodash/capitalize';
 import { ROUTES } from 'common/routes';
 import { UserState } from 'common/store/types';
 import { renderWithProviders } from 'test/mockProviders';
-import {
-  useCardanoMock,
-  eventMock_finished,
-  voteStats,
-} from 'test/mocks';
+import { useCardanoMock, eventMock_finished, voteStats, eventMock_active } from 'test/mocks';
 import { CustomRouter } from 'test/CustomRouter';
 import { ByCategory } from 'types/voting-app-types';
 import { Leaderboard } from '../Leaderboard';
@@ -167,6 +163,82 @@ describe('For the event that has already finished', () => {
           value: (voteStats.proposals?.[name as any] as unknown as ByCategory['proposals'])?.votes,
           color: proposalColorsMap[name],
         })),
+      });
+    });
+  });
+});
+
+describe("For the event that hasn't finished yet", () => {
+  beforeEach(() => {
+    mockUseCardano.mockReturnValue(useCardanoMock);
+    mockGetStats.mockReturnValue(voteStats);
+  });
+  afterEach(() => {
+    jest.clearAllMocks();
+    cleanup();
+  });
+  test('should render proper state', async () => {
+    const history = createMemoryHistory({ initialEntries: [ROUTES.LEADERBOARD] });
+
+    renderWithProviders(
+      <CustomRouter history={history}>
+        <Leaderboard />
+      </CustomRouter>,
+      { preloadedState: { user: { event: eventMock_active } as UserState } }
+    );
+
+    const statsSum = '--';
+    const placeholder = '--';
+    const stats = Object.entries(voteStats.proposals);
+
+    await waitFor(async () => {
+      expect(mockGetStats).not.toBeCalled();
+
+      const leaderboardPage = await screen.queryByTestId('leaderboard-page');
+      expect(leaderboardPage).not.toBeNull();
+
+      const leaderboardTitle = await within(leaderboardPage).queryByTestId('leaderboard-title');
+      expect(leaderboardTitle).not.toBeNull();
+      expect(leaderboardTitle.textContent).toEqual('Leaderboard');
+
+      const pollStatsTile = await within(leaderboardPage).queryByTestId('poll-stats-tile');
+      expect(pollStatsTile).not.toBeNull();
+
+      const pollStatsTileTitle = await within(pollStatsTile).queryByTestId('tile-title');
+      expect(pollStatsTileTitle).not.toBeNull();
+      expect(pollStatsTileTitle.textContent).toEqual('Poll stats');
+
+      const pollStatsTileSummary = await within(pollStatsTile).queryByTestId('tile-summary');
+      expect(pollStatsTileSummary).not.toBeNull();
+      expect(pollStatsTileSummary.textContent).toEqual(`${statsSum}`);
+
+      const pollStatsItems = await within(pollStatsTile).queryAllByTestId('poll-stats-item');
+      expect(pollStatsItems[0].textContent).toEqual(`${capitalize(stats[0][0].toLowerCase())}${placeholder}`);
+      expect(pollStatsItems[1].textContent).toEqual(`${capitalize(stats[1][0].toLowerCase())}${placeholder}`);
+      expect(pollStatsItems[2].textContent).toEqual(`${capitalize(stats[2][0].toLowerCase())}${placeholder}`);
+
+      const currentlyVotingTile = await within(leaderboardPage).queryByTestId('currently-voting-tile');
+      expect(currentlyVotingTile).not.toBeNull();
+
+      const currentlyVotingTileTitle = await within(currentlyVotingTile).queryByTestId('tile-title');
+      expect(currentlyVotingTileTitle).not.toBeNull();
+      expect(currentlyVotingTileTitle.textContent).toEqual('Current voting stats');
+
+      const currentlyVotingTileSummary = await within(currentlyVotingTile).queryByTestId('tile-summary');
+      expect(currentlyVotingTileSummary).not.toBeNull();
+      expect(currentlyVotingTileSummary.textContent).toEqual(`${statsSum}`);
+
+      const currentlyVotingItems = await within(currentlyVotingTile).queryAllByTestId('currently-voting-item');
+      expect(currentlyVotingItems[0].textContent).toEqual(`${capitalize(stats[0][0].toLowerCase())}`);
+      expect(currentlyVotingItems[1].textContent).toEqual(`${capitalize(stats[1][0].toLowerCase())}`);
+      expect(currentlyVotingItems[2].textContent).toEqual(`${capitalize(stats[2][0].toLowerCase())}`);
+
+      const currentlyVotingChart = await within(currentlyVotingTile).queryByTestId('pie-chart');
+      expect(currentlyVotingChart).toBeInTheDocument();
+      expect(mockPieChart.mock.lastCall[0]).toEqual({
+        style: { height: '200px', width: '200px' },
+        lineWidth: 32,
+        data: [{ title: '', value: 1, color: '#BBBBBB' }],
       });
     });
   });

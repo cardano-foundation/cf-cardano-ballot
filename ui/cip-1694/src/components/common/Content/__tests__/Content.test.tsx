@@ -85,7 +85,7 @@ describe('ConnectWalletModal', () => {
     );
 
     expect(within(modal).queryByTestId('connect-wallet-list')).not.toBeNull();
-    await act(() => {
+    await act(async () => {
       mockConnectWalletList.mock.lastCall[0].onConnectError();
     });
 
@@ -111,7 +111,7 @@ describe('ConnectWalletModal', () => {
       { preloadedState: { user: { isConnectWalletModalVisible: true } as UserState } }
     );
 
-    await act(() => {
+    await act(async () => {
       mockConnectWalletList.mock.lastCall[0].onConnect();
     });
 

@@ -24,6 +24,7 @@ export const EventTime = ({ endTime, startTime, eventHasntStarted, eventHasFinis
       {showPlaceholder ? (
         <Skeleton
           variant="text"
+          data-testid="event-time-loader"
           className={styles.skeleton}
         />
       ) : (

@@ -24,13 +24,13 @@ export const ConfirmWithWalletSignatureModal = (props: ConfirmWithWalletSignatur
       open={!!openStatus}
       aria-labelledby={name}
       PaperProps={{ sx: { width: '400px', borderRadius: '16px' } }}
-      data-testid="vote-submitted-modal"
+      data-testid="confirm-with-signature-modal"
     >
       <DialogTitle
         sx={{ padding: { xs: '20px', md: '30px 30px 20px 30px' } }}
         className={styles.dialogTitle}
         id={id}
-        data-testid="vote-submitted-title"
+        data-testid="confirm-with-signature-title"
       >
         {title}
       </DialogTitle>
@@ -54,7 +54,7 @@ export const ConfirmWithWalletSignatureModal = (props: ConfirmWithWalletSignatur
                 className={styles.description}
                 component="div"
                 variant="h5"
-                data-testid="vote-submitted-description"
+                data-testid="confirm-with-signature-description"
               >
                 {description}
               </Typography>
@@ -70,7 +70,7 @@ export const ConfirmWithWalletSignatureModal = (props: ConfirmWithWalletSignatur
                   variant="contained"
                   onClick={() => onConfirm()}
                   sx={{}}
-                  data-testid="vote-submitted-cta"
+                  data-testid="confirm-with-signature-cta"
                 >
                   Confirm
                 </Button>

@@ -63,6 +63,7 @@ export const OptionCard = ({
                 variant="rounded"
                 height="100%"
                 width="100%"
+                data-testid="option-card-loader"
               />
             </Grid>
           ))}

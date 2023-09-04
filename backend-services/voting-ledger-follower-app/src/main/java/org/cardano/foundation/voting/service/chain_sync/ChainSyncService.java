@@ -21,8 +21,8 @@ public class ChainSyncService {
     @Qualifier("yaci_blockfrost")
     private BFBackendService yaciBackendService;
 
-    @Value("${chain.sync.buffer:5}")
-    private final int chainSyncBuffer = 5;
+    @Value("${chain.sync.buffer:2}")
+    private final int chainSyncBuffer = 2;
 
     public SyncStatus getSyncStatus() {
         try {

@@ -17,36 +17,27 @@ import java.util.Optional;
 @Slf4j
 @SuperBuilder
 @NoArgsConstructor
+@Getter
+@Setter
 public class UserVerification extends AbstractTimestampEntity {
 
     @Id
     @Column(name = "id", nullable = false)
-    @Getter
-    @Setter
     private String id;
 
     @Column(name = "stake_address", nullable = false)
-    @Getter
-    @Setter
     private String stakeAddress;
 
     @Column(name = "event_id", nullable = false)
-    @Getter
-    @Setter
     private String eventId;
 
     @Column(name = "verification_code", nullable = false)
-    @Getter
-    @Setter
     private String verificationCode;
 
     @Column(name = "request_id", nullable = false)
-    @Getter
-    @Setter
     private String requestId;
 
-    @Column(name = "phone_number_hash")
-    @Nullable
+    @Column(name = "phone_number_hash", nullable = false)
     private String phoneNumberHash;
 
     @Column(name = "status", nullable = false)
@@ -88,14 +79,6 @@ public class UserVerification extends AbstractTimestampEntity {
     public enum Provider {
         TWILIO,
         AWS_SNS
-    }
-
-    public Optional<String> getPhoneNumberHash() {
-        return Optional.ofNullable(phoneNumberHash);
-    }
-
-    public void setPhoneNumberHash(Optional<String> phoneNumberHash) {
-        this.phoneNumberHash = phoneNumberHash.orElse(null);
     }
 
     @Override

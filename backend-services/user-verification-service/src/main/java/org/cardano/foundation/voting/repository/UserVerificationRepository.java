@@ -12,8 +12,14 @@ import java.util.Optional;
 @Repository
 public interface UserVerificationRepository extends JpaRepository<UserVerification, String> {
 
+    @Query("SELECT uv FROM UserVerification uv WHERE uv.eventId = :eventId")
+    List<UserVerification> findAllByEventId(@Param("eventId") String eventId);
+
+    @Query("SELECT uv FROM UserVerification uv WHERE uv.status = 'VERIFIED' AND uv.eventId = :eventId AND uv.phoneNumberHash = :phoneNumberHash")
+    List<UserVerification> findAllCompletedPerPhone(@Param("eventId") String eventId, @Param("phoneNumberHash") String phoneNumberHash);
+
     @Query("SELECT uv FROM UserVerification uv WHERE uv.status = 'VERIFIED' AND uv.eventId = :eventId AND uv.stakeAddress = :stakeAddress")
-    List<UserVerification> findAllCompleted(@Param("eventId") String eventId, @Param("stakeAddress") String stakeAddress);
+    List<UserVerification> findAllCompletedPerStake(@Param("eventId") String eventId, @Param("stakeAddress") String stakeAddress);
 
     @Query("SELECT uv FROM UserVerification uv WHERE uv.status = 'PENDING' AND uv.eventId = :eventId")
     List<UserVerification> findAllPending(@Param("eventId") String eventId);

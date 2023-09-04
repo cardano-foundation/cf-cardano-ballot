@@ -235,6 +235,12 @@ const VerifyWallet = (props: VerifyWalletProps) => {
               onChange={(event, checked) => setCheckImNotARobot(checked)}
               name="notRobot"
               color="primary"
+              sx={{
+                color: checkImNotARobot ? '#056122' : '',
+                '&.Mui-checked': {
+                  color: '#000',
+                },
+              }}
             />
           }
           label="I am not a robot"

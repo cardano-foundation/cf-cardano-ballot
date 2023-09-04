@@ -2,8 +2,8 @@ import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { Home } from '../pages/Home';
 import { Nominees } from '../pages/Nominees';
-import { Categories } from '../pages/Categories';
 import { NotFound } from '../pages/NotFound';
+import { Categories } from '../pages/Categories';
 
 export const PAGE_PATH = '/';
 
@@ -40,8 +40,8 @@ const PageRouter = () => {
           element={<NotFound />}
         />
         <Route
-            path="*"
-            element={<NotFound />}
+          path="*"
+          element={<NotFound />}
         />
       </Routes>
     </>

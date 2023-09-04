@@ -15,6 +15,13 @@ import CallIcon from '@mui/icons-material/Call';
 import { MuiTelInput, matchIsValidTel, MuiTelInputCountry } from 'mui-tel-input';
 import './VerifyWallet.scss';
 import discordLogo from '../../common/resources/images/discord-icon.svg';
+import { startVerification } from 'common/api/verificationService';
+import { env } from 'common/constants/env';
+import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
+import { useDispatch, useSelector } from 'react-redux';
+import { setUserStartsVerification } from '../../store/userSlice';
+import { VerificationStarts } from '../../store/types';
+import { RootState } from '../../store';
 
 // TODO: env.
 const excludedCountries: MuiTelInputCountry[] | undefined = [];
@@ -33,10 +40,16 @@ const VerifyWallet = (props: VerifyWalletProps) => {
   const [phoneCodeIsSent, setPhoneCodeIsSent] = useState<boolean>(false);
   const [checkImNotARobot, setCheckImNotARobot] = useState<boolean>(false);
   const [isPhoneInputDisabled] = useState<boolean>(false);
-
+  const { stakeAddress } = useCardano();
+  const dispatch = useDispatch();
+  const userVerification = useSelector((state: RootState) => state.user.userVerification);
+  const userStartsVerification = Object.keys(userVerification).length !== 0 && userVerification[stakeAddress];
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   inputRefs.current = [];
+
+  console.log('userStartsVerification');
+  console.log(userStartsVerification);
 
   const handleSelectOption = (option: string) => {
     setVerifyOption(option);
@@ -46,10 +59,20 @@ const VerifyWallet = (props: VerifyWalletProps) => {
     setPhone(phoneNumber);
   };
 
-  const handleSendCode = () => {
+  const handleSendCode = async () => {
     if (matchIsValidTel(phone) && checkImNotARobot) {
-      setPhoneCodeIsSent(true);
-      setCheckImNotARobot(false);
+      startVerification(env.EVENT_ID, stakeAddress, phone.trim().replace(' ', ''))
+        .then((response: VerificationStarts) => {
+          console.log('response handleSendCode');
+          console.log(response);
+          dispatch(setUserStartsVerification({ stakeAddress, verificationStarts: response }));
+          console.log('hey sent sms');
+          setPhoneCodeIsSent(true);
+          setCheckImNotARobot(false);
+        })
+        .catch(() => {
+          // TODO: handle error
+        });
     }
   };
 

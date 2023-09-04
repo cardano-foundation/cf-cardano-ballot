@@ -16,7 +16,7 @@ spec:
     targetRevision: {{ .Values.git.targetRevision | default "HEAD" }}
     path: deploy/cf-cardano-ballot-infra
     helm:
-      {{- with index .Values "cf-cardano-ballot-infra" }}
+      {{- with index .Values "cf-summit-2023-infra" }}
       values: |
 {{ toYaml . | indent 8 }}
       {{- end }}

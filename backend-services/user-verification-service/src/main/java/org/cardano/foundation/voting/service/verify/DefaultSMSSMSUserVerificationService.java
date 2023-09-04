@@ -35,7 +35,7 @@ import static org.zalando.problem.Status.BAD_REQUEST;
 
 @Service
 @Slf4j
-public class SimpleUserVerificationService implements UserVerificationService {
+public class DefaultSMSSMSUserVerificationService implements SMSUserVerificationService {
 
     @Autowired
     private ChainFollowerClient chainFollowerClient;

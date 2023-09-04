@@ -43,8 +43,7 @@ dependencies {
 
 	implementation("com.google.guava:guava:32.1.1-jre")
 
-	implementation("org.zalando:problem-spring-web:0.29.1")
-	implementation("org.zalando:jackson-datatype-problem:0.27.1")
+	implementation("org.zalando:problem-spring-web-starter:0.29.1")
 
 	compileOnly("org.projectlombok:lombok:1.18.28")
 	annotationProcessor("org.projectlombok:lombok:1.18.28")

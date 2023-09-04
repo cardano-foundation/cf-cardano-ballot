@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.2.15](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.14...v0.2.15) (2023-09-04)
+
+
+### Features
+
+* split origins by comma to allow multiple CORS origin addresses ([#131](https://github.com/cardano-foundation/cf-cardano-ballot/issues/131)) ([5506ad3](https://github.com/cardano-foundation/cf-cardano-ballot/commit/5506ad3c397722b4464ccb9bde96edb032505bbe))
+* user-verification-service, H2 for local dev, postgres for PROD. ([#88](https://github.com/cardano-foundation/cf-cardano-ballot/issues/88)) ([4273ef1](https://github.com/cardano-foundation/cf-cardano-ballot/commit/4273ef1b4cc594f55598cbcea01c7fa7db48cc3c))
+
+
+### Bug Fixes
+
+* **cip-1694:** update ui tests ([7bf0930](https://github.com/cardano-foundation/cf-cardano-ballot/commit/7bf0930463ce4d8fe4ee2d6ce91e2de582c7d7cd))
+
 ## [0.2.14](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.13...v0.2.14) (2023-09-01)
 
 

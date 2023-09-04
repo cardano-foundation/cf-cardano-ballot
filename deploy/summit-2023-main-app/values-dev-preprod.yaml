@@ -11,7 +11,7 @@ cf-summit-2023-ui:
   enabled: false
   values:
     image:
-      tag: 0.2.10
+      tag: 0.2.15
 
 cf-summit-2023-voting-api:
   enabled: true
@@ -24,34 +24,34 @@ cf-summit-2023-voting-api:
         active: "true"
         voteCommitmentCronExpression: "0 0/30 * * * *"
     image:
-      tag: 0.2.10
-    corsAllowedOrigins: http://localhost:3000
+      tag: 0.2.15
+    corsAllowedOrigins: https://{{ .Values.domain }},http://localhost:3000
 
 cf-summit-2023-verification-api:
   enabled: true
   values:
     image:
-      tag: 0.2.10
-    corsAllowedOrigins: http://localhost:3000
+      tag: 0.2.15
+    corsAllowedOrigins: https://{{ .Values.domain }},http://localhost:3000
 
 cf-user-verification-service:
   enabled: true
   values:
     image:
-      tag: 0.2.13-PR88
+      tag: 0.2.15
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
-    corsAllowedOrigins: http://localhost:3000
+    corsAllowedOrigins: https://{{ .Values.domain }},http://localhost:3000
 
 cf-summit-2023-ledger-follower-api:
   enabled: true
   values:
     image:
-      tag: v0.2.10-1-ge407d6a
+      tag: v0.2.15
     bindOnEventIds: CF_SUMMIT_2023_24DC
     yaci:
       startBlockHash: 69a01168a752b9f0aa3d1cd49d9a87fcffceb6738416c199740933fba002c922
       startSlotNumber: "37194728"
-    corsAllowedOrigins: http://localhost:3000
+    corsAllowedOrigins: https://{{ .Values.domain }},http://localhost:3000
     instances:
       - name: follower-1
         schemaName: follower_1

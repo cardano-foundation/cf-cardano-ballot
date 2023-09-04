@@ -133,19 +133,20 @@ public class SimpleUserVerificationService implements UserVerificationService {
 
         var maybePhoneNum = isValidNumber(startVerificationRequest.getPhoneNumber());
 
+        var hexFormat = HexFormat.of();
         if (maybePhoneNum.isEmpty()) {
-            log.error("Invalid phone number:{}", startVerificationRequest.getPhoneNumber());
+            log.error("Invalid phone number:{}", hexFormat.formatHex(blake2bHash256(startVerificationRequest.getPhoneNumber().getBytes(UTF_8))));
 
             return Either.left(Problem.builder()
                     .withTitle("INVALID_PHONE_NUMBER")
-                    .withDetail("Invalid phone number, phone number:" + startVerificationRequest.getPhoneNumber())
+                    .withDetail("Invalid phone number format, correct format is: e.g. +48 881 35 12 67 (with or without spaces)")
                     .withStatus(BAD_REQUEST)
                     .build());
         }
 
         var phoneNum = maybePhoneNum.orElseThrow();
         var formattedPhoneStr = PhoneNumberUtil.getInstance().format(phoneNum, INTERNATIONAL);
-        var phoneHash = HexFormat.of().formatHex(blake2bHash256(formattedPhoneStr.getBytes(UTF_8)));
+        var phoneHash = hexFormat.formatHex(blake2bHash256(formattedPhoneStr.getBytes(UTF_8)));
 
         int pendingPerStakeAddressCount = userVerificationRepository.findPendingPerStakeAddressPerPhoneCount(eventId, stakeAddress, phoneHash);
         if (pendingPerStakeAddressCount > maxVerificationAttempts) {
@@ -383,7 +384,7 @@ public class SimpleUserVerificationService implements UserVerificationService {
 
             return Optional.empty();
         } catch (NumberParseException e) {
-            log.warn("Invalid phone number:{}", userEnteredPhoneNumber);
+            log.warn("Invalid phone number.");
             return Optional.empty();
         }
     }

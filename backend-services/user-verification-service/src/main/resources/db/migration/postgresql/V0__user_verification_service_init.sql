@@ -6,7 +6,7 @@ CREATE TABLE user_verification (
    event_id VARCHAR(255) NOT NULL,
 
    request_id VARCHAR(255) NOT NULL,
-   phone_number_hash VARCHAR(255), -- we don't want to store phone numbers in without hashing(!) and also longer than necessary
+   phone_number_hash VARCHAR(255), -- we don't want to store phone numbers without hashing(!) them and also NO longer than necessary
    verification_code VARCHAR(255) NOT NULL,
 
    status VARCHAR(255) NOT NULL,

@@ -5,7 +5,7 @@ network: preprod
 domain: dev.cf-summit-2023-preprod.eu-west-1.metadata.dev.cf-deployments.org
 
 cf-summit-2023-infra:
-  enabled: false
+  enabled: true
   postgres:
     values:
       dbName: summit-2023
@@ -17,7 +17,7 @@ cf-summit-2023-ui:
       tag: 0.2.15
 
 cf-summit-2023-voting-api:
-  enabled: false
+  enabled: true
   values:
     instances:
       - name: passive
@@ -31,14 +31,14 @@ cf-summit-2023-voting-api:
     corsAllowedOrigins: https://{{ .Values.domain }},http://localhost:3000
 
 cf-summit-2023-verification-api:
-  enabled: false
+  enabled: true
   values:
     image:
       tag: 0.2.15
     corsAllowedOrigins: https://{{ .Values.domain }},http://localhost:3000
 
 cf-user-verification-service:
-  enabled: false
+  enabled: true
   values:
     image:
       tag: 0.2.15
@@ -46,7 +46,7 @@ cf-user-verification-service:
     corsAllowedOrigins: https://{{ .Values.domain }},http://localhost:3000
 
 cf-summit-2023-ledger-follower-api:
-  enabled: false
+  enabled: true
   values:
     image:
       tag: v0.2.15

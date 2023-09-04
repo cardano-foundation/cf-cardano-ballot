@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.web3.SignedWeb3Request;
 import org.cardano.foundation.voting.service.vote.VoteService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StopWatch;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -77,10 +78,7 @@ public class VoteResource {
                                     .status(Objects.requireNonNull(problem.getStatus()).getStatusCode())
                                     .body(problem);
                         },
-                        voteReceipt -> {
-                            return ResponseEntity.ok()
-                                    .body(voteReceipt);
-                        });
+                        isAvailable -> isAvailable ? ResponseEntity.ok().build() : ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build());
     }
 
 }

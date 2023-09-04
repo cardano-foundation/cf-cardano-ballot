@@ -46,8 +46,7 @@ dependencies {
 
 	implementation("com.google.guava:guava:32.1.1-jre")
 
-	implementation("org.zalando:problem-spring-web:0.29.1")
-	implementation("org.zalando:jackson-datatype-problem:0.27.1")
+	implementation("org.zalando:problem-spring-web-starter:0.29.1")
 
 	compileOnly("org.projectlombok:lombok:1.18.28")
 	annotationProcessor("org.projectlombok:lombok:1.18.28")
@@ -71,6 +70,7 @@ dependencies {
 
 	implementation("io.vavr:vavr:0.10.4")
 
+	runtimeOnly("org.postgresql:postgresql")
 	runtimeOnly("com.h2database:h2")
 
 	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.9")
@@ -103,5 +103,6 @@ tasks {
 tasks.register<Copy>("buildAndCopyTypescriptTypes") {
 	dependsOn(tasks.generateTypeScript)
     from(layout.buildDirectory.file("typescript-generator/voting-ledger-follower-types.ts"))
-    into(layout.projectDirectory.dir("../../ui/cip-1694/src/types"))
+	into(layout.projectDirectory.dir("../../ui/cip-1694/src/types"))
+	into(layout.projectDirectory.dir("../../ui/summit-2023/src/types"))
 }

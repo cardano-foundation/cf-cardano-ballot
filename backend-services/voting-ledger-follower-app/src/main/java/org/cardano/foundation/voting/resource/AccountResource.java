@@ -28,12 +28,12 @@ public class AccountResource {
                 .fold(problem -> {
                             return ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem);
                         },
-                        response -> {
-                            if (response.isEmpty()) {
+                        maybeAccount -> {
+                            if (maybeAccount.isEmpty()) {
                                 return ResponseEntity.notFound().build();
                             }
 
-                            return ResponseEntity.ok().body(response.orElseThrow());
+                            return ResponseEntity.ok().body(maybeAccount.orElseThrow());
                         });
     }
 

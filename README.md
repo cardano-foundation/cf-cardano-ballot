@@ -5,15 +5,15 @@ A set of backend services and UI applications to facilitate CIP-1694 voting as w
 [![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)
 ![Discord](https://img.shields.io/discord/1022471509173882950)
 
-[![Voting-App-Build](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/voting-ballot-build.yml/badge.svg)](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/voting-app-build.yml)
+[![Voting-App-Build](https://github.com/cardano-foundation/cf-cardano-ballot/actions/workflows/voting-ballot-build.yml/badge.svg)](https://github.com/cardano-foundation/cf-cardano-ballot/actions/workflows/voting-app-build.yml)
 
-[![Voting-Verification-App-Build](https://github.com/cardano-foundation/cf-ballot-app/actions/workflows/voting-verification-app-build.yml/badge.svg)](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/voting-verification-app-build.yml)
+[![Voting-Verification-App-Build](https://github.com/cardano-foundation/cf-cardano-ballot/actions/workflows/voting-verification-app-build.yml/badge.svg)](https://github.com/cardano-foundation/cf-cardano-ballot/actions/workflows/voting-verification-app-build.yml)
 
-[![User-Verification-App-Build](https://github.com/cardano-foundation/cf-ballot-app/actions/workflows/user-verification-app-build.yml/badge.svg)](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/user-verification-app-build.yml)
+[![User-Verification-App-Build](https://github.com/cardano-foundation/cf-cardano-ballot/actions/workflows/user-verification-app-build.yml/badge.svg)](https://github.com/cardano-foundation/cf-cardano-ballot/actions/workflows/user-verification-app-build.yml)
 
-[![Voting-Admin-App-Build](https://github.com/cardano-foundation/cf-ballot-app/actions/workflows/voting-admin-app-build.yml/badge.svg)](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/voting-admin-app-build.yml)
+[![Voting-Admin-App-Build](https://github.com/cardano-foundation/cf-cardano-ballot/actions/workflows/voting-admin-app-build.yml/badge.svg)](https://github.com/cardano-foundation/cf-cardano-ballot/actions/workflows/voting-admin-app-build.yml)
 
-[![UI-App-Build](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/ui-cypress-tests.yaml/badge.svg)](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/ui-cypress-tests.yaml)
+[![UI-App-Build](https://github.com/cardano-foundation/cf-cardano-ballot/actions/workflows/ui-cypress-tests.yaml/badge.svg)](https://github.com/cardano-foundation/cf-cardano-ballot/actions/workflows/ui-cypress-tests.yaml)
 
 ## Requirements
 - Node.js 18.x LTS

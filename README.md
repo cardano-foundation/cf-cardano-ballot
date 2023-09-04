@@ -1,77 +1,70 @@
 ## Cardano Foundation | Cardano Ballot
 
-Voltaire Voting Applications to be used by Cardano Community to cast CIP-1694 pre-ratification vote. The applications are currently WIP (work in progress).
+A set of backend services and UI applications to facilitate CIP-1694 voting as well as Cardano Summit 2023 voting.
 
 [![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)
 ![Discord](https://img.shields.io/discord/1022471509173882950)
 
-[![Voting-App-Build](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/voting-app-build.yml/badge.svg)](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/voting-app-build.yml)
+[![Voting-App-Build](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/voting-ballot-build.yml/badge.svg)](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/voting-app-build.yml)
 
-[![Voting-Verification-App-Build](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/voting-verification-app-build.yml/badge.svg)](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/voting-verification-app-build.yml)
+[![Voting-Verification-App-Build](https://github.com/cardano-foundation/cf-ballot-app/actions/workflows/voting-verification-app-build.yml/badge.svg)](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/voting-verification-app-build.yml)
 
-[![Voting-Admin-App-Build](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/voting-admin-app-build.yml/badge.svg)](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/voting-admin-app-build.yml)
+[![User-Verification-App-Build](https://github.com/cardano-foundation/cf-ballot-app/actions/workflows/user-verification-app>
+
+[![Voting-Admin-App-Build](https://github.com/cardano-foundation/cf-ballot-app/actions/workflows/voting-admin-app-build.yml/badge.svg)](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/voting-admin-app-build.yml)
 
 [![UI-App-Build](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/ui-cypress-tests.yaml/badge.svg)](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/ui-cypress-tests.yaml)
 
 ## Requirements
 - Node.js 18.x LTS
 - Java 17 LTS
-- Postgres DB 14.x
-
-## Requirements (Development)
-- Docker
-- Docker-Compose
+- Postgres DB 14.x or H2 file db (local development / community running).
 
 ## Running (Development)
 
 By default all backend apps are working with Cardano Pre-Production network.
 
-
-- create `.env` file on the same level as `.env.development`
-
 ```shell
-brew install maven
+cd cf-ballot-app/backend-services/voting-ledger-follower-app
+./gradlew bootRun
 ```
+this will launch main voting-ledger-follower-app on port: 9090 by default.
 
 ```shell
-git clone git@github.com:cardano-foundation/merkle-tree-java.git
-mvn clean install
-```
-
-```shell
-git clone https://github.com/cardano-foundation/cip30-data-signature-parser
-mvn install clean
-```
-
-```shell
-cd cf-voting-app
-rm -rf db
-docker-compose rm
-docker-compose up
-```
-
-```shell
-cd cf-voting-app/backend-services/voting-app
+cd cf-ballot-app/backend-services/voting-app
 ./gradlew bootRun
 ```
 
-this will launch main voting-app on port: 9090 by default.
+this will launch main voting-app on port: 9091 by default.
 
 ```shell
-cd cf-voting-app/backend-services/voting-verification-app
+cd cf-ballot-app/backend-services/voting-verification-app
 ./gradlew bootRun
 ```
 
-this will launch voting-verification-app on port: 9091 by default.
+this will launch voting-verification-app on port: 9092 by default.
 
-binding PORT can be change via SERVER_PORT env variable.
+### User verification app on port
+```bash
+export AWS_SNS_ACCESS_KEY_ID=...
+export AWS_SNS_SECRET_ACCESS_KEY=...
+cd user-verification-service
+./gradlew bootRun
+```
 
-e.g. 
+this will launch user-verification-app on port: 9093 by default. Note that
+user-verification-service is only needed for Cardano Summit 2023 voting.
+
+Note that binding PORT can be changed via SERVER_PORT env variable.
+
+e.g.
 ```
 SERVER_PORT=8888 ./gradlew bootRun
 ```
 
 use `setupProxy.js` to proxy services urls
+
+- create `.env` file on the same level as `.env.development`
 
 ```shell
 npm i
@@ -79,20 +72,25 @@ npm run start
 ```
 
 # Building native image with GraalVM
-Applications are GraalVM compatible (https://www.graalvm.org/)
+Some applications should be GraalVM compatible (https://www.graalvm.org/)
 
 ```shell
-cd cf-voting-app/backend-services/voting-verification-app
+export GRAALVM_HOME=/Users/mati/.sdkman/candidates/java/20.0.2-graalce
+
+cd cf-ballot-app/backend-services/voting-verification-app
 ./gradlew nativeCompile
-cd cf-voting-app/backend-services/voting-app
+cd cf-ballot-app/backend-services/voting-app
 ./gradlew nativeCompile
+cd cf-ballot-app/backend-services/user-verification-service
+./gradlew nativeCompile
+
 ```
 
 # Developing locally with Yaci DevKit
 If you want to develop using Yaci-DevKit (https://github.com/bloxbean/yaci-devkit) you have to start the backend applications in the special YACI_DEV_KIT DEV mode.
 
 ```shell
-cd cf-voting-app/backend-services/voting-app
+cd cf-voting-app/backend-services/voting-ledger-follower-app
 
 export SPRING_CONFIG_LOCATION=classpath:/application.properties,classpath:/application-dev--yaci-dev-kit.properties
 export SPRING_PROFILES_ACTIVE=dev--yaci-dev-kit
@@ -107,4 +105,4 @@ On start up of the app, you can verify if the right profile has been used, there
 
 ## Repository Structure
 - backend-services - contains JAVA backend services
-- ui - contains React.JS frontend code to cast votes / display voting results
+- ui - contains React.JS frontend code apps to cast votes / display voting results

@@ -12,10 +12,10 @@ import org.springframework.core.task.SimpleAsyncTaskExecutor;
 @SpringBootApplication
 @ComponentScan(basePackages = { "org.cardano.foundation.voting.service", "org.cardano.foundation.voting.config", "org.cardano.foundation.voting.shell" })
 @Slf4j
-public class VotingAppAdminService {
+public class VotingAdminApp {
 
     public static void main(String[] args) {
-		SpringApplication.run(VotingAppAdminService.class, args);
+		SpringApplication.run(VotingAdminApp.class, args);
 	}
 
 	@Bean(name = "applicationEventMulticaster")

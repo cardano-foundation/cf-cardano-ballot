@@ -11,9 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
 import java.util.Objects;
-import java.util.Random;
 
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
@@ -34,16 +32,6 @@ public class VerificationResource {
                 .fold(problem -> ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem),
                         voteVerificationResult -> ResponseEntity.ok().body(voteVerificationResult)
                 );
-    }
-
-    @RequestMapping(value = "/mock/verify-vote", method = POST, produces = "application/json")
-    @Timed(value = "resource.verifyVote", percentiles = {0.3, 0.5, 0.95})
-    public ResponseEntity<?> verifyVoteMock(@RequestBody @Valid VoteVerificationRequest voteVerificationRequest) {
-        log.info("Received vote verification mock request: {}", voteVerificationRequest);
-
-        var flap = new Random().nextBoolean();
-
-        return ResponseEntity.ok().body(Map.of("isVerified", flap));
     }
 
 }

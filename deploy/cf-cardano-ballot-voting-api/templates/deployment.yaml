@@ -82,9 +82,6 @@ spec:
                   name: postgres-secrets
                   key: POSTGRES_PASSWORD
 
-            - name: BIND_ON_EVENT_IDS
-              value: {{ $.Values.bindOnEventIds }}
-
             - name: VOTE_COMMITMENT_ENABLED
               value: {{ $instance.active | default "false" | quote }}
 

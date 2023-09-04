@@ -7,3 +7,9 @@ export const proposalColorsMap: Record<ProposalPresentation['name'], string> = {
 };
 
 export const getPercentage = (value: number, total: number) => (value * 100) / total;
+
+export const formatUTCDate = (date: string) => {
+  if (!date) return '';
+  const isoDate = new Date(date).toISOString();
+  return `${isoDate.substring(0, 4)} ${isoDate.substring(11, 16)} UTC`;
+};

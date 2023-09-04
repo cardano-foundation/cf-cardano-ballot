@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import toast from 'react-hot-toast';
 import cn from 'classnames';
-import { Grid, Typography, Button } from '@mui/material';
+import { Grid, Typography, Button, CircularProgress } from '@mui/material';
 import DoneIcon from '@mui/icons-material/Done';
 import CloseIcon from '@mui/icons-material/Close';
 import DoDisturbIcon from '@mui/icons-material/DoDisturb';
@@ -39,6 +39,7 @@ import { HttpError } from 'common/handlers/httpHandler';
 import { getDateAndMonth } from 'common/utils/dateUtils';
 import { env } from '../../env';
 import styles from './Vote.module.scss';
+import { ConfirmWithWalletSignatureModal } from './components/ConfirmWithWalletSignatureModal/ConfirmWithWalletSignatureModal';
 
 const errorsMap = {
   INVALID_VOTING_POWER: 'To cast a vote, Voting Power should be more than 0',
@@ -60,10 +61,21 @@ export const VotePage = () => {
   const isVoteSubmittedModalVisible = useSelector((state: RootState) => state.user.isVoteSubmittedModalVisible);
   const [absoluteSlot, setAbsoluteSlot] = useState<number>();
   const savedProposal = useSelector((state: RootState) => state.user.proposal);
+  const [isReceiptDrawerInitializing, setIsReceiptDrawerInitializing] = useState(false);
+  const [isCastingAVote, setIsCastingAVote] = useState(false);
   const [optionId, setOptionId] = useState(savedProposal || '');
+  const [isConfirmWithWalletSignatureModalVisible, setIsConfirmWithWalletSignatureModalVisible] = useState(
+    absoluteSlot && stakeAddress && !savedProposal && event?.notStarted === false
+  );
   const [voteSubmitted, setVoteSubmitted] = useState(false);
   const [isToggledReceipt, toggleReceipt] = useToggle(false);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (absoluteSlot && stakeAddress && !savedProposal && event?.notStarted === false) {
+      setIsConfirmWithWalletSignatureModalVisible(true);
+    }
+  }, [event?.notStarted, absoluteSlot, savedProposal, stakeAddress]);
 
   const items: OptionItem<ProposalPresentation['name']>[] = event?.categories
     ?.find(({ id }) => id === env.CATEGORY_ID)
@@ -93,9 +105,7 @@ export const VotePage = () => {
           dispatch(setSelectedProposal({ proposal: receiptResponse.proposal }));
         } else {
           const message = `${errorPrefix}', ${receiptResponse?.title}, ${receiptResponse?.detail}`;
-          if (process.env.NODE_ENV === 'development') {
-            console.log(message);
-          }
+          console.log(message);
           toast(
             <Toast
               message={errorPrefix}
@@ -110,6 +120,8 @@ export const VotePage = () => {
         if (error?.message === 'VOTE_NOT_FOUND') {
           dispatch(setVoteReceipt({ receipt: null }));
           dispatch(setIsReceiptFetched({ isFetched: true }));
+          setIsReceiptDrawerInitializing(false);
+          setIsConfirmWithWalletSignatureModalVisible(false);
           return;
         }
         const message = `${errorPrefix}, ${error?.info || error?.message || error?.toString()}`;
@@ -120,16 +132,22 @@ export const VotePage = () => {
             icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
           />
         );
-        if (process.env.NODE_ENV === 'development') {
-          console.log(message);
-        }
+        console.log(message);
       }
+      setIsReceiptDrawerInitializing(false);
+      setIsConfirmWithWalletSignatureModalVisible(false);
     },
     [absoluteSlot, dispatch, signMessagePromisified, stakeAddress]
   );
 
   const openReceiptDrawer = async () => {
-    await fetchReceipt({ cb: toggleReceipt });
+    setIsReceiptDrawerInitializing(true);
+    await fetchReceipt({
+      cb: () => {
+        toggleReceipt();
+        setIsReceiptDrawerInitializing(false);
+      },
+    });
   };
 
   const init = useCallback(async () => {
@@ -137,9 +155,7 @@ export const VotePage = () => {
       setAbsoluteSlot((await voteService.getSlotNumber())?.absoluteSlot);
     } catch (error) {
       const message = `Failed to fecth slot number: ${error?.message}`;
-      if (process.env.NODE_ENV === 'development') {
-        console.log(message);
-      }
+      console.log(message);
       toast(
         <Toast
           message="Failed to fecth slot number"
@@ -155,13 +171,6 @@ export const VotePage = () => {
       init();
     }
   }, [init, isConnected]);
-
-  // fetch vote receipt if there is no saved selection and event is active or finished
-  useEffect(() => {
-    if (absoluteSlot && !savedProposal && event?.notStarted === false) {
-      fetchReceipt({});
-    }
-  }, [absoluteSlot, fetchReceipt, savedProposal, event?.notStarted]);
 
   const onChangeOption = (option: string | null) => {
     setOptionId(option);
@@ -179,9 +188,7 @@ export const VotePage = () => {
         error instanceof Error || error instanceof HttpError ? error?.message : error
       }`;
 
-      if (process.env.NODE_ENV === 'development') {
-        console.log(message);
-      }
+      console.log(message);
       toast(
         <Toast
           error
@@ -201,6 +208,7 @@ export const VotePage = () => {
     });
 
     try {
+      setIsCastingAVote(true);
       const requestVoteObject = await signMessagePromisified(canonicalVoteInput);
       await voteService.castAVoteWithDigitalSignature(requestVoteObject);
       dispatch(setIsVoteSubmittedModalVisible({ isVisible: true }));
@@ -215,9 +223,7 @@ export const VotePage = () => {
           />
         );
         setOptionId('');
-        if (process.env.NODE_ENV === 'development') {
-          console.log('Failed to cast e vote', errorsMap[error?.message as keyof typeof errorsMap] || error?.message);
-        }
+        console.log('Failed to cast e vote', errorsMap[error?.message as keyof typeof errorsMap] || error?.message);
       } else if (error instanceof Error) {
         toast(
           <Toast
@@ -226,11 +232,10 @@ export const VotePage = () => {
             icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
           />
         );
-        if (process.env.NODE_ENV === 'development') {
-          console.log('Failed to cast e vote', error?.message || error.toString());
-        }
+        console.log('Failed to cast e vote', error?.message || error.toString());
       }
     }
+    setIsCastingAVote(true);
   };
 
   const cantSelectOptions =
@@ -288,7 +293,7 @@ export const VotePage = () => {
               fontSize={{ xs: '16px', md: '28px' }}
               data-testid="event-description"
             >
-              Do you want CIP-1694 that will allow On-Chain Governance, implemented on the Cardano Blockchain?
+              (..)
             </Typography>
           </Grid>
           <Grid item>
@@ -302,8 +307,10 @@ export const VotePage = () => {
           <Grid item>
             <Grid
               container
-              direction="row"
+              direction={{ xs: 'column', md: 'row' }}
               justifyContent={'center'}
+              gap={{ xs: '0px', md: '51px' }}
+              wrap="nowrap"
             >
               <Grid
                 justifyContent="center"
@@ -312,6 +319,18 @@ export const VotePage = () => {
                 container
                 gap="12px"
                 item
+                md={4}
+                xs={12}
+              />
+              <Grid
+                justifyContent="center"
+                alignItems="center"
+                direction="column"
+                container
+                gap="12px"
+                item
+                md={4}
+                xs={12}
               >
                 {showViewReceiptButton && (
                   <Button
@@ -321,8 +340,15 @@ export const VotePage = () => {
                     aria-label="Receipt"
                     startIcon={<ReceiptIcon />}
                     data-testid="show-receipt-button"
+                    disabled={isReceiptDrawerInitializing || !absoluteSlot}
                   >
                     Vote receipt
+                    {isReceiptDrawerInitializing && (
+                      <CircularProgress
+                        size={20}
+                        sx={{ marginLeft: '10px' }}
+                      />
+                    )}
                   </Button>
                 )}
                 {showConnectButton && (
@@ -343,11 +369,17 @@ export const VotePage = () => {
                     })}
                     size="large"
                     variant="contained"
-                    disabled={!optionId || !isReceiptFetched}
+                    disabled={!optionId || !isReceiptFetched || isCastingAVote || !absoluteSlot}
                     onClick={() => handleSubmit()}
                     data-testid="proposal-submit-button"
                   >
                     Submit your vote
+                    {isCastingAVote && (
+                      <CircularProgress
+                        size={20}
+                        sx={{ marginLeft: '10px' }}
+                      />
+                    )}
                   </Button>
                 )}
                 {event?.notStarted && (
@@ -374,6 +406,16 @@ export const VotePage = () => {
                   </Button>
                 )}
               </Grid>
+              <Grid
+                justifyContent="center"
+                alignItems="center"
+                direction="column"
+                container
+                gap="12px"
+                item
+                md={4}
+                xs={12}
+              />
             </Grid>
           </Grid>
         </Grid>
@@ -403,6 +445,14 @@ export const VotePage = () => {
             the results!
           </>
         }
+      />
+      <ConfirmWithWalletSignatureModal
+        openStatus={isConfirmWithWalletSignatureModalVisible}
+        onConfirm={() => fetchReceipt({ cb: () => setIsConfirmWithWalletSignatureModalVisible(false) })}
+        name="vote-submitted-modal"
+        id="vote-submitted-modal"
+        title="Wallet signature"
+        description="We need to check if you’ve already voted. Please confirm with your wallet signature."
       />
     </>
   );

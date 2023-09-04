@@ -1,0 +1,20 @@
+{{ if .Values.monitoringEnabled }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "user-verification-service.fullname" . }}
+  labels:
+    release: prometheus-stack
+    {{- include "user-verification-service.labels" . | nindent 4 }}
+spec:
+  endpoints:
+    - path: /actuator/prometheus
+      port: http
+  namespaceSelector:
+    matchNames:
+      - {{ $.Release.Namespace }}
+  selector:
+    matchLabels:
+      {{- include "user-verification-service.labels" . | nindent 6 }}
+{{ end }}

@@ -38,31 +38,31 @@ public class ReferenceDataService {
     private MerkleRootHashRepository merkleRootHashRepository;
 
     @Timed(value = "service.reference.findValidEventByName", percentiles = {0.3, 0.5, 0.95})
-    @Transactional
+    @Transactional(readOnly = true)
     public Optional<Event> findValidEventByName(String name) {
         return eventRepository.findById(name).filter(Event::isValid);
     }
 
     @Timed(value = "service.reference.findEventByName", percentiles = {0.3, 0.5, 0.95})
-    @Transactional
+    @Transactional(readOnly = true)
     public Optional<Event> findEventByName(String name) {
         return eventRepository.findById(name);
     }
 
     @Timed(value = "service.reference.findCategoryByName", percentiles = {0.3, 0.5, 0.95})
-    @Transactional
+    @Transactional(readOnly = true)
     public Optional<Category> findCategoryByName(String name) {
         return categoryRepository.findById(name);
     }
 
     @Timed(value = "service.reference.findProposalById", percentiles = {0.3, 0.5, 0.95})
-    @Transactional
+    @Transactional(readOnly = true)
     public Optional<Proposal> findProposalById(String id) {
         return proposalRepository.findById(id);
     }
 
     @Timed(value = "service.reference.findProposalByName", percentiles = {0.3, 0.5, 0.95})
-    @Transactional
+    @Transactional(readOnly = true)
     public Optional<Proposal> findProposalByName(Category category, String name) {
         return proposalRepository.findProposalByName(category.getId(), name);
     }
@@ -74,7 +74,7 @@ public class ReferenceDataService {
     }
 
     @Timed(value = "service.reference.findAllValidEvents", percentiles = {0.3, 0.5, 0.95})
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Event> findAllValidEvents() {
         return eventRepository.findAll()
                 .stream()
@@ -83,7 +83,7 @@ public class ReferenceDataService {
     }
 
     @Timed(value = "service.reference.findAllActiveEvents", percentiles = {0.3, 0.5, 0.95})
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Event> findAllActiveEvents() {
         return findAllValidEvents().stream()
                 .filter(event -> expirationService.isEventActive(event)).toList();

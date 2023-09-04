@@ -35,7 +35,7 @@ public class VotingLedgerFollowerApp {
 	@Bean
 	public CommandLineRunner onStart() {
 		return (args) -> {
-			log.info("Voting Ledger Follower App Service started.");
+			log.info("Voting Ledger Follower App started.");
 		};
 	}
 

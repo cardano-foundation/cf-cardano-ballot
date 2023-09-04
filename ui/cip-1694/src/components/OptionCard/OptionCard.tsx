@@ -1,6 +1,6 @@
 import React, { useState, MouseEvent, useEffect } from 'react';
 import cn from 'classnames';
-import { Grid, Typography } from '@mui/material';
+import { Grid, Skeleton, Typography } from '@mui/material';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { ProposalPresentation } from 'types/voting-ledger-follower-types';
@@ -44,6 +44,29 @@ export const OptionCard = ({
         onChange={handleChange}
         aria-label="cip-1694 poll options"
       >
+        {!items?.length &&
+          Array.from({ length: 3 }).map((_el, index) => (
+            <Grid
+              key={index}
+              item
+              md={4}
+              xs={12}
+              container
+              direction={{ xs: 'row', md: 'column' }}
+              gap="15px"
+              justifyContent={{ md: 'center', xs: 'flex-start' }}
+              alignItems="center"
+              height={{ xs: '62px', md: '138px' }}
+            >
+              <Skeleton
+                sx={{ borderRadius: '16px' }}
+                variant="rounded"
+                height="100%"
+                width="100%"
+                data-testid="option-card-loader"
+              />
+            </Grid>
+          ))}
         {items?.map((option) => (
           <ToggleButton
             sx={{

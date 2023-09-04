@@ -10,6 +10,7 @@ import org.cardano.foundation.voting.domain.*;
 import org.cardano.foundation.voting.domain.entity.UserVerification;
 import org.cardano.foundation.voting.repository.UserVerificationRepository;
 import org.cardano.foundation.voting.service.address.StakeAddressVerificationService;
+import org.cardano.foundation.voting.service.pass.CodeGenService;
 import org.cardano.foundation.voting.service.sms.SMSService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
-import java.security.SecureRandom;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.HexFormat;
@@ -57,16 +57,17 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
     @Autowired
     private Clock clock;
 
+    @Autowired
+    private CodeGenService codeGenService;
+
     @Value("${friendly.custom.name}")
     private String friendlyCustomName;
 
     @Value("${validation.expiration.time.minutes}")
     private int validationExpirationTimeMinutes;
 
-    @Value("${max.verification.attempts}")
-    private int maxVerificationAttempts;
-
-    private final static SecureRandom SECURE_RANDOM = new SecureRandom();
+    @Value("${max.pending.verification.attempts}")
+    private int maxPendingVerificationAttempts;
 
     @Override
     @Transactional
@@ -171,7 +172,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
         }
 
         int pendingPerStakeAddressCount = userVerificationRepository.findPendingPerStakeAddressPerPhoneCount(eventId, stakeAddress, phoneHash);
-        if (pendingPerStakeAddressCount > maxVerificationAttempts) {
+        if (pendingPerStakeAddressCount > maxPendingVerificationAttempts) {
             return Either.left(Problem.builder()
                     .withTitle("MAX_VERIFICATION_ATTEMPTS_REACHED")
                     .withDetail(String.format("Max verification attempts reached for eventId:%s, stakeAddress:%s. Try again in 24 hours.", eventId, stakeAddress))
@@ -179,8 +180,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
                     .build());
         }
 
-        var randomVerificationCode = SECURE_RANDOM.nextInt(100000, 999999);
-
+        var randomVerificationCode = codeGenService.generateRandomCode();
         var textMsg = String.format("%s. %s", randomVerificationCode, friendlyCustomName).trim();
 
         var smsVerificationResponseE = smsService.publishTextMessage(textMsg, phoneNum);

@@ -9,7 +9,7 @@ A set of backend services and UI applications to facilitate CIP-1694 voting as w
 
 [![Voting-Verification-App-Build](https://github.com/cardano-foundation/cf-ballot-app/actions/workflows/voting-verification-app-build.yml/badge.svg)](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/voting-verification-app-build.yml)
 
-[![User-Verification-App-Build](https://github.com/cardano-foundation/cf-ballot-app/actions/workflows/user-verification-app)
+[![User-Verification-App-Build](https://github.com/cardano-foundation/cf-ballot-app/actions/workflows/user-verification-app-build.yml/badge.svg)](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/user-verification-app-build.yml)
 
 [![Voting-Admin-App-Build](https://github.com/cardano-foundation/cf-ballot-app/actions/workflows/voting-admin-app-build.yml/badge.svg)](https://github.com/cardano-foundation/cf-voting-app/actions/workflows/voting-admin-app-build.yml)
 

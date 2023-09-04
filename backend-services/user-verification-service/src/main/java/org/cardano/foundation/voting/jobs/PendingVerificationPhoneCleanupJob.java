@@ -2,7 +2,7 @@ package org.cardano.foundation.voting.jobs;
 
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
-import org.cardano.foundation.voting.repository.UserVerificationRepository;
+import org.cardano.foundation.voting.service.verify.SMSUserVerificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,7 +19,7 @@ public class PendingVerificationPhoneCleanupJob implements Runnable {
     private ChainFollowerClient chainFollowerClient;
 
     @Autowired
-    private UserVerificationRepository userVerificationRepository;
+    private SMSUserVerificationService smsUserVerificationService;
 
     @Autowired
     private Clock clock;
@@ -41,13 +41,13 @@ public class PendingVerificationPhoneCleanupJob implements Runnable {
         var allEvents = allEventsE.get();
 
         allEvents.forEach(eventSummary -> {
-            userVerificationRepository.findAllPending(eventSummary.id()).forEach(userVerification -> {
+            smsUserVerificationService.findAllPending(eventSummary.id()).forEach(userVerification -> {
                 var now = LocalDateTime.now(clock);
 
                 if (now.isAfter(userVerification.getCreatedAt().plusHours(pendingVerificationPhoneExpirationTimeHours))) {
                     log.info("Deleting expired pending user verification: {}", userVerification);
 
-                    userVerificationRepository.delete(userVerification);
+                    smsUserVerificationService.removeUserVerification(userVerification);
                 }
             });
         });

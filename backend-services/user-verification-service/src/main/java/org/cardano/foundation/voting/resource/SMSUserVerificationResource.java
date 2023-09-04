@@ -20,7 +20,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
-@RequestMapping("/api/user-verification/sms")
+@RequestMapping("/api/sms/user-verification")
 @Slf4j
 @RequiredArgsConstructor
 public class SMSUserVerificationResource {

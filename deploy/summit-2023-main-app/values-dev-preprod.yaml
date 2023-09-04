@@ -52,3 +52,6 @@ cf-summit-2023-ledger-follower-api:
       startBlockHash: 69a01168a752b9f0aa3d1cd49d9a87fcffceb6738416c199740933fba002c922
       startSlotNumber: "37194728"
     corsAllowedOrigins: http://localhost:3000
+    instances:
+      - name: follower-1
+        schemaName: follower_1

@@ -37,4 +37,7 @@ cf-cardano-ballot-ledger-follower-api:
   values:
     image:
       tag: v0.2.9
+    instances:
+      - name: follower-1
+        schemaName: follower_1
 

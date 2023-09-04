@@ -83,7 +83,7 @@ spec:
                   name: postgres-secrets
                   key: POSTGRES_DB
             - name: DB_SCHEMA
-              value: {{ .Values.dbSchema | default "public" }}
+              value: {{ $.Values.dbSchema | default "public" }}
             - name: DB_URL
               value: jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)?currentSchema=$(DB_SCHEMA)
             - name: DB_USERNAME

@@ -67,6 +67,10 @@ spec:
                   key: WALLET_MNEMONIC
 
             ## Postgres
+            - name: DB_DRIVER
+              value: "org.postgresql.Driver"
+            - name: DB_DIALECT
+              value: "org.hibernate.dialect.PostgreSQLDialect"
             - name: POSTGRES_HOST
               valueFrom:
                 secretKeyRef:

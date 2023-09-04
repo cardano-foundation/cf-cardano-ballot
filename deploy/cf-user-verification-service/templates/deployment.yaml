@@ -30,12 +30,11 @@ spec:
             - name: CORS_ALLOWED_ORIGINS
               value: {{ tpl $.Values.corsAllowedOrigins $ }}
 
+            ## Postgres
             - name: DB_DRIVER
               value: "org.postgresql.Driver"
             - name: DB_DIALECT
               value: "org.hibernate.dialect.PostgreSQLDialect"
-
-            ## Postgres
             - name: POSTGRES_HOST
               valueFrom:
                 secretKeyRef:

@@ -6,7 +6,7 @@ domain: dev.cf-summit-2023-preprod.eu-west-1.metadata.dev.cf-deployments.org
 
 cf-summit-2023-infra:
   enabled: true
-  postgres:
+  postgresql:
     values:
       dbName: summit-2023
 

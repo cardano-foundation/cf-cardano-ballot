@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-// Generated using typescript-generator version 3.2.1263 on 2023-08-29 11:44:05.
+// Generated using typescript-generator version 3.2.1263 on 2023-09-01 18:09:47.
 
 export interface Either<L, R> extends Value<R>, Serializable {
     left: L;
@@ -124,7 +124,6 @@ export interface ProposalBuilder {
 export interface CategoryPresentation {
     id: string;
     gdprProtection: boolean;
-    presentationName: string;
     proposals: ProposalPresentation[];
 }
 
@@ -134,7 +133,6 @@ export interface CategoryPresentationBuilder {
 export interface EventPresentation {
     id: string;
     team: string;
-    presentationName: string;
     votingEventType: VotingEventType;
     startSlot?: number;
     endSlot?: number;
@@ -146,11 +144,11 @@ export interface EventPresentation {
     snapshotEpoch?: number;
     categories: CategoryPresentation[];
     active: boolean;
-    highLevelResultsWhileVoting: boolean;
-    categoryResultsWhileVoting: boolean;
+    allowVoteChanging: boolean;
     notStarted: boolean;
     finished: boolean;
-    allowVoteChanging: boolean;
+    categoryResultsWhileVoting: boolean;
+    highLevelResultsWhileVoting: boolean;
 }
 
 export interface EventPresentationBuilder {
@@ -159,7 +157,6 @@ export interface EventPresentationBuilder {
 export interface ProposalPresentation {
     id: string;
     name?: string;
-    presentationName: string;
 }
 
 export interface ProposalPresentationBuilder {
@@ -338,12 +335,6 @@ export interface YaciStoreTipHealthIndicator extends HealthIndicator {
 export interface YaciStoreTipHealthIndicator__BeanDefinitions {
 }
 
-export interface LocalisationService {
-}
-
-export interface LocalisationService__BeanDefinitions {
-}
-
 export interface JsonService {
 }
 
@@ -383,9 +374,6 @@ export interface ReferenceDataService__BeanDefinitions {
 export interface ReferencePresentationService {
 }
 
-export interface ReferencePresentationService__Autowiring {
-}
-
 export interface ReferencePresentationService__BeanDefinitions {
 }
 
@@ -418,8 +406,8 @@ export interface Problem {
     type: URI;
     parameters: { [index: string]: any };
     status: StatusType;
-    title: string;
     detail: string;
+    title: string;
 }
 
 export interface Serializable {
@@ -440,11 +428,11 @@ export interface StatusType {
 }
 
 export interface Value<T> extends Iterable<T> {
+    singleValued: boolean;
     empty: boolean;
     orNull: T;
-    singleValued: boolean;
-    async: boolean;
     lazy: boolean;
+    async: boolean;
 }
 
 export interface Throwable extends Serializable {

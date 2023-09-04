@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import cn from 'classnames';
+import { capitalize } from 'lodash';
 import toast from 'react-hot-toast';
 import { PieChart } from 'react-minimal-pie-chart';
 import { Grid, Typography } from '@mui/material';
@@ -50,9 +51,9 @@ export const Leaderboard = () => {
   const statsItems: StatItem<ProposalPresentation['name']>[] =
     event?.categories
       ?.find(({ id }) => id === env.CATEGORY_ID)
-      ?.proposals?.map(({ name, presentationName: label }) => ({
+      ?.proposals?.map(({ name }) => ({
         name,
-        label,
+        label: capitalize(name.toLowerCase()),
       })) || [];
 
   const placeholder = '--';

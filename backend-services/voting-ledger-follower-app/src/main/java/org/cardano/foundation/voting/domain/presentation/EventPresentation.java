@@ -19,8 +19,6 @@ public class EventPresentation {
 
     private String team; // e.g. CF Team
 
-    private String presentationName; // e.g. Voltaire Pre-Ratification
-
     private VotingEventType votingEventType;
 
     @Builder.Default

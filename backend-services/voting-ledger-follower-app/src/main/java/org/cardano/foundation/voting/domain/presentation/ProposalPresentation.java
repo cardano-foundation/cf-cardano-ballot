@@ -16,6 +16,4 @@ public class ProposalPresentation {
     @Builder.Default
     private Optional<String> name = Optional.empty();
 
-    private String presentationName;
-
 }

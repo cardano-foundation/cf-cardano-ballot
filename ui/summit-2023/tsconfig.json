@@ -23,6 +23,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
     "paths": {
       "common/*": ["./common/*"],
       "src/*": ["./src/*"]

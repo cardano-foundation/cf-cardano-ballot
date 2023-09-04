@@ -10,7 +10,27 @@ const initialState: UserState = {
   isReceiptFetched: false,
   receipt: null,
   proposal: '',
-  event: undefined,
+  event: {
+    id: '',
+    team: '',
+    presentationName: '',
+    votingEventType: 'USER_BASED',
+    startSlot: undefined,
+    endSlot: undefined,
+    startEpoch: undefined,
+    eventStart: undefined,
+    eventEnd: undefined,
+    snapshotTime: undefined,
+    endEpoch: undefined,
+    snapshotEpoch: undefined,
+    categories: [],
+    active: true,
+    notStarted: false,
+    finished: false,
+    allowVoteChanging: false,
+    highLevelResultsWhileVoting: true,
+    categoryResultsWhileVoting: false,
+  },
 };
 
 export const userSlice = createSlice({

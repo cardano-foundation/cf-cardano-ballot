@@ -12,9 +12,7 @@ import { Box, CircularProgress, Container, useMediaQuery, useTheme } from '@mui/
 import * as referenceDataService from './common/api/referenceDataService';
 import Header from './components/common/Header/Header';
 import { PageRouter } from './routes';
-import { env } from 'common/constants/env';
-import eventData from './common/resources/data/event.json';
-import { EventPresentation } from './types/voting-ledger-follower-types';
+import { env } from './common/constants/env';
 import { RootState } from './store';
 
 function App() {
@@ -38,8 +36,6 @@ function App() {
           icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
         />
       );
-      const e = eventData as EventPresentation;
-      dispatch(setEventData({ event: e }));
     }
   }, [dispatch]);
 

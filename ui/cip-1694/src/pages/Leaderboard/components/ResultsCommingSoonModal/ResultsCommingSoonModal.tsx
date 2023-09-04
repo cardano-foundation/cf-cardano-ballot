@@ -28,13 +28,13 @@ export const ResultsCommingSoonModal = (props: ResultsCommingSoonModalProps) => 
       open={!!openStatus}
       aria-labelledby={name}
       PaperProps={{ sx: { width: '400px', borderRadius: '16px' } }}
-      data-testid="vote-submitted-modal"
+      data-testid="result-comming-soon-modal"
     >
       <DialogTitle
         sx={{ padding: { xs: '20px', md: '30px 30px 20px 30px' } }}
         className={styles.dialogTitle}
         id={id}
-        data-testid="vote-submitted-title"
+        data-testid="result-comming-soon-modal-title"
       >
         {title}
         <IconButton
@@ -65,7 +65,7 @@ export const ResultsCommingSoonModal = (props: ResultsCommingSoonModalProps) => 
                 className={styles.description}
                 component="div"
                 variant="h5"
-                data-testid="vote-submitted-description"
+                data-testid="result-comming-soon-modal-description"
               >
                 {description}
               </Typography>
@@ -81,7 +81,7 @@ export const ResultsCommingSoonModal = (props: ResultsCommingSoonModalProps) => 
                   variant="contained"
                   onClick={() => onCloseFn()}
                   sx={{}}
-                  data-testid="vote-submitted-cta"
+                  data-testid="result-comming-soon-modal-cta"
                 >
                   View leaderboard anyway
                 </Button>
@@ -99,7 +99,7 @@ export const ResultsCommingSoonModal = (props: ResultsCommingSoonModalProps) => 
                   variant="contained"
                   onClick={() => onGoBackFn()}
                   sx={{}}
-                  data-testid="vote-submitted-cta"
+                  data-testid="result-comming-soon-modal-close-cta"
                 >
                   Go back
                 </Button>

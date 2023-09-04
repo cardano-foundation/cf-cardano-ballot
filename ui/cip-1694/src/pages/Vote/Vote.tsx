@@ -341,7 +341,7 @@ export const VotePage = () => {
                     aria-label="Receipt"
                     startIcon={<ReceiptIcon />}
                     data-testid="show-receipt-button"
-                    disabled={isReceiptDrawerInitializing}
+                    disabled={isReceiptDrawerInitializing || !absoluteSlot}
                   >
                     Vote receipt
                     {isReceiptDrawerInitializing && (
@@ -370,7 +370,7 @@ export const VotePage = () => {
                     })}
                     size="large"
                     variant="contained"
-                    disabled={!optionId || !isReceiptFetched || isCastingAVote}
+                    disabled={!optionId || !isReceiptFetched || isCastingAVote || !absoluteSlot}
                     onClick={() => handleSubmit()}
                     data-testid="proposal-submit-button"
                   >

@@ -9,6 +9,7 @@ import org.cardano.foundation.voting.repository.VoteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
 import java.util.Optional;
@@ -67,6 +68,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Either<Problem, Leaderboard.ByEvent> getEventLeaderboard(String event) {
         var eventDetailsE = chainFollowerClient.getEventDetails(event);
         if (eventDetailsE.isEmpty()) {
@@ -125,6 +127,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Either<Problem, Leaderboard.ByCategory> getCategoryLeaderboard(String event, String category) {
         var eventDetailsE = chainFollowerClient.getEventDetails(event);
         if (eventDetailsE.isEmpty()) {

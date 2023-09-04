@@ -43,8 +43,7 @@ dependencies {
 
 	implementation("com.google.guava:guava:32.1.1-jre")
 
-	implementation("org.zalando:problem-spring-web:0.29.1")
-	implementation("org.zalando:jackson-datatype-problem:0.27.1")
+	implementation("org.zalando:problem-spring-web-starter:0.29.1")
 
 	compileOnly("org.projectlombok:lombok:1.18.28")
 	annotationProcessor("org.projectlombok:lombok:1.18.28")
@@ -55,7 +54,6 @@ dependencies {
 	implementation("com.querydsl:querydsl-jpa")
     annotationProcessor("com.querydsl:querydsl-apt")
 
-	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0-beta2")
 	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0-beta2")
     implementation("com.bloxbean.cardano:cardano-client-address:0.5.0-beta2")
     implementation("com.bloxbean.cardano:cardano-client-metadata:0.5.0-beta2")
@@ -95,5 +93,6 @@ tasks {
 tasks.register<Copy>("buildAndCopyTypescriptTypes") {
 	dependsOn(tasks.generateTypeScript)
     from(layout.buildDirectory.file("typescript-generator/voting-verification-app-types.ts"))
-    into(layout.projectDirectory.dir("../../ui/cip-1694/src/types"))
+	into(layout.projectDirectory.dir("../../ui/cip-1694/src/types"))
+	into(layout.projectDirectory.dir("../../ui/summit-2023/src/types"))
 }

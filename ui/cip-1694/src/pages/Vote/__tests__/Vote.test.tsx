@@ -13,7 +13,7 @@ var mockToast = jest.fn();
 import 'whatwg-fetch';
 import '@testing-library/jest-dom';
 import { expect } from '@jest/globals';
-import { screen, within, waitFor, cleanup, fireEvent } from '@testing-library/react';
+import { screen, within, waitFor, cleanup, fireEvent, act, waitForElementToBeRemoved } from '@testing-library/react';
 import React from 'react';
 import { createMemoryHistory } from 'history';
 import { rest } from 'msw';
@@ -38,6 +38,7 @@ import {
   eventMock_notStarted,
   eventMock_finished,
   VoteReceiptMock_Full_MediumAssurance,
+  // VoteReceiptMock_Full_MediumAssurance,
 } from 'test/mocks';
 import { CustomRouter } from 'test/CustomRouter';
 import { capitalize } from 'lodash';
@@ -121,6 +122,23 @@ describe('For ongoing event:', () => {
   afterEach(() => {
     jest.clearAllMocks();
     cleanup();
+  });
+
+  test('should display proper state when the event related data is loading', async () => {
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
+
+    renderWithProviders(
+      <CustomRouter history={history}>
+        <VotePage />
+      </CustomRouter>
+    );
+
+    await waitFor(async () => {
+      const votePage = await screen.queryByTestId('vote-page');
+
+      const optionsLoaders = await within(votePage).queryAllByTestId('option-card-loader');
+      expect(optionsLoaders.length).toEqual(3);
+    });
   });
 
   test('should display proper state', async () => {
@@ -324,7 +342,7 @@ describe('For ongoing event:', () => {
     });
   });
 
-  test.skip('should fetch receipt and display proper state if present', async () => {
+  test('should ask to fetch receipt and display proper state if present', async () => {
     const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
     mockGetVoteReceipt.mockReset();
     mockGetVoteReceipt.mockReturnValue(VoteReceiptMock_Basic);
@@ -348,9 +366,22 @@ describe('For ongoing event:', () => {
       { preloadedState: { user: { event: eventMock_active } as UserState } }
     );
 
-    await waitFor(async () => {
-      const votePage = await screen.findByTestId('vote-page');
+    const votePage = await screen.findByTestId('vote-page');
 
+    const confirmationModal = await screen.findByTestId('confirm-with-signature-modal');
+    expect(confirmationModal).not.toBeNull();
+    expect(await within(confirmationModal).findByTestId('confirm-with-signature-title')).toHaveTextContent(
+      'Wallet signature'
+    );
+    expect(await within(confirmationModal).findByTestId('confirm-with-signature-description')).toHaveTextContent(
+      'We need to check if you’ve already voted. Please confirm with your wallet signature.'
+    );
+    const confirmCta = await within(confirmationModal).findByTestId('confirm-with-signature-cta');
+    expect(confirmCta).toHaveTextContent('Confirm');
+
+    fireEvent.click(confirmCta);
+
+    await waitFor(async () => {
       expect(store.getState().user.proposal).toEqual(VoteReceiptMock_Basic.proposal);
       expect(store.getState().user.receipt).toEqual(VoteReceiptMock_Basic);
 
@@ -365,10 +396,12 @@ describe('For ongoing event:', () => {
       const cta = await within(votePage).queryByTestId('show-receipt-button');
       expect(cta).not.toBeNull();
       expect(cta.textContent).toEqual('Vote receipt');
+
+      expect(await screen.queryByTestId('confirm-with-signature-modal')).toBeNull();
     });
   });
 
-  test.skip('should handle show vote receipt', async () => {
+  test('should handle show vote receipt', async () => {
     const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
     mockGetVoteReceipt.mockReset();
     mockGetVoteReceipt.mockReturnValue(VoteReceiptMock_Basic);
@@ -385,26 +418,38 @@ describe('For ongoing event:', () => {
     mockGetVotingPower.mockResolvedValue(accountDataMock);
 
     const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
-    renderWithProviders(
-      <CustomRouter history={history}>
-        <VotePage />
-      </CustomRouter>,
-      { preloadedState: { user: { event: eventMock_active } as UserState } }
-    );
+    await act(async () => {
+      renderWithProviders(
+        <CustomRouter history={history}>
+          <VotePage />
+        </CustomRouter>,
+        {
+          preloadedState: {
+            user: {
+              event: eventMock_active,
+              proposal: VoteReceiptMock_Basic.proposal,
+              receipt: VoteReceiptMock_Basic,
+            } as UserState,
+          },
+        }
+      );
+    });
 
     const votePage = await screen.findByTestId('vote-page');
+    expect(votePage).toBeInTheDocument();
+    expect(screen.queryByTestId('confirm-with-signature-modal')).not.toBeInTheDocument();
 
+    const cta = within(votePage).queryByTestId('show-receipt-button');
+    expect(cta.closest('button')).not.toBeDisabled();
     expect(screen.queryByTestId('vote-receipt')).not.toBeInTheDocument();
 
-    const cta = await within(votePage).findByTestId('show-receipt-button');
-    fireEvent.click(cta);
-
-    await waitFor(async () => {
-      expect(screen.queryByTestId('vote-receipt')).toBeInTheDocument();
+    await act(async () => {
+      fireEvent.click(cta);
     });
+    expect(screen.queryByTestId('vote-receipt')).toBeInTheDocument();
   });
 
-  test.skip('should handle error case of refetch receipt functionality', async () => {
+  test('should handle error case of refetch receipt functionality', async () => {
     const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
     mockGetVoteReceipt.mockReset();
     mockGetVoteReceipt.mockReturnValue(VoteReceiptMock_Full_MediumAssurance);
@@ -421,19 +466,27 @@ describe('For ongoing event:', () => {
     mockGetVotingPower.mockResolvedValue(accountDataMock);
 
     const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
-    renderWithProviders(
-      <CustomRouter history={history}>
-        <VotePage />
-      </CustomRouter>,
-      { preloadedState: { user: { event: eventMock_active } as UserState } }
-    );
+    await act(async () => {
+      renderWithProviders(
+        <CustomRouter history={history}>
+          <VotePage />
+        </CustomRouter>,
+        {
+          preloadedState: {
+            user: {
+              event: eventMock_active,
+              proposal: VoteReceiptMock_Basic.proposal,
+              receipt: VoteReceiptMock_Basic,
+            } as UserState,
+          },
+        }
+      );
+    });
 
-    const votePage = await screen.findByTestId('vote-page');
-
+    const votePage = await screen.queryByTestId('vote-page');
     expect(screen.queryByTestId('vote-receipt')).not.toBeInTheDocument();
-
-    const cta = await within(votePage).findByTestId('show-receipt-button');
-    fireEvent.click(cta);
+    const cta = await within(votePage).queryByTestId('show-receipt-button');
+    await act(async () => fireEvent.click(cta));
 
     const receipt = await screen.findByTestId('vote-receipt');
     expect(receipt).toBeInTheDocument();
@@ -441,17 +494,14 @@ describe('For ongoing event:', () => {
     mockGetVoteReceipt.mockReset();
     mockGetVoteReceipt.mockImplementation(async () => await Promise.reject('error'));
 
-    fireEvent.click(await within(receipt).findByTestId('refetch-receipt-button'));
-
-    await waitFor(async () => {
-      expect(mockToast).toBeCalledWith(
-        <Toast
-          message="Unable to refresh your vote receipt. Please try again"
-          error
-          icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
-        />
-      );
-    });
+    await act(async () => fireEvent.click(within(receipt).queryByTestId('refetch-receipt-button')));
+    expect(mockToast).toBeCalledWith(
+      <Toast
+        message="Unable to refresh your vote receipt. Please try again"
+        error
+        icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
+      />
+    );
   });
 });
 
@@ -627,7 +677,7 @@ describe('For the event that has already finished', () => {
     });
   });
 
-  test.skip('should render view result and open receipt cta when wallet is connected', async () => {
+  test('should render view result and open receipt cta when wallet is connected', async () => {
     const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
     mockGetVoteReceipt.mockReset();
     mockGetVoteReceipt.mockReturnValue(VoteReceiptMock_Basic);
@@ -645,37 +695,44 @@ describe('For the event that has already finished', () => {
     const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
     const historyPushSpy = jest.spyOn(history, 'push');
 
-    renderWithProviders(
-      <CustomRouter history={history}>
-        <VotePage />
-      </CustomRouter>,
-      { preloadedState: { user: { event: eventMock_finished } as UserState } }
-    );
+    await act(async () => {
+      renderWithProviders(
+        <CustomRouter history={history}>
+          <VotePage />
+        </CustomRouter>,
+        {
+          preloadedState: {
+            user: {
+              event: eventMock_finished,
+              proposal: VoteReceiptMock_Basic.proposal,
+              receipt: VoteReceiptMock_Basic,
+            } as UserState,
+          },
+        }
+      );
+    });
 
-    const votePage = await screen.findByTestId('vote-page');
+    const votePage = await screen.queryByTestId('vote-page');
 
     expect(screen.queryByTestId('vote-receipt')).not.toBeInTheDocument();
-
-    const cta = await within(votePage).findByTestId('show-receipt-button');
-    fireEvent.click(cta);
-
-    await waitFor(async () => {
-      expect(screen.queryByTestId('vote-receipt')).toBeInTheDocument();
+    const cta = await within(votePage).queryByTestId('show-receipt-button');
+    await act(async () => {
+      fireEvent.click(cta);
     });
-    const closeVoteReceipt = await within(screen.queryByTestId('vote-receipt')).findByTestId(
+
+    expect(screen.queryByTestId('vote-receipt')).toBeInTheDocument();
+    const closeVoteReceipt = await within(screen.queryByTestId('vote-receipt')).queryByTestId(
       'vote-receipt-close-button'
     );
-    fireEvent.click(closeVoteReceipt);
-
-    await waitFor(async () => {
-      expect(screen.queryByTestId('vote-receipt')).not.toBeInTheDocument();
+    await act(async () => {
+      fireEvent.click(closeVoteReceipt);
     });
+    await waitForElementToBeRemoved(() => screen.queryByTestId('vote-receipt'));
 
-    const cta2 = await within(votePage).findByTestId('view-results-button');
-    fireEvent.click(cta2);
-
-    await waitFor(async () => {
-      expect((historyPushSpy.mock.lastCall[0] as unknown as any).pathname).toEqual(ROUTES.LEADERBOARD);
+    const cta2 = await within(votePage).queryByTestId('view-results-button');
+    await act(async () => {
+      fireEvent.click(cta2);
     });
+    expect((historyPushSpy.mock.lastCall[0] as unknown as any).pathname).toEqual(ROUTES.LEADERBOARD);
   });
 });

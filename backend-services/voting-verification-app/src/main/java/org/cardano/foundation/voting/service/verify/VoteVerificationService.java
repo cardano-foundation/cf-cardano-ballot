@@ -55,7 +55,7 @@ public class VoteVerificationService {
             return Either.left(Problem.builder()
                     .withTitle("INVALID_VOTE")
                     .withStatus(BAD_REQUEST)
-                    .withDetail("Invalid vote cose signature")
+                    .withDetail("Invalid vote's cose signature")
                     .build());
         }
 
@@ -63,6 +63,30 @@ public class VoteVerificationService {
             var jsonNode = parseJson(cip30VerificationResult.getMessage(TEXT));
             var dataNode = jsonNode.get("data");
             var event = dataNode.get("event").asText();
+
+            var maybeEventE = chainFollowerClient.findEventById(event);
+
+            if (maybeEventE.isEmpty()) {
+                return Either.left(maybeEventE.getLeft());
+            }
+
+            var maybeEvent = maybeEventE.get();
+            if (maybeEvent.isEmpty()) {
+                return Either.left(Problem.builder()
+                        .withTitle("UNSUPPORTED_EVENT")
+                        .withDetail("Unsupported event: " + event)
+                        .withStatus(BAD_REQUEST)
+                        .build());
+            }
+
+            var e = maybeEvent.orElseThrow();
+            if (e.notStarted()) {
+                return Either.left(Problem.builder()
+                        .withTitle("EVENT_NOT_STARTED")
+                        .withDetail("Event not started yet: " + event)
+                        .withStatus(BAD_REQUEST)
+                        .build());
+            }
 
             var voteNetwork = dataNode.get("network").asText();
             var maybeNetwork = Enums.getIfPresent(CardanoNetwork.class, voteNetwork);

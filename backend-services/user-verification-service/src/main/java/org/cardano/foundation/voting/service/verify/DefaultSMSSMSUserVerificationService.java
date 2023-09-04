@@ -172,7 +172,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
         }
 
         int pendingPerStakeAddressCount = userVerificationRepository.findPendingPerStakeAddressPerPhoneCount(eventId, stakeAddress, phoneHash);
-        if (pendingPerStakeAddressCount > maxPendingVerificationAttempts) {
+        if (pendingPerStakeAddressCount >= maxPendingVerificationAttempts) {
             return Either.left(Problem.builder()
                     .withTitle("MAX_VERIFICATION_ATTEMPTS_REACHED")
                     .withDetail(String.format("Max verification attempts reached for eventId:%s, stakeAddress:%s. Try again in 24 hours.", eventId, stakeAddress))

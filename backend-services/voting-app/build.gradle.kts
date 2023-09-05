@@ -62,6 +62,8 @@ dependencies {
 
 	implementation("com.nimbusds:nimbus-jose-jwt:9.31")
 
+	implementation("com.google.crypto.tink:tink:1.10.0")
+
 	testImplementation("org.testcontainers:junit-jupiter")
 
 	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0-beta2")

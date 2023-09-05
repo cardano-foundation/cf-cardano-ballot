@@ -43,7 +43,6 @@ public class VoteResource {
 
                             log.warn("Vote cast failed: {}, running time:{} secs.", problem, startStop.getTotalTimeSeconds());
 
-
                             return ResponseEntity
                                     .status(Objects.requireNonNull(problem.getStatus()).getStatusCode())
                                     .body(problem);

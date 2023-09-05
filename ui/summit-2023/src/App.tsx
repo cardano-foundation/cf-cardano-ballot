@@ -11,7 +11,6 @@ import BackgroundPolygon1 from './common/resources/images/polygon1.svg';
 import { Box, CircularProgress, Container, useMediaQuery, useTheme } from '@mui/material';
 import Header from './components/common/Header/Header';
 import { PageRouter } from './routes';
-import { env } from 'common/constants/env';
 import { env } from './common/constants/env';
 import { RootState } from './store';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';

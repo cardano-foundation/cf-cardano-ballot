@@ -37,7 +37,7 @@ cf-summit-2023-verification-api:
     corsAllowedOrigins: https://{{ .Values.domain }},http://localhost:3000
 
 cf-user-verification-service:
-  enabled: false
+  enabled: true
   values:
     image:
       tag: 0.2.17

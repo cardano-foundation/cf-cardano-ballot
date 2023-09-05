@@ -19,22 +19,16 @@ repositories {
 	maven { url = uri("https://repo.spring.io/milestone") }
 }
 
-extra["testcontainersVersion"] = "1.17.6"
-
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.springframework.shell:spring-shell-starter")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
-
-	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.6")
 
 	compileOnly("org.projectlombok:lombok:1.18.28")
 	annotationProcessor("org.projectlombok:lombok:1.18.28")
 
 	testCompileOnly("org.projectlombok:lombok:1.18.28")
 	testAnnotationProcessor("org.projectlombok:lombok:1.18.28")
-
-	testImplementation("org.testcontainers:junit-jupiter")
 
     implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0-beta2")
     implementation("com.bloxbean.cardano:cardano-client-address:0.5.0-beta2")
@@ -47,11 +41,6 @@ dependencies {
 	implementation("com.google.crypto.tink:tink:1.10.0")
 
 	implementation("io.blockfrost:blockfrost-java:0.1.3")
-
-	implementation("io.vavr:vavr:0.10.4")
-
-	implementation("org.zalando:problem:0.27.1")
-	implementation("org.zalando:jackson-datatype-problem:0.27.1")
 }
 
 dependencyManagement {

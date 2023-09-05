@@ -61,7 +61,6 @@ dependencies {
     annotationProcessor("com.querydsl:querydsl-apt")
 
 	implementation("com.nimbusds:nimbus-jose-jwt:9.31")
-
 	implementation("com.google.crypto.tink:tink:1.10.0")
 
 	testImplementation("org.testcontainers:junit-jupiter")

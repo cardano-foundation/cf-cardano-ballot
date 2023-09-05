@@ -16,9 +16,9 @@ public class JwtAuthConfig {
 
     @Bean
     public OctetKeyPair jwtKeyPair() throws ParseException {
-        var decoded = HexUtil.decodeHexString(key);
+        var decodedJsonKey = HexUtil.decodeHexString(key);
 
-        return OctetKeyPair.parse(new String(decoded));
+        return OctetKeyPair.parse(new String(decodedJsonKey));
     }
 
 }

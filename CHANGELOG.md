@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.2.16](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.15...v0.2.16) (2023-09-05)
+
+
+### Features
+
+* added dockerfile, nginx conf and moved dev dep ([#137](https://github.com/cardano-foundation/cf-cardano-ballot/issues/137)) ([b13a806](https://github.com/cardano-foundation/cf-cardano-ballot/commit/b13a8062dc3ec3afa2ed549bc3981633c28a2a45))
+* remove i18n from the backend. ([#128](https://github.com/cardano-foundation/cf-cardano-ballot/issues/128)) ([df39319](https://github.com/cardano-foundation/cf-cardano-ballot/commit/df3931939cf943206f7b783b9477f3b12242885f))
+* user-verification-service sms endpoints, salted phone numbers as well as used phone number protection ([#134](https://github.com/cardano-foundation/cf-cardano-ballot/issues/134)) ([8938848](https://github.com/cardano-foundation/cf-cardano-ballot/commit/8938848181813a1820fa210d80a0684f516c6eb8))
+
+
+### Bug Fixes
+
+* create user-verification-app-build.yml ([582ae78](https://github.com/cardano-foundation/cf-cardano-ballot/commit/582ae786ad5cfaa08d918fb28669d86d975e2a1c))
+* fixed build urls ([48ef658](https://github.com/cardano-foundation/cf-cardano-ballot/commit/48ef658fc6cb8d6bd162a39d7438caceaa6d6e7d))
+* readme link fix ([c46bba4](https://github.com/cardano-foundation/cf-cardano-ballot/commit/c46bba4022bfebc266dcc718d1fd73d95de51243))
+* user-verification-app-build.yml typo ([9ec83f0](https://github.com/cardano-foundation/cf-cardano-ballot/commit/9ec83f0c888a1fc63451df5ab61d308ffff304fe))
+* wrong condition, voting power should not be present for USER_BASED_EVENTS. ([394afa5](https://github.com/cardano-foundation/cf-cardano-ballot/commit/394afa5aec495973e48b0fa5e9b9dfaac8bef4ff))
+
 ## [0.2.15](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.14...v0.2.15) (2023-09-04)
 
 

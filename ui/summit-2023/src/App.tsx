@@ -23,17 +23,13 @@ function App() {
   const eventCache = useSelector((state: RootState) => state.user.event);
   const { isConnected, stakeAddress } = useCardano();
 
-  console.log('stakeAddress');
-  console.log(stakeAddress);
   const dispatch = useDispatch();
   const fetchEvent = useCallback(async () => {
     try {
       const event = await getEvent(env.EVENT_ID);
       dispatch(setEventData({ event }));
 
-      console.log('isConnected', isConnected);
       if (isConnected) {
-        console.log('lets see if we are ferivied');
         const isVerified = await getIsVerified(env.EVENT_ID, stakeAddress);
         console.log('isVerified', isVerified);
         dispatch(setWalletIsVerified({ isVerified: isVerified.verified }));

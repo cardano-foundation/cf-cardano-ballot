@@ -45,11 +45,12 @@ const Header: React.FC = () => {
   const [toastIsError, setToastIsError] = useState(false);
   const [toastOpen, setToastOpen] = useState(false);
 
+
   useEffect(() => {
     const openConnectWalletModal = () => {
+        console.log('heeey')
       setOpenAuthDialog(true);
     };
-
     eventBus.subscribe('openConnectWalletModal', openConnectWalletModal);
 
     return () => {
@@ -57,15 +58,27 @@ const Header: React.FC = () => {
     };
   }, []);
 
+    const showToast = (message: string, error?: boolean) => {
+        setToastIsError(!!error);
+        setToastOpen(true);
+        setToastMessage(message);
+    };
+
+    useEffect(() => {
+        const showToastListener = (message: string, error: boolean) => {
+            showToast(message, error);
+        };
+        eventBus.subscribe('showToast', showToastListener);
+
+        return () => {
+            eventBus.unsubscribe('showToast', showToastListener);
+        };
+    }, []);
+
   const handleCloseAuthDialog = () => {
     setOpenAuthDialog(false);
   };
 
-  const showToast = (message: string, error?: boolean) => {
-    setToastIsError(!!error);
-    setToastOpen(true);
-    setToastMessage(message);
-  };
 
   const onConnectWallet = () => {
     setOpenAuthDialog(false);

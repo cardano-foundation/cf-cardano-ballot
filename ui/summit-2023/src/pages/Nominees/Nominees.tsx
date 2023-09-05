@@ -83,7 +83,7 @@ const Nominees = () => {
       const requestVoteObject = await signMessagePromisified(canonicalVoteInput);
       await castAVoteWithDigitalSignature(requestVoteObject);
     } catch (e) {
-      console.log('error on signing')
+      eventBus.publish('showToast', 'Error while signing', true );
     }
 
   };

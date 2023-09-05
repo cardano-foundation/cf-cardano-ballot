@@ -85,8 +85,8 @@ const VerifyWallet = (props: VerifyWalletProps) => {
           setPhoneCodeIsBeenSending(false);
         })
         .catch((error) => {
-          // TODO: handle error
-          onError(error);
+          onError(error.message);
+          setPhoneCodeIsBeenSending(false);
         });
     }
   };
@@ -237,7 +237,9 @@ const VerifyWallet = (props: VerifyWalletProps) => {
               onClick={() => handleVerifyPhoneCode()}
               disabled={codes.length < 6 || phoneCodeIsBeenConfirming}
               className={`verify-number-button-continue ${
-                codes.filter((code) => code !== '').length === 6 && !phoneCodeIsBeenConfirming ? 'verify-number-button-valid' : ''
+                codes.filter((code) => code !== '').length === 6 && !phoneCodeIsBeenConfirming
+                  ? 'verify-number-button-valid'
+                  : ''
               }`}
               fullWidth
             >
@@ -309,7 +311,9 @@ const VerifyWallet = (props: VerifyWalletProps) => {
               onClick={() => handleSendCode()}
               disabled={!matchIsValidTel(phone) || !checkImNotARobot || phoneCodeIsBeenSending}
               className={`verify-number-button-continue ${
-                matchIsValidTel(phone) && checkImNotARobot && !phoneCodeIsBeenSending ? 'verify-number-button-valid' : ''
+                matchIsValidTel(phone) && checkImNotARobot && !phoneCodeIsBeenSending
+                  ? 'verify-number-button-valid'
+                  : ''
               }`}
               fullWidth
             >

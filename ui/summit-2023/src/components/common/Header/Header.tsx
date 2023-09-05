@@ -97,7 +97,7 @@ const Header: React.FC = () => {
   };
 
   const onError = (error: string | undefined) => {
-    showToast(error);
+    showToast(error, true);
   };
 
   const handleToastClose = (event?: Event | React.SyntheticEvent<any, Event>, reason?: string) => {

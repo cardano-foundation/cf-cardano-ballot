@@ -34,3 +34,127 @@ It correctly bundles React in production mode and optimizes the build for the be
 
 The build is minified and the filenames include the hashes.\
 Your app is ready to be deployed!
+
+## Running backend services in localhost
+
+### T1 Voting app on port: 9091
+```bash
+cd voting-app
+./gradlew bootRun
+```
+### T2 Data follower app on port: 9090
+```bash
+cd voting-ledger-follower-app
+./gradlew bootRun
+```
+### T3 Vote verification app on port: 9092
+```bash
+cd voting-verification-app
+./gradlew bootRun
+```
+### T4 User verification app on port: 9093
+```bash
+export AWS_SNS_ACCESS_KEY_ID=...
+export AWS_SNS_SECRET_ACCESS_KEY=...
+cd user-verification-service
+./gradlew bootRun
+```
+
+## Frontend requests
+### Register phone number
+```bash
+var myHeaders = new Headers();
+myHeaders.append("Content-Type", "application/json");
+
+var raw = JSON.stringify({
+  "eventId": "CF_SUMMIT_2023_24DC",
+  "stakeAddress": "stake_test1uqwcz0754wwpuhm6xhdpda6u9enyahaj5ynlc9ay5l4mlms4pyqyg",
+  "phoneNumber": "+19144244762"
+});
+
+var requestOptions = {
+  method: 'POST',
+  headers: myHeaders,
+  body: raw,
+  redirect: 'follow'
+};
+
+fetch("localhost:9093/api/user-verification/start-verification", requestOptions)
+  .then(response => response.text())
+  .then(result => console.log(result))
+  .catch(error => console.log('error', error));
+```
+#### Response
+```bash
+{
+    "eventId": "CF_SUMMIT_2023_24DC",
+    "stakeAddress": "stake_test1uqwcz0754wwpuhm6xhdpda6u9enyahaj5ynlc9ay5l4mlms4pyqyg",
+    "requestId": "fcf92e23-22d3-57a0-b25a-7348cdbe993b",
+    "createdAt": "2023-09-01T15:54:53.471914",
+    "expiresAt": "2023-09-01T16:09:53.466412"
+}
+```
+### Confirm sms code
+```bash
+### Verify phone number with code
+
+var myHeaders = new Headers();
+myHeaders.append("Content-Type", "application/json");
+
+var raw = JSON.stringify({
+  "eventId": "CF_SUMMIT_2023_24DC",
+  "stakeAddress": "stake_test1uqwcz0754wwpuhm6xhdpda6u9enyahaj5ynlc9ay5l4mlms4pyqyg",
+  "requestId": "fcf92e23-22d3-57a0-b25a-7348cdbe993b",
+  "phoneNumber": "+19144244762",
+  "verificationCode": "420374"
+});
+
+var requestOptions = {
+  method: 'POST',
+  headers: myHeaders,
+  body: raw,
+  redirect: 'follow'
+};
+
+fetch("localhost:9093/api/user-verification/check-verification", requestOptions)
+  .then(response => response.text())
+  .then(result => console.log(result))
+  .catch(error => console.log('error', error));
+```
+
+#### Response
+```bash
+{
+"verified": true
+}
+```
+
+### Verify User
+```bash
+var myHeaders = new Headers();
+myHeaders.append("Content-Type", "application/json");
+
+var raw = JSON.stringify({
+  "coseSignature": "HEX",
+  "cosePublicKey": "HEX"
+});
+
+var requestOptions = {
+  method: 'GET',
+  headers: myHeaders,
+  body: raw,
+  redirect: 'follow'
+};
+
+fetch("localhost:9093/api/user-verification/verified/CF_SUMMIT_2023_24DC/stake_test1uqwcz0754wwpuhm6xhdpda6u9enyahaj5ynlc9ay5l4mlms4pyqyg", requestOptions)
+  .then(response => response.text())
+  .then(result => console.log(result))
+  .catch(error => console.log('error', error));
+  ```
+
+#### Response
+```bash
+{
+    "verified": true
+}
+```

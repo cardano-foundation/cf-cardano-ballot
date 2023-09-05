@@ -56,6 +56,8 @@ const VerifyWallet = (props: VerifyWalletProps) => {
     function clear() {
       setVerifyOption(undefined);
       setPhoneCodeIsSent(false);
+      setPhone('');
+      setCodes(Array(6).fill(''));
     }
     if (timout) {
       setTimeout(() => {

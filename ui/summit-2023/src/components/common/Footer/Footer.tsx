@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppBar, Toolbar, Typography, Grid, Box } from '@mui/material';
+import { Typography, Grid, Box } from '@mui/material';
 import './Footer.scss';
 import discordLogo from '../../../common/resources/images/discord-icon.svg';
 
@@ -8,7 +8,7 @@ const Footer: React.FC = () => {
     <Box
       mt={5}
       textAlign="center"
-      style={{ background: 'transparent', boxShadow: 'none', padding: '10px' }}
+      style={{ background: 'transparent', boxShadow: 'none', padding: '10px', bottom: '0 !important' }}
     >
       <Grid container>
         <Grid

@@ -4,11 +4,13 @@ import PlayCircleOutlineRoundedIcon from '@mui/icons-material/PlayCircleOutlineR
 import { Hexagon } from '../common/Hexagon';
 import './Hero.scss';
 import { i18n } from '../../i18n';
+import { NavLink } from 'react-router-dom';
 
 const Hero: React.FC = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
 
   const handleOpenModal = () => {
     setModalOpen(true);
@@ -22,42 +24,42 @@ const Hero: React.FC = () => {
     <Box
       sx={{
         display: 'flex',
-        flexDirection: { xs: 'column', sm: 'row' },
-        height: { xs: 'auto', sm: '400px' },
-        marginLeft: isMobile ? '0px' : '150px',
-        marginTop: isMobile ? '0px' : '50px',
+        flexDirection: { xs: 'column', sm: 'column', md: 'column', lg: 'row' },
+        height: { xs: 'auto', sm: 'auto', lg: '400px' },
+        marginLeft: isMobile ? '0px' : '10%',
       }}
     >
       <Box
         sx={{
           flex: '1',
           padding: '20px',
-          marginRight: isMobile ? '0px' : '40px',
-          order: { xs: '1', sm: '1' },
+          order: { xs: '1', sm: '1', md: '1' },
         }}
       >
         <div
           className="left-title-container"
-          style={{ marginTop: isMobile ? '0px' : '15%' }}
+          style={{ marginTop: isMobile || isTablet ? '0px' : '15%' }}
         >
           <Typography
             className="title"
             variant="h2"
-            style={{ textAlign: isMobile ? 'center' : 'left' }}
+            style={{ textAlign: isMobile || isTablet ? 'center' : 'left' }}
           >
             {i18n.t('landing.title')}
           </Typography>
           <Typography
             variant="body1"
-            style={{ textAlign: isMobile ? 'center' : 'left', marginTop: isMobile ? '40px' : '40px' }}
+            style={{ textAlign: isMobile || isTablet ? 'center' : 'left', marginTop: isMobile ? '40px' : '40px' }}
           >
             {i18n.t('landing.description')}
           </Typography>
           <Grid
             container
-            justifyContent={isMobile ? 'center' : 'flex-start'}
+            justifyContent={isMobile || isTablet ? 'center' : 'flex-start'}
           >
-            <Button className="get-started-button">{i18n.t('landing.getStartedButton')}</Button>
+            <NavLink to="/categories">
+              <Button className="get-started-button">{i18n.t('landing.getStartedButton')}</Button>
+            </NavLink>
           </Grid>
         </div>
       </Box>
@@ -66,11 +68,10 @@ const Hero: React.FC = () => {
         sx={{
           flex: '1',
           padding: '20px',
-          marginLeft: isMobile ? '0px' : '40px',
-          order: { xs: '2', sm: '2' },
+          order: { xs: '2', sm: '2', md: '2' },
         }}
       >
-        <div style={{ paddingRight: isMobile ? '0px' : '20%' }}>
+        <div style={{ marginLeft: isMobile || isTablet ? '100px' : '0%', width: '60%' }}>
           <Hexagon>
             <>
               <div className="right-title-container">

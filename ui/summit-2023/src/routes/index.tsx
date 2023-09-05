@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { Home } from '../pages/Home';
-import { Nominees } from '../pages/Nominees';
+import { Proposals } from '../pages/Proposals';
 import { NotFound } from '../pages/NotFound';
 import { Categories } from '../pages/Categories';
 
@@ -10,8 +10,8 @@ export const PAGE_PATH = '/';
 export const ROUTES = {
   INTRO: `${PAGE_PATH}`,
   CATEGORIES: `${PAGE_PATH}categories`,
-  NOMINEES: `${PAGE_PATH}nominees`,
-  NOMINEES_BY_ID: `${PAGE_PATH}nominees/:id`,
+  PROPOSALS: `${PAGE_PATH}proposals`,
+  PROPOSALS_BY_ID: `${PAGE_PATH}proposals/:categoryId`,
   NOT_FOUND: `${PAGE_PATH}404`,
 };
 
@@ -28,11 +28,11 @@ const PageRouter = () => {
           element={<Categories />}
         />
         <Route
-          path={ROUTES.NOMINEES_BY_ID}
-          element={<Nominees />}
+          path={ROUTES.PROPOSALS_BY_ID}
+          element={<Proposals />}
         />
         <Route
-          path={ROUTES.NOMINEES}
+          path={ROUTES.PROPOSALS}
           element={<Categories />}
         />
         <Route

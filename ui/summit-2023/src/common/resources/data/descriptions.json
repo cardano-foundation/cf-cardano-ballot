@@ -2,7 +2,7 @@
   "categories": [
     { 
         "id": "BEST_WALLET", 
-        "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        "desc": "BEST_WALLET is Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
         "nominees": [
             { 
                 "id": "fe74fb7b-94f6-4777-af72-f086cba20e36", 
@@ -28,7 +28,7 @@
     },
     { 
         "id": "BEST_DEX", 
-        "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        "desc": "BEST_DEX is Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
         "nominees": [
             { 
                 "id": "fe74fb7b-94f6-4777-af72-f086cba20e36", 
@@ -54,7 +54,7 @@
     },
     { 
         "id": "BEST_BLOCK", 
-        "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        "desc": "BEST_BLOCK is Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
         "nominees": [
             { 
                 "id": "fe74fb7b-94f6-4777-af72-f086cba20e36", 
@@ -80,7 +80,7 @@
     },
     { 
         "id": "BEST_NFT", 
-        "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        "desc": "BEST_NFT is Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
         "nominees": [
             { 
                 "id": "fe74fb7b-94f6-4777-af72-f086cba20e36", 

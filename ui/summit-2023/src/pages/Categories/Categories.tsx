@@ -23,17 +23,27 @@ import CATEGORY_IMAGES from '../../common/resources/data/categoryImages.json';
 import { Link } from 'react-router-dom';
 import CardMedia from '@mui/material/CardMedia';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import CATEGORIES from '../../common/resources/data/categoriesData.json';
+import DESCRIPTIONS from '../../common/resources/data/descriptions.json';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
+
+export interface CategoryDescriptions {
+  id: string;
+  desc: string;
+  nominees: {
+      id: string;
+      desc: string;
+  }[];
+}
 
 const Categories = () => {
   const eventCache = useSelector((state: RootState) => state.user.event);
 
-  const categories = eventCache?.categories || CATEGORIES.data;
+  const categories = eventCache?.categories;
+  const descriptions: CategoryDescriptions[] = DESCRIPTIONS.categories;
 
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('xs'));
 
   const [listView, setListView] = useState<'grid' | 'list'>('grid');
   const [isVisible, setIsVisible] = useState(true);
@@ -70,7 +80,7 @@ const Categories = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <Typography
           className="categories-title"
-          variant="h4"
+          variant="h2"
         >
           Categories
         </Typography>
@@ -91,7 +101,7 @@ const Categories = () => {
         spacing={3}
         style={{ justifyContent: 'center' }}
       >
-        {categories.map((category, index) => (
+        {categories?.map((category, index) => (
           <Grid
             item
             xs={!isMobile && listView === 'grid' ? 4 : 12}
@@ -140,17 +150,17 @@ const Categories = () => {
                               variant="body1"
                               color="text.primary"
                             >
-                              {category.presentationName}
+                              {(category.id === descriptions[index].id) ? descriptions[index].desc : category.presentationName}
                             </Typography>
                           </Box>
                           <CardActions>
                             <Button
                               component={Link}
-                              to={{ pathname: `/nominees/${category.id}` }}
+                              to={{ pathname: `/proposals/${category.id}` }}
                               state={{
                                 category,
                               }}
-                              aria-label="View Nominees"
+                              aria-label="View Proposals"
                               variant="contained"
                               size="large"
                               sx={{
@@ -162,7 +172,7 @@ const Categories = () => {
                                 backgroundColor: '#acfcc5 !important',
                               }}
                             >
-                              View Nominees
+                              View Proposals
                             </Button>
                           </CardActions>
                         </CardContent>
@@ -261,7 +271,7 @@ const Categories = () => {
                         variant="body1"
                         color="text.primary"
                       >
-                        {category.description}
+                        {category.presentationName}
                       </Typography>
                     </Box>
                     <Box sx={{ marginLeft: 'auto' }}>

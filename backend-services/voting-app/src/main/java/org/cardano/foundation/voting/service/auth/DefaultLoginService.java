@@ -185,6 +185,7 @@ public class DefaultLoginService implements LoginService {
                     .withStatus(BAD_REQUEST)
                     .build());
         }
+        var e = maybeEvent.get();
 
         var maybeAddress = cip30VerificationResult.getAddress(AddressFormat.TEXT);
         if (maybeAddress.isEmpty()) {
@@ -221,7 +222,18 @@ public class DefaultLoginService implements LoginService {
                     .build());
         }
 
-        return jwtService.generate(stakeAddress, maybeRole.orElseThrow());
+        var role = maybeRole.orElseThrow();
+
+        if (role != Role.VOTER) {
+            return Either.left(Problem.builder()
+                    .withTitle("ROLE_NOT_SUPPORTED")
+                    .withDetail("Only VOTER role is supported for login for now.")
+                    .withStatus(BAD_REQUEST)
+                    .build(
+            ));
+        }
+
+        return jwtService.generate(stakeAddress, e.id(), role);
     }
 
 }

@@ -1,6 +1,5 @@
 package org.cardano.foundation.voting.service.auth;
 
-import com.google.common.net.HttpHeaders;
 import com.nimbusds.jwt.SignedJWT;
 import io.vavr.control.Either;
 import jakarta.servlet.FilterChain;
@@ -20,6 +19,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.List;
 
+import static com.google.common.net.HttpHeaders.AUTHORIZATION;
 import static io.micrometer.common.util.StringUtils.isEmpty;
 
 @Service
@@ -30,18 +30,22 @@ public class JwtFilter extends OncePerRequestFilter {
     private JwtService jwtService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
-        var header = request.getHeader(HttpHeaders.AUTHORIZATION);
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain chain) throws ServletException, IOException {
+        var header = request.getHeader(AUTHORIZATION);
         if (isEmpty(header) || !header.startsWith("Bearer ")) {
             chain.doFilter(request, response);
             return;
         }
 
-        // Get jwt token and verificationResultE
+        // Get jwt token and verificationResult
         var token = header.split(" ")[1].trim();
         Either<Problem, SignedJWT> verificationResultE = jwtService.verify(token);
 
         if (verificationResultE.isEmpty()) {
+            log.warn("JWT verification failed: {}", verificationResultE.getLeft());
+
             chain.doFilter(request, response);
             return;
         }

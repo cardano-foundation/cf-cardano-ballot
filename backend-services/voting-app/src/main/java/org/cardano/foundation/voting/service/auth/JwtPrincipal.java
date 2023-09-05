@@ -31,7 +31,7 @@ public class JwtPrincipal implements Principal, AuthenticatedPrincipal {
     @Override
     @SneakyThrows
     public String getName() {
-        return signedJWT.getJWTClaimsSet().getStringClaim("username").trim();
+        return signedJWT.getJWTClaimsSet().getStringClaim("stakeAddress").trim();
     }
 
 }

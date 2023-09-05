@@ -13,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.LoginResult;
 import org.cardano.foundation.voting.domain.Role;
+import org.cardano.foundation.voting.service.address.StakeAddressVerificationService;
+import org.cardano.foundation.voting.utils.Enums;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -40,6 +42,9 @@ public class JwtService {
     @Autowired
     private CardanoNetwork cardanoNetwork;
 
+    @Autowired
+    private StakeAddressVerificationService stakeAddressVerificationService;
+
     @Value("${cardano.jwt.iss}")
     private String iss;
 
@@ -47,7 +52,9 @@ public class JwtService {
     private long tokenValidityDurationHours;
 
     @Timed(value = "service.jwt.generate", percentiles = { 0.3, 0.5, 0.95 })
-    public Either<Problem, LoginResult> generate(String stakeAddress, Role role) {
+    public Either<Problem, LoginResult> generate(String stakeAddress,
+                                                 String eventId,
+                                                 Role role) {
         var now = LocalDateTime.now(clock);
         try {
             var signer = new Ed25519Signer(cfJWTKey);
@@ -58,9 +65,10 @@ public class JwtService {
                     .subject(stakeAddress)
                     .jwtID(UUID.randomUUID().toString())
                     .issuer(iss)
-                    .claim("username", stakeAddress)
+                    .claim("stakeAddress", stakeAddress)
+                    .claim("eventId", eventId)
                     .claim("role", role)
-                    .claim("cardano_network", cardanoNetwork.name())
+                    .claim("cardanoNetwork", cardanoNetwork.name())
                     .issueTime(convertToDateViaInstant(now))
                     .expirationTime(legacyExpirationDate)
                     .build();
@@ -73,8 +81,7 @@ public class JwtService {
 
             signedJWT.sign(signer);
 
-            String accessToken = signedJWT.serialize();
-
+            var accessToken = signedJWT.serialize();
 
             return Either.right(new LoginResult(accessToken, expirationLocalDateTime));
         } catch (JOSEException e) {
@@ -98,9 +105,10 @@ public class JwtService {
             var signedJWT = SignedJWT.parse(token);
 
             if (signedJWT.verify(verifier)) {
-                var sub = signedJWT.getJWTClaimsSet().getSubject();
+                var jwtClaimsSet = signedJWT.getJWTClaimsSet();
+                var sub = jwtClaimsSet.getSubject();
 
-                var issuerCheck = signedJWT.getJWTClaimsSet().getIssuer().equals(iss);
+                var issuerCheck = jwtClaimsSet.getIssuer().equals(iss);
 
                 if (!issuerCheck) {
                     log.warn("JWT token verification failed for token:{}, issuer check failed.", token);
@@ -113,19 +121,44 @@ public class JwtService {
                                     .build());
                 }
 
-                var networkCheck = signedJWT.getJWTClaimsSet().getClaim("cardano_network").equals(cardanoNetwork.name());
-                if (!networkCheck) {
-                    return Either.left(
-                            Problem.builder()
-                                    .withTitle("WRONG_NETWORK")
-                                    .withDetail("JWT verification failed for token:" + token + " due to network check failed.")
-                                    .withStatus(BAD_REQUEST)
-                                    .build());
+                var jwtCardanoNetwork = jwtClaimsSet.getStringClaim("cardanoNetwork");
+                var maybeNetwork = Enums.getIfPresent(CardanoNetwork.class, jwtCardanoNetwork);
+                if (maybeNetwork.isEmpty()) {
+                    log.warn("Invalid jwtNetwork, jwtNetwork:{}", jwtCardanoNetwork);
+
+                    return Either.left(Problem.builder()
+                            .withTitle("INVALID_NETWORK")
+                            .withDetail("Invalid network, supported networks:" + CardanoNetwork.supportedNetworks())
+                            .withStatus(BAD_REQUEST)
+                            .build());
                 }
 
-                var username = signedJWT.getJWTClaimsSet().getStringClaim("username");
+                var jwtNetwork = maybeNetwork.orElseThrow();
 
-                log.info("Verified sub:{}, username:{}, ", sub, username);
+                if (jwtNetwork != cardanoNetwork) {
+                    log.warn("Network mismatch, network:{}", jwtNetwork);
+
+                    return Either.left(Problem.builder()
+                            .withTitle("NETWORK_MISMATCH")
+                            .withDetail("Invalid network, backend configured with betwork:" + cardanoNetwork + ", however request is with network:" + jwtNetwork)
+                            .withStatus(BAD_REQUEST)
+                            .build());
+
+                }
+
+                var jwtStakeAddress = jwtClaimsSet.getStringClaim("stakeAddress");
+
+                var stakeAddressCheckE = stakeAddressVerificationService.checkIfAddressIsStakeAddress(jwtStakeAddress);
+                if (stakeAddressCheckE.isLeft()) {
+                    return Either.left(stakeAddressCheckE.getLeft());
+                }
+
+                var stakeAddressNetworkCheck = stakeAddressVerificationService.checkStakeAddressNetwork(jwtStakeAddress);
+                if (stakeAddressNetworkCheck.isLeft()) {
+                    return Either.left(stakeAddressNetworkCheck.getLeft());
+                }
+
+                log.info("Verified sub:{}, stakeAddress:{}, ", sub, jwtStakeAddress);
 
                 return Either.right(signedJWT);
             }

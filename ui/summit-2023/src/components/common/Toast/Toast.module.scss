@@ -1,0 +1,43 @@
+.toast {
+  align-items: center;
+  background: #061d3c;
+  border-radius: 8px !important;
+  display: flex;
+  font-size: 16px;
+  font-weight: 400;
+  gap: 8px;
+  letter-spacing: 0em;
+  padding: 12px 16px;
+
+  &.error {
+    background: #cc0e00;
+    color: #f5f9ff;
+  }
+
+  .message {
+    white-space: nowrap;
+    display: flex;
+    line-height: 22px;
+    color: #f5f9ff;
+  }
+
+  .toastCloseBtn {
+    margin: -8px;
+  }
+
+  .toastIcon {
+    font-size: 19px !important;
+    color: #f5f9ff !important;
+  }
+
+  .divider {
+    height: 22px;
+    width: 1px;
+    background: #f5f9ffa6;
+  }
+
+  .toastClose {
+    font-size: 19px;
+    color: #f5f9ff;
+  }
+}

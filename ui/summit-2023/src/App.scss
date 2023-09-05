@@ -5,6 +5,10 @@ html,
   margin: 0;
 }
 
+body {
+  font-family: 'Roboto', sans-serif;
+}
+
 .App {
   display: flex;
   flex-direction: column;
@@ -36,4 +40,21 @@ html,
   @media (max-width: 420px) {
     display: none;
   }
+}
+
+.toast {
+  padding: 0 !important;
+  border-radius: 8px !important;
+  color: #fff;
+  min-width: auto !important;
+  width: auto !important;
+  max-width: 450px !important;
+  & > div {
+    margin: 0px !important;
+  }
+}
+
+.app-spinner.MuiCircularProgress-root {
+  color: var(--color-ultra-dark-blue);
+  stroke-width: 50;
 }

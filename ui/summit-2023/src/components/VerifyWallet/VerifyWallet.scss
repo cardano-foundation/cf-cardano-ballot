@@ -95,7 +95,7 @@
   line-height: 22px; /* 122.222% */
 }
 
-.didnt-receive-label{
+.didnt-receive-label {
   color: var(--color-dark-blue);
   text-align: center;
   font-size: 16px;
@@ -118,6 +118,7 @@
 }
 .secret-key-input {
   width: 100%;
+  margin-top: 35px !important;
 }
 .secret-key-input > .MuiInputBase-root {
   border-radius: 8px;

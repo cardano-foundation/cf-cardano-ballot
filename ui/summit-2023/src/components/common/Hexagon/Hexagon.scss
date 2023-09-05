@@ -1,8 +1,8 @@
 .hexagon-wrapper {
   position: relative;
   width: 100%;
-  padding-bottom: 113%;
   transition: transform 0.5s ease;
+  padding-bottom: 113%; /* 1:1 Aspect Ratio */
 
   &:hover {
     transform: scale(1.03);
@@ -25,6 +25,10 @@
 
 .hexagon-container {
   position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
   width: 100%;
   height: 100%;
   background: url('./hexagon1.svg') center/cover no-repeat;

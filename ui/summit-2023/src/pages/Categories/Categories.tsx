@@ -39,7 +39,7 @@ const Categories = () => {
   const [isVisible, setIsVisible] = useState(true);
   const [isHoveredId, setIsHoveredId] = useState('');
 
-  useEffect(() => {     
+  useEffect(() => {
     if (isMobile) {
       setListView('list');
     }

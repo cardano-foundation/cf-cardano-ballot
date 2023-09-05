@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { VoteReceipt } from '../types/voting-app-types';
 import { EventPresentation } from '../types/voting-ledger-follower-types';
-import { UserState } from './types';
+import { UserState, VerificationStarts } from './types';
 
 const initialState: UserState = {
   connectedWallet: '',
@@ -10,6 +10,7 @@ const initialState: UserState = {
   isReceiptFetched: false,
   receipt: null,
   proposal: '',
+  userVerification: {},
   event: {
     id: '',
     team: '',
@@ -40,8 +41,8 @@ export const userSlice = createSlice({
     setConnectedWallet: (state, action: PayloadAction<{ wallet: string }>) => {
       state.connectedWallet = action.payload.wallet;
     },
-    setWalletIsVerified: (state, action: PayloadAction<{ isVerified: string }>) => {
-      state.connectedWallet = action.payload.isVerified;
+    setWalletIsVerified: (state, action: PayloadAction<{ isVerified: boolean }>) => {
+      state.walletIsVerified = action.payload.isVerified;
     },
     setVoteReceipt: (state, action: PayloadAction<{ receipt: VoteReceipt }>) => {
       state.receipt = action.payload.receipt;
@@ -55,9 +56,15 @@ export const userSlice = createSlice({
     setEventData: (state, action: PayloadAction<{ event: EventPresentation }>) => {
       state.event = action.payload.event;
     },
+    setUserStartsVerification: (
+      state,
+      action: PayloadAction<{ stakeAddress: string; verificationStarts: VerificationStarts }>
+    ) => {
+      state.userVerification[action.payload.stakeAddress] = action.payload.verificationStarts;
+    },
   },
 });
 
-export const { setConnectedWallet, setVoteReceipt, setIsReceiptFetched, setSelectedProposal, setEventData } =
+export const { setConnectedWallet, setVoteReceipt, setUserStartsVerification, setWalletIsVerified, setEventData } =
   userSlice.actions;
 export default userSlice.reducer;

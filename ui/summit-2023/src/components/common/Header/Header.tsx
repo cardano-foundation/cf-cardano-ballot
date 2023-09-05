@@ -90,9 +90,14 @@ const Header: React.FC = () => {
   const handleCloseVerify = () => {
     setVerifyModalIsOpen(false);
   };
+
   const onVerify = () => {
     showToast('Your wallet has been verified');
     handleCloseVerify();
+  };
+
+  const onError = (error: string | undefined) => {
+    showToast(error, true);
   };
 
   const handleToastClose = (event?: Event | React.SyntheticEvent<any, Event>, reason?: string) => {
@@ -291,7 +296,10 @@ const Header: React.FC = () => {
         onClose={handleCloseVerify}
         disableBackdropClick={true}
       >
-        <VerifyWallet onVerify={() => onVerify()} />
+        <VerifyWallet
+          onVerify={() => onVerify()}
+          onError={(error) => onError(error)}
+        />
       </Modal>
       <Snackbar
         className={`header-toast ${toastIsError ? 'header-toast-error' : ''}`}

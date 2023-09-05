@@ -40,7 +40,6 @@ export const userSlice = createSlice({
       action: PayloadAction<{ stakeAddress: string; verificationStarts: VerificationStarts }>
     ) => {
       state.userVerification[action.payload.stakeAddress] = action.payload.verificationStarts;
-      console.log(state.userVerification);
     },
   },
 });

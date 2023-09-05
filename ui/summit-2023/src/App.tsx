@@ -45,7 +45,7 @@ function App() {
         />
       );
     }
-  }, [dispatch]);
+  }, [dispatch, stakeAddress]);
 
   useEffect(() => {
     fetchEvent();

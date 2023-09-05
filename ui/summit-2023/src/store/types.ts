@@ -20,6 +20,11 @@ export interface VerificationStarts {
   createdAt: string;
   expiresAt: string;
 }
+
+export interface PhoneNumberCodeConfirmation {
+  verified: boolean;
+}
+
 export interface State {
   user: UserState;
 }

@@ -60,7 +60,7 @@ dependencies {
 	implementation("com.querydsl:querydsl-jpa")
     annotationProcessor("com.querydsl:querydsl-apt")
 
-	implementation("com.nimbusds:nimbus-jose-jwt:9.30.2")
+	implementation("com.nimbusds:nimbus-jose-jwt:9.31")
 
 	testImplementation("org.testcontainers:junit-jupiter")
 

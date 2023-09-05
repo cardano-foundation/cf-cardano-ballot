@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.2.17](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.16...v0.2.17) (2023-09-05)
+
+
+### Features
+
+* category and nominee pages with real data and readmore page with sidepage component ([9e3b3cd](https://github.com/cardano-foundation/cf-cardano-ballot/commit/9e3b3cd0607f838f075c1a45459f76af7fa295e0))
+* injecting proper env var for preprod ([#144](https://github.com/cardano-foundation/cf-cardano-ballot/issues/144)) ([e7b4d11](https://github.com/cardano-foundation/cf-cardano-ballot/commit/e7b4d110fea3a06bffc1b5d645152ddd08376325))
+
+
+### Bug Fixes
+
+* missing name on card ([ec3f085](https://github.com/cardano-foundation/cf-cardano-ballot/commit/ec3f085ea2573ac96fadcfc6df38b4c80370a731))
+* moved user verified to a new resource, it will be common for discord and sms flows. ([fc700c1](https://github.com/cardano-foundation/cf-cardano-ballot/commit/fc700c1413501f4976799345de61d2ac599baa49))
+* wrong file has been added css ([57cd2f3](https://github.com/cardano-foundation/cf-cardano-ballot/commit/57cd2f3caef9dc0023e0e6d7052e295d087c3574))
+* wrong file has been added css ([6213dfa](https://github.com/cardano-foundation/cf-cardano-ballot/commit/6213dfa43ddecc6a72f11832a3d09469eb744b09))
+
 ## [0.2.16](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.15...v0.2.16) (2023-09-05)
 
 

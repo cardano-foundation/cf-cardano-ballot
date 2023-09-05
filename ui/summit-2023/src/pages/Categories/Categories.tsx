@@ -204,7 +204,7 @@ const Categories = () => {
                               maxWidth: '285px',
                             }}
                           >
-                            {category.presentationName}
+                            {(category.id === summit2023Categories[index].id) ? summit2023Categories[index].presentationName: ''}
                           </Typography>
                         </Box>
                         <Box

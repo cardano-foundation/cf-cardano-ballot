@@ -10,10 +10,10 @@ cf-summit-2023-infra:
     dbName: summit-2023
 
 cf-summit-2023-ui:
-  enabled: false
+  enabled: true
   values:
     image:
-      tag: 0.2.15
+      tag: 0.2.15-PR137-preprod
 
 cf-summit-2023-voting-api:
   enabled: true

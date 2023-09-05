@@ -276,9 +276,17 @@ jobs:
       - name: Build and Push docker image
         uses: docker/build-push-action@v4
         env:
+          REACT_APP_VOTING_APP_SERVER_URL: https://api.dev.cf-summit-2023-preprod.eu-west-1.metadata.dev.cf-deployments.org
+          REACT_APP_VOTING_LEDGER_FOLLOWER_APP_SERVER_URL: https://follower-api.dev.cf-summit-2023-preprod.eu-west-1.metadata.dev.cf-deployments.org
+          REACT_APP_VOTING_VERIFICATION_APP_SERVER_URL: https://verification-api.dev.cf-summit-2023-preprod.eu-west-1.metadata.dev.cf-deployments.or"
           ARTIFACT_VERSION: ${{needs.build-version.outputs.ARTIFACT_VERSION}}-preprod
         with:
           context: ui/summit-2023
           push: true
+          build-args: |
+            "REACT_APP_VERSION=${{ env.ARTIFACT_VERSION }}"
+            "REACT_APP_VOTING_APP_SERVER_URL=${{ env.REACT_APP_VOTING_APP_SERVER_URL }}"
+            "REACT_APP_VOTING_LEDGER_FOLLOWER_APP_SERVER_URL=${{ env.REACT_APP_VOTING_LEDGER_FOLLOWER_APP_SERVER_URL }}"
+            "REACT_APP_VOTING_VERIFICATION_APP_SERVER_URL=${{ env.REACT_APP_VOTING_VERIFICATION_APP_SERVER_URL }}"
           tags: |
             ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}/${{ env.APP_NAME }}:${{ env.ARTIFACT_VERSION }}

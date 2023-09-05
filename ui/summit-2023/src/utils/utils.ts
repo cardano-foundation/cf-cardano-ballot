@@ -27,7 +27,7 @@ export const buildCanonicalVoteInputJson = ({
   option,
   voteId,
   voter,
-  slotNumber
+  slotNumber,
 }: voteInput): ReturnType<typeof canonicalize> => {
   const startOfCurrentDay = new Date();
   startOfCurrentDay.setUTCMinutes(0, 0, 0);
@@ -42,7 +42,7 @@ export const buildCanonicalVoteInputJson = ({
       category: env.CATEGORY_ID,
       proposal: option,
       network: env.TARGET_NETWORK,
-      votedAt: slotNumber
+      votedAt: slotNumber,
     },
   });
 };

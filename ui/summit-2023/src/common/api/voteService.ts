@@ -1,7 +1,7 @@
 import { ChainTip } from 'types/voting-ledger-follower-types';
 import { Problem, SignedWeb3Request, Vote, VoteReceipt } from 'types/voting-app-types';
 import { DEFAULT_CONTENT_TYPE_HEADERS, doRequest, HttpMethods } from '../handlers/httpHandler';
-import {env} from 'common/constants/env';
+import { env } from 'common/constants/env';
 
 export const CAST_VOTE_URL = `${env.VOTING_APP_SERVER_URL}/api/vote/cast`;
 export const VOTE_RECEIPT_URL = `${env.VOTING_APP_SERVER_URL}/api/vote/receipt`;
@@ -28,9 +28,4 @@ const getVoteReceipt = async (jsonRequest: SignedWeb3Request) => {
   );
 };
 
-
-export {
-  castAVoteWithDigitalSignature,
-  getSlotNumber,
-  getVoteReceipt
-}
+export { castAVoteWithDigitalSignature, getSlotNumber, getVoteReceipt };

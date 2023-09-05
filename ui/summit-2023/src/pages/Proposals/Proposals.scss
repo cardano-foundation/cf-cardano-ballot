@@ -2,18 +2,18 @@
   align-items: normal;
 }
 
-.nominees-title {
+.proposals-title {
   color: var(--color-dark-grey);
-  font-size: 56px !important;
+  font-size: 32px !important;
   font-style: normal;
   font-weight: 600 !important;
   line-height: normal;
 }
-.nominees-title::first-letter {
+.proposals-title::first-letter {
   text-transform: uppercase;
 }
 
-.nominees-description {
+.proposals-description {
   max-height: 110px;
   margin-bottom: 40px !important;
   color: var(--color-medium-grey);
@@ -23,21 +23,20 @@
   line-height: 22px;
   word-break: break-word;
 }
-.nominee-card.MuiPaper-root {
+.proposal-card.MuiPaper-root {
   width: 414px;
   flex-shrink: 0;
-  border-radius: 16px;
-  background: #fff;
+  border-radius: 8px;
   box-shadow: 2px 3px 10px 0px rgba(67, 70, 86, 0.45);
-
-  .nominee-title {
+  
+  .proposal-title {
     color: var(--color-ultra-dark-blue);
     font-size: 36px;
     font-style: normal;
     font-weight: 600 !important;
     line-height: normal;
   }
-  .nominee-description {
+  .proposal-description {
     margin-top: 20px;
     margin-right: 50px;
     color: var(--color-medium-grey);
@@ -69,7 +68,7 @@
   }
 
   .connect-wallet-button,
-  .vote-nominee-button {
+  .vote-proposal-button {
     margin-top: 12px;
     display: flex;
     width: 98%;
@@ -88,7 +87,7 @@
     background: var(--color-ultra-dark-blue) !important;
     color: var(--color-light);
   }
-  .vote-nominee-button {
+  .vote-proposal-button {
     background: var(--color-light-green) !important;
     color: var(--color-ultra-dark-blue);
   }
@@ -122,7 +121,7 @@
   text-transform: none;
 }
 
-.nominee-slide-title {
+.proposal-slide-title {
   color: var(--color-dark-grey);
   font-size: 28px;
   font-style: normal;
@@ -130,7 +129,7 @@
   line-height: 36px;
 }
 
-.nominee-slide-subtitle {
+.proposal-slide-subtitle {
   color: var(--color-medium-grey);
   font-size: 16px;
   font-style: normal;
@@ -138,8 +137,8 @@
   line-height: 22px;
 }
 
-.nominee-social-button.MuiButtonBase-root:hover,
-.nominee-social-button.MuiButtonBase-root {
+.proposal-social-button.MuiButtonBase-root:hover,
+.proposal-social-button.MuiButtonBase-root {
   width: 44px;
   height: 44px;
   flex-shrink: 0;
@@ -150,7 +149,7 @@
   border: 1px solid var(--color-light-blue);
   background-color: transparent !important;
 }
-.nominee-slide-description {
+.proposal-slide-description {
   color: var(--color-medium-grey);
   font-size: 16px;
   font-style: normal;

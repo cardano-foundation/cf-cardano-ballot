@@ -30,22 +30,36 @@ public class SpringSecurityConfiguration {
                 // Add a filter to validate the tokens with every request
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 
+                // allow to request leaderboard without web 3 or web 2 auth
                 .authorizeHttpRequests()
                 .requestMatchers("/api/leaderboard/**").permitAll()
 
                 .and()
 
+                 // Allow to request JWT token
                 .authorizeHttpRequests()
                 .requestMatchers("/api/auth/**").permitAll()
 
                 .and()
 
-                // TODO enable for vote's receipt
+                // SECURED by WEB 3 auth
                 .authorizeHttpRequests()
-                .requestMatchers("/api/vote/**").permitAll()
+                .requestMatchers("/api/vote/cast").permitAll()
 
                 .and()
 
+                // SECURED by WEB 3 auth
+                .authorizeHttpRequests()
+                .requestMatchers("/api/vote/receipt").permitAll()
+
+                .and()
+
+                .authorizeHttpRequests()
+                .requestMatchers("/api/vote/casting-available/**").permitAll()
+
+                .and()
+
+                // needed for monitoring infra
                 .authorizeHttpRequests()
                 .requestMatchers("/actuator/health", "/actuator/prometheus").permitAll()
 

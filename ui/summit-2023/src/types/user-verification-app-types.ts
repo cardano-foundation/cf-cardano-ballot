@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-// Generated using typescript-generator version 3.2.1263 on 2023-08-31 16:25:22.
+// Generated using typescript-generator version 3.2.1263 on 2023-09-05 15:54:38.
 
 export interface Either<L, R> extends Value<R>, Serializable {
     left: L;
@@ -29,6 +29,10 @@ export interface IsVerifiedRequestBuilder {
 
 export interface IsVerifiedResponse {
     verified: boolean;
+}
+
+export interface SaltHolder {
+    salt: string;
 }
 
 export interface StartVerificationRequest {
@@ -63,7 +67,7 @@ export interface UserVerification extends AbstractTimestampEntity {
     eventId: string;
     verificationCode: string;
     requestId: string;
-    phoneNumberHash?: string;
+    phoneNumberHash: string;
     status: Status;
     provider: Provider;
     channel: Channel;
@@ -85,6 +89,12 @@ export interface StakeAddressVerificationService__Autowiring {
 export interface StakeAddressVerificationService__BeanDefinitions {
 }
 
+export interface CodeGenService {
+}
+
+export interface CodeGenService__BeanDefinitions {
+}
+
 export interface AWSSNSService extends SMSService {
 }
 
@@ -95,16 +105,16 @@ export interface SMSVerificationResponse {
     requestId: string;
 }
 
-export interface SimpleUserVerificationService extends UserVerificationService {
+export interface DefaultSMSSMSUserVerificationService extends SMSUserVerificationService {
 }
 
-export interface SimpleUserVerificationService__Autowiring {
+export interface DefaultSMSSMSUserVerificationService__Autowiring {
 }
 
-export interface SimpleUserVerificationService__BeanDefinitions {
+export interface DefaultSMSSMSUserVerificationService__BeanDefinitions {
 }
 
-export interface UserVerificationService {
+export interface SMSUserVerificationService {
 }
 
 export interface Problem {

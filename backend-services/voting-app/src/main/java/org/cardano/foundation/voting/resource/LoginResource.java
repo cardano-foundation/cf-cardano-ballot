@@ -31,7 +31,7 @@ public class LoginResource {
                 .fold(problem -> {
                             return ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem);
                         },
-                        accessToken -> ResponseEntity.ok(Map.of("accessToken", accessToken))
+                        ResponseEntity::ok
                 );
     }
 

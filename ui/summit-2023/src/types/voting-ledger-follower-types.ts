@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-// Generated using typescript-generator version 3.2.1263 on 2023-08-31 15:02:54.
+// Generated using typescript-generator version 3.2.1263 on 2023-09-05 15:55:22.
 
 export interface Either<L, R> extends Value<R>, Serializable {
     left: L;
@@ -126,7 +126,6 @@ export interface ProposalBuilder {
 export interface CategoryPresentation {
     id: string;
     gdprProtection: boolean;
-    presentationName: string;
     proposals: ProposalPresentation[];
 }
 
@@ -136,7 +135,6 @@ export interface CategoryPresentationBuilder {
 export interface EventPresentation {
     id: string;
     team: string;
-    presentationName: string;
     votingEventType: VotingEventType;
     startSlot?: number;
     endSlot?: number;
@@ -148,11 +146,11 @@ export interface EventPresentation {
     snapshotEpoch?: number;
     categories: CategoryPresentation[];
     active: boolean;
-    highLevelResultsWhileVoting: boolean;
-    categoryResultsWhileVoting: boolean;
-    finished: boolean;
     notStarted: boolean;
+    finished: boolean;
     allowVoteChanging: boolean;
+    categoryResultsWhileVoting: boolean;
+    highLevelResultsWhileVoting: boolean;
 }
 
 export interface EventPresentationBuilder {
@@ -161,7 +159,6 @@ export interface EventPresentationBuilder {
 export interface ProposalPresentation {
     id: string;
     name?: string;
-    presentationName: string;
 }
 
 export interface ProposalPresentationBuilder {
@@ -340,12 +337,6 @@ export interface YaciStoreTipHealthIndicator extends HealthIndicator {
 export interface YaciStoreTipHealthIndicator__BeanDefinitions {
 }
 
-export interface LocalisationService {
-}
-
-export interface LocalisationService__BeanDefinitions {
-}
-
 export interface JsonService {
 }
 
@@ -383,9 +374,6 @@ export interface ReferenceDataService__BeanDefinitions {
 }
 
 export interface ReferencePresentationService {
-}
-
-export interface ReferencePresentationService__Autowiring {
 }
 
 export interface ReferencePresentationService__BeanDefinitions {

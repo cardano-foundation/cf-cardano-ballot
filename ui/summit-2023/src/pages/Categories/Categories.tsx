@@ -19,18 +19,18 @@ import ViewListIcon from '@mui/icons-material/ViewList';
 import { Fade } from '@mui/material';
 import './Categories.scss';
 import Grow from '@mui/material/Grow';
-import CATEGORY_IMAGES from 'common/resources/data/categoryImages.json';
+import CATEGORY_IMAGES from '../../common/resources/data/categoryImages.json';
 import { Link } from 'react-router-dom';
 import CardMedia from '@mui/material/CardMedia';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import CATEGORIES from 'common/resources/data/categoriesData.json';
+import CATEGORIES from '../../common/resources/data/categoriesData.json';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 
 const Categories = () => {
   const eventCache = useSelector((state: RootState) => state.user.event);
 
-  const categories = eventCache.categories || CATEGORIES.data;
+  const categories = eventCache?.categories || CATEGORIES.data;
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -39,7 +39,7 @@ const Categories = () => {
   const [isVisible, setIsVisible] = useState(true);
   const [isHoveredId, setIsHoveredId] = useState('');
 
-  useEffect(() => {
+  useEffect(() => {     
     if (isMobile) {
       setListView('list');
     }
@@ -140,7 +140,7 @@ const Categories = () => {
                               variant="body1"
                               color="text.primary"
                             >
-                              {category.description}
+                              {category.presentationName}
                             </Typography>
                           </Box>
                           <CardActions>

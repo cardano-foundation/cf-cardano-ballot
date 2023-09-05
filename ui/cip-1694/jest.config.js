@@ -12,6 +12,7 @@ module.exports = {
   moduleNameMapper: {
     '.*\\.(scss|sass|css|less)$': '<rootDir>/src/test/__mocks__/styleMock.js',
     '.*\\.(jpg|jpeg|png|gif|eot|otf|webp|ttf|woff|woff2)$': '<rootDir>/src/test/__mocks__/fileMock.js',
+    '.*\\.(pdf)$': '<rootDir>/src/test/__mocks__/pdfFileMock.js',
     '.*\\.svg*$': '<rootDir>/src/test/__mocks__/svgMock.js',
     '^lodash-es$': 'lodash',
     '^common/(.*)': '<rootDir>/src/common/$1',

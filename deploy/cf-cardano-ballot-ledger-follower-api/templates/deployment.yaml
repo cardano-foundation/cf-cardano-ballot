@@ -32,6 +32,12 @@ spec:
               value: {{ .Values.network | default "preprod" | upper}}
             - name: VOTING_METADATA_LABEL
               value: {{ $.Values.votingMetadataLabel | default "11113" | quote }}
+            - name: BIND_ON_EVENT_IDS
+              value: {{ $.Values.bindOnEventIds }}
+            - name: YACI_STORE_CARDANO_SYNC_START_BLOCK_HASH
+              value: {{ $.Values.yaci.startBlockHash }}
+            - name: YACI_STORE_CARDANO_SYNC_START_SLOT
+              value: {{ $.Values.yaci.startSlotNumber | quote }}
 
             - name: BLOCKFROST_URL
               valueFrom:

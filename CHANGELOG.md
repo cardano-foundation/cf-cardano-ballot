@@ -1,5 +1,67 @@
 # Changelog
 
+## [0.2.15](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.14...v0.2.15) (2023-09-04)
+
+
+### Features
+
+* split origins by comma to allow multiple CORS origin addresses ([#131](https://github.com/cardano-foundation/cf-cardano-ballot/issues/131)) ([5506ad3](https://github.com/cardano-foundation/cf-cardano-ballot/commit/5506ad3c397722b4464ccb9bde96edb032505bbe))
+* user-verification-service, H2 for local dev, postgres for PROD. ([#88](https://github.com/cardano-foundation/cf-cardano-ballot/issues/88)) ([4273ef1](https://github.com/cardano-foundation/cf-cardano-ballot/commit/4273ef1b4cc594f55598cbcea01c7fa7db48cc3c))
+
+
+### Bug Fixes
+
+* **cip-1694:** update ui tests ([7bf0930](https://github.com/cardano-foundation/cf-cardano-ballot/commit/7bf0930463ce4d8fe4ee2d6ce91e2de582c7d7cd))
+
+## [0.2.14](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.13...v0.2.14) (2023-09-01)
+
+
+### Bug Fixes
+
+* **cip-1694:** wait for absolute slot to vote ([4baf24d](https://github.com/cardano-foundation/cf-cardano-ballot/commit/4baf24d68d00f8e5a9be8a9c070c82b9352da062))
+
+## [0.2.13](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.12...v0.2.13) (2023-09-01)
+
+
+### Bug Fixes
+
+* **cip-1694:** uncomment logs ([dd975eb](https://github.com/cardano-foundation/cf-cardano-ballot/commit/dd975eb6ed4b82f5dc07c04a4c1ecf9e3aa8fa6f))
+* **cip-1694:** uncomment logs ([1561420](https://github.com/cardano-foundation/cf-cardano-ballot/commit/1561420bffb84ee5aa40722b543e60aa1a5ddf20))
+
+## [0.2.12](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.11...v0.2.12) (2023-09-01)
+
+
+### Bug Fixes
+
+* **cip-1694:** hide modals on vote not found ([77fe463](https://github.com/cardano-foundation/cf-cardano-ballot/commit/77fe4638269fbfdeba6aeb748e7fdd310cdf143f))
+
+## [0.2.11](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.10...v0.2.11) (2023-09-01)
+
+
+### Features
+
+* **cip-1694:** add preloaders, confirmation modals ([1b61063](https://github.com/cardano-foundation/cf-cardano-ballot/commit/1b61063d829ad808da53d50054f600d51889250f))
+* event and category leaderboard availability check. ([e407d6a](https://github.com/cardano-foundation/cf-cardano-ballot/commit/e407d6a16c9474cdd9c5b7bd019ed5d3b0bab446))
+
+## [0.2.10](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.9...v0.2.10) (2023-08-31)
+
+
+### Features
+
+* **cip-1694:** add t&c and privacy policy ([3d89a61](https://github.com/cardano-foundation/cf-cardano-ballot/commit/3d89a6121b9737c1d9f3f553e85470125dcac2d6))
+
+
+### Bug Fixes
+
+* **cip-1694:** change proxy port for leaderboard url, fix cta sizing on vote page ([d3d7bd2](https://github.com/cardano-foundation/cf-cardano-ballot/commit/d3d7bd236a3006eb28ee7bc0b74e7cc4caccdedb))
+
+## [0.2.9](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.8...v0.2.9) (2023-08-29)
+
+
+### Features
+
+* attempting to force a release ([27dc303](https://github.com/cardano-foundation/cf-cardano-ballot/commit/27dc30303c685b2d1b9a49b3f634276228164c7c))
+
 ## [0.2.8](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.7...v0.2.8) (2023-08-29)
 
 

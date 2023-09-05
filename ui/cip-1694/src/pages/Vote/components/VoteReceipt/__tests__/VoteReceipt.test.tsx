@@ -69,7 +69,7 @@ describe('Vote receipt:', () => {
       mockVerifyVote.mockImplementation(async () => await Promise.reject('error'));
 
       const history = createMemoryHistory({ initialEntries: [ROUTES.INTRO] });
-      await act(() =>
+      await act(async () =>
         renderWithProviders(
           <CustomRouter history={history}>
             <VoteReceipt
@@ -97,7 +97,7 @@ describe('Vote receipt:', () => {
     test('should render proper state', async () => {
       const fetchReceiptMock = jest.fn();
       const history = createMemoryHistory({ initialEntries: [ROUTES.INTRO] });
-      await act(() =>
+      await act(async () =>
         renderWithProviders(
           <CustomRouter history={history}>
             <VoteReceipt
@@ -174,7 +174,7 @@ describe('Vote receipt:', () => {
     test('should render proper state', async () => {
       const fetchReceiptMock = jest.fn();
       const history = createMemoryHistory({ initialEntries: [ROUTES.INTRO] });
-      await act(() =>
+      await act(async () =>
         renderWithProviders(
           <CustomRouter history={history}>
             <VoteReceipt
@@ -249,7 +249,7 @@ describe('Vote receipt:', () => {
     test('should render proper state', async () => {
       const fetchReceiptMock = jest.fn();
       const history = createMemoryHistory({ initialEntries: [ROUTES.INTRO] });
-      await act(() =>
+      await act(async () =>
         renderWithProviders(
           <CustomRouter history={history}>
             <VoteReceipt
@@ -322,12 +322,12 @@ describe('Vote receipt:', () => {
 
   describe('FULL', () => {
     test('should render proper state', async () => {
-      mockVerifyVote.mockImplementation(async () => await Promise.resolve({ isVerified: false }));
+      mockVerifyVote.mockImplementation(async () => await Promise.resolve({ verified: false }));
       const JsonViewerContentMock = 'JsonViewerContent';
       mockJsonViewer.mockImplementation(() => <span>{JsonViewerContentMock}</span>);
       const fetchReceiptMock = jest.fn();
       const history = createMemoryHistory({ initialEntries: [ROUTES.INTRO] });
-      await act(() =>
+      await act(async () =>
         renderWithProviders(
           <CustomRouter history={history}>
             <VoteReceipt
@@ -408,7 +408,7 @@ describe('Vote receipt:', () => {
     describe('LOW', () => {
       test('should render proper state', async () => {
         const history = createMemoryHistory({ initialEntries: [ROUTES.INTRO] });
-        await act(() =>
+        await act(async () =>
           renderWithProviders(
             <CustomRouter history={history}>
               <VoteReceipt
@@ -433,7 +433,7 @@ describe('Vote receipt:', () => {
     describe('MEDIUM', () => {
       test('should render proper state', async () => {
         const history = createMemoryHistory({ initialEntries: [ROUTES.INTRO] });
-        await act(() =>
+        await act(async () =>
           renderWithProviders(
             <CustomRouter history={history}>
               <VoteReceipt
@@ -458,7 +458,7 @@ describe('Vote receipt:', () => {
     describe('HIGH', () => {
       test('should render proper state', async () => {
         const history = createMemoryHistory({ initialEntries: [ROUTES.INTRO] });
-        await act(() =>
+        await act(async () =>
           renderWithProviders(
             <CustomRouter history={history}>
               <VoteReceipt
@@ -482,9 +482,9 @@ describe('Vote receipt:', () => {
     });
     describe('VERIFIED', () => {
       test('should render proper state', async () => {
-        mockVerifyVote.mockImplementation(async () => await Promise.resolve({ isVerified: true }));
+        mockVerifyVote.mockImplementation(async () => await Promise.resolve({ verified: true }));
         const history = createMemoryHistory({ initialEntries: [ROUTES.INTRO] });
-        await act(() =>
+        await act(async () =>
           renderWithProviders(
             <CustomRouter history={history}>
               <VoteReceipt

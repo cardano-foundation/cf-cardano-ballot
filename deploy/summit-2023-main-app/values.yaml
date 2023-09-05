@@ -11,27 +11,27 @@ network: null
 domain: null
 
 # Infra Parameters
-cf-cardano-ballot-infra:
+cf-summit-2023-infra:
   # Whether Infra resources should be deployed.
   enabled: true
 
 # Ballot UI Parameters
-cf-cardano-ballot-ui:
+cf-summit-2023-ui:
   # Whether Resources should be deployed.
   enabled: true
 
 # Ballot API Parameters
-cf-cardano-ballot-voting-api:
+cf-summit-2023-voting-api:
   # Whether Resources should be deployed.
   enabled: true
 
 # Ballot Verification API Parameters
-cf-cardano-ballot-verification-api:
+cf-summit-2023-verification-api:
   # Whether Resources should be deployed.
   enabled: true
 
 # Ballot Ledger Follower API Parameters
-cf-cardano-ballot-ledger-follower-api:
+cf-summit-2023-ledger-follower-api:
   # Whether Resources should be deployed.
   enabled: true
 

@@ -12,6 +12,7 @@ import { Box, CircularProgress, Container, useMediaQuery, useTheme } from '@mui/
 import Header from './components/common/Header/Header';
 import { PageRouter } from './routes';
 import { env } from 'common/constants/env';
+import { env } from './common/constants/env';
 import { RootState } from './store';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import { getIsVerified } from 'common/api/verificationService';

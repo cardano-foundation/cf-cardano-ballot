@@ -1,6 +1,5 @@
 package org.cardano.foundation.voting.service.chain_sync;
 
-import com.bloxbean.cardano.client.api.exception.ApiException;
 import com.bloxbean.cardano.client.backend.blockfrost.service.BFBackendService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +46,7 @@ public class ChainSyncService {
             }
 
             return SyncStatus.unknownError();
-        } catch (ApiException e) {
+        } catch (Exception e) {
             log.error("Backend service is not available: {}", e.getMessage());
 
             return SyncStatus.error(e);

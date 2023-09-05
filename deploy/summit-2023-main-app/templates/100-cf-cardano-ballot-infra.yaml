@@ -1,9 +1,9 @@
-{{ if index .Values "cf-cardano-ballot-infra" "enabled" }}
+{{ if index .Values "cf-summit-2023-infra" "enabled" }}
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: cf-cardano-ballot-infra
+  name: cf-summit-2023-infra
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
@@ -35,6 +35,6 @@ spec:
       - RespectIgnoreDifferences=true
 
   destination:
-    namespace: cf-cardano-ballot
+    namespace: cf-summit-2023
     server: {{ .Values.spec.destination.server }}
 {{ end }}

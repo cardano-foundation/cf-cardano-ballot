@@ -29,6 +29,8 @@ spec:
               value: {{ .Values.network | default "preprod" | upper}}
             - name: CORS_ALLOWED_ORIGINS
               value: {{ tpl $.Values.corsAllowedOrigins $ }}
+            - name: LEDGER_FOLLOWER_APP_URL
+              value: {{ $.Values.ledgerFollowerAppUrl }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}

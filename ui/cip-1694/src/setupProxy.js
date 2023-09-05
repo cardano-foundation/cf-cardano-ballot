@@ -19,7 +19,7 @@ module.exports = function (app) {
     app.use(
       '/api/leaderboard/**',
       createProxyMiddleware({
-        target: 'http://localhost:9090',
+        target: 'http://localhost:9091',
         changeOrigin: true,
       })
     );

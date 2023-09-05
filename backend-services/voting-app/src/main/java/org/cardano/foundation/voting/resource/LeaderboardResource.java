@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.Leaderboard;
 import org.cardano.foundation.voting.service.leader_board.LeaderBoardService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +17,7 @@ import java.util.Objects;
 import java.util.Random;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
 
 @RestController
 @RequestMapping("/api/leaderboard")
@@ -24,6 +26,17 @@ public class LeaderboardResource {
 
     @Autowired
     private LeaderBoardService leaderBoardService;
+
+    @RequestMapping(value = "/{event}", method = HEAD, produces = "application/json")
+    @Timed(value = "resource.leaderboard.event.available", percentiles = { 0.3, 0.5, 0.95 })
+    public ResponseEntity<?> isEventLeaderBoardAvailable(@PathVariable String event) {
+        return leaderBoardService.isEventLeaderboardAvailable(event)
+                .fold(problem -> {
+                            return ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem);
+                        },
+                        isAvailable -> isAvailable ? ResponseEntity.ok().build() : ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+                );
+    }
 
     @RequestMapping(value = "/{event}", method = GET, produces = "application/json")
     @Timed(value = "resource.leaderboard.event", percentiles = { 0.3, 0.5, 0.95 })
@@ -58,6 +71,17 @@ public class LeaderboardResource {
                             return ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem);
                         },
                         response -> ResponseEntity.ok().body(response)
+                );
+    }
+
+    @RequestMapping(value = "/{event}/{category}", method = HEAD, produces = "application/json")
+    @Timed(value = "resource.leaderboard.category.available", percentiles = { 0.3, 0.5, 0.95 })
+    public ResponseEntity<?> getCategoryLeaderBoardAvailable(@PathVariable String event, @PathVariable String category) {
+        return leaderBoardService.isCategoryLeaderboardAvailable(event, category)
+                .fold(problem -> {
+                            return ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem);
+                        },
+                        isAvailable -> isAvailable ? ResponseEntity.ok().build() : ResponseEntity.status(HttpStatus.FORBIDDEN).build()
                 );
     }
 

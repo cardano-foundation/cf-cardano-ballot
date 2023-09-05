@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import { useParams } from 'react-router-dom';
+import { v4 as uuidv4 } from 'uuid';
 import {
   useTheme,
   useMediaQuery,
@@ -23,10 +24,11 @@ import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import CloseIcon from '@mui/icons-material/Close';
 import xIcon from '../../common/resources/images/x-icon.svg';
 import linkedinIcon from '../../common/resources/images/linkedin-icon.svg';
-import nominees from '../../common/resources/data/nominees.json';
 import { ROUTES } from '../../routes';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
+import {buildCanonicalVoteInputJson, getSignedMessagePromise} from '../../utils/utils';
+import {castAVoteWithDigitalSignature, getSlotNumber} from 'common/api/voteService';
 
 const Nominees = () => {
   const { id } = useParams();
@@ -35,14 +37,18 @@ const Nominees = () => {
   const categories_ids = eventCache.categories.map((e) => e.id);
   if (!categories_ids.includes(id)) navigate(ROUTES.NOT_FOUND);
 
+  const category = eventCache.categories.filter(c => c.id === id)[0];
+
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
   const [listView, setListView] = useState<'grid' | 'list'>('grid');
   const [isVisible, setIsVisible] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const { isConnected } = useCardano();
+  const { isConnected, stakeAddress, signMessage } = useCardano();
+
+  const signMessagePromisified = useMemo(() => getSignedMessagePromise(signMessage), [signMessage]);
+
 
   useEffect(() => {
     if (isMobile) {
@@ -64,8 +70,22 @@ const Nominees = () => {
     eventBus.publish('openConnectWalletModal');
   };
 
-  const handleActionButton = () => {
+  const handleActionButton = async (optionId: string) => {
+    const absoluteSlot = (await getSlotNumber())?.absoluteSlot;
     // TODO:
+    const canonicalVoteInput = buildCanonicalVoteInputJson({
+      option: optionId?.toUpperCase(),
+      voter: stakeAddress,
+      voteId: uuidv4(),
+      slotNumber: absoluteSlot.toString()
+    });
+    try {
+      const requestVoteObject = await signMessagePromisified(canonicalVoteInput);
+      await castAVoteWithDigitalSignature(requestVoteObject);
+    } catch (e) {
+      console.log('error on signing')
+    }
+
   };
 
   return (
@@ -103,7 +123,10 @@ const Nominees = () => {
         spacing={3}
         style={{ justifyContent: 'center' }}
       >
-        {nominees.map((item) => (
+        {/* TODO: update types from backend*/}
+        {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+        {/* @ts-ignore */}
+        {category?.proposals.map((item) => (
           <Grid
             item
             xs={!isMobile && listView === 'grid' ? 4 : 12}
@@ -123,7 +146,7 @@ const Nominees = () => {
                     className="nominee-title"
                     variant="h5"
                   >
-                    {item.title}
+                    {item.id}
                   </Typography>
                   <Grid container>
                     <Grid
@@ -134,7 +157,7 @@ const Nominees = () => {
                         className="nominee-description"
                         variant="body2"
                       >
-                        {item.description}
+                        {item.presentationName}
                       </Typography>
                     </Grid>
                     {!isMobile && listView === 'list' ? (
@@ -145,7 +168,7 @@ const Nominees = () => {
                         <Button
                           className={`${isConnected ? 'vote-nominee-button' : 'connect-wallet-button'}`}
                           style={{ width: 'auto' }}
-                          onClick={() => (isConnected ? handleActionButton() : openConnectWalletModal())}
+                          onClick={() => (isConnected ? handleActionButton(item.id) : openConnectWalletModal())}
                         >
                           {isConnected ? (
                             <>Vote for nominee</>
@@ -174,7 +197,7 @@ const Nominees = () => {
                     <Button
                       className={`${isConnected ? 'vote-nominee-button' : 'connect-wallet-button'}`}
                       fullWidth
-                      onClick={() => (isConnected ? handleActionButton() : openConnectWalletModal())}
+                      onClick={() => (isConnected ? handleActionButton(item.id) : openConnectWalletModal())}
                     >
                       {isConnected ? (
                         <>Vote for nominee</>

@@ -12,7 +12,7 @@ spec:
   source:
     repoURL: git@github.com:cardano-foundation/cf-cardano-ballot.git
     targetRevision: {{ .Values.git.targetRevision | default "HEAD" }}
-    path: deploy/cf-summit-2023-ui
+    path: deploy/cf-cardano-summit-2023-ui
     helm:
       parameters:
         - name: "domain"

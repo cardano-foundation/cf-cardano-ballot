@@ -557,11 +557,11 @@ public class DefaultVoteService implements VoteService {
         }
 
         if (event.votingEventType() == USER_BASED) {
-            if (vote.getVotingPower().isEmpty()) {
+            if (vote.getVotingPower().isPresent()) {
                 return Either.left(
                         Problem.builder()
                                 .withTitle("VOTING_POWER_NOT_SUPPORTED")
-                                .withDetail("Voting power makes no sense for USER_BASED events, please remove it from the vote envelope.")
+                                .withDetail("Voting power makes no sense for USER_BASED events, please remove it from the cast vote's envelope.")
                                 .withStatus(BAD_REQUEST)
                                 .build()
                 );

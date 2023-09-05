@@ -31,5 +31,5 @@
     "typeRoots": ["node_modules/@types"],
     "types": ["jest"]
   },
-  "include": ["src/**/*", "src/**/*.json"]
+  "include": ["src/**/*", "src/**/*.json", "src/common/*"]
 }

@@ -31,7 +31,6 @@ function App() {
 
       if (isConnected) {
         const isVerified = await getIsVerified(env.EVENT_ID, stakeAddress);
-        console.log('isVerified', isVerified);
         dispatch(setWalletIsVerified({ isVerified: isVerified.verified }));
       }
     } catch (error: any) {

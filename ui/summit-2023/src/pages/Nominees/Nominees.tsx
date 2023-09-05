@@ -70,18 +70,18 @@ const Nominees = () => {
   const castVote = async (optionId: string) => {
     const absoluteSlot = (await getSlotNumber())?.absoluteSlot;
     const canonicalVoteInput = buildCanonicalVoteInputJson({
-      option: optionId?.toUpperCase(),
-      voter: stakeAddress,
       voteId: uuidv4(),
-      slotNumber: absoluteSlot.toString(),
+      categoryId: id,
+      proposalId: optionId,
+      stakeAddress,
+      slotNumber: absoluteSlot.toString()
     });
     try {
       const requestVoteObject = await signMessagePromisified(canonicalVoteInput);
-      console.log('requestVoteObject');
-      console.log(requestVoteObject);
       await castAVoteWithDigitalSignature(requestVoteObject);
+      eventBus.publish('showToast', 'Vote submitted successfully');
     } catch (e) {
-      eventBus.publish('showToast', 'Error while signing', true);
+      eventBus.publish('showToast', e.message, true);
     }
   };
 

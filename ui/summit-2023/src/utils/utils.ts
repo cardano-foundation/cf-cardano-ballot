@@ -17,16 +17,18 @@ const walletIcon = (walletName: string) => {
 };
 
 type voteInput = {
-  option: string;
   voteId: string;
-  voter: string;
+  proposalId: string;
+  categoryId: string;
+  stakeAddress: string;
   slotNumber: string;
 };
 
 export const buildCanonicalVoteInputJson = ({
-  option,
   voteId,
-  voter,
+  categoryId,
+  proposalId,
+  stakeAddress,
   slotNumber,
 }: voteInput): ReturnType<typeof canonicalize> => {
   const startOfCurrentDay = new Date();
@@ -37,12 +39,13 @@ export const buildCanonicalVoteInputJson = ({
     slot: slotNumber,
     data: {
       id: voteId,
-      address: voter,
+      address: stakeAddress,
       event: env.EVENT_ID,
-      category: env.CATEGORY_ID,
-      proposal: option,
+      category: categoryId,
+      proposal: proposalId,
       network: env.TARGET_NETWORK,
       votedAt: slotNumber,
+      votingEventType: 'USER_BASED'
     },
   });
 };

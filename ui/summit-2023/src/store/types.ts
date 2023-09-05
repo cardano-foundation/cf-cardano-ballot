@@ -8,6 +8,21 @@ export interface UserState {
   receipt: VoteReceipt | null;
   proposal: VoteReceipt['proposal'];
   event?: EventPresentation;
+  userVerification?: {
+    [stakeAddress: string]: VerificationStarts;
+  };
+}
+
+export interface VerificationStarts {
+  eventId: string;
+  stakeAddress: string;
+  requestId: string;
+  createdAt: string;
+  expiresAt: string;
+}
+
+export interface PhoneNumberCodeConfirmation {
+  verified: boolean;
 }
 
 export interface State {

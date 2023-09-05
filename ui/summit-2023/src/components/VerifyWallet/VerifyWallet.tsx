@@ -15,55 +15,49 @@ import CallIcon from '@mui/icons-material/Call';
 import { MuiTelInput, matchIsValidTel, MuiTelInputCountry } from 'mui-tel-input';
 import './VerifyWallet.scss';
 import discordLogo from '../../common/resources/images/discord-icon.svg';
+import { confirmPhoneNumberCode, startVerification } from 'common/api/verificationService';
+import { env } from 'common/constants/env';
+import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
+import { useDispatch, useSelector } from 'react-redux';
+import { setUserStartsVerification, setWalletIsVerified } from '../../store/userSlice';
+import { PhoneNumberCodeConfirmation, VerificationStarts } from '../../store/types';
+import { RootState } from '../../store';
 
 // TODO: env.
 const excludedCountries: MuiTelInputCountry[] | undefined = [];
 
 type VerifyWalletProps = {
   onVerify: () => void;
+  onError: (error?: string) => void;
 };
 const VerifyWallet = (props: VerifyWalletProps) => {
-  const { onVerify } = props;
+  const { onVerify, onError } = props;
 
   const [verifyOption, setVerifyOption] = useState<string | undefined>(undefined);
   const [defaultCountryCode] = useState<MuiTelInputCountry | undefined>('ES');
   const [discordKey, setDiscordKey] = useState<string>('');
   const [phone, setPhone] = useState<string>('');
   const [codes, setCodes] = useState(Array(6).fill(''));
+  const [phoneCodeIsBeenSending, setPhoneCodeIsBeenSending] = useState<boolean>(false);
+  const [phoneCodeIsBeenConfirming, setPhoneCodeIsBeenConfirming] = useState<boolean>(false);
   const [phoneCodeIsSent, setPhoneCodeIsSent] = useState<boolean>(false);
   const [checkImNotARobot, setCheckImNotARobot] = useState<boolean>(false);
   const [isPhoneInputDisabled] = useState<boolean>(false);
-
+  const { stakeAddress } = useCardano();
+  const dispatch = useDispatch();
+  const userVerification = useSelector((state: RootState) => state.user.userVerification);
+  const userStartsVerificationByStakeAddress =
+    Object.keys(userVerification).length !== 0 && userVerification[stakeAddress];
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   inputRefs.current = [];
-
-  const handleSelectOption = (option: string) => {
-    setVerifyOption(option);
-  };
-
-  const handleChangePhone = (phoneNumber: string) => {
-    setPhone(phoneNumber);
-  };
-
-  const handleSendCode = () => {
-    if (matchIsValidTel(phone) && checkImNotARobot) {
-      setPhoneCodeIsSent(true);
-      setCheckImNotARobot(false);
-    }
-  };
-
-  const handleVerifyDiscordKey = () => {
-    if (discordKey !== '') {
-      // TODO: verify key
-      onVerify();
-    }
-  };
 
   const reset = (timout?: boolean) => {
     function clear() {
       setVerifyOption(undefined);
       setPhoneCodeIsSent(false);
+      setPhone('');
+      setCodes(Array(6).fill(''));
     }
     if (timout) {
       setTimeout(() => {
@@ -74,9 +68,57 @@ const VerifyWallet = (props: VerifyWalletProps) => {
     }
   };
 
+  const handleSelectOption = (option: string) => {
+    setVerifyOption(option);
+  };
+
+  const handleChangePhone = (phoneNumber: string) => {
+    setPhone(phoneNumber);
+  };
+
+  const handleSendCode = async () => {
+    if (matchIsValidTel(phone) && checkImNotARobot) {
+      setPhoneCodeIsBeenSending(true);
+      startVerification(env.EVENT_ID, stakeAddress, phone.trim().replace(' ', ''))
+        .then((response: VerificationStarts) => {
+          dispatch(setUserStartsVerification({ stakeAddress, verificationStarts: response }));
+          setPhoneCodeIsSent(true);
+          setCheckImNotARobot(false);
+          setPhoneCodeIsBeenSending(false);
+        })
+        .catch((error) => {
+          onError(error.message);
+          setPhoneCodeIsBeenSending(false);
+        });
+    }
+  };
+
   const handleVerifyPhoneCode = () => {
-    onVerify();
-    reset(true);
+    setPhoneCodeIsBeenConfirming(true);
+    confirmPhoneNumberCode(
+      env.EVENT_ID,
+      stakeAddress,
+      phone.trim().replace(' ', ''),
+      userStartsVerificationByStakeAddress.requestId,
+      codes.join('')
+    ).then((response: PhoneNumberCodeConfirmation) => {
+      dispatch(setWalletIsVerified({ isVerified: response.verified }));
+      if (response.verified) {
+        onVerify();
+        reset();
+        setPhoneCodeIsBeenConfirming(false);
+      } else {
+        onError('SMS verification failed');
+        setPhoneCodeIsBeenConfirming(false);
+      }
+    });
+  };
+
+  const handleVerifyDiscordKey = () => {
+    if (discordKey !== '') {
+      // TODO: verify key
+      onVerify();
+    }
   };
 
   const renderSelectOption = () => {
@@ -195,9 +237,11 @@ const VerifyWallet = (props: VerifyWalletProps) => {
           >
             <Button
               onClick={() => handleVerifyPhoneCode()}
-              disabled={codes.length < 6}
+              disabled={codes.length < 6 || phoneCodeIsBeenConfirming}
               className={`verify-number-button-continue ${
-                codes.filter((code) => code !== '').length === 6 ? 'verify-number-button-valid' : ''
+                codes.filter((code) => code !== '').length === 6 && !phoneCodeIsBeenConfirming
+                  ? 'verify-number-button-valid'
+                  : ''
               }`}
               fullWidth
             >
@@ -267,9 +311,11 @@ const VerifyWallet = (props: VerifyWalletProps) => {
           >
             <Button
               onClick={() => handleSendCode()}
-              disabled={!matchIsValidTel(phone) || !checkImNotARobot}
+              disabled={!matchIsValidTel(phone) || !checkImNotARobot || phoneCodeIsBeenSending}
               className={`verify-number-button-continue ${
-                matchIsValidTel(phone) && checkImNotARobot ? 'verify-number-button-valid' : ''
+                matchIsValidTel(phone) && checkImNotARobot && !phoneCodeIsBeenSending
+                  ? 'verify-number-button-valid'
+                  : ''
               }`}
               fullWidth
             >

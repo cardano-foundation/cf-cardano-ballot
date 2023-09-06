@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.19](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.18...v0.2.19) (2023-09-06)
+
+
+### Bug Fixes
+
+* added aop in verification app ([425fbef](https://github.com/cardano-foundation/cf-cardano-ballot/commit/425fbef7193216f5acf7601842172c2af092a435))
+
 ## [0.2.18](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.17...v0.2.18) (2023-09-06)
 
 

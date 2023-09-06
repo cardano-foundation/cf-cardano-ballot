@@ -25,7 +25,10 @@ cf-summit-2023-voting-api:
         replicas: 2
       - name: active-hour
         active: "true"
-        voteCommitmentCronExpression: "0 0/30 * * * *"
+        voteCommitmentCronExpression: "0 0 * * * *"
+      - name: active-half-hour
+        active: "true"
+        voteCommitmentCronExpression: "0 30 * * * *"
     image:
       tag: 0.2.20
     corsAllowedOrigins: https://{{ .Values.domain }},http://localhost:3000

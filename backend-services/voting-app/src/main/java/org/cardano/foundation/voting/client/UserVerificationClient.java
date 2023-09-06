@@ -21,7 +21,7 @@ public class UserVerificationClient {
     private String userVerificationBaseUrl;
 
     public Either<Problem, IsVerifiedResponse> isVerified(String eventId, String stakeAddress) {
-        var url = String.format("%s/api/sms/user-verification/verified/{eventId}/{stakeAddress}", userVerificationBaseUrl);
+        var url = String.format("%s/api/user-verification/verified/{eventId}/{stakeAddress}", userVerificationBaseUrl);
 
         try {
             return Either.right(restTemplate.getForObject(url, IsVerifiedResponse.class, eventId, stakeAddress));

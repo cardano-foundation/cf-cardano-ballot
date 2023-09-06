@@ -18,6 +18,7 @@ cf-summit-2023-ui:
 cf-summit-2023-voting-api:
   enabled: true
   values:
+    useJwt: true
     instances:
       - name: passive
         active: "false"

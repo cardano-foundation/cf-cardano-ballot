@@ -86,6 +86,13 @@ spec:
 
             - name: LEDGER_FOLLOWER_APP_URL
               value: {{ $.Values.ledgerFollowerAppUrl }}
+
+            - name: SALT
+              valueFrom:
+                secretKeyRef:
+                  name: user-verification-secrets
+                  key: SALT
+
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}

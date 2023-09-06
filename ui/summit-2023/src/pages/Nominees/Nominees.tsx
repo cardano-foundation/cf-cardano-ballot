@@ -21,6 +21,7 @@ import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import InfoIcon from '@mui/icons-material/Info';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { Fade } from '@mui/material';
 import './Nominees.scss';
@@ -227,7 +228,9 @@ const Nominees = () => {
             variant="h6"
             style={{ color: '#24262E', fontSize: '18px', fontStyle: 'normal', fontWeight: '600', lineHeight: '22px' }}
           >
-            To see you vote receipt, please sign with your wallet
+            {walletIsLoggedIn
+              ? 'You have successfully cast a vote for Nominee in the Ambassador category '
+              : 'To see you vote receipt, please sign with your wallet'}
           </Typography>
         </div>
         <Button
@@ -437,6 +440,7 @@ const Nominees = () => {
           </Button>
         </Container>
       </Drawer>
+
       <Drawer
         anchor="right"
         open={receiptDrawerIsOpen && receipt !== undefined}
@@ -456,7 +460,7 @@ const Nominees = () => {
           >
             <IconButton
               className="closeButton"
-              onClick={() => setDrawerOpen(false)}
+              onClick={() => setReceiptDrawerIsOpen(false)}
               aria-label="close"
               style={{ float: 'right' }}
             >
@@ -484,23 +488,88 @@ const Nominees = () => {
           <Box
             sx={{
               display: 'flex',
+              flexDirection: 'column', // Dirección de los elementos como columna
               justifyContent: 'space-between',
               alignItems: 'center',
-              backgroundColor: walletIsLoggedIn ? 'rgba(5, 97, 34, 0.07)' : 'rgba(253, 135, 60, 0.07)',
+              backgroundColor: 'rgba(16, 101, 147, 0.07)',
               padding: '10px 20px',
               borderRadius: '8px',
-              border: walletIsLoggedIn ? '1px solid #056122' : '1px solid #FD873C',
+              border: '1px solid #106593',
               color: 'white',
               width: '100%',
               marginBottom: '20px',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <NotificationsIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#106593' }} />
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <NotificationsIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#106593' }} />
+                <Typography
+                  variant="h6"
+                  style={{
+                    color: '#24262E',
+                    fontSize: '18px',
+                    fontStyle: 'normal',
+                    fontWeight: '600',
+                    lineHeight: '22px',
+                  }}
+                >
+                  Assurance: LOW
+                  <InfoIcon
+                    style={{
+                      color: '#434656A6',
+                      width: '22px',
+                      marginLeft: '3px',
+                      marginBottom: '5px',
+                      verticalAlign: 'middle',
+                    }}
+                  />
+                </Typography>
+              </div>
+              <RefreshIcon
+                sx={{
+                  display: 'inline-flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  color: '#24262E',
+                  cursor: 'pointer',
+                  width: '36px',
+                  height: '36px',
+                  background: 'rgba(67, 70, 86, 0.10);',
+                  borderRadius: '18px',
+                  padding: '6px',
+                }}
+              />
+            </div>
 
+            <Typography
+              variant="body1"
+              sx={{
+                color: '#434656',
+                fontSize: '16px',
+                fontStyle: 'normal',
+                fontWeight: '400',
+                lineHeight: '22px',
+                wordWrap: 'break-word',
+                maxWidth: '406px',
+              }}
+            >
+              Your vote has been successfully submitted. You might have to wait up to 30 minutes for this to be visible
+              on chain. Please check back later to verify your vote.
+            </Typography>
+          </Box>
+
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              marginBottom: '20px',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
               <Typography
                 variant="h6"
-                style={{
+                sx={{
+                  marginRight: '8px',
                   color: '#24262E',
                   fontSize: '18px',
                   fontStyle: 'normal',
@@ -508,32 +577,32 @@ const Nominees = () => {
                   lineHeight: '22px',
                 }}
               >
-                Assurance: LOW
+                Event
               </Typography>
+              <InfoIcon
+                style={{
+                  color: '#434656A6',
+                  width: '22px',
+                  marginLeft: '3px',
+                  marginBottom: '2px',
+                  verticalAlign: 'middle',
+                }}
+              />
             </div>
-            <RefreshIcon
-              sx={{
-                display: 'inline-flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                color: '#24262E',
-                cursor: 'pointer',
-                width: '36px',
-                height: '36px',
-                background: 'rgba(67, 70, 86, 0.10);',
-                borderRadius: '18px',
-                padding: '8px',
-              }}
-            />
+            <Typography
+              variant="body1"
+              align="left"
+            >
+              {receipt?.event}
+            </Typography>
           </Box>
-
           <Typography
             variant="body2"
             paragraph
             style={{ maxWidth: '490px' }}
             className="nominee-slide-description"
           >
-              {receipt && JSON.stringify(receipt)}
+            {receipt && JSON.stringify(receipt)}
           </Typography>
 
           <Button

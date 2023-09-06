@@ -206,6 +206,14 @@ public class DefaultLoginService implements LoginService {
             return Either.left(stakeAddressCheckE.getLeft());
         }
 
+        if (!stakeAddress.equals(cip93LoginEnvelope.getData().getAddress())) {
+            return Either.left(Problem.builder()
+                    .withTitle("STAKE_ADDRESS_MISMATCH")
+                    .withDetail("Stake address mismatch, signed address:" + stakeAddress + ", however request is with address:" + cip93LoginEnvelope.getData().getAddress())
+                    .withStatus(BAD_REQUEST)
+                    .build());
+        }
+
         var maybeRole = Enums.getIfPresent(Role.class, cip93LoginEnvelope.getData().getRole());
         if (maybeRole.isEmpty()) {
             log.warn("Invalid role, role:{}", cip93LoginEnvelope.getData().getRole());

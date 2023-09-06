@@ -7,6 +7,7 @@ import { UserState, VerificationStarts } from './types';
 const initialState: UserState = {
   connectedWallet: '',
   walletIsVerified: false,
+  walletIsLoggedIn: false,
   isReceiptFetched: false,
   receipt: null,
   proposal: '',
@@ -44,6 +45,9 @@ export const userSlice = createSlice({
     setWalletIsVerified: (state, action: PayloadAction<{ isVerified: boolean }>) => {
       state.walletIsVerified = action.payload.isVerified;
     },
+    setWalletIsLoggedIn: (state, action: PayloadAction<{ isLoggedIn: boolean }>) => {
+      state.walletIsLoggedIn = action.payload.isLoggedIn;
+    },
     setVoteReceipt: (state, action: PayloadAction<{ receipt: VoteReceipt }>) => {
       state.receipt = action.payload.receipt;
     },
@@ -65,6 +69,5 @@ export const userSlice = createSlice({
   },
 });
 
-export const { setConnectedWallet, setVoteReceipt, setUserStartsVerification, setWalletIsVerified, setEventData } =
-  userSlice.actions;
+export const { setWalletIsLoggedIn, setUserStartsVerification, setWalletIsVerified, setEventData } = userSlice.actions;
 export default userSlice.reducer;

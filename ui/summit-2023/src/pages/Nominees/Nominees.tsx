@@ -12,10 +12,13 @@ import {
   Button,
   Drawer,
   Container,
+  Box,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import ViewListIcon from '@mui/icons-material/ViewList';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { Fade } from '@mui/material';
 import './Nominees.scss';
@@ -25,21 +28,25 @@ import CloseIcon from '@mui/icons-material/Close';
 import xIcon from '../../common/resources/images/x-icon.svg';
 import linkedinIcon from '../../common/resources/images/linkedin-icon.svg';
 import { ROUTES } from '../../routes';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import { buildCanonicalVoteInputJson, getSignedMessagePromise } from '../../utils/utils';
-import { castAVoteWithDigitalSignature, getSlotNumber } from 'common/api/voteService';
+import { buildCanonicalVoteInputJson, castAVoteWithDigitalSignature, getSlotNumber } from '../../common/api/voteService';
+import { getSignedMessagePromise } from '../../utils/utils';
+import { buildCanonicalLoginJson, submitLogin } from 'common/api/loginService';
+import { saveUserInSession } from '../../utils/session';
+import { setWalletIsLoggedIn } from '../../store/userSlice';
 
 const Nominees = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const eventCache = useSelector((state: RootState) => state.user.event);
-
+  const walletIsVerified = useSelector((state: RootState) => state.user.walletIsVerified);
+  const walletIsLoggedIn = useSelector((state: RootState) => state.user.walletIsLoggedIn);
+  const dispatch = useDispatch();
   const categories_ids = eventCache.categories.map((e) => e.id);
   if (!categories_ids.includes(id)) navigate(ROUTES.NOT_FOUND);
 
   const category = eventCache.categories.filter((c) => c.id === id)[0];
-  const walletIsVerified = useSelector((state: RootState) => state.user.walletIsVerified);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -51,12 +58,6 @@ const Nominees = () => {
 
   const signMessagePromisified = useMemo(() => getSignedMessagePromise(signMessage), [signMessage]);
 
-  useEffect(() => {
-    if (isMobile) {
-      setListView('list');
-    }
-  }, [isMobile]);
-
   const handleListView = (viewType: 'grid' | 'list') => {
     if (listView === viewType) return;
 
@@ -67,6 +68,36 @@ const Nominees = () => {
     }, 300);
   };
 
+  const login = async () => {
+    const absoluteSlot = (await getSlotNumber())?.absoluteSlot;
+    const canonicalVoteInput = buildCanonicalLoginJson({
+      stakeAddress,
+      slotNumber: absoluteSlot.toString(),
+    });
+    try {
+      const requestVoteObject = await signMessagePromisified(canonicalVoteInput);
+      submitLogin(requestVoteObject)
+        .then((response) => {
+          const session = {
+            accessToken: response.accessToken,
+            expiresAt: response.expiresAt,
+          };
+          saveUserInSession(session);
+          dispatch(setWalletIsLoggedIn({ isLoggedIn: true }));
+          eventBus.publish('showToast', 'Login successfully');
+        })
+        .catch((e) => eventBus.publish('showToast', e.message, true));
+    } catch (e) {
+      eventBus.publish('showToast', e.message, true);
+    }
+  };
+
+  useEffect(() => {
+    if (isMobile) {
+      setListView('list');
+    }
+  }, [isMobile]);
+
   const castVote = async (optionId: string) => {
     const absoluteSlot = (await getSlotNumber())?.absoluteSlot;
     const canonicalVoteInput = buildCanonicalVoteInputJson({
@@ -74,7 +105,7 @@ const Nominees = () => {
       categoryId: id,
       proposalId: optionId,
       stakeAddress,
-      slotNumber: absoluteSlot.toString()
+      slotNumber: absoluteSlot.toString(),
     });
     try {
       const requestVoteObject = await signMessagePromisified(canonicalVoteInput);
@@ -85,8 +116,8 @@ const Nominees = () => {
     }
   };
 
-  const handleNomineeButton = (nomineeId:string) => {
-    if (isConnected){
+  const handleNomineeButton = (nomineeId: string) => {
+    if (isConnected) {
       if (!walletIsVerified) {
         eventBus.publish('openVerifyWalletModal');
       } else {
@@ -98,16 +129,20 @@ const Nominees = () => {
   };
 
   const renderNomineeButtonLabel = () => {
-    if (isConnected){
+    if (isConnected) {
       if (!walletIsVerified) {
-        return 'Verify your wallet'
+        return 'Verify your wallet';
       } else {
-        return 'Vote for nominee'
+        return 'Vote for nominee';
       }
     } else {
-      return <><AccountBalanceWalletIcon /> Connect wallet</>
+      return (
+        <>
+          <AccountBalanceWalletIcon /> Connect wallet
+        </>
+      );
     }
-  }
+  };
 
   return (
     <>
@@ -139,6 +174,57 @@ const Nominees = () => {
         To commemorate the special commitment and work of a Cardano Ambassador.
       </Typography>
 
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          backgroundColor: walletIsLoggedIn ? 'rgba(5, 97, 34, 0.07)' : 'rgba(253, 135, 60, 0.07)',
+          padding: '10px 20px',
+          borderRadius: '8px',
+          border: walletIsLoggedIn ? '1px solid #056122' : '1px solid #FD873C',
+          color: 'white',
+          width: '100%',
+          marginBottom: '20px',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          {walletIsLoggedIn ? (
+            <VerifiedUserIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#056122' }} />
+          ) : (
+            <WarningAmberIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#FD873C' }} />
+          )}
+
+          <Typography
+            variant="h6"
+            style={{ color: '#24262E', fontSize: '18px', fontStyle: 'normal', fontWeight: '600', lineHeight: '22px' }}
+          >
+            To see you vote receipt, please sign with your wallet
+          </Typography>
+        </div>
+        <Button
+          onClick={() => login()}
+          variant="contained"
+          color="primary"
+          sx={{
+            display: 'inline-flex',
+            padding: '16px 24px',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: '10px',
+            borderRadius: '8px',
+            background: '#03021F',
+            color: '#F6F9FF',
+            fontSize: '16px',
+            fontStyle: 'normal',
+            fontWeight: '600',
+            lineHeight: 'normal',
+            textTransform: 'none',
+          }}
+        >
+          {walletIsLoggedIn ? 'View vote receipt' : 'Login with wallet'}
+        </Button>
+      </Box>
       <Grid
         container
         spacing={3}

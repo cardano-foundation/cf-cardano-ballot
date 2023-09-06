@@ -1,7 +1,5 @@
 import { SignedWeb3Request } from '../types/voting-app-types';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
-import { canonicalize } from 'json-canonicalize';
-import { env } from 'common/constants/env';
 
 const addressSlice = (address: string, sliceLength = 10) => {
   if (address) {
@@ -16,40 +14,6 @@ const walletIcon = (walletName: string) => {
   return window.cardano && window.cardano[walletName].icon;
 };
 
-type voteInput = {
-  voteId: string;
-  proposalId: string;
-  categoryId: string;
-  stakeAddress: string;
-  slotNumber: string;
-};
-
-export const buildCanonicalVoteInputJson = ({
-  voteId,
-  categoryId,
-  proposalId,
-  stakeAddress,
-  slotNumber,
-}: voteInput): ReturnType<typeof canonicalize> => {
-  const startOfCurrentDay = new Date();
-  startOfCurrentDay.setUTCMinutes(0, 0, 0);
-  return canonicalize({
-    action: 'CAST_VOTE',
-    actionText: 'Cast Vote',
-    slot: slotNumber,
-    data: {
-      id: voteId,
-      address: stakeAddress,
-      event: env.EVENT_ID,
-      category: categoryId,
-      proposal: proposalId,
-      network: env.TARGET_NETWORK,
-      votedAt: slotNumber,
-      votingEventType: 'USER_BASED'
-    },
-  });
-};
-
 const getSignedMessagePromise = (signMessage: ReturnType<typeof useCardano>['signMessage']) => {
   return async (message: string): Promise<SignedWeb3Request> =>
     new Promise((resolve, reject) => {
@@ -61,4 +25,23 @@ const getSignedMessagePromise = (signMessage: ReturnType<typeof useCardano>['sig
     });
 };
 
-export { addressSlice, walletIcon, getSignedMessagePromise };
+const parseJwt = (token) => {
+  if (token && token.length) {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      window
+        .atob(base64)
+        .split('')
+        .map(function (c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        })
+        .join('')
+    );
+    return JSON.parse(jsonPayload);
+  } else {
+    return undefined;
+  }
+};
+
+export { addressSlice, walletIcon, getSignedMessagePromise, parseJwt };

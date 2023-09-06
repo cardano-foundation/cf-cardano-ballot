@@ -71,7 +71,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
 
     @Override
     @Transactional
-    public Either<Problem, StartVerificationResponse> startVerification(StartVerificationRequest startVerificationRequest) {
+    public Either<Problem, SMSStartVerificationResponse> startVerification(SMSStartVerificationRequest startVerificationRequest) {
         String eventId = startVerificationRequest.getEventId();
         String stakeAddress = startVerificationRequest.getStakeAddress();
 
@@ -205,7 +205,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
 
         var saved = userVerificationRepository.saveAndFlush(newUserVerification);
 
-        var startVerificationResponse = new StartVerificationResponse(
+        var startVerificationResponse = new SMSStartVerificationResponse(
                 saved.getEventId(),
                 saved.getStakeAddress(),
                 saved.getRequestId(),
@@ -218,7 +218,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
 
     @Override
     @Transactional(readOnly = true)
-    public Either<Problem, IsVerifiedResponse> checkVerification(CheckVerificationRequest checkVerificationRequest) {
+    public Either<Problem, IsVerifiedResponse> checkVerification(SMSCheckVerificationRequest checkVerificationRequest) {
         String eventId = checkVerificationRequest.getEventId();
         String stakeAddress = checkVerificationRequest.getStakeAddress();
 

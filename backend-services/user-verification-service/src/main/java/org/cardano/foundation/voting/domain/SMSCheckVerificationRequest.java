@@ -13,16 +13,19 @@ import java.util.Optional;
 @Builder
 @Setter
 @ToString
-public class StartVerificationRequest {
+public class SMSCheckVerificationRequest {
 
     @NotBlank
     private String eventId;
 
     @NotBlank
+    private String requestId;
+
+    @NotBlank
     private String stakeAddress;
 
     @NotBlank
-    private String phoneNumber;
+    private String verificationCode;
 
     @Builder.Default
     private Optional<Locale> locale = Optional.empty();

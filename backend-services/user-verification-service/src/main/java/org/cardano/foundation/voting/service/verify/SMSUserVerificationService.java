@@ -9,9 +9,9 @@ import java.util.List;
 
 public interface SMSUserVerificationService {
 
-    Either<Problem, StartVerificationResponse> startVerification(StartVerificationRequest startVerificationRequest);
+    Either<Problem, SMSStartVerificationResponse> startVerification(SMSStartVerificationRequest SMSStartVerificationRequest);
 
-    Either<Problem, IsVerifiedResponse> checkVerification(CheckVerificationRequest checkVerificationRequest);
+    Either<Problem, IsVerifiedResponse> checkVerification(SMSCheckVerificationRequest checkVerificationRequest);
 
     Either<Problem, IsVerifiedResponse> isVerified(IsVerifiedRequest isVerifiedRequest);
 

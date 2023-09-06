@@ -9,10 +9,10 @@ import org.cardano.foundation.voting.domain.LoginResult;
 import org.cardano.foundation.voting.domain.Role;
 import org.cardano.foundation.voting.domain.web3.SignedWeb3Request;
 import org.cardano.foundation.voting.domain.web3.Web3Action;
-import org.cardano.foundation.voting.service.address.StakeAddressVerificationService;
 import org.cardano.foundation.voting.service.expire.ExpirationService;
 import org.cardano.foundation.voting.service.json.JsonService;
 import org.cardano.foundation.voting.utils.Enums;
+import org.cardano.foundation.voting.utils.StakeAddress;
 import org.cardanofoundation.cip30.AddressFormat;
 import org.cardanofoundation.cip30.CIP30Verifier;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,9 +43,6 @@ public class DefaultLoginService implements LoginService {
 
     @Autowired
     private JsonService jsonService;
-
-    @Autowired
-    private StakeAddressVerificationService stakeAddressVerificationService;
 
     @Autowired
     private CardanoNetwork cardanoNetwork;
@@ -201,7 +198,7 @@ public class DefaultLoginService implements LoginService {
         }
         var stakeAddress = maybeAddress.orElseThrow();
 
-        var stakeAddressCheckE = stakeAddressVerificationService.checkStakeAddress(stakeAddress);
+        var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, stakeAddress);
         if (stakeAddressCheckE.isEmpty()) {
             return Either.left(stakeAddressCheckE.getLeft());
         }

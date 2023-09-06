@@ -13,8 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.LoginResult;
 import org.cardano.foundation.voting.domain.Role;
-import org.cardano.foundation.voting.service.address.StakeAddressVerificationService;
 import org.cardano.foundation.voting.utils.Enums;
+import org.cardano.foundation.voting.utils.StakeAddress;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -41,9 +41,6 @@ public class JwtService {
 
     @Autowired
     private CardanoNetwork cardanoNetwork;
-
-    @Autowired
-    private StakeAddressVerificationService stakeAddressVerificationService;
 
     @Value("${cardano.jwt.iss}")
     private String iss;
@@ -148,7 +145,7 @@ public class JwtService {
 
                 var jwtStakeAddress = jwtClaimsSet.getStringClaim("stakeAddress");
 
-                var stakeAddressCheckE = stakeAddressVerificationService.checkStakeAddress(jwtStakeAddress);
+                var stakeAddressCheckE = StakeAddress.checkStakeAddress(cardanoNetwork, jwtStakeAddress);
                 if (stakeAddressCheckE.isEmpty()) {
                     return Either.left(stakeAddressCheckE.getLeft());
                 }

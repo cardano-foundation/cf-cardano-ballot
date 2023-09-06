@@ -17,6 +17,7 @@ public class SignedWeb3Request {
     @NotBlank
     protected String coseSignature;
 
-    protected Optional<@NotBlank String> cosePublicKey;
+    @Builder.Default
+    protected Optional<@NotBlank String> cosePublicKey = Optional.empty();
 
 }

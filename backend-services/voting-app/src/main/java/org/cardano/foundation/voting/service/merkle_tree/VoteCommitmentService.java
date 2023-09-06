@@ -82,7 +82,7 @@ public class VoteCommitmentService {
         return activeEvents.stream()
                 .map(event -> {
                     // TODO caching or paging or both? Maybe we use Redis???
-                    log.info("Loading votes from db...");
+                    log.info("Loading votes from db for active event:{}", event.id());
                     var stopWatch = new StopWatch();
                     stopWatch.start();
                     var allVotes = voteService.findAll(event.id());

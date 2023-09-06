@@ -113,7 +113,7 @@ spec:
               value: {{ $.Values.ledgerFollowerAppUrl }}
 
             {{- if $.Values.useJwt | default false }}
-            - name: JWT_SECRET
+            - name: CARDANO_JWT_SECRET
               valueFrom:
                 secretKeyRef:
                   name: voting-app-secrets

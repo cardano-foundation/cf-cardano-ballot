@@ -5,9 +5,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.Account;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
-import org.cardano.foundation.voting.service.address.StakeAddressVerificationService;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
 import org.cardano.foundation.voting.service.vote.VotingPowerService;
+import org.cardano.foundation.voting.utils.StakeAddress;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 
@@ -29,8 +29,6 @@ public class DefaultAccountService implements AccountService {
 
     private final VotingPowerService votingPowerService;
 
-    private final StakeAddressVerificationService stakeAddressVerificationService;
-
     private final CardanoNetwork network;
 
     @Override
@@ -47,8 +45,8 @@ public class DefaultAccountService implements AccountService {
         }
         var event = maybeEvent.orElseThrow();
 
-        var stakeAddressCheckE = stakeAddressVerificationService.checkStakeAddress(stakeAddress);
-        if (stakeAddressCheckE.isLeft()) {
+        var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, stakeAddress);
+        if (stakeAddressCheckE.isEmpty()) {
             return Either.left(stakeAddressCheckE.getLeft());
         }
 

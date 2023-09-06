@@ -9,9 +9,9 @@ import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.domain.*;
 import org.cardano.foundation.voting.domain.entity.UserVerification;
 import org.cardano.foundation.voting.repository.UserVerificationRepository;
-import org.cardano.foundation.voting.service.address.StakeAddressVerificationService;
 import org.cardano.foundation.voting.service.pass.CodeGenService;
 import org.cardano.foundation.voting.service.sms.SMSService;
+import org.cardano.foundation.voting.utils.StakeAddress;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -52,10 +52,10 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
     private SaltHolder saltHolder;
 
     @Autowired
-    private StakeAddressVerificationService stakeAddressVerificationService;
+    private Clock clock;
 
     @Autowired
-    private Clock clock;
+    private CardanoNetwork network;
 
     @Autowired
     private CodeGenService codeGenService;
@@ -75,7 +75,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
         String eventId = startVerificationRequest.getEventId();
         String stakeAddress = startVerificationRequest.getStakeAddress();
 
-        var stakeAddressCheckE = stakeAddressVerificationService.checkStakeAddress(stakeAddress);
+        var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, stakeAddress);
         if (stakeAddressCheckE.isEmpty()) {
             return Either.left(stakeAddressCheckE.getLeft());
         }
@@ -222,8 +222,8 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
         String eventId = checkVerificationRequest.getEventId();
         String stakeAddress = checkVerificationRequest.getStakeAddress();
 
-        var stakeAddressCheckE = stakeAddressVerificationService.checkStakeAddress(stakeAddress);
-        if (stakeAddressCheckE.isLeft()) {
+        var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, stakeAddress);
+        if (stakeAddressCheckE.isEmpty()) {
             return Either.left(stakeAddressCheckE.getLeft());
         }
 

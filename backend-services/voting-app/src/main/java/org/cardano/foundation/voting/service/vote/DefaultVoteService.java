@@ -14,7 +14,6 @@ import org.cardano.foundation.voting.domain.entity.VoteMerkleProof;
 import org.cardano.foundation.voting.domain.web3.SignedWeb3Request;
 import org.cardano.foundation.voting.domain.web3.Web3Action;
 import org.cardano.foundation.voting.repository.VoteRepository;
-import org.cardano.foundation.voting.service.address.StakeAddressVerificationService;
 import org.cardano.foundation.voting.service.auth.JwtAuthenticationToken;
 import org.cardano.foundation.voting.service.expire.ExpirationService;
 import org.cardano.foundation.voting.service.json.JsonService;
@@ -22,6 +21,7 @@ import org.cardano.foundation.voting.service.merkle_tree.MerkleProofSerdeService
 import org.cardano.foundation.voting.service.merkle_tree.VoteMerkleProofService;
 import org.cardano.foundation.voting.utils.Enums;
 import org.cardano.foundation.voting.utils.MoreUUID;
+import org.cardano.foundation.voting.utils.StakeAddress;
 import org.cardanofoundation.cip30.AddressFormat;
 import org.cardanofoundation.cip30.CIP30Verifier;
 import org.cardanofoundation.merkle.ProofItem;
@@ -72,9 +72,6 @@ public class DefaultVoteService implements VoteService {
 
     @Autowired
     private JsonService jsonService;
-
-    @Autowired
-    private StakeAddressVerificationService stakeAddressVerificationService;
 
     @Override
     @Transactional(readOnly = true)
@@ -170,11 +167,6 @@ public class DefaultVoteService implements VoteService {
         }
         var stakeAddress = maybeAddress.orElseThrow();
 
-        var stakeAddressCheckE = stakeAddressVerificationService.checkStakeAddress(stakeAddress);
-        if (stakeAddressCheckE.isEmpty()) {
-            return Either.left(stakeAddressCheckE.getLeft());
-        }
-
         var castVoteRequestBodyJsonE = jsonService.decodeCIP93VoteEnvelope(cip30VerificationResult.getMessage(TEXT));
         if (castVoteRequestBodyJsonE.isLeft()) {
             if (castVoteRequestBodyJsonE.isLeft()) {
@@ -209,6 +201,11 @@ public class DefaultVoteService implements VoteService {
                     .withDetail("Invalid network, backend configured with network:" + cardanoNetwork + ", however request is with network:" + network)
                     .withStatus(BAD_REQUEST)
                     .build());
+        }
+
+        var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, stakeAddress);
+        if (stakeAddressCheckE.isEmpty()) {
+            return Either.left(stakeAddressCheckE.getLeft());
         }
 
         String cip30StakeAddress = cip93VoteEnvelope.getData().getAddress();
@@ -603,11 +600,6 @@ public class DefaultVoteService implements VoteService {
         }
         var stakeAddress = maybeAddress.orElseThrow();
 
-        var stakeAddressCheckE = stakeAddressVerificationService.checkStakeAddress(stakeAddress);
-        if (stakeAddressCheckE.isEmpty()) {
-            return Either.left(stakeAddressCheckE.getLeft());
-        }
-
         var viewVoteReceiptEnvelope = jsonService.decodeCIP93ViewVoteReceiptEnvelope(cip30VerificationResult.getMessage(TEXT));
         if (viewVoteReceiptEnvelope.isLeft()) {
             if (viewVoteReceiptEnvelope.isLeft()) {
@@ -642,6 +634,11 @@ public class DefaultVoteService implements VoteService {
                     .withDetail("Invalid network, backed configured with network:" + cardanoNetwork + ", however request is with network:" + network)
                     .withStatus(BAD_REQUEST)
                     .build());
+        }
+
+        var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, stakeAddress);
+        if (stakeAddressCheckE.isEmpty()) {
+            return Either.left(stakeAddressCheckE.getLeft());
         }
 
         String cip30StakeAddress = cip93ViewVoteReceiptEnvelope.getData().getAddress();
@@ -764,7 +761,7 @@ public class DefaultVoteService implements VoteService {
 
             var jwtStakeAddress = jwtClaimsSet.getStringClaim("stakeAddress");
 
-            var stakeAddressCheckE = stakeAddressVerificationService.checkStakeAddress(jwtStakeAddress);
+            var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, jwtStakeAddress);
             if (stakeAddressCheckE.isEmpty()) {
                 return Either.left(stakeAddressCheckE.getLeft());
             }

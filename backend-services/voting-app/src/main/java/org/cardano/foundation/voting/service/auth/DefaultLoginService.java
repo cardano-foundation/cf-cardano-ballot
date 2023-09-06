@@ -13,6 +13,7 @@ import org.cardano.foundation.voting.service.address.StakeAddressVerificationSer
 import org.cardano.foundation.voting.service.expire.ExpirationService;
 import org.cardano.foundation.voting.service.json.JsonService;
 import org.cardano.foundation.voting.utils.Enums;
+import org.cardano.foundation.voting.utils.StakeAddress;
 import org.cardanofoundation.cip30.AddressFormat;
 import org.cardanofoundation.cip30.CIP30Verifier;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -201,7 +202,7 @@ public class DefaultLoginService implements LoginService {
         }
         var stakeAddress = maybeAddress.orElseThrow();
 
-        var stakeAddressCheckE = stakeAddressVerificationService.checkStakeAddress(stakeAddress);
+        var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, stakeAddress);
         if (stakeAddressCheckE.isEmpty()) {
             return Either.left(stakeAddressCheckE.getLeft());
         }

@@ -6,7 +6,7 @@ import xIcon from '../../common/resources/images/x-icon.svg';
 import linkedinIcon from '../../common/resources/images/linkedin-icon.svg';
 
 const ReadMore = (props) => {
-  const { proposal, closeSidePage } = props;
+  const { nominee, closeSidePage } = props;
 
   const handleClose = () => {
     closeSidePage(false);
@@ -40,9 +40,9 @@ const ReadMore = (props) => {
         <Typography
           variant="h5"
           gutterBottom
-          className="proposal-slide-title"
+          className="nominee-slide-title"
         >
-          {proposal.presentationName}
+          {nominee.presentationName}
         </Typography>
 
         <Grid
@@ -53,7 +53,7 @@ const ReadMore = (props) => {
         >
           <Grid item>
             <IconButton
-              className="proposal-social-button"
+              className="nominee-social-button"
               aria-label="X"
             >
               <img
@@ -65,7 +65,7 @@ const ReadMore = (props) => {
           </Grid>
           <Grid item>
             <IconButton
-              className="proposal-social-button"
+              className="nominee-social-button"
               aria-label="Linkedin"
             >
               <img
@@ -81,17 +81,17 @@ const ReadMore = (props) => {
           variant="body2"
           paragraph
           style={{ maxWidth: '490px' }}
-          className="proposal-slide-description"
+          className="nominee-slide-description"
         >
-          {proposal.desc}
+          {nominee.desc}
         </Typography>
 
         <Button
           className="visit-web-button"
-          href={proposal.url}
+          href={nominee.url}
           fullWidth
         >
-          {proposal.url}
+          {nominee.url}
         </Button>
       </Container>
     </>

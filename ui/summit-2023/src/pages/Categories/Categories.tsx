@@ -148,11 +148,11 @@ const Categories = () => {
                           <CardActions>
                             <Button
                               component={Link}
-                              to={{ pathname: `/proposals/${category.id}` }}
+                              to={{ pathname: `/nominees/${category.id}` }}
                               state={{
                                 category,
                               }}
-                              aria-label="View Proposals"
+                              aria-label="View Nominees"
                               variant="contained"
                               size="large"
                               sx={{
@@ -164,7 +164,7 @@ const Categories = () => {
                                 backgroundColor: '#acfcc5 !important',
                               }}
                             >
-                              View Proposals
+                              View Nominees
                             </Button>
                           </CardActions>
                         </CardContent>

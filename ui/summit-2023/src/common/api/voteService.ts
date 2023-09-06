@@ -54,13 +54,15 @@ const getSlotNumber = async () => {
   return await doRequest<ChainTip>(HttpMethods.GET, BLOCKCHAIN_TIP_URL, DEFAULT_CONTENT_TYPE_HEADERS);
 };
 
-const getVoteReceipt = async (jsonRequest: SignedWeb3Request) => {
-  return await doRequest<Problem | VoteReceipt>(
-    HttpMethods.POST,
-    VOTE_RECEIPT_URL,
-    DEFAULT_CONTENT_TYPE_HEADERS,
-    JSON.stringify(jsonRequest)
-  );
-};
+const getVoteReceipt = async (categoryId: string, token: string) =>
+    await doRequest<VoteReceipt>(
+        HttpMethods.GET,
+        `${VOTE_RECEIPT_URL}/${env.EVENT_ID}/${categoryId}`,
+        {
+          ...DEFAULT_CONTENT_TYPE_HEADERS,
+        },
+        null,
+        token
+    );
 
 export { castAVoteWithDigitalSignature, getSlotNumber, getVoteReceipt };

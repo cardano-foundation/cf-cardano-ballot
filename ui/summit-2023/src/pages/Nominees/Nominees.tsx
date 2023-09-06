@@ -30,11 +30,15 @@ import linkedinIcon from '../../common/resources/images/linkedin-icon.svg';
 import { ROUTES } from '../../routes';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import { buildCanonicalVoteInputJson, castAVoteWithDigitalSignature, getSlotNumber } from '../../common/api/voteService';
+import {
+  buildCanonicalVoteInputJson,
+  castAVoteWithDigitalSignature,
+  getSlotNumber, getVoteReceipt,
+} from '../../common/api/voteService';
 import { getSignedMessagePromise } from '../../utils/utils';
 import { buildCanonicalLoginJson, submitLogin } from 'common/api/loginService';
-import { saveUserInSession } from '../../utils/session';
-import { setWalletIsLoggedIn } from '../../store/userSlice';
+import {getUserInSession, saveUserInSession, tokenIsExpired} from '../../utils/session';
+import {setVoteReceipt, setWalletIsLoggedIn} from '../../store/userSlice';
 
 const Nominees = () => {
   const { id } = useParams();
@@ -42,6 +46,12 @@ const Nominees = () => {
   const eventCache = useSelector((state: RootState) => state.user.event);
   const walletIsVerified = useSelector((state: RootState) => state.user.walletIsVerified);
   const walletIsLoggedIn = useSelector((state: RootState) => state.user.walletIsLoggedIn);
+  const receipts = useSelector((state: RootState) => state.user.receipts);
+  const receipt = receipts && Object.keys(receipts).length && receipts[id] ? receipts[id] : undefined;
+
+  console.log('receipt');
+  console.log(receipt);
+
   const dispatch = useDispatch();
   const categories_ids = eventCache.categories.map((e) => e.id);
   if (!categories_ids.includes(id)) navigate(ROUTES.NOT_FOUND);
@@ -53,6 +63,7 @@ const Nominees = () => {
   const [listView, setListView] = useState<'grid' | 'list'>('grid');
   const [isVisible, setIsVisible] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [receiptDrawerIsOpen, setReceiptDrawerIsOpen] = useState(false);
 
   const { isConnected, stakeAddress, signMessage } = useCardano();
 
@@ -66,6 +77,18 @@ const Nominees = () => {
       setListView(viewType);
       setIsVisible(true);
     }, 300);
+  };
+
+  const viewVoteReceipt = async () => {
+    const session = getUserInSession();
+    if (!tokenIsExpired(session.expiresAt)){
+      await getVoteReceipt(id, session.accessToken).then((r) => {
+        dispatch(setVoteReceipt({ categoryId: id, receipt: r }));
+        setReceiptDrawerIsOpen(true);
+      }).catch((e) => eventBus.publish('showToast', e.message, true));
+    } else {
+      eventBus.publish('showToast', 'Please, login before get receipt', true);
+    }
   };
 
   const login = async () => {
@@ -203,7 +226,7 @@ const Nominees = () => {
           </Typography>
         </div>
         <Button
-          onClick={() => login()}
+          onClick={() => (walletIsLoggedIn ? viewVoteReceipt() : login())}
           variant="contained"
           color="primary"
           sx={{
@@ -408,6 +431,13 @@ const Nominees = () => {
             Visit Website
           </Button>
         </Container>
+      </Drawer>
+      <Drawer
+        anchor="right"
+        open={receiptDrawerIsOpen && receipt !== undefined}
+        onClose={() => setReceiptDrawerIsOpen(false)}
+      >
+        Receipt
       </Drawer>
     </>
   );

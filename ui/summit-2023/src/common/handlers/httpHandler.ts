@@ -194,9 +194,22 @@ export const doRequest = async <T>(
   method: HttpMethods,
   url: string,
   headers: Partial<contentTypeHeaders>,
-  body?: string
+  body?: string,
+  token?: string
 ) => {
-  const allHeaders = headers || DEFAULT_CONTENT_TYPE_HEADERS;
+  const allHeaders = { ...headers, ...DEFAULT_CONTENT_TYPE_HEADERS };
+
+  console.log('token?????')
+  console.log(token)
+  if (token) {
+    console.log('add token to request')
+    allHeaders['Authorization'] = <MediaTypes>`Bearer ${token}`;
+  }
+
+  console.log('allHeaders');
+  console.log(allHeaders);
+  console.log('url');
+  console.log(url);
 
   if (method === HttpMethods.POST) {
     return await post<T>(url, allHeaders, body);

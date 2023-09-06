@@ -22,7 +22,7 @@ public class ReferenceDataResource {
     @RequestMapping(value = "/event/{name}", method = GET, produces = "application/json")
     @Timed(value = "resource.reference.event", percentiles = { 0.3, 0.5, 0.95 } )
     public ResponseEntity<?> getEventByName(@PathVariable String name) {
-        return referencePresentationService.findEventReference(name) // TODO support additional languages via http headers
+        return referencePresentationService.findEventReference(name)
                 .map(eventReference -> ResponseEntity.ok().body(eventReference)
                 ).orElseGet(() -> ResponseEntity.notFound().build());
     }

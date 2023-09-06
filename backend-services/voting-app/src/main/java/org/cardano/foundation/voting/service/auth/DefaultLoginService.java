@@ -201,14 +201,9 @@ public class DefaultLoginService implements LoginService {
         }
         var stakeAddress = maybeAddress.orElseThrow();
 
-        var stakeAddressCheckE = stakeAddressVerificationService.checkIfAddressIsStakeAddress(stakeAddress);
-        if (stakeAddressCheckE.isLeft()) {
+        var stakeAddressCheckE = stakeAddressVerificationService.checkStakeAddress(stakeAddress);
+        if (stakeAddressCheckE.isEmpty()) {
             return Either.left(stakeAddressCheckE.getLeft());
-        }
-
-        var stakeAddressNetworkCheck = stakeAddressVerificationService.checkStakeAddressNetwork(stakeAddress);
-        if (stakeAddressNetworkCheck.isLeft()) {
-            return Either.left(stakeAddressNetworkCheck.getLeft());
         }
 
         var maybeRole = Enums.getIfPresent(Role.class, cip93LoginEnvelope.getData().getRole());

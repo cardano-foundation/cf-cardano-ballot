@@ -47,14 +47,9 @@ public class DefaultAccountService implements AccountService {
         }
         var event = maybeEvent.orElseThrow();
 
-        var stakeAddressCheckE = stakeAddressVerificationService.checkIfAddressIsStakeAddress(stakeAddress);
+        var stakeAddressCheckE = stakeAddressVerificationService.checkStakeAddress(stakeAddress);
         if (stakeAddressCheckE.isLeft()) {
             return Either.left(stakeAddressCheckE.getLeft());
-        }
-
-        var stakeAddressNetworkCheck = stakeAddressVerificationService.checkStakeAddressNetwork(stakeAddress);
-        if (stakeAddressNetworkCheck.isLeft()) {
-            return Either.left(stakeAddressNetworkCheck.getLeft());
         }
 
         if (!List.of(STAKE_BASED, BALANCE_BASED).contains(event.getVotingEventType())) {

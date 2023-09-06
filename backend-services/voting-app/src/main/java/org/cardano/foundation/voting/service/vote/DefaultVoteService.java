@@ -721,7 +721,6 @@ public class DefaultVoteService implements VoteService {
             log.info("JWT: {}", jwtAuth);
 
             var signedJWT = (SignedJWT) jwtAuth.getDetails();
-            log.info("Signed JWT: {}", signedJWT);
 
             var jwtClaimsSet = signedJWT.getJWTClaimsSet();
 

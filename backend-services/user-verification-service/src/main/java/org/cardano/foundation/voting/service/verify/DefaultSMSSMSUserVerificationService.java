@@ -75,14 +75,9 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
         String eventId = startVerificationRequest.getEventId();
         String stakeAddress = startVerificationRequest.getStakeAddress();
 
-        var stakeAddressCheckE = stakeAddressVerificationService.checkIfAddressIsStakeAddress(stakeAddress);
-        if (stakeAddressCheckE.isLeft()) {
+        var stakeAddressCheckE = stakeAddressVerificationService.checkStakeAddress(stakeAddress);
+        if (stakeAddressCheckE.isEmpty()) {
             return Either.left(stakeAddressCheckE.getLeft());
-        }
-
-        var stakeAddressNetworkCheck = stakeAddressVerificationService.checkStakeAddressNetwork(stakeAddress);
-        if (stakeAddressNetworkCheck.isLeft()) {
-            return Either.left(stakeAddressNetworkCheck.getLeft());
         }
 
         var activeEventE = chainFollowerClient.findEventById(eventId);
@@ -227,14 +222,9 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
         String eventId = checkVerificationRequest.getEventId();
         String stakeAddress = checkVerificationRequest.getStakeAddress();
 
-        var stakeAddressCheckE = stakeAddressVerificationService.checkIfAddressIsStakeAddress(stakeAddress);
+        var stakeAddressCheckE = stakeAddressVerificationService.checkStakeAddress(stakeAddress);
         if (stakeAddressCheckE.isLeft()) {
             return Either.left(stakeAddressCheckE.getLeft());
-        }
-
-        var stakeAddressNetworkCheck = stakeAddressVerificationService.checkStakeAddressNetwork(stakeAddress);
-        if (stakeAddressNetworkCheck.isLeft()) {
-            return Either.left(stakeAddressNetworkCheck.getLeft());
         }
 
         var activeEventE = chainFollowerClient.findEventById(eventId);

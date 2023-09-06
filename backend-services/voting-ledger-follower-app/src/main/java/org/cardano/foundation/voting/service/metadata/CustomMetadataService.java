@@ -4,7 +4,6 @@ import io.micrometer.core.annotation.Timed;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.TransactionMetadataLabelCbor;
-import org.cardano.foundation.voting.service.address.StakeAddressVerificationService;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataTransactionDetailsService;
 import org.cardano.foundation.voting.service.json.JsonService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +24,6 @@ public class CustomMetadataService {
 
     @Autowired
     private CustomMetadataProcessor customMetadataProcessor;
-
-    @Autowired
-    private StakeAddressVerificationService stakeAddressVerificationService;
 
     @Value("${organiser.account.stakeAddress}")
     private String organiserStakeAccount;

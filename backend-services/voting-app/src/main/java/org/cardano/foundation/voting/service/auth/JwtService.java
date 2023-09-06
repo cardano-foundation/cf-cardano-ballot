@@ -148,14 +148,9 @@ public class JwtService {
 
                 var jwtStakeAddress = jwtClaimsSet.getStringClaim("stakeAddress");
 
-                var stakeAddressCheckE = stakeAddressVerificationService.checkIfAddressIsStakeAddress(jwtStakeAddress);
-                if (stakeAddressCheckE.isLeft()) {
+                var stakeAddressCheckE = stakeAddressVerificationService.checkStakeAddress(jwtStakeAddress);
+                if (stakeAddressCheckE.isEmpty()) {
                     return Either.left(stakeAddressCheckE.getLeft());
-                }
-
-                var stakeAddressNetworkCheck = stakeAddressVerificationService.checkStakeAddressNetwork(jwtStakeAddress);
-                if (stakeAddressNetworkCheck.isLeft()) {
-                    return Either.left(stakeAddressNetworkCheck.getLeft());
                 }
 
                 log.info("Verified sub:{}, stakeAddress:{}, ", sub, jwtStakeAddress);

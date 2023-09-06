@@ -201,14 +201,17 @@ public class DefaultLoginService implements LoginService {
         }
         var stakeAddress = maybeAddress.orElseThrow();
 
-        var stakeAddressCheckE = stakeAddressVerificationService.checkIfAddressIsStakeAddress(stakeAddress);
-        if (stakeAddressCheckE.isLeft()) {
+        var stakeAddressCheckE = stakeAddressVerificationService.checkStakeAddress(stakeAddress);
+        if (stakeAddressCheckE.isEmpty()) {
             return Either.left(stakeAddressCheckE.getLeft());
         }
 
-        var stakeAddressNetworkCheck = stakeAddressVerificationService.checkStakeAddressNetwork(stakeAddress);
-        if (stakeAddressNetworkCheck.isLeft()) {
-            return Either.left(stakeAddressNetworkCheck.getLeft());
+        if (!stakeAddress.equals(cip93LoginEnvelope.getData().getAddress())) {
+            return Either.left(Problem.builder()
+                    .withTitle("STAKE_ADDRESS_MISMATCH")
+                    .withDetail("Stake address mismatch, signed address:" + stakeAddress + ", however request is with address:" + cip93LoginEnvelope.getData().getAddress())
+                    .withStatus(BAD_REQUEST)
+                    .build());
         }
 
         var maybeRole = Enums.getIfPresent(Role.class, cip93LoginEnvelope.getData().getRole());

@@ -37,8 +37,6 @@ public class VoteMerkleProofService {
         voteMerkleProofRepository.flush();
     }
 
-    // TODO rollback handling after follower refactoring
-
     @Transactional
     @Timed(value = "service.merkle.softDeleteAllProofsAfterSlot", percentiles = { 0.3, 0.5, 0.95 })
     public void softDeleteAllProofsAfterSlot(long slot) {

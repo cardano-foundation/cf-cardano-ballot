@@ -1,12 +1,13 @@
 package org.cardano.foundation.voting.service.vote;
 
-import com.bloxbean.cardano.client.util.HexUtil;
+import com.nimbusds.jwt.SignedJWT;
 import io.micrometer.core.annotation.Timed;
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.client.UserVerificationClient;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
+import org.cardano.foundation.voting.domain.Role;
 import org.cardano.foundation.voting.domain.VoteReceipt;
 import org.cardano.foundation.voting.domain.entity.Vote;
 import org.cardano.foundation.voting.domain.entity.VoteMerkleProof;
@@ -14,6 +15,7 @@ import org.cardano.foundation.voting.domain.web3.SignedWeb3Request;
 import org.cardano.foundation.voting.domain.web3.Web3Action;
 import org.cardano.foundation.voting.repository.VoteRepository;
 import org.cardano.foundation.voting.service.address.StakeAddressVerificationService;
+import org.cardano.foundation.voting.service.auth.JwtAuthenticationToken;
 import org.cardano.foundation.voting.service.expire.ExpirationService;
 import org.cardano.foundation.voting.service.json.JsonService;
 import org.cardano.foundation.voting.service.merkle_tree.MerkleProofSerdeService;
@@ -28,9 +30,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
 
+import static com.bloxbean.cardano.client.util.HexUtil.encodeHexString;
 import static org.cardano.foundation.voting.client.ChainFollowerClient.AccountStatus.NOT_ELIGIBLE;
 import static org.cardano.foundation.voting.domain.VoteReceipt.Status.*;
 import static org.cardano.foundation.voting.domain.VotingEventType.*;
@@ -76,12 +80,6 @@ public class DefaultVoteService implements VoteService {
     @Transactional(readOnly = true)
     public List<Vote> findAll(String eventId) {
         return voteRepository.findAllByEventId(eventId);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Optional<Vote> findById(String voteId) {
-        return voteRepository.findById(voteId);
     }
 
     @Transactional(readOnly = true)
@@ -310,7 +308,7 @@ public class DefaultVoteService implements VoteService {
         var categoryId = cip93VoteEnvelope.getData().getCategory();
         var maybeCategory = event.categoryDetailsById(categoryId);
         if (maybeCategory.isEmpty()) {
-            log.warn("Unrecognised category, id:{}", eventId);
+            log.warn("Unrecognised category, id:{}", categoryId);
 
             return Either.left(Problem.builder()
                     .withTitle("UNRECOGNISED_CATEGORY")
@@ -711,9 +709,130 @@ public class DefaultVoteService implements VoteService {
         var event = maybeEvent.get();
 
         var categoryId = cip93ViewVoteReceiptEnvelope.getData().getCategory();
+
+        return actualVoteReceipt(event, categoryId, stakeAddress);
+    }
+
+    @Override
+    public Either<Problem, VoteReceipt> voteReceipt(JwtAuthenticationToken jwtAuth,
+                                                    String eventId,
+                                                    String categoryId) {
+        try {
+            log.info("JWT: {}", jwtAuth);
+
+            var signedJWT = (SignedJWT) jwtAuth.getDetails();
+
+            var jwtClaimsSet = signedJWT.getJWTClaimsSet();
+
+            var maybeRole = Enums.getIfPresent(Role.class, jwtClaimsSet.getStringClaim("role"));
+
+            if (maybeRole.isEmpty()) {
+                return Either.left(Problem.builder()
+                        .withTitle("UNKNOWN_ROLE")
+                        .withDetail("Unknown role")
+                        .withStatus(BAD_REQUEST)
+                        .build());
+            }
+
+            var role = maybeRole.get();
+            log.info("Role: {}", role);
+
+            var jwtEventId = jwtClaimsSet.getStringClaim("eventId");
+
+            if (!jwtEventId.equals(eventId)) {
+                return Either.left(Problem.builder()
+                        .withTitle("EVENT_ID_MISMATCH")
+                        .withDetail("Requested event id mismatch, JWT has no permission for this event.")
+                        .withStatus(BAD_REQUEST)
+                        .build());
+            }
+
+            var jwtCardanoNetwork = jwtClaimsSet.getStringClaim("cardanoNetwork");
+            var maybeNetwork = Enums.getIfPresent(CardanoNetwork.class, jwtCardanoNetwork);
+            if (maybeNetwork.isEmpty()) {
+                log.warn("Invalid network, network:{}", jwtCardanoNetwork);
+
+                return Either.left(Problem.builder()
+                        .withTitle("INVALID_NETWORK")
+                        .withDetail("Invalid network, supported networks:" + CardanoNetwork.supportedNetworks())
+                        .withStatus(BAD_REQUEST)
+                        .build());
+            }
+
+            var network = maybeNetwork.orElseThrow();
+
+            if (network != cardanoNetwork) {
+                log.warn("Network mismatch, network:{}", network);
+
+                return Either.left(Problem.builder()
+                        .withTitle("NETWORK_MISMATCH")
+                        .withDetail("Invalid network, backend configured with network:" + cardanoNetwork + ", however request is with network:" + network)
+                        .withStatus(BAD_REQUEST)
+                        .build());
+
+            }
+
+            var jwtStakeAddress = jwtClaimsSet.getStringClaim("stakeAddress");
+
+            var stakeAddressCheckE = stakeAddressVerificationService.checkIfAddressIsStakeAddress(jwtStakeAddress);
+            if (stakeAddressCheckE.isLeft()) {
+                return Either.left(stakeAddressCheckE.getLeft());
+            }
+
+            var stakeAddressNetworkCheck = stakeAddressVerificationService.checkStakeAddressNetwork(jwtStakeAddress);
+            if (stakeAddressNetworkCheck.isLeft()) {
+                return Either.left(stakeAddressNetworkCheck.getLeft());
+            }
+
+            var allowedRoles = role.allowedActions();
+
+            if (!allowedRoles.contains(VIEW_VOTE_RECEIPT)) {
+                return Either.left(Problem.builder()
+                        .withTitle("ACTION_NOT_ALLOWED")
+                        .withDetail("Action VIEW_VOTE_RECEIPT not allowed for the role:" + role.name())
+                        .withStatus(BAD_REQUEST)
+                        .build());
+            }
+
+            var eventDetailsE = chainFollowerClient.getEventDetails(eventId);
+            if (eventDetailsE.isEmpty()) {
+                return Either.left(Problem.builder()
+                        .withTitle("ERROR_GETTING_EVENT_DETAILS")
+                        .withDetail("Unable to get event details from chain-tip follower service, event:" + eventId)
+                        .withStatus(INTERNAL_SERVER_ERROR)
+                        .build()
+                );
+            }
+            var maybeEvent = eventDetailsE.get();
+            if (maybeEvent.isEmpty()) {
+                log.warn("Unrecognised event, id:{}", eventId);
+
+                return Either.left(Problem.builder()
+                        .withTitle("UNRECOGNISED_EVENT")
+                        .withDetail("Unrecognised event, id:" + eventId)
+                        .withStatus(BAD_REQUEST)
+                        .build());
+            }
+            var event = maybeEvent.get();
+
+            return actualVoteReceipt(event, categoryId, jwtStakeAddress);
+        } catch (ParseException e) {
+            log.error("JWT parse exception", e);
+
+            return Either.left(Problem.builder()
+                    .withTitle("JWT_PARSE_EXCEPTION")
+                    .withDetail("JWT processing exception")
+                    .withStatus(BAD_REQUEST)
+                    .build());
+        }
+    }
+
+    private Either<Problem, VoteReceipt> actualVoteReceipt(ChainFollowerClient.EventDetailsResponse event,
+                                                           String categoryId,
+                                                           String stakeAddress) {
         var maybeCategory = event.categoryDetailsById(categoryId);
         if (maybeCategory.isEmpty()) {
-            log.warn("Unrecognised category, id:{}", eventId);
+            log.warn("Unrecognised category, id:{}", categoryId);
 
             return Either.left(Problem.builder()
                     .withTitle("UNRECOGNISED_CATEGORY")
@@ -799,7 +918,8 @@ public class DefaultVoteService implements VoteService {
         });
     }
 
-    private static VoteReceipt.Status readMerkleProofStatus(VoteMerkleProof merkleProof, Optional<ChainFollowerClient.FinalityScore> isL1CommitmentOnChain) {
+    private static VoteReceipt.Status readMerkleProofStatus(VoteMerkleProof merkleProof,
+                                                            Optional<ChainFollowerClient.FinalityScore> isL1CommitmentOnChain) {
         if (merkleProof.isInvalidated()) {
             return ROLLBACK;
         }
@@ -807,7 +927,8 @@ public class DefaultVoteService implements VoteService {
         return isL1CommitmentOnChain.isEmpty() ? PARTIAL : FULL;
     }
 
-    private VoteReceipt.MerkleProof convertMerkleProof(VoteMerkleProof proof, Optional<ChainFollowerClient.TransactionDetailsResponse> transactionDetails) {
+    private VoteReceipt.MerkleProof convertMerkleProof(VoteMerkleProof proof,
+                                                       Optional<ChainFollowerClient.TransactionDetailsResponse> transactionDetails) {
         return VoteReceipt.MerkleProof.builder()
                 .blockHash(transactionDetails.map(ChainFollowerClient.TransactionDetailsResponse::blockHash))
                 .absoluteSlot(transactionDetails.map(ChainFollowerClient.TransactionDetailsResponse::absoluteSlot))
@@ -824,14 +945,14 @@ public class DefaultVoteService implements VoteService {
             if (item instanceof ProofItem.Left pl) {
                 return VoteReceipt.MerkleProofItem.builder()
                         .type(VoteReceipt.MerkleProofType.Left)
-                        .hash(HexUtil.encodeHexString(pl.hash()))
+                        .hash(encodeHexString(pl.hash()))
                         .build();
             }
 
             if (item instanceof ProofItem.Right pr) {
                 return VoteReceipt.MerkleProofItem.builder()
                         .type(VoteReceipt.MerkleProofType.Right)
-                        .hash(HexUtil.encodeHexString(pr.hash()))
+                        .hash(encodeHexString(pr.hash()))
                         .build();
             }
 

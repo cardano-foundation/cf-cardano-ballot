@@ -124,7 +124,7 @@ public class JwtService {
                 var jwtCardanoNetwork = jwtClaimsSet.getStringClaim("cardanoNetwork");
                 var maybeNetwork = Enums.getIfPresent(CardanoNetwork.class, jwtCardanoNetwork);
                 if (maybeNetwork.isEmpty()) {
-                    log.warn("Invalid jwtNetwork, jwtNetwork:{}", jwtCardanoNetwork);
+                    log.warn("Invalid network, network:{}", jwtCardanoNetwork);
 
                     return Either.left(Problem.builder()
                             .withTitle("INVALID_NETWORK")
@@ -140,7 +140,7 @@ public class JwtService {
 
                     return Either.left(Problem.builder()
                             .withTitle("NETWORK_MISMATCH")
-                            .withDetail("Invalid network, backend configured with betwork:" + cardanoNetwork + ", however request is with network:" + jwtNetwork)
+                            .withDetail("Invalid network, backend configured with network:" + cardanoNetwork + ", however request is with network:" + jwtNetwork)
                             .withStatus(BAD_REQUEST)
                             .build());
 
@@ -179,17 +179,17 @@ public class JwtService {
                     Problem.builder()
                             .withTitle("JWT_VERIFICATION_FAILED")
                             .withDetail("JWT verification failed for token:" + token)
-                            .withStatus(INTERNAL_SERVER_ERROR)
+                            .withStatus(BAD_REQUEST)
                             .build()
             );
         } catch (ParseException e) {
-            log.warn("JWT token parse error", e);
+            log.warn("JWT token parse error, reason:{}", e.getMessage());
 
             return Either.left(
                     Problem.builder()
                             .withTitle("JWT_VERIFICATION_FAILED")
                             .withDetail("JWT verification failed for token:" + token)
-                            .withStatus(INTERNAL_SERVER_ERROR)
+                            .withStatus(BAD_REQUEST)
                             .build()
             );
         }

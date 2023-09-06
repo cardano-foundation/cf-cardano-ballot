@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.2.18](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.17...v0.2.18) (2023-09-06)
+
+
+### Features
+
+* JDK-20 ([#148](https://github.com/cardano-foundation/cf-cardano-ballot/issues/148)) ([6511e66](https://github.com/cardano-foundation/cf-cardano-ballot/commit/6511e663ba1f76eeb559c3bcd470fdd49c8c6992))
+* JWT token support. ([#139](https://github.com/cardano-foundation/cf-cardano-ballot/issues/139)) ([c5e4a09](https://github.com/cardano-foundation/cf-cardano-ballot/commit/c5e4a090af00096a92b1f4b01a2a17c95017ec05))
+
+
+### Bug Fixes
+
+* is verified hot fix. ([e6fe6cd](https://github.com/cardano-foundation/cf-cardano-ballot/commit/e6fe6cdcb03ea934f63d49452705a48beb794eb9))
+* missing content on list view ([6b9614d](https://github.com/cardano-foundation/cf-cardano-ballot/commit/6b9614d7c7e923839c2abc4f05c7a62d1a894efc))
+* renaming proposal to nominee in FE. ([95a0559](https://github.com/cardano-foundation/cf-cardano-ballot/commit/95a0559de8ae6419045777e7d87e4a56d858c267))
+
 ## [0.2.17](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.16...v0.2.17) (2023-09-05)
 
 

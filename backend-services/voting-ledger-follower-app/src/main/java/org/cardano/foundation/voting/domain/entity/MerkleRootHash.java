@@ -28,4 +28,14 @@ public class MerkleRootHash extends AbstractTimestampEntity {
     @Column(name = "absolute_slot", nullable = false)
     private long absoluteSlot;
 
+    @Override
+    public String toString() {
+        return "MerkleRootHash{" +
+                "merkleRootHash='" + merkleRootHash + '\'' +
+                ", eventId='" + eventId + '\'' +
+                ", absoluteSlot=" + absoluteSlot +
+                ", createdAt=" + createdAt +
+                '}';
+    }
+
 }

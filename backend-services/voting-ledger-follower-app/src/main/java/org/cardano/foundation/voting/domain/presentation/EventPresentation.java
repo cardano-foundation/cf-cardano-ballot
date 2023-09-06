@@ -15,7 +15,7 @@ import java.util.Optional;
 @Builder
 public class EventPresentation {
 
-    private String id; // e.g. Voltaire_Pre_Ratification
+    private String id;
 
     private String team; // e.g. CF Team
 

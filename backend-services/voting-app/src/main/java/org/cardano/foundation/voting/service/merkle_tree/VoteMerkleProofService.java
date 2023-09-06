@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @Slf4j
@@ -37,6 +36,8 @@ public class VoteMerkleProofService {
         voteMerkleProofRepository.saveAll(voteMerkleProofs);
         voteMerkleProofRepository.flush();
     }
+
+    // TODO rollback handling after follower refactoring
 
     @Transactional
     @Timed(value = "service.merkle.softDeleteAllProofsAfterSlot", percentiles = { 0.3, 0.5, 0.95 })

@@ -25,7 +25,7 @@ public class Event extends AbstractTimestampEntity {
     @Setter
     @Column(nullable = false)
     @Id
-    private String id; // e.g. Voltaire_Pre_Ratification
+    private String id;
 
     @Column(nullable = false)
     @Getter

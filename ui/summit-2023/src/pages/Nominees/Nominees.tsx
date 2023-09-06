@@ -19,6 +19,8 @@ import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { Fade } from '@mui/material';
 import './Nominees.scss';
@@ -33,12 +35,13 @@ import { RootState } from '../../store';
 import {
   buildCanonicalVoteInputJson,
   castAVoteWithDigitalSignature,
-  getSlotNumber, getVoteReceipt,
+  getSlotNumber,
+  getVoteReceipt,
 } from '../../common/api/voteService';
 import { getSignedMessagePromise } from '../../utils/utils';
 import { buildCanonicalLoginJson, submitLogin } from 'common/api/loginService';
-import {getUserInSession, saveUserInSession, tokenIsExpired} from '../../utils/session';
-import {setVoteReceipt, setWalletIsLoggedIn} from '../../store/userSlice';
+import { getUserInSession, saveUserInSession, tokenIsExpired } from '../../utils/session';
+import { setVoteReceipt, setWalletIsLoggedIn } from '../../store/userSlice';
 
 const Nominees = () => {
   const { id } = useParams();
@@ -81,11 +84,13 @@ const Nominees = () => {
 
   const viewVoteReceipt = async () => {
     const session = getUserInSession();
-    if (!tokenIsExpired(session.expiresAt)){
-      await getVoteReceipt(id, session.accessToken).then((r) => {
-        dispatch(setVoteReceipt({ categoryId: id, receipt: r }));
-        setReceiptDrawerIsOpen(true);
-      }).catch((e) => eventBus.publish('showToast', e.message, true));
+    if (!tokenIsExpired(session.expiresAt)) {
+      await getVoteReceipt(id, session.accessToken)
+        .then((r) => {
+          dispatch(setVoteReceipt({ categoryId: id, receipt: r }));
+          setReceiptDrawerIsOpen(true);
+        })
+        .catch((e) => eventBus.publish('showToast', e.message, true));
     } else {
       eventBus.publish('showToast', 'Please, login before get receipt', true);
     }
@@ -437,7 +442,108 @@ const Nominees = () => {
         open={receiptDrawerIsOpen && receipt !== undefined}
         onClose={() => setReceiptDrawerIsOpen(false)}
       >
-        Receipt
+        <Grid
+          container
+          p={1}
+        >
+          <Grid
+            item
+            xs={11}
+          />
+          <Grid
+            item
+            xs={1}
+          >
+            <IconButton
+              className="closeButton"
+              onClick={() => setDrawerOpen(false)}
+              aria-label="close"
+              style={{ float: 'right' }}
+            >
+              <CloseIcon />
+            </IconButton>
+          </Grid>
+        </Grid>
+
+        <Container style={{ margin: '5px' }}>
+          <Typography
+            variant="h5"
+            gutterBottom
+            sx={{
+              textAlign: 'center',
+              color: '#03021F',
+              fontSize: '28px',
+              fontStyle: 'normal',
+              fontWeight: '600',
+              lineHeight: '36px',
+            }}
+          >
+            Vote Receipt
+          </Typography>
+
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              backgroundColor: walletIsLoggedIn ? 'rgba(5, 97, 34, 0.07)' : 'rgba(253, 135, 60, 0.07)',
+              padding: '10px 20px',
+              borderRadius: '8px',
+              border: walletIsLoggedIn ? '1px solid #056122' : '1px solid #FD873C',
+              color: 'white',
+              width: '100%',
+              marginBottom: '20px',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <NotificationsIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#106593' }} />
+
+              <Typography
+                variant="h6"
+                style={{
+                  color: '#24262E',
+                  fontSize: '18px',
+                  fontStyle: 'normal',
+                  fontWeight: '600',
+                  lineHeight: '22px',
+                }}
+              >
+                Assurance: LOW
+              </Typography>
+            </div>
+            <RefreshIcon
+              sx={{
+                display: 'inline-flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                color: '#24262E',
+                cursor: 'pointer',
+                width: '36px',
+                height: '36px',
+                background: 'rgba(67, 70, 86, 0.10);',
+                borderRadius: '18px',
+                padding: '8px',
+              }}
+            />
+          </Box>
+
+          <Typography
+            variant="body2"
+            paragraph
+            style={{ maxWidth: '490px' }}
+            className="nominee-slide-description"
+          >
+              {receipt && JSON.stringify(receipt)}
+          </Typography>
+
+          <Button
+            className="visit-web-button"
+            href={'#'}
+            fullWidth
+          >
+            Show Advanced Information
+          </Button>
+        </Container>
       </Drawer>
     </>
   );

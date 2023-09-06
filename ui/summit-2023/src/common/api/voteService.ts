@@ -55,14 +55,14 @@ const getSlotNumber = async () => {
 };
 
 const getVoteReceipt = async (categoryId: string, token: string) =>
-    await doRequest<VoteReceipt>(
-        HttpMethods.GET,
-        `${VOTE_RECEIPT_URL}/${env.EVENT_ID}/${categoryId}`,
-        {
-          ...DEFAULT_CONTENT_TYPE_HEADERS,
-        },
-        null,
-        token
-    );
+  await doRequest<VoteReceipt>(
+    HttpMethods.GET,
+    `${VOTE_RECEIPT_URL}/${env.EVENT_ID}/${categoryId}`,
+    {
+      ...DEFAULT_CONTENT_TYPE_HEADERS,
+    },
+    null,
+    token
+  );
 
 export { castAVoteWithDigitalSignature, getSlotNumber, getVoteReceipt };

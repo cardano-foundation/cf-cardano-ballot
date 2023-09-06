@@ -48,11 +48,11 @@ export const userSlice = createSlice({
     setWalletIsLoggedIn: (state, action: PayloadAction<{ isLoggedIn: boolean }>) => {
       state.walletIsLoggedIn = action.payload.isLoggedIn;
     },
-    setVoteReceipt: (state, action: PayloadAction<{ categoryId: string, receipt: VoteReceipt }>) => {
+    setVoteReceipt: (state, action: PayloadAction<{ categoryId: string; receipt: VoteReceipt }>) => {
       state.receipts = {
         ...state.receipts,
-        [action.payload.categoryId]: action.payload.receipt
-      }
+        [action.payload.categoryId]: action.payload.receipt,
+      };
     },
     setIsReceiptFetched: (state, action: PayloadAction<{ isFetched: boolean }>) => {
       state.isReceiptFetched = action.payload.isFetched;
@@ -72,5 +72,6 @@ export const userSlice = createSlice({
   },
 });
 
-export const { setVoteReceipt, setWalletIsLoggedIn, setUserStartsVerification, setWalletIsVerified, setEventData } = userSlice.actions;
+export const { setVoteReceipt, setWalletIsLoggedIn, setUserStartsVerification, setWalletIsVerified, setEventData } =
+  userSlice.actions;
 export default userSlice.reducer;

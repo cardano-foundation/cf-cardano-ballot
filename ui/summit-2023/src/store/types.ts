@@ -6,7 +6,7 @@ export interface UserState {
   walletIsVerified: boolean;
   walletIsLoggedIn: boolean;
   isReceiptFetched: boolean;
-  receipts: {[categoryId:string]: VoteReceipt } | null;
+  receipts: { [categoryId: string]: VoteReceipt } | null;
   proposal: VoteReceipt['proposal'];
   event?: EventPresentation;
   userVerification?: {

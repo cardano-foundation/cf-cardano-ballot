@@ -199,10 +199,10 @@ export const doRequest = async <T>(
 ) => {
   const allHeaders = { ...headers, ...DEFAULT_CONTENT_TYPE_HEADERS };
 
-  console.log('token?????')
-  console.log(token)
+  console.log('token?????');
+  console.log(token);
   if (token) {
-    console.log('add token to request')
+    console.log('add token to request');
     allHeaders['Authorization'] = <MediaTypes>`Bearer ${token}`;
   }
 

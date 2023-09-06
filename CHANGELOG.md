@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.2.20](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.19...v0.2.20) (2023-09-06)
+
+
+### Bug Fixes
+
+* explicit AOP plus loggin fix. ([085e42d](https://github.com/cardano-foundation/cf-cardano-ballot/commit/085e42ddaea2bd27f8c858232879c84bccfd1dcd))
+* removing unavailable presentation namefrom reducer ([ade2a24](https://github.com/cardano-foundation/cf-cardano-ballot/commit/ade2a2447c16bbe6bcd7489548c16e1d6a3f3240))
+* we expect tx confirmation in 5 mins. ([11cdd17](https://github.com/cardano-foundation/cf-cardano-ballot/commit/11cdd1777e45c691722c56bc70a9b3a2014cdc37))
+
 ## [0.2.19](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.18...v0.2.19) (2023-09-06)
 
 

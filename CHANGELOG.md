@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.2.21](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.20...v0.2.21) (2023-09-06)
+
+
+### Features
+
+* mocks for discord verification bot. ([#157](https://github.com/cardano-foundation/cf-cardano-ballot/issues/157)) ([741b601](https://github.com/cardano-foundation/cf-cardano-ballot/commit/741b6012990d951792204e5f6ec013cb0d61f804))
+* project documentation, security, code of conduct, etc. ([#156](https://github.com/cardano-foundation/cf-cardano-ballot/issues/156)) ([25c4464](https://github.com/cardano-foundation/cf-cardano-ballot/commit/25c4464e3f61c48d0ffd9f4dd88c0508c4b718f1))
+
+
+### Bug Fixes
+
+* improved Stake Address validation. ([#154](https://github.com/cardano-foundation/cf-cardano-ballot/issues/154)) ([5359d5d](https://github.com/cardano-foundation/cf-cardano-ballot/commit/5359d5de12ab93779922dbb38474948473c2c265))
+
 ## [0.2.20](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.19...v0.2.20) (2023-09-06)
 
 

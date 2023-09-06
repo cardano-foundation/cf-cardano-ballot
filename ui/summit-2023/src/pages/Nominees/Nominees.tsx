@@ -15,9 +15,9 @@ import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { Fade } from '@mui/material';
-import './Proposals.scss';
+import './Nominees.scss';
 import { CategoryContent } from '../Categories/Category.types';
-import { ProposalContent } from './Proposals.type';
+import { ProposalContent } from './Nominees.type';
 import SUMMIT2023CONTENT from '../../common/resources/data/summit2023Content.json';
 import { eventBus } from '../../utils/EventBus';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
@@ -29,7 +29,7 @@ import SidePage from 'components/common/SidePage/SidePage';
 import { useToggle } from 'common/hooks/useToggle';
 import ReadMore from './ReadMore';
 
-const Proposals = () => {
+const Nominees = () => {
   const { categoryId } = useParams();
   const navigate = useNavigate();
   const eventCache = useSelector((state: RootState) => state.user.event);
@@ -39,15 +39,15 @@ const Proposals = () => {
   const summit2023Category: CategoryContent = SUMMIT2023CONTENT.categories.find(
     (category) => category.id === categoryId
   );
-  const summit2023CategoryProposals: ProposalContent[] = summit2023Category.proposals;
+  const summit2023CategoryNominees: ProposalContent[] = summit2023Category.proposals;
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [listView, setListView] = useState<'grid' | 'list'>('grid');
   const [isVisible, setIsVisible] = useState(true);
   const [isToggleReadMore, toggleReadMore] = useToggle(false);
-  const [selectedProposal, setSelectedProposal] = useState({});
-  const [proposals, setProposals] = useState<ProposalPresentation[]>([]);
+  const [selectedNominee, setSelectedNominee] = useState({});
+  const [nominees, setNominees] = useState<ProposalPresentation[]>([]);
 
   const { isConnected } = useCardano();
 
@@ -57,11 +57,11 @@ const Proposals = () => {
     }
   }, [isMobile]);
 
-  const loadProposals = () => {
+  const loadNominees = () => {
     if (categoryId) {
       categories?.map((category) => {
         if (category.id === categoryId) {
-          setProposals(category?.proposals || []);
+          setNominees(category?.proposals || []);
         }
       });
     } else {
@@ -70,7 +70,7 @@ const Proposals = () => {
   };
 
   useEffect(() => {
-    loadProposals();
+    loadNominees();
   }, []);
 
   const handleListView = (viewType: 'grid' | 'list') => {
@@ -91,8 +91,8 @@ const Proposals = () => {
     // TODO:
   };
 
-  const handleReadMore = (proposal) => {
-    setSelectedProposal(proposal);
+  const handleReadMore = (nominee) => {
+    setSelectedNominee(nominee);
     toggleReadMore();
   };
 
@@ -100,7 +100,7 @@ const Proposals = () => {
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <Typography
-          className="proposals-title"
+          className="nominees-title"
           variant="h4"
         >
           {summit2023Category.presentationName}
@@ -118,7 +118,7 @@ const Proposals = () => {
       </div>
 
       <Typography
-        className="proposals-description"
+        className="nominees-description"
         variant="body1"
         gutterBottom
       >
@@ -130,15 +130,15 @@ const Proposals = () => {
         spacing={3}
         style={{ justifyContent: 'center' }}
       >
-        {proposals.map((proposal, index) => (
+        {nominees.map((nominee, index) => (
           <Grid
             item
             xs={!isMobile && listView === 'grid' ? 4 : 12}
-            key={proposal.id}
+            key={nominee.id}
           >
             <Fade in={isVisible}>
               <Card
-                className={'proposal-card'}
+                className={'nominee-card'}
                 style={{
                   padding: '8px',
                   width: listView === 'list' ? '100%' : '414px',
@@ -147,11 +147,11 @@ const Proposals = () => {
               >
                 <CardContent>
                   <Typography
-                    className="proposal-title"
+                    className="nominee-title"
                     variant="h2"
                   >
-                    {proposal.id === summit2023CategoryProposals[index].id
-                      ? summit2023CategoryProposals[index].presentationName
+                    {nominee.id === summit2023CategoryNominees[index].id
+                      ? summit2023CategoryNominees[index].presentationName
                       : ''}
                   </Typography>
                   <Grid container>
@@ -160,11 +160,11 @@ const Proposals = () => {
                       xs={!isMobile && listView === 'list' ? 10 : 12}
                     >
                       <Typography
-                        className="proposal-description"
+                        className="nominee-description"
                         variant="body2"
                       >
-                        {proposal.id === summit2023CategoryProposals[index].id
-                          ? summit2023CategoryProposals[index].desc
+                        {nominee.id === summit2023CategoryNominees[index].id
+                          ? summit2023CategoryNominees[index].desc
                           : ''}
                       </Typography>
                     </Grid>
@@ -174,12 +174,12 @@ const Proposals = () => {
                         xs={2}
                       >
                         <Button
-                          className={`${isConnected ? 'vote-proposal-button' : 'connect-wallet-button'}`}
+                          className={`${isConnected ? 'vote-nominee-button' : 'connect-wallet-button'}`}
                           style={{ width: 'auto' }}
                           onClick={() => (isConnected ? handleActionButton() : openConnectWalletModal())}
                         >
                           {isConnected ? (
-                            <>Vote for proposal</>
+                            <>Vote for nominee</>
                           ) : (
                             <>
                               <AccountBalanceWalletIcon /> Connect Wallet
@@ -199,7 +199,7 @@ const Proposals = () => {
                     }}
                     onClick={() =>
                       handleReadMore(
-                        proposal.id === summit2023CategoryProposals[index].id && summit2023CategoryProposals[index]
+                        nominee.id === summit2023CategoryNominees[index].id && summit2023CategoryNominees[index]
                       )
                     }
                     sx={{ cursor: 'pointer' }}
@@ -208,12 +208,12 @@ const Proposals = () => {
                   </Button>
                   {isMobile || listView === 'grid' ? (
                     <Button
-                      className={`${isConnected ? 'vote-proposal-button' : 'connect-wallet-button'}`}
+                      className={`${isConnected ? 'vote-nominee-button' : 'connect-wallet-button'}`}
                       fullWidth
                       onClick={() => (isConnected ? handleActionButton() : openConnectWalletModal())}
                     >
                       {isConnected ? (
-                        <>Vote for proposal</>
+                        <>Vote for nominee</>
                       ) : (
                         <>
                           <AccountBalanceWalletIcon /> Connect Wallet
@@ -234,7 +234,7 @@ const Proposals = () => {
         setOpen={toggleReadMore}
       >
         <ReadMore
-          proposal={selectedProposal}
+          nominee={selectedNominee}
           closeSidePage={toggleReadMore}
         />
       </SidePage>
@@ -242,4 +242,4 @@ const Proposals = () => {
   );
 };
 
-export { Proposals };
+export { Nominees };

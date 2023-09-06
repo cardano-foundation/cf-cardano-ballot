@@ -148,11 +148,11 @@ const Categories = () => {
                           <CardActions>
                             <Button
                               component={Link}
-                              to={{ pathname: `/proposals/${category.id}` }}
+                              to={{ pathname: `/nominees/${category.id}` }}
                               state={{
                                 category,
                               }}
-                              aria-label="View Proposals"
+                              aria-label="View Nominees"
                               variant="contained"
                               size="large"
                               sx={{
@@ -164,7 +164,7 @@ const Categories = () => {
                                 backgroundColor: '#acfcc5 !important',
                               }}
                             >
-                              View Proposals
+                              View Nominees
                             </Button>
                           </CardActions>
                         </CardContent>
@@ -246,7 +246,7 @@ const Categories = () => {
                       avatar={
                         <Avatar
                           src={CATEGORY_IMAGES[index]}
-                          alt={category.presentationName}
+                          alt= {(category.id === summit2023Categories[index].id) ? summit2023Categories[index].presentationName: ''}
                           sx={{ width: 100, height: 100 }}
                         />
                       }
@@ -257,13 +257,13 @@ const Categories = () => {
                         color="text.primary"
                         fontWeight="700"
                       >
-                        {category.presentationName}
+                         {(category.id === summit2023Categories[index].id) ? summit2023Categories[index].presentationName: ''}
                       </Typography>
                       <Typography
                         variant="body1"
                         color="text.primary"
                       >
-                        {category.presentationName}
+                         {(category.id === summit2023Categories[index].id) ? summit2023Categories[index].desc: ''}
                       </Typography>
                     </Box>
                     <Box sx={{ marginLeft: 'auto' }}>

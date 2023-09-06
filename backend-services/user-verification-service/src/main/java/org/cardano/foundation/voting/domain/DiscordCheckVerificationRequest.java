@@ -21,9 +21,9 @@ public class DiscordCheckVerificationRequest {
     private String stakeAddress;
 
     @NotBlank
-    private String signature;
+    protected String coseSignature;
 
     @Builder.Default
-    private Optional<String> key = Optional.empty();
+    protected Optional<@NotBlank String> cosePublicKey = Optional.empty();
 
 }

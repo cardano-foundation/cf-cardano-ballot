@@ -11,7 +11,7 @@ export const ROUTES = {
   INTRO: `${PAGE_PATH}`,
   CATEGORIES: `${PAGE_PATH}categories`,
   NOMINEES: `${PAGE_PATH}nominees`,
-  NOMINEES_BY_ID: `${PAGE_PATH}nominees/:id`,
+  NOMINEES_BY_ID: `${PAGE_PATH}nominees/:categoryId`,
   NOT_FOUND: `${PAGE_PATH}404`,
 };
 

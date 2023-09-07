@@ -51,19 +51,19 @@ import { setVoteReceipt, setWalletIsLoggedIn } from '../../store/userSlice';
 import { FinalityScore } from '../../types/voting-ledger-follower-types';
 
 const Nominees = () => {
-  const { id } = useParams();
+  const { categoryId } = useParams();
   const navigate = useNavigate();
   const eventCache = useSelector((state: RootState) => state.user.event);
   const walletIsVerified = useSelector((state: RootState) => state.user.walletIsVerified);
   const walletIsLoggedIn = useSelector((state: RootState) => state.user.walletIsLoggedIn);
   const receipts = useSelector((state: RootState) => state.user.receipts);
-  const receipt = receipts && Object.keys(receipts).length && receipts[id] ? receipts[id] : undefined;
+  const receipt = receipts && Object.keys(receipts).length && receipts[categoryId] ? receipts[categoryId] : undefined;
 
   const dispatch = useDispatch();
   const categories_ids = eventCache.categories.map((e) => e.id);
-  if (!categories_ids.includes(id)) navigate(ROUTES.NOT_FOUND);
+  if (!categories_ids.includes(categoryId)) navigate(ROUTES.NOT_FOUND);
 
-  const category = eventCache.categories.filter((c) => c.id === id)[0];
+  const category = eventCache.categories.filter((c) => c.id === categoryId)[0];
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -94,9 +94,9 @@ const Nominees = () => {
     }
 
     if (!tokenIsExpired(session.expiresAt)) {
-      await getVoteReceipt(id, session.accessToken)
+      await getVoteReceipt(categoryId, session.accessToken)
         .then((r) => {
-          dispatch(setVoteReceipt({ categoryId: id, receipt: r }));
+          dispatch(setVoteReceipt({ categoryId: categoryId, receipt: r }));
           setReceiptDrawerIsOpen(true);
         })
         .catch((e) => eventBus.publish('showToast', e.message, true));
@@ -139,7 +139,7 @@ const Nominees = () => {
     const absoluteSlot = (await getSlotNumber())?.absoluteSlot;
     const canonicalVoteInput = buildCanonicalVoteInputJson({
       voteId: uuidv4(),
-      categoryId: id,
+      categoryId: categoryId,
       proposalId: optionId,
       stakeAddress,
       slotNumber: absoluteSlot.toString(),
@@ -228,7 +228,7 @@ const Nominees = () => {
           className="nominees-title"
           variant="h4"
         >
-          {id}
+          {categoryId}
         </Typography>
         {!isMobile && (
           <div>

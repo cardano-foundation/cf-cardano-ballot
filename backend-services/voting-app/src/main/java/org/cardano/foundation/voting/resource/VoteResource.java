@@ -88,10 +88,11 @@ public class VoteResource {
                         });
     }
 
-    @RequestMapping(value = "/casting-available/{event}/{voteId}", method = GET, produces = "application/json")
+    @RequestMapping(value = "/casting-available/{eventId}/{voteId}", method = GET, produces = "application/json")
     @Timed(value = "resource.voteId.receipt", percentiles = { 0.3, 0.5, 0.95 })
-    public ResponseEntity<?> isVoteCastingStillPossible(@PathVariable String event, @PathVariable String voteId) {
-        return voteService.isVoteCastingStillPossible(event, voteId)
+    public ResponseEntity<?> isVoteCastingStillPossible(@PathVariable("eventId") String eventId,
+                                                        @PathVariable("voteId") String voteId) {
+        return voteService.isVoteCastingStillPossible(eventId, voteId)
                 .fold(problem -> ResponseEntity
                         .status(Objects.requireNonNull(problem.getStatus()).getStatusCode())
                         .body(problem),

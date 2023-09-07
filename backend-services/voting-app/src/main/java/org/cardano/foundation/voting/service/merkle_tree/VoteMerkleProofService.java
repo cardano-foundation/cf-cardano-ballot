@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -27,14 +26,7 @@ public class VoteMerkleProofService {
     @Transactional
     @Timed(value = "service.merkle.store", percentiles = { 0.3, 0.5, 0.95 })
     public VoteMerkleProof store(VoteMerkleProof voteMerkleProof) {
-        return voteMerkleProofRepository.saveAndFlush(voteMerkleProof);
-    }
-
-    @Transactional
-    @Timed(value = "service.merkle.store.all", percentiles = { 0.3, 0.5, 0.95 })
-    public void storeAll(List<VoteMerkleProof> voteMerkleProofs) {
-        voteMerkleProofRepository.saveAll(voteMerkleProofs);
-        voteMerkleProofRepository.flush();
+        return voteMerkleProofRepository.save(voteMerkleProof);
     }
 
     @Transactional
@@ -43,7 +35,6 @@ public class VoteMerkleProofService {
         log.info("Soft deleting all proofs after slot:{}", slot);
 
         voteMerkleProofRepository.invalidateMerkleProofsAfterSlot(slot);
-        voteMerkleProofRepository.flush();
     }
 
 }

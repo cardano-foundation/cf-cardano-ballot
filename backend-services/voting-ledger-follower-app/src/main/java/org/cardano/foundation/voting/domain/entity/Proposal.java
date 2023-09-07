@@ -2,6 +2,7 @@ package org.cardano.foundation.voting.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Immutable;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -11,6 +12,7 @@ import java.util.Optional;
 @Builder
 @Entity
 @Table(name = "proposal")
+@Immutable
 public class Proposal extends AbstractTimestampEntity {
 
     @Getter

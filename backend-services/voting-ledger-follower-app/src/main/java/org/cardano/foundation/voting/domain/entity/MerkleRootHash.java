@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.cardano.foundation.voting.domain.entity.AbstractTimestampEntity;
+import org.hibernate.annotations.Immutable;
 
 @Entity
 @Table(name = "merkle_root_hash")
@@ -16,6 +17,7 @@ import org.cardano.foundation.voting.domain.entity.AbstractTimestampEntity;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Getter
+@Immutable
 public class MerkleRootHash extends AbstractTimestampEntity {
 
     @Id

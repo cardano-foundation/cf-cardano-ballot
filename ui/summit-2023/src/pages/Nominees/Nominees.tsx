@@ -732,7 +732,7 @@ const Nominees = () => {
                       <AccordionSummary
                           sx={{
                               display: 'flex',
-                              width: '490px',
+                              width: isMobile ? 'auto' : '490px',
                               padding: '4px 16px',
                               alignItems: 'center',
                               gap: '10px',

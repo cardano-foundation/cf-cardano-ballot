@@ -1,6 +1,6 @@
 {
   "name": "summit2023",
-  "version": "0.2.4",
+  "version": "0.2.16",
   "private": true,
   "author": "Cardano Foundation Team",
   "repository": "https://github.com/cardano-foundation/cf-cardano-ballot",
@@ -37,9 +37,7 @@
     "swiper": "^9.3.1",
     "typescript": "^4.9.5",
     "uuid": "^9.0.0",
-    "web-vitals": "^2.1.4"
-  },
-  "devDependencies": {
+    "web-vitals": "^2.1.4",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@commitlint/cli": "^17.6.6",
     "@commitlint/config-conventional": "^17.6.6",

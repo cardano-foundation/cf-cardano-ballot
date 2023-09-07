@@ -5,7 +5,6 @@ import com.google.i18n.phonenumbers.Phonenumber;
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.zalando.problem.Problem;
 import software.amazon.awssdk.services.sns.SnsClient;
@@ -26,16 +25,13 @@ public class AWSSNSClient {
     @Autowired
     private SnsClient snsClient;
 
-    @Value("${friendly.custom.name}")
-    private String friendlyName;
-
     public Either<Problem, PublishResponse> publishTextMessage(String text, Phonenumber.PhoneNumber phoneNumber) {
         try {
             var formattedPhone = PhoneNumberUtil.getInstance().format(phoneNumber, INTERNATIONAL);
 
             Map<String, MessageAttributeValue> messageAttributes = Map.of(
                     "AWS.SNS.SMS.SMSType", MessageAttributeValue.builder().stringValue("Transactional").dataType("String").build()
-                    //"AWS.SNS.SMS.SenderID", MessageAttributeValue.builder().stringValue(friendlyName).build()
+                    //"AWS.SNS.SMS.SenderID", MessageAttributeValue.builder().stringValue(???).build()
             );
             var request = PublishRequest.builder()
                     .message(text)

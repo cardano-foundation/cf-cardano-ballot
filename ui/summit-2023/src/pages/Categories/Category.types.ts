@@ -3,7 +3,7 @@ interface Category {
   name: string;
   presentationName: string;
   description: string;
-  nominees: {
+  proposals: {
     id: string;
     name: string;
     presentationName: string;
@@ -15,4 +15,15 @@ interface Category {
   active: boolean;
 }
 
-export type { Category };
+interface CategoryContent {
+  id: string;
+  presentationName: string;
+  desc: string;
+  proposals: {
+      id: string;
+      presentationName: string;
+      desc: string;
+  }[];
+}
+
+export type { Category, CategoryContent };

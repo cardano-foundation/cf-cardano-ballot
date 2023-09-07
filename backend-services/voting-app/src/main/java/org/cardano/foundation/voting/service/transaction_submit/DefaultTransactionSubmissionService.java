@@ -25,7 +25,7 @@ public class DefaultTransactionSubmissionService implements TransactionSubmissio
     @Autowired
     private Clock clock;
 
-    @Value("${transaction.submission.timeout.minutes:15}")
+    @Value("${transaction.submission.timeout.minutes:5}")
     private int timeoutInMinutes;
 
     @Value("${transaction.submission.sleep.seconds:5}")

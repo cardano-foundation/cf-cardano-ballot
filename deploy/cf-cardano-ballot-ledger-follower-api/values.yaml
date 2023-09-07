@@ -1,5 +1,3 @@
-replicaCount: 1
-
 image:
   repository: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/voting-ledger-follower-app
   tag: "0.0.1"
@@ -35,6 +33,13 @@ diagnosticMode:
 corsAllowedOrigins: https://{{ .Values.domain }}
 springProfiles: dev--preprod
 bindOnEventIds: CIP-1694_Pre_Ratification_4619
+
+## The list of desired instances and the schema name
+## they'll connect too.
+## One instance = 1 deployment w/ one pod (replicas: 1) using 1 schema.
+instances:
+  - name: ""
+    schemaName: ""
 
 yaci:
   startBlockHash: ca71d7941c316561c3b21d0f557f34d97a61f97a333c18ed5f2800d74b64e377

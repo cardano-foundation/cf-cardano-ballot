@@ -1,35 +1,38 @@
+{{- range $instance := $.Values.instances }}
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "voting-ledger-follower-app.fullname" . }}
+  name: {{ include "voting-ledger-follower-app.fullname" $ }}-{{ $instance.name }}
   labels:
-    {{- include "voting-ledger-follower-app.labels" . | nindent 4 }}
+    {{- include "voting-ledger-follower-app.labels" $ | nindent 4 }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: 1
   selector:
     matchLabels:
-      {{- include "voting-ledger-follower-app.selectorLabels" . | nindent 6 }}
+      {{- include "voting-ledger-follower-app.selectorLabels" $ | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- include "voting-ledger-follower-app.selectorLabels" . | nindent 8 }}
+        {{- include "voting-ledger-follower-app.selectorLabels" $ | nindent 8 }}
     spec:
-      {{- with .Values.imagePullSecrets }}
+      {{- with $.Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
-        - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        - name: {{ $.Chart.Name }}
+          image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag | default $.Chart.AppVersion }}"
           {{- if $.Values.diagnosticMode.enabled }}
           command: ["bash", "-c", "sleep infinity"]
           {{- end }}
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          imagePullPolicy: {{ $.Values.image.pullPolicy }}
           env:
             - name: SPRING_PROFILES_ACTIVE
-              value: {{ .Values.springProfiles }}
+              value: {{ $.Values.springProfiles }}
+
             - name: CARDANO_NETWORK
-              value: {{ .Values.network | default "preprod" | upper}}
+              value: {{ $.Values.network | default "preprod" | upper}}
             - name: VOTING_METADATA_LABEL
               value: {{ $.Values.votingMetadataLabel | default "11113" | quote }}
             - name: BIND_ON_EVENT_IDS
@@ -59,9 +62,44 @@ spec:
             - name: CORS_ALLOWED_ORIGINS
               value: {{ tpl $.Values.corsAllowedOrigins $ }}
 
+            ## Postgres
+            - name: DB_DRIVER
+              value: "org.postgresql.Driver"
+            - name: DB_DIALECT
+              value: "org.hibernate.dialect.PostgreSQLDialect"
+            - name: POSTGRES_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: POSTGRES_HOST
+            - name: POSTGRES_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: POSTGRES_PORT
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: POSTGRES_DB
+            - name: DB_SCHEMA
+              value: {{ $instance.schemaName }}
+            - name: DB_URL
+              value: jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)?currentSchema=$(DB_SCHEMA)
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: POSTGRES_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: POSTGRES_PASSWORD
+
           ports:
             - name: http
-              containerPort: {{ .Values.service.port }}
+              containerPort: {{ $.Values.service.port }}
               protocol: TCP
 #          livenessProbe:
 #            httpGet:
@@ -72,4 +110,5 @@ spec:
 #              path: /
 #              port: http
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            {{- toYaml $.Values.resources | nindent 12 }}
+{{ end }}

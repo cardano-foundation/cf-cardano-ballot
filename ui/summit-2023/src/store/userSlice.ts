@@ -15,7 +15,6 @@ const initialState: UserState = {
   event: {
     id: '',
     team: '',
-    presentationName: '',
     votingEventType: 'USER_BASED',
     startSlot: undefined,
     endSlot: undefined,

@@ -1,5 +1,70 @@
 # Changelog
 
+## [0.2.20](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.19...v0.2.20) (2023-09-06)
+
+
+### Bug Fixes
+
+* explicit AOP plus loggin fix. ([085e42d](https://github.com/cardano-foundation/cf-cardano-ballot/commit/085e42ddaea2bd27f8c858232879c84bccfd1dcd))
+* removing unavailable presentation namefrom reducer ([ade2a24](https://github.com/cardano-foundation/cf-cardano-ballot/commit/ade2a2447c16bbe6bcd7489548c16e1d6a3f3240))
+* we expect tx confirmation in 5 mins. ([11cdd17](https://github.com/cardano-foundation/cf-cardano-ballot/commit/11cdd1777e45c691722c56bc70a9b3a2014cdc37))
+
+## [0.2.19](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.18...v0.2.19) (2023-09-06)
+
+
+### Bug Fixes
+
+* added aop in verification app ([425fbef](https://github.com/cardano-foundation/cf-cardano-ballot/commit/425fbef7193216f5acf7601842172c2af092a435))
+
+## [0.2.18](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.17...v0.2.18) (2023-09-06)
+
+
+### Features
+
+* JDK-20 ([#148](https://github.com/cardano-foundation/cf-cardano-ballot/issues/148)) ([6511e66](https://github.com/cardano-foundation/cf-cardano-ballot/commit/6511e663ba1f76eeb559c3bcd470fdd49c8c6992))
+* JWT token support. ([#139](https://github.com/cardano-foundation/cf-cardano-ballot/issues/139)) ([c5e4a09](https://github.com/cardano-foundation/cf-cardano-ballot/commit/c5e4a090af00096a92b1f4b01a2a17c95017ec05))
+
+
+### Bug Fixes
+
+* is verified hot fix. ([e6fe6cd](https://github.com/cardano-foundation/cf-cardano-ballot/commit/e6fe6cdcb03ea934f63d49452705a48beb794eb9))
+* missing content on list view ([6b9614d](https://github.com/cardano-foundation/cf-cardano-ballot/commit/6b9614d7c7e923839c2abc4f05c7a62d1a894efc))
+* renaming proposal to nominee in FE. ([95a0559](https://github.com/cardano-foundation/cf-cardano-ballot/commit/95a0559de8ae6419045777e7d87e4a56d858c267))
+
+## [0.2.17](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.16...v0.2.17) (2023-09-05)
+
+
+### Features
+
+* category and nominee pages with real data and readmore page with sidepage component ([9e3b3cd](https://github.com/cardano-foundation/cf-cardano-ballot/commit/9e3b3cd0607f838f075c1a45459f76af7fa295e0))
+* injecting proper env var for preprod ([#144](https://github.com/cardano-foundation/cf-cardano-ballot/issues/144)) ([e7b4d11](https://github.com/cardano-foundation/cf-cardano-ballot/commit/e7b4d110fea3a06bffc1b5d645152ddd08376325))
+
+
+### Bug Fixes
+
+* missing name on card ([ec3f085](https://github.com/cardano-foundation/cf-cardano-ballot/commit/ec3f085ea2573ac96fadcfc6df38b4c80370a731))
+* moved user verified to a new resource, it will be common for discord and sms flows. ([fc700c1](https://github.com/cardano-foundation/cf-cardano-ballot/commit/fc700c1413501f4976799345de61d2ac599baa49))
+* wrong file has been added css ([57cd2f3](https://github.com/cardano-foundation/cf-cardano-ballot/commit/57cd2f3caef9dc0023e0e6d7052e295d087c3574))
+* wrong file has been added css ([6213dfa](https://github.com/cardano-foundation/cf-cardano-ballot/commit/6213dfa43ddecc6a72f11832a3d09469eb744b09))
+
+## [0.2.16](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.15...v0.2.16) (2023-09-05)
+
+
+### Features
+
+* added dockerfile, nginx conf and moved dev dep ([#137](https://github.com/cardano-foundation/cf-cardano-ballot/issues/137)) ([b13a806](https://github.com/cardano-foundation/cf-cardano-ballot/commit/b13a8062dc3ec3afa2ed549bc3981633c28a2a45))
+* remove i18n from the backend. ([#128](https://github.com/cardano-foundation/cf-cardano-ballot/issues/128)) ([df39319](https://github.com/cardano-foundation/cf-cardano-ballot/commit/df3931939cf943206f7b783b9477f3b12242885f))
+* user-verification-service sms endpoints, salted phone numbers as well as used phone number protection ([#134](https://github.com/cardano-foundation/cf-cardano-ballot/issues/134)) ([8938848](https://github.com/cardano-foundation/cf-cardano-ballot/commit/8938848181813a1820fa210d80a0684f516c6eb8))
+
+
+### Bug Fixes
+
+* create user-verification-app-build.yml ([582ae78](https://github.com/cardano-foundation/cf-cardano-ballot/commit/582ae786ad5cfaa08d918fb28669d86d975e2a1c))
+* fixed build urls ([48ef658](https://github.com/cardano-foundation/cf-cardano-ballot/commit/48ef658fc6cb8d6bd162a39d7438caceaa6d6e7d))
+* readme link fix ([c46bba4](https://github.com/cardano-foundation/cf-cardano-ballot/commit/c46bba4022bfebc266dcc718d1fd73d95de51243))
+* user-verification-app-build.yml typo ([9ec83f0](https://github.com/cardano-foundation/cf-cardano-ballot/commit/9ec83f0c888a1fc63451df5ab61d308ffff304fe))
+* wrong condition, voting power should not be present for USER_BASED_EVENTS. ([394afa5](https://github.com/cardano-foundation/cf-cardano-ballot/commit/394afa5aec495973e48b0fa5e9b9dfaac8bef4ff))
+
 ## [0.2.15](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.14...v0.2.15) (2023-09-04)
 
 

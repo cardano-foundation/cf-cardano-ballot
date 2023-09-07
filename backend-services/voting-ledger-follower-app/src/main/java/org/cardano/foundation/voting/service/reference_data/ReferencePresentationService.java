@@ -1,51 +1,41 @@
 package org.cardano.foundation.voting.service.reference_data;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.presentation.CategoryPresentation;
 import org.cardano.foundation.voting.domain.presentation.EventPresentation;
 import org.cardano.foundation.voting.domain.presentation.ProposalPresentation;
-import org.cardano.foundation.voting.repository.EventRepository;
 import org.cardano.foundation.voting.service.epoch.CustomEpochService;
 import org.cardano.foundation.voting.service.expire.ExpirationService;
-import org.cardano.foundation.voting.service.i18n.LocalisationService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class ReferencePresentationService {
 
-    @Autowired
-    private ReferenceDataService referenceDataService;
+    private final ReferenceDataService referenceDataService;
 
-    @Autowired
-    private LocalisationService localisationService;
+    private final ExpirationService expirationService;
 
-    @Autowired
-    private ExpirationService expirationService;
+    private final CustomEpochService customEpochService;
 
-    @Autowired
-    private CustomEpochService customEpochService;
-
-    public Optional<EventPresentation> findEventReference(String name, Locale locale) {
+    public Optional<EventPresentation> findEventReference(String name) {
         return referenceDataService.findValidEventByName(name).map(event -> {
             var categories = event.getCategories().stream().map(category -> {
                         var proposals = category.getProposals().stream().map(proposal -> ProposalPresentation.builder()
                                         .id(proposal.getId())
                                         .name(proposal.getName())
-                                        .presentationName(localisationService.translate(name, proposal.getId(), proposal.getName(), locale))
                                         .build())
                                 .toList();
 
                         return CategoryPresentation.builder()
                                 .id(category.getId())
                                 .gdprProtection(category.isGdprProtection())
-                                .presentationName(localisationService.translate(name, category.getId(), Optional.of(category.getId()), locale))
                                 .proposals(proposals)
                                 .build();
                     }
@@ -53,7 +43,6 @@ public class ReferencePresentationService {
 
             var eventBuilder = EventPresentation.builder()
                     .id(event.getId())
-                    .presentationName(localisationService.translate(name, event.getId(), Optional.of(event.getId()), locale))
                     .team(event.getTeam())
                     .votingEventType(event.getVotingEventType())
                     .startEpoch(event.getStartEpoch())

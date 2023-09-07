@@ -41,6 +41,7 @@ import {
   // VoteReceiptMock_Full_MediumAssurance,
 } from 'test/mocks';
 import { CustomRouter } from 'test/CustomRouter';
+import { capitalize } from 'lodash';
 import { env } from '../../../env';
 
 jest.mock('react-hot-toast', () => mockToast);
@@ -171,9 +172,15 @@ describe('For ongoing event:', () => {
 
       const options = await within(votePage).queryAllByTestId('option-card');
       expect(options.length).toEqual(eventMock_active.categories[0].proposals.length);
-      expect(options[0].textContent).toEqual(eventMock_active.categories[0].proposals[0].presentationName);
-      expect(options[1].textContent).toEqual(eventMock_active.categories[0].proposals[1].presentationName);
-      expect(options[2].textContent).toEqual(eventMock_active.categories[0].proposals[2].presentationName);
+      expect(options[0].textContent).toEqual(
+        capitalize(eventMock_active.categories[0].proposals[0].name.toLowerCase())
+      );
+      expect(options[1].textContent).toEqual(
+        capitalize(eventMock_active.categories[0].proposals[1].name.toLowerCase())
+      );
+      expect(options[2].textContent).toEqual(
+        capitalize(eventMock_active.categories[0].proposals[2].name.toLowerCase())
+      );
 
       const cta = await within(votePage).queryByTestId('proposal-connect-button');
       expect(cta).not.toBeNull();
@@ -223,7 +230,7 @@ describe('For ongoing event:', () => {
       fireEvent.click(options[0]);
       expect(store.getState().user.isConnectWalletModalVisible).toEqual(true);
       expect(screen.queryAllByRole('button', { pressed: true })[0].textContent).toEqual(
-        eventMock_active.categories[0].proposals[0].presentationName
+        capitalize(eventMock_active.categories[0].proposals[0].name.toLowerCase())
       );
     });
   });
@@ -256,9 +263,15 @@ describe('For ongoing event:', () => {
 
       const options = await within(votePage).queryAllByTestId('option-card');
       expect(options.length).toEqual(eventMock_active.categories[0].proposals.length);
-      expect(options[0].textContent).toEqual(eventMock_active.categories[0].proposals[0].presentationName);
-      expect(options[1].textContent).toEqual(eventMock_active.categories[0].proposals[1].presentationName);
-      expect(options[2].textContent).toEqual(eventMock_active.categories[0].proposals[2].presentationName);
+      expect(options[0].textContent).toEqual(
+        capitalize(eventMock_active.categories[0].proposals[0].name.toLowerCase())
+      );
+      expect(options[1].textContent).toEqual(
+        capitalize(eventMock_active.categories[0].proposals[1].name.toLowerCase())
+      );
+      expect(options[2].textContent).toEqual(
+        capitalize(eventMock_active.categories[0].proposals[2].name.toLowerCase())
+      );
 
       const cta = await within(votePage).queryByTestId('proposal-submit-button');
       expect(cta).not.toBeNull();
@@ -373,8 +386,11 @@ describe('For ongoing event:', () => {
       expect(store.getState().user.receipt).toEqual(VoteReceiptMock_Basic);
 
       expect(screen.queryAllByRole('button', { pressed: true })[0].textContent).toEqual(
-        eventMock_active.categories[0].proposals.find(({ name }) => name === VoteReceiptMock_Basic.proposal)
-          .presentationName
+        capitalize(
+          eventMock_active.categories[0].proposals
+            .find(({ name }) => name === VoteReceiptMock_Basic.proposal)
+            .name.toLowerCase()
+        )
       );
 
       const cta = await within(votePage).queryByTestId('show-receipt-button');
@@ -535,11 +551,17 @@ describe("For the event that hasn't started yet", () => {
 
       const options = await within(votePage).queryAllByTestId('option-card');
       expect(options.length).toEqual(eventMock_notStarted.categories[0].proposals.length);
-      expect(options[0].textContent).toEqual(eventMock_notStarted.categories[0].proposals[0].presentationName);
+      expect(options[0].textContent).toEqual(
+        capitalize(eventMock_notStarted.categories[0].proposals[0].name.toLowerCase())
+      );
       expect(options[0].closest('button')).toHaveAttribute('disabled');
-      expect(options[1].textContent).toEqual(eventMock_notStarted.categories[0].proposals[1].presentationName);
+      expect(options[1].textContent).toEqual(
+        capitalize(eventMock_notStarted.categories[0].proposals[1].name.toLowerCase())
+      );
       expect(options[1].closest('button')).toHaveAttribute('disabled');
-      expect(options[2].textContent).toEqual(eventMock_notStarted.categories[0].proposals[2].presentationName);
+      expect(options[2].textContent).toEqual(
+        capitalize(eventMock_notStarted.categories[0].proposals[2].name.toLowerCase())
+      );
       expect(options[2].closest('button')).toHaveAttribute('disabled');
 
       const cta = await within(votePage).queryByTestId('event-hasnt-started-submit-button');
@@ -595,9 +617,15 @@ describe('For the event that has already finished', () => {
 
       const options = await within(votePage).queryAllByTestId('option-card');
       expect(options.length).toEqual(eventMock_finished.categories[0].proposals.length);
-      expect(options[0].textContent).toEqual(eventMock_finished.categories[0].proposals[0].presentationName);
-      expect(options[1].textContent).toEqual(eventMock_finished.categories[0].proposals[1].presentationName);
-      expect(options[2].textContent).toEqual(eventMock_finished.categories[0].proposals[2].presentationName);
+      expect(options[0].textContent).toEqual(
+        capitalize(eventMock_finished.categories[0].proposals[0].name.toLowerCase())
+      );
+      expect(options[1].textContent).toEqual(
+        capitalize(eventMock_finished.categories[0].proposals[1].name.toLowerCase())
+      );
+      expect(options[2].textContent).toEqual(
+        capitalize(eventMock_finished.categories[0].proposals[2].name.toLowerCase())
+      );
 
       const cta = await within(votePage).queryByTestId('proposal-connect-button');
       expect(cta).not.toBeNull();

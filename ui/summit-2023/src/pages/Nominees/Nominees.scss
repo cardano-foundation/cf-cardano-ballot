@@ -4,7 +4,7 @@
 
 .nominees-title {
   color: var(--color-dark-grey);
-  font-size: 56px !important;
+  font-size: 32px !important;
   font-style: normal;
   font-weight: 600 !important;
   line-height: normal;
@@ -26,10 +26,9 @@
 .nominee-card.MuiPaper-root {
   width: 414px;
   flex-shrink: 0;
-  border-radius: 16px;
-  background: #fff;
+  border-radius: 8px;
   box-shadow: 2px 3px 10px 0px rgba(67, 70, 86, 0.45);
-
+  
   .nominee-title {
     color: var(--color-ultra-dark-blue);
     font-size: 36px;

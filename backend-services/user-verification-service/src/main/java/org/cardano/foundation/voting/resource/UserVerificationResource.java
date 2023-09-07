@@ -1,23 +1,18 @@
 package org.cardano.foundation.voting.resource;
 
 import io.micrometer.core.annotation.Timed;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.domain.CheckVerificationRequest;
 import org.cardano.foundation.voting.domain.IsVerifiedRequest;
-import org.cardano.foundation.voting.domain.StartVerificationRequest;
-import org.cardano.foundation.voting.service.verify.SimpleUserVerificationService;
+import org.cardano.foundation.voting.service.verify.SMSUserVerificationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Objects;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
 @RequestMapping("/api/user-verification")
@@ -25,29 +20,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @RequiredArgsConstructor
 public class UserVerificationResource {
 
-    private final SimpleUserVerificationService simpleUserVerificationService;
-
-    @RequestMapping(value = "/start-verification", method = POST, produces = "application/json")
-    @Timed(value = "resource.startVerification", percentiles = {0.3, 0.5, 0.95})
-    public ResponseEntity<?> startVerification(@RequestBody @Valid StartVerificationRequest startVerificationRequest) {
-        log.info("Received startVerification request: {}", startVerificationRequest);
-
-        return simpleUserVerificationService.startVerification(startVerificationRequest)
-                .fold(problem -> ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem),
-                        userVerification -> ResponseEntity.ok().body(userVerification)
-                );
-    }
-
-    @RequestMapping(value = "/check-verification", method = POST, produces = "application/json")
-    @Timed(value = "resource.checkVerification", percentiles = {0.3, 0.5, 0.95})
-    public ResponseEntity<?> checkVerification(@RequestBody @Valid CheckVerificationRequest checkVerificationRequest) {
-        log.info("Received checkVerification request: {}", checkVerificationRequest);
-
-        return simpleUserVerificationService.checkVerification(checkVerificationRequest)
-                .fold(problem -> ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem),
-                        userVerification -> ResponseEntity.ok().body(userVerification)
-                );
-    }
+    private final SMSUserVerificationService smsUserVerificationService;
 
     @RequestMapping(value = "/verified/{eventId}/{stakeAddress}", method = GET, produces = "application/json")
     @Timed(value = "resource.isVerified", percentiles = {0.3, 0.5, 0.95})
@@ -56,7 +29,7 @@ public class UserVerificationResource {
 
         log.info("Received isVerified request: {}", isVerifiedRequest);
 
-        return simpleUserVerificationService.isVerified(isVerifiedRequest)
+        return smsUserVerificationService.isVerified(isVerifiedRequest)
                 .fold(problem -> ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem),
                         isVerifiedResponse -> {
                             return ResponseEntity.ok().body(isVerifiedResponse);

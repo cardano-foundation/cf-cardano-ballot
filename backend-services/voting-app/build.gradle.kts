@@ -31,12 +31,14 @@ extra["testcontainersVersion"] = "1.17.6"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
+	implementation("org.springframework.boot:spring-boot-starter-aop")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-data-rest")
 	testCompileOnly("org.springframework.boot:spring-boot-starter-test")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springframework.boot:spring-boot-starter-security")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 
@@ -59,6 +61,9 @@ dependencies {
 	implementation("com.querydsl:querydsl-jpa")
     annotationProcessor("com.querydsl:querydsl-apt")
 
+	implementation("com.nimbusds:nimbus-jose-jwt:9.31")
+	implementation("com.google.crypto.tink:tink:1.10.0")
+
 	testImplementation("org.testcontainers:junit-jupiter")
 
 	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0-beta2")
@@ -75,7 +80,7 @@ dependencies {
 	runtimeOnly("org.postgresql:postgresql")
 	runtimeOnly("com.h2database:h2")
 
-	implementation("org.cardanofoundation:merkle-tree-java:0.0.6")
+	implementation("org.cardanofoundation:merkle-tree-java:0.0.7")
 	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.9")
 }
 

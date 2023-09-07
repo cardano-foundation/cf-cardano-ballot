@@ -93,9 +93,9 @@ describe('For the event that has already finished', () => {
     const statsItems =
       eventMock_finished?.categories
         ?.find(({ id }) => id === 'CIP-1694_Pre_Ratification_4619')
-        ?.proposals?.map(({ name, presentationName: label }) => ({
+        ?.proposals?.map(({ name }) => ({
           name,
-          label,
+          label: capitalize(name.toLowerCase()),
         })) || [];
 
     await waitFor(async () => {

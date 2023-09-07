@@ -30,6 +30,9 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { Fade } from '@mui/material';
 import './Nominees.scss';
+import { CategoryContent } from '../Categories/Category.types';
+import { ProposalContent } from './Nominees.type';
+import SUMMIT2023CONTENT from '../../common/resources/data/summit2023Content.json';
 import { eventBus } from '../../utils/EventBus';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import CloseIcon from '@mui/icons-material/Close';
@@ -49,6 +52,10 @@ import { buildCanonicalLoginJson, submitLogin } from 'common/api/loginService';
 import { getUserInSession, saveUserInSession, tokenIsExpired } from '../../utils/session';
 import { setVoteReceipt, setWalletIsLoggedIn } from '../../store/userSlice';
 import { FinalityScore } from '../../types/voting-ledger-follower-types';
+import { ProposalPresentation } from '../../types/voting-ledger-follower-types';
+import SidePage from 'components/common/SidePage/SidePage';
+import { useToggle } from 'common/hooks/useToggle';
+import ReadMore from './ReadMore';
 
 const Nominees = () => {
   const { categoryId } = useParams();
@@ -65,16 +72,42 @@ const Nominees = () => {
 
   const category = eventCache.categories.filter((c) => c.id === categoryId)[0];
 
+  const categories = eventCache?.categories;
+  const categories_ids = categories?.map((e) => e.id);
+  if (categoryId && !categories_ids?.includes(categoryId)) navigate(ROUTES.NOT_FOUND);
+  const summit2023Category: CategoryContent = SUMMIT2023CONTENT.categories.find(
+    (category) => category.id === categoryId
+  );
+  const summit2023CategoryNominees: ProposalContent[] = summit2023Category.proposals;
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [listView, setListView] = useState<'grid' | 'list'>('grid');
   const [isVisible, setIsVisible] = useState(true);
+  const [isToggleReadMore, toggleReadMore] = useToggle(false);
+  const [selectedNominee, setSelectedNominee] = useState({});
+  const [nominees, setNominees] = useState<ProposalPresentation[]>([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [receiptDrawerIsOpen, setReceiptDrawerIsOpen] = useState(false);
 
   const { isConnected, stakeAddress, signMessage } = useCardano();
 
   const signMessagePromisified = useMemo(() => getSignedMessagePromise(signMessage), [signMessage]);
+
+  const loadNominees = () => {
+    if (categoryId) {
+      categories?.map((category) => {
+        if (category.id === categoryId) {
+          setNominees(category?.proposals || []);
+        }
+      });
+    } else {
+      navigate(ROUTES.NOT_FOUND);
+    }
+  };
+
+  useEffect(() => {
+    loadNominees();
+  }, []);
 
   const handleListView = (viewType: 'grid' | 'list') => {
     if (listView === viewType) return;
@@ -221,6 +254,11 @@ const Nominees = () => {
     }
   };
 
+  const handleReadMore = (nominee) => {
+    setSelectedNominee(nominee);
+    toggleReadMore();
+  };
+
   return (
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
@@ -228,7 +266,7 @@ const Nominees = () => {
           className="nominees-title"
           variant="h4"
         >
-          {categoryId}
+          {summit2023Category.presentationName}
         </Typography>
         {!isMobile && (
           <div>
@@ -248,7 +286,7 @@ const Nominees = () => {
         variant="body1"
         gutterBottom
       >
-        To commemorate the special commitment and work of a Cardano Ambassador.
+        {summit2023Category.desc}
       </Typography>
 
       <Box
@@ -309,14 +347,11 @@ const Nominees = () => {
         spacing={3}
         style={{ justifyContent: 'center' }}
       >
-        {/* TODO: update types from backend*/}
-        {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-        {/* @ts-ignore */}
-        {category?.proposals.map((item) => (
+        {nominees.map((nominee, index) => (
           <Grid
             item
             xs={!isMobile && listView === 'grid' ? 4 : 12}
-            key={item.id}
+            key={nominee.id}
           >
             <Fade in={isVisible}>
               <Card
@@ -330,9 +365,11 @@ const Nominees = () => {
                 <CardContent>
                   <Typography
                     className="nominee-title"
-                    variant="h5"
+                    variant="h2"
                   >
-                    {item.id}
+                    {nominee.id === summit2023CategoryNominees[index].id
+                      ? summit2023CategoryNominees[index].presentationName
+                      : ''}
                   </Typography>
                   <Grid container>
                     <Grid
@@ -343,7 +380,9 @@ const Nominees = () => {
                         className="nominee-description"
                         variant="body2"
                       >
-                        {item.presentationName}
+                        {nominee.id === summit2023CategoryNominees[index].id
+                          ? summit2023CategoryNominees[index].desc
+                          : ''}
                       </Typography>
                     </Grid>
                     {!isMobile && listView === 'list' ? (
@@ -354,7 +393,7 @@ const Nominees = () => {
                         <Button
                           className={`${isConnected ? 'vote-nominee-button' : 'connect-wallet-button'}`}
                           style={{ width: 'auto' }}
-                          onClick={() => handleNomineeButton(item.id)}
+                          onClick={() => handleNomineeButton(nominee.id)}
                         >
                           {renderNomineeButtonLabel()}
                         </Button>
@@ -369,7 +408,12 @@ const Nominees = () => {
                       width: !isMobile && listView === 'list' ? '146px' : '98%',
                       marginTop: !isMobile && listView === 'list' ? '15px' : '28px',
                     }}
-                    onClick={() => setDrawerOpen(true)}
+                    onClick={() =>
+                      handleReadMore(
+                        nominee.id === summit2023CategoryNominees[index].id && summit2023CategoryNominees[index]
+                      )
+                    }
+                    sx={{ cursor: 'pointer' }}
                   >
                     Read more
                   </Button>
@@ -388,129 +432,40 @@ const Nominees = () => {
           </Grid>
         ))}
       </Grid>
-      <Drawer
+
+      <SidePage
         anchor="right"
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
+        open={isToggleReadMore}
+        setOpen={toggleReadMore}
+      >
+        <ReadMore
+          nominee={selectedNominee}
+          closeSidePage={toggleReadMore}
+        />
+      </SidePage>
+
+      <Drawer
+          anchor="right"
+          open={receiptDrawerIsOpen && receipt !== undefined}
+          onClose={() => setReceiptDrawerIsOpen(false)}
       >
         <Grid
-          container
-          p={1}
-        >
-          <Grid
-            item
-            xs={11}
-          />
-          <Grid
-            item
-            xs={1}
-          >
-            <IconButton
-              className="closeButton"
-              onClick={() => setDrawerOpen(false)}
-              aria-label="close"
-              style={{ float: 'right' }}
-            >
-              <CloseIcon />
-            </IconButton>
-          </Grid>
-        </Grid>
-
-        <Container style={{ margin: '5px' }}>
-          <Typography
-            variant="h5"
-            gutterBottom
-            className="nominee-slide-title"
-          >
-            Nominee
-          </Typography>
-
-          <Typography
-            variant="subtitle1"
-            gutterBottom
-            className="nominee-slide-subtitle"
-          >
-            Company Name
-          </Typography>
-
-          <Grid
             container
-            spacing={1}
-            marginTop={1}
-            marginBottom={2}
-          >
-            <Grid item>
-              <IconButton
-                className="nominee-social-button"
-                aria-label="X"
-              >
-                <img
-                  src={xIcon}
-                  alt="X"
-                  style={{ width: '20px' }}
-                />
-              </IconButton>
-            </Grid>
-            <Grid item>
-              <IconButton
-                className="nominee-social-button"
-                aria-label="Linkedin"
-              >
-                <img
-                  src={linkedinIcon}
-                  alt="Linkedin"
-                  style={{ width: '20px' }}
-                />
-              </IconButton>
-            </Grid>
-          </Grid>
-
-          <Typography
-            variant="body2"
-            paragraph
-            style={{ maxWidth: '490px' }}
-            className="nominee-slide-description"
-          >
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-            dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium
-            fusce id. Scelerisque felis imperdiet proin fermentum leo vel orci. Tortor condimentum lacinia quis vel eros
-            donec ac. Malesuada bibendum arcu vitae elementum curabitur vitae nunc sed velit. Nunc aliquet bibendum enim
-            facilisis gravida neque convallis a. Egestas pretium aenean pharetra magna ac placerat vestibulum. Volutpat
-            maecenas volutpat blandit aliquam etiam.
-          </Typography>
-
-          <Button
-            className="visit-web-button"
-            href={'#'}
-            fullWidth
-          >
-            Visit Website
-          </Button>
-        </Container>
-      </Drawer>
-
-      <Drawer
-        anchor="right"
-        open={receiptDrawerIsOpen && receipt !== undefined}
-        onClose={() => setReceiptDrawerIsOpen(false)}
-      >
-        <Grid
-          container
-          p={1}
+            p={1}
         >
           <Grid
-            item
-            xs={11}
+              item
+              xs={11}
           />
           <Grid
-            item
-            xs={1}
+              item
+              xs={1}
           >
             <IconButton
-              className="closeButton"
-              onClick={() => setReceiptDrawerIsOpen(false)}
-              aria-label="close"
-              style={{ float: 'right' }}
+                className="closeButton"
+                onClick={() => setReceiptDrawerIsOpen(false)}
+                aria-label="close"
+                style={{ float: 'right' }}
             >
               <CloseIcon />
             </IconButton>
@@ -519,90 +474,90 @@ const Nominees = () => {
 
         <Container style={{ margin: '5px' }}>
           <Typography
-            variant="h5"
-            gutterBottom
-            sx={{
-              textAlign: 'center',
-              color: '#03021F',
-              fontSize: '28px',
-              fontStyle: 'normal',
-              fontWeight: '600',
-              lineHeight: '36px',
-            }}
+              variant="h5"
+              gutterBottom
+              sx={{
+                textAlign: 'center',
+                color: '#03021F',
+                fontSize: '28px',
+                fontStyle: 'normal',
+                fontWeight: '600',
+                lineHeight: '36px',
+              }}
           >
             Vote Receipt
           </Typography>
 
           <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              padding: '10px 20px',
-              borderRadius: '8px',
-              border: '1px solid #106593',
-              color: 'white',
-              width: '100%',
-              marginBottom: '20px',
-              backgroundColor: getAssuranceTheme().backgroundColor,
-            }}
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '10px 20px',
+                borderRadius: '8px',
+                border: '1px solid #106593',
+                color: 'white',
+                width: '100%',
+                marginBottom: '20px',
+                backgroundColor: getAssuranceTheme().backgroundColor,
+              }}
           >
             <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <NotificationsIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#106593' }} />
                 <Typography
-                  variant="h6"
-                  style={{
-                    color: '#24262E',
-                    fontSize: '18px',
-                    fontStyle: 'normal',
-                    fontWeight: '600',
-                    lineHeight: '22px',
-                  }}
+                    variant="h6"
+                    style={{
+                      color: '#24262E',
+                      fontSize: '18px',
+                      fontStyle: 'normal',
+                      fontWeight: '600',
+                      lineHeight: '22px',
+                    }}
                 >
                   Assurance: <span style={{ color: getAssuranceTheme().color }}>{receipt?.finalityScore}</span>
                   <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
                     <InfoIcon
-                      style={{
-                        color: '#434656A6',
-                        width: '22px',
-                        marginLeft: '3px',
-                        marginBottom: '5px',
-                        verticalAlign: 'middle',
-                        cursor: 'pointer',
-                      }}
+                        style={{
+                          color: '#434656A6',
+                          width: '22px',
+                          marginLeft: '3px',
+                          marginBottom: '5px',
+                          verticalAlign: 'middle',
+                          cursor: 'pointer',
+                        }}
                     />
                   </Tooltip>
                 </Typography>
               </div>
               <RefreshIcon
-                sx={{
-                  display: 'inline-flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  color: '#24262E',
-                  cursor: 'pointer',
-                  width: '36px',
-                  height: '36px',
-                  background: 'rgba(67, 70, 86, 0.10);',
-                  borderRadius: '18px',
-                  padding: '6px',
-                }}
+                  sx={{
+                    display: 'inline-flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    color: '#24262E',
+                    cursor: 'pointer',
+                    width: '36px',
+                    height: '36px',
+                    background: 'rgba(67, 70, 86, 0.10);',
+                    borderRadius: '18px',
+                    padding: '6px',
+                  }}
               />
             </div>
 
             <Typography
-              variant="body1"
-              sx={{
-                color: '#434656',
-                fontSize: '16px',
-                fontStyle: 'normal',
-                fontWeight: '400',
-                lineHeight: '22px',
-                wordWrap: 'break-word',
-                maxWidth: '406px',
-              }}
+                variant="body1"
+                sx={{
+                  color: '#434656',
+                  fontSize: '16px',
+                  fontStyle: 'normal',
+                  fontWeight: '400',
+                  lineHeight: '22px',
+                  wordWrap: 'break-word',
+                  maxWidth: '406px',
+                }}
             >
               Your vote has been successfully submitted. You might have to wait up to 30 minutes for this to be visible
               on chain. Please check back later to verify your vote.
@@ -610,335 +565,335 @@ const Nominees = () => {
           </Box>
 
           <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              marginBottom: '20px',
-            }}
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                marginBottom: '20px',
+              }}
           >
             <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
               <Typography
-                variant="h6"
-                sx={{
-                  marginRight: '8px',
-                  color: '#24262E',
-                  fontSize: '18px',
-                  fontStyle: 'normal',
-                  fontWeight: '600',
-                  lineHeight: '22px',
-                }}
+                  variant="h6"
+                  sx={{
+                    marginRight: '8px',
+                    color: '#24262E',
+                    fontSize: '18px',
+                    fontStyle: 'normal',
+                    fontWeight: '600',
+                    lineHeight: '22px',
+                  }}
               >
                 Event
               </Typography>
               <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
                 <InfoIcon
-                  style={{
-                    color: '#434656A6',
-                    width: '22px',
-                    marginLeft: '3px',
-                    marginBottom: '5px',
-                    verticalAlign: 'middle',
-                    cursor: 'pointer',
-                  }}
+                    style={{
+                      color: '#434656A6',
+                      width: '22px',
+                      marginLeft: '3px',
+                      marginBottom: '5px',
+                      verticalAlign: 'middle',
+                      cursor: 'pointer',
+                    }}
                 />
               </Tooltip>
             </div>
             <Typography
-              variant="body1"
-              align="left"
-              sx={{ cursor: 'pointer' }}
-              onClick={() => handleCopyToClipboard(receipt?.event)}
+                variant="body1"
+                align="left"
+                sx={{ cursor: 'pointer' }}
+                onClick={() => handleCopyToClipboard(receipt?.event)}
             >
               {receipt?.event}
             </Typography>
           </Box>
           <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              marginBottom: '20px',
-            }}
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                marginBottom: '20px',
+              }}
           >
             <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
               <Typography
-                variant="h6"
-                sx={{
-                  marginRight: '8px',
-                  color: '#24262E',
-                  fontSize: '18px',
-                  fontStyle: 'normal',
-                  fontWeight: '600',
-                  lineHeight: '22px',
-                }}
+                  variant="h6"
+                  sx={{
+                    marginRight: '8px',
+                    color: '#24262E',
+                    fontSize: '18px',
+                    fontStyle: 'normal',
+                    fontWeight: '600',
+                    lineHeight: '22px',
+                  }}
               >
                 Proposal
               </Typography>
               <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
                 <InfoIcon
-                  style={{
-                    color: '#434656A6',
-                    width: '22px',
-                    marginLeft: '3px',
-                    marginBottom: '5px',
-                    verticalAlign: 'middle',
-                    cursor: 'pointer',
-                  }}
+                    style={{
+                      color: '#434656A6',
+                      width: '22px',
+                      marginLeft: '3px',
+                      marginBottom: '5px',
+                      verticalAlign: 'middle',
+                      cursor: 'pointer',
+                    }}
                 />
               </Tooltip>
             </div>
             <Typography
-              variant="body1"
-              align="left"
-              sx={{ cursor: 'pointer' }}
-              onClick={() => handleCopyToClipboard(receipt?.proposal)}
+                variant="body1"
+                align="left"
+                sx={{ cursor: 'pointer' }}
+                onClick={() => handleCopyToClipboard(receipt?.proposal)}
             >
               {receipt?.proposal}
             </Typography>
           </Box>
           <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              marginBottom: '20px',
-            }}
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                marginBottom: '20px',
+              }}
           >
             <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
               <Typography
-                variant="h6"
-                sx={{
-                  marginRight: '8px',
-                  color: '#24262E',
-                  fontSize: '18px',
-                  fontStyle: 'normal',
-                  fontWeight: '600',
-                  lineHeight: '22px',
-                }}
+                  variant="h6"
+                  sx={{
+                    marginRight: '8px',
+                    color: '#24262E',
+                    fontSize: '18px',
+                    fontStyle: 'normal',
+                    fontWeight: '600',
+                    lineHeight: '22px',
+                  }}
               >
                 Voter Staking Address
               </Typography>
               <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
                 <InfoIcon
-                  style={{
-                    color: '#434656A6',
-                    width: '22px',
-                    marginLeft: '3px',
-                    marginBottom: '5px',
-                    verticalAlign: 'middle',
-                    cursor: 'pointer',
-                  }}
+                    style={{
+                      color: '#434656A6',
+                      width: '22px',
+                      marginLeft: '3px',
+                      marginBottom: '5px',
+                      verticalAlign: 'middle',
+                      cursor: 'pointer',
+                    }}
                 />
               </Tooltip>
             </div>
             <Typography
-              variant="body1"
-              align="left"
-              sx={{ wordWrap: 'break-word', maxWidth: '490px', cursor: 'pointer' }}
-              onClick={() => handleCopyToClipboard(receipt?.voterStakingAddress)}
+                variant="body1"
+                align="left"
+                sx={{ wordWrap: 'break-word', maxWidth: '490px', cursor: 'pointer' }}
+                onClick={() => handleCopyToClipboard(receipt?.voterStakingAddress)}
             >
               {receipt?.voterStakingAddress}
             </Typography>
           </Box>
           <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              marginBottom: '20px',
-            }}
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                marginBottom: '20px',
+              }}
           >
             <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
               <Typography
-                variant="h6"
-                sx={{
-                  marginRight: '8px',
-                  color: '#24262E',
-                  fontSize: '18px',
-                  fontStyle: 'normal',
-                  fontWeight: '600',
-                  lineHeight: '22px',
-                }}
+                  variant="h6"
+                  sx={{
+                    marginRight: '8px',
+                    color: '#24262E',
+                    fontSize: '18px',
+                    fontStyle: 'normal',
+                    fontWeight: '600',
+                    lineHeight: '22px',
+                  }}
               >
                 Status
               </Typography>
               <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
                 <InfoIcon
-                  style={{
-                    color: '#434656A6',
-                    width: '22px',
-                    marginLeft: '3px',
-                    marginBottom: '5px',
-                    verticalAlign: 'middle',
-                    cursor: 'pointer',
-                  }}
+                    style={{
+                      color: '#434656A6',
+                      width: '22px',
+                      marginLeft: '3px',
+                      marginBottom: '5px',
+                      verticalAlign: 'middle',
+                      cursor: 'pointer',
+                    }}
                 />
               </Tooltip>
             </div>
             <Typography
-              variant="body1"
-              align="left"
-              sx={{ cursor: 'pointer' }}
-              onClick={() => handleCopyToClipboard(receipt?.status)}
+                variant="body1"
+                align="left"
+                sx={{ cursor: 'pointer' }}
+                onClick={() => handleCopyToClipboard(receipt?.status)}
             >
               {receipt?.status}
             </Typography>
           </Box>
           <Accordion className="accordion-button">
             <AccordionSummary
-              sx={{
-                display: 'flex',
-                width: '490px',
-                padding: '4px 16px',
-                alignItems: 'center',
-                gap: '10px',
-                borderRadius: '8px',
-                background: 'rgba(16, 101, 147, 0.07)',
-              }}
-              expandIcon={<ExpandMoreIcon style={{ color: '#106593' }} />}
+                sx={{
+                  display: 'flex',
+                  width: '490px',
+                  padding: '4px 16px',
+                  alignItems: 'center',
+                  gap: '10px',
+                  borderRadius: '8px',
+                  background: 'rgba(16, 101, 147, 0.07)',
+                }}
+                expandIcon={<ExpandMoreIcon style={{ color: '#106593' }} />}
             >
               <Typography
-                sx={{
-                  color: '#106593',
-                  fontSize: '16px',
-                  fontStyle: 'normal',
-                  fontWeight: '600',
-                  lineHeight: 'normal',
-                }}
+                  sx={{
+                    color: '#106593',
+                    fontSize: '16px',
+                    fontStyle: 'normal',
+                    fontWeight: '600',
+                    lineHeight: 'normal',
+                  }}
               >
                 Show Advanced Information
               </Typography>
             </AccordionSummary>
             <AccordionDetails>
               <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  marginBottom: '20px',
-                  marginTop: '20px',
-                }}
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    marginBottom: '20px',
+                    marginTop: '20px',
+                  }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
                   <Typography
-                    variant="h6"
-                    sx={{
-                      marginRight: '8px',
-                      color: '#24262E',
-                      fontSize: '18px',
-                      fontStyle: 'normal',
-                      fontWeight: '600',
-                      lineHeight: '22px',
-                    }}
+                      variant="h6"
+                      sx={{
+                        marginRight: '8px',
+                        color: '#24262E',
+                        fontSize: '18px',
+                        fontStyle: 'normal',
+                        fontWeight: '600',
+                        lineHeight: '22px',
+                      }}
                   >
                     ID
                   </Typography>
                   <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
                     <InfoIcon
-                      style={{
-                        color: '#434656A6',
-                        width: '22px',
-                        marginLeft: '3px',
-                        marginBottom: '5px',
-                        verticalAlign: 'middle',
-                        cursor: 'pointer',
-                      }}
+                        style={{
+                          color: '#434656A6',
+                          width: '22px',
+                          marginLeft: '3px',
+                          marginBottom: '5px',
+                          verticalAlign: 'middle',
+                          cursor: 'pointer',
+                        }}
                     />
                   </Tooltip>
                 </div>
                 <Typography
-                  variant="body1"
-                  align="left"
-                  sx={{ cursor: 'pointer' }}
-                  onClick={() => handleCopyToClipboard(receipt?.id)}
+                    variant="body1"
+                    align="left"
+                    sx={{ cursor: 'pointer' }}
+                    onClick={() => handleCopyToClipboard(receipt?.id)}
                 >
                   {receipt?.id}
                 </Typography>
               </Box>
               <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  marginBottom: '20px',
-                  marginTop: '20px',
-                }}
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    marginBottom: '20px',
+                    marginTop: '20px',
+                  }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
                   <Typography
-                    variant="h6"
-                    sx={{
-                      marginRight: '8px',
-                      color: '#24262E',
-                      fontSize: '18px',
-                      fontStyle: 'normal',
-                      fontWeight: '600',
-                      lineHeight: '22px',
-                    }}
+                      variant="h6"
+                      sx={{
+                        marginRight: '8px',
+                        color: '#24262E',
+                        fontSize: '18px',
+                        fontStyle: 'normal',
+                        fontWeight: '600',
+                        lineHeight: '22px',
+                      }}
                   >
                     Voted at Slot
                   </Typography>
                   <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
                     <InfoIcon
-                      style={{
-                        color: '#434656A6',
-                        width: '22px',
-                        marginLeft: '3px',
-                        marginBottom: '5px',
-                        verticalAlign: 'middle',
-                        cursor: 'pointer',
-                      }}
+                        style={{
+                          color: '#434656A6',
+                          width: '22px',
+                          marginLeft: '3px',
+                          marginBottom: '5px',
+                          verticalAlign: 'middle',
+                          cursor: 'pointer',
+                        }}
                     />
                   </Tooltip>
                 </div>
                 <Typography
-                  variant="body1"
-                  align="left"
-                  sx={{ cursor: 'pointer' }}
-                  onClick={() => handleCopyToClipboard(receipt?.votedAtSlot)}
+                    variant="body1"
+                    align="left"
+                    sx={{ cursor: 'pointer' }}
+                    onClick={() => handleCopyToClipboard(receipt?.votedAtSlot)}
                 >
                   {receipt?.votedAtSlot}
                 </Typography>
               </Box>
               <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  marginBottom: '20px',
-                  marginTop: '20px',
-                }}
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    marginBottom: '20px',
+                    marginTop: '20px',
+                  }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
                   <Typography
-                    variant="h6"
-                    sx={{
-                      marginRight: '8px',
-                      color: '#24262E',
-                      fontSize: '18px',
-                      fontStyle: 'normal',
-                      fontWeight: '600',
-                      lineHeight: '22px',
-                    }}
+                      variant="h6"
+                      sx={{
+                        marginRight: '8px',
+                        color: '#24262E',
+                        fontSize: '18px',
+                        fontStyle: 'normal',
+                        fontWeight: '600',
+                        lineHeight: '22px',
+                      }}
                   >
                     Vote Proof
                   </Typography>
                   <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
                     <InfoIcon
-                      style={{
-                        color: '#434656A6',
-                        width: '22px',
-                        marginLeft: '3px',
-                        marginBottom: '5px',
-                        verticalAlign: 'middle',
-                        cursor: 'pointer',
-                      }}
+                        style={{
+                          color: '#434656A6',
+                          width: '22px',
+                          marginLeft: '3px',
+                          marginBottom: '5px',
+                          verticalAlign: 'middle',
+                          cursor: 'pointer',
+                        }}
                     />
                   </Tooltip>
                 </div>
                 <Typography
-                  variant="body1"
-                  align="left"
-                  sx={{
-                    wordWrap: 'break-word',
-                    maxWidth: '406px',
-                    cursor: 'pointer',
-                  }}
-                  onClick={() => handleCopyToClipboard(JSON.stringify(receipt?.merkleProof || '', null, 4))}
+                    variant="body1"
+                    align="left"
+                    sx={{
+                      wordWrap: 'break-word',
+                      maxWidth: '406px',
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => handleCopyToClipboard(JSON.stringify(receipt?.merkleProof || '', null, 4))}
                 >
                   {JSON.stringify(receipt?.merkleProof || '', null, 4)}
                 </Typography>

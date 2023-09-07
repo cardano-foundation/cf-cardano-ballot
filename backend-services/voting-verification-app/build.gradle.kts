@@ -29,6 +29,7 @@ repositories {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
+    implementation("org.springframework.boot:spring-boot-starter-aop")
 	implementation("org.springframework.boot:spring-boot-starter-data-rest")
 	testCompileOnly("org.springframework.boot:spring-boot-starter-test")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
@@ -62,7 +63,7 @@ dependencies {
 
 	implementation("io.vavr:vavr:0.10.4")
 
-	implementation("org.cardanofoundation:merkle-tree-java:0.0.6")
+	implementation("org.cardanofoundation:merkle-tree-java:0.0.7")
 	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.10")
 }
 

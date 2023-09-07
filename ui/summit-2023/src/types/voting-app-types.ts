@@ -44,6 +44,12 @@ export interface ByEvent {
     event: string;
     totalVotesCount: number;
     totalVotingPower: string;
+    categories: CategoryStats[];
+}
+
+export interface CategoryStats {
+    id: string;
+    votes: number;
 }
 
 export interface ByEventBuilder {

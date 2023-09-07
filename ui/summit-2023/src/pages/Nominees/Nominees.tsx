@@ -36,8 +36,6 @@ import SUMMIT2023CONTENT from '../../common/resources/data/summit2023Content.jso
 import { eventBus } from '../../utils/EventBus';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import CloseIcon from '@mui/icons-material/Close';
-import xIcon from '../../common/resources/images/x-icon.svg';
-import linkedinIcon from '../../common/resources/images/linkedin-icon.svg';
 import { ROUTES } from '../../routes';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
@@ -67,10 +65,6 @@ const Nominees = () => {
   const receipt = receipts && Object.keys(receipts).length && receipts[categoryId] ? receipts[categoryId] : undefined;
 
   const dispatch = useDispatch();
-  const categories_ids = eventCache.categories.map((e) => e.id);
-  if (!categories_ids.includes(categoryId)) navigate(ROUTES.NOT_FOUND);
-
-  const category = eventCache.categories.filter((c) => c.id === categoryId)[0];
 
   const categories = eventCache?.categories;
   const categories_ids = categories?.map((e) => e.id);
@@ -86,7 +80,6 @@ const Nominees = () => {
   const [isToggleReadMore, toggleReadMore] = useToggle(false);
   const [selectedNominee, setSelectedNominee] = useState({});
   const [nominees, setNominees] = useState<ProposalPresentation[]>([]);
-  const [drawerOpen, setDrawerOpen] = useState(false);
   const [receiptDrawerIsOpen, setReceiptDrawerIsOpen] = useState(false);
 
   const { isConnected, stakeAddress, signMessage } = useCardano();
@@ -421,7 +414,7 @@ const Nominees = () => {
                     <Button
                       className={`${isConnected ? 'vote-nominee-button' : 'connect-wallet-button'}`}
                       fullWidth
-                      onClick={() => handleNomineeButton(item.id)}
+                      onClick={() => handleNomineeButton(nominee.id)}
                     >
                       {renderNomineeButtonLabel()}
                     </Button>

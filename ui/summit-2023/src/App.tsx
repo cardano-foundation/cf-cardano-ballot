@@ -36,8 +36,7 @@ function App() {
       }
 
       const isLoggedIn = getUserInSession();
-      console.log('isLoggedIn App');
-      console.log(isLoggedIn);
+
       if (isLoggedIn) {
         const isExpired = tokenIsExpired(isLoggedIn.expiresAt);
         if (!isExpired) dispatch(setWalletIsLoggedIn({ isLoggedIn }));

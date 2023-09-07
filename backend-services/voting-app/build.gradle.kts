@@ -52,7 +52,7 @@ dependencies {
 
 	implementation("org.zalando:problem-spring-web-starter:0.29.1")
 
-    implementation("com.bloxbean.cardano:yaci:0.2.1-beta")
+    implementation("com.bloxbean.cardano:yaci:0.2.1")
 
 	compileOnly("org.projectlombok:lombok:1.18.28")
 	annotationProcessor("org.projectlombok:lombok:1.18.28")

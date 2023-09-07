@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.domain.LoginEnvelope;
+import org.cardano.foundation.voting.domain.web3.LoginEnvelope;
 import org.cardano.foundation.voting.domain.web3.CIP93Envelope;
 import org.cardano.foundation.voting.domain.web3.ViewVoteReceiptEnvelope;
 import org.cardano.foundation.voting.domain.web3.VoteEnvelope;

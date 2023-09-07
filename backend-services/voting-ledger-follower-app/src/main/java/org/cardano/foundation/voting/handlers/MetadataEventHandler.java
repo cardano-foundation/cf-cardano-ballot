@@ -29,7 +29,7 @@ public class MetadataEventHandler {
                     .filter(txMetadataLabel -> txMetadataLabel.getLabel().equalsIgnoreCase(String.valueOf(metadataLabel)))
                     .forEach(txEvent -> customMetadataProcessor.processMetadataEvent(txEvent.getSlot(), txEvent.getCbor()));
         } catch (Exception e) {
-            log.warn("Error processing metadata event", e);
+            log.warn("Error processing metadata event, reason:{}", e.getMessage());
         }
     }
 

@@ -22,7 +22,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 public class DiscordUserVerificationResource {
 
     @RequestMapping(value = "/is-verified/{hashedDiscordId}", method = GET, produces = "application/json")
-    @Timed(value = "resource.discord.isVerified", percentiles = {0.3, 0.5, 0.95})
+    @Timed(value = "resource.discord.isVerified", histogram = true)
     public ResponseEntity<?> isDiscordUserVerified(@PathVariable("hashedDiscordId") String hashedDiscordId) {
         log.info("Received isDiscordUserVerified hashedDiscordId: {}", hashedDiscordId);
 
@@ -32,7 +32,7 @@ public class DiscordUserVerificationResource {
     }
 
     @RequestMapping(value = "/start-verification", method = POST, produces = "application/json")
-    @Timed(value = "resource.discord.startVerification", percentiles = {0.3, 0.5, 0.95})
+    @Timed(value = "resource.discord.startVerification", histogram = true)
     public ResponseEntity<?> startVerification(@RequestBody @Valid DiscordStartVerificationRequest startVerificationRequest) {
         log.info("Received discord startVerification request: {}", startVerificationRequest);
 
@@ -42,7 +42,7 @@ public class DiscordUserVerificationResource {
     }
 
     @RequestMapping(value = "/check-verification", method = POST, produces = "application/json")
-    @Timed(value = "resource.discord.checkVerification", percentiles = {0.3, 0.5, 0.95})
+    @Timed(value = "resource.discord.checkVerification", histogram = true)
     public ResponseEntity<?> checkVerification(@RequestBody @Valid DiscordCheckVerificationRequest checkVerificationRequest) {
         log.info("Received discord checkVerification request: {}", checkVerificationRequest);
 

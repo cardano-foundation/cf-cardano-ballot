@@ -20,7 +20,7 @@ public class ReferenceDataResource {
     private ReferencePresentationService referencePresentationService;
 
     @RequestMapping(value = "/event/{name}", method = GET, produces = "application/json")
-    @Timed(value = "resource.reference.event", percentiles = { 0.3, 0.5, 0.95 } )
+    @Timed(value = "resource.reference.event", histogram = true)
     public ResponseEntity<?> getEventByName(@PathVariable String name) {
         return referencePresentationService.findEventReference(name)
                 .map(eventReference -> ResponseEntity.ok().body(eventReference)
@@ -28,7 +28,7 @@ public class ReferenceDataResource {
     }
 
     @RequestMapping(value = "/event", method = GET, produces = "application/json")
-    @Timed(value = "resource.reference.events", percentiles = { 0.3, 0.5, 0.95 } )
+    @Timed(value = "resource.reference.events", histogram = true)
     public ResponseEntity<?> events() {
         return ResponseEntity.ok(referencePresentationService.eventsData());
     }

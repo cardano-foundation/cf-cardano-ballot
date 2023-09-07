@@ -23,7 +23,7 @@ public class UserVerificationResource {
     private final SMSUserVerificationService smsUserVerificationService;
 
     @RequestMapping(value = "/verified/{eventId}/{stakeAddress}", method = GET, produces = "application/json")
-    @Timed(value = "resource.isVerified", percentiles = {0.3, 0.5, 0.95})
+    @Timed(value = "resource.isVerified", histogram = true)
     public ResponseEntity<?> isVerified(@PathVariable("eventId") String eventId, @PathVariable("stakeAddress") String stakeAddress) {
         var isVerifiedRequest = new IsVerifiedRequest(stakeAddress, eventId);
 

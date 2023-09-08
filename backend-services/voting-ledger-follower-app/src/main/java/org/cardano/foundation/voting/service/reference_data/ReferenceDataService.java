@@ -37,43 +37,43 @@ public class ReferenceDataService {
     @Autowired
     private MerkleRootHashRepository merkleRootHashRepository;
 
-    @Timed(value = "service.reference.findValidEventByName", percentiles = {0.3, 0.5, 0.95})
+    @Timed(value = "service.reference.findValidEventByName", histogram = true)
     @Transactional(readOnly = true)
     public Optional<Event> findValidEventByName(String name) {
         return eventRepository.findById(name).filter(Event::isValid);
     }
 
-    @Timed(value = "service.reference.findEventByName", percentiles = {0.3, 0.5, 0.95})
+    @Timed(value = "service.reference.findEventByName", histogram = true)
     @Transactional(readOnly = true)
     public Optional<Event> findEventByName(String name) {
         return eventRepository.findById(name);
     }
 
-    @Timed(value = "service.reference.findCategoryByName", percentiles = {0.3, 0.5, 0.95})
+    @Timed(value = "service.reference.findCategoryByName", histogram = true)
     @Transactional(readOnly = true)
     public Optional<Category> findCategoryByName(String name) {
         return categoryRepository.findById(name);
     }
 
-    @Timed(value = "service.reference.findProposalById", percentiles = {0.3, 0.5, 0.95})
+    @Timed(value = "service.reference.findProposalById", histogram = true)
     @Transactional(readOnly = true)
     public Optional<Proposal> findProposalById(String id) {
         return proposalRepository.findById(id);
     }
 
-    @Timed(value = "service.reference.findProposalByName", percentiles = {0.3, 0.5, 0.95})
+    @Timed(value = "service.reference.findProposalByName", histogram = true)
     @Transactional(readOnly = true)
     public Optional<Proposal> findProposalByName(Category category, String name) {
         return proposalRepository.findProposalByName(category.getId(), name);
     }
 
-    @Timed(value = "service.reference.storeEvent", percentiles = {0.3, 0.5, 0.95})
+    @Timed(value = "service.reference.storeEvent", histogram = true)
     @Transactional
     public Event storeEvent(Event event) {
         return eventRepository.saveAndFlush(event);
     }
 
-    @Timed(value = "service.reference.findAllValidEvents", percentiles = {0.3, 0.5, 0.95})
+    @Timed(value = "service.reference.findAllValidEvents", histogram = true)
     @Transactional(readOnly = true)
     public List<Event> findAllValidEvents() {
         return eventRepository.findAll()
@@ -82,27 +82,27 @@ public class ReferenceDataService {
                 .toList();
     }
 
-    @Timed(value = "service.reference.findAllActiveEvents", percentiles = {0.3, 0.5, 0.95})
+    @Timed(value = "service.reference.findAllActiveEvents", histogram = true)
     @Transactional(readOnly = true)
     public List<Event> findAllActiveEvents() {
         return findAllValidEvents().stream()
                 .filter(event -> expirationService.isEventActive(event)).toList();
     }
 
-    @Timed(value = "service.reference.storeCategory", percentiles = {0.3, 0.5, 0.95})
+    @Timed(value = "service.reference.storeCategory", histogram = true)
     @Transactional
     public Category storeCategory(Category category) {
         return categoryRepository.saveAndFlush(category);
     }
 
-    @Timed(value = "service.reference.storeCommitments", percentiles = {0.3, 0.5, 0.95})
+    @Timed(value = "service.reference.storeCommitments", histogram = true)
     @Transactional
     public List<MerkleRootHash> storeCommitments(List<MerkleRootHash> merkleRootHashes) {
         log.info("Storing commitments:{}", merkleRootHashes);
         return merkleRootHashRepository.saveAllAndFlush(merkleRootHashes);
     }
 
-    @Timed(value = "service.reference.rollback", percentiles = {0.3, 0.5, 0.95})
+    @Timed(value = "service.reference.rollback", histogram = true)
     @Transactional
     public void rollbackReferenceDataAfterSlot(long slot) {
         proposalRepository.deleteAllAfterSlot(slot);

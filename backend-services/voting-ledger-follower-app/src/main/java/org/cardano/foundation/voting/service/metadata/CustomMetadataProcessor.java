@@ -2,21 +2,19 @@ package org.cardano.foundation.voting.service.metadata;
 
 import co.nstant.in.cbor.CborException;
 import com.bloxbean.cardano.client.common.cbor.CborSerializationUtil;
-import com.bloxbean.cardano.client.crypto.Blake2bUtil;
 import com.bloxbean.cardano.client.metadata.cbor.CBORMetadata;
 import com.bloxbean.cardano.client.metadata.cbor.CBORMetadataMap;
-import com.bloxbean.cardano.client.util.HexUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.OnChainEventType;
 import org.cardano.foundation.voting.domain.SchemaVersion;
-import org.cardano.foundation.voting.domain.TransactionMetadataLabelCbor;
 import org.cardano.foundation.voting.domain.entity.Category;
 import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.domain.entity.MerkleRootHash;
 import org.cardano.foundation.voting.domain.entity.Proposal;
 import org.cardano.foundation.voting.service.cbor.CborService;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
+import org.cardano.foundation.voting.service.vote.MerkleRootHashService;
 import org.cardano.foundation.voting.utils.ChunkedMetadataParser;
 import org.cardano.foundation.voting.utils.Enums;
 import org.cardanofoundation.cip30.CIP30Verifier;
@@ -32,6 +30,7 @@ import java.util.Optional;
 
 import static com.bloxbean.cardano.client.crypto.Blake2bUtil.blake2bHash224;
 import static com.bloxbean.cardano.client.util.HexUtil.decodeHexString;
+import static com.bloxbean.cardano.client.util.HexUtil.encodeHexString;
 import static org.cardano.foundation.voting.domain.OnChainEventType.*;
 import static org.cardanofoundation.cip30.AddressFormat.TEXT;
 import static org.cardanofoundation.cip30.MessageFormat.HEX;
@@ -45,6 +44,9 @@ public class CustomMetadataProcessor {
     private ReferenceDataService referenceDataService;
 
     @Autowired
+    private MerkleRootHashService merkleRootHashService;
+
+    @Autowired
     private CborService cborService;
 
     @Value("${bind.on.event.ids}")
@@ -54,7 +56,7 @@ public class CustomMetadataProcessor {
     private long metadataLabel;
 
     @Value("${organiser.account.stakeAddress}")
-    private String organiserStakeAccount;
+    private String organiserStakeAddress;
 
     @SneakyThrows
     public void processMetadataEvent(long slot, String txCbor)  {
@@ -115,7 +117,7 @@ public class CustomMetadataProcessor {
                                                      String signatureHexString,
                                                      String keyHexString,
                                                      CBORMetadataMap payload) throws CborException {
-        var id = HexUtil.encodeHexString(blake2bHash224(decodeHexString(signatureHexString)));
+        var id = encodeHexString(blake2bHash224(decodeHexString(signatureHexString)));
         log.info("Processing event registration, hash: {}", id);
 
         var cip30Parser = new CIP30Verifier(signatureHexString, Optional.ofNullable(keyHexString));
@@ -136,7 +138,7 @@ public class CustomMetadataProcessor {
         log.info("eventAddress:{}", eventAddress);
 
         var signaturePayloadHexString = Optional.ofNullable(cip30VerificationResult.getMessage(HEX)).orElse("");
-        var payloadHexString = HexUtil.encodeHexString(Blake2bUtil.blake2bHash224(CborSerializationUtil.serialize(payload.getMap())));
+        var payloadHexString = encodeHexString(blake2bHash224(CborSerializationUtil.serialize(payload.getMap())));
 
         if (!signaturePayloadHexString.equals(payloadHexString)) {
             log.warn("Payload hash mismatch, signaturePayloadHexString: {}, payloadHexString:{}", signaturePayloadHexString, payloadHexString);
@@ -144,8 +146,8 @@ public class CustomMetadataProcessor {
             return Optional.empty();
         }
 
-        if (!organiserStakeAccount.equals(eventAddress)) {
-            log.warn("Addresses mismatch, orgAccountStakeAddress: {}, eventAddress:{}", organiserStakeAccount, eventAddress);
+        if (!organiserStakeAddress.equals(eventAddress)) {
+            log.warn("Addresses mismatch, orgAccountStakeAddress: {}, eventAddress:{}", organiserStakeAddress, eventAddress);
             return Optional.empty();
         }
 
@@ -194,7 +196,7 @@ public class CustomMetadataProcessor {
     }
 
     private Optional<Category> processCategoryRegistration(long slot, String signature, String key, CBORMetadataMap payload) throws CborException {
-        var id = HexUtil.encodeHexString(Blake2bUtil.blake2bHash224(decodeHexString(signature)));
+        var id = encodeHexString(blake2bHash224(decodeHexString(signature)));
 
         log.info("Processing category registration id: {}", id);
 
@@ -212,14 +214,14 @@ public class CustomMetadataProcessor {
         }
         var eventAddress = maybeEventAddress.orElseThrow();
 
-        if (!organiserStakeAccount.equals(eventAddress)) {
-            log.warn("Addresses mismatch, orgAccountStakeAddress: {}, eventAddress:{}", organiserStakeAccount, eventAddress);
+        if (!organiserStakeAddress.equals(eventAddress)) {
+            log.warn("Addresses mismatch, orgAccountStakeAddress: {}, eventAddress:{}", organiserStakeAddress, eventAddress);
 
             return Optional.empty();
         }
 
         var signaturePayloadHexString = Optional.ofNullable(cip30VerificationResult.getMessage(HEX)).orElse("");
-        var payloadHexString = HexUtil.encodeHexString(Blake2bUtil.blake2bHash224(CborSerializationUtil.serialize(payload.getMap())));
+        var payloadHexString = encodeHexString(blake2bHash224(CborSerializationUtil.serialize(payload.getMap())));
 
         if (!signaturePayloadHexString.equals(payloadHexString)) {
             log.warn("Payload hash mismatch, signaturePayloadHexString: {}, payloadHexString:{}", signaturePayloadHexString, payloadHexString);
@@ -276,8 +278,11 @@ public class CustomMetadataProcessor {
         return Optional.of(referenceDataService.storeCategory(category));
     }
 
-    private Optional<List<MerkleRootHash>> processCommitments(long slot, String signature, String key, CBORMetadataMap payload) throws CborException {
-        var id = HexUtil.encodeHexString(Blake2bUtil.blake2bHash224(decodeHexString(signature)));
+    private Optional<List<MerkleRootHash>> processCommitments(long slot,
+                                                              String signature,
+                                                              String key,
+                                                              CBORMetadataMap payload) throws CborException {
+        var id = encodeHexString(blake2bHash224(decodeHexString(signature)));
 
         log.info("Processing on-chain commitments: {}", id);
 
@@ -295,14 +300,14 @@ public class CustomMetadataProcessor {
         }
         var eventAddress = maybeEventAddress.orElseThrow();
 
-        if (!organiserStakeAccount.equals(eventAddress)) {
-            log.warn("Addresses mismatch, orgAccountStakeAddress: {}, eventAddress:{}", organiserStakeAccount, eventAddress);
+        if (!organiserStakeAddress.equals(eventAddress)) {
+            log.warn("Addresses mismatch, orgAccountStakeAddress: {}, eventAddress:{}", organiserStakeAddress, eventAddress);
 
             return Optional.empty();
         }
 
         var signaturePayloadHexString = Optional.ofNullable(cip30VerificationResult.getMessage(HEX)).orElse("");
-        var payloadHexString = HexUtil.encodeHexString(Blake2bUtil.blake2bHash224(CborSerializationUtil.serialize(payload.getMap())));
+        var payloadHexString = encodeHexString(blake2bHash224(CborSerializationUtil.serialize(payload.getMap())));
 
         if (!signaturePayloadHexString.equals(payloadHexString)) {
             log.warn("Payload hash mismatch, signaturePayloadHexString: {}, payloadHexString:{}", signaturePayloadHexString, payloadHexString);
@@ -353,16 +358,7 @@ public class CustomMetadataProcessor {
             return Optional.empty();
         }
 
-        return Optional.of(referenceDataService.storeCommitments(merkleRootHashes));
+        return Optional.of(merkleRootHashService.storeCommitments(merkleRootHashes));
     }
 
-    public void processMetadataEvents(List<TransactionMetadataLabelCbor> transactionMetadataLabelCbors) {
-        transactionMetadataLabelCbors.forEach(transactionMetadataLabelCbor -> {
-            try {
-                processMetadataEvent(transactionMetadataLabelCbor.getSlot(), transactionMetadataLabelCbor.getCborMetadata());
-            } catch (Exception e) {
-                log.warn("Unable to process metadata event", e);
-            }
-        });
-    }
 }

@@ -21,10 +21,11 @@ public class MerkleRootHashResource {
 
     private final MerkleRootHashService merkleRootHashService;
 
-    @RequestMapping(value = "/{event}/{merkleRootHashHex}", method = GET, produces = "application/json")
+    @RequestMapping(value = "/{eventId}/{merkleRootHashHex}", method = GET, produces = "application/json")
     @Timed(value = "resource.merkle_root_hash.find", histogram = true)
-    public ResponseEntity<?> isValidMerkleRootHash(@PathVariable String event, @PathVariable String merkleRootHashHex) {
-        return merkleRootHashService.isPresent(event, merkleRootHashHex)
+    public ResponseEntity<?> isValidMerkleRootHash(@PathVariable("eventId") String eventId,
+                                                   @PathVariable("merkleRootHashHex") String merkleRootHashHex) {
+        return merkleRootHashService.isPresent(eventId, merkleRootHashHex)
                 .fold(problem -> ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem),
                         isMerkleRootPresentResult -> ResponseEntity.ok().body(isMerkleRootPresentResult)
                 );

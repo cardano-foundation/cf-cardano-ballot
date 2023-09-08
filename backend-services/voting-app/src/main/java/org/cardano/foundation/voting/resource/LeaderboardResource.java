@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Objects;
 
+import static org.cardano.foundation.voting.service.auth.Headers.XForceLeaderBoardResults;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
@@ -42,7 +43,7 @@ public class LeaderboardResource {
     @RequestMapping(value = "/{eventId}", method = GET, produces = "application/json")
     @Timed(value = "resource.leaderboard.event", histogram = true)
     public ResponseEntity<?> getEventLeaderBoard(@PathVariable("eventId") String eventId,
-                                                 @RequestHeader(value = "force-leaderboard-results", required = false, defaultValue = "false") boolean forceLeaderboardResults) {
+                                                 @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = "false") boolean forceLeaderboardResults) {
         var forceLeaderboard = forceLeaderboardResults && forceLeaderboardResultsAvailability;
 
         return leaderBoardService.getEventLeaderboard(eventId, forceLeaderboard)
@@ -57,7 +58,7 @@ public class LeaderboardResource {
     @Timed(value = "resource.leaderboard.category", histogram = true)
     public ResponseEntity<?> getCategoryLeaderBoard(@PathVariable("eventId") String eventId,
                                                     @PathVariable("categoryId") String categoryId,
-                                                    @RequestHeader(value = "force-leaderboard-results", required = false, defaultValue = "false") boolean forceLeaderboardResults) {
+                                                    @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = "false") boolean forceLeaderboardResults) {
         var forceLeaderboard = forceLeaderboardResults && forceLeaderboardResultsAvailability;
 
         return leaderBoardService.getCategoryLeaderboard(eventId, categoryId, forceLeaderboard)

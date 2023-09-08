@@ -64,14 +64,12 @@ def signCIP30(): Unit = {
         organiserAccount.stakeHdKeyPair().getPublicKey().getKeyData()
     );
 
-    val outputJSON = s"""
-    {
-        "coseSignature": "${cip30Result.signature()}",
-        "cosePublicKey": "${cip30Result.key()}"
-   }
+    val output = s"""
+        X-CIP93-Signature: ${cip30Result.signature()}
+        X-CIP93-Public-Key: ${cip30Result.key()}
 """.stripMargin
 
-    println(outputJSON)
+    println(output)
 }
 
 def latestAbsoluteSlot(mapper: ObjectMapper): Long = {

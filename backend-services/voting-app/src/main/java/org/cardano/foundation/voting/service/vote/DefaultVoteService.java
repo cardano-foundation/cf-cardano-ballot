@@ -3,29 +3,23 @@ package org.cardano.foundation.voting.service.vote;
 import com.nimbusds.jwt.SignedJWT;
 import io.micrometer.core.annotation.Timed;
 import io.vavr.control.Either;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.client.UserVerificationClient;
-import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.Role;
 import org.cardano.foundation.voting.domain.VoteReceipt;
 import org.cardano.foundation.voting.domain.entity.Vote;
 import org.cardano.foundation.voting.domain.entity.VoteMerkleProof;
-import org.cardano.foundation.voting.domain.web3.SignedWeb3Request;
-import org.cardano.foundation.voting.domain.web3.Web3Action;
 import org.cardano.foundation.voting.repository.VoteRepository;
-import org.cardano.foundation.voting.service.auth.JwtAuthenticationToken;
-import org.cardano.foundation.voting.service.expire.ExpirationService;
+import org.cardano.foundation.voting.service.auth.jwt.JwtAuthenticationToken;
+import org.cardano.foundation.voting.service.auth.web3.Web3AuthenticationToken;
 import org.cardano.foundation.voting.service.json.JsonService;
 import org.cardano.foundation.voting.service.merkle_tree.MerkleProofSerdeService;
 import org.cardano.foundation.voting.service.merkle_tree.VoteMerkleProofService;
 import org.cardano.foundation.voting.utils.Enums;
 import org.cardano.foundation.voting.utils.MoreUUID;
-import org.cardano.foundation.voting.utils.StakeAddress;
-import org.cardanofoundation.cip30.AddressFormat;
-import org.cardanofoundation.cip30.CIP30Verifier;
 import org.cardanofoundation.merkle.ProofItem;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
@@ -42,36 +36,24 @@ import static org.cardano.foundation.voting.domain.web3.Web3Action.CAST_VOTE;
 import static org.cardano.foundation.voting.domain.web3.Web3Action.VIEW_VOTE_RECEIPT;
 import static org.cardano.foundation.voting.utils.MoreNumber.isNumeric;
 import static org.cardanofoundation.cip30.MessageFormat.TEXT;
-import static org.cardanofoundation.cip30.ValidationError.UNKNOWN;
 import static org.zalando.problem.Status.*;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class DefaultVoteService implements VoteService {
 
-    @Autowired
-    private ExpirationService expirationService;
+    private final VoteRepository voteRepository;
 
-    @Autowired
-    private VoteRepository voteRepository;
+    private final VoteMerkleProofService voteMerkleProofService;
 
-    @Autowired
-    private VoteMerkleProofService voteMerkleProofService;
+    private final MerkleProofSerdeService merkleProofSerdeService;
 
-    @Autowired
-    private MerkleProofSerdeService merkleProofSerdeService;
+    private final ChainFollowerClient chainFollowerClient;
 
-    @Autowired
-    private ChainFollowerClient chainFollowerClient;
+    private final UserVerificationClient userVerificationClient;
 
-    @Autowired
-    private CardanoNetwork cardanoNetwork;
-
-    @Autowired
-    private UserVerificationClient userVerificationClient;
-
-    @Autowired
-    private JsonService jsonService;
+    private final JsonService jsonService;
 
     @Override
     @Transactional(readOnly = true)
@@ -137,37 +119,17 @@ public class DefaultVoteService implements VoteService {
     @Override
     @Transactional
     @Timed(value = "service.vote.castVote", histogram = true)
-    public Either<Problem, Vote> castVote(SignedWeb3Request castVoteRequest) {
-        var cip30Verifier = new CIP30Verifier(castVoteRequest.getCoseSignature(), castVoteRequest.getCosePublicKey());
-        var cip30VerificationResult = cip30Verifier.verify();
+    public Either<Problem, Vote> castVote(Web3AuthenticationToken web3AuthenticationToken) {
+        var details = web3AuthenticationToken.getDetails();
+        var cip30VerificationResult = details.getCip30VerificationResult();
 
-        if (!cip30VerificationResult.isValid()) {
-            log.warn("CIP-30 data sign for casting vote verification failed, validationError:{}", cip30VerificationResult.getValidationError().orElse(UNKNOWN));
+        var event = details.getEvent();
+        var eventId = event.id();
+        var stakeAddress = details.getStakeAddress();
 
-            return Either.left(
-                    Problem.builder()
-                        .withTitle("INVALID_CIP30_DATA_SIGNATURE")
-                        .withDetail("Invalid cast vote cose signature!")
-                        .withStatus(BAD_REQUEST)
-                    .build()
-            );
-        }
+        var signedJson = cip30VerificationResult.getMessage(TEXT);
 
-        var maybeAddress = cip30VerificationResult.getAddress(AddressFormat.TEXT);
-        if (maybeAddress.isEmpty()) {
-            log.warn("Address not found in the signed data");
-
-            return Either.left(
-                    Problem.builder()
-                            .withTitle("ADDRESS_NOT_FOUND")
-                            .withDetail("Bech32 address not found in the signed data.")
-                            .withStatus(BAD_REQUEST)
-                            .build()
-            );
-        }
-        var stakeAddress = maybeAddress.orElseThrow();
-
-        var castVoteRequestBodyJsonE = jsonService.decodeCIP93VoteEnvelope(cip30VerificationResult.getMessage(TEXT));
+        var castVoteRequestBodyJsonE = jsonService.decodeCIP93VoteEnvelope(signedJson);
         if (castVoteRequestBodyJsonE.isLeft()) {
             if (castVoteRequestBodyJsonE.isLeft()) {
                 return Either.left(
@@ -180,58 +142,8 @@ public class DefaultVoteService implements VoteService {
             }
         }
         var cip93VoteEnvelope = castVoteRequestBodyJsonE.get();
-        var maybeNetwork = Enums.getIfPresent(CardanoNetwork.class, cip93VoteEnvelope.getData().getNetwork());
-        if (maybeNetwork.isEmpty()) {
-            log.warn("Invalid network, network:{}", cip93VoteEnvelope.getData().getNetwork());
 
-            return Either.left(Problem.builder()
-                    .withTitle("INVALID_NETWORK")
-                    .withDetail("Invalid network, supported networks:" + CardanoNetwork.supportedNetworks())
-                    .withStatus(BAD_REQUEST)
-                    .build());
-        }
-
-        var network = maybeNetwork.orElseThrow();
-
-        if (network != cardanoNetwork) {
-            log.warn("Invalid network, network:{}", cip93VoteEnvelope.getData().getNetwork());
-
-            return Either.left(Problem.builder()
-                    .withTitle("NETWORK_MISMATCH")
-                    .withDetail("Invalid network, backend configured with network:" + cardanoNetwork + ", however request is with network:" + network)
-                    .withStatus(BAD_REQUEST)
-                    .build());
-        }
-
-        var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, stakeAddress);
-        if (stakeAddressCheckE.isEmpty()) {
-            return Either.left(stakeAddressCheckE.getLeft());
-        }
-
-        String cip30StakeAddress = cip93VoteEnvelope.getData().getAddress();
-        if (!stakeAddress.equals(cip30StakeAddress)) {
-            return Either.left(Problem.builder()
-                    .withTitle("STAKE_ADDRESS_MISMATCH")
-                    .withDetail("Invalid stake address, expected stakeAddress:" + stakeAddress + ", actual stakeAddress:" + cip30StakeAddress)
-                    .withStatus(BAD_REQUEST)
-                    .build());
-        }
-
-        var actionText = cip93VoteEnvelope.getAction();
-
-        var maybeAction = Enums.getIfPresent(Web3Action.class, actionText);
-        if (maybeAction.isEmpty()) {
-            log.warn("Unknown action, action:{}", actionText);
-
-            return Either.left(Problem.builder()
-                    .withTitle("ACTION_NOT_FOUND")
-                    .withDetail("Action not found!")
-                    .withStatus(BAD_REQUEST)
-                    .build()
-            );
-        }
-        var action = maybeAction.orElseThrow();
-        if (action != CAST_VOTE) {
+        if (details.getAction() != CAST_VOTE) {
             return Either.left(Problem.builder()
                     .withTitle("INVALID_ACTION")
                     .withDetail("Action is not CAST_VOTE, expected action:" + CAST_VOTE.name())
@@ -239,29 +151,6 @@ public class DefaultVoteService implements VoteService {
                     .build()
             );
         }
-
-        var eventId = cip93VoteEnvelope.getData().getEvent();
-
-        var eventDetailsE = chainFollowerClient.getEventDetails(eventId);
-        if (eventDetailsE.isEmpty()) {
-            return Either.left(Problem.builder()
-                    .withTitle("ERROR_GETTING_EVENT_DETAILS")
-                    .withDetail("Unable to get event details from chain-tip follower service, event:" + eventId)
-                    .withStatus(INTERNAL_SERVER_ERROR)
-                    .build()
-            );
-        }
-        var maybeEvent = eventDetailsE.get();
-        if (maybeEvent.isEmpty()) {
-            log.warn("Unrecognised event, id:{}", eventId);
-
-            return Either.left(Problem.builder()
-                    .withTitle("UNRECOGNISED_EVENT")
-                    .withDetail("Unrecognised event, id:" + eventId)
-                    .withStatus(BAD_REQUEST)
-                    .build());
-        }
-        var event = maybeEvent.get();
 
         if (event.isEventInactive()) {
             log.warn("Event is not active, id:{}", eventId);
@@ -275,7 +164,7 @@ public class DefaultVoteService implements VoteService {
 
         // check which is specific for the USER_BASED event type
         if (event.votingEventType() == USER_BASED) {
-            var userVerifiedE = userVerificationClient.isVerified(event.id(), stakeAddress);
+            var userVerifiedE = userVerificationClient.isVerified(eventId, details.getStakeAddress());
             if (userVerifiedE.isEmpty()) {
                 return Either.left(Problem.builder()
                         .withTitle("ERROR_GETTING_USER_VERIFICATION_STATUS")
@@ -316,7 +205,7 @@ public class DefaultVoteService implements VoteService {
         if (category.gdprProtection()) {
             var maybeProposal = category.findProposalById(proposalIdOrName);
             if (maybeProposal.isEmpty()) {
-                log.warn("Unrecognised proposal, proposalId:{}", eventId);
+                log.warn("Unrecognised proposal, proposalId:{}", proposalIdOrName);
 
                 return Either.left(Problem.builder()
                         .withTitle("UNRECOGNISED_PROPOSAL")
@@ -328,7 +217,7 @@ public class DefaultVoteService implements VoteService {
         } else {
             var maybeProposal = category.findProposalByName(proposalIdOrName);
             if (maybeProposal.isEmpty()) {
-                log.warn("Unrecognised proposal, proposalId:{}", eventId);
+                log.warn("Unrecognised proposal, proposalId:{}", proposalIdOrName);
 
                 return Either.left(Problem.builder()
                         .withTitle("UNRECOGNISED_PROPOSAL")
@@ -337,87 +226,6 @@ public class DefaultVoteService implements VoteService {
                         .build());
             }
             proposal = maybeProposal.orElseThrow();
-        }
-
-        var cip93SlotStr = cip93VoteEnvelope.getSlot();
-
-        if (!isNumeric(cip93SlotStr)) {
-            return Either.left(
-                    Problem.builder()
-                            .withTitle("INVALID_SLOT")
-                            .withDetail("CIP-93 envelope slot is not numeric!")
-                            .withStatus(BAD_REQUEST)
-                            .build()
-            );
-        }
-        var cip93Slot = Long.parseLong(cip93SlotStr);
-
-        var isSlotExpiredE = expirationService.isSlotExpired(cip93Slot);
-        if (isSlotExpiredE.isEmpty()) {
-            return Either.left(Problem.builder()
-                    .withTitle("ERROR_GETTING_CHAIN_TIP")
-                    .withDetail("Unable to get chain tip from chain-tip follower service, reason: chain tip not available")
-                    .withStatus(INTERNAL_SERVER_ERROR)
-                    .build()
-            );
-        }
-        var isSlotExpired = isSlotExpiredE.get();
-        if (isSlotExpired) {
-            log.warn("Invalid request slot, slot:{}", cip93Slot);
-
-            return Either.left(
-                    Problem.builder()
-                            .withTitle("EXPIRED_SLOT")
-                            .withDetail("CIP-93's envelope slot is expired!")
-                            .withStatus(BAD_REQUEST)
-                            .build()
-            );
-        }
-
-        var votedAtSlotStr = cip93VoteEnvelope.getData().getVotedAt();
-        if (!isNumeric(votedAtSlotStr)) {
-            return Either.left(
-                    Problem.builder()
-                            .withTitle("INVALID_SLOT")
-                            .withDetail("Vote's votedAt slot is not numeric!")
-                            .withStatus(BAD_REQUEST)
-                            .build()
-            );
-        }
-        var votedAtSlot = Long.parseLong(votedAtSlotStr);
-
-        var isVotedAtSlotExpiredE = expirationService.isSlotExpired(votedAtSlot);
-        if (isSlotExpiredE.isEmpty()) {
-            return Either.left(Problem.builder()
-                    .withTitle("ERROR_GETTING_CHAIN_TIP")
-                    .withDetail("Unable to get chain tip from chain-tip follower service, reason: chain tip not available")
-                    .withStatus(INTERNAL_SERVER_ERROR)
-                    .build()
-            );
-        }
-        var isVotedAtSlotExpired = isVotedAtSlotExpiredE.get();
-
-        if (isVotedAtSlotExpired) {
-            log.warn("Invalid votedAt slot, votedAt slot:{}", votedAtSlot);
-
-            return Either.left(
-                    Problem.builder()
-                            .withTitle("EXPIRED_SLOT")
-                            .withDetail("votedAt slot is expired!")
-                            .withStatus(BAD_REQUEST)
-                            .build()
-            );
-        }
-        if (votedAtSlot != cip93Slot) {
-            log.warn("Slots mismatch, votedAt CIP-93 slot:{}, slot:{}", votedAtSlot, cip93Slot);
-
-            return Either.left(
-                    Problem.builder()
-                            .withTitle("SLOT_MISMATCH")
-                            .withDetail("CIP93 envelope slot and votedAt slot mismatch!")
-                            .withStatus(BAD_REQUEST)
-                            .build()
-            );
         }
 
         String voteId = cip93VoteEnvelope.getData().getId();
@@ -429,8 +237,31 @@ public class DefaultVoteService implements VoteService {
                             .withStatus(BAD_REQUEST)
                             .build());
         }
+        var votedAtSlotStr = cip93VoteEnvelope.getData().getVotedAt();
+        if (!isNumeric(votedAtSlotStr)) {
+            return Either.left(
+                    Problem.builder()
+                            .withTitle("INVALID_SLOT")
+                            .withDetail("Vote's votedAt slot is not numeric!")
+                            .withStatus(BAD_REQUEST)
+                            .build()
+            );
+        }
+        var votedAtSlot = cip93VoteEnvelope.getData().getVotedAtSlot();
 
-        var maybeExistingVote = voteRepository.findByEventIdAndCategoryIdAndVoterStakingAddress(event.id(), category.id(), stakeAddress);
+        if (votedAtSlot != details.getEnvelope().getSlotAsLong()) {
+            log.warn("Slots mismatch, votedAt slot:{}, CIP-93 slot:{}", votedAtSlot, details.getEnvelope().getSlotAsLong());
+
+            return Either.left(
+                    Problem.builder()
+                            .withTitle("SLOT_MISMATCH")
+                            .withDetail("CIP93 envelope slot and votedAt slot mismatch!")
+                            .withStatus(BAD_REQUEST)
+                            .build()
+            );
+        }
+
+        var maybeExistingVote = voteRepository.findByEventIdAndCategoryIdAndVoterStakingAddress(eventId, category.id(), details.getStakeAddress());
         if (maybeExistingVote.isPresent()) {
 
             if (!event.allowVoteChanging()) {
@@ -457,9 +288,9 @@ public class DefaultVoteService implements VoteService {
             }
             existingVote.setId(existingVote.getId());
             existingVote.setProposalId(proposal.id());
-            existingVote.setVotedAtSlot(votedAtSlot);
-            existingVote.setCoseSignature(castVoteRequest.getCoseSignature());
-            existingVote.setCosePublicKey(castVoteRequest.getCosePublicKey());
+            existingVote.setVotedAtSlot(cip93VoteEnvelope.getSlotAsLong());
+            existingVote.setCoseSignature(details.getSignedWeb3Request().getCoseSignature());
+            existingVote.setCosePublicKey(details.getSignedWeb3Request().getCosePublicKey());
 
             return Either.right(voteRepository.saveAndFlush(existingVote));
         }
@@ -470,9 +301,9 @@ public class DefaultVoteService implements VoteService {
         vote.setCategoryId(category.id());
         vote.setProposalId(proposal.id());
         vote.setVoterStakingAddress(stakeAddress);
-        vote.setVotedAtSlot(votedAtSlot);
-        vote.setCoseSignature(castVoteRequest.getCoseSignature());
-        vote.setCosePublicKey(castVoteRequest.getCosePublicKey());
+        vote.setVotedAtSlot(cip93VoteEnvelope.getSlotAsLong());
+        vote.setCoseSignature(details.getSignedWeb3Request().getCoseSignature());
+        vote.setCosePublicKey(details.getSignedWeb3Request().getCosePublicKey());
 
         if (List.of(STAKE_BASED, BALANCE_BASED).contains(event.votingEventType())) {
             var accountE = chainFollowerClient.findAccount(eventId, stakeAddress);
@@ -564,138 +395,40 @@ public class DefaultVoteService implements VoteService {
     @Override
     @Transactional(readOnly = true)
     @Timed(value = "service.vote.voteReceipt", histogram = true)
-    public Either<Problem, VoteReceipt> voteReceipt(SignedWeb3Request viewVoteReceiptSignedWeb3Request) {
-        log.info("Fetching voter's receipt for the signed data: {}", viewVoteReceiptSignedWeb3Request);
+    public Either<Problem, VoteReceipt> voteReceipt(Web3AuthenticationToken web3AuthenticationToken) {
+        log.info("Fetching voter's receipt for the signed data...");
 
-        var cip30Verifier = new CIP30Verifier(
-            viewVoteReceiptSignedWeb3Request.getCoseSignature(),
-            viewVoteReceiptSignedWeb3Request.getCosePublicKey()
-        );
+        var details = web3AuthenticationToken.getDetails();
+        var cip30VerificationResult = details.getCip30VerificationResult();
 
-        var cip30VerificationResult = cip30Verifier.verify();
+        var event = details.getEvent();
+        var eventId = event.id();
+        var stakeAddress = details.getStakeAddress();
 
-        if (!cip30VerificationResult.isValid()) {
-            log.warn("CIP-30 data sign for viewing voter's receipt failed, validationError:{}", cip30VerificationResult.getValidationError().orElse(UNKNOWN));
+        var signedJson = cip30VerificationResult.getMessage(TEXT);
 
+        var viewVoteReceiptEnvelopeE = jsonService.decodeCIP93ViewVoteReceiptEnvelope(signedJson);
+        if (viewVoteReceiptEnvelopeE.isLeft()) {
             return Either.left(
                     Problem.builder()
                             .withTitle("INVALID_CIP30_DATA_SIGNATURE")
-                            .withDetail("Invalid cast vote cose signature!")
+                            .withDetail("Invalid view vote receipt signature!")
                             .withStatus(BAD_REQUEST)
                             .build()
             );
         }
+        var viewVoteReceiptEnvelope = viewVoteReceiptEnvelopeE.get();
 
-        var maybeAddress = cip30VerificationResult.getAddress(AddressFormat.TEXT);
-        if (maybeAddress.isEmpty()) {
-            log.warn("Address not found in the signed data");
-
-            return Either.left(
-                    Problem.builder()
-                            .withTitle("ADDRESS_NOT_FOUND")
-                            .withDetail("Bech32 address not found in the signed data.")
-                            .withStatus(BAD_REQUEST)
-                            .build()
-            );
-        }
-        var stakeAddress = maybeAddress.orElseThrow();
-
-        var viewVoteReceiptEnvelope = jsonService.decodeCIP93ViewVoteReceiptEnvelope(cip30VerificationResult.getMessage(TEXT));
-        if (viewVoteReceiptEnvelope.isLeft()) {
-            if (viewVoteReceiptEnvelope.isLeft()) {
-                return Either.left(
-                        Problem.builder()
-                                .withTitle("INVALID_CIP30_DATA_SIGNATURE")
-                                .withDetail("Invalid view vote receipt signature!")
-                                .withStatus(BAD_REQUEST)
-                                .build()
-                );
-            }
-        }
-        var cip93ViewVoteReceiptEnvelope = viewVoteReceiptEnvelope.get();
-        var maybeNetwork = Enums.getIfPresent(CardanoNetwork.class, cip93ViewVoteReceiptEnvelope.getData().getNetwork());
-        if (maybeNetwork.isEmpty()) {
-            log.warn("Invalid network, network:{}", cip93ViewVoteReceiptEnvelope.getData().getNetwork());
-
-            return Either.left(Problem.builder()
-                    .withTitle("INVALID_NETWORK")
-                    .withDetail("Invalid network, supported networks:" + CardanoNetwork.supportedNetworks())
-                    .withStatus(BAD_REQUEST)
-                    .build());
-        }
-
-        var network = maybeNetwork.orElseThrow();
-
-        if (network != cardanoNetwork) {
-            log.warn("Invalid network, network:{}", cip93ViewVoteReceiptEnvelope.getData().getNetwork());
-
-            return Either.left(Problem.builder()
-                    .withTitle("NETWORK_MISMATCH")
-                    .withDetail("Invalid network, backed configured with network:" + cardanoNetwork + ", however request is with network:" + network)
-                    .withStatus(BAD_REQUEST)
-                    .build());
-        }
-
-        var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, stakeAddress);
-        if (stakeAddressCheckE.isEmpty()) {
-            return Either.left(stakeAddressCheckE.getLeft());
-        }
-
-        String cip30StakeAddress = cip93ViewVoteReceiptEnvelope.getData().getAddress();
-        if (!stakeAddress.equals(cip30StakeAddress)) {
-            return Either.left(Problem.builder()
-                    .withTitle("STAKE_ADDRESS_MISMATCH")
-                    .withDetail("Invalid stake address, expected stakeAddress:" + stakeAddress + ", actual stakeAddress:" + cip30StakeAddress)
-                    .withStatus(BAD_REQUEST)
-                    .build());
-        }
-
-        var actionText = cip93ViewVoteReceiptEnvelope.getAction();
-
-        var maybeAction = Enums.getIfPresent(Web3Action.class, actionText);
-        if (maybeAction.isEmpty()) {
-            log.warn("Unknown action, action:{}", actionText);
-
-            return Either.left(Problem.builder()
-                    .withTitle("ACTION_NOT_FOUND")
-                    .withDetail("Action not found!")
-                    .withStatus(BAD_REQUEST)
-                    .build()
-            );
-        }
-        var action = maybeAction.orElseThrow();
-        if (action != VIEW_VOTE_RECEIPT) {
+        if (details.getAction() != VIEW_VOTE_RECEIPT) {
             return Either.left(Problem.builder()
                     .withTitle("INVALID_ACTION")
-                    .withDetail("Action is not VIEW_VOTE_RECEIPT, action:" + action.name())
+                    .withDetail("Action is not VIEW_VOTE_RECEIPT, action:" + details.getAction())
                     .withStatus(BAD_REQUEST)
                     .build()
             );
         }
 
-        var eventId = cip93ViewVoteReceiptEnvelope.getData().getEvent();
-        var eventDetailsE = chainFollowerClient.getEventDetails(eventId);
-        if (eventDetailsE.isEmpty()) {
-            return Either.left(Problem.builder()
-                    .withTitle("ERROR_GETTING_EVENT_DETAILS")
-                    .withDetail("Unable to get event details from chain-tip follower service, event:" + eventId)
-                    .withStatus(INTERNAL_SERVER_ERROR)
-                    .build()
-            );
-        }
-        var maybeEvent = eventDetailsE.get();
-        if (maybeEvent.isEmpty()) {
-            log.warn("Unrecognised event, id:{}", eventId);
-
-            return Either.left(Problem.builder()
-                    .withTitle("UNRECOGNISED_EVENT")
-                    .withDetail("Unrecognised event, id:" + eventId)
-                    .withStatus(BAD_REQUEST)
-                    .build());
-        }
-        var event = maybeEvent.get();
-
-        var categoryId = cip93ViewVoteReceiptEnvelope.getData().getCategory();
+        var categoryId = viewVoteReceiptEnvelope.getData().getCategory();
 
         return actualVoteReceipt(event, categoryId, stakeAddress);
     }
@@ -725,6 +458,7 @@ public class DefaultVoteService implements VoteService {
             log.info("Role: {}", role);
 
             var jwtEventId = jwtClaimsSet.getStringClaim("eventId");
+            var jwtStakeAddress = jwtClaimsSet.getStringClaim("stakeAddress");
 
             if (!jwtEventId.equals(eventId)) {
                 return Either.left(Problem.builder()
@@ -732,38 +466,6 @@ public class DefaultVoteService implements VoteService {
                         .withDetail("Requested event id mismatch, JWT has no permission for this event.")
                         .withStatus(BAD_REQUEST)
                         .build());
-            }
-
-            var jwtCardanoNetwork = jwtClaimsSet.getStringClaim("cardanoNetwork");
-            var maybeNetwork = Enums.getIfPresent(CardanoNetwork.class, jwtCardanoNetwork);
-            if (maybeNetwork.isEmpty()) {
-                log.warn("Invalid network, network:{}", jwtCardanoNetwork);
-
-                return Either.left(Problem.builder()
-                        .withTitle("INVALID_NETWORK")
-                        .withDetail("Invalid network, supported networks:" + CardanoNetwork.supportedNetworks())
-                        .withStatus(BAD_REQUEST)
-                        .build());
-            }
-
-            var network = maybeNetwork.orElseThrow();
-
-            if (network != cardanoNetwork) {
-                log.warn("Network mismatch, network:{}", network);
-
-                return Either.left(Problem.builder()
-                        .withTitle("NETWORK_MISMATCH")
-                        .withDetail("Invalid network, backend configured with network:" + cardanoNetwork + ", however request is with network:" + network)
-                        .withStatus(BAD_REQUEST)
-                        .build());
-
-            }
-
-            var jwtStakeAddress = jwtClaimsSet.getStringClaim("stakeAddress");
-
-            var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, jwtStakeAddress);
-            if (stakeAddressCheckE.isEmpty()) {
-                return Either.left(stakeAddressCheckE.getLeft());
             }
 
             var allowedRoles = role.allowedActions();

@@ -7,7 +7,6 @@ import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.domain.Leaderboard;
 import org.cardano.foundation.voting.repository.VoteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
@@ -27,36 +26,9 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
     @Autowired
     private VoteRepository voteRepository;
 
-    @Value("${leaderboard.force.results:false}")
-    private boolean forceLeaderboardResultsAvailability;
-
-    @Override
-    public Either<Problem, Boolean> isEventLeaderboardAvailable(String event) {
-        var eventDetailsE = chainFollowerClient.getEventDetails(event);
-        if (eventDetailsE.isEmpty()) {
-            return Either.left(Problem.builder()
-                    .withTitle("ERROR_GETTING_EVENT_DETAILS")
-                    .withDetail("Unable to get event details from chain-tip follower service, event:" + event)
-                    .withStatus(INTERNAL_SERVER_ERROR)
-                    .build()
-            );
-        }
-        var maybeEventDetails = eventDetailsE.get();
-        if (maybeEventDetails.isEmpty()) {
-            return Either.left(Problem.builder()
-                    .withTitle("UNRECOGNISED_EVENT")
-                    .withDetail("Unrecognised event, event:" + event)
-                    .withStatus(BAD_REQUEST)
-                    .build()
-            );
-        }
-        var eventDetails = maybeEventDetails.orElseThrow();
-
-        return isEventLeaderboardAvailable(eventDetails);
-    }
-
-    private Either<Problem, Boolean> isEventLeaderboardAvailable(ChainFollowerClient.EventDetailsResponse eventDetails) {
-        if (forceLeaderboardResultsAvailability) {
+    private Either<Problem, Boolean> isEventLeaderboardAvailable(ChainFollowerClient.EventDetailsResponse eventDetails,
+                                                                 boolean forceLeaderboard) {
+        if (forceLeaderboard) {
             return Either.right(true);
         }
 
@@ -68,8 +40,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public Either<Problem, Leaderboard.ByEvent> getEventLeaderboard(String event) {
+    public Either<Problem, Boolean> isEventLeaderboardAvailable(String event, boolean forceLeaderboard) {
         var eventDetailsE = chainFollowerClient.getEventDetails(event);
         if (eventDetailsE.isEmpty()) {
             return Either.left(Problem.builder()
@@ -90,7 +61,33 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
         }
         var eventDetails = maybeEventDetails.orElseThrow();
 
-        var eventLeaderboardAvailableE = isEventLeaderboardAvailable(eventDetails);
+        return isEventLeaderboardAvailable(eventDetails, forceLeaderboard);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Either<Problem, Leaderboard.ByEvent> getEventLeaderboard(String event, boolean forceLeaderboard) {
+        var eventDetailsE = chainFollowerClient.getEventDetails(event);
+        if (eventDetailsE.isEmpty()) {
+            return Either.left(Problem.builder()
+                    .withTitle("ERROR_GETTING_EVENT_DETAILS")
+                    .withDetail("Unable to get event details from chain-tip follower service, event:" + event)
+                    .withStatus(INTERNAL_SERVER_ERROR)
+                    .build()
+            );
+        }
+        var maybeEventDetails = eventDetailsE.get();
+        if (maybeEventDetails.isEmpty()) {
+            return Either.left(Problem.builder()
+                    .withTitle("UNRECOGNISED_EVENT")
+                    .withDetail("Unrecognised event, event:" + event)
+                    .withStatus(BAD_REQUEST)
+                    .build()
+            );
+        }
+        var eventDetails = maybeEventDetails.orElseThrow();
+
+        var eventLeaderboardAvailableE = isEventLeaderboardAvailable(eventDetails, forceLeaderboard);
         if (eventLeaderboardAvailableE.isEmpty()) {
             return Either.left(eventLeaderboardAvailableE.getLeft());
         }
@@ -99,7 +96,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
         if (!isEventLeaderBoardAvailable) {
             return Either.left(Problem.builder()
                     .withTitle("VOTING_RESULTS_NOT_AVAILABLE")
-                    .withDetail("High level voting results not available until voting event finishes.")
+                    .withDetail("Event level voting results not available until voting event finishes!")
                     .withStatus(FORBIDDEN)
                     .build()
             );
@@ -128,7 +125,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
 
     @Override
     @Transactional(readOnly = true)
-    public Either<Problem, Leaderboard.ByCategory> getCategoryLeaderboard(String event, String category) {
+    public Either<Problem, Leaderboard.ByCategory> getCategoryLeaderboard(String event, String category, boolean forceLeaderboard) {
         var eventDetailsE = chainFollowerClient.getEventDetails(event);
         if (eventDetailsE.isEmpty()) {
             return Either.left(Problem.builder()
@@ -161,7 +158,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
         }
         var categoryDetails = maybeCategory.orElseThrow();
 
-        var categoryLeaderboardAvailableE = isCategoryLeaderboardAvailable(eventDetails, categoryDetails);
+        var categoryLeaderboardAvailableE = isCategoryLeaderboardAvailable(eventDetails, categoryDetails, forceLeaderboard);
         if (categoryLeaderboardAvailableE.isEmpty()) {
             return Either.left(categoryLeaderboardAvailableE.getLeft());
         }
@@ -170,7 +167,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
         if (!isCategoryLeaderBoardAvailable) {
             return Either.left(Problem.builder()
                     .withTitle("VOTING_RESULTS_NOT_AVAILABLE")
-                    .withDetail("High level voting results not available until voting event finishes.")
+                    .withDetail("Category level voting results not available until voting event finishes!")
                     .withStatus(FORBIDDEN)
                     .build()
             );
@@ -194,7 +191,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
     }
 
     @Override
-    public Either<Problem, Boolean> isCategoryLeaderboardAvailable(String event, String category) {
+    public Either<Problem, Boolean> isCategoryLeaderboardAvailable(String event, String category, boolean forceLeaderboard) {
         var eventDetailsE = chainFollowerClient.getEventDetails(event);
         if (eventDetailsE.isEmpty()) {
             return Either.left(Problem.builder()
@@ -227,12 +224,13 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
         }
         var categoryDetails = maybeCategory.orElseThrow();
 
-        return isCategoryLeaderboardAvailable(eventDetails, categoryDetails);
+        return isCategoryLeaderboardAvailable(eventDetails, categoryDetails, forceLeaderboard);
     }
 
     private Either<Problem, Boolean> isCategoryLeaderboardAvailable(ChainFollowerClient.EventDetailsResponse eventDetails,
-                                                                    ChainFollowerClient.CategoryDetailsResponse categoryDetails) {
-        if (forceLeaderboardResultsAvailability) {
+                                                                    ChainFollowerClient.CategoryDetailsResponse categoryDetails,
+                                                                    boolean forceLeaderboard) {
+        if (forceLeaderboard) {
             return Either.right(true);
         }
 

@@ -16,6 +16,7 @@ import {
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
+import VerifiedIcon from '@mui/icons-material/Verified';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
@@ -28,11 +29,14 @@ import Modal from '../Modal/Modal';
 import ConnectWalletList from '../../ConnectWalletList/ConnectWalletList';
 import { VerifyWallet } from '../../VerifyWallet';
 import { eventBus } from '../../../utils/EventBus';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../store';
 
 const Header: React.FC = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const walletIsVerified = useSelector((state: RootState) => state.user.walletIsVerified);
 
   const { stakeAddress, isConnected, disconnect, enabledWallet } = useCardano();
   const [openAuthDialog, setOpenAuthDialog] = useState<boolean>(false);
@@ -45,7 +49,6 @@ const Header: React.FC = () => {
     const openConnectWalletModal = () => {
       setOpenAuthDialog(true);
     };
-
     eventBus.subscribe('openConnectWalletModal', openConnectWalletModal);
 
     return () => {
@@ -53,14 +56,36 @@ const Header: React.FC = () => {
     };
   }, []);
 
-  const handleCloseAuthDialog = () => {
-    setOpenAuthDialog(false);
-  };
+  useEffect(() => {
+    const openVerifyWalletModal = () => {
+      setVerifyModalIsOpen(true);
+    };
+    eventBus.subscribe('openVerifyWalletModal', openVerifyWalletModal);
+
+    return () => {
+      eventBus.unsubscribe('openVerifyWalletModal', openVerifyWalletModal);
+    };
+  }, []);
 
   const showToast = (message: string, error?: boolean) => {
     setToastIsError(!!error);
     setToastOpen(true);
     setToastMessage(message);
+  };
+
+  useEffect(() => {
+    const showToastListener = (message: string, error: boolean) => {
+      showToast(message, error);
+    };
+    eventBus.subscribe('showToast', showToastListener);
+
+    return () => {
+      eventBus.unsubscribe('showToast', showToastListener);
+    };
+  }, []);
+
+  const handleCloseAuthDialog = () => {
+    setOpenAuthDialog(false);
   };
 
   const onConnectWallet = () => {
@@ -84,7 +109,9 @@ const Header: React.FC = () => {
   };
 
   const handleOpenVerify = () => {
-    setVerifyModalIsOpen(true);
+    if (!walletIsVerified && isConnected) {
+      setVerifyModalIsOpen(true);
+    }
   };
 
   const handleCloseVerify = () => {
@@ -246,7 +273,13 @@ const Header: React.FC = () => {
                         color="inherit"
                         onClick={handleOpenVerify}
                       >
-                        Verify
+                        {walletIsVerified ? (
+                          <>
+                            Verified <VerifiedIcon style={{ width: '20px', paddingBottom: '5px', color: '#1C9BEF' }} />{' '}
+                          </>
+                        ) : (
+                          'Verify'
+                        )}
                       </Button>
                       <Button
                         className="connect-button disconnect-button"

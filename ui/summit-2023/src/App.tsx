@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import toast, { Toaster } from 'react-hot-toast';
 import BlockIcon from '@mui/icons-material/Block';
 import { Toast } from './components/common/Toast/Toast';
-import { setEventData, setWalletIsVerified } from './store/userSlice';
+import { setEventData, setWalletIsLoggedIn, setWalletIsVerified } from './store/userSlice';
 import BackgroundPolygon1 from './common/resources/images/polygon1.svg';
 import { Box, CircularProgress, Container, useMediaQuery, useTheme } from '@mui/material';
 import Header from './components/common/Header/Header';
@@ -16,6 +16,7 @@ import { RootState } from './store';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import { getIsVerified } from 'common/api/verificationService';
 import { getEvent } from 'common/api/referenceDataService';
+import { getUserInSession, tokenIsExpired } from './utils/session';
 
 function App() {
   const theme = useTheme();
@@ -32,6 +33,13 @@ function App() {
       if (isConnected) {
         const isVerified = await getIsVerified(env.EVENT_ID, stakeAddress);
         dispatch(setWalletIsVerified({ isVerified: isVerified.verified }));
+      }
+
+      const isLoggedIn = getUserInSession();
+
+      if (isLoggedIn) {
+        const isExpired = tokenIsExpired(isLoggedIn.expiresAt);
+        if (!isExpired) dispatch(setWalletIsLoggedIn({ isLoggedIn }));
       }
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') {

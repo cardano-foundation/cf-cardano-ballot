@@ -1,10 +1,10 @@
 /* tslint:disable */
 /* eslint-disable */
-// Generated using typescript-generator version 3.2.1263 on 2023-09-05 22:39:31.
+// Generated using typescript-generator version 3.2.1263 on 2023-09-06 13:38:50.
 
 export interface Either<L, R> extends Value<R>, Serializable {
-    left: L;
     right: boolean;
+    left: L;
     orNull: R;
 }
 
@@ -41,6 +41,11 @@ export interface EraData {
     endEpochNo: number;
     previousEra?: Era;
     nextEra?: Era;
+}
+
+export interface IsMerkleRootPresentResult {
+    isPresent: boolean;
+    network: CardanoNetwork;
 }
 
 export interface TransactionDetails {
@@ -146,11 +151,11 @@ export interface EventPresentation {
     snapshotEpoch?: number;
     categories: CategoryPresentation[];
     active: boolean;
-    notStarted: boolean;
-    finished: boolean;
-    allowVoteChanging: boolean;
     highLevelResultsWhileVoting: boolean;
     categoryResultsWhileVoting: boolean;
+    allowVoteChanging: boolean;
+    notStarted: boolean;
+    finished: boolean;
 }
 
 export interface EventPresentationBuilder {
@@ -407,9 +412,9 @@ export interface Problem {
     instance: URI;
     type: URI;
     parameters: { [index: string]: any };
+    detail: string;
     status: StatusType;
     title: string;
-    detail: string;
 }
 
 export interface Serializable {

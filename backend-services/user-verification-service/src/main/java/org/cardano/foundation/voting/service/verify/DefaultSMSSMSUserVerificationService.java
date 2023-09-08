@@ -9,9 +9,9 @@ import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.domain.*;
 import org.cardano.foundation.voting.domain.entity.UserVerification;
 import org.cardano.foundation.voting.repository.UserVerificationRepository;
-import org.cardano.foundation.voting.service.address.StakeAddressVerificationService;
 import org.cardano.foundation.voting.service.pass.CodeGenService;
 import org.cardano.foundation.voting.service.sms.SMSService;
+import org.cardano.foundation.voting.utils.StakeAddress;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -52,10 +52,10 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
     private SaltHolder saltHolder;
 
     @Autowired
-    private StakeAddressVerificationService stakeAddressVerificationService;
+    private Clock clock;
 
     @Autowired
-    private Clock clock;
+    private CardanoNetwork network;
 
     @Autowired
     private CodeGenService codeGenService;
@@ -71,18 +71,13 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
 
     @Override
     @Transactional
-    public Either<Problem, StartVerificationResponse> startVerification(StartVerificationRequest startVerificationRequest) {
+    public Either<Problem, SMSStartVerificationResponse> startVerification(SMSStartVerificationRequest startVerificationRequest) {
         String eventId = startVerificationRequest.getEventId();
         String stakeAddress = startVerificationRequest.getStakeAddress();
 
-        var stakeAddressCheckE = stakeAddressVerificationService.checkIfAddressIsStakeAddress(stakeAddress);
-        if (stakeAddressCheckE.isLeft()) {
+        var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, stakeAddress);
+        if (stakeAddressCheckE.isEmpty()) {
             return Either.left(stakeAddressCheckE.getLeft());
-        }
-
-        var stakeAddressNetworkCheck = stakeAddressVerificationService.checkStakeAddressNetwork(stakeAddress);
-        if (stakeAddressNetworkCheck.isLeft()) {
-            return Either.left(stakeAddressNetworkCheck.getLeft());
         }
 
         var activeEventE = chainFollowerClient.findEventById(eventId);
@@ -210,7 +205,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
 
         var saved = userVerificationRepository.saveAndFlush(newUserVerification);
 
-        var startVerificationResponse = new StartVerificationResponse(
+        var startVerificationResponse = new SMSStartVerificationResponse(
                 saved.getEventId(),
                 saved.getStakeAddress(),
                 saved.getRequestId(),
@@ -223,18 +218,13 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
 
     @Override
     @Transactional(readOnly = true)
-    public Either<Problem, IsVerifiedResponse> checkVerification(CheckVerificationRequest checkVerificationRequest) {
+    public Either<Problem, IsVerifiedResponse> checkVerification(SMSCheckVerificationRequest checkVerificationRequest) {
         String eventId = checkVerificationRequest.getEventId();
         String stakeAddress = checkVerificationRequest.getStakeAddress();
 
-        var stakeAddressCheckE = stakeAddressVerificationService.checkIfAddressIsStakeAddress(stakeAddress);
-        if (stakeAddressCheckE.isLeft()) {
+        var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, stakeAddress);
+        if (stakeAddressCheckE.isEmpty()) {
             return Either.left(stakeAddressCheckE.getLeft());
-        }
-
-        var stakeAddressNetworkCheck = stakeAddressVerificationService.checkStakeAddressNetwork(stakeAddress);
-        if (stakeAddressNetworkCheck.isLeft()) {
-            return Either.left(stakeAddressNetworkCheck.getLeft());
         }
 
         var activeEventE = chainFollowerClient.findEventById(eventId);

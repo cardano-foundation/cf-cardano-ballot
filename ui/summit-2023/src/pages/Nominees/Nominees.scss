@@ -151,3 +151,11 @@
   font-weight: 400 !important;
   line-height: 22px;
 }
+
+.accordion-button.MuiPaper-root {
+  position: static;
+  box-shadow: none;
+}
+.MuiPaper-root .MuiPaper-elevation {
+  background-color: transparent;
+}

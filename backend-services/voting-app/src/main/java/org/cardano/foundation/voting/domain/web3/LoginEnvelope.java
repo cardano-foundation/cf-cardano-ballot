@@ -1,4 +1,4 @@
-package org.cardano.foundation.voting.domain;
+package org.cardano.foundation.voting.domain.web3;
 
 
 import lombok.AllArgsConstructor;

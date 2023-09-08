@@ -6,12 +6,12 @@ import org.zalando.problem.Problem;
 
 public interface LeaderBoardService {
 
-    Either<Problem, Boolean> isEventLeaderboardAvailable(String event);
+    Either<Problem, Boolean> isEventLeaderboardAvailable(String event, boolean forceLeaderboard);
 
-    Either<Problem, Leaderboard.ByEvent> getEventLeaderboard(String event);
+    Either<Problem, Leaderboard.ByEvent> getEventLeaderboard(String event, boolean forceLeaderboard);
 
-    Either<Problem, Leaderboard.ByCategory> getCategoryLeaderboard(String event, String category);
+    Either<Problem, Leaderboard.ByCategory> getCategoryLeaderboard(String event, String category, boolean forceLeaderboard);
 
-    Either<Problem, Boolean> isCategoryLeaderboardAvailable(String event, String category);
+    Either<Problem, Boolean> isCategoryLeaderboardAvailable(String event, String category, boolean forceLeaderboard);
 
 }

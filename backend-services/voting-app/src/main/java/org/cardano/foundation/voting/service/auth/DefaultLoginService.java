@@ -9,10 +9,10 @@ import org.cardano.foundation.voting.domain.LoginResult;
 import org.cardano.foundation.voting.domain.Role;
 import org.cardano.foundation.voting.domain.web3.SignedWeb3Request;
 import org.cardano.foundation.voting.domain.web3.Web3Action;
-import org.cardano.foundation.voting.service.address.StakeAddressVerificationService;
 import org.cardano.foundation.voting.service.expire.ExpirationService;
 import org.cardano.foundation.voting.service.json.JsonService;
 import org.cardano.foundation.voting.utils.Enums;
+import org.cardano.foundation.voting.utils.StakeAddress;
 import org.cardanofoundation.cip30.AddressFormat;
 import org.cardanofoundation.cip30.CIP30Verifier;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,13 +45,10 @@ public class DefaultLoginService implements LoginService {
     private JsonService jsonService;
 
     @Autowired
-    private StakeAddressVerificationService stakeAddressVerificationService;
-
-    @Autowired
     private CardanoNetwork cardanoNetwork;
 
     @Override
-    @Timed(value = "service.auth.login", percentiles = { 0.3, 0.5, 0.95 })
+    @Timed(value = "service.auth.login", histogram = true)
     public Either<Problem, LoginResult> login(SignedWeb3Request loginRequest) {
         var cip30Verifier = new CIP30Verifier(loginRequest.getCoseSignature(), loginRequest.getCosePublicKey());
 
@@ -201,14 +198,17 @@ public class DefaultLoginService implements LoginService {
         }
         var stakeAddress = maybeAddress.orElseThrow();
 
-        var stakeAddressCheckE = stakeAddressVerificationService.checkIfAddressIsStakeAddress(stakeAddress);
-        if (stakeAddressCheckE.isLeft()) {
+        var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, stakeAddress);
+        if (stakeAddressCheckE.isEmpty()) {
             return Either.left(stakeAddressCheckE.getLeft());
         }
 
-        var stakeAddressNetworkCheck = stakeAddressVerificationService.checkStakeAddressNetwork(stakeAddress);
-        if (stakeAddressNetworkCheck.isLeft()) {
-            return Either.left(stakeAddressNetworkCheck.getLeft());
+        if (!stakeAddress.equals(cip93LoginEnvelope.getData().getAddress())) {
+            return Either.left(Problem.builder()
+                    .withTitle("STAKE_ADDRESS_MISMATCH")
+                    .withDetail("Stake address mismatch, signed address:" + stakeAddress + ", however request is with address:" + cip93LoginEnvelope.getData().getAddress())
+                    .withStatus(BAD_REQUEST)
+                    .build());
         }
 
         var maybeRole = Enums.getIfPresent(Role.class, cip93LoginEnvelope.getData().getRole());

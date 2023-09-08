@@ -1,3 +1,6 @@
+import { SignedWeb3Request } from '../types/voting-app-types';
+import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
+
 const addressSlice = (address: string, sliceLength = 10) => {
   if (address) {
     return `${address.slice(0, sliceLength)}...${address.slice(-sliceLength)}`;
@@ -11,4 +14,19 @@ const walletIcon = (walletName: string) => {
   return window.cardano && window.cardano[walletName].icon;
 };
 
-export { addressSlice, walletIcon };
+const getSignedMessagePromise = (signMessage: ReturnType<typeof useCardano>['signMessage']) => {
+  return async (message: string): Promise<SignedWeb3Request> =>
+    new Promise((resolve, reject) => {
+      signMessage(
+        message,
+        (signature, key) => resolve({ coseSignature: signature, cosePublicKey: key || '' }),
+        (error: Error) => reject(error)
+      );
+    });
+};
+
+const copyToClipboard = async (textToCopy: string) => {
+  await navigator.clipboard.writeText(textToCopy);
+};
+
+export { addressSlice, walletIcon, getSignedMessagePromise, copyToClipboard };

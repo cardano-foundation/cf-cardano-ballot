@@ -308,15 +308,9 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-<<<<<<< Updated upstream
-          "expr": "sum(rate(resource_reference_events_seconds_count[$__rate_interval])) by (pod)",
-          "hide": false,
-          "legendFormat": "rps {{ pod }}",
-=======
           "expr": "sum(rate(resource_reference_events_seconds_count{exception=\"none\"}[$__rate_interval])) by (pod)",
           "hide": false,
           "legendFormat": "rps {{ pod }} - OK",
->>>>>>> Stashed changes
           "range": true,
           "refId": "A"
         },
@@ -419,11 +413,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-<<<<<<< Updated upstream
-          "expr": "histogram_quantile(0.5, sum by (pod, le) (rate(resource_reference_event_seconds_bucket[10m])))",
-=======
           "expr": "histogram_quantile(0.5, sum by (pod, le) (rate(resource_reference_event_seconds_bucket{exception=\"none\"}[$__rate_interval])))",
->>>>>>> Stashed changes
           "legendFormat": "median - {{pod}}",
           "range": true,
           "refId": "A"
@@ -434,11 +424,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-<<<<<<< Updated upstream
-          "expr": "histogram_quantile(0.95, sum by (pod, le) (rate(resource_reference_event_seconds_bucket[10m])))",
-=======
           "expr": "histogram_quantile(0.95, sum by (pod, le) (rate(resource_reference_event_seconds_bucket{exception=\"none\"}[$__rate_interval])))",
->>>>>>> Stashed changes
           "hide": false,
           "legendFormat": "p95 - {{pod}}",
           "range": true,
@@ -464,10 +450,6 @@
   "timezone": "",
   "title": "Voting Dashboard",
   "uid": "j-MK-_kIz",
-<<<<<<< Updated upstream
-  "version": 3,
-=======
   "version": 4,
->>>>>>> Stashed changes
   "weekStart": ""
 }

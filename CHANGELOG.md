@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.22](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.21...v0.2.22) (2023-09-08)
+
+
+### Features
+
+* rollback handling via vanilla Yaci and code cleanup. ([#158](https://github.com/cardano-foundation/cf-cardano-ballot/issues/158)) ([a2535d6](https://github.com/cardano-foundation/cf-cardano-ballot/commit/a2535d66f3ddb1fb1e920f16557d18c30dd600d1))
+* switching from prometheus summary to histograms ([#160](https://github.com/cardano-foundation/cf-cardano-ballot/issues/160)) ([1ea0679](https://github.com/cardano-foundation/cf-cardano-ballot/commit/1ea06798c5e856d2ba41ba0f2f01821d89192998))
+
 ## [0.2.21](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.20...v0.2.21) (2023-09-06)
 
 

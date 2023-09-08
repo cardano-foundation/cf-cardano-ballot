@@ -45,12 +45,12 @@ public class CIP1694PreProdCommands {
                 .endEpoch(Optional.of(95))
                 .snapshotEpoch(Optional.of(79))
                 .votingPowerAsset(Optional.of(ADA))
-                .team("CF & IOG")
+                .organisers("CF & IOG")
                 .votingEventType(STAKE_BASED)
                 .schemaVersion(V1)
                 .allowVoteChanging(false)
                 .categoryResultsWhileVoting(false)
-                .highLevelResultsWhileVoting(false)
+                .highLevelEventResultsWhileVoting(false)
                 .build();
 
         l1SubmissionService.submitEvent(createEventCommand);
@@ -82,7 +82,7 @@ public class CIP1694PreProdCommands {
                 .build();
 
         CreateCategoryCommand createCategoryCommand = CreateCategoryCommand.builder()
-                .id(String.format("%s_%s", EVENT_NAME, event.substring(event.length() - 4)))
+                .name(String.format("%s_%s", EVENT_NAME, event.substring(event.length() - 4)))
                 .event(event)
                 .gdprProtection(false)
                 .schemaVersion(V1)

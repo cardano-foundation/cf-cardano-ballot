@@ -10,8 +10,8 @@ public interface LeaderBoardService {
 
     Either<Problem, Leaderboard.ByEvent> getEventLeaderboard(String event, boolean forceLeaderboard);
 
-    Either<Problem, Leaderboard.ByCategory> getCategoryLeaderboard(String event, String category, boolean forceLeaderboard);
-
     Either<Problem, Boolean> isCategoryLeaderboardAvailable(String event, String category, boolean forceLeaderboard);
+
+    Either<Problem, Leaderboard.ByCategory> getCategoryLeaderboard(String event, String category, boolean forceLeaderboard);
 
 }

@@ -3,12 +3,12 @@ package org.cardano.foundation.voting.service.reference_data;
 import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.domain.ExpirationData;
 import org.cardano.foundation.voting.domain.entity.Category;
 import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.domain.entity.Proposal;
 import org.cardano.foundation.voting.repository.CategoryRepository;
 import org.cardano.foundation.voting.repository.EventRepository;
-import org.cardano.foundation.voting.repository.MerkleRootHashRepository;
 import org.cardano.foundation.voting.repository.ProposalRepository;
 import org.cardano.foundation.voting.service.expire.ExpirationService;
 import org.springframework.stereotype.Service;
@@ -29,8 +29,6 @@ public class ReferenceDataService {
     private final ProposalRepository proposalRepository;
 
     private final ExpirationService expirationService;
-
-    private final MerkleRootHashRepository merkleRootHashRepository;
 
     @Timed(value = "service.reference.findValidEventByName", histogram = true)
     @Transactional(readOnly = true)
@@ -81,7 +79,8 @@ public class ReferenceDataService {
     @Transactional(readOnly = true)
     public List<Event> findAllActiveEvents() {
         return findAllValidEvents().stream()
-                .filter(expirationService::isEventActive).toList();
+                .filter(event -> expirationService.getExpirationData(event).fold(problem -> false, ExpirationData::active))
+                .toList();
     }
 
     @Timed(value = "service.reference.storeCategory", histogram = true)

@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.cardano.foundation.voting.domain.OnChainEventType.COMMITMENTS;
-import static org.cardano.foundation.voting.domain.VotingEventType.BALANCE_BASED;
-import static org.cardano.foundation.voting.domain.VotingEventType.STAKE_BASED;
+import static org.cardano.foundation.voting.domain.OnChainEventType.EVENT_REGISTRATION;
+import static org.cardano.foundation.voting.domain.VotingEventType.*;
 import static org.cardano.foundation.voting.utils.MoreBoolean.fromBigInteger;
 import static org.zalando.problem.Status.BAD_REQUEST;
 import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
@@ -181,8 +181,10 @@ public class CborService {
 
     public Either<Problem, EventRegistrationEnvelope> decodeEventRegistrationEnvelope(CBORMetadataMap payload) {
         try {
+            String name = (String) payload.get("name");
+
             var maybeOnchainEventType = Enums.getIfPresent(OnChainEventType.class, (String) payload.get("type"));
-            if (maybeOnchainEventType.isEmpty() || maybeOnchainEventType.orElseThrow() != OnChainEventType.EVENT_REGISTRATION) {
+            if (maybeOnchainEventType.isEmpty() || maybeOnchainEventType.orElseThrow() != EVENT_REGISTRATION) {
                 return Either.left(
                         Problem.builder()
                                 .withTitle("INVALID_EVENT_REGISTRATION")
@@ -191,12 +193,12 @@ public class CborService {
                                 .build());
             }
 
-            var maybeTeam = Optional.ofNullable((String)payload.get("team"));
-            if (maybeTeam.isEmpty()) {
+            var maybeOrganisers = Optional.ofNullable((String)payload.get("organisers"));
+            if (maybeOrganisers.isEmpty()) {
                 return Either.left(
                         Problem.builder()
                                 .withTitle("INVALID_EVENT_REGISTRATION")
-                                .withDetail("Invalid event registration event, missing team field.")
+                                .withDetail("Invalid event registration event, missing organisers field.")
                                 .withStatus(BAD_REQUEST)
                                 .build());
             }
@@ -236,15 +238,16 @@ public class CborService {
             }
 
             var eventRegistrationEnvelopeBuilder = EventRegistrationEnvelope.builder()
-                    .name((String)payload.get("name"))
-                    .type(OnChainEventType.EVENT_REGISTRATION)
-                    .team(maybeTeam.orElseThrow())
+                    .name(name)
+                    .type(EVENT_REGISTRATION)
+                    .organisers(maybeOrganisers.orElseThrow())
                     .creationSlot(maybeCreationSlot.orElseThrow())
                     .votingPowerAsset(maybeVotingPowerAsset)
                     .votingEventType(votingEventType);
 
             if (List.of(STAKE_BASED, BALANCE_BASED).contains(votingEventType)) {
                 var maybeStartEpoch = Optional.ofNullable(payload.get("startEpoch")).map(obj -> ((BigInteger) obj).intValue());
+
                 if (maybeStartEpoch.isEmpty()) {
                     return Either.left(
                             Problem.builder()
@@ -270,7 +273,18 @@ public class CborService {
                                     .withTitle("INVALID_EVENT_REGISTRATION")
                                     .withDetail("Invalid event registration event, missing snapshotEpoch field.")
                                     .withStatus(BAD_REQUEST)
-                                    .build());
+                                    .build()
+                    );
+                }
+
+                var maybeProposalsRevealEpoch = Optional.ofNullable(payload.get("proposalsRevealEpoch")).map(obj -> ((BigInteger) obj).intValue());
+
+                if (maybeProposalsRevealEpoch.isEmpty()) {
+                    log.info("proposalsRevealEpoch for event:{} is not available, setting it to endEpoch", name);
+
+                    maybeProposalsRevealEpoch = Optional.of(maybeEndEpoch.orElseThrow());
+                } else {
+                    log.info("proposalsRevealEpoch for event:{} is available, setting it to {}", name, maybeProposalsRevealEpoch.orElseThrow());
                 }
 
                 if (maybeStartEpoch.orElseThrow() > maybeEndEpoch.orElseThrow()) {
@@ -288,15 +302,27 @@ public class CborService {
                                     .withTitle("INVALID_EVENT_REGISTRATION")
                                     .withDetail("Invalid event registration event, snapshotEpoch must be less than startEpoch.")
                                     .withStatus(BAD_REQUEST)
-                                    .build());
+                                    .build()
+                    );
+                }
+
+                if (maybeProposalsRevealEpoch.orElseThrow() < maybeEndEpoch.orElseThrow()) {
+                    return Either.left(
+                            Problem.builder()
+                                    .withTitle("INVALID_EVENT_REGISTRATION")
+                                    .withDetail("Invalid event registration event, proposalsRevealEpoch must be greater than equal endEpoch.")
+                                    .withStatus(BAD_REQUEST)
+                                    .build()
+                    );
                 }
 
                 eventRegistrationEnvelopeBuilder.startEpoch(maybeStartEpoch);
                 eventRegistrationEnvelopeBuilder.endEpoch(maybeEndEpoch);
                 eventRegistrationEnvelopeBuilder.snapshotEpoch(maybeSnapshotEpoch);
+                eventRegistrationEnvelopeBuilder.proposalsRevealEpoch(maybeProposalsRevealEpoch);
             }
 
-            if (votingEventType == VotingEventType.USER_BASED) {
+            if (votingEventType == USER_BASED) {
                 var maybeStartSlot = Optional.ofNullable(payload.get("startSlot")).map(obj -> ((BigInteger) obj).longValue());
                 if (maybeStartSlot.isEmpty()) {
                     return Either.left(
@@ -316,8 +342,39 @@ public class CborService {
                                     .build());
                 }
 
+                var maybeProposalsRevealSlot = Optional.ofNullable(payload.get("proposalsRevealSlot")).map(obj -> ((BigInteger) obj).longValue());
+
+                if (maybeProposalsRevealSlot.isEmpty()) {
+                    log.info("proposalsRevealSlot for event:{} is not available, setting it to endSlot", name);
+
+                    maybeProposalsRevealSlot = Optional.of(maybeEndSlot.orElseThrow());
+                } else {
+                    log.info("proposalsRevealSlot for event:{} is available, setting it to {}", name, maybeProposalsRevealSlot.orElseThrow());
+                }
+
+                if (maybeEndSlot.orElseThrow() < maybeStartSlot.orElseThrow()) {
+                    return Either.left(
+                            Problem.builder()
+                                    .withTitle("INVALID_EVENT_REGISTRATION")
+                                    .withDetail("Invalid event registration event, startSlot must be less than endSlot.")
+                                    .withStatus(BAD_REQUEST)
+                                    .build()
+                    );
+                }
+
+                if (maybeProposalsRevealSlot.orElseThrow() < maybeEndSlot.orElseThrow()) {
+                    return Either.left(
+                            Problem.builder()
+                                    .withTitle("INVALID_EVENT_REGISTRATION")
+                                    .withDetail("Invalid event registration event, proposalsRevealSlot must be greater than equal endSlot.")
+                                    .withStatus(BAD_REQUEST)
+                                    .build()
+                    );
+                }
+
                 eventRegistrationEnvelopeBuilder.startSlot(maybeStartSlot);
                 eventRegistrationEnvelopeBuilder.endSlot(maybeEndSlot);
+                eventRegistrationEnvelopeBuilder.proposalsRevealSlot(maybeProposalsRevealSlot);
             }
 
             var maybeOptions = Optional.ofNullable((CBORMetadataMap) payload.get("options"));
@@ -332,8 +389,10 @@ public class CborService {
             var options = maybeOptions.orElseThrow();
 
             eventRegistrationEnvelopeBuilder.allowVoteChanging(fromBigInteger(((BigInteger)options.get("allowVoteChanging"))).orElse(false));
+
+            eventRegistrationEnvelopeBuilder.highLevelEventResultsWhileVoting(fromBigInteger(((BigInteger)options.get("highLevelEventResultsWhileVoting"))).orElse(false));
+            eventRegistrationEnvelopeBuilder.highLevelCategoryResultsWhileVoting(fromBigInteger(((BigInteger)options.get("highLevelCategoryResultsWhileVoting"))).orElse(false));
             eventRegistrationEnvelopeBuilder.categoryResultsWhileVoting(fromBigInteger(((BigInteger)options.get("categoryResultsWhileVoting"))).orElse(false));
-            eventRegistrationEnvelopeBuilder.highLevelResultsWhileVoting(fromBigInteger(((BigInteger)options.get("highLevelResultsWhileVoting"))).orElse(false));
 
             eventRegistrationEnvelopeBuilder.schemaVersion((String)payload.get("schemaVersion"));
 
@@ -350,7 +409,8 @@ public class CborService {
         }
     }
 
-    private static List<ProposalEnvelope> readProposalsEnvelope(CBORMetadataList proposalsNode, boolean isGdprProtection) {
+    private static List<ProposalEnvelope> readProposalsEnvelope(CBORMetadataList proposalsNode,
+                                                                boolean isGdprProtection) {
         var proposals = new ArrayList<ProposalEnvelope>();
 
         for (int i = 0; i < proposalsNode.size(); i++) {

@@ -175,9 +175,11 @@ public class CustomMetadataProcessor {
         var event = new Event();
         event.setId(eventRegistration.getName());
         event.setVersion(event.getVersion());
-        event.setTeam(eventRegistration.getTeam());
-        event.setCategoryResultsWhileVoting(eventRegistration.isCategoryResultsWhileVoting());
-        event.setHighLevelResultsWhileVoting(eventRegistration.isHighLevelResultsWhileVoting());
+        event.setOrganisers(eventRegistration.getOrganisers());
+
+        event.setHighLevelEpochResultsWhileVoting(Optional.of(eventRegistration.isHighLevelEventResultsWhileVoting()));
+        event.setHighLevelCategoryResultsWhileVoting(Optional.of(eventRegistration.isHighLevelCategoryResultsWhileVoting()));
+        event.setCategoryResultsWhileVoting(Optional.of(eventRegistration.isCategoryResultsWhileVoting()));
         event.setVersion(SchemaVersion.fromText(eventRegistration.getSchemaVersion()).orElseThrow());
 
         event.setStartEpoch(eventRegistration.getStartEpoch());
@@ -190,12 +192,18 @@ public class CustomMetadataProcessor {
         event.setStartSlot(eventRegistration.getStartSlot());
         event.setEndSlot(eventRegistration.getEndSlot());
 
+        event.setProposalsRevealEpoch(eventRegistration.getProposalsRevealEpoch());
+        event.setProposalsRevealSlot(eventRegistration.getProposalsRevealSlot());
+
         event.setAbsoluteSlot(slot);
 
         return Optional.of(referenceDataService.storeEvent(event));
     }
 
-    private Optional<Category> processCategoryRegistration(long slot, String signature, String key, CBORMetadataMap payload) throws CborException {
+    private Optional<Category> processCategoryRegistration(long slot,
+                                                           String signature,
+                                                           String key,
+                                                           CBORMetadataMap payload) throws CborException {
         var id = encodeHexString(blake2bHash224(decodeHexString(signature)));
 
         log.info("Processing category registration id: {}", id);

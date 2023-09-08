@@ -11,7 +11,7 @@ import java.util.List;
 @ToString
 public class CreateCategoryCommand {
 
-    private String id;
+    private String name;
 
     private String event;
 

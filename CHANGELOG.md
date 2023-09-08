@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.24](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.23...v0.2.24) (2023-09-08)
+
+
+### Bug Fixes
+
+* env variables for user verification ([1ce178a](https://github.com/cardano-foundation/cf-cardano-ballot/commit/1ce178a3884c3aabe2147bb3fb4606c718b6273e))
+* env variables for user verification ([f27f53b](https://github.com/cardano-foundation/cf-cardano-ballot/commit/f27f53b5017f11b4ed753f617f358d0add0e4558))
+
 ## [0.2.23](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.22...v0.2.23) (2023-09-08)
 
 

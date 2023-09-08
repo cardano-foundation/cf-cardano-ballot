@@ -124,14 +124,14 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(rate(${voting_metrics}_seconds_count[$__rate_interval])) by (pod)",
+          "expr": "sum(rate(${voting_metrics:text}_seconds_count[$__rate_interval])) by (pod)",
           "hide": false,
           "legendFormat": "rps {{ pod }}",
           "range": true,
           "refId": "B"
         }
       ],
-      "title": "$voting_metrics - Count",
+      "title": "${voting_metrics:value} - Count",
       "type": "timeseries"
     },
     {
@@ -217,7 +217,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.5, sum by (pod, le) (rate(${voting_metrics}_seconds_bucket[10m])))",
+          "expr": "histogram_quantile(0.5, sum by (pod, le) (rate(${voting_metrics:text}_seconds_bucket[10m])))",
           "legendFormat": "median - {{pod}}",
           "range": true,
           "refId": "A"
@@ -228,14 +228,14 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.95, sum by (pod, le) (rate(${voting_metrics}_seconds_bucket[10m])))",
+          "expr": "histogram_quantile(0.95, sum by (pod, le) (rate(${voting_metrics:text}_seconds_bucket[10m])))",
           "hide": false,
           "legendFormat": "p95 - {{pod}}",
           "range": true,
           "refId": "B"
         }
       ],
-      "title": "$voting_metrics - Percentile",
+      "title": "${voting_metrics:value} - Percentile",
       "type": "timeseries"
     }
   ],
@@ -251,22 +251,12 @@
           "text": [
             "resource_vote_cast",
             "resource_vote_receipt_web3",
-            "resource_vote_receipt_jwt",
-            "resource_auth_login",
-            "resource_sms_startVerification",
-            "resource_sms_checkVerification",
-            "resource_isVerified",
-            "resource_verifyVote"
+            "resource_vote_receipt_jwt"
           ],
           "value": [
-            "resource_vote_cast",
-            "resource_vote_receipt_web3",
-            "resource_vote_receipt_jwt",
-            "resource_auth_login",
-            "resource_sms_startVerification",
-            "resource_sms_checkVerification",
-            "resource_isVerified",
-            "resource_verifyVote"
+            "Vote Cast",
+            "Web3 Vote Receipt",
+            "JWT Vote Receipt"
           ]
         },
         "hide": 0,
@@ -282,115 +272,105 @@
           {
             "selected": true,
             "text": "resource_vote_cast",
-            "value": "resource_vote_cast"
+            "value": "Vote Cast"
           },
           {
             "selected": true,
             "text": "resource_vote_receipt_web3",
-            "value": "resource_vote_receipt_web3"
+            "value": "Web3 Vote Receipt"
           },
           {
             "selected": true,
             "text": "resource_vote_receipt_jwt",
-            "value": "resource_vote_receipt_jwt"
+            "value": "JWT Vote Receipt"
           },
           {
             "selected": false,
-            "text": "resource_voteId_receipt",
-            "value": "resource_voteId_receipt"
-          },
-          {
-            "selected": true,
             "text": "resource_auth_login",
-            "value": "resource_auth_login"
+            "value": "Auth Login"
           },
           {
             "selected": false,
             "text": "resource_leaderboard_event_available",
-            "value": "resource_leaderboard_event_available"
+            "value": "LB Event Available"
           },
           {
             "selected": false,
             "text": "resource_leaderboard_event",
-            "value": "resource_leaderboard_event"
+            "value": "LB Event"
           },
           {
             "selected": false,
             "text": "resource_leaderboard_category",
-            "value": "resource_leaderboard_category"
+            "value": "LB Category"
           },
           {
             "selected": false,
             "text": "resource_leaderboard_category_available",
-            "value": "resource_leaderboard_category_available"
+            "value": "LB Category Available"
           },
           {
             "selected": false,
             "text": "resource_account_find",
-            "value": "resource_account_find"
-          },
-          {
-            "selected": false,
-            "text": "resource_blockchain_tip",
-            "value": "resource_blockchain_tip"
+            "value": "Find Acct"
           },
           {
             "selected": false,
             "text": "resource_tx-details",
-            "value": "resource_tx-details"
+            "value": "Tx Details"
           },
           {
             "selected": false,
             "text": "resource_merkle_root_hash_find",
-            "value": "resource_merkle_root_hash_find"
+            "value": "Find merkle root hash"
           },
           {
             "selected": false,
             "text": "resource_reference_event",
-            "value": "resource_reference_event"
+            "value": "Reference Event"
           },
           {
             "selected": false,
             "text": "resource_reference_events",
-            "value": "resource_reference_events"
+            "value": "Reference Events"
           },
           {
-            "selected": true,
+            "selected": false,
             "text": "resource_sms_startVerification",
-            "value": "resource_sms_startVerification"
+            "value": "SMS Start Verification"
           },
           {
-            "selected": true,
+            "selected": false,
             "text": "resource_sms_checkVerification",
-            "value": "resource_sms_checkVerification"
+            "value": "SMS Check Verification"
           },
           {
-            "selected": true,
+            "selected": false,
             "text": "resource_isVerified",
-            "value": "resource_isVerified"
+            "value": "Verified ?"
           },
           {
             "selected": false,
             "text": "resource_discord_isVerified",
-            "value": "resource_discord_isVerified"
+            "value": "Discord is Verified"
           },
           {
             "selected": false,
             "text": "resource_discord_startVerification",
-            "value": "resource_discord_startVerification"
+            "value": "Discord Start Verification"
           },
           {
             "selected": false,
             "text": "resource_discord_checkVerification",
-            "value": "resource_discord_checkVerification"
+            "value": "Discord Check Verification"
           },
           {
-            "selected": true,
+            "selected": false,
             "text": "resource_verifyVote",
-            "value": "resource_verifyVote"
+            "value": "Verify Vote"
           }
         ],
-        "query": "resource_vote_cast, resource_vote_receipt_web3, resource_vote_receipt_jwt, resource_voteId_receipt, resource_auth_login, resource_leaderboard_event_available, resource_leaderboard_event, resource_leaderboard_category, resource_leaderboard_category_available, resource_account_find, resource_blockchain_tip, resource_tx-details, resource_merkle_root_hash_find, resource_reference_event, resource_reference_events, resource_sms_startVerification, resource_sms_checkVerification, resource_isVerified, resource_discord_isVerified, resource_discord_startVerification, resource_discord_checkVerification, resource_verifyVote",
+        "query": "resource_vote_cast : Vote Cast,resource_vote_receipt_web3 : Web3 Vote Receipt,resource_vote_receipt_jwt : JWT Vote Receipt,resource_auth_login : Auth Login,resource_leaderboard_event_available : LB Event Available,resource_leaderboard_event : LB Event,resource_leaderboard_category : LB Category,resource_leaderboard_category_available : LB Category Available,resource_account_find : Find Acct,resource_tx-details : Tx Details,resource_merkle_root_hash_find : Find merkle root hash,resource_reference_event : Reference Event,resource_reference_events : Reference Events,resource_sms_startVerification : SMS Start Verification,resource_sms_checkVerification : SMS Check Verification,resource_isVerified : Verified ?,resource_discord_isVerified : Discord is Verified,resource_discord_startVerification : Discord Start Verification,resource_discord_checkVerification : Discord Check Verification,resource_verifyVote : Verify Vote",
         "queryValue": "",
         "skipUrlSync": false,
         "type": "custom"
@@ -405,6 +385,6 @@
   "timezone": "",
   "title": "Voting Dashboard",
   "uid": "j-MK-_kIz",
-  "version": 5,
+  "version": 6,
   "weekStart": ""
 }

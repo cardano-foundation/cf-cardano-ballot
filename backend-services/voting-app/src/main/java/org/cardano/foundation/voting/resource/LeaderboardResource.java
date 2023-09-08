@@ -29,7 +29,7 @@ public class LeaderboardResource {
     private boolean forceLeaderboardResultsAvailability;
 
     @RequestMapping(value = "/{eventId}", method = HEAD, produces = "application/json")
-    @Timed(value = "resource.leaderboard.event.available", percentiles = { 0.3, 0.5, 0.95 })
+    @Timed(value = "resource.leaderboard.event.available", histogram = true)
     public ResponseEntity<?> isEventLeaderBoardAvailable(@PathVariable("eventId") String eventId) {
         return leaderBoardService.isEventLeaderboardAvailable(eventId, false)
                 .fold(problem -> {
@@ -40,7 +40,7 @@ public class LeaderboardResource {
     }
 
     @RequestMapping(value = "/{eventId}", method = GET, produces = "application/json")
-    @Timed(value = "resource.leaderboard.event", percentiles = { 0.3, 0.5, 0.95 })
+    @Timed(value = "resource.leaderboard.event", histogram = true)
     public ResponseEntity<?> getEventLeaderBoard(@PathVariable("eventId") String eventId,
                                                  @RequestHeader(value = "force-leaderboard-results", required = false, defaultValue = "false") boolean forceLeaderboardResults) {
         var forceLeaderboard = forceLeaderboardResults && forceLeaderboardResultsAvailability;
@@ -54,7 +54,7 @@ public class LeaderboardResource {
     }
 
     @RequestMapping(value = "/{eventId}/{categoryId}", method = GET, produces = "application/json")
-    @Timed(value = "resource.leaderboard.category", percentiles = { 0.3, 0.5, 0.95 })
+    @Timed(value = "resource.leaderboard.category", histogram = true)
     public ResponseEntity<?> getCategoryLeaderBoard(@PathVariable("eventId") String eventId,
                                                     @PathVariable("categoryId") String categoryId,
                                                     @RequestHeader(value = "force-leaderboard-results", required = false, defaultValue = "false") boolean forceLeaderboardResults) {
@@ -69,7 +69,7 @@ public class LeaderboardResource {
     }
 
     @RequestMapping(value = "/{eventId}/{categoryId}", method = HEAD, produces = "application/json")
-    @Timed(value = "resource.leaderboard.category.available", percentiles = { 0.3, 0.5, 0.95 })
+    @Timed(value = "resource.leaderboard.category.available", histogram = true)
     public ResponseEntity<?> getCategoryLeaderBoardAvailable(@PathVariable("eventId") String eventId,
                                                              @PathVariable("categoryId") String categoryId) {
         return leaderBoardService.isCategoryLeaderboardAvailable(eventId, categoryId, false)

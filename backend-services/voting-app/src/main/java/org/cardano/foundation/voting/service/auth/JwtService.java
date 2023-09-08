@@ -48,7 +48,7 @@ public class JwtService {
     @Value("${cardano.jwt.tokenValidityDurationHours}")
     private long tokenValidityDurationHours;
 
-    @Timed(value = "service.jwt.generate", percentiles = { 0.3, 0.5, 0.95 })
+    @Timed(value = "service.jwt.generate", histogram = true)
     public Either<Problem, LoginResult> generate(String stakeAddress,
                                                  String eventId,
                                                  Role role) {
@@ -93,7 +93,7 @@ public class JwtService {
 
     }
 
-    @Timed(value = "service.jwt.verify", percentiles = { 0.3, 0.5, 0.95 })
+    @Timed(value = "service.jwt.verify", histogram = true)
     public Either<Problem, SignedJWT> verify(String token) {
         var publicJWK = cfJWTKey.toPublicJWK();
 

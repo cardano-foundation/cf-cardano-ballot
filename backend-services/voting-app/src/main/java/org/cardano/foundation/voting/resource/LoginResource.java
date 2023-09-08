@@ -24,7 +24,7 @@ public class LoginResource {
     private final LoginService loginService;
 
     @RequestMapping(value = "/login", method = POST, produces = "application/json")
-    @Timed(value = "resource.auth.login", percentiles = { 0.3, 0.5, 0.95 })
+    @Timed(value = "resource.auth.login", histogram = true)
     public ResponseEntity<?> login(@RequestBody @Valid SignedWeb3Request loginRequest)  {
         return loginService.login(loginRequest)
                 .fold(problem -> {

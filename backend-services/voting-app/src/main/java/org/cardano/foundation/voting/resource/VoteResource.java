@@ -30,7 +30,7 @@ public class VoteResource {
     private final VoteService voteService;
 
     @RequestMapping(value = "/cast", method = POST, produces = "application/json")
-    @Timed(value = "resource.vote.cast", percentiles = { 0.3, 0.5, 0.95 })
+    @Timed(value = "resource.vote.cast", histogram = true)
     public ResponseEntity<?> castVote(@RequestBody @Valid SignedWeb3Request castVoteRequest) {
         log.info("Casting vote: {}", castVoteRequest);
 
@@ -57,7 +57,7 @@ public class VoteResource {
     }
 
     @RequestMapping(value = "/receipt", method = POST, produces = "application/json")
-    @Timed(value = "resource.vote.receipt.web3", percentiles = { 0.3, 0.5, 0.95 })
+    @Timed(value = "resource.vote.receipt.web3", histogram = true)
     public ResponseEntity<?> getVoteReceipt(@RequestBody @Valid SignedWeb3Request viewVoteReceiptRequest) {
         return voteService.voteReceipt(viewVoteReceiptRequest)
                 .fold(problem -> {
@@ -71,7 +71,7 @@ public class VoteResource {
     }
 
     @RequestMapping(value = "/receipt/{eventId}/{categoryId}", method = GET, produces = "application/json")
-    @Timed(value = "resource.vote.receipt.jwt", percentiles = { 0.3, 0.5, 0.95 })
+    @Timed(value = "resource.vote.receipt.jwt", histogram = true)
     public ResponseEntity<?> getVoteReceipt(@PathVariable("eventId") String eventId,
                                             @PathVariable("categoryId") String categoryId,
                                             Authentication authentication) {
@@ -89,7 +89,7 @@ public class VoteResource {
     }
 
     @RequestMapping(value = "/casting-available/{eventId}/{voteId}", method = GET, produces = "application/json")
-    @Timed(value = "resource.voteId.receipt", percentiles = { 0.3, 0.5, 0.95 })
+    @Timed(value = "resource.voteId.receipt", histogram = true)
     public ResponseEntity<?> isVoteCastingStillPossible(@PathVariable("eventId") String eventId,
                                                         @PathVariable String voteId) {
         return voteService.isVoteCastingStillPossible(eventId, voteId)

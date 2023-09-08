@@ -25,7 +25,7 @@ public class BlockchainDataResource {
     private final BlockchainDataTransactionDetailsService blockchainDataTransactionDetailsService;
 
     @RequestMapping(value = "/tip", method = GET, produces = "application/json")
-    @Timed(value = "resource.blockchain.tip", percentiles = { 0.3, 0.5, 0.95 })
+    @Timed(value = "resource.blockchain.tip", histogram = true)
     public ResponseEntity<?> tip() {
         return blockchainDataChainTipService.getChainTip()
                 .fold(problem -> ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem),
@@ -33,7 +33,7 @@ public class BlockchainDataResource {
     }
 
     @RequestMapping(value = "/tx-details/{txHash}", method = GET, produces = "application/json")
-    @Timed(value = "resource.tx-details", percentiles = { 0.3, 0.5, 0.95 })
+    @Timed(value = "resource.tx-details", histogram = true)
     public ResponseEntity<?> txDetails(@PathVariable String txHash) {
         return blockchainDataTransactionDetailsService.getTransactionDetails(txHash)
                 .map(txDetails -> ResponseEntity.ok().body(txDetails))

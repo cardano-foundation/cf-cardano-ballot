@@ -22,7 +22,7 @@ public class AccountResource {
     private final AccountService accountService;
 
     @RequestMapping(value = "/{eventId}/{stakeAddress}", method = GET, produces = "application/json")
-    @Timed(value = "resource.account.find", percentiles = { 0.3, 0.5, 0.95 })
+    @Timed(value = "resource.account.find", histogram = true)
     public ResponseEntity<?> findAccount(@PathVariable("eventId") String eventId, @PathVariable String stakeAddress) {
         return accountService.findAccount(eventId, stakeAddress)
                 .fold(problem -> {

@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.27](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.26...v0.2.27) (2023-09-08)
+
+
+### Bug Fixes
+
+* add missing react-inject-env in deps ([34ef803](https://github.com/cardano-foundation/cf-cardano-ballot/commit/34ef803d659bb0ccabb1fddc2d1dabcb44893bf3))
+* add missing react-inject-env script ([af1a474](https://github.com/cardano-foundation/cf-cardano-ballot/commit/af1a47447ea38df80ba44f9cbb3f73dd6cc5fc09))
+
 ## [0.2.26](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.25...v0.2.26) (2023-09-08)
 
 

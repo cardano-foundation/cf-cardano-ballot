@@ -123,7 +123,11 @@ const Categories = () => {
                             avatar={
                               <Avatar
                                 src={CATEGORY_IMAGES[index]}
-                                alt={(category.id === summit2023Categories[index].id) ? summit2023Categories[index].presentationName: ''}
+                                alt={
+                                  category.id === summit2023Categories[index].id
+                                    ? summit2023Categories[index].presentationName
+                                    : ''
+                                }
                                 sx={{ width: 100, height: 100 }}
                               />
                             }
@@ -134,7 +138,9 @@ const Categories = () => {
                               color="text.primary"
                               fontWeight="700"
                             >
-                            {(category.id === summit2023Categories[index].id) ? summit2023Categories[index].presentationName: ''}
+                              {category.id === summit2023Categories[index].id
+                                ? summit2023Categories[index].presentationName
+                                : ''}
                             </Typography>
                           </Box>
                           <Box m={1}>
@@ -142,7 +148,7 @@ const Categories = () => {
                               variant="body1"
                               color="text.primary"
                             >
-                              {(category.id === summit2023Categories[index].id) ? summit2023Categories[index].desc: ''}
+                              {category.id === summit2023Categories[index].id ? summit2023Categories[index].desc : ''}
                             </Typography>
                           </Box>
                           <CardActions>
@@ -204,7 +210,9 @@ const Categories = () => {
                               maxWidth: '285px',
                             }}
                           >
-                            {(category.id === summit2023Categories[index].id) ? summit2023Categories[index].presentationName: ''}
+                            {category.id === summit2023Categories[index].id
+                              ? summit2023Categories[index].presentationName
+                              : ''}
                           </Typography>
                         </Box>
                         <Box
@@ -246,7 +254,11 @@ const Categories = () => {
                       avatar={
                         <Avatar
                           src={CATEGORY_IMAGES[index]}
-                          alt= {(category.id === summit2023Categories[index].id) ? summit2023Categories[index].presentationName: ''}
+                          alt={
+                            category.id === summit2023Categories[index].id
+                              ? summit2023Categories[index].presentationName
+                              : ''
+                          }
                           sx={{ width: 100, height: 100 }}
                         />
                       }
@@ -257,13 +269,15 @@ const Categories = () => {
                         color="text.primary"
                         fontWeight="700"
                       >
-                         {(category.id === summit2023Categories[index].id) ? summit2023Categories[index].presentationName: ''}
+                        {category.id === summit2023Categories[index].id
+                          ? summit2023Categories[index].presentationName
+                          : ''}
                       </Typography>
                       <Typography
                         variant="body1"
                         color="text.primary"
                       >
-                         {(category.id === summit2023Categories[index].id) ? summit2023Categories[index].desc: ''}
+                        {category.id === summit2023Categories[index].id ? summit2023Categories[index].desc : ''}
                       </Typography>
                     </Box>
                     <Box sx={{ marginLeft: 'auto' }}>

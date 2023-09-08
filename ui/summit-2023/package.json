@@ -6,6 +6,7 @@
   "repository": "https://github.com/cardano-foundation/cf-cardano-ballot",
   "description": "Cardano Summit 2023",
   "dependencies": {
+    "react-inject-env": "^2.0.0-next.17",
     "@cardano-foundation/cardano-connect-with-wallet": "^0.1.57",
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",

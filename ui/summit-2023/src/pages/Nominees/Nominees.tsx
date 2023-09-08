@@ -50,7 +50,7 @@ import { getUserInSession, saveUserInSession, tokenIsExpired } from '../../utils
 import { setVoteReceipt, setWalletIsLoggedIn } from '../../store/userSlice';
 import { FinalityScore } from '../../types/voting-ledger-follower-types';
 import { ProposalPresentation } from '../../types/voting-ledger-follower-types';
-import SidePage from 'components/common/SidePage/SidePage';
+import SidePage from '../../components/common/SidePage/SidePage';
 import { useToggle } from 'common/hooks/useToggle';
 import ReadMore from './ReadMore';
 
@@ -239,7 +239,7 @@ const Nominees = () => {
       case 'FINAL':
         return {
           backgroundColor: 'rgba(16, 101, 147, 0.07)',
-          color: '#C20024',
+          color: '#056122',
         };
       default:
         return {};
@@ -492,7 +492,7 @@ const Nominees = () => {
                           color: 'white',
                           width: '100%',
                           marginBottom: '20px',
-                          backgroundColor: getAssuranceTheme().backgroundColor,
+                          backgroundColor: getAssuranceTheme()?.backgroundColor,
                       }}
                   >
                       <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -508,7 +508,7 @@ const Nominees = () => {
                                       lineHeight: '22px',
                                   }}
                               >
-                                  Assurance: <span style={{ color: getAssuranceTheme().color }}>{receipt?.finalityScore}</span>
+                                  Assurance: <span style={{ color: getAssuranceTheme()?.color }}>{receipt?.finalityScore}</span>
                                   <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
                                       <InfoIcon
                                           style={{

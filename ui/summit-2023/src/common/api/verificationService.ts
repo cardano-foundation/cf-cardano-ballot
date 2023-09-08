@@ -3,10 +3,10 @@ import { DEFAULT_CONTENT_TYPE_HEADERS, doRequest, HttpMethods } from '../handler
 import { env } from '../constants/env';
 import { PhoneNumberCodeConfirmation, VerificationStarts } from '../../store/types';
 
-export const USER_VERIFICATION_URL = `${env.VOTING_VERIFICATION_APP_SERVER_URL}/api/user-verification/verified`;
+export const USER_VERIFICATION_URL = `${env.VOTING_USER_VERIFICATION_SERVER_URL}/api/user-verification/verified`;
 export const VERIFICATION_URL = `${env.VOTING_VERIFICATION_APP_SERVER_URL}/api/verification/verify-vote`;
-export const START_VERIFICATION_URL = `${env.VOTING_VERIFICATION_APP_SERVER_URL}/api/sms/user-verification/start-verification`;
-export const CONFIRM_PHONE_NUMBER_CODE = `${env.VOTING_VERIFICATION_APP_SERVER_URL}/api/sms/user-verification/check-verification`;
+export const START_VERIFICATION_URL = `${env.VOTING_USER_VERIFICATION_SERVER_URL}/api/sms/user-verification/start-verification`;
+export const CONFIRM_PHONE_NUMBER_CODE = `${env.VOTING_USER_VERIFICATION_SERVER_URL}/api/sms/user-verification/check-verification`;
 
 export const verifyVote = async (payload: VoteVerificationRequest) =>
   await doRequest<Problem | VoteVerificationResult>(

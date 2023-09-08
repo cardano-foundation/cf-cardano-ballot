@@ -13,7 +13,7 @@ cf-summit-2023-ui:
   enabled: true
   values:
     image:
-      tag: 0.2.22-preprod
+      tag: 0.2.23-preprod
 
 cf-summit-2023-voting-api:
   enabled: true

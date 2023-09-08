@@ -39,8 +39,12 @@ cf-cardano-ballot-ledger-follower-api:
   enabled: true
   values:
     image:
-      tag: v0.2.9
+      tag: v0.2.21
+    bindOnEventIds: CIP-1694_Pre_Ratification_4619
+    yaci:
+      startBlockHash: ca71d7941c316561c3b21d0f557f34d97a61f97a333c18ed5f2800d74b64e377
+      startSlotNumber: "32349482"
+    corsAllowedOrigins: https://{{ .Values.domain }},http://localhost:3000
     instances:
       - name: follower-1
         schemaName: follower_1
-

@@ -21,7 +21,7 @@ RUN npm install --production
 # Copy app files
 COPY . .
 # Build the app
-RUN npm run build
+RUN npm run react-inject-env && npm run build
 
 # Bundle static assets with nginx
 FROM nginx:1.25.2-alpine as production

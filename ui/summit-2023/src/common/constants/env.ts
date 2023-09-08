@@ -8,6 +8,7 @@ const TARGET_NETWORK = process.env.REACT_APP_TARGET_NETWORK;
 const EVENT_ID = process.env.REACT_APP_EVENT_ID;
 const CATEGORY_ID = process.env.REACT_APP_CATEGORY_ID;
 const COMMIT_HASH = process.env.REACT_APP_COMMIT_HASH;
+const APP_VERSION = process.env.REACT_APP_VERSION;
 const SUPPORTED_WALLETS = (process.env.REACT_APP_SUPPORTED_WALLETS || '').split(',').filter((w) => !!w);
 
 export const env = {
@@ -19,5 +20,6 @@ export const env = {
   EVENT_ID,
   CATEGORY_ID,
   COMMIT_HASH,
+  APP_VERSION,
   SUPPORTED_WALLETS,
 };

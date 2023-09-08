@@ -118,8 +118,8 @@ const Nominees = () => {
         toggleViewVoteReceipt();
     }
 
-    if (!tokenIsExpired(session.expiresAt)) {
-      await getVoteReceipt(categoryId, session.accessToken)
+    if (!tokenIsExpired(session?.expiresAt)) {
+      await getVoteReceipt(categoryId, session?.accessToken)
         .then((r) => {
           dispatch(setVoteReceipt({ categoryId: categoryId, receipt: r }));
             toggleViewVoteReceipt();
@@ -250,6 +250,13 @@ const Nominees = () => {
     setSelectedNominee(nominee);
     toggleReadMore();
   };
+  const handleViewVoteReceipt = () => {
+      if (walletIsLoggedIn) {
+          viewVoteReceipt()
+      } else {
+          login()
+      }
+  };
 
   return (
     <>
@@ -312,7 +319,7 @@ const Nominees = () => {
           </Typography>
         </div>
         <Button
-          onClick={() => (walletIsLoggedIn ? viewVoteReceipt() : login())}
+          onClick={() => handleViewVoteReceipt()}
           variant="contained"
           color="primary"
           sx={{

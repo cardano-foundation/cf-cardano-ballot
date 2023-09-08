@@ -3,6 +3,7 @@ package org.cardano.foundation.voting.domain.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.cardano.foundation.voting.domain.SchemaVersion;
+import org.hibernate.annotations.Immutable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "category")
+@Immutable
 public class Category extends AbstractTimestampEntity {
 
     @Id

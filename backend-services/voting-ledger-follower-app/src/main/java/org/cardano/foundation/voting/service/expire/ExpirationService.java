@@ -1,5 +1,6 @@
 package org.cardano.foundation.voting.service.expire;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataChainTipService;
@@ -8,10 +9,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class ExpirationService {
 
-    @Autowired
-    private BlockchainDataChainTipService blockchainDataChainTipService;
+    private final BlockchainDataChainTipService blockchainDataChainTipService;
 
     public boolean isEventActive(Event event) {
         var chainTipE = blockchainDataChainTipService.getChainTip();

@@ -4,11 +4,12 @@ import cz.habarta.typescript.generator.TypeScriptOutputKind
 
 plugins {
 	java
-	id("org.springframework.boot") version "3.0.7"
-	id("io.spring.dependency-management") version "1.1.0"
-	id("org.graalvm.buildtools.native") version "0.9.22"
-    id("org.flywaydb.flyway") version "9.8.1"
+	id("org.springframework.boot") version "3.0.8"
+	id("io.spring.dependency-management") version "1.1.3"
+	id("org.graalvm.buildtools.native") version "0.9.26"
+    id("org.flywaydb.flyway") version "9.22.0"
 	id("cz.habarta.typescript-generator") version "3.2.1263"
+    id("com.github.ben-manes.versions") version "0.48.0"
 }
 
 group = "org.cardano.foundation"
@@ -44,8 +45,6 @@ dependencies {
 
     implementation("org.flywaydb:flyway-core")
 
-	implementation("com.google.guava:guava:32.1.1-jre")
-
 	implementation("org.zalando:problem-spring-web-starter:0.29.1")
 
 	compileOnly("org.projectlombok:lombok:1.18.28")
@@ -57,14 +56,12 @@ dependencies {
 	implementation("com.querydsl:querydsl-jpa")
     annotationProcessor("com.querydsl:querydsl-apt")
 
-	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.0-beta2")
+	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.0-beta3")
 
 	implementation("com.bloxbean.cardano:yaci-store-spring-boot-starter:0.0.12-beta2")
 	implementation("com.bloxbean.cardano:yaci-store-blocks-spring-boot-starter:0.0.12-beta2")
 	implementation("com.bloxbean.cardano:yaci-store-transaction-spring-boot-starter:0.0.12-beta2")
 	implementation("com.bloxbean.cardano:yaci-store-metadata-spring-boot-starter:0.0.12-beta2")
-
-	implementation("org.apache.commons:commons-lang3:3.12.0")
 
 	implementation("io.blockfrost:blockfrost-java:0.1.3")
 
@@ -73,7 +70,7 @@ dependencies {
 	runtimeOnly("org.postgresql:postgresql")
 	runtimeOnly("com.h2database:h2")
 
-	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.9")
+	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.10")
 }
 
 tasks.withType<Test> {

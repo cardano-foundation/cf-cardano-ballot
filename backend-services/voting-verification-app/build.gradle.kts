@@ -4,11 +4,12 @@ import cz.habarta.typescript.generator.TypeScriptOutputKind
 
 plugins {
 	java
-	id("org.springframework.boot") version "3.0.7"
-	id("io.spring.dependency-management") version "1.1.0"
-	id("org.graalvm.buildtools.native") version "0.9.22"
-    id("org.flywaydb.flyway") version "9.8.1"
+	id("org.springframework.boot") version "3.1.3"
+	id("io.spring.dependency-management") version "1.1.3"
+	id("org.graalvm.buildtools.native") version "0.9.26"
+    id("org.flywaydb.flyway") version "9.22.0"
 	id("cz.habarta.typescript-generator") version "3.2.1263"
+    id("com.github.ben-manes.versions") version "0.48.0"
 }
 
 group = "org.cardano.foundation"
@@ -42,8 +43,6 @@ dependencies {
 
 	runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 
-	implementation("com.google.guava:guava:32.1.1-jre")
-
 	implementation("org.zalando:problem-spring-web-starter:0.29.1")
 
 	compileOnly("org.projectlombok:lombok:1.18.28")
@@ -55,11 +54,8 @@ dependencies {
 	implementation("com.querydsl:querydsl-jpa")
     annotationProcessor("com.querydsl:querydsl-apt")
 
-	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0-beta2")
-    implementation("com.bloxbean.cardano:cardano-client-address:0.5.0-beta2")
-    implementation("com.bloxbean.cardano:cardano-client-metadata:0.5.0-beta2")
-	implementation("com.bloxbean.cardano:cardano-client-quicktx:0.5.0-beta2")
-	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0-beta2")
+    implementation("com.bloxbean.cardano:cardano-client-address:0.5.0-beta3")
+	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0-beta3")
 
 	implementation("io.vavr:vavr:0.10.4")
 

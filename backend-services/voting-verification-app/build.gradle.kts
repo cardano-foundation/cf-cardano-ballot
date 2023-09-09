@@ -4,11 +4,11 @@ import cz.habarta.typescript.generator.TypeScriptOutputKind
 
 plugins {
 	java
-	id("org.springframework.boot") version "3.0.7"
-	id("io.spring.dependency-management") version "1.1.0"
-	id("org.graalvm.buildtools.native") version "0.9.22"
-    id("org.flywaydb.flyway") version "9.8.1"
-	id("cz.habarta.typescript-generator") version "3.2.1263"
+	id("org.springframework.boot")
+	id("io.spring.dependency-management")
+	id("org.graalvm.buildtools.native")
+    id("org.flywaydb.flyway")
+	id("cz.habarta.typescript-generator")
 }
 
 group = "org.cardano.foundation"
@@ -28,43 +28,43 @@ repositories {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter")
-    implementation("org.springframework.boot:spring-boot-starter-aop")
-	implementation("org.springframework.boot:spring-boot-starter-data-rest")
-	testCompileOnly("org.springframework.boot:spring-boot-starter-test")
-	implementation("org.springframework.boot:spring-boot-starter-actuator")
-	implementation("org.springframework.boot:spring-boot-starter-validation")
-	implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter:_")
+    implementation("org.springframework.boot:spring-boot-starter-aop:_")
+	implementation(Spring.boot.data.rest)
+	testCompileOnly(Spring.boot.test)
+	implementation(Spring.boot.actuator)
+	implementation(Spring.boot.validation)
+	implementation(Spring.boot.web)
 
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation(Spring.boot.test)
 
-	runtimeOnly("org.springframework.boot:spring-boot-properties-migrator")
+	runtimeOnly("org.springframework.boot:spring-boot-properties-migrator:_")
 
-	runtimeOnly("io.micrometer:micrometer-registry-prometheus")
+	runtimeOnly("io.micrometer:micrometer-registry-prometheus:_")
 
-	implementation("com.google.guava:guava:32.1.1-jre")
+	implementation("com.google.guava:guava:_")
 
-	implementation("org.zalando:problem-spring-web-starter:0.29.1")
+	implementation("org.zalando:problem-spring-web-starter:_")
 
-	compileOnly("org.projectlombok:lombok:1.18.28")
-	annotationProcessor("org.projectlombok:lombok:1.18.28")
+	compileOnly("org.projectlombok:lombok:_")
+	annotationProcessor("org.projectlombok:lombok:_")
 
-	testCompileOnly("org.projectlombok:lombok:1.18.28")
-	testAnnotationProcessor("org.projectlombok:lombok:1.18.28")
+	testCompileOnly("org.projectlombok:lombok:_")
+	testAnnotationProcessor("org.projectlombok:lombok:_")
 
-	implementation("com.querydsl:querydsl-jpa")
-    annotationProcessor("com.querydsl:querydsl-apt")
+	implementation("com.querydsl:querydsl-jpa:_")
+    annotationProcessor("com.querydsl:querydsl-apt:_")
 
-	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0-beta2")
-    implementation("com.bloxbean.cardano:cardano-client-address:0.5.0-beta2")
-    implementation("com.bloxbean.cardano:cardano-client-metadata:0.5.0-beta2")
-	implementation("com.bloxbean.cardano:cardano-client-quicktx:0.5.0-beta2")
-	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0-beta2")
+	implementation("com.bloxbean.cardano:cardano-client-crypto:_")
+    implementation("com.bloxbean.cardano:cardano-client-address:_")
+    implementation("com.bloxbean.cardano:cardano-client-metadata:_")
+	implementation("com.bloxbean.cardano:cardano-client-quicktx:_")
+	implementation("com.bloxbean.cardano:cardano-client-cip30:_")
 
-	implementation("io.vavr:vavr:0.10.4")
+	implementation("io.vavr:vavr:_")
 
-	implementation("org.cardanofoundation:merkle-tree-java:0.0.7")
-	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.10")
+	implementation("org.cardanofoundation:merkle-tree-java:_")
+	implementation("org.cardanofoundation:cip30-data-signature-parser:_")
 }
 
 tasks.withType<Test> {

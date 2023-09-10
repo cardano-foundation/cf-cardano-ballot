@@ -12,6 +12,10 @@ plugins {
     id("com.github.ben-manes.versions") version "0.48.0"
 }
 
+springBoot {
+    buildInfo()
+}
+
 group = "org.cardano.foundation"
 version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_17
@@ -68,7 +72,7 @@ dependencies {
 	implementation("io.vavr:vavr:0.10.4")
 
 	runtimeOnly("org.postgresql:postgresql")
-	runtimeOnly("com.h2database:h2")
+	runtimeOnly("com.h2database:h2:2.2.222")
 
 	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.10")
 }

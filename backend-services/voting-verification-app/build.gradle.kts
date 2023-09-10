@@ -12,6 +12,10 @@ plugins {
     id("com.github.ben-manes.versions") version "0.48.0"
 }
 
+springBoot {
+    buildInfo()
+}
+
 group = "org.cardano.foundation"
 version = "0.0.1-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_17

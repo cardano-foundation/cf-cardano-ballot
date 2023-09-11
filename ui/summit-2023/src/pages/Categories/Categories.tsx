@@ -73,6 +73,14 @@ const Categories = () => {
         <Typography
           className="categories-title"
           variant="h2"
+          fontSize={{
+            xs: '28px',
+            md: '32px',
+          }}
+          lineHeight={{
+            xs: '28px',
+            md: '32px',
+          }}
         >
           Categories
         </Typography>
@@ -96,10 +104,12 @@ const Categories = () => {
         {categories?.map((category, index) => (
           <Grid
             item
-            xs={!isMobile && listView === 'grid' ? 4 : 12}
+            xs={12}
+            sm={6}
+            md={!isMobile && listView === 'grid' ? 4 : 12}
             key={category.id}
           >
-            {listView === 'grid' || isMobile ? (
+            {!isMobile && listView === 'grid' ? (
               <Fade in={isVisible}>
                 <Card
                   className="categories-card"

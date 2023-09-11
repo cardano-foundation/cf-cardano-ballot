@@ -74,9 +74,9 @@ function App() {
           <div className="main-content">
             <Container
               maxWidth="xl"
-              className="big-container"
+              className="container"
             >
-              <Box my={2}>
+              <Box my={2} className="content">
                 {eventCache !== undefined ? (
                   <PageRouter />
                 ) : (

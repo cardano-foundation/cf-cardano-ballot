@@ -117,10 +117,10 @@ const Nominees = () => {
     }, 300);
   };
 
-  const viewVoteReceipt = async (toast?: boolean) => {
+  const viewVoteReceipt = async (toast?: boolean, toggle?: boolean) => {
     const session = getUserInSession();
 
-    if (receipt) {
+    if (receipt && toggle) {
       toggleViewVoteReceipt();
     }
 
@@ -128,7 +128,7 @@ const Nominees = () => {
       await getVoteReceipt(categoryId, session?.accessToken)
         .then((r) => {
           dispatch(setVoteReceipt({ categoryId: categoryId, receipt: r }));
-          toggleViewVoteReceipt();
+          if (toggle !== false) toggleViewVoteReceipt();
         })
         .catch((e) => {
           if (toast !== false) {
@@ -159,7 +159,7 @@ const Nominees = () => {
           saveUserInSession(session);
           dispatch(setWalletIsLoggedIn({ isLoggedIn: true }));
           eventBus.publish('showToast', 'Login successfully');
-          viewVoteReceipt(false);
+          viewVoteReceipt(false, true);
         })
         .catch((e) => eventBus.publish('showToast', e.message, true));
     } catch (e) {
@@ -269,7 +269,7 @@ const Nominees = () => {
 
   const handleViewVoteReceipt = () => {
     if (walletIsLoggedIn) {
-      viewVoteReceipt();
+      viewVoteReceipt(true, true);
     } else {
       login();
     }
@@ -634,6 +634,7 @@ const Nominees = () => {
                     </Typography>
                   </div>
                   <RefreshIcon
+                      onClick={() => viewVoteReceipt(true, false)}
                     sx={{
                       display: 'inline-flex',
                       justifyContent: 'center',

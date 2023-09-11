@@ -9,7 +9,7 @@ import org.cardano.foundation.voting.domain.presentation.CategoryPresentation;
 import org.cardano.foundation.voting.domain.presentation.EventPresentation;
 import org.cardano.foundation.voting.domain.presentation.ProposalPresentation;
 import org.cardano.foundation.voting.service.epoch.CustomEpochService;
-import org.cardano.foundation.voting.service.expire.ExpirationService;
+import org.cardano.foundation.voting.service.expire.EventAdditionalInfoService;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 
@@ -25,7 +25,7 @@ public class ReferencePresentationService {
 
     private final ReferenceDataService referenceDataService;
 
-    private final ExpirationService expirationService;
+    private final EventAdditionalInfoService eventAdditionalInfoService;
 
     private final CustomEpochService customEpochService;
 
@@ -52,7 +52,7 @@ public class ReferencePresentationService {
                 }
         ).toList();
 
-        var eventAdditionalInfoE = expirationService.getEventAdditionalInfo(event);
+        var eventAdditionalInfoE = eventAdditionalInfoService.getEventAdditionalInfo(event);
         if (eventAdditionalInfoE.isEmpty()) {
             return Either.left(Problem.builder()
                     .withTitle("REFERENCE_ERROR")
@@ -90,9 +90,9 @@ public class ReferencePresentationService {
                 eventBuilder.proposalsRevealEpoch(event.getProposalsRevealEpoch());
             }
             case USER_BASED -> {
-                eventBuilder.eventStartDate(customEpochService.getEpochStartTimeBasedOnAbsoluteSlot(event.getStartSlot().orElseThrow()));
-                eventBuilder.eventEndDate(customEpochService.getEpochEndTimeBasedOnAbsoluteSlot(event.getEndSlot().orElseThrow()));
-                eventBuilder.proposalsRevealDate(customEpochService.getEpochEndTimeBasedOnAbsoluteSlot(event.getProposalsRevealSlot().orElseThrow()));
+                eventBuilder.eventStartDate(customEpochService.getTimeBasedOnAbsoluteSlot(event.getStartSlot().orElseThrow()));
+                eventBuilder.eventEndDate(customEpochService.getTimeBasedOnAbsoluteSlot(event.getEndSlot().orElseThrow()));
+                eventBuilder.proposalsRevealDate(customEpochService.getTimeBasedOnAbsoluteSlot(event.getProposalsRevealSlot().orElseThrow()));
                 eventBuilder.proposalsRevealSlot(event.getProposalsRevealSlot());
             }
         }
@@ -103,7 +103,7 @@ public class ReferencePresentationService {
     public Either<Problem, List<EventAdditionalInfo>> eventsSummaries() {
         List<Event> allValidEvents = referenceDataService.findAllValidEvents();
 
-        return expirationService.getEventAdditionalInfo(allValidEvents);
+        return eventAdditionalInfoService.getEventAdditionalInfo(allValidEvents);
     }
 
 }

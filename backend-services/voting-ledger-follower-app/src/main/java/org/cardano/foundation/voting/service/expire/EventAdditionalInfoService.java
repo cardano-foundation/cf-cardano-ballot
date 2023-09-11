@@ -17,7 +17,7 @@ import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class ExpirationService {
+public class EventAdditionalInfoService {
 
     private final BlockchainDataChainTipService blockchainDataChainTipService;
 

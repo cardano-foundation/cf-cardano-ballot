@@ -105,7 +105,9 @@ jobs:
 
       - name: Execute Gradle build
         working-directory: backend-services/${{ env.APP_NAME }}
-        run: ./gradlew bootJar
+        run: |
+          ./gradlew bootJar
+          ls -hl build/libs
 
       - name: Docker Login
         uses: docker/login-action@v2

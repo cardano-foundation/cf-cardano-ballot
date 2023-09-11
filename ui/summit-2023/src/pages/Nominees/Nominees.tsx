@@ -23,6 +23,7 @@ import ViewListIcon from '@mui/icons-material/ViewList';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import QrCodeIcon from '@mui/icons-material/QrCode';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import InfoIcon from '@mui/icons-material/Info';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -53,6 +54,8 @@ import { ProposalPresentation } from '../../types/voting-ledger-follower-types';
 import SidePage from '../../components/common/SidePage/SidePage';
 import { useToggle } from 'common/hooks/useToggle';
 import ReadMore from './ReadMore';
+import Modal from '../../components/common/Modal/Modal';
+import QRCode from 'react-qr-code';
 
 const Nominees = () => {
   const { categoryId } = useParams();
@@ -80,6 +83,7 @@ const Nominees = () => {
   const [isVisible, setIsVisible] = useState(true);
   const [isToggleReadMore, toggleReadMore] = useToggle(false);
   const [isViewVoteReceipt, toggleViewVoteReceipt] = useToggle(false);
+  const [isViewFinalReceipt, toggleViewFinalReceipt] = useToggle(true);
   const [selectedNominee, setSelectedNominee] = useState({});
   const [nominees, setNominees] = useState<ProposalPresentation[]>([]);
 
@@ -132,9 +136,9 @@ const Nominees = () => {
           }
         });
     } else {
-        if (toast !== false) {
-            eventBus.publish('showToast', 'Please, login before get receipt', true);
-        }
+      if (toast !== false) {
+        eventBus.publish('showToast', 'Please, login before get receipt', true);
+      }
     }
   };
 
@@ -251,7 +255,10 @@ const Nominees = () => {
           color: '#056122',
         };
       default:
-        return {};
+        return {
+          backgroundColor: 'rgba(16, 101, 147, 0.07)',
+          color: '#106593',
+        };
     }
   };
 
@@ -259,6 +266,7 @@ const Nominees = () => {
     setSelectedNominee(nominee);
     toggleReadMore();
   };
+
   const handleViewVoteReceipt = () => {
     if (walletIsLoggedIn) {
       viewVoteReceipt();
@@ -350,7 +358,6 @@ const Nominees = () => {
           {walletIsLoggedIn ? 'View vote receipt' : 'Login with wallet'}
         </Button>
       </Box>
-
 
       <Grid
         container
@@ -453,6 +460,7 @@ const Nominees = () => {
           closeSidePage={toggleReadMore}
         />
       </SidePage>
+
       <SidePage
         anchor="right"
         open={isViewVoteReceipt && receipt !== undefined}
@@ -498,82 +506,166 @@ const Nominees = () => {
               Vote Receipt
             </Typography>
 
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: '10px 20px',
-                borderRadius: '8px',
-                border: '1px solid #106593',
-                color: 'white',
-                width: '100%',
-                marginBottom: '20px',
-                backgroundColor: getAssuranceTheme()?.backgroundColor,
-              }}
-            >
-              <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <NotificationsIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#106593' }} />
-                  <Typography
-                    variant="h6"
-                    style={{
-                      color: '#24262E',
-                      fontSize: '18px',
-                      fontStyle: 'normal',
-                      fontWeight: '600',
-                      lineHeight: '22px',
-                    }}
-                  >
-                    Assurance: <span style={{ color: getAssuranceTheme()?.color }}>{receipt?.finalityScore}</span>
-                    <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
-                      <InfoIcon
-                        style={{
-                          color: '#434656A6',
-                          width: '22px',
-                          marginLeft: '3px',
-                          marginBottom: '5px',
-                          verticalAlign: 'middle',
-                          cursor: 'pointer',
-                        }}
-                      />
-                    </Tooltip>
-                  </Typography>
-                </div>
-                <RefreshIcon
-                  sx={{
-                    display: 'inline-flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    color: '#24262E',
-                    cursor: 'pointer',
-                    width: '36px',
-                    height: '36px',
-                    background: 'rgba(67, 70, 86, 0.10);',
-                    borderRadius: '18px',
-                    padding: '6px',
-                  }}
-                />
-              </div>
-
-              <Typography
-                variant="body1"
+            {receipt?.finalityScore === 'FINAL' ? (
+              <Box
                 sx={{
-                  color: '#434656',
-                  fontSize: '16px',
-                  fontStyle: 'normal',
-                  fontWeight: '400',
-                  lineHeight: '22px',
-                  wordWrap: 'break-word',
-                  maxWidth: '406px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: '10px 20px',
+                  borderRadius: '8px',
+                  border: '1px solid #106593',
+                  color: 'white',
+                  width: '100%',
+                  marginBottom: '20px',
+                  backgroundColor: 'rgba(5, 97, 34, 0.07)',
                 }}
               >
-                Your vote has been successfully submitted. You might have to wait up to 30 minutes for this to be
-                visible on chain. Please check back later to verify your vote.
-              </Typography>
-            </Box>
+                <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <VerifiedUserIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#056122' }} />
+                    <Typography
+                      variant="h6"
+                      style={{
+                        color: '#24262E',
+                        fontSize: '18px',
+                        fontStyle: 'normal',
+                        fontWeight: '600',
+                        lineHeight: '22px',
+                      }}
+                    >
+                      Verified:
+                      <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
+                        <InfoIcon
+                          style={{
+                            color: '#434656A6',
+                            width: '22px',
+                            marginLeft: '3px',
+                            marginBottom: '5px',
+                            verticalAlign: 'middle',
+                            cursor: 'pointer',
+                          }}
+                        />
+                      </Tooltip>
+                    </Typography>
+                  </div>
+                  <QrCodeIcon
+                    sx={{
+                      display: 'inline-flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      color: '#24262E',
+                      cursor: 'pointer',
+                      width: '36px',
+                      height: '36px',
+                      background: 'rgba(67, 70, 86, 0.10);',
+                      borderRadius: '18px',
+                      padding: '6px',
+                    }}
+                    onClick={toggleViewFinalReceipt}
+                  />
+                </div>
 
+                <Typography
+                  variant="body1"
+                  sx={{
+                    color: '#434656',
+                    fontSize: '16px',
+                    fontStyle: 'normal',
+                    fontWeight: '400',
+                    lineHeight: '22px',
+                    wordWrap: 'break-word',
+                    maxWidth: '406px',
+                  }}
+                >
+                  Your vote has been successfully submitted. You might have to wait up to 30 minutes for this to be
+                  visible on chain. Please check back later to verify your vote.
+                </Typography>
+              </Box>
+            ) : (
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: '10px 20px',
+                  borderRadius: '8px',
+                  border: '1px solid #106593',
+                  color: 'white',
+                  width: '100%',
+                  marginBottom: '20px',
+                  backgroundColor: getAssuranceTheme()?.backgroundColor,
+                }}
+              >
+                <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <NotificationsIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#106593' }} />
+                    <Typography
+                      variant="h6"
+                      style={{
+                        color: '#24262E',
+                        fontSize: '18px',
+                        fontStyle: 'normal',
+                        fontWeight: '600',
+                        lineHeight: '22px',
+                      }}
+                    >
+                      {receipt?.finalityScore ? (
+                        <>
+                          Assurance: <span style={{ color: getAssuranceTheme()?.color }}>{receipt?.finalityScore}</span>
+                        </>
+                      ) : (
+                        'Vote not ready for verification'
+                      )}
+                      <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
+                        <InfoIcon
+                          style={{
+                            color: '#434656A6',
+                            width: '22px',
+                            marginLeft: '3px',
+                            marginBottom: '5px',
+                            verticalAlign: 'middle',
+                            cursor: 'pointer',
+                          }}
+                        />
+                      </Tooltip>
+                    </Typography>
+                  </div>
+                  <RefreshIcon
+                    sx={{
+                      display: 'inline-flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      color: '#24262E',
+                      cursor: 'pointer',
+                      width: '36px',
+                      height: '36px',
+                      background: 'rgba(67, 70, 86, 0.10);',
+                      borderRadius: '18px',
+                      padding: '6px',
+                    }}
+                  />
+                </div>
+
+                <Typography
+                  variant="body1"
+                  sx={{
+                    color: '#434656',
+                    fontSize: '16px',
+                    fontStyle: 'normal',
+                    fontWeight: '400',
+                    lineHeight: '22px',
+                    wordWrap: 'break-word',
+                    maxWidth: '406px',
+                  }}
+                >
+                  Your vote has been successfully submitted. You might have to wait up to 30 minutes for this to be
+                  visible on chain. Please check back later to verify your vote.
+                </Typography>
+              </Box>
+            )}
             <Box
               sx={{
                 display: 'flex',
@@ -905,7 +997,7 @@ const Nominees = () => {
                     }}
                     onClick={() => handleCopyToClipboard(JSON.stringify(receipt?.merkleProof || '', null, 4))}
                   >
-                    {JSON.stringify(receipt?.merkleProof || '', null, 4)}
+                    {receipt?.merkleProof ? JSON.stringify(receipt?.merkleProof || '', null, 4) : 'Not available yet'}
                   </Typography>
                 </Box>
               </AccordionDetails>
@@ -913,6 +1005,59 @@ const Nominees = () => {
           </Container>
         </>
       </SidePage>
+      <Modal
+        isOpen={isViewFinalReceipt}
+        id="final-receipt"
+        title="Vote verified"
+        onClose={toggleViewFinalReceipt}
+      >
+        <Typography
+          variant="body1"
+          align="left"
+          sx={{
+            width: '344px',
+            color: '#434656',
+            fontSize: '16px',
+            fontStyle: 'normal',
+            fontWeight: '400',
+            lineHeight: '22px',
+          }}
+        >
+          Your vote has been successfully verified. Click the link or scan the QR code to view the transaction.
+        </Typography>
+        <div style={{ display: 'flex', justifyContent: 'center', width: '100%', marginTop: '24px' }}>
+          <QRCode
+            size={256}
+            style={{ height: 'auto', width: '200px' }}
+            value="heeeeeey"
+            viewBox={'0 0 256 256'}
+          />
+        </div>
+        <Button
+          className="vote-nominee-button"
+          style={{
+            display: 'flex',
+            width: '344px',
+            padding: '12px',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: '10px',
+            borderRadius: '8px',
+            background: '#ACFCC5',
+            color: '#03021F',
+            fontSize: '16px',
+            fontStyle: 'normal',
+            fontWeight: '600',
+            lineHeight: 'normal',
+            textTransform: 'none',
+            marginTop: '24px',
+            marginBottom: '28px',
+          }}
+          onClick={toggleViewFinalReceipt}
+        >
+          Done
+        </Button>
+      </Modal>
     </>
   );
 };

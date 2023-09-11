@@ -99,14 +99,14 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '20'
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
 
       - name: Execute Gradle build
         working-directory: backend-services/${{ env.APP_NAME }}
         run: |
-          gradle build
+          ./gradlew bootJar
           ls -hl build/libs
 
       - name: Docker Login

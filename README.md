@@ -20,6 +20,12 @@ A set of backend services and UI applications to facilitate CIP-1694 voting as w
 - Java 17 LTS
 - Postgres DB 14.x or H2 file db (local development / community running).
 
+## Additional Docs
+- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
+- [SECURITY.md](SECURITY.md)
+- [CONTRIBUTING.md](CONTRIBUTING.md)
+- [CHANGELOG.md](CHANGELOG.md)
+
 ## Running (Development)
 
 By default all backend apps are working with Cardano Pre-Production network.
@@ -104,5 +110,5 @@ but values / properties in `application-dev-yaci-dev-kit.properties` will overri
 On start up of the app, you can verify if the right profile has been used, there should be a message related to that at the beginning.
 
 ## Repository Structure
-- backend-services - contains JAVA backend services
+- backend-services - contains various backend services
 - ui - contains React.JS frontend code apps to cast votes / display voting results

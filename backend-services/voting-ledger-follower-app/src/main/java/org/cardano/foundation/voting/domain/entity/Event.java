@@ -5,6 +5,7 @@ import lombok.*;
 import org.cardano.foundation.voting.domain.SchemaVersion;
 import org.cardano.foundation.voting.domain.VotingEventType;
 import org.cardano.foundation.voting.domain.VotingPowerAsset;
+import org.hibernate.annotations.Immutable;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -19,13 +20,14 @@ import static org.cardano.foundation.voting.domain.VotingEventType.STAKE_BASED;
 @Builder
 @RequiredArgsConstructor
 @AllArgsConstructor
+@Immutable
 public class Event extends AbstractTimestampEntity {
 
     @Getter
     @Setter
     @Column(nullable = false)
     @Id
-    private String id; // e.g. Voltaire_Pre_Ratification
+    private String id;
 
     @Column(nullable = false)
     @Getter

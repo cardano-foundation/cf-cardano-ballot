@@ -13,7 +13,7 @@ import java.util.Optional;
 @Builder
 @Setter
 @ToString
-public class StartVerificationRequest {
+public class SMSStartVerificationRequest {
 
     @NotBlank
     private String eventId;

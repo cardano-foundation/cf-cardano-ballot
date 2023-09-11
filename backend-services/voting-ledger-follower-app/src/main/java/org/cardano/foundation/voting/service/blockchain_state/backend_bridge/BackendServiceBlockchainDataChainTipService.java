@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.ChainTip;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataChainTipService;
+import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
 import java.util.Optional;
@@ -22,6 +23,7 @@ public class BackendServiceBlockchainDataChainTipService implements BlockchainDa
     private final CardanoNetwork cardanoNetwork;
 
     @Override
+    @Transactional(readOnly = true)
     public Either<Problem, ChainTip> getChainTip() {
         try {
             var latestBlock = backendService.getBlockService().getLatestBlock();

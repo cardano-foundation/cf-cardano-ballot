@@ -6,28 +6,24 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.Locale;
 import java.util.Optional;
 
 @Getter
 @Builder
 @Setter
 @ToString
-public class CheckVerificationRequest {
+public class DiscordCheckVerificationRequest {
 
     @NotBlank
-    private String eventId;
-
-    @NotBlank
-    private String requestId;
+    private String secret;
 
     @NotBlank
     private String stakeAddress;
 
     @NotBlank
-    private String verificationCode;
+    protected String coseSignature;
 
     @Builder.Default
-    private Optional<Locale> locale = Optional.empty();
+    protected Optional<@NotBlank String> cosePublicKey = Optional.empty();
 
 }

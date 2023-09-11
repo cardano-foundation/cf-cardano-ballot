@@ -24,7 +24,7 @@ public class VerificationResource {
     private final VoteVerificationService voteVerificationService;
 
     @RequestMapping(value = "/verify-vote", method = POST, produces = "application/json")
-    @Timed(value = "resource.verifyVote", percentiles = {0.3, 0.5, 0.95})
+    @Timed(value = "resource.verifyVote", histogram = true)
     public ResponseEntity<?> verifyVote(@RequestBody @Valid VoteVerificationRequest voteVerificationRequest) {
         log.info("Received vote verification request: {}", voteVerificationRequest);
 

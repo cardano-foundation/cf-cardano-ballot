@@ -14,7 +14,6 @@ import org.cardano.foundation.voting.domain.entity.VoteMerkleProof;
 import org.cardano.foundation.voting.domain.web3.SignedWeb3Request;
 import org.cardano.foundation.voting.domain.web3.Web3Action;
 import org.cardano.foundation.voting.repository.VoteRepository;
-import org.cardano.foundation.voting.service.address.StakeAddressVerificationService;
 import org.cardano.foundation.voting.service.auth.JwtAuthenticationToken;
 import org.cardano.foundation.voting.service.expire.ExpirationService;
 import org.cardano.foundation.voting.service.json.JsonService;
@@ -22,6 +21,7 @@ import org.cardano.foundation.voting.service.merkle_tree.MerkleProofSerdeService
 import org.cardano.foundation.voting.service.merkle_tree.VoteMerkleProofService;
 import org.cardano.foundation.voting.utils.Enums;
 import org.cardano.foundation.voting.utils.MoreUUID;
+import org.cardano.foundation.voting.utils.StakeAddress;
 import org.cardanofoundation.cip30.AddressFormat;
 import org.cardanofoundation.cip30.CIP30Verifier;
 import org.cardanofoundation.merkle.ProofItem;
@@ -73,9 +73,6 @@ public class DefaultVoteService implements VoteService {
     @Autowired
     private JsonService jsonService;
 
-    @Autowired
-    private StakeAddressVerificationService stakeAddressVerificationService;
-
     @Override
     @Transactional(readOnly = true)
     public List<Vote> findAll(String eventId) {
@@ -83,7 +80,7 @@ public class DefaultVoteService implements VoteService {
     }
 
     @Transactional(readOnly = true)
-    @Timed(value = "service.vote.isVoteCastingStillPossible", percentiles = { 0.3, 0.5, 0.95 })
+    @Timed(value = "service.vote.isVoteCastingStillPossible", histogram = true)
     public Either<Problem, Boolean> isVoteCastingStillPossible(String eventId, String voteId) {
         var eventDetailsE = chainFollowerClient.getEventDetails(eventId);
         if (eventDetailsE.isEmpty()) {
@@ -139,7 +136,7 @@ public class DefaultVoteService implements VoteService {
 
     @Override
     @Transactional
-    @Timed(value = "service.vote.castVote", percentiles = { 0.3, 0.5, 0.95 })
+    @Timed(value = "service.vote.castVote", histogram = true)
     public Either<Problem, Vote> castVote(SignedWeb3Request castVoteRequest) {
         var cip30Verifier = new CIP30Verifier(castVoteRequest.getCoseSignature(), castVoteRequest.getCosePublicKey());
         var cip30VerificationResult = cip30Verifier.verify();
@@ -169,16 +166,6 @@ public class DefaultVoteService implements VoteService {
             );
         }
         var stakeAddress = maybeAddress.orElseThrow();
-
-        var stakeAddressCheckE = stakeAddressVerificationService.checkIfAddressIsStakeAddress(stakeAddress);
-        if (stakeAddressCheckE.isLeft()) {
-            return Either.left(stakeAddressCheckE.getLeft());
-        }
-
-        var stakeAddressNetworkCheck = stakeAddressVerificationService.checkStakeAddressNetwork(stakeAddress);
-        if (stakeAddressNetworkCheck.isLeft()) {
-            return Either.left(stakeAddressNetworkCheck.getLeft());
-        }
 
         var castVoteRequestBodyJsonE = jsonService.decodeCIP93VoteEnvelope(cip30VerificationResult.getMessage(TEXT));
         if (castVoteRequestBodyJsonE.isLeft()) {
@@ -214,6 +201,11 @@ public class DefaultVoteService implements VoteService {
                     .withDetail("Invalid network, backend configured with network:" + cardanoNetwork + ", however request is with network:" + network)
                     .withStatus(BAD_REQUEST)
                     .build());
+        }
+
+        var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, stakeAddress);
+        if (stakeAddressCheckE.isEmpty()) {
+            return Either.left(stakeAddressCheckE.getLeft());
         }
 
         String cip30StakeAddress = cip93VoteEnvelope.getData().getAddress();
@@ -571,7 +563,7 @@ public class DefaultVoteService implements VoteService {
 
     @Override
     @Transactional(readOnly = true)
-    @Timed(value = "service.vote.voteReceipt", percentiles = { 0.3, 0.5, 0.95 })
+    @Timed(value = "service.vote.voteReceipt", histogram = true)
     public Either<Problem, VoteReceipt> voteReceipt(SignedWeb3Request viewVoteReceiptSignedWeb3Request) {
         log.info("Fetching voter's receipt for the signed data: {}", viewVoteReceiptSignedWeb3Request);
 
@@ -608,16 +600,6 @@ public class DefaultVoteService implements VoteService {
         }
         var stakeAddress = maybeAddress.orElseThrow();
 
-        var stakeAddressCheckE = stakeAddressVerificationService.checkIfAddressIsStakeAddress(stakeAddress);
-        if (stakeAddressCheckE.isLeft()) {
-            return Either.left(stakeAddressCheckE.getLeft());
-        }
-
-        var stakeAddressNetworkCheck = stakeAddressVerificationService.checkStakeAddressNetwork(stakeAddress);
-        if (stakeAddressNetworkCheck.isLeft()) {
-            return Either.left(stakeAddressNetworkCheck.getLeft());
-        }
-
         var viewVoteReceiptEnvelope = jsonService.decodeCIP93ViewVoteReceiptEnvelope(cip30VerificationResult.getMessage(TEXT));
         if (viewVoteReceiptEnvelope.isLeft()) {
             if (viewVoteReceiptEnvelope.isLeft()) {
@@ -652,6 +634,11 @@ public class DefaultVoteService implements VoteService {
                     .withDetail("Invalid network, backed configured with network:" + cardanoNetwork + ", however request is with network:" + network)
                     .withStatus(BAD_REQUEST)
                     .build());
+        }
+
+        var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, stakeAddress);
+        if (stakeAddressCheckE.isEmpty()) {
+            return Either.left(stakeAddressCheckE.getLeft());
         }
 
         String cip30StakeAddress = cip93ViewVoteReceiptEnvelope.getData().getAddress();
@@ -774,14 +761,9 @@ public class DefaultVoteService implements VoteService {
 
             var jwtStakeAddress = jwtClaimsSet.getStringClaim("stakeAddress");
 
-            var stakeAddressCheckE = stakeAddressVerificationService.checkIfAddressIsStakeAddress(jwtStakeAddress);
-            if (stakeAddressCheckE.isLeft()) {
+            var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, jwtStakeAddress);
+            if (stakeAddressCheckE.isEmpty()) {
                 return Either.left(stakeAddressCheckE.getLeft());
-            }
-
-            var stakeAddressNetworkCheck = stakeAddressVerificationService.checkStakeAddressNetwork(jwtStakeAddress);
-            if (stakeAddressNetworkCheck.isLeft()) {
-                return Either.left(stakeAddressNetworkCheck.getLeft());
             }
 
             var allowedRoles = role.allowedActions();

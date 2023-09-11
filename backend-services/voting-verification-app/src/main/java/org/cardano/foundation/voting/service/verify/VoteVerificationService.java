@@ -34,7 +34,7 @@ public class VoteVerificationService {
 
     private final CardanoNetwork cardanoNetwork;
 
-    @Timed(value = "service.verifyVote", percentiles = { 0.3, 0.5, 0.95 })
+    @Timed(value = "service.verifyVote", histogram = true)
     public Either<Problem, VoteVerificationResult> verifyVoteProof(VoteVerificationRequest voteVerificationRequest) {
         var maybeSteps = voteVerificationRequest.getSteps();
         if (maybeSteps.isEmpty()) {

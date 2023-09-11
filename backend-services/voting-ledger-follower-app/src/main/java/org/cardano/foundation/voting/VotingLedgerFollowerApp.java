@@ -1,6 +1,11 @@
 package org.cardano.foundation.voting;
 
+import io.micrometer.core.aop.TimedAspect;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,9 +14,12 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import static org.springframework.aot.hint.ExecutableMode.INVOKE;
 
 @SpringBootApplication(exclude = { SecurityAutoConfiguration.class, ErrorMvcAutoConfiguration.class })
 @EnableJpaRepositories("org.cardano.foundation.voting.repository")
@@ -27,6 +35,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 @EnableScheduling
 @Slf4j
+@ImportRuntimeHints(VotingLedgerFollowerApp.Hints.class)
 public class VotingLedgerFollowerApp {
 
 	public static void main(String[] args) {
@@ -39,5 +48,14 @@ public class VotingLedgerFollowerApp {
 			log.info("Voting Ledger Follower App started.");
 		};
 	}
+
+    static class Hints implements RuntimeHintsRegistrar {
+
+        @Override
+        @SneakyThrows
+        public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+            hints.reflection().registerMethod(TimedAspect.class.getMethod("timedMethod", ProceedingJoinPoint.class), INVOKE);
+        }
+    }
 
 }

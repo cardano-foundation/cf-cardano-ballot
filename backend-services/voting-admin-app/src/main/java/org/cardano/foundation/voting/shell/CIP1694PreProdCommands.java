@@ -82,7 +82,7 @@ public class CIP1694PreProdCommands {
                 .build();
 
         CreateCategoryCommand createCategoryCommand = CreateCategoryCommand.builder()
-                .name(String.format("%s_%s", EVENT_NAME, event.substring(event.length() - 4)))
+                .id(String.format("%s_%s", EVENT_NAME, event.substring(event.length() - 4)))
                 .event(event)
                 .gdprProtection(false)
                 .schemaVersion(V1)

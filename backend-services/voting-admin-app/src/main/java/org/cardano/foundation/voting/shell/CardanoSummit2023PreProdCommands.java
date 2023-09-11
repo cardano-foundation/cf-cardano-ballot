@@ -11,6 +11,7 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,7 +65,6 @@ public class CardanoSummit2023PreProdCommands {
         if (network != PREPROD) {
             return "This command can only be run on a PRE-PROD network!";
         }
-        var proposalsCount = 5;
 
         log.info("Creating CF-Summit 2023 Ambassador category on a PRE-PROD network...");
 
@@ -93,13 +93,19 @@ public class CardanoSummit2023PreProdCommands {
                 .name("Option 5")
                 .build();
 
+        List<Proposal> allProposals = List.of(n1, n2, n3, n4, n5);
+
         CreateCategoryCommand createCategoryCommand = CreateCategoryCommand.builder()
-                .name("AMBASSADOR")
+                .id("AMBASSADOR")
                 .event(event)
                 .gdprProtection(true)
                 .schemaVersion(V1)
-                .proposals(List.of(n1, n2, n3, n4, n5))
+                .proposals(allProposals)
                 .build();
+
+        if (allProposals.size() != new HashSet<>(allProposals).size()) {
+            throw new RuntimeException("Duplicate proposals detected!");
+        }
 
         l1SubmissionService.submitCategory(createCategoryCommand);
 
@@ -139,13 +145,18 @@ public class CardanoSummit2023PreProdCommands {
                 .name("Option 5")
                 .build();
 
+        List<Proposal> allProposals = List.of(n1, n2, n3, n4, n5);
         CreateCategoryCommand createCategoryCommand = CreateCategoryCommand.builder()
-                .name("BLOCKCHAIN_FOR_GOOD")
+                .id("BLOCKCHAIN_FOR_GOOD")
                 .event(event)
                 .gdprProtection(true)
                 .schemaVersion(V1)
-                .proposals(List.of(n1, n2, n3, n4, n5))
+                .proposals(allProposals)
                 .build();
+
+        if (allProposals.size() != new HashSet<>(allProposals).size()) {
+            throw new RuntimeException("Duplicate proposals detected!");
+        }
 
         l1SubmissionService.submitCategory(createCategoryCommand);
 
@@ -185,13 +196,18 @@ public class CardanoSummit2023PreProdCommands {
                 .name("Option 5")
                 .build();
 
+        List<Proposal> allProposals = List.of(n1, n2, n3, n4, n5);
         CreateCategoryCommand createCategoryCommand = CreateCategoryCommand.builder()
-                .name("CIPS")
+                .id("CIPS")
                 .event(event)
                 .gdprProtection(true)
                 .schemaVersion(V1)
-                .proposals(List.of(n1, n2, n3, n4, n5))
+                .proposals(allProposals)
                 .build();
+
+        if (allProposals.size() != new HashSet<>(allProposals).size()) {
+            throw new RuntimeException("Duplicate proposals detected!");
+        }
 
         l1SubmissionService.submitCategory(createCategoryCommand);
 
@@ -231,13 +247,19 @@ public class CardanoSummit2023PreProdCommands {
                 .name("Option 5")
                 .build();
 
+        List<Proposal> allProposals = List.of(n1, n2, n3, n4, n5);
+
         CreateCategoryCommand createCategoryCommand = CreateCategoryCommand.builder()
-                .name("BEST_DEFI_DEX")
+                .id("BEST_DEFI_DEX")
                 .event(event)
                 .gdprProtection(true)
                 .schemaVersion(V1)
-                .proposals(List.of(n1, n2, n3, n4, n5))
+                .proposals(allProposals)
                 .build();
+
+        if (allProposals.size() != new HashSet<>(allProposals).size()) {
+            throw new RuntimeException("Duplicate proposals detected!");
+        }
 
         l1SubmissionService.submitCategory(createCategoryCommand);
 
@@ -277,13 +299,18 @@ public class CardanoSummit2023PreProdCommands {
                 .name("Option 5")
                 .build();
 
+        List<Proposal> allProposals = List.of(n1, n2, n3, n4, n5);
         CreateCategoryCommand createCategoryCommand = CreateCategoryCommand.builder()
-                .name("BEST_DEVELOPER_OR_DEVELOPER_TOOLS")
+                .id("BEST_DEVELOPER_OR_DEVELOPER_TOOLS")
                 .event(event)
                 .gdprProtection(true)
                 .schemaVersion(V1)
-                .proposals(List.of(n1, n2, n3, n4, n5))
+                .proposals(allProposals)
                 .build();
+
+        if (allProposals.size() != new HashSet<>(allProposals).size()) {
+            throw new RuntimeException("Duplicate proposals detected!");
+        }
 
         l1SubmissionService.submitCategory(createCategoryCommand);
 
@@ -323,13 +350,19 @@ public class CardanoSummit2023PreProdCommands {
                 .name("Option 5")
                 .build();
 
+        List<Proposal> allProposals = List.of(n1, n2, n3, n4, n5);
+
         CreateCategoryCommand createCategoryCommand = CreateCategoryCommand.builder()
-                .name("EDUCATIONAL_INFLUENCER")
+                .id("EDUCATIONAL_INFLUENCER")
                 .event(event)
                 .gdprProtection(true)
                 .schemaVersion(V1)
-                .proposals(List.of(n1, n2, n3, n4, n5))
+                .proposals(allProposals)
                 .build();
+
+        if (allProposals.size() != new HashSet<>(allProposals).size()) {
+            throw new RuntimeException("Duplicate proposals detected!");
+        }
 
         l1SubmissionService.submitCategory(createCategoryCommand);
 
@@ -369,13 +402,19 @@ public class CardanoSummit2023PreProdCommands {
                 .name("Option 5")
                 .build();
 
+        List<Proposal> allProposals = List.of(n1, n2, n3, n4, n5);
+
         CreateCategoryCommand createCategoryCommand = CreateCategoryCommand.builder()
-                .name("MARKETPLACE")
+                .id("MARKETPLACE")
                 .event(event)
                 .gdprProtection(true)
                 .schemaVersion(V1)
-                .proposals(List.of(n1, n2, n3, n4, n5))
+                .proposals(allProposals)
                 .build();
+
+        if (allProposals.size() != new HashSet<>(allProposals).size()) {
+            throw new RuntimeException("Duplicate proposals detected!");
+        }
 
         l1SubmissionService.submitCategory(createCategoryCommand);
 
@@ -415,13 +454,18 @@ public class CardanoSummit2023PreProdCommands {
                 .name("Option 5")
                 .build();
 
+        List<Proposal> allProposals = List.of(n1, n2, n3, n4, n5);
         CreateCategoryCommand createCategoryCommand = CreateCategoryCommand.builder()
-                .name("MOST_IMPACTFUL_SSPO")
+                .id("MOST_IMPACTFUL_SSPO")
                 .event(event)
                 .gdprProtection(true)
                 .schemaVersion(V1)
-                .proposals(List.of(n1, n2, n3, n4, n5))
+                .proposals(allProposals)
                 .build();
+
+        if (allProposals.size() != new HashSet<>(allProposals).size()) {
+            throw new RuntimeException("Duplicate proposals detected!");
+        }
 
         l1SubmissionService.submitCategory(createCategoryCommand);
 
@@ -461,13 +505,18 @@ public class CardanoSummit2023PreProdCommands {
                 .name("Option 5")
                 .build();
 
+        List<Proposal> allProposals = List.of(n1, n2, n3, n4, n5);
         CreateCategoryCommand createCategoryCommand = CreateCategoryCommand.builder()
-                .name("NFT_PROJECT")
+                .id("NFT_PROJECT")
                 .event(event)
                 .gdprProtection(true)
                 .schemaVersion(V1)
-                .proposals(List.of(n1, n2, n3, n4, n5))
+                .proposals(allProposals)
                 .build();
+
+        if (allProposals.size() != new HashSet<>(allProposals).size()) {
+            throw new RuntimeException("Duplicate proposals detected!");
+        }
 
         l1SubmissionService.submitCategory(createCategoryCommand);
 
@@ -532,13 +581,19 @@ public class CardanoSummit2023PreProdCommands {
                 .name("Option 10")
                 .build();
 
+        List<Proposal> allProposals = List.of(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10);
+
         CreateCategoryCommand createCategoryCommand = CreateCategoryCommand.builder()
-                .name("SSI")
+                .id("SSI")
                 .event(event)
                 .gdprProtection(true)
                 .schemaVersion(V1)
-                .proposals(List.of(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10))
+                .proposals(allProposals)
                 .build();
+
+        if (allProposals.size() != new HashSet<>(allProposals).size()) {
+            throw new RuntimeException("Duplicate proposals detected!");
+        }
 
         l1SubmissionService.submitCategory(createCategoryCommand);
 

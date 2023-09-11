@@ -23,7 +23,7 @@ public class MetadataSerialiser {
 
         map.put("type", EVENT_REGISTRATION.name());
 
-        map.put("name", createEventCommand.getId());
+        map.put("id", createEventCommand.getId());
         map.put("organisers", createEventCommand.getOrganisers());
         map.put("votingEventType", createEventCommand.getVotingEventType().name());
         map.put("schemaVersion", createEventCommand.getSchemaVersion().getSemVer());
@@ -63,7 +63,7 @@ public class MetadataSerialiser {
 
         map.put("type", OnChainEventType.CATEGORY_REGISTRATION.name());
 
-        map.put("name", createCategoryCommand.getName());
+        map.put("id", createCategoryCommand.getId());
         map.put("event", createCategoryCommand.getEvent());
 
         map.put("schemaVersion", createCategoryCommand.getSchemaVersion().getSemVer());
@@ -71,7 +71,7 @@ public class MetadataSerialiser {
         map.put("options", createCategoryOptions(createCategoryCommand));
 
         if (createCategoryCommand.getProposals().isEmpty()) {
-            throw new RuntimeException("Category " + createCategoryCommand.getName() + " has no proposals!");
+            throw new RuntimeException("Category " + createCategoryCommand.getId() + " has no proposals!");
         }
 
         map.put("proposals", createProposals(createCategoryCommand));

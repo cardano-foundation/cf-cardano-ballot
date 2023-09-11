@@ -30,7 +30,7 @@ public class ReferenceDataResource {
                                 return ResponseEntity.notFound().build();
                             }
 
-                            EventPresentation eventPresentation = maybeEventPresentation.orElseThrow();
+                            var eventPresentation = maybeEventPresentation.orElseThrow();
 
                             return ResponseEntity.ok().body(eventPresentation);
                         }
@@ -40,7 +40,10 @@ public class ReferenceDataResource {
     @RequestMapping(value = "/event", method = GET, produces = "application/json")
     @Timed(value = "resource.reference.events", histogram = true)
     public ResponseEntity<?> events() {
-        return ResponseEntity.ok(referencePresentationService.eventsExpirationData());
+        return referencePresentationService.eventsSummaries()
+                .fold(problem -> ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem),
+                        listSummaries -> ResponseEntity.ok().body(listSummaries)
+                );
     }
 
 }

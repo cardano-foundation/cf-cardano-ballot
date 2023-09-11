@@ -99,7 +99,7 @@ public class ReferencePresentationService {
         return Either.right(Optional.of(eventBuilder.build()));
     }
 
-    public Either<Problem, List<ExpirationData>> eventsExpirationData() {
+    public Either<Problem, List<ExpirationData>> eventsSummaries() {
         List<Event> allValidEvents = referenceDataService.findAllValidEvents();
 
         return expirationService.getExpirationDataList(allValidEvents);

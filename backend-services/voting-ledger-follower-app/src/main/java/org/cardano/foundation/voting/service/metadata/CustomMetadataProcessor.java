@@ -4,7 +4,6 @@ import co.nstant.in.cbor.CborException;
 import com.bloxbean.cardano.client.common.cbor.CborSerializationUtil;
 import com.bloxbean.cardano.client.metadata.cbor.CBORMetadata;
 import com.bloxbean.cardano.client.metadata.cbor.CBORMetadataMap;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.OnChainEventType;
 import org.cardano.foundation.voting.domain.SchemaVersion;
@@ -22,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -58,58 +58,59 @@ public class CustomMetadataProcessor {
     @Value("${organiser.account.stakeAddress}")
     private String organiserStakeAddress;
 
-    @SneakyThrows
-    public void processMetadataEvent(long slot, String txCbor)  {
-        var cborBytes = decodeHexString(txCbor.replace("\\x", ""));
+    @Transactional
+    public void processMetadataEvent(long slot, String txCbor) throws CborException {
+        try {
 
-        var cborMetadata = CBORMetadata.deserialize(cborBytes);
+            var cborBytes = decodeHexString(txCbor.replace("\\x", ""));
 
-        var envelopeCborMap = Optional.ofNullable((CBORMetadataMap) cborMetadata.get(BigInteger.valueOf(metadataLabel))).orElseThrow();
+            var cborMetadata = CBORMetadata.deserialize(cborBytes);
 
-        Optional<String> maybeSignatureHexString = ChunkedMetadataParser.deChunk(envelopeCborMap.get("signature"));
-        Optional<String> maybeKeyHexString = ChunkedMetadataParser.deChunk(envelopeCborMap.get("key"));
-        Optional<CBORMetadataMap> maybePayloadCborMap = Optional.ofNullable(envelopeCborMap.get("payload")).map(o -> (CBORMetadataMap) o);
+            var envelopeCborMap = Optional.ofNullable((CBORMetadataMap) cborMetadata.get(BigInteger.valueOf(metadataLabel))).orElseThrow();
 
-        if (maybeSignatureHexString.isEmpty()) {
-            log.warn("Missing signature from on chain event: {}", txCbor);
-            return;
-        }
+            Optional<String> maybeSignatureHexString = ChunkedMetadataParser.deChunk(envelopeCborMap.get("signature"));
+            Optional<String> maybeKeyHexString = ChunkedMetadataParser.deChunk(envelopeCborMap.get("key"));
+            Optional<CBORMetadataMap> maybePayloadCborMap = Optional.ofNullable(envelopeCborMap.get("payload")).map(o -> (CBORMetadataMap) o);
 
-        if (maybeKeyHexString.isEmpty()) {
-            log.warn("Missing key from on chain event: {}", txCbor);
-            return;
-        }
+            if (maybeSignatureHexString.isEmpty()) {
+                log.warn("Missing signature from on chain event: {}", txCbor);
+                return;
+            }
 
-        if (maybePayloadCborMap.isEmpty()) {
-            log.warn("Missing payload from on chain event: {}", txCbor);
-            return;
-        }
+            if (maybeKeyHexString.isEmpty()) {
+                log.warn("Missing key from on chain event: {}", txCbor);
+                return;
+            }
 
-        var maybeOnChainVotingEventType = Enums.getIfPresent(OnChainEventType.class, ((String)envelopeCborMap.get("type")));
-        if (maybeOnChainVotingEventType.isEmpty()) {
-            log.warn("Unknown onChainEvenType chain event type: {}", envelopeCborMap.get("type"));
-            return;
-        }
-        var onChainEvenType = maybeOnChainVotingEventType.orElseThrow();
+            if (maybePayloadCborMap.isEmpty()) {
+                log.warn("Missing payload from on chain event: {}", txCbor);
+                return;
+            }
 
-        if (onChainEvenType == EVENT_REGISTRATION) {
-            try {
+            var maybeOnChainVotingEventType = Enums.getIfPresent(OnChainEventType.class, ((String)envelopeCborMap.get("type")));
+            if (maybeOnChainVotingEventType.isEmpty()) {
+                log.warn("Unknown onChainEvenType chain event type: {}", envelopeCborMap.get("type"));
+                return;
+            }
+            var onChainEvenType = maybeOnChainVotingEventType.orElseThrow();
+
+            if (onChainEvenType == EVENT_REGISTRATION) {
                 processEventRegistration(slot, maybeSignatureHexString.orElseThrow(), maybeKeyHexString.orElseThrow(), maybePayloadCborMap.orElseThrow()).ifPresent(event -> {
                     log.info("Event registration processed: {}", event.getId());
                 });
-            } catch (Exception e) {
-                log.warn("Unable to process onChainEvenType chain EVENT_REGISTRATION", e);
             }
-        }
-        if (onChainEvenType == CATEGORY_REGISTRATION) {
-            processCategoryRegistration(slot, maybeSignatureHexString.orElseThrow(), maybeKeyHexString.orElseThrow(), maybePayloadCborMap.orElseThrow()).ifPresent(category -> {
-                log.info("Category registration processed: {}", category.getId());
-            });
-        }
-        if (onChainEvenType == COMMITMENTS) {
-            processCommitments(slot, maybeSignatureHexString.orElseThrow(), maybeKeyHexString.orElseThrow(), maybePayloadCborMap.orElseThrow()).ifPresent(merkleRootHashes -> {
-                log.info("On chain commitments processed: {}", merkleRootHashes);
-            });
+            if (onChainEvenType == CATEGORY_REGISTRATION) {
+                processCategoryRegistration(slot, maybeSignatureHexString.orElseThrow(), maybeKeyHexString.orElseThrow(), maybePayloadCborMap.orElseThrow()).ifPresent(category -> {
+                    log.info("Category registration processed: {}", category.getId());
+                });
+            }
+            if (onChainEvenType == COMMITMENTS) {
+                processCommitments(slot, maybeSignatureHexString.orElseThrow(), maybeKeyHexString.orElseThrow(), maybePayloadCborMap.orElseThrow()).ifPresent(merkleRootHashes -> {
+                    log.info("On chain commitments processed: {}", merkleRootHashes);
+                });
+            }
+        } catch (Exception e) {
+            log.warn("Unable to process onChainEvenType chain event", e);
         }
     }
 
@@ -244,6 +245,7 @@ public class CustomMetadataProcessor {
             return Optional.empty();
         }
         var categoryRegistration = maybeCategoryRegistration.orElseThrow();
+        log.info(categoryRegistration.toString());
 
         if (!bindOnEventIds.contains(categoryRegistration.getEvent())) {
             log.info("Event in category NOT found in bindOnEventIds, ignoring id:{}", id);
@@ -259,15 +261,15 @@ public class CustomMetadataProcessor {
         }
         var event = maybeStoredEvent.orElseThrow();
 
-        var maybeCategory = referenceDataService.findCategoryByName(categoryRegistration.getName());
+        var maybeCategory = referenceDataService.findCategoryByName(categoryRegistration.getId());
         if (maybeCategory.isPresent()) {
-            log.info("Category already found, ignoring name: {}", categoryRegistration.getName());
+            log.info("Category already found, ignoring id: {}", categoryRegistration.getId());
 
             return Optional.empty();
         }
 
         var category = new Category();
-        category.setId(categoryRegistration.getName());
+        category.setId(categoryRegistration.getId());
         category.setVersion(SchemaVersion.fromText(categoryRegistration.getSchemaVersion()).orElseThrow());
         category.setGdprProtection(categoryRegistration.isGdprProtection());
         category.setAbsoluteSlot(slot);

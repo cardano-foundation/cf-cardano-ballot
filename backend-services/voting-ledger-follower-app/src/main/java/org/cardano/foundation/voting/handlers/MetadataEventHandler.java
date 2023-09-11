@@ -1,13 +1,15 @@
 package org.cardano.foundation.voting.handlers;
 
 import com.bloxbean.cardano.yaci.store.metadata.domain.TxMetadataEvent;
+import com.bloxbean.cardano.yaci.store.metadata.domain.TxMetadataLabel;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.service.metadata.CustomMetadataProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
@@ -20,16 +22,19 @@ public class MetadataEventHandler {
     private long metadataLabel;
 
     @EventListener
-    @Transactional
+    @Async
     public void handleMetadataEvent(TxMetadataEvent event) {
         log.debug("Received metadata event: {}", event);
 
         try {
-            event.getTxMetadataList().stream()
-                    .filter(txMetadataLabel -> txMetadataLabel.getLabel().equalsIgnoreCase(String.valueOf(metadataLabel)))
-                    .forEach(txEvent -> customMetadataProcessor.processMetadataEvent(txEvent.getSlot(), txEvent.getCbor()));
+            var txMetadataList = event.getTxMetadataList();
+            for (TxMetadataLabel txEvent : txMetadataList) {
+                if (txEvent.getLabel().equalsIgnoreCase(String.valueOf(metadataLabel))) {
+                    customMetadataProcessor.processMetadataEvent(txEvent.getSlot(), txEvent.getCbor());
+                }
+            }
         } catch (Exception e) {
-            log.warn("Error processing metadata event, reason:{}", e.getMessage());
+            log.warn("Error processing metadata event, cause:{}", e.getMessage());
         }
     }
 

@@ -7,6 +7,7 @@ import org.cardano.foundation.voting.domain.CreateCategoryCommand;
 import org.cardano.foundation.voting.domain.CreateEventCommand;
 import org.cardano.foundation.voting.domain.Proposal;
 import org.cardano.foundation.voting.service.transaction_submit.L1SubmissionService;
+import org.springframework.core.annotation.Order;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
@@ -31,7 +32,8 @@ public class CardanoSummit2023PreProdCommands {
 
     private final CardanoNetwork network;
 
-    @ShellMethod(key = "create-cf-summit03-event-pre-prod", value = "Create a CF-Summit 2023 voting event on a PRE-PROD network.")
+    @ShellMethod(key = "01_create-cf-summit03-event-pre-prod", value = "Create a CF-Summit 2023 voting event on a PRE-PROD network.")
+    @Order(1)
     public String createCFSummit2023Event() {
         if (network != PREPROD) {
             return "This command can only be run on PRE-PROD network!";
@@ -39,11 +41,13 @@ public class CardanoSummit2023PreProdCommands {
 
         log.info("Creating CF-Summit 2023 on a PRE-PROD network...");
 
-        long startSlot = 38500543;
+        long startSlot = 38754987;
+        long endSlot = startSlot + (2630000L / 2);
+
         CreateEventCommand createEventCommand = CreateEventCommand.builder()
                 .id(EVENT_NAME + "_" + shortUUID(4))
                 .startSlot(Optional.of(startSlot))
-                .endSlot(Optional.of(startSlot + (2630000L / 2))) // 30 days / 2 = 15 days in slots
+                .endSlot(Optional.of(endSlot)) // 30 days / 2 = 15 days in slots
                 .votingPowerAsset(Optional.empty())
                 .organisers("CF")
                 .votingEventType(USER_BASED)
@@ -52,7 +56,7 @@ public class CardanoSummit2023PreProdCommands {
                 .highLevelEventResultsWhileVoting(true)
                 .highLevelCategoryResultsWhileVoting(true)
                 .categoryResultsWhileVoting(false)
-                .proposalsRevealSlot(Optional.of(2000000L))
+                .proposalsRevealSlot(Optional.of(endSlot + 604800)) // 604800 = 1 week in seconds
                 .build();
 
         l1SubmissionService.submitEvent(createEventCommand);
@@ -60,7 +64,8 @@ public class CardanoSummit2023PreProdCommands {
         return "Created CF-Summit 2023 event: " + createEventCommand;
     }
 
-    @ShellMethod(key = "create-ambassador-category-pre-prod", value = "Create a CF-Summit 2023 Ambassador category on a PRE-PROD network.")
+    @ShellMethod(key = "02_create-ambassador-category-pre-prod", value = "Create a CF-Summit 2023 Ambassador category on a PRE-PROD network.")
+    @Order(2)
     public String createAmbassadorCategory(@ShellOption String event) {
         if (network != PREPROD) {
             return "This command can only be run on a PRE-PROD network!";
@@ -112,7 +117,8 @@ public class CardanoSummit2023PreProdCommands {
         return "Created CF-Summit 2023 category: " + createCategoryCommand;
     }
 
-    @ShellMethod(key = "create-blockchain-for-good-category-pre-prod", value = "Create a CF-Summit 2023 Best Blockchain for Good category on a PRE-PROD network.")
+    @ShellMethod(key = "03_create-blockchain-for-good-category-pre-prod", value = "Create a CF-Summit 2023 Best Blockchain for Good category on a PRE-PROD network.")
+    @Order(3)
     public String createBlockchainForGoodCategory(@ShellOption String event) {
         if (network != PREPROD) {
             return "This command can only be run on a PRE-PROD network!";
@@ -163,7 +169,8 @@ public class CardanoSummit2023PreProdCommands {
         return "Created CF-Summit 2023 category: " + createCategoryCommand;
     }
 
-    @ShellMethod(key = "create-cips-category-pre-prod", value = "Create a CF-Summit 2023 CIPs category on a PRE-PROD network.")
+    @ShellMethod(key = "04_create-cips-category-pre-prod", value = "Create a CF-Summit 2023 CIPs category on a PRE-PROD network.")
+    @Order(4)
     public String createCIPsCategory(@ShellOption String event) {
         if (network != PREPROD) {
             return "This command can only be run on a PRE-PROD network!";
@@ -214,7 +221,8 @@ public class CardanoSummit2023PreProdCommands {
         return "Created CF-Summit 2023 category: " + createCategoryCommand;
     }
 
-    @ShellMethod(key = "create-defi-dex-category-pre-prod", value = "Create a CF-Summit 2023 DeFi / DEX category on a PRE-PROD network.")
+    @ShellMethod(key = "05_create-defi-dex-category-pre-prod", value = "Create a CF-Summit 2023 DeFi / DEX category on a PRE-PROD network.")
+    @Order(5)
     public String createDeFiDEXCategory(@ShellOption String event) {
         if (network != PREPROD) {
             return "This command can only be run on a PRE-PROD network!";
@@ -266,7 +274,8 @@ public class CardanoSummit2023PreProdCommands {
         return "Created CF-Summit 2023 category: " + createCategoryCommand;
     }
 
-    @ShellMethod(key = "create-developer-or-developer-tools-category-pre-prod", value = "Create a CF-Summit 2023 Developer or Developer Tools category on a PRE-PROD network.")
+    @ShellMethod(key = "06_create-developer-or-developer-tools-category-pre-prod", value = "Create a CF-Summit 2023 Developer or Developer Tools category on a PRE-PROD network.")
+    @Order(6)
     public String createBestDeveloperOrDeveloperTools(@ShellOption String event) {
         if (network != PREPROD) {
             return "This command can only be run on a PRE-PROD network!";
@@ -317,7 +326,8 @@ public class CardanoSummit2023PreProdCommands {
         return "Created CF-Summit 2023 category: " + createCategoryCommand;
     }
 
-    @ShellMethod(key = "create-educational-influencer-category-pre-prod", value = "Create a CF-Summit 2023 Educational Influencer category on a PRE-PROD network.")
+    @ShellMethod(key = "07_create-educational-influencer-category-pre-prod", value = "Create a CF-Summit 2023 Educational Influencer category on a PRE-PROD network.")
+    @Order(7)
     public String createEducationalInfluencer(@ShellOption String event) {
         if (network != PREPROD) {
             return "This command can only be run on a PRE-PROD network!";
@@ -369,7 +379,8 @@ public class CardanoSummit2023PreProdCommands {
         return "Created CF-Summit 2023 category: " + createCategoryCommand;
     }
 
-    @ShellMethod(key = "create-marketplace-category-pre-prod", value = "Create a CF-Summit 2023 Marketplace category on a PRE-PROD network.")
+    @ShellMethod(key = "08_create-marketplace-category-pre-prod", value = "Create a CF-Summit 2023 Marketplace category on a PRE-PROD network.")
+    @Order(8)
     public String createMarketPlaceCategory(@ShellOption String event) {
         if (network != PREPROD) {
             return "This command can only be run on a PRE-PROD network!";
@@ -421,7 +432,8 @@ public class CardanoSummit2023PreProdCommands {
         return "Created CF-Summit 2023 category: " + createCategoryCommand;
     }
 
-    @ShellMethod(key = "create-most-impactful-sspo-category-pre-prod", value = "Create a CF-Summit 2023 Most Impactful SSPO category on a PRE-PROD network.")
+    @ShellMethod(key = "09_create-most-impactful-sspo-category-pre-prod", value = "Create a CF-Summit 2023 Most Impactful SSPO category on a PRE-PROD network.")
+    @Order(9)
     public String createMostImpactfulSPOCategory(@ShellOption String event) {
         if (network != PREPROD) {
             return "This command can only be run on a PRE-PROD network!";
@@ -445,7 +457,7 @@ public class CardanoSummit2023PreProdCommands {
                 .build();
 
         Proposal n4 = Proposal.builder()
-                .id("c0f06200-b04c-4e08-b00b-e050cdcc205c")
+                .id("cfe477d2-e7eb-46a7-a8ee-f721da2de399")
                 .name("Option 4")
                 .build();
 
@@ -472,7 +484,8 @@ public class CardanoSummit2023PreProdCommands {
         return "Created CF-Summit 2023 category: " + createCategoryCommand;
     }
 
-    @ShellMethod(key = "create-nft-project-category-pre-prod", value = "Create a CF-Summit 2023 NFT Project category on a PRE-PROD network.")
+    @ShellMethod(key = "10_create-nft-project-category-pre-prod", value = "Create a CF-Summit 2023 NFT Project category on a PRE-PROD network.")
+    @Order(10)
     public String createNFTProjectCategory(@ShellOption String event) {
         if (network != PREPROD) {
             return "This command can only be run on a PRE-PROD network!";
@@ -523,7 +536,8 @@ public class CardanoSummit2023PreProdCommands {
         return "Created CF-Summit 2023 category: " + createCategoryCommand;
     }
 
-    @ShellMethod(key = "create-ssi-category-pre-prod", value = "Create a CF-Summit 2023 SSI category on a PRE-PROD network.")
+    @ShellMethod(key = "11_create-ssi-category-pre-prod", value = "Create a CF-Summit 2023 SSI category on a PRE-PROD network.")
+    @Order(11)
     public String createSSICategory(@ShellOption String event) {
         if (network != PREPROD) {
             return "This command can only be run on a PRE-PROD network!";

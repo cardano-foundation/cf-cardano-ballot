@@ -34,13 +34,13 @@ public class EventPresentation {
     private Optional<Integer> startEpoch = Optional.empty();
 
     @Builder.Default
-    private Optional<ZonedDateTime> eventStart = Optional.empty();
+    private Optional<ZonedDateTime> eventStartDate = Optional.empty();
 
     @Builder.Default
-    private Optional<ZonedDateTime> eventEnd = Optional.empty();
+    private Optional<ZonedDateTime> eventEndDate = Optional.empty();
 
     @Builder.Default
-    private Optional<ZonedDateTime> proposalsReveal = Optional.empty();
+    private Optional<ZonedDateTime> proposalsRevealDate = Optional.empty();
 
     @Builder.Default
     private Optional<ZonedDateTime> snapshotTime = Optional.empty();
@@ -62,6 +62,9 @@ public class EventPresentation {
 
     @Builder.Default
     private boolean isNotStarted = false;
+
+    @Builder.Default
+    private boolean isProposalsReveal = false;
 
     @Builder.Default
     private boolean isAllowVoteChanging = false;

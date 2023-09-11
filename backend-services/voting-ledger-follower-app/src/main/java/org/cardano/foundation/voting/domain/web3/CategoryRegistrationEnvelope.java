@@ -2,16 +2,18 @@ package org.cardano.foundation.voting.domain.web3;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 import org.cardano.foundation.voting.domain.OnChainEventType;
 
 import java.util.List;
 
 @Getter
 @Builder
+@ToString
 public class CategoryRegistrationEnvelope {
 
     private OnChainEventType type;
-    private String name;
+    private String id;
     private String event;
     private String schemaVersion;
 

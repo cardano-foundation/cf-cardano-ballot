@@ -72,11 +72,10 @@ public class ReferencePresentationService {
                 .endSlot(event.getEndSlot())
                 .snapshotEpoch(event.getSnapshotEpoch())
                 .categories(categories)
-                .proposalsRevealSlot(event.getProposalsRevealSlot())
-                .proposalsRevealEpoch(event.getProposalsRevealEpoch())
                 .isNotStarted(expirationData.notStarted())
                 .isActive(expirationData.active())
                 .isFinished(expirationData.finished())
+                .isProposalsReveal(expirationData.proposalsReveal())
                 .isAllowVoteChanging(event.isAllowVoteChanging())
                 .isHighLevelEventResultsWhileVoting(event.getHighLevelEpochResultsWhileVoting().orElse(false))
                 .isHighLevelCategoryResultsWhileVoting(event.getHighLevelEpochResultsWhileVoting().orElse(false))
@@ -84,15 +83,17 @@ public class ReferencePresentationService {
 
         switch (event.getVotingEventType()) {
             case STAKE_BASED, BALANCE_BASED -> {
-                eventBuilder.eventStart(customEpochService.getEpochStartTimeBasedOnEpochNo(event.getStartEpoch().orElseThrow()));
-                eventBuilder.eventEnd(customEpochService.getEpochEndTime(event.getEndEpoch().orElseThrow()));
+                eventBuilder.eventStartDate(customEpochService.getEpochStartTimeBasedOnEpochNo(event.getStartEpoch().orElseThrow()));
+                eventBuilder.eventEndDate(customEpochService.getEpochEndTime(event.getEndEpoch().orElseThrow()));
                 eventBuilder.snapshotTime(customEpochService.getEpochEndTime(event.getSnapshotEpoch().orElseThrow()));
-                eventBuilder.proposalsReveal(customEpochService.getEpochEndTime(event.getProposalsRevealEpoch().orElseThrow()));
+                eventBuilder.proposalsRevealDate(customEpochService.getEpochEndTime(event.getProposalsRevealEpoch().orElseThrow()));
+                eventBuilder.proposalsRevealEpoch(event.getProposalsRevealEpoch());
             }
             case USER_BASED -> {
-                eventBuilder.eventStart(customEpochService.getEpochStartTimeBasedOnAbsoluteSlot(event.getStartSlot().orElseThrow()));
-                eventBuilder.eventEnd(customEpochService.getEpochEndTimeBasedOnAbsoluteSlot(event.getEndSlot().orElseThrow()));
-                eventBuilder.proposalsReveal(customEpochService.getEpochEndTimeBasedOnAbsoluteSlot(event.getProposalsRevealSlot().orElseThrow()));
+                eventBuilder.eventStartDate(customEpochService.getEpochStartTimeBasedOnAbsoluteSlot(event.getStartSlot().orElseThrow()));
+                eventBuilder.eventEndDate(customEpochService.getEpochEndTimeBasedOnAbsoluteSlot(event.getEndSlot().orElseThrow()));
+                eventBuilder.proposalsRevealDate(customEpochService.getEpochEndTimeBasedOnAbsoluteSlot(event.getProposalsRevealSlot().orElseThrow()));
+                eventBuilder.proposalsRevealSlot(event.getProposalsRevealSlot());
             }
         }
 

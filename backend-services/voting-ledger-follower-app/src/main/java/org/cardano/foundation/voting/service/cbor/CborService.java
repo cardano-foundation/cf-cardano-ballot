@@ -104,7 +104,7 @@ public class CborService {
                                 .build());
             }
 
-            var maybeName = Optional.ofNullable((String) payload.get("name"));
+            var maybeName = Optional.ofNullable((String) payload.get("id"));
             if (maybeName.isEmpty()) {
                 return Either.left(
                         Problem.builder()
@@ -113,6 +113,7 @@ public class CborService {
                                 .withStatus(BAD_REQUEST)
                                 .build());
             }
+            log.info("Category registration event name:{}", maybeName.orElseThrow());
 
             var maybeEvent = Optional.ofNullable((String) payload.get("event"));
             if (maybeEvent.isEmpty()) {
@@ -158,7 +159,7 @@ public class CborService {
             boolean isGdprProtection = fromBigInteger((BigInteger) options.get("gdprProtection")).orElse(false);
             var categoryRegistration = CategoryRegistrationEnvelope.builder()
                     .type(maybeOnchainEventType.orElseThrow())
-                    .name(maybeName.orElseThrow())
+                    .id(maybeName.orElseThrow())
                     .event(maybeEvent.orElseThrow())
                     .creationSlot(maybeCreationSlot.orElseThrow())
                     .gdprProtection(isGdprProtection)
@@ -181,7 +182,7 @@ public class CborService {
 
     public Either<Problem, EventRegistrationEnvelope> decodeEventRegistrationEnvelope(CBORMetadataMap payload) {
         try {
-            String name = (String) payload.get("name");
+            String name = (String) payload.get("id");
 
             var maybeOnchainEventType = Enums.getIfPresent(OnChainEventType.class, (String) payload.get("type"));
             if (maybeOnchainEventType.isEmpty() || maybeOnchainEventType.orElseThrow() != EVENT_REGISTRATION) {

@@ -26,21 +26,49 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
     @Autowired
     private VoteRepository voteRepository;
 
-    private Either<Problem, Boolean> isEventLeaderboardAvailable(ChainFollowerClient.EventDetailsResponse eventDetails,
+    private Either<Problem, Boolean> isHighLevelEventLeaderboardAvailable(ChainFollowerClient.EventDetailsResponse eventDetails,
+                                                                          boolean forceLeaderboard) {
+        if (forceLeaderboard) {
+            return Either.right(true);
+        }
+
+        if (eventDetails.highLevelEventResultsWhileVoting()) {
+            return Either.right(true);
+        }
+
+        return Either.right(eventDetails.proposalsReveal());
+    }
+
+
+    private Either<Problem, Boolean> isHighLevelCategoryLeaderboardAvailable(ChainFollowerClient.EventDetailsResponse eventDetails,
                                                                  boolean forceLeaderboard) {
         if (forceLeaderboard) {
             return Either.right(true);
         }
 
-        if (eventDetails.highLevelResultsWhileVoting()) {
+        if (eventDetails.highLevelCategoryResultsWhileVoting()) {
             return Either.right(true);
         }
 
-        return Either.right(eventDetails.finished());
+        return Either.right(eventDetails.proposalsReveal());
+    }
+
+    private Either<Problem, Boolean> isCategoryLeaderboardAvailable(ChainFollowerClient.EventDetailsResponse eventDetails,
+                                                                    ChainFollowerClient.CategoryDetailsResponse categoryDetails,
+                                                                    boolean forceLeaderboard) {
+        if (forceLeaderboard) {
+            return Either.right(true);
+        }
+
+        if (eventDetails.categoryResultsWhileVoting()) {
+            return Either.right(true);
+        }
+
+        return Either.right(eventDetails.proposalsReveal());
     }
 
     @Override
-    public Either<Problem, Boolean> isEventLeaderboardAvailable(String event, boolean forceLeaderboard) {
+    public Either<Problem, Boolean> isHighLevelEventLeaderboardAvailable(String event, boolean forceLeaderboard) {
         var eventDetailsE = chainFollowerClient.getEventDetails(event);
         if (eventDetailsE.isEmpty()) {
             return Either.left(Problem.builder()
@@ -61,12 +89,37 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
         }
         var eventDetails = maybeEventDetails.orElseThrow();
 
-        return isEventLeaderboardAvailable(eventDetails, forceLeaderboard);
+        return isHighLevelEventLeaderboardAvailable(eventDetails, forceLeaderboard);
+    }
+
+    @Override
+    public Either<Problem, Boolean> isHighLevelCategoryLeaderboardAvailable(String event, boolean forceLeaderboard) {
+        var eventDetailsE = chainFollowerClient.getEventDetails(event);
+        if (eventDetailsE.isEmpty()) {
+            return Either.left(Problem.builder()
+                    .withTitle("ERROR_GETTING_EVENT_DETAILS")
+                    .withDetail("Unable to get event details from chain-tip follower service, event:" + event)
+                    .withStatus(INTERNAL_SERVER_ERROR)
+                    .build()
+            );
+        }
+        var maybeEventDetails = eventDetailsE.get();
+        if (maybeEventDetails.isEmpty()) {
+            return Either.left(Problem.builder()
+                    .withTitle("UNRECOGNISED_EVENT")
+                    .withDetail("Unrecognised event, event:" + event)
+                    .withStatus(BAD_REQUEST)
+                    .build()
+            );
+        }
+        var eventDetails = maybeEventDetails.orElseThrow();
+
+        return isHighLevelCategoryLeaderboardAvailable(eventDetails, forceLeaderboard);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Either<Problem, Leaderboard.ByEvent> getEventLeaderboard(String event, boolean forceLeaderboard) {
+    public Either<Problem, Leaderboard.ByEventStats> getEventLeaderboard(String event, boolean forceLeaderboard) {
         var eventDetailsE = chainFollowerClient.getEventDetails(event);
         if (eventDetailsE.isEmpty()) {
             return Either.left(Problem.builder()
@@ -87,13 +140,13 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
         }
         var eventDetails = maybeEventDetails.orElseThrow();
 
-        var eventLeaderboardAvailableE = isEventLeaderboardAvailable(eventDetails, forceLeaderboard);
-        if (eventLeaderboardAvailableE.isEmpty()) {
-            return Either.left(eventLeaderboardAvailableE.getLeft());
+        var highLevelEventLeaderboardAvailableE = isHighLevelEventLeaderboardAvailable(eventDetails, forceLeaderboard);
+        if (highLevelEventLeaderboardAvailableE.isEmpty()) {
+            return Either.left(highLevelEventLeaderboardAvailableE.getLeft());
         }
-        var isEventLeaderBoardAvailable = eventLeaderboardAvailableE.get();
+        var isHighLevelEventLeaderBoardAvailable = highLevelEventLeaderboardAvailableE.get();
 
-        if (!isEventLeaderBoardAvailable) {
+        if (!isHighLevelEventLeaderBoardAvailable) {
             return Either.left(Problem.builder()
                     .withTitle("VOTING_RESULTS_NOT_AVAILABLE")
                     .withDetail("Event level voting results not available until voting event finishes!")
@@ -104,28 +157,60 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
 
         var votes = voteRepository.countAllByEventId(event);
         if (votes.isEmpty()) {
-            return Either.left(Problem.builder()
-                    .withTitle("INTERNAL_ERROR")
-                    .withDetail("No votes for event, event:" + event)
-                    .withStatus(INTERNAL_SERVER_ERROR)
-                    .build()
-            );
+
+            Leaderboard.ByEventStats.ByEventStatsBuilder byEventStatsBuilder = Leaderboard.ByEventStats.builder()
+                    .event(eventDetails.id())
+                    .totalVotesCount(0L);
+
+            switch (eventDetails.votingEventType()) {
+                case BALANCE_BASED, STAKE_BASED -> byEventStatsBuilder.totalVotingPower("0");
+            }
+
+            return Either.right(byEventStatsBuilder
+                    .build());
         }
+
         var eventVoteCount = Iterables.getOnlyElement(votes);
-        var votingPower = eventVoteCount.getTotalVotingPower();
         var voteCount = eventVoteCount.getTotalVoteCount();
 
-        return Either.right(Leaderboard.ByEvent.builder()
+        var byEventStatsBuilder = Leaderboard.ByEventStats.builder()
                 .event(eventDetails.id())
-                .totalVotesCount(Optional.ofNullable(voteCount).orElse(0L))
-                .totalVotingPower(Optional.ofNullable(votingPower).map(String::valueOf).orElse("0"))
-                .build()
-        );
+                .totalVotesCount(Optional.ofNullable(voteCount).orElse(0L));
+
+        var votingPower = eventVoteCount.getTotalVotingPower();
+
+        switch (eventDetails.votingEventType()) {
+            case BALANCE_BASED, STAKE_BASED -> byEventStatsBuilder.totalVotingPower(Optional.ofNullable(votingPower).map(String::valueOf).orElse("0"));
+        }
+
+        var eventLeaderboardAvailableE = isHighLevelCategoryLeaderboardAvailable(eventDetails, forceLeaderboard);
+        if (eventLeaderboardAvailableE.isEmpty()) {
+            return Either.left(eventLeaderboardAvailableE.getLeft());
+        }
+        var isEventLeaderBoardAvailable = eventLeaderboardAvailableE.get();
+
+        if (isEventLeaderBoardAvailable) {
+            // TODO fake, get value from DB
+            byEventStatsBuilder.categories(eventDetails.categories().stream().map(c -> {
+                Leaderboard.ByCategoryStats.ByCategoryStatsBuilder byCategoryStatsBuilder = Leaderboard.ByCategoryStats.builder();
+
+                byCategoryStatsBuilder.id(c.id());
+                byCategoryStatsBuilder.votes(0L);
+
+                switch (eventDetails.votingEventType()) {
+                    case BALANCE_BASED, STAKE_BASED -> byCategoryStatsBuilder.votingPower("0");
+                }
+
+                return byCategoryStatsBuilder.build();
+            }).toList());
+        }
+
+        return Either.right(byEventStatsBuilder.build());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Either<Problem, Leaderboard.ByCategory> getCategoryLeaderboard(String event, String category, boolean forceLeaderboard) {
+    public Either<Problem, Leaderboard.ByProposalsInCategoryStats> getCategoryLeaderboard(String event, String category, boolean forceLeaderboard) {
         var eventDetailsE = chainFollowerClient.getEventDetails(event);
         if (eventDetailsE.isEmpty()) {
             return Either.left(Problem.builder()
@@ -183,7 +268,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
                     return new Leaderboard.Votes(totalVotesCount, totalVotingPower);
                 }));
 
-        return Either.right(Leaderboard.ByCategory.builder()
+        return Either.right(Leaderboard.ByProposalsInCategoryStats.builder()
                 .category(categoryDetails.id())
                 .proposals(proposalResults)
                 .build()
@@ -225,20 +310,6 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
         var categoryDetails = maybeCategory.orElseThrow();
 
         return isCategoryLeaderboardAvailable(eventDetails, categoryDetails, forceLeaderboard);
-    }
-
-    private Either<Problem, Boolean> isCategoryLeaderboardAvailable(ChainFollowerClient.EventDetailsResponse eventDetails,
-                                                                    ChainFollowerClient.CategoryDetailsResponse categoryDetails,
-                                                                    boolean forceLeaderboard) {
-        if (forceLeaderboard) {
-            return Either.right(true);
-        }
-
-        if (eventDetails.categoryResultsWhileVoting()) {
-            return Either.right(true);
-        }
-
-        return Either.right(eventDetails.finished());
     }
 
 }

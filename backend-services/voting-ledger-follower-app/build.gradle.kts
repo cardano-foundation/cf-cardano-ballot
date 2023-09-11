@@ -62,10 +62,10 @@ dependencies {
 
 	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.0-beta3")
 
-	implementation("com.bloxbean.cardano:yaci-store-spring-boot-starter:0.0.12-beta2")
-	implementation("com.bloxbean.cardano:yaci-store-blocks-spring-boot-starter:0.0.12-beta2")
-	implementation("com.bloxbean.cardano:yaci-store-transaction-spring-boot-starter:0.0.12-beta2")
-	implementation("com.bloxbean.cardano:yaci-store-metadata-spring-boot-starter:0.0.12-beta2")
+	implementation("com.bloxbean.cardano:yaci-store-spring-boot-starter:0.0.12-beta3")
+	implementation("com.bloxbean.cardano:yaci-store-blocks-spring-boot-starter:0.0.12-beta3")
+	implementation("com.bloxbean.cardano:yaci-store-transaction-spring-boot-starter:0.0.12-beta3")
+	implementation("com.bloxbean.cardano:yaci-store-metadata-spring-boot-starter:0.0.12-beta3")
 
 	implementation("io.blockfrost:blockfrost-java:0.1.3")
 

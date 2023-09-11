@@ -6,7 +6,7 @@
   "repository": "https://github.com/cardano-foundation/cf-cardano-ballot",
   "description": "Cardano Summit 2023",
   "dependencies": {
-    "react-inject-env": "^2.0.0-next.17",
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@cardano-foundation/cardano-connect-with-wallet": "^0.1.57",
     "@commitlint/cli": "^17.6.6",
     "@commitlint/config-conventional": "^17.6.6",
@@ -41,6 +41,8 @@
     "react-hot-toast": "^2.4.1",
     "react-i18next": "^12.2.0",
     "react-minimal-pie-chart": "^8.4.0",
+    "react-inject-env": "^2.0.0-next.17",
+    "react-qr-code": "^2.0.12",
     "react-redux": "^8.1.2",
     "react-router-dom": "^6.11.1",
     "react-scripts": "5.0.1",

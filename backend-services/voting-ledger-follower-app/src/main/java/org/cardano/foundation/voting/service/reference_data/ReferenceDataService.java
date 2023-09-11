@@ -3,7 +3,7 @@ package org.cardano.foundation.voting.service.reference_data;
 import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.domain.ExpirationData;
+import org.cardano.foundation.voting.domain.EventAdditionalInfo;
 import org.cardano.foundation.voting.domain.entity.Category;
 import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.domain.entity.Proposal;
@@ -79,7 +79,7 @@ public class ReferenceDataService {
     @Transactional(readOnly = true)
     public List<Event> findAllActiveEvents() {
         return findAllValidEvents().stream()
-                .filter(event -> expirationService.getExpirationData(event).fold(problem -> false, ExpirationData::active))
+                .filter(event -> expirationService.getEventAdditionalInfo(event).fold(problem -> false, EventAdditionalInfo::active))
                 .toList();
     }
 

@@ -4,7 +4,7 @@ import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.ChainTip;
-import org.cardano.foundation.voting.domain.ExpirationData;
+import org.cardano.foundation.voting.domain.EventAdditionalInfo;
 import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataChainTipService;
 import org.springframework.stereotype.Service;
@@ -61,7 +61,7 @@ public class ExpirationService {
         };
     }
 
-    public Either<Problem, List<ExpirationData>> getExpirationDataList(List<Event> events) {
+    public Either<Problem, List<EventAdditionalInfo>> getEventAdditionalInfo(List<Event> events) {
         var chainTipE = blockchainDataChainTipService.getChainTip();
 
         if (chainTipE.isEmpty()) {
@@ -73,17 +73,16 @@ public class ExpirationService {
                     .withStatus(INTERNAL_SERVER_ERROR)
                     .build());
         }
+        var chainTip = chainTipE.get();
 
-        List<ExpirationData> expirationDataList = events.stream().map(e -> {
-                    var chainTip = chainTipE.get();
+        var eventAdditionalInfoList = events.stream().map(event -> {
+                    boolean eventNotStarted = isEventNotStarted(event, chainTip);
+                    boolean eventActive = isEventActive(event, chainTip);
+                    boolean eventFinished = isEventFinished(event, chainTip);
+                    boolean proposalsReveal = isProposalsReveal(event, chainTip);
 
-                    boolean eventNotStarted = isEventNotStarted(e, chainTip);
-                    boolean eventActive = isEventActive(e, chainTip);
-                    boolean eventFinished = isEventFinished(e, chainTip);
-                    boolean proposalsReveal = isProposalsReveal(e, chainTip);
-
-                    return new ExpirationData(
-                            e.getId(),
+                    return new EventAdditionalInfo(
+                            event.getId(),
                             eventNotStarted,
                             eventFinished,
                             eventActive,
@@ -92,10 +91,10 @@ public class ExpirationService {
                 })
                 .toList();
 
-        return Either.right(expirationDataList);
+        return Either.right(eventAdditionalInfoList);
     }
 
-    public Either<Problem, ExpirationData> getExpirationData(Event event) {
+    public Either<Problem, EventAdditionalInfo> getEventAdditionalInfo(Event event) {
         var chainTipE = blockchainDataChainTipService.getChainTip();
 
         if (chainTipE.isEmpty()) {
@@ -107,7 +106,6 @@ public class ExpirationService {
                     .withStatus(INTERNAL_SERVER_ERROR)
                     .build());
         }
-
         var chainTip = chainTipE.get();
 
         boolean eventNotStarted = isEventNotStarted(event, chainTip);
@@ -115,15 +113,13 @@ public class ExpirationService {
         boolean eventFinished = isEventFinished(event, chainTip);
         boolean proposalsReveal = isProposalsReveal(event, chainTip);
 
-        var expirationData = new ExpirationData(
+        return Either.right(new EventAdditionalInfo(
                 event.getId(),
                 eventNotStarted,
                 eventFinished,
                 eventActive,
                 proposalsReveal
-        );
-
-        return Either.right(expirationData);
+        ));
     }
 
 }

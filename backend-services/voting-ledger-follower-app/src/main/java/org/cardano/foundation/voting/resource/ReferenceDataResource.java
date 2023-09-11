@@ -42,7 +42,7 @@ public class ReferenceDataResource {
     public ResponseEntity<?> events() {
         return referencePresentationService.eventsSummaries()
                 .fold(problem -> ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem),
-                        listSummaries -> ResponseEntity.ok().body(listSummaries)
+                        eventSummaries -> ResponseEntity.ok().body(eventSummaries)
                 );
     }
 

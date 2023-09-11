@@ -556,7 +556,6 @@ public class DefaultVoteService implements VoteService {
                                 .build()
                 );
             }
-            vote.setVotingPower(Optional.of(1L));
         }
 
         return Either.right(voteRepository.saveAndFlush(vote));

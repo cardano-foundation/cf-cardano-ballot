@@ -3,7 +3,7 @@ package org.cardano.foundation.voting.service.reference_data;
 import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.domain.ExpirationData;
+import org.cardano.foundation.voting.domain.EventAdditionalInfo;
 import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.domain.presentation.CategoryPresentation;
 import org.cardano.foundation.voting.domain.presentation.EventPresentation;
@@ -52,15 +52,15 @@ public class ReferencePresentationService {
                 }
         ).toList();
 
-        var expirationDataE = expirationService.getExpirationData(event);
-        if (expirationDataE.isEmpty()) {
+        var eventAdditionalInfoE = expirationService.getEventAdditionalInfo(event);
+        if (eventAdditionalInfoE.isEmpty()) {
             return Either.left(Problem.builder()
                     .withTitle("REFERENCE_ERROR")
                     .withDetail("Unable to get expiration data.")
                     .withStatus(INTERNAL_SERVER_ERROR)
                     .build());
         }
-        var expirationData = expirationDataE.get();
+        var eventAdditionalInfo = eventAdditionalInfoE.get();
 
         var eventBuilder = EventPresentation.builder()
                 .id(event.getId())
@@ -72,10 +72,10 @@ public class ReferencePresentationService {
                 .endSlot(event.getEndSlot())
                 .snapshotEpoch(event.getSnapshotEpoch())
                 .categories(categories)
-                .isNotStarted(expirationData.notStarted())
-                .isActive(expirationData.active())
-                .isFinished(expirationData.finished())
-                .isProposalsReveal(expirationData.proposalsReveal())
+                .isNotStarted(eventAdditionalInfo.notStarted())
+                .isActive(eventAdditionalInfo.active())
+                .isFinished(eventAdditionalInfo.finished())
+                .isProposalsReveal(eventAdditionalInfo.proposalsReveal())
                 .isAllowVoteChanging(event.isAllowVoteChanging())
                 .isHighLevelEventResultsWhileVoting(event.getHighLevelEpochResultsWhileVoting().orElse(false))
                 .isHighLevelCategoryResultsWhileVoting(event.getHighLevelEpochResultsWhileVoting().orElse(false))
@@ -100,10 +100,10 @@ public class ReferencePresentationService {
         return Either.right(Optional.of(eventBuilder.build()));
     }
 
-    public Either<Problem, List<ExpirationData>> eventsSummaries() {
+    public Either<Problem, List<EventAdditionalInfo>> eventsSummaries() {
         List<Event> allValidEvents = referenceDataService.findAllValidEvents();
 
-        return expirationService.getExpirationDataList(allValidEvents);
+        return expirationService.getEventAdditionalInfo(allValidEvents);
     }
 
 }

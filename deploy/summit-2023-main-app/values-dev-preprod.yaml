@@ -54,7 +54,7 @@ cf-summit-2023-ledger-follower-api:
   enabled: true
   values:
     image:
-      tag: v0.2.29
+      tag: 0.2.29
     bindOnEventIds: CF_SUMMIT_2023_24DC
     yaci:
       startBlockHash: 69a01168a752b9f0aa3d1cd49d9a87fcffceb6738416c199740933fba002c922

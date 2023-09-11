@@ -6,7 +6,7 @@
   "repository": "https://github.com/cardano-foundation/cf-cardano-ballot",
   "description": "Cardano Summit 2023",
   "dependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "react-inject-env": "^2.0.0-next.17",
     "@cardano-foundation/cardano-connect-with-wallet": "^0.1.57",
     "@commitlint/cli": "^17.6.6",
     "@commitlint/config-conventional": "^17.6.6",
@@ -63,6 +63,7 @@
     "jest-test": "react-scripts test",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
+    "react-inject-env": "react-inject-env set",
     "test": "start-server-and-test start localhost:3000 cypress:run",
     "lint": "eslint --fix --ext .ts,.tsx .",
     "prettier": "npx prettier --write 'src/**/*.{ts,tsx,scss}'"

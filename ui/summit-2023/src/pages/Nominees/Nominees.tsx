@@ -111,22 +111,28 @@ const Nominees = () => {
     }, 300);
   };
 
-  const viewVoteReceipt = async () => {
+  const viewVoteReceipt = async (toast?: boolean) => {
     const session = getUserInSession();
 
     if (receipt) {
-        toggleViewVoteReceipt();
+      toggleViewVoteReceipt();
     }
 
-    if (!tokenIsExpired(session.expiresAt)) {
-      await getVoteReceipt(categoryId, session.accessToken)
+    if (!tokenIsExpired(session?.expiresAt)) {
+      await getVoteReceipt(categoryId, session?.accessToken)
         .then((r) => {
           dispatch(setVoteReceipt({ categoryId: categoryId, receipt: r }));
-            toggleViewVoteReceipt();
+          toggleViewVoteReceipt();
         })
-        .catch((e) => eventBus.publish('showToast', e.message, true));
+        .catch((e) => {
+          if (toast !== false) {
+            eventBus.publish('showToast', e.message, true);
+          }
+        });
     } else {
-      eventBus.publish('showToast', 'Please, login before get receipt', true);
+        if (toast !== false) {
+            eventBus.publish('showToast', 'Please, login before get receipt', true);
+        }
     }
   };
 
@@ -147,6 +153,7 @@ const Nominees = () => {
           saveUserInSession(session);
           dispatch(setWalletIsLoggedIn({ isLoggedIn: true }));
           eventBus.publish('showToast', 'Login successfully');
+          viewVoteReceipt(false);
         })
         .catch((e) => eventBus.publish('showToast', e.message, true));
     } catch (e) {
@@ -250,6 +257,13 @@ const Nominees = () => {
     setSelectedNominee(nominee);
     toggleReadMore();
   };
+  const handleViewVoteReceipt = () => {
+    if (walletIsLoggedIn) {
+      viewVoteReceipt();
+    } else {
+      login();
+    }
+  };
 
   return (
     <>
@@ -320,7 +334,7 @@ const Nominees = () => {
           </Typography>
         </div>
         <Button
-          onClick={() => (walletIsLoggedIn ? viewVoteReceipt() : login())}
+          onClick={() => handleViewVoteReceipt()}
           variant="contained"
           color="primary"
           sx={{
@@ -342,6 +356,8 @@ const Nominees = () => {
           {walletIsLoggedIn ? 'View vote receipt' : 'Login with wallet'}
         </Button>
       </Box>
+
+
       <Grid
         container
         spacing={3}
@@ -360,8 +376,8 @@ const Nominees = () => {
                 className={'nominee-card'}
                 style={{
                   padding: '8px',
-                  width: isMobile ? '100%' : '414px',
-                  height: !isMobile && listView === 'list' ? 'auto' : isMobile ? '440px' : '390px',
+                  width: listView === 'list' ? '100%' : '414px',
+                  height: 'auto',
                 }}
               >
                 <CardContent>
@@ -387,7 +403,7 @@ const Nominees = () => {
                           : ''}
                       </Typography>
                     </Grid>
-                    {!isMobile && listView === 'list' ? (
+                    {!receipt && !isMobile && listView === 'list' ? (
                       <Grid
                         item
                         xs={2}
@@ -419,7 +435,7 @@ const Nominees = () => {
                   >
                     Read more
                   </Button>
-                  {isMobile || listView === 'grid' ? (
+                  {!receipt && (isMobile || listView === 'grid') ? (
                     <Button
                       className={`${isConnected ? 'vote-nominee-button' : 'connect-wallet-button'}`}
                       fullWidth
@@ -450,460 +466,460 @@ const Nominees = () => {
         open={isViewVoteReceipt && receipt !== undefined}
         setOpen={toggleViewVoteReceipt}
       >
-          <>
-              <Grid
-                  container
-                  p={1}
+        <>
+          <Grid
+            container
+            p={1}
+          >
+            <Grid
+              item
+              xs={11}
+            />
+            <Grid
+              item
+              xs={1}
+            >
+              <IconButton
+                className="closeButton"
+                onClick={toggleViewVoteReceipt}
+                aria-label="close"
+                style={{ float: 'right' }}
               >
-                  <Grid
-                      item
-                      xs={11}
-                  />
-                  <Grid
-                      item
-                      xs={1}
-                  >
-                      <IconButton
-                          className="closeButton"
-                          onClick={toggleViewVoteReceipt}
-                          aria-label="close"
-                          style={{ float: 'right' }}
-                      >
-                          <CloseIcon />
-                      </IconButton>
-                  </Grid>
-              </Grid>
+                <CloseIcon />
+              </IconButton>
+            </Grid>
+          </Grid>
 
-              <Container style={{ margin: '5px' }}>
+          <Container style={{ margin: '5px' }}>
+            <Typography
+              variant="h5"
+              gutterBottom
+              sx={{
+                textAlign: 'center',
+                color: '#03021F',
+                fontSize: '28px',
+                fontStyle: 'normal',
+                fontWeight: '600',
+                lineHeight: '36px',
+              }}
+            >
+              Vote Receipt
+            </Typography>
+
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '10px 20px',
+                borderRadius: '8px',
+                border: '1px solid #106593',
+                color: 'white',
+                width: '100%',
+                marginBottom: '20px',
+                backgroundColor: getAssuranceTheme()?.backgroundColor,
+              }}
+            >
+              <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <NotificationsIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#106593' }} />
                   <Typography
-                      variant="h5"
-                      gutterBottom
-                      sx={{
-                          textAlign: 'center',
-                          color: '#03021F',
-                          fontSize: '28px',
-                          fontStyle: 'normal',
-                          fontWeight: '600',
-                          lineHeight: '36px',
-                      }}
+                    variant="h6"
+                    style={{
+                      color: '#24262E',
+                      fontSize: '18px',
+                      fontStyle: 'normal',
+                      fontWeight: '600',
+                      lineHeight: '22px',
+                    }}
                   >
-                      Vote Receipt
+                    Assurance: <span style={{ color: getAssuranceTheme()?.color }}>{receipt?.finalityScore}</span>
+                    <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
+                      <InfoIcon
+                        style={{
+                          color: '#434656A6',
+                          width: '22px',
+                          marginLeft: '3px',
+                          marginBottom: '5px',
+                          verticalAlign: 'middle',
+                          cursor: 'pointer',
+                        }}
+                      />
+                    </Tooltip>
                   </Typography>
+                </div>
+                <RefreshIcon
+                  sx={{
+                    display: 'inline-flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    color: '#24262E',
+                    cursor: 'pointer',
+                    width: '36px',
+                    height: '36px',
+                    background: 'rgba(67, 70, 86, 0.10);',
+                    borderRadius: '18px',
+                    padding: '6px',
+                  }}
+                />
+              </div>
 
-                  <Box
-                      sx={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                          padding: '10px 20px',
-                          borderRadius: '8px',
-                          border: '1px solid #106593',
-                          color: 'white',
-                          width: '100%',
-                          marginBottom: '20px',
-                          backgroundColor: getAssuranceTheme()?.backgroundColor,
-                      }}
-                  >
-                      <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <div style={{ display: 'flex', alignItems: 'center' }}>
-                              <NotificationsIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#106593' }} />
-                              <Typography
-                                  variant="h6"
-                                  style={{
-                                      color: '#24262E',
-                                      fontSize: '18px',
-                                      fontStyle: 'normal',
-                                      fontWeight: '600',
-                                      lineHeight: '22px',
-                                  }}
-                              >
-                                  Assurance: <span style={{ color: getAssuranceTheme()?.color }}>{receipt?.finalityScore}</span>
-                                  <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
-                                      <InfoIcon
-                                          style={{
-                                              color: '#434656A6',
-                                              width: '22px',
-                                              marginLeft: '3px',
-                                              marginBottom: '5px',
-                                              verticalAlign: 'middle',
-                                              cursor: 'pointer',
-                                          }}
-                                      />
-                                  </Tooltip>
-                              </Typography>
-                          </div>
-                          <RefreshIcon
-                              sx={{
-                                  display: 'inline-flex',
-                                  justifyContent: 'center',
-                                  alignItems: 'center',
-                                  color: '#24262E',
-                                  cursor: 'pointer',
-                                  width: '36px',
-                                  height: '36px',
-                                  background: 'rgba(67, 70, 86, 0.10);',
-                                  borderRadius: '18px',
-                                  padding: '6px',
-                              }}
-                          />
-                      </div>
+              <Typography
+                variant="body1"
+                sx={{
+                  color: '#434656',
+                  fontSize: '16px',
+                  fontStyle: 'normal',
+                  fontWeight: '400',
+                  lineHeight: '22px',
+                  wordWrap: 'break-word',
+                  maxWidth: '406px',
+                }}
+              >
+                Your vote has been successfully submitted. You might have to wait up to 30 minutes for this to be
+                visible on chain. Please check back later to verify your vote.
+              </Typography>
+            </Box>
 
-                      <Typography
-                          variant="body1"
-                          sx={{
-                              color: '#434656',
-                              fontSize: '16px',
-                              fontStyle: 'normal',
-                              fontWeight: '400',
-                              lineHeight: '22px',
-                              wordWrap: 'break-word',
-                              maxWidth: '406px',
-                          }}
-                      >
-                          Your vote has been successfully submitted. You might have to wait up to 30 minutes for this to be visible
-                          on chain. Please check back later to verify your vote.
-                      </Typography>
-                  </Box>
-
-                  <Box
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                marginBottom: '20px',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    marginRight: '8px',
+                    color: '#24262E',
+                    fontSize: '18px',
+                    fontStyle: 'normal',
+                    fontWeight: '600',
+                    lineHeight: '22px',
+                  }}
+                >
+                  Event
+                </Typography>
+                <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
+                  <InfoIcon
+                    style={{
+                      color: '#434656A6',
+                      width: '22px',
+                      marginLeft: '3px',
+                      marginBottom: '5px',
+                      verticalAlign: 'middle',
+                      cursor: 'pointer',
+                    }}
+                  />
+                </Tooltip>
+              </div>
+              <Typography
+                variant="body1"
+                align="left"
+                sx={{ cursor: 'pointer' }}
+                onClick={() => handleCopyToClipboard(receipt?.event)}
+              >
+                {receipt?.event}
+              </Typography>
+            </Box>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                marginBottom: '20px',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    marginRight: '8px',
+                    color: '#24262E',
+                    fontSize: '18px',
+                    fontStyle: 'normal',
+                    fontWeight: '600',
+                    lineHeight: '22px',
+                  }}
+                >
+                  Proposal
+                </Typography>
+                <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
+                  <InfoIcon
+                    style={{
+                      color: '#434656A6',
+                      width: '22px',
+                      marginLeft: '3px',
+                      marginBottom: '5px',
+                      verticalAlign: 'middle',
+                      cursor: 'pointer',
+                    }}
+                  />
+                </Tooltip>
+              </div>
+              <Typography
+                variant="body1"
+                align="left"
+                sx={{ cursor: 'pointer' }}
+                onClick={() => handleCopyToClipboard(receipt?.proposal)}
+              >
+                {receipt?.proposal}
+              </Typography>
+            </Box>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                marginBottom: '20px',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    marginRight: '8px',
+                    color: '#24262E',
+                    fontSize: '18px',
+                    fontStyle: 'normal',
+                    fontWeight: '600',
+                    lineHeight: '22px',
+                  }}
+                >
+                  Voter Staking Address
+                </Typography>
+                <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
+                  <InfoIcon
+                    style={{
+                      color: '#434656A6',
+                      width: '22px',
+                      marginLeft: '3px',
+                      marginBottom: '5px',
+                      verticalAlign: 'middle',
+                      cursor: 'pointer',
+                    }}
+                  />
+                </Tooltip>
+              </div>
+              <Typography
+                variant="body1"
+                align="left"
+                sx={{ wordWrap: 'break-word', maxWidth: '490px', cursor: 'pointer' }}
+                onClick={() => handleCopyToClipboard(receipt?.voterStakingAddress)}
+              >
+                {receipt?.voterStakingAddress}
+              </Typography>
+            </Box>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                marginBottom: '20px',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    marginRight: '8px',
+                    color: '#24262E',
+                    fontSize: '18px',
+                    fontStyle: 'normal',
+                    fontWeight: '600',
+                    lineHeight: '22px',
+                  }}
+                >
+                  Status
+                </Typography>
+                <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
+                  <InfoIcon
+                    style={{
+                      color: '#434656A6',
+                      width: '22px',
+                      marginLeft: '3px',
+                      marginBottom: '5px',
+                      verticalAlign: 'middle',
+                      cursor: 'pointer',
+                    }}
+                  />
+                </Tooltip>
+              </div>
+              <Typography
+                variant="body1"
+                align="left"
+                sx={{ cursor: 'pointer' }}
+                onClick={() => handleCopyToClipboard(receipt?.status)}
+              >
+                {receipt?.status}
+              </Typography>
+            </Box>
+            <Accordion className="accordion-button">
+              <AccordionSummary
+                sx={{
+                  display: 'flex',
+                  width: isMobile ? 'auto' : '490px',
+                  padding: '4px 16px',
+                  alignItems: 'center',
+                  gap: '10px',
+                  borderRadius: '8px',
+                  background: 'rgba(16, 101, 147, 0.07)',
+                }}
+                expandIcon={<ExpandMoreIcon style={{ color: '#106593' }} />}
+              >
+                <Typography
+                  sx={{
+                    color: '#106593',
+                    fontSize: '16px',
+                    fontStyle: 'normal',
+                    fontWeight: '600',
+                    lineHeight: 'normal',
+                  }}
+                >
+                  Show Advanced Information
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    marginBottom: '20px',
+                    marginTop: '20px',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+                    <Typography
+                      variant="h6"
                       sx={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          marginBottom: '20px',
+                        marginRight: '8px',
+                        color: '#24262E',
+                        fontSize: '18px',
+                        fontStyle: 'normal',
+                        fontWeight: '600',
+                        lineHeight: '22px',
                       }}
+                    >
+                      ID
+                    </Typography>
+                    <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
+                      <InfoIcon
+                        style={{
+                          color: '#434656A6',
+                          width: '22px',
+                          marginLeft: '3px',
+                          marginBottom: '5px',
+                          verticalAlign: 'middle',
+                          cursor: 'pointer',
+                        }}
+                      />
+                    </Tooltip>
+                  </div>
+                  <Typography
+                    variant="body1"
+                    align="left"
+                    sx={{ cursor: 'pointer' }}
+                    onClick={() => handleCopyToClipboard(receipt?.id)}
                   >
-                      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-                          <Typography
-                              variant="h6"
-                              sx={{
-                                  marginRight: '8px',
-                                  color: '#24262E',
-                                  fontSize: '18px',
-                                  fontStyle: 'normal',
-                                  fontWeight: '600',
-                                  lineHeight: '22px',
-                              }}
-                          >
-                              Event
-                          </Typography>
-                          <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
-                              <InfoIcon
-                                  style={{
-                                      color: '#434656A6',
-                                      width: '22px',
-                                      marginLeft: '3px',
-                                      marginBottom: '5px',
-                                      verticalAlign: 'middle',
-                                      cursor: 'pointer',
-                                  }}
-                              />
-                          </Tooltip>
-                      </div>
-                      <Typography
-                          variant="body1"
-                          align="left"
-                          sx={{ cursor: 'pointer' }}
-                          onClick={() => handleCopyToClipboard(receipt?.event)}
-                      >
-                          {receipt?.event}
-                      </Typography>
-                  </Box>
-                  <Box
+                    {receipt?.id}
+                  </Typography>
+                </Box>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    marginBottom: '20px',
+                    marginTop: '20px',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+                    <Typography
+                      variant="h6"
                       sx={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          marginBottom: '20px',
+                        marginRight: '8px',
+                        color: '#24262E',
+                        fontSize: '18px',
+                        fontStyle: 'normal',
+                        fontWeight: '600',
+                        lineHeight: '22px',
                       }}
+                    >
+                      Voted at Slot
+                    </Typography>
+                    <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
+                      <InfoIcon
+                        style={{
+                          color: '#434656A6',
+                          width: '22px',
+                          marginLeft: '3px',
+                          marginBottom: '5px',
+                          verticalAlign: 'middle',
+                          cursor: 'pointer',
+                        }}
+                      />
+                    </Tooltip>
+                  </div>
+                  <Typography
+                    variant="body1"
+                    align="left"
+                    sx={{ cursor: 'pointer' }}
+                    onClick={() => handleCopyToClipboard(receipt?.votedAtSlot)}
                   >
-                      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-                          <Typography
-                              variant="h6"
-                              sx={{
-                                  marginRight: '8px',
-                                  color: '#24262E',
-                                  fontSize: '18px',
-                                  fontStyle: 'normal',
-                                  fontWeight: '600',
-                                  lineHeight: '22px',
-                              }}
-                          >
-                              Proposal
-                          </Typography>
-                          <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
-                              <InfoIcon
-                                  style={{
-                                      color: '#434656A6',
-                                      width: '22px',
-                                      marginLeft: '3px',
-                                      marginBottom: '5px',
-                                      verticalAlign: 'middle',
-                                      cursor: 'pointer',
-                                  }}
-                              />
-                          </Tooltip>
-                      </div>
-                      <Typography
-                          variant="body1"
-                          align="left"
-                          sx={{ cursor: 'pointer' }}
-                          onClick={() => handleCopyToClipboard(receipt?.proposal)}
-                      >
-                          {receipt?.proposal}
-                      </Typography>
-                  </Box>
-                  <Box
+                    {receipt?.votedAtSlot}
+                  </Typography>
+                </Box>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    marginBottom: '20px',
+                    marginTop: '20px',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+                    <Typography
+                      variant="h6"
                       sx={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          marginBottom: '20px',
+                        marginRight: '8px',
+                        color: '#24262E',
+                        fontSize: '18px',
+                        fontStyle: 'normal',
+                        fontWeight: '600',
+                        lineHeight: '22px',
                       }}
+                    >
+                      Vote Proof
+                    </Typography>
+                    <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
+                      <InfoIcon
+                        style={{
+                          color: '#434656A6',
+                          width: '22px',
+                          marginLeft: '3px',
+                          marginBottom: '5px',
+                          verticalAlign: 'middle',
+                          cursor: 'pointer',
+                        }}
+                      />
+                    </Tooltip>
+                  </div>
+                  <Typography
+                    variant="body1"
+                    align="left"
+                    sx={{
+                      wordWrap: 'break-word',
+                      maxWidth: '406px',
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => handleCopyToClipboard(JSON.stringify(receipt?.merkleProof || '', null, 4))}
                   >
-                      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-                          <Typography
-                              variant="h6"
-                              sx={{
-                                  marginRight: '8px',
-                                  color: '#24262E',
-                                  fontSize: '18px',
-                                  fontStyle: 'normal',
-                                  fontWeight: '600',
-                                  lineHeight: '22px',
-                              }}
-                          >
-                              Voter Staking Address
-                          </Typography>
-                          <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
-                              <InfoIcon
-                                  style={{
-                                      color: '#434656A6',
-                                      width: '22px',
-                                      marginLeft: '3px',
-                                      marginBottom: '5px',
-                                      verticalAlign: 'middle',
-                                      cursor: 'pointer',
-                                  }}
-                              />
-                          </Tooltip>
-                      </div>
-                      <Typography
-                          variant="body1"
-                          align="left"
-                          sx={{ wordWrap: 'break-word', maxWidth: '490px', cursor: 'pointer' }}
-                          onClick={() => handleCopyToClipboard(receipt?.voterStakingAddress)}
-                      >
-                          {receipt?.voterStakingAddress}
-                      </Typography>
-                  </Box>
-                  <Box
-                      sx={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          marginBottom: '20px',
-                      }}
-                  >
-                      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-                          <Typography
-                              variant="h6"
-                              sx={{
-                                  marginRight: '8px',
-                                  color: '#24262E',
-                                  fontSize: '18px',
-                                  fontStyle: 'normal',
-                                  fontWeight: '600',
-                                  lineHeight: '22px',
-                              }}
-                          >
-                              Status
-                          </Typography>
-                          <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
-                              <InfoIcon
-                                  style={{
-                                      color: '#434656A6',
-                                      width: '22px',
-                                      marginLeft: '3px',
-                                      marginBottom: '5px',
-                                      verticalAlign: 'middle',
-                                      cursor: 'pointer',
-                                  }}
-                              />
-                          </Tooltip>
-                      </div>
-                      <Typography
-                          variant="body1"
-                          align="left"
-                          sx={{ cursor: 'pointer' }}
-                          onClick={() => handleCopyToClipboard(receipt?.status)}
-                      >
-                          {receipt?.status}
-                      </Typography>
-                  </Box>
-                  <Accordion className="accordion-button">
-                      <AccordionSummary
-                          sx={{
-                              display: 'flex',
-                              width: isMobile ? 'auto' : '490px',
-                              padding: '4px 16px',
-                              alignItems: 'center',
-                              gap: '10px',
-                              borderRadius: '8px',
-                              background: 'rgba(16, 101, 147, 0.07)',
-                          }}
-                          expandIcon={<ExpandMoreIcon style={{ color: '#106593' }} />}
-                      >
-                          <Typography
-                              sx={{
-                                  color: '#106593',
-                                  fontSize: '16px',
-                                  fontStyle: 'normal',
-                                  fontWeight: '600',
-                                  lineHeight: 'normal',
-                              }}
-                          >
-                              Show Advanced Information
-                          </Typography>
-                      </AccordionSummary>
-                      <AccordionDetails>
-                          <Box
-                              sx={{
-                                  display: 'flex',
-                                  flexDirection: 'column',
-                                  marginBottom: '20px',
-                                  marginTop: '20px',
-                              }}
-                          >
-                              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-                                  <Typography
-                                      variant="h6"
-                                      sx={{
-                                          marginRight: '8px',
-                                          color: '#24262E',
-                                          fontSize: '18px',
-                                          fontStyle: 'normal',
-                                          fontWeight: '600',
-                                          lineHeight: '22px',
-                                      }}
-                                  >
-                                      ID
-                                  </Typography>
-                                  <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
-                                      <InfoIcon
-                                          style={{
-                                              color: '#434656A6',
-                                              width: '22px',
-                                              marginLeft: '3px',
-                                              marginBottom: '5px',
-                                              verticalAlign: 'middle',
-                                              cursor: 'pointer',
-                                          }}
-                                      />
-                                  </Tooltip>
-                              </div>
-                              <Typography
-                                  variant="body1"
-                                  align="left"
-                                  sx={{ cursor: 'pointer' }}
-                                  onClick={() => handleCopyToClipboard(receipt?.id)}
-                              >
-                                  {receipt?.id}
-                              </Typography>
-                          </Box>
-                          <Box
-                              sx={{
-                                  display: 'flex',
-                                  flexDirection: 'column',
-                                  marginBottom: '20px',
-                                  marginTop: '20px',
-                              }}
-                          >
-                              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-                                  <Typography
-                                      variant="h6"
-                                      sx={{
-                                          marginRight: '8px',
-                                          color: '#24262E',
-                                          fontSize: '18px',
-                                          fontStyle: 'normal',
-                                          fontWeight: '600',
-                                          lineHeight: '22px',
-                                      }}
-                                  >
-                                      Voted at Slot
-                                  </Typography>
-                                  <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
-                                      <InfoIcon
-                                          style={{
-                                              color: '#434656A6',
-                                              width: '22px',
-                                              marginLeft: '3px',
-                                              marginBottom: '5px',
-                                              verticalAlign: 'middle',
-                                              cursor: 'pointer',
-                                          }}
-                                      />
-                                  </Tooltip>
-                              </div>
-                              <Typography
-                                  variant="body1"
-                                  align="left"
-                                  sx={{ cursor: 'pointer' }}
-                                  onClick={() => handleCopyToClipboard(receipt?.votedAtSlot)}
-                              >
-                                  {receipt?.votedAtSlot}
-                              </Typography>
-                          </Box>
-                          <Box
-                              sx={{
-                                  display: 'flex',
-                                  flexDirection: 'column',
-                                  marginBottom: '20px',
-                                  marginTop: '20px',
-                              }}
-                          >
-                              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-                                  <Typography
-                                      variant="h6"
-                                      sx={{
-                                          marginRight: '8px',
-                                          color: '#24262E',
-                                          fontSize: '18px',
-                                          fontStyle: 'normal',
-                                          fontWeight: '600',
-                                          lineHeight: '22px',
-                                      }}
-                                  >
-                                      Vote Proof
-                                  </Typography>
-                                  <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
-                                      <InfoIcon
-                                          style={{
-                                              color: '#434656A6',
-                                              width: '22px',
-                                              marginLeft: '3px',
-                                              marginBottom: '5px',
-                                              verticalAlign: 'middle',
-                                              cursor: 'pointer',
-                                          }}
-                                      />
-                                  </Tooltip>
-                              </div>
-                              <Typography
-                                  variant="body1"
-                                  align="left"
-                                  sx={{
-                                      wordWrap: 'break-word',
-                                      maxWidth: '406px',
-                                      cursor: 'pointer',
-                                  }}
-                                  onClick={() => handleCopyToClipboard(JSON.stringify(receipt?.merkleProof || '', null, 4))}
-                              >
-                                  {JSON.stringify(receipt?.merkleProof || '', null, 4)}
-                              </Typography>
-                          </Box>
-                      </AccordionDetails>
-                  </Accordion>
-              </Container>
-          </>
+                    {JSON.stringify(receipt?.merkleProof || '', null, 4)}
+                  </Typography>
+                </Box>
+              </AccordionDetails>
+            </Accordion>
+          </Container>
+        </>
       </SidePage>
     </>
   );

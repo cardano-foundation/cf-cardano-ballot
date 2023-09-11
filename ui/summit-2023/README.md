@@ -37,14 +37,18 @@ Your app is ready to be deployed!
 
 ## Running backend services in localhost
 
-### T1 Voting app on port: 9091
-```bash
-cd voting-app
-./gradlew bootRun
-```
-### T2 Data follower app on port: 9090
+### T1 Data follower app on port: 9090
+Edit ``application.properties``:
+1. Comment CIP-1694 Pre Ratification start block.
+2. Uncomment CF Summit 2023 start block
 ```bash
 cd voting-ledger-follower-app
+./gradlew bootRun
+
+```
+### T2 Voting app on port: 9091
+```bash
+cd voting-app
 ./gradlew bootRun
 ```
 ### T3 Vote verification app on port: 9092

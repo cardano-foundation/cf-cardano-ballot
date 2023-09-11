@@ -2,6 +2,7 @@ import React from 'react';
 import { Typography, Grid, Box } from '@mui/material';
 import './Footer.scss';
 import discordLogo from '../../../common/resources/images/discord-icon.svg';
+import {env} from 'common/constants/env';
 
 const Footer: React.FC = () => {
   return (
@@ -62,7 +63,7 @@ const Footer: React.FC = () => {
                 variant="body2"
                 align="center"
               >
-                Version 1.01 (Status)
+                Version {env.APP_VERSION} (Status)
               </Typography>
             </Grid>
 

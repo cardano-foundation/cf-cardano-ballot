@@ -70,7 +70,9 @@ dependencies {
 	implementation("io.vavr:vavr:0.10.4")
 
 	runtimeOnly("org.postgresql:postgresql")
-	runtimeOnly("com.h2database:h2:2.2.222")
+
+    // spring-boot overridden dependencies:
+    runtimeOnly("com.h2database:h2:2.2.222") // GraalVM compatibility
 }
 
 tasks.withType<Test> {

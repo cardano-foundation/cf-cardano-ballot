@@ -22,13 +22,13 @@ public class MetadataEventHandler {
     private long metadataLabel;
 
     @EventListener
-    @Async
+    @Async("singleThreadExecutor")
     public void handleMetadataEvent(TxMetadataEvent event) {
         log.debug("Received metadata event: {}", event);
 
         try {
             var txMetadataList = event.getTxMetadataList();
-            for (TxMetadataLabel txEvent : txMetadataList) {
+            for (var txEvent : txMetadataList) {
                 if (txEvent.getLabel().equalsIgnoreCase(String.valueOf(metadataLabel))) {
                     customMetadataProcessor.processMetadataEvent(txEvent.getSlot(), txEvent.getCbor());
                 }

@@ -255,7 +255,7 @@ public class CustomMetadataProcessor {
 
         var maybeStoredEvent = referenceDataService.findEventByName(categoryRegistration.getEvent());
         if (maybeStoredEvent.isEmpty()) {
-            log.info("Event not found, ignoring category registration ignoring id: {}", id);
+            log.warn("Event not found, category registration id: {}", id);
 
             return Optional.empty();
         }

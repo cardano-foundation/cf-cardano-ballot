@@ -66,8 +66,10 @@ const Nominees = () => {
   const dispatch = useDispatch();
 
   const categories = eventCache?.categories;
-  const categories_ids = categories?.map((e) => e.id);
-  if (categoryId && !categories_ids?.includes(categoryId)) navigate(ROUTES.NOT_FOUND);
+  // const categories_ids = categories?.map((e) => e.id);
+
+  // if (categoryId && !categories_ids?.includes(categoryId)) navigate(ROUTES.NOT_FOUND);
+
   const summit2023Category: CategoryContent = SUMMIT2023CONTENT.categories.find(
     (category) => category.id === categoryId
   );
@@ -99,7 +101,7 @@ const Nominees = () => {
 
   useEffect(() => {
     loadNominees();
-  }, []);
+  }, [categories]);
 
   const handleListView = (viewType: 'grid' | 'list') => {
     if (listView === viewType) return;

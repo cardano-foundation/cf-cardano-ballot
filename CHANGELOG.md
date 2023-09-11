@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.2.27](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.26...v0.2.27) (2023-09-08)
+
+
+### Bug Fixes
+
+* add missing react-inject-env in deps ([34ef803](https://github.com/cardano-foundation/cf-cardano-ballot/commit/34ef803d659bb0ccabb1fddc2d1dabcb44893bf3))
+* add missing react-inject-env script ([af1a474](https://github.com/cardano-foundation/cf-cardano-ballot/commit/af1a47447ea38df80ba44f9cbb3f73dd6cc5fc09))
+
+## [0.2.26](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.25...v0.2.26) (2023-09-08)
+
+
+### Features
+
+* add app version ([68165d3](https://github.com/cardano-foundation/cf-cardano-ballot/commit/68165d300c163453595f080a6de1817699e29c7c))
+
+
+### Bug Fixes
+
+* update README.md ([a7a8c99](https://github.com/cardano-foundation/cf-cardano-ballot/commit/a7a8c992588fe1fb044e9337536bb84e4694fb70))
+* vote receipt and nominee button after casting vote ([04680e9](https://github.com/cardano-foundation/cf-cardano-ballot/commit/04680e9acec88971e78c4e2f60e082d0096a9b51))
+
 ## [0.2.25](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.24...v0.2.25) (2023-09-08)
 
 

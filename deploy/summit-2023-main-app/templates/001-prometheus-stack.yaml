@@ -35,6 +35,7 @@ spec:
               slack_configs:
                 - api_url: https://hooks.slack.com/services/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
                   channel: '#cf-summit-infra-alerts'
+            - name: 'null'
 
   syncPolicy:
     automated:

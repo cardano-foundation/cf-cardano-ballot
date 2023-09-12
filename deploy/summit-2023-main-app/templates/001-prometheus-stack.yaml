@@ -25,13 +25,15 @@ spec:
               group_wait: 30s
               group_interval: 5m
               repeat_interval: 12h
-              receiver: 'null'
+              receiver: 'slack'
               routes:
-                - receiver: 'slack'
+                - receiver: 'null'
+                  continue: false
                   matchers:
                     - alertname =~ "InfoInhibitor|Watchdog"
             receivers:
             - name: slack
+              send_resolved: true
               slack_configs:
                 - api_url: https://hooks.slack.com/services/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
                   channel: '#cf-summit-infra-alerts'

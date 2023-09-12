@@ -79,6 +79,12 @@ public class DefaultVoteService implements VoteService {
         return voteRepository.findAllByEventId(eventId);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<VoteRepository.CompactVote> findAllCompactVotesByEventId(String eventId) {
+        return voteRepository.findAllCompactVotesByEventId(eventId);
+    }
+
     @Transactional(readOnly = true)
     @Timed(value = "service.vote.isVoteCastingStillPossible", histogram = true)
     public Either<Problem, Boolean> isVoteCastingStillPossible(String eventId, String voteId) {

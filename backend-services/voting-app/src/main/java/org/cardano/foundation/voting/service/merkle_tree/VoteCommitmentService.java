@@ -1,74 +1,74 @@
 package org.cardano.foundation.voting.service.merkle_tree;
 
 import io.vavr.Value;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.domain.L1MerkleCommitment;
+import org.cardano.foundation.voting.domain.L1SubmissionData;
 import org.cardano.foundation.voting.domain.entity.VoteMerkleProof;
+import org.cardano.foundation.voting.domain.web3.SignedWeb3Request;
+import org.cardano.foundation.voting.service.json.JsonService;
 import org.cardano.foundation.voting.service.transaction_submit.L1SubmissionService;
 import org.cardano.foundation.voting.service.vote.VoteService;
+import org.cardanofoundation.cip30.CIP30Verifier;
 import org.cardanofoundation.merkle.MerkleTree;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.bloxbean.cardano.client.util.HexUtil.encodeHexString;
 import static org.cardano.foundation.voting.domain.entity.Vote.VOTE_SERIALISER;
+import static org.cardanofoundation.cip30.MessageFormat.TEXT;
 
 @Service
 @Slf4j
-@EnableAsync
+@RequiredArgsConstructor
 public class VoteCommitmentService {
 
-    @Autowired
-    private VoteService voteService;
+    private final VoteService voteService;
 
-    @Autowired
-    private L1SubmissionService l1SubmissionService;
+    private final L1SubmissionService l1SubmissionService;
 
-    @Autowired
-    private ChainFollowerClient chainFollowerClient;
+    private final ChainFollowerClient chainFollowerClient;
 
-    @Autowired
-    private VoteMerkleProofService voteMerkleProofService;
+    private final VoteMerkleProofService voteMerkleProofService;
 
-    @Autowired
-    private MerkleProofSerdeService merkleProofSerdeService;
+    private final MerkleProofSerdeService merkleProofSerdeService;
+
+    private final JsonService jsonService;
 
     @Async("asyncExecutor")
     public void processVotesForAllEvents() {
-        var l1MerkleCommitments = getL1MerkleCommitments();
+        var l1MerkleCommitments = getValidL1MerkleCommitments();
         if (l1MerkleCommitments.isEmpty()) {
             log.info("No l1 commitments to process.");
             return;
         }
 
-        // Event maybe active but it makes no sense spamming L1 when there are no votes to process
-        if (l1MerkleCommitments.stream().allMatch(l1MerkleCommitment -> l1MerkleCommitment.votes().isEmpty())) {
-            log.info("No votes to process.");
+        // Event maybe active but it makes no sense spamming L1 when there are no signedVotes to process
+        if (l1MerkleCommitments.stream().allMatch(l1MerkleCommitment -> l1MerkleCommitment.signedVotes().isEmpty())) {
+            log.info("No signedVotes to process.");
             return;
         }
 
         var l1TransactionDataE = l1SubmissionService.submitMerkleCommitments(l1MerkleCommitments);
         if (l1TransactionDataE.isEmpty()) {
-            var issue = l1TransactionDataE.swap().get();
+            var problem = l1TransactionDataE.swap().get();
 
-            log.error("Transaction submission failed, issue:{}, will try to submit again in some time...", issue.toString());
+            log.error("Transaction submission failed, problem:{}, will try to submit again in some time...", problem.toString());
             return;
         }
 
         var l1SubmissionData = l1TransactionDataE.get();
-        var l1TransactionHash = l1SubmissionData.txHash();
-        var l1TransactionSlot = l1SubmissionData.slot();
 
-        generateAndStoreMerkleProofs(l1MerkleCommitments, l1TransactionHash, l1TransactionSlot);
+        generateAndStoreMerkleProofs(l1MerkleCommitments, l1SubmissionData);
     }
 
-    private List<L1MerkleCommitment> getL1MerkleCommitments() {
+    private List<L1MerkleCommitment> getValidL1MerkleCommitments() {
         var activeEventsE = chainFollowerClient.findAllActiveEvents();
         if (activeEventsE.isEmpty()) {
             var issue = activeEventsE.swap().get();
@@ -81,22 +81,32 @@ public class VoteCommitmentService {
 
         return activeEvents.stream()
                 .map(event -> {
-                    // TODO caching or paging or both? Maybe we use Redis???
-                    log.info("Loading votes from db for active event:{}", event.id());
+                    // TODO caching or paging or both or neither? Maybe we use Redis???
+                    log.info("Loading signedVotes from db for active event:{}", event.id());
                     var stopWatch = new StopWatch();
                     stopWatch.start();
-                    var allVotes = voteService.findAll(event.id());
+
+                    var allSignedWeb3Votes = voteService.findAllCompactVotesByEventId(event.id())
+                            .stream()
+                            .map(v -> new SignedWeb3Request(v.getCoseSignature(), Optional.ofNullable(v.getCosePublicKey())))
+                            .filter(signedWeb3Request -> {
+                                var cip30Result = new CIP30Verifier(signedWeb3Request.getCoseSignature(), signedWeb3Request.getCosePublicKey());
+
+                                return cip30Result.verify().isValid();
+                            })
+                            .toList();
+
                     stopWatch.stop();
-                    log.info("Loaded votes, count:{}, time: {} secs", allVotes.size(), stopWatch.getTotalTimeSeconds());
+                    log.info("Loaded signedVotes, count:{}, time: {} secs", allSignedWeb3Votes.size(), stopWatch.getTotalTimeSeconds());
 
-                    var root = MerkleTree.fromList(allVotes, VOTE_SERIALISER);
+                    var root = MerkleTree.fromList(allSignedWeb3Votes, VOTE_SERIALISER);
 
-                    return new L1MerkleCommitment(allVotes, root, event.id());
+                    return new L1MerkleCommitment(allSignedWeb3Votes, root, event.id());
                 })
                 .toList();
     }
 
-    private void generateAndStoreMerkleProofs(List<L1MerkleCommitment> l1MerkleCommitments, String l1TransactionHash, long l1TransactionSlot) {
+    private void generateAndStoreMerkleProofs(List<L1MerkleCommitment> l1MerkleCommitments, L1SubmissionData l1SubmissionData) {
         log.info("Storing vote merkle proofs...");
 
         for (var l1MerkleCommitment : l1MerkleCommitments) {
@@ -106,24 +116,43 @@ public class VoteCommitmentService {
 
             var storeProofsStartStop = new StopWatch();
             storeProofsStartStop.start();
-            for (var vote : l1MerkleCommitment.votes()) {
+            for (var vote : l1MerkleCommitment.signedVotes()) {
                 var maybeMerkleProof = MerkleTree.getProof(root, vote, VOTE_SERIALISER).map(Value::toJavaList);
                 if (maybeMerkleProof.isEmpty()) {
-                    log.error("Merkle proof is empty for vote: {}, this should never ever happen", vote.getId());
-                    throw new RuntimeException("Merkle proof is empty for vote: " + vote.getId());
+                    log.error("Merkle proof is empty for vote: {}, this should never ever happen", vote.getCoseSignature());
+                    throw new RuntimeException("Merkle proof is empty for vote: " + vote.getCoseSignature());
                 }
                 var proofItems = maybeMerkleProof.orElseThrow();
                 var merkleRootHash = encodeHexString(root.itemHash());
 
                 var proofItemsJson = merkleProofSerdeService.serialiseAsString(proofItems);
 
+                var cip30Verifier = new CIP30Verifier(vote.getCoseSignature(), vote.getCosePublicKey());
+
+                var cip30VerificationResult = cip30Verifier.verify();
+                if (!cip30VerificationResult.isValid()) {
+                    log.error("Invalid CIP 30 signature for vote:{}", vote.getCoseSignature());
+                    continue;
+                }
+
+                var voteSignedJsonPayload = cip30VerificationResult.getMessage(TEXT);
+
+                var cip93EnvelopeE = jsonService.decodeCIP93VoteEnvelope(voteSignedJsonPayload);
+
+                if (cip93EnvelopeE.isEmpty()) {
+                    log.error("Invalid voteSignedJsonPayload for vote:{}", vote.getCoseSignature());
+                    continue;
+                }
+
+                var voteEnvelopeCIP93Envelope = cip93EnvelopeE.get();
+
                 var voteMerkleProof = VoteMerkleProof.builder()
-                        .voteId(vote.getId())
-                        .eventId(vote.getEventId())
+                        .voteId(voteEnvelopeCIP93Envelope.getData().getId())
+                        .eventId(voteEnvelopeCIP93Envelope.getData().getEvent())
                         .rootHash(merkleRootHash)
-                        .absoluteSlot(l1TransactionSlot)
+                        .absoluteSlot(l1SubmissionData.slot())
                         .proofItemsJson(proofItemsJson)
-                        .l1TransactionHash(l1TransactionHash)
+                        .l1TransactionHash(l1SubmissionData.txHash())
                         .invalidated(false)
                         .build();
 
@@ -131,7 +160,7 @@ public class VoteCommitmentService {
             }
             storeProofsStartStop.stop();
 
-            log.info("Storing merkle proofs: {}, completed for event: {}, time: {} secs", l1MerkleCommitment.votes().size(), l1MerkleCommitment.eventId(), storeProofsStartStop.getTotalTimeSeconds());
+            log.info("Storing merkle proofs: {}, completed for event: {}, time: {} secs", l1MerkleCommitment.signedVotes().size(), l1MerkleCommitment.eventId(), storeProofsStartStop.getTotalTimeSeconds());
         }
 
         log.info("Storing vote merkle proofs for all events completed.");

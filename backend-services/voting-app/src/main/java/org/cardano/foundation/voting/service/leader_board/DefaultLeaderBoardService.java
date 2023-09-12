@@ -106,7 +106,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
         if (votes.isEmpty()) {
             return Either.left(Problem.builder()
                     .withTitle("INTERNAL_ERROR")
-                    .withDetail("No votes for event, event:" + event)
+                    .withDetail("No signedVotes for event, event:" + event)
                     .withStatus(INTERNAL_SERVER_ERROR)
                     .build()
             );

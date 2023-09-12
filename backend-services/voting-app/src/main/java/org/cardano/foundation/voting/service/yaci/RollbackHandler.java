@@ -8,18 +8,16 @@ import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
-import org.cardano.foundation.voting.domain.ProtocolMagic;
+import org.cardano.foundation.voting.domain.WellKnownPointWithProtocolMagic;
 import org.cardano.foundation.voting.service.merkle_tree.VoteMerkleProofService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
 @Component
 @Slf4j
-@ConditionalOnProperty(name = "rollback.handling.enabled", havingValue = "true")
 public class RollbackHandler {
 
     @Value("${cardano.node.ip}")
@@ -35,10 +33,7 @@ public class RollbackHandler {
     private VoteMerkleProofService voteMerkleProofService;
 
     @Autowired
-    private ProtocolMagic protocolMagic;
-
-    @Autowired
-    private Point wellKnownPoint;
+    private WellKnownPointWithProtocolMagic wellKnownPointWithProtocolMagic;
 
     private Optional<BlockSync> blockSync = Optional.empty();
 
@@ -46,8 +41,21 @@ public class RollbackHandler {
     public void init() {
         log.info("Starting cardano block sync on network: {}...", cardanoNetwork);
 
-        var networkMagic = protocolMagic.magic();
-        var blockSync = new BlockSync(cardanoNodeIp, cardanoNodePort, networkMagic, wellKnownPoint);
+        if (wellKnownPointWithProtocolMagic.wellKnownPointForNetwork().isEmpty()) {
+            log.warn("Well known point is not known. Skipping rollback handler / sync...");
+            return;
+        }
+
+        var wellKnownPoint = wellKnownPointWithProtocolMagic.wellKnownPointForNetwork().orElseThrow();
+
+        var protocolMagic = wellKnownPointWithProtocolMagic.protocolMagic();
+        var blockSync = startBlockSync(protocolMagic, wellKnownPoint);
+
+        this.blockSync = Optional.of(blockSync);
+    }
+
+    private BlockSync startBlockSync(long protocolMagic, Point wellKnownPoint) {
+        var blockSync = new BlockSync(cardanoNodeIp, cardanoNodePort, protocolMagic, wellKnownPoint);
         blockSync.startSyncFromTip(new BlockChainDataListener() {
 
             @Override
@@ -63,8 +71,7 @@ public class RollbackHandler {
             }
 
         });
-
-        this.blockSync = Optional.of(blockSync);
+        return blockSync;
     }
 
     @PreDestroy

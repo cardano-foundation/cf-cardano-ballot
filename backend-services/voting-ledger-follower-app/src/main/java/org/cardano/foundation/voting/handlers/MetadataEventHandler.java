@@ -1,14 +1,12 @@
 package org.cardano.foundation.voting.handlers;
 
 import com.bloxbean.cardano.yaci.store.metadata.domain.TxMetadataEvent;
-import com.bloxbean.cardano.yaci.store.metadata.domain.TxMetadataLabel;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.service.metadata.CustomMetadataProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
 @Service

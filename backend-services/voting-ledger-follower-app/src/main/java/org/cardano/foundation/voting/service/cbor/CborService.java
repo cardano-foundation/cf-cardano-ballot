@@ -35,7 +35,7 @@ import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 @RequiredArgsConstructor
 public class CborService {
 
-    private Environment environment;
+    private final Environment environment;
 
     public Either<Problem, CommitmentsEnvelope> decodeCommitmentsEnvelope(CBORMetadataMap payload) {
         try {

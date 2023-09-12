@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.30](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.29...v0.2.30) (2023-09-12)
+
+
+### Features
+
+* fix viewVoteReceipt toggle ([9ab71c4](https://github.com/cardano-foundation/cf-cardano-ballot/commit/9ab71c479a423761b545a02c2be64ec4db3f4f9e))
+* qrcode for final receipt ([6cf2605](https://github.com/cardano-foundation/cf-cardano-ballot/commit/6cf26050622ccd98c000d5ba3f32d244875bdd56))
+
 ## [0.2.29](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.28...v0.2.29) (2023-09-11)
 
 

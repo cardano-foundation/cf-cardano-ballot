@@ -3,6 +3,7 @@ package org.cardano.foundation.voting.service.vote;
 import com.nimbusds.jwt.SignedJWT;
 import io.micrometer.core.annotation.Timed;
 import io.vavr.control.Either;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
@@ -229,7 +230,7 @@ public class DefaultVoteService implements VoteService {
         }
 
         String voteId = cip93VoteEnvelope.getData().getId();
-        if (!MoreUUID.isUUIDv4(voteId)) {
+        if (voteId == null || !MoreUUID.isUUIDv4(voteId)) {
             return Either.left(
                     Problem.builder()
                             .withTitle("INVALID_VOTE_ID")

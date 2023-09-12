@@ -29,7 +29,7 @@ val organiserAccount = new Account(Networks.testnet(), orgMnemonic)
 
 val logger = LoggerFactory.getLogger(getClass());
 
-def signCIP30(): Unit = {
+def signCIP30LoginEnvelope(): Unit = {
     val lastSlot = latestAbsoluteSlot(mapper)
 
     if (lastSlot == -1) {
@@ -72,6 +72,101 @@ def signCIP30(): Unit = {
     println(output)
 }
 
+def signCIP30VoteCastEnvelope(): Unit = {
+    val lastSlot = latestAbsoluteSlot(mapper)
+
+    if (lastSlot == -1) {
+        logger.error("lastSlot error")
+        return
+    }
+
+    val stakeAddress = organiserAccount.stakeAddress()
+    val stakeAddressAccount = new Address(stakeAddress)
+
+    val voteId = java.util.UUID.randomUUID().toString()
+
+    val inputJSON = s"""
+    {
+        "uri": "https://evoting.cardano.org/voltaire",
+        "action": "CAST_VOTE",
+        "actionText": "Vote",
+        "slot": "${lastSlot}",
+        "data": {
+            "id": "${voteId}",
+            "address": "${stakeAddress}",
+            "event": "CF_SUMMIT_2023_24DC",
+            "category": "BEST_DEX",
+            "proposal": "be79ce1f-3cf1-4335-bd07-98f6f24f0f12",
+            "votingPower": "9997463457",
+            "network": "PREPROD",
+            "votedAt": "${lastSlot}"
+        }
+   }
+""".stripMargin
+
+    println(inputJSON)
+
+    val cip30Result = CIP30DataSigner.INSTANCE.signData(
+        stakeAddressAccount.getBytes(),
+        inputJSON.getBytes("UTF-8"),
+        organiserAccount.stakeHdKeyPair().getPrivateKey().getKeyData(),
+        organiserAccount.stakeHdKeyPair().getPublicKey().getKeyData()
+    );
+
+    val output = s"""
+        X-CIP93-Signature: ${cip30Result.signature()}
+        X-CIP93-Public-Key: ${cip30Result.key()}
+""".stripMargin
+
+    println(output)
+}
+
+def signCIP30ViewVoteReceiptEnvelope(): Unit = {
+    val lastSlot = latestAbsoluteSlot(mapper)
+
+    if (lastSlot == -1) {
+        logger.error("lastSlot error")
+        return
+    }
+
+    val stakeAddress = organiserAccount.stakeAddress()
+    val stakeAddressAccount = new Address(stakeAddress)
+
+    val voteId = java.util.UUID.randomUUID().toString()
+
+    val inputJSON = s"""
+    {
+        "uri": "https://evoting.cardano.org/voltaire",
+        "action": "VIEW_VOTE_RECEIPT",
+        "actionText": "Vote",
+        "slot": "${lastSlot}",
+        "data": {
+            "id": "${voteId}",
+            "address": "${stakeAddress}",
+            "event": "CF_SUMMIT_2023_24DC",
+            "category": "BEST_DEX",
+            "network": "PREPROD"
+        }
+   }
+""".stripMargin
+
+    println(inputJSON)
+
+    val cip30Result = CIP30DataSigner.INSTANCE.signData(
+        stakeAddressAccount.getBytes(),
+        inputJSON.getBytes("UTF-8"),
+        organiserAccount.stakeHdKeyPair().getPrivateKey().getKeyData(),
+        organiserAccount.stakeHdKeyPair().getPublicKey().getKeyData()
+    );
+
+    val output = s"""
+        X-CIP93-Signature: ${cip30Result.signature()}
+        X-CIP93-Public-Key: ${cip30Result.key()}
+""".stripMargin
+
+    println(output)
+}
+
 def latestAbsoluteSlot(mapper: ObjectMapper): Long = {
     val r = requests.get(
         "http://localhost:9090/yaci-api/blocks/latest",
@@ -92,5 +187,7 @@ def latestAbsoluteSlot(mapper: ObjectMapper): Long = {
 
 @main
 def main() = {
-    signCIP30();
+    //signCIP30LoginEnvelope()
+    //signCIP30VoteCastEnvelope()
+    signCIP30ViewVoteReceiptEnvelope()
 }

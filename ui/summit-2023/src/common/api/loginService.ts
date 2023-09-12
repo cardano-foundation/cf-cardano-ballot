@@ -26,10 +26,12 @@ const buildCanonicalLoginJson = ({ stakeAddress, slotNumber }: LoginInput): Retu
 
 const submitLogin = async (jsonRequest: SignedWeb3Request) => {
   return await doRequest<{ accessToken: string; expiresAt: string }>(
-    HttpMethods.POST,
-    LOGIN_URL,
-    DEFAULT_CONTENT_TYPE_HEADERS,
-    JSON.stringify(jsonRequest)
+      HttpMethods.GET,
+      LOGIN_URL,
+      DEFAULT_CONTENT_TYPE_HEADERS,
+      JSON.stringify(jsonRequest),
+      undefined,
+      true
   );
 };
 

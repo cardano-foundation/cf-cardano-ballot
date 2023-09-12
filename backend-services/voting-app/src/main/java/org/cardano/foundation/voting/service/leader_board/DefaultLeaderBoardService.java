@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
+import java.util.List;
 import java.util.Optional;
 
 import static java.util.stream.Collectors.toMap;
@@ -41,7 +42,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
 
 
     private Either<Problem, Boolean> isHighLevelCategoryLeaderboardAvailable(ChainFollowerClient.EventDetailsResponse eventDetails,
-                                                                 boolean forceLeaderboard) {
+                                                                             boolean forceLeaderboard) {
         if (forceLeaderboard) {
             return Either.right(true);
         }
@@ -155,7 +156,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
             );
         }
 
-        var votes = voteRepository.countAllByEventId(event);
+        var votes = voteRepository.getHighLevelEventStats(event);
         if (votes.isEmpty()) {
 
             Leaderboard.ByEventStats.ByEventStatsBuilder byEventStatsBuilder = Leaderboard.ByEventStats.builder()
@@ -180,7 +181,8 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
         var votingPower = eventVoteCount.getTotalVotingPower();
 
         switch (eventDetails.votingEventType()) {
-            case BALANCE_BASED, STAKE_BASED -> byEventStatsBuilder.totalVotingPower(Optional.ofNullable(votingPower).map(String::valueOf).orElse("0"));
+            case BALANCE_BASED, STAKE_BASED ->
+                    byEventStatsBuilder.totalVotingPower(Optional.ofNullable(votingPower).map(String::valueOf).orElse("0"));
         }
 
         var eventLeaderboardAvailableE = isHighLevelCategoryLeaderboardAvailable(eventDetails, forceLeaderboard);
@@ -190,19 +192,24 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
         var isEventLeaderBoardAvailable = eventLeaderboardAvailableE.get();
 
         if (isEventLeaderBoardAvailable) {
-            // TODO fake, get value from DB
-            byEventStatsBuilder.categories(eventDetails.categories().stream().map(c -> {
-                Leaderboard.ByCategoryStats.ByCategoryStatsBuilder byCategoryStatsBuilder = Leaderboard.ByCategoryStats.builder();
+            var allHighLevelCategoryStats = voteRepository.getHighLevelCategoryLevelStats(event);
 
-                byCategoryStatsBuilder.id(c.id());
-                byCategoryStatsBuilder.votes(0L);
+            var byCategoryStats = allHighLevelCategoryStats.stream()
+                    .map(categoryLevelStats -> {
+                        var byCategoryStatsBuilder = Leaderboard.ByCategoryStats.builder();
 
-                switch (eventDetails.votingEventType()) {
-                    case BALANCE_BASED, STAKE_BASED -> byCategoryStatsBuilder.votingPower("0");
-                }
+                        byCategoryStatsBuilder.id(categoryLevelStats.getCategoryId());
+                        byCategoryStatsBuilder.votes(Optional.ofNullable(categoryLevelStats.getTotalVoteCount()).orElse(0L));
 
-                return byCategoryStatsBuilder.build();
-            }).toList());
+                        switch (eventDetails.votingEventType()) {
+                            case BALANCE_BASED, STAKE_BASED ->
+                                    byCategoryStatsBuilder.votingPower(Optional.ofNullable(categoryLevelStats.getTotalVotingPower()).map(String::valueOf).orElse("0"));
+                        }
+
+                        return byCategoryStatsBuilder.build();
+                    }).toList();
+
+            byEventStatsBuilder.categories(byCategoryStats);
         }
 
         return Either.right(byEventStatsBuilder.build());
@@ -258,10 +265,10 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
             );
         }
 
-        var votes = voteRepository.countAllByEventId(event, categoryDetails.id());
+        var votes = voteRepository.getCategoryLevelStats(event, categoryDetails.id());
 
         var proposalResults = votes.stream()
-                .collect(toMap(VoteRepository.EventCategoryVoteCount::getProposalId, v -> {
+                .collect(toMap(VoteRepository.CategoryLevelStats::getProposalId, v -> {
                     var totalVotesCount = Optional.ofNullable(v.getTotalVoteCount()).orElse(0L);
                     var totalVotingPower = Optional.ofNullable(v.getTotalVotingPower()).map(String::valueOf).orElse("0");
 

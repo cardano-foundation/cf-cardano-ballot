@@ -36,8 +36,9 @@ import com.bloxbean.cardano.client.function.helper.SignerProviders
 case class CreateEventCommand(id: String,
                               team: String,
                               allowVoteChanging: Boolean,
-                              categoryResultsWhileVoting: Boolean,
-                              highLevelResultsWhileVoting: Boolean, 
+                              highLevelEventResultsWhileVoting: Boolean,
+                              highLevelCategoryResultsWhileVoting: Boolean, 
+                              categoryResultsWhileVoting: Boolean, 
                               votingEventType: String,
                               votingPowerAsset: Option[String] = None,
                               startEpoch: Option[Int] = None,
@@ -45,7 +46,9 @@ case class CreateEventCommand(id: String,
                               startSlot: Option[Long] = None,
                               endSlot: Option[Long] = None,
                               snapshotEpoch: Option[Int] = None,
-                              schemaVersion: String
+                              schemaVersion: String,
+                              proposalsRevealEpoch: Option[Int] = None,
+                              proposalsRevealSlot: Option[Long] = None
                               )
 
 case class Proposal(id: String, name: String)
@@ -70,17 +73,21 @@ val orgMnemonic = "ocean sad mixture disease faith once celery mind clay hidden 
 val organiserAccount = new Account(Networks.testnet(), orgMnemonic)
 val mapper = new ObjectMapper()
 
+val endEpoch = Some(10)
+
 val cip1694Event = CreateEventCommand(
     id = eventName,
     team = "CF",
     allowVoteChanging = false,
+    highLevelEventResultsWhileVoting = false,
+    highLevelCategoryResultsWhileVoting = false,
     categoryResultsWhileVoting = false,
-    highLevelResultsWhileVoting = false,
     votingEventType = "STAKE_BASED",
     votingPowerAsset = Some("ADA"),
     startEpoch = Some(0),
-    endEpoch = Some(1000),
+    endEpoch = endEpoch,
     snapshotEpoch = Some(0),
+    proposalsRevealEpoch = endEpoch.map(e => e + 10),
     schemaVersion = "1.0.0"
 )
 
@@ -336,8 +343,8 @@ def createEvent(createEventCommand: CreateEventCommand, slot: Long): MetadataMap
 
     map.put("type", "EVENT_REGISTRATION")
 
-    map.put("name", createEventCommand.id)
-    map.put("team", createEventCommand.team)
+    map.put("id", createEventCommand.id)
+    map.put("organisers", createEventCommand.team)
     map.put("votingEventType", createEventCommand.votingEventType)
     map.put("schemaVersion", createEventCommand.schemaVersion)
     map.put("creationSlot", BigInteger.valueOf(slot))
@@ -346,6 +353,8 @@ def createEvent(createEventCommand: CreateEventCommand, slot: Long): MetadataMap
         map.put("startEpoch", BigInteger.valueOf(createEventCommand.startEpoch.get))
         map.put("endEpoch", BigInteger.valueOf(createEventCommand.endEpoch.get))
         map.put("snapshotEpoch", BigInteger.valueOf(createEventCommand.snapshotEpoch.get))
+        map.put("snapshotEpoch", BigInteger.valueOf(createEventCommand.snapshotEpoch.get))
+        map.put("proposalsRevealEpoch", BigInteger.valueOf(createEventCommand.endEpoch.get))
         map.put("votingPowerAsset", createEventCommand.votingPowerAsset.get)
     }
     if (createEventCommand.votingEventType.equals("USER_BASED")) {
@@ -361,8 +370,9 @@ def createEvent(createEventCommand: CreateEventCommand, slot: Long): MetadataMap
 def createEventOptions(createEventCommand: CreateEventCommand): MetadataMap = {
     val optionsMap = MetadataBuilder.createMap()
     optionsMap.put("allowVoteChanging", toBigInteger(createEventCommand.allowVoteChanging))
+    optionsMap.put("highLevelEventResultsWhileVoting", toBigInteger(createEventCommand.highLevelEventResultsWhileVoting))
+    optionsMap.put("highLevelCategoryResultsWhileVoting", toBigInteger(createEventCommand.highLevelCategoryResultsWhileVoting))
     optionsMap.put("categoryResultsWhileVoting", toBigInteger(createEventCommand.categoryResultsWhileVoting))
-    optionsMap.put("highLevelResultsWhileVoting", toBigInteger(createEventCommand.highLevelResultsWhileVoting))
 
     optionsMap
 }
@@ -372,7 +382,7 @@ def createCategory(createCategoryCommand: CreateCategoryCommand, slot: Long): Me
 
     map.put("type", "CATEGORY_REGISTRATION")
 
-    map.put("name", createCategoryCommand.id)
+    map.put("id", createCategoryCommand.id)
     map.put("event", createCategoryCommand.event)
 
     map.put("schemaVersion", createCategoryCommand.schemaVersion)

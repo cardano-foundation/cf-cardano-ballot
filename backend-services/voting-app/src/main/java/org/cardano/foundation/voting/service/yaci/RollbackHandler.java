@@ -12,12 +12,14 @@ import org.cardano.foundation.voting.domain.ProtocolMagic;
 import org.cardano.foundation.voting.service.merkle_tree.VoteMerkleProofService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
 @Component
 @Slf4j
+@ConditionalOnProperty(name = "rollback.handling.enabled", havingValue = "true")
 public class RollbackHandler {
 
     @Value("${cardano.node.ip}")
@@ -25,9 +27,6 @@ public class RollbackHandler {
 
     @Value("${cardano.node.port}")
     private int cardanoNodePort;
-
-    @Value("${rollback.handling.enabled}")
-    private boolean isRollbackHandlingEnabled;
 
     @Autowired
     private CardanoNetwork cardanoNetwork;
@@ -45,10 +44,7 @@ public class RollbackHandler {
 
     @PostConstruct
     public void init() {
-        if (!isRollbackHandlingEnabled) {
-            log.info("Rollback handler disabled.");
-            return;
-        }
+        log.info("Starting cardano block sync on network: {}...", cardanoNetwork);
 
         var networkMagic = protocolMagic.magic();
         var blockSync = new BlockSync(cardanoNodeIp, cardanoNodePort, networkMagic, wellKnownPoint);

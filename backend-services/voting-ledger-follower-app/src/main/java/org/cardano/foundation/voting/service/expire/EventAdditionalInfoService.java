@@ -56,8 +56,8 @@ public class EventAdditionalInfoService {
         var currentEpochNo = chainTip.getEpochNo();
 
         return switch (event.getVotingEventType()) {
-            case STAKE_BASED, BALANCE_BASED -> (currentEpochNo > event.getProposalsRevealEpoch().orElseThrow());
-            case USER_BASED -> (currentAbsoluteSlot > event.getProposalsRevealSlot().orElseThrow());
+            case STAKE_BASED, BALANCE_BASED -> (currentEpochNo >= event.getProposalsRevealEpoch().orElseThrow());
+            case USER_BASED -> (currentAbsoluteSlot >= event.getProposalsRevealSlot().orElseThrow());
         };
     }
 

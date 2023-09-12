@@ -3,6 +3,7 @@ package org.cardano.foundation.voting.service.cbor;
 import com.bloxbean.cardano.client.metadata.cbor.CBORMetadataList;
 import com.bloxbean.cardano.client.metadata.cbor.CBORMetadataMap;
 import io.vavr.control.Either;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.OnChainEventType;
 import org.cardano.foundation.voting.domain.VotingEventType;
@@ -12,11 +13,13 @@ import org.cardano.foundation.voting.domain.web3.CommitmentsEnvelope;
 import org.cardano.foundation.voting.domain.web3.EventRegistrationEnvelope;
 import org.cardano.foundation.voting.domain.web3.ProposalEnvelope;
 import org.cardano.foundation.voting.utils.Enums;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,7 +32,10 @@ import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class CborService {
+
+    private Environment environment;
 
     public Either<Problem, CommitmentsEnvelope> decodeCommitmentsEnvelope(CBORMetadataMap payload) {
         try {
@@ -297,14 +303,16 @@ public class CborService {
                                     .build());
                 }
 
-                if (maybeSnapshotEpoch.orElseThrow() >= maybeStartEpoch.orElseThrow()) {
-                    return Either.left(
-                            Problem.builder()
-                                    .withTitle("INVALID_EVENT_REGISTRATION")
-                                    .withDetail("Invalid event registration event, snapshotEpoch must be less than startEpoch.")
-                                    .withStatus(BAD_REQUEST)
-                                    .build()
-                    );
+                if (!isYaciLocalDevNet()) {
+                    if (maybeSnapshotEpoch.orElseThrow() >= maybeStartEpoch.orElseThrow()) {
+                        return Either.left(
+                                Problem.builder()
+                                        .withTitle("INVALID_EVENT_REGISTRATION")
+                                        .withDetail("Invalid event registration event, snapshotEpoch must be less than startEpoch.")
+                                        .withStatus(BAD_REQUEST)
+                                        .build()
+                        );
+                    }
                 }
 
                 if (maybeProposalsRevealEpoch.orElseThrow() < maybeEndEpoch.orElseThrow()) {
@@ -428,6 +436,10 @@ public class CborService {
         }
 
         return proposals;
+    }
+
+    private boolean isYaciLocalDevNet() {
+        return Arrays.asList(environment.getActiveProfiles()).contains("dev--yaci-dev-kit");
     }
 
 }

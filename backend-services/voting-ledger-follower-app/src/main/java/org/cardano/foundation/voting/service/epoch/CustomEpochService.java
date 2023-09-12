@@ -49,7 +49,7 @@ public class CustomEpochService {
                 .orElse(0L);
     }
 
-    public Optional<ZonedDateTime> getEpochStartTimeBasedOnEpochNo(int epochNo) {
+    public Optional<ZonedDateTime> getEpochStartTime(int epochNo) {
         var maybeByronEraData = customEraService.getEraData(Byron, network);
 
         if (maybeByronEraData.isEmpty()) {
@@ -91,7 +91,7 @@ public class CustomEpochService {
     }
 
     public Optional<ZonedDateTime> getEpochEndTime(int epochNo) {
-        return getEpochStartTimeBasedOnEpochNo(epochNo + 1).map(time -> time.minusSeconds(1));
+        return getEpochStartTime(epochNo + 1).map(time -> time.minusSeconds(1));
     }
 
     public Optional<ZonedDateTime> getTimeBasedOnAbsoluteSlot(long absoluteSlotNo) {

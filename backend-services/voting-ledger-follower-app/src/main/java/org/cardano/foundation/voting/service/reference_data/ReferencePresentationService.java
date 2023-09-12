@@ -83,10 +83,10 @@ public class ReferencePresentationService {
 
         switch (event.getVotingEventType()) {
             case STAKE_BASED, BALANCE_BASED -> {
-                eventBuilder.eventStartDate(customEpochService.getEpochStartTimeBasedOnEpochNo(event.getStartEpoch().orElseThrow()));
+                eventBuilder.eventStartDate(customEpochService.getEpochStartTime(event.getStartEpoch().orElseThrow()));
                 eventBuilder.eventEndDate(customEpochService.getEpochEndTime(event.getEndEpoch().orElseThrow()));
                 eventBuilder.snapshotTime(customEpochService.getEpochEndTime(event.getSnapshotEpoch().orElseThrow()));
-                eventBuilder.proposalsRevealDate(customEpochService.getEpochEndTime(event.getProposalsRevealEpoch().orElseThrow()));
+                eventBuilder.proposalsRevealDate(customEpochService.getEpochStartTime(event.getProposalsRevealEpoch().orElseThrow()));
                 eventBuilder.proposalsRevealEpoch(event.getProposalsRevealEpoch());
             }
             case USER_BASED -> {

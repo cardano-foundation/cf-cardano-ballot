@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-// Generated using typescript-generator version 3.2.1263 on 2023-09-12 02:01:05.
+// Generated using typescript-generator version 3.2.1263 on 2023-09-12 11:56:31.
 
 export interface Either<L, R> extends Value<R>, Serializable {
     left: L;
@@ -157,12 +157,12 @@ export interface EventPresentation {
     categories: CategoryPresentation[];
     active: boolean;
     notStarted: boolean;
-    proposalsReveal: boolean;
     finished: boolean;
+    proposalsReveal: boolean;
     allowVoteChanging: boolean;
+    highLevelEventResultsWhileVoting: boolean;
     categoryResultsWhileVoting: boolean;
     highLevelCategoryResultsWhileVoting: boolean;
-    highLevelEventResultsWhileVoting: boolean;
 }
 
 export interface EventPresentationBuilder {
@@ -366,8 +366,8 @@ export interface Problem {
     type: URI;
     parameters: { [index: string]: any };
     status: StatusType;
-    title: string;
     detail: string;
+    title: string;
 }
 
 export interface Serializable {
@@ -392,10 +392,10 @@ export interface StatusType {
 
 export interface Value<T> extends Iterable<T> {
     empty: boolean;
+    singleValued: boolean;
     orNull: T;
     async: boolean;
     lazy: boolean;
-    singleValued: boolean;
 }
 
 export interface Throwable extends Serializable {

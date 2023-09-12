@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-// Generated using typescript-generator version 3.2.1263 on 2023-09-05 22:38:26.
+// Generated using typescript-generator version 3.2.1263 on 2023-09-12 02:00:43.
 
 export interface Either<L, R> extends Value<R>, Serializable {
     left: L;
@@ -8,15 +8,22 @@ export interface Either<L, R> extends Value<R>, Serializable {
     orNull: R;
 }
 
-export interface CheckVerificationRequest {
-    eventId: string;
-    requestId: string;
+export interface DiscordCheckVerificationRequest {
+    secret: string;
     stakeAddress: string;
-    verificationCode: string;
-    locale?: Locale;
+    coseSignature: string;
+    cosePublicKey?: string;
 }
 
-export interface CheckVerificationRequestBuilder {
+export interface DiscordCheckVerificationRequestBuilder {
+}
+
+export interface DiscordStartVerificationRequest {
+    secret: string;
+    hashedDiscordId: string;
+}
+
+export interface DiscordStartVerificationRequestBuilder {
 }
 
 export interface IsVerifiedRequest {
@@ -31,26 +38,37 @@ export interface IsVerifiedResponse {
     verified: boolean;
 }
 
-export interface SaltHolder {
-    salt: string;
+export interface SMSCheckVerificationRequest {
+    eventId: string;
+    requestId: string;
+    stakeAddress: string;
+    verificationCode: string;
+    locale?: Locale;
 }
 
-export interface StartVerificationRequest {
+export interface SMSCheckVerificationRequestBuilder {
+}
+
+export interface SMSStartVerificationRequest {
     eventId: string;
     stakeAddress: string;
     phoneNumber: string;
     locale?: Locale;
 }
 
-export interface StartVerificationRequestBuilder {
+export interface SMSStartVerificationRequestBuilder {
 }
 
-export interface StartVerificationResponse {
+export interface SMSStartVerificationResponse {
     eventId: string;
     stakeAddress: string;
     requestId: string;
     createdAt: Date;
     expiresAt: Date;
+}
+
+export interface SaltHolder {
+    salt: string;
 }
 
 export interface AbstractTimestampEntity {
@@ -78,15 +96,6 @@ export interface UserVerificationBuilder<C, B> extends AbstractTimestampEntityBu
 }
 
 export interface UserVerificationBuilderImpl extends UserVerificationBuilder<UserVerification, UserVerificationBuilderImpl> {
-}
-
-export interface StakeAddressVerificationService {
-}
-
-export interface StakeAddressVerificationService__Autowiring {
-}
-
-export interface StakeAddressVerificationService__BeanDefinitions {
 }
 
 export interface CodeGenService {
@@ -143,9 +152,9 @@ export interface StatusType {
 export interface Value<T> extends Iterable<T> {
     empty: boolean;
     orNull: T;
-    singleValued: boolean;
     async: boolean;
     lazy: boolean;
+    singleValued: boolean;
 }
 
 export interface Cloneable {

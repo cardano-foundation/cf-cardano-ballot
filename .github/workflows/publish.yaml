@@ -16,7 +16,7 @@ env:
 jobs:
 
   build-version:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     outputs:
       ARTIFACT_VERSION: ${{ steps.metadata.outputs.ARTIFACT_VERSION }}
     steps:
@@ -43,23 +43,19 @@ jobs:
           fi
   
   publish-voting-app:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     env:
       APP_NAME: voting-app
     needs: build-version
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          submodules: 'true'
-      - name: Set up JDK 17
+      - name: Set up JDK
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
-
+          cache: 'gradle'
       - name: Execute Gradle build
         working-directory: backend-services/${{ env.APP_NAME }}
         run: ./gradlew bootJar
@@ -86,23 +82,19 @@ jobs:
   
 
   publish-voting-ledger-follower-app:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     env:
       APP_NAME: voting-ledger-follower-app
     needs: build-version
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          submodules: 'true'
-      - name: Set up JDK 17
+      - name: Set up JDK
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
-
+          cache: 'gradle'
       - name: Execute Gradle build
         working-directory: backend-services/${{ env.APP_NAME }}
         run: ./gradlew bootJar
@@ -129,23 +121,19 @@ jobs:
   
 
   publish-voting-verification-app:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     env:
       APP_NAME: voting-verification-app
     needs: build-version
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          submodules: 'true'
-      - name: Set up JDK 17
+      - name: Set up JDK
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
-
+          cache: 'gradle'
       - name: Execute Gradle build
         working-directory: backend-services/${{ env.APP_NAME }}
         run: ./gradlew bootJar
@@ -172,23 +160,19 @@ jobs:
   
 
   publish-user-verification-service:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     env:
       APP_NAME: user-verification-service
     needs: build-version
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          submodules: 'true'
-      - name: Set up JDK 17
+      - name: Set up JDK
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
           java-version: '17'
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
-
+          cache: 'gradle'
       - name: Execute Gradle build
         working-directory: backend-services/${{ env.APP_NAME }}
         run: ./gradlew bootJar
@@ -215,15 +199,13 @@ jobs:
   
 
   publish-voting-app-ui:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     env:
       APP_NAME: voting-app-ui
     needs: build-version
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          submodules: 'true'
 
       - name: Docker Login
         uses: docker/login-action@v2
@@ -253,15 +235,13 @@ jobs:
             ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}/${{ env.APP_NAME }}:${{ env.ARTIFACT_VERSION }}
 
   publish-ui-summit-2023:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     env:
       APP_NAME: summit-2023-ui
     needs: build-version
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          submodules: 'true'
 
       - name: Docker Login
         uses: docker/login-action@v2

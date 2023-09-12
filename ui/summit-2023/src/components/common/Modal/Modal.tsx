@@ -17,13 +17,13 @@ const StyledPaper = (props: any) => {
 };
 
 type ModalProps = {
-  name: string;
+  name?: string;
   id: string;
   isOpen: boolean;
   title: string;
   width?: string;
   disableBackdropClick?: boolean;
-  onClose: () => void;
+  onClose?: () => void;
   children: React.ReactNode;
 };
 

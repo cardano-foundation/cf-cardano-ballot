@@ -63,3 +63,5 @@ cf-summit-2023-ledger-follower-api:
     instances:
       - name: follower-1
         schemaName: follower_1
+      - name: follower-2
+        schemaName: follower_2

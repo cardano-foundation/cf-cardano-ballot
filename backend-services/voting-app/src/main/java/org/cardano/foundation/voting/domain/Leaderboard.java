@@ -40,12 +40,15 @@ public class Leaderboard {
     @AllArgsConstructor
     public static class ByCategoryStats {
         private String id;
-
         private long votes;
-
         private String votingPower;
     }
 
-    public record Votes(long votes, String votingPower) { }
+    @Getter
+    @Builder
+    public static class Votes {
+        private long votes;
+        private String votingPower;
+    }
 
 }

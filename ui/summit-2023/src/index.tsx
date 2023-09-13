@@ -6,7 +6,6 @@ import { ThemeProvider } from '@mui/material/styles';
 import theme from './common/styles/theme';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import './index.scss';
 import { setupStore } from './store/index';
 
 const container = document.getElementById('root')!;

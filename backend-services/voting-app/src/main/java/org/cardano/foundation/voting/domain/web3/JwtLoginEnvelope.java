@@ -1,6 +1,5 @@
 package org.cardano.foundation.voting.domain.web3;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +9,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginEnvelope {
+public class JwtLoginEnvelope {
 
     private String event;
 

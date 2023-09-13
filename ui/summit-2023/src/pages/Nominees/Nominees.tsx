@@ -280,7 +280,15 @@ const Nominees = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <Typography
           className="nominees-title"
-          variant="h4"
+          variant="h2"
+          fontSize={{
+            xs: '28px',
+            md: '32px',
+          }}
+          lineHeight={{
+            xs: '28px',
+            md: '32px',
+          }}
         >
           {summit2023Category.presentationName}
         </Typography>
@@ -367,7 +375,9 @@ const Nominees = () => {
         {nominees.map((nominee, index) => (
           <Grid
             item
-            xs={!isMobile && listView === 'grid' ? 4 : 12}
+            xs={12}
+            sm={6}
+            md={!isMobile && listView === 'grid' ? 4 : 12}
             key={nominee.id}
           >
             <Fade in={isVisible}>

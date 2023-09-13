@@ -22,4 +22,8 @@ public class VoteEnvelope {
     @Builder.Default
     private Optional<String> votingPower = Optional.empty(); // voting power is only available for STAKE_BASED or BALANCE_BASED events
 
+    public long getVotedAtSlot() {
+        return Long.parseLong(votedAt);
+    }
+
 }

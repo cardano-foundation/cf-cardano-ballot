@@ -1,0 +1,24 @@
+.userguide {
+  .title {
+    color: var(--color-dark-grey);
+    font-size: 32px !important;
+    font-style: normal;
+    font-weight: 600 !important;
+    line-height: normal;
+    ::first-letter {
+      text-transform: uppercase;
+    }
+  }
+
+  .sectionTitle {
+    max-height: 110px;
+    margin-top: 40px !important;
+    margin-bottom: 40px !important;
+    color: var(--color-dark-grey);
+    font-size: 26px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 22px;
+    word-break: break-word;
+  }
+}

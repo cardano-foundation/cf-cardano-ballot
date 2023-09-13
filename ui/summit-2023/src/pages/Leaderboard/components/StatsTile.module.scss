@@ -1,0 +1,24 @@
+.statCard {
+  border-radius: 16px !important;
+  border: 1px solid transparent !important;
+  box-shadow: 2px 2px 5px 0px #061d3c40 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  margin: 0px !important;
+  background-color: white;
+
+  .statTitle {
+    color: #39486c !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    line-height: 22px !important;
+    letter-spacing: 0em !important;
+  }
+
+  .statSummary {
+    color: #39486c !important;
+    font-weight: 600 !important;
+    letter-spacing: 0em !important;
+    text-align: left !important;
+  }
+}

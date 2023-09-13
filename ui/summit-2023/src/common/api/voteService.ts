@@ -17,12 +17,12 @@ type voteInput = {
 };
 
 export const buildCanonicalVoteInputJson = ({
-  voteId,
-  categoryId,
-  proposalId,
-  stakeAddress,
-  slotNumber,
-}: voteInput): ReturnType<typeof canonicalize> => {
+                                              voteId,
+                                              categoryId,
+                                              proposalId,
+                                              stakeAddress,
+                                              slotNumber,
+                                            }: voteInput): ReturnType<typeof canonicalize> => {
   const startOfCurrentDay = new Date();
   startOfCurrentDay.setUTCMinutes(0, 0, 0);
   return canonicalize({
@@ -43,26 +43,28 @@ export const buildCanonicalVoteInputJson = ({
 };
 
 const castAVoteWithDigitalSignature = async (jsonRequest: SignedWeb3Request) =>
-  await doRequest<Problem | Vote>(
-    HttpMethods.POST,
-    CAST_VOTE_URL,
-    DEFAULT_CONTENT_TYPE_HEADERS,
-    JSON.stringify(jsonRequest)
-  );
+    await doRequest<Problem | Vote>(
+        HttpMethods.POST,
+        CAST_VOTE_URL,
+        DEFAULT_CONTENT_TYPE_HEADERS,
+        JSON.stringify(jsonRequest),
+        undefined,
+        true
+    );
 
 const getSlotNumber = async () => {
   return await doRequest<ChainTip>(HttpMethods.GET, BLOCKCHAIN_TIP_URL, DEFAULT_CONTENT_TYPE_HEADERS);
 };
 
 const getVoteReceipt = async (categoryId: string, token: string) =>
-  await doRequest<VoteReceipt>(
-    HttpMethods.GET,
-    `${VOTE_RECEIPT_URL}/${env.EVENT_ID}/${categoryId}`,
-    {
-      ...DEFAULT_CONTENT_TYPE_HEADERS,
-    },
-    null,
-    token
-  );
+    await doRequest<VoteReceipt>(
+        HttpMethods.GET,
+        `${VOTE_RECEIPT_URL}/${env.EVENT_ID}/${categoryId}`,
+        {
+          ...DEFAULT_CONTENT_TYPE_HEADERS,
+        },
+        null,
+        token
+    );
 
 export { castAVoteWithDigitalSignature, getSlotNumber, getVoteReceipt };

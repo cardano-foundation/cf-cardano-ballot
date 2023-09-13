@@ -5,7 +5,7 @@ import cn from 'classnames';
 import toast from 'react-hot-toast';
 import { PieChart } from 'react-minimal-pie-chart';
 import BlockIcon from '@mui/icons-material/Block';
-import { ByEvent, CategoryStats } from 'types/voting-app-types';
+import { ByEventStats, ByCategoryStats } from 'types/voting-app-types';
 import { EventPresentation } from 'types/voting-ledger-follower-types';
 //import * as leaderboardService from '../../common/api/leaderboardService';
 import { Toast } from 'components/common/Toast/Toast';
@@ -22,7 +22,7 @@ import { LeaderboardContent } from './Leaderboard.types';
 const Leaderboard = () => {
   const event = useSelector((state: RootState) => state.user.event);
   //const [stats, setStats] = useState<ByEvent['categories']>();
-  const [fakeStats] = useState<CategoryStats[]>((LEADERBOARD as ByEvent).categories);
+  const [fakeStats] = useState<ByCategoryStats[]>((LEADERBOARD as ByEventStats).categories);
   const summit2023Categories: CategoryContent[] = SUMMIT2023CONTENT.categories;
   const summit2023Leaderboard: LeaderboardContent = SUMMIT2023CONTENT.leaderboard;
 

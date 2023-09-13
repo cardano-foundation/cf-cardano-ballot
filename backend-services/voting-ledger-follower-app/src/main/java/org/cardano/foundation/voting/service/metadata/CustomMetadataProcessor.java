@@ -4,7 +4,6 @@ import co.nstant.in.cbor.CborException;
 import com.bloxbean.cardano.client.common.cbor.CborSerializationUtil;
 import com.bloxbean.cardano.client.metadata.cbor.CBORMetadata;
 import com.bloxbean.cardano.client.metadata.cbor.CBORMetadataMap;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.OnChainEventType;
 import org.cardano.foundation.voting.domain.SchemaVersion;
@@ -22,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -58,8 +58,8 @@ public class CustomMetadataProcessor {
     @Value("${organiser.account.stakeAddress}")
     private String organiserStakeAddress;
 
-    @SneakyThrows
-    public void processMetadataEvent(long slot, String txCbor)  {
+    @Transactional
+    public void processMetadataEvent(long slot, String txCbor) throws CborException {
         var cborBytes = decodeHexString(txCbor.replace("\\x", ""));
 
         var cborMetadata = CBORMetadata.deserialize(cborBytes);
@@ -93,13 +93,9 @@ public class CustomMetadataProcessor {
         var onChainEvenType = maybeOnChainVotingEventType.orElseThrow();
 
         if (onChainEvenType == EVENT_REGISTRATION) {
-            try {
-                processEventRegistration(slot, maybeSignatureHexString.orElseThrow(), maybeKeyHexString.orElseThrow(), maybePayloadCborMap.orElseThrow()).ifPresent(event -> {
-                    log.info("Event registration processed: {}", event.getId());
-                });
-            } catch (Exception e) {
-                log.warn("Unable to process onChainEvenType chain EVENT_REGISTRATION", e);
-            }
+            processEventRegistration(slot, maybeSignatureHexString.orElseThrow(), maybeKeyHexString.orElseThrow(), maybePayloadCborMap.orElseThrow()).ifPresent(event -> {
+                log.info("Event registration processed: {}", event.getId());
+            });
         }
         if (onChainEvenType == CATEGORY_REGISTRATION) {
             processCategoryRegistration(slot, maybeSignatureHexString.orElseThrow(), maybeKeyHexString.orElseThrow(), maybePayloadCborMap.orElseThrow()).ifPresent(category -> {
@@ -175,9 +171,11 @@ public class CustomMetadataProcessor {
         var event = new Event();
         event.setId(eventRegistration.getName());
         event.setVersion(event.getVersion());
-        event.setTeam(eventRegistration.getTeam());
-        event.setCategoryResultsWhileVoting(eventRegistration.isCategoryResultsWhileVoting());
-        event.setHighLevelResultsWhileVoting(eventRegistration.isHighLevelResultsWhileVoting());
+        event.setOrganisers(eventRegistration.getOrganisers());
+
+        event.setHighLevelEpochResultsWhileVoting(Optional.of(eventRegistration.isHighLevelEventResultsWhileVoting()));
+        event.setHighLevelCategoryResultsWhileVoting(Optional.of(eventRegistration.isHighLevelCategoryResultsWhileVoting()));
+        event.setCategoryResultsWhileVoting(Optional.of(eventRegistration.isCategoryResultsWhileVoting()));
         event.setVersion(SchemaVersion.fromText(eventRegistration.getSchemaVersion()).orElseThrow());
 
         event.setStartEpoch(eventRegistration.getStartEpoch());
@@ -190,12 +188,18 @@ public class CustomMetadataProcessor {
         event.setStartSlot(eventRegistration.getStartSlot());
         event.setEndSlot(eventRegistration.getEndSlot());
 
+        event.setProposalsRevealEpoch(eventRegistration.getProposalsRevealEpoch());
+        event.setProposalsRevealSlot(eventRegistration.getProposalsRevealSlot());
+
         event.setAbsoluteSlot(slot);
 
         return Optional.of(referenceDataService.storeEvent(event));
     }
 
-    private Optional<Category> processCategoryRegistration(long slot, String signature, String key, CBORMetadataMap payload) throws CborException {
+    private Optional<Category> processCategoryRegistration(long slot,
+                                                           String signature,
+                                                           String key,
+                                                           CBORMetadataMap payload) throws CborException {
         var id = encodeHexString(blake2bHash224(decodeHexString(signature)));
 
         log.info("Processing category registration id: {}", id);
@@ -236,6 +240,7 @@ public class CustomMetadataProcessor {
             return Optional.empty();
         }
         var categoryRegistration = maybeCategoryRegistration.orElseThrow();
+        log.info(categoryRegistration.toString());
 
         if (!bindOnEventIds.contains(categoryRegistration.getEvent())) {
             log.info("Event in category NOT found in bindOnEventIds, ignoring id:{}", id);
@@ -245,21 +250,21 @@ public class CustomMetadataProcessor {
 
         var maybeStoredEvent = referenceDataService.findEventByName(categoryRegistration.getEvent());
         if (maybeStoredEvent.isEmpty()) {
-            log.info("Event not found, ignoring category registration ignoring id: {}", id);
+            log.warn("Event not found, category registration id: {}", id);
 
             return Optional.empty();
         }
         var event = maybeStoredEvent.orElseThrow();
 
-        var maybeCategory = referenceDataService.findCategoryByName(categoryRegistration.getName());
+        var maybeCategory = referenceDataService.findCategoryByName(categoryRegistration.getId());
         if (maybeCategory.isPresent()) {
-            log.info("Category already found, ignoring name: {}", categoryRegistration.getName());
+            log.info("Category already found, ignoring id: {}", categoryRegistration.getId());
 
             return Optional.empty();
         }
 
         var category = new Category();
-        category.setId(categoryRegistration.getName());
+        category.setId(categoryRegistration.getId());
         category.setVersion(SchemaVersion.fromText(categoryRegistration.getSchemaVersion()).orElseThrow());
         category.setGdprProtection(categoryRegistration.isGdprProtection());
         category.setAbsoluteSlot(slot);

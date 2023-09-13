@@ -1,9 +1,11 @@
 package org.cardano.foundation.voting.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.Map;
 
 @Getter
@@ -15,7 +17,7 @@ public class Leaderboard {
     // per category
     @Builder
     @Getter
-    public static class ByCategory {
+    public static class ByProposalsInCategoryStats {
 
         private String category;
         private Map<String, Votes> proposals;
@@ -24,12 +26,24 @@ public class Leaderboard {
 
     @Builder
     @Getter
-    public static class ByEvent {
+    public static class ByEventStats {
 
         private String event;
         private long totalVotesCount;
         private String totalVotingPower;
+        private List<ByCategoryStats> categories;
 
+    }
+
+    @Builder
+    @Getter
+    @AllArgsConstructor
+    public static class ByCategoryStats {
+        private String id;
+
+        private long votes;
+
+        private String votingPower;
     }
 
     public record Votes(long votes, String votingPower) { }

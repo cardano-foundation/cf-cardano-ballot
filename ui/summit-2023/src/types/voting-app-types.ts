@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-// Generated using typescript-generator version 3.2.1263 on 2023-09-05 22:39:07.
+// Generated using typescript-generator version 3.2.1263 on 2023-09-12 11:56:10.
 
 export interface Either<L, R> extends Value<R>, Serializable {
     left: L;
@@ -32,27 +32,31 @@ export interface L1SubmissionData {
 export interface Leaderboard {
 }
 
-export interface ByCategory {
+export interface ByCategoryStats {
+    id: string;
+    votes: number;
+    votingPower: string;
+}
+
+export interface ByCategoryStatsBuilder {
+}
+
+export interface ByEventStats {
+    event: string;
+    totalVotesCount: number;
+    totalVotingPower: string;
+    categories: ByCategoryStats[];
+}
+
+export interface ByEventStatsBuilder {
+}
+
+export interface ByProposalsInCategoryStats {
     category: string;
     proposals: { [index: string]: Votes };
 }
 
-export interface ByCategoryBuilder {
-}
-
-export interface ByEvent {
-    event: string;
-    totalVotesCount: number;
-    totalVotingPower: string;
-    categories: CategoryStats[];
-}
-
-export interface CategoryStats {
-    id: string;
-    votes: number;
-}
-
-export interface ByEventBuilder {
+export interface ByProposalsInCategoryStatsBuilder {
 }
 
 export interface LeaderboardBuilder {
@@ -61,13 +65,6 @@ export interface LeaderboardBuilder {
 export interface Votes {
     votes: number;
     votingPower: string;
-}
-
-export interface LoginEnvelope {
-    event: string;
-    address: string;
-    network: string;
-    role: string;
 }
 
 export interface LoginResult {
@@ -116,6 +113,11 @@ export interface MerkleProofItemBuilder {
 export interface VoteReceiptBuilder {
 }
 
+export interface WellKnownPointWithProtocolMagic {
+    wellKnownPointForNetwork?: Point;
+    protocolMagic: number;
+}
+
 export interface AbstractTimestampEntity {
     createdAt: Date;
     updatedAt: Date;
@@ -160,6 +162,13 @@ export interface CIP93Envelope<T> {
 export interface CIP93EnvelopeBuilder<T> {
 }
 
+export interface LoginEnvelope {
+    event: string;
+    address: string;
+    network: string;
+    role: string;
+}
+
 export interface SignedWeb3Request {
     coseSignature: string;
     cosePublicKey?: string;
@@ -190,15 +199,6 @@ export interface VoteEnvelope {
 export interface VoteEnvelopeBuilder {
 }
 
-export interface StakeAddressVerificationService {
-}
-
-export interface StakeAddressVerificationService__Autowiring {
-}
-
-export interface StakeAddressVerificationService__BeanDefinitions {
-}
-
 export interface DefaultLoginService extends LoginService {
 }
 
@@ -206,12 +206,6 @@ export interface DefaultLoginService__Autowiring {
 }
 
 export interface DefaultLoginService__BeanDefinitions {
-}
-
-export interface JwtAuthenticationEntryPoint extends AuthenticationEntryPoint, Serializable {
-}
-
-export interface JwtAuthenticationEntryPoint__BeanDefinitions {
 }
 
 export interface JwtAuthenticationToken extends AbstractAuthenticationToken {
@@ -361,13 +355,22 @@ export interface DefaultVoteService__BeanDefinitions {
 export interface VoteService {
 }
 
+export interface RollbackHandler {
+}
+
+export interface RollbackHandler__Autowiring {
+}
+
+export interface RollbackHandler__BeanDefinitions {
+}
+
 export interface Problem {
     instance: URI;
     type: URI;
     parameters: { [index: string]: any };
     status: StatusType;
-    title: string;
     detail: string;
+    title: string;
 }
 
 export interface Serializable {
@@ -377,7 +380,9 @@ export interface MerkleElement<T> {
     empty: boolean;
 }
 
-export interface AuthenticationEntryPoint {
+export interface Point {
+    slot: number;
+    hash: string;
 }
 
 export interface GrantedAuthority extends Serializable {
@@ -388,22 +393,23 @@ export interface AbstractAuthenticationToken extends Authentication, Credentials
 }
 
 export interface Environment extends PropertyResolver {
-    activeProfiles: string[];
     defaultProfiles: string[];
+    activeProfiles: string[];
 }
 
 export interface FilterConfig {
     servletContext: ServletContext;
-    initParameterNames: Enumeration<string>;
     filterName: string;
+    initParameterNames: Enumeration<string>;
 }
 
 export interface ServletContext {
     classLoader: ClassLoader;
     majorVersion: number;
     minorVersion: number;
-    effectiveMinorVersion: number;
+    contextPath: string;
     effectiveMajorVersion: number;
+    effectiveMinorVersion: number;
     /**
      * @deprecated
      */
@@ -412,21 +418,20 @@ export interface ServletContext {
      * @deprecated
      */
     servletNames: Enumeration<string>;
-    jspConfigDescriptor: JspConfigDescriptor;
-    virtualServerName: string;
     serverInfo: string;
     initParameterNames: Enumeration<string>;
     servletContextName: string;
-    attributeNames: Enumeration<string>;
     servletRegistrations: { [index: string]: ServletRegistration };
-    sessionCookieConfig: SessionCookieConfig;
     filterRegistrations: { [index: string]: FilterRegistration };
-    contextPath: string;
-    responseCharacterEncoding: string;
-    requestCharacterEncoding: string;
-    defaultSessionTrackingModes: SessionTrackingMode[];
-    effectiveSessionTrackingModes: SessionTrackingMode[];
+    sessionCookieConfig: SessionCookieConfig;
+    jspConfigDescriptor: JspConfigDescriptor;
+    virtualServerName: string;
     sessionTimeout: number;
+    attributeNames: Enumeration<string>;
+    responseCharacterEncoding: string;
+    effectiveSessionTrackingModes: SessionTrackingMode[];
+    defaultSessionTrackingModes: SessionTrackingMode[];
+    requestCharacterEncoding: string;
 }
 
 export interface OncePerRequestFilter extends GenericFilterBean {
@@ -454,18 +459,18 @@ export interface StatusType {
 
 export interface Value<T> extends Iterable<T> {
     empty: boolean;
-    orNull: T;
     singleValued: boolean;
+    orNull: T;
     async: boolean;
     lazy: boolean;
 }
 
 export interface Authentication extends Principal, Serializable {
     authenticated: boolean;
-    credentials: any;
-    details: any;
-    principal: any;
     authorities: GrantedAuthority[];
+    principal: any;
+    details: any;
+    credentials: any;
 }
 
 export interface CredentialsContainer {
@@ -485,29 +490,29 @@ export interface Servlet {
     servletInfo: string;
 }
 
-export interface JspConfigDescriptor {
-    jspPropertyGroups: JspPropertyGroupDescriptor[];
-    taglibs: TaglibDescriptor[];
+export interface ServletRegistration extends Registration {
+    mappings: string[];
+    runAsRole: string;
 }
 
-export interface ServletRegistration extends Registration {
-    runAsRole: string;
-    mappings: string[];
+export interface FilterRegistration extends Registration {
+    servletNameMappings: string[];
+    urlPatternMappings: string[];
 }
 
 export interface SessionCookieConfig {
+    domain: string;
     name: string;
     path: string;
     comment: string;
     httpOnly: boolean;
     secure: boolean;
-    domain: string;
     maxAge: number;
 }
 
-export interface FilterRegistration extends Registration {
-    urlPatternMappings: string[];
-    servletNameMappings: string[];
+export interface JspConfigDescriptor {
+    jspPropertyGroups: JspPropertyGroupDescriptor[];
+    taglibs: TaglibDescriptor[];
 }
 
 export interface GenericFilterBean extends Filter, BeanNameAware, EnvironmentAware, EnvironmentCapable, ServletContextAware, InitializingBean, DisposableBean {
@@ -522,19 +527,19 @@ export interface Base64URL extends Base64 {
 }
 
 export interface JWSHeader extends CommonSEHeader {
-    base64URLEncodePayload: boolean;
     algorithm: JWSAlgorithm;
+    base64URLEncodePayload: boolean;
 }
 
 export interface JWTClaimsSet extends Serializable {
     claims: { [index: string]: any };
-    audience: string[];
+    expirationTime: Date;
     notBeforeTime: Date;
     issueTime: Date;
+    audience: string[];
     subject: string;
-    jwtid: string;
     issuer: string;
-    expirationTime: Date;
+    jwtid: string;
 }
 
 export interface JWSObject extends JOSEObject {
@@ -546,15 +551,21 @@ export interface JWSObject extends JOSEObject {
 
 export interface JWT extends Serializable {
     header: Header;
-    parsedString: string;
-    parsedParts: Base64URL[];
     jwtclaimsSet: JWTClaimsSet;
+    parsedParts: Base64URL[];
+    parsedString: string;
 }
 
 export interface ServletConfig {
-    servletName: string;
     servletContext: ServletContext;
     initParameterNames: Enumeration<string>;
+    servletName: string;
+}
+
+export interface Registration {
+    name: string;
+    className: string;
+    initParameters: { [index: string]: string };
 }
 
 export interface JspPropertyGroupDescriptor {
@@ -563,24 +574,18 @@ export interface JspPropertyGroupDescriptor {
     elIgnored: string;
     pageEncoding: string;
     scriptingInvalid: string;
-    includeCodas: string[];
     includePreludes: string[];
+    includeCodas: string[];
     defaultContentType: string;
-    errorOnUndeclaredNamespace: string;
-    trimDirectiveWhitespaces: string;
     deferredSyntaxAllowedAsLiteral: string;
+    trimDirectiveWhitespaces: string;
+    errorOnUndeclaredNamespace: string;
     isXml: string;
 }
 
 export interface TaglibDescriptor {
     taglibURI: string;
     taglibLocation: string;
-}
-
-export interface Registration {
-    name: string;
-    className: string;
-    initParameters: { [index: string]: string };
 }
 
 export interface Filter {
@@ -610,24 +615,24 @@ export interface Base64 extends Serializable {
 
 export interface JWK extends Serializable {
     keyStore: KeyStore;
+    algorithm: Algorithm;
     private: boolean;
-    notBeforeTime: Date;
+    requiredParams: { [index: string]: any };
+    keyOperations: KeyOperation[];
     x509CertURL: URI;
     /**
      * @deprecated
      */
     x509CertThumbprint: Base64URL;
-    keyOperations: KeyOperation[];
-    issueTime: Date;
-    requiredParams: { [index: string]: any };
     x509CertChain: Base64[];
+    expirationTime: Date;
+    notBeforeTime: Date;
+    issueTime: Date;
     parsedX509CertChain: X509Certificate[];
     x509CertSHA256Thumbprint: Base64URL;
     keyType: KeyType;
     keyID: string;
     keyUse: KeyUse;
-    algorithm: Algorithm;
-    expirationTime: Date;
 }
 
 export interface JWSAlgorithm extends Algorithm {
@@ -660,11 +665,11 @@ export interface JOSEObject extends Serializable {
 export interface Header extends Serializable {
     customParams: { [index: string]: any };
     parsedBase64URL: Base64URL;
+    algorithm: Algorithm;
+    contentType: string;
     type: JOSEObjectType;
     criticalParams: string[];
     includedParams: string[];
-    algorithm: Algorithm;
-    contentType: string;
 }
 
 export interface Comparable<T> {
@@ -681,33 +686,38 @@ export interface KeyStore {
     provider: { [index: string]: any };
 }
 
+export interface Algorithm extends Serializable {
+    name: string;
+    requirement: Requirement;
+}
+
 export interface X509Certificate extends Certificate, X509Extension {
     subjectX500Principal: X500Principal;
     issuerX500Principal: X500Principal;
-    signature: any;
-    basicConstraints: number;
-    version: number;
-    subjectAlternativeNames: any[][];
+    extendedKeyUsage: string[];
+    issuerAlternativeNames: any[][];
     sigAlgName: string;
-    serialNumber: number;
-    /**
-     * @deprecated since 16
-     */
-    subjectDN: Principal;
+    sigAlgParams: any;
+    tbscertificate: any;
     /**
      * @deprecated since 16
      */
     issuerDN: Principal;
-    notBefore: Date;
-    notAfter: Date;
-    sigAlgParams: any;
-    keyUsage: boolean[];
-    extendedKeyUsage: string[];
-    tbscertificate: any;
+    /**
+     * @deprecated since 16
+     */
+    subjectDN: Principal;
     sigAlgOID: string;
     issuerUniqueID: boolean[];
     subjectUniqueID: boolean[];
-    issuerAlternativeNames: any[][];
+    signature: any;
+    basicConstraints: number;
+    version: number;
+    serialNumber: number;
+    notAfter: Date;
+    notBefore: Date;
+    keyUsage: boolean[];
+    subjectAlternativeNames: any[][];
 }
 
 export interface KeyType extends Serializable {
@@ -717,11 +727,6 @@ export interface KeyType extends Serializable {
 
 export interface KeyUse extends Serializable {
     value: string;
-}
-
-export interface Algorithm extends Serializable {
-    name: string;
-    requirement: Requirement;
 }
 
 export interface X500Principal extends Principal, Serializable {
@@ -743,9 +748,9 @@ export interface X509Extension {
 }
 
 export interface Key extends Serializable {
+    algorithm: string;
     encoded: any;
     format: string;
-    algorithm: string;
 }
 
 export type CardanoNetwork = "MAIN" | "PREPROD" | "PREVIEW" | "DEV";

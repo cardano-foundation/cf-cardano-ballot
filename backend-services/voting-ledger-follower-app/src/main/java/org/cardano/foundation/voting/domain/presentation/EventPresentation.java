@@ -17,7 +17,7 @@ public class EventPresentation {
 
     private String id;
 
-    private String team; // e.g. CF Team
+    private String organisers; // e.g. CF
 
     private VotingEventType votingEventType;
 
@@ -28,13 +28,19 @@ public class EventPresentation {
     private Optional<Long> endSlot = Optional.empty();
 
     @Builder.Default
+    private Optional<Long> proposalsRevealSlot = Optional.empty();
+
+    @Builder.Default
     private Optional<Integer> startEpoch = Optional.empty();
 
     @Builder.Default
-    private Optional<ZonedDateTime> eventStart = Optional.empty();
+    private Optional<ZonedDateTime> eventStartDate = Optional.empty();
 
     @Builder.Default
-    private Optional<ZonedDateTime> eventEnd = Optional.empty();
+    private Optional<ZonedDateTime> eventEndDate = Optional.empty();
+
+    @Builder.Default
+    private Optional<ZonedDateTime> proposalsRevealDate = Optional.empty();
 
     @Builder.Default
     private Optional<ZonedDateTime> snapshotTime = Optional.empty();
@@ -46,6 +52,9 @@ public class EventPresentation {
     private Optional<Integer> snapshotEpoch = Optional.empty();
 
     @Builder.Default
+    private Optional<Integer> proposalsRevealEpoch = Optional.empty();
+
+    @Builder.Default
     private boolean isActive = false;
 
     @Builder.Default
@@ -55,10 +64,16 @@ public class EventPresentation {
     private boolean isNotStarted = false;
 
     @Builder.Default
+    private boolean isProposalsReveal = false;
+
+    @Builder.Default
     private boolean isAllowVoteChanging = false;
 
     @Builder.Default
-    private boolean isHighLevelResultsWhileVoting = false;
+    private boolean isHighLevelEventResultsWhileVoting = false;
+
+    @Builder.Default
+    private boolean isHighLevelCategoryResultsWhileVoting = false;
 
     @Builder.Default
     private boolean isCategoryResultsWhileVoting = false;

@@ -207,8 +207,8 @@ describe('For ongoing event:', () => {
 
     expect(within(confirmModal).queryByTestId('result-comming-soon-modal-description')).toHaveTextContent(
       `The results will be displayed after the voting has closed on ${getDateAndMonth(
-        eventMock_active?.eventEnd?.toString()
-      )} ${formatUTCDate(eventMock_active?.eventEnd?.toString())}`
+        eventMock_active?.eventEndDate?.toString()
+      )} ${formatUTCDate(eventMock_active?.eventEndDate?.toString())}`
     );
 
     expect(within(confirmModal).queryByTestId('result-comming-soon-modal-title')).toHaveTextContent('Coming soon');

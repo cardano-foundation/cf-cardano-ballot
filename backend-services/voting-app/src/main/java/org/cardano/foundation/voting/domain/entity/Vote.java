@@ -7,6 +7,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.cardanofoundation.cip30.CIP30Verifier;
 
@@ -20,6 +21,7 @@ import java.util.function.Function;
 @Table(name = "vote")
 @Builder
 @Slf4j
+@ToString(exclude = { "coseSignature", "cosePublicKey"} )
 public class Vote extends AbstractTimestampEntity {
 
     public static final Function<Vote, byte[]> VOTE_SERIALISER = createSerialiserFunction();
@@ -49,7 +51,7 @@ public class Vote extends AbstractTimestampEntity {
 
     @Column(name = "voting_power")
     @Nullable
-    // makes sense only for STAKE_BASED or BALANCE_BASED events
+    // nullable since it makes sense only for STAKE_BASED or BALANCE_BASED events
     private Long votingPower;
 
     @Column(name = "voted_at_slot", nullable = false)

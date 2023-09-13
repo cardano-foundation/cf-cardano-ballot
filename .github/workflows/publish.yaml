@@ -16,7 +16,7 @@ env:
 jobs:
 
   build-version:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     outputs:
       ARTIFACT_VERSION: ${{ steps.metadata.outputs.ARTIFACT_VERSION }}
     steps:
@@ -43,7 +43,7 @@ jobs:
           fi
   
   publish-voting-app:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     env:
       APP_NAME: voting-app
     needs: build-version
@@ -86,7 +86,7 @@ jobs:
   
 
   publish-voting-ledger-follower-app:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     env:
       APP_NAME: voting-ledger-follower-app
     needs: build-version
@@ -99,13 +99,15 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '20'
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
 
       - name: Execute Gradle build
         working-directory: backend-services/${{ env.APP_NAME }}
-        run: ./gradlew bootJar
+        run: |
+          ./gradlew bootJar
+          ls -hl build/libs
 
       - name: Docker Login
         uses: docker/login-action@v2
@@ -129,7 +131,7 @@ jobs:
   
 
   publish-voting-verification-app:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     env:
       APP_NAME: voting-verification-app
     needs: build-version
@@ -172,7 +174,7 @@ jobs:
   
 
   publish-user-verification-service:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     env:
       APP_NAME: user-verification-service
     needs: build-version
@@ -215,7 +217,7 @@ jobs:
   
 
   publish-voting-app-ui:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     env:
       APP_NAME: voting-app-ui
     needs: build-version
@@ -253,7 +255,7 @@ jobs:
             ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}/${{ env.APP_NAME }}:${{ env.ARTIFACT_VERSION }}
 
   publish-ui-summit-2023:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     env:
       APP_NAME: summit-2023-ui
     needs: build-version

@@ -47,4 +47,12 @@ public class Proposal extends AbstractTimestampEntity {
         this.name = name;
     }
 
+    @Override
+    public String toString() {
+        return "Proposal{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                '}';
+    }
+
 }

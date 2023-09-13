@@ -71,7 +71,7 @@ public class VoteResource {
     @RequestMapping(value = "/casting-available/{eventId}/{voteId}", method = GET, produces = "application/json")
     @Timed(value = "resource.voteId.receipt", histogram = true)
     public ResponseEntity<?> isVoteCastingStillPossible(@PathVariable("eventId") String eventId,
-                                                        @PathVariable String voteId) {
+                                                        @PathVariable("voteId") String voteId) {
         return voteService.isVoteCastingStillPossible(eventId, voteId)
                 .fold(problem -> ResponseEntity
                         .status(problem.getStatus().getStatusCode())

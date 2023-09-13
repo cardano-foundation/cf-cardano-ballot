@@ -7,8 +7,9 @@ import { UserState, VerificationStarts } from './types';
 const initialState: UserState = {
   connectedWallet: '',
   walletIsVerified: false,
+  walletIsLoggedIn: false,
   isReceiptFetched: false,
-  receipt: null,
+  receipts: null,
   proposal: '',
   userVerification: {},
   event: {
@@ -18,8 +19,8 @@ const initialState: UserState = {
     startSlot: undefined,
     endSlot: undefined,
     startEpoch: undefined,
-    eventStart: undefined,
-    eventEnd: undefined,
+    eventStartDate: undefined,
+    eventEndDate: undefined,
     snapshotTime: undefined,
     endEpoch: undefined,
     snapshotEpoch: undefined,
@@ -43,8 +44,14 @@ export const userSlice = createSlice({
     setWalletIsVerified: (state, action: PayloadAction<{ isVerified: boolean }>) => {
       state.walletIsVerified = action.payload.isVerified;
     },
-    setVoteReceipt: (state, action: PayloadAction<{ receipt: VoteReceipt }>) => {
-      state.receipt = action.payload.receipt;
+    setWalletIsLoggedIn: (state, action: PayloadAction<{ isLoggedIn: boolean }>) => {
+      state.walletIsLoggedIn = action.payload.isLoggedIn;
+    },
+    setVoteReceipt: (state, action: PayloadAction<{ categoryId: string; receipt: VoteReceipt }>) => {
+      state.receipts = {
+        ...state.receipts,
+        [action.payload.categoryId]: action.payload.receipt,
+      };
     },
     setIsReceiptFetched: (state, action: PayloadAction<{ isFetched: boolean }>) => {
       state.isReceiptFetched = action.payload.isFetched;
@@ -64,6 +71,6 @@ export const userSlice = createSlice({
   },
 });
 
-export const { setConnectedWallet, setVoteReceipt, setUserStartsVerification, setWalletIsVerified, setEventData } =
+export const { setVoteReceipt, setWalletIsLoggedIn, setUserStartsVerification, setWalletIsVerified, setEventData } =
   userSlice.actions;
 export default userSlice.reducer;

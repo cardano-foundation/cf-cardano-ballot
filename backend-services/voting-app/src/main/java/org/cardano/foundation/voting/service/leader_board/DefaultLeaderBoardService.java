@@ -2,16 +2,18 @@ package org.cardano.foundation.voting.service.leader_board;
 
 import com.google.common.collect.Iterables;
 import io.vavr.control.Either;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.domain.Leaderboard;
 import org.cardano.foundation.voting.repository.VoteRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import static java.util.stream.Collectors.toMap;
@@ -19,19 +21,56 @@ import static org.zalando.problem.Status.*;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class DefaultLeaderBoardService implements LeaderBoardService {
 
-    @Autowired
-    private ChainFollowerClient chainFollowerClient;
+    private final ChainFollowerClient chainFollowerClient;
 
-    @Autowired
-    private VoteRepository voteRepository;
+    private final VoteRepository voteRepository;
 
-    @Value("${leaderboard.force.results:false}")
-    private boolean forceLeaderboardResultsAvailability;
+    private Either<Problem, Boolean> isHighLevelEventLeaderboardAvailable(ChainFollowerClient.EventDetailsResponse eventDetails,
+                                                                          boolean forceLeaderboard) {
+        if (forceLeaderboard) {
+            return Either.right(true);
+        }
+
+        if (eventDetails.highLevelEventResultsWhileVoting()) {
+            return Either.right(true);
+        }
+
+        return Either.right(eventDetails.proposalsReveal());
+    }
+
+
+    private Either<Problem, Boolean> isHighLevelCategoryLeaderboardAvailable(ChainFollowerClient.EventDetailsResponse eventDetails,
+                                                                             boolean forceLeaderboard) {
+        if (forceLeaderboard) {
+            return Either.right(true);
+        }
+
+        if (eventDetails.highLevelCategoryResultsWhileVoting()) {
+            return Either.right(true);
+        }
+
+        return Either.right(eventDetails.proposalsReveal());
+    }
+
+    private Either<Problem, Boolean> isCategoryLeaderboardAvailable(ChainFollowerClient.EventDetailsResponse eventDetails,
+                                                                    ChainFollowerClient.CategoryDetailsResponse categoryDetails,
+                                                                    boolean forceLeaderboard) {
+        if (forceLeaderboard) {
+            return Either.right(true);
+        }
+
+        if (eventDetails.categoryResultsWhileVoting()) {
+            return Either.right(true);
+        }
+
+        return Either.right(eventDetails.proposalsReveal());
+    }
 
     @Override
-    public Either<Problem, Boolean> isEventLeaderboardAvailable(String event) {
+    public Either<Problem, Boolean> isHighLevelEventLeaderboardAvailable(String event, boolean forceLeaderboard) {
         var eventDetailsE = chainFollowerClient.getEventDetails(event);
         if (eventDetailsE.isEmpty()) {
             return Either.left(Problem.builder()
@@ -52,24 +91,11 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
         }
         var eventDetails = maybeEventDetails.orElseThrow();
 
-        return isEventLeaderboardAvailable(eventDetails);
-    }
-
-    private Either<Problem, Boolean> isEventLeaderboardAvailable(ChainFollowerClient.EventDetailsResponse eventDetails) {
-        if (forceLeaderboardResultsAvailability) {
-            return Either.right(true);
-        }
-
-        if (eventDetails.highLevelResultsWhileVoting()) {
-            return Either.right(true);
-        }
-
-        return Either.right(eventDetails.finished());
+        return isHighLevelEventLeaderboardAvailable(eventDetails, forceLeaderboard);
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public Either<Problem, Leaderboard.ByEvent> getEventLeaderboard(String event) {
+    public Either<Problem, Boolean> isHighLevelCategoryLeaderboardAvailable(String event, boolean forceLeaderboard) {
         var eventDetailsE = chainFollowerClient.getEventDetails(event);
         if (eventDetailsE.isEmpty()) {
             return Either.left(Problem.builder()
@@ -90,45 +116,132 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
         }
         var eventDetails = maybeEventDetails.orElseThrow();
 
-        var eventLeaderboardAvailableE = isEventLeaderboardAvailable(eventDetails);
+        return isHighLevelCategoryLeaderboardAvailable(eventDetails, forceLeaderboard);
+    }
+
+    @Override
+    @Transactional
+    public Either<Problem, Leaderboard.ByEventStats> getEventLeaderboard(String event, boolean forceLeaderboard) {
+        var eventDetailsE = chainFollowerClient.getEventDetails(event);
+        if (eventDetailsE.isEmpty()) {
+            return Either.left(Problem.builder()
+                    .withTitle("ERROR_GETTING_EVENT_DETAILS")
+                    .withDetail("Unable to get event details from chain-tip follower service, event:" + event)
+                    .withStatus(INTERNAL_SERVER_ERROR)
+                    .build()
+            );
+        }
+        var maybeEventDetails = eventDetailsE.get();
+        if (maybeEventDetails.isEmpty()) {
+            return Either.left(Problem.builder()
+                    .withTitle("UNRECOGNISED_EVENT")
+                    .withDetail("Unrecognised event, event:" + event)
+                    .withStatus(BAD_REQUEST)
+                    .build()
+            );
+        }
+        var eventDetails = maybeEventDetails.orElseThrow();
+
+        var highLevelEventLeaderboardAvailableE = isHighLevelEventLeaderboardAvailable(eventDetails, forceLeaderboard);
+        if (highLevelEventLeaderboardAvailableE.isEmpty()) {
+            return Either.left(highLevelEventLeaderboardAvailableE.getLeft());
+        }
+        var isHighLevelEventLeaderBoardAvailable = highLevelEventLeaderboardAvailableE.get();
+
+        if (!isHighLevelEventLeaderBoardAvailable) {
+            return Either.left(Problem.builder()
+                    .withTitle("VOTING_RESULTS_NOT_AVAILABLE")
+                    .withDetail("Event level voting results not available until voting event finishes!")
+                    .withStatus(FORBIDDEN)
+                    .build()
+            );
+        }
+
+        var votes = voteRepository.getHighLevelEventStats(event);
+        if (votes.isEmpty()) {
+
+            Leaderboard.ByEventStats.ByEventStatsBuilder byEventStatsBuilder = Leaderboard.ByEventStats.builder()
+                    .event(eventDetails.id())
+                    .totalVotesCount(0L);
+
+            switch (eventDetails.votingEventType()) {
+                case BALANCE_BASED, STAKE_BASED -> byEventStatsBuilder.totalVotingPower("0");
+            }
+
+            return Either.right(byEventStatsBuilder
+                    .build());
+        }
+
+        var eventVoteCount = Iterables.getOnlyElement(votes);
+        var voteCount = eventVoteCount.getTotalVoteCount();
+
+        var byEventStatsBuilder = Leaderboard.ByEventStats.builder()
+                .event(eventDetails.id())
+                .totalVotesCount(Optional.ofNullable(voteCount).orElse(0L));
+
+        var votingPower = eventVoteCount.getTotalVotingPower();
+
+        switch (eventDetails.votingEventType()) {
+            case BALANCE_BASED, STAKE_BASED ->
+                    byEventStatsBuilder.totalVotingPower(Optional.ofNullable(votingPower).map(String::valueOf).orElse("0"));
+        }
+
+        var eventLeaderboardAvailableE = isHighLevelCategoryLeaderboardAvailable(eventDetails, forceLeaderboard);
         if (eventLeaderboardAvailableE.isEmpty()) {
             return Either.left(eventLeaderboardAvailableE.getLeft());
         }
         var isEventLeaderBoardAvailable = eventLeaderboardAvailableE.get();
 
         if (!isEventLeaderBoardAvailable) {
-            return Either.left(Problem.builder()
-                    .withTitle("VOTING_RESULTS_NOT_AVAILABLE")
-                    .withDetail("High level voting results not available until voting event finishes.")
-                    .withStatus(FORBIDDEN)
-                    .build()
-            );
+            return Either.right(byEventStatsBuilder.build());
         }
 
-        var votes = voteRepository.countAllByEventId(event);
-        if (votes.isEmpty()) {
-            return Either.left(Problem.builder()
-                    .withTitle("INTERNAL_ERROR")
-                    .withDetail("No votes for event, event:" + event)
-                    .withStatus(INTERNAL_SERVER_ERROR)
-                    .build()
-            );
-        }
-        var eventVoteCount = Iterables.getOnlyElement(votes);
-        var votingPower = eventVoteCount.getTotalVotingPower();
-        var voteCount = eventVoteCount.getTotalVoteCount();
+        var allHighLevelCategoryStats = voteRepository.getHighLevelCategoryLevelStats(event);
 
-        return Either.right(Leaderboard.ByEvent.builder()
-                .event(eventDetails.id())
-                .totalVotesCount(Optional.ofNullable(voteCount).orElse(0L))
-                .totalVotingPower(Optional.ofNullable(votingPower).map(String::valueOf).orElse("0"))
-                .build()
-        );
+        var byCategoryStats = allHighLevelCategoryStats.stream()
+                .map(categoryLevelStats -> {
+                    var byCategoryStatsBuilder = Leaderboard.ByCategoryStats.builder();
+
+                    byCategoryStatsBuilder.id(categoryLevelStats.getCategoryId());
+                    byCategoryStatsBuilder.votes(Optional.ofNullable(categoryLevelStats.getTotalVoteCount()).orElse(0L));
+
+                    switch (eventDetails.votingEventType()) {
+                        case BALANCE_BASED, STAKE_BASED ->
+                                byCategoryStatsBuilder.votingPower(Optional.ofNullable(categoryLevelStats.getTotalVotingPower()).map(String::valueOf).orElse("0"));
+                    }
+
+                    return byCategoryStatsBuilder.build();
+                })
+                .toList();
+
+        var byCategoryStatsMap = byCategoryStats.stream()
+                .collect(toMap(Leaderboard.ByCategoryStats::getId, stats -> stats));
+
+        var byCategoryStatsCopy = new ArrayList<>(byCategoryStats);
+        // pre init with empty if category not returned from db
+        eventDetails.categories().forEach(categoryDetails -> {
+            if (!byCategoryStatsMap.containsKey(categoryDetails.id())) {
+                var b = Leaderboard.ByCategoryStats.builder();
+                b.id(categoryDetails.id());
+
+                b.votes(0L);
+
+                switch (eventDetails.votingEventType()) {
+                    case BALANCE_BASED, STAKE_BASED -> b.votingPower("0");
+                }
+
+                byCategoryStatsCopy.add(b.build());
+            }
+        });
+
+        byEventStatsBuilder.categories(byCategoryStatsCopy);
+
+        return Either.right(byEventStatsBuilder.build());
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public Either<Problem, Leaderboard.ByCategory> getCategoryLeaderboard(String event, String category) {
+    @Transactional
+    public Either<Problem, Leaderboard.ByProposalsInCategoryStats> getCategoryLeaderboard(String event, String category, boolean forceLeaderboard) {
         var eventDetailsE = chainFollowerClient.getEventDetails(event);
         if (eventDetailsE.isEmpty()) {
             return Either.left(Problem.builder()
@@ -161,7 +274,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
         }
         var categoryDetails = maybeCategory.orElseThrow();
 
-        var categoryLeaderboardAvailableE = isCategoryLeaderboardAvailable(eventDetails, categoryDetails);
+        var categoryLeaderboardAvailableE = isCategoryLeaderboardAvailable(eventDetails, categoryDetails, forceLeaderboard);
         if (categoryLeaderboardAvailableE.isEmpty()) {
             return Either.left(categoryLeaderboardAvailableE.getLeft());
         }
@@ -170,31 +283,61 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
         if (!isCategoryLeaderBoardAvailable) {
             return Either.left(Problem.builder()
                     .withTitle("VOTING_RESULTS_NOT_AVAILABLE")
-                    .withDetail("High level voting results not available until voting event finishes.")
+                    .withDetail("Category level voting results not available until voting event finishes!")
                     .withStatus(FORBIDDEN)
                     .build()
             );
         }
 
-        var votes = voteRepository.countAllByEventId(event, categoryDetails.id());
+        var votes = voteRepository.getCategoryLevelStats(event, categoryDetails.id());
 
-        var proposalResults = votes.stream()
-                .collect(toMap(VoteRepository.EventCategoryVoteCount::getProposalId, v -> {
-                    var totalVotesCount = Optional.ofNullable(v.getTotalVoteCount()).orElse(0L);
-                    var totalVotingPower = Optional.ofNullable(v.getTotalVotingPower()).map(String::valueOf).orElse("0");
+        Map<String, Leaderboard.Votes> proposalResultsMap = votes.stream()
+                .collect(toMap(VoteRepository.CategoryLevelStats::getProposalId, v -> {
+                            var totalVotesCount = Optional.ofNullable(v.getTotalVoteCount()).orElse(0L);
+                            var totalVotingPower = Optional.ofNullable(v.getTotalVotingPower()).map(String::valueOf).orElse("0");
 
-                    return new Leaderboard.Votes(totalVotesCount, totalVotingPower);
+                            var b = Leaderboard.Votes.builder();
+                            b.votes(totalVotesCount);
+
+                            switch (eventDetails.votingEventType()) {
+                                case BALANCE_BASED, STAKE_BASED -> b.votingPower(totalVotingPower);
+                            }
+
+                    return b.build();
                 }));
 
-        return Either.right(Leaderboard.ByCategory.builder()
+        var proposalResults = calcProposalsResults(categoryDetails, proposalResultsMap, eventDetails);
+
+        return Either.right(Leaderboard.ByProposalsInCategoryStats.builder()
                 .category(categoryDetails.id())
                 .proposals(proposalResults)
                 .build()
         );
     }
 
+    private static HashMap<String, Leaderboard.Votes> calcProposalsResults(ChainFollowerClient.CategoryDetailsResponse categoryDetails, Map<String, Leaderboard.Votes> proposalResultsMap, ChainFollowerClient.EventDetailsResponse eventDetails) {
+        var categoryProposals = categoryDetails.proposals();
+
+        var proposalResultsMapCopy = new HashMap<>(proposalResultsMap);
+
+        categoryProposals.forEach(proposalDetails -> {
+            if (!proposalResultsMap.containsKey(proposalDetails.id())) {
+                var b = Leaderboard.Votes.builder();
+
+                b.votes(0L);
+
+                switch (eventDetails.votingEventType()) {
+                    case BALANCE_BASED, STAKE_BASED -> b.votingPower("0");
+                }
+
+                proposalResultsMapCopy.put(proposalDetails.id(), b.build());
+            }
+        });
+        return proposalResultsMapCopy;
+    }
+
     @Override
-    public Either<Problem, Boolean> isCategoryLeaderboardAvailable(String event, String category) {
+    public Either<Problem, Boolean> isCategoryLeaderboardAvailable(String event, String category, boolean forceLeaderboard) {
         var eventDetailsE = chainFollowerClient.getEventDetails(event);
         if (eventDetailsE.isEmpty()) {
             return Either.left(Problem.builder()
@@ -227,20 +370,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
         }
         var categoryDetails = maybeCategory.orElseThrow();
 
-        return isCategoryLeaderboardAvailable(eventDetails, categoryDetails);
-    }
-
-    private Either<Problem, Boolean> isCategoryLeaderboardAvailable(ChainFollowerClient.EventDetailsResponse eventDetails,
-                                                                    ChainFollowerClient.CategoryDetailsResponse categoryDetails) {
-        if (forceLeaderboardResultsAvailability) {
-            return Either.right(true);
-        }
-
-        if (eventDetails.categoryResultsWhileVoting()) {
-            return Either.right(true);
-        }
-
-        return Either.right(eventDetails.finished());
+        return isCategoryLeaderboardAvailable(eventDetails, categoryDetails, forceLeaderboard);
     }
 
 }

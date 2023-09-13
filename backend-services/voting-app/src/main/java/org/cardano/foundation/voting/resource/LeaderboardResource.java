@@ -1,21 +1,17 @@
 package org.cardano.foundation.voting.resource;
 
-import com.bloxbean.cardano.client.common.ADAConversionUtil;
 import io.micrometer.core.annotation.Timed;
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.domain.Leaderboard;
 import org.cardano.foundation.voting.service.leader_board.LeaderBoardService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
-import java.util.Objects;
-import java.util.Random;
-
+import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
 
@@ -27,79 +23,76 @@ public class LeaderboardResource {
     @Autowired
     private LeaderBoardService leaderBoardService;
 
-    @RequestMapping(value = "/{event}", method = HEAD, produces = "application/json")
-    @Timed(value = "resource.leaderboard.event.available", percentiles = { 0.3, 0.5, 0.95 })
-    public ResponseEntity<?> isEventLeaderBoardAvailable(@PathVariable String event) {
-        return leaderBoardService.isEventLeaderboardAvailable(event)
-                .fold(problem -> {
-                            return ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem);
-                        },
-                        isAvailable -> isAvailable ? ResponseEntity.ok().build() : ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+    @Value("${leaderboard.force.results:false}")
+    private boolean forceLeaderboardResultsAvailability;
+
+    @RequestMapping(value = "/event/{eventId}/", method = HEAD, produces = "application/json")
+    @Timed(value = "resource.leaderboard.high.level.event.available", histogram = true)
+    public ResponseEntity<?> isHighLevelEventLeaderBoardAvailable(@PathVariable("eventId") String eventId,
+                                                         @RequestHeader(value = "force-leaderboard-results", required = false, defaultValue = "false") boolean forceLeaderboardResults) {
+        var forceLeaderboard = forceLeaderboardResults && forceLeaderboardResultsAvailability;
+
+        var availableE = leaderBoardService.isHighLevelEventLeaderboardAvailable(eventId, forceLeaderboard);
+
+        return availableE.fold(problem -> ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem),
+                        isAvailable -> isAvailable ? ResponseEntity.ok().build() : ResponseEntity.status(FORBIDDEN).build()
                 );
     }
 
-    @RequestMapping(value = "/{event}", method = GET, produces = "application/json")
-    @Timed(value = "resource.leaderboard.event", percentiles = { 0.3, 0.5, 0.95 })
-    public ResponseEntity<?> getEventLeaderBoard(@PathVariable String event) {
-        return leaderBoardService.getEventLeaderboard(event)
-                .fold(problem -> {
-                            return ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem);
-                        },
+    @RequestMapping(value = "/event-category/{eventId}", method = HEAD, produces = "application/json")
+    @Timed(value = "resource.leaderboard.high.level.category.available", histogram = true)
+    public ResponseEntity<?> isHighLevelCategoryLeaderBoardAvailable(@PathVariable("eventId") String eventId,
+                                                         @RequestHeader(value = "force-leaderboard-results", required = false, defaultValue = "false") boolean forceLeaderboardResults) {
+        var forceLeaderboard = forceLeaderboardResults && forceLeaderboardResultsAvailability;
+
+        var availableE = leaderBoardService.isHighLevelCategoryLeaderboardAvailable(eventId, forceLeaderboard);
+
+        return availableE.fold(problem -> ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem),
+                        isAvailable -> isAvailable ? ResponseEntity.ok().build() : ResponseEntity.status(FORBIDDEN).build()
+                );
+    }
+
+    @RequestMapping(value = "/{eventId}/{categoryId}", method = HEAD, produces = "application/json")
+    @Timed(value = "resource.leaderboard.category.available", histogram = true)
+    public ResponseEntity<?> getCategoryLeaderBoardAvailable(@PathVariable("eventId") String eventId,
+                                                             @PathVariable("categoryId") String categoryId,
+                                                             @RequestHeader(value = "force-leaderboard-results", required = false, defaultValue = "false") boolean forceLeaderboardResults) {
+        var forceLeaderboard = forceLeaderboardResults && forceLeaderboardResultsAvailability;
+
+        var categoryLeaderboardAvailableE = leaderBoardService.isCategoryLeaderboardAvailable(eventId, categoryId, forceLeaderboard);
+
+        return categoryLeaderboardAvailableE
+                .fold(problem -> ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem),
+                        isAvailable -> isAvailable ? ResponseEntity.ok().build() : ResponseEntity.status(FORBIDDEN).build()
+                );
+    }
+
+    @RequestMapping(value = "/{eventId}", method = GET, produces = "application/json")
+    @Timed(value = "resource.leaderboard.event", histogram = true)
+    public ResponseEntity<?> getEventLeaderBoard(@PathVariable("eventId") String eventId,
+                                                 @RequestHeader(value = "force-leaderboard-results", required = false, defaultValue = "false") boolean forceLeaderboardResults) {
+        var forceLeaderboard = forceLeaderboardResults && forceLeaderboardResultsAvailability;
+
+        var eventLeaderboardE = leaderBoardService.getEventLeaderboard(eventId, forceLeaderboard);
+
+        return eventLeaderboardE.fold(problem -> ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem),
                         response -> ResponseEntity.ok().body(response)
                 );
     }
 
-    @RequestMapping(value = "/mock/{event}", method = GET, produces = "application/json")
-    @Timed(value = "resource.leaderboard.event", percentiles = { 0.3, 0.5, 0.95 })
-    public ResponseEntity<?> getEventLeaderBoardMock(@PathVariable String event) {
-        Random r = new Random();
+    @RequestMapping(value = "/{eventId}/{categoryId}", method = GET, produces = "application/json")
+    @Timed(value = "resource.leaderboard.category", histogram = true)
+    public ResponseEntity<?> getCategoryLeaderBoard(@PathVariable("eventId") String eventId,
+                                                    @PathVariable("categoryId") String categoryId,
+                                                    @RequestHeader(value = "force-leaderboard-results", required = false, defaultValue = "false") boolean forceLeaderboardResults) {
+        var forceLeaderboard = forceLeaderboardResults && forceLeaderboardResultsAvailability;
 
-        Leaderboard.ByEvent leaderboard = Leaderboard.ByEvent.builder()
-                .event(event)
-                .totalVotesCount(Math.abs(r.nextInt()))
-                .totalVotingPower(String.valueOf(Math.abs(r.nextLong())))
-                .build();
+        var categoryLeaderboardE = leaderBoardService.getCategoryLeaderboard(eventId, categoryId, forceLeaderboard);
 
-        return ResponseEntity.ok().body(leaderboard);
-    }
-
-    @RequestMapping(value = "/{event}/{category}", method = GET, produces = "application/json")
-    @Timed(value = "resource.leaderboard.category", percentiles = { 0.3, 0.5, 0.95 })
-    public ResponseEntity<?> getCategoryLeaderBoard(@PathVariable String event, @PathVariable String category) {
-        return leaderBoardService.getCategoryLeaderboard(event, category)
-                .fold(problem -> {
-                            return ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem);
-                        },
+        return categoryLeaderboardE
+                .fold(problem -> ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem),
                         response -> ResponseEntity.ok().body(response)
                 );
-    }
-
-    @RequestMapping(value = "/{event}/{category}", method = HEAD, produces = "application/json")
-    @Timed(value = "resource.leaderboard.category.available", percentiles = { 0.3, 0.5, 0.95 })
-    public ResponseEntity<?> getCategoryLeaderBoardAvailable(@PathVariable String event, @PathVariable String category) {
-        return leaderBoardService.isCategoryLeaderboardAvailable(event, category)
-                .fold(problem -> {
-                            return ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem);
-                        },
-                        isAvailable -> isAvailable ? ResponseEntity.ok().build() : ResponseEntity.status(HttpStatus.FORBIDDEN).build()
-                );
-    }
-
-    @RequestMapping(value = "/mock/{event}/{category}", method = GET, produces = "application/json")
-    @Timed(value = "resource.leaderboard.category", percentiles = { 0.3, 0.5, 0.95 })
-    public ResponseEntity<?> getCategoryLeaderBoardMock(@PathVariable String event, @PathVariable String category) {
-        var r = new Random();
-
-        var leaderboard = Leaderboard.ByCategory.builder()
-                .category(category)
-                .proposals(
-                        Map.of(
-                                "YES", new Leaderboard.Votes(Math.abs(r.nextInt()), String.valueOf(ADAConversionUtil.adaToLovelace(Math.abs(r.nextInt())))),
-                                "NO", new Leaderboard.Votes(Math.abs(r.nextInt()), String.valueOf(ADAConversionUtil.adaToLovelace(Math.abs(r.nextInt())))),
-                                "ABSTAIN", new Leaderboard.Votes(r.nextInt(),  String.valueOf(ADAConversionUtil.adaToLovelace(Math.abs(r.nextInt()))))))
-                .build();
-
-        return ResponseEntity.ok().body(leaderboard);
     }
 
 }

@@ -4,11 +4,17 @@ import cz.habarta.typescript.generator.TypeScriptOutputKind
 
 plugins {
 	java
-	id("org.springframework.boot") version "3.0.7"
-	id("io.spring.dependency-management") version "1.1.0"
-	id("org.graalvm.buildtools.native") version "0.9.22"
+	id("org.springframework.boot") version "3.0.8"
+	id("io.spring.dependency-management") version "1.1.3"
+	id("org.graalvm.buildtools.native") version "0.9.26"
     id("org.flywaydb.flyway") version "9.8.1"
 	id("cz.habarta.typescript-generator") version "3.2.1263"
+    id("com.github.ben-manes.versions") version "0.48.0"
+    id("com.gorylenko.gradle-git-properties") version "2.4.1"
+}
+
+springBoot {
+    buildInfo()
 }
 
 group = "org.cardano.foundation"
@@ -27,8 +33,6 @@ repositories {
 	maven { url = uri("https://repo.spring.io/milestone") }
 }
 
-extra["testcontainersVersion"] = "1.17.6"
-
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.springframework.boot:spring-boot-starter-aop")
@@ -39,8 +43,8 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-security")
-
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+    implementation("org.zalando:problem-spring-web-starter:0.29.1")
 
 	runtimeOnly("org.springframework.boot:spring-boot-properties-migrator")
 
@@ -48,9 +52,11 @@ dependencies {
 
     implementation("org.flywaydb:flyway-core")
 
-	implementation("com.google.guava:guava:32.1.1-jre")
+    implementation("com.google.guava:guava:32.1.2-jre")
 
-	implementation("org.zalando:problem-spring-web-starter:0.29.1")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
+
+    implementation("com.bloxbean.cardano:yaci:0.2.2")
 
 	compileOnly("org.projectlombok:lombok:1.18.28")
 	annotationProcessor("org.projectlombok:lombok:1.18.28")
@@ -64,30 +70,24 @@ dependencies {
 	implementation("com.nimbusds:nimbus-jose-jwt:9.31")
 	implementation("com.google.crypto.tink:tink:1.10.0")
 
-	testImplementation("org.testcontainers:junit-jupiter")
-
-	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0-beta2")
-    implementation("com.bloxbean.cardano:cardano-client-address:0.5.0-beta2")
-    implementation("com.bloxbean.cardano:cardano-client-metadata:0.5.0-beta2")
-	implementation("com.bloxbean.cardano:cardano-client-quicktx:0.5.0-beta2")
-	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.0-beta2")
-	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0-beta2")
+	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0-beta3")
+    implementation("com.bloxbean.cardano:cardano-client-address:0.5.0-beta3")
+    implementation("com.bloxbean.cardano:cardano-client-metadata:0.5.0-beta3")
+	implementation("com.bloxbean.cardano:cardano-client-quicktx:0.5.0-beta3")
+	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.0-beta3")
+	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0-beta3")
 
 	implementation("io.blockfrost:blockfrost-java:0.1.3")
 
 	implementation("io.vavr:vavr:0.10.4")
 
 	runtimeOnly("org.postgresql:postgresql")
-	runtimeOnly("com.h2database:h2")
 
 	implementation("org.cardanofoundation:merkle-tree-java:0.0.7")
-	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.9")
-}
+	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.10")
 
-dependencyManagement {
-	imports {
-		mavenBom("org.testcontainers:testcontainers-bom:${property("testcontainersVersion")}")
-	}
+    // spring-boot overridden dependencies:
+    runtimeOnly("com.h2database:h2:2.2.222") // GraalVM compatibility
 }
 
 tasks.withType<Test> {

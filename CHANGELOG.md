@@ -1,5 +1,105 @@
 # Changelog
 
+## [0.2.32](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.31...v0.2.32) (2023-09-13)
+
+
+### Bug Fixes
+
+* leaderboard results preinitialized with 0. ([#208](https://github.com/cardano-foundation/cf-cardano-ballot/issues/208)) ([5faa9de](https://github.com/cardano-foundation/cf-cardano-ballot/commit/5faa9deca352a22a4cf8962e23373a411ad9d606))
+
+## [0.2.31](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.30...v0.2.31) (2023-09-13)
+
+
+### Features
+
+* leaderboard overhaul ([#179](https://github.com/cardano-foundation/cf-cardano-ballot/issues/179)) ([bfd5173](https://github.com/cardano-foundation/cf-cardano-ballot/commit/bfd51739e588e4956a3ec92aa4e5097192c72164))
+
+## [0.2.30](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.29...v0.2.30) (2023-09-12)
+
+
+### Features
+
+* fix viewVoteReceipt toggle ([9ab71c4](https://github.com/cardano-foundation/cf-cardano-ballot/commit/9ab71c479a423761b545a02c2be64ec4db3f4f9e))
+* qrcode for final receipt ([6cf2605](https://github.com/cardano-foundation/cf-cardano-ballot/commit/6cf26050622ccd98c000d5ba3f32d244875bdd56))
+
+## [0.2.29](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.28...v0.2.29) (2023-09-11)
+
+
+### Bug Fixes
+
+* added react-inject-env ([#187](https://github.com/cardano-foundation/cf-cardano-ballot/issues/187)) ([8144881](https://github.com/cardano-foundation/cf-cardano-ballot/commit/814488126e4cf4e03480fd5dff064a7587ef9036))
+
+## [0.2.28](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.27...v0.2.28) (2023-09-11)
+
+
+### Features
+
+* versions upgrade. ([#192](https://github.com/cardano-foundation/cf-cardano-ballot/issues/192)) ([3459dce](https://github.com/cardano-foundation/cf-cardano-ballot/commit/3459dce7e007630a98854f999a72a8cb5697d57f))
+
+## [0.2.27](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.26...v0.2.27) (2023-09-08)
+
+
+### Bug Fixes
+
+* add missing react-inject-env in deps ([34ef803](https://github.com/cardano-foundation/cf-cardano-ballot/commit/34ef803d659bb0ccabb1fddc2d1dabcb44893bf3))
+* add missing react-inject-env script ([af1a474](https://github.com/cardano-foundation/cf-cardano-ballot/commit/af1a47447ea38df80ba44f9cbb3f73dd6cc5fc09))
+
+## [0.2.26](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.25...v0.2.26) (2023-09-08)
+
+
+### Features
+
+* add app version ([68165d3](https://github.com/cardano-foundation/cf-cardano-ballot/commit/68165d300c163453595f080a6de1817699e29c7c))
+
+
+### Bug Fixes
+
+* update README.md ([a7a8c99](https://github.com/cardano-foundation/cf-cardano-ballot/commit/a7a8c992588fe1fb044e9337536bb84e4694fb70))
+* vote receipt and nominee button after casting vote ([04680e9](https://github.com/cardano-foundation/cf-cardano-ballot/commit/04680e9acec88971e78c4e2f60e082d0096a9b51))
+
+## [0.2.25](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.24...v0.2.25) (2023-09-08)
+
+
+### Features
+
+* code quality improvements. ([#169](https://github.com/cardano-foundation/cf-cardano-ballot/issues/169)) ([a37de47](https://github.com/cardano-foundation/cf-cardano-ballot/commit/a37de4760d3afdc9e4c59457f6c599a95d0f9e0f))
+
+## [0.2.24](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.23...v0.2.24) (2023-09-08)
+
+
+### Bug Fixes
+
+* env variables for user verification ([1ce178a](https://github.com/cardano-foundation/cf-cardano-ballot/commit/1ce178a3884c3aabe2147bb3fb4606c718b6273e))
+* env variables for user verification ([f27f53b](https://github.com/cardano-foundation/cf-cardano-ballot/commit/f27f53b5017f11b4ed753f617f358d0add0e4558))
+
+## [0.2.23](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.22...v0.2.23) (2023-09-08)
+
+
+### Features
+
+* attempting to force a release ([31e5106](https://github.com/cardano-foundation/cf-cardano-ballot/commit/31e510627095fee069d4be731f227bbacaee3a2a))
+
+## [0.2.22](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.21...v0.2.22) (2023-09-08)
+
+
+### Features
+
+* rollback handling via vanilla Yaci and code cleanup. ([#158](https://github.com/cardano-foundation/cf-cardano-ballot/issues/158)) ([a2535d6](https://github.com/cardano-foundation/cf-cardano-ballot/commit/a2535d66f3ddb1fb1e920f16557d18c30dd600d1))
+* switching from prometheus summary to histograms ([#160](https://github.com/cardano-foundation/cf-cardano-ballot/issues/160)) ([1ea0679](https://github.com/cardano-foundation/cf-cardano-ballot/commit/1ea06798c5e856d2ba41ba0f2f01821d89192998))
+
+## [0.2.21](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.20...v0.2.21) (2023-09-06)
+
+
+### Features
+
+* mocks for discord verification bot. ([#157](https://github.com/cardano-foundation/cf-cardano-ballot/issues/157)) ([741b601](https://github.com/cardano-foundation/cf-cardano-ballot/commit/741b6012990d951792204e5f6ec013cb0d61f804))
+* project documentation, security, code of conduct, etc. ([#156](https://github.com/cardano-foundation/cf-cardano-ballot/issues/156)) ([25c4464](https://github.com/cardano-foundation/cf-cardano-ballot/commit/25c4464e3f61c48d0ffd9f4dd88c0508c4b718f1))
+
+
+### Bug Fixes
+
+* improved Stake Address validation. ([#154](https://github.com/cardano-foundation/cf-cardano-ballot/issues/154)) ([5359d5d](https://github.com/cardano-foundation/cf-cardano-ballot/commit/5359d5de12ab93779922dbb38474948473c2c265))
+
 ## [0.2.20](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.19...v0.2.20) (2023-09-06)
 
 

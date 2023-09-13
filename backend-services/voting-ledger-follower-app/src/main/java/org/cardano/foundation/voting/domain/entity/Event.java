@@ -5,6 +5,7 @@ import lombok.*;
 import org.cardano.foundation.voting.domain.SchemaVersion;
 import org.cardano.foundation.voting.domain.VotingEventType;
 import org.cardano.foundation.voting.domain.VotingPowerAsset;
+import org.hibernate.annotations.Immutable;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -19,18 +20,19 @@ import static org.cardano.foundation.voting.domain.VotingEventType.STAKE_BASED;
 @Builder
 @RequiredArgsConstructor
 @AllArgsConstructor
+@Immutable
 public class Event extends AbstractTimestampEntity {
 
     @Getter
     @Setter
     @Column(nullable = false)
     @Id
-    private String id; // e.g. Voltaire_Pre_Ratification
+    private String id;
 
     @Column(nullable = false)
     @Getter
     @Setter
-    private String team; // e.g. CF Team
+    private String organisers; // e.g. CF
 
     @Column(name = "event_type", nullable = false)
     @Getter
@@ -49,15 +51,20 @@ public class Event extends AbstractTimestampEntity {
     @Builder.Default
     private Boolean allowVoteChanging = false;
 
+    @Column(name = "high_level_epoch_results_while_voting")
+    @Nullable
+    @Builder.Default
+    private Boolean highLevelEpochResultsWhileVoting = false;
+
+    @Column(name = "high_level_category_results_while_voting")
+    @Nullable
+    @Builder.Default
+    private Boolean highLevelCategoryResultsWhileVoting = false;
+
     @Column(name = "category_results_while_voting")
     @Nullable
     @Builder.Default
     private Boolean categoryResultsWhileVoting = false;
-
-    @Column(name = "high_level_results_while_voting")
-    @Nullable
-    @Builder.Default
-    private Boolean highLevelResultsWhileVoting = false;
 
     @Column(name = "start_epoch")
     // startEpoch is only needed for stake based voting events
@@ -69,6 +76,16 @@ public class Event extends AbstractTimestampEntity {
     @Nullable
     private Integer endEpoch;
 
+    @Column(name = "snapshot_epoch")
+    // snapshotEpoch is only needed for stake based voting events
+    @Nullable
+    private Integer snapshotEpoch;
+
+    @Column(name = "proposals_reveal_epoch")
+    // proposalsRevealEpoch is only needed for stake based voting events
+    @Nullable
+    private Integer proposalsRevealEpoch;
+
     @Column(name = "start_slot")
     //startSlot is only needed for user based voting events
     @Nullable
@@ -79,10 +96,10 @@ public class Event extends AbstractTimestampEntity {
     @Nullable
     private Long endSlot;
 
-    @Column(name = "snapshot_epoch")
-    // snapshotEpoch is only needed for stake based voting events
+    @Column(name = "proposals_reveal_slot")
+    // proposalsRevealSlot is only needed for user based voting events
     @Nullable
-    private Integer snapshotEpoch;
+    private Long proposalsRevealSlot;
 
     @Column(name = "schema_version")
     @Getter
@@ -126,22 +143,6 @@ public class Event extends AbstractTimestampEntity {
         this.allowVoteChanging = allowVoteChanging;
     }
 
-    public boolean isCategoryResultsWhileVoting() {
-        return Optional.ofNullable(categoryResultsWhileVoting).orElse(false);
-    }
-
-    public void setCategoryResultsWhileVoting(boolean categoryResultsWhileVoting) {
-        this.categoryResultsWhileVoting = categoryResultsWhileVoting;
-    }
-
-    public boolean isHighLevelResultsWhileVoting() {
-        return Optional.ofNullable(highLevelResultsWhileVoting).orElse(false);
-    }
-
-    public void setHighLevelResultsWhileVoting(boolean highLevelResultsWhileVoting) {
-        this.highLevelResultsWhileVoting = highLevelResultsWhileVoting;
-    }
-
     public Optional<Integer> getStartEpoch() {
         return Optional.ofNullable(startEpoch);
     }
@@ -182,14 +183,54 @@ public class Event extends AbstractTimestampEntity {
         this.snapshotEpoch = snapshotEpoch.orElse(null);
     }
 
+    public Optional<Boolean> getHighLevelEpochResultsWhileVoting() {
+        return Optional.ofNullable(highLevelEpochResultsWhileVoting);
+    }
+
+    public void setHighLevelEpochResultsWhileVoting(Optional<Boolean> highLevelEpochResultsWhileVoting) {
+        this.highLevelEpochResultsWhileVoting = highLevelEpochResultsWhileVoting.orElse(null);
+    }
+
+    public Optional<Boolean> getHighLevelCategoryResultsWhileVoting() {
+        return Optional.ofNullable(highLevelCategoryResultsWhileVoting);
+    }
+
+    public void setHighLevelCategoryResultsWhileVoting(Optional<Boolean> highLevelCategoryResultsWhileVoting) {
+        this.highLevelCategoryResultsWhileVoting = highLevelCategoryResultsWhileVoting.orElse(null);
+    }
+
+    public Optional<Boolean> getCategoryResultsWhileVoting() {
+        return Optional.ofNullable(categoryResultsWhileVoting);
+    }
+
+    public void setCategoryResultsWhileVoting(Optional<Boolean> categoryResultsWhileVoting) {
+        this.categoryResultsWhileVoting = categoryResultsWhileVoting.orElse(null);
+    }
+
+    public Optional<Integer> getProposalsRevealEpoch() {
+        return Optional.ofNullable(proposalsRevealEpoch);
+    }
+
+    public void setProposalsRevealEpoch(Optional<Integer> proposalsRevealEpoch) {
+        this.proposalsRevealEpoch = proposalsRevealEpoch.orElse(null);
+    }
+
+    public Optional<Long> getProposalsRevealSlot() {
+        return Optional.ofNullable(proposalsRevealSlot);
+    }
+
+    public void setProposalsRevealSlot(Optional<Long> proposalsRevealSlot) {
+        this.proposalsRevealSlot = proposalsRevealSlot.orElse(null);
+    }
+
     public boolean isValid() {
         if (List.of(STAKE_BASED, BALANCE_BASED).contains(votingEventType)) {
-            if (getStartEpoch().isEmpty() || getEndEpoch().isEmpty() || getSnapshotEpoch().isEmpty() || getVotingPowerAsset().isEmpty()) {
+            if (getStartEpoch().isEmpty() || getEndEpoch().isEmpty() || getSnapshotEpoch().isEmpty() || getVotingPowerAsset().isEmpty() || getProposalsRevealEpoch().isEmpty()) {
                 return false;
             }
         }
         if (votingEventType == VotingEventType.USER_BASED) {
-            if (getStartSlot().isEmpty() || getEndSlot().isEmpty()) {
+            if (getStartSlot().isEmpty() || getEndSlot().isEmpty() || getProposalsRevealSlot().isEmpty()) {
                 return false;
             }
         }

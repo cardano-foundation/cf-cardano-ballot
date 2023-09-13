@@ -2,22 +2,25 @@ DROP TABLE IF EXISTS event;
 
 CREATE TABLE event (
     id VARCHAR(255) NOT NULL, -- human readable name, should never contain PII data
-    team VARCHAR(255) NOT NULL,
+    organisers VARCHAR(255) NOT NULL,
     schema_version VARCHAR(255) NOT NULL,
     event_type VARCHAR(255) NOT NULL,
     allow_vote_changing BOOL,
+
+    high_level_epoch_results_while_voting BOOL,
+    high_level_category_results_while_voting BOOL,
     category_results_while_voting BOOL,
-    high_level_results_while_voting BOOL,
 
     voting_power_asset VARCHAR(255),
 
     start_epoch INT,
     end_epoch INT,
+    proposals_reveal_epoch INT,
+    snapshot_epoch INT,
 
     start_slot BIGINT,
     end_slot BIGINT,
-
-    snapshot_epoch INT,
+    proposals_reveal_slot BIGINT,
 
     absolute_slot BIGINT NOT NULL,
 

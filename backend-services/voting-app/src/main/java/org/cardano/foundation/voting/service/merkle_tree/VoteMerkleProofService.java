@@ -8,9 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @Slf4j
@@ -20,31 +18,23 @@ public class VoteMerkleProofService {
     private VoteMerkleProofRepository voteMerkleProofRepository;
 
     @Transactional(readOnly = true)
-    @Timed(value = "service.merkle.findLatestProof", percentiles = { 0.3, 0.5, 0.95 })
+    @Timed(value = "service.merkle.findLatestProof", histogram = true)
     public Optional<VoteMerkleProof> findLatestProof(String eventId, String voteId) {
         return voteMerkleProofRepository.findLatestProof(eventId, voteId);
     }
 
     @Transactional
-    @Timed(value = "service.merkle.store", percentiles = { 0.3, 0.5, 0.95 })
+    @Timed(value = "service.merkle.store", histogram = true)
     public VoteMerkleProof store(VoteMerkleProof voteMerkleProof) {
         return voteMerkleProofRepository.saveAndFlush(voteMerkleProof);
     }
 
     @Transactional
-    @Timed(value = "service.merkle.store.all", percentiles = { 0.3, 0.5, 0.95 })
-    public void storeAll(List<VoteMerkleProof> voteMerkleProofs) {
-        voteMerkleProofRepository.saveAll(voteMerkleProofs);
-        voteMerkleProofRepository.flush();
-    }
-
-    @Transactional
-    @Timed(value = "service.merkle.softDeleteAllProofsAfterSlot", percentiles = { 0.3, 0.5, 0.95 })
+    @Timed(value = "service.merkle.softDeleteAllProofsAfterSlot", histogram = true)
     public void softDeleteAllProofsAfterSlot(long slot) {
         log.info("Soft deleting all proofs after slot:{}", slot);
 
         voteMerkleProofRepository.invalidateMerkleProofsAfterSlot(slot);
-        voteMerkleProofRepository.flush();
     }
 
 }

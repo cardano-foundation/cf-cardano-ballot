@@ -2,12 +2,11 @@ package org.cardano.foundation.voting.resource;
 
 import io.micrometer.core.annotation.Timed;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.web3.SignedWeb3Request;
 import org.cardano.foundation.voting.service.auth.JwtAuthenticationToken;
 import org.cardano.foundation.voting.service.vote.VoteService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.util.StopWatch;
@@ -18,19 +17,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Objects;
 
+import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
 @RequestMapping("/api/vote")
 @Slf4j
+@RequiredArgsConstructor
 public class VoteResource {
 
-    @Autowired
-    private VoteService voteService;
+    private final VoteService voteService;
 
     @RequestMapping(value = "/cast", method = POST, produces = "application/json")
-    @Timed(value = "resource.vote.cast", percentiles = { 0.3, 0.5, 0.95 })
+    @Timed(value = "resource.vote.cast", histogram = true)
     public ResponseEntity<?> castVote(@RequestBody @Valid SignedWeb3Request castVoteRequest) {
         log.info("Casting vote: {}", castVoteRequest);
 
@@ -57,7 +57,7 @@ public class VoteResource {
     }
 
     @RequestMapping(value = "/receipt", method = POST, produces = "application/json")
-    @Timed(value = "resource.vote.receipt.web3", percentiles = { 0.3, 0.5, 0.95 })
+    @Timed(value = "resource.vote.receipt.web3", histogram = true)
     public ResponseEntity<?> getVoteReceipt(@RequestBody @Valid SignedWeb3Request viewVoteReceiptRequest) {
         return voteService.voteReceipt(viewVoteReceiptRequest)
                 .fold(problem -> {
@@ -71,7 +71,7 @@ public class VoteResource {
     }
 
     @RequestMapping(value = "/receipt/{eventId}/{categoryId}", method = GET, produces = "application/json")
-    @Timed(value = "resource.vote.receipt.jwt", percentiles = { 0.3, 0.5, 0.95 })
+    @Timed(value = "resource.vote.receipt.jwt", histogram = true)
     public ResponseEntity<?> getVoteReceipt(@PathVariable("eventId") String eventId,
                                             @PathVariable("categoryId") String categoryId,
                                             Authentication authentication) {
@@ -88,16 +88,15 @@ public class VoteResource {
                         });
     }
 
-    @RequestMapping(value = "/casting-available/{event}/{voteId}", method = GET, produces = "application/json")
-    @Timed(value = "resource.voteId.receipt", percentiles = { 0.3, 0.5, 0.95 })
-    public ResponseEntity<?> isVoteCastingStillPossible(@PathVariable String event, @PathVariable String voteId) {
-        return voteService.isVoteCastingStillPossible(event, voteId)
+    @RequestMapping(value = "/casting-available/{eventId}/{voteId}", method = GET, produces = "application/json")
+    @Timed(value = "resource.voteId.receipt", histogram = true)
+    public ResponseEntity<?> isVoteCastingStillPossible(@PathVariable("eventId") String eventId,
+                                                        @PathVariable("voteId") String voteId) {
+        return voteService.isVoteCastingStillPossible(eventId, voteId)
                 .fold(problem -> ResponseEntity
                         .status(Objects.requireNonNull(problem.getStatus()).getStatusCode())
                         .body(problem),
-                        isAvailable -> isAvailable ? ResponseEntity.ok().build() : ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build());
+                        isAvailable -> isAvailable ? ResponseEntity.ok().build() : ResponseEntity.status(NOT_ACCEPTABLE).build());
     }
-
-
 
 }

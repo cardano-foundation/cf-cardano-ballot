@@ -39,14 +39,14 @@ public class ChainFollowerClient {
         log.info("Merkle root hash: {}, response: {}", merkleRootHash, merkleRootHashResponse);
 
         return Optional.ofNullable(merkleRootHashResponse)
-                .map(r -> {
-                    if (network != r.network()) {
-                        log.warn("Network mismatch: expected={}, actual={}", network, r.network());
+                .map(mrh -> {
+                    if (network != mrh.network()) {
+                        log.warn("Network mismatch: expected={}, actual={}", network, mrh.network());
 
                         return false;
                     }
 
-                    return r.isPresent();
+                    return mrh.isPresent();
                 }).orElse(false);
     }
 

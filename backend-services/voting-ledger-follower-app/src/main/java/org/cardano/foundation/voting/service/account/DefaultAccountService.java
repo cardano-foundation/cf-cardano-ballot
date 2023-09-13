@@ -9,6 +9,7 @@ import org.cardano.foundation.voting.service.reference_data.ReferenceDataService
 import org.cardano.foundation.voting.service.vote.VotingPowerService;
 import org.cardano.foundation.voting.utils.StakeAddress;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
 import java.util.List;
@@ -31,6 +32,7 @@ public class DefaultAccountService implements AccountService {
     private final CardanoNetwork network;
 
     @Override
+    @Transactional(readOnly = true)
     public Either<Problem, Optional<Account>> findAccount(String eventName, String stakeAddress) {
         var maybeEvent = referenceDataService.findValidEventByName(eventName);
         if (maybeEvent.isEmpty()) {
@@ -57,17 +59,16 @@ public class DefaultAccountService implements AccountService {
                     .build());
         }
 
-        var votingPower = votingPowerService.getVotingPower(event, stakeAddress);
-
-        return Either.right(Optional.of(Account.builder()
-                .stakeAddress(stakeAddress)
-                .network(network)
-                .accountStatus(votingPower.map(vp -> vp > 0 ? ELIGIBLE : NOT_ELIGIBLE).orElse(NOT_ELIGIBLE))
-                .epochNo(event.getSnapshotEpoch().orElseThrow())
-                .votingPower(votingPower.map(String::valueOf))
-                .votingPowerAsset(event.getVotingPowerAsset())
-                .build())
-        );
+        return votingPowerService.getVotingPower(event, stakeAddress)
+                .map(vp -> vp.map(power -> Account.builder()
+                        .stakeAddress(stakeAddress)
+                        .network(network)
+                        .accountStatus(vp.filter(v -> v > 0).map(v -> ELIGIBLE).orElse(NOT_ELIGIBLE))
+                        .epochNo(event.getSnapshotEpoch().orElseThrow())
+                        .votingPower(vp.map(String::valueOf))
+                        .votingPowerAsset(event.getVotingPowerAsset())
+                        .build()
+                ));
     }
 
 }

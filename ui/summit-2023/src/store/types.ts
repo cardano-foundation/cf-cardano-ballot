@@ -4,8 +4,9 @@ import { EventPresentation } from '../types/voting-ledger-follower-types';
 export interface UserState {
   connectedWallet: string;
   walletIsVerified: boolean;
+  walletIsLoggedIn: boolean;
   isReceiptFetched: boolean;
-  receipt: VoteReceipt | null;
+  receipts: { [categoryId: string]: VoteReceipt } | null;
   proposal: VoteReceipt['proposal'];
   event?: EventPresentation;
   userVerification?: {

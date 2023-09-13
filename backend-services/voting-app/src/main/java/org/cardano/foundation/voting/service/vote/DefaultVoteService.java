@@ -80,7 +80,7 @@ public class DefaultVoteService implements VoteService {
     }
 
     @Transactional(readOnly = true)
-    @Timed(value = "service.vote.isVoteCastingStillPossible", percentiles = { 0.3, 0.5, 0.95 })
+    @Timed(value = "service.vote.isVoteCastingStillPossible", histogram = true)
     public Either<Problem, Boolean> isVoteCastingStillPossible(String eventId, String voteId) {
         var eventDetailsE = chainFollowerClient.getEventDetails(eventId);
         if (eventDetailsE.isEmpty()) {
@@ -136,7 +136,7 @@ public class DefaultVoteService implements VoteService {
 
     @Override
     @Transactional
-    @Timed(value = "service.vote.castVote", percentiles = { 0.3, 0.5, 0.95 })
+    @Timed(value = "service.vote.castVote", histogram = true)
     public Either<Problem, Vote> castVote(SignedWeb3Request castVoteRequest) {
         var cip30Verifier = new CIP30Verifier(castVoteRequest.getCoseSignature(), castVoteRequest.getCosePublicKey());
         var cip30VerificationResult = cip30Verifier.verify();
@@ -563,7 +563,7 @@ public class DefaultVoteService implements VoteService {
 
     @Override
     @Transactional(readOnly = true)
-    @Timed(value = "service.vote.voteReceipt", percentiles = { 0.3, 0.5, 0.95 })
+    @Timed(value = "service.vote.voteReceipt", histogram = true)
     public Either<Problem, VoteReceipt> voteReceipt(SignedWeb3Request viewVoteReceiptSignedWeb3Request) {
         log.info("Fetching voter's receipt for the signed data: {}", viewVoteReceiptSignedWeb3Request);
 

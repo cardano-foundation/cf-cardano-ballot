@@ -48,7 +48,7 @@ public class DefaultLoginService implements LoginService {
     private CardanoNetwork cardanoNetwork;
 
     @Override
-    @Timed(value = "service.auth.login", percentiles = { 0.3, 0.5, 0.95 })
+    @Timed(value = "service.auth.login", histogram = true)
     public Either<Problem, LoginResult> login(SignedWeb3Request loginRequest) {
         var cip30Verifier = new CIP30Verifier(loginRequest.getCoseSignature(), loginRequest.getCosePublicKey());
 

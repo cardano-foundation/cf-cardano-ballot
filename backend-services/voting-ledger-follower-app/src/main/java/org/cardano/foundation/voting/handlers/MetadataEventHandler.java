@@ -6,8 +6,8 @@ import org.cardano.foundation.voting.service.metadata.CustomMetadataProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
@@ -20,16 +20,19 @@ public class MetadataEventHandler {
     private long metadataLabel;
 
     @EventListener
-    @Transactional
+    @Async("singleThreadExecutor")
     public void handleMetadataEvent(TxMetadataEvent event) {
         log.debug("Received metadata event: {}", event);
 
         try {
-            event.getTxMetadataList().stream()
-                    .filter(txMetadataLabel -> txMetadataLabel.getLabel().equalsIgnoreCase(String.valueOf(metadataLabel)))
-                    .forEach(txEvent -> customMetadataProcessor.processMetadataEvent(txEvent.getSlot(), txEvent.getCbor()));
+            var txMetadataList = event.getTxMetadataList();
+            for (var txEvent : txMetadataList) {
+                if (txEvent.getLabel().equalsIgnoreCase(String.valueOf(metadataLabel))) {
+                    customMetadataProcessor.processMetadataEvent(txEvent.getSlot(), txEvent.getCbor());
+                }
+            }
         } catch (Exception e) {
-            log.warn("Error processing metadata event", e);
+            log.warn("Error processing metadata event, cause:{}", e.getMessage());
         }
     }
 

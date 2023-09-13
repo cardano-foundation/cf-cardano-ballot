@@ -20,9 +20,9 @@ interface CategoryContent {
   presentationName: string;
   desc: string;
   proposals: {
-      id: string;
-      presentationName: string;
-      desc: string;
+    id: string;
+    presentationName: string;
+    desc: string;
   }[];
 }
 

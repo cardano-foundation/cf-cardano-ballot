@@ -5,11 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.service.chain_sync.ChainSyncService;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Component;
 
 @Component("yaci_store_chain_sync")
 @Slf4j
 @RequiredArgsConstructor
+@ConditionalOnExpression("'${spring.profiles.active}' != 'dev--yaci-dev-kit'")
 public class YaciStoreTipHealthIndicator implements HealthIndicator {
 
     private final ChainSyncService chainSyncService;

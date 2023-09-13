@@ -91,7 +91,7 @@ describe('For ongoing event:', () => {
 
       const eventTime = await within(introductionPage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
-      expect(eventTime.textContent).toEqual(`Voting closes: ${formatUTCDate(eventMock_active.eventEnd.toString())}`);
+      expect(eventTime.textContent).toEqual(`Voting closes: ${formatUTCDate(eventMock_active.eventEndDate.toString())}`);
 
       const eventDescription = await within(introductionPage).queryByTestId('event-description');
       expect(eventDescription).not.toBeNull();
@@ -158,8 +158,8 @@ describe("For the event that hasn't started yet", () => {
       const eventTime = await within(introductionPage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
       expect(eventTime.textContent).toEqual(
-        `Vote from: ${formatUTCDate(eventMock_active.eventStart.toString())} - ${formatUTCDate(
-          eventMock_active.eventEnd.toString()
+        `Vote from: ${formatUTCDate(eventMock_active.eventStartDate.toString())} - ${formatUTCDate(
+          eventMock_active.eventEndDate.toString()
         )}`
       );
 
@@ -228,7 +228,7 @@ describe('For the event that has already finished', () => {
       const eventTime = await within(introductionPage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
       expect(eventTime.textContent).toEqual(
-        `The vote closed on ${formatUTCDate(eventMock_active.eventEnd.toString())}`
+        `The vote closed on ${formatUTCDate(eventMock_active.eventEndDate.toString())}`
       );
 
       const eventDescription = await within(introductionPage).queryByTestId('event-description');

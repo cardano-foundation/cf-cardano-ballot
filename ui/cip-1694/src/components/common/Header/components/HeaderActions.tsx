@@ -114,8 +114,8 @@ export const HeaderActions = ({ isMobileMenu = false, onClick, showNavigationIte
           <>
             The results will be displayed after the voting has closed on{' '}
             <b>
-              {event?.eventStart && getDateAndMonth(event?.eventEnd?.toString())}{' '}
-              {formatUTCDate(event?.eventEnd?.toString())}
+              {event?.eventStartDate && getDateAndMonth(event?.eventEndDate?.toString())}{' '}
+              {formatUTCDate(event?.eventEndDate?.toString())}
             </b>
           </>
         }

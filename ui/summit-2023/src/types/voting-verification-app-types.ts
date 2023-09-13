@@ -1,10 +1,10 @@
 /* tslint:disable */
 /* eslint-disable */
-// Generated using typescript-generator version 3.2.1263 on 2023-09-06 13:38:08.
+// Generated using typescript-generator version 3.2.1263 on 2023-09-12 11:56:49.
 
 export interface Either<L, R> extends Value<R>, Serializable {
-    right: boolean;
     left: L;
+    right: boolean;
     orNull: R;
 }
 
@@ -49,8 +49,8 @@ export interface Problem {
     instance: URI;
     type: URI;
     parameters: { [index: string]: any };
-    detail: string;
     status: StatusType;
+    detail: string;
     title: string;
 }
 
@@ -67,8 +67,8 @@ export interface StatusType {
 
 export interface Value<T> extends Iterable<T> {
     empty: boolean;
-    orNull: T;
     singleValued: boolean;
+    orNull: T;
     async: boolean;
     lazy: boolean;
 }

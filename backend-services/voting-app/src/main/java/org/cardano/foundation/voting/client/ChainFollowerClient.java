@@ -138,7 +138,8 @@ public class ChainFollowerClient {
     public record EventSummary(String id,
                                boolean finished,
                                boolean notStarted,
-                               boolean active) {
+                               boolean active,
+                               boolean proposalsReveal) {
 
         public boolean isEventInactive() {
             return !active;
@@ -150,8 +151,10 @@ public class ChainFollowerClient {
                                        boolean finished,
                                        boolean notStarted,
                                        boolean active,
+                                       boolean proposalsReveal,
                                        boolean allowVoteChanging,
-                                       boolean highLevelResultsWhileVoting,
+                                       boolean highLevelEventResultsWhileVoting,
+                                       boolean highLevelCategoryResultsWhileVoting,
                                        boolean categoryResultsWhileVoting,
                                        VotingEventType votingEventType,
                                        List<CategoryDetailsResponse> categories) {

@@ -281,8 +281,8 @@ export const VotePage = () => {
               <EventTime
                 eventHasntStarted={event?.notStarted}
                 eventHasFinished={event?.finished}
-                endTime={event?.eventEnd?.toString()}
-                startTime={event?.eventStart?.toString()}
+                endTime={event?.eventEndDate?.toString()}
+                startTime={event?.eventStartDate?.toString()}
               />
             </Typography>
           </Grid>
@@ -391,7 +391,7 @@ export const VotePage = () => {
                     disabled
                     data-testid="event-hasnt-started-submit-button"
                   >
-                    Submit your vote from {event?.eventStart && getDateAndMonth(event?.eventStart?.toString())}
+                    Submit your vote from {event?.eventStartDate && getDateAndMonth(event?.eventStartDate?.toString())}
                   </Button>
                 )}
                 {isConnected && event?.finished && (
@@ -442,7 +442,7 @@ export const VotePage = () => {
         description={
           <>
             <div style={{ marginBottom: '10px' }}>Thank you, your vote has been submitted.</div>
-            Make sure to check back on <b>{event?.eventStart && getDateAndMonth(event?.eventEnd?.toString())}</b> to see
+            Make sure to check back on <b>{event?.eventStartDate && getDateAndMonth(event?.eventEndDate?.toString())}</b> to see
             the results!
           </>
         }

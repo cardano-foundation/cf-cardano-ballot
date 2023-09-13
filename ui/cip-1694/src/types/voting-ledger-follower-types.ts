@@ -137,8 +137,8 @@ export interface EventPresentation {
     startSlot?: number;
     endSlot?: number;
     startEpoch?: number;
-    eventStart?: Date;
-    eventEnd?: Date;
+    eventStartDate?: Date;
+    eventEndDate?: Date;
     snapshotTime?: Date;
     endEpoch?: number;
     snapshotEpoch?: number;

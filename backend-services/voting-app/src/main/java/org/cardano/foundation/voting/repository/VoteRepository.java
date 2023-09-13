@@ -22,20 +22,15 @@ public interface VoteRepository extends JpaRepository<Vote, String> {
     Optional<Vote> findByEventIdAndCategoryIdAndVoterStakingAddress(String eventId, String categoryId, String voterStakeAddress);
 
     @Query("SELECT COUNT(v) AS totalVoteCount, SUM(v.votingPower) AS totalVotingPower FROM Vote v WHERE v.eventId = :eventId")
-    List<EventVoteCount> countAllByEventId(@Param("eventId") String eventId);
+    List<HighLevelEventVoteCount> getHighLevelEventStats(@Param("eventId") String eventId);
 
-    @Query("SELECT v.proposalId AS proposalId, COUNT(v) AS totalVoteCount, SUM(v.votingPower) AS totalVotingPower FROM Vote v WHERE v.eventId = :eventId AND v.categoryId = :categoryId GROUP BY proposalId")
-    List<EventCategoryVoteCount> countAllByEventId(@Param("eventId") String eventId, @Param("categoryId") String categoryId);
+    @Query("SELECT v.categoryId as categoryId, COUNT(v) AS totalVoteCount, SUM(v.votingPower) AS totalVotingPower FROM Vote v WHERE v.eventId = :eventId GROUP BY categoryId")
+    List<HighLevelCategoryLevelStats> getHighLevelCategoryLevelStats(@Param("eventId") String eventId);
 
-    interface CompactVote {
+    @Query("SELECT v.categoryId as categoryId, v.proposalId AS proposalId, COUNT(v) AS totalVoteCount, SUM(v.votingPower) AS totalVotingPower FROM Vote v WHERE v.eventId = :eventId AND v.categoryId = :categoryId GROUP BY proposalId")
+    List<CategoryLevelStats> getCategoryLevelStats(@Param("eventId") String eventId, @Param("categoryId") String categoryId);
 
-        String getCoseSignature();
-
-        @Nullable String getCosePublicKey();
-
-    }
-
-    interface EventVoteCount {
+    interface HighLevelEventVoteCount {
 
         @Nullable
         Long getTotalVoteCount();
@@ -45,7 +40,21 @@ public interface VoteRepository extends JpaRepository<Vote, String> {
 
     }
 
-    interface EventCategoryVoteCount {
+    interface HighLevelCategoryLevelStats {
+
+        String getCategoryId();
+
+        @Nullable
+        Long getTotalVoteCount();
+
+        @Nullable
+        Long getTotalVotingPower();
+
+    }
+
+    interface CategoryLevelStats {
+
+        String getCategoryId();
 
         String getProposalId();
 
@@ -56,5 +65,14 @@ public interface VoteRepository extends JpaRepository<Vote, String> {
         Long getTotalVotingPower();
 
     }
+
+    interface CompactVote {
+
+        String getCoseSignature();
+
+        @Nullable String getCosePublicKey();
+
+    }
+
 
 }

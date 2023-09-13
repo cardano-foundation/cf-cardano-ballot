@@ -1,41 +1,55 @@
 package org.cardano.foundation.voting.service.epoch;
 
 import com.bloxbean.cardano.yaci.core.model.Era;
+import com.bloxbean.cardano.yaci.store.core.StoreProperties;
 import com.bloxbean.cardano.yaci.store.core.configuration.GenesisConfig;
+import com.bloxbean.cardano.yaci.store.core.domain.CardanoEra;
 import com.bloxbean.cardano.yaci.store.core.service.EraService;
+import com.bloxbean.cardano.yaci.store.core.storage.api.EraStorage;
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.Clock;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 
 import static com.bloxbean.cardano.yaci.core.model.Era.Byron;
+import static com.bloxbean.cardano.yaci.core.model.Era.Shelley;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class CustomEpochService {
 
-    @Autowired
-    private CardanoNetwork network;
+    private final CardanoNetwork network;
 
-    @Autowired
-    private Clock clock;
+    private final GenesisConfig genesisConfig;
 
-    @Autowired
-    private GenesisConfig genesisConfig;
+    private final EraService eraService;
 
-    @Autowired
-    private EraService eraService;
+    private final EraStorage eraStorage;
 
-    @Autowired
-    private CustomEraService customEraService;
+    private final CustomEraService customEraService;
 
-    public Optional<ZonedDateTime> getEpochStartTimeBasedOnEpochNo(int epochNo) {
+    private final StoreProperties storeProperties;
+
+    private long firstShelleySlot;
+
+    private final static ZoneId UTC = ZoneId.of("UTC");
+
+    @PostConstruct
+    public void init() {
+        firstShelleySlot = eraStorage.findFirstNonByronEra()
+                .map(CardanoEra::getStartSlot)
+                .orElse(0L);
+    }
+
+    public Optional<ZonedDateTime> getEpochStartTime(int epochNo) {
         var maybeByronEraData = customEraService.getEraData(Byron, network);
 
         if (maybeByronEraData.isEmpty()) {
@@ -48,8 +62,8 @@ public class CustomEpochService {
         }
 
         var shelleyStartTime = this.eraService.shelleyEraStartTime();
-        var shelleySlotDuration = (long) this.genesisConfig.slotDuration(Era.Shelley);
-        var shelleySlotsPerEpoch = this.genesisConfig.slotsPerEpoch(Era.Shelley);
+        var shelleySlotDuration = (long) this.genesisConfig.slotDuration(Shelley);
+        var shelleySlotsPerEpoch = this.genesisConfig.slotsPerEpoch(Shelley);
 
         var diffEpochCount = epochNo - byronEraData.endEpochNo() - 1;
 
@@ -57,21 +71,35 @@ public class CustomEpochService {
 
         var totalTimeInstant = Instant.ofEpochSecond(shelleyStartTime).plusSeconds(postShelleyDuration);
 
-        return Optional.of(ZonedDateTime.ofInstant(totalTimeInstant, ZoneId.of("UTC")));
+        return Optional.of(ZonedDateTime.ofInstant(totalTimeInstant, UTC));
+    }
+
+    public long blockTime(Era era, long slot) {
+        if (era == Byron) {
+            return byronBlockTime(slot);
+        }
+
+        long slotsFromShelleyStart = slot - firstShelleySlot;
+
+        return (eraService.shelleyEraStartTime() + slotsFromShelleyStart * (long) genesisConfig.slotDuration(Shelley));
+    }
+
+    private long byronBlockTime(long slot) {
+        long startTime = genesisConfig.getStartTime(storeProperties.getProtocolMagic());
+
+        return startTime + slot * (long) genesisConfig.slotDuration(Byron);
     }
 
     public Optional<ZonedDateTime> getEpochEndTime(int epochNo) {
-        return getEpochStartTimeBasedOnEpochNo(epochNo + 1).map(time -> time.minusSeconds(1));
+        return getEpochStartTime(epochNo + 1).map(time -> time.minusSeconds(1));
     }
 
-    // TODO CF Summit 2023
-    public Optional<ZonedDateTime> getEpochStartTimeBasedOnAbsoluteSlot(long absoluteSlotNo) {
-        return Optional.empty();
-    }
+    public Optional<ZonedDateTime> getTimeBasedOnAbsoluteSlot(long absoluteSlotNo) {
+        var millis = blockTime(Shelley, absoluteSlotNo) * 1000;
 
-    // TODO CF Summit 2023
-    public Optional<ZonedDateTime> getEpochEndTimeBasedOnAbsoluteSlot(long absoluteSlotNo) {
-        return Optional.empty();
+        var t = LocalDateTime.ofInstant(Instant.ofEpochMilli(millis), UTC);
+
+        return Optional.of(t.atZone(UTC));
     }
 
 }

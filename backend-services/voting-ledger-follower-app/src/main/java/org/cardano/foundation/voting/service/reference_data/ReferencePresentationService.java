@@ -1,17 +1,22 @@
 package org.cardano.foundation.voting.service.reference_data;
 
+import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.domain.EventAdditionalInfo;
+import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.domain.presentation.CategoryPresentation;
 import org.cardano.foundation.voting.domain.presentation.EventPresentation;
 import org.cardano.foundation.voting.domain.presentation.ProposalPresentation;
 import org.cardano.foundation.voting.service.epoch.CustomEpochService;
-import org.cardano.foundation.voting.service.expire.ExpirationService;
+import org.cardano.foundation.voting.service.expire.EventAdditionalInfoService;
 import org.springframework.stereotype.Service;
+import org.zalando.problem.Problem;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+
+import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 
 @Service
 @Slf4j
@@ -20,67 +25,85 @@ public class ReferencePresentationService {
 
     private final ReferenceDataService referenceDataService;
 
-    private final ExpirationService expirationService;
+    private final EventAdditionalInfoService eventAdditionalInfoService;
 
     private final CustomEpochService customEpochService;
 
-    public Optional<EventPresentation> findEventReference(String name) {
-        return referenceDataService.findValidEventByName(name).map(event -> {
-            var categories = event.getCategories().stream().map(category -> {
-                        var proposals = category.getProposals().stream().map(proposal -> ProposalPresentation.builder()
-                                        .id(proposal.getId())
-                                        .name(proposal.getName())
-                                        .build())
-                                .toList();
+    public Either<Problem, Optional<EventPresentation>> findEventReference(String name) {
+        var maybeValidEventByName = referenceDataService.findValidEventByName(name);
 
-                        return CategoryPresentation.builder()
-                                .id(category.getId())
-                                .gdprProtection(category.isGdprProtection())
-                                .proposals(proposals)
-                                .build();
-                    }
-            ).toList();
+        if (maybeValidEventByName.isEmpty()) {
+            return Either.right(Optional.empty());
+        }
 
-            var eventBuilder = EventPresentation.builder()
-                    .id(event.getId())
-                    .team(event.getTeam())
-                    .votingEventType(event.getVotingEventType())
-                    .startEpoch(event.getStartEpoch())
-                    .endEpoch(event.getEndEpoch())
-                    .startSlot(event.getStartSlot())
-                    .endSlot(event.getEndSlot())
-                    .snapshotEpoch(event.getSnapshotEpoch())
-                    .categories(categories)
-                    .isNotStarted(expirationService.isEventNotStarted(event))
-                    .isActive(expirationService.isEventActive(event))
-                    .isFinished(expirationService.isEventFinished(event))
-                    .isAllowVoteChanging(event.isAllowVoteChanging())
-                    .isHighLevelResultsWhileVoting(event.isHighLevelResultsWhileVoting())
-                    .isCategoryResultsWhileVoting(event.isCategoryResultsWhileVoting());
+        var event = maybeValidEventByName.get();
+        var categories = event.getCategories().stream().map(category -> {
+                    var proposals = category.getProposals().stream().map(proposal -> ProposalPresentation.builder()
+                                    .id(proposal.getId())
+                                    .name(proposal.getName())
+                                    .build())
+                            .toList();
 
-            switch (event.getVotingEventType()) {
-                case STAKE_BASED, BALANCE_BASED -> {
-                    eventBuilder.eventStart(customEpochService.getEpochStartTimeBasedOnEpochNo(event.getStartEpoch().orElseThrow()));
-                    eventBuilder.eventEnd(customEpochService.getEpochEndTime(event.getEndEpoch().orElseThrow()));
-                    eventBuilder.snapshotTime(customEpochService.getEpochEndTime(event.getSnapshotEpoch().orElseThrow()));
+                    return CategoryPresentation.builder()
+                            .id(category.getId())
+                            .gdprProtection(category.isGdprProtection())
+                            .proposals(proposals)
+                            .build();
                 }
-                case USER_BASED -> {
-                    eventBuilder.eventStart(customEpochService.getEpochStartTimeBasedOnAbsoluteSlot(event.getStartSlot().orElseThrow()));
-                    eventBuilder.eventEnd(customEpochService.getEpochEndTimeBasedOnAbsoluteSlot(event.getEndSlot().orElseThrow()));
-                }
+        ).toList();
+
+        var eventAdditionalInfoE = eventAdditionalInfoService.getEventAdditionalInfo(event);
+        if (eventAdditionalInfoE.isEmpty()) {
+            return Either.left(Problem.builder()
+                    .withTitle("REFERENCE_ERROR")
+                    .withDetail("Unable to get expiration data.")
+                    .withStatus(INTERNAL_SERVER_ERROR)
+                    .build());
+        }
+        var eventAdditionalInfo = eventAdditionalInfoE.get();
+
+        var eventBuilder = EventPresentation.builder()
+                .id(event.getId())
+                .organisers(event.getOrganisers())
+                .votingEventType(event.getVotingEventType())
+                .startEpoch(event.getStartEpoch())
+                .endEpoch(event.getEndEpoch())
+                .startSlot(event.getStartSlot())
+                .endSlot(event.getEndSlot())
+                .snapshotEpoch(event.getSnapshotEpoch())
+                .categories(categories)
+                .isNotStarted(eventAdditionalInfo.notStarted())
+                .isActive(eventAdditionalInfo.active())
+                .isFinished(eventAdditionalInfo.finished())
+                .isProposalsReveal(eventAdditionalInfo.proposalsReveal())
+                .isAllowVoteChanging(event.isAllowVoteChanging())
+                .isHighLevelEventResultsWhileVoting(event.getHighLevelEpochResultsWhileVoting().orElse(false))
+                .isHighLevelCategoryResultsWhileVoting(event.getHighLevelEpochResultsWhileVoting().orElse(false))
+                .isCategoryResultsWhileVoting(event.getCategoryResultsWhileVoting().orElse(false));
+
+        switch (event.getVotingEventType()) {
+            case STAKE_BASED, BALANCE_BASED -> {
+                eventBuilder.eventStartDate(customEpochService.getEpochStartTime(event.getStartEpoch().orElseThrow()));
+                eventBuilder.eventEndDate(customEpochService.getEpochEndTime(event.getEndEpoch().orElseThrow()));
+                eventBuilder.snapshotTime(customEpochService.getEpochEndTime(event.getSnapshotEpoch().orElseThrow()));
+                eventBuilder.proposalsRevealDate(customEpochService.getEpochStartTime(event.getProposalsRevealEpoch().orElseThrow()));
+                eventBuilder.proposalsRevealEpoch(event.getProposalsRevealEpoch());
             }
+            case USER_BASED -> {
+                eventBuilder.eventStartDate(customEpochService.getTimeBasedOnAbsoluteSlot(event.getStartSlot().orElseThrow()));
+                eventBuilder.eventEndDate(customEpochService.getTimeBasedOnAbsoluteSlot(event.getEndSlot().orElseThrow()));
+                eventBuilder.proposalsRevealDate(customEpochService.getTimeBasedOnAbsoluteSlot(event.getProposalsRevealSlot().orElseThrow()));
+                eventBuilder.proposalsRevealSlot(event.getProposalsRevealSlot());
+            }
+        }
 
-            return eventBuilder.build();
-        });
+        return Either.right(Optional.of(eventBuilder.build()));
     }
 
-    public List<Map<String, Object>> eventsData() {
-        return referenceDataService.findAllValidEvents().stream().map(event -> Map.<String, Object>of(
-                "id", event.getId(),
-                "notStarted", expirationService.isEventNotStarted(event),
-                "finished", expirationService.isEventFinished(event),
-                "active", expirationService.isEventActive(event)
-        )).toList();
+    public Either<Problem, List<EventAdditionalInfo>> eventsSummaries() {
+        List<Event> allValidEvents = referenceDataService.findAllValidEvents();
+
+        return eventAdditionalInfoService.getEventAdditionalInfo(allValidEvents);
     }
 
 }

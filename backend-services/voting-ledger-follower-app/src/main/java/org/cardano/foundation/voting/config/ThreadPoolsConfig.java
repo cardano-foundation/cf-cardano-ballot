@@ -5,32 +5,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 @Configuration
 public class ThreadPoolsConfig {
 
-    @Bean(name = "taskExecutor")
-    public Executor taskExecutor() {
-        ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
-        threadPoolTaskExecutor.setQueueCapacity(100);
-
-        threadPoolTaskExecutor.setCorePoolSize(2);
-
-        threadPoolTaskExecutor.setMaxPoolSize(5);
-
-        return threadPoolTaskExecutor;
-    }
-
-    @Bean(name = "asyncExecutor")
+    @Bean(name = "singleThreadExecutor")
     public Executor threadPoolTaskExecutor() {
-        ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
-        threadPoolTaskExecutor.setQueueCapacity(100);
-
-        threadPoolTaskExecutor.setCorePoolSize(2);
-
-        threadPoolTaskExecutor.setMaxPoolSize(5);
-
-        return threadPoolTaskExecutor;
+        return Executors.newSingleThreadExecutor();
     }
 
 }

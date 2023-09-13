@@ -28,7 +28,7 @@ public class BlockchainDataResource {
     @Timed(value = "resource.blockchain.tip", histogram = true)
     public ResponseEntity<?> tip() {
         return blockchainDataChainTipService.getChainTip()
-                .fold(problem -> ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem),
+                .fold(problem -> ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem),
                         chainTip -> ResponseEntity.ok().body(chainTip));
     }
 
@@ -36,8 +36,14 @@ public class BlockchainDataResource {
     @Timed(value = "resource.tx-details", histogram = true)
     public ResponseEntity<?> txDetails(@PathVariable String txHash) {
         return blockchainDataTransactionDetailsService.getTransactionDetails(txHash)
-                .map(txDetails -> ResponseEntity.ok().body(txDetails))
-                .orElseGet(() -> ResponseEntity.notFound().build());
+                .fold(problem -> ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem),
+                        maybeTxDetails -> {
+                            if (maybeTxDetails.isEmpty()) {
+                                return ResponseEntity.notFound().build();
+                            }
+
+                            return ResponseEntity.ok().body(maybeTxDetails);
+                        });
     }
 
 }

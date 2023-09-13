@@ -13,18 +13,21 @@ import static org.cardano.foundation.voting.domain.VotingPowerAsset.ADA;
 @ToString
 public class CreateEventCommand {
 
-    private String id; // e.g. Voltaire_Pre_Ratification
+    private String id;
 
-    private String team;
+    private String organisers;
 
     @Builder.Default
     private boolean allowVoteChanging = false; // until merkle root is committed to the chain, we could allow vote changing
 
     @Builder.Default
-    private boolean categoryResultsWhileVoting = false; // until voting is finished, do we actually allow people to see results within category?
+    private boolean highLevelEventResultsWhileVoting = false;
 
     @Builder.Default
-    private boolean highLevelResultsWhileVoting = false; // until voting is finished are high level aggregates actually visible (e.g. total votes count)
+    private boolean highLevelCategoryResultsWhileVoting = false;
+
+    @Builder.Default
+    private boolean categoryResultsWhileVoting = false;
 
     @Builder.Default
     private VotingEventType votingEventType = VotingEventType.STAKE_BASED;
@@ -39,13 +42,19 @@ public class CreateEventCommand {
     private Optional<Integer> endEpoch = Optional.empty();
 
     @Builder.Default
+    private Optional<Integer> snapshotEpoch = Optional.empty();
+
+    @Builder.Default
     private Optional<Long> startSlot = Optional.empty();
 
     @Builder.Default
     private Optional<Long> endSlot = Optional.empty();
 
     @Builder.Default
-    private Optional<Integer> snapshotEpoch = Optional.empty();
+    private Optional<Long> proposalsRevealSlot = Optional.empty();
+
+    @Builder.Default
+    private Optional<Integer> proposalsRevealEpoch = Optional.empty();
 
     @Builder.Default
     private SchemaVersion schemaVersion = SchemaVersion.V1;

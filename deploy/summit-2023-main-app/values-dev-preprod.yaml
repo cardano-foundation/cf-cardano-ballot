@@ -16,7 +16,7 @@ cf-summit-2023-ui:
       tag: 0.2.30-preprod
 
 cf-summit-2023-voting-api:
-  enabled: false
+  enabled: true
   values:
     useJwt: true
     instances:
@@ -35,7 +35,7 @@ cf-summit-2023-voting-api:
     corsAllowedOrigins: https://{{ .Values.domain }},http://localhost:3000
 
 cf-summit-2023-verification-api:
-  enabled: false
+  enabled: true
   values:
     image:
       tag: 0.2.31
@@ -43,7 +43,7 @@ cf-summit-2023-verification-api:
     corsAllowedOrigins: https://{{ .Values.domain }},http://localhost:3000
 
 cf-user-verification-service:
-  enabled: false
+  enabled: true
   values:
     image:
       tag: 0.2.31
@@ -51,7 +51,7 @@ cf-user-verification-service:
     corsAllowedOrigins: https://{{ .Values.domain }},http://localhost:3000
 
 cf-summit-2023-ledger-follower-api:
-  enabled: false
+  enabled: true
   values:
     image:
       tag: 0.2.31

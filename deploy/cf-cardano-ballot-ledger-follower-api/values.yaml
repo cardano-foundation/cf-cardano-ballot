@@ -47,6 +47,6 @@ yaci:
 
 ## Configuring the time for the follower startup probe
 startupProbe:
-  initialDelaySeconds: 300
+  initialDelaySeconds: 0
   periodSeconds: 30
   failureThreshold: 10

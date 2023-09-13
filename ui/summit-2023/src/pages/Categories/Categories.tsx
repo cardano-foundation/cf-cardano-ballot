@@ -17,7 +17,7 @@ import {
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import { Fade } from '@mui/material';
-import './Categories.scss';
+import styles from './Categories.module.scss';
 import { CategoryContent } from './Category.types';
 import Grow from '@mui/material/Grow';
 import CATEGORY_IMAGES from '../../common/resources/data/categoryImages.json';
@@ -68,10 +68,13 @@ const Categories = () => {
   };
 
   return (
-    <>
+    <div
+      data-testid="categories-page"
+      className={styles.categories}
+    >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <Typography
-          className="categories-title"
+          className={styles.title}
           variant="h2"
           fontSize={{
             xs: '28px',
@@ -84,6 +87,7 @@ const Categories = () => {
         >
           Categories
         </Typography>
+
         {!isMobile && (
           <div>
             <IconButton onClick={() => handleListView('grid')}>
@@ -112,7 +116,7 @@ const Categories = () => {
             {!isMobile && listView === 'grid' ? (
               <Fade in={isVisible}>
                 <Card
-                  className="categories-card"
+                  className={styles.card}
                   sx={{
                     width: isMobile ? '100%' : '414px',
                   }}
@@ -319,7 +323,7 @@ const Categories = () => {
           </Grid>
         ))}
       </Grid>
-    </>
+    </div>
   );
 };
 

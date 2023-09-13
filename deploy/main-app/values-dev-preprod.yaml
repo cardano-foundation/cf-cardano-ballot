@@ -47,4 +47,5 @@ cf-cardano-ballot-ledger-follower-api:
     corsAllowedOrigins: https://{{ .Values.domain }},http://localhost:3000
     instances:
       - name: follower-1
+        enabled: true
         schemaName: follower_1

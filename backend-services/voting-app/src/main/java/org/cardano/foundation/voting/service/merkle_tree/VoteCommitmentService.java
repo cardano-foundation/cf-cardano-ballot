@@ -12,7 +12,6 @@ import org.cardano.foundation.voting.service.transaction_submit.L1SubmissionServ
 import org.cardano.foundation.voting.service.vote.VoteService;
 import org.cardanofoundation.cip30.CIP30Verifier;
 import org.cardanofoundation.merkle.MerkleTree;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
 
@@ -40,7 +39,6 @@ public class VoteCommitmentService {
 
     private final JsonService jsonService;
 
-    @Async("asyncExecutor")
     public void processVotesForAllEvents() {
         var l1MerkleCommitments = getValidL1MerkleCommitments();
         if (l1MerkleCommitments.isEmpty()) {

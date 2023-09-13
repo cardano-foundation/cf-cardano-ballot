@@ -10,6 +10,7 @@ public class ViewVoteReceiptEnvelope {
     private String network;
 
     private String event;
+
     private String category;
 
 }

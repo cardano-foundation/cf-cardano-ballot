@@ -8,18 +8,16 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.annotation.Nullable;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Entity
-@Table(name = "user_verification")
+@Table(name = "sms_user_verification")
 @Slf4j
 @SuperBuilder
 @NoArgsConstructor
 @Getter
 @Setter
-public class UserVerification extends AbstractTimestampEntity {
+public class DiscordUserVerification extends AbstractTimestampEntity {
 
     @Id
     @Column(name = "id", nullable = false)
@@ -67,7 +65,7 @@ public class UserVerification extends AbstractTimestampEntity {
     private LocalDateTime expiresAt = LocalDateTime.now(); // TODO clock
 
     public enum Channel {
-        SMS,
+        SMS
     }
 
     public enum Status {
@@ -83,7 +81,7 @@ public class UserVerification extends AbstractTimestampEntity {
 
     @Override
     public String toString() {
-        return "UserVerification{" +
+        return "SMSUserVerification{" +
                 "id='" + id + '\'' +
                 ", stakeAddress='" + stakeAddress + '\'' +
                 ", eventId='" + eventId + '\'' +

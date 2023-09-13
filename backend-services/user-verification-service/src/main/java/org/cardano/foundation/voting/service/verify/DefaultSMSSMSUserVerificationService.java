@@ -7,7 +7,7 @@ import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.domain.*;
-import org.cardano.foundation.voting.domain.entity.UserVerification;
+import org.cardano.foundation.voting.domain.entity.SMSUserVerification;
 import org.cardano.foundation.voting.repository.UserVerificationRepository;
 import org.cardano.foundation.voting.service.pass.CodeGenService;
 import org.cardano.foundation.voting.service.sms.SMSService;
@@ -28,10 +28,10 @@ import java.util.UUID;
 import static com.bloxbean.cardano.client.crypto.Blake2bUtil.blake2bHash256;
 import static com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.cardano.foundation.voting.domain.entity.UserVerification.Channel.SMS;
-import static org.cardano.foundation.voting.domain.entity.UserVerification.Provider.AWS_SNS;
-import static org.cardano.foundation.voting.domain.entity.UserVerification.Status.PENDING;
-import static org.cardano.foundation.voting.domain.entity.UserVerification.Status.VERIFIED;
+import static org.cardano.foundation.voting.domain.entity.SMSUserVerification.Channel.SMS;
+import static org.cardano.foundation.voting.domain.entity.SMSUserVerification.Provider.AWS_SNS;
+import static org.cardano.foundation.voting.domain.entity.SMSUserVerification.Status.PENDING;
+import static org.cardano.foundation.voting.domain.entity.SMSUserVerification.Status.VERIFIED;
 import static org.zalando.problem.Status.BAD_REQUEST;
 
 @Service
@@ -190,7 +190,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
 
         var now = LocalDateTime.now(clock);
 
-        var newUserVerification = UserVerification.builder()
+        var newUserVerification = SMSUserVerification.builder()
                 .id(UUID.randomUUID().toString())
                 .eventId(eventId)
                 .channel(SMS)
@@ -386,19 +386,19 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
 
     @Override
     @Transactional
-    public void removeUserVerification(UserVerification userVerification) {
-        userVerificationRepository.delete(userVerification);
+    public void removeUserVerification(SMSUserVerification SMSUserVerification) {
+        userVerificationRepository.delete(SMSUserVerification);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserVerification> findAllForEvent(String eventId) {
+    public List<SMSUserVerification> findAllForEvent(String eventId) {
         return userVerificationRepository.findAllByEventId(eventId);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserVerification> findAllPending(String eventId) {
+    public List<SMSUserVerification> findAllPending(String eventId) {
         return userVerificationRepository.findAllPending(eventId);
     }
 

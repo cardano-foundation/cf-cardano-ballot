@@ -2,7 +2,7 @@ package org.cardano.foundation.voting.service.verify;
 
 import io.vavr.control.Either;
 import org.cardano.foundation.voting.domain.*;
-import org.cardano.foundation.voting.domain.entity.UserVerification;
+import org.cardano.foundation.voting.domain.entity.SMSUserVerification;
 import org.zalando.problem.Problem;
 
 import java.util.List;
@@ -15,10 +15,10 @@ public interface SMSUserVerificationService {
 
     Either<Problem, IsVerifiedResponse> isVerified(IsVerifiedRequest isVerifiedRequest);
 
-    void removeUserVerification(UserVerification userVerification);
+    void removeUserVerification(SMSUserVerification SMSUserVerification);
 
-    List<UserVerification> findAllForEvent(String eventId);
+    List<SMSUserVerification> findAllForEvent(String eventId);
 
-    List<UserVerification> findAllPending(String eventId);
+    List<SMSUserVerification> findAllPending(String eventId);
 
 }

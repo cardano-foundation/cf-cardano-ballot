@@ -133,7 +133,7 @@ def topUpAccount(newAcc: Account, amount: Int): Boolean = {
     }
 
     println("sleeping for 1 sec")
-    Thread.sleep(1000L)
+    Thread.sleep(1000)
 
     res
 }
@@ -426,10 +426,11 @@ def main(isAlreadyRegistered: Boolean = false, organiserAlreadyToppedUp: Boolean
 
             println("woke up...")
 
-            for (i <- 1 to 10000) {
+            for (i <- 1 to 10000000) {
                 try {
                     val account = Account(Networks.testnet())
-                    val isPreloaded = topUpAccount(account, amountAda)
+                    //val isPreloaded = topUpAccount(account, amountAda)
+                    val isPreloaded = true
 
                     if (isPreloaded) {
                         castVote(account, amountAda)

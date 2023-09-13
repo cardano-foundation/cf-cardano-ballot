@@ -164,7 +164,7 @@ describe('For ongoing event:', () => {
 
       const eventTime = await within(votePage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
-      expect(eventTime.textContent).toEqual(`Voting closes: ${formatUTCDate(eventMock_active.eventEnd.toString())}`);
+      expect(eventTime.textContent).toEqual(`Voting closes: ${formatUTCDate(eventMock_active.eventEndDate.toString())}`);
 
       const eventDescription = await within(votePage).queryByTestId('event-description');
       expect(eventDescription).not.toBeNull();
@@ -255,7 +255,7 @@ describe('For ongoing event:', () => {
 
       const eventTime = await within(votePage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
-      expect(eventTime.textContent).toEqual(`Voting closes: ${formatUTCDate(eventMock_active.eventEnd.toString())}`);
+      expect(eventTime.textContent).toEqual(`Voting closes: ${formatUTCDate(eventMock_active.eventEndDate.toString())}`);
 
       const eventDescription = await within(votePage).queryByTestId('event-description');
       expect(eventDescription).not.toBeNull();
@@ -540,8 +540,8 @@ describe("For the event that hasn't started yet", () => {
       const eventTime = await within(votePage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
       expect(eventTime.textContent).toEqual(
-        `Vote from: ${formatUTCDate(eventMock_notStarted.eventStart.toString())} - ${formatUTCDate(
-          eventMock_notStarted.eventEnd.toString()
+        `Vote from: ${formatUTCDate(eventMock_notStarted.eventStartDate.toString())} - ${formatUTCDate(
+          eventMock_notStarted.eventEndDate.toString()
         )}`
       );
 
@@ -567,7 +567,7 @@ describe("For the event that hasn't started yet", () => {
       const cta = await within(votePage).queryByTestId('event-hasnt-started-submit-button');
       expect(cta).not.toBeNull();
       expect(cta.textContent).toEqual(
-        `Submit your vote from ${getDateAndMonth(eventMock_notStarted.eventStart?.toString())}`
+        `Submit your vote from ${getDateAndMonth(eventMock_notStarted.eventStartDate?.toString())}`
       );
     });
   });
@@ -608,7 +608,7 @@ describe('For the event that has already finished', () => {
       const eventTime = await within(votePage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
       expect(eventTime.textContent).toEqual(
-        `The vote closed on ${formatUTCDate(eventMock_finished.eventEnd.toString())}`
+        `The vote closed on ${formatUTCDate(eventMock_finished.eventEndDate.toString())}`
       );
 
       const eventDescription = await within(votePage).queryByTestId('event-description');

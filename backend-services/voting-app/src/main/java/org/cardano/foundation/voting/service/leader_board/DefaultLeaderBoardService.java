@@ -2,31 +2,31 @@ package org.cardano.foundation.voting.service.leader_board;
 
 import com.google.common.collect.Iterables;
 import io.vavr.control.Either;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.domain.Leaderboard;
 import org.cardano.foundation.voting.repository.VoteRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import static java.util.stream.Collectors.toMap;
-import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
-import static org.springframework.transaction.annotation.Isolation.REPEATABLE_READ;
 import static org.zalando.problem.Status.*;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class DefaultLeaderBoardService implements LeaderBoardService {
 
-    @Autowired
-    private ChainFollowerClient chainFollowerClient;
+    private final ChainFollowerClient chainFollowerClient;
 
-    @Autowired
-    private VoteRepository voteRepository;
+    private final VoteRepository voteRepository;
 
     private Either<Problem, Boolean> isHighLevelEventLeaderboardAvailable(ChainFollowerClient.EventDetailsResponse eventDetails,
                                                                           boolean forceLeaderboard) {
@@ -120,7 +120,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
     }
 
     @Override
-    @Transactional(readOnly = true, isolation = REPEATABLE_READ)
+    @Transactional
     public Either<Problem, Leaderboard.ByEventStats> getEventLeaderboard(String event, boolean forceLeaderboard) {
         var eventDetailsE = chainFollowerClient.getEventDetails(event);
         if (eventDetailsE.isEmpty()) {
@@ -192,32 +192,55 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
         }
         var isEventLeaderBoardAvailable = eventLeaderboardAvailableE.get();
 
-        if (isEventLeaderBoardAvailable) {
-            var allHighLevelCategoryStats = voteRepository.getHighLevelCategoryLevelStats(event);
-
-            var byCategoryStats = allHighLevelCategoryStats.stream()
-                    .map(categoryLevelStats -> {
-                        var byCategoryStatsBuilder = Leaderboard.ByCategoryStats.builder();
-
-                        byCategoryStatsBuilder.id(categoryLevelStats.getCategoryId());
-                        byCategoryStatsBuilder.votes(Optional.ofNullable(categoryLevelStats.getTotalVoteCount()).orElse(0L));
-
-                        switch (eventDetails.votingEventType()) {
-                            case BALANCE_BASED, STAKE_BASED ->
-                                    byCategoryStatsBuilder.votingPower(Optional.ofNullable(categoryLevelStats.getTotalVotingPower()).map(String::valueOf).orElse("0"));
-                        }
-
-                        return byCategoryStatsBuilder.build();
-                    }).toList();
-
-            byEventStatsBuilder.categories(byCategoryStats);
+        if (!isEventLeaderBoardAvailable) {
+            return Either.right(byEventStatsBuilder.build());
         }
+
+        var allHighLevelCategoryStats = voteRepository.getHighLevelCategoryLevelStats(event);
+
+        var byCategoryStats = allHighLevelCategoryStats.stream()
+                .map(categoryLevelStats -> {
+                    var byCategoryStatsBuilder = Leaderboard.ByCategoryStats.builder();
+
+                    byCategoryStatsBuilder.id(categoryLevelStats.getCategoryId());
+                    byCategoryStatsBuilder.votes(Optional.ofNullable(categoryLevelStats.getTotalVoteCount()).orElse(0L));
+
+                    switch (eventDetails.votingEventType()) {
+                        case BALANCE_BASED, STAKE_BASED ->
+                                byCategoryStatsBuilder.votingPower(Optional.ofNullable(categoryLevelStats.getTotalVotingPower()).map(String::valueOf).orElse("0"));
+                    }
+
+                    return byCategoryStatsBuilder.build();
+                })
+                .toList();
+
+        var byCategoryStatsMap = byCategoryStats.stream()
+                .collect(toMap(Leaderboard.ByCategoryStats::getId, stats -> stats));
+
+        var byCategoryStatsCopy = new ArrayList<>(byCategoryStats);
+        // pre init with empty if category not returned from db
+        eventDetails.categories().forEach(categoryDetails -> {
+            if (!byCategoryStatsMap.containsKey(categoryDetails.id())) {
+                var b = Leaderboard.ByCategoryStats.builder();
+                b.id(categoryDetails.id());
+
+                b.votes(0L);
+
+                switch (eventDetails.votingEventType()) {
+                    case BALANCE_BASED, STAKE_BASED -> b.votingPower("0");
+                }
+
+                byCategoryStatsCopy.add(b.build());
+            }
+        });
+
+        byEventStatsBuilder.categories(byCategoryStatsCopy);
 
         return Either.right(byEventStatsBuilder.build());
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public Either<Problem, Leaderboard.ByProposalsInCategoryStats> getCategoryLeaderboard(String event, String category, boolean forceLeaderboard) {
         var eventDetailsE = chainFollowerClient.getEventDetails(event);
         if (eventDetailsE.isEmpty()) {
@@ -268,19 +291,49 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
 
         var votes = voteRepository.getCategoryLevelStats(event, categoryDetails.id());
 
-        var proposalResults = votes.stream()
+        Map<String, Leaderboard.Votes> proposalResultsMap = votes.stream()
                 .collect(toMap(VoteRepository.CategoryLevelStats::getProposalId, v -> {
                     var totalVotesCount = Optional.ofNullable(v.getTotalVoteCount()).orElse(0L);
                     var totalVotingPower = Optional.ofNullable(v.getTotalVotingPower()).map(String::valueOf).orElse("0");
 
-                    return new Leaderboard.Votes(totalVotesCount, totalVotingPower);
+                    var b = Leaderboard.Votes.builder();
+                    b.votes(totalVotesCount);
+
+                    switch (eventDetails.votingEventType()) {
+                        case BALANCE_BASED, STAKE_BASED -> b.votingPower(totalVotingPower);
+                    }
+
+                    return b.build();
                 }));
+
+        var proposalResults = calcProposalsResults(categoryDetails, proposalResultsMap, eventDetails);
 
         return Either.right(Leaderboard.ByProposalsInCategoryStats.builder()
                 .category(categoryDetails.id())
                 .proposals(proposalResults)
                 .build()
         );
+    }
+
+    private static HashMap<String, Leaderboard.Votes> calcProposalsResults(ChainFollowerClient.CategoryDetailsResponse categoryDetails, Map<String, Leaderboard.Votes> proposalResultsMap, ChainFollowerClient.EventDetailsResponse eventDetails) {
+        var categoryProposals = categoryDetails.proposals();
+
+        var proposalResultsMapCopy = new HashMap<>(proposalResultsMap);
+
+        categoryProposals.forEach(proposalDetails -> {
+            if (!proposalResultsMap.containsKey(proposalDetails.id())) {
+                var b = Leaderboard.Votes.builder();
+
+                b.votes(0L);
+
+                switch (eventDetails.votingEventType()) {
+                    case BALANCE_BASED, STAKE_BASED -> b.votingPower("0");
+                }
+
+                proposalResultsMapCopy.put(proposalDetails.id(), b.build());
+            }
+        });
+        return proposalResultsMapCopy;
     }
 
     @Override

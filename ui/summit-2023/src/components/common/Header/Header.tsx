@@ -182,7 +182,7 @@ const Header: React.FC = () => {
   return (
     <>
       <AppBar
-        position={isMobile ? 'static' : 'sticky'}
+        position={'static'}
         style={{ background: 'transparent', boxShadow: 'none', color: 'black' }}
       >
         <Toolbar>

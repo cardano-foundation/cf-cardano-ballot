@@ -14,18 +14,22 @@ body {
   flex-direction: column;
   min-height: 100vh;
   position: relative;
+  background: #f5f9ff;
 }
+
 .main-content {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.big-container {
+
+.container {
   @media (min-width: 1921px) {
     max-width: 2800px !important;
   }
 }
+
 .background-shape-1 {
   position: absolute;
   width: 750px;

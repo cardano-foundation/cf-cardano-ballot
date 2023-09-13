@@ -2,6 +2,8 @@ import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { Home } from '../pages/Home';
 import { Nominees } from '../pages/Nominees';
+import { Leaderboard } from '../pages/Leaderboard';
+import { UserGuide } from '../pages/UserGuide';
 import { NotFound } from '../pages/NotFound';
 import { Categories } from '../pages/Categories';
 
@@ -11,6 +13,8 @@ export const ROUTES = {
   INTRO: `${PAGE_PATH}`,
   CATEGORIES: `${PAGE_PATH}categories`,
   NOMINEES: `${PAGE_PATH}nominees`,
+  LEADERBOARD: `${PAGE_PATH}leaderboard`,
+  USERGUIDE: `${PAGE_PATH}user-guide`,
   NOMINEES_BY_ID: `${PAGE_PATH}nominees/:categoryId`,
   NOT_FOUND: `${PAGE_PATH}404`,
 };
@@ -34,6 +38,14 @@ const PageRouter = () => {
         <Route
           path={ROUTES.NOMINEES}
           element={<Categories />}
+        />
+        <Route
+          path={ROUTES.LEADERBOARD}
+          element={<Leaderboard />}
+        />
+        <Route
+          path={ROUTES.USERGUIDE}
+          element={<UserGuide />}
         />
         <Route
           path={ROUTES.NOT_FOUND}

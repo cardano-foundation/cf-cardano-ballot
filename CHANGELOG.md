@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.31](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.30...v0.2.31) (2023-09-13)
+
+
+### Features
+
+* leaderboard overhaul ([#179](https://github.com/cardano-foundation/cf-cardano-ballot/issues/179)) ([bfd5173](https://github.com/cardano-foundation/cf-cardano-ballot/commit/bfd51739e588e4956a3ec92aa4e5097192c72164))
+
 ## [0.2.30](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.29...v0.2.30) (2023-09-12)
 
 

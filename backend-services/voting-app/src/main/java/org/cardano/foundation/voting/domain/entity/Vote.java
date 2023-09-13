@@ -9,14 +9,9 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.domain.web3.SignedWeb3Request;
-import org.cardanofoundation.cip30.CIP30Verifier;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
-import java.util.function.Function;
-
-import static com.bloxbean.cardano.client.crypto.Blake2bUtil.blake2bHash256;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,8 +21,6 @@ import static com.bloxbean.cardano.client.crypto.Blake2bUtil.blake2bHash256;
 @Slf4j
 @ToString(exclude = { "coseSignature", "cosePublicKey"} )
 public class Vote extends AbstractTimestampEntity {
-
-    public static final Function<SignedWeb3Request, byte[]> VOTE_SERIALISER = createSerialiserFunction();
 
     @Id
     @Column(name = "id", nullable = false)
@@ -131,23 +124,6 @@ public class Vote extends AbstractTimestampEntity {
 
     public void setVotedAtSlot(long votedAtSlot) {
         this.votedAtSlot = votedAtSlot;
-    }
-
-    private static Function<SignedWeb3Request, byte[]> createSerialiserFunction() {
-        return vote -> {
-            var cip30Verifier = new CIP30Verifier(vote.getCoseSignature(), vote.getCosePublicKey());
-            var verificationResult = cip30Verifier.verify();
-
-            if (!verificationResult.isValid()) {
-                log.info("Verifying vote failed: {}", verificationResult.getMessage());
-
-                throw new RuntimeException("At this should vote must be valid, abort processing otherwise");
-            }
-
-            var bytes = Optional.ofNullable(verificationResult.getMessage()).orElse(new byte[0]);
-
-            return blake2bHash256(bytes);
-        };
     }
 
 }

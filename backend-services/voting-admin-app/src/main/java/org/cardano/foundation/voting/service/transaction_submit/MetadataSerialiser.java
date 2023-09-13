@@ -18,7 +18,8 @@ import static org.cardano.foundation.voting.utils.MoreBoolean.toBigInteger;
 @Service
 public class MetadataSerialiser {
 
-    public MetadataMap serialise(CreateEventCommand createEventCommand, long slot) {
+    public MetadataMap serialise(CreateEventCommand createEventCommand,
+                                 long slot) {
         var map = MetadataBuilder.createMap();
 
         map.put("type", EVENT_REGISTRATION.name());
@@ -28,6 +29,7 @@ public class MetadataSerialiser {
         map.put("votingEventType", createEventCommand.getVotingEventType().name());
         map.put("schemaVersion", createEventCommand.getSchemaVersion().getSemVer());
         map.put("creationSlot", BigInteger.valueOf(slot));
+        map.put("leafHashAlgo", "BLAKE2b-256");
 
         if (List.of(STAKE_BASED, BALANCE_BASED).contains(createEventCommand.getVotingEventType())) {
             map.put("startEpoch", BigInteger.valueOf(createEventCommand.getStartEpoch().orElseThrow()));

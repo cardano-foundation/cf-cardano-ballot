@@ -7,7 +7,6 @@ import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.domain.L1MerkleCommitment;
 import org.cardano.foundation.voting.domain.L1SubmissionData;
 import org.cardano.foundation.voting.domain.entity.VoteMerkleProof;
-import org.cardano.foundation.voting.domain.web3.SignedWeb3Request;
 import org.cardano.foundation.voting.service.json.JsonService;
 import org.cardano.foundation.voting.service.transaction_submit.L1SubmissionService;
 import org.cardano.foundation.voting.service.vote.VoteService;
@@ -18,10 +17,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
 
 import java.util.List;
-import java.util.Optional;
 
 import static com.bloxbean.cardano.client.util.HexUtil.encodeHexString;
-import static org.cardano.foundation.voting.domain.entity.Vote.VOTE_SERIALISER;
+import static org.cardano.foundation.voting.domain.VoteSerialisations.VOTE_SERIALISER;
+import static org.cardano.foundation.voting.domain.VoteSerialisations.createSerialiserFunction;
 import static org.cardanofoundation.cip30.MessageFormat.TEXT;
 
 @Service
@@ -86,9 +85,8 @@ public class VoteCommitmentService {
                     var stopWatch = new StopWatch();
                     stopWatch.start();
 
-                    var allSignedWeb3Votes = voteService.findAllCompactVotesByEventId(event.id())
+                    var votes = voteService.findAllCompactVotesByEventId(event.id())
                             .stream()
-                            .map(v -> new SignedWeb3Request(v.getCoseSignature(), Optional.ofNullable(v.getCosePublicKey())))
                             .filter(signedWeb3Request -> {
                                 var cip30Result = new CIP30Verifier(signedWeb3Request.getCoseSignature(), signedWeb3Request.getCosePublicKey());
 
@@ -97,16 +95,17 @@ public class VoteCommitmentService {
                             .toList();
 
                     stopWatch.stop();
-                    log.info("Loaded signedVotes, count:{}, time: {} secs", allSignedWeb3Votes.size(), stopWatch.getTotalTimeSeconds());
+                    log.info("Loaded signedVotes, count:{}, time: {} secs", votes.size(), stopWatch.getTotalTimeSeconds());
 
-                    var root = MerkleTree.fromList(allSignedWeb3Votes, VOTE_SERIALISER);
+                    var root = MerkleTree.fromList(votes, VOTE_SERIALISER);
 
-                    return new L1MerkleCommitment(allSignedWeb3Votes, root, event.id());
+                    return new L1MerkleCommitment(votes, root, event.id());
                 })
                 .toList();
     }
 
-    private void generateAndStoreMerkleProofs(List<L1MerkleCommitment> l1MerkleCommitments, L1SubmissionData l1SubmissionData) {
+    private void generateAndStoreMerkleProofs(List<L1MerkleCommitment> l1MerkleCommitments,
+                                              L1SubmissionData l1SubmissionData) {
         log.info("Storing vote merkle proofs...");
 
         for (var l1MerkleCommitment : l1MerkleCommitments) {
@@ -117,7 +116,7 @@ public class VoteCommitmentService {
             var storeProofsStartStop = new StopWatch();
             storeProofsStartStop.start();
             for (var vote : l1MerkleCommitment.signedVotes()) {
-                var maybeMerkleProof = MerkleTree.getProof(root, vote, VOTE_SERIALISER).map(Value::toJavaList);
+                var maybeMerkleProof = MerkleTree.getProof(root, vote, createSerialiserFunction()).map(Value::toJavaList);
                 if (maybeMerkleProof.isEmpty()) {
                     log.error("Merkle proof is empty for vote: {}, this should never ever happen", vote.getCoseSignature());
                     throw new RuntimeException("Merkle proof is empty for vote: " + vote.getCoseSignature());

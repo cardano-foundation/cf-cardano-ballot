@@ -14,6 +14,8 @@ import org.zalando.problem.Problem;
 import java.util.Optional;
 
 import static java.util.stream.Collectors.toMap;
+import static org.springframework.transaction.annotation.Isolation.READ_COMMITTED;
+import static org.springframework.transaction.annotation.Isolation.REPEATABLE_READ;
 import static org.zalando.problem.Status.*;
 
 @Service
@@ -118,7 +120,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true, isolation = REPEATABLE_READ)
     public Either<Problem, Leaderboard.ByEventStats> getEventLeaderboard(String event, boolean forceLeaderboard) {
         var eventDetailsE = chainFollowerClient.getEventDetails(event);
         if (eventDetailsE.isEmpty()) {

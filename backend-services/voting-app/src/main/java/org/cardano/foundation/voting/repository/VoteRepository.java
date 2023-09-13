@@ -70,9 +70,8 @@ public interface VoteRepository extends JpaRepository<Vote, String> {
 
         String getCoseSignature();
 
-        @Nullable String getCosePublicKey();
+        Optional<String> getCosePublicKey();
 
     }
-
 
 }

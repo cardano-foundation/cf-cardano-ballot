@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigInteger;
 import java.util.List;
 
+import static org.cardano.foundation.voting.domain.OnChainEventType.EVENT_REGISTRATION;
 import static org.cardano.foundation.voting.domain.VotingEventType.*;
 import static org.cardano.foundation.voting.utils.MoreBoolean.toBigInteger;
 
@@ -20,10 +21,10 @@ public class MetadataSerialiser {
     public MetadataMap serialise(CreateEventCommand createEventCommand, long slot) {
         var map = MetadataBuilder.createMap();
 
-        map.put("type", OnChainEventType.EVENT_REGISTRATION.name());
+        map.put("type", EVENT_REGISTRATION.name());
 
-        map.put("name", createEventCommand.getId());
-        map.put("team", createEventCommand.getTeam());
+        map.put("id", createEventCommand.getId());
+        map.put("organisers", createEventCommand.getOrganisers());
         map.put("votingEventType", createEventCommand.getVotingEventType().name());
         map.put("schemaVersion", createEventCommand.getSchemaVersion().getSemVer());
         map.put("creationSlot", BigInteger.valueOf(slot));
@@ -33,10 +34,12 @@ public class MetadataSerialiser {
             map.put("endEpoch", BigInteger.valueOf(createEventCommand.getEndEpoch().orElseThrow()));
             map.put("snapshotEpoch", BigInteger.valueOf(createEventCommand.getSnapshotEpoch().orElseThrow()));
             map.put("votingPowerAsset", createEventCommand.getVotingPowerAsset().orElseThrow().name());
+            map.put("proposalsRevealEpoch", BigInteger.valueOf(createEventCommand.getProposalsRevealEpoch().orElseThrow()));
         }
         if (createEventCommand.getVotingEventType() == USER_BASED) {
             map.put("startSlot", BigInteger.valueOf(createEventCommand.getStartSlot().orElseThrow()));
             map.put("endSlot", BigInteger.valueOf(createEventCommand.getEndSlot().orElseThrow()));
+            map.put("proposalsRevealSlot", BigInteger.valueOf(createEventCommand.getProposalsRevealSlot().orElseThrow()));
         }
 
         map.put("options", createEventOptions(createEventCommand));
@@ -47,8 +50,10 @@ public class MetadataSerialiser {
     private static MetadataMap createEventOptions(CreateEventCommand createEventCommand) {
         var optionsMap = MetadataBuilder.createMap();
         optionsMap.put("allowVoteChanging", toBigInteger(createEventCommand.isAllowVoteChanging()));
+
+        optionsMap.put("highLevelEventResultsWhileVoting", toBigInteger(createEventCommand.isHighLevelEventResultsWhileVoting()));
+        optionsMap.put("highLevelCategoryResultsWhileVoting", toBigInteger(createEventCommand.isHighLevelCategoryResultsWhileVoting()));
         optionsMap.put("categoryResultsWhileVoting", toBigInteger(createEventCommand.isCategoryResultsWhileVoting()));
-        optionsMap.put("highLevelResultsWhileVoting", toBigInteger(createEventCommand.isHighLevelResultsWhileVoting()));
 
         return optionsMap;
     }
@@ -58,7 +63,7 @@ public class MetadataSerialiser {
 
         map.put("type", OnChainEventType.CATEGORY_REGISTRATION.name());
 
-        map.put("name", createCategoryCommand.getId());
+        map.put("id", createCategoryCommand.getId());
         map.put("event", createCategoryCommand.getEvent());
 
         map.put("schemaVersion", createCategoryCommand.getSchemaVersion().getSemVer());

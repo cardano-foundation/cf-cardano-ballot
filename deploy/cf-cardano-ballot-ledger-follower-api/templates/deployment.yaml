@@ -1,5 +1,5 @@
 {{ range $instance := $.Values.instances }}
-{{ if $instance.enabled | default true }}
+{{ if $instance.enabled }}
 ---
 apiVersion: apps/v1
 kind: Deployment

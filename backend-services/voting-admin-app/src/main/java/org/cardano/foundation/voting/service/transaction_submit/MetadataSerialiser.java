@@ -29,7 +29,7 @@ public class MetadataSerialiser {
         map.put("votingEventType", createEventCommand.getVotingEventType().name());
         map.put("schemaVersion", createEventCommand.getSchemaVersion().getSemVer());
         map.put("creationSlot", BigInteger.valueOf(slot));
-        map.put("leafHashAlgo", "BLAKE2b-256");
+        map.put("votesHashAlgo", "BLAKE2b-256");
 
         if (List.of(STAKE_BASED, BALANCE_BASED).contains(createEventCommand.getVotingEventType())) {
             map.put("startEpoch", BigInteger.valueOf(createEventCommand.getStartEpoch().orElseThrow()));

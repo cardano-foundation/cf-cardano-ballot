@@ -16,6 +16,7 @@ A set of backend services and UI applications to facilitate CIP-1694 voting as w
 [![UI-App-Build](https://github.com/cardano-foundation/cf-cardano-ballot/actions/workflows/ui-cypress-tests.yaml/badge.svg)](https://github.com/cardano-foundation/cf-cardano-ballot/actions/workflows/ui-cypress-tests.yaml)
 
 ## Requirements
+
 - Node.js 18.x LTS
 - Java 17 LTS
 - Postgres DB 14.x or H2 file db (local development / community running).

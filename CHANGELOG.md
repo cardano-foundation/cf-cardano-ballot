@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.2.35](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.34...v0.2.35) (2023-09-14)
+
+
+### Bug Fixes
+
+* dummy commit to force release-please ([34ec8ca](https://github.com/cardano-foundation/cf-cardano-ballot/commit/34ec8ca5639f7c57530f37b316311f5b486ebf96))
+
+## [0.2.34](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.33...v0.2.34) (2023-09-13)
+
+
+### Features
+
+* web3 spring security ([#188](https://github.com/cardano-foundation/cf-cardano-ballot/issues/188)) ([a81e735](https://github.com/cardano-foundation/cf-cardano-ballot/commit/a81e7359e668b6e34e8314a885e7b8e3a5000053))
+
+## [0.2.33](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.32...v0.2.33) (2023-09-13)
+
+
+### Bug Fixes
+
+* removed the unused component ([753da52](https://github.com/cardano-foundation/cf-cardano-ballot/commit/753da52098b98d2282205433c25a5b051f3b30e5))
+
 ## [0.2.32](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.31...v0.2.32) (2023-09-13)
 
 

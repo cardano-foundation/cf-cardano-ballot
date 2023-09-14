@@ -94,12 +94,12 @@ export function responseErrorsHandler() {
   return {
     parse(errors: Errors['errors']) {
       return (errors || [])
-        .map((error) => {
-          if (error.errorCode) {
-            return error.errorCode;
-          }
-        })
-        .toString();
+          .map((error) => {
+            if (error.errorCode) {
+              return error.errorCode;
+            }
+          })
+          .toString();
     },
   };
 }
@@ -120,9 +120,9 @@ export function responseHandlerDelegate<T>() {
         parsedResponse = await response[isJson ? 'json' : 'text']();
         if (response.status !== 200) {
           throw new HttpError(
-            response.status,
-            response.url,
-            response.status === 500 ? 'Oops, something went wrong...' : getErrorMessage(parsedResponse)
+              response.status,
+              response.url,
+              response.status === 500 ? 'Oops, something went wrong...' : getErrorMessage(parsedResponse)
           );
         }
       } catch (error: any) {
@@ -145,10 +145,10 @@ type RequestInit = {
 };
 
 async function executeRequest<T>(
-  requestUri: string,
-  method: HttpMethods,
-  headers: Partial<contentTypeHeaders>,
-  body?: string
+    requestUri: string,
+    method: HttpMethods,
+    headers: Partial<contentTypeHeaders>,
+    body?: string
 ) {
   const request: RequestInit = {
     method: method || HttpMethods.GET,
@@ -191,13 +191,20 @@ export function patch<T>(url: string, headers: Partial<contentTypeHeaders>, body
 }
 
 export const doRequest = async <T>(
-  method: HttpMethods,
-  url: string,
-  headers: Partial<contentTypeHeaders>,
-  body?: string,
-  token?: string
+    method: HttpMethods,
+    url: string,
+    headers: Partial<contentTypeHeaders>,
+    body?: string,
+    token?: string,
+    bodyInHeader?: boolean,
 ) => {
   const allHeaders = { ...headers, ...DEFAULT_CONTENT_TYPE_HEADERS };
+
+  if (body && bodyInHeader){
+    allHeaders['X-CIP93-Signature'] = JSON.parse(body).coseSignature;
+    allHeaders['X-CIP93-Public-Key'] = JSON.parse(body).cosePublicKey;
+    body = undefined;
+  }
 
   if (token) {
     allHeaders['Authorization'] = <MediaTypes>`Bearer ${token}`;

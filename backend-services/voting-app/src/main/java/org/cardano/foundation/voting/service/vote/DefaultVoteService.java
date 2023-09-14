@@ -27,6 +27,7 @@ import org.zalando.problem.Problem;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.bloxbean.cardano.client.util.HexUtil.encodeHexString;
 import static org.cardano.foundation.voting.client.ChainFollowerClient.AccountStatus.NOT_ELIGIBLE;
@@ -237,6 +238,7 @@ public class DefaultVoteService implements VoteService {
                             .withStatus(BAD_REQUEST)
                             .build());
         }
+
         var votedAtSlotStr = cip93VoteEnvelope.getData().getVotedAt();
         if (!isNumeric(votedAtSlotStr)) {
             return Either.left(
@@ -304,6 +306,7 @@ public class DefaultVoteService implements VoteService {
         vote.setVotedAtSlot(cip93VoteEnvelope.getSlotAsLong());
         vote.setCoseSignature(details.getSignedWeb3Request().getCoseSignature());
         vote.setCosePublicKey(details.getSignedWeb3Request().getCosePublicKey());
+        vote.setIdNumericHash(UUID.fromString(voteId).hashCode() & 0xFFFFFFF);
 
         if (List.of(STAKE_BASED, BALANCE_BASED).contains(event.votingEventType())) {
             var accountE = chainFollowerClient.findAccount(eventId, stakeAddress);

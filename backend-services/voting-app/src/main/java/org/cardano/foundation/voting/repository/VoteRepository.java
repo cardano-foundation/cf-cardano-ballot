@@ -13,7 +13,7 @@ import java.util.Optional;
 @Repository
 public interface VoteRepository extends JpaRepository<Vote, String> {
 
-    @Query("SELECT v FROM Vote v WHERE v.eventId = :eventId ORDER BY v.votedAtSlot, v.createdAt DESC")
+    @Query("SELECT v FROM Vote v WHERE v.eventId = :eventId ORDER BY v.votedAtSlot, v.idNumericHash ASC")
     List<CompactVote> findAllCompactVotesByEventId(@Param("eventId") String eventId);
 
     Optional<Vote> findByEventIdAndCategoryIdAndVoterStakingAddress(String eventId, String categoryId, String voterStakeAddress);

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.34](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.33...v0.2.34) (2023-09-13)
+
+
+### Features
+
+* web3 spring security ([#188](https://github.com/cardano-foundation/cf-cardano-ballot/issues/188)) ([a81e735](https://github.com/cardano-foundation/cf-cardano-ballot/commit/a81e7359e668b6e34e8314a885e7b8e3a5000053))
+
 ## [0.2.33](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.32...v0.2.33) (2023-09-13)
 
 

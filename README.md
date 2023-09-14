@@ -112,3 +112,4 @@ On start up of the app, you can verify if the right profile has been used, there
 ## Repository Structure
 - backend-services - contains various backend services
 - ui - contains React.JS frontend code apps to cast votes / display voting results
+

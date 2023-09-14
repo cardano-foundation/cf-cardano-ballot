@@ -21,7 +21,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @RequiredArgsConstructor
 public class DiscordUserVerificationResource {
 
-    @RequestMapping(value = "/is-verified/{hashedDiscordId}", method = GET, produces = "application/json")
+    @RequestMapping(value = "/is-verified/{discordIdHash}", method = GET, produces = "application/json")
     @Timed(value = "resource.discord.isVerified", histogram = true)
     public ResponseEntity<?> isDiscordUserVerified(@PathVariable("hashedDiscordId") String hashedDiscordId) {
         log.info("Received isDiscordUserVerified hashedDiscordId: {}", hashedDiscordId);

@@ -16,6 +16,6 @@ public class DiscordStartVerificationRequest {
     private String secret;
 
     @NotBlank
-    private String hashedDiscordId;
+    private String discordIdHash;
 
 }

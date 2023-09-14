@@ -1,4 +1,4 @@
-package org.cardano.foundation.voting.service.verify;
+package org.cardano.foundation.voting.service.sms;
 
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
@@ -8,9 +8,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.domain.*;
 import org.cardano.foundation.voting.domain.entity.SMSUserVerification;
-import org.cardano.foundation.voting.repository.UserVerificationRepository;
+import org.cardano.foundation.voting.domain.sms.SMSCheckVerificationRequest;
+import org.cardano.foundation.voting.domain.sms.SMSStartVerificationRequest;
+import org.cardano.foundation.voting.domain.sms.SMSStartVerificationResponse;
+import org.cardano.foundation.voting.domain.sms.SaltHolder;
+import org.cardano.foundation.voting.repository.SMSUserVerificationRepository;
 import org.cardano.foundation.voting.service.pass.CodeGenService;
-import org.cardano.foundation.voting.service.sms.SMSService;
 import org.cardano.foundation.voting.utils.StakeAddress;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,8 +31,6 @@ import java.util.UUID;
 import static com.bloxbean.cardano.client.crypto.Blake2bUtil.blake2bHash256;
 import static com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.cardano.foundation.voting.domain.entity.SMSUserVerification.Channel.SMS;
-import static org.cardano.foundation.voting.domain.entity.SMSUserVerification.Provider.AWS_SNS;
 import static org.cardano.foundation.voting.domain.entity.SMSUserVerification.Status.PENDING;
 import static org.cardano.foundation.voting.domain.entity.SMSUserVerification.Status.VERIFIED;
 import static org.zalando.problem.Status.BAD_REQUEST;
@@ -44,9 +45,8 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
     @Autowired
     private SMSService smsService;
 
-
     @Autowired
-    private UserVerificationRepository userVerificationRepository;
+    private SMSUserVerificationRepository SMSUserVerificationRepository;
 
     @Autowired
     private SaltHolder saltHolder;
@@ -111,7 +111,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
                     .build());
         }
 
-        var maybeUserVerificationStakeAddress = userVerificationRepository.findAllCompletedPerStake(
+        var maybeUserVerificationStakeAddress = SMSUserVerificationRepository.findAllCompletedPerStake(
                 eventId,
                 stakeAddress
         ).stream().findFirst();
@@ -145,7 +145,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
         var formattedPhoneStr = PhoneNumberUtil.getInstance().format(phoneNum, INTERNATIONAL);
         var phoneHash = saltedPhoneHash(formattedPhoneStr);
 
-        var maybeUserVerificationPhoneHash = userVerificationRepository.findAllCompletedPerPhone(
+        var maybeUserVerificationPhoneHash = SMSUserVerificationRepository.findAllCompletedPerPhone(
                 eventId,
                 phoneHash
         ).stream().findFirst();
@@ -166,7 +166,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
             }
         }
 
-        int pendingPerStakeAddressCount = userVerificationRepository.findPendingPerStakeAddressPerPhoneCount(eventId, stakeAddress, phoneHash);
+        int pendingPerStakeAddressCount = SMSUserVerificationRepository.findPendingPerStakeAddressPerPhoneCount(eventId, stakeAddress, phoneHash);
         if (pendingPerStakeAddressCount >= maxPendingVerificationAttempts) {
             return Either.left(Problem.builder()
                     .withTitle("MAX_VERIFICATION_ATTEMPTS_REACHED")
@@ -193,8 +193,6 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
         var newUserVerification = SMSUserVerification.builder()
                 .id(UUID.randomUUID().toString())
                 .eventId(eventId)
-                .channel(SMS)
-                .provider(AWS_SNS)
                 .status(PENDING)
                 .phoneNumberHash(phoneHash)
                 .stakeAddress(stakeAddress)
@@ -203,7 +201,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
                 .expiresAt(now.plusMinutes(validationExpirationTimeMinutes))
                 .build();
 
-        var saved = userVerificationRepository.saveAndFlush(newUserVerification);
+        var saved = SMSUserVerificationRepository.saveAndFlush(newUserVerification);
 
         var startVerificationResponse = new SMSStartVerificationResponse(
                 saved.getEventId(),
@@ -258,7 +256,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
                     .build());
         }
 
-        var maybeUserVerification = userVerificationRepository.findAllCompletedPerStake(
+        var maybeUserVerification = SMSUserVerificationRepository.findAllCompletedPerStake(
                 eventId,
                 stakeAddress
         ).stream().findFirst();
@@ -277,7 +275,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
             }
         }
 
-        var maybePendingRequest = userVerificationRepository.findPendingVerificationsByEventIdAndStakeAddressAndRequestId(
+        var maybePendingRequest = SMSUserVerificationRepository.findPendingVerificationsByEventIdAndStakeAddressAndRequestId(
                 eventId,
                 stakeAddress,
                 checkVerificationRequest.getRequestId()
@@ -326,7 +324,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
         pendingUserVerification.setStatus(VERIFIED);
         pendingUserVerification.setUpdatedAt(now);
 
-        var saved = userVerificationRepository.saveAndFlush(pendingUserVerification);
+        var saved = SMSUserVerificationRepository.saveAndFlush(pendingUserVerification);
 
         return Either.right(new IsVerifiedResponse(saved.getStatus() == VERIFIED));
     }
@@ -365,7 +363,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
                     .build());
         }
 
-        var maybeUserVerification = userVerificationRepository.findAllCompletedPerStake(
+        var maybeUserVerification = SMSUserVerificationRepository.findAllCompletedPerStake(
                 isVerifiedRequest.getEventId(),
                 isVerifiedRequest.getStakeAddress()
         ).stream().findFirst();
@@ -387,19 +385,19 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
     @Override
     @Transactional
     public void removeUserVerification(SMSUserVerification SMSUserVerification) {
-        userVerificationRepository.delete(SMSUserVerification);
+        SMSUserVerificationRepository.delete(SMSUserVerification);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<SMSUserVerification> findAllForEvent(String eventId) {
-        return userVerificationRepository.findAllByEventId(eventId);
+        return SMSUserVerificationRepository.findAllByEventId(eventId);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<SMSUserVerification> findAllPending(String eventId) {
-        return userVerificationRepository.findAllPending(eventId);
+        return SMSUserVerificationRepository.findAllPending(eventId);
     }
 
     private static Optional<Phonenumber.PhoneNumber> isValidNumber(String userEnteredPhoneNumber) {

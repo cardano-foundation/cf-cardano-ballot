@@ -4,7 +4,7 @@ import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.IsVerifiedRequest;
-import org.cardano.foundation.voting.service.verify.SMSUserVerificationService;
+import org.cardano.foundation.voting.service.sms.SMSUserVerificationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +28,8 @@ public class UserVerificationResource {
         var isVerifiedRequest = new IsVerifiedRequest(stakeAddress, eventId);
 
         log.info("Received isVerified request: {}", isVerifiedRequest);
+
+        // TODO fork join to discord and sms
 
         return smsUserVerificationService.isVerified(isVerifiedRequest)
                 .fold(problem -> ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem),

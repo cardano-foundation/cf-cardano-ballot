@@ -28,6 +28,7 @@ public class MetadataSerialiser {
         map.put("votingEventType", createEventCommand.getVotingEventType().name());
         map.put("schemaVersion", createEventCommand.getSchemaVersion().getSemVer());
         map.put("creationSlot", BigInteger.valueOf(slot));
+        map.put("publicKey", "3op4jfpo3j434i39845");
 
         if (List.of(STAKE_BASED, BALANCE_BASED).contains(createEventCommand.getVotingEventType())) {
             map.put("startEpoch", BigInteger.valueOf(createEventCommand.getStartEpoch().orElseThrow()));

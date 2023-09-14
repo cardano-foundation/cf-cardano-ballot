@@ -2,14 +2,14 @@ package org.cardano.foundation.voting.jobs;
 
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
-import org.cardano.foundation.voting.service.verify.SMSUserVerificationService;
+import org.cardano.foundation.voting.service.sms.SMSUserVerificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class CleanupVerifiedPhonesForEventJob implements Runnable {
+public class SMSCleanupVerifiedPhonesForEventJob implements Runnable {
 
     @Autowired
     private ChainFollowerClient chainFollowerClient;

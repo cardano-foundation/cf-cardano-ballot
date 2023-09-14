@@ -2,7 +2,7 @@ package org.cardano.foundation.voting.jobs;
 
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
-import org.cardano.foundation.voting.service.verify.SMSUserVerificationService;
+import org.cardano.foundation.voting.service.sms.SMSUserVerificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 
 @Service
 @Slf4j
-public class PendingVerificationPhoneCleanupJob implements Runnable {
+public class SMSPendingVerificationPhoneCleanupJob implements Runnable {
 
     @Autowired
     private ChainFollowerClient chainFollowerClient;
@@ -41,15 +41,21 @@ public class PendingVerificationPhoneCleanupJob implements Runnable {
         var allEvents = allEventsE.get();
 
         allEvents.forEach(eventSummary -> {
-            smsUserVerificationService.findAllPending(eventSummary.id()).forEach(userVerification -> {
+            var id = eventSummary.id();
+
+            smsUserVerificationService.findAllPending(id).forEach(userVerification -> {
                 var now = LocalDateTime.now(clock);
 
-                if (now.isAfter(userVerification.getCreatedAt().plusHours(pendingVerificationPhoneExpirationTimeHours))) {
+                boolean expiredVerification = now.isAfter(userVerification.getCreatedAt()
+                        .plusHours(pendingVerificationPhoneExpirationTimeHours));
+
+                if (expiredVerification) {
                     log.info("Deleting expired pending user verification: {}", userVerification);
 
                     smsUserVerificationService.removeUserVerification(userVerification);
                 }
             });
+
         });
     }
 

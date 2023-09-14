@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface UserVerificationRepository extends JpaRepository<SMSUserVerification, String> {
+public interface SMSUserVerificationRepository extends JpaRepository<SMSUserVerification, String> {
 
     @Query("SELECT uv FROM SMSUserVerification uv WHERE uv.eventId = :eventId")
     List<SMSUserVerification> findAllByEventId(@Param("eventId") String eventId);

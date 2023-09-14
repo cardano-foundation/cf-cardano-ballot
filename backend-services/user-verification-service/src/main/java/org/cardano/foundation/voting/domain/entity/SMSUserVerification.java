@@ -45,38 +45,17 @@ public class SMSUserVerification extends AbstractTimestampEntity {
     @Setter
     private Status status = Status.NOT_REQUESTED;
 
-    @Column(name = "provider", nullable = false)
-    @Enumerated(EnumType.STRING)
-    @Getter
-    @Setter
-    private Provider provider;
-
-    @Column(name = "channel", nullable = false)
-    @Enumerated(EnumType.STRING)
-    @Getter
-    @Setter
-    private Channel channel;
-
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "expires_at", nullable = false)
     @Builder.Default
     @Getter
     @Setter
-    private LocalDateTime expiresAt = LocalDateTime.now(); // TODO clock
-
-    public enum Channel {
-        SMS,
-    }
+    private LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(15);
 
     public enum Status {
         NOT_REQUESTED,
         PENDING,
         VERIFIED,
-    }
-
-    public enum Provider {
-        TWILIO,
-        AWS_SNS
     }
 
     @Override
@@ -90,8 +69,6 @@ public class SMSUserVerification extends AbstractTimestampEntity {
                 ", expiresAt=" + expiresAt +
                 ", phoneNumberHash='" + phoneNumberHash + '\'' +
                 ", status=" + status +
-                ", provider=" + provider +
-                ", channel=" + channel +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';

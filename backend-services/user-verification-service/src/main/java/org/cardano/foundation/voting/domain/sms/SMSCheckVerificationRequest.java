@@ -1,4 +1,4 @@
-package org.cardano.foundation.voting.domain;
+package org.cardano.foundation.voting.domain.sms;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;

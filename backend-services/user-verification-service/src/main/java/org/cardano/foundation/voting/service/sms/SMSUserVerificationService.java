@@ -1,8 +1,11 @@
-package org.cardano.foundation.voting.service.verify;
+package org.cardano.foundation.voting.service.sms;
 
 import io.vavr.control.Either;
 import org.cardano.foundation.voting.domain.*;
 import org.cardano.foundation.voting.domain.entity.SMSUserVerification;
+import org.cardano.foundation.voting.domain.sms.SMSCheckVerificationRequest;
+import org.cardano.foundation.voting.domain.sms.SMSStartVerificationRequest;
+import org.cardano.foundation.voting.domain.sms.SMSStartVerificationResponse;
 import org.zalando.problem.Problem;
 
 import java.util.List;

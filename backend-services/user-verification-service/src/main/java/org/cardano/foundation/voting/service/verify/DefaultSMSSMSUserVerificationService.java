@@ -217,7 +217,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public Either<Problem, IsVerifiedResponse> checkVerification(SMSCheckVerificationRequest checkVerificationRequest) {
         String eventId = checkVerificationRequest.getEventId();
         String stakeAddress = checkVerificationRequest.getStakeAddress();

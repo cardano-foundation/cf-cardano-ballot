@@ -1,8 +1,15 @@
 import { CategoryPresentation } from 'types/voting-ledger-follower-types';
 
 export const categoryColorsMap: Record<CategoryPresentation['id'], string> = {
-  BEST_WALLET: '#43E4B7',
-  BEST_DEX: '#FFBC5C'
+  AMBASSADOR: '#106593',
+  BLOCKCHAIN_FOR_GOOD: '#FFBC5C',
+  CIPS: '#75FA9F',
+  BEST_DEFI_DEX: '#652701',
+  BEST_DEVELOPER_OR_DEVELOPER_TOOLS: '#FD873C',
+  EDUCATIONAL_INFLUENCER: '#1894D6',
+  MARKETPLACE: '#C20024',
+  MOST_IMPACTFUL_SSPO: '#056122',
+  SSI: '#DAEEFB',
 };
 
 export const getPercentage = (value: number, total: number) => (value * 100) / total;

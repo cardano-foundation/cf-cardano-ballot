@@ -1,34 +1,34 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Typography, Grid } from '@mui/material';
+import { Typography, Grid, Box } from '@mui/material';
 import styles from './Leaderboard.module.scss';
 import cn from 'classnames';
 import toast from 'react-hot-toast';
 import { PieChart } from 'react-minimal-pie-chart';
 import BlockIcon from '@mui/icons-material/Block';
-import { ByEventStats, ByCategoryStats } from 'types/voting-app-types';
+import { ByCategoryStats } from 'types/voting-app-types';
 import { EventPresentation } from 'types/voting-ledger-follower-types';
-//import * as leaderboardService from '../../common/api/leaderboardService';
+import * as leaderboardService from '../../common/api/leaderboardService';
 import { Toast } from 'components/common/Toast/Toast';
 import { categoryColorsMap, getPercentage } from './utils';
 import { StatItem } from './types';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { StatsTile } from './components/StatsTile';
-import LEADERBOARD from '../../common/resources/data/leaderboardByEvent.json';
 import SUMMIT2023CONTENT from '../../common/resources/data/summit2023Content.json';
 import { CategoryContent } from 'pages/Categories/Category.types';
 import { LeaderboardContent } from './Leaderboard.types';
 
 const Leaderboard = () => {
   const event = useSelector((state: RootState) => state.user.event);
-  //const [stats, setStats] = useState<ByEvent['categories']>();
-  const [fakeStats] = useState<ByCategoryStats[]>((LEADERBOARD as ByEventStats).categories);
+  const [stats, setStats] = useState<ByCategoryStats[]>();
   const summit2023Categories: CategoryContent[] = SUMMIT2023CONTENT.categories;
   const summit2023Leaderboard: LeaderboardContent = SUMMIT2023CONTENT.leaderboard;
 
   const init = useCallback(async () => {
     try {
-      //setStats((await leaderboardService.getStats()).categories);
+      await leaderboardService.getStats().then((response) => {
+        setStats(response.categories);
+      });
     } catch (error) {
       const message = `Failed to fecth stats: ${error?.message || error?.toString()}`;
       if (process.env.NODE_ENV === 'development') {
@@ -50,21 +50,18 @@ const Leaderboard = () => {
   const statsItems: StatItem<EventPresentation['categories']>[] =
     event?.categories?.map(({ id }, index) => ({
       id,
-      label: ((id === summit2023Categories[index].id) && summit2023Categories[index].presentationName),
+      label: id === summit2023Categories[index].id && summit2023Categories[index].presentationName,
     })) || [];
 
   const placeholder = '--';
-  const statsSum = useMemo(
-    () => fakeStats && Object.values(fakeStats)?.reduce((acc, { votes }) => (acc += votes), 0),
-    [fakeStats]
-  );
+  const statsSum = useMemo(() => stats && Object.values(stats)?.reduce((acc, { votes }) => (acc += votes), 0), [stats]);
 
   const chartData = statsItems.map(({ label, id }) => ({
     title: label,
-    value: fakeStats?.find((category) => category.id === id).votes,
+    value: stats?.find((category) => category.id === id)?.votes,
     color: categoryColorsMap[id],
   }));
-  console.log(chartData)
+
   return (
     <div
       data-testid="leaderboard-page"
@@ -111,7 +108,7 @@ const Leaderboard = () => {
             container
             spacing={0}
             direction="column"
-            gap="15px"
+            gap={{ xs: '15px', md: 'none' }}
             sx={{ marginTop: '25px' }}
           >
             <Grid
@@ -138,6 +135,7 @@ const Leaderboard = () => {
                   container
                   justifyContent="space-between"
                   data-testid="total-stats-item"
+                  sx={{ my: '15px' }}
                 >
                   <Typography
                     variant="h5"
@@ -149,7 +147,7 @@ const Leaderboard = () => {
                     variant="h5"
                     className={cn(styles.optionTitle, styles.statTitle)}
                   >
-                    {fakeStats?.find((category) => category.id === id).votes || placeholder}
+                    {stats?.find((category) => category.id === id).votes || placeholder}
                   </Typography>
                 </Grid>
               </React.Fragment>
@@ -166,7 +164,7 @@ const Leaderboard = () => {
             direction={{ xs: 'column' }}
             gridRow={{ md: 6, xs: 12 }}
             sx={{ flexWrap: { md: 'nowrap', xs: 'wrap' }, marginTop: { md: '8px', xs: '25px' } }}
-            gap={{ xs: '25px', md: 'none' }}
+            gap={{ xs: '15px', md: 'none' }}
           >
             <Grid
               item
@@ -174,47 +172,88 @@ const Leaderboard = () => {
               justifyContent={{ xs: 'center' }}
             >
               <PieChart
-                style={{ height: '200px', width: '200px' }}
-                lineWidth={32}
-                data={fakeStats ? chartData : [{ title: '', value: 1, color: '#BBBBBB' }]}
+                style={{ height: '300px', width: '300px', margin: 1 }}
+                lineWidth={45}
+                data={statsSum > 0 ? chartData : [{ title: '', value: 1, color: '#BBBBBB' }]}
               />
             </Grid>
-          </Grid>
-          <Grid
-            container
-            item
-            justifyContent="center"
-            direction="row"
-            gap="15px"
-          >
-            {statsItems.map(({ label, id }) => (
+
+            <Box sx={{ flexGrow: 1 }}>
               <Grid
                 container
-                key={id}
-                gap="15px"
-                data-testid="votes-per-category"
+                spacing={{ xs: 2, md: 3 }}
+                columns={{ xs: 4, sm: 8, md: 12 }}
               >
-                <div
-                  className={styles.proposalRect}
-                  data-proposal={id}
-                />
-                <Typography
-                  variant="h5"
-                  className={cn(styles.optionTitle, styles.statTitle)}
-                >
-                  {label}
-                  {fakeStats && (
-                    <>
-                      <span style={{ color: '#BBBBBB' }}>{' - '}</span>
-
-                      <span style={{ color: '#39486C' }}>
-                        {getPercentage(fakeStats?.find((category) => category.id === id).votes, statsSum).toFixed(2)}%
-                      </span>
-                    </>
-                  )}
-                </Typography>
+                {statsItems.map(({ label, id }) => (
+                  <Grid
+                    item
+                    xs={2}
+                    sm={4}
+                    md={4}
+                    key={id}
+                  >
+                      <Grid
+                        container
+                        spacing={2}
+                        key={id}
+                      >
+                        <Grid
+                          item
+                          xs={1}
+                        >
+                          <div
+                            className={styles.proposalRect}
+                            data-proposal={id}
+                          />
+                        </Grid>
+                        <Grid
+                          item
+                          xs={11}
+                        >
+                          <Grid
+                            container
+                            direction="row"
+                          >
+                            <Grid
+                              item
+                              xs={12}
+                            >
+                              <Typography
+                                variant="h4"
+                                className={cn(styles.optionTitle, styles.statTitle)}
+                              >
+                                {label}
+                              </Typography>
+                            </Grid>
+                            <Grid
+                              item
+                              xs={12}
+                            >
+                              {stats && (
+                                <>
+                                  <span style={{ color: '#39486C' }}>
+                                    {statsSum > 0
+                                      ? getPercentage(
+                                          stats?.find((category) => category.id === id)?.votes,
+                                          statsSum
+                                        ).toFixed(2)
+                                      : '0'}{' '}
+                                    %
+                                  </span>
+                                  <span style={{ color: '#BBBBBB' }}>{' - '}</span>
+                                  <span style={{ color: '#BBBBBB' }}>
+                                    {stats?.find((category) => category.id === id)?.votes}
+                                  </span>
+                                </>
+                              )}
+                            </Grid>
+                          </Grid>
+                        </Grid>
+                      </Grid>
+                  </Grid>
+                ))}
               </Grid>
-            ))}
+            </Box>
           </Grid>
         </StatsTile>
       </Grid>

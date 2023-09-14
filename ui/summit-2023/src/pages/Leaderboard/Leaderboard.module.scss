@@ -36,17 +36,39 @@
   }
   .divider {
     height: 1px;
-    background: #bbbbbb;
+    background: #dfdfdf;
   }
 
   .proposalRect {
-    width: 32px;
-    height: 22px;
-    &[data-proposal='BEST_WALLET'] {
-      background: #43e4b7;
+    width: 44px;
+    height: 44px;
+    border-radius: 4px;
+    &[data-proposal='AMBASSADOR'] {
+      background: #106593;
     }
-    &[data-proposal='BEST_DEX'] {
-      background: #ffbc5c;
+    &[data-proposal='BLOCKCHAIN_FOR_GOOD'] {
+      background: #FFBC5C;
+    }
+    &[data-proposal='CIPS'] {
+      background: #75FA9F;
+    }
+    &[data-proposal='BEST_DEFI_DEX'] {
+      background: #652701;
+    }
+    &[data-proposal='BEST_DEVELOPER_OR_DEVELOPER_TOOLS'] {
+      background: #FD873C;
+    }
+    &[data-proposal='EDUCATIONAL_INFLUENCER'] {
+      background: #1894D6;
+    }
+    &[data-proposal='MARKETPLACE'] {
+      background: #C20024;
+    }
+    &[data-proposal='MOST_IMPACTFUL_SSPO'] {
+      background: #056122;
+    }
+    &[data-proposal='SSI'] {
+      background: #DAEEFB;
     }
   }
 

@@ -21,7 +21,7 @@ import java.util.List;
 
 import static com.bloxbean.cardano.client.util.HexUtil.decodeHexString;
 import static com.bloxbean.cardano.client.util.JsonUtil.parseJson;
-import static org.cardano.foundation.voting.domain.CoseWrappedVote.VOTE_SERIALISER;
+import static org.cardano.foundation.voting.utils.VoteSerialisations.VOTE_SERIALISER;
 import static org.cardanofoundation.cip30.MessageFormat.TEXT;
 import static org.zalando.problem.Status.BAD_REQUEST;
 

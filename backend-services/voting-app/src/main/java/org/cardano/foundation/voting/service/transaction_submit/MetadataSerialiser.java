@@ -25,7 +25,7 @@ public class MetadataSerialiser {
         var l1CommitmentMap = MetadataBuilder.createMap();
         for (var l1MerkleCommitment : l1MerkleCommitments) {
 
-            if (l1MerkleCommitment.votes().isEmpty()) {
+            if (l1MerkleCommitment.signedVotes().isEmpty()) {
                 continue;
             }
 

@@ -1,4 +1,4 @@
-package org.cardano.foundation.voting.service.auth;
+package org.cardano.foundation.voting.service.auth.jwt;
 
 import com.nimbusds.jwt.SignedJWT;
 import lombok.SneakyThrows;

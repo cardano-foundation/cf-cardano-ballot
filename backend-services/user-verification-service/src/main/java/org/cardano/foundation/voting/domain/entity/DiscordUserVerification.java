@@ -9,29 +9,36 @@ import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.VerificationStatus;
 
+import javax.annotation.Nullable;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Entity
 @Table(name = "discord_user_verification")
 @Slf4j
 @NoArgsConstructor
 @SuperBuilder
-@Getter
-@Setter
 @AllArgsConstructor
 public class DiscordUserVerification extends AbstractTimestampEntity {
 
     @Id
     @Column(name = "discord_id_hash", nullable = false)
+    @Getter
+    @Setter
     private String discordIdHash;
 
     @Column(name = "event_id", nullable = false)
+    @Getter
+    @Setter
     private String eventId;
 
-    @Column(name = "stake_address", nullable = false)
+    @Column(name = "stake_address")
+    @Nullable
     private String stakeAddress;
 
     @Column(name = "secret_code", nullable = false)
+    @Getter
+    @Setter
     private String secretCode;
 
     @Column(name = "status", nullable = false)
@@ -45,6 +52,14 @@ public class DiscordUserVerification extends AbstractTimestampEntity {
     @Getter
     @Setter
     private LocalDateTime expiresAt;
+
+    public Optional<String> getStakeAddress() {
+        return Optional.ofNullable(stakeAddress);
+    }
+
+    public void setStakeAddress(Optional<String> stakeAddress) {
+        this.stakeAddress = stakeAddress.orElse(null);
+    }
 
     @Override
     public String toString() {

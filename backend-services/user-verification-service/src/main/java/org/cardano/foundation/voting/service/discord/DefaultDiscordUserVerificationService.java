@@ -3,6 +3,7 @@ package org.cardano.foundation.voting.service.discord;
 import io.vavr.control.Either;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.IsVerifiedRequest;
 import org.cardano.foundation.voting.domain.IsVerifiedResponse;
@@ -14,6 +15,7 @@ import org.cardano.foundation.voting.repository.DiscordUserVerificationRepositor
 import org.cardano.foundation.voting.utils.StakeAddress;
 import org.cardanofoundation.cip30.AddressFormat;
 import org.cardanofoundation.cip30.CIP30Verifier;
+import org.cardanofoundation.cip30.MessageFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -22,16 +24,20 @@ import org.zalando.problem.Problem;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 import static org.cardano.foundation.voting.domain.VerificationStatus.PENDING;
 import static org.cardano.foundation.voting.domain.VerificationStatus.VERIFIED;
-import static org.cardanofoundation.cip30.MessageFormat.TEXT;
 import static org.zalando.problem.Status.BAD_REQUEST;
 
 @Service
 @Slf4j
 @AllArgsConstructor
 public class DefaultDiscordUserVerificationService implements DiscordUserVerificationService {
+
+    @Autowired
+    private ChainFollowerClient chainFollowerClient;
 
     @Autowired
     private DiscordUserVerificationRepository userVerificationRepository;
@@ -74,6 +80,37 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
                 .status(PENDING)
                 .build();
 
+        var eventDetails = chainFollowerClient.findEventById(discordBotEventIdBinding);
+
+        if (eventDetails.isEmpty()) {
+            log.error("event error:{}", eventDetails.getLeft());
+
+            return Either.left(eventDetails.getLeft());
+        }
+
+        var maybeEvent = eventDetails.get();
+        if (maybeEvent.isEmpty()) {
+            log.warn("Active event not found:{}", discordBotEventIdBinding);
+
+            return Either.left(Problem.builder()
+                    .withTitle("EVENT_NOT_FOUND")
+                    .withDetail("Event not found, eventId:" + discordBotEventIdBinding)
+                    .withStatus(BAD_REQUEST)
+                    .build());
+        }
+
+        var event = maybeEvent.orElseThrow();
+
+        if (event.finished()) {
+            log.warn("Event already finished:{}", discordBotEventIdBinding);
+
+            return Either.left(Problem.builder()
+                    .withTitle("EVENT_ALREADY_FINISHED")
+                    .withDetail("Event already finished, eventId:" + discordBotEventIdBinding)
+                    .withStatus(BAD_REQUEST)
+                    .build());
+        }
+
         var saved = userVerificationRepository.saveAndFlush(discordUserVerification);
 
         return Either.right(DiscordStartVerificationResponse.builder()
@@ -87,6 +124,37 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
     @Override
     @Transactional
     public Either<Problem, IsVerifiedResponse> checkVerification(DiscordCheckVerificationRequest checkVerificationRequest) {
+        var eventDetails = chainFollowerClient.findEventById(discordBotEventIdBinding);
+
+        if (eventDetails.isEmpty()) {
+            log.error("event error:{}", eventDetails.getLeft());
+
+            return Either.left(eventDetails.getLeft());
+        }
+
+        var maybeEvent = eventDetails.get();
+        if (maybeEvent.isEmpty()) {
+            log.warn("Active event not found:{}", discordBotEventIdBinding);
+
+            return Either.left(Problem.builder()
+                    .withTitle("EVENT_NOT_FOUND")
+                    .withDetail("Event not found, eventId:" + discordBotEventIdBinding)
+                    .withStatus(BAD_REQUEST)
+                    .build());
+        }
+
+        var event = maybeEvent.orElseThrow();
+
+        if (event.finished()) {
+            log.warn("Event already finished:{}", discordBotEventIdBinding);
+
+            return Either.left(Problem.builder()
+                    .withTitle("EVENT_ALREADY_FINISHED")
+                    .withDetail("Event already finished, eventId:" + discordBotEventIdBinding)
+                    .withStatus(BAD_REQUEST)
+                    .build());
+        }
+
         var stakeAddress = checkVerificationRequest.getStakeAddress();
 
         var coseSignature = checkVerificationRequest.getCoseSignature();
@@ -103,7 +171,7 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
             );
         }
 
-        var msg = cip30VerificationResult.getMessage(TEXT);
+        var msg = cip30VerificationResult.getMessage(MessageFormat.TEXT);
         var items = msg.split("\\|");
 
         if (items.length != 2) {
@@ -149,13 +217,25 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
             return Either.left(Problem.builder()
                     .withTitle("USER_ALREADY_VERIFIED")
                     .withDetail("User already verified.")
+                    .with("discordIdHash", discordIdHash)
                     .build()
             );
         }
 
-        var maybePendingVerification = userVerificationRepository.findPendingVerification(discordBotEventIdBinding, discordIdHash, secret);
+        var maybePendingVerification = userVerificationRepository.findPendingVerificationBasedOnDiscordUserHash(discordBotEventIdBinding, discordIdHash);
 
         if (maybePendingVerification.isEmpty()) {
+            return Either.left(Problem.builder()
+                    .withTitle("NO_PENDING_VERIFICATION")
+                    .withDetail("No pending verification found for discordIdHash:" + discordIdHash)
+                    .with("discordIdHash", discordIdHash)
+                    .build()
+            );
+        }
+
+        boolean isSecretCodeMatch = maybePendingVerification.get().getSecretCode().equals(secret);
+
+        if (!isSecretCodeMatch) {
             return Either.left(Problem.builder()
                     .withTitle("AUTH_FAILED")
                     .withDetail("Invalid secret and / or discordIdHash.")
@@ -176,7 +256,7 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
                     .build());
         }
 
-        pendingUserVerification.setStakeAddress(stakeAddress);
+        pendingUserVerification.setStakeAddress(Optional.of(stakeAddress));
         pendingUserVerification.setUpdatedAt(now);
         pendingUserVerification.setStatus(VERIFIED);
 
@@ -199,6 +279,18 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
     @Transactional
     public void removeUserVerification(DiscordUserVerification userVerification) {
         userVerificationRepository.delete(userVerification);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<DiscordUserVerification> findAllForEvent(String eventId) {
+        return userVerificationRepository.findAllForEvent(eventId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<DiscordUserVerification> findAllPending(String eventId) {
+        return userVerificationRepository.findAllPending(eventId);
     }
 
 }

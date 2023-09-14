@@ -9,6 +9,8 @@ import org.cardano.foundation.voting.domain.discord.DiscordStartVerificationResp
 import org.cardano.foundation.voting.domain.entity.DiscordUserVerification;
 import org.zalando.problem.Problem;
 
+import java.util.List;
+
 public interface DiscordUserVerificationService {
 
     Either<Problem, DiscordStartVerificationResponse> startVerification(DiscordStartVerificationRequest startVerificationRequest);
@@ -19,8 +21,8 @@ public interface DiscordUserVerificationService {
 
     void removeUserVerification(DiscordUserVerification userVerification);
 
-//    List<SMSUserVerification> findAllForEvent(String eventId);
-//
-//    List<SMSUserVerification> findAllPending(String eventId);
+    List<DiscordUserVerification> findAllForEvent(String eventId);
+
+    List<DiscordUserVerification> findAllPending(String eventId);
 
 }

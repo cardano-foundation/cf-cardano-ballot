@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -18,15 +19,20 @@ public interface DiscordUserVerificationRepository extends JpaRepository<Discord
 
     @Query("SELECT uv FROM DiscordUserVerification uv WHERE uv.status = 'VERIFIED' AND uv.eventId = :eventId AND uv.discordIdHash = :discordIdHash")
     Optional<DiscordUserVerification> findCompletedVerificationBasedOnDiscordUserHash(@Param("eventId") String eventId,
-                                                                                      @Param("discordIdHash") String discordIdHash);
+                                                                                      @Param("discordIdHash") String discordIdHash
+    );
 
     @Query("SELECT uv FROM DiscordUserVerification uv WHERE uv.status = 'PENDING'" +
                                                             " AND uv.eventId = :eventId" +
-                                                            " AND uv.discordIdHash = :discordIdHash" +
-                                                            " AND uv.secretCode = :secretCode")
-    Optional<DiscordUserVerification> findPendingVerification(@Param("eventId") String eventId,
-                                                              @Param("discordIdHash") String discordIdHash,
-                                                              @Param("secretCode") String secretCode
+                                                            " AND uv.discordIdHash = :discordIdHash")
+    Optional<DiscordUserVerification> findPendingVerificationBasedOnDiscordUserHash(@Param("eventId") String eventId,
+                                                                                    @Param("discordIdHash") String discordIdHash
     );
+
+    @Query("SELECT uv FROM DiscordUserVerification uv WHERE uv.eventId = :eventId")
+    List<DiscordUserVerification> findAllForEvent(String eventId);
+
+    @Query("SELECT uv FROM DiscordUserVerification uv WHERE uv.eventId = :eventId AND uv.status = 'PENDING'")
+    List<DiscordUserVerification> findAllPending(String eventId);
 
 }

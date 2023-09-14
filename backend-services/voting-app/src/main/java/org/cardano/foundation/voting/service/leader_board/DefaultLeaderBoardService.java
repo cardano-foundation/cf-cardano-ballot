@@ -293,15 +293,15 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
 
         Map<String, Leaderboard.Votes> proposalResultsMap = votes.stream()
                 .collect(toMap(VoteRepository.CategoryLevelStats::getProposalId, v -> {
-                            var totalVotesCount = Optional.ofNullable(v.getTotalVoteCount()).orElse(0L);
-                            var totalVotingPower = Optional.ofNullable(v.getTotalVotingPower()).map(String::valueOf).orElse("0");
+                    var totalVotesCount = Optional.ofNullable(v.getTotalVoteCount()).orElse(0L);
+                    var totalVotingPower = Optional.ofNullable(v.getTotalVotingPower()).map(String::valueOf).orElse("0");
 
-                            var b = Leaderboard.Votes.builder();
-                            b.votes(totalVotesCount);
+                    var b = Leaderboard.Votes.builder();
+                    b.votes(totalVotesCount);
 
-                            switch (eventDetails.votingEventType()) {
-                                case BALANCE_BASED, STAKE_BASED -> b.votingPower(totalVotingPower);
-                            }
+                    switch (eventDetails.votingEventType()) {
+                        case BALANCE_BASED, STAKE_BASED -> b.votingPower(totalVotingPower);
+                    }
 
                     return b.build();
                 }));

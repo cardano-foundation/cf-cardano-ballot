@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.35](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.34...v0.2.35) (2023-09-14)
+
+
+### Bug Fixes
+
+* dummy commit to force release-please ([34ec8ca](https://github.com/cardano-foundation/cf-cardano-ballot/commit/34ec8ca5639f7c57530f37b316311f5b486ebf96))
+
 ## [0.2.34](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.33...v0.2.34) (2023-09-13)
 
 

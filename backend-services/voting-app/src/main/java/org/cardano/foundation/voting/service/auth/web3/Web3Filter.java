@@ -128,6 +128,7 @@ public class Web3Filter extends OncePerRequestFilter {
                     .build();
 
             sendBackProblem(response, problem);
+
             return;
         }
 

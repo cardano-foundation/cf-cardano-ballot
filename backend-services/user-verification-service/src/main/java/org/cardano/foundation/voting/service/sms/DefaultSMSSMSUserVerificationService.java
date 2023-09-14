@@ -6,7 +6,9 @@ import com.google.i18n.phonenumbers.Phonenumber;
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
-import org.cardano.foundation.voting.domain.*;
+import org.cardano.foundation.voting.domain.CardanoNetwork;
+import org.cardano.foundation.voting.domain.IsVerifiedRequest;
+import org.cardano.foundation.voting.domain.IsVerifiedResponse;
 import org.cardano.foundation.voting.domain.entity.SMSUserVerification;
 import org.cardano.foundation.voting.domain.sms.SMSCheckVerificationRequest;
 import org.cardano.foundation.voting.domain.sms.SMSStartVerificationRequest;
@@ -31,8 +33,8 @@ import java.util.UUID;
 import static com.bloxbean.cardano.client.crypto.Blake2bUtil.blake2bHash256;
 import static com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.cardano.foundation.voting.domain.entity.SMSUserVerification.Status.PENDING;
-import static org.cardano.foundation.voting.domain.entity.SMSUserVerification.Status.VERIFIED;
+import static org.cardano.foundation.voting.domain.VerificationStatus.PENDING;
+import static org.cardano.foundation.voting.domain.VerificationStatus.VERIFIED;
 import static org.zalando.problem.Status.BAD_REQUEST;
 
 @Service

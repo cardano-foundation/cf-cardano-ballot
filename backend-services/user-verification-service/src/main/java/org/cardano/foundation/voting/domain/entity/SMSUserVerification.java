@@ -1,22 +1,22 @@
 package org.cardano.foundation.voting.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.domain.VerificationStatus;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "sms_user_verification")
 @Slf4j
-@SuperBuilder
 @NoArgsConstructor
 @Getter
 @Setter
+@SuperBuilder
 public class SMSUserVerification extends AbstractTimestampEntity {
 
     @Id
@@ -40,23 +40,11 @@ public class SMSUserVerification extends AbstractTimestampEntity {
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
-    @Builder.Default
-    @Getter
-    @Setter
-    private Status status = Status.NOT_REQUESTED;
+    private VerificationStatus status;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "expires_at", nullable = false)
-    @Builder.Default
-    @Getter
-    @Setter
-    private LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(15);
-
-    public enum Status {
-        NOT_REQUESTED,
-        PENDING,
-        VERIFIED,
-    }
+    private LocalDateTime expiresAt;
 
     @Override
     public String toString() {
@@ -73,4 +61,5 @@ public class SMSUserVerification extends AbstractTimestampEntity {
                 ", updatedAt=" + updatedAt +
                 '}';
     }
+
 }

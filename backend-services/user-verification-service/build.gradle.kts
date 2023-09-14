@@ -72,7 +72,9 @@ dependencies {
 
 	runtimeOnly("org.postgresql:postgresql")
 
-    // spring-boot overridden dependencies:
+	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.10")
+
+	// spring-boot overridden dependencies:
     runtimeOnly("com.h2database:h2:2.2.222") // GraalVM compatibility
 }
 

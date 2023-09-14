@@ -195,17 +195,14 @@ def castVote(acc: Account, amountAda: Int): Boolean = {
         acc.stakeHdKeyPair().getPublicKey().getKeyData()
     );
 
-    val cip30JsonNode = mapper.createObjectNode()
-    cip30JsonNode.put("coseSignature", castCoteCIP30Result.signature())
-    cip30JsonNode.put("cosePublicKey", castCoteCIP30Result.key())
-
-    val requestString = mapper.writerWithDefaultPrettyPrinter
-                              .writeValueAsString(cip30JsonNode)
-
     val r = requests.post(
         "http://localhost:9091/api/vote/cast", 
-        headers = Map("Content-Type" -> "application/json"),
-        data = requestString
+        headers = Map(
+         "Content-Type" -> "application/json",
+         "X-CIP93-Signature" -> castCoteCIP30Result.signature(),
+         "X-CIP93-Public-Key" -> castCoteCIP30Result.key()
+    ),
+    data = "{ }"
     )
 
     if (r.statusCode == 200) {
@@ -436,7 +433,7 @@ def main(isAlreadyRegistered: Boolean = false, organiserAlreadyToppedUp: Boolean
 
             println("woke up...")
 
-            for (i <- 1 to 10000000) {
+            for (i <- 1 to 25001) {
                 try {
                     val account = Account(Networks.testnet())
                     //val isPreloaded = topUpAccount(account, amountAda)
@@ -446,7 +443,7 @@ def main(isAlreadyRegistered: Boolean = false, organiserAlreadyToppedUp: Boolean
                         castVote(account, amountAda)
                     }
                 } catch {
-                    case e: Exception => println(s"Couldn't cast vote.")
+                    case e: Exception => println("vote cast error, error:" + e.getMessage())
                 }
             }
             

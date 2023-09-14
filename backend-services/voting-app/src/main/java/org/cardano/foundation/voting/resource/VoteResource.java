@@ -27,8 +27,6 @@ public class VoteResource {
     @RequestMapping(value = "/cast", method = POST, produces = "application/json")
     @Timed(value = "resource.vote.cast", histogram = true)
     public ResponseEntity<?> castVote(Authentication authentication) {
-        log.info("Casting vote...");
-
         return voteService.castVote((Web3AuthenticationToken) authentication)
                 .fold(problem -> {
                             log.warn("Vote cast failed, problem:{}", problem);

@@ -67,12 +67,13 @@ public class L1TransactionCreator {
     }
 
     @SneakyThrows
-    protected Metadata serialiseMetadata(MetadataMap childMetadata, OnChainEventType onChainEventType) {
+    protected Metadata serialiseMetadata(MetadataMap childMetadata,
+                                         OnChainEventType onChainEventType) {
         var stakeAddress = organiserAccount.stakeAddress();
         var stakeAddressAccount = new Address(stakeAddress);
 
         var data = CborSerializationUtil.serialize(childMetadata.getMap());
-        var hashedData = Blake2bUtil.blake2bHash224(data);
+        var hashedData = Blake2bUtil.blake2bHash256(data);
 
         DataSignature dataSignature = CIP30DataSigner.INSTANCE.signData(
                 stakeAddressAccount.getBytes(),
@@ -87,7 +88,7 @@ public class L1TransactionCreator {
 
         envelope.put("payload", childMetadata);
         envelope.put("signatureType", "HASH_ONLY"); // potential CIP-30 extension
-        envelope.put("hashType", "BLAKE2B_224"); // potential CIP-30 extension
+        envelope.put("hashType", "BLAKE2B_256"); // potential CIP-30 extension
 
         envelope.put("format", "CIP-30");
         envelope.put("subFormat", "CBOR");

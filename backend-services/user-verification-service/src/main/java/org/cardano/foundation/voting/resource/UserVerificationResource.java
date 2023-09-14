@@ -4,13 +4,12 @@ import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.IsVerifiedRequest;
+import org.cardano.foundation.voting.service.discord.DiscordUserVerificationService;
 import org.cardano.foundation.voting.service.sms.SMSUserVerificationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Objects;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
@@ -21,6 +20,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 public class UserVerificationResource {
 
     private final SMSUserVerificationService smsUserVerificationService;
+    private final DiscordUserVerificationService discordUserVerificationService;
 
     @RequestMapping(value = "/verified/{eventId}/{stakeAddress}", method = GET, produces = "application/json")
     @Timed(value = "resource.isVerified", histogram = true)
@@ -29,10 +29,10 @@ public class UserVerificationResource {
 
         log.info("Received isVerified request: {}", isVerifiedRequest);
 
-        // TODO fork join to discord and sms
+        // TODO fork join to sms and discord services and check is verified for both in parallel
 
         return smsUserVerificationService.isVerified(isVerifiedRequest)
-                .fold(problem -> ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem),
+                .fold(problem -> ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem),
                         isVerifiedResponse -> {
                             return ResponseEntity.ok().body(isVerifiedResponse);
                         }

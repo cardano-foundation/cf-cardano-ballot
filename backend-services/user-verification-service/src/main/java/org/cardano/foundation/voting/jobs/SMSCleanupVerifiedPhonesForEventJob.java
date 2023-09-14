@@ -1,21 +1,20 @@
 package org.cardano.foundation.voting.jobs;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.service.sms.SMSUserVerificationService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class SMSCleanupVerifiedPhonesForEventJob implements Runnable {
 
-    @Autowired
-    private ChainFollowerClient chainFollowerClient;
+    private final ChainFollowerClient chainFollowerClient;
 
-    @Autowired
-    private SMSUserVerificationService smsUserVerificationService;
+    private final SMSUserVerificationService smsUserVerificationService;
 
     @Scheduled(cron = "${finished.verifications.cleanup.job.cron}")
     public void run() {
@@ -41,3 +40,6 @@ public class SMSCleanupVerifiedPhonesForEventJob implements Runnable {
     }
 
 }
+
+
+/// SAR (30 days dirty trick) vs DDR

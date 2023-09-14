@@ -1,4 +1,4 @@
-package org.cardano.foundation.voting.domain;
+package org.cardano.foundation.voting.domain.discord;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
@@ -13,9 +13,9 @@ import lombok.ToString;
 public class DiscordStartVerificationRequest {
 
     @NotBlank
-    private String secret;
+    private String discordIdHash;
 
     @NotBlank
-    private String discordIdHash;
+    private String secret;
 
 }

@@ -13,7 +13,16 @@ type GuideTilePorps = {
   featureImgStyle?: any;
 };
 
-export const GuideTile = ({ width, height, featureImg, graphic, stepNumber, stepTitle, stepHint, featureImgStyle }: GuideTilePorps) => {
+export const GuideTile = ({
+  width,
+  height,
+  featureImg,
+  graphic,
+  stepNumber,
+  stepTitle,
+  stepHint,
+  featureImgStyle,
+}: GuideTilePorps) => {
   return (
     <Card
       className={styles.guideCard}
@@ -24,7 +33,7 @@ export const GuideTile = ({ width, height, featureImg, graphic, stepNumber, step
         height="260"
         image={graphic}
         alt=""
-        sx={{objectFit: 'fill'}}
+        sx={{ objectFit: 'fill' }}
       />
       <Box
         sx={{
@@ -34,10 +43,13 @@ export const GuideTile = ({ width, height, featureImg, graphic, stepNumber, step
           alignItems: 'center',
           margin: '0 auto',
           width: 'fit-content',
-          verticalAlign: 'middle'
+          verticalAlign: 'middle',
         }}
       >
-        <img style={featureImgStyle} src={featureImg} />
+        <img
+          style={featureImgStyle}
+          src={featureImg}
+        />
       </Box>
       <CardContent>
         {stepNumber}

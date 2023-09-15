@@ -1,8 +1,9 @@
 import React from 'react';
-import { Avatar, List, ListItem, ListItemAvatar, Typography } from '@mui/material';
+import {Avatar, List, ListItem, ListItemAvatar, Typography} from '@mui/material';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import './ConnectWalletList.scss';
 import { walletIcon } from '../../utils/utils';
+import { NetworkType } from '@cardano-foundation/cardano-connect-with-wallet-core';
 
 type ConnectWalletModalProps = {
   description: string;
@@ -16,7 +17,7 @@ const SUPPORTED_WALLETS = ['flint', 'nami', 'eternl', 'typhon', 'yoroi', 'nufi']
 
 const ConnectWalletList = (props: ConnectWalletModalProps) => {
   const { description, onConnectWallet, onConnectError } = props;
-  const { installedExtensions, connect } = useCardano();
+  const { installedExtensions, connect } = useCardano({ limitNetwork: 'testnet' as NetworkType });
 
   const availableWallets = installedExtensions.filter((installedWallet) => SUPPORTED_WALLETS.includes(installedWallet));
 

@@ -71,7 +71,7 @@ const Hero: React.FC = () => {
           order: { xs: '2', sm: '2', md: '2' },
         }}
       >
-        <div style={{ marginLeft: isMobile || isTablet ? '100px' : '0%'}}>
+        <div style={{ marginLeft: isMobile || isTablet ? '100px' : '0%' }}>
           <Hexagon>
             <>
               <div className="right-title-container">

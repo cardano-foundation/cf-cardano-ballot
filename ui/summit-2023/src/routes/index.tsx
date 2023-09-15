@@ -20,7 +20,7 @@ export const ROUTES = {
   TERMSANDCONDITIONS: `${PAGE_PATH}termsandconditions`,
   PRIVACYPOLICY: `${PAGE_PATH}privacypolicy`,
   NOMINEES_BY_ID: `${PAGE_PATH}nominees/:categoryId`,
-  NOT_FOUND: `${PAGE_PATH}404`,
+  PAGENOTFOUND: `${PAGE_PATH}404`,
 };
 
 const PageRouter = () => {
@@ -60,7 +60,7 @@ const PageRouter = () => {
           element={<PrivacyPolicy />}
         />
         <Route
-          path={ROUTES.NOT_FOUND}
+          path={ROUTES.PAGENOTFOUND}
           element={<NotFound />}
         />
         <Route

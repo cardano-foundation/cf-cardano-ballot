@@ -1,0 +1,45 @@
+@import './src/common/styles/colors';
+
+.modal {
+  min-width: 450px;
+  backdrop-filter: 'blur(10px)';
+}
+.modalTitle {
+  color: var(--color-ultra-dark-blue);
+  font-size: 22px !important;
+  font-style: normal;
+  font-weight: 600 !important;
+  line-height: 32px;
+  float: right;
+}
+
+.modalDescription {
+  color: var(--color-medium-grey);
+  font-size: 16px !important;
+  font-style: normal;
+  font-weight: 400 !important;
+  line-height: 22px;
+}
+
+.modalButtonAccept.MuiButtonBase-root:hover,
+.modalButtonAccept.MuiButtonBase-root {
+  display: flex;
+  width: 162px;
+  padding: 16px 24px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  border-radius: 8px;
+  background: var(--color-light-grey) !important;;
+  color: var(--color-light) !important;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  text-transform: none;
+}
+.modalButtonAcceptChecked.MuiButtonBase-root:hover,
+.modalButtonAcceptChecked.MuiButtonBase-root {
+  background: var(--color-light-green) !important;
+  color: var(--color-ultra-dark-blue) !important;
+}

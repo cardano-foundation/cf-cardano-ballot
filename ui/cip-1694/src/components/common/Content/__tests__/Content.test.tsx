@@ -36,8 +36,8 @@ jest.mock('../../../../env', () => {
     ...original,
     env: {
       ...original.env,
-      CATEGORY_ID: 'CIP-1694_Pre_Ratification_4619',
-      EVENT_ID: 'CIP-1694_Pre_Ratification_4619',
+      CATEGORY_ID: 'CHANGE_GOV_STRUCTURE',
+      EVENT_ID: 'CIP-1694_Pre_Ratification_3316',
       SUPPORTED_WALLETS: mockSupportedWallets,
     },
   };

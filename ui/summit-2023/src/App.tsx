@@ -20,7 +20,7 @@ import { getEvent } from 'common/api/referenceDataService';
 import { getUserInSession, tokenIsExpired } from './utils/session';
 import { CB_TERMS_AND_PRIVACY } from './common/constants/local';
 import { TermsOptInModal } from 'components/LegalOptInModal';
-
+import { NetworkType } from '@cardano-foundation/cardano-connect-with-wallet-core';
 function App() {
   const theme = useTheme();
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
@@ -28,6 +28,7 @@ function App() {
   const { isConnected, stakeAddress } = useCardano();
   const [storedValue, _] = useLocalStorage(CB_TERMS_AND_PRIVACY, false);
   const [openTermDialog, setOpenTermDialog] = useState(false);
+  const { isConnected, stakeAddress } = useCardano({ limitNetwork: 'testnet' as NetworkType });
 
   const dispatch = useDispatch();
   const fetchEvent = useCallback(async () => {
@@ -44,7 +45,7 @@ function App() {
 
       if (isLoggedIn) {
         const isExpired = tokenIsExpired(isLoggedIn.expiresAt);
-        if (!isExpired) dispatch(setWalletIsLoggedIn({ isLoggedIn }));
+        if (!isExpired) dispatch(setWalletIsLoggedIn({ isLoggedIn: isExpired }));
       }
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') {

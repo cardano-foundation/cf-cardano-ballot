@@ -1,7 +1,6 @@
 package org.cardano.foundation.voting.service.discord;
 
 import io.vavr.control.Either;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
@@ -33,7 +32,6 @@ import static org.zalando.problem.Status.BAD_REQUEST;
 
 @Service
 @Slf4j
-@AllArgsConstructor
 public class DefaultDiscordUserVerificationService implements DiscordUserVerificationService {
 
     @Autowired
@@ -45,9 +43,6 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
     @Autowired
     private Clock clock;
 
-    @Value("${discord.bot.eventId.binding}")
-    private String discordBotEventIdBinding;
-
     @Value("${validation.expiration.time.minutes}")
     private int validationExpirationTimeMinutes;
 
@@ -56,31 +51,21 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
 
     @Override
     @Transactional
-    public Either<Problem, DiscordStartVerificationResponse> startVerification(DiscordStartVerificationRequest startVerificationRequest) {
+    public Either<Problem, DiscordStartVerificationResponse> startVerification(String eventId, DiscordStartVerificationRequest startVerificationRequest) {
         var discordIdHash = startVerificationRequest.getDiscordIdHash();
 
         var maybeCompletedVerificationBasedOnDiscordUserHash = userVerificationRepository
-                .findCompletedVerificationBasedOnDiscordUserHash(discordBotEventIdBinding, discordIdHash);
+                .findCompletedVerificationBasedOnDiscordUserHash(eventId, discordIdHash);
 
         if (maybeCompletedVerificationBasedOnDiscordUserHash.isPresent()) {
             return Either.left(Problem.builder()
                     .withTitle("USER_ALREADY_VERIFIED")
                     .withDetail("User already verified.")
+                    .withStatus(BAD_REQUEST)
                     .build());
         }
 
-        var createdAt = LocalDateTime.now(clock);
-        var expiresAt = createdAt.plusMinutes(validationExpirationTimeMinutes);
-
-        var discordUserVerification = DiscordUserVerification.builder()
-                .discordIdHash(discordIdHash)
-                .secretCode(startVerificationRequest.getSecret())
-                .createdAt(createdAt)
-                .expiresAt(expiresAt)
-                .status(PENDING)
-                .build();
-
-        var eventDetails = chainFollowerClient.findEventById(discordBotEventIdBinding);
+        var eventDetails = chainFollowerClient.findEventById(eventId);
 
         if (eventDetails.isEmpty()) {
             log.error("event error:{}", eventDetails.getLeft());
@@ -90,23 +75,34 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
 
         var maybeEvent = eventDetails.get();
         if (maybeEvent.isEmpty()) {
-            log.warn("Active event not found:{}", discordBotEventIdBinding);
+            log.warn("Event not found:{}", eventId);
 
             return Either.left(Problem.builder()
                     .withTitle("EVENT_NOT_FOUND")
-                    .withDetail("Event not found, eventId:" + discordBotEventIdBinding)
+                    .withDetail("Event not found, eventId:" + eventId)
                     .withStatus(BAD_REQUEST)
                     .build());
         }
 
         var event = maybeEvent.orElseThrow();
+        var createdAt = LocalDateTime.now(clock);
+        var expiresAt = createdAt.plusMinutes(validationExpirationTimeMinutes);
+
+        var discordUserVerification = DiscordUserVerification.builder()
+                .discordIdHash(discordIdHash)
+                .eventId(eventId)
+                .secretCode(startVerificationRequest.getSecret())
+                .createdAt(createdAt)
+                .expiresAt(expiresAt)
+                .status(PENDING)
+                .build();
 
         if (event.finished()) {
-            log.warn("Event already finished:{}", discordBotEventIdBinding);
+            log.warn("Event already finished:{}", eventId);
 
             return Either.left(Problem.builder()
                     .withTitle("EVENT_ALREADY_FINISHED")
-                    .withDetail("Event already finished, eventId:" + discordBotEventIdBinding)
+                    .withDetail("Event already finished, eventId:" + eventId)
                     .withStatus(BAD_REQUEST)
                     .build());
         }
@@ -114,7 +110,7 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
         var saved = userVerificationRepository.saveAndFlush(discordUserVerification);
 
         return Either.right(DiscordStartVerificationResponse.builder()
-                .eventId(discordBotEventIdBinding)
+                .eventId(eventId)
                 .discordIdHash(saved.getDiscordIdHash())
                 .status(saved.getStatus())
                 .build()
@@ -123,8 +119,8 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
 
     @Override
     @Transactional
-    public Either<Problem, IsVerifiedResponse> checkVerification(DiscordCheckVerificationRequest checkVerificationRequest) {
-        var eventDetails = chainFollowerClient.findEventById(discordBotEventIdBinding);
+    public Either<Problem, IsVerifiedResponse> checkVerification(String eventId, DiscordCheckVerificationRequest checkVerificationRequest) {
+        var eventDetails = chainFollowerClient.findEventById(eventId);
 
         if (eventDetails.isEmpty()) {
             log.error("event error:{}", eventDetails.getLeft());
@@ -134,11 +130,11 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
 
         var maybeEvent = eventDetails.get();
         if (maybeEvent.isEmpty()) {
-            log.warn("Active event not found:{}", discordBotEventIdBinding);
+            log.warn("Event not found:{}", eventId);
 
             return Either.left(Problem.builder()
                     .withTitle("EVENT_NOT_FOUND")
-                    .withDetail("Event not found, eventId:" + discordBotEventIdBinding)
+                    .withDetail("Event not found, eventId:" + eventId)
                     .withStatus(BAD_REQUEST)
                     .build());
         }
@@ -146,11 +142,11 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
         var event = maybeEvent.orElseThrow();
 
         if (event.finished()) {
-            log.warn("Event already finished:{}", discordBotEventIdBinding);
+            log.warn("Event already finished:{}", eventId);
 
             return Either.left(Problem.builder()
                     .withTitle("EVENT_ALREADY_FINISHED")
-                    .withDetail("Event already finished, eventId:" + discordBotEventIdBinding)
+                    .withDetail("Event already finished, eventId:" + eventId)
                     .withStatus(BAD_REQUEST)
                     .build());
         }
@@ -167,6 +163,7 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
             return Either.left(Problem.builder()
                     .withTitle("INVALID_CIP-30-SIGNATURE")
                     .withDetail("Invalid CIP-30 signature")
+                    .withStatus(BAD_REQUEST)
                     .build()
             );
         }
@@ -178,6 +175,7 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
             return Either.left(Problem.builder()
                     .withTitle("INVALID_CIP-30-SIGNATURE")
                     .withDetail("Invalid CIP-30 signature, invalid signed message.")
+                    .withStatus(BAD_REQUEST)
                     .build()
             );
         }
@@ -190,6 +188,7 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
             return Either.left(Problem.builder()
                     .withTitle("INVALID_CIP-30-SIGNATURE")
                     .withDetail("Invalid CIP-30 signature, must have asdress in CIP-30 signature.")
+                    .withStatus(BAD_REQUEST)
                     .build()
             );
         }
@@ -200,6 +199,7 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
             return Either.left(Problem.builder()
                     .withTitle("ADDRESS_MISMATCH")
                     .withDetail(String.format("Address mismatch, stakeAddress: %s, address: %s", stakeAddress, address))
+                    .withStatus(BAD_REQUEST)
                     .build()
             );
         }
@@ -211,23 +211,25 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
         }
 
         var maybeCompletedVerificationBasedOnDiscordUserHash = userVerificationRepository
-                .findCompletedVerificationBasedOnDiscordUserHash(discordBotEventIdBinding, discordIdHash);
+                .findCompletedVerificationBasedOnDiscordUserHash(eventId, discordIdHash);
 
         if (maybeCompletedVerificationBasedOnDiscordUserHash.isPresent()) {
             return Either.left(Problem.builder()
                     .withTitle("USER_ALREADY_VERIFIED")
                     .withDetail("User already verified.")
+                    .withStatus(BAD_REQUEST)
                     .with("discordIdHash", discordIdHash)
                     .build()
             );
         }
 
-        var maybePendingVerification = userVerificationRepository.findPendingVerificationBasedOnDiscordUserHash(discordBotEventIdBinding, discordIdHash);
+        var maybePendingVerification = userVerificationRepository.findPendingVerificationBasedOnDiscordUserHash(eventId, discordIdHash);
 
         if (maybePendingVerification.isEmpty()) {
             return Either.left(Problem.builder()
                     .withTitle("NO_PENDING_VERIFICATION")
                     .withDetail("No pending verification found for discordIdHash:" + discordIdHash)
+                    .withStatus(BAD_REQUEST)
                     .with("discordIdHash", discordIdHash)
                     .build()
             );
@@ -239,11 +241,12 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
             return Either.left(Problem.builder()
                     .withTitle("AUTH_FAILED")
                     .withDetail("Invalid secret and / or discordIdHash.")
+                    .withStatus(BAD_REQUEST)
                     .build()
             );
         }
 
-        DiscordUserVerification pendingUserVerification = maybePendingVerification.orElseThrow();
+        var pendingUserVerification = maybePendingVerification.orElseThrow();
 
         var now = LocalDateTime.now(clock);
 
@@ -253,6 +256,8 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
                     .withTitle("VERIFICATION_EXPIRED")
                     .withDetail(String.format("Secret code: %s expired for stakeAddress: %s and discordHashId:%s", secret, stakeAddress, discordIdHash))
                     .withStatus(BAD_REQUEST)
+                    .with("discordIdHash", discordIdHash)
+                    .with("stakeAddress", stakeAddress)
                     .build());
         }
 
@@ -264,12 +269,17 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public Either<Problem, IsVerifiedResponse> isVerified(IsVerifiedRequest isVerifiedRequest) {
-        var eventId = isVerifiedRequest.getEventId();
-        var stakeAddress = isVerifiedRequest.getStakeAddress();
+    public Either<Problem, IsVerifiedResponse> isVerifiedBasedOnStakeAddress(IsVerifiedRequest isVerifiedRequest) {
+        var isVerified = userVerificationRepository.findCompletedVerification(isVerifiedRequest.getEventId(), isVerifiedRequest.getStakeAddress())
+                .map(uv -> new IsVerifiedResponse(true)).orElse(new IsVerifiedResponse(false));
 
-        var isVerified = userVerificationRepository.findCompletedVerification(eventId, stakeAddress)
+        return Either.right(isVerified);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Either<Problem, IsVerifiedResponse> isVerifiedBasedOnDiscordIdHash(String eventId, String discordIdHash) {
+        var isVerified = userVerificationRepository.findCompletedVerificationBasedOnDiscordUserHash(eventId, discordIdHash)
                 .map(uv -> new IsVerifiedResponse(true)).orElse(new IsVerifiedResponse(false));
 
         return Either.right(isVerified);

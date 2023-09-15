@@ -92,7 +92,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
 
         var maybeEvent = eventDetails.get();
         if (maybeEvent.isEmpty()) {
-            log.warn("Active event not found:{}", eventId);
+            log.warn("Event not found:{}", eventId);
 
             return Either.left(Problem.builder()
                     .withTitle("EVENT_NOT_FOUND")
@@ -238,7 +238,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
 
         var maybeEvent = activeEventE.get();
         if (maybeEvent.isEmpty()) {
-            log.error("Active event not found:{}", eventId);
+            log.error("Event not found:{}", eventId);
 
             return Either.left(Problem.builder()
                     .withTitle("EVENT_NOT_FOUND")
@@ -345,7 +345,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
 
         var maybeEvent = activeEventE.get();
         if (maybeEvent.isEmpty()) {
-            log.error("Active event not found:{}", isVerifiedRequest.getEventId());
+            log.error("Event not found:{}", isVerifiedRequest.getEventId());
 
             return Either.left(Problem.builder()
                     .withTitle("EVENT_NOT_FOUND")

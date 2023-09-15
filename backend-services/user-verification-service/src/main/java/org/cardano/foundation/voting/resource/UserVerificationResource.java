@@ -8,14 +8,15 @@ import org.cardano.foundation.voting.domain.IsVerifiedRequest;
 import org.cardano.foundation.voting.domain.IsVerifiedResponse;
 import org.cardano.foundation.voting.service.discord.DiscordUserVerificationService;
 import org.cardano.foundation.voting.service.sms.SMSUserVerificationService;
+import org.cardano.foundation.voting.utils.CompletableFutures;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.zalando.problem.Problem;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -33,8 +34,8 @@ public class UserVerificationResource {
     @RequestMapping(value = "/verified/{eventId}/{stakeAddress}", method = GET, produces = "application/json")
     @Timed(value = "resource.isVerified", histogram = true)
     public ResponseEntity<?> isVerified(@PathVariable("eventId") String eventId,
-                                        @PathVariable("stakeAddress") String stakeAddress) throws ExecutionException, InterruptedException {
-        var isVerifiedRequest = new IsVerifiedRequest(stakeAddress, eventId);
+                                        @PathVariable("stakeAddress") String stakeAddress) {
+        var isVerifiedRequest = new IsVerifiedRequest(eventId, stakeAddress);
 
         log.info("Received isVerified request: {}", isVerifiedRequest);
 
@@ -43,22 +44,29 @@ public class UserVerificationResource {
         });
 
         CompletableFuture<Either<Problem, IsVerifiedResponse>> discordVerificationFuture = CompletableFuture.supplyAsync(() -> {
-            return discordUserVerificationService.isVerified(isVerifiedRequest);
+            return discordUserVerificationService.isVerifiedBasedOnStakeAddress(isVerifiedRequest);
         });
 
-        var isVerified = CompletableFuture.anyOf(smsVerificationFuture, discordVerificationFuture);
+        var allFutures = CompletableFutures.anyResultsOf(List.of(smsVerificationFuture, discordVerificationFuture));
 
-        var isVerifiedResponseE = (Either<Problem, IsVerifiedResponse>) isVerified
-                .orTimeout(30, SECONDS)
-                .get();
+        List<Either<Problem, IsVerifiedResponse>> allResponses = allFutures.orTimeout(30, SECONDS)
+                .join();
 
-        return isVerifiedResponseE.fold(problem -> {
-                    return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
-                },
-                isVerifiedResponse -> {
-                    return ResponseEntity.ok().body(isVerifiedResponse);
-                }
-        );
+        var successCount = allResponses.stream().filter(Either::isRight).count();
+
+        if (successCount != 2) {
+            var problem = allResponses.stream().filter(Either::isLeft).findFirst().orElseThrow().getLeft();
+
+            return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
+        }
+
+        var successes = allResponses.stream().filter(Either::isRight).toList().stream().map(Either::get).toList();
+
+        var isVerified = successes.stream().reduce((a, b) -> {
+            return new IsVerifiedResponse(a.isVerified() || b.isVerified());
+        }).orElse(new IsVerifiedResponse(false));
+
+        return ResponseEntity.ok().body(isVerified);
     }
 
 }

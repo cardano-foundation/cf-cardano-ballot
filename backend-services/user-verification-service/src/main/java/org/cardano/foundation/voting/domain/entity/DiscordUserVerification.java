@@ -22,7 +22,7 @@ import java.util.Optional;
 public class DiscordUserVerification extends AbstractTimestampEntity {
 
     @Id
-    @Column(name = "discord_id_hash", nullable = false)
+    @Column(name = "id", nullable = false)
     @Getter
     @Setter
     private String discordIdHash;

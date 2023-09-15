@@ -20,9 +20,11 @@ export enum Headers {
   CARDANO_BALLOT_TRACE_ID = 'X-Cardano-Ballot-Trace-ID',
   AUTHORIZATION = 'Authorization',
   ACCEPT = 'Accept',
+  X_CIP93_Signature = 'X-CIP93-Signature',
+  X_CIP93_Public_Key = 'X-CIP93-Public-Key',
 }
 
-type contentTypeHeaders = Record<Headers, MediaTypes>;
+type contentTypeHeaders = Record<Headers, string>;
 
 export const DEFAULT_CONTENT_TYPE_HEADERS: Partial<contentTypeHeaders> = {
   [Headers.CONTENT_TYPE]: MediaTypes.APPLICATION_JSON_UTF8,
@@ -194,9 +196,21 @@ export const doRequest = async <T>(
   method: HttpMethods,
   url: string,
   headers: Partial<contentTypeHeaders>,
-  body?: string
+  body?: string,
+  token?: string,
+  bodyInHeader?: boolean
 ) => {
-  const allHeaders = headers || DEFAULT_CONTENT_TYPE_HEADERS;
+  const allHeaders = { ...headers, ...DEFAULT_CONTENT_TYPE_HEADERS };
+
+  if (body && bodyInHeader) {
+    allHeaders['X-CIP93-Signature'] = JSON.parse(body).coseSignature;
+    allHeaders['X-CIP93-Public-Key'] = JSON.parse(body).cosePublicKey;
+    body = undefined;
+  }
+
+  if (token) {
+    allHeaders['Authorization'] = <MediaTypes>`Bearer ${token}`;
+  }
 
   if (method === HttpMethods.POST) {
     return await post<T>(url, allHeaders, body);

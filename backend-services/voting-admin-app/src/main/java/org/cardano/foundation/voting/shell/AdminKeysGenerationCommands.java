@@ -1,5 +1,8 @@
 package org.cardano.foundation.voting.shell;
 
+import com.bloxbean.cardano.client.account.Account;
+import com.bloxbean.cardano.client.common.model.Network;
+import com.bloxbean.cardano.client.common.model.Networks;
 import com.bloxbean.cardano.client.util.HexUtil;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.jwk.gen.OctetKeyPairGenerator;
@@ -19,32 +22,56 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 @RequiredArgsConstructor
 public class AdminKeysGenerationCommands {
 
-    @ShellMethod(key = "generate-jwt-keys", value = "Generates JWT keys.")
+    private final Network network;
+
+    @ShellMethod(key = "admin-generate-new-account", value = "Generates new shelley address and staking key.")
+    public String generateNewAccount() {
+        val newAccount = new Account(network);
+
+        var sb = new StringBuilder();
+
+        sb
+        .append("Account created.").append("\n").append("\n")
+        .append("Network: ").append(network.toString()).append("\n")
+        .append("Address: ").append(newAccount.baseAddress()).append("\n")
+        .append("StakeAddress: ").append(newAccount.stakeAddress()).append("\n")
+        .append("Mnemonic: ").append(newAccount.mnemonic()).append("\n")
+        .append("\n");
+
+        return sb.toString();
+    }
+
+    @ShellMethod(key = "admin-generate-jwt-keys", value = "Generates JWT keys.")
     public String generateJWTAdminKeys() throws JOSEException {
         val key = new OctetKeyPairGenerator(Ed25519)
                 .generate();
 
         val keyJson = key.toJSONString();
 
-        log.info("JWT key as json:" + keyJson);
+        var sb = new StringBuilder();
 
-        String keyHex = HexUtil.encodeHexString(keyJson.getBytes(UTF_8));
+        sb.append("JWT admin keys generated.").append("\n").append("\n");
 
-        log.info("JWT key as hex:" + keyHex);
+        sb.append("JWT key (json): ").append(key.toJSONString()).append("\n");
 
-        return "Created JWT key (hex): " + keyHex;
+        sb.append("JWT key (hex): ").append(HexUtil.encodeHexString(keyJson.getBytes(UTF_8))).append("\n");
+
+        return sb.toString();
     }
 
-    @ShellMethod(key = "generate-salt", value = "Generates salt.")
+    @ShellMethod(key = "admin-generate-salt", value = "Generates salt.")
     public String generateSalt() {
         String randomUUID = UUID.randomUUID().toString();
 
-        log.info("UUID: " + randomUUID);
-
         var uuidSanitized = randomUUID.replace("-", "");
-        log.info("UUID (sanitized) (HEX): " + uuidSanitized);
 
-        return "Created salt key (hex): " + uuidSanitized;
+        var sb = new StringBuilder();
+
+        sb.append("Salt generated.").append("\n").append("\n");
+
+        sb.append("Salt key (hex): ").append(uuidSanitized).append("\n");
+
+        return sb.toString();
     }
 
 }

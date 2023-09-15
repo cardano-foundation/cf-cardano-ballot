@@ -36,7 +36,7 @@ CREATE TABLE discord_user_verification (
 
    event_id VARCHAR(255) NOT NULL,
 
-   stake_address VARCHAR(255),
+   stake_address VARCHAR(255), -- nullable since it is set on check-verification request
 
    secret_code VARCHAR(255) NOT NULL,
 
@@ -50,10 +50,10 @@ CREATE TABLE discord_user_verification (
    CONSTRAINT pk_discord_id_hash PRIMARY KEY (id)
 );
 
-create index idx_discord_stake_event_id on sms_user_verification(event_id);
+create index idx_discord_stake_event_id on discord_user_verification(event_id);
 
-create index idx_discord_event_id_status on sms_user_verification(event_id, status);
+create index idx_discord_event_id_status on discord_user_verification(event_id, status);
 
-create index idx_discord_stake_address_status on sms_user_verification(event_id, stake_address, status);
+create index idx_discord_stake_address_status on discord_user_verification(event_id, stake_address, status);
 
-create index idx_discord_status_event_discord_id_hash on sms_user_verification(event_id, status, id);
+create index idx_discord_status_event_discord_id_hash on discord_user_verification(event_id, status, id);

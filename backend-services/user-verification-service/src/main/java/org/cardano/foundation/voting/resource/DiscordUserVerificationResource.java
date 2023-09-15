@@ -16,8 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Objects;
 
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @RestController
 @RequestMapping("/api/discord/user-verification")
@@ -45,7 +44,7 @@ public class DiscordUserVerificationResource {
                 );
     }
 
-    @RequestMapping(value = "/start-verification", method = POST, produces = "application/json")
+    @RequestMapping(value = "/start-verification", method = { POST, PUT }, produces = "application/json")
     @Timed(value = "resource.discord.startVerification", histogram = true)
     public ResponseEntity<?> startVerification(@RequestBody @Valid DiscordStartVerificationRequest startVerificationRequest) {
         log.info("Received discord startVerification request: {}", startVerificationRequest);
@@ -60,7 +59,7 @@ public class DiscordUserVerificationResource {
                 );
     }
 
-    @RequestMapping(value = "/check-verification", method = POST, produces = "application/json")
+    @RequestMapping(value = "/check-verification", method = { POST , PUT }, produces = "application/json")
     @Timed(value = "resource.discord.checkVerification", histogram = true)
     public ResponseEntity<?> checkVerification(@RequestBody @Valid DiscordCheckVerificationRequest checkVerificationRequest) {
         log.info("Received discord checkVerification request: {}", checkVerificationRequest);

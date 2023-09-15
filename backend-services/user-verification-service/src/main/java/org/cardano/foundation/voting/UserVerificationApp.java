@@ -11,18 +11,19 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ImportRuntimeHints;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import static org.springframework.aot.hint.ExecutableMode.INVOKE;
 
-@SpringBootApplication(exclude = { SecurityAutoConfiguration.class, ErrorMvcAutoConfiguration.class })
+@SpringBootApplication(exclude = { SecurityAutoConfiguration.class, ErrorMvcAutoConfiguration.class, UserDetailsServiceAutoConfiguration.class })
 @EnableJpaRepositories("org.cardano.foundation.voting.repository")
 @EntityScan(basePackages = "org.cardano.foundation.voting.domain.entity")
 @ComponentScan(basePackages = {
@@ -34,6 +35,7 @@ import static org.springframework.aot.hint.ExecutableMode.INVOKE;
 })
 @EnableScheduling
 @EnableTransactionManagement
+@EnableWebSecurity
 @Slf4j
 @ImportRuntimeHints(UserVerificationApp.Hints.class)
 public class UserVerificationApp {
@@ -55,8 +57,7 @@ public class UserVerificationApp {
         @SneakyThrows
         public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
             hints.reflection().registerMethod(TimedAspect.class.getMethod("timedMethod", ProceedingJoinPoint.class), INVOKE);
-            hints.resources().registerResource(new ClassPathResource("db/migration/h2/V0__user_verification_service_init.sql"));
-            hints.resources().registerResource(new ClassPathResource("db/migration/postgresql/V0__user_verification_service_init.sql"));
+            hints.resources().registerPattern("*.sql");
         }
     }
 

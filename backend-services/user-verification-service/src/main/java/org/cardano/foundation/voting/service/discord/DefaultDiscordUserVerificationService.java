@@ -151,7 +151,8 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
                     .build());
         }
 
-        var stakeAddress = checkVerificationRequest.getStakeAddress();
+        var requestStakeAddress = checkVerificationRequest.getStakeAddress();
+        var requestSecret = checkVerificationRequest.getSecret();
 
         var coseSignature = checkVerificationRequest.getCoseSignature();
         var cosePublicKey = checkVerificationRequest.getCosePublicKey();
@@ -180,7 +181,16 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
             );
         }
         var discordIdHash = items[0];
-        var secret = items[1];
+        var cip30Secret = items[1];
+
+        if (!requestSecret.equals(cip30Secret)) {
+            return Either.left(Problem.builder()
+                    .withTitle("SECRET_MISMATCH")
+                    .withDetail("Request Secret and CIP-30 secret mismatch.")
+                    .withStatus(BAD_REQUEST)
+                    .build()
+            );
+        }
 
         var maybeAddress = cip30VerificationResult.getAddress(AddressFormat.TEXT);
 
@@ -195,16 +205,16 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
 
         var address = maybeAddress.orElseThrow();
 
-        if (!stakeAddress.equals(address)) {
+        if (!requestStakeAddress.equals(address)) {
             return Either.left(Problem.builder()
                     .withTitle("ADDRESS_MISMATCH")
-                    .withDetail(String.format("Address mismatch, stakeAddress: %s, address: %s", stakeAddress, address))
+                    .withDetail(String.format("Address mismatch, requestStakeAddress: %s, address: %s", requestStakeAddress, address))
                     .withStatus(BAD_REQUEST)
                     .build()
             );
         }
 
-        var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, stakeAddress);
+        var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, requestStakeAddress);
 
         if (stakeAddressCheckE.isEmpty()) {
             return Either.left(stakeAddressCheckE.getLeft());
@@ -235,7 +245,9 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
             );
         }
 
-        boolean isSecretCodeMatch = maybePendingVerification.get().getSecretCode().equals(secret);
+        var pendingVerification = maybePendingVerification.get();
+        boolean isSecretCodeMatch = pendingVerification.getSecretCode().equals(cip30Secret)
+                && pendingVerification.getSecretCode().equals(requestSecret);
 
         if (!isSecretCodeMatch) {
             return Either.left(Problem.builder()
@@ -254,14 +266,14 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
         if (isCodeExpired) {
             return Either.left(Problem.builder()
                     .withTitle("VERIFICATION_EXPIRED")
-                    .withDetail(String.format("Secret code: %s expired for stakeAddress: %s and discordHashId:%s", secret, stakeAddress, discordIdHash))
+                    .withDetail(String.format("Secret code: %s expired for requestStakeAddress: %s and discordHashId:%s", cip30Secret, requestStakeAddress, discordIdHash))
                     .withStatus(BAD_REQUEST)
                     .with("discordIdHash", discordIdHash)
-                    .with("stakeAddress", stakeAddress)
+                    .with("requestStakeAddress", requestStakeAddress)
                     .build());
         }
 
-        pendingUserVerification.setStakeAddress(Optional.of(stakeAddress));
+        pendingUserVerification.setStakeAddress(Optional.of(requestStakeAddress));
         pendingUserVerification.setUpdatedAt(now);
         pendingUserVerification.setStatus(VERIFIED);
 

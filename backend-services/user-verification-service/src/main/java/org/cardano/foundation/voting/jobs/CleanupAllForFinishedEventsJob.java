@@ -34,8 +34,8 @@ public class CleanupAllForFinishedEventsJob implements Runnable {
 
         allEvents.forEach(eventSummary -> {
             if (eventSummary.finished()) {
-                log.info("Event:{} is finished, removing all sms verifications...", eventSummary.id());
 
+                log.info("Event:{} is finished, removing all sms verifications...", eventSummary.id());
                 smsUserVerificationService.findAllForEvent(eventSummary.id()).forEach(userVerification -> {
                     log.info("Removing historical user sms verification... since eventId:{} is finished.", eventSummary.id());
                     smsUserVerificationService.removeUserVerification(userVerification);
@@ -46,6 +46,7 @@ public class CleanupAllForFinishedEventsJob implements Runnable {
                     log.info("Removing historical user discord verification... since eventId:{} is finished.", eventSummary.id());
                     discordUserVerificationService.removeUserVerification(userVerification);
                 });
+
             }
         });
     }

@@ -33,7 +33,7 @@ def signDiscordCIP30(): Unit = {
     val stakeAddress = organiserAccount.stakeAddress()
     val stakeAddressAccount = new Address(stakeAddress)
 
-    val input = s"fffff|bla"
+    val input = s"938c2cc0dcc05f2b68c4287040cfcf72|dupa.jasiu"
 
     println(input)
 

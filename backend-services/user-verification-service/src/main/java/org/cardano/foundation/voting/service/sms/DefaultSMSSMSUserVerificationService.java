@@ -13,7 +13,7 @@ import org.cardano.foundation.voting.domain.entity.SMSUserVerification;
 import org.cardano.foundation.voting.domain.sms.SMSCheckVerificationRequest;
 import org.cardano.foundation.voting.domain.sms.SMSStartVerificationRequest;
 import org.cardano.foundation.voting.domain.sms.SMSStartVerificationResponse;
-import org.cardano.foundation.voting.domain.sms.SaltHolder;
+import org.cardano.foundation.voting.domain.SaltHolder;
 import org.cardano.foundation.voting.repository.SMSUserVerificationRepository;
 import org.cardano.foundation.voting.service.pass.CodeGenService;
 import org.cardano.foundation.voting.utils.StakeAddress;

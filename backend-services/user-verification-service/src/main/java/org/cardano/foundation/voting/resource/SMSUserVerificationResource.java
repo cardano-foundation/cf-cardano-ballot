@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Objects;
 
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 @RestController
 @RequestMapping("/api/sms/user-verification")
@@ -24,7 +25,7 @@ public class SMSUserVerificationResource {
 
     private final SMSUserVerificationService smsUserVerificationService;
 
-    @RequestMapping(value = "/start-verification", method = POST, produces = "application/json")
+    @RequestMapping(value = "/start-verification", method = { PUT, POST }, produces = "application/json")
     @Timed(value = "resource.sms.startVerification", histogram = true)
     public ResponseEntity<?> startVerification(@RequestBody @Valid SMSStartVerificationRequest startVerificationRequest) {
         log.info("Received SMS startVerification request: {}", startVerificationRequest);
@@ -35,7 +36,7 @@ public class SMSUserVerificationResource {
                 );
     }
 
-    @RequestMapping(value = "/check-verification", method = POST, produces = "application/json")
+    @RequestMapping(value = "/check-verification", method = { POST }, produces = "application/json")
     @Timed(value = "resource.sms.checkVerification", histogram = true)
     public ResponseEntity<?> checkVerification(@RequestBody @Valid SMSCheckVerificationRequest checkVerificationRequest) {
         log.info("Received SMS checkVerification request: {}", checkVerificationRequest);

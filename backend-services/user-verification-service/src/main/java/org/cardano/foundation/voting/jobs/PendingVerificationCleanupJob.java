@@ -28,8 +28,8 @@ public class PendingVerificationCleanupJob implements Runnable {
     @Autowired
     private Clock clock;
 
-    @Value("${pending.verification.phone.expiration.time.hours}")
-    private int pendingVerificationPhoneExpirationTimeHours;
+    @Value("${pending.verification.expiration.time.hours}")
+    private int pendingVerificationExpirationTimeHours;
 
     @Scheduled(cron = "${pending.verification.phone.cleanup.job.cron}")
     public void run() {
@@ -52,7 +52,7 @@ public class PendingVerificationCleanupJob implements Runnable {
                 var now = LocalDateTime.now(clock);
 
                 boolean expiredVerification = now.isAfter(userVerification.getCreatedAt()
-                        .plusHours(pendingVerificationPhoneExpirationTimeHours));
+                        .plusHours(pendingVerificationExpirationTimeHours));
 
                 if (expiredVerification) {
                     log.info("Deleting expired pending user verification: {}", userVerification);
@@ -66,7 +66,7 @@ public class PendingVerificationCleanupJob implements Runnable {
                 var now = LocalDateTime.now(clock);
 
                 boolean expiredVerification = now.isAfter(userVerification.getCreatedAt()
-                        .plusHours(pendingVerificationPhoneExpirationTimeHours));
+                        .plusHours(pendingVerificationExpirationTimeHours));
 
                 if (expiredVerification) {
                     log.info("Deleting expired pending user verification: {}", userVerification);

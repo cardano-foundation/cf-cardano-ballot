@@ -70,9 +70,6 @@ const Nominees = () => {
   const dispatch = useDispatch();
 
   const categories = eventCache?.categories;
-  // const categories_ids = categories?.map((e) => e.id);
-
-  // if (categoryId && !categories_ids?.includes(categoryId)) navigate(ROUTES.NOT_FOUND);
 
   const summit2023Category: CategoryContent = SUMMIT2023CONTENT.categories.find(
     (category) => category.id === categoryId
@@ -314,59 +311,61 @@ const Nominees = () => {
         {summit2023Category.desc}
       </Typography>
 
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          backgroundColor: walletIsLoggedIn ? 'rgba(5, 97, 34, 0.07)' : 'rgba(253, 135, 60, 0.07)',
-          padding: '10px 20px',
-          borderRadius: '8px',
-          border: walletIsLoggedIn ? '1px solid #056122' : '1px solid #FD873C',
-          color: 'white',
-          width: '100%',
-          marginBottom: '20px',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          {walletIsLoggedIn ? (
-            <VerifiedUserIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#056122' }} />
-          ) : (
-            <WarningAmberIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#FD873C' }} />
-          )}
+        {
+            walletIsVerified ? <Box
+                sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    backgroundColor: walletIsLoggedIn ? 'rgba(5, 97, 34, 0.07)' : 'rgba(253, 135, 60, 0.07)',
+                    padding: '10px 20px',
+                    borderRadius: '8px',
+                    border: walletIsLoggedIn ? '1px solid #056122' : '1px solid #FD873C',
+                    color: 'white',
+                    width: '100%',
+                    marginBottom: '20px',
+                }}
+            >
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    {walletIsLoggedIn ? (
+                        <VerifiedUserIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#056122' }} />
+                    ) : (
+                        <WarningAmberIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#FD873C' }} />
+                    )}
 
-          <Typography
-            variant="h6"
-            style={{ color: '#24262E', fontSize: '18px', fontStyle: 'normal', fontWeight: '600', lineHeight: '22px' }}
-          >
-            {walletIsLoggedIn
-              ? 'You have successfully cast a vote for Nominee in the Ambassador category '
-              : 'To see you vote receipt, please sign with your wallet'}
-          </Typography>
-        </div>
-        <Button
-          onClick={() => handleViewVoteReceipt()}
-          variant="contained"
-          color="primary"
-          sx={{
-            display: 'inline-flex',
-            padding: '16px 24px',
-            justifyContent: 'center',
-            alignItems: 'center',
-            gap: '10px',
-            borderRadius: '8px',
-            background: '#03021F',
-            color: '#F6F9FF',
-            fontSize: '16px',
-            fontStyle: 'normal',
-            fontWeight: '600',
-            lineHeight: 'normal',
-            textTransform: 'none',
-          }}
-        >
-          {walletIsLoggedIn ? 'View vote receipt' : 'Login with wallet'}
-        </Button>
-      </Box>
+                    <Typography
+                        variant="h6"
+                        style={{ color: '#24262E', fontSize: '18px', fontStyle: 'normal', fontWeight: '600', lineHeight: '22px' }}
+                    >
+                        {walletIsLoggedIn
+                            ? 'You have successfully cast a vote for Nominee in the Ambassador category '
+                            : 'To see you vote receipt, please sign with your wallet'}
+                    </Typography>
+                </div>
+                <Button
+                    onClick={() => handleViewVoteReceipt()}
+                    variant="contained"
+                    color="primary"
+                    sx={{
+                        display: 'inline-flex',
+                        padding: '16px 24px',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        gap: '10px',
+                        borderRadius: '8px',
+                        background: '#03021F',
+                        color: '#F6F9FF',
+                        fontSize: '16px',
+                        fontStyle: 'normal',
+                        fontWeight: '600',
+                        lineHeight: 'normal',
+                        textTransform: 'none',
+                    }}
+                >
+                    {walletIsLoggedIn ? 'View vote receipt' : 'Login with wallet'}
+                </Button>
+            </Box> : null
+        }
 
       <Grid
         container

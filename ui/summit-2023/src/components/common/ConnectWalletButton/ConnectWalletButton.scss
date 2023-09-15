@@ -1,0 +1,105 @@
+
+.button-container {
+  position: relative;
+  padding-top: 16px;
+
+  &:hover .disconnect-wrapper {
+    display: block;
+  }
+
+  &:hover .arrow-icon svg {
+    transform: rotate(180deg);
+  }
+}
+
+.arrow-icon {
+  display: inline-flex;
+  align-items: center;
+
+  svg {
+    transition: transform 0.3s ease-in-out;
+    transform: rotate(0deg);
+  }
+}
+
+.disconnect-wrapper {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  display: none;
+
+  .disconnect-button {
+    margin-top: 4px;
+    width: 100%;
+    text-transform: none;
+  }
+}
+.connect-button.MuiButton-root {
+  display: inline-flex;
+  padding: 16px 24px 16px 16px;
+  align-items: flex-start;
+  gap: 8px;
+  border-radius: 8px;
+  background-color: var(--color-ultra-dark-blue) !important;
+  transition: transform 0.3s ease;
+  color: var(--color-light);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  text-transform: none;
+
+  span {
+    padding-top: 3px;
+  }
+}
+.verify-button.MuiButton-root {
+  width: 100%;
+  margin-top: 4px;
+  display: inline-flex;
+  padding: 16px 24px 16px 16px;
+  align-items: flex-start;
+  gap: 8px;
+  border-radius: 8px;
+  background-color: var(--color-light-green) !important;
+  transition: transform 0.3s ease;
+  color: var(--color-ultra-dark-blue);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  text-transform: none;
+
+  span {
+    padding-top: 3px;
+  }
+}
+
+.connect-button.MuiButton-root:hover {
+  transform: scale(1.02);
+}
+
+.connected-button.MuiButton-root {
+  width: 191px;
+  border-radius: 8px;
+  border: 1px solid var(--color-light-grey);
+  background: var(--color-light-blue);
+  display: inline-flex;
+  padding: 16px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  text-transform: none;
+
+  color: var(--color-dark-grey);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+}
+
+.connected-button.MuiButton-root:hover {
+  border: 1px solid var(--color-light-grey);
+  background: var(--color-light-blue);
+}

@@ -6,9 +6,14 @@ var mockCastAVoteWithDigitalSignature = jest.fn();
 var mockGetVotingPower = jest.fn();
 var mockBuildCanonicalVoteInputJson = jest.fn();
 var mockGetSignedMessagePromise = jest.fn();
-var mockGetSlotNumber = jest.fn();
+var mockGetChainTip = jest.fn();
 var mockGetVoteReceipt = jest.fn();
 var mockToast = jest.fn();
+var mockGetUserInSession = jest.fn();
+var mockSaveUserInSession = jest.fn();
+var mockTokenIsExpired = jest.fn();
+var submitLoginMock = jest.fn();
+var buildCanonicalLoginJsonMock = jest.fn();
 /* eslint-disable import/imports-first */
 import 'whatwg-fetch';
 import '@testing-library/jest-dom';
@@ -38,6 +43,7 @@ import {
   eventMock_notStarted,
   eventMock_finished,
   VoteReceiptMock_Full_MediumAssurance,
+  userInSessionMock,
   // VoteReceiptMock_Full_MediumAssurance,
 } from 'test/mocks';
 import { CustomRouter } from 'test/CustomRouter';
@@ -78,8 +84,8 @@ jest.mock('../../../env', () => {
     ...original,
     env: {
       ...original.env,
-      CATEGORY_ID: 'CIP-1694_Pre_Ratification_4619',
-      EVENT_ID: 'CIP-1694_Pre_Ratification_4619',
+      CATEGORY_ID: 'CHANGE_GOV_STRUCTURE',
+      EVENT_ID: 'CIP-1694_Pre_Ratification_3316',
     },
   };
 });
@@ -88,14 +94,27 @@ jest.mock('common/api/voteService', () => ({
   ...jest.requireActual('common/api/voteService'),
   castAVoteWithDigitalSignature: mockCastAVoteWithDigitalSignature,
   getVotingPower: mockGetVotingPower,
-  getSlotNumber: mockGetSlotNumber,
+  getChainTip: mockGetChainTip,
   getVoteReceipt: mockGetVoteReceipt,
+}));
+
+jest.mock('common/api/loginService', () => ({
+  ...jest.requireActual('common/api/loginService'),
+  submitLogin: submitLoginMock,
+  buildCanonicalLoginJson: buildCanonicalLoginJsonMock,
 }));
 
 jest.mock('common/utils/voteUtils', () => ({
   ...jest.requireActual('common/utils/voteUtils'),
   buildCanonicalVoteInputJson: mockBuildCanonicalVoteInputJson,
   getSignedMessagePromise: mockGetSignedMessagePromise,
+}));
+
+jest.mock('common/utils/session', () => ({
+  ...jest.requireActual('common/utils/session'),
+  getUserInSession: mockGetUserInSession,
+  saveUserInSession: mockSaveUserInSession,
+  tokenIsExpired: mockTokenIsExpired,
 }));
 
 export const handlers = [
@@ -116,7 +135,9 @@ afterAll(() => server.close());
 describe('For ongoing event:', () => {
   beforeEach(() => {
     mockUseCardano.mockReturnValue(useCardanoMock);
-    mockGetSlotNumber.mockReturnValue(chainTipMock);
+    mockGetChainTip.mockReturnValue(chainTipMock);
+    mockGetUserInSession.mockReturnValue({ accessToken: true });
+    mockTokenIsExpired.mockReturnValue(false);
     mockGetVoteReceipt.mockReturnValue({});
   });
   afterEach(() => {
@@ -164,7 +185,9 @@ describe('For ongoing event:', () => {
 
       const eventTime = await within(votePage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
-      expect(eventTime.textContent).toEqual(`Voting closes: ${formatUTCDate(eventMock_active.eventEndDate.toString())}`);
+      expect(eventTime.textContent).toEqual(
+        `Voting closes: ${formatUTCDate(eventMock_active.eventEndDate.toString())}`
+      );
 
       const eventDescription = await within(votePage).queryByTestId('event-description');
       expect(eventDescription).not.toBeNull();
@@ -172,15 +195,11 @@ describe('For ongoing event:', () => {
 
       const options = await within(votePage).queryAllByTestId('option-card');
       expect(options.length).toEqual(eventMock_active.categories[0].proposals.length);
-      expect(options[0].textContent).toEqual(
-        capitalize(eventMock_active.categories[0].proposals[0].name.toLowerCase())
-      );
-      expect(options[1].textContent).toEqual(
-        capitalize(eventMock_active.categories[0].proposals[1].name.toLowerCase())
-      );
-      expect(options[2].textContent).toEqual(
-        capitalize(eventMock_active.categories[0].proposals[2].name.toLowerCase())
-      );
+      for (const option in options) {
+        expect(options[option].textContent).toEqual(
+          capitalize(eventMock_active.categories[0].proposals[option].name.toLowerCase())
+        );
+      }
 
       const cta = await within(votePage).queryByTestId('proposal-connect-button');
       expect(cta).not.toBeNull();
@@ -255,7 +274,9 @@ describe('For ongoing event:', () => {
 
       const eventTime = await within(votePage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
-      expect(eventTime.textContent).toEqual(`Voting closes: ${formatUTCDate(eventMock_active.eventEndDate.toString())}`);
+      expect(eventTime.textContent).toEqual(
+        `Voting closes: ${formatUTCDate(eventMock_active.eventEndDate.toString())}`
+      );
 
       const eventDescription = await within(votePage).queryByTestId('event-description');
       expect(eventDescription).not.toBeNull();
@@ -263,15 +284,11 @@ describe('For ongoing event:', () => {
 
       const options = await within(votePage).queryAllByTestId('option-card');
       expect(options.length).toEqual(eventMock_active.categories[0].proposals.length);
-      expect(options[0].textContent).toEqual(
-        capitalize(eventMock_active.categories[0].proposals[0].name.toLowerCase())
-      );
-      expect(options[1].textContent).toEqual(
-        capitalize(eventMock_active.categories[0].proposals[1].name.toLowerCase())
-      );
-      expect(options[2].textContent).toEqual(
-        capitalize(eventMock_active.categories[0].proposals[2].name.toLowerCase())
-      );
+      for (const option in options) {
+        expect(options[option].textContent).toEqual(
+          capitalize(eventMock_active.categories[0].proposals[option].name.toLowerCase())
+        );
+      }
 
       const cta = await within(votePage).queryByTestId('proposal-submit-button');
       expect(cta).not.toBeNull();
@@ -322,7 +339,7 @@ describe('For ongoing event:', () => {
       <CustomRouter history={history}>
         <VotePage />
       </CustomRouter>,
-      { preloadedState: { user: { event: eventMock_active, isReceiptFetched: true } as UserState } }
+      { preloadedState: { user: { event: eventMock_active, isReceiptFetched: true, tip: chainTipMock } as UserState } }
     );
 
     const votePage = await screen.findByTestId('vote-page');
@@ -342,7 +359,7 @@ describe('For ongoing event:', () => {
     });
   });
 
-  test('should ask to fetch receipt and display proper state if present', async () => {
+  test('should ask to fetch receipt and display proper state if present and user session is active', async () => {
     const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
     mockGetVoteReceipt.mockReset();
     mockGetVoteReceipt.mockReturnValue(VoteReceiptMock_Basic);
@@ -358,12 +375,126 @@ describe('For ongoing event:', () => {
     mockGetVotingPower.mockReset();
     mockGetVotingPower.mockResolvedValue(accountDataMock);
 
+    mockGetUserInSession.mockReset();
+    mockGetUserInSession.mockReturnValue({ accessToken: true });
+    mockTokenIsExpired.mockReset();
+    mockTokenIsExpired.mockReturnValue(false);
+
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
+    renderWithProviders(
+      <CustomRouter history={history}>
+        <VotePage />
+      </CustomRouter>,
+      { preloadedState: { user: { event: eventMock_active, tip: chainTipMock } as UserState } }
+    );
+
+    await waitFor(async () => {
+      const confirmationModal = screen.queryByTestId('confirm-with-signature-modal');
+      expect(confirmationModal).toBeNull();
+    });
+  });
+
+  test('should ask to fetch receipt and display proper state if present and there is no user session', async () => {
+    const canonicalVoteInput = 'canonicalVoteInput';
+    buildCanonicalLoginJsonMock.mockReset();
+    buildCanonicalLoginJsonMock.mockReturnValue(canonicalVoteInput);
+    const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
+    mockGetVoteReceipt.mockReset();
+    mockGetVoteReceipt.mockReturnValue(VoteReceiptMock_Basic);
+    mockUseCardano.mockReset();
+    mockUseCardano.mockReturnValue({
+      ...useCardanoMock,
+      signMessage: mockSignMessage,
+    });
+    mockGetSignedMessagePromise.mockReset();
+    mockGetSignedMessagePromise.mockImplementation(
+      (signMessage: (message: string) => string) => async (message: string) => await signMessage(message)
+    );
+    mockGetVotingPower.mockReset();
+    mockGetVotingPower.mockResolvedValue(accountDataMock);
+
+    mockGetUserInSession.mockReset();
+    mockGetUserInSession.mockReturnValue(null);
+
+    submitLoginMock.mockReset();
+    submitLoginMock.mockReturnValue(userInSessionMock);
+
     const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
     const { store } = renderWithProviders(
       <CustomRouter history={history}>
         <VotePage />
       </CustomRouter>,
-      { preloadedState: { user: { event: eventMock_active } as UserState } }
+      { preloadedState: { user: { event: eventMock_active, tip: chainTipMock } as UserState } }
+    );
+
+    const votePage = await screen.findByTestId('vote-page');
+
+    const confirmationModal = await screen.findByTestId('confirm-with-signature-modal');
+    expect(confirmationModal).not.toBeNull();
+    expect(await within(confirmationModal).findByTestId('confirm-with-signature-title')).toHaveTextContent(
+      'Wallet signature'
+    );
+    expect(await within(confirmationModal).findByTestId('confirm-with-signature-description')).toHaveTextContent(
+      'We need to check if you’ve already voted. Please confirm with your wallet signature.'
+    );
+    const confirmCta = await within(confirmationModal).findByTestId('confirm-with-signature-cta');
+    expect(confirmCta).toHaveTextContent('Confirm');
+
+    fireEvent.click(confirmCta);
+
+    await waitFor(async () => {
+      expect(store.getState().user.proposal).toEqual(VoteReceiptMock_Basic.proposal);
+      expect(store.getState().user.receipt).toEqual(VoteReceiptMock_Basic);
+
+      expect(screen.queryAllByRole('button', { pressed: true })[0].textContent).toEqual(
+        capitalize(
+          eventMock_active.categories[0].proposals
+            .find(({ name }) => name === VoteReceiptMock_Basic.proposal)
+            .name.toLowerCase()
+        )
+      );
+
+      const cta = await within(votePage).queryByTestId('show-receipt-button');
+      expect(cta).not.toBeNull();
+      expect(cta.textContent).toEqual('Vote receipt');
+
+      expect(await screen.queryByTestId('confirm-with-signature-modal')).toBeNull();
+      expect(submitLoginMock).toBeCalledWith(canonicalVoteInput);
+      expect(mockSaveUserInSession).toBeCalledWith(userInSessionMock);
+    });
+  });
+
+  test('should ask to fetch receipt and display proper state if present and user token has expired', async () => {
+    const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
+    mockGetVoteReceipt.mockReset();
+    mockGetVoteReceipt.mockReturnValue(VoteReceiptMock_Basic);
+    mockUseCardano.mockReset();
+    mockUseCardano.mockReturnValue({
+      ...useCardanoMock,
+      signMessage: mockSignMessage,
+    });
+    mockGetSignedMessagePromise.mockReset();
+    mockGetSignedMessagePromise.mockImplementation(
+      (signMessage: (message: string) => string) => async (message: string) => await signMessage(message)
+    );
+    mockGetVotingPower.mockReset();
+    mockGetVotingPower.mockResolvedValue(accountDataMock);
+
+    mockGetUserInSession.mockReset();
+    mockGetUserInSession.mockReturnValue({ accessToken: true });
+
+    mockTokenIsExpired.mockReset();
+    mockTokenIsExpired.mockReturnValue(true);
+
+    submitLoginMock.mockReset();
+    submitLoginMock.mockReturnValue(userInSessionMock);
+
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
+    const { store } = renderWithProviders(
+      <CustomRouter history={history}>
+        <VotePage />
+      </CustomRouter>,
+      { preloadedState: { user: { event: eventMock_active, tip: chainTipMock } as UserState } }
     );
 
     const votePage = await screen.findByTestId('vote-page');
@@ -429,6 +560,56 @@ describe('For ongoing event:', () => {
               event: eventMock_active,
               proposal: VoteReceiptMock_Basic.proposal,
               receipt: VoteReceiptMock_Basic,
+              tip: chainTipMock,
+            } as UserState,
+          },
+        }
+      );
+    });
+
+    const votePage = await screen.findByTestId('vote-page');
+    expect(votePage).toBeInTheDocument();
+    expect(screen.queryByTestId('confirm-with-signature-modal')).not.toBeInTheDocument();
+
+    const cta = within(votePage).queryByTestId('show-receipt-button');
+    expect(cta.closest('button')).not.toBeDisabled();
+    expect(screen.queryByTestId('vote-receipt')).not.toBeInTheDocument();
+
+    await act(async () => {
+      fireEvent.click(cta);
+    });
+    expect(screen.queryByTestId('vote-receipt')).toBeInTheDocument();
+  });
+
+  test('should handle show vote receipt for inactive user session', async () => {
+    const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
+    mockGetVoteReceipt.mockReset();
+    mockGetVoteReceipt.mockReturnValue(VoteReceiptMock_Basic);
+    mockUseCardano.mockReset();
+    mockUseCardano.mockReturnValue({
+      ...useCardanoMock,
+      signMessage: mockSignMessage,
+    });
+    mockGetSignedMessagePromise.mockReset();
+    mockGetSignedMessagePromise.mockImplementation(
+      (signMessage: (message: string) => string) => async (message: string) => await signMessage(message)
+    );
+    mockGetVotingPower.mockReset();
+    mockGetVotingPower.mockResolvedValue(accountDataMock);
+
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
+    await act(async () => {
+      renderWithProviders(
+        <CustomRouter history={history}>
+          <VotePage />
+        </CustomRouter>,
+        {
+          preloadedState: {
+            user: {
+              event: eventMock_active,
+              proposal: VoteReceiptMock_Basic.proposal,
+              receipt: VoteReceiptMock_Basic,
+              tip: chainTipMock,
             } as UserState,
           },
         }
@@ -465,6 +646,11 @@ describe('For ongoing event:', () => {
     mockGetVotingPower.mockReset();
     mockGetVotingPower.mockResolvedValue(accountDataMock);
 
+    mockGetUserInSession.mockReset();
+    mockGetUserInSession.mockReturnValue({ accessToken: true });
+    mockTokenIsExpired.mockReset();
+    mockTokenIsExpired.mockReturnValue(false);
+
     const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
     await act(async () => {
       renderWithProviders(
@@ -477,6 +663,7 @@ describe('For ongoing event:', () => {
               event: eventMock_active,
               proposal: VoteReceiptMock_Basic.proposal,
               receipt: VoteReceiptMock_Basic,
+              tip: chainTipMock,
             } as UserState,
           },
         }
@@ -508,8 +695,10 @@ describe('For ongoing event:', () => {
 describe("For the event that hasn't started yet", () => {
   beforeEach(() => {
     mockUseCardano.mockReturnValue(useCardanoMock);
-    mockGetSlotNumber.mockReturnValue(chainTipMock);
+    mockGetChainTip.mockReturnValue(chainTipMock);
     mockGetVoteReceipt.mockReturnValue(null);
+    mockGetUserInSession.mockReturnValue({ accessToken: true });
+    mockTokenIsExpired.mockReturnValue(false);
   });
   afterEach(() => {
     jest.clearAllMocks();
@@ -526,7 +715,7 @@ describe("For the event that hasn't started yet", () => {
       <CustomRouter history={history}>
         <VotePage />
       </CustomRouter>,
-      { preloadedState: { user: { event: eventMock_notStarted } as UserState } }
+      { preloadedState: { user: { event: eventMock_notStarted, tip: chainTipMock } as UserState } }
     );
 
     await waitFor(async () => {
@@ -551,18 +740,12 @@ describe("For the event that hasn't started yet", () => {
 
       const options = await within(votePage).queryAllByTestId('option-card');
       expect(options.length).toEqual(eventMock_notStarted.categories[0].proposals.length);
-      expect(options[0].textContent).toEqual(
-        capitalize(eventMock_notStarted.categories[0].proposals[0].name.toLowerCase())
-      );
-      expect(options[0].closest('button')).toHaveAttribute('disabled');
-      expect(options[1].textContent).toEqual(
-        capitalize(eventMock_notStarted.categories[0].proposals[1].name.toLowerCase())
-      );
-      expect(options[1].closest('button')).toHaveAttribute('disabled');
-      expect(options[2].textContent).toEqual(
-        capitalize(eventMock_notStarted.categories[0].proposals[2].name.toLowerCase())
-      );
-      expect(options[2].closest('button')).toHaveAttribute('disabled');
+      for (const option in options) {
+        expect(options[option].textContent).toEqual(
+          capitalize(eventMock_notStarted.categories[0].proposals[option].name.toLowerCase())
+        );
+        expect(options[option].closest('button')).toHaveAttribute('disabled');
+      }
 
       const cta = await within(votePage).queryByTestId('event-hasnt-started-submit-button');
       expect(cta).not.toBeNull();
@@ -576,8 +759,10 @@ describe("For the event that hasn't started yet", () => {
 describe('For the event that has already finished', () => {
   beforeEach(() => {
     mockUseCardano.mockReturnValue(useCardanoMock);
-    mockGetSlotNumber.mockReturnValue(chainTipMock);
+    mockGetChainTip.mockReturnValue(chainTipMock);
     mockGetVoteReceipt.mockReturnValue({});
+    mockGetUserInSession.mockReturnValue({ accessToken: true });
+    mockTokenIsExpired.mockReturnValue(false);
   });
   afterEach(() => {
     jest.clearAllMocks();
@@ -617,15 +802,11 @@ describe('For the event that has already finished', () => {
 
       const options = await within(votePage).queryAllByTestId('option-card');
       expect(options.length).toEqual(eventMock_finished.categories[0].proposals.length);
-      expect(options[0].textContent).toEqual(
-        capitalize(eventMock_finished.categories[0].proposals[0].name.toLowerCase())
-      );
-      expect(options[1].textContent).toEqual(
-        capitalize(eventMock_finished.categories[0].proposals[1].name.toLowerCase())
-      );
-      expect(options[2].textContent).toEqual(
-        capitalize(eventMock_finished.categories[0].proposals[2].name.toLowerCase())
-      );
+      for (const option in options) {
+        expect(options[option].textContent).toEqual(
+          capitalize(eventMock_finished.categories[0].proposals[option].name.toLowerCase())
+        );
+      }
 
       const cta = await within(votePage).queryByTestId('proposal-connect-button');
       expect(cta).not.toBeNull();
@@ -706,6 +887,7 @@ describe('For the event that has already finished', () => {
               event: eventMock_finished,
               proposal: VoteReceiptMock_Basic.proposal,
               receipt: VoteReceiptMock_Basic,
+              tip: chainTipMock,
             } as UserState,
           },
         }

@@ -24,6 +24,13 @@ module.exports = function (app) {
       })
     );
     app.use(
+      '/api/auth/**',
+      createProxyMiddleware({
+        target: 'http://localhost:9091',
+        changeOrigin: true,
+      })
+    );
+    app.use(
       '/api',
       createProxyMiddleware({
         target: 'http://localhost:9090',

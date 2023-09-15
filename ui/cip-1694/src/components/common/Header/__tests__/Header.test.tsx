@@ -88,7 +88,7 @@ describe('For ongoing event:', () => {
 
       const headerLogo = await within(header).queryByTestId('header-logo');
       expect(headerLogo).not.toBeNull();
-      expect(headerLogo.textContent).toEqual('CIP-1694 Ratification');
+      expect(headerLogo.textContent).toEqual('Referendum on Governance');
 
       const leaderboardLink = await within(header).queryByTestId('leaderboard-link');
       expect(leaderboardLink).not.toBeNull();
@@ -116,7 +116,7 @@ describe('For ongoing event:', () => {
     await waitFor(async () => {
       const header = await screen.queryByTestId('header');
       const headerLogo = await within(header).queryByTestId('header-logo');
-      expect(headerLogo.textContent).toEqual('CIP-1694 Ratification');
+      expect(headerLogo.textContent).toEqual('Referendum on Governance');
 
       const voteLink = await within(header).queryByTestId('vote-link');
       expect(voteLink.textContent).toEqual('Your vote');

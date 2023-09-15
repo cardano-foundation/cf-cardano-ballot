@@ -7,7 +7,7 @@ import { PieChart } from 'react-minimal-pie-chart';
 import { Grid, Typography } from '@mui/material';
 import BlockIcon from '@mui/icons-material/Block';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
-import { ByCategory } from 'types/voting-app-types';
+import { ByProposalsInCategoryStats } from 'types/voting-app-types';
 import { ProposalPresentation } from 'types/voting-ledger-follower-types';
 import { RootState } from 'common/store';
 import * as leaderboardService from 'common/api/leaderboardService';
@@ -21,7 +21,7 @@ import { StatItem } from './types';
 export const Leaderboard = () => {
   const { isConnected } = useCardano();
   const event = useSelector((state: RootState) => state.user.event);
-  const [stats, setStats] = useState<ByCategory['proposals']>();
+  const [stats, setStats] = useState<ByProposalsInCategoryStats['proposals']>();
 
   const init = useCallback(async () => {
     try {

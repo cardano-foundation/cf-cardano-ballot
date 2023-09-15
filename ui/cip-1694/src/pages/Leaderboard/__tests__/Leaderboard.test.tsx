@@ -16,7 +16,7 @@ import { UserState } from 'common/store/types';
 import { renderWithProviders } from 'test/mockProviders';
 import { useCardanoMock, eventMock_finished, voteStats, eventMock_active } from 'test/mocks';
 import { CustomRouter } from 'test/CustomRouter';
-import { ByCategory } from 'types/voting-app-types';
+import { ByProposalsInCategoryStats } from 'types/voting-app-types';
 import { Leaderboard } from '../Leaderboard';
 import { proposalColorsMap, getPercentage } from '../utils';
 
@@ -56,8 +56,8 @@ jest.mock('../../../env', () => {
     ...original,
     env: {
       ...original.env,
-      CATEGORY_ID: 'CIP-1694_Pre_Ratification_4619',
-      EVENT_ID: 'CIP-1694_Pre_Ratification_4619',
+      CATEGORY_ID: 'CHANGE_GOV_STRUCTURE',
+      EVENT_ID: 'CIP-1694_Pre_Ratification_3316',
     },
   };
 });
@@ -92,7 +92,7 @@ describe('For the event that has already finished', () => {
     const statsSum = Object.values(voteStats.proposals)?.reduce((acc, { votes }) => (acc += votes), 0);
     const statsItems =
       eventMock_finished?.categories
-        ?.find(({ id }) => id === 'CIP-1694_Pre_Ratification_4619')
+        ?.find(({ id }) => id === 'CHANGE_GOV_STRUCTURE')
         ?.proposals?.map(({ name }) => ({
           name,
           label: capitalize(name.toLowerCase()),
@@ -118,9 +118,11 @@ describe('For the event that has already finished', () => {
       expect(pollStatsTileSummary.textContent).toEqual(`${statsSum}`);
 
       const pollStatsItems = await within(pollStatsTile).queryAllByTestId('poll-stats-item');
-      expect(pollStatsItems[0].textContent).toEqual(`${capitalize(stats[0][0].toLowerCase())}${stats[0][1].votes}`);
-      expect(pollStatsItems[1].textContent).toEqual(`${capitalize(stats[1][0].toLowerCase())}${stats[1][1].votes}`);
-      expect(pollStatsItems[2].textContent).toEqual(`${capitalize(stats[2][0].toLowerCase())}${stats[2][1].votes}`);
+      for (const item in pollStatsItems) {
+        expect(pollStatsItems[item].textContent).toEqual(
+          `${capitalize(stats[item][0].toLowerCase())}${stats[item][1].votes}`
+        );
+      }
 
       const currentlyVotingTile = await within(leaderboardPage).queryByTestId('currently-voting-tile');
       expect(currentlyVotingTile).not.toBeNull();
@@ -134,24 +136,14 @@ describe('For the event that has already finished', () => {
       expect(currentlyVotingTileSummary.textContent).toEqual(`${statsSum}`);
 
       const currentlyVotingItems = await within(currentlyVotingTile).queryAllByTestId('currently-voting-item');
-      expect(currentlyVotingItems[0].textContent).toEqual(
-        `${capitalize(stats[0][0].toLowerCase())} - ${getPercentage(
-          voteStats.proposals[stats[0][0]]?.votes,
-          statsSum
-        ).toFixed(2)}%`
-      );
-      expect(currentlyVotingItems[1].textContent).toEqual(
-        `${capitalize(stats[1][0].toLowerCase())} - ${getPercentage(
-          voteStats.proposals[stats[1][0]]?.votes,
-          statsSum
-        ).toFixed(2)}%`
-      );
-      expect(currentlyVotingItems[2].textContent).toEqual(
-        `${capitalize(stats[2][0].toLowerCase())} - ${getPercentage(
-          voteStats.proposals[stats[2][0]]?.votes,
-          statsSum
-        ).toFixed(2)}%`
-      );
+      for (const item in pollStatsItems) {
+        expect(currentlyVotingItems[item].textContent).toEqual(
+          `${capitalize(stats[item][0].toLowerCase())} - ${getPercentage(
+            voteStats.proposals[stats[item][0]]?.votes,
+            statsSum
+          ).toFixed(2)}%`
+        );
+      }
 
       const currentlyVotingChart = await within(currentlyVotingTile).queryByTestId('pie-chart');
       expect(currentlyVotingChart).toBeInTheDocument();
@@ -160,7 +152,7 @@ describe('For the event that has already finished', () => {
         lineWidth: 32,
         data: statsItems.map(({ label, name }) => ({
           title: label,
-          value: (voteStats.proposals?.[name as any] as unknown as ByCategory['proposals'])?.votes,
+          value: (voteStats.proposals?.[name as any] as unknown as ByProposalsInCategoryStats['proposals'])?.votes,
           color: proposalColorsMap[name],
         })),
       });
@@ -213,9 +205,9 @@ describe("For the event that hasn't finished yet", () => {
       expect(pollStatsTileSummary.textContent).toEqual(`${statsSum}`);
 
       const pollStatsItems = await within(pollStatsTile).queryAllByTestId('poll-stats-item');
-      expect(pollStatsItems[0].textContent).toEqual(`${capitalize(stats[0][0].toLowerCase())}${placeholder}`);
-      expect(pollStatsItems[1].textContent).toEqual(`${capitalize(stats[1][0].toLowerCase())}${placeholder}`);
-      expect(pollStatsItems[2].textContent).toEqual(`${capitalize(stats[2][0].toLowerCase())}${placeholder}`);
+      for (const item in pollStatsItems) {
+        expect(pollStatsItems[item].textContent).toEqual(`${capitalize(stats[item][0].toLowerCase())}${placeholder}`);
+      }
 
       const currentlyVotingTile = await within(leaderboardPage).queryByTestId('currently-voting-tile');
       expect(currentlyVotingTile).not.toBeNull();
@@ -229,9 +221,9 @@ describe("For the event that hasn't finished yet", () => {
       expect(currentlyVotingTileSummary.textContent).toEqual(`${statsSum}`);
 
       const currentlyVotingItems = await within(currentlyVotingTile).queryAllByTestId('currently-voting-item');
-      expect(currentlyVotingItems[0].textContent).toEqual(`${capitalize(stats[0][0].toLowerCase())}`);
-      expect(currentlyVotingItems[1].textContent).toEqual(`${capitalize(stats[1][0].toLowerCase())}`);
-      expect(currentlyVotingItems[2].textContent).toEqual(`${capitalize(stats[2][0].toLowerCase())}`);
+      for (const item in pollStatsItems) {
+        expect(currentlyVotingItems[item].textContent).toEqual(`${capitalize(stats[item][0].toLowerCase())}`);
+      }
 
       const currentlyVotingChart = await within(currentlyVotingTile).queryByTestId('pie-chart');
       expect(currentlyVotingChart).toBeInTheDocument();

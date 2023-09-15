@@ -1,5 +1,5 @@
 import { VoteReceipt } from 'types/voting-app-types';
-import { EventPresentation } from 'types/voting-ledger-follower-types';
+import { ChainTip, EventPresentation } from 'types/voting-ledger-follower-types';
 
 export interface UserState {
   isConnectWalletModalVisible: boolean;
@@ -9,6 +9,7 @@ export interface UserState {
   receipt: VoteReceipt | null;
   proposal: VoteReceipt['proposal'];
   event: EventPresentation;
+  tip: ChainTip;
 }
 
 export interface State {

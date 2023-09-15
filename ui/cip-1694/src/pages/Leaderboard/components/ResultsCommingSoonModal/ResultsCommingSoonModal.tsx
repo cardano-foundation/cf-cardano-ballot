@@ -18,10 +18,11 @@ type ResultsCommingSoonModalProps = {
   description: string | React.ReactNode;
   onCloseFn: () => void;
   onGoBackFn: () => void;
+  onConfirmFn: () => void;
 };
 
 export const ResultsCommingSoonModal = (props: ResultsCommingSoonModalProps) => {
-  const { name, id, openStatus, title, description, onCloseFn, onGoBackFn } = props;
+  const { name, id, openStatus, title, description, onCloseFn, onGoBackFn, onConfirmFn } = props;
 
   return (
     <Dialog
@@ -41,6 +42,7 @@ export const ResultsCommingSoonModal = (props: ResultsCommingSoonModalProps) => 
           aria-label="close"
           onClick={onCloseFn}
           className={styles.closeBtn}
+          data-testid="result-comming-soon-modal-close-icon"
         >
           <CloseIcon className={styles.closeIcon} />
         </IconButton>
@@ -79,7 +81,7 @@ export const ResultsCommingSoonModal = (props: ResultsCommingSoonModalProps) => 
                   className={cn(styles.button, styles.secondary)}
                   size="large"
                   variant="contained"
-                  onClick={() => onCloseFn()}
+                  onClick={() => onConfirmFn()}
                   sx={{}}
                   data-testid="result-comming-soon-modal-cta"
                 >

@@ -44,5 +44,7 @@ export const confirmPhoneNumberCode = async (
     {
       ...DEFAULT_CONTENT_TYPE_HEADERS,
     },
-    JSON.stringify({ eventId, stakeAddress, phoneNumber, requestId, verificationCode })
+    JSON.stringify({ eventId, stakeAddress, phoneNumber, requestId, verificationCode }),
+    undefined,
+    true
   );

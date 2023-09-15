@@ -17,12 +17,13 @@ import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import { getIsVerified } from 'common/api/verificationService';
 import { getEvent } from 'common/api/referenceDataService';
 import { getUserInSession, tokenIsExpired } from './utils/session';
+import { NetworkType } from '@cardano-foundation/cardano-connect-with-wallet-core';
 
 function App() {
   const theme = useTheme();
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
   const eventCache = useSelector((state: RootState) => state.user.event);
-  const { isConnected, stakeAddress } = useCardano();
+  const { isConnected, stakeAddress } = useCardano({ limitNetwork: 'testnet' as NetworkType });
 
   const dispatch = useDispatch();
   const fetchEvent = useCallback(async () => {
@@ -76,7 +77,10 @@ function App() {
               maxWidth="xl"
               className="container"
             >
-              <Box my={2} className="content">
+              <Box
+                my={2}
+                className="content"
+              >
                 {eventCache !== undefined ? (
                   <PageRouter />
                 ) : (

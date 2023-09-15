@@ -56,6 +56,7 @@ import { useToggle } from 'common/hooks/useToggle';
 import ReadMore from './ReadMore';
 import Modal from '../../components/common/Modal/Modal';
 import QRCode from 'react-qr-code';
+import { NetworkType } from '@cardano-foundation/cardano-connect-with-wallet-core';
 
 const Nominees = () => {
   const { categoryId } = useParams();
@@ -83,11 +84,11 @@ const Nominees = () => {
   const [isVisible, setIsVisible] = useState(true);
   const [isToggleReadMore, toggleReadMore] = useToggle(false);
   const [isViewVoteReceipt, toggleViewVoteReceipt] = useToggle(false);
-  const [isViewFinalReceipt, toggleViewFinalReceipt] = useToggle(true);
+  const [isViewFinalReceipt, toggleViewFinalReceipt] = useToggle(false);
   const [selectedNominee, setSelectedNominee] = useState({});
   const [nominees, setNominees] = useState<ProposalPresentation[]>([]);
 
-  const { isConnected, stakeAddress, signMessage } = useCardano();
+  const { isConnected, stakeAddress, signMessage } = useCardano({ limitNetwork: 'testnet' as NetworkType });
 
   const signMessagePromisified = useMemo(() => getSignedMessagePromise(signMessage), [signMessage]);
 
@@ -644,7 +645,7 @@ const Nominees = () => {
                     </Typography>
                   </div>
                   <RefreshIcon
-                      onClick={() => viewVoteReceipt(true, false)}
+                    onClick={() => viewVoteReceipt(true, false)}
                     sx={{
                       display: 'inline-flex',
                       justifyContent: 'center',

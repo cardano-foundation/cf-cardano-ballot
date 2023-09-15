@@ -181,7 +181,7 @@ describe('For ongoing event:', () => {
 
       const eventTitle = await within(votePage).queryByTestId('event-title');
       expect(eventTitle).not.toBeNull();
-      expect(eventTitle.textContent).toEqual('CIP-1694 Vote');
+      expect(eventTitle.textContent).toEqual('The Governance of Cardano');
 
       const eventTime = await within(votePage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
@@ -191,7 +191,7 @@ describe('For ongoing event:', () => {
 
       const eventDescription = await within(votePage).queryByTestId('event-description');
       expect(eventDescription).not.toBeNull();
-      expect(eventDescription.textContent).toEqual('(..)');
+      expect(eventDescription.textContent).toEqual('Should Cardano change its governance structure?');
 
       const options = await within(votePage).queryAllByTestId('option-card');
       expect(options.length).toEqual(eventMock_active.categories[0].proposals.length);
@@ -270,7 +270,7 @@ describe('For ongoing event:', () => {
 
       const eventTitle = await within(votePage).queryByTestId('event-title');
       expect(eventTitle).not.toBeNull();
-      expect(eventTitle.textContent).toEqual('CIP-1694 Vote');
+      expect(eventTitle.textContent).toEqual('The Governance of Cardano');
 
       const eventTime = await within(votePage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
@@ -280,7 +280,7 @@ describe('For ongoing event:', () => {
 
       const eventDescription = await within(votePage).queryByTestId('event-description');
       expect(eventDescription).not.toBeNull();
-      expect(eventDescription.textContent).toEqual('(..)');
+      expect(eventDescription.textContent).toEqual('Should Cardano change its governance structure?');
 
       const options = await within(votePage).queryAllByTestId('option-card');
       expect(options.length).toEqual(eventMock_active.categories[0].proposals.length);
@@ -333,27 +333,37 @@ describe('For ongoing event:', () => {
     mockGetVotingPower.mockResolvedValue(accountDataMock);
     mockBuildCanonicalVoteInputJson.mockReset();
     mockBuildCanonicalVoteInputJson.mockReturnValue(canonicalVoteInputJsonMock);
+
     const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
 
-    const { store } = renderWithProviders(
-      <CustomRouter history={history}>
-        <VotePage />
-      </CustomRouter>,
-      { preloadedState: { user: { event: eventMock_active, isReceiptFetched: true, tip: chainTipMock } as UserState } }
-    );
+    let store: ReturnType<typeof renderWithProviders>['store'];
+    await act(async () => {
+      ({ store } = renderWithProviders(
+        <CustomRouter history={history}>
+          <VotePage />
+        </CustomRouter>,
+        { preloadedState: { user: { event: eventMock_active, tip: chainTipMock } as UserState } }
+      ));
+    });
 
-    const votePage = await screen.findByTestId('vote-page');
-    const options = await within(votePage).queryAllByTestId('option-card');
+    await waitFor(async () => {
+      const votePage = screen.queryByTestId('vote-page');
 
-    fireEvent.click(options[0]);
+      const options = within(votePage).queryAllByTestId('option-card');
 
-    const cta = await within(votePage).queryByTestId('proposal-submit-button');
-    expect(cta).not.toBeNull();
+      await act(async () => {
+        fireEvent.click(options[0]);
+      });
 
-    expect(store.getState().user.isVoteSubmittedModalVisible).toBeFalsy();
-    fireEvent.click(cta);
+      const cta = within(votePage).queryByTestId('proposal-submit-button');
+      expect(cta).not.toBeNull();
+      expect(cta.closest('button')).not.toBeDisabled();
 
-    await waitFor(() => {
+      expect(store.getState().user.isVoteSubmittedModalVisible).toBeFalsy();
+      await act(async () => {
+        fireEvent.click(cta);
+      });
+
       expect(mockCastAVoteWithDigitalSignature).toHaveBeenCalledWith(canonicalVoteInputJsonMock);
       expect(store.getState().user.isVoteSubmittedModalVisible).toBeTruthy;
     });
@@ -420,7 +430,7 @@ describe('For ongoing event:', () => {
     submitLoginMock.mockReturnValue(userInSessionMock);
 
     const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
-    const { store } = renderWithProviders(
+    renderWithProviders(
       <CustomRouter history={history}>
         <VotePage />
       </CustomRouter>,
@@ -443,9 +453,6 @@ describe('For ongoing event:', () => {
     fireEvent.click(confirmCta);
 
     await waitFor(async () => {
-      expect(store.getState().user.proposal).toEqual(VoteReceiptMock_Basic.proposal);
-      expect(store.getState().user.receipt).toEqual(VoteReceiptMock_Basic);
-
       expect(screen.queryAllByRole('button', { pressed: true })[0].textContent).toEqual(
         capitalize(
           eventMock_active.categories[0].proposals
@@ -490,7 +497,7 @@ describe('For ongoing event:', () => {
     submitLoginMock.mockReturnValue(userInSessionMock);
 
     const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
-    const { store } = renderWithProviders(
+    renderWithProviders(
       <CustomRouter history={history}>
         <VotePage />
       </CustomRouter>,
@@ -513,9 +520,6 @@ describe('For ongoing event:', () => {
     fireEvent.click(confirmCta);
 
     await waitFor(async () => {
-      expect(store.getState().user.proposal).toEqual(VoteReceiptMock_Basic.proposal);
-      expect(store.getState().user.receipt).toEqual(VoteReceiptMock_Basic);
-
       expect(screen.queryAllByRole('button', { pressed: true })[0].textContent).toEqual(
         capitalize(
           eventMock_active.categories[0].proposals
@@ -558,8 +562,6 @@ describe('For ongoing event:', () => {
           preloadedState: {
             user: {
               event: eventMock_active,
-              proposal: VoteReceiptMock_Basic.proposal,
-              receipt: VoteReceiptMock_Basic,
               tip: chainTipMock,
             } as UserState,
           },
@@ -607,8 +609,6 @@ describe('For ongoing event:', () => {
           preloadedState: {
             user: {
               event: eventMock_active,
-              proposal: VoteReceiptMock_Basic.proposal,
-              receipt: VoteReceiptMock_Basic,
               tip: chainTipMock,
             } as UserState,
           },
@@ -661,8 +661,6 @@ describe('For ongoing event:', () => {
           preloadedState: {
             user: {
               event: eventMock_active,
-              proposal: VoteReceiptMock_Basic.proposal,
-              receipt: VoteReceiptMock_Basic,
               tip: chainTipMock,
             } as UserState,
           },
@@ -724,7 +722,7 @@ describe("For the event that hasn't started yet", () => {
 
       const eventTitle = await within(votePage).queryByTestId('event-title');
       expect(eventTitle).not.toBeNull();
-      expect(eventTitle.textContent).toEqual('CIP-1694 Vote');
+      expect(eventTitle.textContent).toEqual('The Governance of Cardano');
 
       const eventTime = await within(votePage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
@@ -736,7 +734,7 @@ describe("For the event that hasn't started yet", () => {
 
       const eventDescription = await within(votePage).queryByTestId('event-description');
       expect(eventDescription).not.toBeNull();
-      expect(eventDescription.textContent).toEqual('(..)');
+      expect(eventDescription.textContent).toEqual('Should Cardano change its governance structure?');
 
       const options = await within(votePage).queryAllByTestId('option-card');
       expect(options.length).toEqual(eventMock_notStarted.categories[0].proposals.length);
@@ -788,7 +786,7 @@ describe('For the event that has already finished', () => {
 
       const eventTitle = await within(votePage).queryByTestId('event-title');
       expect(eventTitle).not.toBeNull();
-      expect(eventTitle.textContent).toEqual('CIP-1694 Vote');
+      expect(eventTitle.textContent).toEqual('The Governance of Cardano');
 
       const eventTime = await within(votePage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
@@ -798,7 +796,7 @@ describe('For the event that has already finished', () => {
 
       const eventDescription = await within(votePage).queryByTestId('event-description');
       expect(eventDescription).not.toBeNull();
-      expect(eventDescription.textContent).toEqual('(..)');
+      expect(eventDescription.textContent).toEqual('Should Cardano change its governance structure?');
 
       const options = await within(votePage).queryAllByTestId('option-card');
       expect(options.length).toEqual(eventMock_finished.categories[0].proposals.length);
@@ -843,7 +841,7 @@ describe('For the event that has already finished', () => {
       <CustomRouter history={history}>
         <VotePage />
       </CustomRouter>,
-      { preloadedState: { user: { event: eventMock_finished, isReceiptFetched: true } as UserState } }
+      { preloadedState: { user: { event: eventMock_finished } as UserState } }
     );
 
     const votePage = await screen.findByTestId('vote-page');
@@ -885,8 +883,6 @@ describe('For the event that has already finished', () => {
           preloadedState: {
             user: {
               event: eventMock_finished,
-              proposal: VoteReceiptMock_Basic.proposal,
-              receipt: VoteReceiptMock_Basic,
               tip: chainTipMock,
             } as UserState,
           },

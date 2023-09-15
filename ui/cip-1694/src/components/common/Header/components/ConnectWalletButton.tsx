@@ -12,12 +12,7 @@ import {
   ConnectWalletButton as CFConnectWalletButton,
   getWalletIcon,
 } from '@cardano-foundation/cardano-connect-with-wallet';
-import {
-  setConnectedWallet,
-  setIsConnectWalletModalVisible,
-  setIsReceiptFetched,
-  setVoteReceipt,
-} from 'common/store/userSlice';
+import { setConnectedWallet, setIsConnectWalletModalVisible } from 'common/store/userSlice';
 import { Toast } from 'components/common/Toast/Toast';
 import { RootState } from 'common/store';
 import styles from './ConnectWalletButton.module.scss';
@@ -60,8 +55,6 @@ export const ConnectWalletButton = ({ isMobileMenu = false }) => {
   const onDisconnectWallet = () => {
     disconnect();
     dispatch(setConnectedWallet({ wallet: '' }));
-    dispatch(setVoteReceipt({ receipt: null }));
-    dispatch(setIsReceiptFetched({ isFetched: false }));
   };
 
   return !connectedWallet ? (

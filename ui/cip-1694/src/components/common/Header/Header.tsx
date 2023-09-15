@@ -49,7 +49,7 @@ export const Header = () => {
             onClick={handleLogoClick}
             className={styles.logo}
           >
-            CIP-1694 Ratification
+            Referendum on Governance
           </Typography>
         </Grid>
         <Grid display={{ xs: 'none', md: 'flex' }}>

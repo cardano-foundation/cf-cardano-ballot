@@ -6,8 +6,8 @@ plugins {
 	java
 	id("org.springframework.boot") version "3.0.8"
 	id("io.spring.dependency-management") version "1.1.3"
-	id("org.graalvm.buildtools.native") version "0.9.26"
-    id("org.flywaydb.flyway") version "9.8.1"
+	id("org.graalvm.buildtools.native") version "0.9.27"
+    id("org.flywaydb.flyway") version "9.22.1"
 	id("cz.habarta.typescript-generator") version "3.2.1263"
     id("com.github.ben-manes.versions") version "0.48.0"
     id("com.gorylenko.gradle-git-properties") version "2.4.1"
@@ -67,7 +67,7 @@ dependencies {
 	implementation("com.querydsl:querydsl-jpa")
     annotationProcessor("com.querydsl:querydsl-apt")
 
-	implementation("com.nimbusds:nimbus-jose-jwt:9.31")
+	implementation("com.nimbusds:nimbus-jose-jwt:9.34")
 	implementation("com.google.crypto.tink:tink:1.10.0")
 
 	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0-beta3")

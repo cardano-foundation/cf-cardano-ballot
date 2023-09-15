@@ -1,0 +1,69 @@
+stage: pro
+
+network: mainnet
+
+domain: pro.cf-summit-2023-mainnet.eu-west-1.voting.summit.cardano.org
+
+cf-summit-2023-infra:
+  enabled: false
+
+cf-summit-2023-ui:
+  enabled: true
+  values:
+    image:
+      tag: 0.2.36-mainnet
+
+cf-summit-2023-voting-api:
+  enabled: true
+  values:
+    useJwt: true
+    instances:
+      - name: passive
+        active: "false"
+        replicas: 2
+      - name: active-hour
+        active: "true"
+        voteCommitmentCronExpression: "0 15 * * * *"
+      - name: active-half-hour
+        active: "true"
+        voteCommitmentCronExpression: "0 45 * * * *"
+    image:
+      tag: 0.2.36
+    ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
+    corsAllowedOrigins: https://{{ .Values.domain }},http://localhost:3000
+
+cf-summit-2023-verification-api:
+  enabled: true
+  values:
+    image:
+      tag: 0.2.36
+    ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
+    corsAllowedOrigins: https://{{ .Values.domain }},http://localhost:3000
+
+cf-user-verification-service:
+  enabled: true
+  values:
+    image:
+      tag: 0.2.36
+    ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
+    corsAllowedOrigins: https://{{ .Values.domain }},http://localhost:3000
+
+cf-summit-2023-ledger-follower-api:
+  enabled: true
+  values:
+    image:
+      tag: 0.2.36
+    bindOnEventIds: CF_SUMMIT_2023_3A33
+    yaci:
+      startBlockHash: 69a01168a752b9f0aa3d1cd49d9a87fcffceb6738416c199740933fba002c922
+      startSlotNumber: "37194728"
+    corsAllowedOrigins: https://{{ .Values.domain }},http://localhost:3000
+    instances:
+      - name: follower-1
+        enabled: true
+#        imageTag: 0.2.36
+        schemaName: follower_1
+      - name: follower-2
+        enabled: true
+#        imageTag: 0.2.36
+        schemaName: follower_2

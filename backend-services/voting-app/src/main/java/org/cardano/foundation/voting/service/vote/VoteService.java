@@ -14,7 +14,7 @@ public interface VoteService {
 
     List<VoteRepository.CompactVote> findAllCompactVotesByEventId(String eventId);
 
-    Either<Problem, Boolean> isVoteCastingStillPossible(String eventId, String voteId);
+    Either<Problem, Boolean> isVoteCastingStillPossible(JwtAuthenticationToken jwtAuth, String eventId, String voteId);
 
     Either<Problem, Vote> castVote(Web3AuthenticationToken web3AuthenticationToken);
 

@@ -32,8 +32,7 @@ import static com.bloxbean.cardano.client.util.HexUtil.encodeHexString;
 import static org.cardano.foundation.voting.client.ChainFollowerClient.AccountStatus.NOT_ELIGIBLE;
 import static org.cardano.foundation.voting.domain.VoteReceipt.Status.*;
 import static org.cardano.foundation.voting.domain.VotingEventType.*;
-import static org.cardano.foundation.voting.domain.web3.Web3Action.CAST_VOTE;
-import static org.cardano.foundation.voting.domain.web3.Web3Action.VIEW_VOTE_RECEIPT;
+import static org.cardano.foundation.voting.domain.web3.Web3Action.*;
 import static org.cardano.foundation.voting.utils.MoreNumber.isNumeric;
 import static org.cardanofoundation.cip30.MessageFormat.TEXT;
 import static org.zalando.problem.Status.*;
@@ -63,57 +62,103 @@ public class DefaultVoteService implements VoteService {
 
     @Transactional(readOnly = true)
     @Timed(value = "service.vote.isVoteCastingStillPossible", histogram = true)
-    public Either<Problem, Boolean> isVoteCastingStillPossible(String eventId, String voteId) {
-        var eventDetailsE = chainFollowerClient.getEventDetails(eventId);
-        if (eventDetailsE.isEmpty()) {
-            return Either.left(Problem.builder()
-                    .withTitle("ERROR_GETTING_EVENT_DETAILS")
-                    .withDetail("Unable to get event details from chain-tip follower service, event:" + eventId)
-                    .withStatus(INTERNAL_SERVER_ERROR)
-                    .build()
-            );
-        }
+    public Either<Problem, Boolean> isVoteCastingStillPossible(JwtAuthenticationToken jwtAuth, String eventId, String voteId) {
+        try {
+            log.info("JWT: {}", jwtAuth);
 
-        var maybeEventDetails = eventDetailsE.get();
-        if (maybeEventDetails.isEmpty()) {
-            return Either.left(Problem.builder()
-                    .withTitle("EVENT_NOT_FOUND")
-                    .withDetail("Event not found, id:" + eventId)
+            var signedJWT = (SignedJWT) jwtAuth.getDetails();
+
+            var jwtClaimsSet = signedJWT.getJWTClaimsSet();
+
+            var maybeRole = Enums.getIfPresent(Role.class, jwtClaimsSet.getStringClaim("role"));
+
+            if (maybeRole.isEmpty()) {
+                return Either.left(Problem.builder()
+                        .withTitle("UNKNOWN_ROLE")
+                        .withDetail("Unknown role")
+                        .withStatus(BAD_REQUEST)
+                        .build());
+            }
+
+            var role = maybeRole.get();
+            log.info("Role: {}", role);
+
+            var jwtEventId = jwtClaimsSet.getStringClaim("eventId");
+            var jwtStakeAddress = jwtClaimsSet.getStringClaim("stakeAddress");
+
+            if (!jwtEventId.equals(eventId)) {
+                return Either.left(Problem.builder()
+                        .withTitle("EVENT_ID_MISMATCH")
+                        .withDetail("Requested event id mismatch, JWT has no permission for this event.")
+                        .withStatus(BAD_REQUEST)
+                        .build());
+            }
+
+            var allowedRoles = role.allowedActions();
+
+            if (!allowedRoles.contains(IS_VOTE_CASTING_ALLOWED)) {
+                return Either.left(Problem.builder()
+                        .withTitle("ACTION_NOT_ALLOWED")
+                        .withDetail("Action IS_VOTE_CASTING_ALLOWED not allowed for the role:" + role.name())
+                        .withStatus(BAD_REQUEST)
+                        .build());
+            }
+            var eventDetailsE = chainFollowerClient.getEventDetails(eventId);
+            if (eventDetailsE.isEmpty()) {
+                return Either.left(Problem.builder()
+                        .withTitle("ERROR_GETTING_EVENT_DETAILS")
+                        .withDetail("Unable to get event details from chain-tip follower service, event:" + eventId)
+                        .withStatus(INTERNAL_SERVER_ERROR)
+                        .build()
+                );
+            }
+
+            var maybeEventDetails = eventDetailsE.get();
+            if (maybeEventDetails.isEmpty()) {
+                return Either.left(Problem.builder()
+                        .withTitle("EVENT_NOT_FOUND")
+                        .withDetail("Event not found, id:" + eventId)
+                        .withStatus(BAD_REQUEST)
+                        .build());
+            }
+            var event = maybeEventDetails.orElseThrow();
+
+            if (event.isEventInactive()) {
+                return Either.right(false);
+            }
+
+            var maybeExistingVote = voteRepository.findById(voteId);
+            if (maybeExistingVote.isEmpty()) {
+                return Either.left(Problem.builder()
+                        .withTitle("VOTE_NOT_FOUND")
+                        .withDetail("Vote not found, voteId:" + voteId)
+                        .withStatus(BAD_REQUEST)
+                        .build()
+                );
+            }
+
+            var maybeExistingProof = voteMerkleProofService.findLatestProof(eventId, voteId);
+            if (maybeExistingProof.isPresent()) {
+                return Either.left(Problem.builder()
+                        .withTitle("VOTE_CANNOT_BE_CHANGED")
+                        .withDetail("Vote cannot be changed, voteId:" + voteId)
+                        .withStatus(BAD_REQUEST)
+                        .build()
+                );
+            }
+
+            return Either.right(true);
+        } catch (ParseException e) {
+            log.warn("JWT parse exception", e);
+
+            var problem = Problem.builder()
+                    .withTitle("JWT_PARSE_EXCEPTION")
+                    .withDetail("JWT processing exception")
                     .withStatus(BAD_REQUEST)
-                    .build());
-        }
-        var event = maybeEventDetails.orElseThrow();
+                    .build();
 
-        boolean isInactive = event.isEventInactive();
-        if (isInactive) {
-            return Either.left(Problem.builder()
-                    .withTitle("EVENT_INACTIVE")
-                    .withDetail("Event is inactive, id:" + eventId)
-                    .withStatus(BAD_REQUEST)
-                    .build());
+            return Either.left(problem);
         }
-
-        var maybeExistingVote = voteRepository.findById(voteId);
-        if (maybeExistingVote.isEmpty()) {
-            return Either.left(Problem.builder()
-                    .withTitle("VOTE_NOT_FOUND")
-                    .withDetail("Vote not found, voteId:" + voteId)
-                    .withStatus(BAD_REQUEST)
-                    .build()
-            );
-        }
-
-        var maybeExistingProof = voteMerkleProofService.findLatestProof(eventId, voteId);
-        if (maybeExistingProof.isPresent()) {
-            return Either.left(Problem.builder()
-                    .withTitle("VOTE_CANNOT_BE_CHANGED")
-                    .withDetail("Vote cannot be changed, voteId:" + voteId)
-                    .withStatus(BAD_REQUEST)
-                    .build()
-            );
-        }
-
-        return Either.right(true);
     }
 
     @Override
@@ -402,7 +447,6 @@ public class DefaultVoteService implements VoteService {
         var cip30VerificationResult = details.getCip30VerificationResult();
 
         var event = details.getEvent();
-        var eventId = event.id();
         var stakeAddress = details.getStakeAddress();
 
         var signedJson = cip30VerificationResult.getMessage(TEXT);
@@ -501,13 +545,15 @@ public class DefaultVoteService implements VoteService {
 
             return actualVoteReceipt(event, categoryId, jwtStakeAddress);
         } catch (ParseException e) {
-            log.error("JWT parse exception", e);
+            log.warn("JWT parse exception", e);
 
-            return Either.left(Problem.builder()
+            var problem = Problem.builder()
                     .withTitle("JWT_PARSE_EXCEPTION")
                     .withDetail("JWT processing exception")
                     .withStatus(BAD_REQUEST)
-                    .build());
+                    .build();
+
+            return Either.left(problem);
         }
     }
 

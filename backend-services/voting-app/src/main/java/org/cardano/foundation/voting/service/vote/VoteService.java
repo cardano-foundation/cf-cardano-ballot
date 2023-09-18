@@ -1,6 +1,7 @@
 package org.cardano.foundation.voting.service.vote;
 
 import io.vavr.control.Either;
+import org.cardano.foundation.voting.domain.CategoryProposalPair;
 import org.cardano.foundation.voting.domain.VoteReceipt;
 import org.cardano.foundation.voting.domain.entity.Vote;
 import org.cardano.foundation.voting.repository.VoteRepository;
@@ -14,12 +15,14 @@ public interface VoteService {
 
     List<VoteRepository.CompactVote> findAllCompactVotesByEventId(String eventId);
 
-    Either<Problem, Boolean> isVoteCastingStillPossible(JwtAuthenticationToken jwtAuth, String eventId, String voteId);
+    Either<Problem, List<CategoryProposalPair>> getVotedOn(JwtAuthenticationToken auth);
+
+    Either<Problem, Boolean> isVoteChangingPossible(String voteId, JwtAuthenticationToken auth);
 
     Either<Problem, Vote> castVote(Web3AuthenticationToken web3AuthenticationToken);
 
     Either<Problem, VoteReceipt> voteReceipt(Web3AuthenticationToken web3AuthenticationToken);
 
-    Either<Problem, VoteReceipt> voteReceipt(JwtAuthenticationToken jwtAuthenticationToken, String eventId, String categoryId);
+    Either<Problem, VoteReceipt> voteReceipt(String categoryId, JwtAuthenticationToken auth);
 
 }

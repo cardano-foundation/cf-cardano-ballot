@@ -25,7 +25,7 @@ public class LoginResource {
     @RequestMapping(value = "/login", method = GET, produces = "application/json")
     @Timed(value = "resource.auth.login", histogram = true)
     public ResponseEntity<?> login(Authentication authentication)  {
-        if (!(authentication instanceof Web3AuthenticationToken)) {
+        if (!(authentication instanceof Web3AuthenticationToken web3AuthenticationToken)) {
             var problem = Problem.builder()
                     .withTitle("WEB3_AUTH_REQUIRED")
                     .withDetail("CIP-93 auth headers tokens needed!")
@@ -35,7 +35,7 @@ public class LoginResource {
             return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
         }
 
-        return loginService.login((Web3AuthenticationToken) authentication)
+        return loginService.login(web3AuthenticationToken)
                 .fold(problem -> ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem),
                         ResponseEntity::ok
                 );

@@ -82,7 +82,7 @@ public class SpringSecurityConfiguration {
                     // SECURED by Web3 auth
                     .requestMatchers(new AntPathRequestMatcher("/api/vote/cast", POST.name())).authenticated()
                     // SECURED by JWT auth
-                    .requestMatchers(new AntPathRequestMatcher("/api/vote/casting-available/**", HEAD.name())).authenticated()
+                    .requestMatchers(new AntPathRequestMatcher("/api/vote/vote-changing-available/**", HEAD.name())).authenticated()
 
                     // without auth
                     .requestMatchers(new AntPathRequestMatcher("/api/leaderboard/**", GET.name())).permitAll()

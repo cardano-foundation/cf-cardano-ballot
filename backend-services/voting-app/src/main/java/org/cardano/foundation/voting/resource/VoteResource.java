@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.zalando.problem.Problem;
 
+import java.util.Optional;
+
 import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 import static org.zalando.problem.Status.BAD_REQUEST;
@@ -25,12 +27,49 @@ public class VoteResource {
 
     private final VoteService voteService;
 
+    @RequestMapping(value = "/voted-on/{eventId}", method = GET, produces = "application/json")
+    @Timed(value = "resource.vote.votedOn", histogram = true)
+    public ResponseEntity<?> votedOn(@PathVariable(value = "eventId", required = false) Optional<String> maybeEventId,
+                                     Authentication authentication) {
+        if (!(authentication instanceof JwtAuthenticationToken jwtAuth)) {
+            var problem = Problem.builder()
+                    .withTitle("JWT_REQUIRED")
+                    .withDetail("JWT auth Bearer Auth token needed!")
+                    .withStatus(BAD_REQUEST)
+                    .build();
+
+            return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
+        }
+
+        if (maybeEventId.isPresent() && !maybeEventId.orElseThrow().equals(jwtAuth.eventDetails().id())) {
+            var problem = Problem.builder()
+                    .withTitle("EVENT_ID_MISMATCH")
+                    .withDetail("Event id in path and in JWT token do not match!")
+                    .withStatus(BAD_REQUEST)
+                    .build();
+
+            return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
+        }
+
+        return voteService.getVotedOn(jwtAuth)
+                .fold(problem -> {
+                            log.warn("Vote get voted on failed, problem:{}", problem);
+
+                            return ResponseEntity
+                                    .status(problem.getStatus().getStatusCode())
+                                    .body(problem);
+                        },
+                        categoryProposalPairs -> {
+                            return ResponseEntity.ok().body(categoryProposalPairs);
+                        });
+    }
+
     @RequestMapping(value = "/cast", method = POST, produces = "application/json")
     @Timed(value = "resource.vote.cast", histogram = true)
     public ResponseEntity<?> castVote(Authentication authentication) {
         log.info("Casting vote...");
 
-        if (!(authentication instanceof Web3AuthenticationToken)) {
+        if (!(authentication instanceof Web3AuthenticationToken web3Auth)) {
             var problem = Problem.builder()
                     .withTitle("WEB3_AUTH_REQUIRED")
                     .withDetail("CIP-93 auth headers tokens needed!")
@@ -40,7 +79,7 @@ public class VoteResource {
             return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
         }
 
-        return voteService.castVote((Web3AuthenticationToken) authentication)
+        return voteService.castVote(web3Auth)
                 .fold(problem -> {
                             log.warn("Vote cast failed, problem:{}", problem);
 
@@ -59,7 +98,7 @@ public class VoteResource {
     @Timed(value = "resource.vote.receipt.web3", histogram = true)
     public ResponseEntity<?> getVoteReceipt(Authentication authentication) {
 
-        if (!(authentication instanceof Web3AuthenticationToken)) {
+        if (!(authentication instanceof Web3AuthenticationToken web3Auth)) {
             var problem = Problem.builder()
                     .withTitle("WEB3_AUTH_REQUIRED")
                     .withDetail("CIP-93 auth headers tokens needed!")
@@ -69,19 +108,19 @@ public class VoteResource {
             return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
         }
 
-        return voteService.voteReceipt((Web3AuthenticationToken) authentication)
+        return voteService.voteReceipt(web3Auth)
                 .fold(problem -> ResponseEntity
                         .status(problem.getStatus().getStatusCode())
                         .body(problem),
                         voteReceipt -> ResponseEntity.ok().body(voteReceipt));
     }
 
-    @RequestMapping(value = "/receipt/{eventId}/{categoryId}", method = GET, produces = "application/json")
+    @RequestMapping(value = "/receipt/{maybeEventId}/{categoryId}", method = GET, produces = "application/json")
     @Timed(value = "resource.vote.receipt.jwt", histogram = true)
-    public ResponseEntity<?> getVoteReceipt(@PathVariable("eventId") String eventId,
+    public ResponseEntity<?> getVoteReceipt(@PathVariable(value = "eventId", required = false) Optional<String> maybeEventId,
                                             @PathVariable("categoryId") String categoryId,
                                             Authentication authentication) {
-        if (!(authentication instanceof JwtAuthenticationToken)) {
+        if (!(authentication instanceof JwtAuthenticationToken jwtAuth)) {
             var problem = Problem.builder()
                     .withTitle("JWT_REQUIRED")
                     .withDetail("JWT auth token needed!")
@@ -91,21 +130,29 @@ public class VoteResource {
             return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
         }
 
-        var jwtAuth = (JwtAuthenticationToken) authentication;
+        if (maybeEventId.isPresent() && !maybeEventId.orElseThrow().equals(jwtAuth.eventDetails().id())) {
+            var problem = Problem.builder()
+                    .withTitle("EVENT_ID_MISMATCH")
+                    .withDetail("Event id in path and in JWT token do not match!")
+                    .withStatus(BAD_REQUEST)
+                    .build();
 
-        return voteService.voteReceipt(jwtAuth, eventId, categoryId)
+            return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
+        }
+
+        return voteService.voteReceipt(categoryId, jwtAuth)
                 .fold(problem -> ResponseEntity
                         .status(problem.getStatus().getStatusCode())
                         .body(problem),
                         voteReceipt -> ResponseEntity.ok().body(voteReceipt));
     }
 
-    @RequestMapping(value = "/casting-available/{eventId}/{voteId}", method = HEAD, produces = "application/json")
+    @RequestMapping(value = "/vote-changing-available/{eventId}/{voteId}", method = HEAD, produces = "application/json")
     @Timed(value = "resource.voteId.receipt", histogram = true)
-    public ResponseEntity<?> isVoteCastingStillPossible(@PathVariable("eventId") String eventId,
-                                                        @PathVariable("voteId") String voteId,
-                                                        Authentication authentication) {
-        if (!(authentication instanceof JwtAuthenticationToken)) {
+    public ResponseEntity<?> isVoteChangingAvailable(@PathVariable(value = "eventId", required = false) Optional<String> maybeEventId,
+                                                     @PathVariable("voteId") String voteId,
+                                                     Authentication authentication) {
+        if (!(authentication instanceof JwtAuthenticationToken jwtAuth)) {
             var problem = Problem.builder()
                     .withTitle("JWT_REQUIRED")
                     .withDetail("JWT auth Bearer Auth token needed!")
@@ -115,9 +162,17 @@ public class VoteResource {
             return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
         }
 
-        var jwtAuth = (JwtAuthenticationToken) authentication;
+        if (maybeEventId.isPresent() && maybeEventId.orElseThrow().equals(jwtAuth.eventDetails().id())) {
+            var problem = Problem.builder()
+                    .withTitle("EVENT_ID_MISMATCH")
+                    .withDetail("Event id in path and in JWT token do not match!")
+                    .withStatus(BAD_REQUEST)
+                    .build();
 
-        return voteService.isVoteCastingStillPossible(jwtAuth, eventId, voteId)
+            return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
+        }
+
+        return voteService.isVoteChangingPossible(voteId, jwtAuth)
                 .fold(problem -> ResponseEntity
                         .status(problem.getStatus().getStatusCode())
                         .body(problem),

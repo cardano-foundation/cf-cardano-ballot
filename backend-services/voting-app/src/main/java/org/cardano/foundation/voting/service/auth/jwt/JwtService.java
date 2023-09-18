@@ -152,6 +152,18 @@ public class JwtService {
 
                 log.info("Verified sub:{}, stakeAddress:{}, ", sub, jwtStakeAddress);
 
+                var maybeRole = Enums.getIfPresent(Role.class, jwtClaimsSet.getStringClaim("role"));
+
+                if (maybeRole.isEmpty()) {
+                    log.warn("Invalid role, role:{}", jwtClaimsSet.getStringClaim("role"));
+
+                    return Either.left(Problem.builder()
+                            .withTitle("INVALID_ROLE")
+                            .withDetail("Invalid role, supported roles:" + Role.supportedRoles())
+                            .withStatus(BAD_REQUEST)
+                            .build());
+                }
+
                 return Either.right(signedJWT);
             }
 

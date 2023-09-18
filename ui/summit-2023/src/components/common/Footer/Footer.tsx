@@ -1,15 +1,17 @@
 import React from 'react';
 import { Typography, Grid, Box } from '@mui/material';
-import './Footer.scss';
+import styles from './Footer.module.scss';
 import discordLogo from '../../../common/resources/images/discord-icon.svg';
 import { env } from 'common/constants/env';
+import { NavLink } from 'react-router-dom';
+import { i18n } from 'i18n';
 
 const Footer: React.FC = () => {
   return (
     <Box
       mt={5}
       textAlign="center"
-      style={{ background: 'transparent', boxShadow: 'none', padding: '10px', bottom: '0 !important' }}
+      className={styles.footer}
     >
       <Grid container>
         <Grid
@@ -33,12 +35,15 @@ const Footer: React.FC = () => {
               xs={12}
               sm={3}
             >
-              <Typography
-                variant="body2"
-                align="center"
-              >
-                Terms & Conditions
-              </Typography>
+              <NavLink to="/termsandconditions">
+                <Typography
+                  variant="body2"
+                  justifyContent="center"
+                  className={styles.link}
+                >
+                  {i18n.t('footer.menu.termsAndConditions')}
+                </Typography>
+              </NavLink>
             </Grid>
 
             <Grid
@@ -46,12 +51,15 @@ const Footer: React.FC = () => {
               xs={12}
               sm={3}
             >
-              <Typography
-                variant="body2"
-                align="center"
-              >
-                Privacy
-              </Typography>
+              <NavLink to="/privacypolicy">
+                <Typography
+                  variant="body2"
+                  justifyContent="center"
+                  className={styles.link}
+                >
+                  {i18n.t('footer.menu.privacyPolicy')}
+                </Typography>
+              </NavLink>
             </Grid>
 
             <Grid

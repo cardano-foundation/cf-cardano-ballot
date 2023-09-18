@@ -24,7 +24,7 @@ const Hero: React.FC = () => {
     <Box
       sx={{
         display: 'flex',
-        flexDirection: { xs: 'column', sm: 'column', md: 'column', lg: 'row' },
+        flexDirection: { xs: 'column', md: 'row' },
         height: { xs: 'auto', sm: 'auto', lg: '400px' },
         marginLeft: isMobile ? '0px' : '10%',
       }}
@@ -71,7 +71,7 @@ const Hero: React.FC = () => {
           order: { xs: '2', sm: '2', md: '2' },
         }}
       >
-        <div style={{ marginLeft: isMobile || isTablet ? '100px' : '0%' }}>
+        <div style={{ width: isMobile || isTablet ? '450px' : '33vw', margin: '20px' }}>
           <Hexagon>
             <>
               <div className="right-title-container">

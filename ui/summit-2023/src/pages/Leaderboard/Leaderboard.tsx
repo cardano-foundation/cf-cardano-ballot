@@ -108,7 +108,6 @@ const Leaderboard = () => {
             container
             spacing={0}
             direction="column"
-            gap={{ xs: '15px', md: 'none' }}
             sx={{ marginTop: '25px' }}
           >
             <Grid
@@ -162,7 +161,7 @@ const Leaderboard = () => {
           <Grid
             container
             direction={{ xs: 'column' }}
-            gridRow={{ md: 6, xs: 12 }}
+            gridRow={{ md: 7, xs: 12 }}
             sx={{ flexWrap: { md: 'nowrap', xs: 'wrap' }, marginTop: { md: '8px', xs: '25px' } }}
             gap={{ xs: '15px', md: 'none' }}
           >
@@ -172,7 +171,7 @@ const Leaderboard = () => {
               justifyContent={{ xs: 'center' }}
             >
               <PieChart
-                style={{ height: '300px', width: '300px', margin: 1 }}
+                style={{ height: '350px', width: '350px', margin: 2 }}
                 lineWidth={45}
                 data={statsSum > 0 ? chartData : [{ title: '', value: 1, color: '#BBBBBB' }]}
               />
@@ -181,7 +180,7 @@ const Leaderboard = () => {
             <Box sx={{ flexGrow: 1 }}>
               <Grid
                 container
-                spacing={{ xs: 2, md: 3 }}
+                spacing={{ xs: 2 }}
                 columns={{ xs: 4, sm: 8, md: 12 }}
               >
                 {statsItems.map(({ label, id }) => (
@@ -213,6 +212,7 @@ const Leaderboard = () => {
                         <Grid
                           container
                           direction="row"
+                          sx={{pl: 1}}
                         >
                           <Grid
                             item
@@ -228,6 +228,7 @@ const Leaderboard = () => {
                           <Grid
                             item
                             xs={12}
+                            sx={{fontWeight: 600}}
                           >
                             {stats && (
                               <>

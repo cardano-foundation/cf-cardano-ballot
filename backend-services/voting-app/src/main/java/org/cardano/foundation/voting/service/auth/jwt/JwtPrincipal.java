@@ -18,20 +18,10 @@ public class JwtPrincipal implements Principal, AuthenticatedPrincipal {
         return signedJWT;
     }
 
-    @SneakyThrows
-    public boolean isAllowed(String stakeAddress) {
-        return getName().trim().equals(stakeAddress.trim());
-    }
-
-    @SneakyThrows
-    public boolean isNotAllowed(String stakeAddress) {
-        return !isAllowed(stakeAddress);
-    }
-
     @Override
     @SneakyThrows
     public String getName() {
-        return signedJWT.getJWTClaimsSet().getStringClaim("stakeAddress").trim();
+        return signedJWT.getJWTClaimsSet().getSubject();
     }
 
 }

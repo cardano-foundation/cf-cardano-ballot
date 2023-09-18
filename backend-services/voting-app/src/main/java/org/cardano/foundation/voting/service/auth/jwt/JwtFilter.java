@@ -91,8 +91,8 @@ public class JwtFilter extends OncePerRequestFilter {
             var maybeEventDetails = eventDetailsE.get();
             if (maybeEventDetails.isEmpty()) {
                 var problem = Problem.builder()
-                        .withTitle("EVENT_NOT_FOUND")
-                        .withDetail("Event not found, id:" + eventId)
+                        .withTitle("UNRECOGNISED_EVENT")
+                        .withDetail("Event not found, id: " + eventId)
                         .withStatus(BAD_REQUEST)
                         .build();
 

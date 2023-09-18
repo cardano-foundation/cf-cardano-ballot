@@ -1,6 +1,5 @@
 package org.cardano.foundation.voting;
 
-import com.google.protobuf.Method;
 import io.micrometer.core.aop.TimedAspect;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;

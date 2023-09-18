@@ -9,7 +9,7 @@ import static org.cardano.foundation.voting.domain.web3.Web3Action.*;
 
 public enum Role {
 
-    VOTER(List.of(VIEW_VOTE_RECEIPT, IS_VOTE_CASTING_ALLOWED, VOTED_ON));
+    VOTER(List.of(VIEW_VOTE_RECEIPT, IS_VOTE_CASTING_ALLOWED, VOTES));
 
     private final List<Web3Action> allowedActions;
 

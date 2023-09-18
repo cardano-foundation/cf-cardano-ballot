@@ -9,8 +9,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.Objects;
-
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @Controller
@@ -26,8 +24,14 @@ public class MerkleRootHashResource {
     public ResponseEntity<?> isValidMerkleRootHash(@PathVariable("eventId") String eventId,
                                                    @PathVariable("merkleRootHashHex") String merkleRootHashHex) {
         return merkleRootHashService.isPresent(eventId, merkleRootHashHex)
-                .fold(problem -> ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem),
-                        isMerkleRootPresentResult -> ResponseEntity.ok().body(isMerkleRootPresentResult)
+                .fold(problem -> {
+                            return ResponseEntity
+                                    .status(problem.getStatus().getStatusCode())
+                                    .body(problem);
+                        },
+                        isMerkleRootPresentResult -> {
+                            return ResponseEntity.ok().body(isMerkleRootPresentResult);
+                        }
                 );
     }
 

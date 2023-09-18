@@ -85,9 +85,9 @@ public class JwtService {
             log.error("JWT token generation error", e);
 
             return Either.left(Problem.builder()
-                    .withStatus(INTERNAL_SERVER_ERROR)
                     .withTitle("JWT_GENERATION_FAILED")
                     .withDetail(e.getMessage())
+                    .withStatus(INTERNAL_SERVER_ERROR)
                     .build());
         }
 
@@ -118,6 +118,21 @@ public class JwtService {
                                     .build());
                 }
 
+                var now = LocalDateTime.now(clock);
+                var nowDate = convertToDateViaInstant(now);
+                var expDate = signedJWT.getJWTClaimsSet().getExpirationTime();
+
+                if (nowDate.after(expDate)) {
+                    log.info("JWT token verification failed for token, token expired on: {}", expDate);
+
+                    return Either.left(
+                            Problem.builder()
+                                    .withTitle("JWT_EXPIRED")
+                                    .withDetail("JWT verification failed for token, token expired on: " + expDate)
+                                    .withStatus(BAD_REQUEST)
+                                    .build());
+                }
+
                 var jwtCardanoNetwork = jwtClaimsSet.getStringClaim("cardanoNetwork");
                 var maybeNetwork = Enums.getIfPresent(CardanoNetwork.class, jwtCardanoNetwork);
                 if (maybeNetwork.isEmpty()) {
@@ -125,7 +140,7 @@ public class JwtService {
 
                     return Either.left(Problem.builder()
                             .withTitle("INVALID_NETWORK")
-                            .withDetail("Invalid network, supported networks:" + CardanoNetwork.supportedNetworks())
+                            .withDetail("Invalid network, supported networks: " + CardanoNetwork.supportedNetworks())
                             .withStatus(BAD_REQUEST)
                             .build());
                 }
@@ -137,7 +152,7 @@ public class JwtService {
 
                     return Either.left(Problem.builder()
                             .withTitle("NETWORK_MISMATCH")
-                            .withDetail("Invalid network, backend configured with network:" + cardanoNetwork + ", however request is with network:" + jwtNetwork)
+                            .withDetail("Invalid network, backend configured with network: " + cardanoNetwork + ", however request is with network: " + jwtNetwork)
                             .withStatus(BAD_REQUEST)
                             .build());
 

@@ -27,10 +27,10 @@ public class VoteResource {
 
     private final VoteService voteService;
 
-    @RequestMapping(value = "/voted-on/{eventId}", method = GET, produces = "application/json")
-    @Timed(value = "resource.vote.votedOn", histogram = true)
-    public ResponseEntity<?> votedOn(@PathVariable(value = "eventId", required = false) Optional<String> maybeEventId,
-                                     Authentication authentication) {
+    @RequestMapping(value = "/votes/{eventId}", method = GET, produces = "application/json")
+    @Timed(value = "resource.vote.votes", histogram = true)
+    public ResponseEntity<?> getVotes(@PathVariable(value = "eventId", required = false) Optional<String> maybeEventId,
+                                      Authentication authentication) {
         if (!(authentication instanceof JwtAuthenticationToken jwtAuth)) {
             var problem = Problem.builder()
                     .withTitle("JWT_REQUIRED")
@@ -51,7 +51,7 @@ public class VoteResource {
             return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
         }
 
-        return voteService.getVotedOn(jwtAuth)
+        return voteService.getVotes(jwtAuth)
                 .fold(problem -> {
                             log.warn("Vote get voted on failed, problem:{}", problem);
 

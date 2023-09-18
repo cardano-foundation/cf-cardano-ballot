@@ -73,16 +73,19 @@ public class SpringSecurityConfiguration {
                 .formLogin(AbstractHttpConfigurer::disable)
 
                 .authorizeHttpRequests(requests -> {
+                    requests
+                    // SECURED by Web3 auth
+                    .requestMatchers(new AntPathRequestMatcher("/api/vote/cast", POST.name())).authenticated()
                     // SECURED by JWT auth
-                    requests.requestMatchers(new AntPathRequestMatcher("/api/vote/receipt/**", GET.name())).authenticated()
+                    .requestMatchers(new AntPathRequestMatcher("/api/vote/votes/**", GET.name())).authenticated()
+                    // SECURED by JWT auth
+                    .requestMatchers(new AntPathRequestMatcher("/api/vote/receipt/**", GET.name())).authenticated()
                     // SECURED by Web3 auth
                     .requestMatchers(new AntPathRequestMatcher("/api/vote/receipt", GET.name())).authenticated()
                     // SECURED by Web3 auth
                     .requestMatchers(new AntPathRequestMatcher("/api/auth/login", GET.name())).authenticated()
-                    // SECURED by Web3 auth
-                    .requestMatchers(new AntPathRequestMatcher("/api/vote/cast", POST.name())).authenticated()
                     // SECURED by JWT auth
-                    .requestMatchers(new AntPathRequestMatcher("/api/vote/vote-changing-available/**", HEAD.name())).authenticated()
+                    //.requestMatchers(new AntPathRequestMatcher("/api/vote/vote-changing-available/**", HEAD.name())).authenticated()
 
                     // without auth
                     .requestMatchers(new AntPathRequestMatcher("/api/leaderboard/**", GET.name())).permitAll()

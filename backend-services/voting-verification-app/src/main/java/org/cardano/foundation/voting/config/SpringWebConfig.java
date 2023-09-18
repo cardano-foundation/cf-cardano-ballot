@@ -18,7 +18,9 @@ public class SpringWebConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/api/**")
-                        .allowedOrigins(allowedOrigins.split(","));
+                        .allowedOrigins(allowedOrigins.split(","))
+                        .allowedMethods("POST")
+                        .allowedHeaders("*");
             }
         };
     }

@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.client.UserVerificationClient;
-import org.cardano.foundation.voting.domain.CategoryProposalPair;
 import org.cardano.foundation.voting.domain.VoteReceipt;
 import org.cardano.foundation.voting.domain.entity.Vote;
 import org.cardano.foundation.voting.domain.entity.VoteMerkleProof;
@@ -54,23 +53,20 @@ public class DefaultVoteService implements VoteService {
 
     @Override
     @Transactional(readOnly = true)
-    @Timed(value = "service.vote.getVotedOn", histogram = true)
-    public Either<Problem, List<CategoryProposalPair>> getVotedOn(JwtAuthenticationToken auth) {
+    @Timed(value = "service.vote.getVotes", histogram = true)
+    public Either<Problem, List<VoteRepository.CategoryProposalProjection>> getVotes(JwtAuthenticationToken auth) {
         var jwtEventId = auth.eventDetails().id();
         var jwtStakeAddress = auth.getStakeAddress();
 
-        if (auth.isActionNotAllowed(VOTED_ON)) {
+        if (auth.isActionNotAllowed(VOTES)) {
             return Either.left(Problem.builder()
                     .withTitle("ACTION_NOT_ALLOWED")
-                    .withDetail("Action VOTED_ON not allowed for the role:" + auth.role().name())
+                    .withDetail("Action VOTES not allowed for the role:" + auth.role().name())
                     .withStatus(BAD_REQUEST)
                     .build());
         }
 
-        var votedOn = voteRepository.getVotedOn(jwtEventId, jwtStakeAddress).stream()
-                .map(r -> new CategoryProposalPair(r.getCategoryId(), r.getCategoryId())).toList();
-
-        return Either.right(votedOn);
+        return Either.right(voteRepository.getVotesByStakeAddress(jwtEventId, jwtStakeAddress));
     }
 
     @Override

@@ -12,6 +12,6 @@ public enum Web3Action {
 
     IS_VOTE_CHANGING_ALLOWED, // checking if vote casting changing
 
-    VOTED_ON // getting list of categories and proposals user already voted on
+    VOTES // getting list of categories and proposals user already voted on
 
 }

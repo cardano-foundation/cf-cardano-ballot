@@ -1,6 +1,6 @@
 import React, { useMemo, useRef, useState } from 'react';
 
-import { Button, Checkbox, FormControlLabel, Grid, List, ListItem, ListItemAvatar, Typography } from '@mui/material';
+import { Checkbox, FormControlLabel, Grid, List, ListItem, ListItemAvatar, Typography } from '@mui/material';
 import CallIcon from '@mui/icons-material/Call';
 import { MuiTelInput, matchIsValidTel, MuiTelInputCountry } from 'mui-tel-input';
 import './VerifyWallet.scss';
@@ -192,6 +192,11 @@ const VerifyWallet = (props: VerifyWalletProps) => {
       }
     };
 
+      const handleCancelConfirmChode = () => {
+          setPhoneCodeIsSent(false);
+          setCodes(Array(6).fill(''));
+      }
+
     return (
       <>
         <Typography
@@ -230,36 +235,41 @@ const VerifyWallet = (props: VerifyWalletProps) => {
         </Typography>
         <Grid
           container
+          spacing={2}
           style={{ marginTop: '28px' }}
         >
           <Grid
             item
             xs={6}
           >
-            <Button
-              onClick={() => setPhoneCodeIsSent(false)}
-              className="verify-number-button-cancel"
-              fullWidth
-            >
-              Back
-            </Button>
+              <CustomButton
+                  styles={{
+                      background: 'transparent !important',
+                      color: '#03021F',
+                      border: '1px solid #daeefb'
+                  }}
+                  label="Cancel"
+                  onClick={() => handleCancelConfirmChode()}
+                  fullWidth={true}
+              />
           </Grid>
           <Grid
             item
             xs={6}
           >
-            <Button
-              onClick={() => handleVerifyPhoneCode()}
-              disabled={codes.length < 6 || phoneCodeIsBeenConfirming}
-              className={`verify-number-button-continue ${
-                codes.filter((code) => code !== '').length === 6 && !phoneCodeIsBeenConfirming
-                  ? 'verify-number-button-valid'
-                  : ''
-              }`}
-              fullWidth
-            >
-              Verify
-            </Button>
+              <CustomButton
+                  styles={ codes.filter((code) => code !== '').length === 6 && !phoneCodeIsBeenConfirming ? {
+                      background: '#ACFCC5',
+                      color: '#03021F',
+                  }: {
+                      background: '#6C6F89',
+                      color: '#F6F9FF !important'
+                  }}
+                  disabled={codes.length < 6 || phoneCodeIsBeenConfirming}
+                  label='Verify'
+                  onClick={() => handleVerifyPhoneCode()}
+                  fullWidth={true}
+              />
           </Grid>
         </Grid>
       </>

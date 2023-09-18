@@ -364,6 +364,7 @@ const Nominees = () => {
                 styles={{
                     background: '#03021F',
                     color: '#F6F9FF',
+                    width: 'auto'
                 }}
                 label= {walletIsLoggedIn ? 'View vote receipt' : 'Login with wallet'}
                 onClick={() => handleViewVoteReceipt()}
@@ -438,7 +439,7 @@ const Nominees = () => {
                             background: 'transparent !important',
                             color: '#03021F',
                             border: '1px solid #daeefb',
-                            width: !isMobile && listView === 'list' ? '146px' : '98%',
+                            width: !isMobile && listView === 'list' ? '146px' : '100%',
                             marginTop: !isMobile && listView === 'list' ? '15px' : '28px',
                         }}
                         label="Read more"

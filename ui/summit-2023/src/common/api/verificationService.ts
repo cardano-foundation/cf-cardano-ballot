@@ -55,7 +55,7 @@ export const verifyDiscord = async (
   secret: string,
   signedMessaged: SignedWeb3Request
 ) =>
-  await doRequest<VerificationStarts>(
+  await doRequest<{verified: boolean}>(
     HttpMethods.POST,
     `${DISCORD_VERIFICATION_URL}`,
     {

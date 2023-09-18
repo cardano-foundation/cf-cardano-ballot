@@ -121,8 +121,14 @@ const VerifyWallet = (props: VerifyWalletProps) => {
   const handleVerifyDiscord = async () => {
     if (action === 'verification' && secret) {
       signMessagePromisified(secret).then((signedMessaged:SignedWeb3Request) => {
-          verifyDiscord(env.EVENT_ID, stakeAddress, secret, signedMessaged).then(() => {
-              onVerify();
+          verifyDiscord(env.EVENT_ID, stakeAddress, secret, signedMessaged).then((response:{verified:boolean}) => {
+              dispatch(setWalletIsVerified({ isVerified: response.verified }));
+              if (response.verified) {
+                  onVerify();
+                  reset();
+              } else {
+                  onError('Discord verification failed');
+              }
           }).catch((e) => eventBus.publish('showToast', capitalizeFirstLetter(e.message), true));
       }).catch((e) => eventBus.publish('showToast', capitalizeFirstLetter(e.message), true));
     }

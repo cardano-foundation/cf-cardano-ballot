@@ -33,7 +33,7 @@ const capitalizeFirstLetter =  (input: string):string => {
     if (!input || typeof input !== 'string') {
         return '';
     }
-    return input.charAt(0).toUpperCase() + input.slice(1);
+    return input.trim().charAt(0).toUpperCase() + input.slice(1);
 }
 
 export { addressSlice, walletIcon, getSignedMessagePromise, copyToClipboard , capitalizeFirstLetter};

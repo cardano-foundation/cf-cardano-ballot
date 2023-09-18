@@ -108,7 +108,6 @@ const Leaderboard = () => {
             container
             spacing={0}
             direction="column"
-            gap={{ xs: '15px', md: 'none' }}
             sx={{ marginTop: '25px' }}
           >
             <Grid
@@ -162,7 +161,7 @@ const Leaderboard = () => {
           <Grid
             container
             direction={{ xs: 'column' }}
-            gridRow={{ md: 6, xs: 12 }}
+            gridRow={{ md: 7, xs: 12 }}
             sx={{ flexWrap: { md: 'nowrap', xs: 'wrap' }, marginTop: { md: '8px', xs: '25px' } }}
             gap={{ xs: '15px', md: 'none' }}
           >
@@ -172,7 +171,7 @@ const Leaderboard = () => {
               justifyContent={{ xs: 'center' }}
             >
               <PieChart
-                style={{ height: '300px', width: '300px', margin: 1 }}
+                style={{ height: '350px', width: '350px', margin: 1 }}
                 lineWidth={45}
                 data={statsSum > 0 ? chartData : [{ title: '', value: 1, color: '#BBBBBB' }]}
               />
@@ -199,7 +198,7 @@ const Leaderboard = () => {
                       >
                         <Grid
                           item
-                          xs={1}
+                          xs={3}
                         >
                           <div
                             className={styles.proposalRect}
@@ -208,7 +207,7 @@ const Leaderboard = () => {
                         </Grid>
                         <Grid
                           item
-                          xs={11}
+                          xs={9}
                         >
                           <Grid
                             container

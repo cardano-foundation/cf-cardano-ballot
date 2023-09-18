@@ -1,6 +1,6 @@
 stage: pro
 
-network: mainnet
+network: main
 
 domain: pro.cf-summit-2023-mainnet.eu-west-1.voting.summit.cardano.org
 
@@ -11,7 +11,7 @@ cf-summit-2023-ui:
   enabled: true
   values:
     image:
-      tag: 0.2.36-mainnet
+      tag: 0.2.36-preprod
 
 cf-summit-2023-voting-api:
   enabled: true

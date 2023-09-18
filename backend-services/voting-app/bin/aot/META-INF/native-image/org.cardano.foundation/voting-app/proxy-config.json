@@ -1,0 +1,392 @@
+[
+  {
+    "interfaces": [
+      "org.springframework.aop.SpringProxy",
+      "org.springframework.aop.framework.Advised",
+      "org.springframework.cglib.proxy.Factory",
+      "java.lang.Runnable",
+      "org.springframework.core.DecoratingProxy"
+    ]
+  },
+  {
+    "interfaces": [
+      "java.lang.Runnable",
+      "org.springframework.aop.SpringProxy",
+      "org.springframework.aop.framework.Advised",
+      "org.springframework.core.DecoratingProxy"
+    ]
+  },
+  {
+    "interfaces": [
+      "java.util.List"
+    ]
+  },
+  {
+    "interfaces": [
+      "org.cardano.foundation.voting.repository.ProposalRepository",
+      "org.springframework.aop.SpringProxy",
+      "org.springframework.aop.framework.Advised",
+      "org.springframework.core.DecoratingProxy"
+    ]
+  },
+  {
+    "interfaces": [
+      "org.cardano.foundation.voting.repository.ProposalRepository",
+      "org.springframework.data.repository.Repository",
+      "org.springframework.transaction.interceptor.TransactionalProxy",
+      "org.springframework.aop.framework.Advised",
+      "org.springframework.core.DecoratingProxy"
+    ]
+  },
+  {
+    "interfaces": [
+      "org.cardano.foundation.voting.repository.CategoryRepository",
+      "org.springframework.aop.SpringProxy",
+      "org.springframework.aop.framework.Advised",
+      "org.springframework.core.DecoratingProxy"
+    ]
+  },
+  {
+    "interfaces": [
+      "org.cardano.foundation.voting.repository.CategoryRepository",
+      "org.springframework.data.repository.Repository",
+      "org.springframework.transaction.interceptor.TransactionalProxy",
+      "org.springframework.aop.framework.Advised",
+      "org.springframework.core.DecoratingProxy"
+    ]
+  },
+  {
+    "interfaces": [
+      "org.cardano.foundation.voting.repository.CategoryRepository",
+      "org.springframework.data.repository.Repository",
+      "org.springframework.transaction.interceptor.TransactionalProxy",
+      "org.springframework.aop.framework.Advised",
+      "org.springframework.core.DecoratingProxy",
+      "java.io.Serializable"
+    ]
+  },
+  {
+    "interfaces": [
+      "org.cardano.foundation.voting.repository.VoteRepository",
+      "org.springframework.aop.SpringProxy",
+      "org.springframework.aop.framework.Advised",
+      "org.springframework.core.DecoratingProxy"
+    ]
+  },
+  {
+    "interfaces": [
+      "org.cardano.foundation.voting.repository.VoteRepository",
+      "org.springframework.data.repository.Repository",
+      "org.springframework.transaction.interceptor.TransactionalProxy",
+      "org.springframework.aop.framework.Advised",
+      "org.springframework.core.DecoratingProxy"
+    ]
+  },
+  {
+    "interfaces": [
+      "org.cardano.foundation.voting.repository.VoteRepository",
+      "org.springframework.data.repository.Repository",
+      "org.springframework.transaction.interceptor.TransactionalProxy",
+      "org.springframework.aop.framework.Advised",
+      "org.springframework.core.DecoratingProxy",
+      "java.io.Serializable"
+    ]
+  },
+  {
+    "interfaces": [
+      "org.cardano.foundation.voting.repository.VoteRepository$EventCategoryVoteCount",
+      "org.springframework.data.projection.TargetAware",
+      "org.springframework.aop.SpringProxy",
+      "org.springframework.core.DecoratingProxy"
+    ]
+  },
+  {
+    "interfaces": [
+      "org.cardano.foundation.voting.repository.VoteRepository$EventVoteCount",
+      "org.springframework.data.projection.TargetAware",
+      "org.springframework.aop.SpringProxy",
+      "org.springframework.core.DecoratingProxy"
+    ]
+  },
+  {
+    "interfaces": [
+      "org.cardano.foundation.voting.repository.EventRepository",
+      "org.springframework.aop.SpringProxy",
+      "org.springframework.aop.framework.Advised",
+      "org.springframework.core.DecoratingProxy"
+    ]
+  },
+  {
+    "interfaces": [
+      "org.cardano.foundation.voting.repository.EventRepository",
+      "org.springframework.data.repository.Repository",
+      "org.springframework.transaction.interceptor.TransactionalProxy",
+      "org.springframework.aop.framework.Advised",
+      "org.springframework.core.DecoratingProxy"
+    ]
+  },
+  {
+    "interfaces": [
+      "org.cardano.foundation.voting.repository.EventRepository",
+      "org.springframework.data.repository.Repository",
+      "org.springframework.transaction.interceptor.TransactionalProxy",
+      "org.springframework.aop.framework.Advised",
+      "org.springframework.core.DecoratingProxy",
+      "java.io.Serializable"
+    ]
+  },
+  {
+    "interfaces": [
+      "org.cardano.foundation.voting.repository.VoteMerkleProofRepository",
+      "org.springframework.aop.SpringProxy",
+      "org.springframework.aop.framework.Advised",
+      "org.springframework.core.DecoratingProxy"
+    ]
+  },
+  {
+    "interfaces": [
+      "org.cardano.foundation.voting.repository.VoteMerkleProofRepository",
+      "org.springframework.data.repository.Repository",
+      "org.springframework.transaction.interceptor.TransactionalProxy",
+      "org.springframework.aop.framework.Advised",
+      "org.springframework.core.DecoratingProxy"
+    ]
+  },
+  {
+    "interfaces": [
+      "org.cardano.foundation.voting.repository.VoteMerkleProofRepository",
+      "org.springframework.data.repository.Repository",
+      "org.springframework.transaction.interceptor.TransactionalProxy",
+      "org.springframework.aop.framework.Advised",
+      "org.springframework.core.DecoratingProxy",
+      "java.io.Serializable"
+    ]
+  },
+  {
+    "interfaces": [
+      "java.util.Map"
+    ]
+  },
+  {
+    "interfaces": [
+      "com.bloxbean.cardano.yaci.store.blocks.storage.impl.jpa.repository.EpochRepository",
+      "org.springframework.aop.SpringProxy",
+      "org.springframework.aop.framework.Advised",
+      "org.springframework.core.DecoratingProxy"
+    ]
+  },
+  {
+    "interfaces": [
+      "com.bloxbean.cardano.yaci.store.blocks.storage.impl.jpa.repository.EpochRepository",
+      "org.springframework.data.repository.Repository",
+      "org.springframework.transaction.interceptor.TransactionalProxy",
+      "org.springframework.aop.framework.Advised",
+      "org.springframework.core.DecoratingProxy"
+    ]
+  },
+  {
+    "interfaces": [
+      "com.bloxbean.cardano.yaci.store.blocks.storage.impl.jpa.repository.EpochRepository",
+      "org.springframework.data.repository.Repository",
+      "org.springframework.transaction.interceptor.TransactionalProxy",
+      "org.springframework.aop.framework.Advised",
+      "org.springframework.core.DecoratingProxy",
+      "java.io.Serializable"
+    ]
+  },
+  {
+    "interfaces": [
+      "com.bloxbean.cardano.yaci.store.blocks.storage.impl.jpa.repository.RollbackRepository",
+      "org.springframework.aop.SpringProxy",
+      "org.springframework.aop.framework.Advised",
+      "org.springframework.core.DecoratingProxy"
+    ]
+  },
+  {
+    "interfaces": [
+      "com.bloxbean.cardano.yaci.store.blocks.storage.impl.jpa.repository.RollbackRepository",
+      "org.springframework.data.repository.Repository",
+      "org.springframework.transaction.interceptor.TransactionalProxy",
+      "org.springframework.aop.framework.Advised",
+      "org.springframework.core.DecoratingProxy"
+    ]
+  },
+  {
+    "interfaces": [
+      "com.bloxbean.cardano.yaci.store.blocks.storage.impl.jpa.repository.RollbackRepository",
+      "org.springframework.data.repository.Repository",
+      "org.springframework.transaction.interceptor.TransactionalProxy",
+      "org.springframework.aop.framework.Advised",
+      "org.springframework.core.DecoratingProxy",
+      "java.io.Serializable"
+    ]
+  },
+  {
+    "interfaces": [
+      "com.bloxbean.cardano.yaci.store.blocks.storage.impl.jpa.repository.BlockRepository",
+      "org.springframework.aop.SpringProxy",
+      "org.springframework.aop.framework.Advised",
+      "org.springframework.core.DecoratingProxy"
+    ]
+  },
+  {
+    "interfaces": [
+      "com.bloxbean.cardano.yaci.store.blocks.storage.impl.jpa.repository.BlockRepository",
+      "org.springframework.data.repository.Repository",
+      "org.springframework.transaction.interceptor.TransactionalProxy",
+      "org.springframework.aop.framework.Advised",
+      "org.springframework.core.DecoratingProxy"
+    ]
+  },
+  {
+    "interfaces": [
+      "com.bloxbean.cardano.yaci.store.blocks.storage.impl.jpa.repository.BlockRepository",
+      "org.springframework.data.repository.Repository",
+      "org.springframework.transaction.interceptor.TransactionalProxy",
+      "org.springframework.aop.framework.Advised",
+      "org.springframework.core.DecoratingProxy",
+      "java.io.Serializable"
+    ]
+  },
+  {
+    "interfaces": [
+      "com.bloxbean.cardano.yaci.store.core.storage.impl.CursorRepository",
+      "org.springframework.aop.SpringProxy",
+      "org.springframework.aop.framework.Advised",
+      "org.springframework.core.DecoratingProxy"
+    ]
+  },
+  {
+    "interfaces": [
+      "com.bloxbean.cardano.yaci.store.core.storage.impl.CursorRepository",
+      "org.springframework.data.repository.Repository",
+      "org.springframework.transaction.interceptor.TransactionalProxy",
+      "org.springframework.aop.framework.Advised",
+      "org.springframework.core.DecoratingProxy"
+    ]
+  },
+  {
+    "interfaces": [
+      "com.bloxbean.cardano.yaci.store.core.storage.impl.CursorRepository",
+      "org.springframework.data.repository.Repository",
+      "org.springframework.transaction.interceptor.TransactionalProxy",
+      "org.springframework.aop.framework.Advised",
+      "org.springframework.core.DecoratingProxy",
+      "java.io.Serializable"
+    ]
+  },
+  {
+    "interfaces": [
+      "com.bloxbean.cardano.yaci.store.core.storage.impl.EraRepository",
+      "org.springframework.aop.SpringProxy",
+      "org.springframework.aop.framework.Advised",
+      "org.springframework.core.DecoratingProxy"
+    ]
+  },
+  {
+    "interfaces": [
+      "com.bloxbean.cardano.yaci.store.core.storage.impl.EraRepository",
+      "org.springframework.data.repository.Repository",
+      "org.springframework.transaction.interceptor.TransactionalProxy",
+      "org.springframework.aop.framework.Advised",
+      "org.springframework.core.DecoratingProxy"
+    ]
+  },
+  {
+    "interfaces": [
+      "com.bloxbean.cardano.yaci.store.metadata.storage.impl.jpa.repository.TxMetadataLabelRepository",
+      "org.springframework.aop.SpringProxy",
+      "org.springframework.aop.framework.Advised",
+      "org.springframework.core.DecoratingProxy"
+    ]
+  },
+  {
+    "interfaces": [
+      "com.bloxbean.cardano.yaci.store.metadata.storage.impl.jpa.repository.TxMetadataLabelRepository",
+      "org.springframework.data.repository.Repository",
+      "org.springframework.transaction.interceptor.TransactionalProxy",
+      "org.springframework.aop.framework.Advised",
+      "org.springframework.core.DecoratingProxy"
+    ]
+  },
+  {
+    "interfaces": [
+      "com.bloxbean.cardano.yaci.store.metadata.storage.impl.jpa.repository.TxMetadataLabelRepository",
+      "org.springframework.data.repository.Repository",
+      "org.springframework.transaction.interceptor.TransactionalProxy",
+      "org.springframework.aop.framework.Advised",
+      "org.springframework.core.DecoratingProxy",
+      "java.io.Serializable"
+    ]
+  },
+  {
+    "interfaces": [
+      "com.bloxbean.cardano.yaci.store.transaction.storage.impl.jpa.repository.TxnEntityRepository",
+      "org.springframework.aop.SpringProxy",
+      "org.springframework.aop.framework.Advised",
+      "org.springframework.core.DecoratingProxy"
+    ]
+  },
+  {
+    "interfaces": [
+      "com.bloxbean.cardano.yaci.store.transaction.storage.impl.jpa.repository.TxnEntityRepository",
+      "org.springframework.data.repository.Repository",
+      "org.springframework.transaction.interceptor.TransactionalProxy",
+      "org.springframework.aop.framework.Advised",
+      "org.springframework.core.DecoratingProxy"
+    ]
+  },
+  {
+    "interfaces": [
+      "com.bloxbean.cardano.yaci.store.transaction.storage.impl.jpa.repository.TxnEntityRepository",
+      "org.springframework.data.repository.Repository",
+      "org.springframework.transaction.interceptor.TransactionalProxy",
+      "org.springframework.aop.framework.Advised",
+      "org.springframework.core.DecoratingProxy",
+      "java.io.Serializable"
+    ]
+  },
+  {
+    "interfaces": [
+      "java.util.Set"
+    ]
+  },
+  {
+    "interfaces": [
+      "org.springframework.web.context.request.NativeWebRequest"
+    ]
+  },
+  {
+    "interfaces": [
+      "org.springframework.data.jpa.repository.support.CrudMethodMetadata",
+      "org.springframework.aop.SpringProxy",
+      "org.springframework.aop.framework.Advised",
+      "org.springframework.core.DecoratingProxy"
+    ]
+  },
+  {
+    "interfaces": [
+      "java.util.List",
+      "org.springframework.aop.SpringProxy",
+      "org.springframework.aop.framework.Advised",
+      "org.springframework.core.DecoratingProxy"
+    ]
+  },
+  {
+    "interfaces": [
+      "org.hibernate.SessionFactory",
+      "org.springframework.orm.jpa.EntityManagerFactoryInfo"
+    ]
+  },
+  {
+    "interfaces": [
+      "org.hibernate.Session",
+      "org.springframework.orm.jpa.EntityManagerProxy"
+    ]
+  },
+  {
+    "interfaces": [
+      "org.springframework.data.annotation.QueryAnnotation"
+    ]
+  }
+]

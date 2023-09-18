@@ -1,4 +1,4 @@
-package org.cardano.foundation.voting.domain;
+package org.cardano.foundation.voting.domain.discord;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
@@ -15,10 +15,10 @@ import java.util.Optional;
 public class DiscordCheckVerificationRequest {
 
     @NotBlank
-    private String secret;
+    private String stakeAddress;
 
     @NotBlank
-    private String stakeAddress;
+    private String secret;
 
     @NotBlank
     protected String coseSignature;

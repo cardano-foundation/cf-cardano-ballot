@@ -1,17 +1,26 @@
 package org.cardano.foundation.voting.utils;
 
 import com.bloxbean.cardano.client.address.Address;
+import com.bloxbean.cardano.client.common.model.Networks;
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.zalando.problem.Problem;
 
-import static org.cardano.foundation.voting.utils.MoreAddress.isMainnet;
-import static org.cardano.foundation.voting.utils.MoreAddress.isTestnet;
 import static org.zalando.problem.Status.BAD_REQUEST;
 
 @Slf4j
 public final class StakeAddress {
+
+    public static boolean isMainnet(String stakeAddress) {
+        var addr = new Address(stakeAddress);
+
+        return addr.getNetwork().equals(Networks.mainnet());
+    }
+
+    public static boolean isTestnet(String stakeAddress) {
+        return !isMainnet(stakeAddress);
+    }
 
     public static Either<Problem, Boolean> checkStakeAddress(CardanoNetwork network, String stakeAddress) {
         return checkIfAddressIsStakeAddress(network, stakeAddress)

@@ -583,6 +583,75 @@ describe('For ongoing event:', () => {
     expect(screen.queryByTestId('vote-receipt')).toBeInTheDocument();
   });
 
+  test('should switch between categories', async () => {
+    const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
+    mockGetVoteReceipt.mockReset();
+    mockGetVoteReceipt.mockReturnValue(VoteReceiptMock_Basic);
+    mockUseCardano.mockReset();
+    mockUseCardano.mockReturnValue({
+      ...useCardanoMock,
+      signMessage: mockSignMessage,
+    });
+    mockGetSignedMessagePromise.mockReset();
+    mockGetSignedMessagePromise.mockImplementation(
+      (signMessage: (message: string) => string) => async (message: string) => await signMessage(message)
+    );
+    mockGetVotingPower.mockReset();
+    mockGetVotingPower.mockResolvedValue(accountDataMock);
+
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
+    await act(async () => {
+      renderWithProviders(
+        <CustomRouter history={history}>
+          <VotePage />
+        </CustomRouter>,
+        {
+          preloadedState: {
+            user: {
+              event: eventMock_active,
+              tip: chainTipMock,
+            } as UserState,
+          },
+        }
+      );
+    });
+
+    const votePage = await screen.findByTestId('vote-page');
+    expect(votePage).toBeInTheDocument();
+
+    const cta = within(votePage).queryByTestId('next-question-button');
+    expect(cta.closest('button')).not.toBeDisabled();
+    expect(cta).toHaveTextContent('Next question');
+
+    await act(async () => {
+      fireEvent.click(cta);
+    });
+
+    const eventTitle = await within(votePage).queryByTestId('event-title');
+    expect(eventTitle).not.toBeNull();
+    expect(eventTitle.textContent).toEqual('The Governance of Cardano');
+
+    const eventTime = await within(votePage).queryByTestId('event-time');
+    expect(eventTime).not.toBeNull();
+    expect(eventTime.textContent).toEqual(`Voting closes: ${formatUTCDate(eventMock_active.eventEndDate.toString())}`);
+
+    const eventDescription = await within(votePage).queryByTestId('event-description');
+    expect(eventDescription).not.toBeNull();
+    expect(eventDescription.textContent).toEqual(
+      'Should Cardano implement the minimum-viable governance proposed in CIP-1694?'
+    );
+
+    const options = await within(votePage).queryAllByTestId('option-card');
+    expect(options.length).toEqual(eventMock_active.categories[1].proposals.length);
+    for (const option in options) {
+      expect(options[option].textContent).toEqual(
+        capitalize(eventMock_active.categories[1].proposals[option].name.toLowerCase())
+      );
+    }
+    expect(screen.queryByTestId('vote-receipt')).not.toBeInTheDocument();
+    expect(mockGetVoteReceipt).toHaveBeenLastCalledWith('MIN_VIABLE_GOV_STRUCTURE', true);
+  });
+
   test('should handle show vote receipt for inactive user session', async () => {
     const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
     mockGetVoteReceipt.mockReset();

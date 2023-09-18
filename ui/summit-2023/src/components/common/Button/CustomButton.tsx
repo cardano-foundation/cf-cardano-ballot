@@ -6,14 +6,14 @@ type CustomButtonProps = {
   styles?: { [key: string]: string };
   disabled?: boolean;
   fullWidth?: boolean;
-  onClick: () => void;
+  onClick?: () => void;
 };
 const CustomButton = (props: CustomButtonProps) => {
   const { onClick, disabled, styles, label, fullWidth } = props;
   return (
     <Button
       disabled={disabled || false}
-      onClick={() => onClick()}
+      onClick={onClick}
       fullWidth={fullWidth || false}
       sx={{
         ...styles,
@@ -27,6 +27,7 @@ const CustomButton = (props: CustomButtonProps) => {
         fontStyle: 'normal',
         fontWeight: '600',
         lineHeight: 'normal',
+        textDecoration: 'none',
         textTransform: 'none',
         '&:hover': {
           background: styles?.background,

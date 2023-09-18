@@ -431,8 +431,8 @@ const Nominees = () => {
                                   width: 'auto',
                                 }
                               : {
-                                    background: '#03021F',
-                                    color: '#F6F9FF',
+                                  background: '#03021F',
+                                  color: '#F6F9FF',
                                   width: 'auto',
                                 }
                           }
@@ -470,8 +470,8 @@ const Nominees = () => {
                               marginTop: !isMobile && listView === 'list' ? '15px' : '18px',
                             }
                           : {
-                                background: '#03021F',
-                                color: '#F6F9FF',
+                              background: '#03021F',
+                              color: '#F6F9FF',
                               marginTop: !isMobile && listView === 'list' ? '15px' : '18px',
                             }
                       }

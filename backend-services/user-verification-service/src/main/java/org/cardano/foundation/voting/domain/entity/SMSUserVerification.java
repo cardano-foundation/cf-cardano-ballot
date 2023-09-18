@@ -1,25 +1,23 @@
 package org.cardano.foundation.voting.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.domain.VerificationStatus;
 
-import javax.annotation.Nullable;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Entity
-@Table(name = "user_verification")
+@Table(name = "sms_user_verification")
 @Slf4j
-@SuperBuilder
 @NoArgsConstructor
 @Getter
 @Setter
-public class UserVerification extends AbstractTimestampEntity {
+@SuperBuilder
+public class SMSUserVerification extends AbstractTimestampEntity {
 
     @Id
     @Column(name = "id", nullable = false)
@@ -42,48 +40,15 @@ public class UserVerification extends AbstractTimestampEntity {
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
-    @Builder.Default
-    @Getter
-    @Setter
-    private Status status = Status.NOT_REQUESTED;
-
-    @Column(name = "provider", nullable = false)
-    @Enumerated(EnumType.STRING)
-    @Getter
-    @Setter
-    private Provider provider;
-
-    @Column(name = "channel", nullable = false)
-    @Enumerated(EnumType.STRING)
-    @Getter
-    @Setter
-    private Channel channel;
+    private VerificationStatus status;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "expires_at", nullable = false)
-    @Builder.Default
-    @Getter
-    @Setter
-    private LocalDateTime expiresAt = LocalDateTime.now(); // TODO clock
-
-    public enum Channel {
-        SMS,
-    }
-
-    public enum Status {
-        NOT_REQUESTED,
-        PENDING,
-        VERIFIED,
-    }
-
-    public enum Provider {
-        TWILIO,
-        AWS_SNS
-    }
+    private LocalDateTime expiresAt;
 
     @Override
     public String toString() {
-        return "UserVerification{" +
+        return "SMSUserVerification{" +
                 "id='" + id + '\'' +
                 ", stakeAddress='" + stakeAddress + '\'' +
                 ", eventId='" + eventId + '\'' +
@@ -92,10 +57,9 @@ public class UserVerification extends AbstractTimestampEntity {
                 ", expiresAt=" + expiresAt +
                 ", phoneNumberHash='" + phoneNumberHash + '\'' +
                 ", status=" + status +
-                ", provider=" + provider +
-                ", channel=" + channel +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';
     }
+
 }

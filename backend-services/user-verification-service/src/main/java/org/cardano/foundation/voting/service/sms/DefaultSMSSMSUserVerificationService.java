@@ -1,4 +1,4 @@
-package org.cardano.foundation.voting.service.verify;
+package org.cardano.foundation.voting.service.sms;
 
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
@@ -6,11 +6,16 @@ import com.google.i18n.phonenumbers.Phonenumber;
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
-import org.cardano.foundation.voting.domain.*;
-import org.cardano.foundation.voting.domain.entity.UserVerification;
-import org.cardano.foundation.voting.repository.UserVerificationRepository;
+import org.cardano.foundation.voting.domain.CardanoNetwork;
+import org.cardano.foundation.voting.domain.IsVerifiedRequest;
+import org.cardano.foundation.voting.domain.IsVerifiedResponse;
+import org.cardano.foundation.voting.domain.entity.SMSUserVerification;
+import org.cardano.foundation.voting.domain.sms.SMSCheckVerificationRequest;
+import org.cardano.foundation.voting.domain.sms.SMSStartVerificationRequest;
+import org.cardano.foundation.voting.domain.sms.SMSStartVerificationResponse;
+import org.cardano.foundation.voting.domain.SaltHolder;
+import org.cardano.foundation.voting.repository.SMSUserVerificationRepository;
 import org.cardano.foundation.voting.service.pass.CodeGenService;
-import org.cardano.foundation.voting.service.sms.SMSService;
 import org.cardano.foundation.voting.utils.StakeAddress;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,10 +33,8 @@ import java.util.UUID;
 import static com.bloxbean.cardano.client.crypto.Blake2bUtil.blake2bHash256;
 import static com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.cardano.foundation.voting.domain.entity.UserVerification.Channel.SMS;
-import static org.cardano.foundation.voting.domain.entity.UserVerification.Provider.AWS_SNS;
-import static org.cardano.foundation.voting.domain.entity.UserVerification.Status.PENDING;
-import static org.cardano.foundation.voting.domain.entity.UserVerification.Status.VERIFIED;
+import static org.cardano.foundation.voting.domain.VerificationStatus.PENDING;
+import static org.cardano.foundation.voting.domain.VerificationStatus.VERIFIED;
 import static org.zalando.problem.Status.BAD_REQUEST;
 
 @Service
@@ -44,9 +47,8 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
     @Autowired
     private SMSService smsService;
 
-
     @Autowired
-    private UserVerificationRepository userVerificationRepository;
+    private SMSUserVerificationRepository smsUserVerificationRepository;
 
     @Autowired
     private SaltHolder saltHolder;
@@ -80,17 +82,17 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
             return Either.left(stakeAddressCheckE.getLeft());
         }
 
-        var activeEventE = chainFollowerClient.findEventById(eventId);
+        var eventDetails = chainFollowerClient.findEventById(eventId);
 
-        if (activeEventE.isEmpty()) {
-            log.error("Active event error:{}", activeEventE.getLeft());
+        if (eventDetails.isEmpty()) {
+            log.error("event error:{}", eventDetails.getLeft());
 
-            return Either.left(activeEventE.getLeft());
+            return Either.left(eventDetails.getLeft());
         }
 
-        var maybeEvent = activeEventE.get();
+        var maybeEvent = eventDetails.get();
         if (maybeEvent.isEmpty()) {
-            log.warn("Active event not found:{}", eventId);
+            log.warn("Event not found:{}", eventId);
 
             return Either.left(Problem.builder()
                     .withTitle("EVENT_NOT_FOUND")
@@ -111,7 +113,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
                     .build());
         }
 
-        var maybeUserVerificationStakeAddress = userVerificationRepository.findAllCompletedPerStake(
+        var maybeUserVerificationStakeAddress = smsUserVerificationRepository.findAllCompletedPerStake(
                 eventId,
                 stakeAddress
         ).stream().findFirst();
@@ -145,7 +147,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
         var formattedPhoneStr = PhoneNumberUtil.getInstance().format(phoneNum, INTERNATIONAL);
         var phoneHash = saltedPhoneHash(formattedPhoneStr);
 
-        var maybeUserVerificationPhoneHash = userVerificationRepository.findAllCompletedPerPhone(
+        var maybeUserVerificationPhoneHash = smsUserVerificationRepository.findAllCompletedPerPhone(
                 eventId,
                 phoneHash
         ).stream().findFirst();
@@ -166,7 +168,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
             }
         }
 
-        int pendingPerStakeAddressCount = userVerificationRepository.findPendingPerStakeAddressPerPhoneCount(eventId, stakeAddress, phoneHash);
+        int pendingPerStakeAddressCount = smsUserVerificationRepository.findPendingPerStakeAddressPerPhoneCount(eventId, stakeAddress, phoneHash);
         if (pendingPerStakeAddressCount >= maxPendingVerificationAttempts) {
             return Either.left(Problem.builder()
                     .withTitle("MAX_VERIFICATION_ATTEMPTS_REACHED")
@@ -176,7 +178,8 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
         }
 
         var randomVerificationCode = codeGenService.generateRandomCode();
-        var textMsg = String.format("%s. %s", randomVerificationCode, friendlyCustomName).trim();
+        // TODO transaction service based on phone number prefix?
+        var textMsg = String.format("Auth Code: %s. %s", randomVerificationCode, friendlyCustomName).trim();
 
         var smsVerificationResponseE = smsService.publishTextMessage(textMsg, phoneNum);
 
@@ -190,11 +193,9 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
 
         var now = LocalDateTime.now(clock);
 
-        var newUserVerification = UserVerification.builder()
+        var newUserVerification = SMSUserVerification.builder()
                 .id(UUID.randomUUID().toString())
                 .eventId(eventId)
-                .channel(SMS)
-                .provider(AWS_SNS)
                 .status(PENDING)
                 .phoneNumberHash(phoneHash)
                 .stakeAddress(stakeAddress)
@@ -203,7 +204,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
                 .expiresAt(now.plusMinutes(validationExpirationTimeMinutes))
                 .build();
 
-        var saved = userVerificationRepository.saveAndFlush(newUserVerification);
+        var saved = smsUserVerificationRepository.saveAndFlush(newUserVerification);
 
         var startVerificationResponse = new SMSStartVerificationResponse(
                 saved.getEventId(),
@@ -237,7 +238,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
 
         var maybeEvent = activeEventE.get();
         if (maybeEvent.isEmpty()) {
-            log.error("Active event not found:{}", eventId);
+            log.error("Event not found:{}", eventId);
 
             return Either.left(Problem.builder()
                     .withTitle("EVENT_NOT_FOUND")
@@ -258,7 +259,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
                     .build());
         }
 
-        var maybeUserVerification = userVerificationRepository.findAllCompletedPerStake(
+        var maybeUserVerification = smsUserVerificationRepository.findAllCompletedPerStake(
                 eventId,
                 stakeAddress
         ).stream().findFirst();
@@ -277,7 +278,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
             }
         }
 
-        var maybePendingRequest = userVerificationRepository.findPendingVerificationsByEventIdAndStakeAddressAndRequestId(
+        var maybePendingRequest = smsUserVerificationRepository.findPendingVerificationsByEventIdAndStakeAddressAndRequestId(
                 eventId,
                 stakeAddress,
                 checkVerificationRequest.getRequestId()
@@ -326,7 +327,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
         pendingUserVerification.setStatus(VERIFIED);
         pendingUserVerification.setUpdatedAt(now);
 
-        var saved = userVerificationRepository.saveAndFlush(pendingUserVerification);
+        var saved = smsUserVerificationRepository.saveAndFlush(pendingUserVerification);
 
         return Either.right(new IsVerifiedResponse(saved.getStatus() == VERIFIED));
     }
@@ -344,7 +345,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
 
         var maybeEvent = activeEventE.get();
         if (maybeEvent.isEmpty()) {
-            log.error("Active event not found:{}", isVerifiedRequest.getEventId());
+            log.error("Event not found:{}", isVerifiedRequest.getEventId());
 
             return Either.left(Problem.builder()
                     .withTitle("EVENT_NOT_FOUND")
@@ -365,7 +366,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
                     .build());
         }
 
-        var maybeUserVerification = userVerificationRepository.findAllCompletedPerStake(
+        var maybeUserVerification = smsUserVerificationRepository.findAllCompletedPerStake(
                 isVerifiedRequest.getEventId(),
                 isVerifiedRequest.getStakeAddress()
         ).stream().findFirst();
@@ -386,20 +387,20 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
 
     @Override
     @Transactional
-    public void removeUserVerification(UserVerification userVerification) {
-        userVerificationRepository.delete(userVerification);
+    public void removeUserVerification(SMSUserVerification SMSUserVerification) {
+        smsUserVerificationRepository.delete(SMSUserVerification);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserVerification> findAllForEvent(String eventId) {
-        return userVerificationRepository.findAllByEventId(eventId);
+    public List<SMSUserVerification> findAllForEvent(String eventId) {
+        return smsUserVerificationRepository.findAllByEventId(eventId);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserVerification> findAllPending(String eventId) {
-        return userVerificationRepository.findAllPending(eventId);
+    public List<SMSUserVerification> findAllPending(String eventId) {
+        return smsUserVerificationRepository.findAllPending(eventId);
     }
 
     private static Optional<Phonenumber.PhoneNumber> isValidNumber(String userEnteredPhoneNumber) {

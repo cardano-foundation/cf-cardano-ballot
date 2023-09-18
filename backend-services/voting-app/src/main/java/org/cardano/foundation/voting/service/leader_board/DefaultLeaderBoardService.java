@@ -41,7 +41,6 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
         return Either.right(eventDetails.proposalsReveal());
     }
 
-
     private Either<Problem, Boolean> isHighLevelCategoryLeaderboardAvailable(ChainFollowerClient.EventDetailsResponse eventDetails,
                                                                              boolean forceLeaderboard) {
         if (forceLeaderboard) {
@@ -70,7 +69,8 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
     }
 
     @Override
-    public Either<Problem, Boolean> isHighLevelEventLeaderboardAvailable(String event, boolean forceLeaderboard) {
+    public Either<Problem, Boolean> isHighLevelEventLeaderboardAvailable(String event,
+                                                                         boolean forceLeaderboard) {
         var eventDetailsE = chainFollowerClient.getEventDetails(event);
         if (eventDetailsE.isEmpty()) {
             return Either.left(Problem.builder()
@@ -159,7 +159,6 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
 
         var votes = voteRepository.getHighLevelEventStats(event);
         if (votes.isEmpty()) {
-
             Leaderboard.ByEventStats.ByEventStatsBuilder byEventStatsBuilder = Leaderboard.ByEventStats.builder()
                     .event(eventDetails.id())
                     .totalVotesCount(0L);

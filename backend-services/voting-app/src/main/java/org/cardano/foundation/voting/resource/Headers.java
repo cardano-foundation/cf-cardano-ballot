@@ -1,4 +1,4 @@
-package org.cardano.foundation.voting.service.auth;
+package org.cardano.foundation.voting.resource;
 
 public final class Headers {
 

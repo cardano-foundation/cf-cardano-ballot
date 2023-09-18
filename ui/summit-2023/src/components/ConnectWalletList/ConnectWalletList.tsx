@@ -1,5 +1,5 @@
 import React from 'react';
-import {Avatar, List, ListItem, ListItemAvatar, Typography} from '@mui/material';
+import { Avatar, List, ListItem, ListItemAvatar, Typography } from '@mui/material';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import './ConnectWalletList.scss';
 import { walletIcon } from '../../utils/utils';

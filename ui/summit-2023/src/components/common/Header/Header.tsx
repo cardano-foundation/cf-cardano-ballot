@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import {
   AppBar,
   Toolbar,
@@ -27,6 +27,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../../store';
 import { NetworkType } from '@cardano-foundation/cardano-connect-with-wallet-core';
 import { ConnectWalletButton } from '../ConnectWalletButton/ConnectWalletButton';
+import { useToggle } from 'common/hooks/useToggle';
 
 const Header: React.FC = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -37,9 +38,23 @@ const Header: React.FC = () => {
   const { isConnected } = useCardano({ limitNetwork: 'testnet' as NetworkType });
   const [openAuthDialog, setOpenAuthDialog] = useState<boolean>(false);
   const [verifyModalIsOpen, setVerifyModalIsOpen] = useState<boolean>(false);
+  const [verifyDiscordModalIsReady, toggleVerifyDiscordModalIsOpen] = useToggle(false);
   const [toastMessage, setToastMessage] = useState('');
   const [toastIsError, setToastIsError] = useState(false);
   const [toastOpen, setToastOpen] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const action = queryParams.get('action');
+    const secret = queryParams.get('secret');
+
+    console.log('action: ', action);
+    console.log('secret: ', secret);
+    if (action === 'verification' && secret) {
+      toggleVerifyDiscordModalIsOpen();
+    }
+  }, []);
 
   useEffect(() => {
     const openConnectWalletModal = () => {
@@ -264,7 +279,7 @@ const Header: React.FC = () => {
       </Modal>
       <Modal
         id="verify-wallet-modal"
-        isOpen={verifyModalIsOpen}
+        isOpen={verifyModalIsOpen || verifyDiscordModalIsReady}
         name="verify-wallet-modal"
         title="Verify your wallet"
         onClose={handleCloseVerify}
@@ -272,6 +287,7 @@ const Header: React.FC = () => {
         width={isMobile ? 'auto' : '400px'}
       >
         <VerifyWallet
+          method={verifyDiscordModalIsReady ? 'discord' : undefined}
           onVerify={() => onVerify()}
           onError={(error) => onError(error)}
         />

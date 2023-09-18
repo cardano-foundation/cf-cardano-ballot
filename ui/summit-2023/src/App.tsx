@@ -3,9 +3,6 @@ import { Footer } from './components/common/Footer/Footer';
 import { BrowserRouter } from 'react-router-dom';
 import './App.scss';
 import { useDispatch, useSelector } from 'react-redux';
-import toast, { Toaster } from 'react-hot-toast';
-import BlockIcon from '@mui/icons-material/Block';
-import { Toast } from './components/common/Toast/Toast';
 import { setEventData, setWalletIsLoggedIn, setWalletIsVerified } from './store/userSlice';
 import BackgroundPolygon1 from './common/resources/images/polygon1.svg';
 import { Box, CircularProgress, Container, useMediaQuery, useTheme } from '@mui/material';
@@ -18,6 +15,7 @@ import { getIsVerified } from 'common/api/verificationService';
 import { getEvent } from 'common/api/referenceDataService';
 import { getUserInSession, tokenIsExpired } from './utils/session';
 import { NetworkType } from '@cardano-foundation/cardano-connect-with-wallet-core';
+import { eventBus } from './utils/EventBus';
 
 function App() {
   const theme = useTheme();
@@ -46,13 +44,7 @@ function App() {
       if (process.env.NODE_ENV === 'development') {
         console.log(`Failed to fetch event, ${error?.info || error?.message || error?.toString()}`);
       }
-      toast(
-        <Toast
-          message="Failed to update event"
-          error
-          icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
-        />
-      );
+      eventBus.publish('showToast', 'Failed to update event', true);
     }
   }, [dispatch, stakeAddress]);
 
@@ -104,9 +96,7 @@ function App() {
               </Box>
             </Container>
           </div>
-
           <Footer />
-          <Toaster toastOptions={{ className: 'toast' }} />
         </div>
       </BrowserRouter>
     </>

@@ -1,11 +1,11 @@
-import { VoteReceipt, ByCategory } from 'types/voting-app-types';
+import { VoteReceipt, ByProposalsInCategoryStats } from 'types/voting-app-types';
 import { EventPresentation, ChainTip, Account } from 'types/voting-ledger-follower-types';
 
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import { canonicalize } from 'json-canonicalize';
 
-export const voteStats: ByCategory = {
-  category: '1694_Pre_Ratification_4619',
+export const voteStats: ByProposalsInCategoryStats = {
+  category: 'CHANGE_GOV_STRUCTURE',
   proposals: {
     YES: { votes: 2134, votingPower: '123' },
     NO: { votes: 700, votingPower: '123' },
@@ -18,8 +18,8 @@ export const canonicalVoteInputJsonMock = canonicalize({
   actionText: 'Cast Vote',
   data: {
     address: 'stake_test1uqwcz0754wwpuhm6xhdpda6u9enyahaj5ynlc9ay5l4mlms4pyqyg',
-    category: 'CIP-1694_Pre_Ratification_4619',
-    event: 'CIP-1694_Pre_Ratification_4619',
+    category: 'CHANGE_GOV_STRUCTURE',
+    event: 'CIP-1694_Pre_Ratification_3316',
     id: 'ebff2758-7122-4007-899f-90eea0e236c0',
     network: 'PREPROD',
     proposal: 'YES',
@@ -81,43 +81,62 @@ export const useCardanoMock_notConnected: ReturnType<typeof useCardano> = {
 };
 
 export const eventMock_active: EventPresentation = {
-  id: 'CIP-1694_Pre_Ratification_4619',
-  team: 'CF & IOG',
+  id: 'CIP-1694_Pre_Ratification_3316',
+  organisers: 'CF and IOG',
   votingEventType: 'STAKE_BASED',
   startSlot: null,
   endSlot: null,
-  startEpoch: 80,
-  eventStartDate: '2023-07-06T00:00:00Z' as unknown as Date,
-  eventEndDate: '2023-09-23T23:59:59Z' as unknown as Date,
-  snapshotTime: '2023-07-05T23:59:59Z' as unknown as Date,
-  endEpoch: 95,
-  snapshotEpoch: 79,
+  proposalsRevealSlot: null,
+  startEpoch: 94,
+  eventStartDate: '2023-09-14T00:00:00Z' as unknown as Date,
+  eventEndDate: '2023-10-18T23:59:59Z' as unknown as Date,
+  proposalsRevealDate: '2023-11-08T00:00:00Z' as unknown as Date,
+  snapshotTime: '2023-09-13T23:59:59Z' as unknown as Date,
+  endEpoch: 100,
+  snapshotEpoch: 93,
+  proposalsRevealEpoch: 105,
   categories: [
     {
-      id: 'CIP-1694_Pre_Ratification_4619',
+      id: 'CHANGE_GOV_STRUCTURE',
       gdprProtection: false,
       proposals: [
         {
-          id: '00048bb6-028d-4f13-b3e5-d19deb22d2c2',
+          id: '1f082124-ee46-4deb-9140-84a4529f98be',
           name: 'YES',
         },
         {
-          id: 'e858953c-37f2-4d1b-b844-c2e4b125fe23',
+          id: 'ed9f03e8-8ee9-4de5-93a3-30779216f150',
           name: 'NO',
         },
+      ],
+    },
+    {
+      id: 'MIN_VIABLE_GOV_STRUCTURE',
+      gdprProtection: false,
+      proposals: [
         {
-          id: '6f05012e-081e-4746-ba53-1833ff995fe3',
+          id: '291f91b3-3e3c-402e-aebf-854f141b372b',
+          name: 'CIP-1694',
+        },
+        {
+          id: '842cf5fc-2eda-44a0-b067-87e6a7035aa1',
+          name: 'OTHER',
+        },
+        {
+          id: 'adcec241-67de-4860-a881-aaa91a5283a2',
           name: 'ABSTAIN',
         },
       ],
     },
   ],
   active: true,
-  notStarted: false,
-  allowVoteChanging: false,
   finished: false,
+  notStarted: false,
+  proposalsReveal: false,
+  allowVoteChanging: false,
+  highLevelEventResultsWhileVoting: false,
+  highLevelCategoryResultsWhileVoting: false,
   categoryResultsWhileVoting: false,
-  highLevelResultsWhileVoting: false,
 };
 
 export const eventMock_notStarted: EventPresentation = {
@@ -153,7 +172,7 @@ export const VoteReceiptMock_Basic: VoteReceipt = {
   coseSignature:
     '8458200201276761646472657373581de01d813fdab9cle5f7a35da16f75c2664edfb2a127c17a4a7ebbfeel6668617368656445901907622616374696f6e223a22434153545f596179356c346d6c6d73347079717967222c226361746567672792230224349502d3136393455072655526174696669636174696f6e534363139222c226576656e74223a224349502f73616c223a22594553222c227667465644174223a33323936333037392c227667469667506776572223a2239393937227d2c22736c674223a33323936333037392c2275726922375d8Fb996a6cb01',
   cosePublicKey: '04010103272006215820c4821499cef96eda9c00cdd',
-  category: '',
+  category: 'CHANGE_GOV_STRUCTURE',
 };
 
 export const VoteReceiptMock_Partial: VoteReceipt = {
@@ -182,4 +201,10 @@ export const VoteReceiptMock_Full_HighAssurance: VoteReceipt = {
   ...VoteReceiptMock_Basic,
   status: 'FULL',
   finalityScore: 'VERY_HIGH',
+};
+
+export const userInSessionMock = {
+  accessToken:
+    'eyJhbGciOiJFZERTQSJ9.eyJzdWIiOiJzdGFrZV90ZXN0MXVxd2N6MDc1NHd3cHVobTZ4aGRwZGE2dTllbnlhaGFqNXlubGM5YXk1bDRtbG1zNHB5cXlnIiwiZXZlbnRJZCI6IkNJUC0xNjk0X1ByZV9SYXRpZmljYXRpb25fMzMxNiIsInJvbGUiOiJWT1RFUiIsImlzcyI6Imh0dHBzOi8vY2FyZGFub2ZvdW5kYXRpb24ub3JnIiwic3Rha2VBZGRyZXNzIjoic3Rha2VfdGVzdDF1cXdjejA3NTR3d3B1aG02eGhkcGRhNnU5ZW55YWhhajV5bmxjOWF5NWw0bWxtczRweXF5ZyIsImV4cCI6MTY5NDc4NDk4NCwiaWF0IjoxNjk0Njk4NTg0LCJqdGkiOiIzNmIxZjc1NS1mZDc2LTQyMzAtYTVmMy0zYjhkMDJhN2I2ZGYiLCJjYXJkYW5vTmV0d29yayI6IlBSRVBST0QifQ.MHXhEiXhak-5HOVxBRN9y5kx5LGO2zIpU3c4L09GNlg8cJDqtfSgFwgDl0eY0kZQQKkWJhT5kpz5V7Bqu7fxDQ',
+  expiresAt: '2023-09-15T16:36:24.903634',
 };

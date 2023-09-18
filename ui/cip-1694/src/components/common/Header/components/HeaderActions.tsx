@@ -1,15 +1,21 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link, matchPath, useLocation, useNavigate } from 'react-router-dom';
 import cn from 'classnames';
+import { useDispatch, useSelector } from 'react-redux';
+import toast from 'react-hot-toast';
 import { Grid, Typography, Button } from '@mui/material';
 import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined';
+import BlockIcon from '@mui/icons-material/Block';
 import LeaderboardIcon from '@mui/icons-material/Leaderboard';
 import { ROUTES } from 'common/routes';
-import { ResultsCommingSoonModal } from 'pages/Leaderboard/components/ResultsCommingSoonModal/ResultsCommingSoonModal';
-import { useSelector } from 'react-redux';
+import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import { RootState } from 'common/store';
-import { formatUTCDate } from 'pages/Leaderboard/utils';
 import { getDateAndMonth } from 'common/utils/dateUtils';
+import * as voteService from 'common/api/voteService';
+import { setChainTipData } from 'common/store/userSlice';
+import { Toast } from 'components/common/Toast/Toast';
+import { ResultsCommingSoonModal } from 'pages/Leaderboard/components/ResultsCommingSoonModal/ResultsCommingSoonModal';
+import { formatUTCDate } from 'pages/Leaderboard/utils';
 import { ConnectWalletButton } from './ConnectWalletButton';
 import styles from './HeaderActions.module.scss';
 
@@ -20,11 +26,36 @@ type HeaderActionsProps = {
 };
 
 export const HeaderActions = ({ isMobileMenu = false, onClick, showNavigationItems }: HeaderActionsProps) => {
+  const { isConnected } = useCardano();
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const event = useSelector((state: RootState) => state.user.event);
+  const tip = useSelector((state: RootState) => state.user.tip);
   const [isCommingSoonModalVisible, setIsCommingSoonModalVisible] = useState<boolean>(false);
+
+  const init = useCallback(async () => {
+    try {
+      dispatch(setChainTipData({ tip: await voteService.getChainTip() }));
+    } catch (error) {
+      const message = `Failed to fecth chain tip: ${error?.message}`;
+      console.log(message);
+      toast(
+        <Toast
+          message="Failed to fecth chain tip"
+          error
+          icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
+        />
+      );
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (isConnected) {
+      init();
+    }
+  }, [init, isConnected]);
 
   const goToLeaderboard = () => {
     navigate(ROUTES.LEADERBOARD);
@@ -33,7 +64,7 @@ export const HeaderActions = ({ isMobileMenu = false, onClick, showNavigationIte
   };
 
   const onGoToLeaderboard = () => {
-    if (event?.finished === false) {
+    if (event?.proposalsRevealEpoch > tip?.epochNo) {
       setIsCommingSoonModalVisible(true);
     } else {
       navigate(ROUTES.LEADERBOARD);
@@ -81,7 +112,7 @@ export const HeaderActions = ({ isMobileMenu = false, onClick, showNavigationIte
                   [styles.activeRoute]: !!matchPath(location?.pathname, ROUTES.LEADERBOARD),
                 })}
                 startIcon={<LeaderboardIcon />}
-                disabled={!event}
+                disabled={!event || !tip?.epochNo}
               >
                 Leaderboard
               </Button>
@@ -102,7 +133,11 @@ export const HeaderActions = ({ isMobileMenu = false, onClick, showNavigationIte
       </Grid>
       <ResultsCommingSoonModal
         openStatus={isCommingSoonModalVisible}
-        onCloseFn={() => goToLeaderboard()}
+        onCloseFn={() => {
+          setIsCommingSoonModalVisible(false);
+          onClick?.();
+        }}
+        onConfirmFn={() => goToLeaderboard()}
         onGoBackFn={() => {
           setIsCommingSoonModalVisible(false);
           onClick?.();
@@ -112,10 +147,10 @@ export const HeaderActions = ({ isMobileMenu = false, onClick, showNavigationIte
         title="Coming soon"
         description={
           <>
-            The results will be displayed after the voting has closed on{' '}
+            The results will be available from{' '}
             <b>
-              {event?.eventStartDate && getDateAndMonth(event?.eventEndDate?.toString())}{' '}
-              {formatUTCDate(event?.eventEndDate?.toString())}
+              {event?.proposalsRevealDate && getDateAndMonth(event?.proposalsRevealDate?.toString())}{' '}
+              {formatUTCDate(event?.proposalsRevealDate?.toString())}
             </b>
           </>
         }

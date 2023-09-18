@@ -3,7 +3,6 @@ package org.cardano.foundation.voting.service.vote;
 import com.nimbusds.jwt.SignedJWT;
 import io.micrometer.core.annotation.Timed;
 import io.vavr.control.Either;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
@@ -58,8 +57,8 @@ public class DefaultVoteService implements VoteService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Vote> findAll(String eventId) {
-        return voteRepository.findAllByEventId(eventId);
+    public List<VoteRepository.CompactVote> findAllCompactVotesByEventId(String eventId) {
+        return voteRepository.findAllCompactVotesByEventId(eventId);
     }
 
     @Transactional(readOnly = true)

@@ -12,7 +12,7 @@ public class CodeGenService {
     private final static SecureRandom SECURE_RANDOM = new SecureRandom();
 
     public String generateRandomCode() {
-        var randomVerificationCode = SECURE_RANDOM.nextInt(100000, 999999);
+        var randomVerificationCode = SECURE_RANDOM.nextInt(100_000, 999_999);
 
         return String.valueOf(randomVerificationCode);
     }

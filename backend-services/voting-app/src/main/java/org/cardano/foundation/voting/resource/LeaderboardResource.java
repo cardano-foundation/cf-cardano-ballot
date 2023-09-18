@@ -15,7 +15,7 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
 
-import static org.cardano.foundation.voting.service.auth.Headers.XForceLeaderBoardResults;
+import static org.cardano.foundation.voting.resource.Headers.XForceLeaderBoardResults;
 
 @RestController
 @RequestMapping("/api/leaderboard")

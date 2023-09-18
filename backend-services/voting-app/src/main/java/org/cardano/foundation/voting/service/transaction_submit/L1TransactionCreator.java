@@ -7,7 +7,6 @@ import com.bloxbean.cardano.client.backend.api.BackendService;
 import com.bloxbean.cardano.client.cip.cip30.CIP30DataSigner;
 import com.bloxbean.cardano.client.cip.cip30.DataSignature;
 import com.bloxbean.cardano.client.common.cbor.CborSerializationUtil;
-import com.bloxbean.cardano.client.crypto.Blake2bUtil;
 import com.bloxbean.cardano.client.function.helper.SignerProviders;
 import com.bloxbean.cardano.client.metadata.Metadata;
 import com.bloxbean.cardano.client.metadata.MetadataBuilder;
@@ -30,6 +29,7 @@ import org.zalando.problem.Problem;
 
 import java.util.List;
 
+import static com.bloxbean.cardano.client.crypto.Blake2bUtil.blake2bHash224;
 import static org.cardano.foundation.voting.domain.OnChainEventType.COMMITMENTS;
 
 @Service
@@ -67,12 +67,13 @@ public class L1TransactionCreator {
     }
 
     @SneakyThrows
-    protected Metadata serialiseMetadata(MetadataMap childMetadata, OnChainEventType onChainEventType) {
+    protected Metadata serialiseMetadata(MetadataMap childMetadata,
+                                         OnChainEventType onChainEventType) {
         var stakeAddress = organiserAccount.stakeAddress();
         var stakeAddressAccount = new Address(stakeAddress);
 
         var data = CborSerializationUtil.serialize(childMetadata.getMap());
-        var hashedData = Blake2bUtil.blake2bHash224(data);
+        var hashedData = blake2bHash224(data);
 
         DataSignature dataSignature = CIP30DataSigner.INSTANCE.signData(
                 stakeAddressAccount.getBytes(),

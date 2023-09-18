@@ -9,6 +9,7 @@ type voteInput = {
   voter: string;
   slotNumber: string;
   votePower: string;
+  category: string;
 };
 
 export const buildCanonicalVoteInputJson = ({
@@ -17,6 +18,7 @@ export const buildCanonicalVoteInputJson = ({
   voter,
   slotNumber,
   votePower,
+  category,
 }: voteInput): ReturnType<typeof canonicalize> => {
   const startOfCurrentDay = new Date();
   startOfCurrentDay.setUTCMinutes(0, 0, 0);
@@ -30,7 +32,7 @@ export const buildCanonicalVoteInputJson = ({
       id: voteId,
       address: voter,
       event: env.EVENT_ID,
-      category: env.CATEGORY_ID,
+      category,
       proposal: option,
       network: env.TARGET_NETWORK,
       votedAt: slotNumber,
@@ -38,29 +40,6 @@ export const buildCanonicalVoteInputJson = ({
     },
   });
 };
-
-type votereceiptInput = {
-  voter: string;
-  slotNumber: string;
-};
-
-export const buildCanonicalVoteReceiptInputJson = ({
-  voter,
-  slotNumber,
-}: votereceiptInput): ReturnType<typeof canonicalize> =>
-  canonicalize({
-    // TODO: should this one be hardcoded?
-    uri: 'https://evoting.cardano.org/voltaire',
-    action: 'VIEW_VOTE_RECEIPT',
-    actionText: 'View Vote Receipt',
-    slot: slotNumber,
-    data: {
-      address: voter,
-      event: env.EVENT_ID,
-      category: env.CATEGORY_ID,
-      network: env.TARGET_NETWORK,
-    },
-  });
 
 export const getSignedMessagePromise = (signMessage: ReturnType<typeof useCardano>['signMessage']) => {
   return async (message: string): Promise<SignedWeb3Request> =>

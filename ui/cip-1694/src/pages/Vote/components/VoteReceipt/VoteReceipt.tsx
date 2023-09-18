@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import pick from 'lodash/pick';
 import Grid from '@mui/material/Grid';
@@ -9,7 +8,7 @@ import BlockIcon from '@mui/icons-material/Block';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { VoteVerificationRequest } from 'types/voting-verification-app-types';
 import * as verificationService from 'common/api/verificationService';
-import { RootState } from 'common/store';
+import { VoteReceipt as VoteReceiptType } from 'types/voting-app-types';
 import { Toast } from 'components/common/Toast/Toast';
 import {
   AdvancedFullFieldsToDisplayArrayKeys,
@@ -25,10 +24,10 @@ import styles from './VoteReceipt.module.scss';
 type VoteReceiptProps = {
   setOpen: () => void;
   fetchReceipt: (props: { cb?: () => void; refetch?: boolean }) => void;
+  receipt: VoteReceiptType;
 };
 
-export const VoteReceipt = ({ setOpen, fetchReceipt }: VoteReceiptProps) => {
-  const receipt = useSelector((state: RootState) => state.user.receipt);
+export const VoteReceipt = ({ setOpen, fetchReceipt, receipt }: VoteReceiptProps) => {
   const [isVerified, setIsVerified] = useState(false);
 
   const verifyVote = useCallback(async () => {

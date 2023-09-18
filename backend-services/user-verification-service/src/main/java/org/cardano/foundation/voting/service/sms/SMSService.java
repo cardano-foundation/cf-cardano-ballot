@@ -6,6 +6,7 @@ import org.zalando.problem.Problem;
 
 public interface SMSService {
 
-    Either<Problem, SMSVerificationResponse> publishTextMessage(String message, Phonenumber.PhoneNumber phoneNumber);
+    Either<Problem, SMSVerificationResponse> publishTextMessage(String message,
+                                                                Phonenumber.PhoneNumber phoneNumber);
 
 }

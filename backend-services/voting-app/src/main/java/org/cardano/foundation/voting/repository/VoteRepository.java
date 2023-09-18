@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface VoteRepository extends JpaRepository<Vote, String> {
 
     @Query("SELECT v FROM Vote v WHERE v.eventId = :eventId ORDER BY v.votedAtSlot, v.createdAt DESC")
-    List<Vote> findAllByEventId(@Param("eventId") String eventId);
+    List<CompactVote> findAllCompactVotesByEventId(@Param("eventId") String eventId);
 
     Optional<Vote> findByEventIdAndCategoryIdAndVoterStakingAddress(String eventId, String categoryId, String voterStakeAddress);
 
@@ -60,6 +60,14 @@ public interface VoteRepository extends JpaRepository<Vote, String> {
 
         @Nullable
         Long getTotalVotingPower();
+
+    }
+
+    interface CompactVote {
+
+        String getCoseSignature();
+
+        Optional<String> getCosePublicKey();
 
     }
 

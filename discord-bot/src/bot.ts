@@ -112,13 +112,31 @@ client.on(Events.InteractionCreate, async (interaction) => {
                 .createHash('sha256')
                 .update(DISCORD_VERIFICATION_BOT_SALT + discordUserId)
                 .digest('hex');
+
+            const response = await axios.get(`${BACKEND_BASE_URL}/api/discord/user-verification/is-verified/${hashedDiscordId}`, authenticationHeader);
             
+            if (response.data.isVerified) {
+                interaction.reply({
+                    content: `Hi ${interaction.user.username}, you have already verified your wallet!`,
+                    ephemeral: true 
+                });
+                return;
+            }
+
             const randomSecret = generateAuthenticationSecret();
             try {
-                await axios.post(`${BACKEND_BASE_URL}/api/discord/user-verification/start-verification`, {
-                    hashedDiscordId: hashedDiscordId,
+                const startVerificationResponse = await axios.post(`${BACKEND_BASE_URL}/api/discord/user-verification/start-verification`, {
+                    discordIdHash: hashedDiscordId,
                     secret: randomSecret,
                 }, authenticationHeader);
+
+                if (startVerificationResponse.status !== 200) {
+                    interaction.reply({
+                        content: `Hi ${interaction.user.username}, something went wrong. Please try again later.`,
+                        ephemeral: true
+                    });
+                    return;
+                }
                 
                 const button = new ButtonBuilder()
                     .setLabel('Finish Wallet Verification')

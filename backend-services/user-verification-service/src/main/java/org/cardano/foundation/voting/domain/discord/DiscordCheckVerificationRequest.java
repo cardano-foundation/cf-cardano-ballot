@@ -15,6 +15,9 @@ import java.util.Optional;
 public class DiscordCheckVerificationRequest {
 
     @NotBlank
+    private String eventId;
+
+    @NotBlank
     private String stakeAddress;
 
     @NotBlank

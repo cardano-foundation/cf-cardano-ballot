@@ -15,7 +15,7 @@ public interface DiscordUserVerificationService {
 
     Either<Problem, DiscordStartVerificationResponse> startVerification(String eventId, DiscordStartVerificationRequest startVerificationRequest);
 
-    Either<Problem, IsVerifiedResponse> checkVerification(String eventId, DiscordCheckVerificationRequest checkVerificationRequest);
+    Either<Problem, IsVerifiedResponse> checkVerification(DiscordCheckVerificationRequest checkVerificationRequest);
 
     Either<Problem, IsVerifiedResponse> isVerifiedBasedOnStakeAddress(IsVerifiedRequest isVerifiedRequest);
 

@@ -13,8 +13,8 @@ import java.util.Optional;
 public interface DiscordUserVerificationRepository extends JpaRepository<DiscordUserVerification, String> {
 
     @Query("SELECT uv FROM DiscordUserVerification uv WHERE uv.status = 'VERIFIED' AND uv.eventId = :eventId AND uv.stakeAddress = :stakeAddress")
-    Optional<DiscordUserVerification> findCompletedVerification(@Param("eventId") String eventId,
-                                                                @Param("stakeAddress") String stakeAddress
+    List<DiscordUserVerification> findCompletedVerifications(@Param("eventId") String eventId,
+                                                             @Param("stakeAddress") String stakeAddress
     );
 
     @Query("SELECT uv FROM DiscordUserVerification uv WHERE uv.status = 'VERIFIED' AND uv.eventId = :eventId AND uv.discordIdHash = :discordIdHash")

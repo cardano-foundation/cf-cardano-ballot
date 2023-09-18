@@ -1,11 +1,11 @@
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 
 import { Button, Checkbox, FormControlLabel, Grid, List, ListItem, ListItemAvatar, Typography } from '@mui/material';
 import CallIcon from '@mui/icons-material/Call';
 import { MuiTelInput, matchIsValidTel, MuiTelInputCountry } from 'mui-tel-input';
 import './VerifyWallet.scss';
 import discordLogo from '../../common/resources/images/discord-icon.svg';
-import { confirmPhoneNumberCode, startVerification } from 'common/api/verificationService';
+import { confirmPhoneNumberCode, startVerification, verifyDiscord } from 'common/api/verificationService';
 import { env } from 'common/constants/env';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import { useDispatch, useSelector } from 'react-redux';
@@ -15,6 +15,9 @@ import { RootState } from '../../store';
 import { NetworkType } from '@cardano-foundation/cardano-connect-with-wallet-core';
 import { useLocation } from 'react-router-dom';
 import { CustomButton } from '../common/Button/CustomButton';
+import {capitalizeFirstLetter, getSignedMessagePromise} from '../../utils/utils';
+import {eventBus} from '../../utils/EventBus';
+import {SignedWeb3Request} from '../../types/voting-app-types';
 
 // TODO: env.
 const excludedCountries: MuiTelInputCountry[] | undefined = [];
@@ -36,8 +39,8 @@ const VerifyWallet = (props: VerifyWalletProps) => {
   const [phoneCodeIsSent, setPhoneCodeIsSent] = useState<boolean>(false);
   const [checkImNotARobot, setCheckImNotARobot] = useState<boolean>(false);
   const [isPhoneInputDisabled] = useState<boolean>(false);
-  const { stakeAddress } = useCardano({ limitNetwork: 'testnet' as NetworkType });
   const dispatch = useDispatch();
+  const { stakeAddress, signMessage } = useCardano({ limitNetwork: 'testnet' as NetworkType });
   const userVerification = useSelector((state: RootState) => state.user.userVerification);
   const userStartsVerificationByStakeAddress =
     Object.keys(userVerification).length !== 0 && userVerification[stakeAddress];
@@ -50,6 +53,8 @@ const VerifyWallet = (props: VerifyWalletProps) => {
   const secret = queryParams.get('secret');
 
   inputRefs.current = [];
+
+  const signMessagePromisified = useMemo(() => getSignedMessagePromise(signMessage), [signMessage]);
 
   const reset = (timout?: boolean) => {
     function clear() {
@@ -113,10 +118,13 @@ const VerifyWallet = (props: VerifyWalletProps) => {
     });
   };
 
-  const handleVerifyDiscordKey = () => {
+  const handleVerifyDiscord = async () => {
     if (action === 'verification' && secret) {
-      // TODO: verify key
-      onVerify();
+      signMessagePromisified(secret).then((signedMessaged:SignedWeb3Request) => {
+          verifyDiscord(env.EVENT_ID, stakeAddress, secret, signedMessaged).then(() => {
+              onVerify();
+          }).catch((e) => eventBus.publish('showToast', capitalizeFirstLetter(e.message), true));
+      }).catch((e) => eventBus.publish('showToast', capitalizeFirstLetter(e.message), true));
     }
   };
 
@@ -372,7 +380,7 @@ const VerifyWallet = (props: VerifyWalletProps) => {
             color: '#03021F',
           }}
           label="Sign and verify"
-          onClick={() => handleVerifyDiscordKey()}
+          onClick={() => handleVerifyDiscord()}
           disabled={!secret}
           fullWidth={true}
         />
@@ -380,7 +388,7 @@ const VerifyWallet = (props: VerifyWalletProps) => {
           styles={{
             background: 'transparent !important',
             color: '#03021F',
-              border: '1px solid var(--color-light-blue)',
+            border: '1px solid var(--color-light-blue)',
           }}
           label="Cancel"
           onClick={() => reset()}

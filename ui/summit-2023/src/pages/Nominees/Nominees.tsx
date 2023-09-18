@@ -57,6 +57,7 @@ import ReadMore from './ReadMore';
 import Modal from '../../components/common/Modal/Modal';
 import QRCode from 'react-qr-code';
 import { NetworkType } from '@cardano-foundation/cardano-connect-with-wallet-core';
+import {CustomButton} from '../../components/common/Button/CustomButton';
 
 const Nominees = () => {
   const { categoryId } = useParams();
@@ -359,28 +360,15 @@ const Nominees = () => {
                 : 'To see you vote receipt, please sign with your wallet'}
             </Typography>
           </div>
-          <Button
-            onClick={() => handleViewVoteReceipt()}
-            variant="contained"
-            color="primary"
-            sx={{
-              display: 'inline-flex',
-              padding: '16px 24px',
-              justifyContent: 'center',
-              alignItems: 'center',
-              gap: '10px',
-              borderRadius: '8px',
-              background: '#03021F',
-              color: '#F6F9FF',
-              fontSize: '16px',
-              fontStyle: 'normal',
-              fontWeight: '600',
-              lineHeight: 'normal',
-              textTransform: 'none',
-            }}
-          >
-            {walletIsLoggedIn ? 'View vote receipt' : 'Login with wallet'}
-          </Button>
+            <CustomButton
+                styles={{
+                    background: '#03021F',
+                    color: '#F6F9FF',
+                }}
+                label= {walletIsLoggedIn ? 'View vote receipt' : 'Login with wallet'}
+                onClick={() => handleViewVoteReceipt()}
+                fullWidth={true}
+            />
         </Box>
       ) : null}
 
@@ -445,30 +433,37 @@ const Nominees = () => {
                     ) : null}
                   </Grid>
 
-                  <Button
-                    className="read-more-button"
-                    fullWidth
-                    style={{
-                      width: !isMobile && listView === 'list' ? '146px' : '98%',
-                      marginTop: !isMobile && listView === 'list' ? '15px' : '28px',
-                    }}
-                    onClick={() =>
-                      handleReadMore(
-                        nominee.id === summit2023CategoryNominees[index].id && summit2023CategoryNominees[index]
-                      )
-                    }
-                    sx={{ cursor: 'pointer' }}
-                  >
-                    Read more
-                  </Button>
+                    <CustomButton
+                        styles={{
+                            background: 'transparent !important',
+                            color: '#03021F',
+                            border: '1px solid #daeefb',
+                            width: !isMobile && listView === 'list' ? '146px' : '98%',
+                            marginTop: !isMobile && listView === 'list' ? '15px' : '28px',
+                        }}
+                        label="Read more"
+                        onClick={() => handleReadMore(
+                            nominee.id === summit2023CategoryNominees[index].id && summit2023CategoryNominees[index]
+                        )}
+                        fullWidth={true}
+                    />
+
                   {!receipt && (isMobile || listView === 'grid') ? (
-                    <Button
-                      className={`${isConnected ? 'vote-nominee-button' : 'connect-wallet-button'}`}
-                      fullWidth
-                      onClick={() => handleNomineeButton(nominee.id)}
-                    >
-                      {renderNomineeButtonLabel()}
-                    </Button>
+                      <CustomButton
+                          styles={ isConnected ? {
+                              background: '#ACFCC5',
+                              color: '#03021F',
+                              marginTop: !isMobile && listView === 'list' ? '15px' : '18px'
+                          }: {
+                              background: 'transparent !important',
+                              color: '#03021F',
+                              border: '1px solid #daeefb',
+                              marginTop: !isMobile && listView === 'list' ? '15px' : '18px'
+                          }}
+                          label={renderNomineeButtonLabel() as string}
+                          onClick={() => handleNomineeButton(nominee.id)}
+                          fullWidth={true}
+                      />
                   ) : null}
                 </CardContent>
               </Card>

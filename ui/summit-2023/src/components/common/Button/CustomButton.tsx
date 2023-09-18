@@ -17,7 +17,6 @@ const CustomButton = (props: CustomButtonProps) => {
       fullWidth={fullWidth || false}
       sx={{
         ...styles,
-        margin: '24px 0px',
         display: 'flex',
         padding: '16px 24px',
         justifyContent: 'center',

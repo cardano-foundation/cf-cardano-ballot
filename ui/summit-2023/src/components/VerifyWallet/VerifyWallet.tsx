@@ -304,36 +304,43 @@ const VerifyWallet = (props: VerifyWalletProps) => {
         />
         <Grid
           container
+          spacing={2}
           style={{ marginTop: '4px' }}
         >
           <Grid
             item
             xs={6}
           >
-            <Button
-              onClick={() => reset()}
-              className="verify-number-button-cancel"
-              fullWidth
-            >
-              Cancel
-            </Button>
+              <CustomButton
+                  styles={{
+                      background: 'transparent !important',
+                      color: '#03021F',
+                      border: '1px solid #daeefb',
+                      marginRight: '20px'
+                  }}
+                  label="Cancel"
+                  onClick={() => reset()}
+                  fullWidth={true}
+              />
           </Grid>
           <Grid
             item
             xs={6}
           >
-            <Button
-              onClick={() => handleSendCode()}
-              disabled={!matchIsValidTel(phone) || !checkImNotARobot || phoneCodeIsBeenSending}
-              className={`verify-number-button-continue ${
-                matchIsValidTel(phone) && checkImNotARobot && !phoneCodeIsBeenSending
-                  ? 'verify-number-button-valid'
-                  : ''
-              }`}
-              fullWidth
-            >
-              Send code
-            </Button>
+              <CustomButton
+                  styles={matchIsValidTel(phone) && checkImNotARobot && !phoneCodeIsBeenSending ? {
+                      background: '#ACFCC5',
+                      color: '#03021F',
+                      paddingLeft: '20px'
+                  } : {
+                      background: '#6C6F89',
+                      color: '#F6F9FF !important'
+                  }}
+                  label="Send code"
+                  disabled={!matchIsValidTel(phone) || !checkImNotARobot || phoneCodeIsBeenSending}
+                  onClick={() => handleSendCode()}
+                  fullWidth={true}
+              />
           </Grid>
         </Grid>
       </>
@@ -384,6 +391,7 @@ const VerifyWallet = (props: VerifyWalletProps) => {
           styles={{
             background: '#ACFCC5',
             color: '#03021F',
+              margin: '24px 0px',
           }}
           label="Sign and verify"
           onClick={() => handleVerifyDiscord()}
@@ -394,7 +402,8 @@ const VerifyWallet = (props: VerifyWalletProps) => {
           styles={{
             background: 'transparent !important',
             color: '#03021F',
-            border: '1px solid var(--color-light-blue)',
+            border: '1px solid #daeefb',
+              margin: '24px 0px',
           }}
           label="Cancel"
           onClick={() => reset()}

@@ -3,7 +3,6 @@ import { NavLink } from 'react-router-dom';
 import {
   AppBar,
   Toolbar,
-  Button,
   IconButton,
   Drawer,
   List,
@@ -11,26 +10,23 @@ import {
   useTheme,
   useMediaQuery,
   Grid,
-  Avatar,
   Snackbar,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
-import VerifiedIcon from '@mui/icons-material/Verified';
-import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import DoNotDisturbAltIcon from '@mui/icons-material/DoNotDisturbAlt';
 import './Header.scss';
 import { i18n } from '../../../i18n';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
-import { addressSlice, walletIcon } from '../../../utils/utils';
 import Modal from '../Modal/Modal';
 import ConnectWalletList from '../../ConnectWalletList/ConnectWalletList';
 import { VerifyWallet } from '../../VerifyWallet';
 import { eventBus } from '../../../utils/EventBus';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store';
+import { NetworkType } from '@cardano-foundation/cardano-connect-with-wallet-core';
+import { ConnectWalletButton } from '../ConnectWalletButton/ConnectWalletButton';
 
 const Header: React.FC = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -38,7 +34,7 @@ const Header: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const walletIsVerified = useSelector((state: RootState) => state.user.walletIsVerified);
 
-  const { stakeAddress, isConnected, disconnect, enabledWallet } = useCardano();
+  const { isConnected } = useCardano({ limitNetwork: 'testnet' as NetworkType });
   const [openAuthDialog, setOpenAuthDialog] = useState<boolean>(false);
   const [verifyModalIsOpen, setVerifyModalIsOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState('');
@@ -97,11 +93,6 @@ const Header: React.FC = () => {
     showToast('Unable to connect wallet. Please try again', true);
   };
 
-  const onDisconnectWallet = () => {
-    disconnect();
-    showToast('Wallet disconnected successfully');
-  };
-
   const handleConnectWallet = () => {
     if (!isConnected) {
       setOpenAuthDialog(true);
@@ -137,13 +128,10 @@ const Header: React.FC = () => {
   const drawerItems = (
     <List>
       <ListItem style={{ justifyContent: 'space-between' }}>
-        <Button
-          className="connect-button"
-          color="inherit"
-          onClick={() => setOpenAuthDialog(true)}
-        >
-          {i18n.t('header.connectWalletButton')}
-        </Button>
+        <ConnectWalletButton
+          onOpenConnectWalletModal={handleConnectWallet}
+          onOpenVerifyWalletModal={handleOpenVerify}
+        />
         <IconButton
           className="close-button"
           onClick={() => setDrawerOpen(false)}
@@ -239,58 +227,10 @@ const Header: React.FC = () => {
                 </NavLink>
               </Grid>
               <Grid item>
-                <div className="button-container">
-                  <Button
-                    className={isConnected ? 'connected-button' : 'connect-button'}
-                    color="inherit"
-                    onClick={() => handleConnectWallet()}
-                  >
-                    {isConnected && enabledWallet ? (
-                      <Avatar
-                        src={walletIcon(enabledWallet)}
-                        style={{ width: '24px', height: '24px' }}
-                      />
-                    ) : (
-                      <AccountBalanceWalletIcon />
-                    )}
-                    {isConnected ? (
-                      <>
-                        {stakeAddress ? addressSlice(stakeAddress, 5) : null}
-                        <div className="arrow-icon">
-                          <KeyboardArrowDownIcon />
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <span> {i18n.t('header.connectWalletButton')}</span>
-                      </>
-                    )}
-                  </Button>
-                  {isConnected && (
-                    <div className="disconnect-wrapper">
-                      <Button
-                        className="connect-button verify-button"
-                        color="inherit"
-                        onClick={handleOpenVerify}
-                      >
-                        {walletIsVerified ? (
-                          <>
-                            Verified <VerifiedIcon style={{ width: '20px', paddingBottom: '5px', color: '#1C9BEF' }} />{' '}
-                          </>
-                        ) : (
-                          'Verify'
-                        )}
-                      </Button>
-                      <Button
-                        className="connect-button disconnect-button"
-                        color="inherit"
-                        onClick={onDisconnectWallet}
-                      >
-                        Disconnect wallet
-                      </Button>
-                    </div>
-                  )}
-                </div>
+                <ConnectWalletButton
+                  onOpenConnectWalletModal={handleConnectWallet}
+                  onOpenVerifyWalletModal={handleOpenVerify}
+                />
               </Grid>
             </Grid>
           )}
@@ -314,6 +254,7 @@ const Header: React.FC = () => {
         name="connect-wallet-modal"
         title="Connect wallet"
         onClose={handleCloseAuthDialog}
+        width={isMobile ? 'auto' : '400px'}
       >
         <ConnectWalletList
           description="In order to vote, first you will need to connect your wallet."
@@ -328,6 +269,7 @@ const Header: React.FC = () => {
         title="Verify your wallet"
         onClose={handleCloseVerify}
         disableBackdropClick={true}
+        width={isMobile ? 'auto' : '400px'}
       >
         <VerifyWallet
           onVerify={() => onVerify()}

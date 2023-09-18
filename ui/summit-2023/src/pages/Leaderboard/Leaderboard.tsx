@@ -191,64 +191,64 @@ const Leaderboard = () => {
                     md={4}
                     key={id}
                   >
+                    <Grid
+                      container
+                      spacing={2}
+                      key={id}
+                    >
                       <Grid
-                        container
-                        spacing={2}
-                        key={id}
+                        item
+                        xs={1}
+                      >
+                        <div
+                          className={styles.proposalRect}
+                          data-proposal={id}
+                        />
+                      </Grid>
+                      <Grid
+                        item
+                        xs={11}
                       >
                         <Grid
-                          item
-                          xs={3}
-                        >
-                          <div
-                            className={styles.proposalRect}
-                            data-proposal={id}
-                          />
-                        </Grid>
-                        <Grid
-                          item
-                          xs={9}
+                          container
+                          direction="row"
                         >
                           <Grid
-                            container
-                            direction="row"
+                            item
+                            xs={12}
                           >
-                            <Grid
-                              item
-                              xs={12}
+                            <Typography
+                              variant="h4"
+                              className={cn(styles.optionTitle, styles.statTitle)}
                             >
-                              <Typography
-                                variant="h4"
-                                className={cn(styles.optionTitle, styles.statTitle)}
-                              >
-                                {label}
-                              </Typography>
-                            </Grid>
-                            <Grid
-                              item
-                              xs={12}
-                            >
-                              {stats && (
-                                <>
-                                  <span style={{ color: '#39486C' }}>
-                                    {statsSum > 0
-                                      ? getPercentage(
-                                          stats?.find((category) => category.id === id)?.votes,
-                                          statsSum
-                                        ).toFixed(2)
-                                      : '0'}{' '}
-                                    %
-                                  </span>
-                                  <span style={{ color: '#BBBBBB' }}>{' - '}</span>
-                                  <span style={{ color: '#BBBBBB' }}>
-                                    {stats?.find((category) => category.id === id)?.votes}
-                                  </span>
-                                </>
-                              )}
-                            </Grid>
+                              {label}
+                            </Typography>
+                          </Grid>
+                          <Grid
+                            item
+                            xs={12}
+                          >
+                            {stats && (
+                              <>
+                                <span style={{ color: '#39486C' }}>
+                                  {statsSum > 0
+                                    ? getPercentage(
+                                        stats?.find((category) => category.id === id)?.votes,
+                                        statsSum
+                                      ).toFixed(2)
+                                    : '0'}{' '}
+                                  %
+                                </span>
+                                <span style={{ color: '#BBBBBB' }}>{' - '}</span>
+                                <span style={{ color: '#BBBBBB' }}>
+                                  {stats?.find((category) => category.id === id)?.votes}
+                                </span>
+                              </>
+                            )}
                           </Grid>
                         </Grid>
                       </Grid>
+                    </Grid>
                   </Grid>
                 ))}
               </Grid>

@@ -24,6 +24,8 @@ import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.springframework.http.HttpMethod.*;
+
 @Configuration
 @Import(SecurityProblemSupport.class)
 public class SpringSecurityConfiguration {
@@ -77,8 +79,12 @@ public class SpringSecurityConfiguration {
             .anonymous(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                     .requestMatchers(new AntPathRequestMatcher("/api/sms/**")).permitAll()
-                    .requestMatchers(new AntPathRequestMatcher("/api/discord/**")).hasRole("BOT")
-                    .requestMatchers(new AntPathRequestMatcher("/api/user-verification/**")).permitAll()
+                    .requestMatchers(new AntPathRequestMatcher("/api/discord/user-verification/is-verified/**", GET.name())).hasRole("BOT")
+                    .requestMatchers(new AntPathRequestMatcher("/api/discord/user-verification/start-verification", POST.name())).hasRole("BOT")
+                    .requestMatchers(new AntPathRequestMatcher("/api/discord/user-verification/start-verification", PUT.name())).hasRole("BOT")
+                    .requestMatchers(new AntPathRequestMatcher("/api/discord/user-verification/check-verification", POST.name())).permitAll()
+
+                    .requestMatchers(new AntPathRequestMatcher("/api/user-verification/verified/**", GET.name())).permitAll()
                     .anyRequest().denyAll()
          )
          .rememberMe(AbstractHttpConfigurer::disable)

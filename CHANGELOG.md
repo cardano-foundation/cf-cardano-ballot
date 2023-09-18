@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.2.37](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.36...v0.2.37) (2023-09-18)
+
+
+### Features
+
+* discord fixes. ([#243](https://github.com/cardano-foundation/cf-cardano-ballot/issues/243)) ([4195aef](https://github.com/cardano-foundation/cf-cardano-ballot/commit/4195aef0eb8cf99076584f6f715d595e7c7d4fe8))
+* Discord user-verification flow and integration with Discord Bot. ([#210](https://github.com/cardano-foundation/cf-cardano-ballot/issues/210)) ([f9189fa](https://github.com/cardano-foundation/cf-cardano-ballot/commit/f9189facd37c9dc4579b9490f651f5c91c8ff5f5))
+* prod test - git ignore. ([0b58fd2](https://github.com/cardano-foundation/cf-cardano-ballot/commit/0b58fd2b9fd9fb88b690b97c72a2bccaae2096df))
+* prod test. ([c533b2a](https://github.com/cardano-foundation/cf-cardano-ballot/commit/c533b2a72568577149611c8eb0c10d7f5f3f0b13))
+* shelley account generation ([c53c6ef](https://github.com/cardano-foundation/cf-cardano-ballot/commit/c53c6ef88420c34e7cff2aca3679ed84586f001c))
+* shelley account generation. ([a30499e](https://github.com/cardano-foundation/cf-cardano-ballot/commit/a30499e49d0db72855a5faae5ddd220c43f450b8))
+
+
+### Bug Fixes
+
+* ability to run voting-app from command line. ([1c0349b](https://github.com/cardano-foundation/cf-cardano-ballot/commit/1c0349b47f09f1b510e3229f04de9b014fba983b))
+* **admin-cli:** ability to run voting-app from command line. ([af196ca](https://github.com/cardano-foundation/cf-cardano-ballot/commit/af196ca326a08b5e2a750aa124189f83bed030c9))
+* **cip-1694-ui:** support second question on ui ([02a87f3](https://github.com/cardano-foundation/cf-cardano-ballot/commit/02a87f3af48b5243ae75be9d3af31ea5753d446c))
+* **cip-1694-ui:** update to the latest be services ([8057e40](https://github.com/cardano-foundation/cf-cardano-ballot/commit/8057e40401eec41047ad493bf046f25b5fe795c5))
+
 ## [0.2.36](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.35...v0.2.36) (2023-09-14)
 
 

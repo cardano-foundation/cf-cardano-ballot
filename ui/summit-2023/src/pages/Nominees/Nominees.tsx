@@ -82,7 +82,9 @@ const Nominees = () => {
   const [isToggleReadMore, toggleReadMore] = useToggle(false);
   const [isViewVoteReceipt, toggleViewVoteReceipt] = useToggle(false);
   const [isViewFinalReceipt, toggleViewFinalReceipt] = useToggle(false);
+  const [confirmVoteModal, toggleConfirmVoteModal] = useToggle(false);
   const [selectedNominee, setSelectedNominee] = useState({});
+  const [selectedNomineeToVote, setSelectedNomineeToVote] = useState(undefined);
   const [nominees, setNominees] = useState<ProposalPresentation[]>([]);
 
   const { isConnected, stakeAddress, signMessage } = useCardano({ limitNetwork: 'testnet' as NetworkType });
@@ -182,6 +184,7 @@ const Nominees = () => {
     });
     try {
       const requestVoteObject = await signMessagePromisified(canonicalVoteInput);
+        eventBus.publish('showToast', 'Vote sent');
       await castAVoteWithDigitalSignature(requestVoteObject);
       eventBus.publish('showToast', 'Vote submitted successfully');
     } catch (e) {
@@ -194,12 +197,28 @@ const Nominees = () => {
       if (!walletIsVerified) {
         eventBus.publish('openVerifyWalletModal');
       } else {
-        castVote(nomineeId);
+
+        toggleConfirmVoteModal();
+        setSelectedNomineeToVote(nomineeId)
+        //castVote(nomineeId);
       }
     } else {
       eventBus.publish('openConnectWalletModal');
     }
   };
+
+    const handleVoteNomineeButton = () => {
+        if (isConnected) {
+            if (!walletIsVerified) {
+                eventBus.publish('openVerifyWalletModal');
+            } else {
+                castVote(selectedNomineeToVote);
+                toggleConfirmVoteModal();
+            }
+        } else {
+            eventBus.publish('openConnectWalletModal');
+        }
+    }
 
   const renderNomineeButtonLabel = () => {
     if (isConnected) {
@@ -1069,6 +1088,56 @@ const Nominees = () => {
           Done
         </Button>
       </Modal>
+
+        <Modal
+            isOpen={confirmVoteModal}
+            id="confirm-vote"
+            title="Confirm Vote"
+            onClose={toggleViewFinalReceipt}
+        >
+            <Button
+                fullWidth
+                sx={{
+                    margin: '24px 0px',
+                    display: 'flex',
+                    padding: '16px 24px',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: '10px',
+                    borderRadius: '8px',
+                    background: '#ACFCC5',
+                    color: '#03021F',
+                    fontSize: '16px',
+                    fontStyle: 'normal',
+                    fontWeight: '600',
+                    lineHeight: 'normal'
+                }}
+                onClick={() => handleVoteNomineeButton()}
+            >
+                Confirm Vote
+            </Button>
+            <Button
+                fullWidth
+                onClick={toggleConfirmVoteModal}
+                sx={{
+                    marginBottom: '4px',
+                    display: 'flex',
+                    padding: '16px 24px',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: '10px',
+                    borderRadius: '8px',
+                    background: 'transparent',
+                    color: '#03021F',
+                    fontSize: '16px',
+                    fontStyle: 'normal',
+                    fontWeight: '600',
+                    lineHeight: 'normal'
+                }}
+            >
+                Cancel
+            </Button>
+        </Modal>
     </>
   );
 };

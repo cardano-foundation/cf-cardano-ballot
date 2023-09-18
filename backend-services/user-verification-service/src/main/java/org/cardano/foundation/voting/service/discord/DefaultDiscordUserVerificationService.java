@@ -119,7 +119,8 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
 
     @Override
     @Transactional
-    public Either<Problem, IsVerifiedResponse> checkVerification(String eventId, DiscordCheckVerificationRequest checkVerificationRequest) {
+    public Either<Problem, IsVerifiedResponse> checkVerification(DiscordCheckVerificationRequest checkVerificationRequest) {
+        var eventId = checkVerificationRequest.getEventId();
         var eventDetails = chainFollowerClient.findEventById(eventId);
 
         if (eventDetails.isEmpty()) {
@@ -281,8 +282,10 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Either<Problem, IsVerifiedResponse> isVerifiedBasedOnStakeAddress(IsVerifiedRequest isVerifiedRequest) {
-        var isVerified = userVerificationRepository.findCompletedVerification(isVerifiedRequest.getEventId(), isVerifiedRequest.getStakeAddress())
+        var isVerified = userVerificationRepository.findCompletedVerifications(isVerifiedRequest.getEventId(), isVerifiedRequest.getStakeAddress())
+                .stream().findFirst()
                 .map(uv -> new IsVerifiedResponse(true)).orElse(new IsVerifiedResponse(false));
 
         return Either.right(isVerified);

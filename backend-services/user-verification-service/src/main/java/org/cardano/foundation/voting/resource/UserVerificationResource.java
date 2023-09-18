@@ -6,8 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.IsVerifiedRequest;
 import org.cardano.foundation.voting.domain.IsVerifiedResponse;
-import org.cardano.foundation.voting.service.discord.DiscordUserVerificationService;
-import org.cardano.foundation.voting.service.sms.SMSUserVerificationService;
+import org.cardano.foundation.voting.service.common.UserVerificationService;
 import org.cardano.foundation.voting.utils.CompletableFutures;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,9 +26,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 @RequiredArgsConstructor
 public class UserVerificationResource {
 
-    private final SMSUserVerificationService smsUserVerificationService;
-
-    private final DiscordUserVerificationService discordUserVerificationService;
+    private final UserVerificationService userVerificationService;
 
     @RequestMapping(value = "/verified/{eventId}/{stakeAddress}", method = GET, produces = "application/json")
     @Timed(value = "resource.isVerified", histogram = true)
@@ -37,36 +34,14 @@ public class UserVerificationResource {
                                         @PathVariable("stakeAddress") String stakeAddress) {
         var isVerifiedRequest = new IsVerifiedRequest(eventId, stakeAddress);
 
-        log.info("Received isVerified request: {}", isVerifiedRequest);
-
-        CompletableFuture<Either<Problem, IsVerifiedResponse>> smsVerificationFuture = CompletableFuture.supplyAsync(() -> {
-            return smsUserVerificationService.isVerified(isVerifiedRequest);
-        });
-
-        CompletableFuture<Either<Problem, IsVerifiedResponse>> discordVerificationFuture = CompletableFuture.supplyAsync(() -> {
-            return discordUserVerificationService.isVerifiedBasedOnStakeAddress(isVerifiedRequest);
-        });
-
-        var allFutures = CompletableFutures.anyResultsOf(List.of(smsVerificationFuture, discordVerificationFuture));
-
-        List<Either<Problem, IsVerifiedResponse>> allResponses = allFutures.orTimeout(30, SECONDS)
-                .join();
-
-        var successCount = allResponses.stream().filter(Either::isRight).count();
-
-        if (successCount != 2) {
-            var problem = allResponses.stream().filter(Either::isLeft).findFirst().orElseThrow().getLeft();
-
-            return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
-        }
-
-        var successes = allResponses.stream().filter(Either::isRight).toList().stream().map(Either::get).toList();
-
-        var isVerified = successes.stream().reduce((a, b) -> {
-            return new IsVerifiedResponse(a.isVerified() || b.isVerified());
-        }).orElse(new IsVerifiedResponse(false));
-
-        return ResponseEntity.ok().body(isVerified);
+        return userVerificationService.isVerified(isVerifiedRequest)
+                .fold(problem -> {
+                            return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
+                        },
+                        isVerifiedResponse -> {
+                            return ResponseEntity.ok().body(isVerifiedResponse);
+                        }
+                );
     }
 
 }

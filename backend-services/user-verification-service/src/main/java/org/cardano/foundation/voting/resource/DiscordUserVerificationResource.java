@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Objects;
+import org.zalando.problem.Problem;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
+import static org.zalando.problem.Status.BAD_REQUEST;
 
 @RestController
 @RequestMapping("/api/discord/user-verification")
@@ -36,7 +36,7 @@ public class DiscordUserVerificationResource {
 
         return discordUserVerificationService.isVerifiedBasedOnDiscordIdHash(discordBotEventIdBinding, discordIdHash)
                 .fold(problem -> {
-                            return ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem);
+                            return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
                         },
                         userVerification -> {
                             return ResponseEntity.ok().body(userVerification);
@@ -59,12 +59,20 @@ public class DiscordUserVerificationResource {
                 );
     }
 
-    @RequestMapping(value = "/check-verification", method = { POST , PUT }, produces = "application/json")
+    @RequestMapping(value = "/check-verification", method = { POST }, produces = "application/json")
     @Timed(value = "resource.discord.checkVerification", histogram = true)
     public ResponseEntity<?> checkVerification(@RequestBody @Valid DiscordCheckVerificationRequest checkVerificationRequest) {
         log.info("Received discord checkVerification request: {}", checkVerificationRequest);
 
-        return discordUserVerificationService.checkVerification(discordBotEventIdBinding, checkVerificationRequest)
+        if (!checkVerificationRequest.getEventId().equals(discordBotEventIdBinding)) {
+            return ResponseEntity.badRequest().
+                    body(Problem.builder().withTitle("EVENT_ID_AND_DISCORD_ID_BOT_MISMATCH")
+                            .withDetail("Event id and discord id bot mismatch!")
+                            .withStatus(BAD_REQUEST)
+                            .build());
+        }
+
+        return discordUserVerificationService.checkVerification(checkVerificationRequest)
                 .fold(problem -> {
                             return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
                         },

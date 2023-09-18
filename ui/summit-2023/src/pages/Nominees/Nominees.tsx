@@ -9,7 +9,6 @@ import {
   Grid,
   Card,
   CardContent,
-  Button,
   Container,
   Box,
   Tooltip,
@@ -57,7 +56,7 @@ import ReadMore from './ReadMore';
 import Modal from '../../components/common/Modal/Modal';
 import QRCode from 'react-qr-code';
 import { NetworkType } from '@cardano-foundation/cardano-connect-with-wallet-core';
-import {CustomButton} from '../../components/common/Button/CustomButton';
+import { CustomButton } from '../../components/common/Button/CustomButton';
 
 const Nominees = () => {
   const { categoryId } = useParams();
@@ -185,6 +184,7 @@ const Nominees = () => {
     });
     try {
       const requestVoteObject = await signMessagePromisified(canonicalVoteInput);
+      toggleConfirmVoteModal();
       eventBus.publish('showToast', 'Vote sent');
       await castAVoteWithDigitalSignature(requestVoteObject);
       eventBus.publish('showToast', 'Vote submitted successfully');
@@ -193,13 +193,13 @@ const Nominees = () => {
     }
   };
 
-  const handleNomineeButton = (nomineeId: string) => {
+  const handleNomineeButton = (nominee) => {
     if (isConnected) {
       if (!walletIsVerified) {
         eventBus.publish('openVerifyWalletModal');
       } else {
         toggleConfirmVoteModal();
-        setSelectedNomineeToVote(nomineeId);
+        setSelectedNomineeToVote(nominee);
       }
     } else {
       eventBus.publish('openConnectWalletModal');
@@ -211,8 +211,7 @@ const Nominees = () => {
       if (!walletIsVerified) {
         eventBus.publish('openVerifyWalletModal');
       } else {
-        castVote(selectedNomineeToVote);
-        toggleConfirmVoteModal();
+        castVote(selectedNomineeToVote.id);
       }
     } else {
       eventBus.publish('openConnectWalletModal');
@@ -360,16 +359,16 @@ const Nominees = () => {
                 : 'To see you vote receipt, please sign with your wallet'}
             </Typography>
           </div>
-            <CustomButton
-                styles={{
-                    background: '#03021F',
-                    color: '#F6F9FF',
-                    width: 'auto'
-                }}
-                label= {walletIsLoggedIn ? 'View vote receipt' : 'Login with wallet'}
-                onClick={() => handleViewVoteReceipt()}
-                fullWidth={true}
-            />
+          <CustomButton
+            styles={{
+              background: '#03021F',
+              color: '#F6F9FF',
+              width: 'auto',
+            }}
+            label={walletIsLoggedIn ? 'View vote receipt' : 'Login with wallet'}
+            onClick={() => handleViewVoteReceipt()}
+            fullWidth={true}
+          />
         </Box>
       ) : null}
 
@@ -423,48 +422,63 @@ const Nominees = () => {
                         item
                         xs={2}
                       >
-                        <Button
-                          className={`${isConnected ? 'vote-nominee-button' : 'connect-wallet-button'}`}
-                          style={{ width: 'auto' }}
-                          onClick={() => handleNomineeButton(nominee.id)}
-                        >
-                          {renderNomineeButtonLabel()}
-                        </Button>
+                        <CustomButton
+                          styles={
+                            isConnected
+                              ? {
+                                  background: '#ACFCC5',
+                                  color: '#03021F',
+                                  width: 'auto',
+                                }
+                              : {
+                                    background: '#03021F',
+                                    color: '#F6F9FF',
+                                  width: 'auto',
+                                }
+                          }
+                          label={renderNomineeButtonLabel() as string}
+                          onClick={() => handleNomineeButton(nominee)}
+                        />
                       </Grid>
                     ) : null}
                   </Grid>
 
-                    <CustomButton
-                        styles={{
-                            background: 'transparent !important',
-                            color: '#03021F',
-                            border: '1px solid #daeefb',
-                            width: !isMobile && listView === 'list' ? '146px' : '100%',
-                            marginTop: !isMobile && listView === 'list' ? '15px' : '28px',
-                        }}
-                        label="Read more"
-                        onClick={() => handleReadMore(
-                            nominee.id === summit2023CategoryNominees[index].id && summit2023CategoryNominees[index]
-                        )}
-                        fullWidth={true}
-                    />
+                  <CustomButton
+                    styles={{
+                      background: 'transparent !important',
+                      color: '#03021F',
+                      border: '1px solid #daeefb',
+                      width: !isMobile && listView === 'list' ? '146px' : '100%',
+                      marginTop: !isMobile && listView === 'list' ? '15px' : '28px',
+                    }}
+                    label="Read more"
+                    onClick={() =>
+                      handleReadMore(
+                        nominee.id === summit2023CategoryNominees[index].id && summit2023CategoryNominees[index]
+                      )
+                    }
+                    fullWidth={true}
+                  />
 
                   {!receipt && (isMobile || listView === 'grid') ? (
-                      <CustomButton
-                          styles={ isConnected ? {
+                    <CustomButton
+                      styles={
+                        isConnected
+                          ? {
                               background: '#ACFCC5',
                               color: '#03021F',
-                              marginTop: !isMobile && listView === 'list' ? '15px' : '18px'
-                          }: {
-                              background: 'transparent !important',
-                              color: '#03021F',
-                              border: '1px solid #daeefb',
-                              marginTop: !isMobile && listView === 'list' ? '15px' : '18px'
-                          }}
-                          label={renderNomineeButtonLabel() as string}
-                          onClick={() => handleNomineeButton(nominee.id)}
-                          fullWidth={true}
-                      />
+                              marginTop: !isMobile && listView === 'list' ? '15px' : '18px',
+                            }
+                          : {
+                                background: '#03021F',
+                                color: '#F6F9FF',
+                              marginTop: !isMobile && listView === 'list' ? '15px' : '18px',
+                            }
+                      }
+                      label={renderNomineeButtonLabel() as string}
+                      onClick={() => handleNomineeButton(nominee)}
+                      fullWidth={true}
+                    />
                   ) : null}
                 </CardContent>
               </Card>
@@ -1057,80 +1071,42 @@ const Nominees = () => {
             viewBox={'0 0 256 256'}
           />
         </div>
-        <Button
-          className="vote-nominee-button"
-          style={{
-            display: 'flex',
-            width: '344px',
-            padding: '12px',
-            justifyContent: 'center',
-            alignItems: 'center',
-            gap: '10px',
-            borderRadius: '8px',
+        <CustomButton
+          styles={{
             background: '#ACFCC5',
             color: '#03021F',
-            fontSize: '16px',
-            fontStyle: 'normal',
-            fontWeight: '600',
-            lineHeight: 'normal',
-            textTransform: 'none',
-            marginTop: '24px',
-            marginBottom: '28px',
+            width: 'auto',
           }}
+          label="Done"
           onClick={toggleViewFinalReceipt}
-        >
-          Done
-        </Button>
+        />
       </Modal>
 
       <Modal
         isOpen={confirmVoteModal}
         id="confirm-vote"
         title="Confirm Vote"
-        onClose={toggleViewFinalReceipt}
+        onClose={toggleConfirmVoteModal}
       >
-        <Button
-          fullWidth
-          sx={{
-            margin: '24px 0px',
-            display: 'flex',
-            padding: '16px 24px',
-            justifyContent: 'center',
-            alignItems: 'center',
-            gap: '10px',
-            borderRadius: '8px',
+        <CustomButton
+          styles={{
             background: '#ACFCC5',
             color: '#03021F',
-            fontSize: '16px',
-            fontStyle: 'normal',
-            fontWeight: '600',
-            lineHeight: 'normal',
+            margin: '20px 0px',
           }}
+          label={`Vote for ${selectedNomineeToVote?.id}`}
+          fullWidth={true}
           onClick={() => handleVoteNomineeButton()}
-        >
-          Confirm Vote
-        </Button>
-        <Button
-          fullWidth
-          onClick={toggleConfirmVoteModal}
-          sx={{
-            marginBottom: '4px',
-            display: 'flex',
-            padding: '16px 24px',
-            justifyContent: 'center',
-            alignItems: 'center',
-            gap: '10px',
-            borderRadius: '8px',
-            background: 'transparent',
+        />
+        <CustomButton
+          styles={{
+            background: 'transparent !important',
             color: '#03021F',
-            fontSize: '16px',
-            fontStyle: 'normal',
-            fontWeight: '600',
-            lineHeight: 'normal',
           }}
-        >
-          Cancel
-        </Button>
+          label="Cancel"
+          fullWidth={true}
+          onClick={toggleConfirmVoteModal}
+        />
       </Modal>
     </>
   );

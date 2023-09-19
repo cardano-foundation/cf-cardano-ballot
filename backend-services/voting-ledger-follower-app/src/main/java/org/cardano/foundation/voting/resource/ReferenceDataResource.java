@@ -3,7 +3,6 @@ package org.cardano.foundation.voting.resource;
 import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.domain.presentation.EventPresentation;
 import org.cardano.foundation.voting.service.reference_data.ReferencePresentationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,7 +23,9 @@ public class ReferenceDataResource {
     @Timed(value = "resource.reference.event", histogram = true)
     public ResponseEntity<?> getEventByName(@PathVariable("eventId") String eventId) {
         return referencePresentationService.findEventReference(eventId)
-                .fold(problem -> ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem),
+                .fold(problem -> {
+                            return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
+                        },
                         maybeEventPresentation -> {
                             if (maybeEventPresentation.isEmpty()) {
                                 return ResponseEntity.notFound().build();
@@ -41,8 +42,12 @@ public class ReferenceDataResource {
     @Timed(value = "resource.reference.events", histogram = true)
     public ResponseEntity<?> events() {
         return referencePresentationService.eventsSummaries()
-                .fold(problem -> ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem),
-                        eventSummaries -> ResponseEntity.ok().body(eventSummaries)
+                .fold(problem -> {
+                            return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
+                        },
+                        eventSummaries -> {
+                            return ResponseEntity.ok().body(eventSummaries);
+                        }
                 );
     }
 

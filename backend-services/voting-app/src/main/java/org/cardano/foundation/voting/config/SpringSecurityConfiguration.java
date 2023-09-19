@@ -3,6 +3,7 @@ package org.cardano.foundation.voting.config;
 import org.cardano.foundation.voting.service.auth.jwt.JwtFilter;
 import org.cardano.foundation.voting.service.auth.web3.Web3Filter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,14 +11,17 @@ import org.springframework.context.annotation.Import;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
 import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
 
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.POST;
-import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.springframework.http.HttpMethod.*;
 
 @Configuration
 @EnableWebSecurity
@@ -33,6 +37,9 @@ public class SpringSecurityConfiguration {
     @Autowired
     private Web3Filter web3Filter;
 
+    @Value("${cors.allowed.origins:http://localhost:3000}")
+    private String allowedUrls;
+
     @ConditionalOnProperty( //to make sure it is active if console is enabled
             value="spring.h2.console.enabled",
             havingValue = "true",
@@ -45,75 +52,51 @@ public class SpringSecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .cors().and()
-                .csrf().disable()
+              .cors(c ->
+                c.configurationSource(request -> {
+                    var cors = new CorsConfiguration();
+                    cors.setAllowedMethods(List.of("GET", "HEAD", "POST"));
+                    cors.setAllowedHeaders(List.of("*"));
+
+                    cors.setAllowedOrigins(Arrays.stream(allowedUrls.split(",")).toList());
+
+                    return cors;
+                }))
+                .csrf(AbstractHttpConfigurer::disable)
 
                 .addFilterBefore(web3Filter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 
-                .sessionManagement()
-                .disable()
+                .sessionManagement(AbstractHttpConfigurer::disable)
 
-                .rememberMe()
-                .disable()
+                .rememberMe(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
 
-                // SECURED by JWT auth
-                .authorizeHttpRequests()
-                .requestMatchers(GET, "/api/vote/receipt/**")
-                .authenticated()
+                .authorizeHttpRequests(requests -> {
+                    requests
+                    // SECURED by Web3 auth
+                    .requestMatchers(new AntPathRequestMatcher("/api/vote/cast", POST.name())).authenticated()
+                    // SECURED by JWT auth
+                    .requestMatchers(new AntPathRequestMatcher("/api/vote/votes/**", GET.name())).authenticated()
+                    // SECURED by JWT auth
+                    .requestMatchers(new AntPathRequestMatcher("/api/vote/receipt/**", GET.name())).authenticated()
+                    // SECURED by Web3 auth
+                    .requestMatchers(new AntPathRequestMatcher("/api/vote/receipt", GET.name())).authenticated()
+                    // SECURED by Web3 auth
+                    .requestMatchers(new AntPathRequestMatcher("/api/auth/login", GET.name())).authenticated()
+                    // SECURED by JWT auth
+                    //.requestMatchers(new AntPathRequestMatcher("/api/vote/vote-changing-available/**", HEAD.name())).authenticated()
 
-                .and()
+                    // without auth
+                    .requestMatchers(new AntPathRequestMatcher("/api/leaderboard/**", GET.name())).permitAll()
+                    .requestMatchers(new AntPathRequestMatcher("/api/leaderboard/**", HEAD.name())).permitAll()
+                    .requestMatchers(new AntPathRequestMatcher("/actuator/**", GET.name())).permitAll()
+                    .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
+                    .anyRequest().denyAll();
+                })
 
-                // SECURED by Web3 auth
-                .authorizeHttpRequests()
-                .requestMatchers(GET, "/api/vote/receipt")
-                .authenticated()
-
-                .and()
-
-                // SECURED by Web3 auth
-                .authorizeHttpRequests()
-                .requestMatchers(GET, "/api/auth/login")
-                .authenticated()
-
-                .and()
-
-                // SECURED by Web3 auth
-                .authorizeHttpRequests()
-                .requestMatchers(POST, "/api/vote/cast")
-                .authenticated()
-
-                .and()
-
-                .authorizeHttpRequests()
-                .requestMatchers(GET, "/api/leaderboard/**")
-                .permitAll()
-
-                .and()
-
-                .authorizeHttpRequests()
-                .requestMatchers(GET, "/actuator/**")
-                .permitAll()
-
-                .and()
-
-                .authorizeHttpRequests()
-                .requestMatchers("/h2-console")
-                .permitAll()
-
-                .and()
-
-                .authorizeHttpRequests()
-                .anyRequest()
-                .denyAll()
-
-                .and()
-
-                .exceptionHandling()
-                .authenticationEntryPoint(problemSupport)
-                .accessDeniedHandler(problemSupport)
-                .and()
-                .sessionManagement().sessionCreationPolicy(STATELESS);
+                .exceptionHandling(c -> c.accessDeniedHandler(problemSupport).authenticationEntryPoint(problemSupport))
+                .sessionManagement(AbstractHttpConfigurer::disable);
 
         return http.build();
     }

@@ -254,7 +254,7 @@ public class Web3Filter extends OncePerRequestFilter {
         if (maybeEventDetails.isEmpty()) {
             var problem = Problem.builder()
                     .withTitle("UNRECOGNISED_EVENT")
-                    .withDetail("Unrecognised event, event:" + eventId)
+                    .withDetail("Event not found, id: " + eventId)
                     .withStatus(BAD_REQUEST)
                     .build();
 

@@ -2,6 +2,7 @@ DROP TABLE IF EXISTS vote;
 
 CREATE TABLE vote (
    id VARCHAR(255) NOT NULL,
+   id_numeric_hash BIGINT NOT NULL,
    event_id VARCHAR(255) NOT NULL,
    category_id VARCHAR(255) NOT NULL,
    proposal_id VARCHAR(255) NOT NULL,
@@ -31,6 +32,7 @@ DROP TABLE IF EXISTS vote_merkle_proof;
 -- benefit of storing vote merkle proof is that upon restart of app voter's receipt can be served from local db
 CREATE TABLE vote_merkle_proof (
    vote_id VARCHAR(255) NOT NULL,
+   vote_id_numeric_hash BIGINT NOT NULL,
    event_id VARCHAR(255) NOT NULL,
    root_hash VARCHAR(255) NOT NULL, -- merkle root hash as hex string
    l1_transaction_hash VARCHAR(255) NOT NULL, -- transaction hash as hex string

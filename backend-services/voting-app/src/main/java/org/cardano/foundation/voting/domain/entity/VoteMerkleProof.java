@@ -21,6 +21,9 @@ public class VoteMerkleProof extends AbstractTimestampEntity {
     @Column(name = "vote_id", nullable = false)
     private String voteId;
 
+    @Column(name = "vote_id_numeric_hash", nullable = false)
+    private long voteIdNumericHash;
+
     @Column(name = "event_id", nullable = false)
     private String eventId;
 

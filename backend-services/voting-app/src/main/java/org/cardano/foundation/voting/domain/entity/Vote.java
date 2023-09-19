@@ -4,10 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.annotation.Nullable;
@@ -24,21 +21,38 @@ public class Vote extends AbstractTimestampEntity {
 
     @Id
     @Column(name = "id", nullable = false)
+    @Getter
+    @Setter
     private String id;
 
+    @Column(name = "id_numeric_hash", nullable = false)
+    @Getter
+    @Setter
+    private long idNumericHash;
+
     @Column(name = "event_id", nullable = false)
+    @Getter
+    @Setter
     private String eventId;
 
     @Column(name = "category_id", nullable = false)
+    @Getter
+    @Setter
     private String categoryId;
 
     @Column(name = "proposal_id", nullable = false)
+    @Getter
+    @Setter
     private String proposalId;
 
     @Column(name = "voter_stake_address", nullable = false)
+    @Getter
+    @Setter
     private String voterStakingAddress;
 
     @Column(name = "cose_signature", nullable = false, columnDefinition = "text", length = 2048)
+    @Getter
+    @Setter
     private String coseSignature;
 
     @Column(name = "cose_public_key")
@@ -51,55 +65,9 @@ public class Vote extends AbstractTimestampEntity {
     private Long votingPower;
 
     @Column(name = "voted_at_slot", nullable = false)
+    @Getter
+    @Setter
     private long votedAtSlot;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getEventId() {
-        return eventId;
-    }
-
-    public void setEventId(String eventId) {
-        this.eventId = eventId;
-    }
-
-    public String getCategoryId() {
-        return categoryId;
-    }
-
-    public void setCategoryId(String categoryId) {
-        this.categoryId = categoryId;
-    }
-
-    public String getProposalId() {
-        return proposalId;
-    }
-
-    public void setProposalId(String proposalId) {
-        this.proposalId = proposalId;
-    }
-
-    public String getVoterStakingAddress() {
-        return voterStakingAddress;
-    }
-
-    public void setVoterStakingAddress(String voterStakingAddress) {
-        this.voterStakingAddress = voterStakingAddress;
-    }
-
-    public String getCoseSignature() {
-        return coseSignature;
-    }
-
-    public void setCoseSignature(String coseSignature) {
-        this.coseSignature = coseSignature;
-    }
 
     @Nullable
     public Optional<String> getCosePublicKey() {
@@ -116,14 +84,6 @@ public class Vote extends AbstractTimestampEntity {
 
     public void setVotingPower(Optional<Long> votingPower) {
         this.votingPower = votingPower.orElse(null);
-    }
-
-    public long getVotedAtSlot() {
-        return votedAtSlot;
-    }
-
-    public void setVotedAtSlot(long votedAtSlot) {
-        this.votedAtSlot = votedAtSlot;
     }
 
 }

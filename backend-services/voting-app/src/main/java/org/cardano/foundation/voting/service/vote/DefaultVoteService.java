@@ -1,13 +1,11 @@
 package org.cardano.foundation.voting.service.vote;
 
-import com.nimbusds.jwt.SignedJWT;
 import io.micrometer.core.annotation.Timed;
 import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.client.UserVerificationClient;
-import org.cardano.foundation.voting.domain.Role;
 import org.cardano.foundation.voting.domain.VoteReceipt;
 import org.cardano.foundation.voting.domain.entity.Vote;
 import org.cardano.foundation.voting.domain.entity.VoteMerkleProof;
@@ -17,23 +15,21 @@ import org.cardano.foundation.voting.service.auth.web3.Web3AuthenticationToken;
 import org.cardano.foundation.voting.service.json.JsonService;
 import org.cardano.foundation.voting.service.merkle_tree.MerkleProofSerdeService;
 import org.cardano.foundation.voting.service.merkle_tree.VoteMerkleProofService;
-import org.cardano.foundation.voting.utils.Enums;
 import org.cardano.foundation.voting.utils.MoreUUID;
 import org.cardanofoundation.merkle.ProofItem;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
-import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.bloxbean.cardano.client.util.HexUtil.encodeHexString;
 import static org.cardano.foundation.voting.client.ChainFollowerClient.AccountStatus.NOT_ELIGIBLE;
 import static org.cardano.foundation.voting.domain.VoteReceipt.Status.*;
 import static org.cardano.foundation.voting.domain.VotingEventType.*;
-import static org.cardano.foundation.voting.domain.web3.Web3Action.CAST_VOTE;
-import static org.cardano.foundation.voting.domain.web3.Web3Action.VIEW_VOTE_RECEIPT;
+import static org.cardano.foundation.voting.domain.web3.Web3Action.*;
 import static org.cardano.foundation.voting.utils.MoreNumber.isNumeric;
 import static org.cardanofoundation.cip30.MessageFormat.TEXT;
 import static org.zalando.problem.Status.*;
@@ -57,40 +53,44 @@ public class DefaultVoteService implements VoteService {
 
     @Override
     @Transactional(readOnly = true)
+    @Timed(value = "service.vote.getVotes", histogram = true)
+    public Either<Problem, List<VoteRepository.CategoryProposalProjection>> getVotes(JwtAuthenticationToken auth) {
+        var jwtEventId = auth.eventDetails().id();
+        var jwtStakeAddress = auth.getStakeAddress();
+
+        if (auth.isActionNotAllowed(VOTES)) {
+            return Either.left(Problem.builder()
+                    .withTitle("ACTION_NOT_ALLOWED")
+                    .withDetail("Action VOTES not allowed for the role:" + auth.role().name())
+                    .withStatus(BAD_REQUEST)
+                    .build());
+        }
+
+        return Either.right(voteRepository.getVotesByStakeAddress(jwtEventId, jwtStakeAddress));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    @Timed(value = "service.vote.findAllCompactVotesByEventId", histogram = true)
     public List<VoteRepository.CompactVote> findAllCompactVotesByEventId(String eventId) {
         return voteRepository.findAllCompactVotesByEventId(eventId);
     }
 
     @Transactional(readOnly = true)
-    @Timed(value = "service.vote.isVoteCastingStillPossible", histogram = true)
-    public Either<Problem, Boolean> isVoteCastingStillPossible(String eventId, String voteId) {
-        var eventDetailsE = chainFollowerClient.getEventDetails(eventId);
-        if (eventDetailsE.isEmpty()) {
-            return Either.left(Problem.builder()
-                    .withTitle("ERROR_GETTING_EVENT_DETAILS")
-                    .withDetail("Unable to get event details from chain-tip follower service, event:" + eventId)
-                    .withStatus(INTERNAL_SERVER_ERROR)
-                    .build()
-            );
-        }
+    @Timed(value = "service.vote.isVoteChangingPossible", histogram = true)
+    public Either<Problem, Boolean> isVoteChangingPossible(String voteId,
+                                                           JwtAuthenticationToken auth) {
+        var jwtEventId = auth.eventDetails().id();
 
-        var maybeEventDetails = eventDetailsE.get();
-        if (maybeEventDetails.isEmpty()) {
+        if (auth.isActionNotAllowed(IS_VOTE_CHANGING_ALLOWED)) {
             return Either.left(Problem.builder()
-                    .withTitle("EVENT_NOT_FOUND")
-                    .withDetail("Event not found, id:" + eventId)
+                    .withTitle("ACTION_NOT_ALLOWED")
+                    .withDetail("Action IS_VOTE_CASTING_ALLOWED not allowed for the role:" + auth.role().name())
                     .withStatus(BAD_REQUEST)
                     .build());
         }
-        var event = maybeEventDetails.orElseThrow();
-
-        boolean isInactive = event.isEventInactive();
-        if (isInactive) {
-            return Either.left(Problem.builder()
-                    .withTitle("EVENT_INACTIVE")
-                    .withDetail("Event is inactive, id:" + eventId)
-                    .withStatus(BAD_REQUEST)
-                    .build());
+        if (auth.eventDetails().isEventInactive()) {
+            return Either.right(false);
         }
 
         var maybeExistingVote = voteRepository.findById(voteId);
@@ -103,7 +103,7 @@ public class DefaultVoteService implements VoteService {
             );
         }
 
-        var maybeExistingProof = voteMerkleProofService.findLatestProof(eventId, voteId);
+        var maybeExistingProof = voteMerkleProofService.findLatestProof(jwtEventId, voteId);
         if (maybeExistingProof.isPresent()) {
             return Either.left(Problem.builder()
                     .withTitle("VOTE_CANNOT_BE_CHANGED")
@@ -237,6 +237,7 @@ public class DefaultVoteService implements VoteService {
                             .withStatus(BAD_REQUEST)
                             .build());
         }
+
         var votedAtSlotStr = cip93VoteEnvelope.getData().getVotedAt();
         if (!isNumeric(votedAtSlotStr)) {
             return Either.left(
@@ -304,6 +305,7 @@ public class DefaultVoteService implements VoteService {
         vote.setVotedAtSlot(cip93VoteEnvelope.getSlotAsLong());
         vote.setCoseSignature(details.getSignedWeb3Request().getCoseSignature());
         vote.setCosePublicKey(details.getSignedWeb3Request().getCosePublicKey());
+        vote.setIdNumericHash(UUID.fromString(voteId).hashCode() & 0xFFFFFFF);
 
         if (List.of(STAKE_BASED, BALANCE_BASED).contains(event.votingEventType())) {
             var accountE = chainFollowerClient.findAccount(eventId, stakeAddress);
@@ -402,7 +404,6 @@ public class DefaultVoteService implements VoteService {
         var cip30VerificationResult = details.getCip30VerificationResult();
 
         var event = details.getEvent();
-        var eventId = event.id();
         var stakeAddress = details.getStakeAddress();
 
         var signedJson = cip30VerificationResult.getMessage(TEXT);
@@ -434,81 +435,20 @@ public class DefaultVoteService implements VoteService {
     }
 
     @Override
-    public Either<Problem, VoteReceipt> voteReceipt(JwtAuthenticationToken jwtAuth,
-                                                    String eventId,
-                                                    String categoryId) {
-        try {
-            log.info("JWT: {}", jwtAuth);
+    @Transactional(readOnly = true)
+    public Either<Problem, VoteReceipt> voteReceipt(String categoryId,
+                                                    JwtAuthenticationToken auth) {
+        var jwtStakeAddress = auth.getStakeAddress();
 
-            var signedJWT = (SignedJWT) jwtAuth.getDetails();
-
-            var jwtClaimsSet = signedJWT.getJWTClaimsSet();
-
-            var maybeRole = Enums.getIfPresent(Role.class, jwtClaimsSet.getStringClaim("role"));
-
-            if (maybeRole.isEmpty()) {
-                return Either.left(Problem.builder()
-                        .withTitle("UNKNOWN_ROLE")
-                        .withDetail("Unknown role")
-                        .withStatus(BAD_REQUEST)
-                        .build());
-            }
-
-            var role = maybeRole.get();
-            log.info("Role: {}", role);
-
-            var jwtEventId = jwtClaimsSet.getStringClaim("eventId");
-            var jwtStakeAddress = jwtClaimsSet.getStringClaim("stakeAddress");
-
-            if (!jwtEventId.equals(eventId)) {
-                return Either.left(Problem.builder()
-                        .withTitle("EVENT_ID_MISMATCH")
-                        .withDetail("Requested event id mismatch, JWT has no permission for this event.")
-                        .withStatus(BAD_REQUEST)
-                        .build());
-            }
-
-            var allowedRoles = role.allowedActions();
-
-            if (!allowedRoles.contains(VIEW_VOTE_RECEIPT)) {
-                return Either.left(Problem.builder()
-                        .withTitle("ACTION_NOT_ALLOWED")
-                        .withDetail("Action VIEW_VOTE_RECEIPT not allowed for the role:" + role.name())
-                        .withStatus(BAD_REQUEST)
-                        .build());
-            }
-
-            var eventDetailsE = chainFollowerClient.getEventDetails(eventId);
-            if (eventDetailsE.isEmpty()) {
-                return Either.left(Problem.builder()
-                        .withTitle("ERROR_GETTING_EVENT_DETAILS")
-                        .withDetail("Unable to get event details from chain-tip follower service, event:" + eventId)
-                        .withStatus(INTERNAL_SERVER_ERROR)
-                        .build()
-                );
-            }
-            var maybeEvent = eventDetailsE.get();
-            if (maybeEvent.isEmpty()) {
-                log.warn("Unrecognised event, id:{}", eventId);
-
-                return Either.left(Problem.builder()
-                        .withTitle("UNRECOGNISED_EVENT")
-                        .withDetail("Unrecognised event, id:" + eventId)
-                        .withStatus(BAD_REQUEST)
-                        .build());
-            }
-            var event = maybeEvent.get();
-
-            return actualVoteReceipt(event, categoryId, jwtStakeAddress);
-        } catch (ParseException e) {
-            log.error("JWT parse exception", e);
-
+        if (auth.isActionNotAllowed(VIEW_VOTE_RECEIPT)) {
             return Either.left(Problem.builder()
-                    .withTitle("JWT_PARSE_EXCEPTION")
-                    .withDetail("JWT processing exception")
+                    .withTitle("ACTION_NOT_ALLOWED")
+                    .withDetail("Action VIEW_VOTE_RECEIPT not allowed for the role:" + auth.role().name())
                     .withStatus(BAD_REQUEST)
                     .build());
         }
+
+        return actualVoteReceipt(auth.eventDetails(), categoryId, jwtStakeAddress);
     }
 
     private Either<Problem, VoteReceipt> actualVoteReceipt(ChainFollowerClient.EventDetailsResponse event,

@@ -14,12 +14,14 @@ public interface VoteService {
 
     List<VoteRepository.CompactVote> findAllCompactVotesByEventId(String eventId);
 
-    Either<Problem, Boolean> isVoteCastingStillPossible(String eventId, String voteId);
+    Either<Problem, List<VoteRepository.CategoryProposalProjection>> getVotes(JwtAuthenticationToken auth);
+
+    Either<Problem, Boolean> isVoteChangingPossible(String voteId, JwtAuthenticationToken auth);
 
     Either<Problem, Vote> castVote(Web3AuthenticationToken web3AuthenticationToken);
 
     Either<Problem, VoteReceipt> voteReceipt(Web3AuthenticationToken web3AuthenticationToken);
 
-    Either<Problem, VoteReceipt> voteReceipt(JwtAuthenticationToken jwtAuthenticationToken, String eventId, String categoryId);
+    Either<Problem, VoteReceipt> voteReceipt(String categoryId, JwtAuthenticationToken auth);
 
 }

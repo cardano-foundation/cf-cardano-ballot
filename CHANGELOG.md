@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.39](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.38...v0.2.39) (2023-09-19)
+
+
+### Features
+
+* my votes on delivering list of categoryIds and proposalIds user already voted on (protected by JWT) ([#236](https://github.com/cardano-foundation/cf-cardano-ballot/issues/236)) ([22654f4](https://github.com/cardano-foundation/cf-cardano-ballot/commit/22654f4f9c01701454217f2bf59ba8c85fd81941))
+
+## [0.2.38](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.37...v0.2.38) (2023-09-19)
+
+
+### Features
+
+* adjust bot to the backend endpoints ([8a40364](https://github.com/cardano-foundation/cf-cardano-ballot/commit/8a403648008df0dbedfab914e76ac6df4ebf1933))
+
 ## [0.2.37](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.36...v0.2.37) (2023-09-18)
 
 

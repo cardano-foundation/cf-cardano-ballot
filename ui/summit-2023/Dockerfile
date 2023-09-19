@@ -1,20 +1,5 @@
 FROM node:18-alpine AS builder
 
-ARG REACT_APP_VERSION
-ARG REACT_APP_VOTING_APP_SERVER_URL=http://localhost:3000
-ARG REACT_APP_VOTING_LEDGER_FOLLOWER_APP_SERVER_URL=http://localhost:3000
-ARG REACT_APP_VOTING_VERIFICATION_APP_SERVER_URL=http://localhost:3000
-ARG REACT_APP_USER_VERIFICATION_SERVER_URL=http://localhost:3000
-
-ENV NODE_ENV="production" \
-    REACT_APP_VOTING_APP_SERVER_URL=${REACT_APP_VOTING_APP_SERVER_URL} \
-    REACT_APP_VOTING_LEDGER_FOLLOWER_APP_SERVER_URL=${REACT_APP_VOTING_LEDGER_FOLLOWER_APP_SERVER_URL} \
-    REACT_APP_VOTING_VERIFICATION_APP_SERVER_URL=${REACT_APP_VOTING_VERIFICATION_APP_SERVER_URL} \
-    REACT_APP_USER_VERIFICATION_SERVER_URL=${REACT_APP_USER_VERIFICATION_SERVER_URL} \
-    REACT_APP_TARGET_NETWORK="PREPROD" \
-    REACT_APP_EVENT_ID="CF_SUMMIT_2023_3A33" \
-    REACT_APP_SUPPORTED_WALLETS="flint,eternl,nami,typhon,yoroi,nufi,gerowallet,lace"
-
 # Add a work directory
 WORKDIR /app
 # Cache and Install dependencies
@@ -27,12 +12,24 @@ RUN npm run react-inject-env && npm run build
 
 # Bundle static assets with nginx
 FROM nginx:1.25.2-alpine as production
-ENV NODE_ENV="production"
+WORKDIR /app
+ENV NODE_ENV="production" \
+    REACT_APP_VOTING_APP_SERVER_URL=${REACT_APP_VOTING_APP_SERVER_URL} \
+    REACT_APP_VOTING_LEDGER_FOLLOWER_APP_SERVER_URL=${REACT_APP_VOTING_LEDGER_FOLLOWER_APP_SERVER_URL} \
+    REACT_APP_VOTING_VERIFICATION_APP_SERVER_URL=${REACT_APP_VOTING_VERIFICATION_APP_SERVER_URL} \
+    REACT_APP_USER_VERIFICATION_SERVER_URL=${REACT_APP_USER_VERIFICATION_SERVER_URL} \
+    REACT_APP_TARGET_NETWORK="PREPROD" \
+    REACT_APP_EVENT_ID="CF_SUMMIT_2023_3A33" \
+    REACT_APP_SUPPORTED_WALLETS="flint,eternl,nami,typhon,yoroi,nufi,gerowallet,lace"
+
 # Copy built assets from builder
 COPY --from=builder /app/build /usr/share/nginx/html
 # Add your nginx.conf
 COPY docker-assets/nginx.conf /etc/nginx/conf.d/default.conf
+COPY docker-assets/bin/entrypoint.sh /app/entrypoint.sh
+COPY env.global.tmp.js /app/env.global.tmp.js
+COPY package.json /app/
 # Expose port
 EXPOSE 80
 # Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["sh", "/app/entrypoint.sh"]

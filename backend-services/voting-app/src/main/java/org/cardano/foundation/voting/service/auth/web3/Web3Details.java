@@ -18,9 +18,10 @@ public class Web3Details {
     private String stakeAddress;
     private ChainFollowerClient.EventDetailsResponse event;
     private Web3Action action;
-    private CardanoNetwork network;
     private Cip30VerificationResult cip30VerificationResult;
     private CIP93Envelope<Map<String, Object>> envelope;
     private SignedWeb3Request signedWeb3Request;
+    private ChainFollowerClient.ChainTipResponse chainTip;
+    private CardanoNetwork network;
 
 }

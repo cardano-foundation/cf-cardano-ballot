@@ -162,6 +162,14 @@ public class DefaultVoteService implements VoteService {
                     .build());
         }
 
+        if (web3AuthenticationToken.getDetails().getChainTip().isNotSynced()) {
+            return Either.left(Problem.builder()
+                    .withTitle("CHAIN_FOLLOWER_NOT_SYNCED")
+                    .withDetail("Chain follower sercice not fully synced, please try again later.")
+                    .withStatus(INTERNAL_SERVER_ERROR)
+                    .build());
+        }
+
         // check which is specific for the USER_BASED event type
         if (event.votingEventType() == USER_BASED) {
             var userVerifiedE = userVerificationClient.isVerified(eventId, details.getStakeAddress());

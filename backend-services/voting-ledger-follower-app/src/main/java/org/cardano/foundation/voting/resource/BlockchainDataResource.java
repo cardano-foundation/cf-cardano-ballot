@@ -42,7 +42,8 @@ public class BlockchainDataResource {
 
     @RequestMapping(value = "/tx-details/{txHash}", method = GET, produces = "application/json")
     @Timed(value = "resource.tx-details", histogram = true)
-    public ResponseEntity<?> txDetails(@PathVariable String txHash) {
+    public ResponseEntity<?> txDetails(@PathVariable("txHash") String txHash) {
+
         return blockchainDataTransactionDetailsService.getTransactionDetails(txHash)
                 .fold(problem -> {
                             return ResponseEntity

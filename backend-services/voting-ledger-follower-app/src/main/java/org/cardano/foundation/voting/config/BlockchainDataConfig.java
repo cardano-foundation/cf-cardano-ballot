@@ -9,7 +9,10 @@ import org.cardano.foundation.voting.service.blockchain_state.FixedBlockchainDat
 import org.cardano.foundation.voting.service.blockchain_state.backend_bridge.BackendServiceBlockchainDataChainTipService;
 import org.cardano.foundation.voting.service.blockchain_state.backend_bridge.BackendServiceBlockchainDataStakePoolService;
 import org.cardano.foundation.voting.service.blockchain_state.backend_bridge.BackendServiceBlockchainDataTransactionDetailsService;
+import org.cardano.foundation.voting.service.chain_sync.ChainSyncService;
+import org.cardano.foundation.voting.service.chain_sync.DefaultChainSyncService;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -19,8 +22,9 @@ public class BlockchainDataConfig {
 
     @Bean
     public BlockchainDataChainTipService blockchainDataChainTipService(CardanoNetwork network,
-                                                                       @Qualifier("yaci_blockfrost") BackendService backendService) {
-        return new BackendServiceBlockchainDataChainTipService(backendService, network);
+                                                                       @Qualifier("yaci_blockfrost") BackendService backendService,
+                                                                       ChainSyncService chainSyncService) {
+        return new BackendServiceBlockchainDataChainTipService(backendService, chainSyncService, network);
     }
 
     @Bean
@@ -33,6 +37,20 @@ public class BlockchainDataConfig {
     @Profile( value = "dev--yaci-dev-kit" )
     public BlockchainDataStakePoolService dummyBlockchainDataStakePoolService() {
         return new FixedBlockchainDataStakePoolService(1000);
+    }
+
+    @Bean
+    @Profile( value = "dev--yaci-dev-kit" )
+    public ChainSyncService dummyChainSyncService() {
+        return new ChainSyncService.Noop();
+    }
+
+    @Bean
+    @Profile( value = { "prod", "dev--preprod"} )
+    public ChainSyncService defaultChainSyncService(@Qualifier("yaci_blockfrost") BackendService yaciBackendService,
+                                                    @Qualifier("original_blockfrost") BackendService orgBackendService,
+                                                    @Value("${chain.sync.buffer:2}") int chainSyncBuffer) {
+        return new DefaultChainSyncService(orgBackendService, yaciBackendService, chainSyncBuffer);
     }
 
     @Bean

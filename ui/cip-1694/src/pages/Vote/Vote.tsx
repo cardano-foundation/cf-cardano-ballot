@@ -210,7 +210,6 @@ export const VotePage = () => {
     let votingPower: Account['votingPower'];
     try {
       ({ votingPower } = await voteService.getVotingPower(env.EVENT_ID, stakeAddress));
-      fetchReceipt({});
     } catch (error) {
       const message = `Failed to fetch votingPower ${
         error instanceof Error || error instanceof HttpError ? error?.message : error
@@ -242,6 +241,7 @@ export const VotePage = () => {
       await voteService.castAVoteWithDigitalSignature(requestVoteObject);
       dispatch(setIsVoteSubmittedModalVisible({ isVisible: true }));
       setVoteSubmitted(true);
+      await fetchReceipt({});
     } catch (error) {
       if (error instanceof HttpError && error.code === 400) {
         toast(

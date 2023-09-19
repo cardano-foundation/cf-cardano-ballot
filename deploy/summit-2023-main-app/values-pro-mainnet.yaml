@@ -61,7 +61,7 @@ cf-summit-2023-ledger-follower-api:
       tag: 0.2.37
     bindOnEventIds: CF_SUMMIT_2023_TEST1
     yaci:
-      startBlockHash: 69a01168a752b9f0aa3d1cd49d9a87fcffceb6738416c199740933fba002c922
+      startBlockHash: 6bb9228e3b746366e24f2681021d619395b850b34c2db020c4928285dcf7b0c2
       startSlotNumber: "103209875"
       network: main
       cardanoNodeHost: relays-new.cardano-mainnet.iohk.io

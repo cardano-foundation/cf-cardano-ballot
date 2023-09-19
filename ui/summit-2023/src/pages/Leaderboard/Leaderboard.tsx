@@ -108,7 +108,6 @@ const Leaderboard = () => {
             container
             spacing={0}
             direction="column"
-            gap={{ xs: '15px', md: 'none' }}
             sx={{ marginTop: '25px' }}
           >
             <Grid
@@ -162,7 +161,7 @@ const Leaderboard = () => {
           <Grid
             container
             direction={{ xs: 'column' }}
-            gridRow={{ md: 6, xs: 12 }}
+            gridRow={{ md: 7, xs: 12 }}
             sx={{ flexWrap: { md: 'nowrap', xs: 'wrap' }, marginTop: { md: '8px', xs: '25px' } }}
             gap={{ xs: '15px', md: 'none' }}
           >
@@ -172,7 +171,7 @@ const Leaderboard = () => {
               justifyContent={{ xs: 'center' }}
             >
               <PieChart
-                style={{ height: '300px', width: '300px', margin: 1 }}
+                style={{ height: '350px', width: '350px', margin: 2 }}
                 lineWidth={45}
                 data={statsSum > 0 ? chartData : [{ title: '', value: 1, color: '#BBBBBB' }]}
               />
@@ -181,7 +180,7 @@ const Leaderboard = () => {
             <Box sx={{ flexGrow: 1 }}>
               <Grid
                 container
-                spacing={{ xs: 2, md: 3 }}
+                spacing={{ xs: 2 }}
                 columns={{ xs: 4, sm: 8, md: 12 }}
               >
                 {statsItems.map(({ label, id }) => (
@@ -192,64 +191,66 @@ const Leaderboard = () => {
                     md={4}
                     key={id}
                   >
+                    <Grid
+                      container
+                      spacing={2}
+                      key={id}
+                    >
                       <Grid
-                        container
-                        spacing={2}
-                        key={id}
+                        item
+                        xs={1}
+                      >
+                        <div
+                          className={styles.proposalRect}
+                          data-proposal={id}
+                        />
+                      </Grid>
+                      <Grid
+                        item
+                        xs={11}
                       >
                         <Grid
-                          item
-                          xs={1}
-                        >
-                          <div
-                            className={styles.proposalRect}
-                            data-proposal={id}
-                          />
-                        </Grid>
-                        <Grid
-                          item
-                          xs={11}
+                          container
+                          direction="row"
+                          sx={{pl: 1}}
                         >
                           <Grid
-                            container
-                            direction="row"
+                            item
+                            xs={12}
                           >
-                            <Grid
-                              item
-                              xs={12}
+                            <Typography
+                              variant="h4"
+                              className={cn(styles.optionTitle, styles.statTitle)}
                             >
-                              <Typography
-                                variant="h4"
-                                className={cn(styles.optionTitle, styles.statTitle)}
-                              >
-                                {label}
-                              </Typography>
-                            </Grid>
-                            <Grid
-                              item
-                              xs={12}
-                            >
-                              {stats && (
-                                <>
-                                  <span style={{ color: '#39486C' }}>
-                                    {statsSum > 0
-                                      ? getPercentage(
-                                          stats?.find((category) => category.id === id)?.votes,
-                                          statsSum
-                                        ).toFixed(2)
-                                      : '0'}{' '}
-                                    %
-                                  </span>
-                                  <span style={{ color: '#BBBBBB' }}>{' - '}</span>
-                                  <span style={{ color: '#BBBBBB' }}>
-                                    {stats?.find((category) => category.id === id)?.votes}
-                                  </span>
-                                </>
-                              )}
-                            </Grid>
+                              {label}
+                            </Typography>
+                          </Grid>
+                          <Grid
+                            item
+                            xs={12}
+                            sx={{fontWeight: 600}}
+                          >
+                            {stats && (
+                              <>
+                                <span style={{ color: '#39486C' }}>
+                                  {statsSum > 0
+                                    ? getPercentage(
+                                        stats?.find((category) => category.id === id)?.votes,
+                                        statsSum
+                                      ).toFixed(2)
+                                    : '0'}{' '}
+                                  %
+                                </span>
+                                <span style={{ color: '#BBBBBB' }}>{' - '}</span>
+                                <span style={{ color: '#BBBBBB' }}>
+                                  {stats?.find((category) => category.id === id)?.votes}
+                                </span>
+                              </>
+                            )}
                           </Grid>
                         </Grid>
                       </Grid>
+                    </Grid>
                   </Grid>
                 ))}
               </Grid>

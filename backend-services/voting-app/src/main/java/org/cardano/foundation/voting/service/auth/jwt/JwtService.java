@@ -115,7 +115,8 @@ public class JwtService {
                                     .withTitle("JWT_ISSUER_MISMATCH")
                                     .withDetail("JWT verification failed for token:" + token + " due to issuer check failed.")
                                     .withStatus(BAD_REQUEST)
-                                    .build());
+                                    .build()
+                    );
                 }
 
                 var now = LocalDateTime.now(clock);
@@ -165,8 +166,6 @@ public class JwtService {
                     return Either.left(stakeAddressCheckE.getLeft());
                 }
 
-                log.info("Verified sub:{}, stakeAddress:{}, ", sub, jwtStakeAddress);
-
                 var maybeRole = Enums.getIfPresent(Role.class, jwtClaimsSet.getStringClaim("role"));
 
                 if (maybeRole.isEmpty()) {
@@ -178,6 +177,8 @@ public class JwtService {
                             .withStatus(BAD_REQUEST)
                             .build());
                 }
+
+                log.info("Verified sub:{}, ", sub);
 
                 return Either.right(signedJWT);
             }

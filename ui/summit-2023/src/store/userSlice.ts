@@ -36,7 +36,7 @@ const initialState: UserState = {
     highLevelEventResultsWhileVoting: true,
     categoryResultsWhileVoting: true,
     highLevelCategoryResultsWhileVoting: false,
-  }
+  },
 };
 
 export const userSlice = createSlice({

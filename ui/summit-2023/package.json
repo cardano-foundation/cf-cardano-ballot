@@ -6,8 +6,7 @@
   "repository": "https://github.com/cardano-foundation/cf-cardano-ballot",
   "description": "Cardano Summit 2023",
   "dependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "@cardano-foundation/cardano-connect-with-wallet": "^0.1.57",
+    "@cardano-foundation/cardano-connect-with-wallet": "^0.2.6",
     "@commitlint/cli": "^17.6.6",
     "@commitlint/config-conventional": "^17.6.6",
     "@emotion/react": "^11.11.0",

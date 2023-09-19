@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-// Generated using typescript-generator version 3.2.1263 on 2023-09-18 21:28:37.
+// Generated using typescript-generator version 3.2.1263 on 2023-09-19 10:19:27.
 
 export interface Either<L, R> extends Value<R>, Serializable {
     left: L;
@@ -156,13 +156,13 @@ export interface EventPresentation {
     proposalsRevealEpoch?: number;
     categories: CategoryPresentation[];
     active: boolean;
-    highLevelCategoryResultsWhileVoting: boolean;
-    categoryResultsWhileVoting: boolean;
-    highLevelEventResultsWhileVoting: boolean;
-    proposalsReveal: boolean;
+    allowVoteChanging: boolean;
     notStarted: boolean;
     finished: boolean;
-    allowVoteChanging: boolean;
+    proposalsReveal: boolean;
+    highLevelEventResultsWhileVoting: boolean;
+    highLevelCategoryResultsWhileVoting: boolean;
+    categoryResultsWhileVoting: boolean;
 }
 
 export interface EventPresentationBuilder {

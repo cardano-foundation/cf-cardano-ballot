@@ -40,36 +40,35 @@
   }
 
   .proposalRect {
-    width: 44px;
-    height: 44px;
+    width: 15px;
+    height: 60px;
     border-radius: 4px;
     &[data-proposal='AMBASSADOR'] {
       background: #106593;
     }
     &[data-proposal='BLOCKCHAIN_FOR_GOOD'] {
-      background: #FFBC5C;
+      background: #ffbc5c;
     }
     &[data-proposal='CIPS'] {
-      background: #75FA9F;
+      background: #75fa9f;
     }
     &[data-proposal='BEST_DEFI_DEX'] {
       background: #652701;
     }
     &[data-proposal='BEST_DEVELOPER_OR_DEVELOPER_TOOLS'] {
-      background: #FD873C;
+      background: #fd873c;
     }
     &[data-proposal='EDUCATIONAL_INFLUENCER'] {
-      background: #1894D6;
+      background: #1894d6;
     }
     &[data-proposal='MARKETPLACE'] {
-      background: #C20024;
+      background: #c20024;
     }
     &[data-proposal='MOST_IMPACTFUL_SSPO'] {
       background: #056122;
     }
     &[data-proposal='SSI'] {
-      background: #DAEEFB;
+      background: #daeefb;
     }
   }
-
 }

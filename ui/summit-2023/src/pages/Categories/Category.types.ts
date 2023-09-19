@@ -26,4 +26,9 @@ interface CategoryContent {
   }[];
 }
 
-export type { Category, CategoryContent };
+interface VoteResults {
+  categoryId: string;
+  proposalId: string;
+}
+
+export type { Category, CategoryContent, VoteResults };

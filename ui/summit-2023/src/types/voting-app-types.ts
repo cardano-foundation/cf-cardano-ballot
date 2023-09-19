@@ -87,6 +87,11 @@ export interface VoteReceipt {
   votedAtSlot: string;
 }
 
+export interface UserVotes {
+    proposalId: string;
+    categoryId: string;
+}
+
 export interface MerkleProof {
   transactionHash: string;
   absoluteSlot?: number;

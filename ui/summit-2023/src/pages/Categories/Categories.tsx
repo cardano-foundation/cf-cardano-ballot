@@ -27,10 +27,12 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import SUMMIT2023CONTENT from '../../common/resources/data/summit2023Content.json';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
+import { getUserInSession, tokenIsExpired } from '../../utils/session';
+import { getUserVotes } from '../../common/api/voteService';
 
 const Categories = () => {
   const eventCache = useSelector((state: RootState) => state.user.event);
-
+  const session = getUserInSession();
   const categories = eventCache?.categories;
   const summit2023Categories: CategoryContent[] = SUMMIT2023CONTENT.categories;
 
@@ -40,12 +42,27 @@ const Categories = () => {
   const [listView, setListView] = useState<'grid' | 'list'>('grid');
   const [isVisible, setIsVisible] = useState(true);
   const [isHoveredId, setIsHoveredId] = useState('');
+  //const [votedCategories, setVotedCategories] = useState<VoteResults[]>();
 
   useEffect(() => {
     if (isMobile) {
       setListView('list');
     }
   }, [isMobile]);
+
+  useEffect(() => {
+    if (!tokenIsExpired(session?.expiresAt)) {
+      getUserVotes(session?.accessToken)
+        .then((response) => {
+          if (response) {
+            console.log(response);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, []);
 
   const handleListView = (viewType: 'grid' | 'list') => {
     if (listView === viewType) return;

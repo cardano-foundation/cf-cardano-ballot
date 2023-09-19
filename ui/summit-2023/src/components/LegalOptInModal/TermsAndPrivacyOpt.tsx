@@ -1,5 +1,4 @@
 import * as React from 'react';
-import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -14,6 +13,7 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { LegalDocPreview } from './LegalDocPreview';
 import { ROUTES } from '../../routes';
 import styles from './TermsAndPolicyOpt.module.scss';
+import { CustomButton } from '../common/Button/CustomButton';
 
 export const LINK_TERMS = 'Terms & Conditions';
 export const LINK_PRIVACY = 'Privacy';
@@ -71,7 +71,7 @@ const TermsOptInModal = (props) => {
       keepMounted
       scroll={'paper'}
       maxWidth={isMobile ? 'sm' : 'lg'}
-      sx={{ backdropFilter: 'blur(10px)'}}
+      sx={{ backdropFilter: 'blur(10px)' }}
       PaperProps={{ sx: { borderRadius: '16px' } }}
       aria-labelledby="cardano-ballot-terms-modal"
       aria-describedby="cardano-ballot-terms-modal-description"
@@ -235,14 +235,23 @@ const TermsOptInModal = (props) => {
           item
           xs={4}
         >
-          <Button
+          <CustomButton
+            styles={
+              checked
+                ? {
+                    background: '#ACFCC5',
+                    color: '#03021F',
+                  }
+                : {
+                    background: '#6C6F89',
+                    color: '#F6F9FF !important',
+                  }
+            }
+            label="Accept"
             onClick={handleAgreeClose}
+            fullWidth={true}
             disabled={!checked}
-            className={checked ? styles.modalButtonAcceptChecked : styles.modalButtonAccept}
-            fullWidth
-          >
-            Accept
-          </Button>
+          />
         </Grid>
       </DialogActions>
     </Dialog>

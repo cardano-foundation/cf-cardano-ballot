@@ -14,7 +14,8 @@ public interface LeaderBoardService {
 
     Either<Problem, Leaderboard.ByEventStats> getEventLeaderboard(String event, boolean forceLeaderboard);
 
-
     Either<Problem, Leaderboard.ByProposalsInCategoryStats> getCategoryLeaderboard(String event, String category, boolean forceLeaderboard);
+
+    Either<Problem, Leaderboard.WinnerStats> getWinners(String event, boolean forceLeaderboard);
 
 }

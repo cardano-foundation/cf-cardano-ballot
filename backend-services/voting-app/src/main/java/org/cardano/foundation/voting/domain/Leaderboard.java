@@ -13,6 +13,15 @@ import java.util.Map;
 @Builder
 public class Leaderboard {
 
+    @Builder
+    @Getter
+    public static class WinnerStats {
+
+        private Map<String, String> winners;
+
+    }
+
+
 
     // per category
     @Builder

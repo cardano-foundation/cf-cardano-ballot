@@ -30,6 +30,17 @@ public interface VoteRepository extends JpaRepository<Vote, String> {
     @Query("SELECT v.categoryId as categoryId, v.proposalId AS proposalId, COUNT(v) AS totalVoteCount, SUM(v.votingPower) AS totalVotingPower FROM Vote v WHERE v.eventId = :eventId AND v.categoryId = :categoryId GROUP BY proposalId")
     List<CategoryLevelStats> getCategoryLevelStats(@Param("eventId") String eventId, @Param("categoryId") String categoryId);
 
+    @Query("SELECT v.categoryId, v.proposalId, MAX(COUNT(v)) AS maxVoteCount, MAX(SUM(v.votingPower)) AS maxVotingPower FROM Vote v WHERE v.eventId = :eventId AND GROUP BY categoryId")
+    List<EventWinnerStats> getWinners(@Param("eventId") String eventId);
+
+    interface EventWinnerStats {
+
+        String getCategoryId();
+
+        String getProposalId();
+
+    }
+
     interface CategoryProposalProjection {
 
         String getCategoryId();

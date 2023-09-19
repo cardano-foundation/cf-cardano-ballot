@@ -11,10 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toMap;
 import static org.zalando.problem.Status.*;
@@ -312,6 +310,17 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
                 .proposals(proposalResults)
                 .build()
         );
+    }
+
+    @Override
+    public Either<Problem, Leaderboard.WinnerStats> getWinners(String event, boolean forceLeaderboard) {
+        List<VoteRepository.EventWinnerStats> winners = voteRepository.getWinners(event);
+
+        var winnerMap = winners.stream().map(w -> {
+
+        }).collect(Collectors.toMap());
+
+        return Either.<Problem, Leaderboard.WinnerStats>right(winnerStats);
     }
 
     private static HashMap<String, Leaderboard.Votes> calcProposalsResults(ChainFollowerClient.CategoryDetailsResponse categoryDetails, Map<String, Leaderboard.Votes> proposalResultsMap, ChainFollowerClient.EventDetailsResponse eventDetails) {

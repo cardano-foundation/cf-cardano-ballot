@@ -264,10 +264,11 @@ export const VotePage = () => {
         console.log('Failed to cast e vote', error?.message || error.toString());
       }
     }
-    setIsCastingAVote(true);
+    setIsCastingAVote(false);
   };
 
   const onChangeCategory = () => {
+    setVoteSubmitted(false);
     setIsReceiptFetched(false);
     const currentCategoryIndex = findIndex(event?.categories, ['id', category]);
     setCategory(event?.categories[(currentCategoryIndex + 1) % event?.categories?.length]?.id);

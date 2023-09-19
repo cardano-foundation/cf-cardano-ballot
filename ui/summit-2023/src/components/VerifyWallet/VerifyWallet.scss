@@ -38,47 +38,6 @@
   width: 100% !important;
 }
 
-.verify-number-button-cancel.MuiButtonBase-root {
-  display: flex;
-  width: 162px;
-  padding: 16px 24px;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  border-radius: 8px;
-  background-color: transparent !important;
-  border: 1px solid var(--color-light-blue);
-  color: var(--color-medium-grey);
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: normal;
-  text-transform: none;
-}
-
-.verify-number-button-continue.MuiButtonBase-root:hover,
-.verify-number-button-continue.MuiButtonBase-root {
-  display: flex;
-  width: 162px;
-  padding: 16px 24px;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  border-radius: 8px;
-  background: var(--color-light-grey);
-  color: var(--color-light) !important;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: normal;
-  text-transform: none;
-}
-.verify-number-button-valid.MuiButtonBase-root:hover,
-.verify-number-button-valid.MuiButtonBase-root {
-  background: var(--color-light-green) !important;
-  color: var(--color-ultra-dark-blue) !important;
-}
-
 .confirm-phone-code-input {
   width: 53px;
   height: 58px;

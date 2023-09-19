@@ -3,9 +3,6 @@ import { Footer } from './components/common/Footer/Footer';
 import { BrowserRouter } from 'react-router-dom';
 import './App.scss';
 import { useDispatch, useSelector } from 'react-redux';
-import toast, { Toaster } from 'react-hot-toast';
-import BlockIcon from '@mui/icons-material/Block';
-import { Toast } from './components/common/Toast/Toast';
 import { setEventData, setWalletIsLoggedIn, setWalletIsVerified } from './store/userSlice';
 import BackgroundPolygon1 from './common/resources/images/polygon1.svg';
 import { Box, CircularProgress, Container, useMediaQuery, useTheme } from '@mui/material';
@@ -21,6 +18,8 @@ import { getUserInSession, tokenIsExpired } from './utils/session';
 import { CB_TERMS_AND_PRIVACY } from './common/constants/local';
 import { TermsOptInModal } from 'components/LegalOptInModal';
 import { NetworkType } from '@cardano-foundation/cardano-connect-with-wallet-core';
+import { eventBus } from './utils/EventBus';
+
 function App() {
   const theme = useTheme();
   const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
@@ -44,19 +43,19 @@ function App() {
 
       if (isLoggedIn) {
         const isExpired = tokenIsExpired(isLoggedIn.expiresAt);
-        if (!isExpired) dispatch(setWalletIsLoggedIn({ isLoggedIn: isExpired }));
+        if (!isExpired) {
+          dispatch(setWalletIsLoggedIn({ isLoggedIn: isExpired }));
+        } else {
+          eventBus.publish('openLoginModal');
+        }
+      } else {
+        eventBus.publish('openLoginModal');
       }
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') {
         console.log(`Failed to fetch event, ${error?.info || error?.message || error?.toString()}`);
       }
-      toast(
-        <Toast
-          message="Failed to update event"
-          error
-          icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
-        />
-      );
+      eventBus.publish('showToast', 'Failed to update event', true);
     }
   }, [dispatch, stakeAddress]);
 
@@ -113,9 +112,7 @@ function App() {
               </Box>
             </Container>
           </div>
-
           <Footer />
-          <Toaster toastOptions={{ className: 'toast' }} />
           <TermsOptInModal
             open={openTermDialog}
             setOpen={(value) => setOpenTermDialog(value)}

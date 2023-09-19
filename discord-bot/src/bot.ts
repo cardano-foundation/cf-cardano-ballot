@@ -66,7 +66,7 @@ client.once(Events.ClientReady, async (client) => {
                 .setStyle(ButtonStyle.Success);
 
 		    const actionRow = new ActionRowBuilder<ButtonBuilder>().addComponents(button);
-            
+
             channel.send({
                 content: 'Click the button below to verify your wallet',
                 components: [actionRow],
@@ -103,7 +103,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
                 log.error((error as Error).message);
                 interaction.reply({
                     content: `Hi ${interaction.user.username}, something went wrong. Please try again later.`,
-                    ephemeral: true 
+                    ephemeral: true
                 });
                 return;
             }
@@ -114,11 +114,11 @@ client.on(Events.InteractionCreate, async (interaction) => {
                 .digest('hex');
 
             const response = await axios.get(`${BACKEND_BASE_URL}/api/discord/user-verification/is-verified/${hashedDiscordId}`, authenticationHeader);
-            
-            if (response.data.isVerified) {
+
+            if (response.data.verified) {
                 interaction.reply({
                     content: `Hi ${interaction.user.username}, you have already verified your wallet!`,
-                    ephemeral: true 
+                    ephemeral: true
                 });
                 return;
             }
@@ -137,23 +137,23 @@ client.on(Events.InteractionCreate, async (interaction) => {
                     });
                     return;
                 }
-                
+
                 const button = new ButtonBuilder()
                     .setLabel('Finish Wallet Verification')
                     .setURL(`${FRONTEND_URL}?action=verification&secret=${hashedDiscordId}|${randomSecret}`)
                     .setStyle(ButtonStyle.Link);
 
                 const actionRow = new ActionRowBuilder<ButtonBuilder>().addComponents(button);
-                await interaction.reply({ 
-                    content: `Thank you ${interaction.user}, please click that button to finish the verification process in Cardano Ballot!`, 
+                await interaction.reply({
+                    content: `Thank you ${interaction.user}, please click that button to finish the verification process in Cardano Ballot!`,
                     ephemeral: true,
                     components: [actionRow],
-                });  
+                });
             } catch (error) {
                 log.error((error as Error).message);
                 interaction.reply({
                     content: `Hi ${interaction.user.username}, something went wrong. Please try again later.`,
-                    ephemeral: true 
+                    ephemeral: true
                 });
             }
         } catch (error) {

@@ -212,7 +212,7 @@ const Leaderboard = () => {
                         <Grid
                           container
                           direction="row"
-                          sx={{pl: 1}}
+                          sx={{ pl: 1 }}
                         >
                           <Grid
                             item
@@ -228,7 +228,7 @@ const Leaderboard = () => {
                           <Grid
                             item
                             xs={12}
-                            sx={{fontWeight: 600}}
+                            sx={{ fontWeight: 600 }}
                           >
                             {stats && (
                               <>

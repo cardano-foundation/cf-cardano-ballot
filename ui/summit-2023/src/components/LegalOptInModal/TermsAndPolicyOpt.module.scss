@@ -16,30 +16,3 @@
   font-weight: 400 !important;
   line-height: 22px;
 }
-
-.modalButtonAccept,
-.modalButtonAcceptChecked {
-  display: flex;
-  width: 162px !important;
-  padding: 16px 24px !important;
-  justify-content: center !important;
-  align-items: center !important;
-  gap: 10px !important;
-  border-radius: 8px !important;
-  font-size: 16px !important;
-  font-style: normal !important;
-  font-weight: 600 !important;
-  line-height: normal !important;
-  text-transform: none !important;
-}
-
-.modalButtonAccept {
-  background: var(--color-light-grey) !important;
-  color: var(--color-light) !important;
-}
-
-.modalButtonAccept:hover,
-.modalButtonAcceptChecked {
-  background: var(--color-light-green) !important;
-  color: var(--color-ultra-dark-blue) !important;
-}

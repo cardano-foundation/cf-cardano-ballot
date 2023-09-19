@@ -223,6 +223,8 @@ jobs:
           REACT_APP_VOTING_APP_SERVER_URL: https://api.dev.cf-cip1694-preprod.eu-west-1.metadata.dev.cf-deployments.org
           REACT_APP_VOTING_LEDGER_FOLLOWER_APP_SERVER_URL: https://follower-api.dev.cf-cip1694-preprod.eu-west-1.metadata.dev.cf-deployments.org
           REACT_APP_VOTING_VERIFICATION_APP_SERVER_URL: https://verification-api.dev.cf-cip1694-preprod.eu-west-1.metadata.dev.cf-deployments.org
+          REACT_APP_EVENT_ID: CIP-1694_Pre_Ratification_3316
+          REACT_APP_CATEGORY_ID: CIP-1694_Pre_Ratification_3316
           ARTIFACT_VERSION: ${{needs.build-version.outputs.ARTIFACT_VERSION}}-preprod
         with:
           context: ui/cip-1694
@@ -231,6 +233,8 @@ jobs:
             "REACT_APP_VOTING_APP_SERVER_URL=${{ env.REACT_APP_VOTING_APP_SERVER_URL }}"
             "REACT_APP_VOTING_LEDGER_FOLLOWER_APP_SERVER_URL=${{ env.REACT_APP_VOTING_LEDGER_FOLLOWER_APP_SERVER_URL }}"
             "REACT_APP_VOTING_VERIFICATION_APP_SERVER_URL=${{ env.REACT_APP_VOTING_VERIFICATION_APP_SERVER_URL }}"
+            "REACT_APP_EVENT_ID=${{ env.REACT_APP_EVENT_ID }}"
+            "REACT_APP_CATEGORY_ID=${{ env.REACT_APP_CATEGORY_ID }}"
           tags: |
             ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}/${{ env.APP_NAME }}:${{ env.ARTIFACT_VERSION }}
 

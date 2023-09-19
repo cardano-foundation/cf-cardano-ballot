@@ -10,7 +10,8 @@ import {
   useTheme,
   useMediaQuery,
   Grid,
-  Snackbar, Typography,
+  Snackbar,
+  Typography,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
@@ -348,8 +349,8 @@ const Header: React.FC = () => {
         width={isMobile ? 'auto' : '500px'}
       >
         <Typography
-            variant="h6"
-            sx={{ color: '#24262E', fontSize: '18px', fontStyle: 'normal', fontWeight: '400', lineHeight: '22px' }}
+          variant="h6"
+          sx={{ color: '#24262E', fontSize: '18px', fontStyle: 'normal', fontWeight: '400', lineHeight: '22px' }}
         >
           The session has expired. In order to see your votes, please, login again with your wallet.
         </Typography>

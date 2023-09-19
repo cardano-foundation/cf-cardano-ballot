@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.40](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.39...v0.2.40) (2023-09-19)
+
+
+### Features
+
+* add login modal on session expired ([0a413dd](https://github.com/cardano-foundation/cf-cardano-ballot/commit/0a413ddf32a0c4e5faa3345fccee73aa771117ad))
+
+
+### Bug Fixes
+
+* is verified typo in discord bot ([991e9b3](https://github.com/cardano-foundation/cf-cardano-ballot/commit/991e9b38eeab1baa2eb01fb463c855139c769265))
+* leaderboard alignment ([3178157](https://github.com/cardano-foundation/cf-cardano-ballot/commit/31781576b8582e056efa3f0371670aa0fb1658a3))
+* updated event for cip1694 CIP-1694_Pre_Ratification_3316 ([393abd5](https://github.com/cardano-foundation/cf-cardano-ballot/commit/393abd574e44698a80a4f42e60017e178e228994))
+
 ## [0.2.39](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.38...v0.2.39) (2023-09-19)
 
 

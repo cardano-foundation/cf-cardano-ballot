@@ -73,13 +73,16 @@ public class ReferencePresentationService {
                 .snapshotEpoch(event.getSnapshotEpoch())
                 .categories(categories)
                 .isNotStarted(eventAdditionalInfo.notStarted())
+                .isStarted(eventAdditionalInfo.started())
                 .isActive(eventAdditionalInfo.active())
                 .isFinished(eventAdditionalInfo.finished())
                 .isProposalsReveal(eventAdditionalInfo.proposalsReveal())
+                .isCommitmentsWindowOpen(eventAdditionalInfo.commitmentsWindowOpen())
                 .isAllowVoteChanging(event.isAllowVoteChanging())
-                .isHighLevelEventResultsWhileVoting(event.getHighLevelEpochResultsWhileVoting().orElse(false))
-                .isHighLevelCategoryResultsWhileVoting(event.getHighLevelEpochResultsWhileVoting().orElse(false))
-                .isCategoryResultsWhileVoting(event.getCategoryResultsWhileVoting().orElse(false));
+                .isHighLevelEventResultsWhileVoting(event.getHighLevelEventResultsWhileVoting())
+                .isHighLevelCategoryResultsWhileVoting(event.getHighLevelEventResultsWhileVoting())
+                .isCategoryResultsWhileVoting(event.getCategoryResultsWhileVoting())
+                ;
 
         switch (event.getVotingEventType()) {
             case STAKE_BASED, BALANCE_BASED -> {

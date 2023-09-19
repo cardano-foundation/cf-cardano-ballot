@@ -80,14 +80,18 @@ public class ChainFollowerClient {
         }
     }
 
-    public Either<Problem, List<EventSummary>> findAllActiveEvents() {
+    public Either<Problem, List<EventSummary>> findAllCommitmentWindowOpenEvents() {
         var url = String.format("%s/api/reference/event", ledgerFollowerBaseUrl);
 
         try {
             var allEventSummaries = Optional.ofNullable(restTemplate.getForObject(url, EventSummary[].class))
                     .map(Arrays::asList).orElse(List.of());
 
-            return Either.right(allEventSummaries.stream().filter(EventSummary::active).toList());
+            var allCommitmentsOpenWindowEvents = allEventSummaries.stream()
+                    .filter(EventSummary::commitmentsWindowOpen)
+                    .toList();
+
+            return Either.right(allCommitmentsOpenWindowEvents);
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == NOT_FOUND) {
                 return Either.right(List.of());
@@ -95,7 +99,7 @@ public class ChainFollowerClient {
 
             return Either.left(Problem.builder()
                     .withTitle("REFERENCE_ERROR")
-                    .withDetail("Unable to get event details from chain-tip follower service, reason:" + e.getMessage())
+                    .withDetail("Unable to get event details from ledger follower service, reason:" + e.getMessage())
                     .withStatus(new HttpStatusAdapter(e.getStatusCode()))
                     .build());
         }
@@ -138,20 +142,20 @@ public class ChainFollowerClient {
     public record EventSummary(String id,
                                boolean finished,
                                boolean notStarted,
+                               boolean started,
                                boolean active,
-                               boolean proposalsReveal) {
-
-        public boolean isEventInactive() {
-            return !active;
-        }
+                               boolean proposalsReveal,
+                               boolean commitmentsWindowOpen) {
 
     }
 
     public record EventDetailsResponse(String id,
                                        boolean finished,
                                        boolean notStarted,
+                                       boolean isStarted,
                                        boolean active,
                                        boolean proposalsReveal,
+                                       boolean commitmentsWindowOpen,
                                        boolean allowVoteChanging,
                                        boolean highLevelEventResultsWhileVoting,
                                        boolean highLevelCategoryResultsWhileVoting,

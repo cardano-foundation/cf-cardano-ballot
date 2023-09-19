@@ -7,7 +7,7 @@ CREATE TABLE event (
     event_type VARCHAR(255) NOT NULL,
     allow_vote_changing BOOL,
 
-    high_level_epoch_results_while_voting BOOL,
+    high_level_event_results_while_voting BOOL,
     high_level_category_results_while_voting BOOL,
     category_results_while_voting BOOL,
 

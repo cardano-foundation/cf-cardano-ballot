@@ -173,7 +173,7 @@ public class CustomMetadataProcessor {
         event.setVersion(event.getVersion());
         event.setOrganisers(eventRegistration.getOrganisers());
 
-        event.setHighLevelEpochResultsWhileVoting(Optional.of(eventRegistration.isHighLevelEventResultsWhileVoting()));
+        event.setHighLevelEventResultsWhileVoting(Optional.of(eventRegistration.isHighLevelEventResultsWhileVoting()));
         event.setHighLevelCategoryResultsWhileVoting(Optional.of(eventRegistration.isHighLevelCategoryResultsWhileVoting()));
         event.setCategoryResultsWhileVoting(Optional.of(eventRegistration.isCategoryResultsWhileVoting()));
         event.setVersion(SchemaVersion.fromText(eventRegistration.getSchemaVersion()).orElseThrow());

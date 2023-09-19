@@ -34,6 +34,15 @@ spec:
 
             - name: CARDANO_NETWORK
               value: {{ $.Values.network | default "preprod" | upper}}
+
+
+            - name: CARDANO_NODE_HOST
+              value: {{ $.Values.cardanoNodeHost | default "preprod-node.world.dev.cardano.org" }}
+            - name: CARDANO_NODE_PORT
+              value: {{ $.Values.cardanoNodePort | default "30000" }}
+            - name: CARDANO_NODE_PROTOCOL_MAGIC
+              value: {{ $.Values.cardanoNodeProtocolMagic | default "1" }}
+
             - name: VOTING_METADATA_LABEL
               value: {{ $.Values.votingMetadataLabel | default "11113" | quote }}
             - name: BIND_ON_EVENT_IDS

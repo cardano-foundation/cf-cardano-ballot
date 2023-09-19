@@ -17,7 +17,7 @@ export const StatsTile = ({ title, summary, children, dataTestId }: StatsTilePor
       md={6}
       item
       className={styles.statCard}
-      padding={{ md: '30px', xs: '20px' }}
+      padding={{ md: '20px', xs: '10px' }}
     >
       <Grid
         container

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
   AppBar,
@@ -10,7 +10,7 @@ import {
   useTheme,
   useMediaQuery,
   Grid,
-  Snackbar,
+  Snackbar, Typography,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
@@ -23,20 +23,30 @@ import Modal from '../Modal/Modal';
 import ConnectWalletList from '../../ConnectWalletList/ConnectWalletList';
 import { VerifyWallet } from '../../VerifyWallet';
 import { eventBus } from '../../../utils/EventBus';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../store';
 import { NetworkType } from '@cardano-foundation/cardano-connect-with-wallet-core';
 import { ConnectWalletButton } from '../ConnectWalletButton/ConnectWalletButton';
 import { useToggle } from 'common/hooks/useToggle';
+import { CustomButton } from '../Button/CustomButton';
+import { getSlotNumber } from 'common/api/voteService';
+import { buildCanonicalLoginJson, submitLogin } from 'common/api/loginService';
+import { saveUserInSession } from '../../../utils/session';
+import { setWalletIsLoggedIn } from '../../../store/userSlice';
+import { getSignedMessagePromise } from '../../../utils/utils';
 
 const Header: React.FC = () => {
+  const dispatch = useDispatch();
+
   const [drawerOpen, setDrawerOpen] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const walletIsVerified = useSelector((state: RootState) => state.user.walletIsVerified);
 
-  const { isConnected } = useCardano({ limitNetwork: 'testnet' as NetworkType });
+  const { isConnected, stakeAddress, signMessage } = useCardano({ limitNetwork: 'testnet' as NetworkType });
+
   const [openAuthDialog, setOpenAuthDialog] = useState<boolean>(false);
+  const [loginModal, toggleLoginModal] = useToggle(false);
   const [verifyModalIsOpen, setVerifyModalIsOpen] = useState<boolean>(false);
   const [verifyDiscordModalIsReady, toggleVerifyDiscordModalIsOpen] = useToggle(false);
   const [toastMessage, setToastMessage] = useState('');
@@ -44,13 +54,13 @@ const Header: React.FC = () => {
   const [toastOpen, setToastOpen] = useState(false);
   const location = useLocation();
 
+  const signMessagePromisified = useMemo(() => getSignedMessagePromise(signMessage), [signMessage]);
+
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const action = queryParams.get('action');
     const secret = queryParams.get('secret');
 
-    console.log('action: ', action);
-    console.log('secret: ', secret);
     if (action === 'verification' && secret.includes('|')) {
       toggleVerifyDiscordModalIsOpen();
     }
@@ -64,6 +74,17 @@ const Header: React.FC = () => {
 
     return () => {
       eventBus.unsubscribe('openConnectWalletModal', openConnectWalletModal);
+    };
+  }, []);
+
+  useEffect(() => {
+    const openLoginModal = () => {
+      toggleLoginModal();
+    };
+    eventBus.subscribe('openLoginModal', openLoginModal);
+
+    return () => {
+      eventBus.unsubscribe('openLoginModal', openLoginModal);
     };
   }, []);
 
@@ -138,6 +159,31 @@ const Header: React.FC = () => {
       return;
     }
     setToastOpen(false);
+  };
+
+  const handleLogin = async () => {
+    const absoluteSlot = (await getSlotNumber())?.absoluteSlot;
+    const canonicalVoteInput = buildCanonicalLoginJson({
+      stakeAddress,
+      slotNumber: absoluteSlot.toString(),
+    });
+    try {
+      const requestVoteObject = await signMessagePromisified(canonicalVoteInput);
+      submitLogin(requestVoteObject)
+        .then((response) => {
+          const session = {
+            accessToken: response.accessToken,
+            expiresAt: response.expiresAt,
+          };
+          saveUserInSession(session);
+          dispatch(setWalletIsLoggedIn({ isLoggedIn: true }));
+          eventBus.publish('showToast', 'Login successfully');
+          toggleLoginModal();
+        })
+        .catch((e) => eventBus.publish('showToast', e.message, true));
+    } catch (e) {
+      eventBus.publish('showToast', e.message, true);
+    }
   };
 
   const drawerItems = (
@@ -290,6 +336,32 @@ const Header: React.FC = () => {
           method={verifyDiscordModalIsReady ? 'discord' : undefined}
           onVerify={() => onVerify()}
           onError={(error) => onError(error)}
+        />
+      </Modal>
+      <Modal
+        id="login-modal"
+        isOpen={isConnected && walletIsVerified && loginModal}
+        name="login-modal"
+        title="Login with your wallet"
+        onClose={toggleLoginModal}
+        disableBackdropClick={true}
+        width={isMobile ? 'auto' : '500px'}
+      >
+        <Typography
+            variant="h6"
+            sx={{ color: '#24262E', fontSize: '18px', fontStyle: 'normal', fontWeight: '400', lineHeight: '22px' }}
+        >
+          The session has expired. In order to see your votes, please, login again with your wallet.
+        </Typography>
+        <CustomButton
+          styles={{
+            background: '#ACFCC5',
+            color: '#03021F',
+            margin: '24px 0px',
+          }}
+          label="Login with wallet"
+          onClick={() => handleLogin()}
+          fullWidth={true}
         />
       </Modal>
       <Snackbar

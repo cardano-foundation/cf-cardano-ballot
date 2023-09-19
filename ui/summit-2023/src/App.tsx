@@ -43,7 +43,13 @@ function App() {
 
       if (isLoggedIn) {
         const isExpired = tokenIsExpired(isLoggedIn.expiresAt);
-        if (!isExpired) dispatch(setWalletIsLoggedIn({ isLoggedIn: isExpired }));
+        if (!isExpired) {
+          dispatch(setWalletIsLoggedIn({ isLoggedIn: isExpired }));
+        } else {
+          eventBus.publish('openLoginModal');
+        }
+      } else {
+        eventBus.publish('openLoginModal');
       }
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') {

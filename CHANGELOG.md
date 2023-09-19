@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.41](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.40...v0.2.41) (2023-09-19)
+
+
+### Bug Fixes
+
+* capitalize error message ([1d12873](https://github.com/cardano-foundation/cf-cardano-ballot/commit/1d128737059d75d7b73b0f66d3973384f168261e))
+* continue L1 commitments even tough event finishes, delay by number of slots and epochs for now. ([#257](https://github.com/cardano-foundation/cf-cardano-ballot/issues/257)) ([fc2390b](https://github.com/cardano-foundation/cf-cardano-ballot/commit/fc2390bae445b3bc2651ef54e43c49b7d831c82f))
+* remove unnecessary toast and dep ([71bad68](https://github.com/cardano-foundation/cf-cardano-ballot/commit/71bad6882844897fcb642259bfb2e9193f914a1f))
+* remove unused styles in terms&cond ([c621594](https://github.com/cardano-foundation/cf-cardano-ballot/commit/c6215945e2ce5981319804cf14e9173e21e475e3))
+* terms&cond modal width and backdrop ([9b992d1](https://github.com/cardano-foundation/cf-cardano-ballot/commit/9b992d1388d811017aebef1be6521d9be774e025))
+* using CustomButton in terms&cond ([6a0e9f7](https://github.com/cardano-foundation/cf-cardano-ballot/commit/6a0e9f7e4243f8e7b9945f3e2138b6d9c141deb1))
+
 ## [0.2.40](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.39...v0.2.40) (2023-09-19)
 
 

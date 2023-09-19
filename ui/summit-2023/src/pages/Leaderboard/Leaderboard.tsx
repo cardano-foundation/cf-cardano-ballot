@@ -2,13 +2,11 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Typography, Grid, Box } from '@mui/material';
 import styles from './Leaderboard.module.scss';
 import cn from 'classnames';
-import toast from 'react-hot-toast';
+
 import { PieChart } from 'react-minimal-pie-chart';
-import BlockIcon from '@mui/icons-material/Block';
 import { ByCategoryStats } from 'types/voting-app-types';
 import { EventPresentation } from 'types/voting-ledger-follower-types';
 import * as leaderboardService from '../../common/api/leaderboardService';
-import { Toast } from 'components/common/Toast/Toast';
 import { categoryColorsMap, getPercentage } from './utils';
 import { StatItem } from './types';
 import { useSelector } from 'react-redux';
@@ -17,6 +15,7 @@ import { StatsTile } from './components/StatsTile';
 import SUMMIT2023CONTENT from '../../common/resources/data/summit2023Content.json';
 import { CategoryContent } from 'pages/Categories/Category.types';
 import { LeaderboardContent } from './Leaderboard.types';
+import {eventBus} from '../../utils/EventBus';
 
 const Leaderboard = () => {
   const event = useSelector((state: RootState) => state.user.event);
@@ -34,12 +33,7 @@ const Leaderboard = () => {
       if (process.env.NODE_ENV === 'development') {
         console.log(message);
       }
-      toast(
-        <Toast
-          message="Failed to fecth stats"
-          icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
-        />
-      );
+      eventBus.publish('showToast', 'Failed to fecth stats', true);
     }
   }, []);
 

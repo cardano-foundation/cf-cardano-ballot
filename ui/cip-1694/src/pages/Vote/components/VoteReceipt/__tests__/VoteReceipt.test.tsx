@@ -8,7 +8,6 @@ import { expect } from '@jest/globals';
 import { cleanup, act, waitFor, screen, within, fireEvent } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import BlockIcon from '@mui/icons-material/Block';
-import { UserState } from 'common/store/types';
 import { ROUTES } from 'common/routes';
 import { Toast } from 'components/common/Toast/Toast';
 import { renderWithProviders } from 'test/mockProviders';
@@ -75,9 +74,9 @@ describe('Vote receipt:', () => {
             <VoteReceipt
               setOpen={jest.fn()}
               fetchReceipt={jest.fn()}
+              receipt={VoteReceiptMock_Full_MediumAssurance}
             />
-          </CustomRouter>,
-          { preloadedState: { user: { receipt: VoteReceiptMock_Full_MediumAssurance } as UserState } }
+          </CustomRouter>
         )
       );
 
@@ -103,9 +102,9 @@ describe('Vote receipt:', () => {
             <VoteReceipt
               setOpen={jest.fn()}
               fetchReceipt={fetchReceiptMock}
+              receipt={VoteReceiptMock_Basic}
             />
-          </CustomRouter>,
-          { preloadedState: { user: { receipt: VoteReceiptMock_Basic } as UserState } }
+          </CustomRouter>
         )
       );
 
@@ -180,9 +179,9 @@ describe('Vote receipt:', () => {
             <VoteReceipt
               setOpen={jest.fn()}
               fetchReceipt={fetchReceiptMock}
+              receipt={VoteReceiptMock_Partial}
             />
-          </CustomRouter>,
-          { preloadedState: { user: { receipt: VoteReceiptMock_Partial } as UserState } }
+          </CustomRouter>
         )
       );
 
@@ -255,9 +254,9 @@ describe('Vote receipt:', () => {
             <VoteReceipt
               setOpen={jest.fn()}
               fetchReceipt={fetchReceiptMock}
+              receipt={VoteReceiptMock_Rollback}
             />
-          </CustomRouter>,
-          { preloadedState: { user: { receipt: VoteReceiptMock_Rollback } as UserState } }
+          </CustomRouter>
         )
       );
 
@@ -333,9 +332,9 @@ describe('Vote receipt:', () => {
             <VoteReceipt
               setOpen={jest.fn()}
               fetchReceipt={fetchReceiptMock}
+              receipt={VoteReceiptMock_Full_LowAssurance}
             />
-          </CustomRouter>,
-          { preloadedState: { user: { receipt: VoteReceiptMock_Full_LowAssurance } as UserState } }
+          </CustomRouter>
         )
       );
 
@@ -414,9 +413,9 @@ describe('Vote receipt:', () => {
               <VoteReceipt
                 setOpen={jest.fn()}
                 fetchReceipt={jest.fn()}
+                receipt={VoteReceiptMock_Full_LowAssurance}
               />
-            </CustomRouter>,
-            { preloadedState: { user: { receipt: VoteReceiptMock_Full_LowAssurance } as UserState } }
+            </CustomRouter>
           )
         );
 
@@ -439,9 +438,9 @@ describe('Vote receipt:', () => {
               <VoteReceipt
                 setOpen={jest.fn()}
                 fetchReceipt={jest.fn()}
+                receipt={VoteReceiptMock_Full_MediumAssurance}
               />
-            </CustomRouter>,
-            { preloadedState: { user: { receipt: VoteReceiptMock_Full_MediumAssurance } as UserState } }
+            </CustomRouter>
           )
         );
 
@@ -464,9 +463,9 @@ describe('Vote receipt:', () => {
               <VoteReceipt
                 setOpen={jest.fn()}
                 fetchReceipt={jest.fn()}
+                receipt={VoteReceiptMock_Full_HighAssurance}
               />
-            </CustomRouter>,
-            { preloadedState: { user: { receipt: VoteReceiptMock_Full_HighAssurance } as UserState } }
+            </CustomRouter>
           )
         );
 
@@ -490,9 +489,9 @@ describe('Vote receipt:', () => {
               <VoteReceipt
                 setOpen={jest.fn()}
                 fetchReceipt={jest.fn()}
+                receipt={VoteReceiptMock_Full_HighAssurance}
               />
-            </CustomRouter>,
-            { preloadedState: { user: { receipt: VoteReceiptMock_Full_HighAssurance } as UserState } }
+            </CustomRouter>
           )
         );
 

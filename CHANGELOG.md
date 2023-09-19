@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.36](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.35...v0.2.36) (2023-09-14)
+
+
+### Features
+
+* keep memory low even for large number of votes. ([#204](https://github.com/cardano-foundation/cf-cardano-ballot/issues/204)) ([a121628](https://github.com/cardano-foundation/cf-cardano-ballot/commit/a121628b352a2e7b670a09988566d9e10f09509b))
+
+
+### Bug Fixes
+
+* Transactional readOnly bug fix. ([#220](https://github.com/cardano-foundation/cf-cardano-ballot/issues/220)) ([52eac44](https://github.com/cardano-foundation/cf-cardano-ballot/commit/52eac44451445492f54887df33954724b5508dca))
+
 ## [0.2.35](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.34...v0.2.35) (2023-09-14)
 
 

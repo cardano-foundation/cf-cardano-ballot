@@ -13,21 +13,25 @@ export const castAVoteWithDigitalSignature = async (jsonRequest: SignedWeb3Reque
     HttpMethods.POST,
     CAST_VOTE_URL,
     DEFAULT_CONTENT_TYPE_HEADERS,
-    JSON.stringify(jsonRequest)
+    JSON.stringify(jsonRequest),
+    undefined,
+    true
   );
 
-export const getSlotNumber = async () => {
+export const getChainTip = async () => {
   return await doRequest<ChainTip>(HttpMethods.GET, BLOCKCHAIN_TIP_URL, DEFAULT_CONTENT_TYPE_HEADERS);
 };
 
-export const getVoteReceipt = async (jsonRequest: SignedWeb3Request) => {
-  return await doRequest<Problem | VoteReceipt>(
-    HttpMethods.POST,
-    VOTE_RECEIPT_URL,
-    DEFAULT_CONTENT_TYPE_HEADERS,
-    JSON.stringify(jsonRequest)
+export const getVoteReceipt = async (categoryId: string, token: string) =>
+  await doRequest<Problem | VoteReceipt>(
+    HttpMethods.GET,
+    `${VOTE_RECEIPT_URL}/${env.EVENT_ID}/${categoryId}`,
+    {
+      ...DEFAULT_CONTENT_TYPE_HEADERS,
+    },
+    null,
+    token
   );
-};
 
 export const getVotingPower = async (eventId: EventPresentation['id'], stakeAddress: string) => {
   return await doRequest<Account>(

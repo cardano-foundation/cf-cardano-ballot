@@ -2,6 +2,8 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
+import capitalize from 'lodash/capitalize';
+import findIndex from 'lodash/findIndex';
 import toast from 'react-hot-toast';
 import cn from 'classnames';
 import { Grid, Typography, Button, CircularProgress } from '@mui/material';
@@ -13,14 +15,9 @@ import BlockIcon from '@mui/icons-material/Block';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import { ROUTES } from 'common/routes';
 import { EventTime } from 'components/EventTime/EventTime';
-import {
-  setIsConnectWalletModalVisible,
-  setIsReceiptFetched,
-  setIsVoteSubmittedModalVisible,
-  setSelectedProposal,
-  setVoteReceipt,
-} from 'common/store/userSlice';
+import { setIsConnectWalletModalVisible, setIsVoteSubmittedModalVisible } from 'common/store/userSlice';
 import { ProposalPresentation, Account } from 'types/voting-ledger-follower-types';
+import { VoteReceipt as VoteReceiptType } from 'types/voting-app-types';
 import { RootState } from 'common/store';
 import { VoteReceipt } from 'pages/Vote/components/VoteReceipt/VoteReceipt';
 import { Toast } from 'components/common/Toast/Toast';
@@ -28,19 +25,27 @@ import { VoteSubmittedModal } from 'components/VoteSubmittedModal/VoteSubmittedM
 import { OptionCard } from 'components/OptionCard/OptionCard';
 import { OptionItem } from 'components/OptionCard/OptionCard.types';
 import SidePage from 'components/common/SidePage/SidePage';
-import {
-  buildCanonicalVoteInputJson,
-  buildCanonicalVoteReceiptInputJson,
-  getSignedMessagePromise,
-} from 'common/utils/voteUtils';
+import { buildCanonicalVoteInputJson, getSignedMessagePromise } from 'common/utils/voteUtils';
 import * as voteService from 'common/api/voteService';
+import * as loginService from 'common/api/loginService';
 import { useToggle } from 'common/hooks/useToggle';
 import { HttpError } from 'common/handlers/httpHandler';
 import { getDateAndMonth } from 'common/utils/dateUtils';
-import { capitalize } from 'lodash';
+import { getUserInSession, saveUserInSession, tokenIsExpired } from 'common/utils/session';
+import { ConfirmWithWalletSignatureModal } from './components/ConfirmWithWalletSignatureModal/ConfirmWithWalletSignatureModal';
 import { env } from '../../env';
 import styles from './Vote.module.scss';
-import { ConfirmWithWalletSignatureModal } from './components/ConfirmWithWalletSignatureModal/ConfirmWithWalletSignatureModal';
+
+const copies = [
+  {
+    title: 'The Governance of Cardano',
+    body: 'Should Cardano change its governance structure?',
+  },
+  {
+    title: 'The Governance of Cardano',
+    body: 'Should Cardano implement the minimum-viable governance proposed in CIP-1694?',
+  },
+];
 
 const errorsMap = {
   INVALID_VOTING_POWER: 'To cast a vote, Voting Power should be more than 0',
@@ -56,30 +61,39 @@ const iconsMap: Record<ProposalPresentation['name'], React.ReactElement | null> 
 
 export const VotePage = () => {
   const { stakeAddress, isConnected, signMessage } = useCardano();
-  const receipt = useSelector((state: RootState) => state.user.receipt);
+  const [receipt, setReceipt] = useState<VoteReceiptType | null>(null);
   const event = useSelector((state: RootState) => state.user.event);
-  const isReceiptFetched = useSelector((state: RootState) => state.user.isReceiptFetched);
+  const tip = useSelector((state: RootState) => state.user.tip);
+  const [isReceiptFetched, setIsReceiptFetched] = useState(false);
   const isVoteSubmittedModalVisible = useSelector((state: RootState) => state.user.isVoteSubmittedModalVisible);
-  const [absoluteSlot, setAbsoluteSlot] = useState<number>();
-  const savedProposal = useSelector((state: RootState) => state.user.proposal);
   const [isReceiptDrawerInitializing, setIsReceiptDrawerInitializing] = useState(false);
   const [isCastingAVote, setIsCastingAVote] = useState(false);
-  const [optionId, setOptionId] = useState(savedProposal || '');
-  const [isConfirmWithWalletSignatureModalVisible, setIsConfirmWithWalletSignatureModalVisible] = useState(
-    absoluteSlot && stakeAddress && !savedProposal && event?.notStarted === false
-  );
+  const [optionId, setOptionId] = useState('');
+  const [isConfirmWithWalletSignatureModalVisible, setIsConfirmWithWalletSignatureModalVisible] = useState(false);
   const [voteSubmitted, setVoteSubmitted] = useState(false);
+  const [category, setCategory] = useState(event?.categories?.[0].id);
   const [isToggledReceipt, toggleReceipt] = useToggle(false);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (absoluteSlot && stakeAddress && !savedProposal && event?.notStarted === false) {
+    setCategory(event?.categories?.[0].id);
+  }, [event]);
+
+  useEffect(() => {
+    const session = getUserInSession();
+
+    if (
+      tip?.absoluteSlot &&
+      stakeAddress &&
+      event?.notStarted === false &&
+      ((session && tokenIsExpired(session.expiresAt)) || !session)
+    ) {
       setIsConfirmWithWalletSignatureModalVisible(true);
     }
-  }, [event?.notStarted, absoluteSlot, savedProposal, stakeAddress]);
+  }, [event?.notStarted, tip?.absoluteSlot, stakeAddress]);
 
   const items: OptionItem<ProposalPresentation['name']>[] = event?.categories
-    ?.find(({ id }) => id === env.CATEGORY_ID)
+    ?.find(({ id }) => id === category)
     ?.proposals?.map(({ name }) => ({
       name,
       label: capitalize(name.toLowerCase()),
@@ -88,22 +102,49 @@ export const VotePage = () => {
 
   const signMessagePromisified = useMemo(() => getSignedMessagePromise(signMessage), [signMessage]);
 
+  const login = useCallback(async () => {
+    const canonicalVoteInput = loginService.buildCanonicalLoginJson({
+      stakeAddress,
+      slotNumber: tip.absoluteSlot.toString(),
+    });
+    try {
+      const requestVoteObject = await signMessagePromisified(canonicalVoteInput);
+      const response = await loginService.submitLogin(requestVoteObject);
+      const session = {
+        accessToken: response.accessToken,
+        expiresAt: response.expiresAt,
+      };
+      saveUserInSession(session);
+      return session?.accessToken;
+    } catch (error) {
+      const message = `${error?.info || error?.message || error?.toString()}`;
+      toast(
+        <Toast
+          message={message}
+          error
+          icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
+        />
+      );
+      console.log(message);
+    }
+  }, [signMessagePromisified, stakeAddress, tip?.absoluteSlot]);
+
   const fetchReceipt = useCallback(
     async ({ cb, refetch = false }: { cb?: () => void; refetch?: boolean }) => {
       const errorPrefix = refetch
         ? 'Unable to refresh your vote receipt. Please try again'
         : 'Unable to fetch your vote receipt. Please try again';
       try {
-        const voteObjectPayload = await signMessagePromisified(
-          buildCanonicalVoteReceiptInputJson({
-            voter: stakeAddress,
-            slotNumber: absoluteSlot.toString(),
-          })
-        );
-        const receiptResponse = await voteService.getVoteReceipt(voteObjectPayload);
+        const session = getUserInSession();
+        let token = session?.accessToken;
+        if (!session || tokenIsExpired(session?.expiresAt)) {
+          token = await login();
+        }
+        if (!token) return;
+        const receiptResponse = await voteService.getVoteReceipt(category, token);
+
         if ('id' in receiptResponse) {
-          dispatch(setVoteReceipt({ receipt: receiptResponse }));
-          dispatch(setSelectedProposal({ proposal: receiptResponse.proposal }));
+          setReceipt(receiptResponse);
         } else {
           const message = `${errorPrefix}', ${receiptResponse?.title}, ${receiptResponse?.detail}`;
           console.log(message);
@@ -115,12 +156,12 @@ export const VotePage = () => {
             />
           );
         }
-        dispatch(setIsReceiptFetched({ isFetched: true }));
+        setIsReceiptFetched(true);
         cb?.();
       } catch (error) {
         if (error?.message === 'VOTE_NOT_FOUND') {
-          dispatch(setVoteReceipt({ receipt: null }));
-          dispatch(setIsReceiptFetched({ isFetched: true }));
+          setReceipt(null);
+          setIsReceiptFetched(true);
           setIsReceiptDrawerInitializing(false);
           setIsConfirmWithWalletSignatureModalVisible(false);
           return;
@@ -138,8 +179,15 @@ export const VotePage = () => {
       setIsReceiptDrawerInitializing(false);
       setIsConfirmWithWalletSignatureModalVisible(false);
     },
-    [absoluteSlot, dispatch, signMessagePromisified, stakeAddress]
+    [login, category]
   );
+
+  useEffect(() => {
+    const session = getUserInSession();
+    if (isConnected && tip?.absoluteSlot && stakeAddress && session && !tokenIsExpired(session.expiresAt) && category) {
+      fetchReceipt({});
+    }
+  }, [fetchReceipt, isConnected, stakeAddress, tip?.absoluteSlot, category]);
 
   const openReceiptDrawer = async () => {
     setIsReceiptDrawerInitializing(true);
@@ -150,28 +198,6 @@ export const VotePage = () => {
       },
     });
   };
-
-  const init = useCallback(async () => {
-    try {
-      setAbsoluteSlot((await voteService.getSlotNumber())?.absoluteSlot);
-    } catch (error) {
-      const message = `Failed to fecth slot number: ${error?.message}`;
-      console.log(message);
-      toast(
-        <Toast
-          message="Failed to fecth slot number"
-          error
-          icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
-        />
-      );
-    }
-  }, []);
-
-  useEffect(() => {
-    if (isConnected) {
-      init();
-    }
-  }, [init, isConnected]);
 
   const onChangeOption = (option: string | null) => {
     setOptionId(option);
@@ -184,6 +210,7 @@ export const VotePage = () => {
     let votingPower: Account['votingPower'];
     try {
       ({ votingPower } = await voteService.getVotingPower(env.EVENT_ID, stakeAddress));
+      fetchReceipt({});
     } catch (error) {
       const message = `Failed to fetch votingPower ${
         error instanceof Error || error instanceof HttpError ? error?.message : error
@@ -204,8 +231,9 @@ export const VotePage = () => {
       option: optionId?.toUpperCase(),
       voter: stakeAddress,
       voteId: uuidv4(),
-      slotNumber: absoluteSlot.toString(),
+      slotNumber: tip.absoluteSlot.toString(),
       votePower: votingPower,
+      category,
     });
 
     try {
@@ -239,11 +267,18 @@ export const VotePage = () => {
     setIsCastingAVote(true);
   };
 
+  const onChangeCategory = () => {
+    setIsReceiptFetched(false);
+    const currentCategoryIndex = findIndex(event?.categories, ['id', category]);
+    setCategory(event?.categories[(currentCategoryIndex + 1) % event?.categories?.length]?.id);
+  };
+
   const cantSelectOptions =
     !!receipt || voteSubmitted || (isConnected && !isReceiptFetched) || event?.notStarted || event?.finished;
   const showViewReceiptButton = receipt?.id || voteSubmitted || (isReceiptFetched && event?.finished);
   const showConnectButton = !isConnected && !event?.notStarted;
   const showSubmitButton = isConnected && !event?.notStarted && !event?.finished && !showViewReceiptButton;
+  const showPagination = isConnected && receipt && category === receipt?.category && event?.categories?.length > 1;
 
   return (
     <>
@@ -273,7 +308,7 @@ export const VotePage = () => {
                 md: '65px',
               }}
             >
-              CIP-1694 Vote
+              {copies[findIndex(event?.categories, ['id', category])]?.title}
             </Typography>
           </Grid>
           <Grid item>
@@ -294,12 +329,12 @@ export const VotePage = () => {
               fontSize={{ xs: '16px', md: '28px' }}
               data-testid="event-description"
             >
-              (..)
+              {copies[findIndex(event?.categories, ['id', category])]?.body}
             </Typography>
           </Grid>
           <Grid item>
             <OptionCard
-              selectedOption={isConnected && savedProposal}
+              selectedOption={isConnected && receipt?.proposal}
               disabled={cantSelectOptions}
               items={items}
               onChangeOption={onChangeOption}
@@ -341,7 +376,7 @@ export const VotePage = () => {
                     aria-label="Receipt"
                     startIcon={<ReceiptIcon />}
                     data-testid="show-receipt-button"
-                    disabled={isReceiptDrawerInitializing || !absoluteSlot}
+                    disabled={isReceiptDrawerInitializing || !tip?.absoluteSlot}
                   >
                     Vote receipt
                     {isReceiptDrawerInitializing && (
@@ -370,7 +405,7 @@ export const VotePage = () => {
                     })}
                     size="large"
                     variant="contained"
-                    disabled={!optionId || !isReceiptFetched || isCastingAVote || !absoluteSlot}
+                    disabled={!optionId || !isReceiptFetched || isCastingAVote || !tip?.absoluteSlot}
                     onClick={() => handleSubmit()}
                     data-testid="proposal-submit-button"
                   >
@@ -406,6 +441,17 @@ export const VotePage = () => {
                     View the results
                   </Button>
                 )}
+                {showPagination && (
+                  <Button
+                    onClick={() => onChangeCategory()}
+                    className={styles.button}
+                    size="large"
+                    variant="contained"
+                    data-testid="next-question-button"
+                  >
+                    Next question
+                  </Button>
+                )}
               </Grid>
               <Grid
                 justifyContent="center"
@@ -428,6 +474,7 @@ export const VotePage = () => {
           <VoteReceipt
             fetchReceipt={fetchReceipt}
             setOpen={toggleReceipt}
+            receipt={receipt}
           />
         </SidePage>
       </div>
@@ -442,8 +489,8 @@ export const VotePage = () => {
         description={
           <>
             <div style={{ marginBottom: '10px' }}>Thank you, your vote has been submitted.</div>
-            Make sure to check back on <b>{event?.eventStartDate && getDateAndMonth(event?.eventEndDate?.toString())}</b> to see
-            the results!
+            Make sure to check back on{' '}
+            <b>{event?.eventStartDate && getDateAndMonth(event?.eventEndDate?.toString())}</b> to see the results!
           </>
         }
       />

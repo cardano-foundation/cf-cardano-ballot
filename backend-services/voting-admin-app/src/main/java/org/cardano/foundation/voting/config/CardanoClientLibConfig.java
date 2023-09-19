@@ -3,6 +3,7 @@ package org.cardano.foundation.voting.config;
 import com.bloxbean.cardano.client.account.Account;
 import com.bloxbean.cardano.client.backend.api.BackendService;
 import com.bloxbean.cardano.client.backend.blockfrost.service.BFBackendService;
+import com.bloxbean.cardano.client.common.model.Network;
 import com.bloxbean.cardano.client.common.model.Networks;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
@@ -22,15 +23,20 @@ public class CardanoClientLibConfig {
     }
 
     @Bean
-    @Qualifier("organiser_account")
-    public Account organiserAccount(CardanoNetwork cardanoNetwork,
-                                    @Value("${organiser.account.mnemonic}" ) String organiserMnemonic) {
-        var organiserAccount = switch(cardanoNetwork) {
-            case MAIN -> new Account(Networks.mainnet(), organiserMnemonic);
-            case PREPROD -> new Account(Networks.preprod(), organiserMnemonic);
-            case PREVIEW -> new Account(Networks.preview(), organiserMnemonic);
-            case DEV -> new Account(Networks.testnet(), organiserMnemonic);
+    public Network cardanoNetwork(CardanoNetwork cardanoNetwork) {
+        return switch(cardanoNetwork) {
+            case MAIN -> Networks.mainnet();
+            case PREPROD -> Networks.preprod();
+            case PREVIEW -> Networks.preview();
+            case DEV -> Networks.testnet();
         };
+    }
+
+    @Bean
+    @Qualifier("organiser_account")
+    public Account organiserAccount(Network network,
+                                    @Value("${organiser.account.mnemonic}" ) String organiserMnemonic) {
+        var organiserAccount = new Account(Networks.mainnet(), organiserMnemonic);
 
         log.info("Organiser's address:{}, stakeAddress:{}", organiserAccount.baseAddress(), organiserAccount.stakeAddress());
 

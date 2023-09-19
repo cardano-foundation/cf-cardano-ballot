@@ -1,21 +1,11 @@
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 
-import {
-  Button,
-  Checkbox,
-  FormControlLabel,
-  Grid,
-  List,
-  ListItem,
-  ListItemAvatar,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Checkbox, FormControlLabel, Grid, List, ListItem, ListItemAvatar, Typography } from '@mui/material';
 import CallIcon from '@mui/icons-material/Call';
 import { MuiTelInput, matchIsValidTel, MuiTelInputCountry } from 'mui-tel-input';
 import './VerifyWallet.scss';
 import discordLogo from '../../common/resources/images/discord-icon.svg';
-import { confirmPhoneNumberCode, startVerification } from 'common/api/verificationService';
+import { confirmPhoneNumberCode, startVerification, verifyDiscord } from 'common/api/verificationService';
 import { env } from 'common/constants/env';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import { useDispatch, useSelector } from 'react-redux';
@@ -23,20 +13,25 @@ import { setUserStartsVerification, setWalletIsVerified } from '../../store/user
 import { PhoneNumberCodeConfirmation, VerificationStarts } from '../../store/types';
 import { RootState } from '../../store';
 import { NetworkType } from '@cardano-foundation/cardano-connect-with-wallet-core';
+import { useLocation } from 'react-router-dom';
+import { CustomButton } from '../common/Button/CustomButton';
+import { capitalizeFirstLetter, getSignedMessagePromise } from '../../utils/utils';
+import { eventBus } from '../../utils/EventBus';
+import { SignedWeb3Request } from '../../types/voting-app-types';
 
 // TODO: env.
 const excludedCountries: MuiTelInputCountry[] | undefined = [];
 
 type VerifyWalletProps = {
+  method?: string;
   onVerify: () => void;
   onError: (error?: string) => void;
 };
 const VerifyWallet = (props: VerifyWalletProps) => {
-  const { onVerify, onError } = props;
+  const { onVerify, onError, method } = props;
 
-  const [verifyOption, setVerifyOption] = useState<string | undefined>(undefined);
+  const [verifyOption, setVerifyOption] = useState<string | undefined>(method || undefined);
   const [defaultCountryCode] = useState<MuiTelInputCountry | undefined>('ES');
-  const [discordKey, setDiscordKey] = useState<string>('');
   const [phone, setPhone] = useState<string>('');
   const [codes, setCodes] = useState(Array(6).fill(''));
   const [phoneCodeIsBeenSending, setPhoneCodeIsBeenSending] = useState<boolean>(false);
@@ -44,14 +39,22 @@ const VerifyWallet = (props: VerifyWalletProps) => {
   const [phoneCodeIsSent, setPhoneCodeIsSent] = useState<boolean>(false);
   const [checkImNotARobot, setCheckImNotARobot] = useState<boolean>(false);
   const [isPhoneInputDisabled] = useState<boolean>(false);
-  const { stakeAddress } = useCardano({ limitNetwork: 'testnet' as NetworkType });
   const dispatch = useDispatch();
+  const { stakeAddress, signMessage } = useCardano({ limitNetwork: 'testnet' as NetworkType });
   const userVerification = useSelector((state: RootState) => state.user.userVerification);
   const userStartsVerificationByStakeAddress =
     Object.keys(userVerification).length !== 0 && userVerification[stakeAddress];
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
+  const location = useLocation();
+
+  const queryParams = new URLSearchParams(location.search);
+  const action = queryParams.get('action');
+  const secret = queryParams.get('secret');
+
   inputRefs.current = [];
+
+  const signMessagePromisified = useMemo(() => getSignedMessagePromise(signMessage), [signMessage]);
 
   const reset = (timout?: boolean) => {
     function clear() {
@@ -115,10 +118,24 @@ const VerifyWallet = (props: VerifyWalletProps) => {
     });
   };
 
-  const handleVerifyDiscordKey = () => {
-    if (discordKey !== '') {
-      // TODO: verify key
-      onVerify();
+  const handleVerifyDiscord = async () => {
+    if (action === 'verification' && secret.includes('|')) {
+      signMessagePromisified(secret.trim())
+        .then((signedMessaged: SignedWeb3Request) => {
+          const parsedSecret = secret.split('|')[1];
+          verifyDiscord(env.EVENT_ID, stakeAddress, parsedSecret, signedMessaged)
+            .then((response: { verified: boolean }) => {
+              dispatch(setWalletIsVerified({ isVerified: response.verified }));
+              if (response.verified) {
+                onVerify();
+                reset();
+              } else {
+                onError('Discord verification failed');
+              }
+            })
+            .catch((e) => eventBus.publish('showToast', capitalizeFirstLetter(e.message), true));
+        })
+        .catch((e) => eventBus.publish('showToast', capitalizeFirstLetter(e.message), true));
     }
   };
 
@@ -180,6 +197,11 @@ const VerifyWallet = (props: VerifyWalletProps) => {
       }
     };
 
+    const handleCancelConfirmChode = () => {
+      setPhoneCodeIsSent(false);
+      setCodes(Array(6).fill(''));
+    };
+
     return (
       <>
         <Typography
@@ -218,36 +240,45 @@ const VerifyWallet = (props: VerifyWalletProps) => {
         </Typography>
         <Grid
           container
+          spacing={2}
           style={{ marginTop: '28px' }}
         >
           <Grid
             item
             xs={6}
           >
-            <Button
-              onClick={() => setPhoneCodeIsSent(false)}
-              className="verify-number-button-cancel"
-              fullWidth
-            >
-              Back
-            </Button>
+            <CustomButton
+              styles={{
+                background: 'transparent !important',
+                color: '#03021F',
+                border: '1px solid #daeefb',
+              }}
+              label="Cancel"
+              onClick={() => handleCancelConfirmChode()}
+              fullWidth={true}
+            />
           </Grid>
           <Grid
             item
             xs={6}
           >
-            <Button
-              onClick={() => handleVerifyPhoneCode()}
-              disabled={codes.length < 6 || phoneCodeIsBeenConfirming}
-              className={`verify-number-button-continue ${
+            <CustomButton
+              styles={
                 codes.filter((code) => code !== '').length === 6 && !phoneCodeIsBeenConfirming
-                  ? 'verify-number-button-valid'
-                  : ''
-              }`}
-              fullWidth
-            >
-              Verify
-            </Button>
+                  ? {
+                      background: '#ACFCC5',
+                      color: '#03021F',
+                    }
+                  : {
+                      background: '#6C6F89',
+                      color: '#F6F9FF !important',
+                    }
+              }
+              disabled={codes.length < 6 || phoneCodeIsBeenConfirming}
+              label="Verify"
+              onClick={() => handleVerifyPhoneCode()}
+              fullWidth={true}
+            />
           </Grid>
         </Grid>
       </>
@@ -292,36 +323,47 @@ const VerifyWallet = (props: VerifyWalletProps) => {
         />
         <Grid
           container
+          spacing={2}
           style={{ marginTop: '4px' }}
         >
           <Grid
             item
             xs={6}
           >
-            <Button
+            <CustomButton
+              styles={{
+                background: 'transparent !important',
+                color: '#03021F',
+                border: '1px solid #daeefb',
+                marginRight: '20px',
+              }}
+              label="Cancel"
               onClick={() => reset()}
-              className="verify-number-button-cancel"
-              fullWidth
-            >
-              Cancel
-            </Button>
+              fullWidth={true}
+            />
           </Grid>
           <Grid
             item
             xs={6}
           >
-            <Button
-              onClick={() => handleSendCode()}
-              disabled={!matchIsValidTel(phone) || !checkImNotARobot || phoneCodeIsBeenSending}
-              className={`verify-number-button-continue ${
+            <CustomButton
+              styles={
                 matchIsValidTel(phone) && checkImNotARobot && !phoneCodeIsBeenSending
-                  ? 'verify-number-button-valid'
-                  : ''
-              }`}
-              fullWidth
-            >
-              Send code
-            </Button>
+                  ? {
+                      background: '#ACFCC5',
+                      color: '#03021F',
+                      paddingLeft: '20px',
+                    }
+                  : {
+                      background: '#6C6F89',
+                      color: '#F6F9FF !important',
+                    }
+              }
+              label="Send code"
+              disabled={!matchIsValidTel(phone) || !checkImNotARobot || phoneCodeIsBeenSending}
+              onClick={() => handleSendCode()}
+              fullWidth={true}
+            />
           </Grid>
         </Grid>
       </>
@@ -352,58 +394,44 @@ const VerifyWallet = (props: VerifyWalletProps) => {
           gutterBottom
           style={{ wordWrap: 'break-word', marginTop: '16px' }}
         >
-          2. Copy your Stake Address.
+          2. Open the chat with the bot.
         </Typography>
         <Typography
           className="verify-wallet-modal-description"
           gutterBottom
           style={{ wordWrap: 'break-word', marginTop: '16px' }}
         >
-          3. Send your Stake Address as a private message to our WalletVerificationBot.
+          3. Click on the button.
         </Typography>
         <Typography
           className="verify-wallet-modal-description"
           gutterBottom
           style={{ wordWrap: 'break-word', marginTop: '16px' }}
         >
-          4. Get the secret key from the chat with our WalletVerificationBot.
+          4. You will be redirected to voting app.
         </Typography>
-        <TextField
-          value={discordKey}
-          className="secret-key-input"
-          label="Enter Secret Key"
-          onChange={(e) => setDiscordKey(e.target.value)}
+        <CustomButton
+          styles={{
+            background: '#ACFCC5',
+            color: '#03021F',
+            margin: '24px 0px',
+          }}
+          label="Sign and verify"
+          onClick={() => handleVerifyDiscord()}
+          disabled={!secret}
+          fullWidth={true}
         />
-        <Grid
-          container
-          style={{ marginTop: '35px' }}
-        >
-          <Grid
-            item
-            xs={6}
-          >
-            <Button
-              onClick={() => reset()}
-              className="verify-number-button-cancel"
-              fullWidth
-            >
-              Cancel
-            </Button>
-          </Grid>
-          <Grid
-            item
-            xs={6}
-          >
-            <Button
-              onClick={() => handleVerifyDiscordKey()}
-              disabled={!discordKey.length}
-              className={`verify-number-button-continue ${discordKey.length ? 'verify-number-button-valid' : ''}`}
-              fullWidth
-            >
-              Verify
-            </Button>
-          </Grid>
-        </Grid>
+        <CustomButton
+          styles={{
+            background: 'transparent !important',
+            color: '#03021F',
+            border: '1px solid #daeefb',
+            margin: '24px 0px',
+          }}
+          label="Cancel"
+          onClick={() => reset()}
+          fullWidth={true}
+        />
       </>
     );
   };

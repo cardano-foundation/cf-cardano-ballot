@@ -9,7 +9,6 @@ import {
   Grid,
   Card,
   CardContent,
-  Button,
   Container,
   Box,
   Tooltip,
@@ -57,6 +56,7 @@ import ReadMore from './ReadMore';
 import Modal from '../../components/common/Modal/Modal';
 import QRCode from 'react-qr-code';
 import { NetworkType } from '@cardano-foundation/cardano-connect-with-wallet-core';
+import { CustomButton } from '../../components/common/Button/CustomButton';
 
 const Nominees = () => {
   const { categoryId } = useParams();
@@ -184,7 +184,8 @@ const Nominees = () => {
     });
     try {
       const requestVoteObject = await signMessagePromisified(canonicalVoteInput);
-        eventBus.publish('showToast', 'Vote sent');
+      toggleConfirmVoteModal();
+      eventBus.publish('showToast', 'Vote sent');
       await castAVoteWithDigitalSignature(requestVoteObject);
       eventBus.publish('showToast', 'Vote submitted successfully');
     } catch (e) {
@@ -192,33 +193,30 @@ const Nominees = () => {
     }
   };
 
-  const handleNomineeButton = (nomineeId: string) => {
+  const handleNomineeButton = (nominee) => {
     if (isConnected) {
       if (!walletIsVerified) {
         eventBus.publish('openVerifyWalletModal');
       } else {
-
         toggleConfirmVoteModal();
-        setSelectedNomineeToVote(nomineeId)
-        //castVote(nomineeId);
+        setSelectedNomineeToVote(nominee);
       }
     } else {
       eventBus.publish('openConnectWalletModal');
     }
   };
 
-    const handleVoteNomineeButton = () => {
-        if (isConnected) {
-            if (!walletIsVerified) {
-                eventBus.publish('openVerifyWalletModal');
-            } else {
-                castVote(selectedNomineeToVote);
-                toggleConfirmVoteModal();
-            }
-        } else {
-            eventBus.publish('openConnectWalletModal');
-        }
+  const handleVoteNomineeButton = () => {
+    if (isConnected) {
+      if (!walletIsVerified) {
+        eventBus.publish('openVerifyWalletModal');
+      } else {
+        castVote(selectedNomineeToVote.id);
+      }
+    } else {
+      eventBus.publish('openConnectWalletModal');
     }
+  };
 
   const renderNomineeButtonLabel = () => {
     if (isConnected) {
@@ -330,61 +328,49 @@ const Nominees = () => {
         {summit2023Category.desc}
       </Typography>
 
-        {
-            walletIsVerified ? <Box
-                sx={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    backgroundColor: walletIsLoggedIn ? 'rgba(5, 97, 34, 0.07)' : 'rgba(253, 135, 60, 0.07)',
-                    padding: '10px 20px',
-                    borderRadius: '8px',
-                    border: walletIsLoggedIn ? '1px solid #056122' : '1px solid #FD873C',
-                    color: 'white',
-                    width: '100%',
-                    marginBottom: '20px',
-                }}
-            >
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                    {walletIsLoggedIn ? (
-                        <VerifiedUserIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#056122' }} />
-                    ) : (
-                        <WarningAmberIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#FD873C' }} />
-                    )}
+      {walletIsVerified ? (
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            backgroundColor: walletIsLoggedIn ? 'rgba(5, 97, 34, 0.07)' : 'rgba(253, 135, 60, 0.07)',
+            padding: '10px 20px',
+            borderRadius: '8px',
+            border: walletIsLoggedIn ? '1px solid #056122' : '1px solid #FD873C',
+            color: 'white',
+            width: '100%',
+            marginBottom: '20px',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            {walletIsLoggedIn ? (
+              <VerifiedUserIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#056122' }} />
+            ) : (
+              <WarningAmberIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#FD873C' }} />
+            )}
 
-                    <Typography
-                        variant="h6"
-                        style={{ color: '#24262E', fontSize: '18px', fontStyle: 'normal', fontWeight: '600', lineHeight: '22px' }}
-                    >
-                        {walletIsLoggedIn
-                            ? 'You have successfully cast a vote for Nominee in the Ambassador category '
-                            : 'To see you vote receipt, please sign with your wallet'}
-                    </Typography>
-                </div>
-                <Button
-                    onClick={() => handleViewVoteReceipt()}
-                    variant="contained"
-                    color="primary"
-                    sx={{
-                        display: 'inline-flex',
-                        padding: '16px 24px',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        gap: '10px',
-                        borderRadius: '8px',
-                        background: '#03021F',
-                        color: '#F6F9FF',
-                        fontSize: '16px',
-                        fontStyle: 'normal',
-                        fontWeight: '600',
-                        lineHeight: 'normal',
-                        textTransform: 'none',
-                    }}
-                >
-                    {walletIsLoggedIn ? 'View vote receipt' : 'Login with wallet'}
-                </Button>
-            </Box> : null
-        }
+            <Typography
+              variant="h6"
+              style={{ color: '#24262E', fontSize: '18px', fontStyle: 'normal', fontWeight: '600', lineHeight: '22px' }}
+            >
+              {walletIsLoggedIn
+                ? 'You have successfully cast a vote for Nominee in the Ambassador category '
+                : 'To see you vote receipt, please sign with your wallet'}
+            </Typography>
+          </div>
+          <CustomButton
+            styles={{
+              background: '#03021F',
+              color: '#F6F9FF',
+              width: 'auto',
+            }}
+            label={walletIsLoggedIn ? 'View vote receipt' : 'Login with wallet'}
+            onClick={() => handleViewVoteReceipt()}
+            fullWidth={true}
+          />
+        </Box>
+      ) : null}
 
       <Grid
         container
@@ -436,41 +422,63 @@ const Nominees = () => {
                         item
                         xs={2}
                       >
-                        <Button
-                          className={`${isConnected ? 'vote-nominee-button' : 'connect-wallet-button'}`}
-                          style={{ width: 'auto' }}
-                          onClick={() => handleNomineeButton(nominee.id)}
-                        >
-                          {renderNomineeButtonLabel()}
-                        </Button>
+                        <CustomButton
+                          styles={
+                            isConnected
+                              ? {
+                                  background: '#ACFCC5',
+                                  color: '#03021F',
+                                  width: 'auto',
+                                }
+                              : {
+                                  background: '#03021F',
+                                  color: '#F6F9FF',
+                                  width: 'auto',
+                                }
+                          }
+                          label={renderNomineeButtonLabel() as string}
+                          onClick={() => handleNomineeButton(nominee)}
+                        />
                       </Grid>
                     ) : null}
                   </Grid>
 
-                  <Button
-                    className="read-more-button"
-                    fullWidth
-                    style={{
-                      width: !isMobile && listView === 'list' ? '146px' : '98%',
+                  <CustomButton
+                    styles={{
+                      background: 'transparent !important',
+                      color: '#03021F',
+                      border: '1px solid #daeefb',
+                      width: !isMobile && listView === 'list' ? '146px' : '100%',
                       marginTop: !isMobile && listView === 'list' ? '15px' : '28px',
                     }}
+                    label="Read more"
                     onClick={() =>
                       handleReadMore(
                         nominee.id === summit2023CategoryNominees[index].id && summit2023CategoryNominees[index]
                       )
                     }
-                    sx={{ cursor: 'pointer' }}
-                  >
-                    Read more
-                  </Button>
+                    fullWidth={true}
+                  />
+
                   {!receipt && (isMobile || listView === 'grid') ? (
-                    <Button
-                      className={`${isConnected ? 'vote-nominee-button' : 'connect-wallet-button'}`}
-                      fullWidth
-                      onClick={() => handleNomineeButton(nominee.id)}
-                    >
-                      {renderNomineeButtonLabel()}
-                    </Button>
+                    <CustomButton
+                      styles={
+                        isConnected
+                          ? {
+                              background: '#ACFCC5',
+                              color: '#03021F',
+                              marginTop: !isMobile && listView === 'list' ? '15px' : '18px',
+                            }
+                          : {
+                              background: '#03021F',
+                              color: '#F6F9FF',
+                              marginTop: !isMobile && listView === 'list' ? '15px' : '18px',
+                            }
+                      }
+                      label={renderNomineeButtonLabel() as string}
+                      onClick={() => handleNomineeButton(nominee)}
+                      fullWidth={true}
+                    />
                   ) : null}
                 </CardContent>
               </Card>
@@ -1063,81 +1071,43 @@ const Nominees = () => {
             viewBox={'0 0 256 256'}
           />
         </div>
-        <Button
-          className="vote-nominee-button"
-          style={{
-            display: 'flex',
-            width: '344px',
-            padding: '12px',
-            justifyContent: 'center',
-            alignItems: 'center',
-            gap: '10px',
-            borderRadius: '8px',
+        <CustomButton
+          styles={{
             background: '#ACFCC5',
             color: '#03021F',
-            fontSize: '16px',
-            fontStyle: 'normal',
-            fontWeight: '600',
-            lineHeight: 'normal',
-            textTransform: 'none',
-            marginTop: '24px',
-            marginBottom: '28px',
+            width: 'auto',
           }}
+          label="Done"
           onClick={toggleViewFinalReceipt}
-        >
-          Done
-        </Button>
+        />
       </Modal>
 
-        <Modal
-            isOpen={confirmVoteModal}
-            id="confirm-vote"
-            title="Confirm Vote"
-            onClose={toggleViewFinalReceipt}
-        >
-            <Button
-                fullWidth
-                sx={{
-                    margin: '24px 0px',
-                    display: 'flex',
-                    padding: '16px 24px',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    gap: '10px',
-                    borderRadius: '8px',
-                    background: '#ACFCC5',
-                    color: '#03021F',
-                    fontSize: '16px',
-                    fontStyle: 'normal',
-                    fontWeight: '600',
-                    lineHeight: 'normal'
-                }}
-                onClick={() => handleVoteNomineeButton()}
-            >
-                Confirm Vote
-            </Button>
-            <Button
-                fullWidth
-                onClick={toggleConfirmVoteModal}
-                sx={{
-                    marginBottom: '4px',
-                    display: 'flex',
-                    padding: '16px 24px',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    gap: '10px',
-                    borderRadius: '8px',
-                    background: 'transparent',
-                    color: '#03021F',
-                    fontSize: '16px',
-                    fontStyle: 'normal',
-                    fontWeight: '600',
-                    lineHeight: 'normal'
-                }}
-            >
-                Cancel
-            </Button>
-        </Modal>
+      <Modal
+        isOpen={confirmVoteModal}
+        id="confirm-vote"
+        title="Confirm Vote"
+        onClose={toggleConfirmVoteModal}
+      >
+        <CustomButton
+          styles={{
+            background: '#ACFCC5',
+            color: '#03021F',
+            margin: '20px 0px',
+          }}
+          label={`Vote for ${selectedNomineeToVote?.id}`}
+          fullWidth={true}
+          onClick={() => handleVoteNomineeButton()}
+        />
+        <CustomButton
+          styles={{
+            background: 'transparent !important',
+            color: '#03021F',
+          }}
+          label="Cancel"
+          fullWidth={true}
+          onClick={toggleConfirmVoteModal}
+        />
+      </Modal>
     </>
   );
 };

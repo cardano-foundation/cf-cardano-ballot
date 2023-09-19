@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Button, Typography, Grid, useTheme, useMediaQuery, Dialog, Box } from '@mui/material';
+import { Typography, Grid, useTheme, useMediaQuery, Dialog, Box } from '@mui/material';
 import PlayCircleOutlineRoundedIcon from '@mui/icons-material/PlayCircleOutlineRounded';
 import { Hexagon } from '../common/Hexagon';
 import './Hero.scss';
 import { i18n } from '../../i18n';
 import { NavLink } from 'react-router-dom';
+import { CustomButton } from '../common/Button/CustomButton';
 
 const Hero: React.FC = () => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -57,8 +58,19 @@ const Hero: React.FC = () => {
             container
             justifyContent={isMobile || isTablet ? 'center' : 'flex-start'}
           >
-            <NavLink to="/categories">
-              <Button className="get-started-button">{i18n.t('landing.getStartedButton')}</Button>
+            <NavLink
+              to="/categories"
+              style={{ textDecoration: 'none' }}
+            >
+              <CustomButton
+                styles={{
+                  background: '#ACFCC5',
+                  color: '#03021F',
+                  marginTop: '40px',
+                  textDecoration: 'none !important',
+                }}
+                label={i18n.t('landing.getStartedButton')}
+              />
             </NavLink>
           </Grid>
         </div>

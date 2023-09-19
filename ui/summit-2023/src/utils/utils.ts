@@ -29,4 +29,11 @@ const copyToClipboard = async (textToCopy: string) => {
   await navigator.clipboard.writeText(textToCopy);
 };
 
-export { addressSlice, walletIcon, getSignedMessagePromise, copyToClipboard };
+const capitalizeFirstLetter = (input: string): string => {
+  if (!input || typeof input !== 'string') {
+    return '';
+  }
+  return input.trim().charAt(0).toUpperCase() + input.slice(1);
+};
+
+export { addressSlice, walletIcon, getSignedMessagePromise, copyToClipboard, capitalizeFirstLetter };

@@ -24,11 +24,19 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: REACT_APP_VOTING_APP_SERVER_URL
-              value: https://api.dev.cf-cip1694-preprod.eu-west-1.metadata.dev.cf-deployments.org/
+              value: {{ .Values.votingAppServerUrl }}
             - name: REACT_APP_VOTING_LEDGER_FOLLOWER_APP_SERVER_URL
-              value: https://follower-api.dev.cf-cip1694-preprod.eu-west-1.metadata.dev.cf-deployments.org/
+              value: {{ .Values.votingLedgerFollowerAppServerUrl }}
             - name: REACT_APP_VOTING_VERIFICATION_APP_SERVER_URL
-              value: https://verification-api.dev.cf-cip1694-preprod.eu-west-1.metadata.dev.cf-deployments.org/
+              value: {{ .Values.votingVerificationAppServerUrl }}
+            - name: REACT_APP_USER_VERIFICATION_SERVER_URL
+              value: {{ .Values.userVerificationServerUrl }}
+            - name: REACT_APP_TARGET_NETWORK
+              value: {{ .Values.targetNetwork }}
+            - name: REACT_APP_EVENT_ID
+              value: {{ .Values.eventId }}
+            - name: REACT_APP_SUPPORTED_WALLETS
+              value: {{ .Values.supportedWallets | default "flint,eternl,nami,typhon,yoroi,nufi,gerowallet,lace" }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}

@@ -70,8 +70,8 @@ const TermsOptInModal = (props) => {
       open={open}
       keepMounted
       scroll={'paper'}
-      maxWidth="sm"
-      className={styles.modal}
+      maxWidth={isMobile ? 'sm' : 'lg'}
+      sx={{ backdropFilter: 'blur(10px)'}}
       PaperProps={{ sx: { borderRadius: '16px' } }}
       aria-labelledby="cardano-ballot-terms-modal"
       aria-describedby="cardano-ballot-terms-modal-description"

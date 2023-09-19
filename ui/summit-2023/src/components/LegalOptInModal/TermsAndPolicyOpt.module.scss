@@ -1,9 +1,5 @@
 @import './src/common/styles/colors';
 
-.modal {
-  min-width: 450px;
-  backdrop-filter: 'blur(10px)';
-}
 .modalTitle {
   color: var(--color-ultra-dark-blue);
   font-size: 22px !important;

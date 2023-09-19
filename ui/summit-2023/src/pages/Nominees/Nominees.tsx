@@ -44,7 +44,7 @@ import {
   getSlotNumber,
   getVoteReceipt,
 } from '../../common/api/voteService';
-import { copyToClipboard, getSignedMessagePromise } from '../../utils/utils';
+import {capitalizeFirstLetter, copyToClipboard, getSignedMessagePromise} from '../../utils/utils';
 import { buildCanonicalLoginJson, submitLogin } from 'common/api/loginService';
 import { getUserInSession, saveUserInSession, tokenIsExpired } from '../../utils/session';
 import { setVoteReceipt, setWalletIsLoggedIn } from '../../store/userSlice';
@@ -189,7 +189,7 @@ const Nominees = () => {
       await castAVoteWithDigitalSignature(requestVoteObject);
       eventBus.publish('showToast', 'Vote submitted successfully');
     } catch (e) {
-      eventBus.publish('showToast', e.message, true);
+      eventBus.publish('showToast', capitalizeFirstLetter(e.message), true);
     }
   };
 

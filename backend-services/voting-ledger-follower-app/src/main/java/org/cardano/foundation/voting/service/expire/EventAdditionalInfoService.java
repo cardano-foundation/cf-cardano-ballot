@@ -1,12 +1,14 @@
 package org.cardano.foundation.voting.service.expire;
 
 import io.vavr.control.Either;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.ChainTip;
 import org.cardano.foundation.voting.domain.EventAdditionalInfo;
 import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataChainTipService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 
@@ -21,6 +23,21 @@ public class EventAdditionalInfoService {
 
     private final BlockchainDataChainTipService blockchainDataChainTipService;
 
+    @Value("${voting.event.additional.commitments.delay.slots:3600}")
+    private long additionalCommitmentsDelaySlots;
+
+    @Value("${voting.event.additional.commitments.delay.epochs:1}")
+    private long additionalCommitmentsDelayEpochs;
+
+    @PostConstruct
+    public void init() {
+        log.info("EventAdditionalInfoService initialised with" +
+                        " additionalCommitmentsDelaySlots:{}," +
+                        " additionalCommitmentsDelayEpochs:{}",
+
+                additionalCommitmentsDelaySlots, additionalCommitmentsDelayEpochs);
+    }
+
     private boolean isEventActive(Event event, ChainTip chainTip) {
         var currentAbsoluteSlot = chainTip.getAbsoluteSlot();
         var epochNo = chainTip.getEpochNo();
@@ -32,12 +49,16 @@ public class EventAdditionalInfoService {
     }
 
     private boolean isEventNotStarted(Event event, ChainTip chainTip) {
+        return !isEventStarted(event, chainTip);
+    }
+
+    private boolean isEventStarted(Event event, ChainTip chainTip) {
         var currentAbsoluteSlot = chainTip.getAbsoluteSlot();
         var currentEpochNo = chainTip.getEpochNo();
 
         return switch (event.getVotingEventType()) {
-            case STAKE_BASED, BALANCE_BASED -> (currentEpochNo < event.getStartEpoch().orElseThrow());
-            case USER_BASED -> (currentAbsoluteSlot < event.getStartSlot().orElseThrow());
+            case STAKE_BASED, BALANCE_BASED -> (currentEpochNo >= event.getStartEpoch().orElseThrow());
+            case USER_BASED -> (currentAbsoluteSlot >= event.getStartSlot().orElseThrow());
         };
     }
 
@@ -61,6 +82,28 @@ public class EventAdditionalInfoService {
         };
     }
 
+    private boolean isCommitmentsWindowOpen(Event event, ChainTip chainTip) {
+        var currentAbsoluteSlot = chainTip.getAbsoluteSlot();
+        var currentEpochNo = chainTip.getEpochNo();
+
+        var isEventStarted = isEventStarted(event, chainTip);
+
+        return switch (event.getVotingEventType()) {
+            case STAKE_BASED, BALANCE_BASED -> {
+                var endEpoch = event.getEndEpoch().orElseThrow();
+                var endEpochWithDelay = endEpoch + additionalCommitmentsDelayEpochs;
+
+                yield isEventStarted && (currentEpochNo < endEpochWithDelay);
+            }
+            case USER_BASED -> {
+                var endSlot = event.getEndSlot().orElseThrow();
+                var endSlotWithDelay = endSlot + additionalCommitmentsDelaySlots;
+
+                yield isEventStarted && (currentAbsoluteSlot < endSlotWithDelay);
+            }
+        };
+    }
+
     public Either<Problem, List<EventAdditionalInfo>> getEventAdditionalInfo(List<Event> events) {
         var chainTipE = blockchainDataChainTipService.getChainTip();
 
@@ -77,16 +120,21 @@ public class EventAdditionalInfoService {
 
         var eventAdditionalInfoList = events.stream().map(event -> {
                     boolean eventNotStarted = isEventNotStarted(event, chainTip);
+                    boolean eventStarted = isEventStarted(event, chainTip);
+
                     boolean eventActive = isEventActive(event, chainTip);
                     boolean eventFinished = isEventFinished(event, chainTip);
                     boolean proposalsReveal = isProposalsReveal(event, chainTip);
+                    boolean commitmentsWindowOpen = isCommitmentsWindowOpen(event, chainTip);
 
                     return new EventAdditionalInfo(
                             event.getId(),
                             eventNotStarted,
+                            eventStarted,
                             eventFinished,
                             eventActive,
-                            proposalsReveal
+                            proposalsReveal,
+                            commitmentsWindowOpen
                     );
                 })
                 .toList();
@@ -109,16 +157,21 @@ public class EventAdditionalInfoService {
         var chainTip = chainTipE.get();
 
         boolean eventNotStarted = isEventNotStarted(event, chainTip);
+        boolean eventStarted = isEventStarted(event, chainTip);
+
         boolean eventActive = isEventActive(event, chainTip);
         boolean eventFinished = isEventFinished(event, chainTip);
         boolean proposalsReveal = isProposalsReveal(event, chainTip);
+        boolean commitmentsWindowOpen = isCommitmentsWindowOpen(event, chainTip);
 
         return Either.right(new EventAdditionalInfo(
                 event.getId(),
                 eventNotStarted,
+                eventStarted,
                 eventFinished,
                 eventActive,
-                proposalsReveal
+                proposalsReveal,
+                commitmentsWindowOpen
         ));
     }
 

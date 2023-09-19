@@ -67,20 +67,22 @@ public class VoteCommitmentService {
     }
 
     private List<L1MerkleCommitment> getValidL1MerkleCommitments() {
-        var activeEventsE = chainFollowerClient.findAllActiveEvents();
-        if (activeEventsE.isEmpty()) {
-            var issue = activeEventsE.swap().get();
+        var eventSummariesE = chainFollowerClient.findAllCommitmentWindowOpenEvents();
+        if (eventSummariesE.isEmpty()) {
+            var issue = eventSummariesE.swap().get();
 
-            log.error("Failed to get active events, issue:{}, will try again in some time...", issue.toString());
+            log.error("Failed to get eventSummaries issue:{}, will try again in some time...", issue.toString());
 
             return List.of();
         }
-        var activeEvents = activeEventsE.get();
+        var eventSummaries = eventSummariesE.get();
 
-        return activeEvents.stream()
+        log.info("Found events with active commitments window: {}", eventSummaries.stream().map(ChainFollowerClient.EventSummary::id).toList());
+
+        return eventSummaries.stream()
                 .map(event -> {
                     // TODO caching or paging or both or neither? Maybe we use Redis???
-                    log.info("Loading signedVotes from db for active event:{}", event.id());
+                    log.info("Loading signedVotes from db for event:{}", event.id());
                     var stopWatch = new StopWatch();
                     stopWatch.start();
 

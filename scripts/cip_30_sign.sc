@@ -48,7 +48,7 @@ def signCIP30LoginEnvelope(): Unit = {
         "slot": "${lastSlot}",
         "data": {
             "address": "${stakeAddress}",
-            "event": "CIP-1694_Pre_Ratification_4619",
+            "event": "CIP-1694_Pre_Ratification_3316",
             "network": "PREPROD",
             "role": "VOTER"
         }
@@ -89,15 +89,15 @@ def signCIP30VoteCastEnvelope(): Unit = {
     {
         "uri": "https://evoting.cardano.org/voltaire",
         "action": "CAST_VOTE",
-        "actionText": "Vote",
+        "actionText": "Cast Vote",
         "slot": "${lastSlot}",
         "data": {
             "id": "${voteId}",
             "address": "${stakeAddress}",
-            "event": "CF_SUMMIT_2023_24DC",
-            "category": "BEST_DEX",
-            "proposal": "be79ce1f-3cf1-4335-bd07-98f6f24f0f12",
-            "votingPower": "9997463457",
+            "event": "CIP-1694_Pre_Ratification_3316",
+            "category": "MIN_VIABLE_GOV_STRUCTURE",
+            "proposal": "ABSTAIN",
+            "votingPower": "9980230980",
             "network": "PREPROD",
             "votedAt": "${lastSlot}"
         }
@@ -143,8 +143,8 @@ def signCIP30ViewVoteReceiptEnvelope(): Unit = {
         "data": {
             "id": "${voteId}",
             "address": "${stakeAddress}",
-            "event": "CF_SUMMIT_2023_24DC",
-            "category": "BEST_DEX",
+            "event": "CIP-1694_Pre_Ratification_3316",
+            "category": "CHANGE_GOV_STRUCTURE",
             "network": "PREPROD"
         }
    }
@@ -187,7 +187,7 @@ def latestAbsoluteSlot(mapper: ObjectMapper): Long = {
 
 @main
 def main() = {
-    //signCIP30LoginEnvelope()
+    signCIP30LoginEnvelope()
     //signCIP30VoteCastEnvelope()
-    signCIP30ViewVoteReceiptEnvelope()
+    //signCIP30ViewVoteReceiptEnvelope()
 }

@@ -99,7 +99,7 @@ const Nominees = () => {
         }
       });
     } else {
-      navigate(ROUTES.NOT_FOUND);
+      navigate(ROUTES.PAGENOTFOUND);
     }
   };
 

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
 
 import java.util.List;
+import java.util.UUID;
 
 import static com.bloxbean.cardano.client.util.HexUtil.encodeHexString;
 import static org.cardano.foundation.voting.domain.VoteSerialisations.VOTE_SERIALISER;
@@ -143,8 +144,10 @@ public class VoteCommitmentService {
 
                 var voteEnvelopeCIP93Envelope = cip93EnvelopeE.get();
 
+                var voteId = voteEnvelopeCIP93Envelope.getData().getId();
                 var voteMerkleProof = VoteMerkleProof.builder()
-                        .voteId(voteEnvelopeCIP93Envelope.getData().getId())
+                        .voteId(voteId)
+                        .voteIdNumericHash(UUID.fromString(voteId).hashCode() & 0xFFFFFFF)
                         .eventId(voteEnvelopeCIP93Envelope.getData().getEvent())
                         .rootHash(merkleRootHash)
                         .absoluteSlot(l1SubmissionData.slot())

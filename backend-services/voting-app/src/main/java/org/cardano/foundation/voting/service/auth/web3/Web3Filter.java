@@ -28,8 +28,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.cardano.foundation.voting.domain.Role.VOTER;
-import static org.cardano.foundation.voting.service.auth.Headers.XCIP93PublicKey;
-import static org.cardano.foundation.voting.service.auth.Headers.XCIP93Signature;
+import static org.cardano.foundation.voting.resource.Headers.XCIP93PublicKey;
+import static org.cardano.foundation.voting.resource.Headers.XCIP93Signature;
 import static org.cardano.foundation.voting.service.auth.LoginSystem.CIP93;
 import static org.cardano.foundation.voting.utils.MoreNumber.isNumeric;
 import static org.cardanofoundation.cip30.MessageFormat.TEXT;
@@ -254,7 +254,7 @@ public class Web3Filter extends OncePerRequestFilter {
         if (maybeEventDetails.isEmpty()) {
             var problem = Problem.builder()
                     .withTitle("UNRECOGNISED_EVENT")
-                    .withDetail("Unrecognised event, event:" + eventId)
+                    .withDetail("Event not found, id: " + eventId)
                     .withStatus(BAD_REQUEST)
                     .build();
 

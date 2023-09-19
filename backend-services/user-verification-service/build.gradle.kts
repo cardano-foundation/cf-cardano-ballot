@@ -6,8 +6,8 @@ plugins {
 	java
 	id("org.springframework.boot") version "3.1.3"
 	id("io.spring.dependency-management") version "1.1.3"
-	id("org.graalvm.buildtools.native") version "0.9.26"
-    id("org.flywaydb.flyway") version "9.22.0"
+	id("org.graalvm.buildtools.native") version "0.9.27"
+    id("org.flywaydb.flyway") version "9.22.1"
 	id("cz.habarta.typescript-generator") version "3.2.1263"
     id("com.github.ben-manes.versions") version "0.48.0"
     id("com.gorylenko.gradle-git-properties") version "2.4.1"
@@ -41,6 +41,7 @@ dependencies {
 	testCompileOnly("org.springframework.boot:spring-boot-starter-test")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
+	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -66,13 +67,15 @@ dependencies {
 
 	implementation("com.bloxbean.cardano:cardano-client-address:0.5.0-beta3")
 
-	implementation("software.amazon.awssdk:sns:2.20.136")
+	implementation("software.amazon.awssdk:sns:2.20.149")
 
 	implementation("io.vavr:vavr:0.10.4")
 
 	runtimeOnly("org.postgresql:postgresql")
 
-    // spring-boot overridden dependencies:
+	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.10")
+
+	// spring-boot overridden dependencies:
     runtimeOnly("com.h2database:h2:2.2.222") // GraalVM compatibility
 }
 

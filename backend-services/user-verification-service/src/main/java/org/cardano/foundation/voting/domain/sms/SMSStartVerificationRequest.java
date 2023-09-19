@@ -1,4 +1,4 @@
-package org.cardano.foundation.voting.domain;
+package org.cardano.foundation.voting.domain.sms;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
@@ -6,24 +6,25 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Locale;
 import java.util.Optional;
 
 @Getter
 @Builder
 @Setter
 @ToString
-public class DiscordCheckVerificationRequest {
+public class SMSStartVerificationRequest {
 
     @NotBlank
-    private String secret;
+    private String eventId;
 
     @NotBlank
     private String stakeAddress;
 
     @NotBlank
-    protected String coseSignature;
+    private String phoneNumber;
 
     @Builder.Default
-    protected Optional<@NotBlank String> cosePublicKey = Optional.empty();
+    private Optional<Locale> locale = Optional.empty();
 
 }

@@ -54,8 +54,10 @@ export const verifyDiscord = async (
   stakeAddress: string,
   secret: string,
   signedMessaged: SignedWeb3Request
-) =>
-  await doRequest<{ verified: boolean }>(
+) => {
+  console.log('JSON.stringify({ eventId, stakeAddress, secret, ...signedMessaged })');
+  console.log(JSON.stringify({ eventId, stakeAddress, secret, ...signedMessaged }));
+  return await doRequest<{ verified: boolean }>(
     HttpMethods.POST,
     `${DISCORD_VERIFICATION_URL}`,
     {
@@ -63,3 +65,4 @@ export const verifyDiscord = async (
     },
     JSON.stringify({ eventId, stakeAddress, secret, ...signedMessaged })
   );
+};

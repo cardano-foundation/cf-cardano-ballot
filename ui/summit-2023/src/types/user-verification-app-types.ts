@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-// Generated using typescript-generator version 3.2.1263 on 2023-09-12 11:55:43.
+// Generated using typescript-generator version 3.2.1263 on 2023-09-19 10:18:44.
 
 export interface Either<L, R> extends Value<R>, Serializable {
   left: L;
@@ -8,25 +8,9 @@ export interface Either<L, R> extends Value<R>, Serializable {
   orNull: R;
 }
 
-export interface DiscordCheckVerificationRequest {
-  secret: string;
-  stakeAddress: string;
-  coseSignature: string;
-  cosePublicKey?: string;
-}
-
-export interface DiscordCheckVerificationRequestBuilder {}
-
-export interface DiscordStartVerificationRequest {
-  secret: string;
-  hashedDiscordId: string;
-}
-
-export interface DiscordStartVerificationRequestBuilder {}
-
 export interface IsVerifiedRequest {
-  stakeAddress: string;
   eventId: string;
+  stakeAddress: string;
 }
 
 export interface IsVerifiedRequestBuilder {}
@@ -34,6 +18,72 @@ export interface IsVerifiedRequestBuilder {}
 export interface IsVerifiedResponse {
   verified: boolean;
 }
+
+export interface SaltHolder {
+  salt: string;
+}
+
+export interface DiscordCheckVerificationRequest {
+  eventId: string;
+  stakeAddress: string;
+  secret: string;
+  coseSignature: string;
+  cosePublicKey?: string;
+}
+
+export interface DiscordCheckVerificationRequestBuilder {}
+
+export interface DiscordStartVerificationRequest {
+  discordIdHash: string;
+  secret: string;
+}
+
+export interface DiscordStartVerificationRequestBuilder {}
+
+export interface DiscordStartVerificationResponse {
+  eventId: string;
+  discordIdHash: string;
+  status: VerificationStatus;
+}
+
+export interface DiscordStartVerificationResponseBuilder {}
+
+export interface AbstractTimestampEntity {
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface AbstractTimestampEntityBuilder<C, B> {}
+
+export interface DiscordUserVerification extends AbstractTimestampEntity {
+  discordIdHash: string;
+  eventId: string;
+  stakeAddress?: string;
+  secretCode: string;
+  status: VerificationStatus;
+  expiresAt: Date;
+}
+
+export interface DiscordUserVerificationBuilder<C, B> extends AbstractTimestampEntityBuilder<C, B> {}
+
+export interface DiscordUserVerificationBuilderImpl
+  extends DiscordUserVerificationBuilder<DiscordUserVerification, DiscordUserVerificationBuilderImpl> {}
+
+export interface SMSUserVerification extends AbstractTimestampEntity {
+  id: string;
+  stakeAddress: string;
+  eventId: string;
+  verificationCode: string;
+  requestId: string;
+  phoneNumberHash: string;
+  status: VerificationStatus;
+  expiresAt: Date;
+}
+
+export interface SMSUserVerificationBuilder<C, B> extends AbstractTimestampEntityBuilder<C, B> {}
+
+export interface SMSUserVerificationBuilderImpl
+  extends SMSUserVerificationBuilder<SMSUserVerification, SMSUserVerificationBuilderImpl> {}
 
 export interface SMSCheckVerificationRequest {
   eventId: string;
@@ -62,34 +112,19 @@ export interface SMSStartVerificationResponse {
   expiresAt: Date;
 }
 
-export interface SaltHolder {
-  salt: string;
-}
+export interface DefaultUserVerificationService extends UserVerificationService {}
 
-export interface AbstractTimestampEntity {
-  createdAt: Date;
-  updatedAt: Date;
-}
+export interface DefaultUserVerificationService__BeanDefinitions {}
 
-export interface AbstractTimestampEntityBuilder<C, B> {}
+export interface UserVerificationService {}
 
-export interface UserVerification extends AbstractTimestampEntity {
-  id: string;
-  stakeAddress: string;
-  eventId: string;
-  verificationCode: string;
-  requestId: string;
-  phoneNumberHash: string;
-  status: Status;
-  provider: Provider;
-  channel: Channel;
-  expiresAt: Date;
-}
+export interface DefaultDiscordUserVerificationService extends DiscordUserVerificationService {}
 
-export interface UserVerificationBuilder<C, B> extends AbstractTimestampEntityBuilder<C, B> {}
+export interface DefaultDiscordUserVerificationService__Autowiring {}
 
-export interface UserVerificationBuilderImpl
-  extends UserVerificationBuilder<UserVerification, UserVerificationBuilderImpl> {}
+export interface DefaultDiscordUserVerificationService__BeanDefinitions {}
+
+export interface DiscordUserVerificationService {}
 
 export interface CodeGenService {}
 
@@ -97,19 +132,19 @@ export interface CodeGenService__BeanDefinitions {}
 
 export interface AWSSNSService extends SMSService {}
 
-export interface SMSService {}
-
-export interface SMSVerificationResponse {
-  requestId: string;
-}
-
 export interface DefaultSMSSMSUserVerificationService extends SMSUserVerificationService {}
 
 export interface DefaultSMSSMSUserVerificationService__Autowiring {}
 
 export interface DefaultSMSSMSUserVerificationService__BeanDefinitions {}
 
+export interface SMSService {}
+
 export interface SMSUserVerificationService {}
+
+export interface SMSVerificationResponse {
+  requestId: string;
+}
 
 export interface Problem {
   instance: URI;
@@ -147,8 +182,4 @@ export interface Iterable<T> {}
 
 export type CardanoNetwork = 'MAIN' | 'PREPROD' | 'PREVIEW' | 'DEV';
 
-export type Channel = 'SMS';
-
-export type Provider = 'TWILIO' | 'AWS_SNS';
-
-export type Status = 'NOT_REQUESTED' | 'PENDING' | 'VERIFIED';
+export type VerificationStatus = 'PENDING' | 'VERIFIED';

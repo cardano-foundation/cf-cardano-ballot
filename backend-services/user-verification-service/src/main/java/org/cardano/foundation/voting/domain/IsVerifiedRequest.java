@@ -11,10 +11,9 @@ import lombok.*;
 public class IsVerifiedRequest {
 
     @NotBlank
-    private String stakeAddress;
-
-    @NotBlank
     private String eventId;
 
+    @NotBlank
+    private String stakeAddress;
 
 }

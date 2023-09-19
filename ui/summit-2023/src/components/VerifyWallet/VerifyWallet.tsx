@@ -119,10 +119,11 @@ const VerifyWallet = (props: VerifyWalletProps) => {
   };
 
   const handleVerifyDiscord = async () => {
-    if (action === 'verification' && secret) {
-      signMessagePromisified(secret)
+    if (action === 'verification' && secret.includes('|')) {
+      signMessagePromisified(secret.trim())
         .then((signedMessaged: SignedWeb3Request) => {
-          verifyDiscord(env.EVENT_ID, stakeAddress, secret, signedMessaged)
+          const parsedSecret = secret.split('|')[1];
+          verifyDiscord(env.EVENT_ID, stakeAddress, parsedSecret, signedMessaged)
             .then((response: { verified: boolean }) => {
               dispatch(setWalletIsVerified({ isVerified: response.verified }));
               if (response.verified) {

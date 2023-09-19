@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Objects;
-
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @RestController
@@ -23,17 +21,22 @@ public class AccountResource {
 
     @RequestMapping(value = "/{eventId}/{stakeAddress}", method = GET, produces = "application/json")
     @Timed(value = "resource.account.find", histogram = true)
-    public ResponseEntity<?> findAccount(@PathVariable("eventId") String eventId, @PathVariable String stakeAddress) {
+    public ResponseEntity<?> findAccount(@PathVariable("eventId") String eventId,
+                                         @PathVariable String stakeAddress) {
         return accountService.findAccount(eventId, stakeAddress)
                 .fold(problem -> {
-                            return ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem);
+                            return ResponseEntity
+                                    .status(problem.getStatus().getStatusCode())
+                                    .body(problem);
                         },
                         maybeAccount -> {
                             if (maybeAccount.isEmpty()) {
                                 return ResponseEntity.notFound().build();
                             }
 
-                            return ResponseEntity.ok().body(maybeAccount.orElseThrow());
+                            var account = maybeAccount.orElseThrow();
+
+                            return ResponseEntity.ok().body(account);
                         });
     }
 

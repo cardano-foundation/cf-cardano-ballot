@@ -12,9 +12,10 @@ public class AWSSNSService implements SMSService {
     private final AWSSNSClient awssnsClient;
 
     @Override
-    public Either<Problem, SMSVerificationResponse> publishTextMessage(String message, Phonenumber.PhoneNumber phoneNumber) {
+    public Either<Problem, SMSVerificationResponse> publishTextMessage(String message,
+                                                                       Phonenumber.PhoneNumber phoneNumber) {
         return awssnsClient.publishTextMessage(message, phoneNumber)
-                .map(r -> new SMSVerificationResponse(r.messageId()));
+                .map(publishResponse -> new SMSVerificationResponse(publishResponse.messageId()));
     }
 
 }

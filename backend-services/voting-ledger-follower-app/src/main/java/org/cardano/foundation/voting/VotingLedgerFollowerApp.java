@@ -11,6 +11,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -22,7 +23,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import static org.springframework.aot.hint.ExecutableMode.INVOKE;
 
-@SpringBootApplication(exclude = { SecurityAutoConfiguration.class, ErrorMvcAutoConfiguration.class })
+@SpringBootApplication(exclude = { SecurityAutoConfiguration.class, ErrorMvcAutoConfiguration.class, UserDetailsServiceAutoConfiguration.class })
 @EnableJpaRepositories("org.cardano.foundation.voting.repository")
 @EntityScan(basePackages = "org.cardano.foundation.voting.domain.entity")
 @ComponentScan(basePackages = {
@@ -47,7 +48,7 @@ public class VotingLedgerFollowerApp {
 	@Bean
 	public CommandLineRunner onStart() {
 		return (args) -> {
-			log.info("Voting Ledger Follower App started.");
+			log.info("Voting Ledger follower App started.");
 		};
 	}
 

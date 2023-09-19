@@ -15,10 +15,13 @@ public class SpringWebConfig {
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
+
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/api/**")
-                        .allowedOrigins(allowedOrigins.split(","));
+                        .allowedOrigins(allowedOrigins.split(","))
+                        .allowedMethods("GET")
+                        .allowedHeaders("*");
             }
         };
     }

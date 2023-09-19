@@ -51,7 +51,7 @@ const Header: React.FC = () => {
 
     console.log('action: ', action);
     console.log('secret: ', secret);
-    if (action === 'verification' && secret) {
+    if (action === 'verification' && secret.includes('|')) {
       toggleVerifyDiscordModalIsOpen();
     }
   }, []);

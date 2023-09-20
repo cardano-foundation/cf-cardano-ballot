@@ -21,7 +21,7 @@ spec:
           server {
             listen 0.0.0.0:8080;
             location / {
-            return 400 "Not Found";
+            return 404 "Not Found";
             }
           }
 

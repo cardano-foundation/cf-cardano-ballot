@@ -17,7 +17,7 @@ spec:
       http:
         paths:
 {{ if .Values.ingress.disableActuatorEndpoint }}
-          - path: /actuator
+          - path: /actuator/
             pathType: Prefix
             backend:
               service:

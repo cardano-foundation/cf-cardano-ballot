@@ -27,51 +27,95 @@ const LegalDocPreview = () => {
           >
             {termsData.date}
           </Typography>
-          <Typography
-            variant="subtitle1"
-            sx={{ mt: 4 }}
-          >
-            {termsData.subtitle}
-          </Typography>
           {termsData.sections.map((section, index) => {
             return (
               <div key={index}>
                 <Typography
                   variant="subtitle2"
-                  sx={{ mt: 1 }}
+                  sx={{ mt: 1 , fontWeight: 'bold'}}
                 >
                   {section.title}
                 </Typography>
-                <Typography variant="body1">{section.content}</Typography>
+                {section.content &&
+                section.content.map((paragraph, paragraphIndex) => (
+                  <Typography
+                    key={paragraphIndex}
+                    variant="body1"
+                    sx={{ mt: 1 }}
+                    dangerouslySetInnerHTML={{ __html: paragraph }}
+                  />
+                ))}
+                {section.subsections &&
+                section.subsections.map((subsection, subIndex) => (
+                  <div key={`${subsection.title}-${subIndex}`}>
+                    <Typography
+                      variant="subtitle2"
+                      sx={{ mt: 1, fontWeight: 'bold' }}
+                    >
+                      {subsection.title}
+                    </Typography>
+
+                    <Typography
+                      variant="body1"
+                      sx={{ mt: 1 }}
+                    >
+                      {subsection.content}
+                    </Typography>
+
+                    {subsection.definitions && (
+                      <div>
+                        {Object.entries(subsection.definitions).map(([definition, text], termIndex) => (
+                          <Typography
+                            key={definition}
+                            variant="body1"
+                            sx={{ mt: 1, ml: 4 }}
+                            dangerouslySetInnerHTML={{ __html: text }}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
             );
           })}
+        </AccordionDetails>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1a-content"
+          id="panel1a-header"
+        >
+          <Typography variant="h6">{termsData.title}</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
           {termsData.terms.map((term, index) => {
             return (
               <div key={index}>
                 <Typography
                   variant="subtitle2"
-                  sx={{ mt: 1 }}
+                  sx={{ mt: 1, fontWeight: 'bold' }}
                 >
                   {term.title}
                 </Typography>
-                {term.list.map((t) => {
-                  return (
-                    <Typography
-                      key={t.number}
-                      variant="body1"
-                    >
-                      {t.number} {t.content}
-                    </Typography>
-                  );
-                })}
+                {term.list.map((item, indexTerm) => (
+                  <div key={`${term.title}-${indexTerm}`}>
+                    {item.content.map((paragraph, indexParagraph) => (
+                      <Typography
+                        key={`${item.number}-${indexParagraph}`}
+                        variant="body1"
+                        sx={{ mt: 1 }}
+                        dangerouslySetInnerHTML={{ __html: paragraph }}
+                      />
+                    ))}
+                  </div>
+                ))}
               </div>
             );
           })}
 
           <Typography
             variant="subtitle2"
-            sx={{ mt: 1 }}
+            sx={{ mt: 1, fontWeight: 'bold' }}
           >
             {termsData.disclaimer.title}
           </Typography>
@@ -79,7 +123,7 @@ const LegalDocPreview = () => {
 
           <Typography
             variant="subtitle2"
-            sx={{ mt: 1 }}
+            sx={{ mt: 1, fontWeight: 'bold' }}
           >
             {termsData.liability.title}
           </Typography>
@@ -87,7 +131,7 @@ const LegalDocPreview = () => {
 
           <Typography
             variant="subtitle2"
-            sx={{ mt: 1 }}
+            sx={{ mt: 1, fontWeight: 'bold' }}
           >
             {termsData.miscellaneous.title}
           </Typography>
@@ -103,11 +147,14 @@ const LegalDocPreview = () => {
 
           <Typography
             variant="subtitle2"
-            sx={{ mt: 1 }}
+            sx={{ mt: 1, fontWeight: 'bold' }}
           >
             {termsData.contactus.title}
           </Typography>
-          <Typography variant="body1">{termsData.contactus.content}</Typography>
+          <Typography 
+            variant="body1"
+            dangerouslySetInnerHTML={{ __html: termsData.contactus.content }}
+          />
         </AccordionDetails>
       </Accordion>
 
@@ -131,29 +178,58 @@ const LegalDocPreview = () => {
           >
             {privacyData.date}
           </Typography>
-          <Typography
-            variant="body1"
-            sx={{ mt: 4 }}
-          >
-            {privacyData.description}
-          </Typography>
-          <Typography
-            variant="body2"
-            sx={{ mt: 2 }}
-          >
-            {privacyData.subdescription}
-          </Typography>
+          {privacyData.description.map((paragraph, index) => (
+            <Typography
+              key={index}
+              variant="body1"
+              sx={{ mt: 4 }}
+            >
+              {paragraph}
+            </Typography>
+          ))}
 
           {privacyData.sections.map((section, index) => {
             return (
-              <div key={index}>
+              <div key={`${section.title}-${index}`}>
                 <Typography
                   variant="subtitle2"
-                  sx={{ mt: 1 }}
+                  sx={{ mt: 1, fontWeight: 'bold' }}
                 >
                   {section.title}
                 </Typography>
-                <Typography variant="body1">{section.content}</Typography>
+                {section.subsections &&
+                  section.subsections.map((subsection, subIndex) => (
+                    <div key={`${subsection.title}-${subIndex}`}>
+                      <Typography
+                        variant="subtitle2"
+                        sx={{ mt: 1, fontWeight: 'bold' }}
+                      >
+                        {subsection.title}
+                      </Typography>
+
+                      {subsection.content.map((paragraph, paragraphIndex) => (
+                        <Typography
+                          key={paragraphIndex}
+                          variant="body1"
+                          sx={{ mt: 1 }}
+                          dangerouslySetInnerHTML={{ __html: paragraph }}
+                        />
+                      ))}
+
+                      {subsection.extras && (
+                        <div>
+                          {Object.entries(subsection.extras).map(([extra, text], termIndex) => (
+                            <Typography
+                              key={extra}
+                              variant="body1"
+                              sx={{ mt: 1, ml: 4 }}
+                              dangerouslySetInnerHTML={{ __html: text }}
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
               </div>
             );
           })}

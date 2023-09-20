@@ -88,6 +88,8 @@ export interface VoteReceipt {
 }
 
 export interface UserVotes {
+    length: boolean;
+    find(arg0: (c: any) => boolean);
     proposalId: string;
     categoryId: string;
 }

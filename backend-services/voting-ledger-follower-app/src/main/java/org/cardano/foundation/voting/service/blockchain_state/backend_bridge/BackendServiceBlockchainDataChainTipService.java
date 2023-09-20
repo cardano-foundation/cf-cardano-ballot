@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.ChainTip;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataChainTipService;
+import org.cardano.foundation.voting.service.chain_sync.ChainSyncService;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
@@ -20,6 +21,8 @@ public class BackendServiceBlockchainDataChainTipService implements BlockchainDa
 
     private final BackendService backendService;
 
+    private final ChainSyncService chainSyncService;
+
     private final CardanoNetwork cardanoNetwork;
 
     @Override
@@ -27,6 +30,7 @@ public class BackendServiceBlockchainDataChainTipService implements BlockchainDa
     public Either<Problem, ChainTip> getChainTip() {
         try {
             var latestBlock = backendService.getBlockService().getLatestBlock();
+            var chainSync = chainSyncService.getSyncStatus(true);
 
             if (latestBlock.isSuccessful()) {
                 var block = latestBlock.getValue();
@@ -36,6 +40,7 @@ public class BackendServiceBlockchainDataChainTipService implements BlockchainDa
                         .epochNo(Optional.ofNullable(block.getEpoch()).orElse(-1))
                         .absoluteSlot(block.getSlot())
                         .network(cardanoNetwork)
+                        .isSynced(chainSync.isSynced())
                         .build());
             }
 

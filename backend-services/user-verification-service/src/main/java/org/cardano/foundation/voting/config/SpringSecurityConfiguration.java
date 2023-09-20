@@ -85,6 +85,10 @@ public class SpringSecurityConfiguration {
                     .requestMatchers(new AntPathRequestMatcher("/api/discord/user-verification/check-verification", POST.name())).permitAll()
 
                     .requestMatchers(new AntPathRequestMatcher("/api/user-verification/verified/**", GET.name())).permitAll()
+
+                    .requestMatchers(new AntPathRequestMatcher("/actuator/**", GET.name())).permitAll()
+                    .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
+
                     .anyRequest().denyAll()
          )
          .rememberMe(AbstractHttpConfigurer::disable)

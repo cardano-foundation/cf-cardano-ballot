@@ -17,11 +17,11 @@ spec:
       http:
         paths:
 {{ if .Values.ingress.disableActuatorEndpoint }}
-          - path: /actuator/
+          - path: /actuator
             pathType: Prefix
             backend:
               service:
-                name: unknown
+                name: actuator
                 port:
                   number: 80
 {{ end }}

@@ -31,7 +31,7 @@ import { getSlotNumber } from 'common/api/voteService';
 import { buildCanonicalLoginJson, submitLogin } from 'common/api/loginService';
 import { saveUserInSession } from '../../../utils/session';
 import { setWalletIsLoggedIn } from '../../../store/userSlice';
-import { getSignedMessagePromise } from '../../../utils/utils';
+import {capitalizeFirstLetter, getSignedMessagePromise} from '../../../utils/utils';
 import { Toast } from '../Toast/Toast';
 import { ToastType } from '../Toast/Toast.types';
 
@@ -180,9 +180,9 @@ const Header: React.FC = () => {
           eventBus.publish('showToast', 'Login successfully');
           toggleLoginModal();
         })
-        .catch((e) => eventBus.publish('showToast', e.message, true));
+        .catch((e) => eventBus.publish('showToast', 'Login failed', 'error'));
     } catch (e) {
-      eventBus.publish('showToast', e.message, true);
+      eventBus.publish('showToast', capitalizeFirstLetter(e.message || 'Login failed'), 'error');
     }
   };
 

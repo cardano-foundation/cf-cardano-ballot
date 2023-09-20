@@ -33,7 +33,7 @@ const Leaderboard = () => {
       if (process.env.NODE_ENV === 'development') {
         console.log(message);
       }
-      eventBus.publish('showToast', 'Failed to fecth stats', true);
+      eventBus.publish('showToast', 'Failed to fecth stats', 'error');
     }
   }, []);
 

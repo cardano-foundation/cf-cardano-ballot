@@ -165,7 +165,7 @@ public class DefaultVoteService implements VoteService {
         if (web3AuthenticationToken.getDetails().getChainTip().isNotSynced()) {
             return Either.left(Problem.builder()
                     .withTitle("CHAIN_FOLLOWER_NOT_SYNCED")
-                    .withDetail("Chain follower sercice not fully synced, please try again later.")
+                    .withDetail("Chain follower service not fully synced, please try again later!")
                     .withStatus(INTERNAL_SERVER_ERROR)
                     .build());
         }

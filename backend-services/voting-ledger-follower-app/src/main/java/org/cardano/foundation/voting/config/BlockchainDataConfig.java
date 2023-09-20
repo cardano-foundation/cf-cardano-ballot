@@ -49,7 +49,7 @@ public class BlockchainDataConfig {
     @Profile( value = { "prod", "dev--preprod"} )
     public ChainSyncService defaultChainSyncService(@Qualifier("yaci_blockfrost") BackendService yaciBackendService,
                                                     @Qualifier("original_blockfrost") BackendService orgBackendService,
-                                                    @Value("${chain.sync.buffer:2}") int chainSyncBuffer) {
+                                                    @Value("${chain.sync.buffer:30}") int chainSyncBuffer) {
         return new DefaultChainSyncService(orgBackendService, yaciBackendService, chainSyncBuffer);
     }
 

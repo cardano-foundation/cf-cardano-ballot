@@ -19,7 +19,7 @@ cf-summit-2023-ui:
     targetNetwork: MAIN
     eventId: CF_SUMMIT_2023_TEST1
     image:
-      tag: 0.2.35-PR235-preprod
+      tag: 0.2.43
 
 cf-summit-2023-voting-api:
   enabled: true
@@ -43,31 +43,31 @@ cf-summit-2023-voting-api:
         active: "true"
         voteCommitmentCronExpression: "0 30 * * * *"
     image:
-      tag: 0.2.37
+      tag: 0.2.43
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
-    corsAllowedOrigins: https://{{ .Values.domain }},http://localhost:3000
+    corsAllowedOrigins: https://{{ .Values.domain }}
 
 cf-summit-2023-verification-api:
   enabled: true
   values:
     image:
-      tag: 0.2.37
+      tag: 0.2.43
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
-    corsAllowedOrigins: https://{{ .Values.domain }},http://localhost:3000
+    corsAllowedOrigins: https://{{ .Values.domain }}
 
 cf-user-verification-service:
   enabled: true
   values:
     image:
-      tag: 0.2.37
+      tag: 0.2.43
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
-    corsAllowedOrigins: https://{{ .Values.domain }},http://localhost:3000
+    corsAllowedOrigins: https://{{ .Values.domain }}
 
 cf-summit-2023-ledger-follower-api:
   enabled: true
   values:
     image:
-      tag: 0.2.37
+      tag: 0.2.43
     bindOnEventIds: CF_SUMMIT_2023_TEST1
     yaci:
       startBlockHash: 6bb9228e3b746366e24f2681021d619395b850b34c2db020c4928285dcf7b0c2
@@ -76,7 +76,7 @@ cf-summit-2023-ledger-follower-api:
       cardanoNodeHost: relays-new.cardano-mainnet.iohk.io
       cardanoNodePort: "3001"
       cardanoNodeProtocolMagic: "764824073"
-    corsAllowedOrigins: https://{{ .Values.domain }},http://localhost:3000
+    corsAllowedOrigins: https://{{ .Values.domain }}
     instances:
       - name: follower-1
         enabled: true

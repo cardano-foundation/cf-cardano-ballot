@@ -298,7 +298,7 @@ jobs:
           REACT_APP_VOTING_LEDGER_FOLLOWER_APP_SERVER_URL: https://follower-api.dev.cf-summit-2023-preprod.eu-west-1.metadata.dev.cf-deployments.org
           REACT_APP_VOTING_VERIFICATION_APP_SERVER_URL: https://verification-api.dev.cf-summit-2023-preprod.eu-west-1.metadata.dev.cf-deployments.org
           REACT_APP_USER_VERIFICATION_SERVER_URL: https://user-verification.dev.cf-summit-2023-preprod.eu-west-1.metadata.dev.cf-deployments.org
-          ARTIFACT_VERSION: ${{needs.build-version.outputs.ARTIFACT_VERSION}}-preprod
+          ARTIFACT_VERSION: ${{needs.build-version.outputs.ARTIFACT_VERSION}}
         with:
           context: ui/summit-2023
           push: true

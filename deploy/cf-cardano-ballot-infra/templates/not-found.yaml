@@ -11,8 +11,8 @@ spec:
   project: default
   source:
     repoURL: https://charts.bitnami.com/bitnami
-    targetRevision: 12.4.3
-    chart: postgresql
+    targetRevision: 15.2.1
+    chart: nginx
     helm:
       values: |
         serverBlock: |-

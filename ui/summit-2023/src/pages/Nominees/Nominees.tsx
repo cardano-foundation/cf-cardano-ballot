@@ -185,7 +185,7 @@ const Nominees = () => {
     try {
       const requestVoteObject = await signMessagePromisified(canonicalVoteInput);
       toggleConfirmVoteModal();
-      eventBus.publish('showToast', 'Vote sent');
+      eventBus.publish('showToast', 'Vote submitted');
       await castAVoteWithDigitalSignature(requestVoteObject);
       eventBus.publish('showToast', 'Vote submitted successfully');
     } catch (e) {

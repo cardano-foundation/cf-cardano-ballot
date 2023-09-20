@@ -14,7 +14,7 @@ const VOTING_USER_VERIFICATION_SERVER_URL =
 const WEB_URL = process.env.REACT_APP_WEB_URL || get(window, 'env.REACT_APP_WEB_URL');
 const DISCORD_CHANNEL_URL =
   process.env.REACT_APP_DISCORD_CHANNEL_URL || get(window, 'env.REACT_APP_DISCORD_CHANNEL_URL');
-const REACT_APP_DISCORD_BOT_URL = process.env.REACT_APP_DISCORD_BOT_URL || get(window, 'env.REACT_APP_DISCORD_BOT_URL');
+const DISCORD_BOT_URL = process.env.REACT_APP_DISCORD_BOT_URL || get(window, 'env.REACT_APP_DISCORD_BOT_URL');
 // config vars
 const TARGET_NETWORK = process.env.REACT_APP_TARGET_NETWORK || get(window, 'env.REACT_APP_TARGET_NETWORK');
 const EVENT_ID = process.env.REACT_APP_EVENT_ID || get(window, 'env.REACT_APP_EVENT_ID');
@@ -34,5 +34,5 @@ export const env = {
   SUPPORTED_WALLETS,
   WEB_URL,
   DISCORD_CHANNEL_URL,
-  REACT_APP_DISCORD_BOT_URL,
+  DISCORD_BOT_URL,
 };

@@ -14,7 +14,7 @@ import { PhoneNumberCodeConfirmation, VerificationStarts } from '../../store/typ
 import { RootState } from '../../store';
 import { useLocation } from 'react-router-dom';
 import { CustomButton } from '../common/Button/CustomButton';
-import { capitalizeFirstLetter, getSignedMessagePromise, resolveCardanoNetwork } from '../../utils/utils';
+import { capitalizeFirstLetter, getSignedMessagePromise, openNewTab, resolveCardanoNetwork } from '../../utils/utils';
 import { SignedWeb3Request } from '../../types/voting-app-types';
 
 // TODO: env.
@@ -384,15 +384,26 @@ const VerifyWallet = (props: VerifyWalletProps) => {
           gutterBottom
           style={{ wordWrap: 'break-word', marginTop: '16px' }}
         >
-          1. Join our Discord Server and accept our terms and conditions by reacting with a 🚀 to the message in the
-          verification channel.
+          1.{' '}
+          <span
+            style={{ cursor: 'pointer' }}
+            onClick={() => openNewTab(env.DISCORD_CHANNEL_URL)}
+          >
+            Join our Discord Server
+          </span>{' '}
+          and accept our terms and conditions by reacting with a 🚀 to the message in the verification channel.
         </Typography>
         <Typography
           className="verify-wallet-modal-description"
           gutterBottom
           style={{ wordWrap: 'break-word', marginTop: '16px' }}
         >
-          2. Open the chat with the bot.
+          2. <span
+            style={{ cursor: 'pointer' }}
+            onClick={() => openNewTab(env.DISCORD_BOT_URL)}
+        >
+            Open the chat
+          </span> with the bot.
         </Typography>
         <Typography
           className="verify-wallet-modal-description"

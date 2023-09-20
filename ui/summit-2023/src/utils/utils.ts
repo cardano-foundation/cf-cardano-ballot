@@ -30,6 +30,10 @@ const copyToClipboard = async (textToCopy: string) => {
   await navigator.clipboard.writeText(textToCopy);
 };
 
+const openNewTab = async (url: string) => {
+  window.open(url, '_blank');
+};
+
 const capitalizeFirstLetter = (input: string): string => {
   if (!input || typeof input !== 'string') {
     return '';
@@ -52,4 +56,5 @@ export {
   copyToClipboard,
   capitalizeFirstLetter,
   resolveCardanoNetwork,
+  openNewTab,
 };

@@ -76,7 +76,8 @@ const Nominees = () => {
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+    const isBigScreen= useMediaQuery(theme.breakpoints.down('xl'));
+    const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [isVisible, setIsVisible] = useState(true);
   const [isToggleReadMore, toggleReadMore] = useToggle(false);
   const [isViewVoteReceipt, toggleViewVoteReceipt] = useToggle(false);
@@ -469,6 +470,7 @@ const Nominees = () => {
             style={{
                 marginTop: '50px',
                 marginBottom: 20,
+                padding: isBigScreen ? '0px' : '0px 150px'
             }}
         >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
@@ -551,7 +553,7 @@ const Nominees = () => {
                 </Box>
             ) : null}
 
-            {viewMode === 'grid' ? renderResponsiveGrid(nominees) : renderResponsiveList(nominees)}
+            {isMobile || viewMode === 'grid' ? renderResponsiveGrid(nominees) : renderResponsiveList(nominees)}
 
         </div>
 

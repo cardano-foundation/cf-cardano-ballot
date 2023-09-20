@@ -194,70 +194,78 @@ const TermsOptInModal = (props) => {
       <DialogActions style={{ display: 'flex', justifyContent: 'space-between' }}>
         <Grid container>
           <Grid
-              item
-              xs={isMobile ? 12: 7}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', marginLeft: isMobile ? '0px' : '12px' }}
+            item
+            xs={isMobile ? 12 : 7}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flex-start',
+              marginLeft: isMobile ? '0px' : '12px',
+            }}
           >
             <FormGroup>
               <FormControlLabel
-                  control={
-                    <Checkbox
-                        checked={checked}
-                        onChange={(e) => handleCheckbox(e.target.checked)}
-                        sx={{ color: highlightCheckbox ? 'red' : '', marginBottom: 0.5 }}
-                    />
-                  }
-                  label={
-                    <>
-                      I have read and agree to the Cardano Ballot
-                      <Link
-                          href={ROUTES.TERMSANDCONDITIONS}
-                          target="_blank"
-                          sx={{ marginX: 1 }}
-                      >
-                        {LINK_TERMS}
-                      </Link>
-                      and
-                      <Link
-                          href={ROUTES.PRIVACYPOLICY}
-                          target="_blank"
-                          sx={{ marginX: 1 }}
-                      >
-                        {LINK_PRIVACY}
-                      </Link>
-                    </>
-                  }
-                  className={styles.modalDescription}
+                control={
+                  <Checkbox
+                    checked={checked}
+                    onChange={(e) => handleCheckbox(e.target.checked)}
+                    sx={{ color: highlightCheckbox ? 'red' : '', marginBottom: 0.5 }}
+                  />
+                }
+                label={
+                  <>
+                    I have read and agree to the Cardano Ballot
+                    <Link
+                      href={ROUTES.TERMSANDCONDITIONS}
+                      target="_blank"
+                      sx={{ marginX: 1 }}
+                    >
+                      {LINK_TERMS}
+                    </Link>
+                    and
+                    <Link
+                      href={ROUTES.PRIVACYPOLICY}
+                      target="_blank"
+                      sx={{ marginX: 1 }}
+                    >
+                      {LINK_PRIVACY}
+                    </Link>
+                  </>
+                }
+                className={styles.modalDescription}
               />
             </FormGroup>
           </Grid>
           <Grid
-              item
-              xs={isMobile ? 12 : 4}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', padding: isMobile ? '6px' : '0px' }}
+            item
+            xs={isMobile ? 12 : 4}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              padding: isMobile ? '6px' : '0px',
+            }}
           >
             <CustomButton
-                styles={
-                  checked
-                      ? {
-                        background: '#ACFCC5',
-                        color: '#03021F',
-                      }
-                      : {
-                        background: '#6C6F89',
-                        color: '#F6F9FF !important',
-                      }
-                }
-                label="Accept"
-                onClick={handleAgreeClose}
-                fullWidth={isMobile}
-                disabled={!checked}
+              styles={
+                checked
+                  ? {
+                      background: '#ACFCC5',
+                      color: '#03021F',
+                    }
+                  : {
+                      background: '#6C6F89',
+                      color: '#F6F9FF !important',
+                    }
+              }
+              label="Accept"
+              onClick={handleAgreeClose}
+              fullWidth={isMobile}
+              disabled={!checked}
             />
           </Grid>
         </Grid>
-
       </DialogActions>
-
     </Dialog>
   );
 };

@@ -12,10 +12,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setUserStartsVerification, setWalletIsVerified } from '../../store/userSlice';
 import { PhoneNumberCodeConfirmation, VerificationStarts } from '../../store/types';
 import { RootState } from '../../store';
-import { NetworkType } from '@cardano-foundation/cardano-connect-with-wallet-core';
 import { useLocation } from 'react-router-dom';
 import { CustomButton } from '../common/Button/CustomButton';
-import { capitalizeFirstLetter, getSignedMessagePromise } from '../../utils/utils';
+import { capitalizeFirstLetter, getSignedMessagePromise, resolveCardanoNetwork } from '../../utils/utils';
 import { SignedWeb3Request } from '../../types/voting-app-types';
 
 // TODO: env.
@@ -39,7 +38,7 @@ const VerifyWallet = (props: VerifyWalletProps) => {
   const [checkImNotARobot, setCheckImNotARobot] = useState<boolean>(false);
   const [isPhoneInputDisabled] = useState<boolean>(false);
   const dispatch = useDispatch();
-  const { stakeAddress, signMessage } = useCardano({ limitNetwork: 'testnet' as NetworkType });
+  const { stakeAddress, signMessage } = useCardano({ limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK) });
   const userVerification = useSelector((state: RootState) => state.user.userVerification);
   const userStartsVerificationByStakeAddress =
     Object.keys(userVerification).length !== 0 && userVerification[stakeAddress];

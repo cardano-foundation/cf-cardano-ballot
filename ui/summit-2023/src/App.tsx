@@ -17,10 +17,10 @@ import { getEvent } from 'common/api/referenceDataService';
 import { getUserInSession, tokenIsExpired } from './utils/session';
 import { CB_TERMS_AND_PRIVACY } from './common/constants/local';
 import { TermsOptInModal } from 'components/LegalOptInModal';
-import { NetworkType } from '@cardano-foundation/cardano-connect-with-wallet-core';
 import { eventBus } from './utils/EventBus';
 import { CategoryContent } from './pages/Categories/Category.types';
 import SUMMIT2023CONTENT from 'common/resources/data/summit2023Content.json';
+import { resolveCardanoNetwork } from './utils/utils';
 
 function App() {
   const theme = useTheme();
@@ -28,7 +28,7 @@ function App() {
   const eventCache = useSelector((state: RootState) => state.user.event);
   const [storedValue, _] = useLocalStorage(CB_TERMS_AND_PRIVACY, false);
   const [openTermDialog, setOpenTermDialog] = useState(false);
-  const { isConnected, stakeAddress } = useCardano({ limitNetwork: 'testnet' as NetworkType });
+  const { isConnected, stakeAddress } = useCardano({ limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK) });
 
   const dispatch = useDispatch();
   const fetchEvent = useCallback(async () => {

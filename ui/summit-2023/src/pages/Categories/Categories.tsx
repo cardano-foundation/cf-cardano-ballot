@@ -36,7 +36,7 @@ const Categories = () => {
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'));
-  const isBigScreen= useMediaQuery(theme.breakpoints.down('xl'));
+  const isBigScreen = useMediaQuery(theme.breakpoints.down('xl'));
 
   const [listView, setListView] = useState<'grid' | 'list'>('grid');
   const [isVisible, setIsVisible] = useState(true);
@@ -318,7 +318,7 @@ const Categories = () => {
     <div
       data-testid="categories-page"
       className={styles.categories}
-      style={{padding: isBigScreen ? '0px' : '0px 150px'}}
+      style={{ padding: isBigScreen ? '0px' : '0px 150px' }}
     >
       <div
         style={{

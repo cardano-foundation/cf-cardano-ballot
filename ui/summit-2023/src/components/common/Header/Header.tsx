@@ -23,7 +23,6 @@ import { VerifyWallet } from '../../VerifyWallet';
 import { eventBus } from '../../../utils/EventBus';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../store';
-import { NetworkType } from '@cardano-foundation/cardano-connect-with-wallet-core';
 import { ConnectWalletButton } from '../ConnectWalletButton/ConnectWalletButton';
 import { useToggle } from 'common/hooks/useToggle';
 import { CustomButton } from '../Button/CustomButton';
@@ -31,9 +30,10 @@ import { getSlotNumber } from 'common/api/voteService';
 import { buildCanonicalLoginJson, submitLogin } from 'common/api/loginService';
 import { saveUserInSession } from '../../../utils/session';
 import { setWalletIsLoggedIn } from '../../../store/userSlice';
-import { capitalizeFirstLetter, getSignedMessagePromise } from '../../../utils/utils';
+import { capitalizeFirstLetter, getSignedMessagePromise, resolveCardanoNetwork } from '../../../utils/utils';
 import { Toast } from '../Toast/Toast';
 import { ToastType } from '../Toast/Toast.types';
+import { env } from 'common/constants/env';
 
 const Header: React.FC = () => {
   const dispatch = useDispatch();
@@ -43,7 +43,9 @@ const Header: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const walletIsVerified = useSelector((state: RootState) => state.user.walletIsVerified);
 
-  const { isConnected, stakeAddress, signMessage } = useCardano({ limitNetwork: 'testnet' as NetworkType });
+  const { isConnected, stakeAddress, signMessage } = useCardano({
+    limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
+  });
 
   const [openAuthDialog, setOpenAuthDialog] = useState<boolean>(false);
   const [loginModal, toggleLoginModal] = useToggle(false);

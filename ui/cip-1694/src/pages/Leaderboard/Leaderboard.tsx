@@ -14,7 +14,6 @@ import * as leaderboardService from 'common/api/leaderboardService';
 import { Toast } from 'components/common/Toast/Toast';
 import { getPercentage, proposalColorsMap } from './utils';
 import { StatsTile } from './components/StatsTile';
-import { env } from '../../env';
 import styles from './Leaderboard.module.scss';
 import { StatItem } from './types';
 
@@ -24,8 +23,9 @@ export const Leaderboard = () => {
   const [stats, setStats] = useState<ByProposalsInCategoryStats['proposals']>();
 
   const init = useCallback(async () => {
+    if (!event?.categories?.[0]?.id) return;
     try {
-      setStats((await leaderboardService.getStats())?.proposals);
+      setStats((await leaderboardService.getStats(event?.categories?.[0]?.id))?.proposals);
     } catch (error) {
       const message = `Failed to fecth stats: ${error?.message || error?.toString()}`;
       if (process.env.NODE_ENV === 'development') {
@@ -33,12 +33,13 @@ export const Leaderboard = () => {
       }
       toast(
         <Toast
-          message="Failed to fecth stats"
+          error
+          message={message}
           icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
         />
       );
     }
-  }, []);
+  }, [event?.categories]);
 
   const canViewResults = useMemo(() => isConnected && event?.finished === true, [event?.finished, isConnected]);
 
@@ -49,12 +50,10 @@ export const Leaderboard = () => {
   }, [init, canViewResults]);
 
   const statsItems: StatItem<ProposalPresentation['name']>[] =
-    event?.categories
-      ?.find(({ id }) => id === env.CATEGORY_ID)
-      ?.proposals?.map(({ name }) => ({
-        name,
-        label: capitalize(name.toLowerCase()),
-      })) || [];
+    event?.categories?.[0]?.proposals?.map(({ name }) => ({
+      name,
+      label: capitalize(name.toLowerCase()),
+    })) || [];
 
   const placeholder = '--';
   const statsSum = useMemo(() => stats && Object.values(stats)?.reduce((acc, { votes }) => (acc += votes), 0), [stats]);

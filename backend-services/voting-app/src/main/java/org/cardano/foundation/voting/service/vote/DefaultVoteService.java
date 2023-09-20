@@ -576,14 +576,14 @@ public class DefaultVoteService implements VoteService {
 
             if (item instanceof ProofItem.Left pl) {
                 return VoteReceipt.MerkleProofItem.builder()
-                        .type(VoteReceipt.MerkleProofType.Left)
+                        .type(VoteReceipt.MerkleProofType.L)
                         .hash(encodeHexString(pl.hash()))
                         .build();
             }
 
             if (item instanceof ProofItem.Right pr) {
                 return VoteReceipt.MerkleProofItem.builder()
-                        .type(VoteReceipt.MerkleProofType.Right)
+                        .type(VoteReceipt.MerkleProofType.R)
                         .hash(encodeHexString(pr.hash()))
                         .build();
             }

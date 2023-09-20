@@ -9,4 +9,5 @@ export const env = {
   CATEGORY_ID: process.env.REACT_APP_CATEGORY_ID,
   COMMIT_HASH: process.env.REACT_APP_COMMIT_HASH,
   SUPPORTED_WALLETS: (process.env.REACT_APP_SUPPORTED_WALLETS || '').split(',').filter((w) => !!w),
+  DISCORD_URL: process.env.REACT_APP_DISCORD_URL,
 };

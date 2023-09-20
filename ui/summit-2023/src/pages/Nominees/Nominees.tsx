@@ -44,7 +44,7 @@ import {
   getSlotNumber,
   getVoteReceipt,
 } from '../../common/api/voteService';
-import {capitalizeFirstLetter, copyToClipboard, getSignedMessagePromise} from '../../utils/utils';
+import { capitalizeFirstLetter, copyToClipboard, getSignedMessagePromise } from '../../utils/utils';
 import { buildCanonicalLoginJson, submitLogin } from 'common/api/loginService';
 import { getUserInSession, saveUserInSession, tokenIsExpired } from '../../utils/session';
 import { setVoteReceipt, setWalletIsLoggedIn } from '../../store/userSlice';
@@ -132,12 +132,12 @@ const Nominees = () => {
         })
         .catch((e) => {
           if (toast !== false) {
-            eventBus.publish('showToast', e.message, true);
+            eventBus.publish('showToast', e.message, 'error');
           }
         });
     } else {
       if (toast !== false) {
-        eventBus.publish('showToast', 'Please, login before get receipt', true);
+        eventBus.publish('showToast', 'Please, login before get receipt', 'error');
       }
     }
   };
@@ -161,9 +161,9 @@ const Nominees = () => {
           eventBus.publish('showToast', 'Login successfully');
           viewVoteReceipt(false, true);
         })
-        .catch((e) => eventBus.publish('showToast', e.message, true));
+        .catch((e) => eventBus.publish('showToast', e.message, 'error'));
     } catch (e) {
-      eventBus.publish('showToast', e.message, true);
+      eventBus.publish('showToast', e.message, 'error');
     }
   };
 
@@ -189,7 +189,7 @@ const Nominees = () => {
       await castAVoteWithDigitalSignature(requestVoteObject);
       eventBus.publish('showToast', 'Vote submitted successfully');
     } catch (e) {
-      eventBus.publish('showToast', capitalizeFirstLetter(e.message), true);
+      eventBus.publish('showToast', capitalizeFirstLetter(e.message), 'error');
     }
   };
 
@@ -237,7 +237,7 @@ const Nominees = () => {
   const handleCopyToClipboard = (text: string) => {
     copyToClipboard(text)
       .then(() => eventBus.publish('showToast', 'Copied to clipboard'))
-      .catch(() => eventBus.publish('showToast', 'Copied to clipboard failed', true));
+      .catch(() => eventBus.publish('showToast', 'Copied to clipboard failed', 'error'));
   };
   const getAssuranceTheme = () => {
     // TODO

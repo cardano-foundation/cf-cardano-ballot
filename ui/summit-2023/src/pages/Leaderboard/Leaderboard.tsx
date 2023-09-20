@@ -15,7 +15,7 @@ import { StatsTile } from './components/StatsTile';
 import SUMMIT2023CONTENT from '../../common/resources/data/summit2023Content.json';
 import { CategoryContent } from 'pages/Categories/Category.types';
 import { LeaderboardContent } from './Leaderboard.types';
-import {eventBus} from '../../utils/EventBus';
+import { eventBus } from '../../utils/EventBus';
 
 const Leaderboard = () => {
   const event = useSelector((state: RootState) => state.user.event);

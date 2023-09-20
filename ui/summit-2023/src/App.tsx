@@ -55,7 +55,7 @@ function App() {
       if (process.env.NODE_ENV === 'development') {
         console.log(`Failed to fetch event, ${error?.info || error?.message || error?.toString()}`);
       }
-      eventBus.publish('showToast', 'Failed to update event', true);
+      eventBus.publish('showToast', 'Failed to update event', 'error');
     }
   }, [dispatch, stakeAddress]);
 

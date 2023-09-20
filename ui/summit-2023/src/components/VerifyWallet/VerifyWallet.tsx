@@ -16,7 +16,6 @@ import { NetworkType } from '@cardano-foundation/cardano-connect-with-wallet-cor
 import { useLocation } from 'react-router-dom';
 import { CustomButton } from '../common/Button/CustomButton';
 import { capitalizeFirstLetter, getSignedMessagePromise } from '../../utils/utils';
-import { eventBus } from '../../utils/EventBus';
 import { SignedWeb3Request } from '../../types/voting-app-types';
 
 // TODO: env.
@@ -133,9 +132,9 @@ const VerifyWallet = (props: VerifyWalletProps) => {
                 onError('Discord verification failed');
               }
             })
-            .catch((e) => eventBus.publish('showToast', capitalizeFirstLetter(e.message), true));
+            .catch((e) => onError(capitalizeFirstLetter(e.message)));
         })
-        .catch((e) => eventBus.publish('showToast', capitalizeFirstLetter(e.message), true));
+        .catch((e) => onError(capitalizeFirstLetter(e.message)));
     }
   };
 

@@ -383,94 +383,82 @@ const Nominees = () => {
   const renderResponsiveGrid = (items): ReactElement => {
     return (
       <>
-        <div style={{ width: '100%' }}>
-          <Grid
-            container
-            spacing={2}
-            justifyContent="center"
-          >
-            {items.map((nominee, index) => (
-              <Grid
-                item
-                xs={12}
-                sm={12}
-                md={4}
-                lg={4}
-                key={nominee.id}
-              >
-                <Card
-                  style={{
-                    height: 'auto',
-                    width: '414px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <CardContent>
-                    <Typography
-                      className="nominee-title"
-                      variant="h2"
-                    >
-                      {nominee.presentationName}
-                    </Typography>
-                    <Grid container>
-                      <Grid
-                        item
-                        xs={12}
-                      >
-                        <Typography
-                          className="nominee-description"
-                          variant="body2"
-                        >
-                          {nominee.desc}
-                        </Typography>
+          <div style={{ width: '100%' }}>
+              <Grid container spacing={2} justifyContent="center">
+                  {items.map((nominee) => (
+                      <Grid item xs={12} sm={12} md={4} lg={4} key={nominee.id}>
+                          <div style={{ height: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              <Card sx={{
+                                  width: '414px',
+                                  justifyContent: 'center',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                              }}>
+                                  <CardContent>
+                                      <Typography
+                                          className="nominee-title"
+                                          variant="h2"
+                                      >
+                                          {nominee.presentationName}
+                                      </Typography>
+                                      <Grid container>
+                                          <Grid
+                                              item
+                                              xs={12}
+                                          >
+                                              <Typography
+                                                  className="nominee-description"
+                                                  variant="body2"
+                                              >
+                                                  {nominee.desc}
+                                              </Typography>
+                                          </Grid>
+                                      </Grid>
+
+                                      <CustomButton
+                                          styles={{
+                                              background: 'transparent !important',
+                                              color: '#03021F',
+                                              border: '1px solid #daeefb',
+                                              width: '100%',
+                                              marginTop: '28px',
+                                          }}
+                                          label="Read more"
+                                          onClick={() =>
+                                              handleReadMore(
+                                                  nominee
+                                              )
+                                          }
+                                          fullWidth={true}
+                                      />
+
+                                      {!receipt ? (
+                                          <CustomButton
+                                              styles={
+                                                  isConnected
+                                                      ? {
+                                                          background: '#ACFCC5',
+                                                          color: '#03021F',
+                                                          marginTop: '18px',
+                                                      }
+                                                      : {
+                                                          background: '#03021F',
+                                                          color: '#F6F9FF',
+                                                          marginTop: '18px',
+                                                      }
+                                              }
+                                              label={renderNomineeButtonLabel() as string}
+                                              onClick={() => handleNomineeButton(nominee)}
+                                              fullWidth={true}
+                                          />
+                                      ) : null}
+                                  </CardContent>
+                              </Card>
+                          </div>
                       </Grid>
-                    </Grid>
-
-                    <CustomButton
-                      styles={{
-                        background: 'transparent !important',
-                        color: '#03021F',
-                        border: '1px solid #daeefb',
-                        width: '100%',
-                        marginTop: '28px',
-                      }}
-                      label="Read more"
-                      onClick={() =>
-                        handleReadMore(
-                          nominee
-                        )
-                      }
-                      fullWidth={true}
-                    />
-
-                    {!receipt ? (
-                      <CustomButton
-                        styles={
-                          isConnected
-                            ? {
-                                background: '#ACFCC5',
-                                color: '#03021F',
-                                marginTop: '18px',
-                              }
-                            : {
-                                background: '#03021F',
-                                color: '#F6F9FF',
-                                marginTop: '18px',
-                              }
-                        }
-                        label={renderNomineeButtonLabel() as string}
-                        onClick={() => handleNomineeButton(nominee)}
-                        fullWidth={true}
-                      />
-                    ) : null}
-                  </CardContent>
-                </Card>
+                  ))}
               </Grid>
-            ))}
-          </Grid>
-        </div>
+          </div>
       </>
     );
   };

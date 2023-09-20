@@ -73,7 +73,7 @@ public class VoteReceipt {
     }
 
     public enum MerkleProofType {
-        Left, Right
+        L, R
     }
 
 }

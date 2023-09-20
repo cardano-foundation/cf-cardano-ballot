@@ -16,6 +16,15 @@ spec:
     - host: "verification-api.{{ .Values.domain }}"
       http:
         paths:
+{{ if .Values.ingress.disableActuatorEndpoint }}
+          - path: /actuator
+            pathType: Prefix
+            backend:
+              service:
+                name: unknown
+                port:
+                  number: 80
+{{ end }}
           - path: /
             pathType: Prefix
             backend:

@@ -5,7 +5,9 @@ network: main
 domain: pro.cf-summit-2023-mainnet.eu-west-1.voting.summit.cardano.org
 
 cf-summit-2023-infra:
-  enabled: false
+  enabled: true
+  postgresql:
+    enabled: false
 
 cf-summit-2023-ui:
   enabled: true

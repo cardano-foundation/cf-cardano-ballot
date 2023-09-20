@@ -19,6 +19,8 @@ import { CB_TERMS_AND_PRIVACY } from './common/constants/local';
 import { TermsOptInModal } from 'components/LegalOptInModal';
 import { NetworkType } from '@cardano-foundation/cardano-connect-with-wallet-core';
 import { eventBus } from './utils/EventBus';
+import { CategoryContent } from './pages/Categories/Category.types';
+import SUMMIT2023CONTENT from 'common/resources/data/summit2023Content.json';
 
 function App() {
   const theme = useTheme();
@@ -32,6 +34,25 @@ function App() {
   const fetchEvent = useCallback(async () => {
     try {
       const event = await getEvent(env.EVENT_ID);
+      const staticCategories: CategoryContent[] = SUMMIT2023CONTENT.categories;
+      console.log('summit2023Categories');
+      console.log(staticCategories);
+      console.log('event');
+      console.log(event);
+      const joinedCategories = event.categories
+        .map((item1) => {
+          const item2 = staticCategories.find((item) => item.id === item1.id);
+          if (item2) {
+            return { ...item1, ...item2 };
+          }
+          return null;
+        })
+        .filter((item) => item !== null);
+
+      console.log('joinedCategories');
+      console.log(joinedCategories);
+
+      event.categories = joinedCategories;
       dispatch(setEventData({ event }));
 
       if (isConnected) {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ReactElement } from 'react';
 import {
   useTheme,
   useMediaQuery,
@@ -67,193 +67,180 @@ const Categories = () => {
     setIsHoveredId('');
   };
 
-  return (
-    <div
-      data-testid="categories-page"
-      className={styles.categories}
-    >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-        <Typography
-          className={styles.title}
-          variant="h2"
-          fontSize={{
-            xs: '28px',
-            md: '32px',
-          }}
-          lineHeight={{
-            xs: '28px',
-            md: '32px',
-          }}
+  const renderResponsiveGrid = (items): ReactElement => {
+    return (
+      <div style={{ width: '100%' }}>
+        <Grid
+          container
+          spacing={3}
+          justifyContent="center"
         >
-          Categories
-        </Typography>
-
-        {!isMobile && (
-          <div>
-            <IconButton onClick={() => handleListView('grid')}>
-              <ViewModuleIcon />
-            </IconButton>
-            <IconButton onClick={() => handleListView('list')}>
-              <ViewListIcon />
-            </IconButton>
-          </div>
-        )}
-      </div>
-
-      <Grid
-        container
-        spacing={3}
-        style={{ justifyContent: 'center' }}
-      >
-        {categories?.map((category, index) => (
-          <Grid
-            item
-            xs={12}
-            sm={6}
-            md={!isMobile && listView === 'grid' ? 4 : 12}
-            key={category.id}
-          >
-            {!isMobile && listView === 'grid' ? (
+          {items.map((category, index) => (
+            <Grid
+              item
+              xs={12}
+              sm={12}
+              md={4}
+              lg={4}
+              key={category.id}
+            >
               <Fade in={isVisible}>
-                <Card
-                  className={styles.card}
-                  sx={{
-                    width: isMobile ? '100%' : '414px',
-                  }}
-                  key={category.id}
-                >
-                  <CardActionArea
-                    onMouseOver={handleMouseOver(category.id)}
-                    onMouseOut={handleMouseOut}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Card
+                    style={{
+                      height: 'auto',
+                      width: '414px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
                   >
-                    {isHoveredId == category.id ? (
-                      <Grow
-                        in
-                        style={{ transformOrigin: '10 0 0' }}
-                        {...{ timeout: 600 }}
-                      >
-                        <CardContent sx={{ minHeight: '350px' }}>
-                          <CardHeader
-                            avatar={
-                              <Avatar
-                                src={CATEGORY_IMAGES[index]}
-                                alt={
-                                  category.id === summit2023Categories[index].id
-                                    ? summit2023Categories[index].presentationName
-                                    : ''
-                                }
-                                sx={{ width: 100, height: 100 }}
-                              />
-                            }
-                          />
-                          <Box m={1}>
+                    <CardActionArea
+                      onMouseOver={handleMouseOver(category.id)}
+                      onMouseOut={handleMouseOut}
+                    >
+                      {isHoveredId == category.id ? (
+                        <Grow
+                          in
+                          style={{ transformOrigin: '10 0 0' }}
+                          {...{ timeout: 600 }}
+                        >
+                          <CardContent sx={{ minHeight: '350px' }}>
+                            <CardHeader
+                              avatar={
+                                <Avatar
+                                  src={CATEGORY_IMAGES[index]}
+                                  alt={category.presentationName}
+                                  sx={{ width: 100, height: 100 }}
+                                />
+                              }
+                            />
+                            <Box m={1}>
+                              <Typography
+                                variant="h5"
+                                color="text.primary"
+                                fontWeight="700"
+                              >
+                                {category.presentationName}
+                              </Typography>
+                            </Box>
+                            <Box m={1}>
+                              <Typography
+                                variant="body1"
+                                color="text.primary"
+                              >
+                                {category.desc}
+                              </Typography>
+                            </Box>
+                            <CardActions>
+                              <Button
+                                component={Link}
+                                to={{ pathname: `/nominees/${category.id}` }}
+                                state={{
+                                  category,
+                                }}
+                                aria-label="View Nominees"
+                                variant="contained"
+                                size="large"
+                                sx={{
+                                  color: 'text.primary',
+                                  fontSize: 16,
+                                  fontWeight: 700,
+                                  textTransform: 'none',
+                                  width: '100%',
+                                  backgroundColor: '#acfcc5 !important',
+                                }}
+                              >
+                                View Nominees
+                              </Button>
+                            </CardActions>
+                          </CardContent>
+                        </Grow>
+                      ) : (
+                        <Box sx={{ position: 'relative' }}>
+                          <Box>
+                            <CardMedia
+                              sx={{
+                                height: 350,
+                                cursor: 'pointer',
+                                '&:hover': {
+                                  borderRadius: '50%',
+                                  transition: 'all 1s ease',
+                                },
+                              }}
+                              image={CATEGORY_IMAGES[index]}
+                            />
+                          </Box>
+                          <Box
+                            sx={{
+                              position: 'absolute',
+                              bottom: '20%',
+                              left: 0,
+                              width: '100%',
+                              paddingLeft: '20px',
+                              textAlign: 'left',
+                            }}
+                          >
                             <Typography
-                              variant="h5"
-                              color="text.primary"
-                              fontWeight="700"
+                              variant="h6"
+                              sx={{
+                                color: 'white',
+                                fontSize: '36px',
+                                fontWeight: 600,
+                                wordBreak: 'break-word',
+                                maxWidth: '285px',
+                              }}
                             >
                               {category.id === summit2023Categories[index].id
                                 ? summit2023Categories[index].presentationName
                                 : ''}
                             </Typography>
                           </Box>
-                          <Box m={1}>
-                            <Typography
-                              variant="body1"
-                              color="text.primary"
-                            >
-                              {category.id === summit2023Categories[index].id ? summit2023Categories[index].desc : ''}
-                            </Typography>
-                          </Box>
-                          <CardActions>
-                            <Button
-                              component={Link}
-                              to={{ pathname: `/nominees/${category.id}` }}
-                              state={{
-                                category,
-                              }}
-                              aria-label="View Nominees"
-                              variant="contained"
-                              size="large"
-                              sx={{
-                                color: 'text.primary',
-                                fontSize: 16,
-                                fontWeight: 700,
-                                textTransform: 'none',
-                                width: '100%',
-                                backgroundColor: '#acfcc5 !important',
-                              }}
-                            >
-                              View Nominees
-                            </Button>
-                          </CardActions>
-                        </CardContent>
-                      </Grow>
-                    ) : (
-                      <Box sx={{ position: 'relative' }}>
-                        <Box>
-                          <CardMedia
+                          <Box
                             sx={{
-                              height: 350,
-                              cursor: 'pointer',
-                              '&:hover': {
-                                borderRadius: '50%',
-                                transition: 'all 1s ease',
-                              },
-                            }}
-                            image={CATEGORY_IMAGES[index]}
-                          />
-                        </Box>
-                        <Box
-                          sx={{
-                            position: 'absolute',
-                            bottom: '20%',
-                            left: 0,
-                            width: '100%',
-                            paddingLeft: '20px',
-                            textAlign: 'left',
-                          }}
-                        >
-                          <Typography
-                            variant="h6"
-                            sx={{
-                              color: 'white',
-                              fontSize: '36px',
-                              fontWeight: 600,
-                              wordBreak: 'break-word',
-                              maxWidth: '285px',
+                              position: 'absolute',
+                              bottom: isMobile ? '8%' : '20%',
+                              right: 0,
+                              width: '100%',
+                              paddingLeft: '20px',
+                              textAlign: 'right',
                             }}
                           >
-                            {category.id === summit2023Categories[index].id
-                              ? summit2023Categories[index].presentationName
-                              : ''}
-                          </Typography>
+                            <NavigateNextIcon
+                              sx={{
+                                fontSize: '50px',
+                                margin: '0px 20px -7px 20px',
+                                borderRadius: 25,
+                                backgroundColor: '#acfcc5 !important',
+                              }}
+                            />
+                          </Box>
                         </Box>
-                        <Box
-                          sx={{
-                            position: 'absolute',
-                            bottom: isMobile ? '8%' : '20%',
-                            right: 0,
-                            width: '100%',
-                            paddingLeft: '20px',
-                            textAlign: 'right',
-                          }}
-                        >
-                          <NavigateNextIcon
-                            sx={{
-                              fontSize: '50px',
-                              margin: '0px 20px -7px 20px',
-                              borderRadius: 25,
-                              backgroundColor: '#acfcc5 !important',
-                            }}
-                          />
-                        </Box>
-                      </Box>
-                    )}
-                  </CardActionArea>
-                </Card>
+                      )}
+                    </CardActionArea>
+                  </Card>
+                </div>
               </Fade>
-            ) : (
+            </Grid>
+          ))}
+        </Grid>
+      </div>
+    );
+  };
+  const renderResponsiveList = (items): ReactElement => {
+    return (
+      <div style={{ width: '100%' }}>
+        <Grid
+          container
+          spacing={3}
+          justifyContent="center"
+        >
+          {items.map((category, index) => (
+            <Grid
+              item
+              xs={12}
+              key={category.id}
+            >
               <Fade in={isVisible}>
                 <Card
                   className="categories-card"
@@ -319,10 +306,55 @@ const Categories = () => {
                   </CardContent>
                 </Card>
               </Fade>
-            )}
-          </Grid>
-        ))}
-      </Grid>
+            </Grid>
+          ))}
+        </Grid>
+      </div>
+    );
+  };
+
+  return (
+    <div
+      data-testid="categories-page"
+      className={styles.categories}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '50px', marginBottom: 20 }}>
+        <Typography
+          variant="h2"
+          fontSize={{
+            xs: '28px',
+            md: '48px',
+          }}
+          lineHeight={{
+            xs: '28px',
+            md: '32px',
+          }}
+          sx={{
+            color: '#24262E',
+            fontStyle: 'normal',
+            fontWeight: '600',
+          }}
+        >
+          Categories
+        </Typography>
+
+        {!isMobile && (
+          <div>
+            <IconButton onClick={() => handleListView('grid')}>
+              <ViewModuleIcon />
+            </IconButton>
+            <IconButton onClick={() => handleListView('list')}>
+              <ViewListIcon />
+            </IconButton>
+          </div>
+        )}
+      </div>
+
+      <Box
+        marginY={10}
+      >
+        {isMobile || listView === 'grid' ? renderResponsiveGrid(categories) : renderResponsiveList(categories)}
+      </Box>
     </div>
   );
 };

@@ -77,7 +77,8 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
           >
             {walletIsVerified ? (
               <>
-                <span style={{paddingTop: '3px'}}>Verified</span> <VerifiedIcon style={{ width: '20px', paddingBottom: '0px', color: '#1C9BEF' }} />{' '}
+                <span style={{ paddingTop: '3px' }}>Verified</span>{' '}
+                <VerifiedIcon style={{ width: '20px', paddingBottom: '0px', color: '#1C9BEF' }} />{' '}
               </>
             ) : (
               'Verify'

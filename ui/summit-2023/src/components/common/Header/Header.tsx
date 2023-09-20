@@ -31,7 +31,7 @@ import { getSlotNumber } from 'common/api/voteService';
 import { buildCanonicalLoginJson, submitLogin } from 'common/api/loginService';
 import { saveUserInSession } from '../../../utils/session';
 import { setWalletIsLoggedIn } from '../../../store/userSlice';
-import {capitalizeFirstLetter, getSignedMessagePromise} from '../../../utils/utils';
+import { capitalizeFirstLetter, getSignedMessagePromise } from '../../../utils/utils';
 import { Toast } from '../Toast/Toast';
 import { ToastType } from '../Toast/Toast.types';
 

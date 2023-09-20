@@ -57,8 +57,8 @@ cf-summit-2023-ledger-follower-api:
       tag: 0.2.42
     bindOnEventIds: CF_SUMMIT_2023_3A33
     yaci:
-      startBlockHash: 69a01168a752b9f0aa3d1cd49d9a87fcffceb6738416c199740933fba002c922
-      startSlotNumber: "37194728"
+      startBlockHash: 3337e297121fda1262372c28de3d917bd2a60bb1e3c6326e3b7e832eb8017615
+      startSlotNumber: "38748711"
     corsAllowedOrigins: https://{{ .Values.domain }},http://localhost:3000
     instances:
       - name: follower-1

@@ -7,14 +7,16 @@ metadata:
   name: {{ $fullName }}
   labels:
     {{- include "voting-verification-app.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
   annotations:
-    traefik.ingress.kubernetes.io/router.middlewares: {{ .Release.Namespace }}-actuator-stripper@kubernetescrd
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   rules:
     - host: "verification-api.{{ .Values.domain }}"
       http:
         paths:
-          - path: /
+          - path: ~/actuator
             pathType: Prefix
             backend:
               service:
@@ -24,15 +26,4 @@ spec:
   tls:
     - hosts:
         - "verification-api.{{ .Values.domain }}"
-{{ end }}
-{{ if .Values.ingress.disableActuatorEndpoint }}
----
-apiVersion: traefik.io/v1alpha1
-kind: Middleware
-metadata:
-  name: actuator-stripper
-spec:
-  replacePathRegex:
-    regex: ^/actuator/(.*)
-    replacement: /not-found
 {{ end }}

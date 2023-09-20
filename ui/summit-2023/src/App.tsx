@@ -35,10 +35,7 @@ function App() {
     try {
       const event = await getEvent(env.EVENT_ID);
       const staticCategories: CategoryContent[] = SUMMIT2023CONTENT.categories;
-      console.log('summit2023Categories');
-      console.log(staticCategories);
-      console.log('event');
-      console.log(event);
+
       const joinedCategories = event.categories
         .map((item1) => {
           const item2 = staticCategories.find((item) => item.id === item1.id);
@@ -48,9 +45,6 @@ function App() {
           return null;
         })
         .filter((item) => item !== null);
-
-      console.log('joinedCategories');
-      console.log(joinedCategories);
 
       event.categories = joinedCategories;
       dispatch(setEventData({ event }));

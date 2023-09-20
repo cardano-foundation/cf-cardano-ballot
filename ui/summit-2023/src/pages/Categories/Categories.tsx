@@ -318,7 +318,15 @@ const Categories = () => {
       data-testid="categories-page"
       className={styles.categories}
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '50px', marginBottom: 20 }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginTop: '50px',
+          marginBottom: 20,
+        }}
+      >
         <Typography
           variant="h2"
           fontSize={{
@@ -350,9 +358,7 @@ const Categories = () => {
         )}
       </div>
 
-      <Box
-        marginY={10}
-      >
+      <Box marginY={10}>
         {isMobile || listView === 'grid' ? renderResponsiveGrid(categories) : renderResponsiveList(categories)}
       </Box>
     </div>

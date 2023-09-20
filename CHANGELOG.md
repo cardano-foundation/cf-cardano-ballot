@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.43](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.42...v0.2.43) (2023-09-20)
+
+
+### Bug Fixes
+
+* merkle proof generation fix. ([#270](https://github.com/cardano-foundation/cf-cardano-ballot/issues/270)) ([235f3cb](https://github.com/cardano-foundation/cf-cardano-ballot/commit/235f3cb1c9ebc8708f9b84b227841f628a148c61))
+* vote-admin-cli pre-prod fix and added fruits test event. ([b3b5a3f](https://github.com/cardano-foundation/cf-cardano-ballot/commit/b3b5a3f6bcd005cf3d974bd982393bd3015f695c))
+
 ## [0.2.42](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.41...v0.2.42) (2023-09-20)
 
 

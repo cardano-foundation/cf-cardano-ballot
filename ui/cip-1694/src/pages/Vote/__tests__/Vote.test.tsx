@@ -191,7 +191,7 @@ describe('For ongoing event:', () => {
 
       const eventDescription = await within(votePage).queryByTestId('event-description');
       expect(eventDescription).not.toBeNull();
-      expect(eventDescription.textContent).toEqual('Should Cardano change its governance structure?');
+      expect(eventDescription.textContent).toEqual('Do you like pineapple pizza?');
 
       const options = await within(votePage).queryAllByTestId('option-card');
       expect(options.length).toEqual(eventMock_active.categories[0].proposals.length);
@@ -280,7 +280,7 @@ describe('For ongoing event:', () => {
 
       const eventDescription = await within(votePage).queryByTestId('event-description');
       expect(eventDescription).not.toBeNull();
-      expect(eventDescription.textContent).toEqual('Should Cardano change its governance structure?');
+      expect(eventDescription.textContent).toEqual('Do you like pineapple pizza?');
 
       const options = await within(votePage).queryAllByTestId('option-card');
       expect(options.length).toEqual(eventMock_active.categories[0].proposals.length);
@@ -637,9 +637,7 @@ describe('For ongoing event:', () => {
 
     const eventDescription = await within(votePage).queryByTestId('event-description');
     expect(eventDescription).not.toBeNull();
-    expect(eventDescription.textContent).toEqual(
-      'Should Cardano implement the minimum-viable governance proposed in CIP-1694?'
-    );
+    expect(eventDescription.textContent).toEqual('Do you like apples?');
 
     const options = await within(votePage).queryAllByTestId('option-card');
     expect(options.length).toEqual(eventMock_active.categories[1].proposals.length);
@@ -803,7 +801,7 @@ describe("For the event that hasn't started yet", () => {
 
       const eventDescription = await within(votePage).queryByTestId('event-description');
       expect(eventDescription).not.toBeNull();
-      expect(eventDescription.textContent).toEqual('Should Cardano change its governance structure?');
+      expect(eventDescription.textContent).toEqual('Do you like pineapple pizza?');
 
       const options = await within(votePage).queryAllByTestId('option-card');
       expect(options.length).toEqual(eventMock_notStarted.categories[0].proposals.length);
@@ -865,7 +863,7 @@ describe('For the event that has already finished', () => {
 
       const eventDescription = await within(votePage).queryByTestId('event-description');
       expect(eventDescription).not.toBeNull();
-      expect(eventDescription.textContent).toEqual('Should Cardano change its governance structure?');
+      expect(eventDescription.textContent).toEqual('Do you like pineapple pizza?');
 
       const options = await within(votePage).queryAllByTestId('option-card');
       expect(options.length).toEqual(eventMock_finished.categories[0].proposals.length);

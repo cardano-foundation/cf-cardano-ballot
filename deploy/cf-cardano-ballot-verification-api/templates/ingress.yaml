@@ -16,7 +16,7 @@ spec:
     - host: "verification-api.{{ .Values.domain }}"
       http:
         paths:
-          - path: ~/actuator
+          - path: /
             pathType: Prefix
             backend:
               service:

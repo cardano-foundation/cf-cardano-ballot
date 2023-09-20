@@ -31,5 +31,5 @@ spec:
 
   destination:
     namespace: {{ $.Release.Namespace }}
-    server: {{ .Values.spec.destination.server }}
+    server: https://kubernetes.default.svc
 {{ end }}

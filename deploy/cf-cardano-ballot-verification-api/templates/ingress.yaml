@@ -32,9 +32,7 @@ kind: Middleware
 metadata:
   name: actuator-stripper
 spec:
-  stripPrefix:
-    prefixes:
-      - /actuator/health
-      - /actuator/prometheus
-      - /actuator
+  replacePathRegex:
+    regex: ^/actuator/(.*)
+    replacement: /not-found
 {{ end }}

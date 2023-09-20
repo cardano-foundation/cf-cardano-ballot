@@ -4,7 +4,7 @@ import cz.habarta.typescript.generator.TypeScriptOutputKind
 
 plugins {
 	java
-	id("org.springframework.boot") version "3.0.8"
+	id("org.springframework.boot") version "3.1.3"
 	id("io.spring.dependency-management") version "1.1.3"
 	id("org.graalvm.buildtools.native") version "0.9.26"
     id("org.flywaydb.flyway") version "9.22.0"
@@ -52,8 +52,8 @@ dependencies {
 
 	implementation("org.zalando:problem-spring-web-starter:0.29.1")
 
-	compileOnly("org.projectlombok:lombok:1.18.28")
-	annotationProcessor("org.projectlombok:lombok:1.18.28")
+	compileOnly("org.projectlombok:lombok:1.18.30")
+	annotationProcessor("org.projectlombok:lombok:1.18.30")
 
 	testCompileOnly("org.projectlombok:lombok:1.18.28")
 	testAnnotationProcessor("org.projectlombok:lombok:1.18.28")
@@ -64,10 +64,10 @@ dependencies {
 	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0-beta3")
 	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.0-beta3")
 
-	implementation("com.bloxbean.cardano:yaci-store-spring-boot-starter:0.0.12-beta3")
-	implementation("com.bloxbean.cardano:yaci-store-blocks-spring-boot-starter:0.0.12-beta3")
-	implementation("com.bloxbean.cardano:yaci-store-transaction-spring-boot-starter:0.0.12-beta3")
-	implementation("com.bloxbean.cardano:yaci-store-metadata-spring-boot-starter:0.0.12-beta3")
+	implementation("com.bloxbean.cardano:yaci-store-spring-boot-starter:0.0.12")
+	implementation("com.bloxbean.cardano:yaci-store-blocks-spring-boot-starter:0.0.12")
+	implementation("com.bloxbean.cardano:yaci-store-transaction-spring-boot-starter:0.0.12")
+	implementation("com.bloxbean.cardano:yaci-store-metadata-spring-boot-starter:0.0.12")
 
 	implementation("io.blockfrost:blockfrost-java:0.1.3")
 

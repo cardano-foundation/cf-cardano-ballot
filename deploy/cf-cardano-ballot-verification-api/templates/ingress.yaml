@@ -16,6 +16,15 @@ spec:
     - host: "verification-api.{{ .Values.domain }}"
       http:
         paths:
+{{ if .Values.ingress.disableActuatorEndpoint }}
+          - path: /actuator
+            pathType: Prefix
+            backend:
+              service:
+                name: actuator
+                port:
+                  number: 80
+{{ end }}
           - path: /
             pathType: Prefix
             backend:
@@ -29,14 +38,14 @@ spec:
 {{ end }}
 {{ if .Values.ingress.disableActuatorEndpoint }}
 ---
-apiVersion: traefik.io/v1alpha1
-kind: Middleware
+apiVersion: v1
+kind: Service
 metadata:
-  name: test-stripprefix
+  name: actuator
 spec:
-  stripPrefix:
-    prefixes:
-      - /actuator/health
-      - /actuator/prometheus
-      - /actuator
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
 {{ end }}

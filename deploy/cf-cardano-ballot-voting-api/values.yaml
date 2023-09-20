@@ -15,6 +15,7 @@ service:
 
 ingress:
   enabled: true
+  disableActuatorEndpoint: true
 
 resources: {}
   # limits:

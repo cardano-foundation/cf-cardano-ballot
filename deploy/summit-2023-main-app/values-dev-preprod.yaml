@@ -12,6 +12,12 @@ cf-summit-2023-infra:
 cf-summit-2023-ui:
   enabled: true
   values:
+    votingAppServerUrl: https://api.dev.cf-summit-2023-preprod.eu-west-1.metadata.dev.cf-deployments.org
+    votingLedgerFollowerAppServerUrl: https://follower-api.dev.cf-summit-2023-preprod.eu-west-1.metadata.dev.cf-deployments.org
+    votingVerificationAppServerUrl: https://verification-api.dev.cf-summit-2023-preprod.eu-west-1.metadata.dev.cf-deployments.org
+    userVerificationServerUrl: https://user-verification.dev.cf-summit-2023-preprod.eu-west-1.metadata.dev.cf-deployments.org
+    targetNetwork: PREPROD
+    eventId: CF_SUMMIT_2023_3A33
     image:
       tag: 0.2.43
 

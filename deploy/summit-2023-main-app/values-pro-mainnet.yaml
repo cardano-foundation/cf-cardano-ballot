@@ -25,16 +25,23 @@ cf-summit-2023-voting-api:
   enabled: true
   values:
     useJwt: true
+    resources:
+      limits:
+        cpu: 2
+        memory: 5Gi
+      requests:
+        cpu: 1
+        memory: 3Gi
     instances:
       - name: passive
         active: "false"
         replicas: 2
       - name: active-hour
         active: "true"
-        voteCommitmentCronExpression: "0 15 * * * *"
+        voteCommitmentCronExpression: "0 0 * * * *"
       - name: active-half-hour
         active: "true"
-        voteCommitmentCronExpression: "0 45 * * * *"
+        voteCommitmentCronExpression: "0 30 * * * *"
     image:
       tag: 0.2.37
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090

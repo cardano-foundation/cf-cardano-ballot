@@ -11,7 +11,7 @@ cf-cardano-ballot-ui:
   enabled: true
   values:
     image:
-      tag: 0.2.42-preprod
+      tag: 0.2.43-preprod
 
 cf-cardano-ballot-voting-api:
   enabled: true
@@ -27,19 +27,19 @@ cf-cardano-ballot-voting-api:
         active: "true"
         voteCommitmentCronExpression: "0 30 * * * *"
     image:
-      tag: 0.2.42
+      tag: 0.2.43
 
 cf-cardano-ballot-verification-api:
   enabled: true
   values:
     image:
-      tag: 0.2.42
+      tag: 0.2.43
 
 cf-cardano-ballot-ledger-follower-api:
   enabled: true
   values:
     image:
-      tag: 0.2.42
+      tag: 0.2.43
     bindOnEventIds: CIP-1694_Pre_Ratification_3316,FRUITS_9172
     yaci:
       startBlockHash: 3337e297121fda1262372c28de3d917bd2a60bb1e3c6326e3b7e832eb8017615

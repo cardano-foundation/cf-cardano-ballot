@@ -8,8 +8,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.zalando.problem.Problem;
+import org.zalando.problem.Status;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.zalando.problem.Status.NOT_FOUND;
 
 @RestController
 @RequestMapping("/api/account")
@@ -31,7 +34,15 @@ public class AccountResource {
                         },
                         maybeAccount -> {
                             if (maybeAccount.isEmpty()) {
-                                return ResponseEntity.notFound().build();
+                                var problem = Problem.builder()
+                                        .withTitle("ACCOUNT_NOT_FOUND")
+                                        .withDetail("Account not found for event: " + eventId + " and stake address: " + stakeAddress)
+                                        .withStatus(NOT_FOUND)
+                                        .build();
+
+                                return ResponseEntity
+                                        .status(problem.getStatus().getStatusCode())
+                                        .body(problem);
                             }
 
                             var account = maybeAccount.orElseThrow();

@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.cardano.foundation.voting.domain.Account.AccountStatus.ELIGIBLE;
 import static org.cardano.foundation.voting.domain.Account.AccountStatus.NOT_ELIGIBLE;
@@ -33,7 +32,7 @@ public class DefaultAccountService implements AccountService {
 
     @Override
     @Transactional(readOnly = true)
-    public Either<Problem, Optional<Account>> findAccount(String eventName, String stakeAddress) {
+    public Either<Problem, Account> findAccount(String eventName, String stakeAddress) {
         var maybeEvent = referenceDataService.findValidEventByName(eventName);
         if (maybeEvent.isEmpty()) {
             log.warn("Unrecognised event, eventName:{}", eventName);
@@ -59,16 +58,23 @@ public class DefaultAccountService implements AccountService {
                     .build());
         }
 
-        return votingPowerService.getVotingPower(event, stakeAddress)
-                .map(vp -> vp.map(power -> Account.builder()
-                        .stakeAddress(stakeAddress)
-                        .network(network)
-                        .accountStatus(vp.filter(v -> v > 0).map(v -> ELIGIBLE).orElse(NOT_ELIGIBLE))
-                        .epochNo(event.getSnapshotEpoch().orElseThrow())
-                        .votingPower(vp.map(String::valueOf))
-                        .votingPowerAsset(event.getVotingPowerAsset())
-                        .build()
-                ));
+        var amountE = votingPowerService.getVotingPower(event, stakeAddress);
+
+        if (amountE.isEmpty()) {
+            return Either.left(amountE.getLeft());
+        }
+
+        var amount = amountE.get();
+
+        return Either.right(Account.builder()
+                .stakeAddress(stakeAddress)
+                .network(network)
+                .accountStatus(amount > 0 ? ELIGIBLE : NOT_ELIGIBLE)
+                .epochNo(event.getSnapshotEpoch().orElseThrow())
+                .votingPower(String.valueOf(amount))
+                .votingPowerAsset(event.getVotingPowerAsset().orElseThrow())
+                .build()
+        );
     }
 
 }

@@ -6,15 +6,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.domain.Leaderboard;
+import org.cardano.foundation.voting.repository.CustomVoteRepository;
 import org.cardano.foundation.voting.repository.VoteRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
 import java.util.*;
 
 import static java.util.stream.Collectors.toMap;
+import static org.springframework.transaction.annotation.Isolation.SERIALIZABLE;
 import static org.zalando.problem.Status.*;
 
 @Service
@@ -26,47 +27,10 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
 
     private final VoteRepository voteRepository;
 
-    private Either<Problem, Boolean> isHighLevelEventLeaderboardAvailable(ChainFollowerClient.EventDetailsResponse eventDetails,
-                                                                          boolean forceLeaderboard) {
-        if (forceLeaderboard) {
-            return Either.right(true);
-        }
-
-        if (eventDetails.highLevelEventResultsWhileVoting()) {
-            return Either.right(true);
-        }
-
-        return Either.right(eventDetails.proposalsReveal());
-    }
-
-    private Either<Problem, Boolean> isHighLevelCategoryLeaderboardAvailable(ChainFollowerClient.EventDetailsResponse eventDetails,
-                                                                             boolean forceLeaderboard) {
-        if (forceLeaderboard) {
-            return Either.right(true);
-        }
-
-        if (eventDetails.highLevelCategoryResultsWhileVoting()) {
-            return Either.right(true);
-        }
-
-        return Either.right(eventDetails.proposalsReveal());
-    }
-
-    private Either<Problem, Boolean> isCategoryLeaderboardAvailable(ChainFollowerClient.EventDetailsResponse eventDetails,
-                                                                    ChainFollowerClient.CategoryDetailsResponse categoryDetails,
-                                                                    boolean forceLeaderboard) {
-        if (forceLeaderboard) {
-            return Either.right(true);
-        }
-
-        if (eventDetails.categoryResultsWhileVoting()) {
-            return Either.right(true);
-        }
-
-        return Either.right(eventDetails.proposalsReveal());
-    }
+    private final CustomVoteRepository customVoteRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public Either<Problem, Boolean> isHighLevelEventLeaderboardAvailable(String event,
                                                                          boolean forceLeaderboard) {
         var eventDetailsE = chainFollowerClient.getEventDetails(event);
@@ -93,6 +57,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Either<Problem, Boolean> isHighLevelCategoryLeaderboardAvailable(String event, boolean forceLeaderboard) {
         var eventDetailsE = chainFollowerClient.getEventDetails(event);
         if (eventDetailsE.isEmpty()) {
@@ -118,7 +83,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
     }
 
     @Override
-    @Transactional(readOnly = true, isolation = Isolation.SERIALIZABLE)
+    @Transactional(readOnly = true)
     public Either<Problem, Leaderboard.ByEventStats> getEventLeaderboard(String event, boolean forceLeaderboard) {
         var eventDetailsE = chainFollowerClient.getEventDetails(event);
         if (eventDetailsE.isEmpty()) {
@@ -237,7 +202,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
     }
 
     @Override
-    @Transactional(readOnly = true, isolation = Isolation.SERIALIZABLE)
+    @Transactional(readOnly = true)
     public Either<Problem, Leaderboard.ByProposalsInCategoryStats> getCategoryLeaderboard(String event, String category, boolean forceLeaderboard) {
         var eventDetailsE = chainFollowerClient.getEventDetails(event);
         if (eventDetailsE.isEmpty()) {
@@ -271,7 +236,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
         }
         var categoryDetails = maybeCategory.orElseThrow();
 
-        var categoryLeaderboardAvailableE = isCategoryLeaderboardAvailable(eventDetails, categoryDetails, forceLeaderboard);
+        var categoryLeaderboardAvailableE = isCategoryLeaderboardAvailable(eventDetails, forceLeaderboard);
         if (categoryLeaderboardAvailableE.isEmpty()) {
             return Either.left(categoryLeaderboardAvailableE.getLeft());
         }
@@ -280,7 +245,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
         if (!isCategoryLeaderBoardAvailable) {
             return Either.left(Problem.builder()
                     .withTitle("VOTING_RESULTS_NOT_AVAILABLE")
-                    .withDetail("Category level voting results not available until voting event finishes!")
+                    .withDetail("Category level voting results not available until results can be revealed!")
                     .withStatus(FORBIDDEN)
                     .build()
             );
@@ -313,18 +278,48 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
     }
 
     @Override
-    public Either<Problem, Leaderboard.WinnerStats> getWinners(String event, boolean forceLeaderboard) {
-        List<VoteRepository.EventWinnerStats> winners = voteRepository.getWinners(event);
+    @Transactional(readOnly = true, isolation = SERIALIZABLE)
+    public Either<Problem, List<Leaderboard.WinnerStats>> getEventWinners(String event, boolean forceLeaderboard) {
+        var eventDetailsE = chainFollowerClient.getEventDetails(event);
 
-//
-//        var winnerMap = winners.stream().map(w -> {
-//
-//        }).collect(Collectors.toMap());
+        if (eventDetailsE.isEmpty()) {
+            return Either.left(eventDetailsE.getLeft());
+        }
 
-        return Either.<Problem, Leaderboard.WinnerStats>right(Leaderboard.WinnerStats.builder()
-                .winners(Map.of())
-                .build()
-        );
+        var maybeEventDetails = eventDetailsE.get();
+
+        if (maybeEventDetails.isEmpty()) {
+            return Either.left(Problem.builder()
+                    .withTitle("UNRECOGNISED_EVENT")
+                    .withDetail("Unrecognised event, event:" + event)
+                    .withStatus(BAD_REQUEST)
+                    .build()
+            );
+        }
+
+        var eventDetails = maybeEventDetails.orElseThrow();
+
+        var categoryLeaderboardAvailableE = isCategoryLeaderboardAvailable(eventDetails, forceLeaderboard);
+        if (categoryLeaderboardAvailableE.isEmpty()) {
+            return Either.left(categoryLeaderboardAvailableE.getLeft());
+        }
+
+        var isCategoryLeaderBoardAvailable = categoryLeaderboardAvailableE.get();
+        if (!isCategoryLeaderBoardAvailable) {
+            return Either.left(Problem.builder()
+                    .withTitle("VOTING_RESULTS_NOT_AVAILABLE")
+                    .withDetail("Category level voting results not available until results can be revealed!")
+                    .withStatus(FORBIDDEN)
+                    .build()
+            );
+        }
+
+        var categoryIds = eventDetails.categories()
+                .stream()
+                .map(ChainFollowerClient.CategoryDetailsResponse::id)
+                .toList();
+
+        return Either.right(customVoteRepository.getEventWinners(event, categoryIds));
     }
 
     private static HashMap<String, Leaderboard.Votes> calcProposalsResults(ChainFollowerClient.CategoryDetailsResponse categoryDetails, Map<String, Leaderboard.Votes> proposalResultsMap, ChainFollowerClient.EventDetailsResponse eventDetails) {
@@ -349,7 +344,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
     }
 
     @Override
-    @Transactional(readOnly = true, isolation = Isolation.SERIALIZABLE)
+    @Transactional(readOnly = true)
     public Either<Problem, Boolean> isCategoryLeaderboardAvailable(String event, String category, boolean forceLeaderboard) {
         var eventDetailsE = chainFollowerClient.getEventDetails(event);
         if (eventDetailsE.isEmpty()) {
@@ -381,9 +376,47 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
                     .build()
             );
         }
-        var categoryDetails = maybeCategory.orElseThrow();
 
-        return isCategoryLeaderboardAvailable(eventDetails, categoryDetails, forceLeaderboard);
+        return isCategoryLeaderboardAvailable(eventDetails, forceLeaderboard);
+    }
+
+    private Either<Problem, Boolean> isHighLevelEventLeaderboardAvailable(ChainFollowerClient.EventDetailsResponse eventDetails,
+                                                                          boolean forceLeaderboard) {
+        if (forceLeaderboard) {
+            return Either.right(true);
+        }
+
+        if (eventDetails.highLevelEventResultsWhileVoting()) {
+            return Either.right(true);
+        }
+
+        return Either.right(eventDetails.proposalsReveal());
+    }
+
+    private Either<Problem, Boolean> isHighLevelCategoryLeaderboardAvailable(ChainFollowerClient.EventDetailsResponse eventDetails,
+                                                                             boolean forceLeaderboard) {
+        if (forceLeaderboard) {
+            return Either.right(true);
+        }
+
+        if (eventDetails.highLevelCategoryResultsWhileVoting()) {
+            return Either.right(true);
+        }
+
+        return Either.right(eventDetails.proposalsReveal());
+    }
+
+    private Either<Problem, Boolean> isCategoryLeaderboardAvailable(ChainFollowerClient.EventDetailsResponse eventDetails,
+                                                                    boolean forceLeaderboard) {
+        if (forceLeaderboard) {
+            return Either.right(true);
+        }
+
+        if (eventDetails.categoryResultsWhileVoting()) {
+            return Either.right(true);
+        }
+
+        return Either.right(eventDetails.proposalsReveal());
     }
 
 }

@@ -17,11 +17,10 @@ public class Leaderboard {
     @Getter
     public static class WinnerStats {
 
-        private Map<String, String> winners;
+        private String categoryId;
+        private String proposalId;
 
     }
-
-
 
     // per category
     @Builder

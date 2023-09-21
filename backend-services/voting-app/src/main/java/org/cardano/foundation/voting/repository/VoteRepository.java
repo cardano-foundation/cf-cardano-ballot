@@ -30,39 +30,6 @@ public interface VoteRepository extends JpaRepository<Vote, String> {
     @Query("SELECT v.categoryId as categoryId, v.proposalId AS proposalId, COUNT(v) AS totalVoteCount, SUM(v.votingPower) AS totalVotingPower FROM Vote v WHERE v.eventId = :eventId AND v.categoryId = :categoryId GROUP BY proposalId")
     List<CategoryLevelStats> getCategoryLevelStats(@Param("eventId") String eventId, @Param("categoryId") String categoryId);
 
-    @Query("""
-            SELECT v.event_id, v.category_id, v.proposal_id
-            FROM Vote v
-            WHERE v.event_id = :eventId
-            AND v.category_id IN (
-                SELECT DISTINCT v2.category_id
-                FROM Vote v2
-                WHERE v2.event_id = :eventId
-            )
-            GROUP BY v.event_id, v.category_id, v.proposal_id
-            HAVING SUM(v.voting_power) = (
-                SELECT MAX(category_sum)
-                FROM (
-                    SELECT v2.event_id, v2.category_id, SUM(v2.voting_power) AS category_sum
-                    FROM Vote v2
-                    WHERE v2.event_id = :eventId
-                    GROUP BY v2.event_id, v2.category_id
-                ) AS category_sums
-                WHERE category_sums.event_id = v.event_id
-                AND category_sums.category_id = v.category_id
-            );""")
-    List<EventWinnerStats> getWinners(@Param("eventId") String eventId);
-
-    interface EventWinnerStats {
-
-        String getEventId();
-
-        String getCategoryId();
-
-        String getProposalId();
-
-    }
-
     interface CategoryProposalProjection {
 
         String getCategoryId();

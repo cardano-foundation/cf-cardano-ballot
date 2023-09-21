@@ -17,15 +17,15 @@ cf-cardano-ballot-voting-api:
   enabled: true
   values:
     instances:
-      - name: passive
-        active: "false"
-        replicas: 2
+#      - name: passive
+#        active: "false"
+#        replicas: 2
       - name: active-hour
         active: "true"
         voteCommitmentCronExpression: "0 0 * * * *"
-      - name: active-half-hour
-        active: "true"
-        voteCommitmentCronExpression: "0 30 * * * *"
+#      - name: active-half-hour
+#        active: "true"
+#        voteCommitmentCronExpression: "0 30 * * * *"
     image:
       tag: 0.2.43
 

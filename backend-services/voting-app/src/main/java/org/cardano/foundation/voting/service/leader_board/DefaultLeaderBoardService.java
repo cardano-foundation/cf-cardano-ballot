@@ -8,11 +8,11 @@ import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.domain.Leaderboard;
 import org.cardano.foundation.voting.repository.VoteRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toMap;
 import static org.zalando.problem.Status.*;
@@ -118,7 +118,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true, isolation = Isolation.SERIALIZABLE)
     public Either<Problem, Leaderboard.ByEventStats> getEventLeaderboard(String event, boolean forceLeaderboard) {
         var eventDetailsE = chainFollowerClient.getEventDetails(event);
         if (eventDetailsE.isEmpty()) {
@@ -237,7 +237,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true, isolation = Isolation.SERIALIZABLE)
     public Either<Problem, Leaderboard.ByProposalsInCategoryStats> getCategoryLeaderboard(String event, String category, boolean forceLeaderboard) {
         var eventDetailsE = chainFollowerClient.getEventDetails(event);
         if (eventDetailsE.isEmpty()) {
@@ -316,11 +316,15 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
     public Either<Problem, Leaderboard.WinnerStats> getWinners(String event, boolean forceLeaderboard) {
         List<VoteRepository.EventWinnerStats> winners = voteRepository.getWinners(event);
 
-        var winnerMap = winners.stream().map(w -> {
+//
+//        var winnerMap = winners.stream().map(w -> {
+//
+//        }).collect(Collectors.toMap());
 
-        }).collect(Collectors.toMap());
-
-        return Either.<Problem, Leaderboard.WinnerStats>right(winnerStats);
+        return Either.<Problem, Leaderboard.WinnerStats>right(Leaderboard.WinnerStats.builder()
+                .winners(Map.of())
+                .build()
+        );
     }
 
     private static HashMap<String, Leaderboard.Votes> calcProposalsResults(ChainFollowerClient.CategoryDetailsResponse categoryDetails, Map<String, Leaderboard.Votes> proposalResultsMap, ChainFollowerClient.EventDetailsResponse eventDetails) {
@@ -345,6 +349,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
     }
 
     @Override
+    @Transactional(readOnly = true, isolation = Isolation.SERIALIZABLE)
     public Either<Problem, Boolean> isCategoryLeaderboardAvailable(String event, String category, boolean forceLeaderboard) {
         var eventDetailsE = chainFollowerClient.getEventDetails(event);
         if (eventDetailsE.isEmpty()) {

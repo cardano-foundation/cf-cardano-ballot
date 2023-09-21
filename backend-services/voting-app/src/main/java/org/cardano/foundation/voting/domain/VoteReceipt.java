@@ -43,7 +43,9 @@ public class VoteReceipt {
 
         PARTIAL, // there is a merkle proof but L1 commitment is not visible on chain yet
 
-        ROLLBACK, // with merkle proof committed to L1 but on L1 there has been a rollback - no longer visible on chain    .. it has been on chain and it's gome
+        // with merkle proof committed to L1 but on L1 there has been a rollback - no longer visible on chain
+        //, in fact it has been on chain and it's gome
+        ROLLBACK,
 
         FULL // with merkle proof committed to L1 and visible on chain
     }
@@ -73,7 +75,7 @@ public class VoteReceipt {
     }
 
     public enum MerkleProofType {
-        Left, Right
+        L, R
     }
 
 }

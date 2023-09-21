@@ -28,6 +28,9 @@ cf-cardano-ballot-voting-api:
 #        voteCommitmentCronExpression: "0 30 * * * *"
     image:
       tag: 0.2.43
+    monitoring:
+      alerting:
+        enabled: false
 
 cf-cardano-ballot-verification-api:
   enabled: true

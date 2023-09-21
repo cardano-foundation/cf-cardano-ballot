@@ -46,6 +46,9 @@ cf-summit-2023-voting-api:
       tag: 0.2.43
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
     corsAllowedOrigins: https://{{ .Values.domain }}
+    monitoring:
+      alerting:
+        enabled: false
 
 cf-summit-2023-verification-api:
   enabled: true

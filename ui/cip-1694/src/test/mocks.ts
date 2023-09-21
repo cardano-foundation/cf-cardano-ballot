@@ -40,6 +40,7 @@ export const accountDataMock: Account = {
 };
 
 export const chainTipMock: ChainTip = {
+  synced: true,
   absoluteSlot: 36004360,
   epochNo: 87,
   hash: '22f30715e455ba4eb9d1333239c3508fae8f7c0c00a74859d3a55d26cd0e7289',
@@ -81,6 +82,8 @@ export const useCardanoMock_notConnected: ReturnType<typeof useCardano> = {
 };
 
 export const eventMock_active: EventPresentation = {
+  started: true,
+  commitmentsWindowOpen: true,
   id: 'CIP-1694_Pre_Ratification_3316',
   organisers: 'CF and IOG',
   votingEventType: 'STAKE_BASED',
@@ -164,9 +167,9 @@ export const VoteReceiptMock_Basic: VoteReceipt = {
     transactionHash: '',
     rootHash: '51861e99048e9beec0689fcafed7b3a13760472d8073d0b153edc265e2cb8d2',
     steps: [
-      { type: 'Left', hash: '252f10c83610ebca1a059c0bae8255eba2f95be4d1d7bcfa89d7248a82d9f111' },
-      { type: 'Right', hash: '6b7ba3e2b42d464f8b7dd6e74e23bbd75de48087bf33959d5cad25d240332c8c' },
-      { type: 'Left', hash: '2a3c8dd1eef04d53583e7953ffdb8596bcef8b3b74fe54a599cbaa4954984473' },
+      { type: 'L', hash: '252f10c83610ebca1a059c0bae8255eba2f95be4d1d7bcfa89d7248a82d9f111' },
+      { type: 'R', hash: '6b7ba3e2b42d464f8b7dd6e74e23bbd75de48087bf33959d5cad25d240332c8c' },
+      { type: 'L', hash: '2a3c8dd1eef04d53583e7953ffdb8596bcef8b3b74fe54a599cbaa4954984473' },
     ],
   },
   coseSignature:

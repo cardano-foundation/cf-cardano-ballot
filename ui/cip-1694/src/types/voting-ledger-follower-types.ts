@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-// Generated using typescript-generator version 3.2.1263 on 2023-09-14 10:20:22.
+// Generated using typescript-generator version 3.2.1263 on 2023-09-20 14:24:08.
 
 export interface Either<L, R> extends Value<R>, Serializable {
     left: L;
@@ -25,6 +25,7 @@ export interface ChainTip {
     hash: string;
     epochNo: number;
     network: CardanoNetwork;
+    synced: boolean;
 }
 
 export interface ChainTipBuilder {
@@ -46,9 +47,11 @@ export interface EraData {
 export interface EventAdditionalInfo {
     id: string;
     notStarted: boolean;
+    started: boolean;
     finished: boolean;
     active: boolean;
     proposalsReveal: boolean;
+    commitmentsWindowOpen: boolean;
 }
 
 export interface IsMerkleRootPresentResult {
@@ -92,9 +95,9 @@ export interface Event extends AbstractTimestampEntity {
     votingEventType: VotingEventType;
     votingPowerAsset?: VotingPowerAsset;
     allowVoteChanging: boolean;
-    highLevelEpochResultsWhileVoting?: boolean;
-    highLevelCategoryResultsWhileVoting?: boolean;
-    categoryResultsWhileVoting?: boolean;
+    highLevelEventResultsWhileVoting: boolean;
+    highLevelCategoryResultsWhileVoting: boolean;
+    categoryResultsWhileVoting: boolean;
     startEpoch?: number;
     endEpoch?: number;
     snapshotEpoch?: number;
@@ -156,13 +159,15 @@ export interface EventPresentation {
     proposalsRevealEpoch?: number;
     categories: CategoryPresentation[];
     active: boolean;
-    highLevelCategoryResultsWhileVoting: boolean;
-    categoryResultsWhileVoting: boolean;
-    highLevelEventResultsWhileVoting: boolean;
+    started: boolean;
+    notStarted: boolean;
     allowVoteChanging: boolean;
+    commitmentsWindowOpen: boolean;
     proposalsReveal: boolean;
     finished: boolean;
-    notStarted: boolean;
+    highLevelEventResultsWhileVoting: boolean;
+    highLevelCategoryResultsWhileVoting: boolean;
+    categoryResultsWhileVoting: boolean;
 }
 
 export interface EventPresentationBuilder {
@@ -271,19 +276,18 @@ export interface CborService__BeanDefinitions {
 }
 
 export interface ChainSyncService {
-    syncStatus: SyncStatus;
+}
+
+export interface Noop extends ChainSyncService {
+}
+
+export interface DefaultChainSyncService extends ChainSyncService {
 }
 
 export interface SyncStatus {
     isSynced: boolean;
     diff?: number;
     ex?: Exception;
-}
-
-export interface ChainSyncService__Autowiring {
-}
-
-export interface ChainSyncService__BeanDefinitions {
 }
 
 export interface CustomEpochService {
@@ -302,6 +306,9 @@ export interface CustomEraService__BeanDefinitions {
 }
 
 export interface EventAdditionalInfoService {
+}
+
+export interface EventAdditionalInfoService__Autowiring {
 }
 
 export interface EventAdditionalInfoService__BeanDefinitions {
@@ -392,8 +399,8 @@ export interface StatusType {
 
 export interface Value<T> extends Iterable<T> {
     empty: boolean;
-    singleValued: boolean;
     orNull: T;
+    singleValued: boolean;
     async: boolean;
     lazy: boolean;
 }

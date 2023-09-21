@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-// Generated using typescript-generator version 3.2.1263 on 2023-09-14 10:18:45.
+// Generated using typescript-generator version 3.2.1263 on 2023-09-20 14:24:21.
 
 export interface Either<L, R> extends Value<R>, Serializable {
     left: L;
@@ -9,8 +9,8 @@ export interface Either<L, R> extends Value<R>, Serializable {
 }
 
 export interface L1MerkleCommitment {
-    votes: Vote[];
-    root: MerkleElement<Vote>;
+    signedVotes: CompactVote[];
+    root: MerkleElement<CompactVote>;
     eventId: string;
 }
 
@@ -116,6 +116,9 @@ export interface MerkleProofItemBuilder {
 export interface VoteReceiptBuilder {
 }
 
+export interface VoteSerialisations {
+}
+
 export interface WellKnownPointWithProtocolMagic {
     wellKnownPointForNetwork?: Point;
     protocolMagic: number;
@@ -128,6 +131,7 @@ export interface AbstractTimestampEntity {
 
 export interface Vote extends AbstractTimestampEntity {
     id: string;
+    idNumericHash: number;
     eventId: string;
     categoryId: string;
     proposalId: string;
@@ -143,6 +147,7 @@ export interface VoteBuilder {
 
 export interface VoteMerkleProof extends AbstractTimestampEntity {
     voteId: string;
+    voteIdNumericHash: number;
     eventId: string;
     rootHash: string;
     l1TransactionHash: string;
@@ -160,8 +165,8 @@ export interface CIP93Envelope<T> {
     actionText: string;
     slot: string;
     data: T;
-    slotAsLong: number;
     actionAsEnum?: Web3Action;
+    slotAsLong: number;
 }
 
 export interface CIP93EnvelopeBuilder<T> {
@@ -211,9 +216,6 @@ export interface DefaultLoginService extends LoginService {
 export interface DefaultLoginService__BeanDefinitions {
 }
 
-export interface Headers {
-}
-
 export interface LoginService {
 }
 
@@ -224,6 +226,7 @@ export interface LoginSystemDetector__BeanDefinitions {
 }
 
 export interface JwtAuthenticationToken extends AbstractAuthenticationToken {
+    stakeAddress: string;
 }
 
 export interface JwtFilter extends OncePerRequestFilter {
@@ -255,10 +258,11 @@ export interface Web3Details {
     stakeAddress: string;
     event: EventDetailsResponse;
     action: Web3Action;
-    network: CardanoNetwork;
     cip30VerificationResult: Cip30VerificationResult;
     envelope: CIP93Envelope<{ [index: string]: any }>;
     signedWeb3Request: SignedWeb3Request;
+    chainTip: ChainTipResponse;
+    network: CardanoNetwork;
 }
 
 export interface Web3DetailsBuilder {
@@ -323,16 +327,10 @@ export interface MerkleProofSerdeService__BeanDefinitions {
 export interface VoteCommitmentService {
 }
 
-export interface VoteCommitmentService__Autowiring {
-}
-
 export interface VoteCommitmentService__BeanDefinitions {
 }
 
 export interface VoteMerkleProofService {
-}
-
-export interface VoteMerkleProofService__Autowiring {
 }
 
 export interface VoteMerkleProofService__BeanDefinitions {
@@ -397,11 +395,16 @@ export interface Problem {
     type: URI;
     parameters: { [index: string]: any };
     status: StatusType;
-    detail: string;
     title: string;
+    detail: string;
 }
 
 export interface Serializable {
+}
+
+export interface CompactVote {
+    cosePublicKey?: string;
+    coseSignature: string;
 }
 
 export interface MerkleElement<T> {
@@ -426,9 +429,9 @@ export interface Environment extends PropertyResolver {
 }
 
 export interface FilterConfig {
+    filterName: string;
     initParameterNames: Enumeration<string>;
     servletContext: ServletContext;
-    filterName: string;
 }
 
 export interface ServletContext {
@@ -436,10 +439,8 @@ export interface ServletContext {
     classLoader: ClassLoader;
     majorVersion: number;
     minorVersion: number;
-    defaultSessionTrackingModes: SessionTrackingMode[];
-    effectiveSessionTrackingModes: SessionTrackingMode[];
-    requestCharacterEncoding: string;
-    responseCharacterEncoding: string;
+    attributeNames: Enumeration<string>;
+    contextPath: string;
     effectiveMajorVersion: number;
     effectiveMinorVersion: number;
     /**
@@ -458,8 +459,10 @@ export interface ServletContext {
     sessionCookieConfig: SessionCookieConfig;
     jspConfigDescriptor: JspConfigDescriptor;
     virtualServerName: string;
-    contextPath: string;
-    attributeNames: Enumeration<string>;
+    defaultSessionTrackingModes: SessionTrackingMode[];
+    effectiveSessionTrackingModes: SessionTrackingMode[];
+    requestCharacterEncoding: string;
+    responseCharacterEncoding: string;
 }
 
 export interface OncePerRequestFilter extends GenericFilterBean {
@@ -481,8 +484,10 @@ export interface EventDetailsResponse {
     id: string;
     finished: boolean;
     notStarted: boolean;
+    isStarted: boolean;
     active: boolean;
     proposalsReveal: boolean;
+    commitmentsWindowOpen: boolean;
     allowVoteChanging: boolean;
     highLevelEventResultsWhileVoting: boolean;
     highLevelCategoryResultsWhileVoting: boolean;
@@ -502,6 +507,15 @@ export interface Cip30VerificationResult {
     valid: boolean;
 }
 
+export interface ChainTipResponse {
+    hash: string;
+    epochNo: number;
+    absoluteSlot: number;
+    synced: boolean;
+    network: CardanoNetwork;
+    notSynced: boolean;
+}
+
 export interface URI extends Comparable<URI>, Serializable {
 }
 
@@ -512,18 +526,18 @@ export interface StatusType {
 
 export interface Value<T> extends Iterable<T> {
     empty: boolean;
-    singleValued: boolean;
     orNull: T;
+    singleValued: boolean;
     async: boolean;
     lazy: boolean;
 }
 
 export interface Authentication extends Principal, Serializable {
     authorities: GrantedAuthority[];
-    authenticated: boolean;
-    principal: any;
     details: any;
+    authenticated: boolean;
     credentials: any;
+    principal: any;
 }
 
 export interface CredentialsContainer {
@@ -559,8 +573,8 @@ export interface SessionCookieConfig {
     path: string;
     comment: string;
     httpOnly: boolean;
-    maxAge: number;
     secure: boolean;
+    maxAge: number;
 }
 
 export interface JspConfigDescriptor {
@@ -604,9 +618,9 @@ export interface JWSObject extends JOSEObject {
 
 export interface JWT extends Serializable {
     header: Header;
+    jwtclaimsSet: JWTClaimsSet;
     parsedParts: Base64URL[];
     parsedString: string;
-    jwtclaimsSet: JWTClaimsSet;
 }
 
 export interface CategoryDetailsResponse {
@@ -616,8 +630,8 @@ export interface CategoryDetailsResponse {
 }
 
 export interface ServletConfig {
-    servletName: string;
     initParameterNames: Enumeration<string>;
+    servletName: string;
     servletContext: ServletContext;
 }
 
@@ -629,9 +643,6 @@ export interface Registration {
 
 export interface JspPropertyGroupDescriptor {
     buffer: string;
-    errorOnUndeclaredNamespace: string;
-    trimDirectiveWhitespaces: string;
-    deferredSyntaxAllowedAsLiteral: string;
     urlPatterns: string[];
     elIgnored: string;
     pageEncoding: string;
@@ -639,6 +650,9 @@ export interface JspPropertyGroupDescriptor {
     includePreludes: string[];
     includeCodas: string[];
     defaultContentType: string;
+    deferredSyntaxAllowedAsLiteral: string;
+    trimDirectiveWhitespaces: string;
+    errorOnUndeclaredNamespace: string;
     isXml: string;
 }
 
@@ -677,7 +691,6 @@ export interface JWK extends Serializable {
     expirationTime: Date;
     algorithm: Algorithm;
     private: boolean;
-    x509CertSHA256Thumbprint: Base64URL;
     requiredParams: { [index: string]: any };
     keyOperations: KeyOperation[];
     x509CertURL: URI;
@@ -689,9 +702,10 @@ export interface JWK extends Serializable {
     notBeforeTime: Date;
     issueTime: Date;
     parsedX509CertChain: X509Certificate[];
+    x509CertSHA256Thumbprint: Base64URL;
+    keyID: string;
     keyType: KeyType;
     keyUse: KeyUse;
-    keyID: string;
 }
 
 export interface JWSAlgorithm extends Algorithm {
@@ -703,13 +717,13 @@ export interface JOSEObjectType extends Serializable {
 
 export interface CommonSEHeader extends Header {
     jwk: JWK;
-    x509CertSHA256Thumbprint: Base64URL;
     x509CertURL: URI;
     /**
      * @deprecated
      */
     x509CertThumbprint: Base64URL;
     x509CertChain: Base64[];
+    x509CertSHA256Thumbprint: Base64URL;
     keyID: string;
     jwkurl: URI;
 }
@@ -756,8 +770,14 @@ export interface Algorithm extends Serializable {
 }
 
 export interface X509Certificate extends Certificate, X509Extension {
-    subjectX500Principal: X500Principal;
-    issuerX500Principal: X500Principal;
+    sigAlgParams: any;
+    extendedKeyUsage: string[];
+    tbscertificate: any;
+    sigAlgOID: string;
+    issuerUniqueID: boolean[];
+    subjectUniqueID: boolean[];
+    issuerAlternativeNames: any[][];
+    keyUsage: boolean[];
     sigAlgName: string;
     serialNumber: number;
     /**
@@ -770,16 +790,10 @@ export interface X509Certificate extends Certificate, X509Extension {
     issuerDN: Principal;
     notBefore: Date;
     notAfter: Date;
-    sigAlgParams: any;
-    extendedKeyUsage: string[];
-    tbscertificate: any;
-    sigAlgOID: string;
-    issuerUniqueID: boolean[];
-    subjectUniqueID: boolean[];
-    issuerAlternativeNames: any[][];
-    keyUsage: boolean[];
     signature: any;
     basicConstraints: number;
+    issuerX500Principal: X500Principal;
+    subjectX500Principal: X500Principal;
     version: number;
     subjectAlternativeNames: any[][];
 }
@@ -825,7 +839,7 @@ export type Role = "VOTER";
 
 export type SchemaVersion = "V1";
 
-export type MerkleProofType = "Left" | "Right";
+export type MerkleProofType = "L" | "R";
 
 export type Status = "BASIC" | "PARTIAL" | "ROLLBACK" | "FULL";
 
@@ -833,7 +847,7 @@ export type VotingEventType = "USER_BASED" | "STAKE_BASED" | "BALANCE_BASED";
 
 export type VotingPowerAsset = "ADA";
 
-export type Web3Action = "CAST_VOTE" | "VIEW_VOTE_RECEIPT" | "LOGIN";
+export type Web3Action = "CAST_VOTE" | "VIEW_VOTE_RECEIPT" | "LOGIN" | "IS_VOTE_CASTING_ALLOWED" | "IS_VOTE_CHANGING_ALLOWED" | "VOTES";
 
 export type LoginSystem = "JWT" | "CIP93";
 

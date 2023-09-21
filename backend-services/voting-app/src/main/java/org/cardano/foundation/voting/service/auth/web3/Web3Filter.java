@@ -53,6 +53,7 @@ public class Web3Filter extends OncePerRequestFilter {
 
     private final LoginSystemDetector loginSystemDetector;
 
+
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
@@ -162,21 +163,21 @@ public class Web3Filter extends OncePerRequestFilter {
             return;
         }
 
-        var slot = genericEnvelope.getSlotAsLong();
-        var slotExpiredE = expirationService.isSlotExpired(slot);
-        if (slotExpiredE.isEmpty()) {
-            logger.warn("Unable to lookup slot data!");
-
+        var chainTipE = chainFollowerClient.getChainTip();
+        if (chainTipE.isEmpty()) {
             var problem = Problem.builder()
-                    .withTitle("SLOT_LOOKUP_FAILURE")
-                    .withDetail("CIP-93 lookup failure!")
+                    .withTitle("CHAIN_TIP_ERROR")
+                    .withDetail("Unable to get chain tip from chain-tip follower service, reason: " + chainTipE.swap().get().getDetail())
                     .withStatus(INTERNAL_SERVER_ERROR)
                     .build();
 
             sendBackProblem(response, problem);
             return;
         }
-        var slotExpired = slotExpiredE.get();
+        var chainTip = chainTipE.get();
+
+        var slot = genericEnvelope.getSlotAsLong();
+        var slotExpired = expirationService.isSlotExpired(chainTip, slot);
 
         if (slotExpired) {
             var problem = Problem.builder()
@@ -268,6 +269,7 @@ public class Web3Filter extends OncePerRequestFilter {
                 .event(eventDetails)
                 .stakeAddress(stakeAddress)
                 .signedWeb3Request(signedWeb3Request)
+                .chainTip(chainTip)
                 .action(web3Action)
                 .envelope(genericEnvelope)
                 .cip30VerificationResult(cipVerificationResult)

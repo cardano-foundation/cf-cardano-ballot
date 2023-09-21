@@ -17,4 +17,6 @@ public class ChainTip {
 
     private CardanoNetwork network;
 
+    private boolean isSynced;
+
 }

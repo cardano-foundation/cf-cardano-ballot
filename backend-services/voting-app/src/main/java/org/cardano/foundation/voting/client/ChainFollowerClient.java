@@ -205,7 +205,17 @@ public class ChainFollowerClient {
                                       FinalityScore finalityScore,
                                       CardanoNetwork network) {}
 
-    public record ChainTipResponse(String hash, int epochNo, int absoluteSlot, CardanoNetwork network) {}
+    public record ChainTipResponse(String hash,
+                                   int epochNo,
+                                   int absoluteSlot,
+                                   boolean synced,
+                                   CardanoNetwork network) {
+
+        public boolean isNotSynced() {
+            return !synced;
+        }
+
+    }
 
     public record AccountResponse(String stakeAddress,
                            int epochNo,

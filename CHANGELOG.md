@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.2.43](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.42...v0.2.43) (2023-09-20)
+
+
+### Bug Fixes
+
+* merkle proof generation fix. ([#270](https://github.com/cardano-foundation/cf-cardano-ballot/issues/270)) ([235f3cb](https://github.com/cardano-foundation/cf-cardano-ballot/commit/235f3cb1c9ebc8708f9b84b227841f628a148c61))
+* vote-admin-cli pre-prod fix and added fruits test event. ([b3b5a3f](https://github.com/cardano-foundation/cf-cardano-ballot/commit/b3b5a3f6bcd005cf3d974bd982393bd3015f695c))
+
+## [0.2.42](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.41...v0.2.42) (2023-09-20)
+
+
+### Features
+
+* gradle 8.3 upgrade. ([#264](https://github.com/cardano-foundation/cf-cardano-ballot/issues/264)) ([0534092](https://github.com/cardano-foundation/cf-cardano-ballot/commit/0534092ad18adcca90df3072cd76d5d1b52097af))
+
+
+### Bug Fixes
+
+* allow actuator calls. ([#266](https://github.com/cardano-foundation/cf-cardano-ballot/issues/266)) ([8834436](https://github.com/cardano-foundation/cf-cardano-ballot/commit/8834436f4e68594f27beec3a1b49a72fbdb1ea26))
+* **cip-1694-ui:** optimize event image size, hide discrod icon ([de54ee3](https://github.com/cardano-foundation/cf-cardano-ballot/commit/de54ee3cd22f247bd1fb8358aa3ae3d36e2d1504))
+* **cip-1694-ui:** show next question btn on vote submit ([dd9c955](https://github.com/cardano-foundation/cf-cardano-ballot/commit/dd9c9557086909139b4702ba41579bd9b9665209))
+* prevent vote casting when chain is not fully synced. ([#261](https://github.com/cardano-foundation/cf-cardano-ballot/issues/261)) ([84263f3](https://github.com/cardano-foundation/cf-cardano-ballot/commit/84263f34a714ae53ce8fd5e102fe2f3d62e71882))
+
 ## [0.2.41](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.40...v0.2.41) (2023-09-19)
 
 

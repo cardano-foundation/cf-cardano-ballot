@@ -37,3 +37,4 @@ logs/*
 jpb-settings.xml
 
 application-prod.properties
+bin

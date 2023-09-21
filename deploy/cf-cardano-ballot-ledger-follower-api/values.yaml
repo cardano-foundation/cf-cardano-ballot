@@ -26,7 +26,8 @@ resources: {}
 
 nodeSelector: {}
 
-monitoringEnabled: true
+monitoring:
+  enabled: true
 
 diagnosticMode:
   enabled: false

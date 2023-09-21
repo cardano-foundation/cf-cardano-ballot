@@ -4,7 +4,6 @@ import { BrowserRouter } from 'react-router-dom';
 import './App.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import { setEventData, setWalletIsLoggedIn, setWalletIsVerified } from './store/userSlice';
-import BackgroundPolygon1 from './common/resources/images/polygon1.svg';
 import { Box, CircularProgress, Container, useMediaQuery, useTheme } from '@mui/material';
 import Header from './components/common/Header/Header';
 import { PageRouter } from './routes';
@@ -86,9 +85,9 @@ function App() {
     <>
       <BrowserRouter>
         <img
-          src={BackgroundPolygon1}
-          alt="Background Shape"
-          className="background-shape-1"
+          src={'/static/home-graphic-bg-top.svg'}
+          alt="Home graphic background top left"
+          className="home-graphic-bg-top"
         />
         <div
           className="App"
@@ -127,6 +126,11 @@ function App() {
               </Box>
             </Container>
           </div>
+          <img
+            src={'/static/home-graphic-bg-bottom.svg'}
+            alt="Home graphic background bottom right"
+            className="home-graphic-bg-bottom"
+          />
           <Footer />
           <TermsOptInModal
             open={openTermDialog}

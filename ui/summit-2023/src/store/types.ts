@@ -1,4 +1,4 @@
-import { VoteReceipt } from '../types/voting-app-types';
+import { UserVotes, VoteReceipt } from '../types/voting-app-types';
 import { EventPresentation } from '../types/voting-ledger-follower-types';
 
 export interface UserState {
@@ -7,6 +7,7 @@ export interface UserState {
   walletIsLoggedIn: boolean;
   isReceiptFetched: boolean;
   receipts: { [categoryId: string]: VoteReceipt } | null;
+  userVotes: UserVotes;
   proposal: VoteReceipt['proposal'];
   event?: EventPresentation;
   userVerification?: {

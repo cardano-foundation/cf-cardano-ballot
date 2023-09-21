@@ -13,7 +13,10 @@ import {
   Avatar,
   Box,
   CardActions,
+  Tooltip,
 } from '@mui/material';
+import checkMark from '../../common/resources/images/checkmark-white.png';
+import labelVoted from '../../common/resources/images/checkmark-green.png';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import { Fade } from '@mui/material';
@@ -25,12 +28,18 @@ import { Link } from 'react-router-dom';
 import CardMedia from '@mui/material/CardMedia';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import SUMMIT2023CONTENT from '../../common/resources/data/summit2023Content.json';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
+import { setUserVotes } from '../../store/userSlice';
+import { getUserInSession, tokenIsExpired } from '../../utils/session';
+import { getUserVotes } from '../../common/api/voteService';
+import { eventBus } from 'utils/EventBus';
 
 const Categories = () => {
   const eventCache = useSelector((state: RootState) => state.user.event);
+  const userVotes = useSelector((state: RootState) => state.user.userVotes);
 
+  const session = getUserInSession();
   const categories = eventCache?.categories;
   const summit2023Categories: CategoryContent[] = SUMMIT2023CONTENT.categories;
 
@@ -42,11 +51,27 @@ const Categories = () => {
   const [isVisible, setIsVisible] = useState(true);
   const [isHoveredId, setIsHoveredId] = useState('');
 
+  const dispatch = useDispatch();
+
   useEffect(() => {
     if (isMobile) {
       setListView('list');
     }
   }, [isMobile]);
+
+  useEffect(() => {
+    if (!tokenIsExpired(session?.expiresAt)) {
+      getUserVotes(session?.accessToken)
+        .then((response) => {
+          if (response) {
+            dispatch(setUserVotes({userVotes: response}));
+          }
+        })
+        .catch((e) => {
+            eventBus.publish('showToast', e.message, true);
+        });
+    }
+  }, []);
 
   const handleListView = (viewType: 'grid' | 'list') => {
     if (listView === viewType) return;

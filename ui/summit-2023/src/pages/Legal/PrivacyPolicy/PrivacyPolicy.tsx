@@ -21,29 +21,58 @@ const PrivacyPolicy = () => {
       >
         {privacyData.date}
       </Typography>
-      <Typography
-        variant="body1"
-        sx={{ mt: 4 }}
-      >
-        {privacyData.description}
-      </Typography>
-      <Typography
-        variant="body2"
-        sx={{ mt: 2 }}
-      >
-        {privacyData.subdescription}
-      </Typography>
+      {privacyData.description.map((paragraph, index) => (
+        <Typography
+          key={index}
+          variant="body1"
+          sx={{ mt: 4 }}
+        >
+          {paragraph}
+        </Typography>
+      ))}
 
       {privacyData.sections.map((section, index) => {
         return (
           <div key={`${section.title}-${index}`}>
             <Typography
-              variant="subtitle2"
-              sx={{ mt: 1 }}
+              variant="h5"
+              sx={{ mt: 5, fontWeight: 'bold' }}
             >
               {section.title}
             </Typography>
-            <Typography variant="body1">{section.content}</Typography>
+            {section.subsections &&
+              section.subsections.map((subsection, subIndex) => (
+                <div key={`${subsection.title}-${subIndex}`}>
+                  <Typography
+                    variant="h6"
+                    sx={{ mt: 4, fontWeight: 'bold' }}
+                  >
+                    {subsection.title}
+                  </Typography>
+
+                  {subsection.content.map((paragraph, paragraphIndex) => (
+                    <Typography
+                      key={paragraphIndex}
+                      variant="body1"
+                      sx={{ mt: 1 }}
+                      dangerouslySetInnerHTML={{ __html: paragraph }}
+                    />
+                  ))}
+
+                  {subsection.extras && (
+                    <div>
+                      {Object.entries(subsection.extras).map(([extra, text], termIndex) => (
+                        <Typography
+                          key={extra}
+                          variant="body1"
+                          sx={{ mt: 1, ml: 4 }}
+                          dangerouslySetInnerHTML={{ __html: text }}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
           </div>
         );
       })}

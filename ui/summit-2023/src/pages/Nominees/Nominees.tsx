@@ -26,6 +26,7 @@ import QrCodeIcon from '@mui/icons-material/QrCode';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import InfoIcon from '@mui/icons-material/Info';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import labelVoted from '../../common/resources/images/checkmark-green.png';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { Fade } from '@mui/material';
 import './Nominees.scss';
@@ -70,6 +71,7 @@ const Nominees = () => {
   const walletIsLoggedIn = useSelector((state: RootState) => state.user.walletIsLoggedIn);
   const receipts = useSelector((state: RootState) => state.user.receipts);
   const receipt = receipts && Object.keys(receipts).length && receipts[categoryId] ? receipts[categoryId] : undefined;
+  const userVotes = useSelector((state: RootState) => state.user.userVotes);
 
   const dispatch = useDispatch();
 

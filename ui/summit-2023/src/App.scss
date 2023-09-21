@@ -7,6 +7,7 @@ html,
 
 body {
   font-family: 'Roboto', sans-serif;
+  background-color: #f5f9ff !important;
 }
 
 .App {
@@ -14,7 +15,6 @@ body {
   flex-direction: column;
   min-height: 100vh;
   position: relative;
-  background: #f5f9ff;
 }
 
 .main-content {
@@ -30,14 +30,30 @@ body {
   }
 }
 
-.background-shape-1 {
+.home-graphic-bg-top {
   position: absolute;
   width: 750px;
   height: 750px;
-  left: 13.63px;
-  top: -231px;
+  left: -12.37px;
+  top: -22%;
   border-radius: 100px;
-  transform: rotate(21.27deg);
+  transform: rotate(1.27deg);
+  opacity: 0.6;
+  z-index: -1;
+
+  @media (max-width: 420px) {
+    display: none;
+  }
+}
+
+.home-graphic-bg-bottom {
+  position: absolute;
+  width: 850px;
+  height: 700px;
+  right: -4.37%;
+  top: 10%;
+  border-radius: 100px;
+  transform: rotate(-6.73deg);
   opacity: 0.6;
   z-index: -1;
 

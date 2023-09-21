@@ -83,7 +83,7 @@ const Hero: React.FC = () => {
           order: { xs: '2', sm: '2', md: '2' },
         }}
       >
-        <div style={{ width: isMobile || isTablet ? '450px' : '33vw', margin: '20px' }}>
+        <div style={{ minWidth: '485px', maxWidth: '19vw', width: '33vw', margin: '20px' }}>
           <Hexagon>
             <>
               <div className="right-title-container">

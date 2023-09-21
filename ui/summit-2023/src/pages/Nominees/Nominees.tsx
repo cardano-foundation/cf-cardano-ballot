@@ -26,6 +26,7 @@ import QrCodeIcon from '@mui/icons-material/QrCode';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import InfoIcon from '@mui/icons-material/Info';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import labelVoted from '../../common/resources/images/checkmark-green.png';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { Fade } from '@mui/material';
 import './Nominees.scss';
@@ -44,7 +45,7 @@ import {
   getSlotNumber,
   getVoteReceipt,
 } from '../../common/api/voteService';
-import {capitalizeFirstLetter, copyToClipboard, getSignedMessagePromise} from '../../utils/utils';
+import { capitalizeFirstLetter, copyToClipboard, getSignedMessagePromise } from '../../utils/utils';
 import { buildCanonicalLoginJson, submitLogin } from 'common/api/loginService';
 import { getUserInSession, saveUserInSession, tokenIsExpired } from '../../utils/session';
 import { setVoteReceipt, setWalletIsLoggedIn } from '../../store/userSlice';
@@ -66,6 +67,7 @@ const Nominees = () => {
   const walletIsLoggedIn = useSelector((state: RootState) => state.user.walletIsLoggedIn);
   const receipts = useSelector((state: RootState) => state.user.receipts);
   const receipt = receipts && Object.keys(receipts).length && receipts[categoryId] ? receipts[categoryId] : undefined;
+  const userVotes = useSelector((state: RootState) => state.user.userVotes);
 
   const dispatch = useDispatch();
 
@@ -290,6 +292,20 @@ const Nominees = () => {
     }
   };
 
+  const nomineeAlreadyVoted = (nominee) => {
+    let alreadyVoted = false;
+    const session = getUserInSession();
+    if (
+      !tokenIsExpired(session?.expiresAt) &&
+      userVotes?.length &&
+      userVotes?.find((c) => c.categoryId === categoryId) &&
+      userVotes?.find((p) => p.proposalId === nominee.id)
+    ) {
+      alreadyVoted = true;
+    }
+    return alreadyVoted;
+  };
+
   return (
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
@@ -377,114 +393,136 @@ const Nominees = () => {
         spacing={3}
         style={{ justifyContent: 'center' }}
       >
-        {nominees.map((nominee, index) => (
-          <Grid
-            item
-            xs={12}
-            sm={6}
-            md={!isMobile && listView === 'grid' ? 4 : 12}
-            key={nominee.id}
-          >
-            <Fade in={isVisible}>
-              <Card
-                className={'nominee-card'}
-                style={{
-                  padding: '8px',
-                  width: listView === 'list' ? '100%' : '414px',
-                  height: 'auto',
-                }}
-              >
-                <CardContent>
-                  <Typography
-                    className="nominee-title"
-                    variant="h2"
-                  >
-                    {nominee.id === summit2023CategoryNominees[index].id
-                      ? summit2023CategoryNominees[index].presentationName
-                      : ''}
-                  </Typography>
-                  <Grid container>
-                    <Grid
-                      item
-                      xs={!isMobile && listView === 'list' ? 10 : 12}
+        {nominees.map((nominee, index) => {
+          const voted = nomineeAlreadyVoted(nominee);
+          return (
+            <Grid
+              item
+              xs={12}
+              sm={6}
+              md={!isMobile && listView === 'grid' ? 4 : 12}
+              key={nominee.id}
+            >
+              <Fade in={isVisible}>
+                <Card
+                  className={'nominee-card'}
+                  style={{
+                    padding: '8px',
+                    width: listView === 'list' ? '100%' : '414px',
+                    height: 'auto',
+                  }}
+                >
+                  <CardContent>
+                    <Box sx={{ position: 'relative' }}>
+                      {voted ? (
+                        <Tooltip title="Already Voted">
+                          <img
+                            height={40}
+                            width={102}
+                            src={labelVoted}
+                            alt="Already Voted"
+                            style={{
+                              position: 'absolute',
+                              float: 'right',
+                              right: 0,
+                              zIndex: 99,
+                              opacity: 1,
+                            }}
+                          />
+                        </Tooltip>
+                      ) : null}
+                    </Box>
+                    <Typography
+                      className="nominee-title"
+                      variant="h2"
                     >
-                      <Typography
-                        className="nominee-description"
-                        variant="body2"
-                      >
-                        {nominee.id === summit2023CategoryNominees[index].id
-                          ? summit2023CategoryNominees[index].desc
-                          : ''}
-                      </Typography>
-                    </Grid>
-                    {!receipt && !isMobile && listView === 'list' ? (
+                      {nominee.id === summit2023CategoryNominees[index].id
+                        ? summit2023CategoryNominees[index].presentationName
+                        : ''}
+                    </Typography>
+                    <Grid container>
                       <Grid
                         item
-                        xs={2}
+                        xs={!isMobile && listView === 'list' ? 10 : 12}
                       >
-                        <CustomButton
-                          styles={
-                            isConnected
-                              ? {
-                                  background: '#ACFCC5',
-                                  color: '#03021F',
-                                  width: 'auto',
-                                }
-                              : {
-                                  background: '#03021F',
-                                  color: '#F6F9FF',
-                                  width: 'auto',
-                                }
-                          }
-                          label={renderNomineeButtonLabel() as string}
-                          onClick={() => handleNomineeButton(nominee)}
-                        />
+                        <Typography
+                          className="nominee-description"
+                          variant="body2"
+                        >
+                          {nominee.id === summit2023CategoryNominees[index].id
+                            ? summit2023CategoryNominees[index].desc
+                            : ''}
+                        </Typography>
                       </Grid>
-                    ) : null}
-                  </Grid>
+                      {!receipt && !isMobile && listView === 'list' ? (
+                        <Grid
+                          item
+                          xs={2}
+                        >
+                          <CustomButton
+                            styles={
+                              isConnected
+                                ? {
+                                    background: '#ACFCC5',
+                                    color: '#03021F',
+                                    width: 'auto',
+                                  }
+                                : {
+                                    background: '#03021F',
+                                    color: '#F6F9FF',
+                                    width: 'auto',
+                                  }
+                            }
+                            label={renderNomineeButtonLabel() as string}
+                            onClick={() => handleNomineeButton(nominee)}
+                          />
+                        </Grid>
+                      ) : null}
+                    </Grid>
 
-                  <CustomButton
-                    styles={{
-                      background: 'transparent !important',
-                      color: '#03021F',
-                      border: '1px solid #daeefb',
-                      width: !isMobile && listView === 'list' ? '146px' : '100%',
-                      marginTop: !isMobile && listView === 'list' ? '15px' : '28px',
-                    }}
-                    label="Read more"
-                    onClick={() =>
-                      handleReadMore(
-                        nominee.id === summit2023CategoryNominees[index].id && summit2023CategoryNominees[index]
-                      )
-                    }
-                    fullWidth={true}
-                  />
-
-                  {!receipt && (isMobile || listView === 'grid') ? (
                     <CustomButton
-                      styles={
-                        isConnected
-                          ? {
-                              background: '#ACFCC5',
-                              color: '#03021F',
-                              marginTop: !isMobile && listView === 'list' ? '15px' : '18px',
-                            }
-                          : {
-                              background: '#03021F',
-                              color: '#F6F9FF',
-                              marginTop: !isMobile && listView === 'list' ? '15px' : '18px',
-                            }
+                      styles={{
+                        background: 'transparent !important',
+                        color: '#03021F',
+                        border: '1px solid #daeefb',
+                        width: !isMobile && listView === 'list' ? '146px' : '100%',
+                        marginTop: !isMobile && listView === 'list' ? '15px' : '28px',
+                      }}
+                      label="Read more"
+                      onClick={() =>
+                        handleReadMore(
+                          nominee.id === summit2023CategoryNominees[index].id && summit2023CategoryNominees[index]
+                        )
                       }
-                      label={renderNomineeButtonLabel() as string}
-                      onClick={() => handleNomineeButton(nominee)}
                       fullWidth={true}
                     />
-                  ) : null}
-                </CardContent>
-              </Card>
-            </Fade>
-          </Grid>
-        ))}
+
+                    {!receipt && (isMobile || listView === 'grid') ? (
+                      <CustomButton
+                        styles={
+                          isConnected
+                            ? {
+                                background: '#ACFCC5',
+                                color: '#03021F',
+                                marginTop: !isMobile && listView === 'list' ? '15px' : '18px',
+                              }
+                            : {
+                                background: '#03021F',
+                                color: '#F6F9FF',
+                                marginTop: !isMobile && listView === 'list' ? '15px' : '18px',
+                              }
+                        }
+                        label={renderNomineeButtonLabel() as string}
+                        onClick={() => handleNomineeButton(nominee)}
+                        fullWidth={true}
+                      />
+                    ) : null}
+                  </CardContent>
+                </Card>
+              </Fade>
+            </Grid>
+          );
+        })}
       </Grid>
 
       <SidePage

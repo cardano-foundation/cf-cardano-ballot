@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    types: [ opened, synchronize ]
   workflow_dispatch:
 
 env:
@@ -60,12 +58,18 @@ jobs:
         working-directory: backend-services/${{ env.APP_NAME }}
         run: ./gradlew bootJar
 
-      - name: Docker Login
+      - name: Private Docker Hub Login
         uses: docker/login-action@v2
         with:
           registry: ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}
           username: ${{ env.PRIVATE_DOCKER_REGISTRY_USER }}
           password: ${{ env.PRIVATE_DOCKER_REGISTRY_PASS }}
+
+      - name: Public Docker Hub Login
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_REGISTRY_USER }}
+          password: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -99,12 +103,18 @@ jobs:
         working-directory: backend-services/${{ env.APP_NAME }}
         run: ./gradlew bootJar
 
-      - name: Docker Login
+      - name: Private Docker Hub Login
         uses: docker/login-action@v2
         with:
           registry: ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}
           username: ${{ env.PRIVATE_DOCKER_REGISTRY_USER }}
           password: ${{ env.PRIVATE_DOCKER_REGISTRY_PASS }}
+
+      - name: Public Docker Hub Login
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_REGISTRY_USER }}
+          password: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -138,12 +148,18 @@ jobs:
         working-directory: backend-services/${{ env.APP_NAME }}
         run: ./gradlew bootJar
 
-      - name: Docker Login
+      - name: Private Docker Hub Login
         uses: docker/login-action@v2
         with:
           registry: ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}
           username: ${{ env.PRIVATE_DOCKER_REGISTRY_USER }}
           password: ${{ env.PRIVATE_DOCKER_REGISTRY_PASS }}
+
+      - name: Public Docker Hub Login
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_REGISTRY_USER }}
+          password: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -177,12 +193,18 @@ jobs:
         working-directory: backend-services/${{ env.APP_NAME }}
         run: ./gradlew bootJar
 
-      - name: Docker Login
+      - name: Private Docker Hub Login
         uses: docker/login-action@v2
         with:
           registry: ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}
           username: ${{ env.PRIVATE_DOCKER_REGISTRY_USER }}
           password: ${{ env.PRIVATE_DOCKER_REGISTRY_PASS }}
+
+      - name: Public Docker Hub Login
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_REGISTRY_USER }}
+          password: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -207,12 +229,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Docker Login
+      - name: Private Docker Hub Login
         uses: docker/login-action@v2
         with:
           registry: ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}
           username: ${{ env.PRIVATE_DOCKER_REGISTRY_USER }}
           password: ${{ env.PRIVATE_DOCKER_REGISTRY_PASS }}
+
+      - name: Public Docker Hub Login
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_REGISTRY_USER }}
+          password: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -247,12 +275,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Docker Login
+      - name: Private Docker Hub Login
         uses: docker/login-action@v2
         with:
           registry: ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}
           username: ${{ env.PRIVATE_DOCKER_REGISTRY_USER }}
           password: ${{ env.PRIVATE_DOCKER_REGISTRY_PASS }}
+
+      - name: Public Docker Hub Login
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_REGISTRY_USER }}
+          password: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -264,7 +298,7 @@ jobs:
           REACT_APP_VOTING_LEDGER_FOLLOWER_APP_SERVER_URL: https://follower-api.dev.cf-summit-2023-preprod.eu-west-1.metadata.dev.cf-deployments.org
           REACT_APP_VOTING_VERIFICATION_APP_SERVER_URL: https://verification-api.dev.cf-summit-2023-preprod.eu-west-1.metadata.dev.cf-deployments.org
           REACT_APP_USER_VERIFICATION_SERVER_URL: https://user-verification.dev.cf-summit-2023-preprod.eu-west-1.metadata.dev.cf-deployments.org
-          ARTIFACT_VERSION: ${{needs.build-version.outputs.ARTIFACT_VERSION}}-preprod
+          ARTIFACT_VERSION: ${{needs.build-version.outputs.ARTIFACT_VERSION}}
         with:
           context: ui/summit-2023
           push: true
@@ -286,12 +320,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Docker Login
+      - name: Private Docker Hub Login
         uses: docker/login-action@v2
         with:
           registry: ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}
           username: ${{ env.PRIVATE_DOCKER_REGISTRY_USER }}
           password: ${{ env.PRIVATE_DOCKER_REGISTRY_PASS }}
+
+      - name: Public Docker Hub Login
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_REGISTRY_USER }}
+          password: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2

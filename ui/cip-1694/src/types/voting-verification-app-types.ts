@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-// Generated using typescript-generator version 3.2.1263 on 2023-08-29 11:44:03.
+// Generated using typescript-generator version 3.2.1263 on 2023-09-20 14:23:39.
 
 export interface Either<L, R> extends Value<R>, Serializable {
     left: L;

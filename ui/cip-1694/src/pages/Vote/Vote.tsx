@@ -39,11 +39,11 @@ import styles from './Vote.module.scss';
 const copies = [
   {
     title: 'The Governance of Cardano',
-    body: 'Should Cardano change its governance structure?',
+    body: 'Do you like pineapple pizza?',
   },
   {
     title: 'The Governance of Cardano',
-    body: 'Should Cardano implement the minimum-viable governance proposed in CIP-1694?',
+    body: 'Do you like apples?',
   },
 ];
 

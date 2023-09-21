@@ -36,9 +36,9 @@ public class CardanoClientLibConfig {
     @Qualifier("organiser_account")
     public Account organiserAccount(Network network,
                                     @Value("${organiser.account.mnemonic}" ) String organiserMnemonic) {
-        var organiserAccount = new Account(Networks.mainnet(), organiserMnemonic);
+        var organiserAccount = new Account(network, organiserMnemonic);
 
-        log.info("Organiser's address:{}, stakeAddress:{}", organiserAccount.baseAddress(), organiserAccount.stakeAddress());
+        log.info("Organiser's address:{}, stakeAddress:{}, network:{}", organiserAccount.baseAddress(), organiserAccount.stakeAddress(), network);
 
         return organiserAccount;
     }

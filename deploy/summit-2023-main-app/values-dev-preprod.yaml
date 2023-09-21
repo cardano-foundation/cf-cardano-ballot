@@ -19,7 +19,7 @@ cf-summit-2023-ui:
     targetNetwork: PREPROD
     eventId: CF_SUMMIT_2023_3A33
     image:
-      tag: 0.2.43
+      tag: 0.2.44
 
 cf-summit-2023-voting-api:
   enabled: true
@@ -36,7 +36,7 @@ cf-summit-2023-voting-api:
         active: "true"
         voteCommitmentCronExpression: "0 45 * * * *"
     image:
-      tag: 0.2.43
+      tag: 0.2.44
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
     corsAllowedOrigins: https://{{ .Values.domain }},http://localhost:3000
     monitoring:
@@ -47,7 +47,7 @@ cf-summit-2023-verification-api:
   enabled: true
   values:
     image:
-      tag: 0.2.43
+      tag: 0.2.44
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
     corsAllowedOrigins: https://{{ .Values.domain }},http://localhost:3000
 
@@ -55,7 +55,7 @@ cf-user-verification-service:
   enabled: true
   values:
     image:
-      tag: 0.2.43
+      tag: 0.2.44
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
     corsAllowedOrigins: https://{{ .Values.domain }},http://localhost:3000
 
@@ -63,7 +63,7 @@ cf-summit-2023-ledger-follower-api:
   enabled: true
   values:
     image:
-      tag: 0.2.43
+      tag: 0.2.44
     bindOnEventIds: CF_SUMMIT_2023_3A33
     yaci:
       startBlockHash: 3337e297121fda1262372c28de3d917bd2a60bb1e3c6326e3b7e832eb8017615

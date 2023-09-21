@@ -16,7 +16,7 @@ import styles from './TermsAndPolicyOpt.module.scss';
 import { CustomButton } from '../common/Button/CustomButton';
 
 export const LINK_TERMS = 'Terms & Conditions';
-export const LINK_PRIVACY = 'Privacy';
+export const LINK_PRIVACY = 'Privacy Policy';
 
 const TermsOptInModal = (props) => {
   const theme = useTheme();

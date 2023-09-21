@@ -59,7 +59,7 @@ public class DefaultChainSyncService implements ChainSyncService {
 
                 log.info("Current diff: {} (slots) between org and yaci.", diff);
 
-                boolean isSynced = diff >= 0 && diff <= chainSyncBuffer;
+                boolean isSynced = diff <= chainSyncBuffer;
 
                 if (isSynced) {
                     return SyncStatus.ok(diff);

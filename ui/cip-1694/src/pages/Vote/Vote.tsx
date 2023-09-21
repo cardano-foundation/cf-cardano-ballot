@@ -68,10 +68,11 @@ export const VotePage = () => {
   const isVoteSubmittedModalVisible = useSelector((state: RootState) => state.user.isVoteSubmittedModalVisible);
   const [isReceiptDrawerInitializing, setIsReceiptDrawerInitializing] = useState(false);
   const [isCastingAVote, setIsCastingAVote] = useState(false);
-  const [optionId, setOptionId] = useState('');
+  const [optionId, setOptionId] = useState<string | null>();
   const [isConfirmWithWalletSignatureModalVisible, setIsConfirmWithWalletSignatureModalVisible] = useState(false);
   const [voteSubmitted, setVoteSubmitted] = useState(false);
   const [category, setCategory] = useState(event?.categories?.[0].id);
+  const numOfCategories = event?.categories?.length;
   const [isToggledReceipt, toggleReceipt] = useToggle(false);
   const dispatch = useDispatch();
 
@@ -204,6 +205,13 @@ export const VotePage = () => {
     if (!isConnected) dispatch(setIsConnectWalletModalVisible({ isVisible: true }));
   };
 
+  const onChangeCategory = () => {
+    setVoteSubmitted(false);
+    setIsReceiptFetched(false);
+    const currentCategoryIndex = findIndex(event?.categories, ['id', category]);
+    setCategory(event?.categories[(currentCategoryIndex + 1) % numOfCategories]?.id);
+  };
+
   const handleSubmit = async () => {
     if (!isConnected) return;
 
@@ -241,7 +249,11 @@ export const VotePage = () => {
       await voteService.castAVoteWithDigitalSignature(requestVoteObject);
       dispatch(setIsVoteSubmittedModalVisible({ isVisible: true }));
       setVoteSubmitted(true);
-      await fetchReceipt({});
+      if (numOfCategories === 1) {
+        await fetchReceipt({});
+      } else {
+        onChangeCategory();
+      }
     } catch (error) {
       if (error instanceof HttpError && error.code === 400) {
         toast(
@@ -267,19 +279,12 @@ export const VotePage = () => {
     setIsCastingAVote(false);
   };
 
-  const onChangeCategory = () => {
-    setVoteSubmitted(false);
-    setIsReceiptFetched(false);
-    const currentCategoryIndex = findIndex(event?.categories, ['id', category]);
-    setCategory(event?.categories[(currentCategoryIndex + 1) % event?.categories?.length]?.id);
-  };
-
   const cantSelectOptions =
     !!receipt || voteSubmitted || (isConnected && !isReceiptFetched) || event?.notStarted || event?.finished;
   const showViewReceiptButton = receipt?.id || voteSubmitted || (isReceiptFetched && event?.finished);
   const showConnectButton = !isConnected && !event?.notStarted;
   const showSubmitButton = isConnected && !event?.notStarted && !event?.finished && !showViewReceiptButton;
-  const showPagination = isConnected && receipt && category === receipt?.category && event?.categories?.length > 1;
+  const showPagination = isConnected && receipt && category === receipt?.category && numOfCategories > 1;
 
   return (
     <>

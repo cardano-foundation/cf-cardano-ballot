@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.45](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.44...v0.2.45) (2023-09-21)
+
+
+### Features
+
+* deploying pizza event FRUITS_9172 ([9531d81](https://github.com/cardano-foundation/cf-cardano-ballot/commit/9531d818bb22b623ee6874b7ef05987ba60d2cf8))
+* more details on errors when details where misssing. ([#282](https://github.com/cardano-foundation/cf-cardano-ballot/issues/282)) ([315cc67](https://github.com/cardano-foundation/cf-cardano-ballot/commit/315cc675eed3aac3669d72fed1c0681d3cbbd72a))
+
 ## [0.2.44](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.43...v0.2.44) (2023-09-21)
 
 

@@ -2,6 +2,7 @@ package org.cardano.foundation.voting.client;
 
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -34,6 +35,7 @@ public class UserVerificationClient {
         }
     }
 
+    @RegisterReflectionForBinding
     public record IsVerifiedResponse(boolean verified) {
 
         public boolean isNotYetVerified() {

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.VotingEventType;
 import org.cardano.foundation.voting.domain.VotingPowerAsset;
+import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -21,6 +22,16 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Component
 @Slf4j
+@RegisterReflectionForBinding(classes =
+        { ChainFollowerClient.ChainTipResponse.class,
+          ChainFollowerClient.AccountResponse.class,
+          ChainFollowerClient.TransactionDetailsResponse.class,
+          ChainFollowerClient.ProposalDetailsResponse.class,
+          ChainFollowerClient.CategoryDetailsResponse.class,
+          ChainFollowerClient.FinalityScore.class,
+          ChainFollowerClient.EventSummary.class,
+          ChainFollowerClient.EventDetailsResponse.class
+        })
 public class ChainFollowerClient {
 
     @Autowired
@@ -123,8 +134,10 @@ public class ChainFollowerClient {
         }
     }
 
+    @RegisterReflectionForBinding
     public record ProposalDetailsResponse(String id, String name) {}
 
+    @RegisterReflectionForBinding
     public record CategoryDetailsResponse(String id,
                                           boolean gdprProtection,
                                           List<ProposalDetailsResponse> proposals) {
@@ -139,6 +152,7 @@ public class ChainFollowerClient {
 
     }
 
+    @RegisterReflectionForBinding
     public record EventSummary(String id,
                                boolean finished,
                                boolean notStarted,
@@ -148,6 +162,7 @@ public class ChainFollowerClient {
                                boolean commitmentsWindowOpen) {
 
     }
+
 
     public record EventDetailsResponse(String id,
                                        boolean finished,
@@ -173,6 +188,7 @@ public class ChainFollowerClient {
 
     }
 
+    @RegisterReflectionForBinding
     public enum FinalityScore {
 
         LOW(0),
@@ -193,6 +209,7 @@ public class ChainFollowerClient {
 
     }
 
+    @RegisterReflectionForBinding
     public record TransactionDetailsResponse(String transactionHash,
                                       long absoluteSlot,
                                       String blockHash,
@@ -200,6 +217,7 @@ public class ChainFollowerClient {
                                       FinalityScore finalityScore,
                                       CardanoNetwork network) {}
 
+    @RegisterReflectionForBinding
     public record ChainTipResponse(String hash,
                                    int epochNo,
                                    int absoluteSlot,
@@ -212,6 +230,7 @@ public class ChainFollowerClient {
 
     }
 
+    @RegisterReflectionForBinding
     public record AccountResponse(
                            String stakeAddress,
                            int epochNo,

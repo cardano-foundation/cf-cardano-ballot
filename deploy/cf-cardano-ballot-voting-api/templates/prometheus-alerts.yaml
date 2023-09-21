@@ -4,12 +4,11 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   labels:
-    prometheus: kube-prometheus-stack-prometheus
-    role: alert-rules
-  name: {{ include "voting-app.fullname" . }}
+    release: prometheus-stack
+  name: {{ include "voting-app.fullname" . }}.rules
 spec:
   groups:
-    - name: {{ include "voting-app.fullname" . }}-.rules
+    - name: {{ include "voting-app.fullname" . }}.rules
       rules:
         - alert: NoVotes5m
           expr: sum(rate(resource_vote_cast_seconds_count[1m])) == 0

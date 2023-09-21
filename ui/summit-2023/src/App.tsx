@@ -36,14 +36,14 @@ function App() {
       const staticCategories: CategoryContent[] = SUMMIT2023CONTENT.categories;
 
       const joinedCategories = event.categories
-        .map((item1) => {
-          const item2 = staticCategories.find((item) => item.id === item1.id);
-          if (item2) {
-            return { ...item1, ...item2 };
+        .map((category) => {
+          const joinedCategory = staticCategories.find((staticCategory) => staticCategory.id === category.id);
+          if (joinedCategory) {
+            return { ...category, ...joinedCategory };
           }
           return null;
         })
-        .filter((item) => item !== null);
+        .filter((staticCategory) => staticCategory !== null);
 
       event.categories = joinedCategories;
       dispatch(setEventData({ event }));

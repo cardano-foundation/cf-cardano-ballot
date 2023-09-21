@@ -21,13 +21,11 @@ import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import { Fade } from '@mui/material';
 import styles from './Categories.module.scss';
-import { CategoryContent } from './Category.types';
 import Grow from '@mui/material/Grow';
 import CATEGORY_IMAGES from '../../common/resources/data/categoryImages.json';
 import { Link } from 'react-router-dom';
 import CardMedia from '@mui/material/CardMedia';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import SUMMIT2023CONTENT from '../../common/resources/data/summit2023Content.json';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { setUserVotes } from '../../store/userSlice';
@@ -41,7 +39,6 @@ const Categories = () => {
 
   const session = getUserInSession();
   const categories = eventCache?.categories;
-  const summit2023Categories: CategoryContent[] = SUMMIT2023CONTENT.categories;
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('xs'));
@@ -269,9 +266,7 @@ const Categories = () => {
                                         maxWidth: '285px',
                                       }}
                                   >
-                                    {category.id === summit2023Categories[index].id
-                                        ? summit2023Categories[index].presentationName
-                                        : ''}
+                                    {category.presentationName}
                                   </Typography>
                                 </Box>
                                 <Box
@@ -355,11 +350,7 @@ const Categories = () => {
                             avatar={
                               <Avatar
                                   src={CATEGORY_IMAGES[index]}
-                                  alt={
-                                    category.id === summit2023Categories[index].id
-                                        ? summit2023Categories[index].presentationName
-                                        : ''
-                                  }
+                                  alt={category.presentationName}
                                   sx={{width: 100, height: 100}}
                               />
                             }
@@ -370,15 +361,13 @@ const Categories = () => {
                               color="text.primary"
                               fontWeight="700"
                           >
-                            {category.id === summit2023Categories[index].id
-                                ? summit2023Categories[index].presentationName
-                                : ''}
+                            {category.presentationName}
                           </Typography>
                           <Typography
                               variant="body1"
                               color="text.primary"
                           >
-                            {category.id === summit2023Categories[index].id ? summit2023Categories[index].desc : ''}
+                            {category.desc}
                           </Typography>
                         </Box>
                         <Box sx={{marginLeft: 'auto'}}>

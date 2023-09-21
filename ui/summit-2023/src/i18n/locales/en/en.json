@@ -16,10 +16,48 @@
   },
   "landing": {
     "title": "Vote for the Cardano Summit Awards",
-    "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Tempor commodo ullamcorper a lacus vestibulum sed arcu non. Commodo elit at imperdiet dui accumsan.",
-    "getStartedButton": "Get Started",
+    "description": "10 categories, 10 winners awarded for their work and exceptional contributions within the Cardano ecosystem. Vote for the shortlisted nominees and watch the winners announced live at the Cardano Summit 2023 Gala Awards Dinner.",
+    "getStartedButton": "Start Voting",
     "hexagon": {
       "title": "CARDANO SUMMIT 2023"
+    }
+  },
+  "userGuide": {
+    "title": "User Guide",
+    "requirements": {
+      "title": "Requirements to submit votes using the Cardano Ballot",
+      "sms": {
+        "title": "Ability to receive an SMS verification message.",
+        "hint": "A one-time SMS code to securely and quickly verify a Cardano Ballot account."
+      },
+      "discord": {
+        "title": "A supported Cardano wallet and/or browser extension.",
+        "hint": "You dont need to have any funds in your Wallet to use Cardano Ballot. View a list of supported Wallets."
+      }
+    },
+    "createVerify": {
+      "title": "Creating and verifying a Cardano Ballot account",
+      "steps": {
+        "1": {
+          "title": "Click on “Connect Wallet” and choose a supported wallet from the list.",
+          "hint": "By default, only Flint wallet (Desktop/Mobile) as well as already installed supported wallets will be shown."
+        },
+        "2": {
+          "title": "Verify the wallet using CIP8 message signing through SMS or Discord.",
+          "hint": "Capacity to choose between SMS and Discord verification to account for different user preferences."
+        }
+      }
+    },
+    "submitVote": {
+      "title": "How to submit a vote on the Cardano Ballot",
+      "steps": {
+        "1": "Go to the Cardano Summit Awards categories.",
+        "2": "To see shortlisted nominees, click “View Nominees” on each category tile.",
+        "3": "Review the nominees of a specific category and select the one you want to vote for.",
+        "4": "Click on “Vote for Nominee”.",
+        "5": "To proceed with the voting, select “Sign with Wallet”.",
+        "6": "Click on “Submit Vote” to complete the process."
+      }
     }
   },
   "toast": {

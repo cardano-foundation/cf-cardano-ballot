@@ -8,6 +8,7 @@ import LooksThreeIcon from '@mui/icons-material/Looks3Outlined';
 import LooksFourIcon from '@mui/icons-material/Looks4Outlined';
 import LooksFiveIcon from '@mui/icons-material/Looks5Outlined';
 import LooksSixIcon from '@mui/icons-material/Looks6Outlined';
+import { i18n } from 'i18n';
 
 const UserGuide = () => {
   return (
@@ -28,7 +29,7 @@ const UserGuide = () => {
             md: '32px',
           }}
         >
-          User Guide
+          {i18n.t('userGuide.title')}
         </Typography>
       </div>
 
@@ -37,7 +38,7 @@ const UserGuide = () => {
         variant="h3"
         gutterBottom
       >
-        To submit votes using Cardano Ballot, you’ll need
+        {i18n.t('userGuide.requirements.title')}
       </Typography>
 
       <Grid
@@ -53,10 +54,8 @@ const UserGuide = () => {
           height={470}
           graphic={'/static/CardanoBallot-category-1.png'}
           featureImg={'/static/sms_verification_message.png'}
-          stepTitle={'The ability to receive an SMS verification message.'}
-          stepHint={
-            'Securely verify your account with a one-time SMS code for Cardano Ballot. Safety and simplicity combined.'
-          }
+          stepTitle={i18n.t('userGuide.requirements.sms.title')}
+          stepHint={i18n.t('userGuide.requirements.sms.hint')}
           featureImgStyle={{ height: '210px', padding: '10% 0% 10% 110%', margin: '15%' }}
         />
         <GuideTile
@@ -65,10 +64,8 @@ const UserGuide = () => {
           height={470}
           graphic={'/static/CardanoBallot-category-2.png'}
           featureImg={'/static/cardano_wallet_extension.png'}
-          stepTitle={'A supported Cardano wallet and/or browser extension'}
-          stepHint={
-            'You dont need to have any funds in your wallet to use Cardano Ballot. View a list of supported wallets'
-          }
+          stepTitle={i18n.t('userGuide.requirements.discord.title')}
+          stepHint={i18n.t('userGuide.requirements.discord.hint')}
           featureImgStyle={{ height: '210px', padding: '10% 0% 10% 150%', margin: '15%' }}
         />
       </Grid>
@@ -78,7 +75,7 @@ const UserGuide = () => {
         variant="h3"
         gutterBottom
       >
-        Creating and Verifying your Cardano Ballot Account
+        {i18n.t('userGuide.createVerify.title')}
       </Typography>
 
       <Grid
@@ -94,8 +91,8 @@ const UserGuide = () => {
           height={470}
           graphic={'/static/CardanoBallot-category-3.png'}
           featureImg={'/static/connect_wallet.png'}
-          stepTitle={'Click on "Connect Wallet" and choose a supported wallet from the list.'}
-          stepHint={'By default, only Flint (Desktop/Mobile) and installed supported wallets will be shown.'}
+          stepTitle={i18n.t('userGuide.createVerify.steps.1.title')}
+          stepHint={i18n.t('userGuide.createVerify.steps.1.hint')}
           featureImgStyle={{ height: '135px', padding: '7% 0% 10% 12%', margin: '15%' }}
         />
         <GuideTile
@@ -104,10 +101,8 @@ const UserGuide = () => {
           height={470}
           graphic={'/static/CardanoBallot-category-4.png'}
           featureImg={'/static/verify_wallet.png'}
-          stepTitle={'Verify your wallet using CIP8 message signing through SMS or Discord.'}
-          stepHint={
-            'Seamless wallet verification with CIP8 message signing via SMS or Discord. Protect your Cardano Ballot account effortlessly.'
-          }
+          stepTitle={i18n.t('userGuide.createVerify.steps.2.title')}
+          stepHint={i18n.t('userGuide.createVerify.steps.2.hint')}
           featureImgStyle={{ height: '125px', padding: '10% 0% 10% 60%', margin: '20%' }}
         />
       </Grid>
@@ -117,7 +112,7 @@ const UserGuide = () => {
         variant="h3"
         gutterBottom
       >
-        How to submit a vote on Cardano Ballot
+        {i18n.t('userGuide.submitVote.title')}
       </Typography>
 
       <Grid
@@ -133,7 +128,7 @@ const UserGuide = () => {
           height={446}
           graphic={'/static/CardanoBallot-category-5.png'}
           featureImg={'/static/categories.png'}
-          stepTitle={'Navigate to Cardano Ballot’s categoy section.'}
+          stepTitle={i18n.t('userGuide.submitVote.steps.1')}
           featureImgStyle={{ height: '100px', padding: '10% 0% 10% 60%', margin: '35%' }}
         />
         <GuideTile
@@ -142,7 +137,7 @@ const UserGuide = () => {
           height={446}
           graphic={'/static/CardanoBallot-category-6.png'}
           featureImg={'/static/categories_card.png'}
-          stepTitle={'Verify your wallet using CIP8 message signing through SMS or Discord.'}
+          stepTitle={i18n.t('userGuide.submitVote.steps.2')}
           featureImgStyle={{ height: '250px', padding: '5% 0% 5% 65%', margin: '5%' }}
         />
         <GuideTile
@@ -151,7 +146,7 @@ const UserGuide = () => {
           height={446}
           graphic={'/static/CardanoBallot-category-7.png'}
           featureImg={'/static/view_nominees.png'}
-          stepTitle={'To vote in a category, click on "View nominees".'}
+          stepTitle={i18n.t('userGuide.submitVote.steps.3')}
           featureImgStyle={{ width: '340px', padding: '10% 0% 10% 15%', margin: '25%' }}
         />
       </Grid>
@@ -168,7 +163,7 @@ const UserGuide = () => {
           height={446}
           graphic={'/static/CardanoBallot-category-8.png'}
           featureImg={'/static/vote_for_nominee.png'}
-          stepTitle={'Review the nominees and click on "Vote for nominee".'}
+          stepTitle={i18n.t('userGuide.submitVote.steps.4')}
           featureImgStyle={{ width: '340px', padding: '10% 0% 10% 15%', margin: '25%' }}
         />
         <GuideTile
@@ -177,7 +172,7 @@ const UserGuide = () => {
           height={446}
           graphic={'/static/CardanoBallot-category-9.png'}
           featureImg={'/static/sign_with_wallet.png'}
-          stepTitle={'To finalize your vote, select "Sign with wallet".'}
+          stepTitle={i18n.t('userGuide.submitVote.steps.5')}
           featureImgStyle={{ height: '115px', padding: '7% 0% 10% 12%', margin: '20%' }}
         />
         <GuideTile
@@ -186,7 +181,7 @@ const UserGuide = () => {
           height={446}
           graphic={'/static/CardanoBallot-category-10.png'}
           featureImg={'/static/submit.png'}
-          stepTitle={'Click on "Submit your vote" to complete the process.'}
+          stepTitle={i18n.t('userGuide.submitVote.steps.6')}
           featureImgStyle={{ height: '115px', padding: '7% 0% 10% 12%', margin: '20%' }}
         />
       </Grid>

@@ -230,14 +230,14 @@ const Nominees = () => {
   const renderNomineeButtonLabel = () => {
     if (isConnected) {
       if (!walletIsVerified) {
-        return 'Verify your wallet';
+        return 'Verify your Wallet';
       } else {
         return 'Vote for nominee';
       }
     } else {
       return (
         <>
-          <AccountBalanceWalletIcon /> Connect wallet
+          <AccountBalanceWalletIcon /> Connect Wallet
         </>
       );
     }
@@ -613,7 +613,7 @@ const Nominees = () => {
               >
                 {walletIsLoggedIn
                   ? 'You have successfully cast a vote for Nominee in the Ambassador category '
-                  : 'To see you vote receipt, please sign with your wallet'}
+                  : 'To see you vote receipt, please sign with your Wallet'}
               </Typography>
             </div>
             <CustomButton
@@ -622,7 +622,7 @@ const Nominees = () => {
                 color: '#F6F9FF',
                 width: 'auto',
               }}
-              label={walletIsLoggedIn ? 'View vote receipt' : 'Login with wallet'}
+              label={walletIsLoggedIn ? 'View vote receipt' : 'Login with Wallet'}
               onClick={() => handleViewVoteReceipt()}
               fullWidth={true}
             />

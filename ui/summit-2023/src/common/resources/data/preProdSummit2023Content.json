@@ -3,7 +3,7 @@
     {
         "id": "AMBASSADOR",
         "presentationName": "Ambassador",
-        "desc": "Ambassador is Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
+        "desc": "Special commitment and work of a Cardano Ambassador.",
         "proposals": [
             {
                 "id": "63123e7f-dfc3-481e-bb9d-fed1d9f6e9b9",
@@ -40,7 +40,7 @@
     {
         "id": "BLOCKCHAIN_FOR_GOOD",
         "presentationName": "Blockchain For Good",
-        "desc": "Blockchain For Good is Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
+        "desc": "Project or stake pool operator (SPO) doing exceptional environmental or humanitarian work.",
         "proposals": [
             {
                 "id": "633199b6-ab4c-49bc-afd8-e8c675d145d0",
@@ -77,7 +77,7 @@
     {
         "id": "CIPS",
         "presentationName": "CIPs",
-        "desc": "CIPs is Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
+        "desc": "Initial proposer of a Cardano Improvement Proposal (CIP) that remarkably improved the Cardano blockchain.",
         "proposals": [
             {
                 "id": "4cf1ea70-87dd-45ee-85a0-2d29720725f7",
@@ -113,8 +113,8 @@
     },
     {
         "id": "BEST_DEFI_DEX",
-        "presentationName": "Best DEFI",
-        "desc": "Best DEFI is Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
+        "presentationName": "DeFi / Dex",
+        "desc": "Decentralized finance (DeFi) or decentralized exchange (DEX) platform offering superlative solutions.",
         "proposals": [
             {
                 "id": "f71c438d-8247-4064-a5aa-4d21b54c2a5d",
@@ -150,8 +150,8 @@
     },
     {
         "id": "BEST_DEVELOPER_OR_DEVELOPER_TOOLS",
-        "presentationName": "Best Developer or Developer Tools",
-        "desc": "Best Developer or Developer Tools is Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
+        "presentationName": "Developer or Developer Tools",
+        "desc": "Individual or team providing technical solutions to the Cardano ecosystem.",
         "proposals": [
             {
                 "id": "f4d6055f-964e-43b4-bc23-83141ca04f9f",
@@ -188,7 +188,7 @@
     {
         "id": "EDUCATIONAL_INFLUENCER",
         "presentationName": "Educational Influencer",
-        "desc": "Educational Influencer is Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
+        "desc": "Individual or account vastly contributing to blockchain education.",
         "proposals": [
             {
                 "id": "88af463f-0d9c-4738-baef-bdb80f2c374e",
@@ -225,7 +225,7 @@
     {
         "id": "MARKETPLACE",
         "presentationName": "Marketplace",
-        "desc": "Marketplace is Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
+        "desc": "Marketplace with proven maturity and excellence.",
         "proposals": [
             {
                 "id": "33038f64-fff9-44cc-a8e5-d4f5896c8ff6",
@@ -262,7 +262,7 @@
     {
         "id": "MOST_IMPACTFUL_SSPO",
         "presentationName": "Most Impactful SSPO",
-        "desc": "Most Impactful SSPO is Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
+        "desc": "Remarkable single stake pool operator (SSPO).",
         "proposals": [
             {
                 "id": "6e16cdae-7696-4c41-a5f2-de373a17f488",
@@ -298,8 +298,8 @@
     },
     {
         "id": "SSI",
-        "presentationName": "SSI",
-        "desc": "SSI is Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
+        "presentationName": "Self Sovereign Identity (SSI)",
+        "desc": "SSI solution providing phenomenal management and governance of credentials, identity, tokens, or others.",
         "proposals": [
             {
                 "id": "a910a8af-f63b-4190-90fb-1409fd110526",

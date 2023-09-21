@@ -90,7 +90,7 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
             color="inherit"
             onClick={onDisconnectWallet}
           >
-            Disconnect wallet
+            Disconnect Wallet
           </Button>
         </div>
       )}

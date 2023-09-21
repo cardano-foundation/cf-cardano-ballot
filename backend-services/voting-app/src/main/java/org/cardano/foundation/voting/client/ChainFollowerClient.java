@@ -193,11 +193,6 @@ public class ChainFollowerClient {
 
     }
 
-    public enum AccountStatus {
-        ELIGIBLE,
-        NOT_ELIGIBLE,
-    }
-
     public record TransactionDetailsResponse(String transactionHash,
                                       long absoluteSlot,
                                       String blockHash,
@@ -217,10 +212,10 @@ public class ChainFollowerClient {
 
     }
 
-    public record AccountResponse(String stakeAddress,
+    public record AccountResponse(
+                           String stakeAddress,
                            int epochNo,
-                           AccountStatus accountStatus,
-                           Optional<String> votingPower,
-                           Optional<VotingPowerAsset> votingPowerAsset) { }
+                           String votingPower,
+                           VotingPowerAsset votingPowerAsset) { }
 
 }

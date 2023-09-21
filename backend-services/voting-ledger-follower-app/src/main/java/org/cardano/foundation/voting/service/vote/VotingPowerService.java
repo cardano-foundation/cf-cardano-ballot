@@ -26,7 +26,8 @@ public class VotingPowerService {
                         .build());
             }
             case STAKE_BASED -> {
-                var maybeAmount = blockchainDataStakePoolService.getStakeAmount(event.getSnapshotEpoch().orElseThrow(), stakeAddress);
+                var maybeAmount = blockchainDataStakePoolService.getStakeAmount(event.getSnapshotEpoch().orElseThrow(), stakeAddress)
+                        .filter(amount -> amount > 0);
 
                 if (maybeAmount.isEmpty()) {
                     yield Either.left(Problem.builder()
@@ -40,7 +41,8 @@ public class VotingPowerService {
                 yield Either.right(maybeAmount.orElseThrow());
             }
             case BALANCE_BASED -> {
-                var maybeAmount = blockchainDataStakePoolService.getBalanceAmount(event.getSnapshotEpoch().orElseThrow(), stakeAddress);
+                var maybeAmount = blockchainDataStakePoolService.getBalanceAmount(event.getSnapshotEpoch().orElseThrow(), stakeAddress)
+                .filter(amount -> amount > 0);
 
                 if (maybeAmount.isEmpty()) {
                     yield Either.left(Problem.builder()

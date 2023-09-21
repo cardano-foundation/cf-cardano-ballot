@@ -14,8 +14,6 @@ import org.zalando.problem.Problem;
 
 import java.util.List;
 
-import static org.cardano.foundation.voting.domain.Account.AccountStatus.ELIGIBLE;
-import static org.cardano.foundation.voting.domain.Account.AccountStatus.NOT_ELIGIBLE;
 import static org.cardano.foundation.voting.domain.VotingEventType.BALANCE_BASED;
 import static org.cardano.foundation.voting.domain.VotingEventType.STAKE_BASED;
 import static org.zalando.problem.Status.BAD_REQUEST;
@@ -69,7 +67,6 @@ public class DefaultAccountService implements AccountService {
         return Either.right(Account.builder()
                 .stakeAddress(stakeAddress)
                 .network(network)
-                .accountStatus(amount > 0 ? ELIGIBLE : NOT_ELIGIBLE)
                 .epochNo(event.getSnapshotEpoch().orElseThrow())
                 .votingPower(String.valueOf(amount))
                 .votingPowerAsset(event.getVotingPowerAsset().orElseThrow())

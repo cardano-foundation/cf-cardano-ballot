@@ -9,8 +9,6 @@ public class Account {
 
     private String stakeAddress;
 
-    private AccountStatus accountStatus;
-
     private int epochNo;
 
     private String votingPower;
@@ -18,10 +16,5 @@ public class Account {
     private VotingPowerAsset votingPowerAsset;
 
     private CardanoNetwork network;
-
-    public enum AccountStatus {
-        ELIGIBLE,
-        NOT_ELIGIBLE
-    }
 
 }

@@ -44,7 +44,7 @@ const ConnectWalletList = (props: ConnectWalletModalProps) => {
               />
             </ListItemAvatar>
             <Typography className="walletLabel">
-              Connect <span className="walletName">{walletName}</span> wallet
+              Connect <span className="walletName">{walletName}</span> Wallet
             </Typography>
           </ListItem>
         ))}

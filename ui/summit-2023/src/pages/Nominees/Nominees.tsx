@@ -545,7 +545,7 @@ const Nominees = () => {
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
           <Typography
-            className="nominees-title"
+            className="nominees-page-title"
             variant="h2"
             fontSize={{
               xs: '28px',

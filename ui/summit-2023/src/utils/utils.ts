@@ -1,5 +1,6 @@
 import { SignedWeb3Request } from '../types/voting-app-types';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
+import { NetworkType } from '@cardano-foundation/cardano-connect-with-wallet-core';
 
 const addressSlice = (address: string, sliceLength = 10) => {
   if (address) {
@@ -29,6 +30,10 @@ const copyToClipboard = async (textToCopy: string) => {
   await navigator.clipboard.writeText(textToCopy);
 };
 
+const openNewTab = async (url: string) => {
+  window.open(url, '_blank');
+};
+
 const capitalizeFirstLetter = (input: string): string => {
   if (!input || typeof input !== 'string') {
     return '';
@@ -36,4 +41,20 @@ const capitalizeFirstLetter = (input: string): string => {
   return input.trim().charAt(0).toUpperCase() + input.slice(1);
 };
 
-export { addressSlice, walletIcon, getSignedMessagePromise, copyToClipboard, capitalizeFirstLetter };
+const resolveCardanoNetwork = (network: string): NetworkType => {
+  if (network.toUpperCase() === 'MAINNET') {
+    return NetworkType.MAINNET;
+  } else {
+    return NetworkType.TESTNET;
+  }
+};
+
+export {
+  addressSlice,
+  walletIcon,
+  getSignedMessagePromise,
+  copyToClipboard,
+  capitalizeFirstLetter,
+  resolveCardanoNetwork,
+  openNewTab,
+};

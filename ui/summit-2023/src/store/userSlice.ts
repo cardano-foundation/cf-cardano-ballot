@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import { VoteReceipt } from '../types/voting-app-types';
+import {UserVotes, VoteReceipt} from '../types/voting-app-types';
 import { EventPresentation } from '../types/voting-ledger-follower-types';
 import { UserState, VerificationStarts } from './types';
 
@@ -10,6 +10,7 @@ const initialState: UserState = {
   walletIsLoggedIn: false,
   isReceiptFetched: false,
   receipts: null,
+  userVotes: null,
   proposal: '',
   userVerification: {},
   event: {
@@ -64,6 +65,9 @@ export const userSlice = createSlice({
     setSelectedProposal: (state, action: PayloadAction<{ proposal: VoteReceipt['proposal'] }>) => {
       state.proposal = action.payload.proposal;
     },
+    setUserVotes: (state, action: PayloadAction<{ userVotes: UserVotes }>) => {
+      state.userVotes = action.payload.userVotes;
+    },
     setEventData: (state, action: PayloadAction<{ event: EventPresentation }>) => {
       state.event = action.payload.event;
     },
@@ -76,6 +80,12 @@ export const userSlice = createSlice({
   },
 });
 
-export const { setVoteReceipt, setWalletIsLoggedIn, setUserStartsVerification, setWalletIsVerified, setEventData } =
-  userSlice.actions;
+export const {
+  setVoteReceipt,
+  setWalletIsLoggedIn,
+  setUserStartsVerification,
+  setWalletIsVerified,
+  setUserVotes,
+  setEventData,
+} = userSlice.actions;
 export default userSlice.reducer;

@@ -1,0 +1,413 @@
+{
+    "categories": [
+      {
+          "id": "AMBASSADOR",
+          "presentationName": "Ambassador",
+          "desc": "Special commitment and work of a Cardano Ambassador.",
+          "proposals": [
+              {
+                  "id": "63123e7f-dfc3-481e-bb9d-fed1d9f6e9b9",
+                  "presentationName": "Alice",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "0299d93e-93f2-4bc8-9b40-6dd09343c443",
+                  "presentationName": "Bob",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "fd477fac-ad16-4d2a-91a4-0a4288d3d7aa",
+                  "presentationName": "Charlie",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "0b755eaf-a588-441f-a9dd-50c4aa478a90",
+                  "presentationName": "David",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "2c94cd2e-2ad9-4425-af01-27210afca1e3",
+                  "presentationName": "Elizabeth",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              }
+          ]
+      },
+      {
+          "id": "BLOCKCHAIN_FOR_GOOD",
+          "presentationName": "Blockchain for Good",
+          "desc": "Project or stake pool operator (SPO) doing exceptional environmental or humanitarian work.",
+          "proposals": [
+              {
+                  "id": "633199b6-ab4c-49bc-afd8-e8c675d145d0",
+                  "presentationName": "Alice",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "d4d33796-7372-410a-b640-7dde093f20e5",
+                  "presentationName": "Bob",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "2e24b92f-1a34-4799-9eb4-a489be2b63c6",
+                  "presentationName": "Charlie",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "4cbeb976-20ba-4c20-bdc1-f21bf28c17fd",
+                  "presentationName": "David",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "71f4f082-4512-4e7f-adc6-6092d1b3aa14",
+                  "presentationName": "Elizabeth",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              }
+          ]
+      },
+      {
+          "id": "CIPS",
+          "presentationName": "CIPs",
+          "desc": "Initial proposer of a Cardano Improvement Proposal (CIP) that remarkably improved the Cardano blockchain.",
+          "proposals": [
+              {
+                  "id": "4cf1ea70-87dd-45ee-85a0-2d29720725f7",
+                  "presentationName": "Alice",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "d5116b52-1e82-4c7f-95e5-2a74a9f75492",
+                  "presentationName": "Bob",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "69ee264f-9d02-48ef-98f1-541ffb28756f",
+                  "presentationName": "Charlie",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "70a88fb6-a87f-4ebd-8719-31c461118f3d",
+                  "presentationName": "David",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "eaafc7a1-8944-4faf-91dd-5ceefa51e8db",
+                  "presentationName": "Elizabeth",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              }
+          ]
+      },
+      {
+          "id": "BEST_DEFI_DEX",
+          "presentationName": "DeFi / DEX",
+          "desc": "Decentralized finance (DeFi) or decentralized exchange (DEX) platform offering superlative solutions.",
+          "proposals": [
+              {
+                  "id": "f71c438d-8247-4064-a5aa-4d21b54c2a5d",
+                  "presentationName": "Alice",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "a5f92606-6e15-4f91-8443-7030eb02a274",
+                  "presentationName": "Bob",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "e9d72191-bda4-437e-af4b-2f979bad5c7f",
+                  "presentationName": "Charlie",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "8cf20a27-8bc8-49f3-8133-ef76e899e1c1",
+                  "presentationName": "David",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "91871e20-f9aa-422f-9213-3722ac47c1c6",
+                  "presentationName": "Elizabeth",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              }
+          ]
+      },
+      {
+          "id": "BEST_DEVELOPER_OR_DEVELOPER_TOOLS",
+          "presentationName": "Developer or Developer Tools",
+          "desc": "Individual or team providing technical solutions to the Cardano ecosystem.",
+          "proposals": [
+              {
+                  "id": "f4d6055f-964e-43b4-bc23-83141ca04f9f",
+                  "presentationName": "Alice",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "a00e6d3e-1b06-48f0-b2a0-4f3784e6226c",
+                  "presentationName": "Bob",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "58bb4e29-5124-473b-80e1-c5c8ffa57dbb",
+                  "presentationName": "Charlie",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "a30267e1-314c-4801-aa95-b03dd4d6856e",
+                  "presentationName": "David",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "ec34567c-2012-4e3b-94ee-8778a6e33a04",
+                  "presentationName": "Elizabeth",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              }
+          ]
+      },
+      {
+          "id": "EDUCATIONAL_INFLUENCER",
+          "presentationName": "Educational Influencer",
+          "desc": "Individual or account vastly contributing to blockchain education.",
+          "proposals": [
+              {
+                  "id": "88af463f-0d9c-4738-baef-bdb80f2c374e",
+                  "presentationName": "Alice",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "65cf347e-129a-459b-b192-55ae37e03160",
+                  "presentationName": "Bob",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "1e609753-a83e-4ff6-9cf8-dd90803f0368",
+                  "presentationName": "Charlie",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "9b91f3ed-42be-4650-8e43-6d7a416f9591",
+                  "presentationName": "David",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "702efda6-ceec-413e-8f33-aa206962850c",
+                  "presentationName": "Elizabeth",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              }
+          ]
+      },
+      {
+          "id": "MARKETPLACE",
+          "presentationName": "Marketplace",
+          "desc": "Marketplace with proven maturity and excellence.",
+          "proposals": [
+              {
+                  "id": "33038f64-fff9-44cc-a8e5-d4f5896c8ff6",
+                  "presentationName": "Alice",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "953c7970-6f9d-41a0-8556-b83ff7b481fe",
+                  "presentationName": "Bob",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "107fc947-85f0-442e-b56f-9c10e8b5631a",
+                  "presentationName": "Charlie",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "0752dc99-19fa-4f4c-96c4-25ca3a66a12f",
+                  "presentationName": "David",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "5b2145cd-8740-4254-942f-889eb3671640",
+                  "presentationName": "Elizabeth",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              }
+          ]
+      },
+      {
+          "id": "MOST_IMPACTFUL_SSPO",
+          "presentationName": "Most Impactful SSPO",
+          "desc": "Remarkable single stake pool operator (SSPO).",
+          "proposals": [
+              {
+                  "id": "6e16cdae-7696-4c41-a5f2-de373a17f488",
+                  "presentationName": "Alice",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "46ea36b8-15b6-4d31-8c29-946342595756",
+                  "presentationName": "Bob",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "e3a130e7-45c9-47c5-a121-fbdebc6c3e9f",
+                  "presentationName": "Charlie",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "c0f06200-b04c-4e08-b00b-e050cdcc205c",
+                  "presentationName": "David",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "6ee41116-b60c-41d2-974c-c3de31b71a83",
+                  "presentationName": "Elizabeth",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              }
+          ]
+      },
+      {
+          "id": "NFT_PROJECT",
+          "presentationName": "NFT Project",
+          "desc": "Most impactful art, music, metaverse, gaming, or collectible NFT project in the Cardano community.",
+          "proposals": [
+              {
+                  "id": "623405b4-a845-4130-b406-b4cf4a1a985d",
+                  "presentationName": "Alice",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "9074cf60-d413-4c20-a344-a3f894d2e6c0",
+                  "presentationName": "Bob",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "1bae816a-b943-4148-ac58-c4081ef8cac5",
+                  "presentationName": "Charlie",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "c0f06200-b04c-4e08-b00b-e050cdcc205c",
+                  "presentationName": "David",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "02bd8150-91cd-499d-b94c-c0e7b5fd5dc4",
+                  "presentationName": "Elizabeth",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "50d31468-a915-4284-9e3f-e0c6f5c1c90c",
+                  "presentationName": "Frank",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              }
+          ]
+      },
+      {
+          "id": "SSI",
+          "presentationName": "Self Sovereign Identity (SSI)",
+          "desc": "SSI solution providing phenomenal management and governance of credentials, identity, tokens, or others.",
+          "proposals": [
+              {
+                  "id": "a910a8af-f63b-4190-90fb-1409fd110526",
+                  "presentationName": "Alice",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "0a70b72d-1394-4bdd-bf93-e79ceb0c40a6",
+                  "presentationName": "Bob",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "f37bf063-15fc-4959-a6a4-0349a7613ede",
+                  "presentationName": "Charlie",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "57f93799-5123-4ad0-a13f-a7c70387a756",
+                  "presentationName": "David",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "a355c7f7-c3be-46c5-bcbf-52e628323c88",
+                  "presentationName": "Elizabeth",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "159fb64e-9613-4b5b-8618-a1c458cf9cf8",
+                  "presentationName": "Frank",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "6e16dcb5-1c40-4149-abba-b9f0b5e4e1a9",
+                  "presentationName": "George",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "b7cf09e8-ea41-448d-b53f-6fe70b6da3c1",
+                  "presentationName": "Harry",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "15b4856e-f1f7-4bee-820b-d8f24cdff379",
+                  "presentationName": "Isaac",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              },
+              {
+                  "id": "8c5296a6-a5ff-414c-b5e6-55ecf8b01f24",
+                  "presentationName": "John",
+                  "url": "https://beta.explorer.cardano.org",
+                  "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant morbi tristique senectus et netus. In massa tempor nec feugiat nisl pretium fusce id." 
+              }
+          ]
+      }
+    ],
+    "leaderboard" : {
+      "desc": "At the moment the leaderboard only shows the number of votes per category. To see the winners for each category please check back when the votes closes."
+    }
+  }

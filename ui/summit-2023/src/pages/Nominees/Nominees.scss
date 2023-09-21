@@ -1,14 +1,14 @@
-.nominees-title {
+.nominees-page-title {
   color: var(--color-dark-grey);
   font-style: normal;
   font-weight: 600 !important;
   line-height: normal;
 }
-.nominees-title::first-letter {
+.nominees-page-title::first-letter {
   text-transform: uppercase;
 }
 
-.nominees-description {
+.nominees-page-description {
   max-height: 110px;
   margin-bottom: 40px !important;
   color: var(--color-medium-grey);

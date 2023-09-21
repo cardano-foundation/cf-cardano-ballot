@@ -4,7 +4,6 @@ import { BrowserRouter } from 'react-router-dom';
 import './App.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import { setEventData, setWalletIsLoggedIn, setWalletIsVerified } from './store/userSlice';
-import BackgroundPolygon1 from './common/resources/images/polygon1.svg';
 import { Box, CircularProgress, Container, useMediaQuery, useTheme } from '@mui/material';
 import Header from './components/common/Header/Header';
 import { PageRouter } from './routes';
@@ -17,8 +16,10 @@ import { getEvent } from 'common/api/referenceDataService';
 import { getUserInSession, tokenIsExpired } from './utils/session';
 import { CB_TERMS_AND_PRIVACY } from './common/constants/local';
 import { TermsOptInModal } from 'components/LegalOptInModal';
-import { NetworkType } from '@cardano-foundation/cardano-connect-with-wallet-core';
 import { eventBus } from './utils/EventBus';
+import { CategoryContent } from './pages/Categories/Category.types';
+import SUMMIT2023CONTENT from 'common/resources/data/summit2023Content.json';
+import { resolveCardanoNetwork } from './utils/utils';
 
 function App() {
   const theme = useTheme();
@@ -26,12 +27,25 @@ function App() {
   const eventCache = useSelector((state: RootState) => state.user.event);
   const [storedValue, _] = useLocalStorage(CB_TERMS_AND_PRIVACY, false);
   const [openTermDialog, setOpenTermDialog] = useState(false);
-  const { isConnected, stakeAddress } = useCardano({ limitNetwork: 'testnet' as NetworkType });
+  const { isConnected, stakeAddress } = useCardano({ limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK) });
 
   const dispatch = useDispatch();
   const fetchEvent = useCallback(async () => {
     try {
       const event = await getEvent(env.EVENT_ID);
+      const staticCategories: CategoryContent[] = SUMMIT2023CONTENT.categories;
+
+      const joinedCategories = event.categories
+        .map((category) => {
+          const joinedCategory = staticCategories.find((staticCategory) => staticCategory.id === category.id);
+          if (joinedCategory) {
+            return { ...category, ...joinedCategory };
+          }
+          return null;
+        })
+        .filter((staticCategory) => staticCategory !== null);
+
+      event.categories = joinedCategories;
       dispatch(setEventData({ event }));
 
       if (isConnected) {
@@ -55,7 +69,7 @@ function App() {
       if (process.env.NODE_ENV === 'development') {
         console.log(`Failed to fetch event, ${error?.info || error?.message || error?.toString()}`);
       }
-      eventBus.publish('showToast', 'Failed to update event', true);
+      eventBus.publish('showToast', 'Failed to update event', 'error');
     }
   }, [dispatch, stakeAddress]);
 
@@ -71,9 +85,9 @@ function App() {
     <>
       <BrowserRouter>
         <img
-          src={BackgroundPolygon1}
-          alt="Background Shape"
-          className="background-shape-1"
+          src={'/static/home-graphic-bg-top.svg'}
+          alt="Home graphic background top left"
+          className="home-graphic-bg-top"
         />
         <div
           className="App"
@@ -112,6 +126,11 @@ function App() {
               </Box>
             </Container>
           </div>
+          <img
+            src={'/static/home-graphic-bg-bottom.svg'}
+            alt="Home graphic background bottom right"
+            className="home-graphic-bg-bottom"
+          />
           <Footer />
           <TermsOptInModal
             open={openTermDialog}

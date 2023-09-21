@@ -1,16 +1,16 @@
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
-import { NetworkType } from '@cardano-foundation/cardano-connect-with-wallet-core';
 import { eventBus } from '../../../utils/EventBus';
 import { Avatar, Button } from '@mui/material';
-import { addressSlice, walletIcon } from '../../../utils/utils';
+import { addressSlice, resolveCardanoNetwork, walletIcon } from '../../../utils/utils';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { i18n } from '../../../i18n';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import React from 'react';
 import './ConnectWalletButton.scss';
+import { env } from 'common/constants/env';
 
 type ConnectWalletButtonProps = {
   disableBackdropClick?: boolean;
@@ -24,7 +24,7 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
   const walletIsVerified = useSelector((state: RootState) => state.user.walletIsVerified);
 
   const { stakeAddress, isConnected, disconnect, enabledWallet } = useCardano({
-    limitNetwork: 'testnet' as NetworkType,
+    limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
   });
 
   const handleConnectWallet = () => {
@@ -70,14 +70,15 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
       {isConnected && (
         <div className="disconnect-wrapper">
           <Button
-            sx={{ zIndex: '99' }}
+            sx={{ zIndex: '99', cursor: walletIsVerified ? 'default' : 'pointer' }}
             className="connect-button verify-button"
             color="inherit"
             onClick={() => onOpenVerifyWalletModal()}
           >
             {walletIsVerified ? (
               <>
-                Verified <VerifiedIcon style={{ width: '20px', paddingBottom: '5px', color: '#1C9BEF' }} />{' '}
+                <span style={{ paddingTop: '3px' }}>Verified</span>{' '}
+                <VerifiedIcon style={{ width: '20px', paddingBottom: '0px', color: '#1C9BEF' }} />{' '}
               </>
             ) : (
               'Verify'
@@ -89,7 +90,7 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
             color="inherit"
             onClick={onDisconnectWallet}
           >
-            Disconnect wallet
+            Disconnect Wallet
           </Button>
         </div>
       )}

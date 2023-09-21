@@ -26,7 +26,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.bloxbean.cardano.client.util.HexUtil.encodeHexString;
-import static org.cardano.foundation.voting.client.ChainFollowerClient.AccountStatus.NOT_ELIGIBLE;
 import static org.cardano.foundation.voting.domain.VoteReceipt.Status.*;
 import static org.cardano.foundation.voting.domain.VotingEventType.*;
 import static org.cardano.foundation.voting.domain.web3.Web3Action.*;
@@ -327,19 +326,6 @@ public class DefaultVoteService implements VoteService {
             }
             var maybeAccount = accountE.get();
             if (maybeAccount.isEmpty()) {
-                log.warn("Account not found for the stake address: " + stakeAddress);
-
-                return Either.left(
-                        Problem.builder()
-                                .withTitle("ACCOUNT_NOT_FOUND")
-                                .withDetail("Account not found for the stake address:" + stakeAddress)
-                                .withStatus(BAD_REQUEST)
-                                .build()
-                );
-            }
-            var account = maybeAccount.get();
-
-            if (account.accountStatus() == NOT_ELIGIBLE) {
                 log.warn("State account not eligible to vote, e.g. not staked or power is less than equal 0 for the stake address: " + stakeAddress);
 
                 return Either.left(
@@ -350,9 +336,10 @@ public class DefaultVoteService implements VoteService {
                                 .build()
                 );
             }
+            var account = maybeAccount.get();
 
             // if we are eligible then we will have voting power
-            var blockchainVotingPowerStr = account.votingPower().orElseThrow();
+            var blockchainVotingPowerStr = account.votingPower();
             if (!isNumeric(blockchainVotingPowerStr)) {
                 return Either.left(
                         Problem.builder()

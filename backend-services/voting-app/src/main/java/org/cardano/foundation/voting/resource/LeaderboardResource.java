@@ -10,9 +10,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.zalando.problem.Problem;
+import org.zalando.problem.Status;
 
 import static org.cardano.foundation.voting.resource.Headers.XForceLeaderBoardResults;
-import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
 
@@ -39,7 +40,20 @@ public class LeaderboardResource {
                     return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
                 },
                 isAvailable -> {
-                    return isAvailable ? ResponseEntity.ok().build() : ResponseEntity.status(FORBIDDEN).build();
+                    if (isAvailable) {
+                        return ResponseEntity.ok().build();
+                    }
+
+                    var problem = Problem.builder()
+                            .withTitle("VOTING_RESULTS_NOT_AVAILABLE")
+                            .withDetail("Leaderboard not yet available for event: " + eventId)
+                            .withStatus(Status.FORBIDDEN)
+                            .build();
+
+
+                    return ResponseEntity
+                            .status(problem.getStatus().getStatusCode())
+                            .body(problem);
                 }
         );
     }
@@ -56,7 +70,18 @@ public class LeaderboardResource {
                     return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
                 },
                 isAvailable -> {
-                    return isAvailable ? ResponseEntity.ok().build() : ResponseEntity.status(FORBIDDEN).build();
+                    if (isAvailable) {
+                        return ResponseEntity.ok().build();
+                    }
+                    var problem = Problem.builder()
+                            .withTitle("VOTING_RESULTS_NOT_AVAILABLE")
+                            .withDetail("Leaderboard not yet available for event: " + eventId)
+                            .withStatus(Status.FORBIDDEN)
+                            .build();
+
+                    return ResponseEntity
+                            .status(problem.getStatus().getStatusCode())
+                            .body(problem);
                 }
         );
     }
@@ -72,10 +97,23 @@ public class LeaderboardResource {
 
         return categoryLeaderboardAvailableE
                 .fold(problem -> {
-                            return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
+                            return ResponseEntity
+                                    .status(problem.getStatus().getStatusCode())
+                                    .body(problem);
                         },
                         isAvailable -> {
-                            return isAvailable ? ResponseEntity.ok().build() : ResponseEntity.status(FORBIDDEN).build();
+                            if (isAvailable) {
+                                return ResponseEntity.ok().build();
+                            }
+                            var problem = Problem.builder()
+                                    .withTitle("VOTING_RESULTS_NOT_AVAILABLE")
+                                    .withDetail("Leaderboard not yet available for event: " + eventId)
+                                    .withStatus(Status.FORBIDDEN)
+                                    .build();
+
+                            return ResponseEntity
+                                    .status(problem.getStatus().getStatusCode())
+                                    .body(problem);
                         }
                 );
     }

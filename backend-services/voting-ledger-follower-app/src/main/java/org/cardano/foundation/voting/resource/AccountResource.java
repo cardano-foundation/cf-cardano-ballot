@@ -29,13 +29,7 @@ public class AccountResource {
                                     .status(problem.getStatus().getStatusCode())
                                     .body(problem);
                         },
-                        maybeAccount -> {
-                            if (maybeAccount.isEmpty()) {
-                                return ResponseEntity.notFound().build();
-                            }
-
-                            var account = maybeAccount.orElseThrow();
-
+                        account -> {
                             return ResponseEntity.ok().body(account);
                         });
     }

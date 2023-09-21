@@ -15,9 +15,9 @@ import org.zalando.problem.Problem;
 
 import java.util.Optional;
 
-import static org.springframework.http.HttpStatus.NOT_ACCEPTABLE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 import static org.zalando.problem.Status.BAD_REQUEST;
+import static org.zalando.problem.Status.NOT_ACCEPTABLE;
 
 @RestController
 @RequestMapping("/api/vote")
@@ -38,7 +38,9 @@ public class VoteResource {
                     .withStatus(BAD_REQUEST)
                     .build();
 
-            return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
+            return ResponseEntity
+                    .status(problem.getStatus().getStatusCode())
+                    .body(problem);
         }
 
         if (maybeEventId.isPresent() && !maybeEventId.orElseThrow().equals(jwtAuth.eventDetails().id())) {
@@ -48,7 +50,9 @@ public class VoteResource {
                     .withStatus(BAD_REQUEST)
                     .build();
 
-            return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
+            return ResponseEntity
+                    .status(problem.getStatus().getStatusCode())
+                    .body(problem);
         }
 
         return voteService.getVotes(jwtAuth)
@@ -60,7 +64,9 @@ public class VoteResource {
                                     .body(problem);
                         },
                         categoryProposalPairs -> {
-                            return ResponseEntity.ok().body(categoryProposalPairs);
+                            return ResponseEntity
+                                    .ok()
+                                    .body(categoryProposalPairs);
                         });
     }
 
@@ -76,7 +82,9 @@ public class VoteResource {
                     .withStatus(BAD_REQUEST)
                     .build();
 
-            return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
+            return ResponseEntity
+                    .status(problem.getStatus().getStatusCode())
+                    .body(problem);
         }
 
         return voteService.castVote(web3Auth)
@@ -90,7 +98,9 @@ public class VoteResource {
                         vote -> {
                             log.info("Vote cast just fine.");
 
-                            return ResponseEntity.ok().build();
+                            return ResponseEntity
+                                    .ok()
+                                    .build();
                         });
     }
 
@@ -105,14 +115,20 @@ public class VoteResource {
                     .withStatus(BAD_REQUEST)
                     .build();
 
-            return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
+            return ResponseEntity
+                    .status(problem.getStatus().getStatusCode())
+                    .body(problem);
         }
 
         return voteService.voteReceipt(web3Auth)
-                .fold(problem -> ResponseEntity
-                        .status(problem.getStatus().getStatusCode())
-                        .body(problem),
-                        voteReceipt -> ResponseEntity.ok().body(voteReceipt));
+                .fold(problem -> {
+                            return ResponseEntity
+                                    .status(problem.getStatus().getStatusCode())
+                                    .body(problem);
+                        },
+                        voteReceipt -> {
+                            return ResponseEntity.ok().body(voteReceipt);
+                        });
     }
 
     @RequestMapping(value = "/receipt/{maybeEventId}/{categoryId}", method = GET, produces = "application/json")
@@ -137,14 +153,20 @@ public class VoteResource {
                     .withStatus(BAD_REQUEST)
                     .build();
 
-            return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
+            return ResponseEntity
+                    .status(problem.getStatus().getStatusCode())
+                    .body(problem);
         }
 
         return voteService.voteReceipt(categoryId, jwtAuth)
-                .fold(problem -> ResponseEntity
-                        .status(problem.getStatus().getStatusCode())
-                        .body(problem),
-                        voteReceipt -> ResponseEntity.ok().body(voteReceipt));
+                .fold(problem -> {
+                            return ResponseEntity
+                                    .status(problem.getStatus().getStatusCode())
+                                    .body(problem);
+                        },
+                        voteReceipt -> {
+                            return ResponseEntity.ok().body(voteReceipt);
+                        });
     }
 
     @RequestMapping(value = "/vote-changing-available/{eventId}/{voteId}", method = HEAD, produces = "application/json")
@@ -159,7 +181,9 @@ public class VoteResource {
                     .withStatus(BAD_REQUEST)
                     .build();
 
-            return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
+            return ResponseEntity
+                    .status(problem.getStatus().getStatusCode())
+                    .body(problem);
         }
 
         if (maybeEventId.isPresent() && maybeEventId.orElseThrow().equals(jwtAuth.eventDetails().id())) {
@@ -169,14 +193,29 @@ public class VoteResource {
                     .withStatus(BAD_REQUEST)
                     .build();
 
-            return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
+            return ResponseEntity
+                    .status(problem.getStatus().getStatusCode())
+                    .body(problem);
         }
 
         return voteService.isVoteChangingPossible(voteId, jwtAuth)
                 .fold(problem -> ResponseEntity
                         .status(problem.getStatus().getStatusCode())
                         .body(problem),
-                        isAvailable -> isAvailable ? ResponseEntity.ok().build() : ResponseEntity.status(NOT_ACCEPTABLE).build());
+                        isAvailable -> {
+                            if (isAvailable) {
+                                return ResponseEntity.ok().build();
+                            }
+                            var problem = Problem.builder()
+                                    .withTitle("VOTE_CHANGING_NOT_AVAILABLE")
+                                    .withDetail("Vote changing is not available for this vote!")
+                                    .withStatus(NOT_ACCEPTABLE)
+                                    .build();
+
+                            return ResponseEntity
+                                    .status(problem.getStatus().getStatusCode())
+                                    .body(problem);
+                        });
     }
 
 }

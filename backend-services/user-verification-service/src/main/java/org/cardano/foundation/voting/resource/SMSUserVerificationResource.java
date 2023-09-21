@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Objects;
-
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
@@ -31,8 +29,16 @@ public class SMSUserVerificationResource {
         log.info("Received SMS startVerification request: {}", startVerificationRequest);
 
         return smsUserVerificationService.startVerification(startVerificationRequest)
-                .fold(problem -> ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem),
-                        userVerification -> ResponseEntity.ok().body(userVerification)
+                .fold(problem -> {
+                            return ResponseEntity
+                                    .status(problem.getStatus().getStatusCode())
+                                    .body(problem);
+                        },
+                        userVerification -> {
+                            return ResponseEntity
+                                    .ok()
+                                    .body(userVerification);
+                        }
                 );
     }
 
@@ -42,8 +48,16 @@ public class SMSUserVerificationResource {
         log.info("Received SMS checkVerification request: {}", checkVerificationRequest);
 
         return smsUserVerificationService.checkVerification(checkVerificationRequest)
-                .fold(problem -> ResponseEntity.status(Objects.requireNonNull(problem.getStatus()).getStatusCode()).body(problem),
-                        userVerification -> ResponseEntity.ok().body(userVerification)
+                .fold(problem -> {
+                            return ResponseEntity
+                                    .status(problem.getStatus().getStatusCode())
+                                    .body(problem);
+                        },
+                        userVerification -> {
+                            return ResponseEntity
+                                    .ok()
+                                    .body(userVerification);
+                        }
                 );
     }
 

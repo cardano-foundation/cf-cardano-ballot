@@ -32,11 +32,17 @@ public class LoginResource {
                     .withStatus(BAD_REQUEST)
                     .build();
 
-            return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
+            return ResponseEntity
+                    .status(problem.getStatus().getStatusCode())
+                    .body(problem);
         }
 
         return loginService.login(web3AuthenticationToken)
-                .fold(problem -> ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem),
+                .fold(problem -> {
+                            return ResponseEntity
+                                    .status(problem.getStatus().getStatusCode())
+                                    .body(problem);
+                        },
                         ResponseEntity::ok
                 );
     }

@@ -12,11 +12,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setUserStartsVerification, setWalletIsVerified } from '../../store/userSlice';
 import { PhoneNumberCodeConfirmation, VerificationStarts } from '../../store/types';
 import { RootState } from '../../store';
-import { NetworkType } from '@cardano-foundation/cardano-connect-with-wallet-core';
 import { useLocation } from 'react-router-dom';
 import { CustomButton } from '../common/Button/CustomButton';
-import { capitalizeFirstLetter, getSignedMessagePromise } from '../../utils/utils';
-import { eventBus } from '../../utils/EventBus';
+import { capitalizeFirstLetter, getSignedMessagePromise, openNewTab, resolveCardanoNetwork } from '../../utils/utils';
 import { SignedWeb3Request } from '../../types/voting-app-types';
 
 // TODO: env.
@@ -40,7 +38,7 @@ const VerifyWallet = (props: VerifyWalletProps) => {
   const [checkImNotARobot, setCheckImNotARobot] = useState<boolean>(false);
   const [isPhoneInputDisabled] = useState<boolean>(false);
   const dispatch = useDispatch();
-  const { stakeAddress, signMessage } = useCardano({ limitNetwork: 'testnet' as NetworkType });
+  const { stakeAddress, signMessage } = useCardano({ limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK) });
   const userVerification = useSelector((state: RootState) => state.user.userVerification);
   const userStartsVerificationByStakeAddress =
     Object.keys(userVerification).length !== 0 && userVerification[stakeAddress];
@@ -133,9 +131,9 @@ const VerifyWallet = (props: VerifyWalletProps) => {
                 onError('Discord verification failed');
               }
             })
-            .catch((e) => eventBus.publish('showToast', capitalizeFirstLetter(e.message), true));
+            .catch((e) => onError(capitalizeFirstLetter(e.message)));
         })
-        .catch((e) => eventBus.publish('showToast', capitalizeFirstLetter(e.message), true));
+        .catch((e) => onError(capitalizeFirstLetter(e.message)));
     }
   };
 
@@ -386,15 +384,26 @@ const VerifyWallet = (props: VerifyWalletProps) => {
           gutterBottom
           style={{ wordWrap: 'break-word', marginTop: '16px' }}
         >
-          1. Join our Discord Server and accept our terms and conditions by reacting with a 🚀 to the message in the
-          verification channel.
+          1.{' '}
+          <span
+            style={{ cursor: 'pointer' }}
+            onClick={() => openNewTab(env.DISCORD_CHANNEL_URL)}
+          >
+            Join our Discord Server
+          </span>{' '}
+          and accept our terms and conditions by reacting with a 🚀 to the message in the verification channel.
         </Typography>
         <Typography
           className="verify-wallet-modal-description"
           gutterBottom
           style={{ wordWrap: 'break-word', marginTop: '16px' }}
         >
-          2. Open the chat with the bot.
+          2. <span
+            style={{ cursor: 'pointer' }}
+            onClick={() => openNewTab(env.DISCORD_BOT_URL)}
+        >
+            Open the chat
+          </span> with the bot.
         </Typography>
         <Typography
           className="verify-wallet-modal-description"

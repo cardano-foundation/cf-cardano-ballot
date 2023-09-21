@@ -162,6 +162,8 @@ export interface EventPresentationBuilder {}
 export interface ProposalPresentation {
   id: string;
   name?: string;
+  presentationName?: string;
+  desc?: string;
 }
 
 export interface ProposalPresentationBuilder {}

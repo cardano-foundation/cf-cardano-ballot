@@ -15,7 +15,7 @@ import { StatsTile } from './components/StatsTile';
 import SUMMIT2023CONTENT from '../../common/resources/data/summit2023Content.json';
 import { CategoryContent } from 'pages/Categories/Category.types';
 import { LeaderboardContent } from './Leaderboard.types';
-import {eventBus} from '../../utils/EventBus';
+import { eventBus } from '../../utils/EventBus';
 
 const Leaderboard = () => {
   const event = useSelector((state: RootState) => state.user.event);
@@ -33,7 +33,7 @@ const Leaderboard = () => {
       if (process.env.NODE_ENV === 'development') {
         console.log(message);
       }
-      eventBus.publish('showToast', 'Failed to fecth stats', true);
+      eventBus.publish('showToast', 'Failed to fecth stats', 'error');
     }
   }, []);
 

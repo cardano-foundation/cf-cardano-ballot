@@ -10,13 +10,10 @@ import {
   useTheme,
   useMediaQuery,
   Grid,
-  Snackbar,
   Typography,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import DoNotDisturbAltIcon from '@mui/icons-material/DoNotDisturbAlt';
 import './Header.scss';
 import { i18n } from '../../../i18n';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
@@ -26,7 +23,6 @@ import { VerifyWallet } from '../../VerifyWallet';
 import { eventBus } from '../../../utils/EventBus';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../store';
-import { NetworkType } from '@cardano-foundation/cardano-connect-with-wallet-core';
 import { ConnectWalletButton } from '../ConnectWalletButton/ConnectWalletButton';
 import { useToggle } from 'common/hooks/useToggle';
 import { CustomButton } from '../Button/CustomButton';
@@ -34,7 +30,10 @@ import { getSlotNumber } from 'common/api/voteService';
 import { buildCanonicalLoginJson, submitLogin } from 'common/api/loginService';
 import { saveUserInSession } from '../../../utils/session';
 import { setWalletIsLoggedIn } from '../../../store/userSlice';
-import { getSignedMessagePromise } from '../../../utils/utils';
+import { capitalizeFirstLetter, getSignedMessagePromise, resolveCardanoNetwork } from '../../../utils/utils';
+import { Toast } from '../Toast/Toast';
+import { ToastType } from '../Toast/Toast.types';
+import { env } from 'common/constants/env';
 
 const Header: React.FC = () => {
   const dispatch = useDispatch();
@@ -44,14 +43,16 @@ const Header: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const walletIsVerified = useSelector((state: RootState) => state.user.walletIsVerified);
 
-  const { isConnected, stakeAddress, signMessage } = useCardano({ limitNetwork: 'testnet' as NetworkType });
+  const { isConnected, stakeAddress, signMessage } = useCardano({
+    limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
+  });
 
   const [openAuthDialog, setOpenAuthDialog] = useState<boolean>(false);
   const [loginModal, toggleLoginModal] = useToggle(false);
   const [verifyModalIsOpen, setVerifyModalIsOpen] = useState<boolean>(false);
   const [verifyDiscordModalIsReady, toggleVerifyDiscordModalIsOpen] = useToggle(false);
   const [toastMessage, setToastMessage] = useState('');
-  const [toastIsError, setToastIsError] = useState(false);
+  const [toastType, setToastType] = useState<ToastType>('common');
   const [toastOpen, setToastOpen] = useState(false);
   const location = useLocation();
 
@@ -100,15 +101,15 @@ const Header: React.FC = () => {
     };
   }, []);
 
-  const showToast = (message: string, error?: boolean) => {
-    setToastIsError(!!error);
-    setToastOpen(true);
+  const showToast = (message: string, type?: ToastType) => {
+    setToastType(type || 'common');
     setToastMessage(message);
+    setToastOpen(true);
   };
 
   useEffect(() => {
-    const showToastListener = (message: string, error: boolean) => {
-      showToast(message, error);
+    const showToastListener = (message: string, type?: ToastType) => {
+      showToast(message, type || 'common');
     };
     eventBus.subscribe('showToast', showToastListener);
 
@@ -127,7 +128,7 @@ const Header: React.FC = () => {
   };
   const onConnectWalletError = () => {
     setOpenAuthDialog(false);
-    showToast('Unable to connect wallet. Please try again', true);
+    showToast('Unable to connect wallet. Please try again', 'error');
   };
 
   const handleConnectWallet = () => {
@@ -147,12 +148,12 @@ const Header: React.FC = () => {
   };
 
   const onVerify = () => {
-    showToast('Your wallet has been verified');
+    showToast('Your wallet has been verified', 'verified');
     handleCloseVerify();
   };
 
   const onError = (error: string | undefined) => {
-    showToast(error, true);
+    showToast(error, 'error');
   };
 
   const handleToastClose = (event?: Event | React.SyntheticEvent<any, Event>, reason?: string) => {
@@ -181,9 +182,9 @@ const Header: React.FC = () => {
           eventBus.publish('showToast', 'Login successfully');
           toggleLoginModal();
         })
-        .catch((e) => eventBus.publish('showToast', e.message, true));
+        .catch((e) => eventBus.publish('showToast', 'Login failed', 'error'));
     } catch (e) {
-      eventBus.publish('showToast', e.message, true);
+      eventBus.publish('showToast', capitalizeFirstLetter(e.message || 'Login failed'), 'error');
     }
   };
 
@@ -365,30 +366,12 @@ const Header: React.FC = () => {
           fullWidth={true}
         />
       </Modal>
-      <Snackbar
-        className={`header-toast ${toastIsError ? 'header-toast-error' : ''}`}
-        open={toastOpen}
-        autoHideDuration={3000}
+
+      <Toast
+        isOpen={toastOpen}
+        type={toastType}
+        message={toastMessage}
         onClose={handleToastClose}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-        message={
-          <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            {toastIsError ? <DoNotDisturbAltIcon /> : <CheckCircleOutlineIcon />} {toastMessage}
-          </span>
-        }
-        action={
-          <>
-            <div style={{ background: 'lightgray', width: '1px', height: '24px', marginRight: '8px' }}></div>
-            <IconButton
-              size="small"
-              aria-label="close"
-              color="inherit"
-              onClick={handleToastClose}
-            >
-              <CloseIcon fontSize="small" />
-            </IconButton>
-          </>
-        }
       />
     </>
   );

@@ -16,7 +16,7 @@ import styles from './TermsAndPolicyOpt.module.scss';
 import { CustomButton } from '../common/Button/CustomButton';
 
 export const LINK_TERMS = 'Terms & Conditions';
-export const LINK_PRIVACY = 'Privacy Policy';
+export const LINK_PRIVACY = 'Privacy & Policy';
 
 const TermsOptInModal = (props) => {
   const theme = useTheme();
@@ -70,7 +70,7 @@ const TermsOptInModal = (props) => {
       open={open}
       keepMounted
       scroll={'paper'}
-      maxWidth={isMobile ? 'sm' : 'lg'}
+      maxWidth={isMobile ? 'sm' : 'md'}
       sx={{ backdropFilter: 'blur(10px)' }}
       PaperProps={{ sx: { borderRadius: '16px' } }}
       aria-labelledby="cardano-ballot-terms-modal"
@@ -191,11 +191,17 @@ const TermsOptInModal = (props) => {
           )}
         </DialogContentText>
       </DialogContent>
-      <DialogActions>
-        {!showConditionsPreview ? null : (
+      <DialogActions style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <Grid container>
           <Grid
             item
-            xs={8}
+            xs={isMobile ? 12 : 7}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flex-start',
+              marginLeft: isMobile ? '0px' : '12px',
+            }}
           >
             <FormGroup>
               <FormControlLabel
@@ -230,28 +236,34 @@ const TermsOptInModal = (props) => {
               />
             </FormGroup>
           </Grid>
-        )}
-        <Grid
-          item
-          xs={4}
-        >
-          <CustomButton
-            styles={
-              checked
-                ? {
-                    background: '#ACFCC5',
-                    color: '#03021F',
-                  }
-                : {
-                    background: '#6C6F89',
-                    color: '#F6F9FF !important',
-                  }
-            }
-            label="Accept"
-            onClick={handleAgreeClose}
-            fullWidth={true}
-            disabled={!checked}
-          />
+          <Grid
+            item
+            xs={isMobile ? 12 : 4}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              padding: isMobile ? '6px' : '0px',
+            }}
+          >
+            <CustomButton
+              styles={
+                checked
+                  ? {
+                      background: '#ACFCC5',
+                      color: '#03021F',
+                    }
+                  : {
+                      background: '#6C6F89',
+                      color: '#F6F9FF !important',
+                    }
+              }
+              label="Accept"
+              onClick={handleAgreeClose}
+              fullWidth={isMobile}
+              disabled={!checked}
+            />
+          </Grid>
         </Grid>
       </DialogActions>
     </Dialog>

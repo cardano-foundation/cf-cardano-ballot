@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.44](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.43...v0.2.44) (2023-09-21)
+
+
+### Features
+
+* winner winner chicken dinner ([#279](https://github.com/cardano-foundation/cf-cardano-ballot/issues/279)) ([5da0d00](https://github.com/cardano-foundation/cf-cardano-ballot/commit/5da0d004e5e61b3a6c857e88a5f884672bd1aa7f))
+* yaci-store goes spring 3.1.x ([#275](https://github.com/cardano-foundation/cf-cardano-ballot/issues/275)) ([df35210](https://github.com/cardano-foundation/cf-cardano-ballot/commit/df352105d812b6cbfdc887165fce24c9f8d60c73))
+
+
+### Bug Fixes
+
+* slot diff between yaci and blockfrost CAN be negative, ie yaci being faster than blockfrost. Go YACI ([#281](https://github.com/cardano-foundation/cf-cardano-ballot/issues/281)) ([9c5d8c3](https://github.com/cardano-foundation/cf-cardano-ballot/commit/9c5d8c36a5343a84cfa6602e5dfa766c0ba744bc))
+* voting-admin-app: pass the network to CCL code. ([8b020c1](https://github.com/cardano-foundation/cf-cardano-ballot/commit/8b020c16137b01243675512a1c020a191b6ba1a1))
+
 ## [0.2.43](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.42...v0.2.43) (2023-09-20)
 
 

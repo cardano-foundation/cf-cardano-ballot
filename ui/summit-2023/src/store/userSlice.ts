@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import {UserVotes, VoteReceipt} from '../types/voting-app-types';
+import { UserVotes, VoteReceipt } from '../types/voting-app-types';
 import { EventPresentation } from '../types/voting-ledger-follower-types';
 import { UserState, VerificationStarts } from './types';
 

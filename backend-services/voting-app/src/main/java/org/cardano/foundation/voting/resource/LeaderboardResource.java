@@ -126,7 +126,10 @@ public class LeaderboardResource {
 
         return categoryLeaderboardE
                 .fold(problem -> {
-                            return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
+                            return ResponseEntity
+                                    .status(problem.getStatus().getStatusCode())
+                                    //.cacheControl(noCache())
+                                    .body(problem);
                         },
                         response -> {
                             return ResponseEntity.ok().body(response);

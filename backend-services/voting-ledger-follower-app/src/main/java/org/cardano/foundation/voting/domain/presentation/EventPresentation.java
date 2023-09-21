@@ -64,7 +64,13 @@ public class EventPresentation {
     private boolean isNotStarted = false;
 
     @Builder.Default
+    private boolean isStarted = false;
+
+    @Builder.Default
     private boolean isProposalsReveal = false;
+
+    @Builder.Default
+    private boolean isCommitmentsWindowOpen = false;
 
     @Builder.Default
     private boolean isAllowVoteChanging = false;

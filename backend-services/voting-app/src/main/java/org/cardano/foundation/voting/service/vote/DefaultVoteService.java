@@ -162,6 +162,14 @@ public class DefaultVoteService implements VoteService {
                     .build());
         }
 
+        if (web3AuthenticationToken.getDetails().getChainTip().isNotSynced()) {
+            return Either.left(Problem.builder()
+                    .withTitle("CHAIN_FOLLOWER_NOT_SYNCED")
+                    .withDetail("Chain follower service not fully synced, please try again later!")
+                    .withStatus(INTERNAL_SERVER_ERROR)
+                    .build());
+        }
+
         // check which is specific for the USER_BASED event type
         if (event.votingEventType() == USER_BASED) {
             var userVerifiedE = userVerificationClient.isVerified(eventId, details.getStakeAddress());
@@ -568,14 +576,14 @@ public class DefaultVoteService implements VoteService {
 
             if (item instanceof ProofItem.Left pl) {
                 return VoteReceipt.MerkleProofItem.builder()
-                        .type(VoteReceipt.MerkleProofType.Left)
+                        .type(VoteReceipt.MerkleProofType.L)
                         .hash(encodeHexString(pl.hash()))
                         .build();
             }
 
             if (item instanceof ProofItem.Right pr) {
                 return VoteReceipt.MerkleProofItem.builder()
-                        .type(VoteReceipt.MerkleProofType.Right)
+                        .type(VoteReceipt.MerkleProofType.R)
                         .hash(encodeHexString(pr.hash()))
                         .build();
             }

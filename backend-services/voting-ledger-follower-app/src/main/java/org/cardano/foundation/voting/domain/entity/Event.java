@@ -51,10 +51,10 @@ public class Event extends AbstractTimestampEntity {
     @Builder.Default
     private Boolean allowVoteChanging = false;
 
-    @Column(name = "high_level_epoch_results_while_voting")
+    @Column(name = "high_level_event_results_while_voting")
     @Nullable
     @Builder.Default
-    private Boolean highLevelEpochResultsWhileVoting = false;
+    private Boolean highLevelEventResultsWhileVoting = false;
 
     @Column(name = "high_level_category_results_while_voting")
     @Nullable
@@ -183,24 +183,24 @@ public class Event extends AbstractTimestampEntity {
         this.snapshotEpoch = snapshotEpoch.orElse(null);
     }
 
-    public Optional<Boolean> getHighLevelEpochResultsWhileVoting() {
-        return Optional.ofNullable(highLevelEpochResultsWhileVoting);
+    public boolean getHighLevelEventResultsWhileVoting() {
+        return Optional.ofNullable(highLevelEventResultsWhileVoting).orElse(false);
     }
 
-    public void setHighLevelEpochResultsWhileVoting(Optional<Boolean> highLevelEpochResultsWhileVoting) {
-        this.highLevelEpochResultsWhileVoting = highLevelEpochResultsWhileVoting.orElse(null);
+    public void setHighLevelEventResultsWhileVoting(Optional<Boolean> highLevelEventResultsWhileVoting) {
+        this.highLevelEventResultsWhileVoting = highLevelEventResultsWhileVoting.orElse(null);
     }
 
-    public Optional<Boolean> getHighLevelCategoryResultsWhileVoting() {
-        return Optional.ofNullable(highLevelCategoryResultsWhileVoting);
+    public boolean getHighLevelCategoryResultsWhileVoting() {
+        return Optional.ofNullable(highLevelCategoryResultsWhileVoting).orElse(false);
     }
 
     public void setHighLevelCategoryResultsWhileVoting(Optional<Boolean> highLevelCategoryResultsWhileVoting) {
         this.highLevelCategoryResultsWhileVoting = highLevelCategoryResultsWhileVoting.orElse(null);
     }
 
-    public Optional<Boolean> getCategoryResultsWhileVoting() {
-        return Optional.ofNullable(categoryResultsWhileVoting);
+    public boolean getCategoryResultsWhileVoting() {
+        return Optional.ofNullable(categoryResultsWhileVoting).orElse(false);
     }
 
     public void setCategoryResultsWhileVoting(Optional<Boolean> categoryResultsWhileVoting) {

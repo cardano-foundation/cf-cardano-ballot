@@ -299,6 +299,20 @@ const Nominees = () => {
     }
   };
 
+    const nomineeAlreadyVoted = (nominee) => {
+        let alreadyVoted = false;
+        const session = getUserInSession();
+        if (
+            !tokenIsExpired(session?.expiresAt) &&
+            userVotes?.length &&
+            userVotes?.find((c) => c.categoryId === categoryId) &&
+            userVotes?.find((p) => p.proposalId === nominee.id)
+        ) {
+            alreadyVoted = true;
+        }
+        return alreadyVoted;
+    };
+
   const renderResponsiveList = (items): ReactElement => {
     return (
       <>
@@ -307,81 +321,102 @@ const Nominees = () => {
           spacing={3}
           style={{ justifyContent: 'center' }}
         >
-          {nominees.map((nominee, index) => (
-            <Grid
-              item
-              xs={12}
-              key={nominee.id}
-            >
-              <Fade in={isVisible}>
-                <Card
-                  className={'nominee-card'}
-                  style={{
-                    padding: '8px',
-                    width: '100%',
-                    height: 'auto',
-                  }}
-                >
-                  <CardContent>
-                    <Typography
-                      className="nominee-title"
-                      variant="h2"
-                    >
-                      {nominee.presentationName}
-                    </Typography>
-                    <Grid container>
-                      <Grid
-                        item
-                        xs={10}
-                      >
-                        <Typography
-                          className="nominee-description"
-                          variant="body2"
-                        >
-                          {nominee.desc}
-                        </Typography>
-                      </Grid>
-                      <Grid
-                        item
-                        xs={2}
-                      >
-                        <CustomButton
-                          styles={
-                            isConnected
-                              ? {
-                                  background: '#ACFCC5',
-                                  color: '#03021F',
-                                  width: 'auto',
-                                }
-                              : {
-                                  background: '#03021F',
-                                  color: '#F6F9FF',
-                                  width: 'auto',
-                                }
-                          }
-                          label={renderNomineeButtonLabel() as string}
-                          onClick={() => handleNomineeButton(nominee)}
-                        />
-                      </Grid>
-                    </Grid>
+          {nominees.map((nominee, index) => {
+              const voted = nomineeAlreadyVoted(nominee);
+              return <Grid
+                      item
+                      xs={12}
+                      key={nominee.id}
+                  >
+                      <Fade in={isVisible}>
+                          <Card
+                              className={'nominee-card'}
+                              style={{
+                                  padding: '8px',
+                                  width: '100%',
+                                  height: 'auto',
+                              }}
+                          >
+                              <CardContent>
+                                  <Box sx={{ position: 'relative' }}>
+                                      {voted ? (
+                                          <Tooltip title="Already Voted">
+                                              <img
+                                                  height={40}
+                                                  width={102}
+                                                  src={labelVoted}
+                                                  alt="Already Voted"
+                                                  style={{
+                                                      position: 'absolute',
+                                                      float: 'right',
+                                                      right: 0,
+                                                      zIndex: 99,
+                                                      opacity: 1,
+                                                  }}
+                                              />
+                                          </Tooltip>
+                                      ) : null}
+                                  </Box>
+                                  <Typography
+                                      className="nominee-title"
+                                      variant="h2"
+                                  >
+                                      {nominee.presentationName}
+                                  </Typography>
+                                  <Grid container>
+                                      <Grid
+                                          item
+                                          xs={10}
+                                      >
+                                          <Typography
+                                              className="nominee-description"
+                                              variant="body2"
+                                          >
+                                              {nominee.desc}
+                                          </Typography>
+                                      </Grid>
+                                      <Grid
+                                          item
+                                          xs={2}
+                                      >
+                                          <CustomButton
+                                              styles={
+                                                  isConnected
+                                                      ? {
+                                                          background: '#ACFCC5',
+                                                          color: '#03021F',
+                                                          width: 'auto',
+                                                      }
+                                                      : {
+                                                          background: '#03021F',
+                                                          color: '#F6F9FF',
+                                                          width: 'auto',
+                                                      }
+                                              }
+                                              label={renderNomineeButtonLabel() as string}
+                                              onClick={() => handleNomineeButton(nominee)}
+                                          />
+                                      </Grid>
+                                  </Grid>
 
-                    <CustomButton
-                      styles={{
-                        background: 'transparent !important',
-                        color: '#03021F',
-                        border: '1px solid #daeefb',
-                        width: '146px',
-                        marginTop: '15px',
-                      }}
-                      label="Read more"
-                      onClick={() => handleReadMore(nominee)}
-                      fullWidth={true}
-                    />
-                  </CardContent>
-                </Card>
-              </Fade>
-            </Grid>
-          ))}
+                                  <CustomButton
+                                      styles={{
+                                          background: 'transparent !important',
+                                          color: '#03021F',
+                                          border: '1px solid #daeefb',
+                                          width: '146px',
+                                          marginTop: '15px',
+                                      }}
+                                      label="Read more"
+                                      onClick={() => handleReadMore(nominee)}
+                                      fullWidth={true}
+                                  />
+                              </CardContent>
+                          </Card>
+                      </Fade>
+                  </Grid>
+
+          })}
         </Grid>
       </>
     );
@@ -395,83 +430,104 @@ const Nominees = () => {
             spacing={2}
             justifyContent="center"
           >
-            {items.map((nominee) => (
-              <Grid
-                item
-                xs={12}
-                sm={12}
-                md={4}
-                lg={4}
-                key={nominee.id}
-              >
-                <div style={{ height: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Card
-                    sx={{
-                      width: '414px',
-                      justifyContent: 'center',
-                      display: 'flex',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <CardContent>
-                      <Typography
-                        className="nominee-title"
-                        variant="h2"
-                      >
-                        {nominee.presentationName}
-                      </Typography>
-                      <Grid container>
-                        <Grid
-                          item
-                          xs={12}
-                        >
-                          <Typography
-                            className="nominee-description"
-                            variant="body2"
-                          >
-                            {nominee.desc}
-                          </Typography>
-                        </Grid>
-                      </Grid>
+            {items.map((nominee) => {
+                const voted = nomineeAlreadyVoted(nominee);
+                return <Grid
+                        item
+                        xs={12}
+                        sm={12}
+                        md={4}
+                        lg={4}
+                        key={nominee.id}
+                    >
+                        <div style={{height: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                            <Card
+                                sx={{
+                                    width: '414px',
+                                    justifyContent: 'center',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <CardContent>
+                                    <Box sx={{ position: 'relative' }}>
+                                        {voted ? (
+                                            <Tooltip title="Already Voted">
+                                                <img
+                                                    height={40}
+                                                    width={102}
+                                                    src={labelVoted}
+                                                    alt="Already Voted"
+                                                    style={{
+                                                        position: 'absolute',
+                                                        float: 'right',
+                                                        right: 0,
+                                                        zIndex: 99,
+                                                        opacity: 1,
+                                                    }}
+                                                />
+                                            </Tooltip>
+                                        ) : null}
+                                    </Box>
+                                    <Typography
+                                        className="nominee-title"
+                                        variant="h2"
+                                    >
+                                        {nominee.presentationName}
+                                    </Typography>
+                                    <Grid container>
+                                        <Grid
+                                            item
+                                            xs={12}
+                                        >
+                                            <Typography
+                                                className="nominee-description"
+                                                variant="body2"
+                                            >
+                                                {nominee.desc}
+                                            </Typography>
+                                        </Grid>
+                                    </Grid>
 
-                      <CustomButton
-                        styles={{
-                          background: 'transparent !important',
-                          color: '#03021F',
-                          border: '1px solid #daeefb',
-                          width: '100%',
-                          marginTop: '28px',
-                        }}
-                        label="Read more"
-                        onClick={() => handleReadMore(nominee)}
-                        fullWidth={true}
-                      />
+                                    <CustomButton
+                                        styles={{
+                                            background: 'transparent !important',
+                                            color: '#03021F',
+                                            border: '1px solid #daeefb',
+                                            width: '100%',
+                                            marginTop: '28px',
+                                        }}
+                                        label="Read more"
+                                        onClick={() => handleReadMore(nominee)}
+                                        fullWidth={true}
+                                    />
 
-                      {!receipt ? (
-                        <CustomButton
-                          styles={
-                            isConnected
-                              ? {
-                                  background: '#ACFCC5',
-                                  color: '#03021F',
-                                  marginTop: '18px',
-                                }
-                              : {
-                                  background: '#03021F',
-                                  color: '#F6F9FF',
-                                  marginTop: '18px',
-                                }
-                          }
-                          label={renderNomineeButtonLabel() as string}
-                          onClick={() => handleNomineeButton(nominee)}
-                          fullWidth={true}
-                        />
-                      ) : null}
-                    </CardContent>
-                  </Card>
-                </div>
-              </Grid>
-            ))}
+                                    {!receipt ? (
+                                        <CustomButton
+                                            styles={
+                                                isConnected
+                                                    ? {
+                                                        background: '#ACFCC5',
+                                                        color: '#03021F',
+                                                        marginTop: '18px',
+                                                    }
+                                                    : {
+                                                        background: '#03021F',
+                                                        color: '#F6F9FF',
+                                                        marginTop: '18px',
+                                                    }
+                                            }
+                                            label={renderNomineeButtonLabel() as string}
+                                            onClick={() => handleNomineeButton(nominee)}
+                                            fullWidth={true}
+                                        />
+                                    ) : null}
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </Grid>
+
+            })}
           </Grid>
         </div>
       </>

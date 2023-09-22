@@ -1,13 +1,13 @@
 interface Category {
   id: string;
-  name: string;
   presentationName: string;
-  description: string;
+  desc: string;
+  gdprProtection: boolean;
   proposals: {
     id: string;
     name: string;
     presentationName: string;
-    description: string;
+    desc: string;
     url: string;
     imageUrl: string;
     active: boolean;

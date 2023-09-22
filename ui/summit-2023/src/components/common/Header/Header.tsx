@@ -129,7 +129,7 @@ const Header: React.FC = () => {
   };
   const onConnectWalletError = () => {
     setOpenAuthDialog(false);
-    showToast('Unable to connect wallet. Please try again', 'error');
+    showToast('Unable to connect Wallet. Please try again', 'error');
   };
 
   const handleConnectWallet = () => {
@@ -149,7 +149,7 @@ const Header: React.FC = () => {
   };
 
   const onVerify = () => {
-    showToast('Your wallet has been verified', 'verified');
+    showToast('Your Wallet has been verified', 'verified');
     handleCloseVerify();
   };
 
@@ -316,12 +316,12 @@ const Header: React.FC = () => {
         id="connect-wallet-modal"
         isOpen={openAuthDialog}
         name="connect-wallet-modal"
-        title="Connect wallet"
+        title="Connect Wallet"
         onClose={handleCloseAuthDialog}
         width={isMobile ? 'auto' : '400px'}
       >
         <ConnectWalletList
-          description="In order to vote, first you will need to connect your wallet."
+          description="In order to vote, first you will need to connect your Wallet."
           onConnectWallet={onConnectWallet}
           onConnectError={onConnectWalletError}
         />
@@ -330,7 +330,7 @@ const Header: React.FC = () => {
         id="verify-wallet-modal"
         isOpen={verifyModalIsOpen || verifyDiscordModalIsReady}
         name="verify-wallet-modal"
-        title="Verify your wallet"
+        title="Verify your Wallet"
         onClose={handleCloseVerify}
         disableBackdropClick={true}
         width={isMobile ? 'auto' : '400px'}
@@ -345,7 +345,7 @@ const Header: React.FC = () => {
         id="login-modal"
         isOpen={isConnected && walletIsVerified && loginModal}
         name="login-modal"
-        title="Login with your wallet"
+        title="Login with your Wallet"
         onClose={toggleLoginModal}
         disableBackdropClick={true}
         width={isMobile ? 'auto' : '500px'}
@@ -354,7 +354,7 @@ const Header: React.FC = () => {
           variant="h6"
           sx={{ color: '#24262E', fontSize: '18px', fontStyle: 'normal', fontWeight: '400', lineHeight: '22px' }}
         >
-          The session has expired. In order to see your votes, please, login again with your wallet.
+          The session has expired. In order to see your votes, please, login again with your Wallet.
         </Typography>
         <CustomButton
           styles={{
@@ -362,7 +362,7 @@ const Header: React.FC = () => {
             color: '#03021F',
             margin: '24px 0px',
           }}
-          label="Login with wallet"
+          label="Login with Wallet"
           onClick={() => handleLogin()}
           fullWidth={true}
         />

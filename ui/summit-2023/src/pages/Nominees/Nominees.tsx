@@ -42,12 +42,13 @@ import {
   buildCanonicalVoteInputJson,
   castAVoteWithDigitalSignature,
   getSlotNumber,
+  getUserVotes,
   getVoteReceipt,
 } from '../../common/api/voteService';
 import { copyToClipboard, getSignedMessagePromise, resolveCardanoNetwork } from '../../utils/utils';
 import { buildCanonicalLoginJson, submitLogin } from 'common/api/loginService';
 import { getUserInSession, saveUserInSession, tokenIsExpired } from '../../utils/session';
-import { setVoteReceipt, setWalletIsLoggedIn } from '../../store/userSlice';
+import { setUserVotes, setVoteReceipt, setWalletIsLoggedIn } from '../../store/userSlice';
 import { FinalityScore } from '../../types/voting-ledger-follower-types';
 import { ProposalPresentation } from '../../types/voting-ledger-follower-types';
 import SidePage from '../../components/common/SidePage/SidePage';
@@ -58,6 +59,7 @@ import QRCode from 'react-qr-code';
 import { CustomButton } from '../../components/common/Button/CustomButton';
 import { env } from 'common/constants/env';
 import { parseError } from 'common/constants/errors';
+import { categoryAlreadyVoted } from '../Categories';
 
 const Nominees = () => {
   const { categoryId } = useParams();
@@ -68,6 +70,8 @@ const Nominees = () => {
   const receipts = useSelector((state: RootState) => state.user.receipts);
   const receipt = receipts && Object.keys(receipts).length && receipts[categoryId] ? receipts[categoryId] : undefined;
   const userVotes = useSelector((state: RootState) => state.user.userVotes);
+
+  const categoryVoted = categoryAlreadyVoted(categoryId, userVotes);
 
   const dispatch = useDispatch();
 
@@ -164,6 +168,15 @@ const Nominees = () => {
           saveUserInSession(session);
           dispatch(setWalletIsLoggedIn({ isLoggedIn: true }));
           eventBus.publish('showToast', 'Login successfully');
+          getUserVotes(session?.accessToken)
+            .then((uVotes) => {
+              if (uVotes) {
+                dispatch(setUserVotes({ userVotes: uVotes }));
+              }
+            })
+            .catch((e) => {
+              eventBus.publish('showToast', parseError(e.message), 'error');
+            });
           viewVoteReceipt(false, true);
         })
         .catch((e) => eventBus.publish('showToast', parseError(e.message), 'error'));
@@ -372,28 +385,30 @@ const Nominees = () => {
                             {nominee.desc}
                           </Typography>
                         </Grid>
-                        <Grid
-                          item
-                          xs={2}
-                        >
-                          <CustomButton
-                            styles={
-                              isConnected
-                                ? {
-                                    background: '#ACFCC5',
-                                    color: '#03021F',
-                                    width: 'auto',
-                                  }
-                                : {
-                                    background: '#03021F',
-                                    color: '#F6F9FF',
-                                    width: 'auto',
-                                  }
-                            }
-                            label={renderNomineeButtonLabel() as string}
-                            onClick={() => handleNomineeButton(nominee)}
-                          />
-                        </Grid>
+                        {!categoryVoted ? (
+                          <Grid
+                            item
+                            xs={2}
+                          >
+                            <CustomButton
+                              styles={
+                                isConnected
+                                  ? {
+                                      background: '#ACFCC5',
+                                      color: '#03021F',
+                                      width: 'auto',
+                                    }
+                                  : {
+                                      background: '#03021F',
+                                      color: '#F6F9FF',
+                                      width: 'auto',
+                                    }
+                              }
+                              label={renderNomineeButtonLabel() as string}
+                              onClick={() => handleNomineeButton(nominee)}
+                            />
+                          </Grid>
+                        ) : null}
                       </Grid>
 
                       <CustomButton
@@ -500,7 +515,7 @@ const Nominees = () => {
                           fullWidth={true}
                         />
 
-                        {!receipt ? (
+                        {!categoryVoted ? (
                           <CustomButton
                             styles={
                               isConnected
@@ -570,14 +585,14 @@ const Nominees = () => {
 
         <Typography
           className="nominees-description"
-          style={{ width: isMobile ? '360px' : '414px' }}
           variant="body1"
           gutterBottom
+          sx={{marginBottom: '50px'}}
         >
           {summit2023Category.desc}
         </Typography>
 
-        {walletIsVerified ? (
+        {categoryVoted ? (
           <Box
             sx={{
               display: 'flex',

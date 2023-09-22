@@ -30,11 +30,18 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { getUserInSession, tokenIsExpired } from '../../utils/session';
 
+const categoryAlreadyVoted = (categoryId, userVotes) => {
+  let alreadyVoted = false;
+  const session = getUserInSession();
+  if (!tokenIsExpired(session?.expiresAt) && userVotes?.length && userVotes?.find((c) => c.categoryId === categoryId)) {
+    alreadyVoted = true;
+  }
+  return alreadyVoted;
+};
+
 const Categories = () => {
   const eventCache = useSelector((state: RootState) => state.user.event);
   const userVotes = useSelector((state: RootState) => state.user.userVotes);
-
-  const session = getUserInSession();
   const categories = eventCache?.categories;
 
   const theme = useTheme();
@@ -53,7 +60,6 @@ const Categories = () => {
 
   const handleListView = (viewType: 'grid' | 'list') => {
     if (listView === viewType) return;
-
     setIsVisible(false);
     setTimeout(() => {
       setListView(viewType);
@@ -71,18 +77,6 @@ const Categories = () => {
     setIsHoveredId('');
   };
 
-  const categoryAlreadyVoted = (category) => {
-    let alreadyVoted = false;
-    if (
-      !tokenIsExpired(session?.expiresAt) &&
-      userVotes?.length &&
-      userVotes?.find((c) => c.categoryId === category.id)
-    ) {
-      alreadyVoted = true;
-    }
-    return alreadyVoted;
-  };
-
   const renderResponsiveGrid = (items): ReactElement => {
     return (
       <div style={{ width: '100%' }}>
@@ -92,7 +86,7 @@ const Categories = () => {
           justifyContent="center"
         >
           {items.map((category, index) => {
-            const voted = categoryAlreadyVoted(category);
+            const voted = categoryAlreadyVoted(category.id, userVotes);
             return (
               <Grid
                 item
@@ -291,7 +285,7 @@ const Categories = () => {
           justifyContent="center"
         >
           {items.map((category, index) => {
-            const voted = categoryAlreadyVoted(category);
+            const voted = categoryAlreadyVoted(category.id, userVotes);
             return (
               <Grid
                 item
@@ -438,4 +432,4 @@ const Categories = () => {
   );
 };
 
-export { Categories };
+export { Categories, categoryAlreadyVoted };

@@ -26,12 +26,9 @@ import CATEGORY_IMAGES from '../../common/resources/data/categoryImages.json';
 import { Link } from 'react-router-dom';
 import CardMedia from '@mui/material/CardMedia';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import { setUserVotes } from '../../store/userSlice';
 import { getUserInSession, tokenIsExpired } from '../../utils/session';
-import { getUserVotes } from '../../common/api/voteService';
-import { eventBus } from 'utils/EventBus';
 
 const Categories = () => {
   const eventCache = useSelector((state: RootState) => state.user.event);
@@ -47,8 +44,6 @@ const Categories = () => {
   const [listView, setListView] = useState<'grid' | 'list'>('grid');
   const [isVisible, setIsVisible] = useState(true);
   const [isHoveredId, setIsHoveredId] = useState('');
-
-  const dispatch = useDispatch();
 
   useEffect(() => {
     if (isMobile) {

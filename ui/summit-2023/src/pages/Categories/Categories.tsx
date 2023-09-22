@@ -56,20 +56,6 @@ const Categories = () => {
     }
   }, [isMobile]);
 
-  useEffect(() => {
-    if (!tokenIsExpired(session?.expiresAt)) {
-      getUserVotes(session?.accessToken)
-        .then((response) => {
-          if (response) {
-            dispatch(setUserVotes({userVotes: response}));
-          }
-        })
-        .catch((e) => {
-            eventBus.publish('showToast', e.message, true);
-        });
-    }
-  }, []);
-
   const handleListView = (viewType: 'grid' | 'list') => {
     if (listView === viewType) return;
 

@@ -59,18 +59,28 @@ function App() {
         }
       }
 
-      const isLoggedIn = getUserInSession();
-
-      if (isLoggedIn) {
-        const isExpired = tokenIsExpired(isLoggedIn.expiresAt);
+      const session = getUserInSession();
+      if (session) {
+        const isExpired = tokenIsExpired(session?.expiresAt);
         if (!isExpired) {
           dispatch(setWalletIsLoggedIn({ isLoggedIn: isExpired }));
+          getUserVotes(session?.accessToken)
+              .then((response) => {
+                if (response) {
+                  dispatch(setUserVotes({ userVotes: response }));
+                }
+              })
+              .catch((e) => {
+                eventBus.publish('showToast', parseError(e.message), 'error');
+              });
+
         } else {
           eventBus.publish('openLoginModal');
         }
       } else {
         eventBus.publish('openLoginModal');
       }
+
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') {
         console.log(`Failed to fetch event, ${error?.info || error?.message || error?.toString()}`);
@@ -78,21 +88,6 @@ function App() {
       eventBus.publish('showToast', parseError(error.message), 'error');
     }
   }, [dispatch, stakeAddress]);
-
-  useEffect(() => {
-    const session = getUserInSession();
-    if (!tokenIsExpired(session?.expiresAt)) {
-      getUserVotes(session?.accessToken)
-          .then((response) => {
-            if (response) {
-              dispatch(setUserVotes({ userVotes: response }));
-            }
-          })
-          .catch((e) => {
-            eventBus.publish('showToast', parseError(e.message), 'error');
-          });
-    }
-  }, []);
 
   useEffect(() => {
     fetchEvent();

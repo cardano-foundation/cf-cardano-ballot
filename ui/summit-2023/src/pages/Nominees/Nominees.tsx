@@ -556,22 +556,35 @@ const Nominees = () => {
           padding: isBigScreen ? '0px' : '0px 150px',
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-          <Typography
-            className="nominees-page-title"
-            variant="h2"
-            fontSize={{
-              xs: '28px',
-              md: '32px',
-            }}
-            lineHeight={{
-              xs: '28px',
-              md: '32px',
-            }}
-          >
-            {summit2023Category.presentationName}
-          </Typography>
-          {!isMobile && (
+        <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginTop: '50px',
+          marginBottom: 20,
+        }}
+      >
+        <Typography
+          variant="h2"
+          fontSize={{
+            xs: '28px',
+            md: '32px',
+            lg: '48px',
+          }}
+          lineHeight={{
+            xs: '28px',
+            md: '32px',
+          }}
+          sx={{
+            color: '#24262E',
+            fontStyle: 'normal',
+            fontWeight: '600',
+          }}
+        >
+          {summit2023Category.presentationName}
+        </Typography>
+        {!isMobile && (
             <div>
               <IconButton onClick={() => handleListView('grid')}>
                 <ViewModuleIcon />
@@ -581,7 +594,7 @@ const Nominees = () => {
               </IconButton>
             </div>
           )}
-        </div>
+      </div>
 
         <Typography
           className="nominees-description"

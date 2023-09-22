@@ -1,56 +1,44 @@
 import React from 'react';
-import { Box, Card, CardContent, CardMedia, Typography } from '@mui/material';
+import { Card, CardContent, CardMedia, Typography } from '@mui/material';
 import styles from './GuideTile.module.scss';
 
 type GuideTilePorps = {
   width: number;
   height: number;
+  media: string;
   graphic: any | React.ReactElement;
-  featureImg?: any | React.ReactElement;
   stepNumber: any | React.ReactElement;
   stepTitle: string | React.ReactElement;
   stepHint?: string | React.ReactElement;
-  featureImgStyle?: any;
 };
 
 export const GuideTile = ({
   width,
   height,
-  featureImg,
+  media,
   graphic,
   stepNumber,
   stepTitle,
   stepHint,
-  featureImgStyle,
 }: GuideTilePorps) => {
   return (
     <Card
       className={styles.guideCard}
       sx={{ width: { width }, height: { height } }}
     >
-      <CardMedia
+      { media === 'video' ? 
+      (<CardMedia
+        component='video'
+        image={graphic}
+        autoPlay
+      />) :
+      (<CardMedia
         component="img"
         height="260"
         image={graphic}
         alt=""
         sx={{ objectFit: 'fill' }}
-      />
-      <Box
-        sx={{
-          position: 'absolute',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          margin: '0 auto',
-          width: 'fit-content',
-          verticalAlign: 'middle',
-        }}
-      >
-        <img
-          style={featureImgStyle}
-          src={featureImg}
-        />
-      </Box>
+      />)}
       <CardContent>
         {stepNumber}
         <Typography

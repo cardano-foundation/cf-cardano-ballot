@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import './App.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import { setEventData, setUserVotes, setWalletIsLoggedIn, setWalletIsVerified } from './store/userSlice';
-import { Box, CircularProgress, Container, useMediaQuery, useTheme } from '@mui/material';
+import { Box, CircularProgress, Container } from '@mui/material';
 import Header from './components/common/Header/Header';
 import { PageRouter } from './routes';
 import { env } from './common/constants/env';
@@ -22,10 +22,9 @@ import SUMMIT2023CONTENT from 'common/resources/data/summit2023Content.json';
 import { resolveCardanoNetwork } from './utils/utils';
 import { parseError } from 'common/constants/errors';
 import { getUserVotes } from 'common/api/voteService';
+import { Layout } from 'components/common/Layout/Layout';
 
 function App() {
-  const theme = useTheme();
-  const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
   const eventCache = useSelector((state: RootState) => state.user.event);
   const [storedValue, _] = useLocalStorage(CB_TERMS_AND_PRIVACY, false);
   const [openTermDialog, setOpenTermDialog] = useState(false);
@@ -103,17 +102,13 @@ function App() {
   }, []);
 
   return (
-    <>
+    <Layout>
       <BrowserRouter>
         <img
           src={'/static/home-graphic-bg-top.svg'}
           alt="Home graphic background top left"
           className="home-graphic-bg-top"
         />
-        <div
-          className="App"
-          style={{ padding: isTablet ? '0px 0px' : '10px 52px' }}
-        >
           <Header />
           <div className="main-content">
             <Container
@@ -157,9 +152,8 @@ function App() {
             open={openTermDialog}
             setOpen={(value) => setOpenTermDialog(value)}
           />
-        </div>
       </BrowserRouter>
-    </>
+    </Layout>
   );
 }
 

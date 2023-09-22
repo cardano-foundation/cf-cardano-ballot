@@ -398,7 +398,8 @@ const Categories = () => {
           variant="h2"
           fontSize={{
             xs: '28px',
-            md: '48px',
+            md: '32px',
+            lg: '48px',
           }}
           lineHeight={{
             xs: '28px',

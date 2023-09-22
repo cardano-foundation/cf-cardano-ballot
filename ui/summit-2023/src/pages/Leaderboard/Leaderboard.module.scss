@@ -1,15 +1,4 @@
 .leaderboard {
-  .title {
-    color: var(--color-dark-grey);
-    font-size: 32px !important;
-    font-style: normal;
-    font-weight: 600 !important;
-    line-height: normal;
-    ::first-letter {
-      text-transform: uppercase;
-    }
-  }
-
   .description {
     max-height: 110px;
     margin-bottom: 40px !important;

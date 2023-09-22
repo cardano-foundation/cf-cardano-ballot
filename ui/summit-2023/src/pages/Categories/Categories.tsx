@@ -33,11 +33,7 @@ import { getUserInSession, tokenIsExpired } from '../../utils/session';
 const categoryAlreadyVoted = (categoryId, userVotes) => {
   let alreadyVoted = false;
   const session = getUserInSession();
-  if (
-      !tokenIsExpired(session?.expiresAt) &&
-      userVotes?.length &&
-      userVotes?.find((c) => c.categoryId === categoryId)
-  ) {
+  if (!tokenIsExpired(session?.expiresAt) && userVotes?.length && userVotes?.find((c) => c.categoryId === categoryId)) {
     alreadyVoted = true;
   }
   return alreadyVoted;

@@ -93,9 +93,6 @@ function App() {
   }, [fetchEvent]);
 
   useEffect(() => {
-    console.log('tokenIsExpired(session?.expiresAt)');
-    console.log(tokenIsExpired(session?.expiresAt));
-    console.log(session);
     if (isConnected && walletIsVerified && (!session || tokenIsExpired(session?.expiresAt))) {
       eventBus.publish('openLoginModal');
     }

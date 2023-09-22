@@ -26,14 +26,15 @@ import { RootState } from '../../../store';
 import { ConnectWalletButton } from '../ConnectWalletButton/ConnectWalletButton';
 import { useToggle } from 'common/hooks/useToggle';
 import { CustomButton } from '../Button/CustomButton';
-import { getSlotNumber } from 'common/api/voteService';
+import { getSlotNumber, getUserVotes } from 'common/api/voteService';
 import { buildCanonicalLoginJson, submitLogin } from 'common/api/loginService';
 import { saveUserInSession } from '../../../utils/session';
-import { setWalletIsLoggedIn } from '../../../store/userSlice';
-import { capitalizeFirstLetter, getSignedMessagePromise, resolveCardanoNetwork } from '../../../utils/utils';
+import { setUserVotes, setWalletIsLoggedIn } from '../../../store/userSlice';
+import { getSignedMessagePromise, resolveCardanoNetwork } from '../../../utils/utils';
 import { Toast } from '../Toast/Toast';
 import { ToastType } from '../Toast/Toast.types';
 import { env } from 'common/constants/env';
+import { parseError } from 'common/constants/errors';
 
 const Header: React.FC = () => {
   const dispatch = useDispatch();
@@ -152,8 +153,8 @@ const Header: React.FC = () => {
     handleCloseVerify();
   };
 
-  const onError = (error: string | undefined) => {
-    showToast(error, 'error');
+  const onError = (errorMessage: string) => {
+    showToast(errorMessage, 'error');
   };
 
   const handleToastClose = (event?: Event | React.SyntheticEvent<any, Event>, reason?: string) => {
@@ -164,12 +165,12 @@ const Header: React.FC = () => {
   };
 
   const handleLogin = async () => {
-    const absoluteSlot = (await getSlotNumber())?.absoluteSlot;
-    const canonicalVoteInput = buildCanonicalLoginJson({
-      stakeAddress,
-      slotNumber: absoluteSlot.toString(),
-    });
     try {
+      const absoluteSlot = (await getSlotNumber())?.absoluteSlot;
+      const canonicalVoteInput = buildCanonicalLoginJson({
+        stakeAddress,
+        slotNumber: absoluteSlot.toString(),
+      });
       const requestVoteObject = await signMessagePromisified(canonicalVoteInput);
       submitLogin(requestVoteObject)
         .then((response) => {
@@ -181,10 +182,20 @@ const Header: React.FC = () => {
           dispatch(setWalletIsLoggedIn({ isLoggedIn: true }));
           eventBus.publish('showToast', 'Login successfully');
           toggleLoginModal();
+
+          getUserVotes(session?.accessToken)
+            .then((userVotes) => {
+              if (userVotes) {
+                dispatch(setUserVotes({ userVotes }));
+              }
+            })
+            .catch((e) => {
+              eventBus.publish('showToast', parseError(e.message), 'error');
+            });
         })
         .catch((e) => eventBus.publish('showToast', 'Login failed', 'error'));
     } catch (e) {
-      eventBus.publish('showToast', capitalizeFirstLetter(e.message || 'Login failed'), 'error');
+      eventBus.publish('showToast', parseError(e.message), 'error');
     }
   };
 
@@ -361,7 +372,7 @@ const Header: React.FC = () => {
             color: '#03021F',
             margin: '24px 0px',
           }}
-          label="Login with Wallet"
+          label="Login with wallet"
           onClick={() => handleLogin()}
           fullWidth={true}
         />

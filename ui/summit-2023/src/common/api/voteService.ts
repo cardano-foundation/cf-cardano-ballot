@@ -69,7 +69,7 @@ const getVoteReceipt = async (categoryId: string, token: string) =>
   );
 
 const getUserVotes = async (token: string) =>
-  await doRequest<UserVotes>(
+  await doRequest<UserVotes[]>(
     HttpMethods.GET,
     `${USER_VOTES_URL}/${env.EVENT_ID}`,
     {

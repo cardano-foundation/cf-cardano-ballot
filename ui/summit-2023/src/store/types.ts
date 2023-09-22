@@ -1,13 +1,13 @@
 import { UserVotes, VoteReceipt } from '../types/voting-app-types';
-import { EventPresentation } from '../types/voting-ledger-follower-types';
+import { EventPresentation, ProposalPresentation } from '../types/voting-ledger-follower-types';
 
-export interface UserState {
+interface UserState {
   connectedWallet: string;
   walletIsVerified: boolean;
   walletIsLoggedIn: boolean;
   isReceiptFetched: boolean;
   receipts: { [categoryId: string]: VoteReceipt } | null;
-  userVotes: UserVotes;
+  userVotes: UserVotes[];
   proposal: VoteReceipt['proposal'];
   event?: EventPresentation;
   userVerification?: {
@@ -15,7 +15,12 @@ export interface UserState {
   };
 }
 
-export interface VerificationStarts {
+interface ProposalPresentationExtended extends ProposalPresentation {
+  desc?: string;
+  presentationName?: string;
+}
+
+interface VerificationStarts {
   eventId: string;
   stakeAddress: string;
   requestId: string;
@@ -23,10 +28,12 @@ export interface VerificationStarts {
   expiresAt: string;
 }
 
-export interface PhoneNumberCodeConfirmation {
+interface PhoneNumberCodeConfirmation {
   verified: boolean;
 }
 
-export interface State {
+interface State {
   user: UserState;
 }
+
+export { State, PhoneNumberCodeConfirmation, VerificationStarts, ProposalPresentationExtended, UserState };

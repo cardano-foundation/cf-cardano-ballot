@@ -398,12 +398,14 @@ const VerifyWallet = (props: VerifyWalletProps) => {
           gutterBottom
           style={{ wordWrap: 'break-word', marginTop: '16px' }}
         >
-          2. <span
+          2.{' '}
+          <span
             style={{ cursor: 'pointer' }}
             onClick={() => openNewTab(env.DISCORD_BOT_URL)}
-        >
+          >
             Open the chat
-          </span> with the bot.
+          </span>{' '}
+          with the bot.
         </Typography>
         <Typography
           className="verify-wallet-modal-description"

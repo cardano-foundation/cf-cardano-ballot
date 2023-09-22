@@ -32,50 +32,50 @@ const LegalDocPreview = () => {
               <div key={index}>
                 <Typography
                   variant="subtitle2"
-                  sx={{ mt: 1 , fontWeight: 'bold'}}
+                  sx={{ mt: 1, fontWeight: 'bold' }}
                 >
                   {section.title}
                 </Typography>
                 {section.content &&
-                section.content.map((paragraph, paragraphIndex) => (
-                  <Typography
-                    key={paragraphIndex}
-                    variant="body1"
-                    sx={{ mt: 1 }}
-                    dangerouslySetInnerHTML={{ __html: paragraph }}
-                  />
-                ))}
-                {section.subsections &&
-                section.subsections.map((subsection, subIndex) => (
-                  <div key={`${subsection.title}-${subIndex}`}>
+                  section.content.map((paragraph, paragraphIndex) => (
                     <Typography
-                      variant="subtitle2"
-                      sx={{ mt: 1, fontWeight: 'bold' }}
-                    >
-                      {subsection.title}
-                    </Typography>
-
-                    <Typography
+                      key={paragraphIndex}
                       variant="body1"
                       sx={{ mt: 1 }}
-                    >
-                      {subsection.content}
-                    </Typography>
+                      dangerouslySetInnerHTML={{ __html: paragraph }}
+                    />
+                  ))}
+                {section.subsections &&
+                  section.subsections.map((subsection, subIndex) => (
+                    <div key={`${subsection.title}-${subIndex}`}>
+                      <Typography
+                        variant="subtitle2"
+                        sx={{ mt: 1, fontWeight: 'bold' }}
+                      >
+                        {subsection.title}
+                      </Typography>
 
-                    {subsection.definitions && (
-                      <div>
-                        {Object.entries(subsection.definitions).map(([definition, text], termIndex) => (
-                          <Typography
-                            key={definition}
-                            variant="body1"
-                            sx={{ mt: 1, ml: 4 }}
-                            dangerouslySetInnerHTML={{ __html: text }}
-                          />
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))}
+                      <Typography
+                        variant="body1"
+                        sx={{ mt: 1 }}
+                      >
+                        {subsection.content}
+                      </Typography>
+
+                      {subsection.definitions && (
+                        <div>
+                          {Object.entries(subsection.definitions).map(([definition, text], termIndex) => (
+                            <Typography
+                              key={definition}
+                              variant="body1"
+                              sx={{ mt: 1, ml: 4 }}
+                              dangerouslySetInnerHTML={{ __html: text }}
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
               </div>
             );
           })}
@@ -151,7 +151,7 @@ const LegalDocPreview = () => {
           >
             {termsData.contactus.title}
           </Typography>
-          <Typography 
+          <Typography
             variant="body1"
             dangerouslySetInnerHTML={{ __html: termsData.contactus.content }}
           />

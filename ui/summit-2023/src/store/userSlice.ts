@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import {UserVotes, VoteReceipt} from '../types/voting-app-types';
+import { UserVotes, VoteReceipt } from '../types/voting-app-types';
 import { EventPresentation } from '../types/voting-ledger-follower-types';
 import { UserState, VerificationStarts } from './types';
 
@@ -10,7 +10,7 @@ const initialState: UserState = {
   walletIsLoggedIn: false,
   isReceiptFetched: false,
   receipts: null,
-  userVotes: null,
+  userVotes: [],
   proposal: '',
   userVerification: {},
   event: {
@@ -37,6 +37,8 @@ const initialState: UserState = {
     highLevelEventResultsWhileVoting: true,
     categoryResultsWhileVoting: true,
     highLevelCategoryResultsWhileVoting: false,
+    commitmentsWindowOpen: false,
+    started: false,
   },
 };
 
@@ -65,7 +67,7 @@ export const userSlice = createSlice({
     setSelectedProposal: (state, action: PayloadAction<{ proposal: VoteReceipt['proposal'] }>) => {
       state.proposal = action.payload.proposal;
     },
-    setUserVotes: (state, action: PayloadAction<{ userVotes: UserVotes }>) => {
+    setUserVotes: (state, action: PayloadAction<{ userVotes: UserVotes[] }>) => {
       state.userVotes = action.payload.userVotes;
     },
     setEventData: (state, action: PayloadAction<{ event: EventPresentation }>) => {

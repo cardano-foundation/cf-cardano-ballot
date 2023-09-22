@@ -19,7 +19,7 @@ cf-summit-2023-ui:
     targetNetwork: MAIN
     eventId: CF_SUMMIT_2023_TEST1
     image:
-      tag: 0.2.44
+      tag: 0.2.46
 
 cf-summit-2023-voting-api:
   enabled: true

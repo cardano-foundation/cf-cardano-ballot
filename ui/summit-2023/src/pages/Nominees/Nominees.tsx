@@ -41,13 +41,13 @@ import { RootState } from '../../store';
 import {
   buildCanonicalVoteInputJson,
   castAVoteWithDigitalSignature,
-  getSlotNumber,
+  getSlotNumber, getUserVotes,
   getVoteReceipt,
 } from '../../common/api/voteService';
 import { copyToClipboard, getSignedMessagePromise, resolveCardanoNetwork } from '../../utils/utils';
 import { buildCanonicalLoginJson, submitLogin } from 'common/api/loginService';
 import { getUserInSession, saveUserInSession, tokenIsExpired } from '../../utils/session';
-import { setVoteReceipt, setWalletIsLoggedIn } from '../../store/userSlice';
+import {setUserVotes, setVoteReceipt, setWalletIsLoggedIn} from '../../store/userSlice';
 import { FinalityScore } from '../../types/voting-ledger-follower-types';
 import { ProposalPresentation } from '../../types/voting-ledger-follower-types';
 import SidePage from '../../components/common/SidePage/SidePage';
@@ -164,6 +164,15 @@ const Nominees = () => {
           saveUserInSession(session);
           dispatch(setWalletIsLoggedIn({ isLoggedIn: true }));
           eventBus.publish('showToast', 'Login successfully');
+          getUserVotes(session?.accessToken)
+              .then((response) => {
+                if (response) {
+                  dispatch(setUserVotes({ userVotes: response }));
+                }
+              })
+              .catch((e) => {
+                eventBus.publish('showToast', parseError(e.message), 'error');
+              });
           viewVoteReceipt(false, true);
         })
         .catch((e) => eventBus.publish('showToast', parseError(e.message), 'error'));

@@ -1,4 +1,4 @@
-import {capitalizeFirstLetter} from '../../utils/utils';
+import { capitalizeFirstLetter } from '../../utils/utils';
 
 const ERRORS = {
   EVENT_NOT_FOUND: 'Event not found',
@@ -13,11 +13,11 @@ const ERRORS = {
   MAX_VERIFICATION_ATTEMPTS_REACHED: 'Max verification attempts reached',
   ACTION_NOT_ALLOWED: 'Action not allowed',
   INVALID_CIP30_DATA_SIGNATURE: 'Invalid wallet signature',
-  'INVALID_CIP-30-SIGNATURE': 'Invalid wallet signature'
+  'INVALID_CIP-30-SIGNATURE': 'Invalid wallet signature',
 };
 
 const parseError = (errorMessage: string) => {
-  return Object.keys(ERRORS).includes(errorMessage) ? ERRORS[errorMessage] : capitalizeFirstLetter(errorMessage)
-}
+  return Object.keys(ERRORS).includes(errorMessage) ? ERRORS[errorMessage] : capitalizeFirstLetter(errorMessage);
+};
 
 export { ERRORS, parseError };

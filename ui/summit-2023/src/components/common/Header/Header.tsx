@@ -34,7 +34,7 @@ import { getSignedMessagePromise, resolveCardanoNetwork } from '../../../utils/u
 import { Toast } from '../Toast/Toast';
 import { ToastType } from '../Toast/Toast.types';
 import { env } from 'common/constants/env';
-import {parseError} from "common/constants/errors";
+import { parseError } from 'common/constants/errors';
 
 const Header: React.FC = () => {
   const dispatch = useDispatch();
@@ -362,7 +362,7 @@ const Header: React.FC = () => {
             color: '#03021F',
             margin: '24px 0px',
           }}
-          label="Login with Wallet"
+          label="Login with wallet"
           onClick={() => handleLogin()}
           fullWidth={true}
         />

@@ -3,7 +3,7 @@ import { Footer } from './components/common/Footer/Footer';
 import { BrowserRouter } from 'react-router-dom';
 import './App.scss';
 import { useDispatch, useSelector } from 'react-redux';
-import {setEventData, setUserVotes, setWalletIsLoggedIn, setWalletIsVerified} from './store/userSlice';
+import { setEventData, setUserVotes, setWalletIsLoggedIn, setWalletIsVerified } from './store/userSlice';
 import { Box, CircularProgress, Container, useMediaQuery, useTheme } from '@mui/material';
 import Header from './components/common/Header/Header';
 import { PageRouter } from './routes';
@@ -20,8 +20,8 @@ import { eventBus } from './utils/EventBus';
 import { CategoryContent } from './pages/Categories/Category.types';
 import SUMMIT2023CONTENT from 'common/resources/data/summit2023Content.json';
 import { resolveCardanoNetwork } from './utils/utils';
-import {parseError} from 'common/constants/errors';
-import {getUserVotes} from 'common/api/voteService';
+import { parseError } from 'common/constants/errors';
+import { getUserVotes } from 'common/api/voteService';
 
 function App() {
   const theme = useTheme();
@@ -30,6 +30,8 @@ function App() {
   const [storedValue, _] = useLocalStorage(CB_TERMS_AND_PRIVACY, false);
   const [openTermDialog, setOpenTermDialog] = useState(false);
   const { isConnected, stakeAddress } = useCardano({ limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK) });
+  const walletIsVerified = useSelector((state: RootState) => state.user.walletIsVerified);
+  const session = getUserInSession();
 
   const dispatch = useDispatch();
   const fetchEvent = useCallback(async () => {
@@ -51,7 +53,7 @@ function App() {
       dispatch(setEventData({ event }));
 
       if (isConnected) {
-        try  {
+        try {
           const isVerified = await getIsVerified(env.EVENT_ID, stakeAddress);
           dispatch(setWalletIsVerified({ isVerified: isVerified.verified }));
         } catch (e) {
@@ -59,28 +61,25 @@ function App() {
         }
       }
 
-      const session = getUserInSession();
       if (session) {
         const isExpired = tokenIsExpired(session?.expiresAt);
-        if (!isExpired) {
+        if (!tokenIsExpired(session?.expiresAt)) {
           dispatch(setWalletIsLoggedIn({ isLoggedIn: isExpired }));
           getUserVotes(session?.accessToken)
-              .then((response) => {
-                if (response) {
-                  dispatch(setUserVotes({ userVotes: response }));
-                }
-              })
-              .catch((e) => {
-                eventBus.publish('showToast', parseError(e.message), 'error');
-              });
-
-        } else {
-          eventBus.publish('openLoginModal');
+            .then((response) => {
+              if (response) {
+                dispatch(setUserVotes({ userVotes: response }));
+              }
+            })
+            .catch((e) => {
+              eventBus.publish('showToast', parseError(e.message), 'error');
+            });
         }
-      } else {
-        eventBus.publish('openLoginModal');
       }
 
+      if (isConnected && walletIsVerified && tokenIsExpired(session?.expiresAt)) {
+        eventBus.publish('openLoginModal');
+      }
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') {
         console.log(`Failed to fetch event, ${error?.info || error?.message || error?.toString()}`);
@@ -92,6 +91,15 @@ function App() {
   useEffect(() => {
     fetchEvent();
   }, [fetchEvent]);
+
+  useEffect(() => {
+    console.log('tokenIsExpired(session?.expiresAt)');
+    console.log(tokenIsExpired(session?.expiresAt));
+    console.log(session);
+    if (isConnected && walletIsVerified && (!session || tokenIsExpired(session?.expiresAt))) {
+      eventBus.publish('openLoginModal');
+    }
+  }, [walletIsVerified, session]);
 
   useEffect(() => {
     setOpenTermDialog(!storedValue);

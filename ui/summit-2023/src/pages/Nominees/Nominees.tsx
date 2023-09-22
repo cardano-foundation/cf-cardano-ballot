@@ -44,11 +44,7 @@ import {
   getSlotNumber,
   getVoteReceipt,
 } from '../../common/api/voteService';
-import {
-  copyToClipboard,
-  getSignedMessagePromise,
-  resolveCardanoNetwork,
-} from '../../utils/utils';
+import { copyToClipboard, getSignedMessagePromise, resolveCardanoNetwork } from '../../utils/utils';
 import { buildCanonicalLoginJson, submitLogin } from 'common/api/loginService';
 import { getUserInSession, saveUserInSession, tokenIsExpired } from '../../utils/session';
 import { setVoteReceipt, setWalletIsLoggedIn } from '../../store/userSlice';
@@ -61,7 +57,7 @@ import Modal from '../../components/common/Modal/Modal';
 import QRCode from 'react-qr-code';
 import { CustomButton } from '../../components/common/Button/CustomButton';
 import { env } from 'common/constants/env';
-import {parseError} from 'common/constants/errors';
+import { parseError } from 'common/constants/errors';
 
 const Nominees = () => {
   const { categoryId } = useParams();
@@ -198,11 +194,7 @@ const Nominees = () => {
       await castAVoteWithDigitalSignature(requestVoteObject);
       eventBus.publish('showToast', 'Vote submitted successfully');
     } catch (e) {
-      eventBus.publish(
-        'showToast',
-          parseError(e.message),
-        'error'
-      );
+      eventBus.publish('showToast', parseError(e.message), 'error');
     }
   };
 

@@ -8,8 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.zalando.problem.Problem;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.zalando.problem.Status.NOT_FOUND;
 
 @RestController
 @RequestMapping("/api/reference")
@@ -28,7 +30,13 @@ public class ReferenceDataResource {
                         },
                         maybeEventPresentation -> {
                             if (maybeEventPresentation.isEmpty()) {
-                                return ResponseEntity.notFound().build();
+                                var problem = Problem.builder()
+                                        .withTitle("EVENT_NOT_FOUND")
+                                        .withDetail("Event with id: " + eventId + " not found!")
+                                        .withStatus(NOT_FOUND)
+                                        .build();
+
+                                return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
                             }
 
                             var eventPresentation = maybeEventPresentation.orElseThrow();

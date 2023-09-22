@@ -66,7 +66,9 @@ public class ChainFollowerClient {
         var url = String.format("%s/api/blockchain/tx-details/{txHash}", ledgerFollowerBaseUrl);
 
         try {
-            return Either.right(Optional.ofNullable(restTemplate.getForObject(url, TransactionDetailsResponse.class, txHash)));
+            var txResponse = restTemplate.getForObject(url, TransactionDetailsResponse.class, txHash);
+
+            return Either.right(Optional.of(txResponse));
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == NOT_FOUND) {
                 return Either.right(Optional.empty());

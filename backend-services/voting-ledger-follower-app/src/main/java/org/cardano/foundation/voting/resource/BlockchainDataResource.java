@@ -9,10 +9,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Objects;
+import org.zalando.problem.Problem;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.zalando.problem.Status.NOT_FOUND;
 
 @RestController
 @RequestMapping("/api/blockchain")
@@ -43,7 +43,6 @@ public class BlockchainDataResource {
     @RequestMapping(value = "/tx-details/{txHash}", method = GET, produces = "application/json")
     @Timed(value = "resource.tx-details", histogram = true)
     public ResponseEntity<?> txDetails(@PathVariable("txHash") String txHash) {
-
         return blockchainDataTransactionDetailsService.getTransactionDetails(txHash)
                 .fold(problem -> {
                             return ResponseEntity
@@ -52,10 +51,18 @@ public class BlockchainDataResource {
                         },
                         maybeTxDetails -> {
                             if (maybeTxDetails.isEmpty()) {
-                                return ResponseEntity.notFound().build();
+                                var problem = Problem.builder()
+                                        .withTitle("TX_NOT_FOUND")
+                                        .withDetail("Transaction with hash: " + txHash + " not found!")
+                                        .withStatus(NOT_FOUND)
+                                        .build();
+
+                                return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
                             }
 
-                            return ResponseEntity.ok().body(maybeTxDetails);
+                            var txDetails = maybeTxDetails.orElseThrow();
+
+                            return ResponseEntity.ok().body(txDetails);
                         });
     }
 

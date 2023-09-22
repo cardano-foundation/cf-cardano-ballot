@@ -12,6 +12,8 @@ const ReadMore = (props) => {
     closeSidePage(false);
   };
 
+  const shouldDisplayGrid = nominee.url.includes('twitter.com') || nominee.url.includes('linkedin.com');
+
   return (
     <>
       <Grid
@@ -45,37 +47,45 @@ const ReadMore = (props) => {
           {nominee.presentationName}
         </Typography>
 
-        <Grid
-          container
-          spacing={1}
-          marginTop={1}
-          marginBottom={2}
-        >
-          <Grid item>
-            <IconButton
-              className="nominee-social-button"
-              aria-label="X"
-            >
-              <img
-                src={xIcon}
-                alt="X"
-                style={{ width: '20px' }}
-              />
-            </IconButton>
+        {shouldDisplayGrid ? (
+          <Grid
+            container
+            spacing={1}
+            marginTop={1}
+            marginBottom={2}
+          >
+            {nominee.url.includes('twitter.com') ? (
+              <Grid item>
+                <IconButton
+                  className="nominee-social-button"
+                  aria-label="X"
+                  href={nominee.url}
+                >
+                  <img
+                    src={xIcon}
+                    alt="X"
+                    style={{ width: '20px' }}
+                  />
+                </IconButton>
+              </Grid>
+            ) : null}
+            {nominee.url.includes('linkedin.com') ? (
+              <Grid item>
+                <IconButton
+                  className="nominee-social-button"
+                  aria-label="Linkedin"
+                  href={nominee.url}
+                >
+                  <img
+                    src={linkedinIcon}
+                    alt="Linkedin"
+                    style={{ width: '20px' }}
+                  />
+                </IconButton>
+              </Grid>
+            ) : null}
           </Grid>
-          <Grid item>
-            <IconButton
-              className="nominee-social-button"
-              aria-label="Linkedin"
-            >
-              <img
-                src={linkedinIcon}
-                alt="Linkedin"
-                style={{ width: '20px' }}
-              />
-            </IconButton>
-          </Grid>
-        </Grid>
+        ) : null}
 
         <Typography
           variant="body2"
@@ -86,13 +96,15 @@ const ReadMore = (props) => {
           {nominee.desc}
         </Typography>
 
-        <Button
-          className="visit-web-button"
-          href={nominee.url}
-          fullWidth
-        >
-          {nominee.url}
-        </Button>
+        {!shouldDisplayGrid ? (
+          <Button
+            className="visit-web-button"
+            href={nominee.url}
+            fullWidth
+          >
+            {nominee.url}
+          </Button>
+        ) : null}
       </Container>
     </>
   );

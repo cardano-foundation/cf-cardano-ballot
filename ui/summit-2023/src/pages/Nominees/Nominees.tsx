@@ -50,7 +50,6 @@ import { buildCanonicalLoginJson, submitLogin } from 'common/api/loginService';
 import { getUserInSession, saveUserInSession, tokenIsExpired } from '../../utils/session';
 import { setUserVotes, setVoteReceipt, setWalletIsLoggedIn } from '../../store/userSlice';
 import { FinalityScore } from '../../types/voting-ledger-follower-types';
-import { ProposalPresentation } from '../../types/voting-ledger-follower-types';
 import SidePage from '../../components/common/SidePage/SidePage';
 import { useToggle } from 'common/hooks/useToggle';
 import ReadMore from './ReadMore';
@@ -60,6 +59,7 @@ import { CustomButton } from '../../components/common/Button/CustomButton';
 import { env } from 'common/constants/env';
 import { parseError } from 'common/constants/errors';
 import { categoryAlreadyVoted } from '../Categories';
+import { ProposalPresentationExtended } from '../../store/types';
 
 const Nominees = () => {
   const { categoryId } = useParams();
@@ -92,7 +92,7 @@ const Nominees = () => {
   const [confirmVoteModal, toggleConfirmVoteModal] = useToggle(false);
   const [selectedNominee, setSelectedNominee] = useState({});
   const [selectedNomineeToVote, setSelectedNomineeToVote] = useState(undefined);
-  const [nominees, setNominees] = useState<ProposalPresentation[]>([]);
+  const [nominees, setNominees] = useState<ProposalPresentationExtended[]>([]);
 
   const { isConnected, stakeAddress, signMessage } = useCardano({
     limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
@@ -587,7 +587,7 @@ const Nominees = () => {
           className="nominees-description"
           variant="body1"
           gutterBottom
-          sx={{marginBottom: '50px'}}
+          sx={{ marginBottom: '50px' }}
         >
           {summit2023Category.desc}
         </Typography>

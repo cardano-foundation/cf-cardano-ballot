@@ -1,0 +1,37 @@
+{{ if index .Values "not-found" "enabled" }}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nginx-not-found
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://charts.bitnami.com/bitnami
+    targetRevision: 15.2.1
+    chart: nginx
+    helm:
+      values: |
+        service:
+          type: ClusterIP
+        serverBlock: |-
+          server {
+            listen 0.0.0.0:8080;
+            location / {
+            return 404 "Not Found";
+            }
+          }
+
+  syncPolicy:
+    automated:
+      prune: true
+    syncOptions:
+      - CreateNamespace=true
+
+  destination:
+    namespace: {{ $.Release.Namespace }}
+    server: https://kubernetes.default.svc
+{{ end }}

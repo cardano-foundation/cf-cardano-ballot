@@ -1,0 +1,27 @@
+{{ if and .Values.monitoring.enabled .Values.monitoring.alerting.enabled }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    release: prometheus-stack
+  name: {{ include "voting-app.fullname" . }}.rules
+spec:
+  groups:
+    - name: {{ include "voting-app.fullname" . }}.rules
+      rules:
+        - alert: NoVotes5m
+          expr: sum(rate(resource_vote_cast_seconds_count[1m])) == 0
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            message: No votes have been cast for the past 5 minutes
+        - alert: NoVotes15m
+          expr: sum(rate(resource_vote_cast_seconds_count[1m])) == 0
+          for: 15m
+          labels:
+            severity: critical
+          annotations:
+            message: No votes have been cast for the past 15 minutes
+{{ end }}

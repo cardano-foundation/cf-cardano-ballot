@@ -1,0 +1,7 @@
+mainAppPath: "deploy/summit-2023-main-app"
+
+argo-cd:
+  server:
+    ingress:
+      hosts:
+        - argocd.pro.cf-summit-2023-mainnet.eu-west-1.voting.summit.cardano.org

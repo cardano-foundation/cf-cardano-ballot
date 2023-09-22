@@ -95,9 +95,9 @@ public class CustomEpochService {
     }
 
     public Optional<ZonedDateTime> getTimeBasedOnAbsoluteSlot(long absoluteSlotNo) {
-        var millis = blockTime(Shelley, absoluteSlotNo) * 1000;
+        var millis = blockTime(Shelley, absoluteSlotNo);
 
-        var t = LocalDateTime.ofInstant(Instant.ofEpochMilli(millis), UTC);
+        var t = LocalDateTime.ofInstant(Instant.ofEpochSecond(millis), UTC);
 
         return Optional.of(t.atZone(UTC));
     }

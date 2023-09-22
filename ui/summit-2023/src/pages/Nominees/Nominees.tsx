@@ -58,6 +58,7 @@ import QRCode from 'react-qr-code';
 import { CustomButton } from '../../components/common/Button/CustomButton';
 import { env } from 'common/constants/env';
 import { parseError } from 'common/constants/errors';
+import {categoryAlreadyVoted} from "../Categories";
 
 const Nominees = () => {
   const { categoryId } = useParams();
@@ -68,6 +69,8 @@ const Nominees = () => {
   const receipts = useSelector((state: RootState) => state.user.receipts);
   const receipt = receipts && Object.keys(receipts).length && receipts[categoryId] ? receipts[categoryId] : undefined;
   const userVotes = useSelector((state: RootState) => state.user.userVotes);
+
+  const categoryVoted = categoryAlreadyVoted(categoryId, userVotes);
 
   const dispatch = useDispatch();
 
@@ -381,28 +384,30 @@ const Nominees = () => {
                             {nominee.desc}
                           </Typography>
                         </Grid>
-                        <Grid
-                          item
-                          xs={2}
-                        >
-                          <CustomButton
-                            styles={
-                              isConnected
-                                ? {
-                                    background: '#ACFCC5',
-                                    color: '#03021F',
-                                    width: 'auto',
-                                  }
-                                : {
-                                    background: '#03021F',
-                                    color: '#F6F9FF',
-                                    width: 'auto',
-                                  }
-                            }
-                            label={renderNomineeButtonLabel() as string}
-                            onClick={() => handleNomineeButton(nominee)}
-                          />
-                        </Grid>
+                        {
+                          !categoryVoted ? <Grid
+                              item
+                              xs={2}
+                          >
+                            <CustomButton
+                                styles={
+                                  isConnected
+                                      ? {
+                                        background: '#ACFCC5',
+                                        color: '#03021F',
+                                        width: 'auto',
+                                      }
+                                      : {
+                                        background: '#03021F',
+                                        color: '#F6F9FF',
+                                        width: 'auto',
+                                      }
+                                }
+                                label={renderNomineeButtonLabel() as string}
+                                onClick={() => handleNomineeButton(nominee)}
+                            />
+                          </Grid> : null
+                        }
                       </Grid>
 
                       <CustomButton
@@ -509,7 +514,7 @@ const Nominees = () => {
                           fullWidth={true}
                         />
 
-                        {!receipt ? (
+                        {!categoryVoted ? (
                           <CustomButton
                             styles={
                               isConnected
@@ -586,7 +591,7 @@ const Nominees = () => {
           {summit2023Category.desc}
         </Typography>
 
-        {walletIsVerified ? (
+        {categoryVoted ? (
           <Box
             sx={{
               display: 'flex',

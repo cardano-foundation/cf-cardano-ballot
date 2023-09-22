@@ -3,7 +3,7 @@ import { Footer } from './components/common/Footer/Footer';
 import { BrowserRouter } from 'react-router-dom';
 import './App.scss';
 import { useDispatch, useSelector } from 'react-redux';
-import { setEventData, setWalletIsLoggedIn, setWalletIsVerified } from './store/userSlice';
+import {setEventData, setUserVotes, setWalletIsLoggedIn, setWalletIsVerified} from './store/userSlice';
 import { Box, CircularProgress, Container, useMediaQuery, useTheme } from '@mui/material';
 import Header from './components/common/Header/Header';
 import { PageRouter } from './routes';
@@ -20,6 +20,8 @@ import { eventBus } from './utils/EventBus';
 import { CategoryContent } from './pages/Categories/Category.types';
 import SUMMIT2023CONTENT from 'common/resources/data/summit2023Content.json';
 import { resolveCardanoNetwork } from './utils/utils';
+import {parseError} from 'common/constants/errors';
+import {getUserVotes} from 'common/api/voteService';
 
 function App() {
   const theme = useTheme();
@@ -49,8 +51,12 @@ function App() {
       dispatch(setEventData({ event }));
 
       if (isConnected) {
-        const isVerified = await getIsVerified(env.EVENT_ID, stakeAddress);
-        dispatch(setWalletIsVerified({ isVerified: isVerified.verified }));
+        try  {
+          const isVerified = await getIsVerified(env.EVENT_ID, stakeAddress);
+          dispatch(setWalletIsVerified({ isVerified: isVerified.verified }));
+        } catch (e) {
+          eventBus.publish('showToast', parseError(e.message), 'error');
+        }
       }
 
       const isLoggedIn = getUserInSession();
@@ -69,9 +75,24 @@ function App() {
       if (process.env.NODE_ENV === 'development') {
         console.log(`Failed to fetch event, ${error?.info || error?.message || error?.toString()}`);
       }
-      eventBus.publish('showToast', 'Failed to update event', 'error');
+      eventBus.publish('showToast', parseError(error.message), 'error');
     }
   }, [dispatch, stakeAddress]);
+
+  useEffect(() => {
+    const session = getUserInSession();
+    if (!tokenIsExpired(session?.expiresAt)) {
+      getUserVotes(session?.accessToken)
+          .then((response) => {
+            if (response) {
+              dispatch(setUserVotes({ userVotes: response }));
+            }
+          })
+          .catch((e) => {
+            eventBus.publish('showToast', parseError(e.message), 'error');
+          });
+    }
+  }, []);
 
   useEffect(() => {
     fetchEvent();

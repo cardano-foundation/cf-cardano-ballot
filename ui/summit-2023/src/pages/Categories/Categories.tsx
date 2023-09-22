@@ -28,12 +28,9 @@ import { Link } from 'react-router-dom';
 import CardMedia from '@mui/material/CardMedia';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import SUMMIT2023CONTENT from '../../common/resources/data/summit2023Content.json';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import { setUserVotes } from '../../store/userSlice';
 import { getUserInSession, tokenIsExpired } from '../../utils/session';
-import { getUserVotes } from '../../common/api/voteService';
-import { eventBus } from 'utils/EventBus';
 
 const Categories = () => {
   const eventCache = useSelector((state: RootState) => state.user.event);
@@ -51,27 +48,11 @@ const Categories = () => {
   const [isVisible, setIsVisible] = useState(true);
   const [isHoveredId, setIsHoveredId] = useState('');
 
-  const dispatch = useDispatch();
-
   useEffect(() => {
     if (isMobile) {
       setListView('list');
     }
   }, [isMobile]);
-
-  useEffect(() => {
-    if (!tokenIsExpired(session?.expiresAt)) {
-      getUserVotes(session?.accessToken)
-        .then((response) => {
-          if (response) {
-            dispatch(setUserVotes({ userVotes: response }));
-          }
-        })
-        .catch((e) => {
-          eventBus.publish('showToast', e.message, true);
-        });
-    }
-  }, []);
 
   const handleListView = (viewType: 'grid' | 'list') => {
     if (listView === viewType) return;

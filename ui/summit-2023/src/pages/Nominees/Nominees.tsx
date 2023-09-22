@@ -141,7 +141,7 @@ const Nominees = () => {
         })
         .catch((e) => {
           if (toast !== false) {
-            eventBus.publish('showToast', e.message, 'error');
+            eventBus.publish('showToast', parseError(e.message), 'error');
           }
         });
     } else {
@@ -152,12 +152,12 @@ const Nominees = () => {
   };
 
   const login = async () => {
-    const absoluteSlot = (await getSlotNumber())?.absoluteSlot;
-    const canonicalVoteInput = buildCanonicalLoginJson({
-      stakeAddress,
-      slotNumber: absoluteSlot.toString(),
-    });
     try {
+      const absoluteSlot = (await getSlotNumber())?.absoluteSlot;
+      const canonicalVoteInput = buildCanonicalLoginJson({
+        stakeAddress,
+        slotNumber: absoluteSlot.toString(),
+      });
       const requestVoteObject = await signMessagePromisified(canonicalVoteInput);
       submitLogin(requestVoteObject)
         .then((response) => {
@@ -170,7 +170,7 @@ const Nominees = () => {
           eventBus.publish('showToast', 'Login successfully');
           viewVoteReceipt(false, true);
         })
-        .catch((e) => eventBus.publish('showToast', e.message, 'error'));
+        .catch((e) => eventBus.publish('showToast', parseError(e.message), 'error'));
     } catch (e) {
       eventBus.publish('showToast', e.message, 'error');
     }
@@ -183,15 +183,15 @@ const Nominees = () => {
   }, [isMobile]);
 
   const castVote = async (optionId: string) => {
-    const absoluteSlot = (await getSlotNumber())?.absoluteSlot;
-    const canonicalVoteInput = buildCanonicalVoteInputJson({
-      voteId: uuidv4(),
-      categoryId: categoryId,
-      proposalId: optionId,
-      stakeAddress,
-      slotNumber: absoluteSlot.toString(),
-    });
     try {
+      const absoluteSlot = (await getSlotNumber())?.absoluteSlot;
+      const canonicalVoteInput = buildCanonicalVoteInputJson({
+        voteId: uuidv4(),
+        categoryId: categoryId,
+        proposalId: optionId,
+        stakeAddress,
+        slotNumber: absoluteSlot.toString(),
+      });
       const requestVoteObject = await signMessagePromisified(canonicalVoteInput);
       toggleConfirmVoteModal();
       eventBus.publish('showToast', 'Vote submitted');

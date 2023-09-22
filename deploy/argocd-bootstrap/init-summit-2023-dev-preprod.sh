@@ -93,8 +93,6 @@ kubectl create secret -n cf-summit-2023 generic prometheus-alertmanager-secrets 
   -o yaml \
   | kubectl apply -f -
 
-exit 0
-
 #echo "Fetching helm dependencies for main app"
 helm dependency build
 

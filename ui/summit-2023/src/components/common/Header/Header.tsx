@@ -26,10 +26,10 @@ import { RootState } from '../../../store';
 import { ConnectWalletButton } from '../ConnectWalletButton/ConnectWalletButton';
 import { useToggle } from 'common/hooks/useToggle';
 import { CustomButton } from '../Button/CustomButton';
-import { getSlotNumber } from 'common/api/voteService';
+import {getSlotNumber, getUserVotes} from 'common/api/voteService';
 import { buildCanonicalLoginJson, submitLogin } from 'common/api/loginService';
 import { saveUserInSession } from '../../../utils/session';
-import { setWalletIsLoggedIn } from '../../../store/userSlice';
+import {setUserVotes, setWalletIsLoggedIn} from '../../../store/userSlice';
 import { getSignedMessagePromise, resolveCardanoNetwork } from '../../../utils/utils';
 import { Toast } from '../Toast/Toast';
 import { ToastType } from '../Toast/Toast.types';
@@ -182,6 +182,16 @@ const Header: React.FC = () => {
           dispatch(setWalletIsLoggedIn({ isLoggedIn: true }));
           eventBus.publish('showToast', 'Login successfully');
           toggleLoginModal();
+
+          getUserVotes(session?.accessToken)
+              .then((response) => {
+                if (response) {
+                  dispatch(setUserVotes({ userVotes: response }));
+                }
+              })
+              .catch((e) => {
+                eventBus.publish('showToast', parseError(e.message), 'error');
+              });
         })
         .catch((e) => eventBus.publish('showToast', 'Login failed', 'error'));
     } catch (e) {

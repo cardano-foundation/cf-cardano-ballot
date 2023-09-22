@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.client.UserVerificationClient;
+import org.cardano.foundation.voting.domain.UserVotes;
 import org.cardano.foundation.voting.domain.VoteReceipt;
 import org.cardano.foundation.voting.domain.entity.Vote;
 import org.cardano.foundation.voting.domain.entity.VoteMerkleProof;
@@ -53,7 +54,7 @@ public class DefaultVoteService implements VoteService {
     @Override
     @Transactional(readOnly = true)
     @Timed(value = "service.vote.getVotes", histogram = true)
-    public Either<Problem, List<VoteRepository.CategoryProposalProjection>> getVotes(JwtAuthenticationToken auth) {
+    public Either<Problem, List<UserVotes>> getVotes(JwtAuthenticationToken auth) {
         var jwtEventId = auth.eventDetails().id();
         var jwtStakeAddress = auth.getStakeAddress();
 
@@ -65,7 +66,15 @@ public class DefaultVoteService implements VoteService {
                     .build());
         }
 
-        return Either.right(voteRepository.getVotesByStakeAddress(jwtEventId, jwtStakeAddress));
+        var userVotesList = voteRepository.getVotesByStakeAddress(jwtEventId, jwtStakeAddress)
+                .stream().map(p -> {
+                    var cid = p.getCategoryId();
+                    var pid = p.getProposalId();
+
+                    return new UserVotes(cid, pid);
+                }).toList();
+
+        return Either.right(userVotesList);
     }
 
     @Override

@@ -108,7 +108,7 @@ public class Event extends AbstractTimestampEntity {
     private SchemaVersion version;
 
     @OneToMany(
-            mappedBy = "event",
+            mappedBy = "eventId",
             cascade = CascadeType.ALL,
             fetch = FetchType.EAGER,
             orphanRemoval = true
@@ -124,7 +124,7 @@ public class Event extends AbstractTimestampEntity {
     private long absoluteSlot;
 
     public Optional<Category> findCategoryByName(String categoryName) {
-        return categories.stream().filter(category -> category.getId().equals(categoryName)).findFirst();
+        return categories.stream().filter(category -> category.getCategoryId().equals(categoryName)).findFirst();
     }
 
     public Optional<VotingPowerAsset> getVotingPowerAsset() {

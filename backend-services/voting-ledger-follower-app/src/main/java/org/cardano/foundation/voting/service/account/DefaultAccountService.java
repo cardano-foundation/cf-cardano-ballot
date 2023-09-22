@@ -31,7 +31,7 @@ public class DefaultAccountService implements AccountService {
     @Override
     @Transactional(readOnly = true)
     public Either<Problem, Account> findAccount(String eventName, String stakeAddress) {
-        var maybeEvent = referenceDataService.findValidEventByName(eventName);
+        var maybeEvent = referenceDataService.findValidEventById(eventName);
         if (maybeEvent.isEmpty()) {
             log.warn("Unrecognised event, eventName:{}", eventName);
 

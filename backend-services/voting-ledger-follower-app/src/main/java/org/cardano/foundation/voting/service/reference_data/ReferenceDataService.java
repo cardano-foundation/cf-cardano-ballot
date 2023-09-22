@@ -4,9 +4,7 @@ import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.EventAdditionalInfo;
-import org.cardano.foundation.voting.domain.entity.Category;
-import org.cardano.foundation.voting.domain.entity.Event;
-import org.cardano.foundation.voting.domain.entity.Proposal;
+import org.cardano.foundation.voting.domain.entity.*;
 import org.cardano.foundation.voting.repository.CategoryRepository;
 import org.cardano.foundation.voting.repository.EventRepository;
 import org.cardano.foundation.voting.repository.ProposalRepository;
@@ -30,34 +28,28 @@ public class ReferenceDataService {
 
     private final EventAdditionalInfoService eventAdditionalInfoService;
 
-    @Timed(value = "service.reference.findValidEventByName", histogram = true)
+    @Timed(value = "service.reference.findValidEventById", histogram = true)
     @Transactional(readOnly = true)
-    public Optional<Event> findValidEventByName(String name) {
-        return eventRepository.findById(name).filter(Event::isValid);
+    public Optional<Event> findValidEventById(String id) {
+        return eventRepository.findById(id).filter(Event::isValid);
     }
 
-    @Timed(value = "service.reference.findEventByName", histogram = true)
+    @Timed(value = "service.reference.findEventById", histogram = true)
     @Transactional(readOnly = true)
-    public Optional<Event> findEventByName(String name) {
-        return eventRepository.findById(name);
+    public Optional<Event> findEventById(String id) {
+        return eventRepository.findById(id);
     }
 
-    @Timed(value = "service.reference.findCategoryByName", histogram = true)
+    @Timed(value = "service.reference.findCategoryById", histogram = true)
     @Transactional(readOnly = true)
-    public Optional<Category> findCategoryByName(String name) {
-        return categoryRepository.findById(name);
+    public Optional<Category> findCategoryById(CategoryId categoryId) {
+        return categoryRepository.findById(categoryId);
     }
 
     @Timed(value = "service.reference.findProposalById", histogram = true)
     @Transactional(readOnly = true)
-    public Optional<Proposal> findProposalById(String id) {
-        return proposalRepository.findById(id);
-    }
-
-    @Timed(value = "service.reference.findProposalByName", histogram = true)
-    @Transactional(readOnly = true)
-    public Optional<Proposal> findProposalByName(Category category, String name) {
-        return proposalRepository.findProposalByName(category.getId(), name);
+    public Optional<Proposal> findProposalById(ProposalId proposalId) {
+        return proposalRepository.findById(proposalId);
     }
 
     @Timed(value = "service.reference.storeEvent", histogram = true)

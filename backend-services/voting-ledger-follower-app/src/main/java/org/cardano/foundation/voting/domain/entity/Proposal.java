@@ -13,26 +13,25 @@ import java.util.Optional;
 @Entity
 @Table(name = "proposal")
 @Immutable
+@IdClass(ProposalId.class)
 public class Proposal extends AbstractTimestampEntity {
 
     @Getter
-    @Id
-    @Column
     @Setter
-    private String id;
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    @Id
+    private String categoryId;
+
+    @Getter
+    @Column(name = "id")
+    @Setter
+    @Id
+    private String proposalId;
 
     @Column(name = "name")
     @Nullable
     private String name;
-
-    @Getter
-    @Setter
-    @ManyToOne(
-            fetch = FetchType.EAGER,
-            cascade = CascadeType.ALL
-    )
-    @JoinColumn(name = "category_id")
-    private Category category;
 
     @Getter
     @Setter
@@ -50,7 +49,7 @@ public class Proposal extends AbstractTimestampEntity {
     @Override
     public String toString() {
         return "Proposal{" +
-                "id='" + id + '\'' +
+                "id='" + proposalId + '\'' +
                 ", name='" + name + '\'' +
                 '}';
     }

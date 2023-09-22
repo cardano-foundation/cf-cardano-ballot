@@ -29,7 +29,7 @@ public class MerkleRootHashService {
     private final CardanoNetwork network;
 
     public Either<Problem, IsMerkleRootPresentResult> isPresent(String event, String merkleRootHashHex) {
-        var maybeEvent = referenceDataService.findEventByName(event);
+        var maybeEvent = referenceDataService.findEventById(event);
 
         if (maybeEvent.isEmpty()) {
             log.info("No event in db found for {}", event);

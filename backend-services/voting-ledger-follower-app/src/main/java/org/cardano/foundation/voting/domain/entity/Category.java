@@ -16,11 +16,17 @@ import java.util.List;
 @Entity
 @Table(name = "category")
 @Immutable
+@IdClass(CategoryId.class)
 public class Category extends AbstractTimestampEntity {
 
+    @Column(name = "event_id", nullable = false)
     @Id
-    @Column(name = "id", nullable = false)
-    private String id;
+    private String eventId;
+
+    @JoinColumn(name = "id", nullable = false)
+    @Id
+    @ManyToOne
+    private String categoryId;
 
     @Column(name = "gdpr_protection", nullable = false)
     @Builder.Default
@@ -29,14 +35,8 @@ public class Category extends AbstractTimestampEntity {
     @Column(name = "schema_version", nullable = false)
     private SchemaVersion version;
 
-    @ManyToOne(
-            fetch = FetchType.EAGER, cascade = CascadeType.ALL
-    )
-    @JoinColumn(name = "event_id", nullable = false)
-    private Event event;
-
     @OneToMany(
-            mappedBy = "category",
+            mappedBy = "categoryId",
             cascade = CascadeType.ALL,
             fetch = FetchType.EAGER,
             orphanRemoval = true

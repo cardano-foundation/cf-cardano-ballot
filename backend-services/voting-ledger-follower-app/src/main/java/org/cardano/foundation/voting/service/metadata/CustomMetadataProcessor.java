@@ -7,10 +7,7 @@ import com.bloxbean.cardano.client.metadata.cbor.CBORMetadataMap;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.OnChainEventType;
 import org.cardano.foundation.voting.domain.SchemaVersion;
-import org.cardano.foundation.voting.domain.entity.Category;
-import org.cardano.foundation.voting.domain.entity.Event;
-import org.cardano.foundation.voting.domain.entity.MerkleRootHash;
-import org.cardano.foundation.voting.domain.entity.Proposal;
+import org.cardano.foundation.voting.domain.entity.*;
 import org.cardano.foundation.voting.service.cbor.CborService;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
 import org.cardano.foundation.voting.service.vote.MerkleRootHashService;
@@ -99,7 +96,7 @@ public class CustomMetadataProcessor {
         }
         if (onChainEvenType == CATEGORY_REGISTRATION) {
             processCategoryRegistration(slot, maybeSignatureHexString.orElseThrow(), maybeKeyHexString.orElseThrow(), maybePayloadCborMap.orElseThrow()).ifPresent(category -> {
-                log.info("Category registration processed: {}", category.getId());
+                log.info("Category registration processed: {}", category.getCategoryId());
             });
         }
         if (onChainEvenType == COMMITMENTS) {
@@ -161,7 +158,7 @@ public class CustomMetadataProcessor {
             return Optional.empty();
         }
 
-        var maybeStoredEvent = referenceDataService.findEventByName(eventRegistration.getName());
+        var maybeStoredEvent = referenceDataService.findEventById(eventRegistration.getName());
         if (maybeStoredEvent.isPresent()) {
             log.info("Event already found, ignoring id:{}", id);
 
@@ -248,7 +245,7 @@ public class CustomMetadataProcessor {
             return Optional.empty();
         }
 
-        var maybeStoredEvent = referenceDataService.findEventByName(categoryRegistration.getEvent());
+        var maybeStoredEvent = referenceDataService.findEventById(categoryRegistration.getEvent());
         if (maybeStoredEvent.isEmpty()) {
             log.warn("Event not found, category registration id: {}", id);
 
@@ -256,7 +253,7 @@ public class CustomMetadataProcessor {
         }
         var event = maybeStoredEvent.orElseThrow();
 
-        var maybeCategory = referenceDataService.findCategoryByName(categoryRegistration.getId());
+        var maybeCategory = referenceDataService.findCategoryById(new CategoryId(event.getId(), categoryRegistration.getId()));
         if (maybeCategory.isPresent()) {
             log.info("Category already found, ignoring id: {}", categoryRegistration.getId());
 
@@ -264,18 +261,22 @@ public class CustomMetadataProcessor {
         }
 
         var category = new Category();
-        category.setId(categoryRegistration.getId());
+
+        category.setCategoryId(categoryRegistration.getId());
         category.setVersion(SchemaVersion.fromText(categoryRegistration.getSchemaVersion()).orElseThrow());
         category.setGdprProtection(categoryRegistration.isGdprProtection());
         category.setAbsoluteSlot(slot);
-        category.setEvent(event);
+        category.setEventId(event.getId());
 
-        var proposals = categoryRegistration.getProposals().stream().map(proposalEnvelope -> Proposal.builder()
-                .id(proposalEnvelope.getId())
-                .name(proposalEnvelope.getName())
-                .category(category)
-                .absoluteSlot(slot)
-                .build()
+
+        var proposals = categoryRegistration.getProposals().stream().map(proposalEnvelope -> {
+            return Proposal.builder()
+                            .proposalId(proposalEnvelope.getId())
+                            .name(proposalEnvelope.getName())
+                            .categoryId(category.getCategoryId())
+                            .absoluteSlot(slot)
+                            .build();
+                }
         ).toList();
 
         category.setProposals(proposals);
@@ -338,7 +339,7 @@ public class CustomMetadataProcessor {
                 continue;
             }
 
-            var maybeStoredEvent = referenceDataService.findEventByName(eventId);
+            var maybeStoredEvent = referenceDataService.findEventById(eventId);
             if (maybeStoredEvent.isEmpty()) {
                 log.info("Event not found, ignoring commitment, id: {}", eventId);
                 continue;

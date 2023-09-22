@@ -30,7 +30,7 @@ public class ReferencePresentationService {
     private final CustomEpochService customEpochService;
 
     public Either<Problem, Optional<EventPresentation>> findEventReference(String name) {
-        var maybeValidEventByName = referenceDataService.findValidEventByName(name);
+        var maybeValidEventByName = referenceDataService.findValidEventById(name);
 
         if (maybeValidEventByName.isEmpty()) {
             return Either.right(Optional.empty());
@@ -38,14 +38,16 @@ public class ReferencePresentationService {
 
         var event = maybeValidEventByName.get();
         var categories = event.getCategories().stream().map(category -> {
-                    var proposals = category.getProposals().stream().map(proposal -> ProposalPresentation.builder()
-                                    .id(proposal.getId())
-                                    .name(proposal.getName())
-                                    .build())
+                    var proposals = category.getProposals().stream().map(proposal -> {
+                                return ProposalPresentation.builder()
+                                        .id(proposal.getProposalId())
+                                        .name(proposal.getName())
+                                        .build();
+                            })
                             .toList();
 
                     return CategoryPresentation.builder()
-                            .id(category.getId())
+                            .id(category.getCategoryId())
                             .gdprProtection(category.isGdprProtection())
                             .proposals(proposals)
                             .build();

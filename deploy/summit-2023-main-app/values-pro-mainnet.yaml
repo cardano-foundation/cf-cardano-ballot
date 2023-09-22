@@ -17,7 +17,7 @@ cf-summit-2023-ui:
     votingVerificationAppServerUrl: https://verification-api.pro.cf-summit-2023-mainnet.eu-west-1.voting.summit.cardano.org
     userVerificationServerUrl: https://user-verification.pro.cf-summit-2023-mainnet.eu-west-1.voting.summit.cardano.org
     targetNetwork: MAIN
-    eventId: CF_SUMMIT_2023_TEST1
+    eventId: CF_SUMMIT_2023_TEST2
     image:
       tag: 0.2.46
 
@@ -71,7 +71,7 @@ cf-summit-2023-ledger-follower-api:
   values:
     image:
       tag: 0.2.46
-    bindOnEventIds: CF_SUMMIT_2023_TEST1
+    bindOnEventIds: CF_SUMMIT_2023_TEST2
     yaci:
       startBlockHash: 6bb9228e3b746366e24f2681021d619395b850b34c2db020c4928285dcf7b0c2
       startSlotNumber: "103209875"

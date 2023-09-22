@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.2.46](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.45...v0.2.46) (2023-09-22)
+
+
+### Features
+
+* replaced the names of nominees for testing ([e647e4c](https://github.com/cardano-foundation/cf-cardano-ballot/commit/e647e4c51c2868ae824f39a75716ceb2e3ec218d))
+
+
+### Bug Fixes
+
+* chain sync fix and removal of account status. ([#287](https://github.com/cardano-foundation/cf-cardano-ballot/issues/287)) ([f9633f2](https://github.com/cardano-foundation/cf-cardano-ballot/commit/f9633f2d0652158daf650b437ed93dfc4642f9a0))
+* match with content in prod ([5f9c4a1](https://github.com/cardano-foundation/cf-cardano-ballot/commit/5f9c4a137dc00277bcc9860e0eea7e3d51cc709e))
+* merge conflicts from develop ([8d80eae](https://github.com/cardano-foundation/cf-cardano-ballot/commit/8d80eae48afef139c33c7df57ccdff0a03483100))
+* summit content changes with ids and minor renames ([e142ee8](https://github.com/cardano-foundation/cf-cardano-ballot/commit/e142ee8f0e9dc0ef5c035f0225a5ffc4c5a6f449))
+* when blockfrost falls behind, we still consider this to be healthy for follower-api. ([#290](https://github.com/cardano-foundation/cf-cardano-ballot/issues/290)) ([2ff6048](https://github.com/cardano-foundation/cf-cardano-ballot/commit/2ff6048099e965db74e93e98710a1eb1403e3048))
+
 ## [0.2.45](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.44...v0.2.45) (2023-09-21)
 
 

@@ -1,26 +1,26 @@
-#{{ if index .Values "grafana-dashboards" "enabled" }}
-#---
-#apiVersion: argoproj.io/v1alpha1
-#kind: Application
-#metadata:
-#  name: grafana-dashboards
-#  namespace: argocd
-#  finalizers:
-#    - resources-finalizer.argocd.argoproj.io
-#spec:
-#  project: default
-#  source:
-#    repoURL: git@github.com:cardano-foundation/cf-explorer.git
-#    targetRevision: {{ .Values.git.targetRevision | default "HEAD" }}
-#    path: charts/grafana-dashboards
-#
-#  syncPolicy:
-#    automated:
-#      prune: true
-#    syncOptions:
-#      - CreateNamespace=true
-#
-#  destination:
-#    namespace: observe
-#    server: {{ .Values.spec.destination.server }}
-#{{ end }}
+{{ if index .Values "grafana-dashboards" "enabled" }}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: grafana-dashboards
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: git@github.com:cardano-foundation/cf-cardano-ballot.git
+    targetRevision: {{ .Values.git.targetRevision | default "HEAD" }}
+    path: deploy/grafana-dashboards
+
+  syncPolicy:
+    automated:
+      prune: true
+    syncOptions:
+      - CreateNamespace=true
+
+  destination:
+    namespace: observe
+    server: {{ .Values.spec.destination.server }}
+{{ end }}

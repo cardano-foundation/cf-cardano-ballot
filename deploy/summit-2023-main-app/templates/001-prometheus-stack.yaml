@@ -17,6 +17,38 @@ spec:
           value: "true"
         - name: "grafana.ingress.hosts[0]"
           value: grafana.{{ $.Values.domain }}
+      values: |
+        kubeScheduler:
+          enabled: false
+        kubeControllerManager:
+          enabled: false
+        alertmanager:
+          config:
+            route:
+              group_by: ['namespace']
+              group_wait: 30s
+              group_interval: 5m
+              repeat_interval: 12h
+              receiver: 'slack'
+              routes:
+                - receiver: 'null'
+                  continue: false
+                  matchers:
+                    - alertname =~ "InfoInhibitor|Watchdog"
+            receivers:
+            - name: slack
+              slack_configs:
+                - api_url: /etc/secrets/slack-api-url
+                  send_resolved: true
+                  channel: '#cf-summit-infra-alerts'
+            - name: 'null'
+        extraSecretMounts:
+          - name: secret-files
+            mountPath: /etc/secrets
+            subPath: ""
+            secretName: prometheus-alertmanager-secrets
+            readOnly: true
+
   syncPolicy:
     automated:
       prune: true

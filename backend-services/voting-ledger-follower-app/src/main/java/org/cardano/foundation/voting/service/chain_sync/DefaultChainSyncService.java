@@ -55,17 +55,17 @@ public class DefaultChainSyncService implements ChainSyncService {
             var yaciLastBlockResult = yaciBackendService.getBlockService().getLatestBlock();
 
             if (orgLastBlockResult.isSuccessful() && yaciLastBlockResult.isSuccessful()) {
-                long diff = orgLastBlockResult.getValue().getSlot() - yaciLastBlockResult.getValue().getSlot();
+                var diff = orgLastBlockResult.getValue().getSlot() - yaciLastBlockResult.getValue().getSlot();
 
-                log.info("Current diff: {} (slots) between org and yaci.", diff);
+                log.info("Current diff: {} (slots) between blockfrost and yaci.", diff);
 
-                boolean isSynced = diff >= 0 && diff <= chainSyncBuffer;
+                boolean isSynced = diff <= chainSyncBuffer;
 
                 if (isSynced) {
                     return SyncStatus.ok(diff);
                 }
 
-                log.warn("Yaci is not synced with the original chain. Diff: {} (slots)", diff);
+                log.warn("Yaci is not synced with the blockfrost chain. Diff: {} (slots)", diff);
 
                 return SyncStatus.notYet(diff);
             }

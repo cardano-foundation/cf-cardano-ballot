@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.client.UserVerificationClient;
+import org.cardano.foundation.voting.domain.UserVotes;
 import org.cardano.foundation.voting.domain.VoteReceipt;
 import org.cardano.foundation.voting.domain.entity.Vote;
 import org.cardano.foundation.voting.domain.entity.VoteMerkleProof;
@@ -26,7 +27,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.bloxbean.cardano.client.util.HexUtil.encodeHexString;
-import static org.cardano.foundation.voting.client.ChainFollowerClient.AccountStatus.NOT_ELIGIBLE;
 import static org.cardano.foundation.voting.domain.VoteReceipt.Status.*;
 import static org.cardano.foundation.voting.domain.VotingEventType.*;
 import static org.cardano.foundation.voting.domain.web3.Web3Action.*;
@@ -54,7 +54,7 @@ public class DefaultVoteService implements VoteService {
     @Override
     @Transactional(readOnly = true)
     @Timed(value = "service.vote.getVotes", histogram = true)
-    public Either<Problem, List<VoteRepository.CategoryProposalProjection>> getVotes(JwtAuthenticationToken auth) {
+    public Either<Problem, List<UserVotes>> getVotes(JwtAuthenticationToken auth) {
         var jwtEventId = auth.eventDetails().id();
         var jwtStakeAddress = auth.getStakeAddress();
 
@@ -66,7 +66,15 @@ public class DefaultVoteService implements VoteService {
                     .build());
         }
 
-        return Either.right(voteRepository.getVotesByStakeAddress(jwtEventId, jwtStakeAddress));
+        var userVotesList = voteRepository.getVotesByStakeAddress(jwtEventId, jwtStakeAddress)
+                .stream().map(p -> {
+                    var cid = p.getCategoryId();
+                    var pid = p.getProposalId();
+
+                    return new UserVotes(cid, pid);
+                }).toList();
+
+        return Either.right(userVotesList);
     }
 
     @Override
@@ -327,19 +335,6 @@ public class DefaultVoteService implements VoteService {
             }
             var maybeAccount = accountE.get();
             if (maybeAccount.isEmpty()) {
-                log.warn("Account not found for the stake address: " + stakeAddress);
-
-                return Either.left(
-                        Problem.builder()
-                                .withTitle("ACCOUNT_NOT_FOUND")
-                                .withDetail("Account not found for the stake address:" + stakeAddress)
-                                .withStatus(BAD_REQUEST)
-                                .build()
-                );
-            }
-            var account = maybeAccount.get();
-
-            if (account.accountStatus() == NOT_ELIGIBLE) {
                 log.warn("State account not eligible to vote, e.g. not staked or power is less than equal 0 for the stake address: " + stakeAddress);
 
                 return Either.left(
@@ -350,9 +345,10 @@ public class DefaultVoteService implements VoteService {
                                 .build()
                 );
             }
+            var account = maybeAccount.get();
 
             // if we are eligible then we will have voting power
-            var blockchainVotingPowerStr = account.votingPower().orElseThrow();
+            var blockchainVotingPowerStr = account.votingPower();
             if (!isNumeric(blockchainVotingPowerStr)) {
                 return Either.left(
                         Problem.builder()

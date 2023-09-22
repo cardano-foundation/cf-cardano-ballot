@@ -1,5 +1,43 @@
 # Changelog
 
+## [0.2.46](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.45...v0.2.46) (2023-09-22)
+
+
+### Features
+
+* replaced the names of nominees for testing ([e647e4c](https://github.com/cardano-foundation/cf-cardano-ballot/commit/e647e4c51c2868ae824f39a75716ceb2e3ec218d))
+
+
+### Bug Fixes
+
+* chain sync fix and removal of account status. ([#287](https://github.com/cardano-foundation/cf-cardano-ballot/issues/287)) ([f9633f2](https://github.com/cardano-foundation/cf-cardano-ballot/commit/f9633f2d0652158daf650b437ed93dfc4642f9a0))
+* match with content in prod ([5f9c4a1](https://github.com/cardano-foundation/cf-cardano-ballot/commit/5f9c4a137dc00277bcc9860e0eea7e3d51cc709e))
+* merge conflicts from develop ([8d80eae](https://github.com/cardano-foundation/cf-cardano-ballot/commit/8d80eae48afef139c33c7df57ccdff0a03483100))
+* summit content changes with ids and minor renames ([e142ee8](https://github.com/cardano-foundation/cf-cardano-ballot/commit/e142ee8f0e9dc0ef5c035f0225a5ffc4c5a6f449))
+* when blockfrost falls behind, we still consider this to be healthy for follower-api. ([#290](https://github.com/cardano-foundation/cf-cardano-ballot/issues/290)) ([2ff6048](https://github.com/cardano-foundation/cf-cardano-ballot/commit/2ff6048099e965db74e93e98710a1eb1403e3048))
+
+## [0.2.45](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.44...v0.2.45) (2023-09-21)
+
+
+### Features
+
+* deploying pizza event FRUITS_9172 ([9531d81](https://github.com/cardano-foundation/cf-cardano-ballot/commit/9531d818bb22b623ee6874b7ef05987ba60d2cf8))
+* more details on errors when details where misssing. ([#282](https://github.com/cardano-foundation/cf-cardano-ballot/issues/282)) ([315cc67](https://github.com/cardano-foundation/cf-cardano-ballot/commit/315cc675eed3aac3669d72fed1c0681d3cbbd72a))
+
+## [0.2.44](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.43...v0.2.44) (2023-09-21)
+
+
+### Features
+
+* winner winner chicken dinner ([#279](https://github.com/cardano-foundation/cf-cardano-ballot/issues/279)) ([5da0d00](https://github.com/cardano-foundation/cf-cardano-ballot/commit/5da0d004e5e61b3a6c857e88a5f884672bd1aa7f))
+* yaci-store goes spring 3.1.x ([#275](https://github.com/cardano-foundation/cf-cardano-ballot/issues/275)) ([df35210](https://github.com/cardano-foundation/cf-cardano-ballot/commit/df352105d812b6cbfdc887165fce24c9f8d60c73))
+
+
+### Bug Fixes
+
+* slot diff between yaci and blockfrost CAN be negative, ie yaci being faster than blockfrost. Go YACI ([#281](https://github.com/cardano-foundation/cf-cardano-ballot/issues/281)) ([9c5d8c3](https://github.com/cardano-foundation/cf-cardano-ballot/commit/9c5d8c36a5343a84cfa6602e5dfa766c0ba744bc))
+* voting-admin-app: pass the network to CCL code. ([8b020c1](https://github.com/cardano-foundation/cf-cardano-ballot/commit/8b020c16137b01243675512a1c020a191b6ba1a1))
+
 ## [0.2.43](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.42...v0.2.43) (2023-09-20)
 
 

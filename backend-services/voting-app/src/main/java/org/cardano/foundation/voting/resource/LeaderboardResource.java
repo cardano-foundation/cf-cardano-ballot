@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import static org.springframework.http.HttpStatus.FORBIDDEN;
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
+import org.zalando.problem.Problem;
+import org.zalando.problem.Status;
 
 import static org.cardano.foundation.voting.resource.Headers.XForceLeaderBoardResults;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
 
 @RestController
 @RequestMapping("/api/leaderboard")
@@ -36,8 +36,25 @@ public class LeaderboardResource {
 
         var availableE = leaderBoardService.isHighLevelEventLeaderboardAvailable(eventId, forceLeaderboard);
 
-        return availableE.fold(problem -> ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem),
-                isAvailable -> isAvailable ? ResponseEntity.ok().build() : ResponseEntity.status(FORBIDDEN).build()
+        return availableE.fold(problem -> {
+                    return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
+                },
+                isAvailable -> {
+                    if (isAvailable) {
+                        return ResponseEntity.ok().build();
+                    }
+
+                    var problem = Problem.builder()
+                            .withTitle("VOTING_RESULTS_NOT_AVAILABLE")
+                            .withDetail("Leaderboard not yet available for event: " + eventId)
+                            .withStatus(Status.FORBIDDEN)
+                            .build();
+
+
+                    return ResponseEntity
+                            .status(problem.getStatus().getStatusCode())
+                            .body(problem);
+                }
         );
     }
 
@@ -49,8 +66,23 @@ public class LeaderboardResource {
 
         var availableE = leaderBoardService.isHighLevelCategoryLeaderboardAvailable(eventId, forceLeaderboard);
 
-        return availableE.fold(problem -> ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem),
-                isAvailable -> isAvailable ? ResponseEntity.ok().build() : ResponseEntity.status(FORBIDDEN).build()
+        return availableE.fold(problem -> {
+                    return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
+                },
+                isAvailable -> {
+                    if (isAvailable) {
+                        return ResponseEntity.ok().build();
+                    }
+                    var problem = Problem.builder()
+                            .withTitle("VOTING_RESULTS_NOT_AVAILABLE")
+                            .withDetail("Leaderboard not yet available for event: " + eventId)
+                            .withStatus(Status.FORBIDDEN)
+                            .build();
+
+                    return ResponseEntity
+                            .status(problem.getStatus().getStatusCode())
+                            .body(problem);
+                }
         );
     }
 
@@ -64,8 +96,25 @@ public class LeaderboardResource {
         var categoryLeaderboardAvailableE = leaderBoardService.isCategoryLeaderboardAvailable(eventId, categoryId, forceLeaderboard);
 
         return categoryLeaderboardAvailableE
-                .fold(problem -> ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem),
-                        isAvailable -> isAvailable ? ResponseEntity.ok().build() : ResponseEntity.status(FORBIDDEN).build()
+                .fold(problem -> {
+                            return ResponseEntity
+                                    .status(problem.getStatus().getStatusCode())
+                                    .body(problem);
+                        },
+                        isAvailable -> {
+                            if (isAvailable) {
+                                return ResponseEntity.ok().build();
+                            }
+                            var problem = Problem.builder()
+                                    .withTitle("VOTING_RESULTS_NOT_AVAILABLE")
+                                    .withDetail("Leaderboard not yet available for event: " + eventId)
+                                    .withStatus(Status.FORBIDDEN)
+                                    .build();
+
+                            return ResponseEntity
+                                    .status(problem.getStatus().getStatusCode())
+                                    .body(problem);
+                        }
                 );
     }
 
@@ -77,8 +126,12 @@ public class LeaderboardResource {
 
         var eventLeaderboardE = leaderBoardService.getEventLeaderboard(eventId, forceLeaderboard);
 
-        return eventLeaderboardE.fold(problem -> ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem),
-                response -> ResponseEntity.ok().body(response)
+        return eventLeaderboardE.fold(problem -> {
+                    return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
+                },
+                response -> {
+                    return ResponseEntity.ok().body(response);
+                }
         );
     }
 
@@ -92,8 +145,33 @@ public class LeaderboardResource {
         var categoryLeaderboardE = leaderBoardService.getCategoryLeaderboard(eventId, categoryId, forceLeaderboard);
 
         return categoryLeaderboardE
-                .fold(problem -> ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem),
-                        response -> ResponseEntity.ok().body(response)
+                .fold(problem -> {
+                            return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
+                        },
+                        response -> {
+                            return ResponseEntity.ok().body(response);
+                        }
+                );
+    }
+
+    @RequestMapping(value = "/{eventId}/winners", method = GET, produces = "application/json")
+    @Timed(value = "resource.leaderboard.category.winners", histogram = true)
+    public ResponseEntity<?> getWinners(@PathVariable("eventId") String eventId,
+                                        @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = "false") boolean forceLeaderboardResults) {
+        var forceLeaderboard = forceLeaderboardResults && forceLeaderboardResultsAvailability;
+
+        var categoryLeaderboardE = leaderBoardService.getEventWinners(eventId, forceLeaderboard);
+
+        return categoryLeaderboardE
+                .fold(problem -> {
+                            return ResponseEntity
+                                    .status(problem.getStatus().getStatusCode())
+                                    //.cacheControl(noCache())
+                                    .body(problem);
+                        },
+                        response -> {
+                            return ResponseEntity.ok().body(response);
+                        }
                 );
     }
 

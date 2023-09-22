@@ -7,9 +7,8 @@ import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataStak
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 
-import java.util.Optional;
-
 import static org.zalando.problem.Status.BAD_REQUEST;
+import static org.zalando.problem.Status.NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
@@ -17,7 +16,7 @@ public class VotingPowerService {
 
     private final BlockchainDataStakePoolService blockchainDataStakePoolService;
 
-    public Either<Problem, Optional<Long>> getVotingPower(Event event, String stakeAddress) {
+    public Either<Problem, Long> getVotingPower(Event event, String stakeAddress) {
         return switch (event.getVotingEventType()) {
             case USER_BASED -> {
                 yield Either.left(Problem.builder()
@@ -27,10 +26,33 @@ public class VotingPowerService {
                         .build());
             }
             case STAKE_BASED -> {
-                yield Either.right(blockchainDataStakePoolService.getStakeAmount(event.getSnapshotEpoch().orElseThrow(), stakeAddress));
+                var maybeAmount = blockchainDataStakePoolService.getStakeAmount(event.getSnapshotEpoch().orElseThrow(), stakeAddress)
+                        .filter(amount -> amount > 0);
+
+                if (maybeAmount.isEmpty()) {
+                    yield Either.left(Problem.builder()
+                            .withTitle("STAKE_AMOUNT_NOT_AVAILABLE")
+                            .withDetail("Stake amount not found (like wallet not staked) for event: " + event + " and stake address: " + stakeAddress)
+                            .withStatus(NOT_FOUND)
+                            .build()
+                    );
+                }
+
+                yield Either.right(maybeAmount.orElseThrow());
             }
             case BALANCE_BASED -> {
-                yield Either.right(blockchainDataStakePoolService.getBalanceAmount(event.getSnapshotEpoch().orElseThrow(), stakeAddress));
+                var maybeAmount = blockchainDataStakePoolService.getBalanceAmount(event.getSnapshotEpoch().orElseThrow(), stakeAddress)
+                .filter(amount -> amount > 0);
+
+                if (maybeAmount.isEmpty()) {
+                    yield Either.left(Problem.builder()
+                            .withTitle("BALANCE_AMOUNT_NOT_AVAILABLE")
+                            .withDetail("Balance amount not found for event: " + event + " and stake address: " + stakeAddress)
+                            .withStatus(NOT_FOUND)
+                            .build());
+                }
+
+                yield Either.right(maybeAmount.orElseThrow());
             }
         };
     }

@@ -86,4 +86,5 @@ public class Vote extends AbstractTimestampEntity {
         this.votingPower = votingPower.orElse(null);
     }
 
+
 }

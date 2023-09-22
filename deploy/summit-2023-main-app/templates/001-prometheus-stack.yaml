@@ -38,10 +38,16 @@ spec:
             receivers:
             - name: slack
               slack_configs:
-                - api_url: https://hooks.slack.com/services/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
+                - api_url: /etc/secrets/slack-api-url
                   send_resolved: true
                   channel: '#cf-summit-infra-alerts'
             - name: 'null'
+        extraSecretMounts:
+          - name: secret-files
+            mountPath: /etc/secrets
+            subPath: ""
+            secretName: prometheus-alertmanager-secrets
+            readOnly: true
 
   syncPolicy:
     automated:

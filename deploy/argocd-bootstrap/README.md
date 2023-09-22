@@ -25,3 +25,7 @@ GitHub Deployment Keys can be setup to grant ArgoCD with the required permission
 Configuring deployment keys secrets is done in two steps:
 1. deploying the relevant secrets via the `init.sh`
 2. associate secret to repos: `values.yaml`
+
+## Prometheus and Alertmanager secrets
+
+https://stackoverflow.com/questions/74254241/how-to-insert-a-secret-in-alertmanager-configuration-file

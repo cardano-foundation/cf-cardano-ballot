@@ -165,9 +165,9 @@ const Nominees = () => {
           dispatch(setWalletIsLoggedIn({ isLoggedIn: true }));
           eventBus.publish('showToast', 'Login successfully');
           getUserVotes(session?.accessToken)
-              .then((response) => {
-                if (response) {
-                  dispatch(setUserVotes({ userVotes: response }));
+              .then((uVotes) => {
+                if (uVotes) {
+                  dispatch(setUserVotes({ userVotes: uVotes }));
                 }
               })
               .catch((e) => {

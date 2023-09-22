@@ -184,9 +184,9 @@ const Header: React.FC = () => {
           toggleLoginModal();
 
           getUserVotes(session?.accessToken)
-              .then((response) => {
-                if (response) {
-                  dispatch(setUserVotes({ userVotes: response }));
+              .then((userVotes) => {
+                if (userVotes) {
+                  dispatch(setUserVotes({ userVotes }));
                 }
               })
               .catch((e) => {

@@ -484,7 +484,8 @@ const Nominees = () => {
                         </Box>
                         <Typography
                           className="nominee-title"
-                          variant="h2"
+                          variant="h4"
+                          sx={{ mb: 1, fontWeight: 'bold' }}
                         >
                           {nominee.presentationName}
                         </Typography>

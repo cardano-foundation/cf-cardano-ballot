@@ -113,3 +113,13 @@ On start up of the app, you can verify if the right profile has been used, there
 ## Repository Structure
 - backend-services - contains various backend services
 - ui - contains React.JS frontend code apps to cast votes / display voting results
+
+# Backend -> Frontend Types Generation
+All Backend Apps will generate TypeScript types for the frontend by using the following command:
+
+As an example:
+```shell
+cd voting-app
+./gradlew buildAndCopyTypescriptTypes -Pui_project_name=summit-2023
+```
+will generate TypeScript types in the ui/summit-2023/build/typescript-generator/voting-app-types.ts

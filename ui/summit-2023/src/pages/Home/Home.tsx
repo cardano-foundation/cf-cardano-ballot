@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import { Typography, Grid, Dialog } from '@mui/material';
-import PlayCircleOutlineRoundedIcon from '@mui/icons-material/PlayCircleOutlineRounded';
+import React from 'react';
+import { Typography, Grid  } from '@mui/material';
 import CARDANOSUMMIT2023LOGO from '../../common/resources/images/cardanosummit2023.svg';
 import { Hexagon } from '../../components/common/Hexagon';
 import './Home.scss';
@@ -9,15 +8,6 @@ import { NavLink } from 'react-router-dom';
 import { CustomButton } from '../../components/common/Button/CustomButton';
 
 const Home: React.FC = () => {
-  const [isModalOpen, setModalOpen] = useState(false);
-
-  const handleOpenModal = () => {
-    setModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setModalOpen(false);
-  };
 
   return (
     <Grid
@@ -94,25 +84,6 @@ const Home: React.FC = () => {
                 alt="CARDANO SUMMIT 2023"
                 className="cardano-summit-logo"
               />
-              <PlayCircleOutlineRoundedIcon
-                className="play-icon"
-                onClick={handleOpenModal}
-              />
-              <Dialog
-                open={isModalOpen}
-                onClose={handleCloseModal}
-                maxWidth="md"
-                fullWidth
-              >
-                <iframe
-                  width="100%"
-                  height="600px"
-                  src="https://www.youtube.com/embed/UiY5-ycvM7w"
-                  title="Cardano Summit 2023"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                ></iframe>
-              </Dialog>
             </>
           </Hexagon>
         </div>

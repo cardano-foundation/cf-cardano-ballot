@@ -14,7 +14,7 @@ import {
   Box,
   CardActions,
   Tooltip,
-  Hidden
+  Hidden,
 } from '@mui/material';
 import checkMark from '../../common/resources/images/checkmark-white.png';
 import labelVoted from '../../common/resources/images/checkmark-green.png';
@@ -102,11 +102,11 @@ const Categories = () => {
                     <Card
                       sx={{
                         height: 'auto',
-                        width: {xs: '380px', sm: '414px'},
+                        width: { xs: '380px', sm: '414px' },
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        borderRadius: '16px'
+                        borderRadius: '16px',
                       }}
                     >
                       <CardActionArea
@@ -388,30 +388,31 @@ const Categories = () => {
       style={{ padding: isBigScreen ? '0px' : '0px 10px' }}
     >
       <Grid
-  container
-  direction="row"
-  justifyContent="space-between"
-  alignItems="center">
-    <Grid item>
-        <Typography
-          variant="h2"
-          fontSize={{
-            xs: '28px',
-            md: '32px',
-            lg: '48px',
-          }}
-          lineHeight={{
-            xs: '28px',
-            md: '32px',
-          }}
-          sx={{
-            color: '#24262E',
-            fontStyle: 'normal',
-            fontWeight: '600',
-          }}
-        >
-          Categories
-        </Typography>
+        container
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+      >
+        <Grid item>
+          <Typography
+            variant="h2"
+            fontSize={{
+              xs: '28px',
+              md: '32px',
+              lg: '48px',
+            }}
+            lineHeight={{
+              xs: '28px',
+              md: '32px',
+            }}
+            sx={{
+              color: '#24262E',
+              fontStyle: 'normal',
+              fontWeight: '600',
+            }}
+          >
+            Categories
+          </Typography>
         </Grid>
         <Grid item>
           <Hidden smDown>
@@ -422,9 +423,8 @@ const Categories = () => {
               <ViewListIcon />
             </IconButton>
           </Hidden>
-          </Grid>
-    
-  </Grid>
+        </Grid>
+      </Grid>
 
       <Box marginY={10}>
         {isMobile || listView === 'grid' ? renderResponsiveGrid(categories) : renderResponsiveList(categories)}

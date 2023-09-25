@@ -12,8 +12,14 @@ cf-summit-2023-infra:
 cf-summit-2023-ui:
   enabled: true
   values:
+    votingAppServerUrl: https://api.dev.cf-summit-2023-preprod.eu-west-1.metadata.dev.cf-deployments.org
+    votingLedgerFollowerAppServerUrl: https://follower-api.dev.cf-summit-2023-preprod.eu-west-1.metadata.dev.cf-deployments.org
+    votingVerificationAppServerUrl: https://verification-api.dev.cf-summit-2023-preprod.eu-west-1.metadata.dev.cf-deployments.org
+    userVerificationServerUrl: https://user-verification.dev.cf-summit-2023-preprod.eu-west-1.metadata.dev.cf-deployments.org
+    targetNetwork: PREPROD
+    eventId: CF_SUMMIT_2023_3A33
     image:
-      tag: 0.2.23-preprod
+      tag: 0.2.46
 
 cf-summit-2023-voting-api:
   enabled: true
@@ -30,15 +36,18 @@ cf-summit-2023-voting-api:
         active: "true"
         voteCommitmentCronExpression: "0 45 * * * *"
     image:
-      tag: 0.2.22
+      tag: 0.2.46
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
     corsAllowedOrigins: https://{{ .Values.domain }},http://localhost:3000
+    monitoring:
+      alerting:
+        enabled: false
 
 cf-summit-2023-verification-api:
   enabled: true
   values:
     image:
-      tag: 0.2.22
+      tag: 0.2.46
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
     corsAllowedOrigins: https://{{ .Values.domain }},http://localhost:3000
 
@@ -46,7 +55,7 @@ cf-user-verification-service:
   enabled: true
   values:
     image:
-      tag: 0.2.22
+      tag: 0.2.46
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
     corsAllowedOrigins: https://{{ .Values.domain }},http://localhost:3000
 
@@ -54,12 +63,18 @@ cf-summit-2023-ledger-follower-api:
   enabled: true
   values:
     image:
-      tag: v0.2.22
-    bindOnEventIds: CF_SUMMIT_2023_24DC
+      tag: 0.2.46
+    bindOnEventIds: CF_SUMMIT_2023_3A33
     yaci:
-      startBlockHash: 69a01168a752b9f0aa3d1cd49d9a87fcffceb6738416c199740933fba002c922
-      startSlotNumber: "37194728"
+      startBlockHash: 3337e297121fda1262372c28de3d917bd2a60bb1e3c6326e3b7e832eb8017615
+      startSlotNumber: "38748711"
     corsAllowedOrigins: https://{{ .Values.domain }},http://localhost:3000
     instances:
       - name: follower-1
+        enabled: true
+#        imageTag: 0.2.36
         schemaName: follower_1
+      - name: follower-2
+        enabled: true
+#        imageTag: 0.2.36
+        schemaName: follower_2

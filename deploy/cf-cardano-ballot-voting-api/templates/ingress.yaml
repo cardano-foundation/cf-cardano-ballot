@@ -16,6 +16,15 @@ spec:
     - host: "api.{{ .Values.domain }}"
       http:
         paths:
+{{ if .Values.ingress.disableActuatorEndpoint }}
+          - path: /actuator
+            pathType: Prefix
+            backend:
+              service:
+                name: nginx-not-found
+                port:
+                  number: 80
+{{ end }}
           - path: /
             pathType: Prefix
             backend:

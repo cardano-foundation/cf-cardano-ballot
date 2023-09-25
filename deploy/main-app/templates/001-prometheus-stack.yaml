@@ -17,6 +17,11 @@ spec:
           value: "true"
         - name: "grafana.ingress.hosts[0]"
           value: grafana.{{ $.Values.domain }}
+      values: |
+        kubeScheduler:
+          enabled: false
+        kubeControllerManager:
+          enabled: false
   syncPolicy:
     automated:
       prune: true

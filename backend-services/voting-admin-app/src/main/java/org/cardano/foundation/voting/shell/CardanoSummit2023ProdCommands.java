@@ -40,11 +40,12 @@ public class CardanoSummit2023ProdCommands {
 
         log.info("Creating CF-Summit 2023 on a MAIN network...");
 
-        long startSlot = 39093360L + 172800L; // 15-09-2023 11:17 UTC plus 2 days
-        long endSlot = startSlot + 518400; // 518400 = 6 days in slots
+        long startSlot = 103828509; // 22-09-2023 15:00:00 UTC
+        long endSlot = 104260509; // 27-09-2023 15:00:00 UTC
+        long proposalsRevealSlot = 104336109; // 28-09-2023 12:00:00 UTC
 
         CreateEventCommand createEventCommand = CreateEventCommand.builder()
-                .id(EVENT_NAME + "_" + "TEST1")
+                .id(EVENT_NAME + "_" + "TEST2")
                 .startSlot(Optional.of(startSlot))
                 .endSlot(Optional.of(endSlot))
                 .votingPowerAsset(Optional.empty())
@@ -55,7 +56,7 @@ public class CardanoSummit2023ProdCommands {
                 .highLevelEventResultsWhileVoting(true)
                 .highLevelCategoryResultsWhileVoting(true)
                 .categoryResultsWhileVoting(false)
-                .proposalsRevealSlot(Optional.of(endSlot + 172800))
+                .proposalsRevealSlot(Optional.of(proposalsRevealSlot))
                 .build();
 
         l1SubmissionService.submitEvent(createEventCommand);
@@ -551,15 +552,7 @@ public class CardanoSummit2023ProdCommands {
                 .id("57f93799-5123-4ad0-a13f-a7c70387a756")
                 .build();
 
-        Proposal n5 = Proposal.builder()
-                .id("a355c7f7-c3be-46c5-bcbf-52e628323c88")
-                .build();
-
-        Proposal n6 = Proposal.builder()
-                .id("159fb64e-9613-4b5b-8618-a1c458cf9cf8")
-                .build();
-
-        List<Proposal> allProposals = List.of(n1, n2, n3, n4, n5, n6);
+        List<Proposal> allProposals = List.of(n1, n2, n3, n4);
 
         CreateCategoryCommand createCategoryCommand = CreateCategoryCommand.builder()
                 .id("SSI")

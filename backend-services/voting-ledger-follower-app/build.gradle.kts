@@ -106,8 +106,13 @@ tasks {
 }
 
 tasks.register<Copy>("buildAndCopyTypescriptTypes") {
+	val uiProject = properties["ui_project_name"]
+		?:
+		throw GradleException("UI project name not set. Please set ui_project_name property, e.g. ./gradlew buildAndCopyTypescriptTypes -Pui_project_name=summit-2023")
+
+	println("buildAndCopyTypescriptTypes UI project name: $uiProject")
+
 	dependsOn(tasks.generateTypeScript)
     from(layout.buildDirectory.file("typescript-generator/voting-ledger-follower-types.ts"))
-	into(layout.projectDirectory.dir("../../ui/cip-1694/src/types"))
-	into(layout.projectDirectory.dir("../../ui/summit-2023/src/types"))
+	into(layout.projectDirectory.dir("../../ui/$uiProject/src/types"))
 }

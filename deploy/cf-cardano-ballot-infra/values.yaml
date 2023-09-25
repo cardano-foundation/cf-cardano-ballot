@@ -1,3 +1,5 @@
 postgresql:
   enabled: true
 
+not-found:
+  enabled: true

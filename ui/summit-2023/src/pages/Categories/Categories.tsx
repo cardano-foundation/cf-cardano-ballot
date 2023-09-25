@@ -105,6 +105,7 @@ const Categories = () => {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
+                        borderRadius: '16px'
                       }}
                     >
                       <CardActionArea
@@ -383,14 +384,14 @@ const Categories = () => {
     <div
       data-testid="categories-page"
       className={styles.categories}
-      style={{ padding: isBigScreen ? '0px' : '0px 150px' }}
+      style={{ padding: isBigScreen ? '0px' : '0px 10px' }}
     >
       <div
         style={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          marginTop: '50px',
+          marginTop: '10px',
           marginBottom: 20,
         }}
       >

@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import './App.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import { setEventData, setUserVotes, setWalletIsLoggedIn, setWalletIsVerified } from './store/userSlice';
-import { Box, CircularProgress, Container } from '@mui/material';
+import { Box, CircularProgress, Container, Grid } from '@mui/material';
 import Header from './components/common/Header/Header';
 import { PageRouter } from './routes';
 import { env } from './common/constants/env';
@@ -22,7 +22,6 @@ import SUMMIT2023CONTENT from 'common/resources/data/summit2023Content.json';
 import { resolveCardanoNetwork } from './utils/utils';
 import { parseError } from 'common/constants/errors';
 import { getUserVotes } from 'common/api/voteService';
-import { Layout } from 'components/common/Layout/Layout';
 
 function App() {
   const eventCache = useSelector((state: RootState) => state.user.event);
@@ -102,58 +101,55 @@ function App() {
   }, []);
 
   return (
-    <Layout>
+    <Container maxWidth="lg">
       <BrowserRouter>
         <img
           src={'/static/home-graphic-bg-top.svg'}
           alt="Home graphic background top left"
           className="home-graphic-bg-top"
         />
-          <Header />
-          <div className="main-content">
-            <Container
-              maxWidth="xl"
-              className="container"
-            >
-              <Box
-                my={2}
-                className="content"
-              >
-                {eventCache !== undefined ? (
-                  <PageRouter />
-                ) : (
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      height: '60vh',
-                      alignItems: 'center',
-                      justifyContent: 'center',
+        <Grid
+          container
+          spacing={1}
+          direction="column"
+        >
+          <Grid item xs>
+            <Header />
+          </Grid>
+          <Grid item xs={6}>
+            <Box className="content">
+              {eventCache !== undefined ? (
+                <PageRouter />
+              ) : (
+                <Box
+                  sx={{
+                    display: 'flex',
+                    height: '60vh',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <CircularProgress
+                    className="app-spinner"
+                    style={{
+                      color: '#03021f',
+                      strokeWidth: '10',
                     }}
-                  >
-                    <CircularProgress
-                      className="app-spinner"
-                      style={{
-                        color: '#03021f',
-                        strokeWidth: '10',
-                      }}
-                    />
-                  </Box>
-                )}
-              </Box>
-            </Container>
-          </div>
-          <img
-            src={'/static/home-graphic-bg-bottom.svg'}
-            alt="Home graphic background bottom right"
-            className="home-graphic-bg-bottom"
-          />
-          <Footer />
-          <TermsOptInModal
-            open={openTermDialog}
-            setOpen={(value) => setOpenTermDialog(value)}
-          />
+                  />
+                </Box>
+              )}
+            </Box>
+          </Grid>
+          <Grid item xs>
+            <Footer />
+          </Grid>
+        </Grid>
+        <TermsOptInModal
+          open={openTermDialog}
+          setOpen={(value) => setOpenTermDialog(value)}
+        />
       </BrowserRouter>
-    </Layout>
+    </Container>
   );
 }
 

@@ -66,7 +66,7 @@ const Leaderboard = () => {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          marginTop: '50px',
+          marginTop: '20px',
           marginBottom: 20,
         }}
       >
@@ -200,7 +200,7 @@ const Leaderboard = () => {
                   >
                     <Grid
                       container
-                      spacing={2}
+                      spacing={1}
                       key={id}
                     >
                       <Grid

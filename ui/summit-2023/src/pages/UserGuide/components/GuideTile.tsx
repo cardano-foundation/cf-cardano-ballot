@@ -3,7 +3,7 @@ import { Card, CardContent, CardMedia, Typography } from '@mui/material';
 import styles from './GuideTile.module.scss';
 
 type GuideTilePorps = {
-  width: number;
+  width?: number;
   height: number;
   media: string;
   graphic: any | React.ReactElement;
@@ -12,33 +12,28 @@ type GuideTilePorps = {
   stepHint?: string | React.ReactElement;
 };
 
-export const GuideTile = ({
-  width,
-  height,
-  media,
-  graphic,
-  stepNumber,
-  stepTitle,
-  stepHint,
-}: GuideTilePorps) => {
+export const GuideTile = ({ width, height, media, graphic, stepNumber, stepTitle, stepHint }: GuideTilePorps) => {
   return (
     <Card
       className={styles.guideCard}
-      sx={{ width: { width }, height: { height } }}
+      sx={{ width: {width}, height: { height } }}
     >
-      { media === 'video' ? 
-      (<CardMedia
-        component='video'
-        image={graphic}
-        autoPlay
-      />) :
-      (<CardMedia
-        component="img"
-        height="260"
-        image={graphic}
-        alt=""
-        sx={{ objectFit: 'fill' }}
-      />)}
+      {media === 'video' ? (
+        <CardMedia
+          component="video"
+          src={graphic}
+          sx={{ objectFit: 'cover' }}
+          autoPlay
+          controls
+        />
+      ) : (
+        <CardMedia
+          component="img"
+          height="260"
+          image={graphic}
+          sx={{ objectFit: 'cover' }}
+        />
+      )}
       <CardContent>
         {stepNumber}
         <Typography

@@ -9,9 +9,8 @@ export interface QRCodeProps {
 }
 
 const defaultOptions: Options = {
-  margin: 0,
-  width: 160,
-  height: 160,
+  width: 200,
+  height: 200,
   cornersDotOptions: {
     type: "square",
   },

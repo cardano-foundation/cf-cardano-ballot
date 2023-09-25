@@ -8,7 +8,6 @@ type VerifyProps = {
   setVoteProof: (vote: string) => void;
 };
 
-// TODO: create separate folder for this component
 export const VerifyVoteSection = ({ voteProof, setVoteProof }: VerifyProps) => (
   <TextField
     value={voteProof}
@@ -18,6 +17,8 @@ export const VerifyVoteSection = ({ voteProof, setVoteProof }: VerifyProps) => (
     multiline
     maxRows={8}
     fullWidth
+    InputProps={{ disableUnderline: true }}
+    variant="standard"
     classes={{
       root: cn(styles.root, { [styles.filled]: voteProof }),
     }}

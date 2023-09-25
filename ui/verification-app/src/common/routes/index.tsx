@@ -1,6 +1,6 @@
 import { VerifyVote } from "pages/VerifyVote/VerifyVote";
 import React from "react";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 
 export const PAGE_PATH = "/";
 
@@ -11,5 +11,6 @@ export const ROUTES = {
 export const PageRoutes = () => (
   <Routes>
     <Route path={ROUTES.MAIN} element={<VerifyVote />} />
+    <Route path="*" element={<Navigate to="/" />} />
   </Routes>
 );

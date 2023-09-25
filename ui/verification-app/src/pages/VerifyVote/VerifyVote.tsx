@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import { Verify } from "./components/Verify/Verify";
-import { Success } from "./components/Success/Success";
+import { VerifyModal } from "./components/VerifyModal/VerifyModal";
+import { SuccessModal } from "./components/SuccessModal/SuccessModal";
 
 export const VerifyVote = () => {
-  const [explorer, setExplorer] = useState("");
+  const [explorerLink, setExplorerLink] = useState("");
 
   return (
     <>
-      <Verify opened={!explorer} onConfirm={setExplorer} />
-      <Success opened={!!explorer} />
+      <VerifyModal opened={!explorerLink} onConfirm={setExplorerLink} />
+      <SuccessModal opened={!!explorerLink} explorerLink={explorerLink} />
     </>
   );
 };

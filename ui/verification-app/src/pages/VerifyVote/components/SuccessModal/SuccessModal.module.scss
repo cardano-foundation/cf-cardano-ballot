@@ -1,0 +1,19 @@
+$checkboxSize: 80px;
+
+.pulse {
+  display: block;
+  width: #{$checkboxSize};
+  height: #{$checkboxSize};
+  border-radius: 50%;
+  background: rgba(67, 228, 183, 1);
+}
+
+.checkBox {
+  position: absolute !important;
+  top: calc(50% - #{$checkboxSize} / 2);
+
+  &.checkBoxAnimated {
+    transition: top 1000ms cubic-bezier(0.4, 0, 0.2, 1) 0ms !important;
+    top: 0px;
+  }
+}

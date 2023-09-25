@@ -35,7 +35,6 @@ export const accountDataMock: Account = {
   votingPower: '9997463457',
   votingPowerAsset: 'ADA',
   network: 'PREPROD',
-  accountStatus: 'ELIGIBLE',
   epochNo: 1,
 };
 

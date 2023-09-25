@@ -8,63 +8,16 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { Button } from "@mui/material";
-import { MerkleProof, VoteReceipt } from "types/voting-app-types";
 import * as verificationService from "common/api/verificationService";
 import { Toast } from "common/components/Toast/Toast";
-import { VerifyVoteSection } from "./components/VerifyVoteSection";
+import { VerifyVoteSection } from "./components/VerifyVoteSection/VerifyVoteSection";
 import styles from "../../VerifyVote.module.scss";
-import { ChoseExplorerSection } from "./components/ChoseExplorerSection";
+import { ChoseExplorerSection } from "./components/ChoseExplorerSection/ChoseExplorerSection";
 import { Loader } from "common/components/Loader/Loader";
+import { SECTIONS, VerifyModalProps, ERRORS, voteProof } from "./types";
+import { ctas, descriptions, errors, titles } from "./utils";
 
-enum SECTIONS {
-  VERIFY = "verify",
-  CHOSE_EXPLORER = "chose_explorer",
-}
-
-// TODO: move to types file
-type voteProof = {
-  transactionHash: MerkleProof["transactionHash"];
-  steps: MerkleProof["steps"];
-  rootHash: MerkleProof["rootHash"];
-  coseSignature: VoteReceipt["coseSignature"];
-  cosePublicKey: VoteReceipt["cosePublicKey"];
-};
-
-const titles = {
-  [SECTIONS.VERIFY]: "Verify your vote",
-  [SECTIONS.CHOSE_EXPLORER]: "Viewing transaction details",
-};
-
-const description = {
-  [SECTIONS.VERIFY]:
-    'To authenticate your vote, please paste your Vote Proof into the text field below. After this, click on the "Verify" button to complete the verification process.',
-  [SECTIONS.CHOSE_EXPLORER]:
-    "Where would you like to see your transaction details displayed after your verification has been completed?",
-};
-
-enum ERRORS {
-  VERIFY = "verify",
-  JSON = "json",
-  UNSUPPORTED_EVENT = "UNSUPPORTED_EVENT",
-}
-
-const errors = {
-  [ERRORS.VERIFY]: "Unable to verify vote receipt. Please try again",
-  [ERRORS.JSON]: "Invalid JSON. Please try again",
-  [ERRORS.UNSUPPORTED_EVENT]: "Unsupported event",
-};
-
-const cta = {
-  [SECTIONS.VERIFY]: "Verify",
-  [SECTIONS.CHOSE_EXPLORER]: "Confirm",
-};
-
-type VerifyProps = {
-  onConfirm: (explorer: string) => void;
-  opened: boolean;
-};
-
-export const Verify = ({ opened, onConfirm }: VerifyProps) => {
+export const VerifyModal = ({ opened, onConfirm }: VerifyModalProps) => {
   const [activeSection, setActiveSection] = useState(SECTIONS.VERIFY);
   const [voteProof, setVoteProof] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
@@ -81,7 +34,6 @@ export const Verify = ({ opened, onConfirm }: VerifyProps) => {
         cosePublicKey,
       }: voteProof = JSON.parse(voteProof);
 
-      // TODO: validate MerkleProof eg: check if rootHash is string etc. https://stackoverflow.com/questions/63629256/parsing-json-to-interface-in-typescript-and-check-if-it-is-ok
       setIsLoading(true);
       const verified = await verificationService.verifyVote({
         rootHash,
@@ -100,9 +52,7 @@ export const Verify = ({ opened, onConfirm }: VerifyProps) => {
 
       const message = error?.message?.endsWith("is not valid JSON")
         ? errors[ERRORS.JSON]
-        : error?.message === ERRORS.UNSUPPORTED_EVENT
-        ? errors[ERRORS.UNSUPPORTED_EVENT]
-        : errors[ERRORS.VERIFY];
+        : errors[error?.message as ERRORS] || errors[ERRORS.VERIFY];
 
       toast(
         <Toast
@@ -111,13 +61,12 @@ export const Verify = ({ opened, onConfirm }: VerifyProps) => {
           icon={<BlockIcon style={{ fontSize: "19px", color: "#F5F9FF" }} />}
         />
       );
-      setActiveSection(SECTIONS.CHOSE_EXPLORER);
       setIsLoading(false);
     }
   }, [voteProof]);
 
   const handleNext = useCallback(() => {
-    onConfirm(`${explorer}/${txHash}`);
+    onConfirm(`${explorer}${txHash}`);
   }, [explorer, onConfirm, txHash]);
 
   return (
@@ -141,6 +90,7 @@ export const Verify = ({ opened, onConfirm }: VerifyProps) => {
         id="dialog-title"
         sx={{
           padding: "50px 50px 20px 50px",
+          lineHeight: "32.8px",
           color: "#061D3C",
           fontSize: 28,
           fontFamily: "Roboto",
@@ -149,8 +99,6 @@ export const Verify = ({ opened, onConfirm }: VerifyProps) => {
       >
         {titles[activeSection]}
       </DialogTitle>
-
-      {/* CONTENT */}
 
       <DialogContent sx={{ padding: "0px 50px 25px 50px !important" }}>
         <DialogContentText
@@ -162,9 +110,10 @@ export const Verify = ({ opened, onConfirm }: VerifyProps) => {
             fontFamily: "Roboto",
             fontWeight: "400",
             wordWrap: "break-word",
+            lineHeight: "22px",
           }}
         >
-          {description[activeSection]}
+          {descriptions[activeSection]}
         </DialogContentText>
 
         {activeSection === SECTIONS.VERIFY && (
@@ -195,7 +144,7 @@ export const Verify = ({ opened, onConfirm }: VerifyProps) => {
             isLoading
           }
         >
-          {isLoading ? <Loader /> : cta[activeSection]}
+          {isLoading ? <Loader /> : ctas[activeSection]}
         </Button>
       </DialogActions>
     </Dialog>

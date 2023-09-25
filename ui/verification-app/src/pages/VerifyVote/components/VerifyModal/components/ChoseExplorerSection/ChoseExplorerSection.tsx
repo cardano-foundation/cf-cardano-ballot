@@ -6,45 +6,15 @@ import {
   ToggleButtonGroup,
   ToggleButton,
 } from "@mui/material";
-import { styled } from "@mui/material/styles";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import styles from "../../../VerifyVote.module.scss";
-
-const Img = styled("img")({
-  height: "23px",
-  width: "23px",
-  objectFit: "cover",
-  margin: "auto",
-  display: "block",
-  maxWidth: "100%",
-  maxHeight: "100%",
-  marginRight: "10px",
-});
-
-export const explorers = [
-  {
-    name: "Explorer",
-    label: "Explorer",
-    icon: <Img src="/static/ie.png" />,
-  },
-  {
-    name: "Cardanoscan",
-    label: "Cardanoscan",
-    icon: <Img src="/static/cardanoscan.png" />,
-  },
-  {
-    name: "Cexplorer",
-    label: "Cexplorer",
-    icon: <Img src="/static/cexplorer.png" />,
-  },
-];
+import styles from "../ChoseExplorerSection/ChoceExplorerSection.module.scss";
+import { EXPLORERS } from "./utils";
 
 type ChoseExplorerSectionProps = {
   setExplorer: (explorer: string) => void;
   explorer: string;
 };
 
-// TODO: move to separate file
 export const ChoseExplorerSection = ({
   setExplorer,
   explorer,
@@ -56,23 +26,24 @@ export const ChoseExplorerSection = ({
         flexDirection: "column",
         gap: "16px",
       }}
-      value={"value1"}
+      value={explorer}
       exclusive
       onChange={(_event: MouseEvent<HTMLElement>, _active: string | null) => {
+        console.log(_active);
         setExplorer(_active);
       }}
       aria-label="verification-app"
     >
-      {explorers?.map((option) => (
+      {EXPLORERS?.map((option) => (
         <ToggleButton
           sx={{
             height: "55px",
             borderRadius: "8px",
             padding: "16px 24px",
           }}
-          value={option.name}
+          value={option.url}
           className={cn(styles.optionCard, {
-            [styles.selected]: explorer === option.name,
+            [styles.selected]: explorer === option.url,
           })}
           key={option.label}
           data-testid="option-card"
@@ -102,7 +73,7 @@ export const ChoseExplorerSection = ({
               display="flex"
               item
             >
-              {explorer === option.name ? (
+              {explorer === option.url ? (
                 <CheckCircleIcon
                   style={{
                     color: "#1D439B",

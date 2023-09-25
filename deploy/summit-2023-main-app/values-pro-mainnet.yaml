@@ -16,7 +16,7 @@ cf-summit-2023-ui:
     votingLedgerFollowerAppServerUrl: https://follower-api.pro.cf-summit-2023-mainnet.eu-west-1.voting.summit.cardano.org
     votingVerificationAppServerUrl: https://verification-api.pro.cf-summit-2023-mainnet.eu-west-1.voting.summit.cardano.org
     userVerificationServerUrl: https://user-verification.pro.cf-summit-2023-mainnet.eu-west-1.voting.summit.cardano.org
-    targetNetwork: MAIN
+    targetNetwork: mainnet
     eventId: CF_SUMMIT_2023_TEST2
     image:
       tag: 0.2.47

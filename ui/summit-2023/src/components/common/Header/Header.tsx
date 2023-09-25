@@ -11,7 +11,7 @@ import {
   useMediaQuery,
   Grid,
   Typography,
-  Button,
+  Button, Card,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
@@ -560,75 +560,76 @@ const Header: React.FC = () => {
         </div>
         {startPeerConnect ? (
           <>
-            <Typography
-                variant="body1"
-                align="left"
-                sx={{
-                  textAlign: 'center',
-                  color: '#434656',
-                  fontSize: '18px',
-                  fontStyle: 'normal',
-                  fontWeight: '500',
-                  lineHeight: '22px',
-                  marginTop: '24px',
-                  marginBottom: '8px',
-                }}
-            >
-              <span style={{ textTransform: 'capitalize', fontStyle: 'italic', fontWeight: '600', }}>{peerConnectWalletInfo?.name}{' '}</span>
-              wallet is trying to connect
-            </Typography>
-            <Button
-              onClick={handleAccept}
-              className="vote-nominee-button"
-              style={{
-                display: 'flex',
-                width: '344px',
-                padding: '12px',
-                justifyContent: 'center',
-                alignItems: 'center',
-                gap: '10px',
-                borderRadius: '8px',
-                background: '#ACFCC5',
-                color: '#03021F',
-                fontSize: '16px',
-                fontStyle: 'normal',
-                fontWeight: '600',
-                lineHeight: 'normal',
-                textTransform: 'none',
-                marginTop: '4px',
-                marginBottom: '18px',
-              }}
-            >
-              Accept connection
-              <img
-                src={peerConnectWalletInfo?.icon}
-                alt="Wallet"
-                style={{ width: '28px' }}
-              />
-            </Button>
-            <Button
-              onClick={handleReject}
-              className="vote-nominee-button"
-              style={{
-                display: 'flex',
-                width: '344px',
-                padding: '12px',
-                justifyContent: 'center',
-                alignItems: 'center',
-                gap: '10px',
-                borderRadius: '8px',
-                background: 'transparent',
-                color: '#03021F',
-                fontSize: '16px',
-                fontStyle: 'normal',
-                fontWeight: '600',
-                lineHeight: 'normal',
-                textTransform: 'none',
-                marginBottom: '8px',
-              }}
-            >
-              Cancel
-            </Button>
+            <Card sx={{padding: '12px', marginTop: '24px'}} >
+              <Typography
+                  variant="body1"
+                  align="left"
+                  sx={{
+                    textAlign: 'center',
+                    color: '#434656',
+                    fontSize: '18px',
+                    fontStyle: 'normal',
+                    fontWeight: '500',
+                    lineHeight: '22px',
+                    marginTop: '4px',
+                    marginBottom: '8px',
+                  }}
+              >
+                <span style={{ textTransform: 'capitalize', fontStyle: 'italic', fontWeight: '600', }}>{peerConnectWalletInfo?.name}{' '}</span>
+                wallet is trying to connect
+              </Typography>
+              <Button
+                  onClick={handleAccept}
+                  className="vote-nominee-button"
+                  style={{
+                    display: 'flex',
+                    padding: '12px',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: '10px',
+                    borderRadius: '8px',
+                    background: '#ACFCC5',
+                    color: '#03021F',
+                    fontSize: '16px',
+                    fontStyle: 'normal',
+                    fontWeight: '600',
+                    lineHeight: 'normal',
+                    textTransform: 'none',
+                    marginTop: '4px',
+                    marginBottom: '18px',
+                  }}
+                  fullWidth
+              >
+                Accept connection
+                <img
+                    src={peerConnectWalletInfo?.icon}
+                    alt="Wallet"
+                    style={{ width: '28px' }}
+                />
+              </Button>
+              <Button
+                  onClick={handleReject}
+                  className="vote-nominee-button"
+                  style={{
+                    display: 'flex',
+                    width: '344px',
+                    padding: '12px',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: '10px',
+                    borderRadius: '8px',
+                    background: 'transparent',
+                    color: '#03021F',
+                    fontSize: '16px',
+                    fontStyle: 'normal',
+                    fontWeight: '600',
+                    lineHeight: 'normal',
+                    textTransform: 'none'
+                  }}
+              >
+                Cancel
+              </Button>
+            </Card>
           </>
         ) : (
           <>

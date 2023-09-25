@@ -455,7 +455,7 @@ export const VotePage = () => {
                     variant="contained"
                     data-testid="next-question-button"
                   >
-                    Next question
+                    {findIndex(event?.categories, ['id', category]) === 0 ? 'Next question' : 'Previous question'}
                   </Button>
                 )}
               </Grid>

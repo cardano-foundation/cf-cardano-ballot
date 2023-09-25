@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.2.48](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.47...v0.2.48) (2023-09-25)
+
+
+### Features
+
+* Cache-Control headers. ([#305](https://github.com/cardano-foundation/cf-cardano-ballot/issues/305)) ([29ebeb2](https://github.com/cardano-foundation/cf-cardano-ballot/commit/29ebeb2e2641a3e1081134fbe193cc7df38fbf47))
+* improved error messages. ([#304](https://github.com/cardano-foundation/cf-cardano-ballot/issues/304)) ([da0bccb](https://github.com/cardano-foundation/cf-cardano-ballot/commit/da0bccb71f4171be60619b0e1e6cbd09e5265593))
+* libraries dependency updates ([#309](https://github.com/cardano-foundation/cf-cardano-ballot/issues/309)) ([2d82bcd](https://github.com/cardano-foundation/cf-cardano-ballot/commit/2d82bcdd86458b042bd167a098a0ea763beb69f7))
+* made gradle task to generate UI types more generic. ([#300](https://github.com/cardano-foundation/cf-cardano-ballot/issues/300)) ([9d95f96](https://github.com/cardano-foundation/cf-cardano-ballot/commit/9d95f96e9f5f931f7750e187403ecc9a8d8e2606))
+
+
+### Bug Fixes
+
+* event start date and event end date based on absolute slot calculation fix. ([#303](https://github.com/cardano-foundation/cf-cardano-ballot/issues/303)) ([1ef39b6](https://github.com/cardano-foundation/cf-cardano-ballot/commit/1ef39b672a703084472b6dc4cd709231cbc5c466))
+* IDE gradle plugin crash fixes. ([#308](https://github.com/cardano-foundation/cf-cardano-ballot/issues/308)) ([d98f392](https://github.com/cardano-foundation/cf-cardano-ballot/commit/d98f392905fc8f90fd4a43f7659f142324d947b8))
+
 ## [0.2.47](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.46...v0.2.47) (2023-09-22)
 
 

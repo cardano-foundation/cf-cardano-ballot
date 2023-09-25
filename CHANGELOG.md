@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.49](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.48...v0.2.49) (2023-09-25)
+
+
+### Bug Fixes
+
+* yaci changed interface adjustment. ([847b8cc](https://github.com/cardano-foundation/cf-cardano-ballot/commit/847b8cc3629ca623155350883446a2030a77082e))
+
 ## [0.2.48](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.47...v0.2.48) (2023-09-25)
 
 

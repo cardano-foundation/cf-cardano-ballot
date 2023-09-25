@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.50](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.49...v0.2.50) (2023-09-25)
+
+
+### Features
+
+* show verify modal on connect wallet ([349a89e](https://github.com/cardano-foundation/cf-cardano-ballot/commit/349a89e0cfde17515a31b1c812f6c67ac428f074))
+
+
+### Bug Fixes
+
+* add INVALID_NETWORK to errors ([42fd8c5](https://github.com/cardano-foundation/cf-cardano-ballot/commit/42fd8c5f39d076c5d05827a0035be2c2f25b48f1))
+* hide QR code on receive cip45 request ([ed0865e](https://github.com/cardano-foundation/cf-cardano-ballot/commit/ed0865e61229dd877cc4d7f220a40536e5e4d20b))
+* include main in network type ([889544c](https://github.com/cardano-foundation/cf-cardano-ballot/commit/889544cb052faccdedbdc25d3f03a0ef11666a9f))
+
 ## [0.2.49](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.48...v0.2.49) (2023-09-25)
 
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Avatar, List, ListItem, ListItemAvatar, Typography } from '@mui/material';
+import PhonelinkRingIcon from '@mui/icons-material/PhonelinkRing';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import './ConnectWalletList.scss';
 import { resolveCardanoNetwork, walletIcon } from '../../utils/utils';
@@ -9,6 +10,7 @@ type ConnectWalletModalProps = {
   description: string;
   onConnectWallet: () => void;
   onConnectError: () => void;
+    onOpenPeerConnect: () => void;
 };
 
 // TODO: move to .env file
@@ -16,7 +18,7 @@ type ConnectWalletModalProps = {
 const SUPPORTED_WALLETS = ['flint', 'nami', 'eternl', 'typhon', 'yoroi', 'nufi'];
 
 const ConnectWalletList = (props: ConnectWalletModalProps) => {
-  const { description, onConnectWallet, onConnectError } = props;
+  const { description, onConnectWallet, onConnectError, onOpenPeerConnect } = props;
   const { installedExtensions, connect } = useCardano({ limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK) });
 
   const availableWallets = installedExtensions.filter((installedWallet) => SUPPORTED_WALLETS.includes(installedWallet));
@@ -48,6 +50,17 @@ const ConnectWalletList = (props: ConnectWalletModalProps) => {
             </Typography>
           </ListItem>
         ))}
+          <ListItem
+              className="walletItem"
+              onClick={() => onOpenPeerConnect()}
+          >
+              <ListItemAvatar>
+                  <PhonelinkRingIcon style={{ width: '24px', height: '24px' }} />
+              </ListItemAvatar>
+              <Typography className="walletLabel">
+                  Connect <span className="walletName">P2P</span> wallet (Beta)
+              </Typography>
+          </ListItem>
       </List>
     </>
   );

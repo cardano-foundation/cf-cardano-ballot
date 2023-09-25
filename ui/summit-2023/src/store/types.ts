@@ -3,6 +3,7 @@ import { EventPresentation, ProposalPresentation } from '../types/voting-ledger-
 
 interface UserState {
   connectedWallet: string;
+  connectedPeerWallet: boolean;
   walletIsVerified: boolean;
   walletIsLoggedIn: boolean;
   isReceiptFetched: boolean;

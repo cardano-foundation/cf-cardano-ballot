@@ -42,7 +42,7 @@ const capitalizeFirstLetter = (input: string): string => {
 };
 
 const resolveCardanoNetwork = (network: string): NetworkType => {
-  if (network.toUpperCase() === 'MAINNET') {
+  if (['MAINNET', 'MAIN'].includes(network.toUpperCase())) {
     return NetworkType.MAINNET;
   } else {
     return NetworkType.TESTNET;

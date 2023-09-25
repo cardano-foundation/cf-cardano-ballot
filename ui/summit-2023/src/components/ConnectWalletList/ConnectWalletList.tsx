@@ -33,7 +33,7 @@ const ConnectWalletList = (props: ConnectWalletModalProps) => {
         {description}
       </Typography>
       <List>
-        {availableWallets.map((walletName, index) => (
+        {availableWallets.length ? availableWallets.map((walletName, index) => (
           <ListItem
             key={index}
             className="walletItem"
@@ -49,7 +49,11 @@ const ConnectWalletList = (props: ConnectWalletModalProps) => {
               Connect <span className="walletName">{walletName}</span> Wallet
             </Typography>
           </ListItem>
-        ))}
+        )) : <>
+            <Typography className="walletLabel">
+               No extension wallets installed
+            </Typography>
+        </>}
           <ListItem
               className="walletItem"
               onClick={() => onOpenPeerConnect()}

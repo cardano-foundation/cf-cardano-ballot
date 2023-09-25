@@ -214,7 +214,7 @@ const Header: React.FC = () => {
 
       initDappConnect(
           'Cardano Summit 2023',
-          'http://awesome-dapp-url.tld/',
+          env.FRONTEND_URL,
           verifyConnection,
           onApiInject,
           onApiEject,

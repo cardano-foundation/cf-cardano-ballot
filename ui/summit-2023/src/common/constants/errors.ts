@@ -1,6 +1,7 @@
 import { capitalizeFirstLetter } from '../../utils/utils';
 
 const ERRORS = {
+  INVALID_NETWORK: 'Network not valid, please check your wallet configuration',
   EVENT_NOT_FOUND: 'Event not found',
   VOTE_NOT_FOUND: 'Vote not found',
   VOTE_CANNOT_BE_CHANGED: 'Vote cannot be changed',

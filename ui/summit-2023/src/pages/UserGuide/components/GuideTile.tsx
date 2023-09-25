@@ -3,7 +3,7 @@ import { Card, CardContent, CardMedia, Typography } from '@mui/material';
 import styles from './GuideTile.module.scss';
 
 type GuideTilePorps = {
-  width?: number;
+  width?: string;
   height: number;
   media: string;
   graphic: any | React.ReactElement;

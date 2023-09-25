@@ -14,6 +14,7 @@ import {
   Box,
   CardActions,
   Tooltip,
+  Hidden
 } from '@mui/material';
 import checkMark from '../../common/resources/images/checkmark-white.png';
 import labelVoted from '../../common/resources/images/checkmark-green.png';
@@ -99,9 +100,9 @@ const Categories = () => {
                 <Fade in={isVisible}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <Card
-                      style={{
+                      sx={{
                         height: 'auto',
-                        width: '414px',
+                        width: {xs: '380px', sm: '414px'},
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -386,15 +387,12 @@ const Categories = () => {
       className={styles.categories}
       style={{ padding: isBigScreen ? '0px' : '0px 10px' }}
     >
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginTop: '10px',
-          marginBottom: 20,
-        }}
-      >
+      <Grid
+  container
+  direction="row"
+  justifyContent="space-between"
+  alignItems="center">
+    <Grid item>
         <Typography
           variant="h2"
           fontSize={{
@@ -414,18 +412,19 @@ const Categories = () => {
         >
           Categories
         </Typography>
-
-        {!isMobile && (
-          <div>
+        </Grid>
+        <Grid item>
+          <Hidden smDown>
             <IconButton onClick={() => handleListView('grid')}>
               <ViewModuleIcon />
             </IconButton>
             <IconButton onClick={() => handleListView('list')}>
               <ViewListIcon />
             </IconButton>
-          </div>
-        )}
-      </div>
+          </Hidden>
+          </Grid>
+    
+  </Grid>
 
       <Box marginY={10}>
         {isMobile || listView === 'grid' ? renderResponsiveGrid(categories) : renderResponsiveList(categories)}

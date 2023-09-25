@@ -11,7 +11,10 @@ body {
   background-repeat: no-repeat;
   background-position: right;
   background-size: contain;
-  height: 100vh;
+  height: 99vh;
+  @media only screen and (max-width: 1080px) {
+    background-image: none;
+  }
 }
 
 .content {
@@ -19,7 +22,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 80vh;
+  min-height: 71vh;
 
 }
 

@@ -122,13 +122,13 @@ const UserGuide = () => {
 
       <Grid
         container
-        spacing={3}
+        spacing={2}
         gridRow={{ xs: 12, md: 6 }}
         sx={{ flexWrap: { md: 'nowrap', xs: 'wrap' } }}
       >
         <GuideTile
           stepNumber={<LooksOneIcon fontSize="large" />}
-          width={340}
+          width={'35%'}
           height={446}
           media='image'
           graphic={'/static/categories.png'}
@@ -136,7 +136,7 @@ const UserGuide = () => {
         />
         <GuideTile
           stepNumber={<LooksTwoIcon fontSize="large" />}
-          width={340}
+          width={'35%'}
           height={446}
           media='image'
           graphic={'/static/categories_card.png'}
@@ -144,7 +144,7 @@ const UserGuide = () => {
         />
         <GuideTile
           stepNumber={<LooksThreeIcon fontSize="large" />}
-          width={340}
+          width={'35%'}
           height={446}
           media='image'
           graphic={'/static/view_nominees.png'}
@@ -153,13 +153,13 @@ const UserGuide = () => {
       </Grid>
       <Grid
         container
-        spacing={3}
+        spacing={2}
         gridRow={{ xs: 12, md: 6 }}
         sx={{ flexWrap: { md: 'nowrap', xs: 'wrap' } }}
       >
         <GuideTile
           stepNumber={<LooksFourIcon fontSize="large" />}
-          width={340}
+          width={'35%'}
           height={446}
           media='image'
           graphic={'/static/vote_for_nominee.png'}
@@ -167,7 +167,7 @@ const UserGuide = () => {
         />
         <GuideTile
           stepNumber={<LooksFiveIcon fontSize="large" />}
-          width={340}
+          width={'35%'}
           height={446}
           media='image'
           graphic={'/static/sign_with_wallet.png'}
@@ -175,7 +175,7 @@ const UserGuide = () => {
         />
         <GuideTile
           stepNumber={<LooksSixIcon fontSize="large" />}
-          width={340}
+          width={'35%'}
           height={446}
           media='image'
           graphic={'/static/submit.png'}

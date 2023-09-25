@@ -223,9 +223,12 @@ const Header: React.FC = () => {
     setOpenAuthDialog(false);
     showToast('Wallet connected successfully');
   };
-  const onConnectWalletError = () => {
+  const onConnectWalletError = (error: Error) => {
     setOpenAuthDialog(false);
-    showToast('Unable to connect Wallet. Please try again', 'error');
+    if (process.env.NODE_ENV === 'development') {
+      console.log(error.message);
+    }
+    showToast('Unable to connect wallet. Please, Review your wallet configuration and try again', 'error');
   };
 
   const handleConnectWallet = () => {
@@ -434,7 +437,7 @@ const Header: React.FC = () => {
         <ConnectWalletList
           description="In order to vote, first you will need to connect your Wallet."
           onConnectWallet={onConnectWallet}
-          onConnectError={onConnectWalletError}
+          onConnectError={(error: Error) => onConnectWalletError(error)}
           onOpenPeerConnect={() => handleOpenPeerConnect()}
         />
       </Modal>

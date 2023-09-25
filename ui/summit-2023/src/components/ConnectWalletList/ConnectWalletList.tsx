@@ -9,7 +9,7 @@ import { env } from 'common/constants/env';
 type ConnectWalletModalProps = {
   description: string;
   onConnectWallet: () => void;
-  onConnectError: () => void;
+  onConnectError: (code: Error) => void;
   onOpenPeerConnect: () => void;
 };
 

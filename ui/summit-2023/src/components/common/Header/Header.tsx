@@ -222,6 +222,9 @@ const Header: React.FC = () => {
   const onConnectWallet = () => {
     setOpenAuthDialog(false);
     showToast('Wallet connected successfully');
+    if (!walletIsVerified) {
+      setVerifyModalIsOpen(true);
+    }
   };
   const onConnectWalletError = (error: Error) => {
     setOpenAuthDialog(false);

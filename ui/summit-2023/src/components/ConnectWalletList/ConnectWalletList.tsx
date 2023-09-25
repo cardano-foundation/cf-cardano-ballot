@@ -10,12 +10,10 @@ type ConnectWalletModalProps = {
   description: string;
   onConnectWallet: () => void;
   onConnectError: () => void;
-    onOpenPeerConnect: () => void;
+  onOpenPeerConnect: () => void;
 };
 
-// TODO: move to .env file
-// TODO: handle mobile support. Flint
-const SUPPORTED_WALLETS = ['flint', 'nami', 'eternl', 'typhon', 'yoroi', 'nufi'];
+const SUPPORTED_WALLETS = env.SUPPORTED_WALLETS;
 
 const ConnectWalletList = (props: ConnectWalletModalProps) => {
   const { description, onConnectWallet, onConnectError, onOpenPeerConnect } = props;
@@ -33,38 +31,40 @@ const ConnectWalletList = (props: ConnectWalletModalProps) => {
         {description}
       </Typography>
       <List>
-        {availableWallets.length ? availableWallets.map((walletName, index) => (
-          <ListItem
-            key={index}
-            className="walletItem"
-            onClick={() => connect(walletName, onConnectWallet, onConnectError)}
-          >
-            <ListItemAvatar>
-              <Avatar
-                src={walletIcon(walletName)}
-                style={{ width: '24px', height: '24px' }}
-              />
-            </ListItemAvatar>
-            <Typography className="walletLabel">
-              Connect <span className="walletName">{walletName}</span> Wallet
-            </Typography>
-          </ListItem>
-        )) : <>
-            <Typography className="walletLabel">
-               No extension wallets installed
-            </Typography>
-        </>}
-          <ListItem
+        {availableWallets.length ? (
+          availableWallets.map((walletName, index) => (
+            <ListItem
+              key={index}
               className="walletItem"
-              onClick={() => onOpenPeerConnect()}
-          >
+              onClick={() => connect(walletName, onConnectWallet, onConnectError)}
+            >
               <ListItemAvatar>
-                  <PhonelinkRingIcon style={{ width: '24px', height: '24px' }} />
+                <Avatar
+                  src={walletIcon(walletName)}
+                  style={{ width: '24px', height: '24px' }}
+                />
               </ListItemAvatar>
               <Typography className="walletLabel">
-                  Connect <span className="walletName">P2P</span> wallet (Beta)
+                Connect <span className="walletName">{walletName}</span> Wallet
               </Typography>
-          </ListItem>
+            </ListItem>
+          ))
+        ) : (
+          <>
+            <Typography className="walletLabel">No extension wallets installed</Typography>
+          </>
+        )}
+        <ListItem
+          className="walletItem"
+          onClick={() => onOpenPeerConnect()}
+        >
+          <ListItemAvatar>
+            <PhonelinkRingIcon style={{ width: '24px', height: '24px' }} />
+          </ListItemAvatar>
+          <Typography className="walletLabel">
+            Connect <span className="walletName">P2P</span> wallet (Beta)
+          </Typography>
+        </ListItem>
       </List>
     </>
   );

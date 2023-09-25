@@ -1,9 +1,12 @@
 package org.cardano.foundation.voting.service.yaci;
 
 import com.bloxbean.cardano.yaci.core.model.Block;
+import com.bloxbean.cardano.yaci.core.model.Era;
+import com.bloxbean.cardano.yaci.core.model.HeaderBody;
 import com.bloxbean.cardano.yaci.core.protocol.chainsync.messages.Point;
 import com.bloxbean.cardano.yaci.helper.BlockSync;
 import com.bloxbean.cardano.yaci.helper.listener.BlockChainDataListener;
+import com.bloxbean.cardano.yaci.helper.model.Transaction;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -59,8 +63,10 @@ public class RollbackHandler {
         blockSync.startSyncFromTip(new BlockChainDataListener() {
 
             @Override
-            public void onBlock(Block block) {
-                log.info("Block's slot:{}, hash:{}, blockNo:{}", block.getHeader().getHeaderBody().getSlot(), block.getHeader().getHeaderBody().getBlockHash(), block.getHeader().getHeaderBody().getBlockNumber());
+            public void onBlock(Era era, Block block, List<Transaction> transactions) {
+                var headerBody = block.getHeader().getHeaderBody();
+
+                log.info("Block's slot:{}, hash:{}, blockNo:{}", headerBody.getSlot(), headerBody.getBlockHash(), headerBody.getBlockNumber());
             }
 
             @Override

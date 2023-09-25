@@ -5,12 +5,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataChainTipService;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataTransactionDetailsService;
+import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.zalando.problem.Problem;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.zalando.problem.Status.NOT_FOUND;
 
@@ -27,15 +29,21 @@ public class BlockchainDataResource {
     @RequestMapping(value = "/tip", method = GET, produces = "application/json")
     @Timed(value = "resource.blockchain.tip", histogram = true)
     public ResponseEntity<?> tip() {
+        var cacheControl = CacheControl.maxAge(15, SECONDS)
+                .noTransform()
+                .mustRevalidate();
+
         return blockchainDataChainTipService.getChainTip()
                 .fold(problem -> {
                             return ResponseEntity
                                     .status(problem.getStatus().getStatusCode())
+                                    .cacheControl(cacheControl)
                                     .body(problem);
                         },
                         chainTip -> {
                             return ResponseEntity
                                     .ok()
+                                    .cacheControl(cacheControl)
                                     .body(chainTip);
                         });
     }
@@ -43,10 +51,15 @@ public class BlockchainDataResource {
     @RequestMapping(value = "/tx-details/{txHash}", method = GET, produces = "application/json")
     @Timed(value = "resource.tx-details", histogram = true)
     public ResponseEntity<?> txDetails(@PathVariable("txHash") String txHash) {
+        var cacheControl = CacheControl.noCache()
+                .noTransform()
+                .mustRevalidate();
+
         return blockchainDataTransactionDetailsService.getTransactionDetails(txHash)
                 .fold(problem -> {
                             return ResponseEntity
                                     .status(problem.getStatus().getStatusCode())
+                                    .cacheControl(cacheControl)
                                     .body(problem);
                         },
                         maybeTxDetails -> {
@@ -62,7 +75,10 @@ public class BlockchainDataResource {
 
                             var txDetails = maybeTxDetails.orElseThrow();
 
-                            return ResponseEntity.ok().body(txDetails);
+                            return ResponseEntity
+                                    .ok()
+                                    .cacheControl(cacheControl)
+                                    .body(txDetails);
                         });
     }
 

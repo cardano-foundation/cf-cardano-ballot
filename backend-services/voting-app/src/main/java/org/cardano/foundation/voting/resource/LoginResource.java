@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.service.auth.LoginService;
 import org.cardano.foundation.voting.service.auth.web3.Web3AuthenticationToken;
+import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +26,10 @@ public class LoginResource {
     @RequestMapping(value = "/login", method = GET, produces = "application/json")
     @Timed(value = "resource.auth.login", histogram = true)
     public ResponseEntity<?> login(Authentication authentication)  {
+        var cacheControl = CacheControl.noCache()
+                .noTransform()
+                .mustRevalidate();
+
         if (!(authentication instanceof Web3AuthenticationToken web3AuthenticationToken)) {
             var problem = Problem.builder()
                     .withTitle("WEB3_AUTH_REQUIRED")
@@ -34,6 +39,7 @@ public class LoginResource {
 
             return ResponseEntity
                     .status(problem.getStatus().getStatusCode())
+                    .cacheControl(cacheControl)
                     .body(problem);
         }
 
@@ -41,9 +47,15 @@ public class LoginResource {
                 .fold(problem -> {
                             return ResponseEntity
                                     .status(problem.getStatus().getStatusCode())
+                                    .cacheControl(cacheControl)
                                     .body(problem);
                         },
-                        ResponseEntity::ok
+                        loginResult -> {
+                            return ResponseEntity
+                                    .ok()
+                                    .cacheControl(cacheControl)
+                                    .body(loginResult);
+                        }
                 );
     }
 

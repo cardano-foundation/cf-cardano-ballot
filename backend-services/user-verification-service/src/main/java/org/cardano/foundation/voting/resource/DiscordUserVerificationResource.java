@@ -36,10 +36,14 @@ public class DiscordUserVerificationResource {
 
         return discordUserVerificationService.isVerifiedBasedOnDiscordIdHash(discordBotEventIdBinding, discordIdHash)
                 .fold(problem -> {
-                            return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
+                            return ResponseEntity
+                                    .status(problem.getStatus().getStatusCode())
+                                    .body(problem);
                         },
                         userVerification -> {
-                            return ResponseEntity.ok().body(userVerification);
+                            return ResponseEntity
+                                    .ok()
+                                    .body(userVerification);
                         }
                 );
     }

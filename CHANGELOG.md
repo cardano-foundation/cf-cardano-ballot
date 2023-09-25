@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.2.47](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.46...v0.2.47) (2023-09-22)
+
+
+### Features
+
+* backend -&gt; frontend types re-generated. ([#293](https://github.com/cardano-foundation/cf-cardano-ballot/issues/293)) ([c574bc3](https://github.com/cardano-foundation/cf-cardano-ballot/commit/c574bc39d75372932c9278db2efcd61be958862b))
+* summit 2023 prod test 2 ([#299](https://github.com/cardano-foundation/cf-cardano-ballot/issues/299)) ([cadc9c2](https://github.com/cardano-foundation/cf-cardano-ballot/commit/cadc9c2cf6e9485b3b2354837c1faa0abd2841f7))
+
+
+### Bug Fixes
+
+* backend types ([efaf0a0](https://github.com/cardano-foundation/cf-cardano-ballot/commit/efaf0a0ce4229047732ec117745e7822b678bfca))
+* get votes after login ([4a6d002](https://github.com/cardano-foundation/cf-cardano-ballot/commit/4a6d002be7e3ed303e3414ebe78d84efdf87c42f))
+* get votes after login ([552c0f8](https://github.com/cardano-foundation/cf-cardano-ballot/commit/552c0f8be6ea9d1cb6fd0b1797dc4db0eef2270b))
+* get votes after login ([f619d27](https://github.com/cardano-foundation/cf-cardano-ballot/commit/f619d27a80a47dbc75f460e5638d8e039cf2941e))
+* get votes when not connected, not verified, no JWT ([9064ce8](https://github.com/cardano-foundation/cf-cardano-ballot/commit/9064ce8b61a0c8feb42565995b9de87cbe27fb55))
+* hide vote button when already voted in category ([0298938](https://github.com/cardano-foundation/cf-cardano-ballot/commit/0298938ee1ba6a38e63c735ff45cda2555925f2f))
+* refactor getUserVotes ([3450889](https://github.com/cardano-foundation/cf-cardano-ballot/commit/345088988b93e4c0608be1a0128066804012b1a6))
+* remove debugs and inline category description ([4deb878](https://github.com/cardano-foundation/cf-cardano-ballot/commit/4deb878d66fa14937368b3abd8f252680e2f4ada))
+* remove unused imports ([e39af1c](https://github.com/cardano-foundation/cf-cardano-ballot/commit/e39af1c471207174dff18f0263ce3520a6cbf629))
+
 ## [0.2.46](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.45...v0.2.46) (2023-09-22)
 
 

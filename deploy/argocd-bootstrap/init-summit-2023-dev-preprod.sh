@@ -85,6 +85,14 @@ kubectl create secret generic github-deploy-key \
   --from-file=../../.keys/cf-cardano-ballot \
   | kubectl apply -f -
 
+## Prometheus / Alertmanager secrets
+kubectl create secret -n cf-summit-2023 generic prometheus-alertmanager-secrets \
+  --from-env-file=../../.keys/prometheus-alertmanager-secrets-summit-dev-preprod \
+  --save-config \
+  --dry-run=client \
+  -o yaml \
+  | kubectl apply -f -
+
 #echo "Fetching helm dependencies for main app"
 helm dependency build
 

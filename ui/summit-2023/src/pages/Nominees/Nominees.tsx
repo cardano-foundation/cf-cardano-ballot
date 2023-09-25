@@ -202,9 +202,10 @@ const Nominees = () => {
         slotNumber: absoluteSlot.toString(),
       });
       const requestVoteObject = await signMessagePromisified(canonicalVoteInput);
-      toggleConfirmVoteModal();
+
       eventBus.publish('showToast', 'Vote submitted');
       await castAVoteWithDigitalSignature(requestVoteObject);
+      toggleConfirmVoteModal();
       eventBus.publish('showToast', 'Vote submitted successfully');
     } catch (e) {
       eventBus.publish('showToast', parseError(e.message), 'error');

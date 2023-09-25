@@ -6,6 +6,7 @@ import { UserState, VerificationStarts } from './types';
 
 const initialState: UserState = {
   connectedWallet: '',
+  connectedPeerWallet: false,
   walletIsVerified: false,
   walletIsLoggedIn: false,
   isReceiptFetched: false,
@@ -49,6 +50,9 @@ export const userSlice = createSlice({
     setConnectedWallet: (state, action: PayloadAction<{ wallet: string }>) => {
       state.connectedWallet = action.payload.wallet;
     },
+    setConnectedPeerWallet: (state, action: PayloadAction<{ peerWallet: boolean }>) => {
+      state.connectedPeerWallet = action.payload.peerWallet;
+    },
     setWalletIsVerified: (state, action: PayloadAction<{ isVerified: boolean }>) => {
       state.walletIsVerified = action.payload.isVerified;
     },
@@ -84,6 +88,7 @@ export const userSlice = createSlice({
 
 export const {
   setVoteReceipt,
+  setConnectedPeerWallet,
   setWalletIsLoggedIn,
   setUserStartsVerification,
   setWalletIsVerified,

@@ -24,10 +24,23 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 27,
   "links": [],
   "liveNow": false,
   "panels": [
+    {
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 17,
+      "panels": [],
+      "repeat": "voting_metrics",
+      "repeatDirection": "h",
+      "title": "Metric: $voting_metrics",
+      "type": "row"
+    },
     {
       "datasource": {
         "type": "prometheus",
@@ -89,9 +102,9 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 0
+        "y": 1
       },
-      "id": 5,
+      "id": 15,
       "options": {
         "legend": {
           "calcs": [],
@@ -111,14 +124,14 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "sum(rate(resource_vote_count_seconds_count[$__rate_interval])) by (pod)",
+          "expr": "sum(rate(${voting_metrics:text}_seconds_count[$__rate_interval])) by (pod)",
           "hide": false,
           "legendFormat": "rps {{ pod }}",
           "range": true,
-          "refId": "A"
+          "refId": "B"
         }
       ],
-      "title": "Vote Cast",
+      "title": "${voting_metrics:value} - Count",
       "type": "timeseries"
     },
     {
@@ -182,7 +195,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 0
+        "y": 1
       },
       "id": 6,
       "options": {
@@ -204,7 +217,7 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.5, sum by (pod, le) (rate(resource_vote_count_seconds_bucket[10m])))",
+          "expr": "histogram_quantile(0.5, sum by (pod, le) (rate(${voting_metrics:text}_seconds_bucket[10m])))",
           "legendFormat": "median - {{pod}}",
           "range": true,
           "refId": "A"
@@ -215,223 +228,14 @@
             "uid": "prometheus"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.95, sum by (pod, le) (rate(resource_vote_count_seconds_bucket[10m])))",
+          "expr": "histogram_quantile(0.95, sum by (pod, le) (rate(${voting_metrics:text}_seconds_bucket[10m])))",
           "hide": false,
           "legendFormat": "p95 - {{pod}}",
           "range": true,
           "refId": "B"
         }
       ],
-      "title": "Vote Count - Percentile",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 8
-      },
-      "id": 7,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "editorMode": "code",
-          "expr": "sum(rate(resource_reference_events_seconds_count{exception=\"none\"}[$__rate_interval])) by (pod)",
-          "hide": false,
-          "legendFormat": "rps {{ pod }} - OK",
-          "range": true,
-          "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "editorMode": "code",
-          "expr": "sum(rate(resource_reference_events_seconds_count{exception!=\"none\"}[$__rate_interval])) by (pod)",
-          "hide": false,
-          "legendFormat": "rps {{ pod }} - Error",
-          "range": true,
-          "refId": "B"
-        }
-      ],
-      "title": "Reference Events",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 8
-      },
-      "id": 8,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "editorMode": "code",
-          "expr": "histogram_quantile(0.5, sum by (pod, le) (rate(resource_reference_event_seconds_bucket{exception=\"none\"}[$__rate_interval])))",
-          "legendFormat": "median - {{pod}}",
-          "range": true,
-          "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "editorMode": "code",
-          "expr": "histogram_quantile(0.95, sum by (pod, le) (rate(resource_reference_event_seconds_bucket{exception=\"none\"}[$__rate_interval])))",
-          "hide": false,
-          "legendFormat": "p95 - {{pod}}",
-          "range": true,
-          "refId": "B"
-        }
-      ],
-      "title": "Reference Events - Percentile",
+      "title": "${voting_metrics:value} - Percentile",
       "type": "timeseries"
     }
   ],
@@ -440,7 +244,138 @@
   "style": "dark",
   "tags": [],
   "templating": {
-    "list": []
+    "list": [
+      {
+        "current": {
+          "selected": true,
+          "text": [
+            "resource_vote_cast",
+            "resource_vote_receipt_web3",
+            "resource_vote_receipt_jwt"
+          ],
+          "value": [
+            "Vote Cast",
+            "Web3 Vote Receipt",
+            "JWT Vote Receipt"
+          ]
+        },
+        "hide": 0,
+        "includeAll": true,
+        "multi": true,
+        "name": "voting_metrics",
+        "options": [
+          {
+            "selected": false,
+            "text": "All",
+            "value": "$__all"
+          },
+          {
+            "selected": true,
+            "text": "resource_vote_cast",
+            "value": "Vote Cast"
+          },
+          {
+            "selected": true,
+            "text": "resource_vote_receipt_web3",
+            "value": "Web3 Vote Receipt"
+          },
+          {
+            "selected": true,
+            "text": "resource_vote_receipt_jwt",
+            "value": "JWT Vote Receipt"
+          },
+          {
+            "selected": false,
+            "text": "resource_auth_login",
+            "value": "Auth Login"
+          },
+          {
+            "selected": false,
+            "text": "resource_leaderboard_event_available",
+            "value": "LB Event Available"
+          },
+          {
+            "selected": false,
+            "text": "resource_leaderboard_event",
+            "value": "LB Event"
+          },
+          {
+            "selected": false,
+            "text": "resource_leaderboard_category",
+            "value": "LB Category"
+          },
+          {
+            "selected": false,
+            "text": "resource_leaderboard_category_available",
+            "value": "LB Category Available"
+          },
+          {
+            "selected": false,
+            "text": "resource_account_find",
+            "value": "Find Acct"
+          },
+          {
+            "selected": false,
+            "text": "resource_tx-details",
+            "value": "Tx Details"
+          },
+          {
+            "selected": false,
+            "text": "resource_merkle_root_hash_find",
+            "value": "Find merkle root hash"
+          },
+          {
+            "selected": false,
+            "text": "resource_reference_event",
+            "value": "Reference Event"
+          },
+          {
+            "selected": false,
+            "text": "resource_reference_events",
+            "value": "Reference Events"
+          },
+          {
+            "selected": false,
+            "text": "resource_sms_startVerification",
+            "value": "SMS Start Verification"
+          },
+          {
+            "selected": false,
+            "text": "resource_sms_checkVerification",
+            "value": "SMS Check Verification"
+          },
+          {
+            "selected": false,
+            "text": "resource_isVerified",
+            "value": "Verified ?"
+          },
+          {
+            "selected": false,
+            "text": "resource_discord_isVerified",
+            "value": "Discord is Verified"
+          },
+          {
+            "selected": false,
+            "text": "resource_discord_startVerification",
+            "value": "Discord Start Verification"
+          },
+          {
+            "selected": false,
+            "text": "resource_discord_checkVerification",
+            "value": "Discord Check Verification"
+          },
+          {
+            "selected": false,
+            "text": "resource_verifyVote",
+            "value": "Verify Vote"
+          }
+        ],
+        "query": "resource_vote_cast : Vote Cast,resource_vote_receipt_web3 : Web3 Vote Receipt,resource_vote_receipt_jwt : JWT Vote Receipt,resource_auth_login : Auth Login,resource_leaderboard_event_available : LB Event Available,resource_leaderboard_event : LB Event,resource_leaderboard_category : LB Category,resource_leaderboard_category_available : LB Category Available,resource_account_find : Find Acct,resource_tx-details : Tx Details,resource_merkle_root_hash_find : Find merkle root hash,resource_reference_event : Reference Event,resource_reference_events : Reference Events,resource_sms_startVerification : SMS Start Verification,resource_sms_checkVerification : SMS Check Verification,resource_isVerified : Verified ?,resource_discord_isVerified : Discord is Verified,resource_discord_startVerification : Discord Start Verification,resource_discord_checkVerification : Discord Check Verification,resource_verifyVote : Verify Vote",
+        "queryValue": "",
+        "skipUrlSync": false,
+        "type": "custom"
+      }
+    ]
   },
   "time": {
     "from": "now-30m",
@@ -450,6 +385,6 @@
   "timezone": "",
   "title": "Voting Dashboard",
   "uid": "j-MK-_kIz",
-  "version": 4,
+  "version": 6,
   "weekStart": ""
 }

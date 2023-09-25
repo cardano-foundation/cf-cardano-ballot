@@ -11,9 +11,11 @@ import {
   useMediaQuery,
   Grid,
   Typography,
+  Button, Card,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
+import FileCopyIcon from '@mui/icons-material/FileCopy';
 import './Header.scss';
 import { i18n } from '../../../i18n';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
@@ -29,12 +31,15 @@ import { CustomButton } from '../Button/CustomButton';
 import { getSlotNumber, getUserVotes } from 'common/api/voteService';
 import { buildCanonicalLoginJson, submitLogin } from 'common/api/loginService';
 import { saveUserInSession } from '../../../utils/session';
-import { setUserVotes, setWalletIsLoggedIn } from '../../../store/userSlice';
-import { getSignedMessagePromise, resolveCardanoNetwork } from '../../../utils/utils';
+import { setConnectedPeerWallet, setUserVotes, setWalletIsLoggedIn } from '../../../store/userSlice';
+import { copyToClipboard, getSignedMessagePromise, resolveCardanoNetwork } from '../../../utils/utils';
 import { Toast } from '../Toast/Toast';
 import { ToastType } from '../Toast/Toast.types';
 import { env } from 'common/constants/env';
 import { parseError } from 'common/constants/errors';
+import { IWalletInfo } from 'components/ConnectWalletList/ConnectWalletList.types';
+import { removeFromLocalStorage } from 'utils/storage';
+import QRCode from 'react-qr-code';
 
 const Header: React.FC = () => {
   const dispatch = useDispatch();
@@ -44,9 +49,10 @@ const Header: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const walletIsVerified = useSelector((state: RootState) => state.user.walletIsVerified);
 
-  const { isConnected, stakeAddress, signMessage } = useCardano({
-    limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
-  });
+  const { stakeAddress, isConnected, disconnect, connect, dAppConnect, meerkatAddress, initDappConnect, signMessage } =
+    useCardano({
+      limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
+    });
 
   const [openAuthDialog, setOpenAuthDialog] = useState<boolean>(false);
   const [loginModal, toggleLoginModal] = useToggle(false);
@@ -55,6 +61,17 @@ const Header: React.FC = () => {
   const [toastMessage, setToastMessage] = useState('');
   const [toastType, setToastType] = useState<ToastType>('common');
   const [toastOpen, setToastOpen] = useState(false);
+
+  const [cip45ModalIsOpen, setCip45ModalIsOpen] = useState<boolean>(false);
+  const [startPeerConnect, setStartPeerConnect] = useState(false);
+  const [peerConnectWalletInfo, setPeerConnectWalletInfo] = useState<IWalletInfo>(undefined);
+  const [onPeerConnectAccept, setOnPeerConnectAccept] = useState(() => () => {
+    /*TODO */
+  });
+  const [onPeerConnectReject, setOnPeerConnectReject] = useState(() => () => {
+    /*TODO */
+  });
+
   const location = useLocation();
 
   const signMessagePromisified = useMemo(() => getSignedMessagePromise(signMessage), [signMessage]);
@@ -119,6 +136,85 @@ const Header: React.FC = () => {
     };
   }, []);
 
+  const handleAccept = () => {
+    if (peerConnectWalletInfo) {
+      onPeerConnectAccept();
+      connect(peerConnectWalletInfo.name).then(() => {
+        setStartPeerConnect(false);
+        setOpenAuthDialog(false);
+        setCip45ModalIsOpen(false);
+      });
+    }
+  };
+
+  const handleReject = () => {
+    onPeerConnectReject();
+    setStartPeerConnect(false);
+  };
+
+  const onDisconnectWallet = () => {
+    disconnect();
+    showToast('Wallet disconnected successfully');
+    setPeerConnectWalletInfo(undefined);
+    removeFromLocalStorage('cardano-peer-autoconnect-id');
+    removeFromLocalStorage('cardano-wallet-discovery-address');
+  };
+
+  useEffect(() => {
+    if (dAppConnect.current === null) {
+      const verifyConnection = (
+        walletInfo: IWalletInfo,
+        callback: (granted: boolean, autoconnect: boolean) => void
+      ) => {
+        setPeerConnectWalletInfo(walletInfo);
+        setStartPeerConnect(true);
+
+        if (walletInfo.requestAutoconnect) {
+          //setModalMessage(`Do you want to automatically connect to wallet ${walletInfo.name} (${walletInfo.address})?`);
+          setOnPeerConnectAccept(() => () => callback(true, true));
+          setOnPeerConnectReject(() => () => callback(false, false));
+        } else {
+          // setModalMessage(`Do you want to connect to wallet ${walletInfo.name} (${walletInfo.address})?`);
+          setOnPeerConnectAccept(() => () => callback(true, false));
+          setOnPeerConnectReject(() => () => callback(false, false));
+        }
+      };
+
+      const onApiInject = (name: string, address: string): void => {
+        connect(
+          name,
+          () => {
+            dispatch(setConnectedPeerWallet({ peerWallet: true }));
+            showToast('Peer wallet connected successfully');
+          },
+          () => {
+            dispatch(setConnectedPeerWallet({ peerWallet: false }));
+            showToast('Peer wallet connected failed', 'error');
+          }
+        );
+      };
+
+      const onApiEject = (name: string, address: string): void => {
+        onDisconnectWallet();
+        setPeerConnectWalletInfo(undefined);
+        showToast('Peer wallet disconnected successfully');
+      };
+
+      const onP2PConnect = (address: string, walletInfo?: IWalletInfo): void => {
+        console.log('onP2PConnect');
+      };
+
+      initDappConnect(
+        'Cardano Summit 2023',
+        env.FRONTEND_URL,
+        verifyConnection,
+        onApiInject,
+        onApiEject,
+        [],
+        onP2PConnect
+      );
+    }
+  }, []);
   const handleCloseAuthDialog = () => {
     setOpenAuthDialog(false);
   };
@@ -127,9 +223,12 @@ const Header: React.FC = () => {
     setOpenAuthDialog(false);
     showToast('Wallet connected successfully');
   };
-  const onConnectWalletError = () => {
+  const onConnectWalletError = (error: Error) => {
     setOpenAuthDialog(false);
-    showToast('Unable to connect Wallet. Please try again', 'error');
+    if (process.env.NODE_ENV === 'development') {
+      console.log(error.message);
+    }
+    showToast('Unable to connect wallet. Please, Review your wallet configuration and try again', 'error');
   };
 
   const handleConnectWallet = () => {
@@ -197,6 +296,11 @@ const Header: React.FC = () => {
     } catch (e) {
       eventBus.publish('showToast', parseError(e.message), 'error');
     }
+  };
+
+  const handleOpenPeerConnect = () => {
+    setOpenAuthDialog(false);
+    setCip45ModalIsOpen(true);
   };
 
   const drawerItems = (
@@ -333,7 +437,8 @@ const Header: React.FC = () => {
         <ConnectWalletList
           description="In order to vote, first you will need to connect your Wallet."
           onConnectWallet={onConnectWallet}
-          onConnectError={onConnectWalletError}
+          onConnectError={(error: Error) => onConnectWalletError(error)}
+          onOpenPeerConnect={() => handleOpenPeerConnect()}
         />
       </Modal>
       <Modal
@@ -378,6 +483,186 @@ const Header: React.FC = () => {
         />
       </Modal>
 
+      <Modal
+        id="cip45-wallet-modal"
+        isOpen={cip45ModalIsOpen}
+        name="cip45-wallet-modal"
+        title="Connect Peer Wallet"
+        onClose={() => setCip45ModalIsOpen(false)}
+        disableBackdropClick={true}
+      >
+        <Typography
+          variant="body1"
+          align="left"
+          sx={{
+            width: '344px',
+            color: '#434656',
+            fontSize: '16px',
+            fontStyle: 'normal',
+            fontWeight: '400',
+            lineHeight: '22px',
+          }}
+        >
+          P2P direct connection to remote wallet without intermediaries (Beta).{' '}
+          <span style={{ fontSize: '14px', fontStyle: 'italic', cursor: 'pointer' }}>
+            {' '}
+            <a
+              href="https://github.com/cardano-foundation/CIPs/pull/395"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Learn more about CIP-45
+            </a>
+          </span>
+        </Typography>
+        <div style={{ display: 'flex', justifyContent: 'center', width: '100%', marginTop: '24px' }}>
+          <QRCode
+            size={256}
+            style={{ height: 'auto', width: '200px' }}
+            value={meerkatAddress}
+            viewBox={'0 0 256 256'}
+          />
+        </div>
+        <div
+          onClick={() => {
+            copyToClipboard(meerkatAddress)
+              .then(() => eventBus.publish('showToast', 'Copied to clipboard'))
+              .catch(() => eventBus.publish('showToast', 'Copied to clipboard failed', 'error'));
+          }}
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: '100%',
+            marginTop: '24px',
+            cursor: 'pointer',
+          }}
+        >
+          <Typography
+            variant="body1"
+            align="center"
+            sx={{
+              color: '#434656',
+              fontSize: '14px',
+              fontStyle: 'normal',
+              fontWeight: '400',
+              lineHeight: '22px',
+              cursor: 'pointer',
+              marginRight: '8px',
+            }}
+          >
+            {meerkatAddress}
+          </Typography>
+          <FileCopyIcon
+            fontSize="small"
+            style={{ color: '#434656', cursor: 'pointer' }}
+          />
+        </div>
+        {startPeerConnect ? (
+          <>
+            <Card sx={{padding: '12px', marginTop: '24px'}} >
+              <Typography
+                  variant="body1"
+                  align="left"
+                  sx={{
+                    textAlign: 'center',
+                    color: '#434656',
+                    fontSize: '18px',
+                    fontStyle: 'normal',
+                    fontWeight: '500',
+                    lineHeight: '22px',
+                    marginTop: '4px',
+                    marginBottom: '8px',
+                  }}
+              >
+                <span style={{ textTransform: 'capitalize', fontStyle: 'italic', fontWeight: '600', }}>{peerConnectWalletInfo?.name}{' '}</span>
+                wallet is trying to connect
+              </Typography>
+              <Button
+                  onClick={handleAccept}
+                  className="vote-nominee-button"
+                  style={{
+                    display: 'flex',
+                    padding: '12px',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: '10px',
+                    borderRadius: '8px',
+                    background: '#ACFCC5',
+                    color: '#03021F',
+                    fontSize: '16px',
+                    fontStyle: 'normal',
+                    fontWeight: '600',
+                    lineHeight: 'normal',
+                    textTransform: 'none',
+                    marginTop: '4px',
+                    marginBottom: '18px',
+                  }}
+                  fullWidth
+              >
+                Accept connection
+                <img
+                    src={peerConnectWalletInfo?.icon}
+                    alt="Wallet"
+                    style={{ width: '28px' }}
+                />
+              </Button>
+              <Button
+                  onClick={handleReject}
+                  className="vote-nominee-button"
+                  style={{
+                    display: 'flex',
+                    width: '344px',
+                    padding: '12px',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    gap: '10px',
+                    borderRadius: '8px',
+                    background: 'transparent',
+                    color: '#03021F',
+                    fontSize: '16px',
+                    fontStyle: 'normal',
+                    fontWeight: '600',
+                    lineHeight: 'normal',
+                    textTransform: 'none'
+                  }}
+              >
+                Cancel
+              </Button>
+            </Card>
+          </>
+        ) : (
+          <>
+            <Button
+              onClick={() => {
+                setStartPeerConnect(false);
+                setOpenAuthDialog(true);
+              }}
+              className="vote-nominee-button"
+              style={{
+                display: 'flex',
+                width: '344px',
+                padding: '12px',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: '10px',
+                borderRadius: '8px',
+                background: '#ACFCC5',
+                color: '#03021F',
+                fontSize: '16px',
+                fontStyle: 'normal',
+                fontWeight: '600',
+                lineHeight: 'normal',
+                textTransform: 'none',
+                marginTop: '24px',
+                marginBottom: '28px',
+              }}
+            >
+              Back
+            </Button>
+          </>
+        )}
+      </Modal>
       <Toast
         isOpen={toastOpen}
         type={toastType}

@@ -66,6 +66,9 @@ spec:
                   name: wallet-secrets
                   key: WALLET_MNEMONIC
 
+            - name: USER_VERIFICATION_APP_URL
+              value: "http://cf-user-verification-service:9093"
+
             ## Postgres
             - name: DB_DRIVER
               value: "org.postgresql.Driver"

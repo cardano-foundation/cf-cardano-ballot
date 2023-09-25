@@ -162,3 +162,11 @@ fetch("localhost:9093/api/user-verification/verified/CF_SUMMIT_2023_24DC/stake_t
     "verified": true
 }
 ```
+
+### Generate types from backend
+```bash
+cd cf-ballot-app
+cd backend-services/voting-app
+./gradlew buildAndCopyTypescriptTypes -Pui_project_name=summit-2023
+```
+Repeat for every service.

@@ -511,7 +511,7 @@ const Header: React.FC = () => {
               target="_blank"
               rel="noreferrer"
             >
-              Learn more
+              Learn more about CIP-45
             </a>
           </span>
         </Typography>
@@ -560,6 +560,23 @@ const Header: React.FC = () => {
         </div>
         {startPeerConnect ? (
           <>
+            <Typography
+                variant="body1"
+                align="left"
+                sx={{
+                  textAlign: 'center',
+                  color: '#434656',
+                  fontSize: '18px',
+                  fontStyle: 'normal',
+                  fontWeight: '500',
+                  lineHeight: '22px',
+                  marginTop: '24px',
+                  marginBottom: '8px',
+                }}
+            >
+              <span style={{ textTransform: 'capitalize', fontStyle: 'italic', fontWeight: '600', }}>{peerConnectWalletInfo?.name}{' '}</span>
+              wallet is trying to connect
+            </Typography>
             <Button
               onClick={handleAccept}
               className="vote-nominee-button"
@@ -578,12 +595,11 @@ const Header: React.FC = () => {
                 fontWeight: '600',
                 lineHeight: 'normal',
                 textTransform: 'none',
-                marginTop: '24px',
+                marginTop: '4px',
                 marginBottom: '18px',
               }}
             >
-              Connect to
-              <span style={{ textTransform: 'capitalize', fontStyle: 'italic' }}>{peerConnectWalletInfo?.name}</span>
+              Accept connection
               <img
                 src={peerConnectWalletInfo?.icon}
                 alt="Wallet"

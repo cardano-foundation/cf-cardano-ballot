@@ -12,14 +12,17 @@ cf-summit-2023-infra:
 cf-summit-2023-ui:
   enabled: true
   values:
+    frontendUrl: https://{{ .Values.domain }}
     votingAppServerUrl: https://api.pro.cf-summit-2023-mainnet.eu-west-1.voting.summit.cardano.org
     votingLedgerFollowerAppServerUrl: https://follower-api.pro.cf-summit-2023-mainnet.eu-west-1.voting.summit.cardano.org
     votingVerificationAppServerUrl: https://verification-api.pro.cf-summit-2023-mainnet.eu-west-1.voting.summit.cardano.org
     userVerificationServerUrl: https://user-verification.pro.cf-summit-2023-mainnet.eu-west-1.voting.summit.cardano.org
-    targetNetwork: mainnet
+    targetNetwork: MAIN
     eventId: CF_SUMMIT_2023_TEST2
+    discordChannelUrl: https://discord.gg/XekFHYXNmu
+    discordBotUrl: https://discord.com/channels/945974991718068254/1149627691310530570
     image:
-      tag: 0.2.49
+      tag: 0.2.50
 
 cf-summit-2023-voting-api:
   enabled: true
@@ -43,7 +46,7 @@ cf-summit-2023-voting-api:
         active: "true"
         voteCommitmentCronExpression: "0 30 * * * *"
     image:
-      tag: 0.2.49
+      tag: 0.2.50
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
     corsAllowedOrigins: https://{{ .Values.domain }}
     monitoring:
@@ -54,7 +57,7 @@ cf-summit-2023-verification-api:
   enabled: true
   values:
     image:
-      tag: 0.2.49
+      tag: 0.2.50
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
     corsAllowedOrigins: https://{{ .Values.domain }}
 
@@ -62,7 +65,7 @@ cf-user-verification-service:
   enabled: true
   values:
     image:
-      tag: 0.2.49
+      tag: 0.2.50
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
     corsAllowedOrigins: https://{{ .Values.domain }}
 
@@ -70,7 +73,7 @@ cf-summit-2023-ledger-follower-api:
   enabled: true
   values:
     image:
-      tag: 0.2.49
+      tag: 0.2.50
     bindOnEventIds: CF_SUMMIT_2023_TEST2
     yaci:
       startBlockHash: 6bb9228e3b746366e24f2681021d619395b850b34c2db020c4928285dcf7b0c2

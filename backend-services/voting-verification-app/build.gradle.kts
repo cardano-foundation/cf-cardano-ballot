@@ -7,7 +7,7 @@ plugins {
 	id("org.springframework.boot") version "3.1.3"
 	id("io.spring.dependency-management") version "1.1.3"
 	id("org.graalvm.buildtools.native") version "0.9.26"
-    id("org.flywaydb.flyway") version "9.22.0"
+    id("org.flywaydb.flyway") version "9.22.1"
 	id("cz.habarta.typescript-generator") version "3.2.1263"
     id("com.github.ben-manes.versions") version "0.48.0"
     id("com.gorylenko.gradle-git-properties") version "2.4.1"
@@ -18,7 +18,7 @@ springBoot {
 }
 
 group = "org.cardano.foundation"
-version = "0.0.1-SNAPSHOT"
+version = "1.0.0-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 configurations {
@@ -50,11 +50,11 @@ dependencies {
 
 	implementation("org.zalando:problem-spring-web-starter:0.29.1")
 
-	compileOnly("org.projectlombok:lombok:1.18.28")
-	annotationProcessor("org.projectlombok:lombok:1.18.28")
+	compileOnly("org.projectlombok:lombok:1.18.30")
+	annotationProcessor("org.projectlombok:lombok:1.18.30")
 
-	testCompileOnly("org.projectlombok:lombok:1.18.28")
-	testAnnotationProcessor("org.projectlombok:lombok:1.18.28")
+	testCompileOnly("org.projectlombok:lombok:1.18.30")
+	testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
 
 	implementation("com.querydsl:querydsl-jpa")
     annotationProcessor("com.querydsl:querydsl-apt")

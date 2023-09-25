@@ -18,7 +18,7 @@ springBoot {
 }
 
 group = "org.cardano.foundation"
-version = "0.0.1-SNAPSHOT"
+version = "1.0.0-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 configurations {
@@ -56,19 +56,19 @@ dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
 
-    implementation("com.bloxbean.cardano:yaci:0.2.2")
+    implementation("com.bloxbean.cardano:yaci:0.2.3")
 
-	compileOnly("org.projectlombok:lombok:1.18.28")
-	annotationProcessor("org.projectlombok:lombok:1.18.28")
+	compileOnly("org.projectlombok:lombok:1.18.30")
+	annotationProcessor("org.projectlombok:lombok:1.18.30")
 
-	testCompileOnly("org.projectlombok:lombok:1.18.28")
-	testAnnotationProcessor("org.projectlombok:lombok:1.18.28")
+	testCompileOnly("org.projectlombok:lombok:1.18.30")
+	testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
 
 	implementation("com.querydsl:querydsl-jpa")
     annotationProcessor("com.querydsl:querydsl-apt")
 
-	implementation("com.nimbusds:nimbus-jose-jwt:9.34")
-	implementation("com.google.crypto.tink:tink:1.10.0")
+	implementation("com.nimbusds:nimbus-jose-jwt:9.35")
+	implementation("com.google.crypto.tink:tink:1.11.0")
 
 	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0-beta3")
     implementation("com.bloxbean.cardano:cardano-client-address:0.5.0-beta3")
@@ -87,7 +87,7 @@ dependencies {
 	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.10")
 
     // spring-boot overridden dependencies:
-    runtimeOnly("com.h2database:h2:2.2.222") // GraalVM compatibility
+    runtimeOnly("com.h2database:h2:2.2.224") // GraalVM compatibility
 }
 
 tasks.withType<Test> {

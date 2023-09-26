@@ -45,7 +45,7 @@ import {
   getUserVotes,
   getVoteReceipt,
 } from '../../common/api/voteService';
-import { copyToClipboard, getSignedMessagePromise, resolveCardanoNetwork } from '../../utils/utils';
+import { copyToClipboard, getSignedMessagePromise, resolveCardanoNetwork, shortenString } from '../../utils/utils';
 import { buildCanonicalLoginJson, submitLogin } from 'common/api/loginService';
 import { getUserInSession, saveUserInSession, tokenIsExpired } from '../../utils/session';
 import { setUserVotes, setVoteReceipt, setWalletIsLoggedIn } from '../../store/userSlice';
@@ -336,8 +336,8 @@ const Nominees = () => {
       const body = {
         rootHash: receipt.merkleProof.rootHash,
         steps: receipt.merkleProof.steps,
-        voteCoseSignature: (receipt.coseSignature),
-        voteCosePublicKey: (receipt.cosePublicKey)
+        voteCoseSignature: receipt.coseSignature,
+        voteCosePublicKey: receipt.cosePublicKey
       }
       verifyVote(body).then(result => {
         if ('verified' in result && result.verified){
@@ -411,7 +411,7 @@ const Nominees = () => {
                             className="nominee-description"
                             variant="body2"
                           >
-                            {nominee.desc}
+                            {shortenString(nominee.desc, 210)}
                           </Typography>
                         </Grid>
                         {!categoryVoted ? (
@@ -528,7 +528,7 @@ const Nominees = () => {
                               variant="body2"
                               sx={{ height: '110px' }}
                             >
-                              {nominee.desc}
+                              {shortenString(nominee.desc, 210)}
                             </Typography>
                           </Grid>
                         </Grid>

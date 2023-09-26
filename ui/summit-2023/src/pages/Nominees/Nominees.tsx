@@ -332,21 +332,22 @@ const Nominees = () => {
   };
 
   const verifyVoteProof = () => {
-
     if (receipt){
       const body = {
         rootHash: receipt.merkleProof.rootHash,
         steps: receipt.merkleProof.steps,
-        coseSignature: String(receipt.coseSignature),
-        cosePublicKey: String(receipt.cosePublicKey)
+        voteCoseSignature: (receipt.coseSignature),
+        voteCosePublicKey: (receipt.cosePublicKey)
       }
-      console.log('body');
-      console.log(body);
       verifyVote(body).then(result => {
-        console.log('verifyVoteProof result')
-        console.log(result)
-        eventBus.publish('showToast', 'Vote proof verified', 'verified');
-      }).catch((e) => eventBus.publish('showToast', parseError(e.message), 'error'))
+        if ('verified' in result && result.verified){
+          eventBus.publish('showToast', 'Vote proof verified', 'verified');
+        } else {
+          eventBus.publish('showToast', 'Vote proof not verified', 'error')
+        }
+      }).catch((e) => {
+        eventBus.publish('showToast', parseError(e.message), 'error')
+      });
     }
   }
 

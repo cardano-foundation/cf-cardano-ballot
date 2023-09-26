@@ -11,10 +11,10 @@ export const CONFIRM_PHONE_NUMBER_CODE_URL = `${env.VOTING_USER_VERIFICATION_SER
 export const DISCORD_VERIFICATION_URL = `${env.VOTING_USER_VERIFICATION_SERVER_URL}/api/discord/user-verification/check-verification`;
 
 export const verifyVote = async (payload: {
-    cosePublicKey: string;
     rootHash: string;
     steps: MerkleProofItem[];
-    coseSignature: string
+    voteCoseSignature: string
+    voteCosePublicKey: string;
 }) =>
   await doRequest<Problem | VoteVerificationResult>(
     HttpMethods.POST,

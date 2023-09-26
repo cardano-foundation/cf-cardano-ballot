@@ -10,7 +10,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     env:
       APP_SERVER_URL: ${{ secrets.APP_SERVER_URL }}
       TARGET_NETWORK: ${{ secrets.TARGET_NETWORK }}
@@ -43,7 +43,7 @@ jobs:
           cd ui/cip-1694
           npm run react-inject-env && npm run build
 
-      - name: Upload build
-        uses: actions/upload-artifact@v3
-        with:
-          path: ui/cip-1694/build
+#      - name: Upload build
+#        uses: actions/upload-artifact@v3
+#        with:
+#          path: ui/cip-1694/build

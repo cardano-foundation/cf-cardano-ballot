@@ -80,6 +80,7 @@ export const VoteReceipt = ({ setOpen, fetchReceipt, receipt }: VoteReceiptProps
     {
       ...receipt,
       voteProof: {
+        transactionHash: receipt?.merkleProof?.transactionHash,
         rootHash: receipt?.merkleProof?.rootHash,
         steps: receipt?.merkleProof?.steps,
         coseSignature: receipt.coseSignature,

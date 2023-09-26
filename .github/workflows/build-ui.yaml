@@ -43,7 +43,7 @@ jobs:
           cd ui/cip-1694
           npm run react-inject-env && npm run build
 
-      - name: Upload build
-        uses: actions/upload-artifact@v3
-        with:
-          path: ui/cip-1694/build
+#      - name: Upload build
+#        uses: actions/upload-artifact@v3
+#        with:
+#          path: ui/cip-1694/build

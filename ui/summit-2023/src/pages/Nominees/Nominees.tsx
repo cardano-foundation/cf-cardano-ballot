@@ -60,6 +60,7 @@ import { env } from 'common/constants/env';
 import { parseError } from 'common/constants/errors';
 import { categoryAlreadyVoted } from '../Categories';
 import { ProposalPresentationExtended } from '../../store/types';
+import {verifyVote} from 'common/api/verificationService';
 
 const Nominees = () => {
   const { categoryId } = useParams();
@@ -70,8 +71,8 @@ const Nominees = () => {
   const receipts = useSelector((state: RootState) => state.user.receipts);
   const receipt = receipts && Object.keys(receipts).length && receipts[categoryId] ? receipts[categoryId] : undefined;
   const updatedReceipt = {
-    ...receipt
-  }
+    ...receipt,
+  };
   const userVotes = useSelector((state: RootState) => state.user.userVotes);
 
   const categoryVoted = categoryAlreadyVoted(categoryId, userVotes);
@@ -83,8 +84,6 @@ const Nominees = () => {
   const summit2023Category: CategoryContent = SUMMIT2023CONTENT.categories.find(
     (category) => category.id === categoryId
   );
-
-
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -139,7 +138,6 @@ const Nominees = () => {
   };
 
   const viewVoteReceipt = async (toast?: boolean, toggle?: boolean) => {
-
     if (receipt && toggle) {
       toggleViewVoteReceipt();
     }
@@ -333,6 +331,25 @@ const Nominees = () => {
     return alreadyVoted;
   };
 
+  const verifyVoteProof = () => {
+
+    if (receipt){
+      const body = {
+        rootHash: receipt.merkleProof.rootHash,
+        steps: receipt.merkleProof.steps,
+        coseSignature: String(receipt.coseSignature),
+        cosePublicKey: String(receipt.cosePublicKey)
+      }
+      console.log('body');
+      console.log(body);
+      verifyVote(body).then(result => {
+        console.log('verifyVoteProof result')
+        console.log(result)
+        eventBus.publish('showToast', 'Vote proof verified', 'verified');
+      }).catch((e) => eventBus.publish('showToast', parseError(e.message), 'error'))
+    }
+  }
+
   const renderResponsiveList = (items): ReactElement => {
     return (
       <>
@@ -474,7 +491,7 @@ const Nominees = () => {
                       }}
                     >
                       <CardContent>
-                        <Box sx={{ position: 'relative', marginTop: '28px' }}>
+                        <Box sx={{ position: 'relative', marginTop: '12px' }}>
                           {voted ? (
                             <Tooltip title="Already Voted">
                               <img
@@ -496,7 +513,7 @@ const Nominees = () => {
                         <Typography
                           className="nominee-title"
                           variant="h4"
-                          sx={{ mb: 1, fontWeight: 'bold', wordWrap: 'break-word', width: '260px' }}
+                          sx={{ mb: 1, fontWeight: 'bold', wordWrap: 'break-word', width: voted ? '260px' : '100%' }}
                         >
                           {nominee.presentationName}
                         </Typography>
@@ -559,6 +576,9 @@ const Nominees = () => {
       </>
     );
   };
+
+  console.log('receipt');
+  console.log(receipt);
 
   return (
     <>
@@ -1214,17 +1234,26 @@ const Nominees = () => {
                       width: '460px',
                       overflowX: 'auto',
                       whiteSpace: 'pre',
-                      padding: '16px'
+                      padding: '16px',
                     }}
                   >
                     <Typography
                       component="pre"
                       variant="body2"
-                      sx={{pointer: 'cursor'}}
+                      sx={{ pointer: 'cursor' }}
                     >
                       {receipt?.merkleProof ? JSON.stringify(receipt?.merkleProof || '', null, 4) : 'Not available yet'}
                     </Typography>
                   </Box>
+                  <CustomButton
+                      styles={{
+                        background: '#ACFCC5',
+                        color: '#03021F',
+                        width: 'auto',
+                      }}
+                      label="Verify vote proof"
+                      onClick={verifyVoteProof}
+                  />
                 </Box>
               </AccordionDetails>
             </Accordion>

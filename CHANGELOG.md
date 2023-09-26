@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.55](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.54...v0.2.55) (2023-09-26)
+
+
+### Bug Fixes
+
+* develop to main: UI fixes ([75feb91](https://github.com/cardano-foundation/cf-cardano-ballot/commit/75feb919254a5d3da1f042d0bf4cd54179b70019))
+
 ## [0.2.54](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.53...v0.2.54) (2023-09-26)
 
 

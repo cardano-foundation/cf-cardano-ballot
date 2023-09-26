@@ -54,8 +54,7 @@ const shortenString = (inputStr: string, x: number): string => {
     return inputStr;
   }
   return inputStr.slice(0, x) + '...';
-}
-
+};
 
 export {
   addressSlice,
@@ -65,5 +64,5 @@ export {
   capitalizeFirstLetter,
   resolveCardanoNetwork,
   openNewTab,
-  shortenString
+  shortenString,
 };

@@ -35,6 +35,11 @@ cf-summit-2023-ledger-follower-api:
   # Whether Resources should be deployed.
   enabled: true
 
+# Discord Wallet Verification
+cf-discord-wallet-verification-bot:
+  # Whether Resources should be deployed.
+  enabled: true
+
 grafana-dashboards:
   enabled: true
 

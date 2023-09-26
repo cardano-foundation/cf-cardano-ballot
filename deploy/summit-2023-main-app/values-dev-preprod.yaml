@@ -81,3 +81,11 @@ cf-summit-2023-ledger-follower-api:
         enabled: true
 #        imageTag: 0.2.36
         schemaName: follower_2
+
+cf-discord-wallet-verification-bot:
+  enabled: true
+  values:
+    image:
+      tag: 11f6f15
+    backendBaseUrl: https://user-verification.{{ .Values.domain }}/
+    frontendUrl: https://{{ .Values.domain }}/

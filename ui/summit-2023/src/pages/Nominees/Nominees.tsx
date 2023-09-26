@@ -458,13 +458,13 @@ const Nominees = () => {
                     <Card
                       sx={{
                         width: '414px',
+                        minHeight: '433px',
                         justifyContent: 'center',
                         display: 'flex',
-                        alignItems: 'center',
                       }}
                     >
                       <CardContent>
-                        <Box sx={{ position: 'relative' }}>
+                        <Box sx={{ position: 'relative', marginTop: '28px' }}>
                           {voted ? (
                             <Tooltip title="Already Voted">
                               <img
@@ -517,7 +517,7 @@ const Nominees = () => {
                           fullWidth={true}
                         />
 
-                        {!categoryVoted ? (
+                        {!categoryVoted || !isConnected ? (
                           <CustomButton
                             styles={
                               isConnected
@@ -605,7 +605,7 @@ const Nominees = () => {
           {summit2023Category.desc}
         </Typography>
 
-        {categoryVoted ? (
+        {isConnected && walletIsVerified && categoryVoted ? (
           <Box
             sx={{
               display: 'flex',

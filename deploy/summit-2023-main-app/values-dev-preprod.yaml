@@ -90,4 +90,4 @@ cf-discord-wallet-verification-bot:
     backendBaseUrl: https://user-verification.{{ .Values.domain }}/
     frontendUrl: https://{{ .Values.domain }}/
     diagnosticMode:
-      enabled: true
+      enabled: false

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CreateCategoryCommand;
 import org.cardano.foundation.voting.domain.CreateEventCommand;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,6 +21,9 @@ public class L1SubmissionService {
     @Autowired
     private L1TransactionCreator l1TransactionCreator;
 
+    @Value("${cardano.snapshot.bounds.check.enabled}")
+    private boolean isSnapshotBoundsCheckEnabled = true;
+
     public String submitEvent(CreateEventCommand event) {
         checkEventCorrectness(event);
 
@@ -33,8 +37,10 @@ public class L1SubmissionService {
             if (event.getStartEpoch().orElseThrow(() -> new RuntimeException("startEpoch required")) > event.getEndEpoch().orElseThrow(() -> new RuntimeException("endEpoch required!"))) {
                 throw new IllegalArgumentException("Event start time must be before end time");
             }
-            if (event.getSnapshotEpoch().orElseThrow(() -> new RuntimeException("snapshotEpoch required")) >= event.getStartEpoch().orElseThrow(() -> new RuntimeException("startEpoch required!"))) {
-                throw new IllegalArgumentException("Event snapshot time must be before start time");
+            if (isSnapshotBoundsCheckEnabled) {
+                if (event.getSnapshotEpoch().orElseThrow(() -> new RuntimeException("snapshotEpoch required")) >= event.getStartEpoch().orElseThrow(() -> new RuntimeException("startEpoch required!"))) {
+                    throw new IllegalArgumentException("Event snapshot time must be before start time");
+                }
             }
 
             if (event.getVotingPowerAsset().isEmpty()) {

@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import './App.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import { setEventData, setUserVotes, setWalletIsLoggedIn, setWalletIsVerified } from './store/userSlice';
-import { Box, CircularProgress, Container, useMediaQuery, useTheme } from '@mui/material';
+import { Box, CircularProgress, Container, Grid } from '@mui/material';
 import Header from './components/common/Header/Header';
 import { PageRouter } from './routes';
 import { env } from './common/constants/env';
@@ -24,8 +24,6 @@ import { parseError } from 'common/constants/errors';
 import { getUserVotes } from 'common/api/voteService';
 
 function App() {
-  const theme = useTheme();
-  const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
   const eventCache = useSelector((state: RootState) => state.user.event);
   const [storedValue, _] = useLocalStorage(CB_TERMS_AND_PRIVACY, false);
   const [openTermDialog, setOpenTermDialog] = useState(false);
@@ -63,8 +61,8 @@ function App() {
 
       if (session) {
         const isExpired = tokenIsExpired(session?.expiresAt);
-        if (!tokenIsExpired(session?.expiresAt)) {
-          dispatch(setWalletIsLoggedIn({ isLoggedIn: isExpired }));
+        dispatch(setWalletIsLoggedIn({ isLoggedIn: !isExpired }));
+        if (!isExpired) {
           getUserVotes(session?.accessToken)
             .then((response) => {
               if (response) {
@@ -103,63 +101,64 @@ function App() {
   }, []);
 
   return (
-    <>
+    <Container maxWidth="xl">
       <BrowserRouter>
         <img
           src={'/static/home-graphic-bg-top.svg'}
           alt="Home graphic background top left"
           className="home-graphic-bg-top"
         />
-        <div
-          className="App"
-          style={{ padding: isTablet ? '0px 0px' : '10px 52px' }}
+        <Grid
+          container
+          spacing={1}
+          direction="column"
         >
-          <Header />
-          <div className="main-content">
-            <Container
-              maxWidth="xl"
-              className="container"
-            >
-              <Box
-                my={2}
-                className="content"
-              >
-                {eventCache !== undefined ? (
-                  <PageRouter />
-                ) : (
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      height: '60vh',
-                      alignItems: 'center',
-                      justifyContent: 'center',
+          <Grid
+            item
+            xs
+          >
+            <Header />
+          </Grid>
+          <Grid
+            item
+            xs={6}
+          >
+            <Box className="content">
+              {eventCache !== undefined ? (
+                <PageRouter />
+              ) : (
+                <Box
+                  sx={{
+                    display: 'flex',
+                    height: '60vh',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <CircularProgress
+                    className="app-spinner"
+                    style={{
+                      color: '#03021f',
+                      strokeWidth: '10',
                     }}
-                  >
-                    <CircularProgress
-                      className="app-spinner"
-                      style={{
-                        color: '#03021f',
-                        strokeWidth: '10',
-                      }}
-                    />
-                  </Box>
-                )}
-              </Box>
-            </Container>
-          </div>
-          <img
-            src={'/static/home-graphic-bg-bottom.svg'}
-            alt="Home graphic background bottom right"
-            className="home-graphic-bg-bottom"
-          />
-          <Footer />
-          <TermsOptInModal
-            open={openTermDialog}
-            setOpen={(value) => setOpenTermDialog(value)}
-          />
-        </div>
+                  />
+                </Box>
+              )}
+            </Box>
+          </Grid>
+          <Grid
+            item
+            xs
+          >
+            <Footer />
+          </Grid>
+        </Grid>
+        <TermsOptInModal
+          open={openTermDialog}
+          setOpen={(value) => setOpenTermDialog(value)}
+        />
       </BrowserRouter>
-    </>
+    </Container>
   );
 }
 

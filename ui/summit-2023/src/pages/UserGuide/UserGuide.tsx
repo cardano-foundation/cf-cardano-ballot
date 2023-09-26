@@ -16,17 +16,30 @@ const UserGuide = () => {
       data-testid="userguide-page"
       className={styles.userguide}
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginTop: '10px',
+          marginBottom: 20,
+        }}
+      >
         <Typography
-          className={styles.title}
           variant="h2"
           fontSize={{
             xs: '28px',
             md: '32px',
+            lg: '48px',
           }}
           lineHeight={{
             xs: '28px',
             md: '32px',
+          }}
+          sx={{
+            color: '#24262E',
+            fontStyle: 'normal',
+            fontWeight: '600',
           }}
         >
           {i18n.t('userGuide.title')}
@@ -43,30 +56,26 @@ const UserGuide = () => {
 
       <Grid
         container
-        spacing={3}
+        spacing={4}
         gridRow={{ md: 6, xs: 12 }}
         gap={{ md: '46px', xs: '25px' }}
         sx={{ flexWrap: { md: 'nowrap', xs: 'wrap' } }}
       >
         <GuideTile
           stepNumber={<LooksOneIcon fontSize="large" />}
-          width={530}
           height={470}
-          graphic={'/static/CardanoBallot-category-1.png'}
-          featureImg={'/static/sms_verification_message.png'}
+          media="image"
+          graphic={'/static/sms_verification.png'}
           stepTitle={i18n.t('userGuide.requirements.sms.title')}
           stepHint={i18n.t('userGuide.requirements.sms.hint')}
-          featureImgStyle={{ height: '210px', padding: '10% 0% 10% 110%', margin: '15%' }}
         />
         <GuideTile
           stepNumber={<LooksTwoIcon fontSize="large" />}
-          width={530}
           height={470}
-          graphic={'/static/CardanoBallot-category-2.png'}
-          featureImg={'/static/cardano_wallet_extension.png'}
+          media="image"
+          graphic={'/static/list_of_wallets.png'}
           stepTitle={i18n.t('userGuide.requirements.discord.title')}
           stepHint={i18n.t('userGuide.requirements.discord.hint')}
-          featureImgStyle={{ height: '210px', padding: '10% 0% 10% 150%', margin: '15%' }}
         />
       </Grid>
 
@@ -87,23 +96,19 @@ const UserGuide = () => {
       >
         <GuideTile
           stepNumber={<LooksOneIcon fontSize="large" />}
-          width={530}
           height={470}
-          graphic={'/static/CardanoBallot-category-3.png'}
-          featureImg={'/static/connect_wallet.png'}
+          media="video"
+          graphic={'/static/connect_wallet.mov'}
           stepTitle={i18n.t('userGuide.createVerify.steps.1.title')}
           stepHint={i18n.t('userGuide.createVerify.steps.1.hint')}
-          featureImgStyle={{ height: '135px', padding: '7% 0% 10% 12%', margin: '15%' }}
         />
         <GuideTile
           stepNumber={<LooksTwoIcon fontSize="large" />}
-          width={530}
           height={470}
-          graphic={'/static/CardanoBallot-category-4.png'}
-          featureImg={'/static/verify_wallet.png'}
+          media="video"
+          graphic={'/static/verify_wallet.mov'}
           stepTitle={i18n.t('userGuide.createVerify.steps.2.title')}
           stepHint={i18n.t('userGuide.createVerify.steps.2.hint')}
-          featureImgStyle={{ height: '125px', padding: '10% 0% 10% 60%', margin: '20%' }}
         />
       </Grid>
 
@@ -117,72 +122,64 @@ const UserGuide = () => {
 
       <Grid
         container
-        spacing={3}
-        gridRow={{ md: 6, xs: 12 }}
-        gap={{ md: '46px', xs: '25px' }}
+        spacing={2}
+        gridRow={{ xs: 12, md: 6 }}
         sx={{ flexWrap: { md: 'nowrap', xs: 'wrap' } }}
       >
         <GuideTile
           stepNumber={<LooksOneIcon fontSize="large" />}
-          width={414}
+          width={'35%'}
           height={446}
-          graphic={'/static/CardanoBallot-category-5.png'}
-          featureImg={'/static/categories.png'}
+          media="image"
+          graphic={'/static/categories.png'}
           stepTitle={i18n.t('userGuide.submitVote.steps.1')}
-          featureImgStyle={{ height: '100px', padding: '10% 0% 10% 60%', margin: '35%' }}
         />
         <GuideTile
           stepNumber={<LooksTwoIcon fontSize="large" />}
-          width={414}
+          width={'35%'}
           height={446}
-          graphic={'/static/CardanoBallot-category-6.png'}
-          featureImg={'/static/categories_card.png'}
+          media="image"
+          graphic={'/static/categories_card.png'}
           stepTitle={i18n.t('userGuide.submitVote.steps.2')}
-          featureImgStyle={{ height: '250px', padding: '5% 0% 5% 65%', margin: '5%' }}
         />
         <GuideTile
           stepNumber={<LooksThreeIcon fontSize="large" />}
-          width={414}
+          width={'35%'}
           height={446}
-          graphic={'/static/CardanoBallot-category-7.png'}
-          featureImg={'/static/view_nominees.png'}
+          media="image"
+          graphic={'/static/view_nominees.png'}
           stepTitle={i18n.t('userGuide.submitVote.steps.3')}
-          featureImgStyle={{ width: '340px', padding: '10% 0% 10% 15%', margin: '25%' }}
         />
       </Grid>
       <Grid
         container
-        spacing={1}
-        gridRow={{ md: 6, xs: 12 }}
-        gap={{ md: '46px', xs: '25px' }}
+        spacing={2}
+        gridRow={{ xs: 12, md: 6 }}
         sx={{ flexWrap: { md: 'nowrap', xs: 'wrap' } }}
       >
         <GuideTile
           stepNumber={<LooksFourIcon fontSize="large" />}
-          width={414}
+          width={'35%'}
           height={446}
-          graphic={'/static/CardanoBallot-category-8.png'}
-          featureImg={'/static/vote_for_nominee.png'}
+          media="image"
+          graphic={'/static/vote_for_nominee.png'}
           stepTitle={i18n.t('userGuide.submitVote.steps.4')}
-          featureImgStyle={{ width: '340px', padding: '10% 0% 10% 15%', margin: '25%' }}
         />
         <GuideTile
           stepNumber={<LooksFiveIcon fontSize="large" />}
-          width={414}
+          width={'35%'}
           height={446}
-          graphic={'/static/CardanoBallot-category-9.png'}
-          featureImg={'/static/sign_with_wallet.png'}
+          media="image"
+          graphic={'/static/sign_with_wallet.png'}
           stepTitle={i18n.t('userGuide.submitVote.steps.5')}
-          featureImgStyle={{ height: '115px', padding: '7% 0% 10% 12%', margin: '20%' }}
         />
         <GuideTile
           stepNumber={<LooksSixIcon fontSize="large" />}
-          width={414}
+          width={'35%'}
           height={446}
-          graphic={'/static/CardanoBallot-category-10.png'}
-          featureImg={'/static/submit.png'}
+          media="image"
+          graphic={'/static/submit.png'}
           stepTitle={i18n.t('userGuide.submitVote.steps.6')}
-          featureImgStyle={{ height: '115px', padding: '7% 0% 10% 12%', margin: '20%' }}
         />
       </Grid>
     </div>

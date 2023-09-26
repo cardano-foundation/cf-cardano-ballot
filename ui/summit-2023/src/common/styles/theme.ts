@@ -7,7 +7,7 @@ declare module '@mui/material/styles' {
     xxl: true;
   }
 }
-const breakpoints = createBreakpoints({ values: { xs: 0, sm: 600, md: 960, lg: 1280, xl: 1920, xxl: 2160 } });
+const breakpoints = createBreakpoints({ values: { xs: 0, sm: 780, md: 960, lg: 1378, xl: 1920, xxl: 2160 } });
 
 const theme = createTheme({
   palette: {

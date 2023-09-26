@@ -164,7 +164,7 @@ export const VoteReceiptMock_Basic: VoteReceipt = {
   status: 'BASIC',
   votedAtSlot: '33059418',
   merkleProof: {
-    transactionHash: '',
+    transactionHash: '189f72d07182e89520ee040f49d884a7c68e21a6e6511dc0d1916940bc016420',
     rootHash: '51861e99048e9beec0689fcafed7b3a13760472d8073d0b153edc265e2cb8d2',
     steps: [
       { type: 'L', hash: '252f10c83610ebca1a059c0bae8255eba2f95be4d1d7bcfa89d7248a82d9f111' },

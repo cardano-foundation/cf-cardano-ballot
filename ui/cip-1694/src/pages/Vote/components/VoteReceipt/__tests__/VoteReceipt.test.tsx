@@ -371,6 +371,7 @@ describe('Vote receipt:', () => {
       }
 
       const voteProof = {
+        transactionHash: VoteReceiptMock_Full_LowAssurance?.merkleProof?.transactionHash,
         rootHash: VoteReceiptMock_Full_LowAssurance?.merkleProof?.rootHash,
         steps: VoteReceiptMock_Full_LowAssurance?.merkleProof?.steps,
         coseSignature: VoteReceiptMock_Full_LowAssurance.coseSignature,

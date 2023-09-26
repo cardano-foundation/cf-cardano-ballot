@@ -61,8 +61,10 @@ function App() {
 
       if (session) {
         const isExpired = tokenIsExpired(session?.expiresAt);
-        if (!tokenIsExpired(session?.expiresAt)) {
-          dispatch(setWalletIsLoggedIn({ isLoggedIn: isExpired }));
+        console.log('isExpired');
+        console.log(isExpired);
+        dispatch(setWalletIsLoggedIn({ isLoggedIn: !isExpired }));
+        if (!isExpired) {
           getUserVotes(session?.accessToken)
             .then((response) => {
               if (response) {

@@ -69,6 +69,9 @@ const Nominees = () => {
   const walletIsLoggedIn = useSelector((state: RootState) => state.user.walletIsLoggedIn);
   const receipts = useSelector((state: RootState) => state.user.receipts);
   const receipt = receipts && Object.keys(receipts).length && receipts[categoryId] ? receipts[categoryId] : undefined;
+  const updatedReceipt = {
+    ...receipt
+  }
   const userVotes = useSelector((state: RootState) => state.user.userVotes);
 
   const categoryVoted = categoryAlreadyVoted(categoryId, userVotes);
@@ -80,6 +83,8 @@ const Nominees = () => {
   const summit2023Category: CategoryContent = SUMMIT2023CONTENT.categories.find(
     (category) => category.id === categoryId
   );
+
+
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -93,6 +98,13 @@ const Nominees = () => {
   const [selectedNominee, setSelectedNominee] = useState({});
   const [selectedNomineeToVote, setSelectedNomineeToVote] = useState(undefined);
   const [nominees, setNominees] = useState<ProposalPresentationExtended[]>([]);
+
+  console.log('updatedReceipt');
+  console.log(updatedReceipt);
+  console.log('nominees');
+  console.log(nominees);
+
+  const session = getUserInSession();
 
   const { isConnected, stakeAddress, signMessage } = useCardano({
     limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
@@ -127,7 +139,6 @@ const Nominees = () => {
   };
 
   const viewVoteReceipt = async (toast?: boolean, toggle?: boolean) => {
-    const session = getUserInSession();
 
     if (receipt && toggle) {
       toggleViewVoteReceipt();
@@ -161,14 +172,14 @@ const Nominees = () => {
       const requestVoteObject = await signMessagePromisified(canonicalVoteInput);
       submitLogin(requestVoteObject)
         .then((response) => {
-          const session = {
+          const newSession = {
             accessToken: response.accessToken,
             expiresAt: response.expiresAt,
           };
-          saveUserInSession(session);
+          saveUserInSession(newSession);
           dispatch(setWalletIsLoggedIn({ isLoggedIn: true }));
           eventBus.publish('showToast', 'Login successfully');
-          getUserVotes(session?.accessToken)
+          getUserVotes(newSession?.accessToken)
             .then((uVotes) => {
               if (uVotes) {
                 dispatch(setUserVotes({ userVotes: uVotes }));
@@ -311,7 +322,6 @@ const Nominees = () => {
 
   const nomineeAlreadyVoted = (nominee) => {
     let alreadyVoted = false;
-    const session = getUserInSession();
     if (
       !tokenIsExpired(session?.expiresAt) &&
       userVotes?.length &&
@@ -550,8 +560,6 @@ const Nominees = () => {
     );
   };
 
-  console.log('receipt');
-  console.log(receipt);
   return (
     <>
       <div
@@ -640,7 +648,7 @@ const Nominees = () => {
                   lineHeight: '22px',
                 }}
               >
-                {walletIsLoggedIn
+                {walletIsLoggedIn && !tokenIsExpired(session?.expiresAt)
                   ? 'You have successfully cast a vote for Nominee in the Ambassador category '
                   : 'To see you vote receipt, please sign with your Wallet'}
               </Typography>

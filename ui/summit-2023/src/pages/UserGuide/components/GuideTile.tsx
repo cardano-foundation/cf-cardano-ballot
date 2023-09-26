@@ -16,7 +16,7 @@ export const GuideTile = ({ width, height, media, graphic, stepNumber, stepTitle
   return (
     <Card
       className={styles.guideCard}
-      sx={{ width: {width}, height: { height } }}
+      sx={{ width: { width }, height: { height } }}
     >
       {media === 'video' ? (
         <CardMedia

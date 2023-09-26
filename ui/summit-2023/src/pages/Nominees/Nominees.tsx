@@ -458,9 +458,9 @@ const Nominees = () => {
                     <Card
                       sx={{
                         width: '414px',
-                        minHeight: '433px',
                         justifyContent: 'center',
                         display: 'flex',
+                        borderRadius: '16px',
                       }}
                     >
                       <CardContent>
@@ -498,6 +498,7 @@ const Nominees = () => {
                             <Typography
                               className="nominee-description"
                               variant="body2"
+                              sx={{ height: '110px' }}
                             >
                               {nominee.desc}
                             </Typography>
@@ -549,6 +550,8 @@ const Nominees = () => {
     );
   };
 
+  console.log('receipt');
+  console.log(receipt);
   return (
     <>
       <div
@@ -1196,18 +1199,24 @@ const Nominees = () => {
                       />
                     </Tooltip>
                   </div>
-                  <Typography
-                    variant="body1"
-                    align="left"
-                    sx={{
-                      wordWrap: 'break-word',
-                      maxWidth: '406px',
-                      cursor: 'pointer',
-                    }}
+
+                  <Box
                     onClick={() => handleCopyToClipboard(JSON.stringify(receipt?.merkleProof || '', null, 4))}
+                    sx={{
+                      width: '460px',
+                      overflowX: 'auto',
+                      whiteSpace: 'pre',
+                      padding: '16px'
+                    }}
                   >
-                    {receipt?.merkleProof ? JSON.stringify(receipt?.merkleProof || '', null, 4) : 'Not available yet'}
-                  </Typography>
+                    <Typography
+                      component="pre"
+                      variant="body2"
+                      sx={{pointer: 'cursor'}}
+                    >
+                      {receipt?.merkleProof ? JSON.stringify(receipt?.merkleProof || '', null, 4) : 'Not available yet'}
+                    </Typography>
+                  </Box>
                 </Box>
               </AccordionDetails>
             </Accordion>

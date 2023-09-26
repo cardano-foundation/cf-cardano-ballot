@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Grid  } from '@mui/material';
+import { Typography, Grid } from '@mui/material';
 import CARDANOSUMMIT2023LOGO from '../../common/resources/images/cardanosummit2023.svg';
 import { Hexagon } from '../../components/common/Hexagon';
 import './Home.scss';
@@ -8,7 +8,6 @@ import { NavLink } from 'react-router-dom';
 import { CustomButton } from '../../components/common/Button/CustomButton';
 
 const Home: React.FC = () => {
-
   return (
     <Grid
       container
@@ -26,7 +25,7 @@ const Home: React.FC = () => {
           flex: '1',
           padding: '20px',
           order: '1',
-          display: 'flex'
+          display: 'flex',
         }}
       >
         <div className="left-title-container">

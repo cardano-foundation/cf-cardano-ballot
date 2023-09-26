@@ -11,7 +11,8 @@ import {
   useMediaQuery,
   Grid,
   Typography,
-  Button, Card,
+  Button,
+  Card,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
@@ -521,121 +522,123 @@ const Header: React.FC = () => {
             </a>
           </span>
         </Typography>
-        {
-          !startPeerConnect ? <>
+        {!startPeerConnect ? (
+          <>
             <div style={{ display: 'flex', justifyContent: 'center', width: '100%', marginTop: '24px' }}>
               <QRCode
-                  size={256}
-                  style={{ height: 'auto', width: '200px' }}
-                  value={meerkatAddress}
-                  viewBox={'0 0 256 256'}
+                size={256}
+                style={{ height: 'auto', width: '200px' }}
+                value={meerkatAddress}
+                viewBox={'0 0 256 256'}
               />
             </div>
             <div
-                onClick={() => {
-                  copyToClipboard(meerkatAddress)
-                      .then(() => eventBus.publish('showToast', 'Copied to clipboard'))
-                      .catch(() => eventBus.publish('showToast', 'Copied to clipboard failed', 'error'));
-                }}
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  width: '100%',
-                  marginTop: '24px',
-                  cursor: 'pointer',
-                }}
+              onClick={() => {
+                copyToClipboard(meerkatAddress)
+                  .then(() => eventBus.publish('showToast', 'Copied to clipboard'))
+                  .catch(() => eventBus.publish('showToast', 'Copied to clipboard failed', 'error'));
+              }}
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '100%',
+                marginTop: '24px',
+                cursor: 'pointer',
+              }}
             >
               <Typography
-                  variant="body1"
-                  align="center"
-                  sx={{
-                    color: '#434656',
-                    fontSize: '14px',
-                    fontStyle: 'normal',
-                    fontWeight: '400',
-                    lineHeight: '22px',
-                    cursor: 'pointer',
-                    marginRight: '8px',
-                  }}
+                variant="body1"
+                align="center"
+                sx={{
+                  color: '#434656',
+                  fontSize: '14px',
+                  fontStyle: 'normal',
+                  fontWeight: '400',
+                  lineHeight: '22px',
+                  cursor: 'pointer',
+                  marginRight: '8px',
+                }}
               >
                 {meerkatAddress}
               </Typography>
               <FileCopyIcon
-                  fontSize="small"
-                  style={{ color: '#434656', cursor: 'pointer' }}
+                fontSize="small"
+                style={{ color: '#434656', cursor: 'pointer' }}
               />
             </div>
-          </> : null
-        }
+          </>
+        ) : null}
         {startPeerConnect ? (
           <>
-            <Card sx={{padding: '12px', marginTop: '24px'}} >
+            <Card sx={{ padding: '12px', marginTop: '24px' }}>
               <Typography
-                  variant="body1"
-                  align="left"
-                  sx={{
-                    textAlign: 'center',
-                    color: '#434656',
-                    fontSize: '18px',
-                    fontStyle: 'normal',
-                    fontWeight: '500',
-                    lineHeight: '22px',
-                    marginTop: '4px',
-                    marginBottom: '8px',
-                  }}
+                variant="body1"
+                align="left"
+                sx={{
+                  textAlign: 'center',
+                  color: '#434656',
+                  fontSize: '18px',
+                  fontStyle: 'normal',
+                  fontWeight: '500',
+                  lineHeight: '22px',
+                  marginTop: '4px',
+                  marginBottom: '8px',
+                }}
               >
-                <span style={{ textTransform: 'capitalize', fontStyle: 'italic', fontWeight: '600', }}>{peerConnectWalletInfo?.name}{' '}</span>
+                <span style={{ textTransform: 'capitalize', fontStyle: 'italic', fontWeight: '600' }}>
+                  {peerConnectWalletInfo?.name}{' '}
+                </span>
                 wallet is trying to connect
               </Typography>
               <Button
-                  onClick={handleAccept}
-                  className="vote-nominee-button"
-                  style={{
-                    display: 'flex',
-                    padding: '12px',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    gap: '10px',
-                    borderRadius: '8px',
-                    background: '#ACFCC5',
-                    color: '#03021F',
-                    fontSize: '16px',
-                    fontStyle: 'normal',
-                    fontWeight: '600',
-                    lineHeight: 'normal',
-                    textTransform: 'none',
-                    marginTop: '4px',
-                    marginBottom: '18px',
-                  }}
-                  fullWidth
+                onClick={handleAccept}
+                className="vote-nominee-button"
+                style={{
+                  display: 'flex',
+                  padding: '12px',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: '10px',
+                  borderRadius: '8px',
+                  background: '#ACFCC5',
+                  color: '#03021F',
+                  fontSize: '16px',
+                  fontStyle: 'normal',
+                  fontWeight: '600',
+                  lineHeight: 'normal',
+                  textTransform: 'none',
+                  marginTop: '4px',
+                  marginBottom: '18px',
+                }}
+                fullWidth
               >
                 Accept connection
                 <img
-                    src={peerConnectWalletInfo?.icon}
-                    alt="Wallet"
-                    style={{ width: '28px' }}
+                  src={peerConnectWalletInfo?.icon}
+                  alt="Wallet"
+                  style={{ width: '28px' }}
                 />
               </Button>
               <Button
-                  onClick={handleReject}
-                  className="vote-nominee-button"
-                  style={{
-                    display: 'flex',
-                    width: '344px',
-                    padding: '12px',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    gap: '10px',
-                    borderRadius: '8px',
-                    background: 'transparent',
-                    color: '#03021F',
-                    fontSize: '16px',
-                    fontStyle: 'normal',
-                    fontWeight: '600',
-                    lineHeight: 'normal',
-                    textTransform: 'none'
-                  }}
+                onClick={handleReject}
+                className="vote-nominee-button"
+                style={{
+                  display: 'flex',
+                  width: '344px',
+                  padding: '12px',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: '10px',
+                  borderRadius: '8px',
+                  background: 'transparent',
+                  color: '#03021F',
+                  fontSize: '16px',
+                  fontStyle: 'normal',
+                  fontWeight: '600',
+                  lineHeight: 'normal',
+                  textTransform: 'none',
+                }}
               >
                 Cancel
               </Button>

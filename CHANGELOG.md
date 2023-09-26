@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.51](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.50...v0.2.51) (2023-09-26)
+
+
+### Features
+
+* new fruits test event, minor fixes as well as a new helper script. ([#317](https://github.com/cardano-foundation/cf-cardano-ballot/issues/317)) ([7ac1d85](https://github.com/cardano-foundation/cf-cardano-ballot/commit/7ac1d85c4e9628b8d9825f417e9f67a4e66a666c))
+
 ## [0.2.50](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.49...v0.2.50) (2023-09-25)
 
 

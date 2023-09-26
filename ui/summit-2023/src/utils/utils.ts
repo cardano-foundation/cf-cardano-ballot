@@ -49,6 +49,13 @@ const resolveCardanoNetwork = (network: string): NetworkType => {
   }
 };
 
+const shortenString = (inputStr: string, x: number): string => {
+  if (inputStr.length <= x) {
+    return inputStr;
+  }
+  return inputStr.slice(0, x) + '...';
+};
+
 export {
   addressSlice,
   walletIcon,
@@ -57,4 +64,5 @@ export {
   capitalizeFirstLetter,
   resolveCardanoNetwork,
   openNewTab,
+  shortenString,
 };

@@ -45,7 +45,7 @@ const UserGuide = () => {
           {i18n.t('userGuide.title')}
         </Typography>
       </div>
-      
+
       <Typography
         className={styles.sectionTitle}
         variant="h3"
@@ -64,7 +64,7 @@ const UserGuide = () => {
         <GuideTile
           stepNumber={<LooksOneIcon fontSize="large" />}
           height={470}
-          media='image'
+          media="image"
           graphic={'/static/sms_verification.png'}
           stepTitle={i18n.t('userGuide.requirements.sms.title')}
           stepHint={i18n.t('userGuide.requirements.sms.hint')}
@@ -72,7 +72,7 @@ const UserGuide = () => {
         <GuideTile
           stepNumber={<LooksTwoIcon fontSize="large" />}
           height={470}
-          media='image'
+          media="image"
           graphic={'/static/list_of_wallets.png'}
           stepTitle={i18n.t('userGuide.requirements.discord.title')}
           stepHint={i18n.t('userGuide.requirements.discord.hint')}
@@ -97,7 +97,7 @@ const UserGuide = () => {
         <GuideTile
           stepNumber={<LooksOneIcon fontSize="large" />}
           height={470}
-          media='video'
+          media="video"
           graphic={'/static/connect_wallet.mov'}
           stepTitle={i18n.t('userGuide.createVerify.steps.1.title')}
           stepHint={i18n.t('userGuide.createVerify.steps.1.hint')}
@@ -105,7 +105,7 @@ const UserGuide = () => {
         <GuideTile
           stepNumber={<LooksTwoIcon fontSize="large" />}
           height={470}
-          media='video'
+          media="video"
           graphic={'/static/verify_wallet.mov'}
           stepTitle={i18n.t('userGuide.createVerify.steps.2.title')}
           stepHint={i18n.t('userGuide.createVerify.steps.2.hint')}
@@ -130,7 +130,7 @@ const UserGuide = () => {
           stepNumber={<LooksOneIcon fontSize="large" />}
           width={'35%'}
           height={446}
-          media='image'
+          media="image"
           graphic={'/static/categories.png'}
           stepTitle={i18n.t('userGuide.submitVote.steps.1')}
         />
@@ -138,7 +138,7 @@ const UserGuide = () => {
           stepNumber={<LooksTwoIcon fontSize="large" />}
           width={'35%'}
           height={446}
-          media='image'
+          media="image"
           graphic={'/static/categories_card.png'}
           stepTitle={i18n.t('userGuide.submitVote.steps.2')}
         />
@@ -146,7 +146,7 @@ const UserGuide = () => {
           stepNumber={<LooksThreeIcon fontSize="large" />}
           width={'35%'}
           height={446}
-          media='image'
+          media="image"
           graphic={'/static/view_nominees.png'}
           stepTitle={i18n.t('userGuide.submitVote.steps.3')}
         />
@@ -161,7 +161,7 @@ const UserGuide = () => {
           stepNumber={<LooksFourIcon fontSize="large" />}
           width={'35%'}
           height={446}
-          media='image'
+          media="image"
           graphic={'/static/vote_for_nominee.png'}
           stepTitle={i18n.t('userGuide.submitVote.steps.4')}
         />
@@ -169,7 +169,7 @@ const UserGuide = () => {
           stepNumber={<LooksFiveIcon fontSize="large" />}
           width={'35%'}
           height={446}
-          media='image'
+          media="image"
           graphic={'/static/sign_with_wallet.png'}
           stepTitle={i18n.t('userGuide.submitVote.steps.5')}
         />
@@ -177,7 +177,7 @@ const UserGuide = () => {
           stepNumber={<LooksSixIcon fontSize="large" />}
           width={'35%'}
           height={446}
-          media='image'
+          media="image"
           graphic={'/static/submit.png'}
           stepTitle={i18n.t('userGuide.submitVote.steps.6')}
         />

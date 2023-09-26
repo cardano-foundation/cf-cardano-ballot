@@ -10,7 +10,7 @@ const initialState: UserState = {
   walletIsVerified: false,
   walletIsLoggedIn: false,
   isReceiptFetched: false,
-  receipts: null,
+  receipts: {},
   userVotes: [],
   proposal: '',
   userVerification: {},

@@ -45,7 +45,7 @@ import {
   getUserVotes,
   getVoteReceipt,
 } from '../../common/api/voteService';
-import { copyToClipboard, getSignedMessagePromise, resolveCardanoNetwork } from '../../utils/utils';
+import { copyToClipboard, getSignedMessagePromise, resolveCardanoNetwork, shortenString } from '../../utils/utils';
 import { buildCanonicalLoginJson, submitLogin } from 'common/api/loginService';
 import { getUserInSession, saveUserInSession, tokenIsExpired } from '../../utils/session';
 import { setUserVotes, setVoteReceipt, setWalletIsLoggedIn } from '../../store/userSlice';
@@ -60,6 +60,7 @@ import { env } from 'common/constants/env';
 import { parseError } from 'common/constants/errors';
 import { categoryAlreadyVoted } from '../Categories';
 import { ProposalPresentationExtended } from '../../store/types';
+import { verifyVote } from 'common/api/verificationService';
 
 const Nominees = () => {
   const { categoryId } = useParams();
@@ -69,6 +70,7 @@ const Nominees = () => {
   const walletIsLoggedIn = useSelector((state: RootState) => state.user.walletIsLoggedIn);
   const receipts = useSelector((state: RootState) => state.user.receipts);
   const receipt = receipts && Object.keys(receipts).length && receipts[categoryId] ? receipts[categoryId] : undefined;
+
   const userVotes = useSelector((state: RootState) => state.user.userVotes);
 
   const categoryVoted = categoryAlreadyVoted(categoryId, userVotes);
@@ -93,6 +95,8 @@ const Nominees = () => {
   const [selectedNominee, setSelectedNominee] = useState({});
   const [selectedNomineeToVote, setSelectedNomineeToVote] = useState(undefined);
   const [nominees, setNominees] = useState<ProposalPresentationExtended[]>([]);
+
+  const session = getUserInSession();
 
   const { isConnected, stakeAddress, signMessage } = useCardano({
     limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
@@ -127,8 +131,6 @@ const Nominees = () => {
   };
 
   const viewVoteReceipt = async (toast?: boolean, toggle?: boolean) => {
-    const session = getUserInSession();
-
     if (receipt && toggle) {
       toggleViewVoteReceipt();
     }
@@ -136,7 +138,11 @@ const Nominees = () => {
     if (!tokenIsExpired(session?.expiresAt)) {
       await getVoteReceipt(categoryId, session?.accessToken)
         .then((r) => {
-          dispatch(setVoteReceipt({ categoryId: categoryId, receipt: r }));
+          const extendedReceipt = {
+            ...r,
+            presentationName: nominees.find((nominee) => nominee.id === r.proposal).presentationName,
+          };
+          dispatch(setVoteReceipt({ categoryId: categoryId, receipt: extendedReceipt }));
           if (toggle !== false) toggleViewVoteReceipt();
         })
         .catch((e) => {
@@ -161,14 +167,14 @@ const Nominees = () => {
       const requestVoteObject = await signMessagePromisified(canonicalVoteInput);
       submitLogin(requestVoteObject)
         .then((response) => {
-          const session = {
+          const newSession = {
             accessToken: response.accessToken,
             expiresAt: response.expiresAt,
           };
-          saveUserInSession(session);
+          saveUserInSession(newSession);
           dispatch(setWalletIsLoggedIn({ isLoggedIn: true }));
           eventBus.publish('showToast', 'Login successfully');
-          getUserVotes(session?.accessToken)
+          getUserVotes(newSession?.accessToken)
             .then((uVotes) => {
               if (uVotes) {
                 dispatch(setUserVotes({ userVotes: uVotes }));
@@ -204,9 +210,22 @@ const Nominees = () => {
       const requestVoteObject = await signMessagePromisified(canonicalVoteInput);
 
       eventBus.publish('showToast', 'Vote submitted');
-      await castAVoteWithDigitalSignature(requestVoteObject);
       toggleConfirmVoteModal();
+      await castAVoteWithDigitalSignature(requestVoteObject);
       eventBus.publish('showToast', 'Vote submitted successfully');
+      if (session && !tokenIsExpired(session?.expiresAt)) {
+        await getVoteReceipt(categoryId, session?.accessToken)
+          .then((r) => {
+            dispatch(setVoteReceipt({ categoryId: categoryId, receipt: r }));
+          })
+          .catch((e) => {
+            if (process.env.NODE_ENV === 'development') {
+              console.log(`Failed to fetch vote receipt, ${parseError(e.message)}`);
+            }
+          });
+      } else {
+        eventBus.publish('openLoginModal');
+      }
     } catch (e) {
       eventBus.publish('showToast', parseError(e.message), 'error');
     }
@@ -311,7 +330,6 @@ const Nominees = () => {
 
   const nomineeAlreadyVoted = (nominee) => {
     let alreadyVoted = false;
-    const session = getUserInSession();
     if (
       !tokenIsExpired(session?.expiresAt) &&
       userVotes?.length &&
@@ -321,6 +339,28 @@ const Nominees = () => {
       alreadyVoted = true;
     }
     return alreadyVoted;
+  };
+
+  const verifyVoteProof = () => {
+    if (receipt) {
+      const body = {
+        rootHash: receipt.merkleProof.rootHash,
+        steps: receipt.merkleProof.steps,
+        voteCoseSignature: receipt.coseSignature,
+        voteCosePublicKey: receipt.cosePublicKey,
+      };
+      verifyVote(body)
+        .then((result) => {
+          if ('verified' in result && result.verified) {
+            eventBus.publish('showToast', 'Vote proof verified', 'verified');
+          } else {
+            eventBus.publish('showToast', 'Vote proof not verified', 'error');
+          }
+        })
+        .catch((e) => {
+          eventBus.publish('showToast', parseError(e.message), 'error');
+        });
+    }
   };
 
   const renderResponsiveList = (items): ReactElement => {
@@ -383,7 +423,7 @@ const Nominees = () => {
                             className="nominee-description"
                             variant="body2"
                           >
-                            {nominee.desc}
+                            {shortenString(nominee.desc, 210)}
                           </Typography>
                         </Grid>
                         {!categoryVoted ? (
@@ -460,11 +500,11 @@ const Nominees = () => {
                         width: '414px',
                         justifyContent: 'center',
                         display: 'flex',
-                        alignItems: 'center',
+                        borderRadius: '16px',
                       }}
                     >
                       <CardContent>
-                        <Box sx={{ position: 'relative' }}>
+                        <Box sx={{ position: 'relative', marginTop: '12px' }}>
                           {voted ? (
                             <Tooltip title="Already Voted">
                               <img
@@ -486,7 +526,7 @@ const Nominees = () => {
                         <Typography
                           className="nominee-title"
                           variant="h4"
-                          sx={{ mb: 1, fontWeight: 'bold' }}
+                          sx={{ mb: 1, fontWeight: 'bold', wordWrap: 'break-word', width: voted ? '260px' : '100%' }}
                         >
                           {nominee.presentationName}
                         </Typography>
@@ -498,8 +538,9 @@ const Nominees = () => {
                             <Typography
                               className="nominee-description"
                               variant="body2"
+                              sx={{ height: '110px' }}
                             >
-                              {nominee.desc}
+                              {shortenString(nominee.desc, 210)}
                             </Typography>
                           </Grid>
                         </Grid>
@@ -517,7 +558,7 @@ const Nominees = () => {
                           fullWidth={true}
                         />
 
-                        {!categoryVoted ? (
+                        {!categoryVoted || !isConnected ? (
                           <CustomButton
                             styles={
                               isConnected
@@ -605,7 +646,7 @@ const Nominees = () => {
           {summit2023Category.desc}
         </Typography>
 
-        {categoryVoted ? (
+        {isConnected && walletIsVerified && categoryVoted ? (
           <Box
             sx={{
               display: 'flex',
@@ -637,7 +678,7 @@ const Nominees = () => {
                   lineHeight: '22px',
                 }}
               >
-                {walletIsLoggedIn
+                {walletIsLoggedIn && !tokenIsExpired(session?.expiresAt)
                   ? 'You have successfully cast a vote for Nominee in the Ambassador category '
                   : 'To see you vote receipt, please sign with your Wallet'}
               </Typography>
@@ -955,10 +996,10 @@ const Nominees = () => {
               <Typography
                 variant="body1"
                 align="left"
-                sx={{ cursor: 'pointer' }}
-                onClick={() => handleCopyToClipboard(receipt?.proposal)}
+                sx={{ cursor: 'pointer', wordWrap: 'break-word' }}
+                onClick={() => handleCopyToClipboard(`${receipt?.presentationName} [${receipt?.proposal}]`)}
               >
-                {receipt?.proposal}
+                {receipt?.presentationName} [{receipt?.proposal}]
               </Typography>
             </Box>
             <Box
@@ -1196,18 +1237,35 @@ const Nominees = () => {
                       />
                     </Tooltip>
                   </div>
-                  <Typography
-                    variant="body1"
-                    align="left"
-                    sx={{
-                      wordWrap: 'break-word',
-                      maxWidth: '406px',
-                      cursor: 'pointer',
-                    }}
+
+                  <Box
                     onClick={() => handleCopyToClipboard(JSON.stringify(receipt?.merkleProof || '', null, 4))}
+                    sx={{
+                      width: '460px',
+                      overflowX: 'auto',
+                      whiteSpace: 'pre',
+                      padding: '16px',
+                    }}
                   >
-                    {receipt?.merkleProof ? JSON.stringify(receipt?.merkleProof || '', null, 4) : 'Not available yet'}
-                  </Typography>
+                    <Typography
+                      component="pre"
+                      variant="body2"
+                      sx={{ pointer: 'cursor' }}
+                    >
+                      {receipt?.merkleProof ? JSON.stringify(receipt?.merkleProof || '', null, 4) : 'Not available yet'}
+                    </Typography>
+                  </Box>
+                  {receipt?.merkleProof ? (
+                    <CustomButton
+                      styles={{
+                        background: '#ACFCC5',
+                        color: '#03021F',
+                        width: 'auto',
+                      }}
+                      label="Verify vote proof"
+                      onClick={verifyVoteProof}
+                    />
+                  ) : null}
                 </Box>
               </AccordionDetails>
             </Accordion>
@@ -1265,7 +1323,8 @@ const Nominees = () => {
             color: '#03021F',
             margin: '20px 0px',
           }}
-          label={`Vote for ${selectedNomineeToVote?.id}`}
+          label={`Vote for ${nominees.find((nominee) => nominee.id === selectedNomineeToVote?.id)
+            ?.presentationName} [${selectedNomineeToVote?.id}]`}
           fullWidth={true}
           onClick={() => handleVoteNomineeButton()}
         />

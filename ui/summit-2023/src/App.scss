@@ -7,7 +7,7 @@ html,
 body {
   font-family: 'Roboto', sans-serif;
   background-color: #f5f9ff !important;
-  background-image: url("./common/resources/images/home-graphic-bg-bottom.svg");
+  background-image: url('./common/resources/images/home-graphic-bg-bottom.svg');
   background-repeat: no-repeat;
   background-position: right;
   background-size: contain;
@@ -18,12 +18,11 @@ body {
 }
 
 .content {
-  margin: 2%;  
+  margin: 2%;
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 71vh;
-
 }
 
 .container {

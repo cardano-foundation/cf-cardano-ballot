@@ -61,8 +61,8 @@ function App() {
 
       if (session) {
         const isExpired = tokenIsExpired(session?.expiresAt);
-        if (!tokenIsExpired(session?.expiresAt)) {
-          dispatch(setWalletIsLoggedIn({ isLoggedIn: isExpired }));
+        dispatch(setWalletIsLoggedIn({ isLoggedIn: !isExpired }));
+        if (!isExpired) {
           getUserVotes(session?.accessToken)
             .then((response) => {
               if (response) {
@@ -101,7 +101,7 @@ function App() {
   }, []);
 
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="xl">
       <BrowserRouter>
         <img
           src={'/static/home-graphic-bg-top.svg'}
@@ -113,10 +113,16 @@ function App() {
           spacing={1}
           direction="column"
         >
-          <Grid item xs>
+          <Grid
+            item
+            xs
+          >
             <Header />
           </Grid>
-          <Grid item xs={6}>
+          <Grid
+            item
+            xs={6}
+          >
             <Box className="content">
               {eventCache !== undefined ? (
                 <PageRouter />
@@ -140,7 +146,10 @@ function App() {
               )}
             </Box>
           </Grid>
-          <Grid item xs>
+          <Grid
+            item
+            xs
+          >
             <Footer />
           </Grid>
         </Grid>

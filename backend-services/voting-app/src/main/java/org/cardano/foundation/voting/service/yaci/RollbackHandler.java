@@ -2,7 +2,6 @@ package org.cardano.foundation.voting.service.yaci;
 
 import com.bloxbean.cardano.yaci.core.model.Block;
 import com.bloxbean.cardano.yaci.core.model.Era;
-import com.bloxbean.cardano.yaci.core.model.HeaderBody;
 import com.bloxbean.cardano.yaci.core.protocol.chainsync.messages.Point;
 import com.bloxbean.cardano.yaci.helper.BlockSync;
 import com.bloxbean.cardano.yaci.helper.listener.BlockChainDataListener;
@@ -77,6 +76,7 @@ public class RollbackHandler {
             }
 
         });
+
         return blockSync;
     }
 

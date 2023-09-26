@@ -149,7 +149,7 @@ public class VoteResource {
                         });
     }
 
-    @RequestMapping(value = "/receipt/{maybeEventId}/{categoryId}", method = GET, produces = "application/json")
+    @RequestMapping(value = "/receipt/{eventId}/{categoryId}", method = GET, produces = "application/json")
     @Timed(value = "resource.vote.receipt.jwt", histogram = true)
     public ResponseEntity<?> getVoteReceipt(@PathVariable(value = "eventId", required = false) Optional<String> maybeEventId,
                                             @PathVariable("categoryId") String categoryId,
@@ -200,7 +200,7 @@ public class VoteResource {
     }
 
     @RequestMapping(value = "/vote-changing-available/{eventId}/{voteId}", method = HEAD, produces = "application/json")
-    @Timed(value = "resource.voteId.receipt", histogram = true)
+    @Timed(value = "resource.vote.vote.changing.available", histogram = true)
     public ResponseEntity<?> isVoteChangingAvailable(@PathVariable(value = "eventId", required = false) Optional<String> maybeEventId,
                                                      @PathVariable("voteId") String voteId,
                                                      Authentication authentication) {

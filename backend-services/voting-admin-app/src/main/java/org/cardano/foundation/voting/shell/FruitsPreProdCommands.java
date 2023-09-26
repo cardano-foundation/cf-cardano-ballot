@@ -41,9 +41,9 @@ public class FruitsPreProdCommands {
 
         CreateEventCommand createEventCommand = CreateEventCommand.builder()
                 .id(EVENT_NAME + "_" + shortUUID(4))
-                .startEpoch(Optional.of(95))
+                .startEpoch(Optional.of(97))
                 .endEpoch(Optional.of(105))
-                .snapshotEpoch(Optional.of(94))
+                .snapshotEpoch(Optional.of(96))
                 .proposalsRevealEpoch(Optional.of(106))
                 .votingPowerAsset(Optional.of(ADA))
                 .organisers("IOG")

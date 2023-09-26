@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.53](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.52...v0.2.53) (2023-09-26)
+
+
+### Features
+
+* cip1694 FRUITS_CF62 ([7ecf234](https://github.com/cardano-foundation/cf-cardano-ballot/commit/7ecf2341e4824ba3cb7425caefc4998bbbe30e22))
+
 ## [0.2.52](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.51...v0.2.52) (2023-09-26)
 
 

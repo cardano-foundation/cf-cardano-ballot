@@ -213,9 +213,9 @@ const Nominees = () => {
       const requestVoteObject = await signMessagePromisified(canonicalVoteInput);
 
       eventBus.publish('showToast', 'Vote submitted');
-      await castAVoteWithDigitalSignature(requestVoteObject);
       toggleConfirmVoteModal();
-
+      await castAVoteWithDigitalSignature(requestVoteObject);
+      eventBus.publish('showToast', 'Vote submitted successfully');
       if (session && !tokenIsExpired(session?.expiresAt)){
         await getVoteReceipt(categoryId, session?.accessToken)
             .then((r) => {
@@ -226,8 +226,9 @@ const Nominees = () => {
                 console.log(`Failed to fetch event, ${parseError(e.message)}`);
               }
             });
+      } else {
+        eventBus.publish('openLoginModal');
       }
-      eventBus.publish('showToast', 'Vote submitted successfully');
     } catch (e) {
       eventBus.publish('showToast', parseError(e.message), 'error');
     }
@@ -1258,15 +1259,17 @@ const Nominees = () => {
                       {receipt?.merkleProof ? JSON.stringify(receipt?.merkleProof || '', null, 4) : 'Not available yet'}
                     </Typography>
                   </Box>
-                  <CustomButton
-                      styles={{
-                        background: '#ACFCC5',
-                        color: '#03021F',
-                        width: 'auto',
-                      }}
-                      label="Verify vote proof"
-                      onClick={verifyVoteProof}
-                  />
+                  {
+                    receipt?.merkleProof ? <CustomButton
+                        styles={{
+                          background: '#ACFCC5',
+                          color: '#03021F',
+                          width: 'auto',
+                        }}
+                        label="Verify vote proof"
+                        onClick={verifyVoteProof}
+                    /> : null
+                  }
                 </Box>
               </AccordionDetails>
             </Accordion>

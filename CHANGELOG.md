@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.52](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.51...v0.2.52) (2023-09-26)
+
+
+### Features
+
+* ability to disable snapshot check as an application parameter. ([#319](https://github.com/cardano-foundation/cf-cardano-ballot/issues/319)) ([412123c](https://github.com/cardano-foundation/cf-cardano-ballot/commit/412123c15a5382b62ab2e634e90400be568f06c6))
+
 ## [0.2.51](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.50...v0.2.51) (2023-09-26)
 
 

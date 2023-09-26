@@ -9,7 +9,7 @@ import { i18n } from 'i18n';
 const Footer: React.FC = () => {
   return (
     <Box
-      mt={5}
+      mt={1}
       textAlign="center"
       className={styles.footer}
     >

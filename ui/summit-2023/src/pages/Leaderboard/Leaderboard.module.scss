@@ -1,15 +1,4 @@
 .leaderboard {
-  .title {
-    color: var(--color-dark-grey);
-    font-size: 32px !important;
-    font-style: normal;
-    font-weight: 600 !important;
-    line-height: normal;
-    ::first-letter {
-      text-transform: uppercase;
-    }
-  }
-
   .description {
     max-height: 110px;
     margin-bottom: 40px !important;
@@ -40,7 +29,7 @@
   }
 
   .proposalRect {
-    width: 15px;
+    width: 7px;
     height: 60px;
     border-radius: 4px;
     &[data-proposal='AMBASSADOR'] {
@@ -66,6 +55,9 @@
     }
     &[data-proposal='MOST_IMPACTFUL_SSPO'] {
       background: #056122;
+    }
+    &[data-proposal='NFT_PROJECTS'] {
+      background: #ad0ec5;
     }
     &[data-proposal='SSI'] {
       background: #daeefb;

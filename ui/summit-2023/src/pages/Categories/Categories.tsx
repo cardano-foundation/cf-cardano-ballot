@@ -14,6 +14,7 @@ import {
   Box,
   CardActions,
   Tooltip,
+  Hidden,
 } from '@mui/material';
 import checkMark from '../../common/resources/images/checkmark-white.png';
 import labelVoted from '../../common/resources/images/checkmark-green.png';
@@ -99,12 +100,13 @@ const Categories = () => {
                 <Fade in={isVisible}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <Card
-                      style={{
+                      sx={{
                         height: 'auto',
-                        width: '414px',
+                        width: { xs: '380px', sm: '414px' },
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
+                        borderRadius: '16px',
                       }}
                     >
                       <CardActionArea
@@ -383,47 +385,46 @@ const Categories = () => {
     <div
       data-testid="categories-page"
       className={styles.categories}
-      style={{ padding: isBigScreen ? '0px' : '0px 150px' }}
+      style={{ padding: isBigScreen ? '0px' : '0px 10px' }}
     >
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginTop: '50px',
-          marginBottom: 20,
-        }}
+      <Grid
+        container
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
       >
-        <Typography
-          variant="h2"
-          fontSize={{
-            xs: '28px',
-            md: '48px',
-          }}
-          lineHeight={{
-            xs: '28px',
-            md: '32px',
-          }}
-          sx={{
-            color: '#24262E',
-            fontStyle: 'normal',
-            fontWeight: '600',
-          }}
-        >
-          Categories
-        </Typography>
-
-        {!isMobile && (
-          <div>
+        <Grid item>
+          <Typography
+            variant="h2"
+            fontSize={{
+              xs: '28px',
+              md: '32px',
+              lg: '48px',
+            }}
+            lineHeight={{
+              xs: '28px',
+              md: '32px',
+            }}
+            sx={{
+              color: '#24262E',
+              fontStyle: 'normal',
+              fontWeight: '600',
+            }}
+          >
+            Categories
+          </Typography>
+        </Grid>
+        <Grid item>
+          <Hidden smDown>
             <IconButton onClick={() => handleListView('grid')}>
               <ViewModuleIcon />
             </IconButton>
             <IconButton onClick={() => handleListView('list')}>
               <ViewListIcon />
             </IconButton>
-          </div>
-        )}
-      </div>
+          </Hidden>
+        </Grid>
+      </Grid>
 
       <Box marginY={10}>
         {isMobile || listView === 'grid' ? renderResponsiveGrid(categories) : renderResponsiveList(categories)}

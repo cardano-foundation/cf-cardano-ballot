@@ -47,6 +47,7 @@ const Header: React.FC = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isTablet = useMediaQuery(theme.breakpoints.down('md'));
   const walletIsVerified = useSelector((state: RootState) => state.user.walletIsVerified);
 
   const { stakeAddress, isConnected, disconnect, connect, dAppConnect, meerkatAddress, initDappConnect, signMessage } =
@@ -355,13 +356,15 @@ const Header: React.FC = () => {
         style={{ background: 'transparent', boxShadow: 'none', color: 'black' }}
       >
         <Toolbar>
-          {isMobile ? (
+          {isTablet ? (
             <>
-              <img
-                src="/static/cardano-ballot.png"
-                alt="Cardano Logo"
-                style={{ height: isMobile ? '29px' : '40px' }}
-              />
+              <NavLink to="/">
+                <img
+                  src="/static/cardano-ballot.png"
+                  alt="Cardano Logo"
+                  style={{ height: isMobile ? '29px' : '40px' }}
+                />
+              </NavLink>
               <div style={{ flexGrow: 1 }}></div>
               <IconButton
                 edge="end"

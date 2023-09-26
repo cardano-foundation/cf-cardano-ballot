@@ -4,12 +4,13 @@
   display: flex !important;
   flex-direction: column !important;
   margin: 20px !important;
+  min-width: 340px;
   background-color: white;
 
   .guideTitle {
     color: var(--color-dark-grey);
     font-size: 24px !important;
-    font-weight: 600 !important;
+    font-weight: 400 !important;
     line-height: 28px !important;
     letter-spacing: 0em !important;
     margin-bottom: 20px;

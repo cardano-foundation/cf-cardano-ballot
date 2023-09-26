@@ -61,17 +61,30 @@ const Leaderboard = () => {
       data-testid="leaderboard-page"
       className={styles.leaderboard}
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginTop: '20px',
+          marginBottom: 20,
+        }}
+      >
         <Typography
-          className={styles.title}
           variant="h2"
           fontSize={{
             xs: '28px',
             md: '32px',
+            lg: '48px',
           }}
           lineHeight={{
             xs: '28px',
             md: '32px',
+          }}
+          sx={{
+            color: '#24262E',
+            fontStyle: 'normal',
+            fontWeight: '600',
           }}
         >
           Leaderboard
@@ -187,7 +200,7 @@ const Leaderboard = () => {
                   >
                     <Grid
                       container
-                      spacing={2}
+                      spacing={1}
                       key={id}
                     >
                       <Grid

@@ -25,38 +25,38 @@
   "userGuide": {
     "title": "User Guide",
     "requirements": {
-      "title": "Requirements to submit votes using the Cardano Ballot",
+      "title": "To submit votes using Cardano Ballot, you'll need",
       "sms": {
-        "title": "Ability to receive an SMS verification message.",
-        "hint": "A one-time SMS code to securely and quickly verify a Cardano Ballot account."
+        "title": "The ability to receive an SMS verification message.",
+        "hint": "Securely verify your account with a one-time SMS code for Cardano Ballot. Safety and simplicity combined."
       },
       "discord": {
         "title": "A supported Cardano wallet and/or browser extension.",
-        "hint": "You dont need to have any funds in your Wallet to use Cardano Ballot. View a list of supported Wallets."
+        "hint": "You don't need to have any funds in your wallet to use Cardano Ballot. View a list of supported wallets"
       }
     },
     "createVerify": {
-      "title": "Creating and verifying a Cardano Ballot account",
+      "title": "Creating and Verifying your Cardano Ballot Account",
       "steps": {
         "1": {
-          "title": "Click on “Connect Wallet” and choose a supported wallet from the list.",
-          "hint": "By default, only Flint wallet (Desktop/Mobile) as well as already installed supported wallets will be shown."
+          "title": "Click on 'Connect Wallet' and choose a supported wallet from the list.",
+          "hint": "By default, only Flint (Desktop/Mobile) and installed supported wallets will be shown."
         },
         "2": {
-          "title": "Verify the wallet using CIP8 message signing through SMS or Discord.",
-          "hint": "Capacity to choose between SMS and Discord verification to account for different user preferences."
+          "title": "Verify your wallet using CIP8 message signing through SMS or Discord.",
+          "hint": "Seamless wallet verification with CIP8 message signing via SMS or Discord. Protect your Cardano Ballot account effortlessly."
         }
       }
     },
     "submitVote": {
-      "title": "How to submit a vote on the Cardano Ballot",
+      "title": "How to submit a vote on Cardano Ballot",
       "steps": {
-        "1": "Go to the Cardano Summit Awards categories.",
-        "2": "To see shortlisted nominees, click “View Nominees” on each category tile.",
-        "3": "Review the nominees of a specific category and select the one you want to vote for.",
-        "4": "Click on “Vote for Nominee”.",
-        "5": "To proceed with the voting, select “Sign with Wallet”.",
-        "6": "Click on “Submit Vote” to complete the process."
+        "1": "Navigate to Cardano Ballot's category section.",
+        "2": "Scroll through the proposed voting categories.",
+        "3": "To vote in a category, click on 'View nominees'.",
+        "4": "Review the nominees and click on 'Vote for nominee'.",
+        "5": "To finalize your vote, select 'Sign with wallet'.",
+        "6": "Click on 'Submit your vote' to complete the process."
       }
     }
   },

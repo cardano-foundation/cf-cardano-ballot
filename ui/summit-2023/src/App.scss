@@ -1,27 +1,29 @@
 body,
 html,
-#root,
-.App {
+#root {
   margin: 0;
 }
 
 body {
   font-family: 'Roboto', sans-serif;
   background-color: #f5f9ff !important;
+  background-image: url("./common/resources/images/home-graphic-bg-bottom.svg");
+  background-repeat: no-repeat;
+  background-position: right;
+  background-size: contain;
+  height: 99vh;
+  @media only screen and (max-width: 1080px) {
+    background-image: none;
+  }
 }
 
-.App {
+.content {
+  margin: 2%;  
   display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  position: relative;
-}
-
-.main-content {
-  flex: 1;
-  display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+  min-height: 71vh;
+
 }
 
 .container {
@@ -32,28 +34,10 @@ body {
 
 .home-graphic-bg-top {
   position: absolute;
-  width: 750px;
-  height: 750px;
   left: -12.37px;
   top: -22%;
   border-radius: 100px;
   transform: rotate(1.27deg);
-  opacity: 0.6;
-  z-index: -1;
-
-  @media (max-width: 420px) {
-    display: none;
-  }
-}
-
-.home-graphic-bg-bottom {
-  position: absolute;
-  width: 850px;
-  height: 700px;
-  right: -4.37%;
-  top: 10%;
-  border-radius: 100px;
-  transform: rotate(-6.73deg);
   opacity: 0.6;
   z-index: -1;
 

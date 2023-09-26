@@ -93,6 +93,17 @@ spec:
                   name: user-verification-secrets
                   key: SALT
 
+            - name: DISCORD_BOT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: discord-secrets
+                  key: BACKEND_BASIC_AUTH_USER
+            - name: DISCORD_BOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: discord-secrets
+                  key: BACKEND_BASIC_AUTH_PASSWORD
+
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}

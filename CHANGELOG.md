@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.54](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.53...v0.2.54) (2023-09-26)
+
+
+### Bug Fixes
+
+* if stake bound check is disabled then we should not use account history API. ([#324](https://github.com/cardano-foundation/cf-cardano-ballot/issues/324)) ([2881f18](https://github.com/cardano-foundation/cf-cardano-ballot/commit/2881f18d4714ceff3a6b90aa596a0f6d658e7453))
+
 ## [0.2.53](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.52...v0.2.53) (2023-09-26)
 
 

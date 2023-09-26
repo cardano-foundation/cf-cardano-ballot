@@ -251,8 +251,8 @@ jobs:
           REACT_APP_VOTING_APP_SERVER_URL: https://api.dev.cf-cip1694-preprod.eu-west-1.metadata.dev.cf-deployments.org
           REACT_APP_VOTING_LEDGER_FOLLOWER_APP_SERVER_URL: https://follower-api.dev.cf-cip1694-preprod.eu-west-1.metadata.dev.cf-deployments.org
           REACT_APP_VOTING_VERIFICATION_APP_SERVER_URL: https://verification-api.dev.cf-cip1694-preprod.eu-west-1.metadata.dev.cf-deployments.org
-          REACT_APP_EVENT_ID: FRUITS_9172
-          REACT_APP_CATEGORY_ID: FRUITS_9172
+          REACT_APP_EVENT_ID: FRUITS_CF62
+          REACT_APP_CATEGORY_ID: FRUITS_CF62
           ARTIFACT_VERSION: ${{needs.build-version.outputs.ARTIFACT_VERSION}}-preprod
         with:
           context: ui/cip-1694

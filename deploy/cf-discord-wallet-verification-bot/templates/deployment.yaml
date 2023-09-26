@@ -64,10 +64,6 @@ spec:
             - name: FRONTEND_URL
               value: {{ .Values.frontendUrl }}
 
-          ports:
-            - name: http
-              containerPort: {{ .Values.service.port }}
-              protocol: TCP
 #          livenessProbe:
 #            httpGet:
 #              path: /

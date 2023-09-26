@@ -496,7 +496,7 @@ const Nominees = () => {
                         <Typography
                           className="nominee-title"
                           variant="h4"
-                          sx={{ mb: 1, fontWeight: 'bold' }}
+                          sx={{ mb: 1, fontWeight: 'bold', wordWrap: 'break-word', width: '260px' }}
                         >
                           {nominee.presentationName}
                         </Typography>

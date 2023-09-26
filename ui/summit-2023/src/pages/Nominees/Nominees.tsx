@@ -215,6 +215,18 @@ const Nominees = () => {
       eventBus.publish('showToast', 'Vote submitted');
       await castAVoteWithDigitalSignature(requestVoteObject);
       toggleConfirmVoteModal();
+
+      if (session && !tokenIsExpired(session?.expiresAt)){
+        await getVoteReceipt(categoryId, session?.accessToken)
+            .then((r) => {
+              dispatch(setVoteReceipt({ categoryId: categoryId, receipt: r }));
+            })
+            .catch((e) => {
+              if (process.env.NODE_ENV === 'development') {
+                console.log(`Failed to fetch event, ${parseError(e.message)}`);
+              }
+            });
+      }
       eventBus.publish('showToast', 'Vote submitted successfully');
     } catch (e) {
       eventBus.publish('showToast', parseError(e.message), 'error');

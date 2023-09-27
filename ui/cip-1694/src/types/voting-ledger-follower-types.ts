@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-// Generated using typescript-generator version 3.2.1263 on 2023-09-20 14:24:08.
+// Generated using typescript-generator version 3.2.1263 on 2023-09-27 14:11:13.
 
 export interface Either<L, R> extends Value<R>, Serializable {
     left: L;
@@ -10,10 +10,9 @@ export interface Either<L, R> extends Value<R>, Serializable {
 
 export interface Account {
     stakeAddress: string;
-    accountStatus: AccountStatus;
     epochNo: number;
-    votingPower?: string;
-    votingPowerAsset?: VotingPowerAsset;
+    votingPower: string;
+    votingPowerAsset: VotingPowerAsset;
     network: CardanoNetwork;
 }
 
@@ -160,14 +159,14 @@ export interface EventPresentation {
     categories: CategoryPresentation[];
     active: boolean;
     started: boolean;
-    notStarted: boolean;
-    allowVoteChanging: boolean;
-    commitmentsWindowOpen: boolean;
-    proposalsReveal: boolean;
-    finished: boolean;
-    highLevelEventResultsWhileVoting: boolean;
     highLevelCategoryResultsWhileVoting: boolean;
     categoryResultsWhileVoting: boolean;
+    highLevelEventResultsWhileVoting: boolean;
+    proposalsReveal: boolean;
+    commitmentsWindowOpen: boolean;
+    notStarted: boolean;
+    finished: boolean;
+    allowVoteChanging: boolean;
 }
 
 export interface EventPresentationBuilder {
@@ -373,8 +372,8 @@ export interface Problem {
     type: URI;
     parameters: { [index: string]: any };
     status: StatusType;
-    title: string;
     detail: string;
+    title: string;
 }
 
 export interface Serializable {
@@ -398,9 +397,9 @@ export interface StatusType {
 }
 
 export interface Value<T> extends Iterable<T> {
+    singleValued: boolean;
     empty: boolean;
     orNull: T;
-    singleValued: boolean;
     async: boolean;
     lazy: boolean;
 }
@@ -432,8 +431,6 @@ export interface Comparable<T> {
 
 export interface Iterable<T> {
 }
-
-export type AccountStatus = "ELIGIBLE" | "NOT_ELIGIBLE";
 
 export type CardanoNetwork = "MAIN" | "PREPROD" | "PREVIEW" | "DEV";
 

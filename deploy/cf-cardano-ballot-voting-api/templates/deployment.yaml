@@ -124,7 +124,7 @@ spec:
             {{- end }}
 
             - name: LEADERBOARD_FORCE_RESULTS
-              value: {{ $.Values.leaderboardForceResults }}
+              value: {{ $.Values.leaderboardForceResults | quote }}
 
           ports:
             - name: http

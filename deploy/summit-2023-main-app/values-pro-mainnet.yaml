@@ -28,6 +28,7 @@ cf-summit-2023-voting-api:
   enabled: true
   values:
     useJwt: true
+    leaderboardForceResults: "false"
     resources:
       limits:
         cpu: 2

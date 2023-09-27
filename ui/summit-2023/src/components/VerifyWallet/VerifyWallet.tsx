@@ -135,9 +135,9 @@ const VerifyWallet = (props: VerifyWalletProps) => {
                 onError('Discord verification failed');
               }
             })
-            .catch((e) => onError(capitalizeFirstLetter(e.message)));
+            .catch((e) => onError(parseError(e.message)));
         })
-        .catch((e) => onError(capitalizeFirstLetter(e.message)));
+        .catch((e) => onError(parseError(e.message)));
     }
   };
 

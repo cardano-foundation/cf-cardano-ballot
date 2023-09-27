@@ -115,7 +115,7 @@ spec:
             - name: LEDGER_FOLLOWER_APP_URL
               value: {{ $.Values.ledgerFollowerAppUrl }}
 
-            {{- if $.Values.useJwt | default "false" | quote }}
+            {{- if $.Values.useJwt | default false }}
             - name: CARDANO_JWT_SECRET
               valueFrom:
                 secretKeyRef:

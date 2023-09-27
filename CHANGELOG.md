@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.57](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.56...v0.2.57) (2023-09-27)
+
+
+### Features
+
+* new PRE-PROD event. ([#333](https://github.com/cardano-foundation/cf-cardano-ballot/issues/333)) ([c6d71b7](https://github.com/cardano-foundation/cf-cardano-ballot/commit/c6d71b78f1250ea7ec56596c9b3da290b9517949))
+* **verification-app:** initial commmit ([c0e3118](https://github.com/cardano-foundation/cf-cardano-ballot/commit/c0e3118953c6e7f7b34bc9f3cc1da5b0923d0415))
+
+
+### Bug Fixes
+
+* disable verify wallet on event ends ([1e387f4](https://github.com/cardano-foundation/cf-cardano-ballot/commit/1e387f482835f3cce6cf625ef0ae565eef8cdc8e))
+* remove unnecessary debug ([9d5a7d4](https://github.com/cardano-foundation/cf-cardano-ballot/commit/9d5a7d4d6657ceb1cf79915679ed979db1526000))
+
 ## [0.2.56](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.55...v0.2.56) (2023-09-27)
 
 

@@ -61,8 +61,8 @@ export const VerifyModal = ({ opened, onConfirm }: VerifyModalProps) => {
           icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
         />
       );
-      setIsLoading(false);
     }
+    setIsLoading(false);
   }, [voteProof]);
 
   const handleNext = useCallback(() => {
@@ -124,7 +124,10 @@ export const VerifyModal = ({ opened, onConfirm }: VerifyModalProps) => {
         )}
 
         {activeSection === SECTIONS.CHOSE_EXPLORER && (
-          <ChoseExplorerSection setExplorer={setExplorer} explorer={explorer} />
+          <ChoseExplorerSection
+            setExplorer={setExplorer}
+            explorer={explorer}
+          />
         )}
       </DialogContent>
 
@@ -135,14 +138,9 @@ export const VerifyModal = ({ opened, onConfirm }: VerifyModalProps) => {
       >
         <Button
           variant="contained"
-          onClick={
-            activeSection === SECTIONS.VERIFY ? handleVerify : handleNext
-          }
+          onClick={activeSection === SECTIONS.VERIFY ? handleVerify : handleNext}
           className={cn(styles.verifyButton, { [styles.loading]: isLoading })}
-          disabled={
-            (activeSection === SECTIONS.VERIFY ? !voteProof : !explorer) ||
-            isLoading
-          }
+          disabled={(activeSection === SECTIONS.VERIFY ? !voteProof : !explorer) || isLoading}
         >
           {isLoading ? <Loader /> : ctas[activeSection]}
         </Button>

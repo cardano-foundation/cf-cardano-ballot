@@ -14,7 +14,7 @@ import { PhoneNumberCodeConfirmation, VerificationStarts } from '../../store/typ
 import { RootState } from '../../store';
 import { useLocation } from 'react-router-dom';
 import { CustomButton } from '../common/Button/CustomButton';
-import { capitalizeFirstLetter, getSignedMessagePromise, openNewTab, resolveCardanoNetwork } from '../../utils/utils';
+import { getSignedMessagePromise, openNewTab, resolveCardanoNetwork } from '../../utils/utils';
 import { SignedWeb3Request } from '../../types/voting-app-types';
 import { parseError } from 'common/constants/errors';
 

@@ -435,7 +435,7 @@ const Nominees = () => {
                             {shortenString(nominee.desc, 210)}
                           </Typography>
                         </Grid>
-                        {!categoryVoted ? (
+                        {!eventHasEnded && !categoryVoted ? (
                           <Grid
                             item
                             xs={2}
@@ -567,7 +567,7 @@ const Nominees = () => {
                           fullWidth={true}
                         />
 
-                        {!categoryVoted || !isConnected ? (
+                        {!eventHasEnded && !categoryVoted ? (
                           <CustomButton
                             styles={
                               isConnected

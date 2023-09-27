@@ -1,8 +1,8 @@
-import { VerifyVote } from "pages/VerifyVote/VerifyVote";
-import React from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { VerifyVote } from 'pages/VerifyVote/VerifyVote';
+import React from 'react';
+import { Navigate, Route, Routes } from 'react-router-dom';
 
-export const PAGE_PATH = "/";
+export const PAGE_PATH = '/';
 
 export const ROUTES = {
   MAIN: PAGE_PATH,

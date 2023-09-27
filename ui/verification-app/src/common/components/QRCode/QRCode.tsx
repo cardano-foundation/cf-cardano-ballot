@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useMemo } from "react";
-import QRCodeStyling, { Options } from "qr-code-styling";
+import React, { useEffect, useRef, useMemo } from 'react';
+import QRCodeStyling, { Options } from 'qr-code-styling';
 
 export interface QRCodeProps {
   /** Data to display as QR code */
@@ -12,7 +12,7 @@ const defaultOptions: Options = {
   width: 200,
   height: 200,
   cornersDotOptions: {
-    type: "square",
+    type: 'square',
   },
 };
 
@@ -30,7 +30,7 @@ export const QRCode = ({ data, options }: QRCodeProps): React.ReactElement => {
   return (
     <div
       data-testid="qr-code"
-      style={{ overflow: "hidden", display: "flex" }}
+      style={{ overflow: 'hidden', display: 'flex' }}
       ref={ref}
     />
   );

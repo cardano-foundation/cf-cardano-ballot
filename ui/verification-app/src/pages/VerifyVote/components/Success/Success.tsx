@@ -1,6 +1,6 @@
-import React from "react";
-import Dialog from "@mui/material/Dialog";
-import { QRCode } from "common/components/QRCode/QRCode";
+import React from 'react';
+import Dialog from '@mui/material/Dialog';
+import { QRCode } from 'common/components/QRCode/QRCode';
 
 type SuccessProps = {
   opened: boolean;
@@ -15,14 +15,14 @@ export const Success = ({ opened }: SuccessProps) => {
       open={opened}
       maxWidth="xl" // To set width more then 600px
       // TODO: use classes instead
-      sx={{ "& .MuiBackdrop-root": { bgcolor: "#F5F9FF" } }}
+      sx={{ '& .MuiBackdrop-root': { bgcolor: '#F5F9FF' } }}
       PaperProps={{
         sx: {
-          width: "450px",
-          height: "607px",
-          borderRadius: "16px",
-          bgcolor: "#F5F9FF",
-          boxShadow: "2px 5px 50px 0px rgba(57, 72, 108, 0.20)",
+          width: '450px',
+          height: '607px',
+          borderRadius: '16px',
+          bgcolor: '#F5F9FF',
+          boxShadow: '2px 5px 50px 0px rgba(57, 72, 108, 0.20)',
         },
       }}
     >

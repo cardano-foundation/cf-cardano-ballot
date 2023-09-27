@@ -244,6 +244,7 @@ const Nominees = () => {
   };
 
   const handleNomineeButton = (nominee) => {
+
     if (eventHasEnded) return;
 
     if (isConnected) {
@@ -275,7 +276,7 @@ const Nominees = () => {
   const renderNomineeButtonLabel = () => {
     if (isConnected) {
       if (!walletIsVerified) {
-        return 'Verify your Wallet';
+        return 'Verify your wallet';
       } else {
         return 'Vote for nominee';
       }

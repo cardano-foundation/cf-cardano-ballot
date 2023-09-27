@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.56](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.55...v0.2.56) (2023-09-27)
+
+
+### Bug Fixes
+
+* disable some caches to avoid bugs. ([#329](https://github.com/cardano-foundation/cf-cardano-ballot/issues/329)) ([5b185c9](https://github.com/cardano-foundation/cf-cardano-ballot/commit/5b185c99f0a825500f5ca9f61f0852b89627dc54))
+
 ## [0.2.55](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.54...v0.2.55) (2023-09-26)
 
 

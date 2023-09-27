@@ -41,13 +41,13 @@ public class CardanoSummit2023PreProdCommands {
 
         log.info("Creating CF-Summit 2023 on a PRE-PROD network...");
 
-        long startSlot = 38754987;
-        long endSlot = startSlot + (2630000L / 2);
+        long startSlot = 40127992;
+        long endSlot = startSlot + (604800 * 2); // two weeks since 604800 is 1 week in seconds
 
         CreateEventCommand createEventCommand = CreateEventCommand.builder()
                 .id(EVENT_NAME + "_" + shortUUID(4))
                 .startSlot(Optional.of(startSlot))
-                .endSlot(Optional.of(endSlot)) // 30 days / 2 = 15 days in slots
+                .endSlot(Optional.of(endSlot))
                 .votingPowerAsset(Optional.empty())
                 .organisers("CF")
                 .votingEventType(USER_BASED)
@@ -56,7 +56,7 @@ public class CardanoSummit2023PreProdCommands {
                 .highLevelEventResultsWhileVoting(true)
                 .highLevelCategoryResultsWhileVoting(true)
                 .categoryResultsWhileVoting(false)
-                .proposalsRevealSlot(Optional.of(endSlot + 604800)) // 604800 = 1 week in seconds
+                .proposalsRevealSlot(Optional.of(endSlot + 43200))
                 .build();
 
         l1SubmissionService.submitEvent(createEventCommand);
@@ -565,37 +565,7 @@ public class CardanoSummit2023PreProdCommands {
                 .name("Option 4")
                 .build();
 
-        Proposal n5 = Proposal.builder()
-                .id("a355c7f7-c3be-46c5-bcbf-52e628323c88")
-                .name("Option 5")
-                .build();
-
-        Proposal n6 = Proposal.builder()
-                .id("159fb64e-9613-4b5b-8618-a1c458cf9cf8")
-                .name("Option 6")
-                .build();
-
-        Proposal n7 = Proposal.builder()
-                .id("6e16dcb5-1c40-4149-abba-b9f0b5e4e1a9")
-                .name("Option 7")
-                .build();
-
-        Proposal n8 = Proposal.builder()
-                .id("b7cf09e8-ea41-448d-b53f-6fe70b6da3c1")
-                .name("Option 8")
-                .build();
-
-        Proposal n9 = Proposal.builder()
-                .id("15b4856e-f1f7-4bee-820b-d8f24cdff379")
-                .name("Option 9")
-                .build();
-
-        Proposal n10 = Proposal.builder()
-                .id("8c5296a6-a5ff-414c-b5e6-55ecf8b01f24")
-                .name("Option 10")
-                .build();
-
-        List<Proposal> allProposals = List.of(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10);
+        List<Proposal> allProposals = List.of(n1, n2, n3, n4);
 
         CreateCategoryCommand createCategoryCommand = CreateCategoryCommand.builder()
                 .id("SSI")

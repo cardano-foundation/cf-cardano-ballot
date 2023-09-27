@@ -87,7 +87,7 @@ cf-discord-wallet-verification-bot:
   values:
     image:
       tag: 11f6f15
-    backendBaseUrl: https://user-verification.{{ .Values.domain }}/
-    frontendUrl: https://{{ .Values.domain }}/
+    backendBaseUrl: https://user-verification.{{ .Values.domain }}
+    frontendUrl: https://{{ .Values.domain }}
     diagnosticMode:
       enabled: false

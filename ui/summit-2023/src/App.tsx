@@ -28,8 +28,8 @@ function App() {
   const [termsAndConditionsChecked] = useLocalStorage(CB_TERMS_AND_PRIVACY, false);
   const [openTermDialog, setOpenTermDialog] = useState(false);
   const { isConnected, stakeAddress } = useCardano({ limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK) });
-  const walletIsVerified = useSelector((state: RootState) => state.user.walletIsVerified);
   const session = getUserInSession();
+  const isExpired = tokenIsExpired(session?.expiresAt);
   const eventHasEnded = hasEventEnded(eventCache?.eventEndDate)
 
   const dispatch = useDispatch();
@@ -63,7 +63,7 @@ function App() {
       }
 
       if (session) {
-        const isExpired = tokenIsExpired(session?.expiresAt);
+
         dispatch(setWalletIsLoggedIn({ isLoggedIn: !isExpired }));
         if (!isExpired) {
           getUserVotes(session?.accessToken)
@@ -78,9 +78,6 @@ function App() {
         }
       }
 
-      if (((isConnected && walletIsVerified) || (isConnected || eventHasEnded)) && tokenIsExpired(session?.expiresAt)) {
-        eventBus.publish('openLoginModal');
-      }
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') {
         console.log(`Failed to fetch event, ${error?.info || error?.message || error?.toString()}`);
@@ -90,15 +87,8 @@ function App() {
   }, [dispatch]);
 
   useEffect(() => {
-    console.log('useeEffect fetchEvent');
     fetchEvent();
   }, [fetchEvent, stakeAddress]);
-
-  useEffect(() => {
-    if (((isConnected && walletIsVerified) || (isConnected || eventHasEnded)) && (!session || tokenIsExpired(session?.expiresAt))) {
-      eventBus.publish('openLoginModal');
-    }
-  }, [stakeAddress, session]);
 
   useEffect(() => {
     setOpenTermDialog(!termsAndConditionsChecked);

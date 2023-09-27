@@ -33,7 +33,7 @@ import { getSlotNumber, getUserVotes } from 'common/api/voteService';
 import { buildCanonicalLoginJson, submitLogin } from 'common/api/loginService';
 import { saveUserInSession } from '../../../utils/session';
 import { setConnectedPeerWallet, setUserVotes, setWalletIsLoggedIn } from '../../../store/userSlice';
-import { copyToClipboard, getSignedMessagePromise, resolveCardanoNetwork } from '../../../utils/utils';
+import {copyToClipboard, getSignedMessagePromise, hasEventEnded, resolveCardanoNetwork} from '../../../utils/utils';
 import { Toast } from '../Toast/Toast';
 import { ToastType } from '../Toast/Toast.types';
 import { env } from 'common/constants/env';
@@ -63,6 +63,8 @@ const Header: React.FC = () => {
   const [toastMessage, setToastMessage] = useState('');
   const [toastType, setToastType] = useState<ToastType>('common');
   const [toastOpen, setToastOpen] = useState(false);
+  const eventCache = useSelector((state: RootState) => state.user.event);
+  const eventHasEnded = hasEventEnded(eventCache?.eventEndDate);
 
   const [cip45ModalIsOpen, setCip45ModalIsOpen] = useState<boolean>(false);
   const [startPeerConnect, setStartPeerConnect] = useState(false);
@@ -244,7 +246,7 @@ const Header: React.FC = () => {
   };
 
   const handleOpenVerify = () => {
-    if (!walletIsVerified && isConnected) {
+    if (isConnected && !walletIsVerified && !eventHasEnded) {
       setVerifyModalIsOpen(true);
     }
   };

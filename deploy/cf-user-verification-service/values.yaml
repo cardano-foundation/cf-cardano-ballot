@@ -30,6 +30,7 @@ nodeSelector: {}
 monitoring:
   enabled: true
 
+discordBotEventIdBinding: ""
 ledgerFollowerAppUrl: http://cf-cardano-ballot-ledger-follower-api-voting-ledger-follower-ap:9090
 corsAllowedOrigins: https://{{ .Values.domain }}
 dbSchema: user_verification

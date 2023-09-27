@@ -66,6 +66,7 @@ cf-user-verification-service:
   values:
     image:
       tag: 0.2.55
+    discordBotEventIdBinding: CF_SUMMIT_2023_TEST2
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
     corsAllowedOrigins: https://{{ .Values.domain }}
 
@@ -74,7 +75,7 @@ cf-summit-2023-ledger-follower-api:
   values:
     image:
       tag: 0.2.55
-    bindOnEventIds: CF_SUMMIT_2023_TEST2
+    bindOnEventIds: CF_SUMMIT_2023_TEST1,CF_SUMMIT_2023_TEST2,CF_SUMMIT_2023_TEST3
     yaci:
       startBlockHash: 6bb9228e3b746366e24f2681021d619395b850b34c2db020c4928285dcf7b0c2
       startSlotNumber: "103209875"

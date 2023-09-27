@@ -59,6 +59,7 @@ cf-user-verification-service:
   values:
     image:
       tag: 0.2.55
+    discordBotEventIdBinding: CF_SUMMIT_2023_3A33
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
     corsAllowedOrigins: https://{{ .Values.domain }},http://localhost:3000
 

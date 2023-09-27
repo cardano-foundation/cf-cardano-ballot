@@ -1,14 +1,14 @@
-import React, { MouseEvent } from "react";
-import cn from "classnames";
+import React, { MouseEvent } from 'react';
+import cn from 'classnames';
 import {
   Grid,
   Typography,
   ToggleButtonGroup,
   ToggleButton,
-} from "@mui/material";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import styles from "../ChoseExplorerSection/ChoceExplorerSection.module.scss";
-import { EXPLORERS } from "./utils";
+} from '@mui/material';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import styles from '../ChoseExplorerSection/ChoceExplorerSection.module.scss';
+import { EXPLORERS } from './utils';
 
 type ChoseExplorerSectionProps = {
   setExplorer: (explorer: string) => void;
@@ -23,8 +23,8 @@ export const ChoseExplorerSection = ({
     <ToggleButtonGroup
       disabled={false}
       sx={{
-        flexDirection: "column",
-        gap: "16px",
+        flexDirection: 'column',
+        gap: '16px',
       }}
       value={explorer}
       exclusive
@@ -37,9 +37,9 @@ export const ChoseExplorerSection = ({
       {EXPLORERS?.map((option) => (
         <ToggleButton
           sx={{
-            height: "55px",
-            borderRadius: "8px",
-            padding: "16px 24px",
+            height: '55px',
+            borderRadius: '8px',
+            padding: '16px 24px',
           }}
           value={option.url}
           className={cn(styles.optionCard, {
@@ -48,18 +48,18 @@ export const ChoseExplorerSection = ({
           key={option.label}
           data-testid="option-card"
         >
-          <Grid container display={"row"}>
+          <Grid container display={'row'}>
             <Grid item container xs>
               <Grid item>{option.icon}</Grid>
               <Typography
                 sx={{
-                  color: "#39486C",
+                  color: '#39486C',
                   fontsize: 16,
-                  fontFamily: "Roboto",
-                  fontWeight: "600",
-                  wordWrap: "break-word",
-                  textTransform: "none",
-                  "&:hover": { color: "#1D439B" },
+                  fontFamily: 'Roboto',
+                  fontWeight: '600',
+                  wordWrap: 'break-word',
+                  textTransform: 'none',
+                  '&:hover': { color: '#1D439B' },
                 }}
                 component="div"
               >
@@ -76,21 +76,21 @@ export const ChoseExplorerSection = ({
               {explorer === option.url ? (
                 <CheckCircleIcon
                   style={{
-                    color: "#1D439B",
-                    fontSize: "28px",
-                    margin: "-2px",
+                    color: '#1D439B',
+                    fontSize: '28px',
+                    margin: '-2px',
                   }}
                 />
               ) : (
                 <div
                   style={{
-                    boxSizing: "border-box",
-                    width: "23px",
-                    minWidth: "23px",
-                    height: "23px",
-                    minHeight: "23px",
-                    border: "1px solid #CCCCCC",
-                    borderRadius: "50%",
+                    boxSizing: 'border-box',
+                    width: '23px',
+                    minWidth: '23px',
+                    height: '23px',
+                    minHeight: '23px',
+                    border: '1px solid #CCCCCC',
+                    borderRadius: '50%',
                   }}
                 />
               )}

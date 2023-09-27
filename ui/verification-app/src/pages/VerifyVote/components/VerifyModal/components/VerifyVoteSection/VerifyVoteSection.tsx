@@ -1,7 +1,7 @@
-import React from "react";
-import cn from "classnames";
-import TextField from "@mui/material/TextField";
-import styles from "./VerifyVoteSection.module.scss";
+import React from 'react';
+import cn from 'classnames';
+import TextField from '@mui/material/TextField';
+import styles from './VerifyVoteSection.module.scss';
 
 type VerifyProps = {
   voteProof: string;

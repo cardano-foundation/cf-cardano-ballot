@@ -27,23 +27,32 @@ jobs:
         with:
           node-version: 18
 
-      - name: 🧘‍♀️ Download dependencies
+      - name: 🧘‍♀️ Download cip-1694 dependencies
         run: |
           cd ui/cip-1694
           npm i
 
-      - name: 🎳 Run tests
+      - name: 🎳 Run cip-1694 tests
         run: |
-          cd ui
-          cd cip-1694
+          cd ui/cip-1694
           npm run test --env=node
 
-      - name: 🎳 Build
+      - name: 🎳 Build cip-1694
         run: |
           cd ui/cip-1694
           npm run react-inject-env && npm run build
 
-#      - name: Upload build
-#        uses: actions/upload-artifact@v3
-#        with:
-#          path: ui/cip-1694/build
+      - name: 🧘‍♀️ Download verification-app dependencies
+        run: |
+          cd ui/verification-app
+          npm i
+
+      - name: 🎳 Run verification-app tests
+        run: |
+          cd ui/verification-app
+          npm run test --env=node
+
+      - name: 🎳 Build verification-app
+        run: |
+          cd ui/verification-app
+          npm run react-inject-env && npm run build

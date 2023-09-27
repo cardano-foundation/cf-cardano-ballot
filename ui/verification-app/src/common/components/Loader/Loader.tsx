@@ -1,8 +1,8 @@
-import React, { useLayoutEffect, useState } from "react";
-import { ReactComponent as Loader1 } from "common/resources/images/Loader1-icon.svg";
-import { ReactComponent as Loader2 } from "common/resources/images/Loader2-icon.svg";
-import { ReactComponent as Loader3 } from "common/resources/images/Loader3-icon.svg";
-import styles from "./Loader.module.scss";
+import React, { useLayoutEffect, useState } from 'react';
+import { ReactComponent as Loader1 } from 'common/resources/images/Loader1-icon.svg';
+import { ReactComponent as Loader2 } from 'common/resources/images/Loader2-icon.svg';
+import { ReactComponent as Loader3 } from 'common/resources/images/Loader3-icon.svg';
+import styles from './Loader.module.scss';
 
 const LoaderPieces = [
   <Loader1 className={styles.loader} key={1} />,

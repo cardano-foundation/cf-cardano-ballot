@@ -78,8 +78,6 @@ const Nominees = () => {
   const receipt = receipts && Object.keys(receipts).length && receipts[categoryId] ? receipts[categoryId] : undefined;
 
   const eventHasEnded = hasEventEnded(eventCache?.eventEndDate);
-  console.log('eventHasEnded');
-  console.log(eventHasEnded);
   const userVotes = useSelector((state: RootState) => state.user.userVotes);
 
   const categoryVoted = categoryAlreadyVoted(categoryId, userVotes);

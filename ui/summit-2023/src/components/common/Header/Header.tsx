@@ -64,6 +64,8 @@ const Header: React.FC = () => {
   const [toastType, setToastType] = useState<ToastType>('common');
   const [toastOpen, setToastOpen] = useState(false);
   const eventCache = useSelector((state: RootState) => state.user.event);
+  console.log('eventCache?.eventEndDate');
+  console.log(eventCache?.eventEndDate)
   const eventHasEnded = hasEventEnded(eventCache?.eventEndDate);
 
   const [cip45ModalIsOpen, setCip45ModalIsOpen] = useState<boolean>(false);

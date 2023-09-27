@@ -55,3 +55,9 @@ cf-cardano-ballot-ledger-follower-api:
       - name: follower-2
         enabled: true
         schemaName: follower_2
+
+cf-voting-verification-ui:
+  values:
+    image:
+      tag: 0.2.57
+

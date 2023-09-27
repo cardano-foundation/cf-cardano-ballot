@@ -104,20 +104,22 @@ const VerifyWallet = (props: VerifyWalletProps) => {
       phone.trim().replace(' ', ''),
       userStartsVerificationByStakeAddress.requestId,
       codes.join('')
-    ).then((response: PhoneNumberCodeConfirmation) => {
-      dispatch(setWalletIsVerified({ isVerified: response.verified }));
-      if (response.verified) {
-        onVerify();
-        reset();
-        setPhoneCodeIsBeenConfirming(false);
-      } else {
-        onError('SMS code not valid');
-        setPhoneCodeIsBeenConfirming(false);
-      }
-    }).catch(() => {
+    )
+      .then((response: PhoneNumberCodeConfirmation) => {
+        dispatch(setWalletIsVerified({ isVerified: response.verified }));
+        if (response.verified) {
+          onVerify();
+          reset();
+          setPhoneCodeIsBeenConfirming(false);
+        } else {
+          onError('SMS code not valid');
+          setPhoneCodeIsBeenConfirming(false);
+        }
+      })
+      .catch(() => {
         onError('SMS code verification failed');
         setPhoneCodeIsBeenConfirming(false);
-    });
+      });
   };
 
   const handleVerifyDiscord = async () => {

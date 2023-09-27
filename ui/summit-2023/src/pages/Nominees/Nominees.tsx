@@ -50,7 +50,7 @@ import {
   getSignedMessagePromise,
   hasEventEnded,
   resolveCardanoNetwork,
-  shortenString
+  shortenString,
 } from '../../utils/utils';
 import { buildCanonicalLoginJson, submitLogin } from 'common/api/loginService';
 import { getUserInSession, saveUserInSession, tokenIsExpired } from '../../utils/session';
@@ -205,8 +205,7 @@ const Nominees = () => {
   }, [isMobile]);
 
   const castVote = async (optionId: string) => {
-
-    if (eventHasEnded){
+    if (eventHasEnded) {
       eventBus.publish('showToast', 'The event already ended', 'error');
       return;
     }
@@ -245,7 +244,6 @@ const Nominees = () => {
   };
 
   const handleNomineeButton = (nominee) => {
-
     if (eventHasEnded) return;
 
     if (isConnected) {
@@ -261,7 +259,6 @@ const Nominees = () => {
   };
 
   const handleVoteNomineeButton = () => {
-
     if (eventHasEnded) return;
 
     if (isConnected) {

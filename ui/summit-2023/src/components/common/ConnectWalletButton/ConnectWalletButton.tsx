@@ -3,7 +3,7 @@ import { RootState } from '../../../store';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import { eventBus } from '../../../utils/EventBus';
 import { Avatar, Button } from '@mui/material';
-import {addressSlice, hasEventEnded, resolveCardanoNetwork, walletIcon} from '../../../utils/utils';
+import { addressSlice, hasEventEnded, resolveCardanoNetwork, walletIcon } from '../../../utils/utils';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { i18n } from '../../../i18n';

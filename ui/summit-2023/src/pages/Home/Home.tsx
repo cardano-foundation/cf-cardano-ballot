@@ -6,15 +6,15 @@ import './Home.scss';
 import { i18n } from '../../i18n';
 import { NavLink } from 'react-router-dom';
 import { CustomButton } from '../../components/common/Button/CustomButton';
-import {hasEventEnded} from '../../utils/utils';
-import {useSelector} from 'react-redux';
-import {RootState} from '../../store';
+import { hasEventEnded } from '../../utils/utils';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store';
 
 const Home: React.FC = () => {
-    const eventCache = useSelector((state: RootState) => state.user.event);
-    const eventHasEnded = hasEventEnded(eventCache?.eventEndDate);
+  const eventCache = useSelector((state: RootState) => state.user.event);
+  const eventHasEnded = hasEventEnded(eventCache?.eventEndDate);
 
-    return (
+  return (
     <Grid
       container
       spacing={1}

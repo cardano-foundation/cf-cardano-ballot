@@ -33,7 +33,7 @@ import { getSlotNumber, getUserVotes } from 'common/api/voteService';
 import { buildCanonicalLoginJson, submitLogin } from 'common/api/loginService';
 import { saveUserInSession } from '../../../utils/session';
 import { setConnectedPeerWallet, setUserVotes, setWalletIsLoggedIn } from '../../../store/userSlice';
-import {copyToClipboard, getSignedMessagePromise, hasEventEnded, resolveCardanoNetwork} from '../../../utils/utils';
+import { copyToClipboard, getSignedMessagePromise, hasEventEnded, resolveCardanoNetwork } from '../../../utils/utils';
 import { Toast } from '../Toast/Toast';
 import { ToastType } from '../Toast/Toast.types';
 import { env } from 'common/constants/env';
@@ -58,14 +58,14 @@ const Header: React.FC = () => {
 
   const [openAuthDialog, setOpenAuthDialog] = useState<boolean>(false);
   const [loginModal, toggleLoginModal] = useToggle(false);
+  const [loginModalMessage, setLoginModalMessage] = useState<string>('');
   const [verifyModalIsOpen, setVerifyModalIsOpen] = useState<boolean>(false);
   const [verifyDiscordModalIsReady, toggleVerifyDiscordModalIsOpen] = useToggle(false);
   const [toastMessage, setToastMessage] = useState('');
   const [toastType, setToastType] = useState<ToastType>('common');
   const [toastOpen, setToastOpen] = useState(false);
   const eventCache = useSelector((state: RootState) => state.user.event);
-  console.log('eventCache?.eventEndDate');
-  console.log(eventCache?.eventEndDate)
+
   const eventHasEnded = hasEventEnded(eventCache?.eventEndDate);
 
   const [cip45ModalIsOpen, setCip45ModalIsOpen] = useState<boolean>(false);
@@ -104,7 +104,9 @@ const Header: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const openLoginModal = () => {
+    const openLoginModal = (message?: string) => {
+      if (message && message.length) setLoginModalMessage(message);
+      else setLoginModalMessage('');
       toggleLoginModal();
     };
     eventBus.subscribe('openLoginModal', openLoginModal);
@@ -482,7 +484,9 @@ const Header: React.FC = () => {
           variant="h6"
           sx={{ color: '#24262E', fontSize: '18px', fontStyle: 'normal', fontWeight: '400', lineHeight: '22px' }}
         >
-          The session has expired. In order to see your votes, please, login again with your Wallet.
+          {loginModalMessage.length
+            ? loginModalMessage
+            : 'The session has expired. In order to see your votes, please, login again with your Wallet.'}
         </Typography>
         <CustomButton
           styles={{

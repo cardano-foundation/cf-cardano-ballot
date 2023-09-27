@@ -27,7 +27,8 @@ cf-summit-2023-ui:
 cf-summit-2023-voting-api:
   enabled: true
   values:
-    useJwt: true
+    useJwt: "true"
+    leaderboardForceResults: "true"
     instances:
       - name: passive
         active: "false"

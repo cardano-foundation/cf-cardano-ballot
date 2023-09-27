@@ -115,13 +115,16 @@ spec:
             - name: LEDGER_FOLLOWER_APP_URL
               value: {{ $.Values.ledgerFollowerAppUrl }}
 
-            {{- if $.Values.useJwt | default false }}
+            {{- if $.Values.useJwt | default "false" | quote }}
             - name: CARDANO_JWT_SECRET
               valueFrom:
                 secretKeyRef:
                   name: voting-app-secrets
                   key: JWT_SECRET
             {{- end }}
+
+            - name: LEADERBOARD_FORCE_RESULTS
+              value: {{ $.Values.leaderboardForceResults }}
 
           ports:
             - name: http

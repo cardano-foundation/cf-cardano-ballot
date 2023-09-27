@@ -231,8 +231,7 @@ const Header: React.FC = () => {
   const onConnectWallet = () => {
     setOpenAuthDialog(false);
     showToast('Wallet connected successfully');
-    // TODO: call backend and update
-    if (!walletIsVerified) {
+    if (!walletIsVerified && !eventHasEnded) {
       setVerifyModalIsOpen(true);
     }
   };
@@ -473,7 +472,7 @@ const Header: React.FC = () => {
       </Modal>
       <Modal
         id="login-modal"
-        isOpen={isConnected && walletIsVerified && loginModal}
+        isOpen={isConnected && loginModal}
         name="login-modal"
         title="Login with your Wallet"
         onClose={toggleLoginModal}

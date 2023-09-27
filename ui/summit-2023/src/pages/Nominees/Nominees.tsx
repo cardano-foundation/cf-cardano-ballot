@@ -337,7 +337,7 @@ const Nominees = () => {
   };
 
   const handleViewVoteReceipt = () => {
-    if (walletIsLoggedIn) {
+    if (isConnected) {
       viewVoteReceipt(true, true);
     } else {
       login();
@@ -662,7 +662,7 @@ const Nominees = () => {
           {summit2023Category.desc}
         </Typography>
 
-        {isConnected && walletIsVerified && categoryVoted ? (
+        {isConnected && categoryVoted ? (
           <Box
             sx={{
               display: 'flex',

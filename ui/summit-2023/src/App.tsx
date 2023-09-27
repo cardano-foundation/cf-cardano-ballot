@@ -19,17 +19,18 @@ import { TermsOptInModal } from 'components/LegalOptInModal';
 import { eventBus } from './utils/EventBus';
 import { CategoryContent } from './pages/Categories/Category.types';
 import SUMMIT2023CONTENT from 'common/resources/data/summit2023Content.json';
-import { resolveCardanoNetwork } from './utils/utils';
+import {hasEventEnded, resolveCardanoNetwork} from './utils/utils';
 import { parseError } from 'common/constants/errors';
 import { getUserVotes } from 'common/api/voteService';
 
 function App() {
   const eventCache = useSelector((state: RootState) => state.user.event);
-  const [storedValue, _] = useLocalStorage(CB_TERMS_AND_PRIVACY, false);
+  const [termsAndConditionsChecked] = useLocalStorage(CB_TERMS_AND_PRIVACY, false);
   const [openTermDialog, setOpenTermDialog] = useState(false);
   const { isConnected, stakeAddress } = useCardano({ limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK) });
   const walletIsVerified = useSelector((state: RootState) => state.user.walletIsVerified);
   const session = getUserInSession();
+  const eventHasEnded = hasEventEnded(eventCache?.eventEndDate)
 
   const dispatch = useDispatch();
   const fetchEvent = useCallback(async () => {
@@ -50,12 +51,14 @@ function App() {
       event.categories = joinedCategories;
       dispatch(setEventData({ event }));
 
-      if (isConnected) {
+      if (isConnected && !eventHasEnded) {
         try {
           const isVerified = await getIsVerified(env.EVENT_ID, stakeAddress);
           dispatch(setWalletIsVerified({ isVerified: isVerified.verified }));
         } catch (e) {
-          eventBus.publish('showToast', parseError(e.message), 'error');
+          if (process.env.NODE_ENV === 'development') {
+            console.log(e.message);
+          }
         }
       }
 
@@ -75,7 +78,7 @@ function App() {
         }
       }
 
-      if (isConnected && walletIsVerified && tokenIsExpired(session?.expiresAt)) {
+      if (((isConnected && walletIsVerified) || (isConnected || eventHasEnded)) && tokenIsExpired(session?.expiresAt)) {
         eventBus.publish('openLoginModal');
       }
     } catch (error: any) {
@@ -92,13 +95,13 @@ function App() {
   }, [fetchEvent, stakeAddress]);
 
   useEffect(() => {
-    if (isConnected && walletIsVerified && (!session || tokenIsExpired(session?.expiresAt))) {
+    if (((isConnected && walletIsVerified) || (isConnected || eventHasEnded)) && (!session || tokenIsExpired(session?.expiresAt))) {
       eventBus.publish('openLoginModal');
     }
-  }, [walletIsVerified, session]);
+  }, [stakeAddress, session]);
 
   useEffect(() => {
-    setOpenTermDialog(!storedValue);
+    setOpenTermDialog(!termsAndConditionsChecked);
   }, []);
 
   return (

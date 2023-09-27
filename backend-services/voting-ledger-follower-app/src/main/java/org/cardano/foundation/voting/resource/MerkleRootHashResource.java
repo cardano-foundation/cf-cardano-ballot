@@ -25,7 +25,7 @@ public class MerkleRootHashResource {
     @Timed(value = "resource.merkle_root_hash.find", histogram = true)
     public ResponseEntity<?> isValidMerkleRootHash(@PathVariable("eventId") String eventId,
                                                    @PathVariable("merkleRootHashHex") String merkleRootHashHex) {
-        var cacheControl = CacheControl.maxAge(1, MINUTES)
+        var cacheControl = CacheControl.noCache()
                 .noTransform()
                 .mustRevalidate();
 

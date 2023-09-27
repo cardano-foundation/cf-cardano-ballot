@@ -16,7 +16,6 @@ import org.zalando.problem.Problem;
 
 import java.util.Optional;
 
-import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 import static org.zalando.problem.Status.BAD_REQUEST;
 import static org.zalando.problem.Status.NOT_ACCEPTABLE;
@@ -117,7 +116,7 @@ public class VoteResource {
     @RequestMapping(value = "/receipt", method = GET, produces = "application/json")
     @Timed(value = "resource.vote.receipt.web3", histogram = true)
     public ResponseEntity<?> getVoteReceipt(Authentication authentication) {
-        var cacheControl = CacheControl.maxAge(1, MINUTES)
+        var cacheControl = CacheControl.noCache()
                 .noTransform()
                 .mustRevalidate();
 
@@ -154,7 +153,7 @@ public class VoteResource {
     public ResponseEntity<?> getVoteReceipt(@PathVariable(value = "eventId", required = false) Optional<String> maybeEventId,
                                             @PathVariable("categoryId") String categoryId,
                                             Authentication authentication) {
-        var cacheControl = CacheControl.maxAge(1, MINUTES)
+        var cacheControl = CacheControl.noCache()
                 .noTransform()
                 .mustRevalidate();
 

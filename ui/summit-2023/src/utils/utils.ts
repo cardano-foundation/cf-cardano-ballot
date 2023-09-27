@@ -57,7 +57,7 @@ const shortenString = (inputStr: string, x: number): string => {
 };
 
 const hasEventEnded = (eventDate: Date): boolean => {
-  if (!eventDate) return true;
+  if (!eventDate) return false;
   const currentDate = new Date();
   const eDate = new Date(eventDate);
   return currentDate.toISOString() > eDate.toISOString();

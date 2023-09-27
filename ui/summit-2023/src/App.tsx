@@ -51,11 +51,20 @@ function App() {
       event.categories = joinedCategories;
       dispatch(setEventData({ event }));
 
+      console.log('isConnected');
+      console.log(isConnected)
+      console.log('eventHasEnded');
+      console.log(eventHasEnded)
       if (isConnected && !eventHasEnded) {
         try {
+          console.log('lets verify')
           const isVerified = await getIsVerified(env.EVENT_ID, stakeAddress);
+          console.log('isVerified');
+          console.log(isVerified);
           dispatch(setWalletIsVerified({ isVerified: isVerified.verified }));
+          console.log('hey')
         } catch (e) {
+          console.log('error')
           if (process.env.NODE_ENV === 'development') {
             console.log(e.message);
           }
@@ -84,7 +93,7 @@ function App() {
       }
       eventBus.publish('showToast', parseError(error.message), 'error');
     }
-  }, [dispatch]);
+  }, [dispatch, stakeAddress]);
 
   useEffect(() => {
     fetchEvent();

@@ -221,6 +221,8 @@ const Nominees = () => {
       });
       const requestVoteObject = await signMessagePromisified(canonicalVoteInput);
 
+      console.log('requestVoteObject');
+      console.log(requestVoteObject);
       eventBus.publish('showToast', 'Vote submitted');
       toggleConfirmVoteModal();
       await castAVoteWithDigitalSignature(requestVoteObject);
@@ -239,7 +241,7 @@ const Nominees = () => {
         eventBus.publish('openLoginModal', 'Login to see your vote receipt');
       }
     } catch (e) {
-      eventBus.publish('showToast', parseError(e.message), 'error');
+      eventBus.publish('showToast', e.message && e.message.length ? parseError(e.message) : 'Action failed', 'error');
     }
   };
 

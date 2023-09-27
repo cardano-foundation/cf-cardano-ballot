@@ -210,7 +210,7 @@ const Header: React.FC = () => {
       };
 
       const onP2PConnect = (address: string, walletInfo?: IWalletInfo): void => {
-        console.log('onP2PConnect');
+       // TODO
       };
 
       initDappConnect(

@@ -236,7 +236,7 @@ const Nominees = () => {
             }
           });
       } else {
-        eventBus.publish('openLoginModal');
+        eventBus.publish('openLoginModal', 'Login to see your vote receipt');
       }
     } catch (e) {
       eventBus.publish('showToast', parseError(e.message), 'error');

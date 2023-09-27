@@ -123,6 +123,9 @@ spec:
                   key: JWT_SECRET
             {{- end }}
 
+            - name: LEADERBOARD_FORCE_RESULTS
+              value: {{ $.Values.leaderboardForceResults | quote }}
+
           ports:
             - name: http
               containerPort: {{ $.Values.service.port }}

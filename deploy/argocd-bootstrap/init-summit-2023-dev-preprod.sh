@@ -76,6 +76,14 @@ kubectl create secret -n cf-summit-2023 generic voting-app-secrets \
   -o yaml \
   | kubectl apply -f -
 
+## Discord Secrets
+kubectl create secret -n cf-summit-2023 generic discord-secrets \
+  --from-env-file=../../.keys/discord-secrets \
+  --save-config \
+  --dry-run=client \
+  -o yaml \
+  | kubectl apply -f -
+
 ## Git Hub deploy key
 kubectl create secret generic github-deploy-key \
   --save-config \
@@ -92,6 +100,8 @@ kubectl create secret -n cf-summit-2023 generic prometheus-alertmanager-secrets 
   --dry-run=client \
   -o yaml \
   | kubectl apply -f -
+
+exit 0
 
 #echo "Fetching helm dependencies for main app"
 helm dependency build

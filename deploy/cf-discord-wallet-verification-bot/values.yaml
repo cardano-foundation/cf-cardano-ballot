@@ -1,0 +1,24 @@
+replicaCount: 1
+
+image:
+  repository: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-discord-wallet-verification-bot
+  tag: "0.0.1"
+  pullPolicy: Always
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+diagnosticMode:
+  enabled: false
+
+backendBaseUrl: ""
+frontendUrl: ""

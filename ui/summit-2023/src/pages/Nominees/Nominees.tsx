@@ -207,6 +207,12 @@ const Nominees = () => {
   }, [isMobile]);
 
   const castVote = async (optionId: string) => {
+
+    if (eventHasEnded){
+      eventBus.publish('showToast', 'The event already ended', 'error');
+      return;
+    }
+
     try {
       const absoluteSlot = (await getSlotNumber())?.absoluteSlot;
       const canonicalVoteInput = buildCanonicalVoteInputJson({
@@ -241,6 +247,9 @@ const Nominees = () => {
   };
 
   const handleNomineeButton = (nominee) => {
+
+    if (eventHasEnded) return;
+
     if (isConnected) {
       if (!walletIsVerified) {
         eventBus.publish('openVerifyWalletModal');
@@ -254,6 +263,9 @@ const Nominees = () => {
   };
 
   const handleVoteNomineeButton = () => {
+
+    if (eventHasEnded) return;
+
     if (isConnected) {
       if (!walletIsVerified) {
         eventBus.publish('openVerifyWalletModal');

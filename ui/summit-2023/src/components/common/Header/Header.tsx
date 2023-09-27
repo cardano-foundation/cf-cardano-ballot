@@ -114,6 +114,7 @@ const Header: React.FC = () => {
 
   useEffect(() => {
     const openVerifyWalletModal = () => {
+      if (eventHasEnded) return;
       setVerifyModalIsOpen(true);
     };
     eventBus.subscribe('openVerifyWalletModal', openVerifyWalletModal);

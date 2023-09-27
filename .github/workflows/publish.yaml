@@ -295,7 +295,7 @@ jobs:
         uses: docker/build-push-action@v4
         env:
           REACT_APP_VERSION: ${{ needs.build-version.outputs.ARTIFACT_VERSION }}
-          REACT_APP_VOTING_VERIFICATION_APP_SERVER_URL: https://verification-api.dev.cf-summit-2023-preprod.eu-west-1.metadata.dev.cf-deployments.org
+          REACT_APP_VOTING_VERIFICATION_APP_SERVER_URL: https://verification-api.dev.cf-cip1694-preprod.eu-west-1.metadata.dev.cf-deployments.org
           REACT_APP_TARGET_NETWORK: PREPROD
         with:
           context: ui/cip-1694

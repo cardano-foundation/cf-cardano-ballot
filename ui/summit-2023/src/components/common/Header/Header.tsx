@@ -224,6 +224,7 @@ const Header: React.FC = () => {
   const onConnectWallet = () => {
     setOpenAuthDialog(false);
     showToast('Wallet connected successfully');
+    // TODO: call backend and update
     if (!walletIsVerified) {
       setVerifyModalIsOpen(true);
     }

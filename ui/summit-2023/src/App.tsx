@@ -84,11 +84,12 @@ function App() {
       }
       eventBus.publish('showToast', parseError(error.message), 'error');
     }
-  }, [dispatch, stakeAddress]);
+  }, [dispatch]);
 
   useEffect(() => {
+    console.log('useeEffect fetchEvent');
     fetchEvent();
-  }, [fetchEvent]);
+  }, [fetchEvent, stakeAddress]);
 
   useEffect(() => {
     if (isConnected && walletIsVerified && (!session || tokenIsExpired(session?.expiresAt))) {

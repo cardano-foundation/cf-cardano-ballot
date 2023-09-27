@@ -16,6 +16,7 @@ import { useLocation } from 'react-router-dom';
 import { CustomButton } from '../common/Button/CustomButton';
 import { capitalizeFirstLetter, getSignedMessagePromise, openNewTab, resolveCardanoNetwork } from '../../utils/utils';
 import { SignedWeb3Request } from '../../types/voting-app-types';
+import { parseError } from 'common/constants/errors';
 
 // TODO: env.
 const excludedCountries: MuiTelInputCountry[] | undefined = [];
@@ -89,7 +90,7 @@ const VerifyWallet = (props: VerifyWalletProps) => {
           setPhoneCodeIsBeenSending(false);
         })
         .catch((error) => {
-          onError(error.message);
+          onError(parseError(error.message));
           setPhoneCodeIsBeenSending(false);
         });
     }
@@ -110,9 +111,12 @@ const VerifyWallet = (props: VerifyWalletProps) => {
         reset();
         setPhoneCodeIsBeenConfirming(false);
       } else {
-        onError('SMS verification failed');
+        onError('SMS code not valid');
         setPhoneCodeIsBeenConfirming(false);
       }
+    }).catch(() => {
+        onError('SMS code verification failed');
+        setPhoneCodeIsBeenConfirming(false);
     });
   };
 

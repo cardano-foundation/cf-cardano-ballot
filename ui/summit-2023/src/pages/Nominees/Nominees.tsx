@@ -45,7 +45,13 @@ import {
   getUserVotes,
   getVoteReceipt,
 } from '../../common/api/voteService';
-import { copyToClipboard, getSignedMessagePromise, resolveCardanoNetwork, shortenString } from '../../utils/utils';
+import {
+  copyToClipboard,
+  getSignedMessagePromise,
+  hasEventEnded,
+  resolveCardanoNetwork,
+  shortenString
+} from '../../utils/utils';
 import { buildCanonicalLoginJson, submitLogin } from 'common/api/loginService';
 import { getUserInSession, saveUserInSession, tokenIsExpired } from '../../utils/session';
 import { setUserVotes, setVoteReceipt, setWalletIsLoggedIn } from '../../store/userSlice';
@@ -71,6 +77,9 @@ const Nominees = () => {
   const receipts = useSelector((state: RootState) => state.user.receipts);
   const receipt = receipts && Object.keys(receipts).length && receipts[categoryId] ? receipts[categoryId] : undefined;
 
+  const eventHasEnded = hasEventEnded(eventCache?.eventEndDate);
+  console.log('eventHasEnded');
+  console.log(eventHasEnded);
   const userVotes = useSelector((state: RootState) => state.user.userVotes);
 
   const categoryVoted = categoryAlreadyVoted(categoryId, userVotes);

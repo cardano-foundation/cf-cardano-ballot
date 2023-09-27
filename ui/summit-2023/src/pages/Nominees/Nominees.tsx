@@ -45,7 +45,13 @@ import {
   getUserVotes,
   getVoteReceipt,
 } from '../../common/api/voteService';
-import { copyToClipboard, getSignedMessagePromise, resolveCardanoNetwork, shortenString } from '../../utils/utils';
+import {
+  copyToClipboard,
+  getSignedMessagePromise,
+  hasEventEnded,
+  resolveCardanoNetwork,
+  shortenString,
+} from '../../utils/utils';
 import { buildCanonicalLoginJson, submitLogin } from 'common/api/loginService';
 import { getUserInSession, saveUserInSession, tokenIsExpired } from '../../utils/session';
 import { setUserVotes, setVoteReceipt, setWalletIsLoggedIn } from '../../store/userSlice';
@@ -71,6 +77,7 @@ const Nominees = () => {
   const receipts = useSelector((state: RootState) => state.user.receipts);
   const receipt = receipts && Object.keys(receipts).length && receipts[categoryId] ? receipts[categoryId] : undefined;
 
+  const eventHasEnded = hasEventEnded(eventCache?.eventEndDate);
   const userVotes = useSelector((state: RootState) => state.user.userVotes);
 
   const categoryVoted = categoryAlreadyVoted(categoryId, userVotes);
@@ -198,6 +205,11 @@ const Nominees = () => {
   }, [isMobile]);
 
   const castVote = async (optionId: string) => {
+    if (eventHasEnded) {
+      eventBus.publish('showToast', 'The event already ended', 'error');
+      return;
+    }
+
     try {
       const absoluteSlot = (await getSlotNumber())?.absoluteSlot;
       const canonicalVoteInput = buildCanonicalVoteInputJson({
@@ -224,7 +236,7 @@ const Nominees = () => {
             }
           });
       } else {
-        eventBus.publish('openLoginModal');
+        eventBus.publish('openLoginModal', 'Login to see your vote receipt');
       }
     } catch (e) {
       eventBus.publish('showToast', parseError(e.message), 'error');
@@ -232,6 +244,8 @@ const Nominees = () => {
   };
 
   const handleNomineeButton = (nominee) => {
+    if (eventHasEnded) return;
+
     if (isConnected) {
       if (!walletIsVerified) {
         eventBus.publish('openVerifyWalletModal');
@@ -245,6 +259,8 @@ const Nominees = () => {
   };
 
   const handleVoteNomineeButton = () => {
+    if (eventHasEnded) return;
+
     if (isConnected) {
       if (!walletIsVerified) {
         eventBus.publish('openVerifyWalletModal');
@@ -321,7 +337,7 @@ const Nominees = () => {
   };
 
   const handleViewVoteReceipt = () => {
-    if (walletIsLoggedIn) {
+    if (isConnected) {
       viewVoteReceipt(true, true);
     } else {
       login();
@@ -426,7 +442,7 @@ const Nominees = () => {
                             {shortenString(nominee.desc, 210)}
                           </Typography>
                         </Grid>
-                        {!categoryVoted ? (
+                        {!eventHasEnded && !categoryVoted ? (
                           <Grid
                             item
                             xs={2}
@@ -558,7 +574,7 @@ const Nominees = () => {
                           fullWidth={true}
                         />
 
-                        {!categoryVoted || !isConnected ? (
+                        {!eventHasEnded && !categoryVoted ? (
                           <CustomButton
                             styles={
                               isConnected
@@ -646,7 +662,7 @@ const Nominees = () => {
           {summit2023Category.desc}
         </Typography>
 
-        {isConnected && walletIsVerified && categoryVoted ? (
+        {isConnected && categoryVoted ? (
           <Box
             sx={{
               display: 'flex',

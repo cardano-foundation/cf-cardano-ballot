@@ -14,8 +14,9 @@ import { PhoneNumberCodeConfirmation, VerificationStarts } from '../../store/typ
 import { RootState } from '../../store';
 import { useLocation } from 'react-router-dom';
 import { CustomButton } from '../common/Button/CustomButton';
-import { capitalizeFirstLetter, getSignedMessagePromise, openNewTab, resolveCardanoNetwork } from '../../utils/utils';
+import { getSignedMessagePromise, openNewTab, resolveCardanoNetwork } from '../../utils/utils';
 import { SignedWeb3Request } from '../../types/voting-app-types';
+import { parseError } from 'common/constants/errors';
 
 // TODO: env.
 const excludedCountries: MuiTelInputCountry[] | undefined = [];
@@ -89,7 +90,7 @@ const VerifyWallet = (props: VerifyWalletProps) => {
           setPhoneCodeIsBeenSending(false);
         })
         .catch((error) => {
-          onError(error.message);
+          onError(parseError(error.message));
           setPhoneCodeIsBeenSending(false);
         });
     }
@@ -103,17 +104,22 @@ const VerifyWallet = (props: VerifyWalletProps) => {
       phone.trim().replace(' ', ''),
       userStartsVerificationByStakeAddress.requestId,
       codes.join('')
-    ).then((response: PhoneNumberCodeConfirmation) => {
-      dispatch(setWalletIsVerified({ isVerified: response.verified }));
-      if (response.verified) {
-        onVerify();
-        reset();
+    )
+      .then((response: PhoneNumberCodeConfirmation) => {
+        dispatch(setWalletIsVerified({ isVerified: response.verified }));
+        if (response.verified) {
+          onVerify();
+          reset();
+          setPhoneCodeIsBeenConfirming(false);
+        } else {
+          onError('SMS code not valid');
+          setPhoneCodeIsBeenConfirming(false);
+        }
+      })
+      .catch(() => {
+        onError('SMS code verification failed');
         setPhoneCodeIsBeenConfirming(false);
-      } else {
-        onError('SMS verification failed');
-        setPhoneCodeIsBeenConfirming(false);
-      }
-    });
+      });
   };
 
   const handleVerifyDiscord = async () => {
@@ -131,9 +137,9 @@ const VerifyWallet = (props: VerifyWalletProps) => {
                 onError('Discord verification failed');
               }
             })
-            .catch((e) => onError(capitalizeFirstLetter(e.message)));
+            .catch((e) => onError(parseError(e.message)));
         })
-        .catch((e) => onError(capitalizeFirstLetter(e.message)));
+        .catch((e) => onError(parseError(e.message)));
     }
   };
 

@@ -5,6 +5,7 @@ import discordLogo from '../../../common/resources/images/discord-icon.svg';
 import { env } from 'common/constants/env';
 import { NavLink } from 'react-router-dom';
 import { i18n } from 'i18n';
+import { openNewTab } from '../../../utils/utils';
 
 const Footer: React.FC = () => {
   return (
@@ -85,9 +86,10 @@ const Footer: React.FC = () => {
                 align="center"
               >
                 <img
+                  onClick={() => openNewTab(env.DISCORD_CHANNEL_URL)}
                   src={discordLogo}
                   alt="Discord"
-                  style={{ height: '25px' }}
+                  style={{ height: '25px', cursor: 'pointer' }}
                 />
               </Typography>
             </Grid>

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.58](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.57...v0.2.58) (2023-09-28)
+
+
+### Features
+
+* attempting to force a release ([f373e7c](https://github.com/cardano-foundation/cf-cardano-ballot/commit/f373e7c3cc7ad8b3824b700d20dabf14e95c5ee3))
+
 ## [0.2.57](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.56...v0.2.57) (2023-09-27)
 
 

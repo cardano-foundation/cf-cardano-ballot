@@ -3,7 +3,7 @@ import { Footer } from './components/common/Footer/Footer';
 import { BrowserRouter } from 'react-router-dom';
 import './App.scss';
 import { useDispatch, useSelector } from 'react-redux';
-import { setEventData, setUserVotes, setWalletIsLoggedIn, setWalletIsVerified } from './store/userSlice';
+import { setEventData, setUserVotes, setWalletIsLoggedIn, setWalletIsVerified, setWinners} from './store/userSlice';
 import { Box, CircularProgress, Container, Grid } from '@mui/material';
 import Header from './components/common/Header/Header';
 import { PageRouter } from './routes';
@@ -19,23 +19,27 @@ import { TermsOptInModal } from 'components/LegalOptInModal';
 import { eventBus } from './utils/EventBus';
 import { CategoryContent } from './pages/Categories/Category.types';
 import SUMMIT2023CONTENT from 'common/resources/data/summit2023Content.json';
-import {hasEventEnded, resolveCardanoNetwork} from './utils/utils';
+import { resolveCardanoNetwork } from './utils/utils';
 import { parseError } from 'common/constants/errors';
 import { getUserVotes } from 'common/api/voteService';
+import { getWinners } from 'common/api/leaderboardService';
 
 function App() {
   const eventCache = useSelector((state: RootState) => state.user.event);
+
   const [termsAndConditionsChecked] = useLocalStorage(CB_TERMS_AND_PRIVACY, false);
   const [openTermDialog, setOpenTermDialog] = useState(false);
   const { isConnected, stakeAddress } = useCardano({ limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK) });
   const session = getUserInSession();
   const isExpired = tokenIsExpired(session?.expiresAt);
-  const eventHasEnded = hasEventEnded(eventCache?.eventEndDate)
 
   const dispatch = useDispatch();
   const fetchEvent = useCallback(async () => {
     try {
       const event = await getEvent(env.EVENT_ID);
+      /*if ('finished' in event) {
+        event.finished = true;
+      }*/
       const staticCategories: CategoryContent[] = SUMMIT2023CONTENT.categories;
 
       const joinedCategories = event.categories
@@ -51,10 +55,22 @@ function App() {
       event.categories = joinedCategories;
       dispatch(setEventData({ event }));
 
-      if (isConnected && !eventHasEnded) {
+      if (isConnected && !eventCache.finished) {
         try {
           const isVerified = await getIsVerified(env.EVENT_ID, stakeAddress);
           dispatch(setWalletIsVerified({ isVerified: isVerified.verified }));
+        } catch (e) {
+          console.log('error');
+          if (process.env.NODE_ENV === 'development') {
+            console.log(e.message);
+          }
+        }
+      }
+
+      if ('finished' in event && event.finished) {
+        try {
+          const winners = await getWinners();
+          dispatch(setWinners({winners}));
         } catch (e) {
           if (process.env.NODE_ENV === 'development') {
             console.log(e.message);
@@ -63,7 +79,6 @@ function App() {
       }
 
       if (session) {
-
         dispatch(setWalletIsLoggedIn({ isLoggedIn: !isExpired }));
         if (!isExpired) {
           getUserVotes(session?.accessToken)
@@ -77,14 +92,13 @@ function App() {
             });
         }
       }
-
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') {
         console.log(`Failed to fetch event, ${error?.info || error?.message || error?.toString()}`);
       }
       eventBus.publish('showToast', parseError(error.message), 'error');
     }
-  }, [dispatch]);
+  }, [dispatch, stakeAddress]);
 
   useEffect(() => {
     fetchEvent();

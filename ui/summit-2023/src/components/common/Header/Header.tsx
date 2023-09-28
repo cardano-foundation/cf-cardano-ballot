@@ -33,7 +33,7 @@ import { getSlotNumber, getUserVotes } from 'common/api/voteService';
 import { buildCanonicalLoginJson, submitLogin } from 'common/api/loginService';
 import { saveUserInSession } from '../../../utils/session';
 import { setConnectedPeerWallet, setUserVotes, setWalletIsLoggedIn } from '../../../store/userSlice';
-import { copyToClipboard, getSignedMessagePromise, hasEventEnded, resolveCardanoNetwork } from '../../../utils/utils';
+import { copyToClipboard, getSignedMessagePromise, resolveCardanoNetwork } from '../../../utils/utils';
 import { Toast } from '../Toast/Toast';
 import { ToastType } from '../Toast/Toast.types';
 import { env } from 'common/constants/env';
@@ -65,8 +65,6 @@ const Header: React.FC = () => {
   const [toastType, setToastType] = useState<ToastType>('common');
   const [toastOpen, setToastOpen] = useState(false);
   const eventCache = useSelector((state: RootState) => state.user.event);
-
-  const eventHasEnded = hasEventEnded(eventCache?.eventEndDate);
 
   const [cip45ModalIsOpen, setCip45ModalIsOpen] = useState<boolean>(false);
   const [startPeerConnect, setStartPeerConnect] = useState(false);
@@ -209,7 +207,7 @@ const Header: React.FC = () => {
       };
 
       const onP2PConnect = (address: string, walletInfo?: IWalletInfo): void => {
-       // TODO
+        // TODO
       };
 
       initDappConnect(
@@ -230,7 +228,7 @@ const Header: React.FC = () => {
   const onConnectWallet = () => {
     setOpenAuthDialog(false);
     showToast('Wallet connected successfully');
-    if (!walletIsVerified && !eventHasEnded) {
+    if (!walletIsVerified && !eventCache?.finished) {
       setVerifyModalIsOpen(true);
     }
   };
@@ -249,7 +247,7 @@ const Header: React.FC = () => {
   };
 
   const handleOpenVerify = () => {
-    if (isConnected && !walletIsVerified && !eventHasEnded) {
+    if (isConnected && !walletIsVerified && !eventCache?.finished) {
       setVerifyModalIsOpen(true);
     }
   };

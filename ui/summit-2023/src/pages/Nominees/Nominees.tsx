@@ -26,6 +26,7 @@ import QrCodeIcon from '@mui/icons-material/QrCode';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import InfoIcon from '@mui/icons-material/Info';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import labelVoted from '../../common/resources/images/checkmark-green.png';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { Fade } from '@mui/material';
@@ -45,13 +46,7 @@ import {
   getUserVotes,
   getVoteReceipt,
 } from '../../common/api/voteService';
-import {
-  copyToClipboard,
-  getSignedMessagePromise,
-  hasEventEnded,
-  resolveCardanoNetwork,
-  shortenString,
-} from '../../utils/utils';
+import { copyToClipboard, getSignedMessagePromise, resolveCardanoNetwork, shortenString } from '../../utils/utils';
 import { buildCanonicalLoginJson, submitLogin } from 'common/api/loginService';
 import { getUserInSession, saveUserInSession, tokenIsExpired } from '../../utils/session';
 import { setUserVotes, setVoteReceipt, setWalletIsLoggedIn } from '../../store/userSlice';
@@ -76,9 +71,8 @@ const Nominees = () => {
   const walletIsLoggedIn = useSelector((state: RootState) => state.user.walletIsLoggedIn);
   const receipts = useSelector((state: RootState) => state.user.receipts);
   const receipt = receipts && Object.keys(receipts).length && receipts[categoryId] ? receipts[categoryId] : undefined;
-
-  const eventHasEnded = hasEventEnded(eventCache?.eventEndDate);
   const userVotes = useSelector((state: RootState) => state.user.userVotes);
+  const winners = useSelector((state: RootState) => state.user.winners);
 
   const categoryVoted = categoryAlreadyVoted(categoryId, userVotes);
 
@@ -205,7 +199,7 @@ const Nominees = () => {
   }, [isMobile]);
 
   const castVote = async (optionId: string) => {
-    if (eventHasEnded) {
+    if (eventCache?.finished) {
       eventBus.publish('showToast', 'The event already ended', 'error');
       return;
     }
@@ -226,7 +220,7 @@ const Nominees = () => {
       await castAVoteWithDigitalSignature(requestVoteObject);
       eventBus.publish('showToast', 'Vote submitted successfully');
       if (session && !tokenIsExpired(session?.expiresAt)) {
-        await getVoteReceipt(categoryId, session?.accessToken)
+        getVoteReceipt(categoryId, session?.accessToken)
           .then((r) => {
             dispatch(setVoteReceipt({ categoryId: categoryId, receipt: r }));
           })
@@ -235,17 +229,27 @@ const Nominees = () => {
               console.log(`Failed to fetch vote receipt, ${parseError(e.message)}`);
             }
           });
+        getUserVotes(session?.accessToken)
+          .then((response) => {
+            if (response) {
+              dispatch(setUserVotes({ userVotes: response }));
+            }
+          })
+          .catch((e) => {
+            if (process.env.NODE_ENV === 'development') {
+              console.log(`Failed to fetch user votes, ${parseError(e.message)}`);
+            }
+          });
       } else {
         eventBus.publish('openLoginModal', 'Login to see your vote receipt');
       }
     } catch (e) {
-      eventBus.publish('showToast', parseError(e.message), 'error');
+      eventBus.publish('showToast', e.message && e.message.length ? parseError(e.message) : 'Action failed', 'error');
     }
   };
 
   const handleNomineeButton = (nominee) => {
-
-    if (eventHasEnded) return;
+    if (eventCache?.finished) return;
 
     if (isConnected) {
       if (!walletIsVerified) {
@@ -260,7 +264,7 @@ const Nominees = () => {
   };
 
   const handleVoteNomineeButton = () => {
-    if (eventHasEnded) return;
+    if (eventCache?.finished) return;
 
     if (isConnected) {
       if (!walletIsVerified) {
@@ -338,7 +342,7 @@ const Nominees = () => {
   };
 
   const handleViewVoteReceipt = () => {
-    if (isConnected) {
+    if (isConnected && walletIsLoggedIn && !tokenIsExpired(session?.expiresAt)) {
       viewVoteReceipt(true, true);
     } else {
       login();
@@ -356,6 +360,35 @@ const Nominees = () => {
       alreadyVoted = true;
     }
     return alreadyVoted;
+  };
+  const nomineeIsWinner = (nominee) => {
+    let isWinner = false;
+    if (
+      winners?.length &&
+      winners?.find((c) => c.categoryId === categoryId) &&
+      winners?.find((p) => p.proposalId === nominee.id)
+    ) {
+      isWinner = true;
+    }
+    return isWinner;
+  };
+
+  const sortNominees = (nomineesList) => {
+    return [...nomineesList].sort((a, b) => {
+      const aIsWinner = nomineeIsWinner(a);
+      const bIsWinner = nomineeIsWinner(b);
+
+      const aAlreadyVoted = nomineeAlreadyVoted(a);
+      const bAlreadyVoted = nomineeAlreadyVoted(b);
+
+      if (aIsWinner && !bIsWinner) return -1;
+      if (!aIsWinner && bIsWinner) return 1;
+
+      if (aAlreadyVoted && !bAlreadyVoted) return -1;
+      if (!aAlreadyVoted && bAlreadyVoted) return 1;
+
+      return 0;
+    });
   };
 
   const verifyVoteProof = () => {
@@ -380,7 +413,7 @@ const Nominees = () => {
     }
   };
 
-  const renderResponsiveList = (items): ReactElement => {
+  const renderResponsiveList = (): ReactElement => {
     return (
       <>
         <Grid
@@ -388,8 +421,9 @@ const Nominees = () => {
           spacing={3}
           style={{ justifyContent: 'center' }}
         >
-          {nominees.map((nominee, index) => {
+          {sortNominees(nominees).map((nominee, index) => {
             const voted = nomineeAlreadyVoted(nominee);
+            const isWinner = nomineeIsWinner(nominee);
             return (
               <Grid
                 item
@@ -430,6 +464,13 @@ const Nominees = () => {
                         variant="h2"
                       >
                         {nominee.presentationName}
+                        {isWinner ? (
+                          <Tooltip title="Winner">
+                            <EmojiEventsIcon
+                              sx={{ fontSize: '40px', position: 'absolute', marginLeft: '4px', color: '#efb810' }}
+                            />
+                          </Tooltip>
+                        ) : null}
                       </Typography>
                       <Grid container>
                         <Grid
@@ -443,7 +484,7 @@ const Nominees = () => {
                             {shortenString(nominee.desc, 210)}
                           </Typography>
                         </Grid>
-                        {!eventHasEnded && !categoryVoted ? (
+                        {!eventCache?.finished && !categoryVoted ? (
                           <Grid
                             item
                             xs={2}
@@ -491,7 +532,7 @@ const Nominees = () => {
       </>
     );
   };
-  const renderResponsiveGrid = (items): ReactElement => {
+  const renderResponsiveGrid = (): ReactElement => {
     return (
       <>
         <div style={{ width: '100%' }}>
@@ -500,8 +541,10 @@ const Nominees = () => {
             spacing={2}
             justifyContent="center"
           >
-            {items.map((nominee) => {
+            {sortNominees(nominees).map((nominee) => {
               const voted = nomineeAlreadyVoted(nominee);
+              const isWinner = nomineeIsWinner(nominee);
+
               return (
                 <Grid
                   item
@@ -514,9 +557,11 @@ const Nominees = () => {
                   <div style={{ height: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <Card
                       sx={{
-                        width: '414px',
-                        justifyContent: 'center',
+                        height: 'auto',
+                        width: { xs: '380px', sm: '414px' },
                         display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                         borderRadius: '16px',
                       }}
                     >
@@ -546,6 +591,13 @@ const Nominees = () => {
                           sx={{ mb: 1, fontWeight: 'bold', wordWrap: 'break-word', width: voted ? '260px' : '100%' }}
                         >
                           {nominee.presentationName}
+                          {isWinner ? (
+                            <Tooltip title="Winner">
+                              <EmojiEventsIcon
+                                sx={{ fontSize: '40px', position: 'absolute', marginLeft: '4px', color: '#efb810' }}
+                              />
+                            </Tooltip>
+                          ) : null}
                         </Typography>
                         <Grid container>
                           <Grid
@@ -575,7 +627,7 @@ const Nominees = () => {
                           fullWidth={true}
                         />
 
-                        {!eventHasEnded && !categoryVoted ? (
+                        {!eventCache?.finished && !categoryVoted ? (
                           <CustomButton
                             styles={
                               isConnected
@@ -610,9 +662,8 @@ const Nominees = () => {
   return (
     <>
       <div
-        style={{
-          padding: isBigScreen ? '0px' : '0px 150px',
-        }}
+        data-testid="nominees-page"
+        style={{ padding: isBigScreen ? '0px' : '0px 10px' }}
       >
         <div
           style={{
@@ -663,7 +714,8 @@ const Nominees = () => {
           {summit2023Category.desc}
         </Typography>
 
-        {isConnected && categoryVoted ? (
+        {isConnected &&
+        (categoryVoted || (isConnected && eventCache?.finished) || (receipt && categoryId === receipt?.category)) ? (
           <Box
             sx={{
               display: 'flex',
@@ -706,14 +758,14 @@ const Nominees = () => {
                 color: '#F6F9FF',
                 width: 'auto',
               }}
-              label={walletIsLoggedIn ? 'View vote receipt' : 'Login with Wallet'}
+              label={walletIsLoggedIn ? 'View vote receipt' : 'Login with wallet'}
               onClick={() => handleViewVoteReceipt()}
               fullWidth={true}
             />
           </Box>
         ) : null}
 
-        {isMobile || viewMode === 'grid' ? renderResponsiveGrid(nominees) : renderResponsiveList(nominees)}
+        {isMobile || viewMode === 'grid' ? renderResponsiveGrid() : renderResponsiveList()}
       </div>
 
       <SidePage

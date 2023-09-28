@@ -6,20 +6,18 @@ import './Home.scss';
 import { i18n } from '../../i18n';
 import { NavLink } from 'react-router-dom';
 import { CustomButton } from '../../components/common/Button/CustomButton';
-import { hasEventEnded } from '../../utils/utils';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 
 const Home: React.FC = () => {
   const eventCache = useSelector((state: RootState) => state.user.event);
-  const eventHasEnded = hasEventEnded(eventCache?.eventEndDate);
 
   return (
     <Grid
       container
       spacing={1}
       sx={{
-        height: { xs: '60%', md: '70%' },
+        height: { xs: '60%', md: '75vh', lg: '57vh', xl: '71vh' },
         margin: { xs: '0%', sm: '2%', md: '3%', lg: '4%' },
       }}
     >
@@ -32,6 +30,8 @@ const Home: React.FC = () => {
           padding: '20px',
           order: '1',
           display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
         }}
       >
         <div className="left-title-container">
@@ -63,7 +63,7 @@ const Home: React.FC = () => {
                   marginTop: '40px',
                   textDecoration: 'none !important',
                 }}
-                label={eventHasEnded ? 'Voting ended' : i18n.t('landing.getStartedButton')}
+                label={eventCache?.finished ? 'Voting ended' : i18n.t('landing.getStartedButton')}
               />
             </NavLink>
           </Grid>

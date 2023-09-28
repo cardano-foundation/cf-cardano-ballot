@@ -26,6 +26,7 @@ import QrCodeIcon from '@mui/icons-material/QrCode';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import InfoIcon from '@mui/icons-material/Info';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import labelVoted from '../../common/resources/images/checkmark-green.png';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { Fade } from '@mui/material';
@@ -72,6 +73,10 @@ const Nominees = () => {
   const receipts = useSelector((state: RootState) => state.user.receipts);
   const receipt = receipts && Object.keys(receipts).length && receipts[categoryId] ? receipts[categoryId] : undefined;
   const userVotes = useSelector((state: RootState) => state.user.userVotes);
+  const winners = useSelector((state: RootState) => state.user.winners);
+
+  console.log('winners');
+  console.log(winners);
 
   const categoryVoted = categoryAlreadyVoted(categoryId, userVotes);
 
@@ -214,8 +219,6 @@ const Nominees = () => {
       });
       const requestVoteObject = await signMessagePromisified(canonicalVoteInput);
 
-      console.log('requestVoteObject');
-      console.log(requestVoteObject);
       eventBus.publish('showToast', 'Vote submitted');
       toggleConfirmVoteModal();
       await castAVoteWithDigitalSignature(requestVoteObject);
@@ -351,6 +354,16 @@ const Nominees = () => {
     }
     return alreadyVoted;
   };
+  const nomineeIsWinner = (nominee) => {
+    let isWinner = false;
+    if (winners?.length &&
+        winners?.find((c) => c.categoryId === categoryId) &&
+        winners?.find((p) => p.proposalId === nominee.id)
+    ) {
+      isWinner = true;
+    }
+    return isWinner;
+  };
 
   const verifyVoteProof = () => {
     if (receipt) {
@@ -384,6 +397,7 @@ const Nominees = () => {
         >
           {nominees.map((nominee, index) => {
             const voted = nomineeAlreadyVoted(nominee);
+            const isWinner = nomineeIsWinner(nominee);
             return (
               <Grid
                 item
@@ -424,6 +438,11 @@ const Nominees = () => {
                         variant="h2"
                       >
                         {nominee.presentationName}
+                        {isWinner ? (
+                            <Tooltip title="Winner">
+                              <EmojiEventsIcon sx={{ fontSize: '40px', position: 'absolute', marginLeft: '4px', color: '#efb810'}} />
+                            </Tooltip>
+                        ) : null}
                       </Typography>
                       <Grid container>
                         <Grid
@@ -496,6 +515,8 @@ const Nominees = () => {
           >
             {items.map((nominee) => {
               const voted = nomineeAlreadyVoted(nominee);
+              const isWinner = nomineeIsWinner(nominee);
+
               return (
                 <Grid
                   item
@@ -540,6 +561,11 @@ const Nominees = () => {
                           sx={{ mb: 1, fontWeight: 'bold', wordWrap: 'break-word', width: voted ? '260px' : '100%' }}
                         >
                           {nominee.presentationName}
+                          {isWinner ? (
+                              <Tooltip title="Winner">
+                                <EmojiEventsIcon sx={{ fontSize: '40px', position: 'absolute', marginLeft: '4px', color: '#efb810'}} />
+                              </Tooltip>
+                          ) : null}
                         </Typography>
                         <Grid container>
                           <Grid
@@ -600,9 +626,6 @@ const Nominees = () => {
       </>
     );
   };
-
-  console.log('receipt');
-  console.log(receipt);
 
   return (
     <>

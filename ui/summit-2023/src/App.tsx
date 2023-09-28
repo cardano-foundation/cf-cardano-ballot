@@ -3,7 +3,7 @@ import { Footer } from './components/common/Footer/Footer';
 import { BrowserRouter } from 'react-router-dom';
 import './App.scss';
 import { useDispatch, useSelector } from 'react-redux';
-import { setEventData, setUserVotes, setWalletIsLoggedIn, setWalletIsVerified } from './store/userSlice';
+import { setEventData, setUserVotes, setWalletIsLoggedIn, setWalletIsVerified, setWinners} from './store/userSlice';
 import { Box, CircularProgress, Container, Grid } from '@mui/material';
 import Header from './components/common/Header/Header';
 import { PageRouter } from './routes';
@@ -22,11 +22,11 @@ import SUMMIT2023CONTENT from 'common/resources/data/summit2023Content.json';
 import { resolveCardanoNetwork } from './utils/utils';
 import { parseError } from 'common/constants/errors';
 import { getUserVotes } from 'common/api/voteService';
+import { getWinners } from 'common/api/leaderboardService';
 
 function App() {
   const eventCache = useSelector((state: RootState) => state.user.event);
-  console.log('eventCache');
-  console.log(eventCache);
+
   const [termsAndConditionsChecked] = useLocalStorage(CB_TERMS_AND_PRIVACY, false);
   const [openTermDialog, setOpenTermDialog] = useState(false);
   const { isConnected, stakeAddress } = useCardano({ limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK) });
@@ -37,7 +37,9 @@ function App() {
   const fetchEvent = useCallback(async () => {
     try {
       const event = await getEvent(env.EVENT_ID);
-
+      if ('finished' in event) {
+        event.finished = true;
+      }
       const staticCategories: CategoryContent[] = SUMMIT2023CONTENT.categories;
 
       const joinedCategories = event.categories
@@ -59,6 +61,17 @@ function App() {
           dispatch(setWalletIsVerified({ isVerified: isVerified.verified }));
         } catch (e) {
           console.log('error');
+          if (process.env.NODE_ENV === 'development') {
+            console.log(e.message);
+          }
+        }
+      }
+
+      if ('finished' in event && event.finished) {
+        try {
+          const winners = await getWinners();
+          dispatch(setWinners({winners}));
+        } catch (e) {
           if (process.env.NODE_ENV === 'development') {
             console.log(e.message);
           }

@@ -177,8 +177,6 @@ const Nominees = () => {
           eventBus.publish('showToast', 'Login successfully');
           getUserVotes(newSession?.accessToken)
             .then((uVotes) => {
-              console.log('uVotes');
-              console.log(uVotes);
               if (uVotes) {
                 dispatch(setUserVotes({ userVotes: uVotes }));
               }
@@ -224,8 +222,6 @@ const Nominees = () => {
       if (session && !tokenIsExpired(session?.expiresAt)) {
         getVoteReceipt(categoryId, session?.accessToken)
           .then((r) => {
-            console.log('receipt');
-            console.log(r)
             dispatch(setVoteReceipt({ categoryId: categoryId, receipt: r }));
           })
           .catch((e) => {
@@ -346,7 +342,7 @@ const Nominees = () => {
   };
 
   const handleViewVoteReceipt = () => {
-    if (isConnected) {
+    if (isConnected && walletIsLoggedIn && !tokenIsExpired(session?.expiresAt)) {
       viewVoteReceipt(true, true);
     } else {
       login();
@@ -759,7 +755,7 @@ const Nominees = () => {
                 color: '#F6F9FF',
                 width: 'auto',
               }}
-              label={walletIsLoggedIn ? 'View vote receipt' : 'Login with Wallet'}
+              label={walletIsLoggedIn ? 'View vote receipt' : 'Login with wallet'}
               onClick={() => handleViewVoteReceipt()}
               fullWidth={true}
             />

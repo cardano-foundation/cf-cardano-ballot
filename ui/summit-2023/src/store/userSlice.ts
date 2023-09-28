@@ -83,8 +83,6 @@ export const userSlice = createSlice({
       state.event = action.payload.event;
     },
     setWinners: (state, action: PayloadAction<{ winners: { categoryId: string, proposalId: string }[] }>) => {
-      console.log('action.payload')
-      console.log(action.payload)
       state.winners = action.payload.winners;
     },
     setUserStartsVerification: (

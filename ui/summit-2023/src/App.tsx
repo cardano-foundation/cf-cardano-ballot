@@ -60,7 +60,6 @@ function App() {
           const isVerified = await getIsVerified(env.EVENT_ID, stakeAddress);
           dispatch(setWalletIsVerified({ isVerified: isVerified.verified }));
         } catch (e) {
-          console.log('error');
           if (process.env.NODE_ENV === 'development') {
             console.log(e.message);
           }
@@ -108,8 +107,6 @@ function App() {
     setOpenTermDialog(!termsAndConditionsChecked);
   }, []);
 
-  console.log('eventCache');
-  console.log(eventCache);
   return (
     <Container maxWidth="xl">
       <BrowserRouter>

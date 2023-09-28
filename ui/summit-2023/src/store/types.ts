@@ -8,7 +8,7 @@ interface UserState {
   walletIsLoggedIn: boolean;
   isReceiptFetched: boolean;
   receipts: { [categoryId: string]: VoteReceipt } | {};
-  winners: { categoryId: string, proposalId: string }[];
+  winners: { categoryId: string; proposalId: string }[];
   userVotes: UserVotes[];
   proposal: VoteReceipt['proposal'];
   event?: EventPresentation;

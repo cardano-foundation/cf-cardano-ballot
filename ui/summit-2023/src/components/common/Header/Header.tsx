@@ -31,7 +31,7 @@ import { useToggle } from 'common/hooks/useToggle';
 import { CustomButton } from '../Button/CustomButton';
 import { getSlotNumber, getUserVotes } from 'common/api/voteService';
 import { buildCanonicalLoginJson, submitLogin } from 'common/api/loginService';
-import {clearUserInSessionStorage, saveUserInSession} from '../../../utils/session';
+import { clearUserInSessionStorage, saveUserInSession } from '../../../utils/session';
 import { setConnectedPeerWallet, setUserVotes, setWalletIsLoggedIn } from '../../../store/userSlice';
 import { copyToClipboard, getSignedMessagePromise, resolveCardanoNetwork } from '../../../utils/utils';
 import { Toast } from '../Toast/Toast';
@@ -361,7 +361,7 @@ const Header: React.FC = () => {
         position={'static'}
         style={{ background: 'transparent', boxShadow: 'none', color: 'black' }}
       >
-        <Toolbar sx={{pl: 0, pt: 1}}>
+        <Toolbar sx={{ pl: 0, pt: 1 }}>
           {isTablet ? (
             <>
               <NavLink to="/">
@@ -505,32 +505,32 @@ const Header: React.FC = () => {
         onClose={() => setCip45ModalIsOpen(false)}
         disableBackdropClick={true}
       >
-
         {!startPeerConnect ? (
           <>
             <Typography
-                variant="body1"
-                align="left"
-                sx={{
-                  width: '344px',
-                  color: '#434656',
-                  fontSize: '16px',
-                  fontStyle: 'normal',
-                  fontWeight: '400',
-                  lineHeight: '22px',
-                }}
+              variant="body1"
+              align="left"
+              sx={{
+                width: '344px',
+                color: '#434656',
+                fontSize: '16px',
+                fontStyle: 'normal',
+                fontWeight: '400',
+                lineHeight: '22px',
+              }}
             >
-              To connect your mobile wallet, simply use your wallet's app to scan the QR code below. If scanning isn't an option, you can also copy the Peer ID.{' '}
+              To connect your mobile wallet, simply use your wallet's app to scan the QR code below. If scanning isn't
+              an option, you can also copy the Peer ID.{' '}
               <span style={{ fontSize: '14px', fontStyle: 'italic', cursor: 'pointer' }}>
-            {' '}
+                {' '}
                 <a
-                    href="https://github.com/cardano-foundation/CIPs/pull/395"
-                    target="_blank"
-                    rel="noreferrer"
+                  href="https://github.com/cardano-foundation/CIPs/pull/395"
+                  target="_blank"
+                  rel="noreferrer"
                 >
-              Learn more about CIP-45
-            </a>
-          </span>
+                  Learn more about CIP-45
+                </a>
+              </span>
             </Typography>
             <div style={{ display: 'flex', justifyContent: 'center', width: '100%', marginTop: '24px' }}>
               <QRCode
@@ -556,8 +556,8 @@ const Header: React.FC = () => {
               }}
             >
               <FileCopyIcon
-                  fontSize="small"
-                  style={{ color: '#434656', cursor: 'pointer' }}
+                fontSize="small"
+                style={{ color: '#434656', cursor: 'pointer' }}
               />
               <Typography
                 variant="body1"
@@ -574,49 +574,50 @@ const Header: React.FC = () => {
               >
                 Copy Peer ID
               </Typography>
-
             </div>
             <Button
-                onClick={() => {
-                  setStartPeerConnect(false);
-                  setOpenAuthDialog(true);
-                }}
-                className="vote-nominee-button"
-                style={{
-                  display: 'flex',
-                  width: '344px',
-                  padding: '12px',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  gap: '10px',
-                  borderRadius: '8px',
-                  background: 'transparent',
-                  border: '1px solid #DAEEFB',
-                  color: '#03021F',
-                  fontSize: '16px',
-                  fontStyle: 'normal',
-                  fontWeight: '600',
-                  lineHeight: 'normal',
-                  textTransform: 'none',
-                  marginTop: '24px',
-                  marginBottom: '28px',
-                }}
+              onClick={() => {
+                setStartPeerConnect(false);
+                setOpenAuthDialog(true);
+              }}
+              className="vote-nominee-button"
+              style={{
+                display: 'flex',
+                width: '344px',
+                padding: '12px',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: '10px',
+                borderRadius: '8px',
+                background: 'transparent',
+                border: '1px solid #DAEEFB',
+                color: '#03021F',
+                fontSize: '16px',
+                fontStyle: 'normal',
+                fontWeight: '600',
+                lineHeight: 'normal',
+                textTransform: 'none',
+                marginTop: '24px',
+                marginBottom: '28px',
+              }}
             >
               Cancel
             </Button>
           </>
-        ) : <>
-          <Box
-                display="flex"
-               flexDirection="column"
-               alignItems="center"
-               justifyContent="center">
-            <img
+        ) : (
+          <>
+            <Box
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <img
                 src={peerConnectWalletInfo?.icon}
                 alt="Wallet"
                 style={{ width: '64px', marginTop: '44px' }}
-            />
-            <Typography
+              />
+              <Typography
                 variant="body1"
                 align="left"
                 sx={{
@@ -629,13 +630,13 @@ const Header: React.FC = () => {
                   marginTop: '24px',
                   marginBottom: '44px',
                 }}
-            >
+              >
                 <span style={{ textTransform: 'capitalize', fontStyle: 'italic', fontWeight: '600' }}>
                   {peerConnectWalletInfo?.name}{' '}
                 </span>
-              wallet is trying to connect
-            </Typography>
-            <Button
+                wallet is trying to connect
+              </Typography>
+              <Button
                 onClick={handleAccept}
                 className="vote-nominee-button"
                 style={{
@@ -651,13 +652,13 @@ const Header: React.FC = () => {
                   fontStyle: 'normal',
                   fontWeight: '600',
                   lineHeight: 'normal',
-                  textTransform: 'none'
+                  textTransform: 'none',
                 }}
                 fullWidth
-            >
-              Accept connection
-            </Button>
-            <Button
+              >
+                Accept connection
+              </Button>
+              <Button
                 onClick={handleReject}
                 className="vote-nominee-button"
                 style={{
@@ -676,13 +677,14 @@ const Header: React.FC = () => {
                   fontWeight: '600',
                   lineHeight: 'normal',
                   textTransform: 'none',
-                  marginTop: '10px'
+                  marginTop: '10px',
                 }}
-            >
-              Deny
-            </Button>
-          </Box>
-        </>}
+              >
+                Deny
+              </Button>
+            </Box>
+          </>
+        )}
       </Modal>
       <Toast
         isOpen={toastOpen}

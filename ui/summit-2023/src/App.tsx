@@ -3,7 +3,7 @@ import { Footer } from './components/common/Footer/Footer';
 import { BrowserRouter } from 'react-router-dom';
 import './App.scss';
 import { useDispatch, useSelector } from 'react-redux';
-import { setEventData, setUserVotes, setWalletIsLoggedIn, setWalletIsVerified, setWinners} from './store/userSlice';
+import { setEventData, setUserVotes, setWalletIsLoggedIn, setWalletIsVerified, setWinners } from './store/userSlice';
 import { Box, CircularProgress, Container, Grid, useMediaQuery, useTheme } from '@mui/material';
 import Header from './components/common/Header/Header';
 import { PageRouter } from './routes';
@@ -70,7 +70,7 @@ function App() {
       if ('finished' in event && event.finished) {
         try {
           const winners = await getWinners();
-          dispatch(setWinners({winners}));
+          dispatch(setWinners({ winners }));
         } catch (e) {
           if (process.env.NODE_ENV === 'development') {
             console.log(e.message);

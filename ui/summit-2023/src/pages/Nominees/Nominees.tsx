@@ -230,16 +230,16 @@ const Nominees = () => {
             }
           });
         getUserVotes(session?.accessToken)
-            .then((response) => {
-              if (response) {
-                dispatch(setUserVotes({ userVotes: response }));
-              }
-            })
-            .catch((e) => {
-              if (process.env.NODE_ENV === 'development') {
-                console.log(`Failed to fetch user votes, ${parseError(e.message)}`);
-              }
-            });
+          .then((response) => {
+            if (response) {
+              dispatch(setUserVotes({ userVotes: response }));
+            }
+          })
+          .catch((e) => {
+            if (process.env.NODE_ENV === 'development') {
+              console.log(`Failed to fetch user votes, ${parseError(e.message)}`);
+            }
+          });
       } else {
         eventBus.publish('openLoginModal', 'Login to see your vote receipt');
       }
@@ -714,7 +714,8 @@ const Nominees = () => {
           {summit2023Category.desc}
         </Typography>
 
-        {isConnected && (categoryVoted || (isConnected && eventCache?.finished) || (receipt && categoryId === receipt?.category)) ? (
+        {isConnected &&
+        (categoryVoted || (isConnected && eventCache?.finished) || (receipt && categoryId === receipt?.category)) ? (
           <Box
             sx={{
               display: 'flex',

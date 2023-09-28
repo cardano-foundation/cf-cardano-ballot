@@ -365,6 +365,28 @@ const Nominees = () => {
     return isWinner;
   };
 
+  const sortNominees = (nomineesList) => {
+
+    return [
+      ...nomineesList
+    ].sort((a, b) => {
+      const aIsWinner = nomineeIsWinner(a);
+      const bIsWinner = nomineeIsWinner(b);
+
+      const aAlreadyVoted = nomineeAlreadyVoted(a);
+      const bAlreadyVoted = nomineeAlreadyVoted(b);
+
+
+      if (aIsWinner && !bIsWinner) return -1;
+      if (!aIsWinner && bIsWinner) return 1;
+
+      if (aAlreadyVoted && !bAlreadyVoted) return -1;
+      if (!aAlreadyVoted && bAlreadyVoted) return 1;
+
+      return 0;
+    });
+  };
+
   const verifyVoteProof = () => {
     if (receipt) {
       const body = {
@@ -387,7 +409,11 @@ const Nominees = () => {
     }
   };
 
-  const renderResponsiveList = (items): ReactElement => {
+
+  console.log('nominees');
+  console.log(nominees);
+
+  const renderResponsiveList = (): ReactElement => {
     return (
       <>
         <Grid
@@ -395,7 +421,7 @@ const Nominees = () => {
           spacing={3}
           style={{ justifyContent: 'center' }}
         >
-          {nominees.map((nominee, index) => {
+          {sortNominees(nominees).map((nominee, index) => {
             const voted = nomineeAlreadyVoted(nominee);
             const isWinner = nomineeIsWinner(nominee);
             return (
@@ -504,7 +530,7 @@ const Nominees = () => {
       </>
     );
   };
-  const renderResponsiveGrid = (items): ReactElement => {
+  const renderResponsiveGrid = (): ReactElement => {
     return (
       <>
         <div style={{ width: '100%' }}>
@@ -513,7 +539,7 @@ const Nominees = () => {
             spacing={2}
             justifyContent="center"
           >
-            {items.map((nominee) => {
+            {sortNominees(nominees).map((nominee) => {
               const voted = nomineeAlreadyVoted(nominee);
               const isWinner = nomineeIsWinner(nominee);
 
@@ -733,7 +759,7 @@ const Nominees = () => {
           </Box>
         ) : null}
 
-        {isMobile || viewMode === 'grid' ? renderResponsiveGrid(nominees) : renderResponsiveList(nominees)}
+        {isMobile || viewMode === 'grid' ? renderResponsiveGrid() : renderResponsiveList()}
       </div>
 
       <SidePage

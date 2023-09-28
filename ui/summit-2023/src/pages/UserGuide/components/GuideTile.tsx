@@ -4,7 +4,7 @@ import styles from './GuideTile.module.scss';
 
 type GuideTilePorps = {
   width?: string;
-  height: number;
+  height?: number;
   media: string;
   graphic: any | React.ReactElement;
   stepNumber: any | React.ReactElement;

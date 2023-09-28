@@ -225,7 +225,7 @@ const Nominees = () => {
         await getVoteReceipt(categoryId, session?.accessToken)
           .then((r) => {
             console.log('receipt');
-            console.log(r)
+            console.log(r);
             dispatch(setVoteReceipt({ categoryId: categoryId, receipt: r }));
           })
           .catch((e) => {
@@ -356,9 +356,10 @@ const Nominees = () => {
   };
   const nomineeIsWinner = (nominee) => {
     let isWinner = false;
-    if (winners?.length &&
-        winners?.find((c) => c.categoryId === categoryId) &&
-        winners?.find((p) => p.proposalId === nominee.id)
+    if (
+      winners?.length &&
+      winners?.find((c) => c.categoryId === categoryId) &&
+      winners?.find((p) => p.proposalId === nominee.id)
     ) {
       isWinner = true;
     }
@@ -366,16 +367,12 @@ const Nominees = () => {
   };
 
   const sortNominees = (nomineesList) => {
-
-    return [
-      ...nomineesList
-    ].sort((a, b) => {
+    return [...nomineesList].sort((a, b) => {
       const aIsWinner = nomineeIsWinner(a);
       const bIsWinner = nomineeIsWinner(b);
 
       const aAlreadyVoted = nomineeAlreadyVoted(a);
       const bAlreadyVoted = nomineeAlreadyVoted(b);
-
 
       if (aIsWinner && !bIsWinner) return -1;
       if (!aIsWinner && bIsWinner) return 1;
@@ -461,9 +458,11 @@ const Nominees = () => {
                       >
                         {nominee.presentationName}
                         {isWinner ? (
-                            <Tooltip title="Winner">
-                              <EmojiEventsIcon sx={{ fontSize: '40px', position: 'absolute', marginLeft: '4px', color: '#efb810'}} />
-                            </Tooltip>
+                          <Tooltip title="Winner">
+                            <EmojiEventsIcon
+                              sx={{ fontSize: '40px', position: 'absolute', marginLeft: '4px', color: '#efb810' }}
+                            />
+                          </Tooltip>
                         ) : null}
                       </Typography>
                       <Grid container>
@@ -551,9 +550,11 @@ const Nominees = () => {
                   <div style={{ height: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <Card
                       sx={{
-                        width: '414px',
-                        justifyContent: 'center',
+                        height: 'auto',
+                        width: { xs: '380px', sm: '414px' },
                         display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                         borderRadius: '16px',
                       }}
                     >
@@ -584,9 +585,11 @@ const Nominees = () => {
                         >
                           {nominee.presentationName}
                           {isWinner ? (
-                              <Tooltip title="Winner">
-                                <EmojiEventsIcon sx={{ fontSize: '40px', position: 'absolute', marginLeft: '4px', color: '#efb810'}} />
-                              </Tooltip>
+                            <Tooltip title="Winner">
+                              <EmojiEventsIcon
+                                sx={{ fontSize: '40px', position: 'absolute', marginLeft: '4px', color: '#efb810' }}
+                              />
+                            </Tooltip>
                           ) : null}
                         </Typography>
                         <Grid container>
@@ -652,9 +655,8 @@ const Nominees = () => {
   return (
     <>
       <div
-        style={{
-          padding: isBigScreen ? '0px' : '0px 150px',
-        }}
+        data-testid="nominees-page"
+        style={{ padding: isBigScreen ? '0px' : '0px 10px' }}
       >
         <div
           style={{
@@ -705,7 +707,9 @@ const Nominees = () => {
           {summit2023Category.desc}
         </Typography>
 
-        {isConnected && categoryVoted || (isConnected && eventCache?.finished) || (receipt && categoryId === receipt?.categorys) ? (
+        {(isConnected && categoryVoted) ||
+        (isConnected && eventCache?.finished) ||
+        (receipt && categoryId === receipt?.categorys) ? (
           <Box
             sx={{
               display: 'flex',
@@ -1382,8 +1386,9 @@ const Nominees = () => {
             color: '#03021F',
             margin: '20px 0px',
           }}
-          label={`Vote for ${nominees.find((nominee) => nominee.id === selectedNomineeToVote?.id)
-            ?.presentationName} [${selectedNomineeToVote?.id}]`}
+          label={`Vote for ${nominees.find((nominee) => nominee.id === selectedNomineeToVote?.id)?.presentationName} [${
+            selectedNomineeToVote?.id
+          }]`}
           fullWidth={true}
           onClick={() => handleVoteNomineeButton()}
         />

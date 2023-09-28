@@ -63,7 +63,6 @@ const UserGuide = () => {
       >
         <GuideTile
           stepNumber={<LooksOneIcon fontSize="large" />}
-          height={470}
           media="image"
           graphic={'/static/sms_verification.png'}
           stepTitle={i18n.t('userGuide.requirements.sms.title')}
@@ -71,7 +70,6 @@ const UserGuide = () => {
         />
         <GuideTile
           stepNumber={<LooksTwoIcon fontSize="large" />}
-          height={470}
           media="image"
           graphic={'/static/list_of_wallets.png'}
           stepTitle={i18n.t('userGuide.requirements.discord.title')}
@@ -96,7 +94,6 @@ const UserGuide = () => {
       >
         <GuideTile
           stepNumber={<LooksOneIcon fontSize="large" />}
-          height={470}
           media="video"
           graphic={'/static/connect_wallet.mov'}
           stepTitle={i18n.t('userGuide.createVerify.steps.1.title')}
@@ -104,7 +101,6 @@ const UserGuide = () => {
         />
         <GuideTile
           stepNumber={<LooksTwoIcon fontSize="large" />}
-          height={470}
           media="video"
           graphic={'/static/verify_wallet.mov'}
           stepTitle={i18n.t('userGuide.createVerify.steps.2.title')}

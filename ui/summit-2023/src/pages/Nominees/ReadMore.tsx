@@ -4,6 +4,7 @@ import { Typography, Button, Container, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import xIcon from '../../common/resources/images/x-icon.svg';
 import linkedinIcon from '../../common/resources/images/linkedin-icon.svg';
+import gitHubIcon from '../../common/resources/images/github-icon.svg';
 
 const ReadMore = (props) => {
   const { nominee, closeSidePage } = props;
@@ -12,7 +13,9 @@ const ReadMore = (props) => {
     closeSidePage(false);
   };
 
-  const shouldDisplayGrid = nominee.url.includes('twitter.com') || nominee.url.includes('linkedin.com');
+  const shouldDisplayGrid = nominee.urls.some(
+    (url) => url.includes('twitter.com') || url.includes('linkedin.com') || url.includes('github.com')
+  );
 
   return (
     <>
@@ -54,36 +57,58 @@ const ReadMore = (props) => {
             marginTop={1}
             marginBottom={2}
           >
-            {nominee.url.includes('twitter.com') ? (
-              <Grid item>
-                <IconButton
-                  className="nominee-social-button"
-                  aria-label="X"
-                  href={nominee.url}
-                >
-                  <img
-                    src={xIcon}
-                    alt="X"
-                    style={{ width: '20px' }}
-                  />
-                </IconButton>
+            {nominee.urls.map((url, index) => (
+              <Grid
+                item
+                key={index}
+              >
+                {url.includes('twitter.com') ? (
+                  <Grid item>
+                    <IconButton
+                      className="nominee-social-button"
+                      aria-label="X"
+                      href={url}
+                    >
+                      <img
+                        src={xIcon}
+                        alt="X"
+                        style={{ width: '20px' }}
+                      />
+                    </IconButton>
+                  </Grid>
+                ) : null}
+                {url.includes('linkedin.com') ? (
+                  <Grid item>
+                    <IconButton
+                      className="nominee-social-button"
+                      aria-label="Linkedin"
+                      href={url}
+                    >
+                      <img
+                        src={linkedinIcon}
+                        alt="Linkedin"
+                        style={{ width: '20px' }}
+                      />
+                    </IconButton>
+                  </Grid>
+                ) : null}
+                {url.includes('github.com') ? (
+                  <Grid item>
+                    <IconButton
+                      className="nominee-social-button"
+                      aria-label="GitHub"
+                      href={url}
+                    >
+                      <img
+                        src={gitHubIcon}
+                        alt="GitHub"
+                        style={{ width: '20px' }}
+                      />
+                    </IconButton>
+                  </Grid>
+                ) : null}
               </Grid>
-            ) : null}
-            {nominee.url.includes('linkedin.com') ? (
-              <Grid item>
-                <IconButton
-                  className="nominee-social-button"
-                  aria-label="Linkedin"
-                  href={nominee.url}
-                >
-                  <img
-                    src={linkedinIcon}
-                    alt="Linkedin"
-                    style={{ width: '20px' }}
-                  />
-                </IconButton>
-              </Grid>
-            ) : null}
+            ))}
           </Grid>
         ) : null}
 
@@ -97,13 +122,18 @@ const ReadMore = (props) => {
         </Typography>
 
         {!shouldDisplayGrid ? (
-          <Button
-            className="visit-web-button"
-            href={nominee.url}
-            fullWidth
-          >
-            {nominee.url}
-          </Button>
+          <>
+            {nominee.urls.map((url, index) => (
+              <Button
+                key={index}
+                className="visit-web-button"
+                href={url}
+                fullWidth
+              >
+                {url}
+              </Button>
+            ))}
+          </>
         ) : null}
       </Container>
     </>

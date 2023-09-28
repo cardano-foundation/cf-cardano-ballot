@@ -37,9 +37,9 @@ function App() {
   const fetchEvent = useCallback(async () => {
     try {
       const event = await getEvent(env.EVENT_ID);
-      if ('finished' in event) {
+      /*if ('finished' in event) {
         event.finished = true;
-      }
+      }*/
       const staticCategories: CategoryContent[] = SUMMIT2023CONTENT.categories;
 
       const joinedCategories = event.categories

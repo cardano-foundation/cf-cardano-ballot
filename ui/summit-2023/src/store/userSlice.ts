@@ -11,10 +11,11 @@ const initialState: UserState = {
   walletIsLoggedIn: false,
   isReceiptFetched: false,
   receipts: {},
-  winners: [{
+  /*winners: [{
     categoryId: 'AMBASSADOR',
     proposalId: '63123e7f-dfc3-481e-bb9d-fed1d9f6e9b9'
-  }],
+  }],*/
+  winners: [],
   userVotes: [],
   proposal: '',
   userVerification: {},

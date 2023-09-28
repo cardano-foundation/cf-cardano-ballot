@@ -68,11 +68,6 @@ dependencies {
 	implementation("com.nimbusds:nimbus-jose-jwt:9.35")
 	implementation("com.google.crypto.tink:tink:1.11.0")
 
-	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0-beta3")
-    implementation("com.bloxbean.cardano:cardano-client-address:0.5.0-beta3")
-    implementation("com.bloxbean.cardano:cardano-client-metadata:0.5.0-beta3")
-	implementation("com.bloxbean.cardano:cardano-client-quicktx:0.5.0-beta3")
-	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.0-beta3")
 	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0-beta3")
 
 	implementation("io.blockfrost:blockfrost-java:0.1.3")

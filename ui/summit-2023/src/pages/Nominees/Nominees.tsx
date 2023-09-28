@@ -62,7 +62,6 @@ import { parseError } from 'common/constants/errors';
 import { categoryAlreadyVoted } from '../Categories';
 import { ProposalPresentationExtended } from '../../store/types';
 import { verifyVote } from 'common/api/verificationService';
-import { JsonViewer } from '@textea/json-viewer';
 
 const Nominees = () => {
   const { categoryId } = useParams();
@@ -74,9 +73,6 @@ const Nominees = () => {
   const receipt = receipts && Object.keys(receipts).length && receipts[categoryId] ? receipts[categoryId] : undefined;
   const userVotes = useSelector((state: RootState) => state.user.userVotes);
   const winners = useSelector((state: RootState) => state.user.winners);
-
-  console.log('winners');
-  console.log(winners);
 
   const categoryVoted = categoryAlreadyVoted(categoryId, userVotes);
 
@@ -181,6 +177,8 @@ const Nominees = () => {
           eventBus.publish('showToast', 'Login successfully');
           getUserVotes(newSession?.accessToken)
             .then((uVotes) => {
+              console.log('uVotes');
+              console.log(uVotes);
               if (uVotes) {
                 dispatch(setUserVotes({ userVotes: uVotes }));
               }
@@ -226,6 +224,8 @@ const Nominees = () => {
       if (session && !tokenIsExpired(session?.expiresAt)) {
         await getVoteReceipt(categoryId, session?.accessToken)
           .then((r) => {
+            console.log('receipt');
+            console.log(r)
             dispatch(setVoteReceipt({ categoryId: categoryId, receipt: r }));
           })
           .catch((e) => {
@@ -408,10 +408,6 @@ const Nominees = () => {
         });
     }
   };
-
-
-  console.log('nominees');
-  console.log(nominees);
 
   const renderResponsiveList = (): ReactElement => {
     return (
@@ -709,7 +705,7 @@ const Nominees = () => {
           {summit2023Category.desc}
         </Typography>
 
-        {isConnected && categoryVoted || (isConnected && eventCache?.finished) ? (
+        {isConnected && categoryVoted || (isConnected && eventCache?.finished) || (receipt && categoryId === receipt?.categorys) ? (
           <Box
             sx={{
               display: 'flex',
@@ -1310,18 +1306,6 @@ const Nominees = () => {
                       padding: '16px',
                     }}
                   >
-                    {receipt?.merkleProof ? (
-                      <JsonViewer value={JSON.stringify(receipt?.merkleProof || '', null, 4)} />
-                    ) : (
-                      <Typography
-                        component="pre"
-                        variant="body2"
-                        sx={{ pointer: 'cursor' }}
-                      >
-                        Not available yet
-                      </Typography>
-                    )}
-
                     <Typography
                       component="pre"
                       variant="body2"

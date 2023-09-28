@@ -73,7 +73,7 @@
     "start": "react-scripts start",
     "build": "GENERATE_SOURCEMAP=false react-scripts build",
     "test": "jest --config ./jest.config.js",
-    "test:coverage": "jest --config ./jest.config.js --collect-coverage",
+    "test:coverage": "jest --config ./jest.config.js --collect-coverage --verbose",
     "react-inject-env": "react-inject-env set",
     "eject": "react-scripts eject",
     "lint": "eslint --fix --ext .ts,.tsx ."

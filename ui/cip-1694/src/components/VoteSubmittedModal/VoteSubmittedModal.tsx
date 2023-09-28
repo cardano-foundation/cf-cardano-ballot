@@ -39,6 +39,7 @@ export const VoteSubmittedModal = (props: VoteSubmittedModalProps) => {
           aria-label="close"
           onClick={onCloseFn}
           className={styles.closeBtn}
+          data-testid="vote-submitted-close"
         >
           <CloseIcon className={styles.closeIcon} />
         </IconButton>

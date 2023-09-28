@@ -46,10 +46,6 @@ export const VerifyModal = ({ opened, onConfirm }: VerifyModalProps) => {
         setActiveSection(SECTIONS.CHOSE_EXPLORER);
       }
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
-        console.log('Failed to verify vote', error?.message);
-      }
-
       const message = error?.message?.endsWith('is not valid JSON')
         ? errors[ERRORS.JSON]
         : errors[error?.message as ERRORS] || errors[ERRORS.VERIFY];

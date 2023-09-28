@@ -76,11 +76,9 @@ describe('App', () => {
     const error = 'error';
     mockGetEvent.mockReset();
     mockGetEvent.mockImplementation(async () => await Promise.reject(error));
-    const consoleLogSpy = jest.spyOn(global.console, 'log');
     renderWithProviders(<App />);
 
     await waitFor(async () => {
-      expect(consoleLogSpy).toBeCalledWith(`Failed to fetch event, ${error}`);
       expect(mockToast).toBeCalledWith(
         <Toast
           message="Failed to fetch event"

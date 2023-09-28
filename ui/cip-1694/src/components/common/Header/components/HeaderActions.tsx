@@ -39,8 +39,6 @@ export const HeaderActions = ({ isMobileMenu = false, onClick, showNavigationIte
     try {
       dispatch(setChainTipData({ tip: await voteService.getChainTip() }));
     } catch (error) {
-      const message = `Failed to fecth chain tip: ${error.message}`;
-      console.log(message);
       toast(
         <Toast
           message="Failed to fecth chain tip"

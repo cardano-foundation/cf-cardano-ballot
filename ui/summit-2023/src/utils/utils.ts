@@ -64,5 +64,5 @@ export {
   capitalizeFirstLetter,
   resolveCardanoNetwork,
   openNewTab,
-  shortenString
+  shortenString,
 };

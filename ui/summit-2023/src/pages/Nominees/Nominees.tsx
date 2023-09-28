@@ -45,12 +45,7 @@ import {
   getUserVotes,
   getVoteReceipt,
 } from '../../common/api/voteService';
-import {
-  copyToClipboard,
-  getSignedMessagePromise,
-  resolveCardanoNetwork,
-  shortenString,
-} from '../../utils/utils';
+import { copyToClipboard, getSignedMessagePromise, resolveCardanoNetwork, shortenString } from '../../utils/utils';
 import { buildCanonicalLoginJson, submitLogin } from 'common/api/loginService';
 import { getUserInSession, saveUserInSession, tokenIsExpired } from '../../utils/session';
 import { setUserVotes, setVoteReceipt, setWalletIsLoggedIn } from '../../store/userSlice';

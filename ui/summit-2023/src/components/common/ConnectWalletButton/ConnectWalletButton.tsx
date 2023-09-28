@@ -69,22 +69,25 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
       </Button>
       {isConnected && (
         <div className="disconnect-wrapper">
-          <Button
-            sx={{ zIndex: '99', cursor: walletIsVerified ? 'default' : 'pointer' }}
-            className="connect-button verify-button"
-            color="inherit"
-            onClick={() => onOpenVerifyWalletModal()}
-            disabled={eventCache?.finished}
-          >
-            {walletIsVerified ? (
-              <>
-                <span style={{ paddingTop: '3px' }}>Verified</span>{' '}
-                <VerifiedIcon style={{ width: '20px', paddingBottom: '0px', color: '#1C9BEF' }} />{' '}
-              </>
-            ) : (
-              'Verify'
-            )}
-          </Button>
+          {!eventCache?.finished ? (
+            <Button
+              sx={{ zIndex: '99', cursor: walletIsVerified ? 'default' : 'pointer' }}
+              className="connect-button verify-button"
+              color="inherit"
+              onClick={() => onOpenVerifyWalletModal()}
+              disabled={eventCache?.finished}
+            >
+              {walletIsVerified ? (
+                <>
+                  <span style={{ paddingTop: '3px' }}>Verified</span>{' '}
+                  <VerifiedIcon style={{ width: '20px', paddingBottom: '0px', color: '#1C9BEF' }} />{' '}
+                </>
+              ) : (
+                'Verify'
+              )}
+            </Button>
+          ) : null}
+
           <Button
             sx={{ zIndex: '99' }}
             className="connect-button disconnect-button"

@@ -18,7 +18,7 @@ cf-summit-2023-ui:
     votingVerificationAppServerUrl: https://verification-api.dev.cf-summit-2023-preprod.eu-west-1.metadata.dev.cf-deployments.org
     userVerificationServerUrl: https://user-verification.dev.cf-summit-2023-preprod.eu-west-1.metadata.dev.cf-deployments.org
     targetNetwork: PREPROD
-    eventId: CF_SUMMIT_2023_3A33
+    eventId: CF_SUMMIT_2023_025E
     discordChannelUrl: https://discord.gg/XekFHYXNmu
     discordBotUrl: https://discord.com/channels/945974991718068254/1149627691310530570
     image:
@@ -60,7 +60,7 @@ cf-user-verification-service:
   values:
     image:
       tag: 0.2.55
-    discordBotEventIdBinding: CF_SUMMIT_2023_3A33
+    discordBotEventIdBinding: CF_SUMMIT_2023_025E
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
     corsAllowedOrigins: https://{{ .Values.domain }},http://localhost:3000
 
@@ -69,7 +69,7 @@ cf-summit-2023-ledger-follower-api:
   values:
     image:
       tag: 0.2.55
-    bindOnEventIds: CF_SUMMIT_2023_3A33
+    bindOnEventIds: CF_SUMMIT_2023_025E
     yaci:
       startBlockHash: 3337e297121fda1262372c28de3d917bd2a60bb1e3c6326e3b7e832eb8017615
       startSlotNumber: "38748711"

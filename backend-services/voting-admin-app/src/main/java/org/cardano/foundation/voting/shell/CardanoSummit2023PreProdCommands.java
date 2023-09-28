@@ -44,7 +44,7 @@ public class CardanoSummit2023PreProdCommands {
         long startSlot = 40127992;
         long endSlot = startSlot + (604800 * 2); // two weeks since 604800 is 1 week in seconds
 
-        CreateEventCommand createEventCommand = CreateEventCommand.builder()
+        var createEventCommand = CreateEventCommand.builder()
                 .id(EVENT_NAME + "_" + shortUUID(4))
                 .startSlot(Optional.of(startSlot))
                 .endSlot(Optional.of(endSlot))

@@ -113,7 +113,7 @@ public class VoteResource {
                         });
     }
 
-    @RequestMapping(value = "/receipt", method = GET, produces = "application/json")
+    @RequestMapping(value = "/receipt", method = { HEAD, GET } , produces = "application/json")
     @Timed(value = "resource.vote.receipt.web3", histogram = true)
     public ResponseEntity<?> getVoteReceipt(Authentication authentication) {
         var cacheControl = CacheControl.noCache()
@@ -148,7 +148,7 @@ public class VoteResource {
                         });
     }
 
-    @RequestMapping(value = "/receipt/{eventId}/{categoryId}", method = GET, produces = "application/json")
+    @RequestMapping(value = "/receipt/{eventId}/{categoryId}", method = { HEAD, GET }, produces = "application/json")
     @Timed(value = "resource.vote.receipt.jwt", histogram = true)
     public ResponseEntity<?> getVoteReceipt(@PathVariable(value = "eventId", required = false) Optional<String> maybeEventId,
                                             @PathVariable("categoryId") String categoryId,

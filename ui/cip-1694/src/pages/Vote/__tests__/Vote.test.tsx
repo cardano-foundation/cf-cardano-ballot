@@ -621,9 +621,15 @@ describe('For ongoing event:', () => {
 
     const cta = within(votePage).queryByTestId('next-question-button');
     expect(cta.closest('button')).not.toBeDisabled();
+    expect(mockGetVoteReceipt).toHaveBeenLastCalledWith(eventMock_active.categories[0].id, true);
     expect(cta).toHaveTextContent('Next question');
 
     await act(async () => {
+      mockGetVoteReceipt.mockReset();
+      mockGetVoteReceipt.mockReturnValue({
+        ...VoteReceiptMock_Basic,
+        category: eventMock_active.categories[1].id,
+      });
       fireEvent.click(cta);
     });
 
@@ -647,7 +653,8 @@ describe('For ongoing event:', () => {
       );
     }
     expect(screen.queryByTestId('vote-receipt')).not.toBeInTheDocument();
-    expect(mockGetVoteReceipt).toHaveBeenLastCalledWith('MIN_VIABLE_GOV_STRUCTURE', true);
+    expect(mockGetVoteReceipt).toHaveBeenLastCalledWith(eventMock_active.categories[1].id, true);
+    expect(within(votePage).queryByTestId('next-question-button')).toHaveTextContent('Previous question');
   });
 
   test('should handle show vote receipt for inactive user session', async () => {

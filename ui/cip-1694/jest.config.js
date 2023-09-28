@@ -1,4 +1,15 @@
 module.exports = {
+  collectCoverage: true,
+  collectCoverageFrom: ['src/**/*.ts', 'src/**/*.tsx'],
+  coveragePathIgnorePatterns: ['node_modules', 'setupTests.ts', 'setupProxy.ts', 'env.ts', '.d.ts', 'types', 'test/*'],
+  coverageThreshold: {
+    global: {
+      branches: 75,
+      functions: 75,
+      lines: 85,
+      statements: 85,
+    },
+  },
   roots: ['<rootDir>/src'],
   testTimeout: 60000,
   testEnvironment: 'jsdom',

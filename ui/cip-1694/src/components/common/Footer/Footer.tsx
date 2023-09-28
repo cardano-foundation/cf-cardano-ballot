@@ -82,13 +82,13 @@ export const Footer = ({ isMobileMenu = false }) => (
       >
         Version 1.01&nbsp;<span className={styles.underline}>(Status)</span>
       </span>
-      {env?.DISCORD_URL && (
+      {env.DISCORD_URL && (
         <Box
           marginTop={{ xs: '15px', md: '0px' }}
           marginLeft={{ xs: '-5px', md: '0px' }}
         >
           <a
-            href={env?.DISCORD_URL}
+            href={env.DISCORD_URL}
             data-testid="discord"
             className={styles.link}
             target="_blank"

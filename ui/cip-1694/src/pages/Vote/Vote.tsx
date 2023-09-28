@@ -47,12 +47,6 @@ const copies = [
   },
 ];
 
-const errorsMap = {
-  INVALID_VOTING_POWER: 'To cast a vote, Voting Power should be more than 0',
-  EXPIRED_SLOT: "CIP-93's envelope slot is expired!",
-  VOTE_CANNOT_BE_CHANGED: 'You have already voted! Vote cannot be changed for this stake address',
-};
-
 const iconsMap: Record<ProposalPresentation['name'], React.ReactElement | null> = {
   YES: <DoneIcon sx={{ fontSize: { xs: '30px', md: '52px' }, color: '#39486C' }} />,
   NO: <CloseIcon sx={{ fontSize: { xs: '30px', md: '52px' }, color: '#39486C' }} />,
@@ -126,7 +120,6 @@ export const VotePage = () => {
           icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
         />
       );
-      console.log(message);
     }
   }, [signMessagePromisified, stakeAddress, tip?.absoluteSlot]);
 
@@ -147,8 +140,6 @@ export const VotePage = () => {
         if ('id' in receiptResponse) {
           setReceipt(receiptResponse);
         } else {
-          const message = `${errorPrefix}', ${receiptResponse?.title}, ${receiptResponse?.detail}`;
-          console.log(message);
           toast(
             <Toast
               message={errorPrefix}
@@ -167,7 +158,6 @@ export const VotePage = () => {
           setIsConfirmWithWalletSignatureModalVisible(false);
           return;
         }
-        const message = `${errorPrefix}, ${error?.info || error?.message || error?.toString()}`;
         toast(
           <Toast
             message={errorPrefix}
@@ -175,7 +165,6 @@ export const VotePage = () => {
             icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
           />
         );
-        console.log(message);
       }
       setIsReceiptDrawerInitializing(false);
       setIsConfirmWithWalletSignatureModalVisible(false);
@@ -213,17 +202,10 @@ export const VotePage = () => {
   };
 
   const handleSubmit = async () => {
-    if (!isConnected) return;
-
     let votingPower: Account['votingPower'];
     try {
       ({ votingPower } = await voteService.getVotingPower(env.EVENT_ID, stakeAddress));
     } catch (error) {
-      const message = `Failed to fetch votingPower ${
-        error instanceof Error || error instanceof HttpError ? error?.message : error
-      }`;
-
-      console.log(message);
       toast(
         <Toast
           error
@@ -231,8 +213,9 @@ export const VotePage = () => {
           icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
         />
       );
-      return;
     }
+
+    if (!votingPower) return;
 
     const canonicalVoteInput = buildCanonicalVoteInputJson({
       option: optionId?.toUpperCase(),
@@ -264,7 +247,6 @@ export const VotePage = () => {
           />
         );
         setOptionId('');
-        console.log('Failed to cast e vote', errorsMap[error?.message as keyof typeof errorsMap] || error?.message);
       } else if (error instanceof Error) {
         toast(
           <Toast
@@ -273,7 +255,6 @@ export const VotePage = () => {
             icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
           />
         );
-        console.log('Failed to cast e vote', error?.message || error.toString());
       }
     }
     setIsCastingAVote(false);
@@ -282,8 +263,9 @@ export const VotePage = () => {
   const cantSelectOptions =
     !!receipt || voteSubmitted || (isConnected && !isReceiptFetched) || event?.notStarted || event?.finished;
   const showViewReceiptButton = receipt?.id || voteSubmitted || (isReceiptFetched && event?.finished);
-  const showConnectButton = !isConnected && !event?.notStarted;
-  const showSubmitButton = isConnected && !event?.notStarted && !event?.finished && !showViewReceiptButton;
+  const showConnectButton = event && !isConnected && event?.notStarted === false;
+  const showSubmitButton =
+    event && isConnected && event?.notStarted === false && event?.finished === false && !showViewReceiptButton;
   const showPagination = isConnected && receipt && category === receipt?.category && numOfCategories > 1;
 
   return (

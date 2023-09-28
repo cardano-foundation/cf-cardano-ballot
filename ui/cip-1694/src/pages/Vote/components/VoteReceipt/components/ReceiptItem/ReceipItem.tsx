@@ -33,7 +33,7 @@ export const ReceiptItem = ({ name, value, onItemClick, dataTestId = 'receipt-it
           gap={'10px'}
           alignItems="center"
         >
-          <span data-testid={`${dataTestId}-title`}>{labelTransformerMap[name] || name}</span>
+          <span data-testid={`${dataTestId}-title`}>{labelTransformerMap[name]}</span>
           <Tooltip
             classes={{ tooltip: styles.tooltip }}
             title={
@@ -47,7 +47,7 @@ export const ReceiptItem = ({ name, value, onItemClick, dataTestId = 'receipt-it
                   className={styles.tooltipTitle}
                   variant="h4"
                 >
-                  {labelTransformerMap[name] || name}
+                  {labelTransformerMap[name]}
                 </Typography>
                 <Typography
                   className={styles.tooltipDescription}
@@ -98,6 +98,7 @@ export const ReceiptItem = ({ name, value, onItemClick, dataTestId = 'receipt-it
       </Typography>
       {name === 'voteProof' && (
         <CopyToClipboard
+          data-testid="copy-vote-proof-cta"
           text={JSON.stringify(value)}
           onCopy={onItemClick}
         >

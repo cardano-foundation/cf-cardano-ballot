@@ -87,7 +87,6 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
               )}
             </Button>
           ) : null}
-
           <Button
             sx={{ zIndex: '99' }}
             className="connect-button disconnect-button"

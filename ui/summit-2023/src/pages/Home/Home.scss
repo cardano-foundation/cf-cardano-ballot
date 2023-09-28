@@ -1,6 +1,6 @@
 .hero-banner {
   width: 420px;
-  height: 420px;
+  height: 458px;
   min-width: 375px;
   max-width: 19vw;
   @media only screen and (max-width: 768px) {
@@ -43,18 +43,6 @@
       width: 170px;
       margin-left: 26%;
     }
-  }
-
-  .play-icon {
-    font-size: 5rem;
-    margin-left: 40%;
-    margin-top: 10%;
-    transition: transform 0.3s ease;
-    cursor: pointer;
-  }
-
-  .play-icon:hover {
-    transform: scale(1.3);
   }
 }
 

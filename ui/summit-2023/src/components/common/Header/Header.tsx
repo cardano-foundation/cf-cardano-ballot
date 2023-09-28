@@ -361,14 +361,14 @@ const Header: React.FC = () => {
         position={'static'}
         style={{ background: 'transparent', boxShadow: 'none', color: 'black' }}
       >
-        <Toolbar>
+        <Toolbar sx={{pl: 0, pt: 1}}>
           {isTablet ? (
             <>
               <NavLink to="/">
                 <img
                   src="/static/cardano-ballot.png"
-                  alt="Cardano Logo"
-                  style={{ height: isMobile ? '29px' : '40px' }}
+                  alt="Cardano Ballot Logo"
+                  style={{ height: isMobile ? '35px' : '40px' }}
                 />
               </NavLink>
               <div style={{ flexGrow: 1 }}></div>
@@ -391,7 +391,7 @@ const Header: React.FC = () => {
                 <NavLink to="/">
                   <img
                     src="/static/cardano-ballot.png"
-                    alt="Cardano Logo"
+                    alt="Cardano Ballot Logo"
                     style={{ flexGrow: 1, height: '40px' }}
                   />
                 </NavLink>

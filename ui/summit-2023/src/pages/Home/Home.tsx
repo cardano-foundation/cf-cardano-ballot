@@ -17,7 +17,7 @@ const Home: React.FC = () => {
       container
       spacing={1}
       sx={{
-        height: { xs: '60%', md: '70%' },
+        height: { xs: '60%', md: '75vh', lg: '57vh', xl: '71vh' },
         margin: { xs: '0%', sm: '2%', md: '3%', lg: '4%' },
       }}
     >
@@ -30,6 +30,8 @@ const Home: React.FC = () => {
           padding: '20px',
           order: '1',
           display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center'
         }}
       >
         <div className="left-title-container">

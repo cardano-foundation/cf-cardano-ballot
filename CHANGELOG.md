@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.61](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.60...v0.2.61) (2023-09-28)
+
+
+### Bug Fixes
+
+* cip45 ui ([be4fb65](https://github.com/cardano-foundation/cf-cardano-ballot/commit/be4fb655290f7e0f2e81dea90544e82eb26641c6))
+* clean session on disconnect ([5e40a7d](https://github.com/cardano-foundation/cf-cardano-ballot/commit/5e40a7dbdadf3b62165c24ec9816af8cbf6b82f9))
+* hide receipt banner if not wallet connected ([1669fcc](https://github.com/cardano-foundation/cf-cardano-ballot/commit/1669fcce6d85c3ecbff9cae50505847af4199f14))
+* layout fixes on all pages ([0315459](https://github.com/cardano-foundation/cf-cardano-ballot/commit/0315459898c1749a47b769308eedf01b862a77e5))
+* login after voting ends and remove debugs ([72e3fbd](https://github.com/cardano-foundation/cf-cardano-ballot/commit/72e3fbde84c80b98fa4baa326dfb3a55a8fc04f6))
+* resolve conflicts ([09f21d6](https://github.com/cardano-foundation/cf-cardano-ballot/commit/09f21d606ccd54a7163550f77e26fc7f7a90a3ae))
+* show see receipt after casting a vote and call user votes after casting a vote ([be1eb6e](https://github.com/cardano-foundation/cf-cardano-ballot/commit/be1eb6ee2180640b2b1938ad32bd80e16f376671))
+* Successfully cast vote and Receipt help texts ([57a5466](https://github.com/cardano-foundation/cf-cardano-ballot/commit/57a54665d8b84ca4a1f2a1312fdf4f90816c0588))
+
 ## [0.2.60](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.59...v0.2.60) (2023-09-28)
 
 

@@ -56,8 +56,6 @@ dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
 
-    implementation("com.bloxbean.cardano:yaci:0.2.3")
-
 	compileOnly("org.projectlombok:lombok:1.18.30")
 	annotationProcessor("org.projectlombok:lombok:1.18.30")
 

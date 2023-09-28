@@ -177,8 +177,6 @@ const Nominees = () => {
           eventBus.publish('showToast', 'Login successfully');
           getUserVotes(newSession?.accessToken)
             .then((uVotes) => {
-              console.log('uVotes');
-              console.log(uVotes);
               if (uVotes) {
                 dispatch(setUserVotes({ userVotes: uVotes }));
               }
@@ -222,15 +220,24 @@ const Nominees = () => {
       await castAVoteWithDigitalSignature(requestVoteObject);
       eventBus.publish('showToast', 'Vote submitted successfully');
       if (session && !tokenIsExpired(session?.expiresAt)) {
-        await getVoteReceipt(categoryId, session?.accessToken)
+        getVoteReceipt(categoryId, session?.accessToken)
           .then((r) => {
-            console.log('receipt');
-            console.log(r);
             dispatch(setVoteReceipt({ categoryId: categoryId, receipt: r }));
           })
           .catch((e) => {
             if (process.env.NODE_ENV === 'development') {
               console.log(`Failed to fetch vote receipt, ${parseError(e.message)}`);
+            }
+          });
+        getUserVotes(session?.accessToken)
+          .then((response) => {
+            if (response) {
+              dispatch(setUserVotes({ userVotes: response }));
+            }
+          })
+          .catch((e) => {
+            if (process.env.NODE_ENV === 'development') {
+              console.log(`Failed to fetch user votes, ${parseError(e.message)}`);
             }
           });
       } else {
@@ -335,7 +342,7 @@ const Nominees = () => {
   };
 
   const handleViewVoteReceipt = () => {
-    if (isConnected) {
+    if (isConnected && walletIsLoggedIn && !tokenIsExpired(session?.expiresAt)) {
       viewVoteReceipt(true, true);
     } else {
       login();
@@ -707,9 +714,8 @@ const Nominees = () => {
           {summit2023Category.desc}
         </Typography>
 
-        {(isConnected && categoryVoted) ||
-        (isConnected && eventCache?.finished) ||
-        (receipt && categoryId === receipt?.categorys) ? (
+        {isConnected &&
+        (categoryVoted || (isConnected && eventCache?.finished) || (receipt && categoryId === receipt?.category)) ? (
           <Box
             sx={{
               display: 'flex',
@@ -742,8 +748,8 @@ const Nominees = () => {
                 }}
               >
                 {walletIsLoggedIn && !tokenIsExpired(session?.expiresAt)
-                  ? 'You have successfully cast a vote for Nominee'
-                  : 'To see you vote receipt, please sign with your wallet'}
+                  ? `You have successfully cast a vote for ${receipt?.presentationName} in the ${summit2023Category.presentationName} category.`
+                  : 'To see you vote receipt, please sign with your Wallet'}
               </Typography>
             </div>
             <CustomButton
@@ -752,7 +758,7 @@ const Nominees = () => {
                 color: '#F6F9FF',
                 width: 'auto',
               }}
-              label={walletIsLoggedIn ? 'View vote receipt' : 'Login with Wallet'}
+              label={walletIsLoggedIn ? 'View vote receipt' : 'Login with wallet'}
               onClick={() => handleViewVoteReceipt()}
               fullWidth={true}
             />
@@ -848,7 +854,7 @@ const Nominees = () => {
                       }}
                     >
                       Verified:
-                      <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
+                      <Tooltip title="The submitted vote has been successfully verified on-chain.">
                         <InfoIcon
                           style={{
                             color: '#434656A6',
@@ -931,7 +937,7 @@ const Nominees = () => {
                       ) : (
                         'Vote not ready for verification'
                       )}
-                      <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
+                      <Tooltip title="Assurance levels will update according to the finality of the transaction on-chain.">
                         <InfoIcon
                           style={{
                             color: '#434656A6',
@@ -1000,7 +1006,7 @@ const Nominees = () => {
                 >
                   Event
                 </Typography>
-                <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
+                <Tooltip title="Cardano Summit 2023 Awards.">
                   <InfoIcon
                     style={{
                       color: '#434656A6',
@@ -1043,7 +1049,7 @@ const Nominees = () => {
                 >
                   Proposal
                 </Typography>
-                <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
+                <Tooltip title="Identifies the nominee selected for this category.">
                   <InfoIcon
                     style={{
                       color: '#434656A6',
@@ -1086,7 +1092,7 @@ const Nominees = () => {
                 >
                   Voter Staking Address
                 </Typography>
-                <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
+                <Tooltip title="The stake address associated with the Cardano wallet casting the vote.">
                   <InfoIcon
                     style={{
                       color: '#434656A6',
@@ -1129,7 +1135,7 @@ const Nominees = () => {
                 >
                   Status
                 </Typography>
-                <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
+                <Tooltip title="The current status of your vote receipt based on the current assurance level.">
                   <InfoIcon
                     style={{
                       color: '#434656A6',
@@ -1199,7 +1205,7 @@ const Nominees = () => {
                     >
                       ID
                     </Typography>
-                    <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
+                    <Tooltip title="This is a unique identifier associated with the vote submitted.">
                       <InfoIcon
                         style={{
                           color: '#434656A6',
@@ -1243,7 +1249,7 @@ const Nominees = () => {
                     >
                       Voted at Slot
                     </Typography>
-                    <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
+                    <Tooltip title="The time of the vote submission represented in Cardano blockchain epoch slots.">
                       <InfoIcon
                         style={{
                           color: '#434656A6',
@@ -1287,7 +1293,7 @@ const Nominees = () => {
                     >
                       Vote Proof
                     </Typography>
-                    <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
+                    <Tooltip title="This is required to verify a vote was included on-chain.">
                       <InfoIcon
                         style={{
                           color: '#434656A6',
@@ -1386,9 +1392,8 @@ const Nominees = () => {
             color: '#03021F',
             margin: '20px 0px',
           }}
-          label={`Vote for ${nominees.find((nominee) => nominee.id === selectedNomineeToVote?.id)?.presentationName} [${
-            selectedNomineeToVote?.id
-          }]`}
+          label={`Vote for ${nominees.find((nominee) => nominee.id === selectedNomineeToVote?.id)
+            ?.presentationName} [${selectedNomineeToVote?.id}]`}
           fullWidth={true}
           onClick={() => handleVoteNomineeButton()}
         />

@@ -177,8 +177,6 @@ const Nominees = () => {
           eventBus.publish('showToast', 'Login successfully');
           getUserVotes(newSession?.accessToken)
             .then((uVotes) => {
-              console.log('uVotes');
-              console.log(uVotes);
               if (uVotes) {
                 dispatch(setUserVotes({ userVotes: uVotes }));
               }
@@ -222,15 +220,24 @@ const Nominees = () => {
       await castAVoteWithDigitalSignature(requestVoteObject);
       eventBus.publish('showToast', 'Vote submitted successfully');
       if (session && !tokenIsExpired(session?.expiresAt)) {
-        await getVoteReceipt(categoryId, session?.accessToken)
+        getVoteReceipt(categoryId, session?.accessToken)
           .then((r) => {
-            console.log('receipt');
-            console.log(r);
             dispatch(setVoteReceipt({ categoryId: categoryId, receipt: r }));
           })
           .catch((e) => {
             if (process.env.NODE_ENV === 'development') {
               console.log(`Failed to fetch vote receipt, ${parseError(e.message)}`);
+            }
+          });
+        getUserVotes(session?.accessToken)
+          .then((response) => {
+            if (response) {
+              dispatch(setUserVotes({ userVotes: response }));
+            }
+          })
+          .catch((e) => {
+            if (process.env.NODE_ENV === 'development') {
+              console.log(`Failed to fetch user votes, ${parseError(e.message)}`);
             }
           });
       } else {
@@ -335,7 +342,7 @@ const Nominees = () => {
   };
 
   const handleViewVoteReceipt = () => {
-    if (isConnected) {
+    if (isConnected && walletIsLoggedIn && !tokenIsExpired(session?.expiresAt)) {
       viewVoteReceipt(true, true);
     } else {
       login();
@@ -707,9 +714,8 @@ const Nominees = () => {
           {summit2023Category.desc}
         </Typography>
 
-        {(isConnected && categoryVoted) ||
-        (isConnected && eventCache?.finished) ||
-        (receipt && categoryId === receipt?.categorys) ? (
+        {isConnected &&
+        (categoryVoted || (isConnected && eventCache?.finished) || (receipt && categoryId === receipt?.category)) ? (
           <Box
             sx={{
               display: 'flex',
@@ -752,7 +758,7 @@ const Nominees = () => {
                 color: '#F6F9FF',
                 width: 'auto',
               }}
-              label={walletIsLoggedIn ? 'View vote receipt' : 'Login with Wallet'}
+              label={walletIsLoggedIn ? 'View vote receipt' : 'Login with wallet'}
               onClick={() => handleViewVoteReceipt()}
               fullWidth={true}
             />
@@ -1386,9 +1392,8 @@ const Nominees = () => {
             color: '#03021F',
             margin: '20px 0px',
           }}
-          label={`Vote for ${nominees.find((nominee) => nominee.id === selectedNomineeToVote?.id)?.presentationName} [${
-            selectedNomineeToVote?.id
-          }]`}
+          label={`Vote for ${nominees.find((nominee) => nominee.id === selectedNomineeToVote?.id)
+            ?.presentationName} [${selectedNomineeToVote?.id}]`}
           fullWidth={true}
           onClick={() => handleVoteNomineeButton()}
         />

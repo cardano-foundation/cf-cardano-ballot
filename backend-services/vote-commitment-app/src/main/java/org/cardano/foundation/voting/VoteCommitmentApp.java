@@ -1,5 +1,7 @@
 package org.cardano.foundation.voting;
 
+import com.bloxbean.cardano.client.backend.blockfrost.service.http.*;
+import com.bloxbean.cardano.client.backend.model.TransactionContent;
 import io.micrometer.core.aop.TimedAspect;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +23,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import static org.springframework.aot.hint.ExecutableMode.INVOKE;
 
 @SpringBootApplication(exclude = { SecurityAutoConfiguration.class, ErrorMvcAutoConfiguration.class, UserDetailsServiceAutoConfiguration.class })
 @EnableJpaRepositories("org.cardano.foundation.voting.repository")
@@ -56,7 +60,16 @@ public class VoteCommitmentApp {
         @Override
         @SneakyThrows
         public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-            hints.reflection().registerMethod(TimedAspect.class.getMethod("timedMethod", ProceedingJoinPoint.class), ExecutableMode.INVOKE);
+            hints.reflection().registerMethod(TimedAspect.class.getMethod("timedMethod", ProceedingJoinPoint.class), INVOKE);
+			hints.proxies().registerJdkProxy(AddressesApi.class);
+			hints.proxies().registerJdkProxy(TransactionApi.class);
+			hints.proxies().registerJdkProxy(AccountApi.class);
+			hints.proxies().registerJdkProxy(BlockApi.class);
+			hints.proxies().registerJdkProxy(EpochApi.class);
+			hints.proxies().registerJdkProxy(MetadataApi.class);
+			hints.proxies().registerJdkProxy(AssetsApi.class);
+			hints.proxies().registerJdkProxy(CardanoLedgerApi.class);
+			hints.proxies().registerJdkProxy(ScriptApi.class);
         }
     }
 

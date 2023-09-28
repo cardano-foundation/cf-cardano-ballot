@@ -3,6 +3,7 @@ package org.cardano.foundation.voting.client;
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
+import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,13 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Component
 @Slf4j
+@RegisterReflectionForBinding({
+        CardanoNetwork.class,
+        ChainFollowerClient.ChainTipResponse.class,
+        ChainFollowerClient.TransactionDetailsResponse.class,
+        ChainFollowerClient.FinalityScore.class,
+        ChainFollowerClient.EventSummary.class,
+})
 public class ChainFollowerClient {
 
     @Autowired

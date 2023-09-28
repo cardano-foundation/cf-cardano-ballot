@@ -25,7 +25,7 @@ cf-cardano-ballot-voting-api:
         voteCommitmentCronExpression: "0 0 * * * *"
       - name: active-half-hour
         active: "true"
-        voteCommitmentCronExpression: "0 */5 * * * *"
+        voteCommitmentCronExpression: "0 */2 * * * *"
     image:
       tag: 0.2.60
     monitoring:

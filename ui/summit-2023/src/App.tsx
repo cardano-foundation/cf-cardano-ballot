@@ -108,6 +108,8 @@ function App() {
     setOpenTermDialog(!termsAndConditionsChecked);
   }, []);
 
+  console.log('eventCache');
+  console.log(eventCache);
   return (
     <Container maxWidth="xl">
       <BrowserRouter>

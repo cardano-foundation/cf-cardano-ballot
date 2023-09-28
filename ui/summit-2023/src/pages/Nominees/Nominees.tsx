@@ -716,7 +716,7 @@ const Nominees = () => {
           {summit2023Category.desc}
         </Typography>
 
-        {isConnected && categoryVoted || (isConnected && eventCache?.finished) || (receipt && categoryId === receipt?.category) ? (
+        {isConnected && (categoryVoted || (isConnected && eventCache?.finished) || (receipt && categoryId === receipt?.category)) ? (
           <Box
             sx={{
               display: 'flex',

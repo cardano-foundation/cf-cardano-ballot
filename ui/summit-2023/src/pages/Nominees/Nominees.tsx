@@ -696,7 +696,7 @@ const Nominees = () => {
                 }}
               >
                 {walletIsLoggedIn && !tokenIsExpired(session?.expiresAt)
-                  ? 'You have successfully cast a vote for Nominee in the Ambassador category '
+                  ? `You have successfully cast a vote for ${receipt?.presentationName} in the ${summit2023Category.presentationName} category.`
                   : 'To see you vote receipt, please sign with your Wallet'}
               </Typography>
             </div>
@@ -802,7 +802,7 @@ const Nominees = () => {
                       }}
                     >
                       Verified:
-                      <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
+                      <Tooltip title="The submitted vote has been successfully verified on-chain.">
                         <InfoIcon
                           style={{
                             color: '#434656A6',
@@ -885,7 +885,7 @@ const Nominees = () => {
                       ) : (
                         'Vote not ready for verification'
                       )}
-                      <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
+                      <Tooltip title="Assurance levels will update according to the finality of the transaction on-chain.">
                         <InfoIcon
                           style={{
                             color: '#434656A6',
@@ -954,7 +954,7 @@ const Nominees = () => {
                 >
                   Event
                 </Typography>
-                <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
+                <Tooltip title="Cardano Summit 2023 Awards.">
                   <InfoIcon
                     style={{
                       color: '#434656A6',
@@ -997,7 +997,7 @@ const Nominees = () => {
                 >
                   Proposal
                 </Typography>
-                <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
+                <Tooltip title="Identifies the nominee selected for this category.">
                   <InfoIcon
                     style={{
                       color: '#434656A6',
@@ -1040,7 +1040,7 @@ const Nominees = () => {
                 >
                   Voter Staking Address
                 </Typography>
-                <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
+                <Tooltip title="The stake address associated with the Cardano wallet casting the vote.">
                   <InfoIcon
                     style={{
                       color: '#434656A6',
@@ -1083,7 +1083,7 @@ const Nominees = () => {
                 >
                   Status
                 </Typography>
-                <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
+                <Tooltip title="The current status of your vote receipt based on the current assurance level.">
                   <InfoIcon
                     style={{
                       color: '#434656A6',
@@ -1153,7 +1153,7 @@ const Nominees = () => {
                     >
                       ID
                     </Typography>
-                    <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
+                    <Tooltip title="This is a unique identifier associated with the vote submitted.">
                       <InfoIcon
                         style={{
                           color: '#434656A6',
@@ -1197,7 +1197,7 @@ const Nominees = () => {
                     >
                       Voted at Slot
                     </Typography>
-                    <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
+                    <Tooltip title="The time of the vote submission represented in Cardano blockchain epoch slots.">
                       <InfoIcon
                         style={{
                           color: '#434656A6',
@@ -1241,7 +1241,7 @@ const Nominees = () => {
                     >
                       Vote Proof
                     </Typography>
-                    <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
+                    <Tooltip title="This is required to verify a vote was included on-chain.">
                       <InfoIcon
                         style={{
                           color: '#434656A6',

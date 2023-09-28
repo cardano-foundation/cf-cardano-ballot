@@ -683,7 +683,7 @@ const Nominees = () => {
           {summit2023Category.desc}
         </Typography>
 
-        {isConnected && categoryVoted ? (
+        {isConnected && categoryVoted || (isConnected && eventCache?.finished) ? (
           <Box
             sx={{
               display: 'flex',
@@ -716,8 +716,8 @@ const Nominees = () => {
                 }}
               >
                 {walletIsLoggedIn && !tokenIsExpired(session?.expiresAt)
-                  ? 'You have successfully cast a vote for Nominee in the Ambassador category '
-                  : 'To see you vote receipt, please sign with your Wallet'}
+                  ? 'You have successfully cast a vote for Nominee'
+                  : 'To see you vote receipt, please sign with your wallet'}
               </Typography>
             </div>
             <CustomButton

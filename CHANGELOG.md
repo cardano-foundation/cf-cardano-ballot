@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.60](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.59...v0.2.60) (2023-09-28)
+
+
+### Bug Fixes
+
+* **cip-1694-ui:** remove user session on wallet disconnect, enforce code coverage ([2021071](https://github.com/cardano-foundation/cf-cardano-ballot/commit/202107100247a42617283602f087de66d87667a0))
+
 ## [0.2.59](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.58...v0.2.59) (2023-09-28)
 
 

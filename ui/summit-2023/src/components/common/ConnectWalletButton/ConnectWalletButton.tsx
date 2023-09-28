@@ -3,7 +3,7 @@ import { RootState } from '../../../store';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import { eventBus } from '../../../utils/EventBus';
 import { Avatar, Button } from '@mui/material';
-import { addressSlice, hasEventEnded, resolveCardanoNetwork, walletIcon } from '../../../utils/utils';
+import { addressSlice, resolveCardanoNetwork, walletIcon } from '../../../utils/utils';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { i18n } from '../../../i18n';
@@ -21,7 +21,6 @@ type ConnectWalletButtonProps = {
 const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
   const { onOpenConnectWalletModal, onOpenVerifyWalletModal } = props;
   const eventCache = useSelector((state: RootState) => state.user.event);
-  const eventHasEnded = hasEventEnded(eventCache?.eventEndDate);
   const walletIsVerified = useSelector((state: RootState) => state.user.walletIsVerified);
 
   const { stakeAddress, isConnected, disconnect, enabledWallet } = useCardano({
@@ -75,7 +74,7 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
             className="connect-button verify-button"
             color="inherit"
             onClick={() => onOpenVerifyWalletModal()}
-            disabled={eventHasEnded}
+            disabled={eventCache?.finished}
           >
             {walletIsVerified ? (
               <>

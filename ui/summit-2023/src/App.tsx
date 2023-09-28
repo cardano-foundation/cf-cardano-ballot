@@ -19,18 +19,19 @@ import { TermsOptInModal } from 'components/LegalOptInModal';
 import { eventBus } from './utils/EventBus';
 import { CategoryContent } from './pages/Categories/Category.types';
 import SUMMIT2023CONTENT from 'common/resources/data/summit2023Content.json';
-import {hasEventEnded, resolveCardanoNetwork} from './utils/utils';
+import { resolveCardanoNetwork } from './utils/utils';
 import { parseError } from 'common/constants/errors';
 import { getUserVotes } from 'common/api/voteService';
 
 function App() {
   const eventCache = useSelector((state: RootState) => state.user.event);
+  console.log('eventCache');
+  console.log(eventCache);
   const [termsAndConditionsChecked] = useLocalStorage(CB_TERMS_AND_PRIVACY, false);
   const [openTermDialog, setOpenTermDialog] = useState(false);
   const { isConnected, stakeAddress } = useCardano({ limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK) });
   const session = getUserInSession();
   const isExpired = tokenIsExpired(session?.expiresAt);
-  const eventHasEnded = hasEventEnded(eventCache?.eventEndDate)
 
   const dispatch = useDispatch();
   const fetchEvent = useCallback(async () => {
@@ -51,13 +52,12 @@ function App() {
       event.categories = joinedCategories;
       dispatch(setEventData({ event }));
 
-      if (isConnected && !eventHasEnded) {
+      if (isConnected && !eventCache.finished) {
         try {
           const isVerified = await getIsVerified(env.EVENT_ID, stakeAddress);
           dispatch(setWalletIsVerified({ isVerified: isVerified.verified }));
-          console.log('hey')
         } catch (e) {
-          console.log('error')
+          console.log('error');
           if (process.env.NODE_ENV === 'development') {
             console.log(e.message);
           }
@@ -65,7 +65,6 @@ function App() {
       }
 
       if (session) {
-
         dispatch(setWalletIsLoggedIn({ isLoggedIn: !isExpired }));
         if (!isExpired) {
           getUserVotes(session?.accessToken)
@@ -79,7 +78,6 @@ function App() {
             });
         }
       }
-
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') {
         console.log(`Failed to fetch event, ${error?.info || error?.message || error?.toString()}`);

@@ -48,7 +48,6 @@ import {
 import {
   copyToClipboard,
   getSignedMessagePromise,
-  hasEventEnded,
   resolveCardanoNetwork,
   shortenString,
 } from '../../utils/utils';
@@ -67,6 +66,7 @@ import { parseError } from 'common/constants/errors';
 import { categoryAlreadyVoted } from '../Categories';
 import { ProposalPresentationExtended } from '../../store/types';
 import { verifyVote } from 'common/api/verificationService';
+import { JsonViewer } from '@textea/json-viewer';
 
 const Nominees = () => {
   const { categoryId } = useParams();
@@ -76,8 +76,6 @@ const Nominees = () => {
   const walletIsLoggedIn = useSelector((state: RootState) => state.user.walletIsLoggedIn);
   const receipts = useSelector((state: RootState) => state.user.receipts);
   const receipt = receipts && Object.keys(receipts).length && receipts[categoryId] ? receipts[categoryId] : undefined;
-
-  const eventHasEnded = hasEventEnded(eventCache?.eventEndDate);
   const userVotes = useSelector((state: RootState) => state.user.userVotes);
 
   const categoryVoted = categoryAlreadyVoted(categoryId, userVotes);
@@ -205,7 +203,7 @@ const Nominees = () => {
   }, [isMobile]);
 
   const castVote = async (optionId: string) => {
-    if (eventHasEnded) {
+    if (eventCache?.finished) {
       eventBus.publish('showToast', 'The event already ended', 'error');
       return;
     }
@@ -246,8 +244,7 @@ const Nominees = () => {
   };
 
   const handleNomineeButton = (nominee) => {
-
-    if (eventHasEnded) return;
+    if (eventCache?.finished) return;
 
     if (isConnected) {
       if (!walletIsVerified) {
@@ -262,7 +259,7 @@ const Nominees = () => {
   };
 
   const handleVoteNomineeButton = () => {
-    if (eventHasEnded) return;
+    if (eventCache?.finished) return;
 
     if (isConnected) {
       if (!walletIsVerified) {
@@ -445,7 +442,7 @@ const Nominees = () => {
                             {shortenString(nominee.desc, 210)}
                           </Typography>
                         </Grid>
-                        {!eventHasEnded && !categoryVoted ? (
+                        {!eventCache?.finished && !categoryVoted ? (
                           <Grid
                             item
                             xs={2}
@@ -577,7 +574,7 @@ const Nominees = () => {
                           fullWidth={true}
                         />
 
-                        {!eventHasEnded && !categoryVoted ? (
+                        {!eventCache?.finished && !categoryVoted ? (
                           <CustomButton
                             styles={
                               isConnected
@@ -608,6 +605,9 @@ const Nominees = () => {
       </>
     );
   };
+
+  console.log('receipt');
+  console.log(receipt);
 
   return (
     <>
@@ -1266,6 +1266,18 @@ const Nominees = () => {
                       padding: '16px',
                     }}
                   >
+                    {receipt?.merkleProof ? (
+                      <JsonViewer value={JSON.stringify(receipt?.merkleProof || '', null, 4)} />
+                    ) : (
+                      <Typography
+                        component="pre"
+                        variant="body2"
+                        sx={{ pointer: 'cursor' }}
+                      >
+                        Not available yet
+                      </Typography>
+                    )}
+
                     <Typography
                       component="pre"
                       variant="body2"

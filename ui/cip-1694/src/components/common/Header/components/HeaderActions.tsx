@@ -39,7 +39,7 @@ export const HeaderActions = ({ isMobileMenu = false, onClick, showNavigationIte
     try {
       dispatch(setChainTipData({ tip: await voteService.getChainTip() }));
     } catch (error) {
-      const message = `Failed to fecth chain tip: ${error?.message}`;
+      const message = `Failed to fecth chain tip: ${error.message}`;
       console.log(message);
       toast(
         <Toast
@@ -64,7 +64,7 @@ export const HeaderActions = ({ isMobileMenu = false, onClick, showNavigationIte
   };
 
   const onGoToLeaderboard = () => {
-    if (event?.proposalsRevealEpoch > tip?.epochNo) {
+    if (event.proposalsRevealEpoch > tip.epochNo) {
       setIsCommingSoonModalVisible(true);
     } else {
       navigate(ROUTES.LEADERBOARD);
@@ -74,6 +74,7 @@ export const HeaderActions = ({ isMobileMenu = false, onClick, showNavigationIte
   return (
     <>
       <Grid
+        data-testid="header-actions"
         display="flex"
         item
         gap={{ xs: '10px', md: '15px' }}

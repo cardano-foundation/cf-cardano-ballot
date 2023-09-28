@@ -31,7 +31,7 @@ import { useToggle } from 'common/hooks/useToggle';
 import { CustomButton } from '../Button/CustomButton';
 import { getSlotNumber, getUserVotes } from 'common/api/voteService';
 import { buildCanonicalLoginJson, submitLogin } from 'common/api/loginService';
-import { saveUserInSession } from '../../../utils/session';
+import {clearUserInSessionStorage, saveUserInSession} from '../../../utils/session';
 import { setConnectedPeerWallet, setUserVotes, setWalletIsLoggedIn } from '../../../store/userSlice';
 import { copyToClipboard, getSignedMessagePromise, resolveCardanoNetwork } from '../../../utils/utils';
 import { Toast } from '../Toast/Toast';
@@ -160,6 +160,7 @@ const Header: React.FC = () => {
 
   const onDisconnectWallet = () => {
     disconnect();
+    clearUserInSessionStorage();
     showToast('Wallet disconnected successfully');
     setPeerConnectWalletInfo(undefined);
     removeFromLocalStorage('cardano-peer-autoconnect-id');
@@ -459,7 +460,7 @@ const Header: React.FC = () => {
         title="Verify your Wallet"
         onClose={handleCloseVerify}
         disableBackdropClick={true}
-        width={isMobile ? 'auto' : '400px'}
+        width={isMobile ? '100%' : '400px'}
       >
         <VerifyWallet
           method={verifyDiscordModalIsReady ? 'discord' : undefined}

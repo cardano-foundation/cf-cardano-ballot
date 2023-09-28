@@ -6,13 +6,11 @@ import './Home.scss';
 import { i18n } from '../../i18n';
 import { NavLink } from 'react-router-dom';
 import { CustomButton } from '../../components/common/Button/CustomButton';
-import { hasEventEnded } from '../../utils/utils';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 
 const Home: React.FC = () => {
   const eventCache = useSelector((state: RootState) => state.user.event);
-  const eventHasEnded = hasEventEnded(eventCache?.eventEndDate);
 
   return (
     <Grid
@@ -63,7 +61,7 @@ const Home: React.FC = () => {
                   marginTop: '40px',
                   textDecoration: 'none !important',
                 }}
-                label={eventHasEnded ? 'Voting ended' : i18n.t('landing.getStartedButton')}
+                label={eventCache?.finished ? 'Voting ended' : i18n.t('landing.getStartedButton')}
               />
             </NavLink>
           </Grid>

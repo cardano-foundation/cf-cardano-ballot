@@ -13,6 +13,7 @@ const ERRORS = {
   PENDING_USER_VERIFICATION_NOT_FOUND: 'Pending user verification not found',
   MAX_VERIFICATION_ATTEMPTS_REACHED: 'Max verification attempts reached',
   ACTION_NOT_ALLOWED: 'Action not allowed',
+  VOTING_RESULTS_NOT_AVAILABLE: 'Voting results not available',
   INVALID_CIP30_DATA_SIGNATURE: 'Invalid wallet signature',
   'INVALID_CIP-30-SIGNATURE': 'Invalid wallet signature',
 };

@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.2.59](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.58...v0.2.59) (2023-09-28)
+
+
+### Features
+
+* display winners in nominees ([da57a8e](https://github.com/cardano-foundation/cf-cardano-ballot/commit/da57a8e82f02f78fdf510a924942e9b4a1cc37e3))
+* sort nominees by vote and winner ([be7b2d0](https://github.com/cardano-foundation/cf-cardano-ballot/commit/be7b2d00a90c3d0ace097fe49bd1f37c4f3b56d7))
+
+
+### Bug Fixes
+
+* remove fixture ([f1d56bb](https://github.com/cardano-foundation/cf-cardano-ballot/commit/f1d56bbe3ee9ee785735db95599b46fdf016fe6f))
+* see login banner in nominees on event ended ([915f5c9](https://github.com/cardano-foundation/cf-cardano-ballot/commit/915f5c9565890cbc343dde9823081b41f0a74e5e))
+* show receipt banner if receipt exists in redux ([511e225](https://github.com/cardano-foundation/cf-cardano-ballot/commit/511e2255ef015773fb13ebaf973420bb70a6ea1a))
+
 ## [0.2.58](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.57...v0.2.58) (2023-09-28)
 
 

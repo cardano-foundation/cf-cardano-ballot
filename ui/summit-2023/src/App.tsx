@@ -4,7 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import './App.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import { setEventData, setUserVotes, setWalletIsLoggedIn, setWalletIsVerified, setWinners} from './store/userSlice';
-import { Box, CircularProgress, Container, Grid } from '@mui/material';
+import { Box, CircularProgress, Container, Grid, useMediaQuery, useTheme } from '@mui/material';
 import Header from './components/common/Header/Header';
 import { PageRouter } from './routes';
 import { env } from './common/constants/env';
@@ -25,13 +25,14 @@ import { getUserVotes } from 'common/api/voteService';
 import { getWinners } from 'common/api/leaderboardService';
 
 function App() {
+  const theme = useTheme();
   const eventCache = useSelector((state: RootState) => state.user.event);
-
   const [termsAndConditionsChecked] = useLocalStorage(CB_TERMS_AND_PRIVACY, false);
   const [openTermDialog, setOpenTermDialog] = useState(false);
   const { isConnected, stakeAddress } = useCardano({ limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK) });
   const session = getUserInSession();
   const isExpired = tokenIsExpired(session?.expiresAt);
+  const isBigScreen = useMediaQuery(theme.breakpoints.up('lg'));
 
   const dispatch = useDispatch();
   const fetchEvent = useCallback(async () => {
@@ -109,7 +110,7 @@ function App() {
   }, []);
 
   return (
-    <Container maxWidth="xl">
+    <Container maxWidth={isBigScreen ? 'lg' : 'xl'}>
       <BrowserRouter>
         <img
           src={'/static/home-graphic-bg-top.svg'}

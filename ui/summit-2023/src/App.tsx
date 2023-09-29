@@ -105,6 +105,12 @@ function App() {
   }, [fetchEvent, stakeAddress]);
 
   useEffect(() => {
+    if (isConnected && (!session || isExpired)) {
+      eventBus.publish('openLoginModal', 'If you already voted, please login to see your votes.');
+    }
+  }, [isConnected]);
+
+  useEffect(() => {
     setOpenTermDialog(!termsAndConditionsChecked);
   }, []);
 

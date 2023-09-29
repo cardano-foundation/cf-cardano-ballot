@@ -40,7 +40,7 @@ const Footer: React.FC = () => {
       >
         <Grid
           container
-          sx={{ textAlignLast: 'right' }}
+          sx={{ textAlignLast: {xs: 'center', sm: 'right'} }}
         >
           <Grid
             item
@@ -77,7 +77,7 @@ const Footer: React.FC = () => {
           <Grid
             item
             xs={12}
-            sm={3}
+            sm={4}
           >
             <Typography
               variant="body2"
@@ -90,7 +90,7 @@ const Footer: React.FC = () => {
           <Grid
             item
             xs={12}
-            sm={3}
+            sm={2}
           >
             <Typography variant="body2">
               <img

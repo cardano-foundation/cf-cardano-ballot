@@ -56,3 +56,8 @@ jobs:
         run: |
           cd ui/verification-app
           npm run react-inject-env && npm run build
+# temporarily disable upload 
+#      - name: Upload build
+#        uses: actions/upload-artifact@v3
+#        with:
+#          path: ui/cip-1694/build

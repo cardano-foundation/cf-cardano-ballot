@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardContent, CardMedia, Typography } from '@mui/material';
+import { Box, Card, CardContent, CardMedia, Typography } from '@mui/material';
 import styles from './GuideTile.module.scss';
 import { eventBus } from 'utils/EventBus';
 import { NavLink } from 'react-router-dom';
@@ -38,7 +38,9 @@ export const GuideTile = ({ width, height, media, graphic, stepNumber, stepTitle
         />
       )}
       <CardContent>
-        {stepNumber}
+        <Box sx={{my: 1}}>
+          {stepNumber}
+        </Box>
         <Typography
           gutterBottom
           variant="h5"

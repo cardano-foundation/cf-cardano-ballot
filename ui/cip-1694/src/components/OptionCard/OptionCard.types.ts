@@ -1,6 +1,7 @@
 import React from 'react';
 
 export interface OptionItem<T> {
+  id: string;
   name: T;
   label: string;
   icon: React.ReactElement | null;

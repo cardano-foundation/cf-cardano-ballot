@@ -90,6 +90,7 @@ export const VotePage = () => {
   const items: OptionItem<ProposalPresentation['name']>[] = event?.categories
     ?.find(({ id }) => id === category)
     ?.proposals?.map(({ name }) => ({
+      id: `${category}-${name}`,
       name,
       label: capitalize(name.toLowerCase()),
       icon: iconsMap[name] || null,
@@ -195,6 +196,8 @@ export const VotePage = () => {
   };
 
   const onChangeCategory = () => {
+    setReceipt(null);
+    setOptionId(null);
     setVoteSubmitted(false);
     setIsReceiptFetched(false);
     const currentCategoryIndex = findIndex(event?.categories, ['id', category]);

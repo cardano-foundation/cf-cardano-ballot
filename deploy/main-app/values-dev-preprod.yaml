@@ -60,5 +60,5 @@ cf-cardano-ballot-ledger-follower-api:
 cf-voting-verification-ui:
   values:
     image:
-      tag: 0.2.57
+      tag: 0.2.60
 

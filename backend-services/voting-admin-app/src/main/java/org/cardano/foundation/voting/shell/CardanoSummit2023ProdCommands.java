@@ -40,12 +40,12 @@ public class CardanoSummit2023ProdCommands {
 
         log.info("Creating CF-Summit 2023 on a MAIN network...");
 
-        long startSlot = 103828509; // 22-09-2023 15:00:00 UTC
-        long endSlot = 104260509; // 27-09-2023 15:00:00 UTC
-        long proposalsRevealSlot = 104336109; // 28-09-2023 12:00:00 UTC
+        long startSlot = 104339709; // 28-09-2023 13:00:00 UTC
+        long endSlot = 105117309; // 07-10-2023 13:00:00 UTC
+        long proposalsRevealSlot = 105203709; // 08-10-2023 13:00:00 UTC
 
         CreateEventCommand createEventCommand = CreateEventCommand.builder()
-                .id(EVENT_NAME + "_" + "TEST2")
+                .id(EVENT_NAME + "_" + "TEST3")
                 .startSlot(Optional.of(startSlot))
                 .endSlot(Optional.of(endSlot))
                 .votingPowerAsset(Optional.empty())

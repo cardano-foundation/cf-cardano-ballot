@@ -1,0 +1,16 @@
+.optionCard {
+  border: 1px solid #ccc !important;
+  margin: 0px !important;
+  border-radius: 8px !important;
+
+  &:hover {
+    color: #1d439b !important;
+  }
+
+  &.selected,
+  &:active {
+    background: rgba(29, 67, 155, 0.1) !important;
+    border: 1px solid #1d439b !important;
+    box-shadow: 2px 2px 5px 0px rgba(29, 67, 155, 0.25) !important;
+  }
+}

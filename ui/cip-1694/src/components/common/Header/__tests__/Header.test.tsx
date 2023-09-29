@@ -437,3 +437,33 @@ describe('For the event that has already finished', () => {
     });
   });
 });
+
+describe('When there is no event:', () => {
+  beforeEach(() => {
+    mockUseCardano.mockReturnValue(useCardanoMock);
+    mockGetChainTip.mockReturnValue(chainTipMock);
+  });
+  afterEach(() => {
+    jest.clearAllMocks();
+    cleanup();
+  });
+
+  test('should display proper state', async () => {
+    const history = createMemoryHistory({ initialEntries: [ROUTES.INTRO] });
+    renderWithProviders(
+      <CustomRouter history={history}>
+        <Header />
+      </CustomRouter>,
+      { preloadedState: { user: {} as UserState } }
+    );
+
+    await waitFor(async () => {
+      const header = await screen.queryByTestId('header');
+      expect(header).not.toBeNull();
+
+      const headerActions = await within(header).queryByTestId('header-actions');
+      expect(within(headerActions).queryByTestId('vote-link')).toBeNull();
+      expect(within(headerActions).queryByTestId('leaderboard-link')).toBeNull();
+    });
+  });
+});

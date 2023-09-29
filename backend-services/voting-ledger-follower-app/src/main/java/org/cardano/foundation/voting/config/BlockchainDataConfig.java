@@ -7,12 +7,14 @@ import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataStak
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataTransactionDetailsService;
 import org.cardano.foundation.voting.service.blockchain_state.FixedBlockchainDataStakePoolService;
 import org.cardano.foundation.voting.service.blockchain_state.backend_bridge.BackendServiceBlockchainDataChainTipService;
+import org.cardano.foundation.voting.service.blockchain_state.backend_bridge.BackendServiceBlockchainDataCurrentStakePoolService;
 import org.cardano.foundation.voting.service.blockchain_state.backend_bridge.BackendServiceBlockchainDataStakePoolService;
 import org.cardano.foundation.voting.service.blockchain_state.backend_bridge.BackendServiceBlockchainDataTransactionDetailsService;
 import org.cardano.foundation.voting.service.chain_sync.ChainSyncService;
 import org.cardano.foundation.voting.service.chain_sync.DefaultChainSyncService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -29,8 +31,16 @@ public class BlockchainDataConfig {
 
     @Bean
     @Profile( value = { "prod", "dev--preprod"} )
+    @ConditionalOnProperty(prefix = "cardano.snapshot.bounds.check", value = "enabled", havingValue = "true")
     public BlockchainDataStakePoolService blockchainDataStakePoolService(@Qualifier("original_blockfrost") BackendService backendService) {
         return new BackendServiceBlockchainDataStakePoolService(backendService);
+    }
+
+    @Bean
+    @Profile( value = { "prod", "dev--preprod"} )
+    @ConditionalOnProperty(prefix = "cardano.snapshot.bounds.check", value = "enabled", havingValue = "false")
+    public BlockchainDataStakePoolService blockchainDataCurrentStakePoolService(@Qualifier("original_blockfrost") BackendService backendService) {
+        return new BackendServiceBlockchainDataCurrentStakePoolService(backendService);
     }
 
     @Bean

@@ -13,13 +13,12 @@ import org.cardano.foundation.voting.domain.web3.CommitmentsEnvelope;
 import org.cardano.foundation.voting.domain.web3.EventRegistrationEnvelope;
 import org.cardano.foundation.voting.domain.web3.ProposalEnvelope;
 import org.cardano.foundation.voting.utils.Enums;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,7 +34,8 @@ import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 @RequiredArgsConstructor
 public class CborService {
 
-    private final Environment environment;
+    @Value("${cardano.snapshot.bounds.check.enabled:true}")
+    private boolean isSnapshotBoundCheck;
 
     public Either<Problem, CommitmentsEnvelope> decodeCommitmentsEnvelope(CBORMetadataMap payload) {
         try {
@@ -303,12 +303,12 @@ public class CborService {
                                     .build());
                 }
 
-                if (!isYaciLocalDevNet()) {
+                if (isSnapshotBoundCheck) {
                     if (maybeSnapshotEpoch.orElseThrow() >= maybeStartEpoch.orElseThrow()) {
                         return Either.left(
                                 Problem.builder()
                                         .withTitle("INVALID_EVENT_REGISTRATION")
-                                        .withDetail("Invalid event registration event, snapshotEpoch must be less than startEpoch.")
+                                        .withDetail("Invalid event registration event, snapshotEpoch must be before startEpoch.")
                                         .withStatus(BAD_REQUEST)
                                         .build()
                         );
@@ -436,10 +436,6 @@ public class CborService {
         }
 
         return proposals;
-    }
-
-    private boolean isYaciLocalDevNet() {
-        return Arrays.asList(environment.getActiveProfiles()).contains("dev--yaci-dev-kit");
     }
 
 }

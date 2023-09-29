@@ -25,6 +25,13 @@ spec:
                 port:
                   number: 80
 {{ end }}
+          - path: /yaci-api
+            pathType: Prefix
+            backend:
+              service:
+                name: nginx-not-found
+                port:
+                  number: 80
           - path: /
             pathType: Prefix
             backend:

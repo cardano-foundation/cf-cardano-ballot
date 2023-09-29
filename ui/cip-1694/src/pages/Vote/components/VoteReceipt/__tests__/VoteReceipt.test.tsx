@@ -371,6 +371,7 @@ describe('Vote receipt:', () => {
       }
 
       const voteProof = {
+        transactionHash: VoteReceiptMock_Full_LowAssurance?.merkleProof?.transactionHash,
         rootHash: VoteReceiptMock_Full_LowAssurance?.merkleProof?.rootHash,
         steps: VoteReceiptMock_Full_LowAssurance?.merkleProof?.steps,
         coseSignature: VoteReceiptMock_Full_LowAssurance.coseSignature,
@@ -401,6 +402,11 @@ describe('Vote receipt:', () => {
         expect(mockToast).not.toBeCalled();
         expect(mockVerifyVote).toBeCalled();
         expect(mockJsonViewer).toBeCalledWith({ value: voteProof, enableClipboard: false }, {});
+      });
+
+      fireEvent.click(within(voteReceipt).queryByTestId('copy-vote-proof-cta'));
+      await waitFor(async () => {
+        expect(mockToast).toBeCalledWith(<Toast message="Copied to clipboard" />);
       });
     });
 

@@ -251,8 +251,8 @@ jobs:
           REACT_APP_VOTING_APP_SERVER_URL: https://api.dev.cf-cip1694-preprod.eu-west-1.metadata.dev.cf-deployments.org
           REACT_APP_VOTING_LEDGER_FOLLOWER_APP_SERVER_URL: https://follower-api.dev.cf-cip1694-preprod.eu-west-1.metadata.dev.cf-deployments.org
           REACT_APP_VOTING_VERIFICATION_APP_SERVER_URL: https://verification-api.dev.cf-cip1694-preprod.eu-west-1.metadata.dev.cf-deployments.org
-          REACT_APP_EVENT_ID: FRUITS_9172
-          REACT_APP_CATEGORY_ID: FRUITS_9172
+          REACT_APP_EVENT_ID: FRUITS_CF62
+          REACT_APP_CATEGORY_ID: FRUITS_CF62
           ARTIFACT_VERSION: ${{needs.build-version.outputs.ARTIFACT_VERSION}}-preprod
         with:
           context: ui/cip-1694
@@ -263,6 +263,47 @@ jobs:
             "REACT_APP_VOTING_VERIFICATION_APP_SERVER_URL=${{ env.REACT_APP_VOTING_VERIFICATION_APP_SERVER_URL }}"
             "REACT_APP_EVENT_ID=${{ env.REACT_APP_EVENT_ID }}"
             "REACT_APP_CATEGORY_ID=${{ env.REACT_APP_CATEGORY_ID }}"
+          tags: |
+            ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}/${{ env.APP_NAME }}:${{ env.ARTIFACT_VERSION }}
+
+  publish-voting-verification-app-ui:
+    runs-on: self-hosted
+    env:
+      APP_NAME: voting-verification-app-ui
+    needs: build-version
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Private Docker Hub Login
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}
+          username: ${{ env.PRIVATE_DOCKER_REGISTRY_USER }}
+          password: ${{ env.PRIVATE_DOCKER_REGISTRY_PASS }}
+
+      - name: Public Docker Hub Login
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_REGISTRY_USER }}
+          password: ${{ secrets.DOCKER_REGISTRY_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build and Push docker image
+        uses: docker/build-push-action@v4
+        env:
+          ARTIFACT_VERSION: ${{ needs.build-version.outputs.ARTIFACT_VERSION }}
+          REACT_APP_VOTING_VERIFICATION_APP_SERVER_URL: https://verification-api.dev.cf-cip1694-preprod.eu-west-1.metadata.dev.cf-deployments.org
+          REACT_APP_TARGET_NETWORK: PREPROD
+        with:
+          context: ui/verification-app
+          push: true
+          build-args: |
+            "REACT_APP_VERSION=${{ env.ARTIFACT_VERSION }}"
+            "REACT_APP_VOTING_VERIFICATION_APP_SERVER_URL=${{ env.REACT_APP_VOTING_VERIFICATION_APP_SERVER_URL }}"
+            "REACT_APP_TARGET_NETWORK=${{ env.REACT_APP_TARGET_NETWORK }}"
           tags: |
             ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}/${{ env.APP_NAME }}:${{ env.ARTIFACT_VERSION }}
 

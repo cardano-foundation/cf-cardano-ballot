@@ -16,6 +16,7 @@ describe('utils:', () => {
     mockJsonViewer.mockReturnValue(JsonViewerContentMock);
 
     const voteProof = {
+      transactionHash: VoteReceiptMock_Full_MediumAssurance?.merkleProof?.transactionHash,
       rootHash: VoteReceiptMock_Full_MediumAssurance?.merkleProof?.rootHash,
       steps: VoteReceiptMock_Full_MediumAssurance?.merkleProof?.steps,
       coseSignature: VoteReceiptMock_Full_MediumAssurance.coseSignature,

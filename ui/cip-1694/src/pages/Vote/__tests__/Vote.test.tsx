@@ -317,6 +317,62 @@ describe('For ongoing event:', () => {
     });
   });
 
+  test('should handle error during submit vote', async () => {
+    const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
+
+    mockUseCardano.mockReset();
+    mockUseCardano.mockReturnValue({
+      ...useCardanoMock,
+      signMessage: mockSignMessage,
+    });
+    mockGetSignedMessagePromise.mockReset();
+    mockGetSignedMessagePromise.mockImplementation(
+      (signMessage: (message: string) => string) => async (message: string) => await signMessage(message)
+    );
+    mockGetVotingPower.mockReset();
+    mockGetVotingPower.mockResolvedValue(accountDataMock);
+    mockBuildCanonicalVoteInputJson.mockReset();
+    mockBuildCanonicalVoteInputJson.mockReturnValue(canonicalVoteInputJsonMock);
+
+    const errorMessage = 'error';
+    const error = new Error(errorMessage);
+    mockCastAVoteWithDigitalSignature.mockReset();
+    mockCastAVoteWithDigitalSignature.mockImplementation(async () => await Promise.reject(error));
+
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
+
+    await act(async () => {
+      renderWithProviders(
+        <CustomRouter history={history}>
+          <VotePage />
+        </CustomRouter>,
+        { preloadedState: { user: { event: eventMock_active, tip: chainTipMock } as UserState } }
+      );
+    });
+
+    await waitFor(async () => {
+      const votePage = screen.queryByTestId('vote-page');
+
+      const options = within(votePage).queryAllByTestId('option-card');
+
+      fireEvent.click(options[0]);
+
+      const cta = within(votePage).queryByTestId('proposal-submit-button');
+      await act(async () => {
+        fireEvent.click(cta);
+      });
+
+      expect(mockToast).toBeCalledWith(
+        <Toast
+          message={'Unable to submit your vote. Please try again'}
+          error
+          icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
+        />
+      );
+    });
+    mockCastAVoteWithDigitalSignature.mockReset();
+  });
+
   test('should submit vote', async () => {
     const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
 
@@ -366,6 +422,119 @@ describe('For ongoing event:', () => {
 
       expect(mockCastAVoteWithDigitalSignature).toHaveBeenCalledWith(canonicalVoteInputJsonMock);
       expect(store.getState().user.isVoteSubmittedModalVisible).toBeTruthy;
+
+      await act(async () => {
+        fireEvent.click(screen.queryByTestId('vote-submitted-close'));
+      });
+
+      expect(store.getState().user.isVoteSubmittedModalVisible).toBeFalsy;
+    });
+  });
+
+  test('should submit vote and fetch receipt for single category', async () => {
+    const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
+
+    mockUseCardano.mockReset();
+    mockUseCardano.mockReturnValue({
+      ...useCardanoMock,
+      signMessage: mockSignMessage,
+    });
+    mockGetSignedMessagePromise.mockReset();
+    mockGetSignedMessagePromise.mockImplementation(
+      (signMessage: (message: string) => string) => async (message: string) => await signMessage(message)
+    );
+    mockGetVotingPower.mockReset();
+    mockGetVotingPower.mockResolvedValue(accountDataMock);
+    mockBuildCanonicalVoteInputJson.mockReset();
+    mockBuildCanonicalVoteInputJson.mockReturnValue(canonicalVoteInputJsonMock);
+
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
+
+    await act(async () => {
+      renderWithProviders(
+        <CustomRouter history={history}>
+          <VotePage />
+        </CustomRouter>,
+        {
+          preloadedState: {
+            user: {
+              event: {
+                ...eventMock_active,
+                categories: [eventMock_active.categories[0]],
+              },
+              tip: chainTipMock,
+            } as UserState,
+          },
+        }
+      );
+    });
+
+    await waitFor(async () => {
+      const votePage = screen.queryByTestId('vote-page');
+
+      const options = within(votePage).queryAllByTestId('option-card');
+
+      await act(async () => {
+        fireEvent.click(options[0]);
+      });
+      const cta = within(votePage).queryByTestId('proposal-submit-button');
+      await act(async () => {
+        fireEvent.click(cta);
+      });
+
+      expect(mockGetVoteReceipt).toBeCalledTimes(2);
+    });
+  });
+
+  test('should show proper error if failed to fetch voting power during vote submitting', async () => {
+    const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
+
+    mockUseCardano.mockReset();
+    mockUseCardano.mockReturnValue({
+      ...useCardanoMock,
+      signMessage: mockSignMessage,
+    });
+    mockGetSignedMessagePromise.mockReset();
+    mockGetSignedMessagePromise.mockImplementation(
+      (signMessage: (message: string) => string) => async (message: string) => await signMessage(message)
+    );
+    const error = { message: 'error' };
+    mockGetVotingPower.mockReset();
+    mockGetVotingPower.mockImplementation(async () => await Promise.reject(error));
+    mockBuildCanonicalVoteInputJson.mockReset();
+    mockBuildCanonicalVoteInputJson.mockReturnValue(canonicalVoteInputJsonMock);
+
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
+
+    await act(async () => {
+      renderWithProviders(
+        <CustomRouter history={history}>
+          <VotePage />
+        </CustomRouter>,
+        { preloadedState: { user: { event: eventMock_active, tip: chainTipMock } as UserState } }
+      );
+    });
+
+    await waitFor(async () => {
+      const votePage = screen.queryByTestId('vote-page');
+
+      const options = within(votePage).queryAllByTestId('option-card');
+
+      await act(async () => {
+        fireEvent.click(options[0]);
+      });
+      const cta = within(votePage).queryByTestId('proposal-submit-button');
+
+      await act(async () => {
+        fireEvent.click(cta);
+      });
+      expect(mockToast).toBeCalledWith(
+        <Toast
+          message={'Unable to submit your vote. Please try again'}
+          error
+          icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
+        />
+      );
     });
   });
 
@@ -401,6 +570,58 @@ describe('For ongoing event:', () => {
     await waitFor(async () => {
       const confirmationModal = screen.queryByTestId('confirm-with-signature-modal');
       expect(confirmationModal).toBeNull();
+    });
+  });
+
+  test('should show proper message if user login servce throws', async () => {
+    const canonicalVoteInput = 'canonicalVoteInput';
+    buildCanonicalLoginJsonMock.mockReset();
+    buildCanonicalLoginJsonMock.mockReturnValue(canonicalVoteInput);
+    const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
+    mockGetVoteReceipt.mockReset();
+    mockGetVoteReceipt.mockReturnValue(VoteReceiptMock_Basic);
+    mockUseCardano.mockReset();
+    mockUseCardano.mockReturnValue({
+      ...useCardanoMock,
+      signMessage: mockSignMessage,
+    });
+    mockGetSignedMessagePromise.mockReset();
+    mockGetSignedMessagePromise.mockImplementation(
+      (signMessage: (message: string) => string) => async (message: string) => await signMessage(message)
+    );
+    mockGetVotingPower.mockReset();
+    mockGetVotingPower.mockResolvedValue(accountDataMock);
+
+    mockGetUserInSession.mockReset();
+    mockGetUserInSession.mockReturnValue(null);
+
+    const error = { message: 'error' };
+    submitLoginMock.mockReset();
+    submitLoginMock.mockImplementation(async () => await Promise.reject(error));
+
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
+    renderWithProviders(
+      <CustomRouter history={history}>
+        <VotePage />
+      </CustomRouter>,
+      { preloadedState: { user: { event: eventMock_active, tip: chainTipMock } as UserState } }
+    );
+
+    const confirmationModal = await screen.findByTestId('confirm-with-signature-modal');
+    const confirmCta = await within(confirmationModal).findByTestId('confirm-with-signature-cta');
+    expect(confirmCta).toHaveTextContent('Confirm');
+
+    await act(async () => {
+      fireEvent.click(confirmCta);
+    });
+    await waitFor(async () => {
+      expect(mockToast).toBeCalledWith(
+        <Toast
+          message={error.message}
+          error
+          icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
+        />
+      );
     });
   });
 
@@ -536,6 +757,53 @@ describe('For ongoing event:', () => {
     });
   });
 
+  test('should show proper error if vote is not found', async () => {
+    const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
+    const error = { message: 'VOTE_NOT_FOUND' };
+    mockGetVoteReceipt.mockReset();
+    mockGetVoteReceipt.mockImplementation(async () => await Promise.reject(error));
+
+    mockUseCardano.mockReset();
+    mockUseCardano.mockReturnValue({
+      ...useCardanoMock,
+      signMessage: mockSignMessage,
+    });
+    mockGetSignedMessagePromise.mockReset();
+    mockGetSignedMessagePromise.mockImplementation(
+      (signMessage: (message: string) => string) => async (message: string) => await signMessage(message)
+    );
+    mockGetVotingPower.mockReset();
+    mockGetVotingPower.mockResolvedValue(accountDataMock);
+
+    mockGetUserInSession.mockReset();
+    mockGetUserInSession.mockReturnValue({ accessToken: true });
+    mockTokenIsExpired.mockReset();
+    mockTokenIsExpired.mockReturnValue(false);
+
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
+    await act(async () => {
+      renderWithProviders(
+        <CustomRouter history={history}>
+          <VotePage />
+        </CustomRouter>,
+        {
+          preloadedState: {
+            user: {
+              event: eventMock_active,
+              tip: chainTipMock,
+            } as UserState,
+          },
+        }
+      );
+    });
+
+    const options = screen.queryAllByTestId('option-card');
+    fireEvent.click(options[0]);
+    await waitFor(async () => {
+      expect(screen.queryByTestId('proposal-submit-button').closest('button')).not.toBeDisabled();
+    });
+  });
+
   test('should handle show vote receipt', async () => {
     const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
     mockGetVoteReceipt.mockReset();
@@ -621,9 +889,15 @@ describe('For ongoing event:', () => {
 
     const cta = within(votePage).queryByTestId('next-question-button');
     expect(cta.closest('button')).not.toBeDisabled();
+    expect(mockGetVoteReceipt).toHaveBeenLastCalledWith(eventMock_active.categories[0].id, true);
     expect(cta).toHaveTextContent('Next question');
 
     await act(async () => {
+      mockGetVoteReceipt.mockReset();
+      mockGetVoteReceipt.mockReturnValue({
+        ...VoteReceiptMock_Basic,
+        category: eventMock_active.categories[1].id,
+      });
       fireEvent.click(cta);
     });
 
@@ -647,7 +921,8 @@ describe('For ongoing event:', () => {
       );
     }
     expect(screen.queryByTestId('vote-receipt')).not.toBeInTheDocument();
-    expect(mockGetVoteReceipt).toHaveBeenLastCalledWith('MIN_VIABLE_GOV_STRUCTURE', true);
+    expect(mockGetVoteReceipt).toHaveBeenLastCalledWith(eventMock_active.categories[1].id, true);
+    expect(within(votePage).queryByTestId('next-question-button')).toHaveTextContent('Previous question');
   });
 
   test('should handle show vote receipt for inactive user session', async () => {

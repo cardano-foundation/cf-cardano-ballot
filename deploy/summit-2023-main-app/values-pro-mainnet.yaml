@@ -12,19 +12,23 @@ cf-summit-2023-infra:
 cf-summit-2023-ui:
   enabled: true
   values:
+    frontendUrl: https://{{ .Values.domain }}
     votingAppServerUrl: https://api.pro.cf-summit-2023-mainnet.eu-west-1.voting.summit.cardano.org
     votingLedgerFollowerAppServerUrl: https://follower-api.pro.cf-summit-2023-mainnet.eu-west-1.voting.summit.cardano.org
     votingVerificationAppServerUrl: https://verification-api.pro.cf-summit-2023-mainnet.eu-west-1.voting.summit.cardano.org
     userVerificationServerUrl: https://user-verification.pro.cf-summit-2023-mainnet.eu-west-1.voting.summit.cardano.org
     targetNetwork: MAIN
-    eventId: CF_SUMMIT_2023_TEST1
+    eventId: CF_SUMMIT_2023_TEST2
+    discordChannelUrl: https://discord.gg/XekFHYXNmu
+    discordBotUrl: https://discord.com/channels/945974991718068254/1149627691310530570
     image:
-      tag: 0.2.46
+      tag: 0.2.55
 
 cf-summit-2023-voting-api:
   enabled: true
   values:
     useJwt: true
+    leaderboardForceResults: "false"
     resources:
       limits:
         cpu: 2
@@ -43,7 +47,7 @@ cf-summit-2023-voting-api:
         active: "true"
         voteCommitmentCronExpression: "0 30 * * * *"
     image:
-      tag: 0.2.44
+      tag: 0.2.55
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
     corsAllowedOrigins: https://{{ .Values.domain }}
     monitoring:
@@ -54,7 +58,7 @@ cf-summit-2023-verification-api:
   enabled: true
   values:
     image:
-      tag: 0.2.44
+      tag: 0.2.55
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
     corsAllowedOrigins: https://{{ .Values.domain }}
 
@@ -62,7 +66,8 @@ cf-user-verification-service:
   enabled: true
   values:
     image:
-      tag: 0.2.44
+      tag: 0.2.55
+    discordBotEventIdBinding: CF_SUMMIT_2023_TEST2
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
     corsAllowedOrigins: https://{{ .Values.domain }}
 
@@ -70,8 +75,8 @@ cf-summit-2023-ledger-follower-api:
   enabled: true
   values:
     image:
-      tag: 0.2.44
-    bindOnEventIds: CF_SUMMIT_2023_TEST1
+      tag: 0.2.55
+    bindOnEventIds: CF_SUMMIT_2023_TEST1,CF_SUMMIT_2023_TEST2,CF_SUMMIT_2023_TEST3
     yaci:
       startBlockHash: 6bb9228e3b746366e24f2681021d619395b850b34c2db020c4928285dcf7b0c2
       startSlotNumber: "103209875"
@@ -89,3 +94,17 @@ cf-summit-2023-ledger-follower-api:
         enabled: true
 #        imageTag: 0.2.37
         schemaName: follower_2
+    startupProbe:
+      initialDelaySeconds: 0
+      periodSeconds: 30
+      failureThreshold: 20
+
+cf-discord-wallet-verification-bot:
+  enabled: true
+  values:
+    image:
+      tag: 11f6f15
+    backendBaseUrl: https://user-verification.{{ .Values.domain }}
+    frontendUrl: https://{{ .Values.domain }}
+    diagnosticMode:
+      enabled: false

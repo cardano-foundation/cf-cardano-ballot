@@ -3,16 +3,19 @@
 var mockUseCardano = jest.fn();
 var mockGetStats = jest.fn();
 var mockPieChart = jest.fn();
+var mockToast = jest.fn();
 /* eslint-disable import/imports-first */
 import 'whatwg-fetch';
 import '@testing-library/jest-dom';
 import { expect } from '@jest/globals';
 import { screen, within, waitFor, cleanup } from '@testing-library/react';
+import BlockIcon from '@mui/icons-material/Block';
 import React from 'react';
 import { createMemoryHistory } from 'history';
 import capitalize from 'lodash/capitalize';
 import { ROUTES } from 'common/routes';
 import { UserState } from 'common/store/types';
+import { Toast } from 'components/common/Toast/Toast';
 import { renderWithProviders } from 'test/mockProviders';
 import { useCardanoMock, eventMock_finished, voteStats, eventMock_active } from 'test/mocks';
 import { CustomRouter } from 'test/CustomRouter';
@@ -65,6 +68,12 @@ jest.mock('../../../env', () => {
 jest.mock('common/api/leaderboardService', () => ({
   ...jest.requireActual('common/api/leaderboardService'),
   getStats: mockGetStats,
+}));
+
+jest.mock('react-hot-toast', () => ({
+  __esModule: true,
+  ...jest.requireActual('react-hot-toast'),
+  default: mockToast,
 }));
 
 describe('For the event that has already finished', () => {
@@ -156,6 +165,31 @@ describe('For the event that has already finished', () => {
           color: proposalColorsMap[name],
         })),
       });
+    });
+  });
+
+  test('should display proper error if getStats throws', async () => {
+    const error = 'error';
+    mockGetStats.mockReset();
+    mockGetStats.mockImplementation(async () => await Promise.reject(error));
+
+    const history = createMemoryHistory({ initialEntries: [ROUTES.LEADERBOARD] });
+
+    renderWithProviders(
+      <CustomRouter history={history}>
+        <Leaderboard />
+      </CustomRouter>,
+      { preloadedState: { user: { event: eventMock_finished } as UserState } }
+    );
+
+    await waitFor(async () => {
+      expect(mockToast).toBeCalledWith(
+        <Toast
+          message={`Failed to fecth stats: ${error}`}
+          error
+          icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
+        />
+      );
     });
   });
 });

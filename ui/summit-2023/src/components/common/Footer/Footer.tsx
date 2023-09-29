@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Grid, Box } from '@mui/material';
+import { Typography, Grid } from '@mui/material';
 import styles from './Footer.module.scss';
 import discordLogo from '../../../common/resources/images/discord-icon.svg';
 import { env } from 'common/constants/env';
@@ -9,94 +9,101 @@ import { openNewTab } from '../../../utils/utils';
 
 const Footer: React.FC = () => {
   return (
-    <Box
-      mt={1}
-      textAlign="center"
+    <Grid
+      container
+      direction="row"
+      justifyContent="center"
+      alignItems="center"
       className={styles.footer}
     >
-      <Grid container>
+      <Grid
+        item
+        xs={12}
+        sm={6}
+      >
+        <Typography variant="body2">
+          © {new Date().getFullYear()}{' '}
+          <NavLink
+            to="https://summit.cardano.org/"
+            target="_blank"
+            rel="noopener"
+          >
+            Cardano Summit
+          </NavLink>
+          . <span color="inherit">All rights reserved.</span>
+        </Typography>
+      </Grid>
+      <Grid
+        item
+        xs={12}
+        sm={6}
+      >
         <Grid
-          item
-          xs={12}
-          sm={4}
+          container
+          sx={{ textAlignLast: 'right' }}
         >
-          <Typography variant="body2">
-            © {new Date().getFullYear()} Cardano Summit.
-            <span color="inherit"> All rights reserved.</span>
-          </Typography>
-        </Grid>
-        <Grid
-          item
-          xs={12}
-          sm={8}
-        >
-          <Grid container>
-            <Grid
-              item
-              xs={12}
-              sm={3}
-            >
-              <NavLink to="/termsandconditions">
-                <Typography
-                  variant="body2"
-                  justifyContent="center"
-                  className={styles.link}
-                >
-                  {i18n.t('footer.menu.termsAndConditions')}
-                </Typography>
-              </NavLink>
-            </Grid>
-
-            <Grid
-              item
-              xs={12}
-              sm={3}
-            >
-              <NavLink to="/privacypolicy">
-                <Typography
-                  variant="body2"
-                  justifyContent="center"
-                  className={styles.link}
-                >
-                  {i18n.t('footer.menu.privacyPolicy')}
-                </Typography>
-              </NavLink>
-            </Grid>
-
-            <Grid
-              item
-              xs={12}
-              sm={3}
-            >
+          <Grid
+            item
+            xs={12}
+            sm={3}
+          >
+            <NavLink to="/termsandconditions">
               <Typography
                 variant="body2"
-                align="center"
+                justifyContent="center"
+                className={styles.link}
               >
-                Version {env.APP_VERSION} (Status)
+                {i18n.t('footer.menu.termsAndConditions')}
               </Typography>
-            </Grid>
+            </NavLink>
+          </Grid>
 
-            <Grid
-              item
-              xs={12}
-              sm={3}
-            >
+          <Grid
+            item
+            xs={12}
+            sm={3}
+          >
+            <NavLink to="/privacypolicy">
               <Typography
                 variant="body2"
-                align="center"
+                justifyContent="center"
+                className={styles.link}
               >
-                <img
-                  onClick={() => openNewTab(env.DISCORD_CHANNEL_URL)}
-                  src={discordLogo}
-                  alt="Discord"
-                  style={{ height: '25px', cursor: 'pointer' }}
-                />
+                {i18n.t('footer.menu.privacyPolicy')}
               </Typography>
-            </Grid>
+            </NavLink>
+          </Grid>
+
+          <Grid
+            item
+            xs={12}
+            sm={3}
+          >
+            <Typography
+              variant="body2"
+              justifyContent="center"
+            >
+              Version {env.APP_VERSION} (Status)
+            </Typography>
+          </Grid>
+
+          <Grid
+            item
+            xs={12}
+            sm={3}
+          >
+            <Typography variant="body2">
+              <img
+                onClick={() => openNewTab(env.DISCORD_CHANNEL_URL)}
+                src={discordLogo}
+                alt="Discord"
+                style={{ height: '25px', cursor: 'pointer' }}
+              />
+            </Typography>
           </Grid>
         </Grid>
       </Grid>
-    </Box>
+    </Grid>
   );
 };
 

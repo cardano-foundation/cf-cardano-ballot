@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.2.62](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.61...v0.2.62) (2023-09-29)
+
+
+### Features
+
+* HEAD requests for vote receipts. ([#355](https://github.com/cardano-foundation/cf-cardano-ballot/issues/355)) ([bc4e58c](https://github.com/cardano-foundation/cf-cardano-ballot/commit/bc4e58c6cdf723203ce30fe74b692e627a882bcb))
+
+
+### Bug Fixes
+
+* ci cd pipeline breaking due to account billing fix ([93cb122](https://github.com/cardano-foundation/cf-cardano-ballot/commit/93cb122663c582cd7689ab083dead496faa536ab))
+* close discord modal ([0a25dbc](https://github.com/cardano-foundation/cf-cardano-ballot/commit/0a25dbc7fc03423c0d2a410476c92e746f359711))
+* hide login modal on discord verification starts ([fde9385](https://github.com/cardano-foundation/cf-cardano-ballot/commit/fde9385d16bd161ba7a35154d52e4ee5f4679487))
+* link has been added on userguide card ([81bb6c5](https://github.com/cardano-foundation/cf-cardano-ballot/commit/81bb6c5f9dcaaaaec05faba552ec37ca716db477))
+* open login modal on connect if not session ([5301661](https://github.com/cardano-foundation/cf-cardano-ballot/commit/530166185d3fcf06557cf66e73264ea1156cc885))
+* remove debugs ([06e787a](https://github.com/cardano-foundation/cf-cardano-ballot/commit/06e787a0d67491e3a3447ec95a8246d55dd7e2d3))
+* rounded numbers instead squares ([9da7f49](https://github.com/cardano-foundation/cf-cardano-ballot/commit/9da7f4905517eff2b150f18c3df7507182b7f057))
+* summit link and count down event dates ([6f15a3e](https://github.com/cardano-foundation/cf-cardano-ballot/commit/6f15a3ef915c256584d5d9428dee7d795d7785cd))
+* undefined voted nominee ([4444d39](https://github.com/cardano-foundation/cf-cardano-ballot/commit/4444d39108566c943ffdc0e4bf6f3097693f95f2))
+
 ## [0.2.61](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.60...v0.2.61) (2023-09-28)
 
 

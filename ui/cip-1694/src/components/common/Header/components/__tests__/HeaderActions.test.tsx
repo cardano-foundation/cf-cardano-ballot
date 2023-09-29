@@ -87,7 +87,6 @@ describe('HeaderActions', () => {
     const error = 'error';
     mockGetChainTip.mockReset();
     mockGetChainTip.mockImplementation(async () => await Promise.reject(error));
-    const consoleLogSpy = jest.spyOn(global.console, 'log');
     const history = createMemoryHistory({ initialEntries: [ROUTES.INTRO] });
     renderWithProviders(
       <CustomRouter history={history}>
@@ -97,7 +96,6 @@ describe('HeaderActions', () => {
     );
 
     await waitFor(async () => {
-      expect(consoleLogSpy).toBeCalledWith(`Failed to fecth chain tip: ${undefined}`);
       expect(mockToast).toBeCalledWith(
         <Toast
           message={'Failed to fecth chain tip'}
@@ -118,7 +116,6 @@ describe('HeaderActions', () => {
     );
 
     await waitFor(async () => {
-      expect(consoleLogSpy).toBeCalledWith(`Failed to fecth chain tip: ${errorMessage?.message}`);
       expect(mockToast).toBeCalledWith(
         <Toast
           message={'Failed to fecth chain tip'}
@@ -138,7 +135,6 @@ describe('HeaderActions', () => {
     );
 
     await waitFor(async () => {
-      expect(consoleLogSpy).toBeCalledWith(`Failed to fecth chain tip: ${undefined}`);
       expect(mockToast).toBeCalledWith(
         <Toast
           message={'Failed to fecth chain tip'}

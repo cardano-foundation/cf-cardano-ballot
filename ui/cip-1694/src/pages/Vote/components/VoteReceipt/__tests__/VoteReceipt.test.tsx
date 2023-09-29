@@ -403,6 +403,11 @@ describe('Vote receipt:', () => {
         expect(mockVerifyVote).toBeCalled();
         expect(mockJsonViewer).toBeCalledWith({ value: voteProof, enableClipboard: false }, {});
       });
+
+      fireEvent.click(within(voteReceipt).queryByTestId('copy-vote-proof-cta'));
+      await waitFor(async () => {
+        expect(mockToast).toBeCalledWith(<Toast message="Copied to clipboard" />);
+      });
     });
 
     describe('LOW', () => {

@@ -53,7 +53,7 @@ export const Header = () => {
           </Typography>
         </Grid>
         <Grid display={{ xs: 'none', md: 'flex' }}>
-          <HeaderActions showNavigationItems={!event?.notStarted} />
+          <HeaderActions showNavigationItems={event?.notStarted === false} />
         </Grid>
         <Grid
           display={{ xs: 'block', md: 'none' }}
@@ -67,6 +67,7 @@ export const Header = () => {
             className={styles.menuButton}
             size="large"
             variant="outlined"
+            data-testid="show-mobile-menu"
             onClick={() => setIsMobileMenuVisible(true)}
           >
             <MenuIcon className={styles.menuIcon} />
@@ -87,7 +88,7 @@ export const Header = () => {
           justifyContent="space-between"
         >
           <HeaderActions
-            showNavigationItems={!event?.notStarted}
+            showNavigationItems={event?.notStarted === false}
             onClick={() => setIsMobileMenuVisible(false)}
             isMobileMenu
           />

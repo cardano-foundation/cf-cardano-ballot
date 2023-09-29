@@ -103,6 +103,8 @@ const Nominees = () => {
     limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
   });
 
+  const votedNominee = nominees.find((nominee) => nominee.id === selectedNomineeToVote?.id);
+
   const signMessagePromisified = useMemo(() => getSignedMessagePromise(signMessage), [signMessage]);
 
   const loadNominees = () => {
@@ -241,7 +243,7 @@ const Nominees = () => {
             }
           });
       } else {
-        eventBus.publish('openLoginModal', 'Login to see your vote receipt');
+        eventBus.publish('openLoginModal', 'Login to see your vote receipt.');
       }
     } catch (e) {
       eventBus.publish('showToast', e.message && e.message.length ? parseError(e.message) : 'Action failed', 'error');
@@ -557,7 +559,7 @@ const Nominees = () => {
                   <div style={{ height: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <Card
                       sx={{
-                        height: 'auto',
+                        height: '400px',
                         width: { xs: '380px', sm: '414px' },
                         display: 'flex',
                         alignItems: 'center',
@@ -714,24 +716,25 @@ const Nominees = () => {
           {summit2023Category.desc}
         </Typography>
 
-        {isConnected &&
-        (categoryVoted || (isConnected && eventCache?.finished) || (receipt && categoryId === receipt?.category)) ? (
+        {isConnected && (categoryVoted || eventCache?.finished || (receipt && categoryId === receipt?.category)) ? (
           <Box
             sx={{
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              backgroundColor: walletIsLoggedIn ? 'rgba(5, 97, 34, 0.07)' : 'rgba(253, 135, 60, 0.07)',
+              backgroundColor: !tokenIsExpired(session?.expiresAt)
+                ? 'rgba(5, 97, 34, 0.07)'
+                : 'rgba(253, 135, 60, 0.07)',
               padding: '10px 20px',
               borderRadius: '8px',
-              border: walletIsLoggedIn ? '1px solid #056122' : '1px solid #FD873C',
+              border: !tokenIsExpired(session?.expiresAt) ? '1px solid #056122' : '1px solid #FD873C',
               color: 'white',
               width: '100%',
               marginBottom: '20px',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center' }}>
-              {walletIsLoggedIn ? (
+              {!tokenIsExpired(session?.expiresAt) ? (
                 <VerifiedUserIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#056122' }} />
               ) : (
                 <WarningAmberIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#FD873C' }} />
@@ -747,9 +750,9 @@ const Nominees = () => {
                   lineHeight: '22px',
                 }}
               >
-                {walletIsLoggedIn && !tokenIsExpired(session?.expiresAt)
-                  ? `You have successfully cast a vote for ${receipt?.presentationName} in the ${summit2023Category.presentationName} category.`
-                  : 'To see you vote receipt, please sign with your Wallet'}
+                {!tokenIsExpired(session?.expiresAt)
+                  ? `You have successfully cast a vote for ${votedNominee?.presentationName} in the ${summit2023Category.presentationName} category.`
+                  : 'To see you vote receipt, please sign with your wallet'}
               </Typography>
             </div>
             <CustomButton
@@ -758,7 +761,7 @@ const Nominees = () => {
                 color: '#F6F9FF',
                 width: 'auto',
               }}
-              label={walletIsLoggedIn ? 'View vote receipt' : 'Login with wallet'}
+              label={!tokenIsExpired(session?.expiresAt) ? 'View vote receipt' : 'Login with wallet'}
               onClick={() => handleViewVoteReceipt()}
               fullWidth={true}
             />
@@ -1392,8 +1395,7 @@ const Nominees = () => {
             color: '#03021F',
             margin: '20px 0px',
           }}
-          label={`Vote for ${nominees.find((nominee) => nominee.id === selectedNomineeToVote?.id)
-            ?.presentationName} [${selectedNomineeToVote?.id}]`}
+          label={`Vote for ${votedNominee?.presentationName} [${selectedNomineeToVote?.id}]`}
           fullWidth={true}
           onClick={() => handleVoteNomineeButton()}
         />

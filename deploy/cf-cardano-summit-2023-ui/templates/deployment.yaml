@@ -23,6 +23,8 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
+            - name: REACT_APP_VERSION
+              value: {{ .Values.image.tag | default .Chart.AppVersion | quote }}
             - name: REACT_APP_FRONTEND_URL
               value: {{ .Values.frontendUrl }}
             - name: REACT_APP_VOTING_APP_SERVER_URL

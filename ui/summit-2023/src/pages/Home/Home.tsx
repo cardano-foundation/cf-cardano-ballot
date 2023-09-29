@@ -51,8 +51,7 @@ const Home: React.FC = () => {
               height: '46px',
               borderRadius: '8px',
               my: '20px',
-              px: '10px'
-
+              px: '10px',
             }}
             icon={<EventIcon />}
             label={`The Vote opens on ${formatUTCDate(

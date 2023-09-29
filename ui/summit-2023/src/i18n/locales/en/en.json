@@ -30,9 +30,10 @@
         "title": "The ability to receive an SMS verification message.",
         "hint": "Securely verify your account with a one-time SMS code for Cardano Ballot. Safety and simplicity combined."
       },
-      "discord": {
+      "wallets": {
         "title": "A supported Cardano wallet and/or browser extension.",
-        "hint": "You don't need to have any funds in your wallet to use Cardano Ballot. View a list of supported wallets"
+        "hint": "You don't need to have any funds in your wallet to use Cardano Ballot.",
+        "link": "View a list of supported wallets"
       }
     },
     "createVerify": {

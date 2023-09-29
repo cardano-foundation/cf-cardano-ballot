@@ -8,6 +8,9 @@ import { NavLink } from 'react-router-dom';
 import { CustomButton } from '../../components/common/Button/CustomButton';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
+import { formatUTCDate } from 'utils/dateUtils';
+import Chip from '@mui/material/Chip';
+import EventIcon from '@mui/icons-material/Event';
 
 const Home: React.FC = () => {
   const eventCache = useSelector((state: RootState) => state.user.event);
@@ -42,12 +45,28 @@ const Home: React.FC = () => {
           >
             {i18n.t('landing.title')}
           </Typography>
+
+          <Chip
+            sx={{
+              height: '46px',
+              borderRadius: '8px',
+              my: '20px',
+              px: '10px',
+            }}
+            icon={<EventIcon />}
+            label={`The Vote opens on ${formatUTCDate(
+              eventCache?.eventStartDate?.toString()
+            )}, and closes on ${formatUTCDate(eventCache?.eventEndDate?.toString())}.`}
+            color="primary"
+          />
+
           <Typography
             variant="body1"
             sx={{ textAlign: { xs: 'center', sm: 'left' } }}
           >
             {i18n.t('landing.description')}
           </Typography>
+
           <Grid
             container
             sx={{ justifyContent: { xs: 'center', sm: 'left' } }}
@@ -60,7 +79,7 @@ const Home: React.FC = () => {
                 styles={{
                   background: '#ACFCC5',
                   color: '#03021F',
-                  marginTop: '40px',
+                  marginTop: '20px',
                   textDecoration: 'none !important',
                 }}
                 label={eventCache?.finished ? 'Voting ended' : i18n.t('landing.getStartedButton')}

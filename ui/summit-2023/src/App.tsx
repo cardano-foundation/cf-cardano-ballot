@@ -105,6 +105,16 @@ function App() {
   }, [fetchEvent, stakeAddress]);
 
   useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const action = queryParams.get('action');
+    const secret = queryParams.get('secret');
+
+    if (isConnected && (!session || isExpired) && !(action === 'verification' && secret.includes('|'))) {
+      eventBus.publish('openLoginModal', 'If you already voted, please login to see your votes.');
+    }
+  }, [isConnected]);
+
+  useEffect(() => {
     setOpenTermDialog(!termsAndConditionsChecked);
   }, []);
 

@@ -87,6 +87,7 @@ const Header: React.FC = () => {
 
     if (action === 'verification' && secret.includes('|')) {
       toggleVerifyDiscordModalIsOpen();
+      setVerifyModalIsOpen(true);
     }
   }, []);
 
@@ -254,6 +255,7 @@ const Header: React.FC = () => {
   };
 
   const handleCloseVerify = () => {
+    console.log('try to close verify')
     setVerifyModalIsOpen(false);
   };
 
@@ -455,9 +457,9 @@ const Header: React.FC = () => {
       </Modal>
       <Modal
         id="verify-wallet-modal"
-        isOpen={verifyModalIsOpen || verifyDiscordModalIsReady}
+        isOpen={verifyModalIsOpen}
         name="verify-wallet-modal"
-        title="Verify your Wallet"
+        title="Verify your wallet"
         onClose={handleCloseVerify}
         disableBackdropClick={true}
         width={isMobile ? '100%' : '400px'}

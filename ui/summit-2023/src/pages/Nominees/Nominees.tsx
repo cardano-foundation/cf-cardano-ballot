@@ -557,7 +557,7 @@ const Nominees = () => {
                   <div style={{ height: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <Card
                       sx={{
-                        height: 'auto',
+                        height: '400px',
                         width: { xs: '380px', sm: '414px' },
                         display: 'flex',
                         alignItems: 'center',

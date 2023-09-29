@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Grid } from '@mui/material';
+import { Typography, Grid, useTheme, useMediaQuery } from '@mui/material';
 import CARDANOSUMMIT2023LOGO from '../../common/resources/images/cardanosummit2023.svg';
 import { Hexagon } from '../../components/common/Hexagon';
 import './Home.scss';
@@ -14,6 +14,8 @@ import EventIcon from '@mui/icons-material/Event';
 
 const Home: React.FC = () => {
   const eventCache = useSelector((state: RootState) => state.user.event);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   return (
     <Grid
@@ -45,20 +47,26 @@ const Home: React.FC = () => {
           >
             {i18n.t('landing.title')}
           </Typography>
-
-          <Chip
-            sx={{
-              height: '46px',
-              borderRadius: '8px',
-              my: '20px',
-              px: '10px',
-            }}
-            icon={<EventIcon />}
-            label={`The Vote opens on ${formatUTCDate(
-              eventCache?.eventStartDate?.toString()
-            )}, and closes on ${formatUTCDate(eventCache?.eventEndDate?.toString())}.`}
-            color="primary"
-          />
+          {isMobile ? (
+            <div className="event-time">
+                <p>Opens on: {formatUTCDate(eventCache?.eventStartDate?.toString())}</p>
+                <p>Closes on: {formatUTCDate(eventCache?.eventEndDate?.toString())}</p>
+            </div>
+          ) : (
+            <Chip
+              sx={{
+                height: '46px',
+                borderRadius: '8px',
+                my: '20px',
+                px: '10px',
+              }}
+              icon={<EventIcon />}
+              label={`The Vote opens on ${formatUTCDate(
+                eventCache?.eventStartDate?.toString()
+              )}, and closes on ${formatUTCDate(eventCache?.eventEndDate?.toString())}.`}
+              color="primary"
+            />
+          )}
 
           <Typography
             variant="body1"

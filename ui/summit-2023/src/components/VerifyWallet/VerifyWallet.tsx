@@ -409,23 +409,15 @@ const VerifyWallet = (props: VerifyWalletProps) => {
             style={{ cursor: 'pointer' }}
             onClick={() => openNewTab(env.DISCORD_BOT_URL)}
           >
-            Open the chat
-          </span>{' '}
-          with the bot.
+            Open the Wallet Verification channel and follow the instructions in Discord.
+          </span>
         </Typography>
         <Typography
           className="verify-wallet-modal-description"
           gutterBottom
           style={{ wordWrap: 'break-word', marginTop: '16px' }}
         >
-          3. Click on the button.
-        </Typography>
-        <Typography
-          className="verify-wallet-modal-description"
-          gutterBottom
-          style={{ wordWrap: 'break-word', marginTop: '16px' }}
-        >
-          4. You will be redirected to voting app.
+          3. You will be redirected back to the Cardano Ballot application within a new window, to complete the sign and verification process.
         </Typography>
         <CustomButton
           styles={{

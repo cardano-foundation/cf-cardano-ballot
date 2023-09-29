@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.2.63](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.62...v0.2.63) (2023-09-29)
+
+
+### Bug Fixes
+
+* adding the new urls on discord links and change of text on popup ([8e3376e](https://github.com/cardano-foundation/cf-cardano-ballot/commit/8e3376e616de8dec9ce4d19fc0fafc21cb725b0d))
+* **cip-1694-ui:** remove option selection on fetch receipt ([e43ad42](https://github.com/cardano-foundation/cf-cardano-ballot/commit/e43ad426767d8e6ac4f1814fd7ebde09972f4e3b))
+* footer fix ([4fdb846](https://github.com/cardano-foundation/cf-cardano-ballot/commit/4fdb846a39be9b1d2441a3b14591b3c5d1e39663))
+* mobile view broken layout fix ([99faa41](https://github.com/cardano-foundation/cf-cardano-ballot/commit/99faa41a1ba6f6271caa5eb2d27233f598b62a8c))
+* nft color fix on leaderboard ([208b7c8](https://github.com/cardano-foundation/cf-cardano-ballot/commit/208b7c889081ed83cf5ae1d5b449e6514bca8632))
+
 ## [0.2.62](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.61...v0.2.62) (2023-09-29)
 
 

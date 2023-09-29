@@ -41,12 +41,6 @@ public class BaseTest {
 
     @BeforeAll
     public void setUp() {
-        DockerImageName localstackImage = DockerImageName.parse("localstack/localstack:0.11.3");
-
-        localstackContainer = new LocalStackContainer(localstackImage)
-                .withServices(SNS);
-        localstackContainer.start();
-
         wireMockServer = new WireMockServer(9090);
         wireMockServer.start();
 
@@ -58,6 +52,13 @@ public class BaseTest {
                                 .withHeader("Content-Type", "application/json")
                                 .withBody(responseBody)));
 
+        /*
+        DockerImageName localstackImage = DockerImageName.parse("localstack/localstack:0.11.3");
+
+        localstackContainer = new LocalStackContainer(localstackImage)
+                .withServices(SNS);
+        localstackContainer.start();
+
         AwsCredentialsProvider credentialsProvider = StaticCredentialsProvider.create(
                 AwsBasicCredentials.create(awsAccessKeyId, awsSecretAccessKey)
         );
@@ -67,6 +68,7 @@ public class BaseTest {
                 .credentialsProvider(credentialsProvider)
                 .region(Region.of(awsRegion))
                 .build();
+         */
 
         RestAssured.port = serverPort;
         RestAssured.baseURI = "http://localhost";

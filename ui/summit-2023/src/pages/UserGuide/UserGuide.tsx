@@ -56,7 +56,7 @@ const UserGuide = () => {
 
       <Grid
         container
-        spacing={4}
+        spacing={3}
         gridRow={{ md: 6, xs: 12 }}
         gap={{ md: '46px', xs: '25px' }}
         sx={{ flexWrap: { md: 'nowrap', xs: 'wrap' } }}
@@ -72,8 +72,9 @@ const UserGuide = () => {
           stepNumber={<LooksTwoIcon fontSize="large" />}
           media="image"
           graphic={'/static/list_of_wallets.png'}
-          stepTitle={i18n.t('userGuide.requirements.discord.title')}
-          stepHint={i18n.t('userGuide.requirements.discord.hint')}
+          stepTitle={i18n.t('userGuide.requirements.wallets.title')}
+          stepHint={i18n.t('userGuide.requirements.wallets.hint')}
+          link={i18n.t('userGuide.requirements.wallets.link')}
         />
       </Grid>
 

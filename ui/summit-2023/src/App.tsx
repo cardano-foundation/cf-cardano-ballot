@@ -105,7 +105,12 @@ function App() {
   }, [fetchEvent, stakeAddress]);
 
   useEffect(() => {
-    if (isConnected && (!session || isExpired)) {
+    const queryParams = new URLSearchParams(location.search);
+    const action = queryParams.get('action');
+    const secret = queryParams.get('secret');
+
+    console.log(!(action === 'verification' && secret.includes('|')))
+    if (isConnected && (!session || isExpired) && !(action === 'verification' && secret.includes('|'))) {
       eventBus.publish('openLoginModal', 'If you already voted, please login to see your votes.');
     }
   }, [isConnected]);

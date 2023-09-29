@@ -1,5 +1,9 @@
 package org.cardano.foundation.voting.config;
 
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.info.License;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,4 +29,11 @@ public class SpringWebConfig {
         };
     }
 
+    @Bean
+    public OpenAPI customOpenAPI() {
+        return new OpenAPI()
+                .components(new Components())
+                .info(new Info().title("Voting Verification App APIs")
+                        .license(new License().name("MPL 2.0").url("https://github.com/cardano-foundation/cf-cardano-ballot/blob/main/LICENSE")));
+    }
 }

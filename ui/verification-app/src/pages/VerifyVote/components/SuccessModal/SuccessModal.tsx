@@ -26,6 +26,7 @@ export const SuccessModal = ({ opened, explorerLink }: SuccessModalProps) => {
 
   return (
     <Dialog
+      data-testid="success-modal"
       disableEscapeKeyDown
       aria-labelledby="dialog-title"
       aria-describedby="dialog-description"
@@ -46,7 +47,12 @@ export const SuccessModal = ({ opened, explorerLink }: SuccessModalProps) => {
         },
       }}
     >
-      <Box position="relative" display="flex" alignItems="flex-end" flex="1">
+      <Box
+        position="relative"
+        display="flex"
+        alignItems="flex-end"
+        flex="1"
+      >
         <Fade
           in={isRendered}
           timeout={1000}
@@ -84,17 +90,19 @@ export const SuccessModal = ({ opened, explorerLink }: SuccessModalProps) => {
                 alignItems={'center'}
                 justifyContent={'center'}
               >
-                <CheckIcon
-                  sx={{ width: '56px', height: '56px', color: '#061D3C' }}
-                  // classes={{ root: styles.pulse }}
-                />
+                <CheckIcon sx={{ width: '56px', height: '56px', color: '#061D3C' }} />
               </Grid>
             </Grid>
           </Grid>
         </Fade>
-        <Slide in={isCheckboxAnimated} timeout={1000} direction="up">
+        <Slide
+          in={isCheckboxAnimated}
+          timeout={1000}
+          direction="up"
+        >
           <div>
             <DialogTitle
+              data-testid="success-modal-title"
               id="dialog-title"
               justifyContent="center"
               display="flex"
@@ -119,6 +127,7 @@ export const SuccessModal = ({ opened, explorerLink }: SuccessModalProps) => {
               }}
             >
               <DialogContentText
+                data-testid="success-modal-description"
                 id="dialog-description"
                 sx={{
                   textAlign: 'center',
@@ -131,13 +140,13 @@ export const SuccessModal = ({ opened, explorerLink }: SuccessModalProps) => {
                   wordWrap: 'break-word',
                 }}
               >
-                Your vote has been successfully verified. Click the link or scan
-                the QR code to view the transaction.
+                Your vote has been successfully verified. Click the link or scan the QR code to view the transaction.
               </DialogContentText>
               <Grid sx={{ pb: '16px' }}>
                 <QRCode data={explorerLink} />
               </Grid>
               <Link
+                data-testid="success-modal-link"
                 target="_blank"
                 href={explorerLink}
                 sx={{

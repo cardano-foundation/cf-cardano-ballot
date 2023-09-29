@@ -1,5 +1,18 @@
-import { cleanup } from '@testing-library/react';
+/* eslint-disable no-var */
+var ToasterMock = jest.fn();
+import React from 'react';
 import '@testing-library/jest-dom';
+import { expect } from '@jest/globals';
+import { screen, cleanup, render, waitFor, act } from '@testing-library/react';
+import { App } from './App';
+
+jest.mock('common/routes', () => ({
+  PageRoutes: () => <span data-testid="page-routes" />,
+}));
+
+jest.mock('react-hot-toast', () => ({
+  Toaster: ToasterMock,
+}));
 
 describe('App', () => {
   beforeEach(() => {
@@ -7,7 +20,17 @@ describe('App', () => {
     cleanup();
   });
 
-  test.todo('should render routes');
+  test('should render proper state', async () => {
+    ToasterMock.mockReset();
+    ToasterMock.mockImplementation(() => <span data-testid="toaster" />);
+    await act(async () => {
+      render(<App />);
+    });
 
-  test.todo('should render toast provider');
+    await waitFor(async () => {
+      expect(screen.queryByTestId('page-routes')).not.toBeNull();
+      expect(screen.queryByTestId('toaster')).not.toBeNull();
+      expect(ToasterMock).toBeCalledWith({ toastOptions: { className: undefined } }, {});
+    });
+  });
 });

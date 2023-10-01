@@ -1,7 +1,7 @@
 // brew install amm
 // amm cip30_debug.sc
 
-import $ivy.`org.cardanofoundation:cip30-data-signature-parser:0.0.10`
+import $ivy.`org.cardanofoundation:cip30-data-signature-parser:0.0.11`
 
 import $ivy.`org.slf4j:slf4j-simple:2.0.9`
 

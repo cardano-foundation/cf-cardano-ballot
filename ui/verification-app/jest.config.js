@@ -4,10 +4,10 @@ module.exports = {
   coveragePathIgnorePatterns: ['node_modules', 'setupTests.ts', 'setupProxy.ts', 'env.ts', '.d.ts', 'types', 'test/*'],
   coverageThreshold: {
     global: {
-      branches: 23,
-      functions: 59,
-      lines: 50,
-      statements: 50,
+      branches: 50,
+      functions: 77,
+      lines: 77,
+      statements: 78,
     },
   },
   roots: ['<rootDir>/src'],

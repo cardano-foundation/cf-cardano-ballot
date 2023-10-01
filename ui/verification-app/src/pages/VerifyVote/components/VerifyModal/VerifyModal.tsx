@@ -28,8 +28,8 @@ export const VerifyModal = ({ opened, onConfirm }: VerifyModalProps) => {
     try {
       const {
         transactionHash,
-        rootHash = '',
-        steps = [],
+        rootHash,
+        steps,
         coseSignature,
         cosePublicKey,
       }: voteProofType = JSON.parse(voteProof);
@@ -41,15 +41,22 @@ export const VerifyModal = ({ opened, onConfirm }: VerifyModalProps) => {
         voteCosePublicKey: cosePublicKey,
         steps,
       });
-      if ('verified' in verified && typeof verified?.verified === 'boolean') {
+      if ('verified' in verified && typeof verified.verified === 'boolean' && verified.verified) {
         setTxHash(transactionHash);
         setActiveSection(SECTIONS.CHOSE_EXPLORER);
+      } else {
+        toast(
+          <Toast
+            message="Vote is not verified. Please check again later"
+            error
+            icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
+          />
+        );
       }
     } catch (error) {
-      const message = error?.message?.endsWith('is not valid JSON')
+      const message = error.message.endsWith('is not valid JSON')
         ? errors[ERRORS.JSON]
-        : errors[error?.message as ERRORS] || errors[ERRORS.VERIFY];
-
+        : errors[error.message as ERRORS] || errors[ERRORS.VERIFY];
       toast(
         <Toast
           message={message}
@@ -67,6 +74,7 @@ export const VerifyModal = ({ opened, onConfirm }: VerifyModalProps) => {
 
   return (
     <Dialog
+      data-testid="verify-modal"
       disableEscapeKeyDown
       aria-labelledby="dialog-title"
       aria-describedby="dialog-description"
@@ -83,6 +91,7 @@ export const VerifyModal = ({ opened, onConfirm }: VerifyModalProps) => {
       }}
     >
       <DialogTitle
+        data-testid="verify-modal-title"
         id="dialog-title"
         sx={{
           padding: '50px 50px 20px 50px',
@@ -98,6 +107,7 @@ export const VerifyModal = ({ opened, onConfirm }: VerifyModalProps) => {
 
       <DialogContent sx={{ padding: '0px 50px 25px 50px !important' }}>
         <DialogContentText
+          data-testid="verify-modal-description"
           id="dialog-description"
           sx={{
             pb: '25px',
@@ -133,6 +143,7 @@ export const VerifyModal = ({ opened, onConfirm }: VerifyModalProps) => {
         style={{ justifyContent: 'start' }}
       >
         <Button
+          data-testid="verify-modal-cta"
           variant="contained"
           onClick={activeSection === SECTIONS.VERIFY ? handleVerify : handleNext}
           className={cn(styles.verifyButton, { [styles.loading]: isLoading })}

@@ -310,7 +310,7 @@ describe('For ongoing event:', () => {
       const votePage = await screen.queryByTestId('vote-page');
       const cta = await within(votePage).queryByTestId('proposal-submit-button');
 
-      expect(cta.closest('button')).toHaveAttribute('disabled');
+      expect(cta.closest('button')).toBeDisabled();
 
       fireEvent.click(cta);
       expect(mockCastAVoteWithDigitalSignature).not.toHaveBeenCalled();
@@ -1251,5 +1251,6 @@ describe('For the event that has already finished', () => {
       fireEvent.click(cta2);
     });
     expect((historyPushSpy.mock.lastCall[0] as unknown as any).pathname).toEqual(ROUTES.LEADERBOARD);
+    historyPushSpy.mockRestore();
   });
 });

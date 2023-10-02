@@ -27,6 +27,7 @@ cf-summit-2023-ui:
 cf-summit-2023-voting-api:
   enabled: true
   values:
+    springProfiles: prod
     useJwt: true
     leaderboardForceResults: "false"
     resources:
@@ -66,6 +67,7 @@ cf-summit-2023-verification-api:
   values:
     image:
       tag: 0.2.64
+    springProfiles: prod
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
     corsAllowedOrigins: https://{{ .Values.domain }}
 
@@ -74,6 +76,7 @@ cf-user-verification-service:
   values:
     image:
       tag: 0.2.64
+    springProfiles: prod
     discordBotEventIdBinding: CF_SUMMIT_2023_TEST3
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
     corsAllowedOrigins: https://{{ .Values.domain }}
@@ -83,6 +86,7 @@ cf-summit-2023-ledger-follower-api:
   values:
     image:
       tag: 0.2.64
+    springProfiles: prod
     bindOnEventIds: CF_SUMMIT_2023_TEST3
     yaci:
       startBlockHash: 6bb9228e3b746366e24f2681021d619395b850b34c2db020c4928285dcf7b0c2
@@ -111,6 +115,7 @@ cf-discord-wallet-verification-bot:
   values:
     image:
       tag: 11f6f15
+    springProfiles: prod
     backendBaseUrl: https://user-verification.{{ .Values.domain }}
     frontendUrl: https://{{ .Values.domain }}
     diagnosticMode:

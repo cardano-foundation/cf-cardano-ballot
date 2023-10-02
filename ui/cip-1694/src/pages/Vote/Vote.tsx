@@ -225,7 +225,7 @@ export const VotePage = () => {
       voter: stakeAddress,
       voteId: uuidv4(),
       slotNumber: tip.absoluteSlot.toString(),
-      votePower: votingPower,
+      votingPower,
       category,
     });
 

@@ -117,7 +117,6 @@ const Header: React.FC = () => {
 
   useEffect(() => {
     const openVerifyWalletModal = () => {
-      console.log('hey');
       setVerifyModalIsOpen(true);
     };
     eventBus.subscribe('openVerifyWalletModal', openVerifyWalletModal);

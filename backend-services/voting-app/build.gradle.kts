@@ -79,6 +79,8 @@ dependencies {
 	implementation("org.cardanofoundation:merkle-tree-java:0.0.7")
 	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.11")
 
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
+
     // spring-boot overridden dependencies:
     runtimeOnly("com.h2database:h2:2.2.224") // GraalVM compatibility
 }

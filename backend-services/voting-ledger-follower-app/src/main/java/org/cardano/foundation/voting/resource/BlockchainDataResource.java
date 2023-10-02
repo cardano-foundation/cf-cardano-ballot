@@ -1,8 +1,16 @@
 package org.cardano.foundation.voting.resource;
 
 import io.micrometer.core.annotation.Timed;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.domain.ChainTip;
+import org.cardano.foundation.voting.domain.TransactionDetails;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataChainTipService;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataTransactionDetailsService;
 import org.springframework.http.CacheControl;
@@ -20,6 +28,7 @@ import static org.zalando.problem.Status.NOT_FOUND;
 @RequestMapping("/api/blockchain")
 @Slf4j
 @RequiredArgsConstructor
+@Tag(name = "BlockchainData", description = "The blockchain data API")
 public class BlockchainDataResource {
 
     private final BlockchainDataChainTipService blockchainDataChainTipService;
@@ -28,6 +37,15 @@ public class BlockchainDataResource {
 
     @RequestMapping(value = "/tip", method = GET, produces = "application/json")
     @Timed(value = "resource.blockchain.tip", histogram = true)
+    @Operation(summary = "Retrieve the current blockchain tip",
+            description = "Fetches the latest blockchain tip information.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Successfully retrieved the blockchain tip",
+                            content = { @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = ChainTip.class)) }),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            }
+    )
     public ResponseEntity<?> tip() {
         var cacheControl = CacheControl.maxAge(15, SECONDS)
                 .noTransform()
@@ -50,7 +68,18 @@ public class BlockchainDataResource {
 
     @RequestMapping(value = "/tx-details/{txHash}", method = GET, produces = "application/json")
     @Timed(value = "resource.tx-details", histogram = true)
-    public ResponseEntity<?> txDetails(@PathVariable("txHash") String txHash) {
+    @Operation(summary = "Retrieve transaction details by transaction hash",
+            description = "Fetches details of a transaction based on the provided transaction hash.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Successfully retrieved transaction details",
+                            content = { @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = TransactionDetails.class)) }),
+                    @ApiResponse(responseCode = "404", description = "Transaction not found for the provided hash"),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            }
+    )
+    public ResponseEntity<?> txDetails( @Parameter(description = "Transaction hash for which details are to be retrieved", required = true)
+                                            @PathVariable("txHash") String txHash) {
         var cacheControl = CacheControl.noCache()
                 .noTransform()
                 .mustRevalidate();

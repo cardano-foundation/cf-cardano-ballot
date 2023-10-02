@@ -1,8 +1,17 @@
 package org.cardano.foundation.voting.resource;
 
 import io.micrometer.core.annotation.Timed;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.domain.UserVotes;
+import org.cardano.foundation.voting.domain.VoteReceipt;
 import org.cardano.foundation.voting.service.auth.jwt.JwtAuthenticationToken;
 import org.cardano.foundation.voting.service.auth.web3.Web3AuthenticationToken;
 import org.cardano.foundation.voting.service.vote.VoteService;
@@ -24,13 +33,35 @@ import static org.zalando.problem.Status.NOT_ACCEPTABLE;
 @RequestMapping("/api/vote")
 @Slf4j
 @RequiredArgsConstructor
+@Tag(name = "Vote", description = "Operations related to voting")
 public class VoteResource {
 
     private final VoteService voteService;
 
     @RequestMapping(value = "/votes/{eventId}", method = GET, produces = "application/json")
     @Timed(value = "resource.vote.votes", histogram = true)
-    public ResponseEntity<?> getVotes(@PathVariable(value = "eventId", required = false) Optional<String> maybeEventId,
+    @Operation(
+            summary = "Retrieve votes for an event",
+            description = "Fetch all votes associated with a given event. If an eventId is provided in the path, it should match the one in the JWT token.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Successful retrieval of votes for the event.",
+                            content = {
+                                    @Content(mediaType = "application/json",
+                                            array = @ArraySchema( schema= @Schema(implementation = UserVotes.class))) // Assuming the response is of type CategoryProposalPairs
+                            }
+                    ),
+                    @ApiResponse(responseCode = "400", description = "Bad request, possibly due to JWT missing or event ID mismatch.",
+                            content = {
+                                    @Content(mediaType = "application/json",
+                                            schema = @Schema(implementation = Problem.class)) // Using the Problem class you provided earlier
+                            }
+                    ),
+                    @ApiResponse(responseCode = "500", description = "Server error")
+            }
+    )
+    public ResponseEntity<?> getVotes(
+            @Parameter(name = "eventId", required = false, description = "ID of the event for which votes are being fetched.")
+            @PathVariable(value = "eventId", required = false) Optional<String> maybeEventId,
                                       Authentication authentication) {
         var cacheControl = CacheControl.noCache()
                 .noTransform()
@@ -81,6 +112,18 @@ public class VoteResource {
 
     @RequestMapping(value = "/cast", method = POST, produces = "application/json")
     @Timed(value = "resource.vote.cast", histogram = true)
+    @Operation(summary = "Cast a vote", description = "Allows users to cast their vote. Requires CIP-93 authentication.",
+        responses = {
+                @ApiResponse(responseCode = "200", description = "Vote successfully cast."),
+                @ApiResponse(responseCode = "400", description = "Bad request, possibly due to missing Web3 authentication.",
+                        content = {
+                                @Content(mediaType = "application/json",
+                                        schema = @Schema(implementation = Problem.class))
+                        }
+                ),
+                @ApiResponse(responseCode = "500", description = "Server error")
+        }
+    )
     public ResponseEntity<?> castVote(Authentication authentication) {
         log.info("Casting vote...");
 
@@ -115,6 +158,23 @@ public class VoteResource {
 
     @RequestMapping(value = "/receipt", method = { HEAD, GET } , produces = "application/json")
     @Timed(value = "resource.vote.receipt.web3", histogram = true)
+    @Operation(summary = "Retrieve a vote receipt", description = "Allows users to retrieve a receipt for their vote. Requires CIP-93 authentication.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Vote receipt retrieved successfully.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = VoteReceipt.class)
+                            )
+                    ),
+                    @ApiResponse(responseCode = "400", description = "Bad request, possibly due to missing Web3 authentication.",
+                            content = {
+                                    @Content(mediaType = "application/json",
+                                            schema = @Schema(implementation = Problem.class))
+                            }
+                    ),
+                    @ApiResponse(responseCode = "500", description = "Server error")
+            }
+    )
     public ResponseEntity<?> getVoteReceipt(Authentication authentication) {
         var cacheControl = CacheControl.noCache()
                 .noTransform()
@@ -150,6 +210,28 @@ public class VoteResource {
 
     @RequestMapping(value = "/receipt/{eventId}/{categoryId}", method = { HEAD, GET }, produces = "application/json")
     @Timed(value = "resource.vote.receipt.jwt", histogram = true)
+    @Operation(
+            summary = "Retrieve a vote receipt for a specific category and event",
+            description = "Allows users to retrieve a receipt for their vote for a specified category within an event. Requires JWT authentication.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Vote receipt retrieved successfully.",
+                            content = @Content(
+                                    mediaType = "application/json", schema = @Schema(implementation = VoteReceipt.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Bad request, possibly due to missing JWT authentication or mismatched event ID.",
+                            content = {
+                                    @Content(mediaType = "application/json",
+                                            schema = @Schema(implementation = Problem.class))
+                            }
+                    ),
+                    @ApiResponse(responseCode = "500", description = "Server error")
+            }
+    )
     public ResponseEntity<?> getVoteReceipt(@PathVariable(value = "eventId", required = false) Optional<String> maybeEventId,
                                             @PathVariable("categoryId") String categoryId,
                                             Authentication authentication) {
@@ -200,6 +282,28 @@ public class VoteResource {
 
     @RequestMapping(value = "/vote-changing-available/{eventId}/{voteId}", method = HEAD, produces = "application/json")
     @Timed(value = "resource.vote.vote.changing.available", histogram = true)
+    @Operation(summary = "Check if vote changing is available for a specific event and vote",
+            description = "Determines if a user's vote can be changed for a specific vote within an event. Requires JWT authentication.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Vote changing is available."),
+                    @ApiResponse(responseCode = "406", description = "Vote changing is not available.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = Problem.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Bad request, possibly due to missing JWT authentication or mismatched event ID.",
+                            content = {
+                                    @Content(mediaType = "application/json",
+                                            schema = @Schema(implementation = Problem.class))
+                            }
+                    ),
+                    @ApiResponse(responseCode = "500", description = "Server error")
+            }
+    )
+
     public ResponseEntity<?> isVoteChangingAvailable(@PathVariable(value = "eventId", required = false) Optional<String> maybeEventId,
                                                      @PathVariable("voteId") String voteId,
                                                      Authentication authentication) {

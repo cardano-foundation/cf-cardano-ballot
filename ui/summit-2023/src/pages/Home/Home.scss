@@ -3,7 +3,7 @@
   height: auto;
   min-width: 375px;
   max-width: 19vw;
-  @media only screen and (max-width: 768px) {
+  @media only screen and (max-width: 600px) {
     width: 313px;
     height: auto;
     min-width: 313px;
@@ -40,7 +40,7 @@
     width: 220px;
     height: 280px;
     margin-left: 22%;
-    @media only screen and (max-width: 768px) {
+    @media only screen and (max-width: 600px) {
       width: 170px;
       margin-left: 26%;
     }
@@ -50,6 +50,7 @@
 .left-title-container {
   padding: 3%;
   text-align: left;
+  max-width: 600px;
   .title {
     display: flex;
     align-items: flex-start;
@@ -87,6 +88,10 @@
       gap: 5px;
       letter-spacing: normal;
       line-height: 22px;
+    }
+    @media only screen and (max-width: 600px) {
+      text-align: left;
+      margin-left: 0px;
     }
   }
 }

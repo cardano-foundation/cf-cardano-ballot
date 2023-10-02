@@ -29,7 +29,8 @@ const Home: React.FC = () => {
       <Grid
         item
         xs={12}
-        md={7}
+        sm={12}
+        md={6}
         sx={{
           flex: '1',
           padding: '20px',
@@ -43,7 +44,7 @@ const Home: React.FC = () => {
           <Typography
             className="title"
             variant="h2"
-            sx={{ textAlign: { xs: 'center', sm: 'left' }, fontSize: { xs: '32px', sm: '48px', md: '56px' } }}
+            sx={{ textAlign: 'left', fontSize: { xs: '32px', sm: '48px', md: '56px' } }}
           >
             {i18n.t('landing.title')}
           </Typography>
@@ -70,18 +71,18 @@ const Home: React.FC = () => {
 
           <Typography
             variant="body1"
-            sx={{ textAlign: { xs: 'center', sm: 'left' } }}
+            sx={{ textAlign: 'left' }}
           >
             {i18n.t('landing.description')}
           </Typography>
 
           <Grid
             container
-            sx={{ justifyContent: { xs: 'center', sm: 'left' } }}
+            sx={{ justifyContent: 'left' }}
           >
             <NavLink
               to="/categories"
-              style={{ textDecoration: 'none' }}
+              style={{ textDecoration: 'none', width: '100%'}}
             >
               <CustomButton
                 styles={{
@@ -90,6 +91,7 @@ const Home: React.FC = () => {
                   marginTop: '20px',
                   textDecoration: 'none !important',
                 }}
+                fullWidth={ isMobile ? true : false }
                 label={eventCache?.finished ? 'Voting ended' : i18n.t('landing.getStartedButton')}
               />
             </NavLink>
@@ -100,7 +102,8 @@ const Home: React.FC = () => {
       <Grid
         item
         xs={12}
-        md={5}
+        sm={12}
+        md={6}
         justifyContent="center"
         alignItems="center"
         sx={{

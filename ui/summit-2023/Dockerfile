@@ -23,7 +23,7 @@ ENV NODE_ENV="production" \
     REACT_APP_COMMIT_HASH="INJECT_COMMIT_HASH" \
     REACT_APP_DISCORD_CHANNEL_URL="https://discord.gg/FeCbA2wYF8" \
     REACT_APP_DISCORD_BOT_URL="https://discord.gg/65Hq3gqFwE" \
-    REACT_APP_SUPPORTED_WALLETS="flint,eternl,nami,typhon,yoroi,nufi,gerowallet,lace"
+    REACT_APP_SUPPORTED_WALLETS="flint,eternl,nami,typhoncip30,yoroi,nufi,gerowallet,lace"
 
 # Copy built assets from builder
 COPY --from=builder /app/build /usr/share/nginx/html

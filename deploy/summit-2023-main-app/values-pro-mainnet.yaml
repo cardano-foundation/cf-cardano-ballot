@@ -50,6 +50,13 @@ cf-summit-2023-voting-api:
       tag: 0.2.64
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
     corsAllowedOrigins: https://{{ .Values.domain }}
+    yaci:
+      startBlockHash: 6bb9228e3b746366e24f2681021d619395b850b34c2db020c4928285dcf7b0c2
+      startSlotNumber: "103209875"
+      network: main
+      cardanoNodeHost: relays-new.cardano-mainnet.iohk.io
+      cardanoNodePort: "3001"
+      cardanoNodeProtocolMagic: "764824073"
     monitoring:
       alerting:
         enabled: false

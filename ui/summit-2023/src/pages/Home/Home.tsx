@@ -82,7 +82,7 @@ const Home: React.FC = () => {
           >
             <NavLink
               to="/categories"
-              style={{ textDecoration: 'none' }}
+              style={{ textDecoration: 'none', width: '100%'}}
             >
               <CustomButton
                 styles={{
@@ -91,6 +91,7 @@ const Home: React.FC = () => {
                   marginTop: '20px',
                   textDecoration: 'none !important',
                 }}
+                fullWidth={ isMobile ? true : false }
                 label={eventCache?.finished ? 'Voting ended' : i18n.t('landing.getStartedButton')}
               />
             </NavLink>

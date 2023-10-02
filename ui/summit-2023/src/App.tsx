@@ -27,6 +27,7 @@ import { getWinners } from 'common/api/leaderboardService';
 function App() {
   const theme = useTheme();
   const eventCache = useSelector((state: RootState) => state.user.event);
+  const walletIsVerified = useSelector((state: RootState) => state.user.walletIsVerified);
   const [termsAndConditionsChecked] = useLocalStorage(CB_TERMS_AND_PRIVACY, false);
   const [openTermDialog, setOpenTermDialog] = useState(false);
   const { isConnected, stakeAddress } = useCardano({ limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK) });
@@ -109,7 +110,15 @@ function App() {
     const action = queryParams.get('action');
     const secret = queryParams.get('secret');
 
-    if (isConnected && (!session || isExpired) && !(action === 'verification' && secret.includes('|'))) {
+    const isVerifiedEventNotEnded = walletIsVerified && !eventCache.finished;
+    const notVerifiedEventEnded = !walletIsVerified && eventCache.finished;
+    const sessionExpired = !session || isExpired;
+    const notDiscordVerification =  !(action === 'verification' && secret.includes('|'));
+
+    const showLoginModal = termsAndConditionsChecked &&
+        isConnected && notDiscordVerification && ((isVerifiedEventNotEnded && sessionExpired) || notVerifiedEventEnded);
+
+    if (showLoginModal) {
       eventBus.publish('openLoginModal', 'If you already voted, please login to see your votes.');
     }
   }, [isConnected]);

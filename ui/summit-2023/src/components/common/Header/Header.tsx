@@ -230,9 +230,6 @@ const Header: React.FC = () => {
   const onConnectWallet = () => {
     setOpenAuthDialog(false);
     showToast('Wallet connected successfully');
-    if (!walletIsVerified && !eventCache?.finished) {
-      setVerifyModalIsOpen(true);
-    }
   };
   const onConnectWalletError = (error: Error) => {
     setOpenAuthDialog(false);
@@ -255,7 +252,6 @@ const Header: React.FC = () => {
   };
 
   const handleCloseVerify = () => {
-    console.log('try to close verify')
     setVerifyModalIsOpen(false);
   };
 
@@ -321,6 +317,7 @@ const Header: React.FC = () => {
         <ConnectWalletButton
           onOpenConnectWalletModal={handleConnectWallet}
           onOpenVerifyWalletModal={handleOpenVerify}
+          onLogin={handleLogin}
         />
         <IconButton
           className="close-button"
@@ -422,6 +419,7 @@ const Header: React.FC = () => {
                 <ConnectWalletButton
                   onOpenConnectWalletModal={handleConnectWallet}
                   onOpenVerifyWalletModal={handleOpenVerify}
+                  onLogin={handleLogin}
                 />
               </Grid>
             </Grid>
@@ -493,7 +491,7 @@ const Header: React.FC = () => {
             color: '#03021F',
             margin: '24px 0px',
           }}
-          label="Login with wallet"
+          label="Login with Wallet"
           onClick={() => handleLogin()}
           fullWidth={true}
         />

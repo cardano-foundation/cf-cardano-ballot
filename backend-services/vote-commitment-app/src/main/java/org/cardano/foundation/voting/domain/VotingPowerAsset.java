@@ -1,4 +1,7 @@
 package org.cardano.foundation.voting.domain;
 
-public record TxBody(String txDataHex) {
+public enum VotingPowerAsset {
+
+    ADA
+
 }

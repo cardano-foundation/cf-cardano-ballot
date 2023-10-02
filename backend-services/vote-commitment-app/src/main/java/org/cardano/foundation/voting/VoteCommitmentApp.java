@@ -1,5 +1,7 @@
 package org.cardano.foundation.voting;
 
+import com.bloxbean.cardano.client.backend.blockfrost.service.http.*;
+import com.bloxbean.cardano.client.backend.model.TransactionContent;
 import io.micrometer.core.aop.TimedAspect;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -17,9 +19,12 @@ import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConf
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ImportRuntimeHints;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import static org.springframework.aot.hint.ExecutableMode.INVOKE;
 
 @SpringBootApplication(exclude = { SecurityAutoConfiguration.class, ErrorMvcAutoConfiguration.class, UserDetailsServiceAutoConfiguration.class })
 @EnableJpaRepositories("org.cardano.foundation.voting.repository")
@@ -29,21 +34,24 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 		"org.cardano.foundation.voting.service",
 		"org.cardano.foundation.voting.resource",
 		"org.cardano.foundation.voting.config",
-		"org.cardano.foundation.voting.client"
+		"org.cardano.foundation.voting.client",
+		"org.cardano.foundation.voting.jobs"
 })
 @EnableTransactionManagement
+@EnableScheduling
 @Slf4j
-@ImportRuntimeHints(VotingApp.Hints.class)
-public class VotingApp {
+@ImportRuntimeHints(VoteCommitmentApp.Hints.class)
+@EnableAsync
+public class VoteCommitmentApp {
 
 	public static void main(String[] args) {
-		SpringApplication.run(VotingApp.class, args);
+		SpringApplication.run(VoteCommitmentApp.class, args);
 	}
 
 	@Bean
 	public CommandLineRunner onStart() {
 		return (args) -> {
-			log.info("Voting App started.");
+			log.info("Vote Commitment App started.");
 		};
 	}
 
@@ -52,9 +60,16 @@ public class VotingApp {
         @Override
         @SneakyThrows
         public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-            hints.reflection().registerMethod(TimedAspect.class.getMethod("timedMethod", ProceedingJoinPoint.class), ExecutableMode.INVOKE);
-            hints.resources().registerResource(new ClassPathResource("db/migration/h2/V0__voting_app_init.sql"));
-            hints.resources().registerResource(new ClassPathResource("db/migration/postgresql/V0__voting_app_init.sql"));
+            hints.reflection().registerMethod(TimedAspect.class.getMethod("timedMethod", ProceedingJoinPoint.class), INVOKE);
+			hints.proxies().registerJdkProxy(AddressesApi.class);
+			hints.proxies().registerJdkProxy(TransactionApi.class);
+			hints.proxies().registerJdkProxy(AccountApi.class);
+			hints.proxies().registerJdkProxy(BlockApi.class);
+			hints.proxies().registerJdkProxy(EpochApi.class);
+			hints.proxies().registerJdkProxy(MetadataApi.class);
+			hints.proxies().registerJdkProxy(AssetsApi.class);
+			hints.proxies().registerJdkProxy(CardanoLedgerApi.class);
+			hints.proxies().registerJdkProxy(ScriptApi.class);
         }
     }
 

@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.64](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.63...v0.2.64) (2023-10-02)
+
+
+### Bug Fixes
+
+* cip-30 parser 0.0.11 upgrade. ([#371](https://github.com/cardano-foundation/cf-cardano-ballot/issues/371)) ([5c17800](https://github.com/cardano-foundation/cf-cardano-ballot/commit/5c1780078061ef5d2c49ff2a19f1baee20593bd2))
+* typhon is not CIP-30 compatible, there is typhoncip30 wallet. ([#373](https://github.com/cardano-foundation/cf-cardano-ballot/issues/373)) ([8c3b3bd](https://github.com/cardano-foundation/cf-cardano-ballot/commit/8c3b3bde30217cfea190f5527fb41d4453258858))
+
 ## [0.2.63](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.62...v0.2.63) (2023-09-29)
 
 

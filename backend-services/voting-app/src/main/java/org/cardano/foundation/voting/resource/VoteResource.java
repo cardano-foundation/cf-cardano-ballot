@@ -156,7 +156,7 @@ public class VoteResource {
                         });
     }
 
-    @RequestMapping(value = "/receipt", method = GET, produces = "application/json")
+    @RequestMapping(value = "/receipt", method = { HEAD, GET } , produces = "application/json")
     @Timed(value = "resource.vote.receipt.web3", histogram = true)
     @Operation(summary = "Retrieve a vote receipt", description = "Allows users to retrieve a receipt for their vote. Requires CIP-93 authentication.",
             responses = {
@@ -208,7 +208,7 @@ public class VoteResource {
                         });
     }
 
-    @RequestMapping(value = "/receipt/{eventId}/{categoryId}", method = GET, produces = "application/json")
+    @RequestMapping(value = "/receipt/{eventId}/{categoryId}", method = { HEAD, GET }, produces = "application/json")
     @Timed(value = "resource.vote.receipt.jwt", histogram = true)
     @Operation(
             summary = "Retrieve a vote receipt for a specific category and event",

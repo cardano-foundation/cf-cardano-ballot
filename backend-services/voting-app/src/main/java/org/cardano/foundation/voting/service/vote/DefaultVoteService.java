@@ -77,13 +77,6 @@ public class DefaultVoteService implements VoteService {
         return Either.right(userVotesList);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    @Timed(value = "service.vote.findAllCompactVotesByEventId", histogram = true)
-    public List<VoteRepository.CompactVote> findAllCompactVotesByEventId(String eventId) {
-        return voteRepository.findAllCompactVotesByEventId(eventId);
-    }
-
     @Transactional(readOnly = true)
     @Timed(value = "service.vote.isVoteChangingPossible", histogram = true)
     public Either<Problem, Boolean> isVoteChangingPossible(String voteId,

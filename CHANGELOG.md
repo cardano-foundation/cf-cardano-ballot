@@ -1,5 +1,87 @@
 # Changelog
 
+## [0.2.64](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.63...v0.2.64) (2023-10-02)
+
+
+### Bug Fixes
+
+* cip-30 parser 0.0.11 upgrade. ([#371](https://github.com/cardano-foundation/cf-cardano-ballot/issues/371)) ([5c17800](https://github.com/cardano-foundation/cf-cardano-ballot/commit/5c1780078061ef5d2c49ff2a19f1baee20593bd2))
+* typhon is not CIP-30 compatible, there is typhoncip30 wallet. ([#373](https://github.com/cardano-foundation/cf-cardano-ballot/issues/373)) ([8c3b3bd](https://github.com/cardano-foundation/cf-cardano-ballot/commit/8c3b3bde30217cfea190f5527fb41d4453258858))
+
+## [0.2.63](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.62...v0.2.63) (2023-09-29)
+
+
+### Bug Fixes
+
+* adding the new urls on discord links and change of text on popup ([8e3376e](https://github.com/cardano-foundation/cf-cardano-ballot/commit/8e3376e616de8dec9ce4d19fc0fafc21cb725b0d))
+* **cip-1694-ui:** remove option selection on fetch receipt ([e43ad42](https://github.com/cardano-foundation/cf-cardano-ballot/commit/e43ad426767d8e6ac4f1814fd7ebde09972f4e3b))
+* footer fix ([4fdb846](https://github.com/cardano-foundation/cf-cardano-ballot/commit/4fdb846a39be9b1d2441a3b14591b3c5d1e39663))
+* mobile view broken layout fix ([99faa41](https://github.com/cardano-foundation/cf-cardano-ballot/commit/99faa41a1ba6f6271caa5eb2d27233f598b62a8c))
+* nft color fix on leaderboard ([208b7c8](https://github.com/cardano-foundation/cf-cardano-ballot/commit/208b7c889081ed83cf5ae1d5b449e6514bca8632))
+
+## [0.2.62](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.61...v0.2.62) (2023-09-29)
+
+
+### Features
+
+* HEAD requests for vote receipts. ([#355](https://github.com/cardano-foundation/cf-cardano-ballot/issues/355)) ([bc4e58c](https://github.com/cardano-foundation/cf-cardano-ballot/commit/bc4e58c6cdf723203ce30fe74b692e627a882bcb))
+
+
+### Bug Fixes
+
+* ci cd pipeline breaking due to account billing fix ([93cb122](https://github.com/cardano-foundation/cf-cardano-ballot/commit/93cb122663c582cd7689ab083dead496faa536ab))
+* close discord modal ([0a25dbc](https://github.com/cardano-foundation/cf-cardano-ballot/commit/0a25dbc7fc03423c0d2a410476c92e746f359711))
+* hide login modal on discord verification starts ([fde9385](https://github.com/cardano-foundation/cf-cardano-ballot/commit/fde9385d16bd161ba7a35154d52e4ee5f4679487))
+* link has been added on userguide card ([81bb6c5](https://github.com/cardano-foundation/cf-cardano-ballot/commit/81bb6c5f9dcaaaaec05faba552ec37ca716db477))
+* open login modal on connect if not session ([5301661](https://github.com/cardano-foundation/cf-cardano-ballot/commit/530166185d3fcf06557cf66e73264ea1156cc885))
+* remove debugs ([06e787a](https://github.com/cardano-foundation/cf-cardano-ballot/commit/06e787a0d67491e3a3447ec95a8246d55dd7e2d3))
+* rounded numbers instead squares ([9da7f49](https://github.com/cardano-foundation/cf-cardano-ballot/commit/9da7f4905517eff2b150f18c3df7507182b7f057))
+* summit link and count down event dates ([6f15a3e](https://github.com/cardano-foundation/cf-cardano-ballot/commit/6f15a3ef915c256584d5d9428dee7d795d7785cd))
+* undefined voted nominee ([4444d39](https://github.com/cardano-foundation/cf-cardano-ballot/commit/4444d39108566c943ffdc0e4bf6f3097693f95f2))
+
+## [0.2.61](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.60...v0.2.61) (2023-09-28)
+
+
+### Bug Fixes
+
+* cip45 ui ([be4fb65](https://github.com/cardano-foundation/cf-cardano-ballot/commit/be4fb655290f7e0f2e81dea90544e82eb26641c6))
+* clean session on disconnect ([5e40a7d](https://github.com/cardano-foundation/cf-cardano-ballot/commit/5e40a7dbdadf3b62165c24ec9816af8cbf6b82f9))
+* hide receipt banner if not wallet connected ([1669fcc](https://github.com/cardano-foundation/cf-cardano-ballot/commit/1669fcce6d85c3ecbff9cae50505847af4199f14))
+* layout fixes on all pages ([0315459](https://github.com/cardano-foundation/cf-cardano-ballot/commit/0315459898c1749a47b769308eedf01b862a77e5))
+* login after voting ends and remove debugs ([72e3fbd](https://github.com/cardano-foundation/cf-cardano-ballot/commit/72e3fbde84c80b98fa4baa326dfb3a55a8fc04f6))
+* resolve conflicts ([09f21d6](https://github.com/cardano-foundation/cf-cardano-ballot/commit/09f21d606ccd54a7163550f77e26fc7f7a90a3ae))
+* show see receipt after casting a vote and call user votes after casting a vote ([be1eb6e](https://github.com/cardano-foundation/cf-cardano-ballot/commit/be1eb6ee2180640b2b1938ad32bd80e16f376671))
+* Successfully cast vote and Receipt help texts ([57a5466](https://github.com/cardano-foundation/cf-cardano-ballot/commit/57a54665d8b84ca4a1f2a1312fdf4f90816c0588))
+
+## [0.2.60](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.59...v0.2.60) (2023-09-28)
+
+
+### Bug Fixes
+
+* **cip-1694-ui:** remove user session on wallet disconnect, enforce code coverage ([2021071](https://github.com/cardano-foundation/cf-cardano-ballot/commit/202107100247a42617283602f087de66d87667a0))
+
+## [0.2.59](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.58...v0.2.59) (2023-09-28)
+
+
+### Features
+
+* display winners in nominees ([da57a8e](https://github.com/cardano-foundation/cf-cardano-ballot/commit/da57a8e82f02f78fdf510a924942e9b4a1cc37e3))
+* sort nominees by vote and winner ([be7b2d0](https://github.com/cardano-foundation/cf-cardano-ballot/commit/be7b2d00a90c3d0ace097fe49bd1f37c4f3b56d7))
+
+
+### Bug Fixes
+
+* remove fixture ([f1d56bb](https://github.com/cardano-foundation/cf-cardano-ballot/commit/f1d56bbe3ee9ee785735db95599b46fdf016fe6f))
+* see login banner in nominees on event ended ([915f5c9](https://github.com/cardano-foundation/cf-cardano-ballot/commit/915f5c9565890cbc343dde9823081b41f0a74e5e))
+* show receipt banner if receipt exists in redux ([511e225](https://github.com/cardano-foundation/cf-cardano-ballot/commit/511e2255ef015773fb13ebaf973420bb70a6ea1a))
+
+## [0.2.58](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.57...v0.2.58) (2023-09-28)
+
+
+### Features
+
+* attempting to force a release ([f373e7c](https://github.com/cardano-foundation/cf-cardano-ballot/commit/f373e7c3cc7ad8b3824b700d20dabf14e95c5ee3))
+
 ## [0.2.57](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.56...v0.2.57) (2023-09-27)
 
 

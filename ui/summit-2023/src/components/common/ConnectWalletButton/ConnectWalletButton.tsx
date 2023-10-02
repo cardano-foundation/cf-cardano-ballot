@@ -3,7 +3,7 @@ import { RootState } from '../../../store';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import { eventBus } from '../../../utils/EventBus';
 import { Avatar, Button } from '@mui/material';
-import { addressSlice, hasEventEnded, resolveCardanoNetwork, walletIcon } from '../../../utils/utils';
+import { addressSlice, resolveCardanoNetwork, walletIcon } from '../../../utils/utils';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { i18n } from '../../../i18n';
@@ -21,7 +21,6 @@ type ConnectWalletButtonProps = {
 const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
   const { onOpenConnectWalletModal, onOpenVerifyWalletModal } = props;
   const eventCache = useSelector((state: RootState) => state.user.event);
-  const eventHasEnded = hasEventEnded(eventCache?.eventEndDate);
   const walletIsVerified = useSelector((state: RootState) => state.user.walletIsVerified);
 
   const { stakeAddress, isConnected, disconnect, enabledWallet } = useCardano({
@@ -70,22 +69,24 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
       </Button>
       {isConnected && (
         <div className="disconnect-wrapper">
-          <Button
-            sx={{ zIndex: '99', cursor: walletIsVerified ? 'default' : 'pointer' }}
-            className="connect-button verify-button"
-            color="inherit"
-            onClick={() => onOpenVerifyWalletModal()}
-            disabled={eventHasEnded}
-          >
-            {walletIsVerified ? (
-              <>
-                <span style={{ paddingTop: '3px' }}>Verified</span>{' '}
-                <VerifiedIcon style={{ width: '20px', paddingBottom: '0px', color: '#1C9BEF' }} />{' '}
-              </>
-            ) : (
-              'Verify'
-            )}
-          </Button>
+          {!eventCache?.finished ? (
+            <Button
+              sx={{ zIndex: '99', cursor: walletIsVerified ? 'default' : 'pointer' }}
+              className="connect-button verify-button"
+              color="inherit"
+              onClick={() => onOpenVerifyWalletModal()}
+              disabled={eventCache?.finished}
+            >
+              {walletIsVerified ? (
+                <>
+                  <span style={{ paddingTop: '3px' }}>Verified</span>{' '}
+                  <VerifiedIcon style={{ width: '20px', paddingBottom: '0px', color: '#1C9BEF' }} />{' '}
+                </>
+              ) : (
+                'Verify'
+              )}
+            </Button>
+          ) : null}
           <Button
             sx={{ zIndex: '99' }}
             className="connect-button disconnect-button"

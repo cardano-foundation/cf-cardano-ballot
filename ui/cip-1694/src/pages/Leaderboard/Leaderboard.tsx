@@ -28,9 +28,6 @@ export const Leaderboard = () => {
       setStats((await leaderboardService.getStats(event?.categories?.[0]?.id))?.proposals);
     } catch (error) {
       const message = `Failed to fecth stats: ${error?.message || error?.toString()}`;
-      if (process.env.NODE_ENV === 'development') {
-        console.log(message);
-      }
       toast(
         <Toast
           error

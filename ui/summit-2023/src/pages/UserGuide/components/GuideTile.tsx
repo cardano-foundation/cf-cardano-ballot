@@ -1,18 +1,21 @@
 import React from 'react';
-import { Card, CardContent, CardMedia, Typography } from '@mui/material';
+import { Box, Card, CardContent, CardMedia, Typography } from '@mui/material';
 import styles from './GuideTile.module.scss';
+import { eventBus } from 'utils/EventBus';
+import { NavLink } from 'react-router-dom';
 
 type GuideTilePorps = {
   width?: string;
-  height: number;
+  height?: number;
   media: string;
   graphic: any | React.ReactElement;
   stepNumber: any | React.ReactElement;
   stepTitle: string | React.ReactElement;
   stepHint?: string | React.ReactElement;
+  link?: string | React.ReactElement;
 };
 
-export const GuideTile = ({ width, height, media, graphic, stepNumber, stepTitle, stepHint }: GuideTilePorps) => {
+export const GuideTile = ({ width, height, media, graphic, stepNumber, stepTitle, stepHint, link }: GuideTilePorps) => {
   return (
     <Card
       className={styles.guideCard}
@@ -35,7 +38,9 @@ export const GuideTile = ({ width, height, media, graphic, stepNumber, stepTitle
         />
       )}
       <CardContent>
-        {stepNumber}
+        <Box sx={{my: 1}}>
+          {stepNumber}
+        </Box>
         <Typography
           gutterBottom
           variant="h5"
@@ -50,7 +55,17 @@ export const GuideTile = ({ width, height, media, graphic, stepNumber, stepTitle
             className={styles.guideSummary}
             color="text.secondary"
           >
-            {stepHint}
+            {stepHint}{' '}
+            {link && (
+              <NavLink
+                onClick={() => {
+                  eventBus.publish('openConnectWalletModal');
+                } } to={''}
+                className={styles.link}
+              >
+                {link}
+              </NavLink>
+            )}
           </Typography>
         )}
       </CardContent>

@@ -74,8 +74,10 @@ export const ReceiptInfo = ({ isVerified, fetchReceipt, receipt }: ReceiptInfoPr
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.up('sm'));
 
+  if (!receipt) return null;
+
   const status = isVerified ? 'VERIFIED' : receipt.status;
-  const finalityScore = ['VERY_HIGH', 'FINAL'].includes(receipt?.finalityScore) ? 'HIGH' : receipt?.finalityScore;
+  const finalityScore = ['VERY_HIGH', 'FINAL'].includes(receipt.finalityScore) ? 'HIGH' : receipt.finalityScore;
   const Title = StatusToInfoPanelTitle[status];
 
   return (
@@ -91,7 +93,7 @@ export const ReceiptInfo = ({ isVerified, fetchReceipt, receipt }: ReceiptInfoPr
           className={styles.ctaButton}
           size="large"
           variant="outlined"
-          onClick={!isVerified ? () => fetchReceipt({ refetch: true }) : () => undefined}
+          onClick={!isVerified ? () => fetchReceipt({ refetch: true }) : undefined}
           data-testid="refetch-receipt-button"
         >
           {isVerified ? <QrCodeIcon className={styles.ctaIcon} /> : <ReplayIcon className={styles.ctaIcon} />}

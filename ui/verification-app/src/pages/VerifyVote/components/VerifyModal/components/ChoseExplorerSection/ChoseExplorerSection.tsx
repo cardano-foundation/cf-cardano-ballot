@@ -1,11 +1,6 @@
 import React, { MouseEvent } from 'react';
 import cn from 'classnames';
-import {
-  Grid,
-  Typography,
-  ToggleButtonGroup,
-  ToggleButton,
-} from '@mui/material';
+import { Grid, Typography, ToggleButtonGroup, ToggleButton } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import styles from '../ChoseExplorerSection/ChoceExplorerSection.module.scss';
 import { EXPLORERS } from './utils';
@@ -15,11 +10,12 @@ type ChoseExplorerSectionProps = {
   explorer: string;
 };
 
-export const ChoseExplorerSection = ({
-  setExplorer,
-  explorer,
-}: ChoseExplorerSectionProps) => (
-  <Grid container direction="column">
+export const ChoseExplorerSection = ({ setExplorer, explorer }: ChoseExplorerSectionProps) => (
+  <Grid
+    data-testid="chose-explorer-section"
+    container
+    direction="column"
+  >
     <ToggleButtonGroup
       disabled={false}
       sx={{
@@ -29,12 +25,11 @@ export const ChoseExplorerSection = ({
       value={explorer}
       exclusive
       onChange={(_event: MouseEvent<HTMLElement>, _active: string | null) => {
-        console.log(_active);
         setExplorer(_active);
       }}
       aria-label="verification-app"
     >
-      {EXPLORERS?.map((option) => (
+      {EXPLORERS.map((option) => (
         <ToggleButton
           sx={{
             height: '55px',
@@ -46,10 +41,17 @@ export const ChoseExplorerSection = ({
             [styles.selected]: explorer === option.url,
           })}
           key={option.label}
-          data-testid="option-card"
+          data-testid="chose-explorer-option-card"
         >
-          <Grid container display={'row'}>
-            <Grid item container xs>
+          <Grid
+            container
+            display={'row'}
+          >
+            <Grid
+              item
+              container
+              xs
+            >
               <Grid item>{option.icon}</Grid>
               <Typography
                 sx={{
@@ -75,6 +77,7 @@ export const ChoseExplorerSection = ({
             >
               {explorer === option.url ? (
                 <CheckCircleIcon
+                  data-testid="chose-explorer-check-icon"
                   style={{
                     color: '#1D439B',
                     fontSize: '28px',

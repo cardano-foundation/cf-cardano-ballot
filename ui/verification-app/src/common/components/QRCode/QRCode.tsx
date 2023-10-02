@@ -8,7 +8,7 @@ export interface QRCodeProps {
   options?: Options;
 }
 
-const defaultOptions: Options = {
+export const defaultOptions: Options = {
   width: 200,
   height: 200,
   cornersDotOptions: {

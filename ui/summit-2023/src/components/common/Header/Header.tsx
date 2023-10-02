@@ -252,7 +252,6 @@ const Header: React.FC = () => {
   };
 
   const handleCloseVerify = () => {
-    console.log('try to close verify');
     setVerifyModalIsOpen(false);
   };
 

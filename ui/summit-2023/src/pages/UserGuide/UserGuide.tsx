@@ -57,40 +57,41 @@ const UserGuide = () => {
 
       <Grid
         container
-        spacing={3}
-        gridRow={{ md: 6, xs: 12 }}
-        gap={{ md: '46px', xs: '25px' }}
-        sx={{ flexWrap: { md: 'nowrap', xs: 'wrap' } }}
       >
-        <GuideTile
-          stepNumber={
-            <SvgIcon
-              component={StepOneIcon}
-              inheritViewBox
-              fontSize="large"
-            />
-          }
-          media="image"
-          graphic={'/static/sms_verification.png'}
-          stepTitle={i18n.t('userGuide.requirements.sms.title')}
-          stepHint={i18n.t('userGuide.requirements.sms.hint')}
-        />
-        <GuideTile
-          stepNumber={
-            <SvgIcon
-              component={StepTwoIcon}
-              inheritViewBox
-              fontSize="large"
-            />
-          }
-          media="image"
-          graphic={'/static/list_of_wallets.png'}
-          stepTitle={i18n.t('userGuide.requirements.wallets.title')}
-          stepHint={i18n.t('userGuide.requirements.wallets.hint')}
-          link={i18n.t('userGuide.requirements.wallets.link')}
-        />
+        <Grid item xs={12} sm={6}>
+          <GuideTile
+            stepNumber={
+              <SvgIcon
+                component={StepOneIcon}
+                inheritViewBox
+                fontSize="large"
+              />
+            }
+            height={479}
+            media="image"
+            graphic={'/static/sms_verification.png'}
+            stepTitle={i18n.t('userGuide.requirements.sms.title')}
+            stepHint={i18n.t('userGuide.requirements.sms.hint')}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <GuideTile
+            stepNumber={
+              <SvgIcon
+                component={StepTwoIcon}
+                inheritViewBox
+                fontSize="large"
+              />
+            }
+            height={479}
+            media="image"
+            graphic={'/static/list_of_wallets.png'}
+            stepTitle={i18n.t('userGuide.requirements.wallets.title')}
+            stepHint={i18n.t('userGuide.requirements.wallets.hint')}
+            link={i18n.t('userGuide.requirements.wallets.link')}
+          />
+        </Grid>
       </Grid>
-
       <Typography
         className={styles.sectionTitle}
         variant="h3"
@@ -101,37 +102,39 @@ const UserGuide = () => {
 
       <Grid
         container
-        spacing={3}
-        gridRow={{ md: 6, xs: 12 }}
-        gap={{ md: '46px', xs: '25px' }}
-        sx={{ flexWrap: { md: 'nowrap', xs: 'wrap' } }}
       >
-        <GuideTile
-          stepNumber={
-            <SvgIcon
-              component={StepOneIcon}
-              inheritViewBox
-              fontSize="large"
-            />
-          }
-          media="video"
-          graphic={'/static/connect_wallet.mov'}
-          stepTitle={i18n.t('userGuide.createVerify.steps.1.title')}
-          stepHint={i18n.t('userGuide.createVerify.steps.1.hint')}
-        />
-        <GuideTile
-          stepNumber={
-            <SvgIcon
-              component={StepTwoIcon}
-              inheritViewBox
-              fontSize="large"
-            />
-          }
-          media="video"
-          graphic={'/static/verify_wallet.mov'}
-          stepTitle={i18n.t('userGuide.createVerify.steps.2.title')}
-          stepHint={i18n.t('userGuide.createVerify.steps.2.hint')}
-        />
+        <Grid item xs={12} sm={6}>
+          <GuideTile
+            stepNumber={
+              <SvgIcon
+                component={StepOneIcon}
+                inheritViewBox
+                fontSize="large"
+              />
+            }
+            height={528}
+            media="video"
+            graphic={'/static/connect_wallet.mov'}
+            stepTitle={i18n.t('userGuide.createVerify.steps.1.title')}
+            stepHint={i18n.t('userGuide.createVerify.steps.1.hint')}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <GuideTile
+            stepNumber={
+              <SvgIcon
+                component={StepTwoIcon}
+                inheritViewBox
+                fontSize="large"
+              />
+            }
+            height={528}
+            media="video"
+            graphic={'/static/verify_wallet.mov'}
+            stepTitle={i18n.t('userGuide.createVerify.steps.2.title')}
+            stepHint={i18n.t('userGuide.createVerify.steps.2.hint')}
+          />
+        </Grid>
       </Grid>
 
       <Typography
@@ -144,101 +147,97 @@ const UserGuide = () => {
 
       <Grid
         container
-        spacing={2}
-        gridRow={{ xs: 12, md: 6 }}
-        sx={{ flexWrap: { md: 'nowrap', xs: 'wrap' } }}
       >
-        <GuideTile
-          stepNumber={
-            <SvgIcon
-              component={StepOneIcon}
-              inheritViewBox
-              fontSize="large"
-            />
-          }
-          width={'35%'}
-          height={446}
-          media="image"
-          graphic={'/static/categories.png'}
-          stepTitle={i18n.t('userGuide.submitVote.steps.1')}
-        />
-        <GuideTile
-          stepNumber={
-            <SvgIcon
-              component={StepTwoIcon}
-              inheritViewBox
-              fontSize="large"
-            />
-          }
-          width={'35%'}
-          height={446}
-          media="image"
-          graphic={'/static/categories_card.png'}
-          stepTitle={i18n.t('userGuide.submitVote.steps.2')}
-        />
-        <GuideTile
-          stepNumber={
-            <SvgIcon
-              component={StepThreeIcon}
-              inheritViewBox
-              fontSize="large"
-            />
-          }
-          width={'35%'}
-          height={446}
-          media="image"
-          graphic={'/static/view_nominees.png'}
-          stepTitle={i18n.t('userGuide.submitVote.steps.3')}
-        />
-      </Grid>
-      <Grid
-        container
-        spacing={2}
-        gridRow={{ xs: 12, md: 6 }}
-        sx={{ flexWrap: { md: 'nowrap', xs: 'wrap' } }}
-      >
-        <GuideTile
-          stepNumber={
-            <SvgIcon
-              component={StepFourIcon}
-              inheritViewBox
-              fontSize="large"
-            />
-          }
-          width={'35%'}
-          height={446}
-          media="image"
-          graphic={'/static/vote_for_nominee.png'}
-          stepTitle={i18n.t('userGuide.submitVote.steps.4')}
-        />
-        <GuideTile
-          stepNumber={
-            <SvgIcon
-              component={StepFiveIcon}
-              inheritViewBox
-              fontSize="large"
-            />
-          }
-          width={'35%'}
-          height={446}
-          media="image"
-          graphic={'/static/sign_with_wallet.png'}
-          stepTitle={i18n.t('userGuide.submitVote.steps.5')}
-        />
-        <GuideTile
-          stepNumber={
-            <SvgIcon
-              component={StepSixIcon}
-              inheritViewBox
-              fontSize="large"
-            />
-          }
-          width={'35%'}
-          height={446}
-          media="image"
-          graphic={'/static/submit.png'}
-          stepTitle={i18n.t('userGuide.submitVote.steps.6')}
-        />
+        <Grid item xs={12} sm={6} md={4}>
+          <GuideTile
+            stepNumber={
+              <SvgIcon
+                component={StepOneIcon}
+                inheritViewBox
+                fontSize="large"
+              />
+            }
+            height={446}
+            media="image"
+            graphic={'/static/categories.png'}
+            stepTitle={i18n.t('userGuide.submitVote.steps.1')}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <GuideTile
+            stepNumber={
+              <SvgIcon
+                component={StepTwoIcon}
+                inheritViewBox
+                fontSize="large"
+              />
+            }
+            height={446}
+            media="image"
+            graphic={'/static/categories_card.png'}
+            stepTitle={i18n.t('userGuide.submitVote.steps.2')}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <GuideTile
+            stepNumber={
+              <SvgIcon
+                component={StepThreeIcon}
+                inheritViewBox
+                fontSize="large"
+              />
+            }
+            height={446}
+            media="image"
+            graphic={'/static/view_nominees.png'}
+            stepTitle={i18n.t('userGuide.submitVote.steps.3')}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <GuideTile
+            stepNumber={
+              <SvgIcon
+                component={StepFourIcon}
+                inheritViewBox
+                fontSize="large"
+              />
+            }
+            height={446}
+            media="image"
+            graphic={'/static/vote_for_nominee.png'}
+            stepTitle={i18n.t('userGuide.submitVote.steps.4')}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <GuideTile
+            stepNumber={
+              <SvgIcon
+                component={StepFiveIcon}
+                inheritViewBox
+                fontSize="large"
+              />
+            }
+            height={446}
+            media="image"
+            graphic={'/static/sign_with_wallet.png'}
+            stepTitle={i18n.t('userGuide.submitVote.steps.5')}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6} md={4}>
+          <GuideTile
+            stepNumber={
+              <SvgIcon
+                component={StepSixIcon}
+                inheritViewBox
+                fontSize="large"
+              />
+            }
+            height={446}
+            media="image"
+            graphic={'/static/submit.png'}
+            stepTitle={i18n.t('userGuide.submitVote.steps.6')}
+          />
+        </Grid>
       </Grid>
     </div>
   );

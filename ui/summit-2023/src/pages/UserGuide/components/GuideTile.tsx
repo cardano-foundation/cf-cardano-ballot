@@ -27,7 +27,8 @@ export const GuideTile = ({ width, height, media, graphic, stepNumber, stepTitle
           src={graphic}
           sx={{ objectFit: 'cover' }}
           autoPlay
-          controls
+          loop
+          muted
         />
       ) : (
         <CardMedia

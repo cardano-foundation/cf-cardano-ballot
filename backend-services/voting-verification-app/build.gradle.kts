@@ -19,7 +19,7 @@ springBoot {
 
 group = "org.cardano.foundation"
 version = "1.0.0-SNAPSHOT"
-java.sourceCompatibility = JavaVersion.VERSION_17
+java.sourceCompatibility = JavaVersion.VERSION_21
 
 configurations {
 	compileOnly {

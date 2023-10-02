@@ -71,7 +71,7 @@ dependencies {
 	runtimeOnly("org.postgresql:postgresql")
 
 	implementation("org.cardanofoundation:merkle-tree-java:0.0.7")
-	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.10")
+	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.11")
 
     // spring-boot overridden dependencies:
     runtimeOnly("com.h2database:h2:2.2.224") // GraalVM compatibility

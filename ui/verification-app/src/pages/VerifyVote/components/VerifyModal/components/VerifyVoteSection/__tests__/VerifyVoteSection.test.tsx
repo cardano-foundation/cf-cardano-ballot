@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { render, waitFor, screen, fireEvent, act } from '@testing-library/react';
+import React, { useEffect } from 'react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import { voteProofMock } from 'test/mocks';
 import { VerifyVoteSection } from '../VerifyVoteSection';
 
@@ -17,16 +17,14 @@ jest.mock('@mui/material', () => ({
 describe('VerifyVoteSection:', () => {
   test('should render proper state', async () => {
     const voteProof = JSON.stringify(voteProofMock);
-    const Wrapper = () => {
-      const [value, setValue] = useState(voteProof);
-      return (
-        <VerifyVoteSection
-          voteProof={value}
-          setVoteProof={setValue}
-        />
-      );
-    };
-    render(<Wrapper />);
+    const setValueMock = jest.fn();
+
+    render(
+      <VerifyVoteSection
+        voteProof={voteProof}
+        setVoteProof={setValueMock}
+      />
+    );
 
     const textarea = screen.queryByTestId('verify-vote-input').querySelector('textarea');
     expect(screen.queryByTestId('verify-vote-input').querySelector('textarea').textContent).toEqual(voteProof);
@@ -39,8 +37,6 @@ describe('VerifyVoteSection:', () => {
       fireEvent.change(textarea, { target: { value: newValue } });
     });
 
-    await waitFor(async () => {
-      expect(screen.queryByTestId('verify-vote-input').querySelector('textarea').textContent).toEqual(newValue);
-    });
+    expect(setValueMock).toBeCalledWith(newValue);
   });
 });

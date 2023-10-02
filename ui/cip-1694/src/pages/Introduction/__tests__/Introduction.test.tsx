@@ -91,7 +91,9 @@ describe('For ongoing event:', () => {
 
       const eventTime = await within(introductionPage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
-      expect(eventTime.textContent).toEqual(`Voting closes: ${formatUTCDate(eventMock_active.eventEndDate.toString())}`);
+      expect(eventTime.textContent).toEqual(
+        `Voting closes: ${formatUTCDate(eventMock_active.eventEndDate.toString())}`
+      );
 
       const eventDescription = await within(introductionPage).queryByTestId('event-description');
       expect(eventDescription).not.toBeNull();
@@ -125,6 +127,7 @@ describe('For ongoing event:', () => {
       fireEvent.click(cta);
       expect((historyPushSpy.mock.lastCall[0] as unknown as any).pathname).toEqual(ROUTES.VOTE);
     });
+    historyPushSpy.mockRestore();
   });
 });
 
@@ -195,6 +198,7 @@ describe("For the event that hasn't started yet", () => {
       fireEvent.click(cta);
       expect((historyPushSpy.mock.lastCall[0] as unknown as any).pathname).toEqual(ROUTES.VOTE);
     });
+    historyPushSpy.mockRestore();
   });
 });
 
@@ -263,5 +267,6 @@ describe('For the event that has already finished', () => {
       fireEvent.click(cta);
       expect((historyPushSpy.mock.lastCall[0] as unknown as any).pathname).toEqual(ROUTES.LEADERBOARD);
     });
+    historyPushSpy.mockRestore();
   });
 });

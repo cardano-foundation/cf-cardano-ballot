@@ -41,7 +41,7 @@ const Footer: React.FC = () => {
         <Grid
           container
           direction={{sm: 'column', md: 'row'}}
-          sx={{ textAlignLast: {xs: 'center', sm: 'right'} }}
+          sx={{ textAlignLast: {sm: 'center', lg: 'right'} }}
         >
           <Grid
             item

@@ -417,7 +417,8 @@ const VerifyWallet = (props: VerifyWalletProps) => {
           gutterBottom
           style={{ wordWrap: 'break-word', marginTop: '16px' }}
         >
-          3. You will be redirected back to the Cardano Ballot application within a new window, to complete the sign and verification process.
+          3. You will be redirected back to the Cardano Ballot application within a new window, to complete the sign and
+          verification process.
         </Typography>
         <CustomButton
           styles={{

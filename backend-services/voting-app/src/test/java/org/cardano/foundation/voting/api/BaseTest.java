@@ -30,7 +30,7 @@ public class BaseTest {
     @LocalServerPort
     private int serverPort;
     @Value("${api.test.event.id}")
-    private String eventId;
+    protected String eventId;
     @Value("${cardano.network}")
     private String cardanoNetwork;
     private WireMockServer wireMockServer;

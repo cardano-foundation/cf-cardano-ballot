@@ -50,8 +50,8 @@ const Home: React.FC = () => {
           </Typography>
           {isMobile ? (
             <div className="event-time">
-                <p>Opens on: {formatUTCDate(eventCache?.eventStartDate?.toString())}</p>
-                <p>Closes on: {formatUTCDate(eventCache?.eventEndDate?.toString())}</p>
+              <p>Opens on: {formatUTCDate(eventCache?.eventStartDate?.toString())}</p>
+              <p>Closes on: {formatUTCDate(eventCache?.eventEndDate?.toString())}</p>
             </div>
           ) : (
             <Chip

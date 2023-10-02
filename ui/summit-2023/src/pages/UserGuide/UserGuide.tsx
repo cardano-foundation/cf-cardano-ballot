@@ -63,14 +63,26 @@ const UserGuide = () => {
         sx={{ flexWrap: { md: 'nowrap', xs: 'wrap' } }}
       >
         <GuideTile
-          stepNumber={<SvgIcon component={StepOneIcon} inheritViewBox fontSize="large"/>}
+          stepNumber={
+            <SvgIcon
+              component={StepOneIcon}
+              inheritViewBox
+              fontSize="large"
+            />
+          }
           media="image"
           graphic={'/static/sms_verification.png'}
           stepTitle={i18n.t('userGuide.requirements.sms.title')}
           stepHint={i18n.t('userGuide.requirements.sms.hint')}
         />
         <GuideTile
-          stepNumber={<SvgIcon component={StepTwoIcon} inheritViewBox fontSize="large"/>}
+          stepNumber={
+            <SvgIcon
+              component={StepTwoIcon}
+              inheritViewBox
+              fontSize="large"
+            />
+          }
           media="image"
           graphic={'/static/list_of_wallets.png'}
           stepTitle={i18n.t('userGuide.requirements.wallets.title')}
@@ -95,14 +107,26 @@ const UserGuide = () => {
         sx={{ flexWrap: { md: 'nowrap', xs: 'wrap' } }}
       >
         <GuideTile
-          stepNumber={<SvgIcon component={StepOneIcon} inheritViewBox fontSize="large"/>}
+          stepNumber={
+            <SvgIcon
+              component={StepOneIcon}
+              inheritViewBox
+              fontSize="large"
+            />
+          }
           media="video"
           graphic={'/static/connect_wallet.mov'}
           stepTitle={i18n.t('userGuide.createVerify.steps.1.title')}
           stepHint={i18n.t('userGuide.createVerify.steps.1.hint')}
         />
         <GuideTile
-          stepNumber={<SvgIcon component={StepTwoIcon} inheritViewBox fontSize="large"/>}
+          stepNumber={
+            <SvgIcon
+              component={StepTwoIcon}
+              inheritViewBox
+              fontSize="large"
+            />
+          }
           media="video"
           graphic={'/static/verify_wallet.mov'}
           stepTitle={i18n.t('userGuide.createVerify.steps.2.title')}
@@ -125,7 +149,13 @@ const UserGuide = () => {
         sx={{ flexWrap: { md: 'nowrap', xs: 'wrap' } }}
       >
         <GuideTile
-          stepNumber={<SvgIcon component={StepOneIcon} inheritViewBox fontSize="large"/>}
+          stepNumber={
+            <SvgIcon
+              component={StepOneIcon}
+              inheritViewBox
+              fontSize="large"
+            />
+          }
           width={'35%'}
           height={446}
           media="image"
@@ -133,7 +163,13 @@ const UserGuide = () => {
           stepTitle={i18n.t('userGuide.submitVote.steps.1')}
         />
         <GuideTile
-          stepNumber={<SvgIcon component={StepTwoIcon} inheritViewBox fontSize="large"/>}
+          stepNumber={
+            <SvgIcon
+              component={StepTwoIcon}
+              inheritViewBox
+              fontSize="large"
+            />
+          }
           width={'35%'}
           height={446}
           media="image"
@@ -141,7 +177,13 @@ const UserGuide = () => {
           stepTitle={i18n.t('userGuide.submitVote.steps.2')}
         />
         <GuideTile
-          stepNumber={<SvgIcon component={StepThreeIcon} inheritViewBox fontSize="large"/>}
+          stepNumber={
+            <SvgIcon
+              component={StepThreeIcon}
+              inheritViewBox
+              fontSize="large"
+            />
+          }
           width={'35%'}
           height={446}
           media="image"
@@ -156,7 +198,13 @@ const UserGuide = () => {
         sx={{ flexWrap: { md: 'nowrap', xs: 'wrap' } }}
       >
         <GuideTile
-          stepNumber={<SvgIcon component={StepFourIcon} inheritViewBox fontSize="large"/>}
+          stepNumber={
+            <SvgIcon
+              component={StepFourIcon}
+              inheritViewBox
+              fontSize="large"
+            />
+          }
           width={'35%'}
           height={446}
           media="image"
@@ -164,7 +212,13 @@ const UserGuide = () => {
           stepTitle={i18n.t('userGuide.submitVote.steps.4')}
         />
         <GuideTile
-          stepNumber={<SvgIcon component={StepFiveIcon} inheritViewBox fontSize="large"/>}
+          stepNumber={
+            <SvgIcon
+              component={StepFiveIcon}
+              inheritViewBox
+              fontSize="large"
+            />
+          }
           width={'35%'}
           height={446}
           media="image"
@@ -172,7 +226,13 @@ const UserGuide = () => {
           stepTitle={i18n.t('userGuide.submitVote.steps.5')}
         />
         <GuideTile
-          stepNumber={<SvgIcon component={StepSixIcon} inheritViewBox fontSize="large"/>}
+          stepNumber={
+            <SvgIcon
+              component={StepSixIcon}
+              inheritViewBox
+              fontSize="large"
+            />
+          }
           width={'35%'}
           height={446}
           media="image"

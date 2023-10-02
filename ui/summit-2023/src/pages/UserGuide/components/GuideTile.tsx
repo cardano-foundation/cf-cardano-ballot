@@ -38,9 +38,7 @@ export const GuideTile = ({ width, height, media, graphic, stepNumber, stepTitle
         />
       )}
       <CardContent>
-        <Box sx={{my: 1}}>
-          {stepNumber}
-        </Box>
+        <Box sx={{ my: 1 }}>{stepNumber}</Box>
         <Typography
           gutterBottom
           variant="h5"
@@ -60,7 +58,8 @@ export const GuideTile = ({ width, height, media, graphic, stepNumber, stepTitle
               <NavLink
                 onClick={() => {
                   eventBus.publish('openConnectWalletModal');
-                } } to={''}
+                }}
+                to={''}
                 className={styles.link}
               >
                 {link}

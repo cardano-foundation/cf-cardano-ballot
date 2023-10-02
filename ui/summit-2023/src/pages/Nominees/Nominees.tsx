@@ -14,7 +14,8 @@ import {
   Tooltip,
   Accordion,
   AccordionSummary,
-  AccordionDetails, Button,
+  AccordionDetails,
+  Button,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
@@ -1390,20 +1391,24 @@ const Nominees = () => {
         onClose={toggleConfirmVoteModal}
       >
         <Typography
-            sx={{
-              color: '#39486C',
-              fontSize: '16px',
-              fontStyle: 'normal',
-              fontWeight: '400',
-              lineHeight: '22px'
-            }}
+          sx={{
+            color: '#39486C',
+            fontSize: '16px',
+            fontStyle: 'normal',
+            fontWeight: '400',
+            lineHeight: '22px',
+          }}
         >
           Please confirm your vote for ${votedNominee?.presentationName} [{selectedNomineeToVote?.id}]
         </Typography>
-        <Box display="flex" justifyContent="space-between" sx={{marginTop: '24px'}}>
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          sx={{ marginTop: '24px' }}
+        >
           <Button
-              onClick={toggleConfirmVoteModal}
-              sx={{
+            onClick={toggleConfirmVoteModal}
+            sx={{
               display: 'flex',
               width: '162px',
               padding: '16px 24px',
@@ -1418,30 +1423,31 @@ const Nominees = () => {
               fontStyle: 'normal',
               fontWeight: '600',
               lineHeight: 'normal',
-              '&:hover': { backgroundColor: 'inherit' }
+              '&:hover': { backgroundColor: 'inherit' },
             }}
           >
             Cancel
           </Button>
           <Button
-              onClick={() => handleVoteNomineeButton()}
-              sx={{
-            display: 'flex',
-            width: '162px',
-            padding: '16px 24px',
-            justifyContent: 'center',
-            alignItems: 'center',
-            gap: '10px',
-            borderRadius: '8px',
-            background: '#ACFCC5',
-            textTransform: 'none',
-            color: '#03021F',
-            fontSize: '16px',
-            fontStyle: 'normal',
-            fontWeight: '600',
-            lineHeight: 'normal',
-            '&:hover': { backgroundColor: '#ACFCC5' }
-          }}>
+            onClick={() => handleVoteNomineeButton()}
+            sx={{
+              display: 'flex',
+              width: '162px',
+              padding: '16px 24px',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: '10px',
+              borderRadius: '8px',
+              background: '#ACFCC5',
+              textTransform: 'none',
+              color: '#03021F',
+              fontSize: '16px',
+              fontStyle: 'normal',
+              fontWeight: '600',
+              lineHeight: 'normal',
+              '&:hover': { backgroundColor: '#ACFCC5' },
+            }}
+          >
             Confirm vote
           </Button>
         </Box>

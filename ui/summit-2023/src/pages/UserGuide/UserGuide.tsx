@@ -55,10 +55,12 @@ const UserGuide = () => {
         {i18n.t('userGuide.requirements.title')}
       </Typography>
 
-      <Grid
-        container
-      >
-        <Grid item xs={12} sm={6}>
+      <Grid container>
+        <Grid
+          item
+          xs={12}
+          sm={6}
+        >
           <GuideTile
             stepNumber={
               <SvgIcon
@@ -74,7 +76,11 @@ const UserGuide = () => {
             stepHint={i18n.t('userGuide.requirements.sms.hint')}
           />
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid
+          item
+          xs={12}
+          sm={6}
+        >
           <GuideTile
             stepNumber={
               <SvgIcon
@@ -100,10 +106,12 @@ const UserGuide = () => {
         {i18n.t('userGuide.createVerify.title')}
       </Typography>
 
-      <Grid
-        container
-      >
-        <Grid item xs={12} sm={6}>
+      <Grid container>
+        <Grid
+          item
+          xs={12}
+          sm={6}
+        >
           <GuideTile
             stepNumber={
               <SvgIcon
@@ -119,7 +127,11 @@ const UserGuide = () => {
             stepHint={i18n.t('userGuide.createVerify.steps.1.hint')}
           />
         </Grid>
-        <Grid item xs={12} sm={6}>
+        <Grid
+          item
+          xs={12}
+          sm={6}
+        >
           <GuideTile
             stepNumber={
               <SvgIcon
@@ -145,10 +157,13 @@ const UserGuide = () => {
         {i18n.t('userGuide.submitVote.title')}
       </Typography>
 
-      <Grid
-        container
-      >
-        <Grid item xs={12} sm={6} md={4}>
+      <Grid container>
+        <Grid
+          item
+          xs={12}
+          sm={6}
+          md={4}
+        >
           <GuideTile
             stepNumber={
               <SvgIcon
@@ -163,7 +178,12 @@ const UserGuide = () => {
             stepTitle={i18n.t('userGuide.submitVote.steps.1')}
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid
+          item
+          xs={12}
+          sm={6}
+          md={4}
+        >
           <GuideTile
             stepNumber={
               <SvgIcon
@@ -178,7 +198,12 @@ const UserGuide = () => {
             stepTitle={i18n.t('userGuide.submitVote.steps.2')}
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid
+          item
+          xs={12}
+          sm={6}
+          md={4}
+        >
           <GuideTile
             stepNumber={
               <SvgIcon
@@ -193,7 +218,12 @@ const UserGuide = () => {
             stepTitle={i18n.t('userGuide.submitVote.steps.3')}
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid
+          item
+          xs={12}
+          sm={6}
+          md={4}
+        >
           <GuideTile
             stepNumber={
               <SvgIcon
@@ -208,7 +238,12 @@ const UserGuide = () => {
             stepTitle={i18n.t('userGuide.submitVote.steps.4')}
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid
+          item
+          xs={12}
+          sm={6}
+          md={4}
+        >
           <GuideTile
             stepNumber={
               <SvgIcon
@@ -223,7 +258,12 @@ const UserGuide = () => {
             stepTitle={i18n.t('userGuide.submitVote.steps.5')}
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={4}>
+        <Grid
+          item
+          xs={12}
+          sm={6}
+          md={4}
+        >
           <GuideTile
             stepNumber={
               <SvgIcon

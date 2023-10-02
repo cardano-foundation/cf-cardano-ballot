@@ -38,6 +38,8 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-aop")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-data-rest")
+	testImplementation("io.rest-assured:rest-assured:5.3.2")
+	testImplementation("org.wiremock:wiremock:3.2.0")
 	testCompileOnly("org.springframework.boot:spring-boot-starter-test")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-validation")

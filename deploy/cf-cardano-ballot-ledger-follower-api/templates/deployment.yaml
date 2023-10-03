@@ -53,7 +53,7 @@ spec:
               value: {{ $.Values.yaci.startSlotNumber | quote }}
 
             - name: CARDANO_SNAPSHOT_BOUNDS_CHECK_ENABLED
-              value: {{ cardanoSnapshotBoundsCheckEnabled | quote }}
+              value: {{ $.Values.cardanoSnapshotBoundsCheckEnabled | quote }}
 
             - name: BLOCKFROST_URL
               valueFrom:

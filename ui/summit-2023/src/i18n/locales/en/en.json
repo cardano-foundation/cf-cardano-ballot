@@ -27,8 +27,8 @@
     "requirements": {
       "title": "To submit votes using Cardano Ballot, you'll need",
       "sms": {
-        "title": "The ability to receive an SMS verification message.",
-        "hint": "Securely verify your account with a one-time SMS code for Cardano Ballot. Safety and simplicity combined."
+        "title": "The ability to receive a verification message.",
+        "hint": "Securely verify your Cardano Ballot account with a one-time SMS code or interact with our Discord bot. Safety and simplicity combined."
       },
       "wallets": {
         "title": "A supported Cardano wallet and/or browser extension.",

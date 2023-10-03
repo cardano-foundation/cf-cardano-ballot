@@ -21,6 +21,7 @@ cf-summit-2023-ui:
     eventId: CARDANO_SUMMIT_AWARDS_2023
     discordChannelUrl: https://discord.gg/FeCbA2wYF8
     discordBotUrl: https://discord.gg/65Hq3gqFwE
+    discordSupportChannelUrl: https://discord.gg/svAcdYjMXx
     image:
       tag: 0.2.64-783
     ingress:

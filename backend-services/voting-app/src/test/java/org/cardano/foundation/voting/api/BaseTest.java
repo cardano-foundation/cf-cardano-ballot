@@ -4,6 +4,7 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import io.restassured.RestAssured;
 import org.cardano.foundation.voting.VotingApp;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,7 +50,7 @@ public class BaseTest {
                                 .withHeader("Content-Type", "application/json")
                                 .withBody(responseBodyEvent)));
 
-        String responseBodyEventDetails = "{" +
+        String responseBodyEvent1Details = "{" +
                 "\"id\": \"" + eventId + "\", " +
                 "\"finished\": false, " +
                 "\"notStarted\": false, " +
@@ -75,7 +76,36 @@ public class BaseTest {
                         .willReturn(aResponse()
                                 .withStatus(200)
                                 .withHeader("Content-Type", "application/json")
-                                .withBody(responseBodyEventDetails)));
+                                .withBody(responseBodyEvent1Details)));
+
+        String responseBodyEvent3Details = "{" +
+                "\"id\": \"CF_TEST_EVENT_03\", " +
+                "\"finished\": false, " +
+                "\"notStarted\": false, " +
+                "\"active\": true, " +
+                "\"isStarted\": true, " +
+                "\"proposalsReveal\": true, " +
+                "\"commitmentsWindowOpen\": true, " +
+                "\"allowVoteChanging\": true, " +
+                "\"highLevelEventResultsWhileVoting\": true, " +
+                "\"highLevelCategoryResultsWhileVoting\": true, " +
+                "\"categoryResultsWhileVoting\": true, " +
+                "\"votingEventType\": \"STAKE_BASED\", " +
+                "\"categories\": [" +
+                "{\"id\": \"CHANGE_MAYBE\", \"gdprProtection\": false, \"proposals\": [" +
+                "{\"id\": \"YES\", \"name\": \"YES\"}, " +
+                "{\"id\": \"NO\", \"name\": \"NO\"}," +
+                "{\"id\": \"MAYBE\", \"name\": \"MAYBE\"}" +
+                "]" +
+                "}" +
+                "]" +
+                "}";
+        wireMockServer.stubFor(
+                WireMock.get(urlEqualTo("/api/reference/event/CF_TEST_EVENT_03"))
+                        .willReturn(aResponse()
+                                .withStatus(200)
+                                .withHeader("Content-Type", "application/json")
+                                .withBody(responseBodyEvent3Details)));
 
         wireMockServer.stubFor(
                 WireMock.get(urlEqualTo("/api/reference/event/CF_TEST_EVENT_02"))
@@ -106,5 +136,10 @@ public class BaseTest {
 
         RestAssured.port = serverPort;
         RestAssured.baseURI = "http://localhost";
+    }
+
+    @AfterAll
+    public void tearDown() {
+        wireMockServer.stop();
     }
 }

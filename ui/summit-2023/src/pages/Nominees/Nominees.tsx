@@ -1010,18 +1010,6 @@ const Nominees = () => {
                 >
                   Event
                 </Typography>
-                <Tooltip title="Cardano Summit 2023 Awards.">
-                  <InfoIcon
-                    style={{
-                      color: '#434656A6',
-                      width: '22px',
-                      marginLeft: '3px',
-                      marginBottom: '5px',
-                      verticalAlign: 'middle',
-                      cursor: 'pointer',
-                    }}
-                  />
-                </Tooltip>
               </div>
               <Typography
                 variant="body1"

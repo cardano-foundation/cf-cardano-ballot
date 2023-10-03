@@ -53,8 +53,8 @@ const Home: React.FC = () => {
             <div className="event-time">
               <Box className="custom-chip-mobile">
                 <EventIcon sx={{ mt: 1 }} />
-                The Vote opens on {formatUTCDate(eventCache?.eventStartDate?.toString())}, and closes on{' '}
-                <br/>{formatUTCDate(eventCache?.eventEndDate?.toString())}.
+                The Vote opens on {formatUTCDate(eventCache?.eventStartDate?.toString())}, and closes on <br />
+                {formatUTCDate(eventCache?.eventEndDate?.toString())}.
               </Box>
             </div>
           ) : (
@@ -87,22 +87,6 @@ const Home: React.FC = () => {
           >
             <Grid item>
               <NavLink
-                to="/user-guide"
-                style={{ textDecoration: 'none', width: '100%' }}
-              >
-                <CustomButton
-                  styles={{
-                    background: '#24262e !important',
-                    color: '#f6f9ff',
-                    marginTop: '20px',
-                  }}
-                  fullWidth={isMobile ? true : false}
-                  label={'How to vote'}
-                />
-              </NavLink>
-            </Grid>
-            <Grid item>
-              <NavLink
                 to="/categories"
                 style={{ textDecoration: 'none', width: '100%' }}
               >
@@ -118,6 +102,26 @@ const Home: React.FC = () => {
                 />
               </NavLink>
             </Grid>
+
+            {!hasEventFinished && (
+              <Grid item>
+                <NavLink
+                  to="/user-guide"
+                  style={{ textDecoration: 'none', width: '100%' }}
+                >
+                  <CustomButton
+                    styles={{
+                      background: 'transparent !important',
+                      color: '#03021F',
+                      marginTop: '20px',
+                      border: '1px solid #daeefb'
+                    }}
+                    fullWidth={isMobile ? true : false}
+                    label={'How to vote'}
+                  />
+                </NavLink>
+              </Grid>
+            )}
           </Grid>
         </div>
       </Grid>

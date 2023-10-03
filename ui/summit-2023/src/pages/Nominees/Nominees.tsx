@@ -698,10 +698,10 @@ const Nominees = () => {
           </Typography>
           {!isMobile && (
             <div>
-              <IconButton onClick={() => handleListView('grid')}>
+              <IconButton onClick={() => handleListView('grid')} className={viewMode === 'grid' ? 'selected' : 'un-selected'}>
                 <ViewModuleIcon />
               </IconButton>
-              <IconButton onClick={() => handleListView('list')}>
+              <IconButton onClick={() => handleListView('list')} className={viewMode === 'list' ? 'selected' : 'un-selected'}>
                 <ViewListIcon />
               </IconButton>
             </div>

@@ -39,7 +39,38 @@ spec:
                 name: {{ $fullName }}
                 port:
                   number: {{ $svcPort }}
+    {{- range $domain := .Values.ingress.additionalDomains }}
+    - host: {{ $domain }}
+      http:
+        paths:
+{{ if .Values.ingress.disableActuatorEndpoint }}
+          - path: /actuator
+            pathType: Prefix
+            backend:
+              service:
+                name: nginx-not-found
+                port:
+                  number: 80
+{{ end }}
+          - path: /yaci-api
+            pathType: Prefix
+            backend:
+              service:
+                name: nginx-not-found
+                port:
+                  number: 80
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ $fullName }}
+                port:
+                  number: {{ $svcPort }}
+    {{- end }}
   tls:
     - hosts:
         - "follower-api.{{ .Values.domain }}"
+{{ with .Values.ingress.additionalDomains }}
+        {{- toYaml . | nindent 8 }}
+{{ end }}
 {{ end }}

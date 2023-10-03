@@ -9,9 +9,8 @@ body {
   background-color: #f5f9ff !important;
   background-image: url('./common/resources/images/home-graphic-bg-bottom.svg');
   background-repeat: no-repeat;
-  background-position: bottom 40% right;
-  background-size: calc(100vw - 50%);
-  height: 100%;
+  background-position: bottom -24px right;
+  background-size: 100vh;
   @media only screen and (max-width: 1080px) {
     background-image: none;
   }

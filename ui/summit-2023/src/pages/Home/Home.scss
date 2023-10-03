@@ -1,12 +1,14 @@
 .hero-banner {
-  width: 420px;
+  width: 375px;
   height: auto;
   min-width: 375px;
   max-width: 19vw;
+  margin-top: -50px;
   @media only screen and (max-width: 600px) {
     width: 313px;
     height: auto;
     min-width: 313px;
+    margin-top: 0px;
   }
 }
 

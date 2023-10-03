@@ -45,7 +45,7 @@ spec:
               value: {{ .Values.discordChannelUrl }}
             - name: REACT_APP_DISCORD_BOT_URL
               value: {{ .Values.discordBotUrl }}
-            - name: REACT_APP_ISCORD_SUPPORT_CHANNEL_URL
+            - name: REACT_APP_DISCORD_SUPPORT_CHANNEL_URL
               value: {{ .Values.discordSupportChannelUrl }}
           ports:
             - name: http

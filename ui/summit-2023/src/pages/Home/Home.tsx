@@ -16,6 +16,7 @@ const Home: React.FC = () => {
   const eventCache = useSelector((state: RootState) => state.user.event);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const hasEventFinished = eventCache?.finished;
 
   return (
     <Grid
@@ -78,7 +79,11 @@ const Home: React.FC = () => {
 
           <Grid
             container
-            sx={{ justifyContent: 'left' }}
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}
           >
             <NavLink
               to="/categories"
@@ -92,9 +97,27 @@ const Home: React.FC = () => {
                   textDecoration: 'none !important',
                 }}
                 fullWidth={isMobile ? true : false}
-                label={eventCache?.finished ? 'Voting ended' : i18n.t('landing.getStartedButton')}
+                label={hasEventFinished ? 'Voting ended' : i18n.t('landing.getStartedButton')}
               />
             </NavLink>
+
+            {!hasEventFinished ? (
+              <NavLink
+                to="/user-guide"
+                style={{ textDecoration: 'none', width: '100%' }}
+              >
+                <CustomButton
+                  styles={{
+                    background: 'transparent !important',
+                    color: '#03021F',
+                    border: '1px solid #daeefb',
+                    marginTop: '20px',
+                  }}
+                  fullWidth={isMobile ? true : false}
+                  label={'How to vote'}
+                />
+              </NavLink>
+            ) : null}
           </Grid>
         </div>
       </Grid>

@@ -50,7 +50,7 @@ cf-summit-2023-voting-api:
     image:
       tag: 0.2.64
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
-    corsAllowedOrigins: https://{{ .Values.domain }}
+    corsAllowedOrigins: https://voting.summit.cardano.org,https://{{ .Values.domain }}
     yaci:
       startBlockHash: 6bb9228e3b746366e24f2681021d619395b850b34c2db020c4928285dcf7b0c2
       startSlotNumber: "103209875"
@@ -69,7 +69,7 @@ cf-summit-2023-verification-api:
       tag: 0.2.64
     springProfiles: prod
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
-    corsAllowedOrigins: https://{{ .Values.domain }}
+    corsAllowedOrigins: https://voting.summit.cardano.org,https://{{ .Values.domain }}
 
 cf-user-verification-service:
   enabled: true
@@ -79,7 +79,7 @@ cf-user-verification-service:
     springProfiles: prod
     discordBotEventIdBinding: CF_SUMMIT_2023_TEST3
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
-    corsAllowedOrigins: https://{{ .Values.domain }}
+    corsAllowedOrigins: https://voting.summit.cardano.org,https://{{ .Values.domain }}
 
 cf-summit-2023-ledger-follower-api:
   enabled: true
@@ -95,7 +95,7 @@ cf-summit-2023-ledger-follower-api:
       cardanoNodeHost: relays-new.cardano-mainnet.iohk.io
       cardanoNodePort: "3001"
       cardanoNodeProtocolMagic: "764824073"
-    corsAllowedOrigins: https://{{ .Values.domain }}
+    corsAllowedOrigins: https://voting.summit.cardano.org,https://{{ .Values.domain }}
     instances:
       - name: follower-1
         enabled: true

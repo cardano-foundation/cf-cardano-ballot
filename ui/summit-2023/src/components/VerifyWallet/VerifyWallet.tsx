@@ -420,17 +420,26 @@ const VerifyWallet = (props: VerifyWalletProps) => {
           3. You will be redirected back to the Cardano Ballot application within a new window, to complete the sign and
           verification process.
         </Typography>
-        <CustomButton
-          styles={{
-            background: '#ACFCC5',
-            color: '#03021F',
-            margin: '24px 0px',
-          }}
-          label="Sign and verify"
-          onClick={() => handleVerifyDiscord()}
-          disabled={!secret}
-          fullWidth={true}
-        />
+          <CustomButton
+              styles={
+                  secret
+                      ? {
+                          background: '#ACFCC5',
+                          color: '#03021F',
+                          paddingLeft: '20px',
+                          margin: '24px 0px',
+                      }
+                      : {
+                          background: '#6C6F89',
+                          color: '#F6F9FF !important',
+                          margin: '24px 0px',
+                      }
+              }
+              label="Sign and verify"
+              disabled={!secret}
+              onClick={() => handleVerifyDiscord()}
+              fullWidth={true}
+          />
         <CustomButton
           styles={{
             background: 'transparent !important',

@@ -114,6 +114,8 @@ spec:
                 secretKeyRef:
                   name: postgres-secrets
                   key: POSTGRES_PASSWORD
+            - name: H2_CONSOLE_ENABLED
+              value: "false"
 
             - name: VOTE_COMMITMENT_ENABLED
               value: {{ $instance.active | default "false" | quote }}

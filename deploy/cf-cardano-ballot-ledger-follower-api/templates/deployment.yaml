@@ -112,6 +112,8 @@ spec:
                 secretKeyRef:
                   name: postgres-secrets
                   key: POSTGRES_PASSWORD
+            - name: H2_CONSOLE_ENABLED
+              value: "false"
 
           ports:
             - name: http

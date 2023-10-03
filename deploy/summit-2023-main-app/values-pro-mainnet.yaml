@@ -18,8 +18,7 @@ cf-summit-2023-ui:
     votingVerificationAppServerUrl: https://verification-api.pro.cf-summit-2023-mainnet.eu-west-1.voting.summit.cardano.org
     userVerificationServerUrl: https://user-verification.pro.cf-summit-2023-mainnet.eu-west-1.voting.summit.cardano.org
     targetNetwork: MAIN
-    eventId: CF_SUMMIT_2023_TEST3
-#    eventId: CARDANO_SUMMIT_AWARDS_2023
+    eventId: CARDANO_SUMMIT_AWARDS_2023
     discordChannelUrl: https://discord.gg/FeCbA2wYF8
     discordBotUrl: https://discord.gg/65Hq3gqFwE
     image:
@@ -45,9 +44,9 @@ cf-summit-2023-voting-api:
       - name: passive
         active: "false"
         replicas: 2
-      - name: active-hour
-        active: "true"
-        voteCommitmentCronExpression: "0 */3 * * * *"
+#      - name: active-hour
+#        active: "true"
+#        voteCommitmentCronExpression: "0 0 * * * *"
 #      - name: active-half-hour
 #        active: "true"
 #        voteCommitmentCronExpression: "0 30 * * * *"
@@ -81,8 +80,7 @@ cf-user-verification-service:
     image:
       tag: 0.2.64-783
     springProfiles: prod
-    discordBotEventIdBinding: CF_SUMMIT_2023_TEST3
-#    discordBotEventIdBinding: CARDANO_SUMMIT_AWARDS_2023
+    discordBotEventIdBinding: CARDANO_SUMMIT_AWARDS_2023
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
     corsAllowedOrigins: https://voting.summit.cardano.org,https://{{ .Values.domain }}
 
@@ -92,8 +90,7 @@ cf-summit-2023-ledger-follower-api:
     image:
       tag: 0.2.64-783
     springProfiles: prod
-    bindOnEventIds: CF_SUMMIT_2023_TEST3
-#    bindOnEventIds: CARDANO_SUMMIT_AWARDS_2023
+    bindOnEventIds: CARDANO_SUMMIT_AWARDS_2023
     yaci:
       startBlockHash: c5255819ac8c2112b483e031cdd1b3fd69dfbe591a0dc9e46d6e2db36907ee7c
       startSlotNumber: "104284818"

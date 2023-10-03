@@ -22,9 +22,7 @@ export const OptionCard = ({
   };
 
   useEffect(() => {
-    if (selectedOption) {
-      setActive(selectedOption);
-    }
+    setActive(selectedOption);
   }, [selectedOption]);
 
   return (
@@ -77,7 +75,7 @@ export const OptionCard = ({
             }}
             value={option.name}
             className={cn(styles.optionCard, { [styles.selected]: active === option.name })}
-            key={option.label}
+            key={option.id}
             data-testid="option-card"
           >
             <Grid

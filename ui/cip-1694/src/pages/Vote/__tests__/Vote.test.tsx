@@ -310,7 +310,7 @@ describe('For ongoing event:', () => {
       const votePage = await screen.queryByTestId('vote-page');
       const cta = await within(votePage).queryByTestId('proposal-submit-button');
 
-      expect(cta.closest('button')).toHaveAttribute('disabled');
+      expect(cta.closest('button')).toBeDisabled();
 
       fireEvent.click(cta);
       expect(mockCastAVoteWithDigitalSignature).not.toHaveBeenCalled();
@@ -350,30 +350,31 @@ describe('For ongoing event:', () => {
       );
     });
 
-    await waitFor(async () => {
-      const votePage = screen.queryByTestId('vote-page');
+    const votePage = screen.queryByTestId('vote-page');
 
-      const options = within(votePage).queryAllByTestId('option-card');
+    const options = within(votePage).queryAllByTestId('option-card');
 
-      fireEvent.click(options[0]);
+    fireEvent.click(options[0]);
 
-      const cta = within(votePage).queryByTestId('proposal-submit-button');
-      await act(async () => {
-        fireEvent.click(cta);
-      });
-
-      expect(mockToast).toBeCalledWith(
-        <Toast
-          message={'Unable to submit your vote. Please try again'}
-          error
-          icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
-        />
-      );
+    const cta = within(votePage).queryByTestId('proposal-submit-button');
+    await act(async () => {
+      fireEvent.click(cta);
     });
+
+    expect(mockToast).toBeCalledWith(
+      <Toast
+        message={'Unable to submit your vote. Please try again'}
+        error
+        icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
+      />
+    );
     mockCastAVoteWithDigitalSignature.mockReset();
   });
 
-  test('should submit vote', async () => {
+  test('should submit vote and fetch vote receipt if there are more that on category', async () => {
+    const accessToken = 'accessToken';
+    mockGetUserInSession.mockReset();
+    mockGetUserInSession.mockReturnValue({ accessToken });
     const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
 
     mockUseCardano.mockReset();
@@ -389,7 +390,6 @@ describe('For ongoing event:', () => {
     mockGetVotingPower.mockResolvedValue(accountDataMock);
     mockBuildCanonicalVoteInputJson.mockReset();
     mockBuildCanonicalVoteInputJson.mockReturnValue(canonicalVoteInputJsonMock);
-
     const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
 
     let store: ReturnType<typeof renderWithProviders>['store'];
@@ -402,33 +402,36 @@ describe('For ongoing event:', () => {
       ));
     });
 
-    await waitFor(async () => {
-      const votePage = screen.queryByTestId('vote-page');
+    const votePage = screen.queryByTestId('vote-page');
 
-      const options = within(votePage).queryAllByTestId('option-card');
+    const options = within(votePage).queryAllByTestId('option-card');
 
-      await act(async () => {
-        fireEvent.click(options[0]);
-      });
-
-      const cta = within(votePage).queryByTestId('proposal-submit-button');
-      expect(cta).not.toBeNull();
-      expect(cta.closest('button')).not.toBeDisabled();
-
-      expect(store.getState().user.isVoteSubmittedModalVisible).toBeFalsy();
-      await act(async () => {
-        fireEvent.click(cta);
-      });
-
-      expect(mockCastAVoteWithDigitalSignature).toHaveBeenCalledWith(canonicalVoteInputJsonMock);
-      expect(store.getState().user.isVoteSubmittedModalVisible).toBeTruthy;
-
-      await act(async () => {
-        fireEvent.click(screen.queryByTestId('vote-submitted-close'));
-      });
-
-      expect(store.getState().user.isVoteSubmittedModalVisible).toBeFalsy;
+    await act(async () => {
+      fireEvent.click(options[0]);
     });
+
+    const cta = within(votePage).queryByTestId('proposal-submit-button');
+    expect(cta).not.toBeNull();
+    expect(cta.closest('button')).not.toBeDisabled();
+    expect(mockGetVoteReceipt.mock.calls[0]).toEqual([eventMock_active.categories[0].id, accessToken]);
+
+    expect(store.getState().user.isVoteSubmittedModalVisible).toBeFalsy();
+    await act(async () => {
+      fireEvent.click(cta);
+    });
+
+    expect(mockCastAVoteWithDigitalSignature).toHaveBeenCalledWith(canonicalVoteInputJsonMock);
+    expect(store.getState().user.isVoteSubmittedModalVisible).toBeTruthy;
+
+    await act(async () => {
+      fireEvent.click(screen.queryByTestId('vote-submitted-close'));
+    });
+
+    expect(store.getState().user.isVoteSubmittedModalVisible).toBeFalsy;
+    expect(mockGetVoteReceipt).toBeCalledTimes(2);
+    expect(mockGetVoteReceipt.mock.calls[1]).toEqual([eventMock_active.categories[1].id, accessToken]);
+    expect(screen.queryAllByRole('button', { pressed: true }).length).toEqual(0);
+    expect(within(votePage).queryByTestId('next-question-button')).toBeNull();
   });
 
   test('should submit vote and fetch receipt for single category', async () => {
@@ -469,21 +472,19 @@ describe('For ongoing event:', () => {
       );
     });
 
-    await waitFor(async () => {
-      const votePage = screen.queryByTestId('vote-page');
+    const votePage = screen.queryByTestId('vote-page');
 
-      const options = within(votePage).queryAllByTestId('option-card');
+    const options = within(votePage).queryAllByTestId('option-card');
 
-      await act(async () => {
-        fireEvent.click(options[0]);
-      });
-      const cta = within(votePage).queryByTestId('proposal-submit-button');
-      await act(async () => {
-        fireEvent.click(cta);
-      });
-
-      expect(mockGetVoteReceipt).toBeCalledTimes(2);
+    await act(async () => {
+      fireEvent.click(options[0]);
     });
+    const cta = within(votePage).queryByTestId('proposal-submit-button');
+    await act(async () => {
+      fireEvent.click(cta);
+    });
+
+    expect(mockGetVoteReceipt).toBeCalledTimes(2);
   });
 
   test('should show proper error if failed to fetch voting power during vote submitting', async () => {
@@ -515,27 +516,25 @@ describe('For ongoing event:', () => {
       );
     });
 
-    await waitFor(async () => {
-      const votePage = screen.queryByTestId('vote-page');
+    const votePage = screen.queryByTestId('vote-page');
 
-      const options = within(votePage).queryAllByTestId('option-card');
+    const options = within(votePage).queryAllByTestId('option-card');
 
-      await act(async () => {
-        fireEvent.click(options[0]);
-      });
-      const cta = within(votePage).queryByTestId('proposal-submit-button');
-
-      await act(async () => {
-        fireEvent.click(cta);
-      });
-      expect(mockToast).toBeCalledWith(
-        <Toast
-          message={'Unable to submit your vote. Please try again'}
-          error
-          icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
-        />
-      );
+    await act(async () => {
+      fireEvent.click(options[0]);
     });
+    const cta = within(votePage).queryByTestId('proposal-submit-button');
+
+    await act(async () => {
+      fireEvent.click(cta);
+    });
+    expect(mockToast).toBeCalledWith(
+      <Toast
+        message={'Unable to submit your vote. Please try again'}
+        error
+        icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
+      />
+    );
   });
 
   test('should ask to fetch receipt and display proper state if present and user session is active', async () => {
@@ -799,9 +798,7 @@ describe('For ongoing event:', () => {
 
     const options = screen.queryAllByTestId('option-card');
     fireEvent.click(options[0]);
-    await waitFor(async () => {
-      expect(screen.queryByTestId('proposal-submit-button').closest('button')).not.toBeDisabled();
-    });
+    expect(screen.queryByTestId('proposal-submit-button').closest('button')).not.toBeDisabled();
   });
 
   test('should handle show vote receipt', async () => {
@@ -1254,5 +1251,6 @@ describe('For the event that has already finished', () => {
       fireEvent.click(cta2);
     });
     expect((historyPushSpy.mock.lastCall[0] as unknown as any).pathname).toEqual(ROUTES.LEADERBOARD);
+    historyPushSpy.mockRestore();
   });
 });

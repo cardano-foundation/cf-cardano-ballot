@@ -127,6 +127,7 @@ describe('For ongoing event:', () => {
       fireEvent.click(headerLogo);
       expect((historyPushSpy.mock.lastCall[0] as unknown as any).pathname).toEqual(ROUTES.INTRO);
     });
+    historyPushSpy.mockRestore();
   });
 
   test('should render connect wallet button and open connect wallet modal once clicked', async () => {
@@ -203,6 +204,7 @@ describe('For ongoing event:', () => {
     });
 
     expect((historyPushSpy.mock.lastCall[0] as unknown as any).pathname).toEqual(ROUTES.LEADERBOARD);
+    historyPushSpy.mockRestore();
   });
 
   test('should show confirmation modal and discard redirection to leadeboard page', async () => {
@@ -248,6 +250,7 @@ describe('For ongoing event:', () => {
     });
 
     expect(historyPushSpy.mock.lastCall).toBeUndefined();
+    historyPushSpy.mockRestore();
   });
 
   test('should show confirmation modal and discard redirection to leadeboard page on close icon click', async () => {
@@ -281,6 +284,7 @@ describe('For ongoing event:', () => {
     });
 
     expect(historyPushSpy.mock.lastCall).toBeUndefined();
+    historyPushSpy.mockRestore();
   });
 
   test('should have leaderboard link disabled if there is no tip fetched', async () => {
@@ -435,6 +439,7 @@ describe('For the event that has already finished', () => {
       fireEvent.click(leaderboardLink);
       expect((historyPushSpy.mock.lastCall[0] as unknown as any).pathname).toEqual(ROUTES.LEADERBOARD);
     });
+    historyPushSpy.mockRestore();
   });
 });
 

@@ -65,7 +65,7 @@ dependencies {
 	implementation("io.vavr:vavr:0.10.4")
 
 	implementation("org.cardanofoundation:merkle-tree-java:0.0.7")
-	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.10")
+	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.11")
 }
 
 tasks.withType<Test> {

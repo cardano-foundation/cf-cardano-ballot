@@ -10,7 +10,13 @@ export const ROUTES = {
 
 export const PageRoutes = () => (
   <Routes>
-    <Route path={ROUTES.MAIN} element={<VerifyVote />} />
-    <Route path="*" element={<Navigate to="/" />} />
+    <Route
+      path={ROUTES.MAIN}
+      element={<VerifyVote />}
+    />
+    <Route
+      path="*"
+      element={<Navigate to={ROUTES.MAIN} />}
+    />
   </Routes>
 );

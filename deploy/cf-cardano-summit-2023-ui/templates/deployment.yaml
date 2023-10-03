@@ -38,7 +38,7 @@ spec:
             - name: REACT_APP_EVENT_ID
               value: {{ .Values.eventId }}
             - name: REACT_APP_SUPPORTED_WALLETS
-              value: {{ .Values.supportedWallets | default "flint,eternl,nami,typhon,yoroi,nufi,gerowallet,lace" }}
+              value: {{ .Values.supportedWallets | default "flint,eternl,nami,typhoncip30,yoroi,nufi,gerowallet,lace" }}
             - name: REACT_APP_VERSION
               value: {{ .Values.image.tag }}
             - name: REACT_APP_DISCORD_CHANNEL_URL

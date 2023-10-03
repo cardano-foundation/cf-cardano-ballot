@@ -81,7 +81,6 @@ const LegalDocPreview = () => {
           })}
         </AccordionDetails>
         <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1a-content"
           id="panel1a-header"
         >

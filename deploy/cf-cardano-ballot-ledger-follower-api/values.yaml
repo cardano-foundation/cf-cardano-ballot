@@ -54,3 +54,5 @@ startupProbe:
   initialDelaySeconds: 0
   periodSeconds: 30
   failureThreshold: 10
+
+cardanoSnapshotBoundsCheckEnabled: "false"

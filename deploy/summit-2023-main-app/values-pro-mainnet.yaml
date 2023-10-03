@@ -105,6 +105,7 @@ cf-summit-2023-ledger-follower-api:
         enabled: true
 #        imageTag: 0.2.37
         schemaName: follower_2
+    cardanoSnapshotBoundsCheckEnabled: "true"
     startupProbe:
       initialDelaySeconds: 0
       periodSeconds: 30

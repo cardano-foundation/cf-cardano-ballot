@@ -17,6 +17,7 @@ import { CustomButton } from '../common/Button/CustomButton';
 import { getSignedMessagePromise, openNewTab, resolveCardanoNetwork } from '../../utils/utils';
 import { SignedWeb3Request } from '../../types/voting-app-types';
 import { parseError } from 'common/constants/errors';
+import { ErrorMessage } from '../common/ErrorMessage/ErrorMessage';
 
 // TODO: env.
 const excludedCountries: MuiTelInputCountry[] | undefined = [];
@@ -36,6 +37,7 @@ const VerifyWallet = (props: VerifyWalletProps) => {
   const [phoneCodeIsBeenSending, setPhoneCodeIsBeenSending] = useState<boolean>(false);
   const [phoneCodeIsBeenConfirming, setPhoneCodeIsBeenConfirming] = useState<boolean>(false);
   const [phoneCodeIsSent, setPhoneCodeIsSent] = useState<boolean>(false);
+  const [phoneCodeShowError, setPhoneCodeShowError] = useState<boolean>(false);
   const [checkImNotARobot, setCheckImNotARobot] = useState<boolean>(false);
   const [isPhoneInputDisabled] = useState<boolean>(false);
   const dispatch = useDispatch();
@@ -112,12 +114,14 @@ const VerifyWallet = (props: VerifyWalletProps) => {
           reset();
           setPhoneCodeIsBeenConfirming(false);
         } else {
-          onError('SMS code not valid');
+          //onError('SMS code not valid');
+          setPhoneCodeShowError(true);
           setPhoneCodeIsBeenConfirming(false);
         }
       })
       .catch(() => {
-        onError('SMS code verification failed');
+        //onError('SMS code verification failed');
+        setPhoneCodeShowError(true);
         setPhoneCodeIsBeenConfirming(false);
       });
   };
@@ -199,6 +203,8 @@ const VerifyWallet = (props: VerifyWalletProps) => {
       } else if (!value && index > 0) {
         inputRefs.current[index]?.focus();
       }
+
+        setPhoneCodeShowError(false);
     };
 
     const handleCancelConfirmChode = () => {
@@ -236,16 +242,16 @@ const VerifyWallet = (props: VerifyWalletProps) => {
             />
           ))}
         </div>
-        <Typography
-          style={{ marginTop: '28px' }}
-          className="didnt-receive-label"
-        >
-          I didn’t receive a code
-        </Typography>
+        <div style={{ height: '20px', marginTop: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <ErrorMessage
+            show={phoneCodeShowError}
+            message="Verification code didn’t match"
+          />
+        </div>
         <Grid
           container
           spacing={2}
-          style={{ marginTop: '28px' }}
+          style={{ marginTop: '8px' }}
         >
           <Grid
             item
@@ -257,7 +263,7 @@ const VerifyWallet = (props: VerifyWalletProps) => {
                 color: '#03021F',
                 border: '1px solid #daeefb',
               }}
-              label="Cancel"
+              label="Back"
               onClick={() => handleCancelConfirmChode()}
               fullWidth={true}
             />
@@ -420,26 +426,26 @@ const VerifyWallet = (props: VerifyWalletProps) => {
           3. You will be redirected back to the Cardano Ballot application within a new window, to complete the sign and
           verification process.
         </Typography>
-          <CustomButton
-              styles={
-                  secret
-                      ? {
-                          background: '#ACFCC5',
-                          color: '#03021F',
-                          paddingLeft: '20px',
-                          margin: '24px 0px',
-                      }
-                      : {
-                          background: '#6C6F89',
-                          color: '#F6F9FF !important',
-                          margin: '24px 0px',
-                      }
-              }
-              label="Sign and verify"
-              disabled={!secret}
-              onClick={() => handleVerifyDiscord()}
-              fullWidth={true}
-          />
+        <CustomButton
+          styles={
+            secret
+              ? {
+                  background: '#ACFCC5',
+                  color: '#03021F',
+                  paddingLeft: '20px',
+                  margin: '24px 0px',
+                }
+              : {
+                  background: '#6C6F89',
+                  color: '#F6F9FF !important',
+                  margin: '24px 0px',
+                }
+          }
+          label="Sign and verify"
+          disabled={!secret}
+          onClick={() => handleVerifyDiscord()}
+          fullWidth={true}
+        />
         <CustomButton
           styles={{
             background: 'transparent !important',

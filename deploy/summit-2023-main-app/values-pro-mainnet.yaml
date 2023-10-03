@@ -56,8 +56,8 @@ cf-summit-2023-voting-api:
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
     corsAllowedOrigins: https://voting.summit.cardano.org,https://{{ .Values.domain }}
     yaci:
-      startBlockHash: 015c52fba49c4f670670e8b92a492c1a87f1c90773518d93fe9c8a7ba55da461
-      startSlotNumber: "103737906"
+      startBlockHash: 285f58fd09cbb95ac5ffd6f644f7907dfb3faff63155b8a86a9c7b0e99503397
+      startSlotNumber: "103737886"
       network: main
       cardanoNodeHost: relays-new.cardano-mainnet.iohk.io
       cardanoNodePort: "3001"
@@ -93,8 +93,8 @@ cf-summit-2023-ledger-follower-api:
     springProfiles: prod
     bindOnEventIds: CARDANO_SUMMIT_AWARDS_2023
     yaci:
-      startBlockHash: 015c52fba49c4f670670e8b92a492c1a87f1c90773518d93fe9c8a7ba55da461
-      startSlotNumber: "103737906"
+      startBlockHash: 285f58fd09cbb95ac5ffd6f644f7907dfb3faff63155b8a86a9c7b0e99503397
+      startSlotNumber: "103737886"
       network: main
       cardanoNodeHost: relays-new.cardano-mainnet.iohk.io
       cardanoNodePort: "3001"

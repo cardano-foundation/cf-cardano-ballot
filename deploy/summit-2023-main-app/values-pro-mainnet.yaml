@@ -19,6 +19,7 @@ cf-summit-2023-ui:
     userVerificationServerUrl: https://user-verification.pro.cf-summit-2023-mainnet.eu-west-1.voting.summit.cardano.org
     targetNetwork: MAIN
     eventId: CF_SUMMIT_2023_TEST3
+#    eventId: CARDANO_SUMMIT_AWARDS_2023
     discordChannelUrl: https://discord.gg/FeCbA2wYF8
     discordBotUrl: https://discord.gg/65Hq3gqFwE
     image:
@@ -81,6 +82,7 @@ cf-user-verification-service:
       tag: 0.2.64
     springProfiles: prod
     discordBotEventIdBinding: CF_SUMMIT_2023_TEST3
+#    discordBotEventIdBinding: CARDANO_SUMMIT_AWARDS_2023
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
     corsAllowedOrigins: https://voting.summit.cardano.org,https://{{ .Values.domain }}
 
@@ -91,6 +93,7 @@ cf-summit-2023-ledger-follower-api:
       tag: 0.2.64
     springProfiles: prod
     bindOnEventIds: CF_SUMMIT_2023_TEST3
+#    bindOnEventIds: CARDANO_SUMMIT_AWARDS_2023
     yaci:
       startBlockHash: c5255819ac8c2112b483e031cdd1b3fd69dfbe591a0dc9e46d6e2db36907ee7c
       startSlotNumber: "104284818"

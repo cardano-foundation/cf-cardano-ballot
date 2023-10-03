@@ -568,9 +568,9 @@ const Nominees = () => {
                         borderRadius: '16px',
                       }}
                     >
-                      <CardContent>
-                        <Box sx={{ position: 'relative', marginTop: '12px' }}>
-                          {voted ? (
+                      <CardContent sx={{ minHeight: '385px', maxHeight: '385px' }}>
+                        {voted ? (
+                          <Box sx={{ position: 'relative', marginTop: '12px' }}>
                             <Tooltip title="Already Voted">
                               <img
                                 height={40}
@@ -586,12 +586,12 @@ const Nominees = () => {
                                 }}
                               />
                             </Tooltip>
-                          ) : null}
-                        </Box>
+                          </Box>
+                        ) : null}
                         <Typography
                           className="nominee-title"
                           variant="h4"
-                          sx={{ mb: 1, fontWeight: 'bold', wordWrap: 'break-word', width: voted ? '260px' : '100%' }}
+                          sx={{ mb: 1, minHeight: '83px', height: '83px', fontWeight: 'bold', wordWrap: 'break-word', width: voted ? '260px' : '100%' }}
                         >
                           {nominee.presentationName}
                           {isWinner ? (
@@ -610,7 +610,7 @@ const Nominees = () => {
                             <Typography
                               className="nominee-description"
                               variant="body2"
-                              sx={{ height: '110px' }}
+                              sx={{ minHeight: '115px', height: '115px', mt: '10px' }}
                             >
                               {shortenString(nominee.desc, 210)}
                             </Typography>
@@ -623,7 +623,6 @@ const Nominees = () => {
                             color: '#03021F',
                             border: '1px solid #daeefb',
                             width: '100%',
-                            marginTop: '28px',
                           }}
                           label="Read more"
                           onClick={() => handleReadMore(nominee)}
@@ -698,10 +697,16 @@ const Nominees = () => {
           </Typography>
           {!isMobile && (
             <div>
-              <IconButton onClick={() => handleListView('grid')} className={viewMode === 'grid' ? 'selected' : 'un-selected'}>
+              <IconButton
+                onClick={() => handleListView('grid')}
+                className={viewMode === 'grid' ? 'selected' : 'un-selected'}
+              >
                 <ViewModuleIcon />
               </IconButton>
-              <IconButton onClick={() => handleListView('list')} className={viewMode === 'list' ? 'selected' : 'un-selected'}>
+              <IconButton
+                onClick={() => handleListView('list')}
+                className={viewMode === 'list' ? 'selected' : 'un-selected'}
+              >
                 <ViewListIcon />
               </IconButton>
             </div>

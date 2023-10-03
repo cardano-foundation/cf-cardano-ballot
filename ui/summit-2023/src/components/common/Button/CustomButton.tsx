@@ -22,7 +22,7 @@ const CustomButton = (props: CustomButtonProps) => {
         justifyContent: 'center',
         alignItems: 'center',
         gap: '10px',
-        borderRadius: '4px',
+        borderRadius: '8px',
         fontSize: '16px',
         fontStyle: 'normal',
         fontWeight: '600',

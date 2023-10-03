@@ -367,6 +367,7 @@ const Categories = () => {
                             fontSize: 16,
                             fontWeight: 700,
                             textTransform: 'none',
+                            borderRadius: '8px',
                             backgroundColor: '#acfcc5 !important',
                             marginRight: '28px',
                             minWidth: '166px'
@@ -392,6 +393,7 @@ const Categories = () => {
                             fontSize: 16,
                             fontWeight: 700,
                             textTransform: 'none',
+                            borderRadius: '8px',
                             backgroundColor: '#acfcc5 !important',
                             margin: '20px',
                             minWidth: '166px'

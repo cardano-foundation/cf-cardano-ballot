@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Grid, useTheme, useMediaQuery } from '@mui/material';
+import { Typography, Grid, useTheme, useMediaQuery, Box } from '@mui/material';
 import CARDANOSUMMIT2023LOGO from '../../common/resources/images/cardanosummit2023.svg';
 import { Hexagon } from '../../components/common/Hexagon';
 import './Home.scss';
@@ -23,8 +23,8 @@ const Home: React.FC = () => {
       container
       spacing={1}
       sx={{
-        height: { xs: '60%', md: '75vh', lg: '57vh', xl: '71vh' },
-        margin: { xs: '0%', sm: '2%', md: '3%', lg: '4%' },
+        height: { xs: '60%' },
+        margin: { xs: '0%', sm: '2.5%' },
       }}
     >
       <Grid
@@ -51,8 +51,11 @@ const Home: React.FC = () => {
           </Typography>
           {isMobile ? (
             <div className="event-time">
-              <p>Opens on: {formatUTCDate(eventCache?.eventStartDate?.toString())}</p>
-              <p>Closes on: {formatUTCDate(eventCache?.eventEndDate?.toString())}</p>
+              <Box className="custom-chip-mobile">
+                <EventIcon sx={{ mt: 1 }} />
+                The Vote opens on {formatUTCDate(eventCache?.eventStartDate?.toString())}, and closes on{' '}
+                <br/>{formatUTCDate(eventCache?.eventEndDate?.toString())}.
+              </Box>
             </div>
           ) : (
             <Chip
@@ -79,45 +82,42 @@ const Home: React.FC = () => {
 
           <Grid
             container
-            sx={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-            }}
+            spacing={1}
+            sx={{ justifyContent: 'left' }}
           >
-            <NavLink
-              to="/categories"
-              style={{ textDecoration: 'none', width: '100%' }}
-            >
-              <CustomButton
-                styles={{
-                  background: '#ACFCC5',
-                  color: '#03021F',
-                  marginTop: '20px',
-                  textDecoration: 'none !important',
-                }}
-                fullWidth={isMobile ? true : false}
-                label={hasEventFinished ? 'Voting ended' : i18n.t('landing.getStartedButton')}
-              />
-            </NavLink>
-
-            {!hasEventFinished ? (
+            <Grid item>
               <NavLink
                 to="/user-guide"
                 style={{ textDecoration: 'none', width: '100%' }}
               >
                 <CustomButton
                   styles={{
-                    background: 'transparent !important',
-                    color: '#03021F',
-                    border: '1px solid #daeefb',
+                    background: '#24262e !important',
+                    color: '#f6f9ff',
                     marginTop: '20px',
                   }}
                   fullWidth={isMobile ? true : false}
                   label={'How to vote'}
                 />
               </NavLink>
-            ) : null}
+            </Grid>
+            <Grid item>
+              <NavLink
+                to="/categories"
+                style={{ textDecoration: 'none', width: '100%' }}
+              >
+                <CustomButton
+                  styles={{
+                    background: '#ACFCC5',
+                    color: '#03021F',
+                    marginTop: '20px',
+                    textDecoration: 'none !important',
+                  }}
+                  fullWidth={isMobile ? true : false}
+                  label={eventCache?.finished ? 'Voting ended' : i18n.t('landing.getStartedButton')}
+                />
+              </NavLink>
+            </Grid>
           </Grid>
         </div>
       </Grid>
@@ -131,7 +131,7 @@ const Home: React.FC = () => {
         alignItems="center"
         sx={{
           display: 'flex',
-          order: '2',
+          order: '1',
         }}
       >
         <div className="hero-banner">

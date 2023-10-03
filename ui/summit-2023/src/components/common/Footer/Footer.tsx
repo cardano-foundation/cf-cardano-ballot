@@ -1,7 +1,8 @@
 import React from 'react';
-import { Typography, Grid } from '@mui/material';
+import { Typography, Grid, IconButton, Tooltip } from '@mui/material';
 import styles from './Footer.module.scss';
 import discordLogo from '../../../common/resources/images/discord-icon.svg';
+import ContactSupportOutlinedIcon from '@mui/icons-material/ContactSupportOutlined';
 import { env } from 'common/constants/env';
 import { NavLink } from 'react-router-dom';
 import { i18n } from 'i18n';
@@ -80,7 +81,7 @@ const Footer: React.FC = () => {
           <Grid
             item
             xs={12}
-            sm={5}
+            sm={4}
           >
             <Typography
               variant="body2"
@@ -105,14 +106,39 @@ const Footer: React.FC = () => {
             xs={12}
             sm={1}
           >
-            <Typography variant="body2">
-              <img
-                onClick={() => openNewTab(env.DISCORD_CHANNEL_URL)}
-                src={discordLogo}
-                alt="Discord"
-                style={{ height: '25px', cursor: 'pointer' }}
-              />
-            </Typography>
+            <Tooltip
+              title="Get support"
+              placement="top"
+              >
+              <IconButton 
+                onClick={() => openNewTab(env.DISCORD_SUPPORT_CHANNEL_URL)}
+                sx={{ m: -1 }}
+                >
+                <ContactSupportOutlinedIcon/>
+              </IconButton>
+            </Tooltip>
+          </Grid>
+
+          <Grid
+            item
+            xs={12}
+            sm={1}
+          >
+            <Tooltip
+              title="Join our Discord"
+              placement="top"
+              >
+              <Typography
+                variant="body2"
+                >
+                <img
+                  onClick={() => openNewTab(env.DISCORD_CHANNEL_URL)}
+                  src={discordLogo}
+                  alt="Discord"
+                  style={{ height: '25px', cursor: 'pointer' }}
+                />
+              </Typography>
+            </Tooltip>
           </Grid>
         </Grid>
       </Grid>

@@ -360,7 +360,7 @@ const Header: React.FC = () => {
         position={'static'}
         style={{ background: 'transparent', boxShadow: 'none', color: 'black' }}
       >
-        <Toolbar sx={{ pl: 0, pt: 1 }}>
+        <Toolbar sx={{ pl: 0, pt: 2 }}>
           {isTablet ? (
             <>
               <NavLink to="/">
@@ -374,7 +374,7 @@ const Header: React.FC = () => {
               <IconButton
                 edge="end"
                 color="inherit"
-                className="menuButton"
+                className="menu-button"
                 onClick={() => setDrawerOpen(true)}
               >
                 <MenuIcon className="close-icon" />

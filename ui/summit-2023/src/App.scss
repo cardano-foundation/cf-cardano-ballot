@@ -17,6 +17,10 @@ body {
   }
 }
 
+a, a:visited{
+  color: var(--color-primary) !important;
+}
+
 .content {
   margin: 2%;
   display: flex;

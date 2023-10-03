@@ -70,7 +70,7 @@ cf-summit-2023-verification-api:
   enabled: true
   values:
     image:
-      tag: 0.2.64
+      tag: 0.2.64-783
     springProfiles: prod
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
     corsAllowedOrigins: https://voting.summit.cardano.org,https://{{ .Values.domain }}
@@ -79,7 +79,7 @@ cf-user-verification-service:
   enabled: true
   values:
     image:
-      tag: 0.2.64
+      tag: 0.2.64-783
     springProfiles: prod
     discordBotEventIdBinding: CF_SUMMIT_2023_TEST3
 #    discordBotEventIdBinding: CARDANO_SUMMIT_AWARDS_2023
@@ -90,7 +90,7 @@ cf-summit-2023-ledger-follower-api:
   enabled: true
   values:
     image:
-      tag: 0.2.64
+      tag: 0.2.64-783
     springProfiles: prod
     bindOnEventIds: CF_SUMMIT_2023_TEST3
 #    bindOnEventIds: CARDANO_SUMMIT_AWARDS_2023

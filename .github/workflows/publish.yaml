@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - summit-2023
   pull_request:
     types: [ opened, synchronize ]
   workflow_dispatch:

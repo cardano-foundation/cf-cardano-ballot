@@ -53,8 +53,7 @@ const Home: React.FC = () => {
             <div className="event-time">
               <Box className="custom-chip-mobile">
                 <EventIcon sx={{ mt: 1 }} />
-                The Vote opens on {formatUTCDate(eventCache?.eventStartDate?.toString())}, and closes on <br />
-                {formatUTCDate(eventCache?.eventEndDate?.toString())}.
+                The Vote opens on {formatUTCDate(eventCache?.eventStartDate?.toString())}, and closes on {formatUTCDate(eventCache?.eventEndDate?.toString())}.
               </Box>
             </div>
           ) : (
@@ -88,7 +87,7 @@ const Home: React.FC = () => {
             <Grid item>
               <NavLink
                 to="/categories"
-                style={{ textDecoration: 'none', width: '100%' }}
+                style={{ textDecoration: 'none' }}
               >
                 <CustomButton
                   styles={{
@@ -107,7 +106,7 @@ const Home: React.FC = () => {
               <Grid item>
                 <NavLink
                   to="/user-guide"
-                  style={{ textDecoration: 'none', width: '100%' }}
+                  style={{ textDecoration: 'none' }}
                 >
                   <CustomButton
                     styles={{

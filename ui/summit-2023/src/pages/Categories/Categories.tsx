@@ -101,7 +101,7 @@ const Categories = () => {
                     <Card
                       sx={{
                         height: 'auto',
-                        width: { xs: '380px', sm: '414px' },
+                        width: { xs: '370px', sm: '410px' },
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -237,7 +237,7 @@ const Categories = () => {
                                 sx={{
                                   color: 'white',
                                   fontSize: {
-                                    xs: '22px',
+                                    xs: '28px',
                                     sm: '28px',
                                     md: '32px',
                                   },
@@ -301,7 +301,7 @@ const Categories = () => {
                   <Card
                     className="categories-card"
                     sx={{
-                      width: listView === 'list' || isMobile ? '100%' : '414px',
+                      width: listView === 'list' || isMobile ? '100%' : '410px',
                       height: 'auto',
                     }}
                     key={category.id}

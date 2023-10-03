@@ -142,16 +142,16 @@
   background: var(--color-light-blue);
 }
 
-.close-button.MuiButtonBase-root {
+.menu-button.MuiButtonBase-root, .close-button.MuiButtonBase-root {
   width: 51px;
   height: 51px;
   flex-shrink: 0;
   border-radius: 8px;
-  border: 1px solid var(--color-ultra-dark-blue);
+  border: 2px solid var(--color-primary);
   background: var(--color-ultra-light-blue);
 }
 
-.close-icon.MuiSvgIcon-root {
+.menu-button.MuiSvgIcon-root, .close-icon.MuiSvgIcon-root {
   width: 29px;
   height: 29px;
   flex-shrink: 0;

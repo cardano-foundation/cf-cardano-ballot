@@ -11,6 +11,7 @@ const Footer: React.FC = () => {
   return (
     <Grid
       container
+      spacing={1}
       direction={{ sm: 'column', md: 'row' }}
       justifyContent="center"
       alignItems="center"
@@ -40,8 +41,9 @@ const Footer: React.FC = () => {
       >
         <Grid
           container
+          spacing={1}
           direction={{ sm: 'column', md: 'row' }}
-          sx={{ textAlignLast: { xs: 'center', sm: 'right' } }}
+          sx={{ textAlignLast: { xs: 'center', sm: 'center', md: 'right' } }}
         >
           <Grid
             item
@@ -78,20 +80,30 @@ const Footer: React.FC = () => {
           <Grid
             item
             xs={12}
-            sm={4}
+            sm={5}
           >
             <Typography
               variant="body2"
               justifyContent="center"
             >
-              Version {env.APP_VERSION} (Status)
+              Version {env.APP_VERSION}
+              <NavLink
+                to={'https://status.voting.summit.cardano.org/'}
+                target="_blank"
+              >
+                <span
+                  className={styles.link}
+                >
+                  Status
+                </span>
+              </NavLink>
             </Typography>
           </Grid>
 
           <Grid
             item
             xs={12}
-            sm={2}
+            sm={1}
           >
             <Typography variant="body2">
               <img

@@ -11,7 +11,7 @@ import VerifiedIcon from '@mui/icons-material/Verified';
 import React from 'react';
 import './ConnectWalletButton.scss';
 import { env } from 'common/constants/env';
-import {getUserInSession, tokenIsExpired} from '../../../utils/session';
+import { getUserInSession, tokenIsExpired } from '../../../utils/session';
 
 type ConnectWalletButtonProps = {
   disableBackdropClick?: boolean;
@@ -61,7 +61,9 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
         {isConnected ? (
           <>
             {stakeAddress ? addressSlice(stakeAddress, 5) : null}
-            {walletIsVerified ? <VerifiedIcon style={{ width: '20px', paddingBottom: '0px', color: '#1C9BEF' }} /> : null}
+            {walletIsVerified ? (
+              <VerifiedIcon style={{ width: '20px', paddingBottom: '0px', color: '#1C9BEF' }} />
+            ) : null}
             <div className="arrow-icon">
               <KeyboardArrowDownIcon />
             </div>
@@ -71,7 +73,6 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
             <span> {i18n.t('header.connectWalletButton')}</span>
           </>
         )}
-
       </Button>
       {isConnected && (
         <div className="disconnect-wrapper">
@@ -86,17 +87,17 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
               Verify
             </Button>
           ) : null}
-          {
-            walletIsVerified || (!walletIsVerified && eventCache.finished) ? <Button
-                sx={{ zIndex: '99', cursor: 'pointer' }}
-                className="connect-button verify-button"
-                color="inherit"
-                onClick={() => onLogin()}
-                disabled={session && !isExpired}
+          {walletIsVerified || (!walletIsVerified && eventCache.finished) ? (
+            <Button
+              sx={{ zIndex: '99', cursor: 'pointer' }}
+              className="connect-button verify-button"
+              color="inherit"
+              onClick={() => onLogin()}
+              disabled={session && !isExpired}
             >
               Login
-            </Button> : null
-          }
+            </Button>
+          ) : null}
           <Button
             sx={{ zIndex: '99' }}
             className="connect-button disconnect-button"

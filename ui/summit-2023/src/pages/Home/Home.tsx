@@ -108,7 +108,7 @@ const Home: React.FC = () => {
         alignItems="center"
         sx={{
           display: 'flex',
-          order: '2',
+          order: '1',
         }}
       >
         <div className="hero-banner">

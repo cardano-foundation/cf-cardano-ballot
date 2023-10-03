@@ -118,7 +118,7 @@ const Categories = () => {
                             style={{ transformOrigin: '10 0 0' }}
                             {...{ timeout: 600 }}
                           >
-                            <CardContent sx={{ minHeight: '350px' }}>
+                            <CardContent sx={{ minHeight: '350px', maxHeight: '350px' }}>
                               <Box sx={{ position: 'relative' }}>
                                 {voted ? (
                                   <Tooltip title="Already Voted">
@@ -236,10 +236,14 @@ const Categories = () => {
                                 variant="h6"
                                 sx={{
                                   color: 'white',
-                                  fontSize: '36px',
+                                  fontSize: {
+                                    xs: '22px',
+                                    sm: '28px',
+                                    md: '32px',
+                                  },
                                   fontWeight: 600,
                                   wordBreak: 'break-word',
-                                  maxWidth: '285px',
+                                  maxWidth: '250px',
                                 }}
                               >
                                 {category.presentationName}
@@ -415,10 +419,10 @@ const Categories = () => {
         </Grid>
         <Grid item>
           <Hidden smDown>
-            <IconButton onClick={() => handleListView('grid')}>
+            <IconButton onClick={() => handleListView('grid')} className={listView === 'grid' ? styles.selected : styles.unSelected}>
               <ViewModuleIcon />
             </IconButton>
-            <IconButton onClick={() => handleListView('list')}>
+            <IconButton onClick={() => handleListView('list')} className={listView === 'list' ? styles.selected : styles.unSelected}>
               <ViewListIcon />
             </IconButton>
           </Hidden>

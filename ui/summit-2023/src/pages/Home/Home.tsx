@@ -16,6 +16,7 @@ const Home: React.FC = () => {
   const eventCache = useSelector((state: RootState) => state.user.event);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const hasEventFinished = eventCache?.finished;
 
   return (
     <Grid

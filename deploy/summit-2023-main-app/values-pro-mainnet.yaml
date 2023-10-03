@@ -47,12 +47,12 @@ cf-summit-2023-voting-api:
         replicas: 2
       - name: active-hour
         active: "true"
-        voteCommitmentCronExpression: "0 0 * * * *"
-      - name: active-half-hour
-        active: "true"
-        voteCommitmentCronExpression: "0 30 * * * *"
+        voteCommitmentCronExpression: "0 */3 * * * *"
+#      - name: active-half-hour
+#        active: "true"
+#        voteCommitmentCronExpression: "0 30 * * * *"
     image:
-      tag: 0.2.64
+      tag: 0.2.64-783
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
     corsAllowedOrigins: https://voting.summit.cardano.org,https://{{ .Values.domain }}
     yaci:

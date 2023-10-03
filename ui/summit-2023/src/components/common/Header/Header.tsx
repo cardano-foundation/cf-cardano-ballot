@@ -457,7 +457,7 @@ const Header: React.FC = () => {
         id="verify-wallet-modal"
         isOpen={verifyModalIsOpen}
         name="verify-wallet-modal"
-        title="Verify your wallet"
+        title="Verify your Wallet"
         onClose={handleCloseVerify}
         disableBackdropClick={true}
         width={isMobile ? '100%' : '400px'}

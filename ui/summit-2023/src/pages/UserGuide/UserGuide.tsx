@@ -23,10 +23,10 @@ const UserGuide = () => {
     const openConnectWalletModal = () => {
       setOpenSupportedWalletsModal(true);
     };
-    eventBus.subscribe('openConnectWalletModal', openConnectWalletModal);
+    eventBus.subscribe('openSupportedWalletModal', openConnectWalletModal);
 
     return () => {
-      eventBus.unsubscribe('openConnectWalletModal', openConnectWalletModal);
+      eventBus.unsubscribe('openSupportedWalletModal', openConnectWalletModal);
     };
   }, []);
 

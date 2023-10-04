@@ -14,7 +14,7 @@ spec:
     helm:
       parameters:
         - name: "grafana.ingress.enabled"
-          value: "false"
+          value: "true"
         - name: "grafana.ingress.hosts[0]"
           value: grafana.{{ $.Values.domain }}
       values: |

@@ -578,7 +578,7 @@ const Header: React.FC = () => {
             <Box sx={{
               display: 'flex',
               justifyContent: 'center',
-              marginTop: '4px',
+              marginTop: '8px',
             }}>
               <Tooltip title="Currently, only the beta version of the Eternl wallet v1.11.15 is supporting CIP-45. Mobile support will be available soon.">
                 <span style={{ fontSize: '14px', fontStyle: 'italic', cursor: 'pointer' }}>
@@ -588,7 +588,7 @@ const Header: React.FC = () => {
                       target="_blank"
                       rel="noreferrer"
                   >
-                      Use Eternl
+                      Using Eternl Wallet
                   </a>
               </span>
               </Tooltip>

@@ -134,6 +134,6 @@ cf-discord-wallet-verification-bot:
       tag: 11f6f15
     springProfiles: prod
     backendBaseUrl: https://user-verification.voting.summit.cardano.org
-    frontendUrl: https://{{ .Values.domain }}
+    frontendUrl: https://voting.summit.cardano.org
     diagnosticMode:
       enabled: false

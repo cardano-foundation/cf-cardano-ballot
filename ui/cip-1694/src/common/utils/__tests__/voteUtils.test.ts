@@ -34,7 +34,7 @@ describe('voteUtils: ', () => {
         voter: accountDataMock.stakeAddress,
         voteId: mockv4Value,
         slotNumber: chainTipMock.absoluteSlot.toString(),
-        votePower: accountDataMock.votingPower,
+        votingPower: accountDataMock.votingPower,
         category: 'CHANGE_GOV_STRUCTURE',
       })
     ).toEqual(

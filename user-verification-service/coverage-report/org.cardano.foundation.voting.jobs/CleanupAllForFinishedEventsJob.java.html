@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CleanupAllForFinishedEventsJob.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">user-verification-service</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.jobs</a> &gt; <span class="el_source">CleanupAllForFinishedEventsJob.java</span></div><h1>CleanupAllForFinishedEventsJob.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.jobs;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.client.ChainFollowerClient;
+import org.cardano.foundation.voting.service.discord.DiscordUserVerificationService;
+import org.cardano.foundation.voting.service.sms.SMSUserVerificationService;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+
+@Service
+<span class="fc" id="L12">@Slf4j</span>
+<span class="fc" id="L13">@RequiredArgsConstructor</span>
+public class CleanupAllForFinishedEventsJob implements Runnable {
+
+    private final ChainFollowerClient chainFollowerClient;
+
+    private final SMSUserVerificationService smsUserVerificationService;
+
+    private final DiscordUserVerificationService discordUserVerificationService;
+
+    @Scheduled(cron = &quot;${finished.verifications.cleanup.job.cron}&quot;)
+    public void run() {
+<span class="nc" id="L24">        log.info(&quot;Cleaning up verified phones for event...&quot;);</span>
+
+<span class="nc" id="L26">        var allEventsE = chainFollowerClient.findAllEvents();</span>
+
+<span class="nc bnc" id="L28" title="All 2 branches missed.">        if (allEventsE.isEmpty()) {</span>
+<span class="nc" id="L29">            log.warn(&quot;No events found in ledger follower, skipping cleanup job.&quot;);</span>
+<span class="nc" id="L30">            return;</span>
+        }
+
+<span class="nc" id="L33">        var allEvents = allEventsE.get();</span>
+
+<span class="nc" id="L35">        allEvents.forEach(eventSummary -&gt; {</span>
+<span class="nc bnc" id="L36" title="All 2 branches missed.">            if (eventSummary.finished()) {</span>
+
+<span class="nc" id="L38">                log.info(&quot;Event:{} is finished, removing all sms verifications...&quot;, eventSummary.id());</span>
+<span class="nc" id="L39">                smsUserVerificationService.findAllForEvent(eventSummary.id()).forEach(userVerification -&gt; {</span>
+<span class="nc" id="L40">                    log.info(&quot;Removing historical user sms verification... since eventId:{} is finished.&quot;, eventSummary.id());</span>
+<span class="nc" id="L41">                    smsUserVerificationService.removeUserVerification(userVerification);</span>
+<span class="nc" id="L42">                });</span>
+
+<span class="nc" id="L44">                log.info(&quot;Event:{} is finished, removing all discord verifications...&quot;, eventSummary.id());</span>
+<span class="nc" id="L45">                discordUserVerificationService.findAllForEvent(eventSummary.id()).forEach(userVerification -&gt; {</span>
+<span class="nc" id="L46">                    log.info(&quot;Removing historical user discord verification... since eventId:{} is finished.&quot;, eventSummary.id());</span>
+<span class="nc" id="L47">                    discordUserVerificationService.removeUserVerification(userVerification);</span>
+<span class="nc" id="L48">                });</span>
+
+            }
+<span class="nc" id="L51">        });</span>
+<span class="nc" id="L52">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

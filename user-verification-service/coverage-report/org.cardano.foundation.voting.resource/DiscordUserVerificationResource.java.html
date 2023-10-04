@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DiscordUserVerificationResource.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">user-verification-service</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.resource</a> &gt; <span class="el_source">DiscordUserVerificationResource.java</span></div><h1>DiscordUserVerificationResource.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.resource;
+
+import io.micrometer.core.annotation.Timed;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.domain.IsVerifiedResponse;
+import org.cardano.foundation.voting.domain.discord.DiscordCheckVerificationRequest;
+import org.cardano.foundation.voting.domain.discord.DiscordStartVerificationRequest;
+import org.cardano.foundation.voting.domain.discord.DiscordStartVerificationResponse;
+import org.cardano.foundation.voting.service.discord.DiscordUserVerificationService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.zalando.problem.Problem;
+
+import static org.springframework.web.bind.annotation.RequestMethod.*;
+import static org.zalando.problem.Status.BAD_REQUEST;
+
+@RestController
+@RequestMapping(&quot;/api/discord/user-verification&quot;)
+<span class="fc" id="L30">@Slf4j</span>
+@Tag(name = &quot;Discord User Verification&quot;, description = &quot;Operations related to Discord user verification&quot;)
+<span class="fc" id="L32">public class DiscordUserVerificationResource {</span>
+
+    @Autowired
+    private DiscordUserVerificationService discordUserVerificationService;
+
+    @Value(&quot;${discord.bot.eventId.binding}&quot;)
+    private String discordBotEventIdBinding;
+
+    @RequestMapping(value = &quot;/is-verified/{discordIdHash}&quot;, method = GET, produces = &quot;application/json&quot;)
+    @Timed(value = &quot;resource.discord.isVerified&quot;, histogram = true)
+    @Operation(summary = &quot;Check if a Discord user is verified&quot;,
+            description = &quot;Determines if a user, based on their Discord ID hash, is verified.&quot;,
+            responses = {
+                    @ApiResponse(
+                            responseCode = &quot;200&quot;,
+                            description = &quot;Successfully retrieved verification status.&quot;,
+                            content = @Content(
+                                    mediaType = &quot;application/json&quot;,
+                                    schema = @Schema(implementation = IsVerifiedResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = &quot;400&quot;,
+                            description = &quot;Bad request, possibly due to an invalid discordIdHash.&quot;,
+                            content = {
+                                    @Content(mediaType = &quot;application/json&quot;,
+                                            schema = @Schema(implementation = Problem.class))
+                            }
+                    ),
+                    @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Server error&quot;)
+            }
+    )
+    public ResponseEntity&lt;?&gt; isDiscordUserVerified(@PathVariable(&quot;discordIdHash&quot;) String discordIdHash) {
+<span class="fc" id="L65">        log.info(&quot;Received isDiscordUserVerified request discordIdHash: {}&quot;, discordIdHash);</span>
+
+<span class="fc" id="L67">        return discordUserVerificationService.isVerifiedBasedOnDiscordIdHash(discordBotEventIdBinding, discordIdHash)</span>
+<span class="fc" id="L68">                .fold(problem -&gt; {</span>
+<span class="nc" id="L69">                            return ResponseEntity</span>
+<span class="nc" id="L70">                                    .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L71">                                    .body(problem);</span>
+                        },
+                        userVerification -&gt; {
+<span class="fc" id="L74">                            return ResponseEntity</span>
+<span class="fc" id="L75">                                    .ok()</span>
+<span class="fc" id="L76">                                    .body(userVerification);</span>
+                        }
+                );
+    }
+
+    @RequestMapping(value = &quot;/start-verification&quot;, method = { POST, PUT }, produces = &quot;application/json&quot;)
+    @Timed(value = &quot;resource.discord.startVerification&quot;, histogram = true)
+    @Operation(summary = &quot;Start the verification process for a Discord user&quot;,
+            description = &quot;Initiates the verification process based on the provided DiscordStartVerificationRequest.&quot;,
+            responses = {
+                    @ApiResponse(
+                            responseCode = &quot;200&quot;,
+                            description = &quot;Successfully started the verification process.&quot;,
+                            content = @Content(
+                                    mediaType = &quot;application/json&quot;,
+                                    schema = @Schema(implementation = DiscordStartVerificationResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = &quot;400&quot;,
+                            description = &quot;Bad request, possibly due to invalid data in the startVerificationRequest.&quot;,
+                            content = {
+                                    @Content(mediaType = &quot;application/json&quot;,
+                                            schema = @Schema(implementation = Problem.class))
+                            }
+                    ),
+                    @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Server error&quot;)
+            }
+    )
+    public ResponseEntity&lt;?&gt; startVerification(@RequestBody @Valid DiscordStartVerificationRequest startVerificationRequest) {
+<span class="fc" id="L106">        log.info(&quot;Received discord startVerification request: {}&quot;, startVerificationRequest);</span>
+
+<span class="fc" id="L108">        return discordUserVerificationService.startVerification(discordBotEventIdBinding, startVerificationRequest)</span>
+<span class="fc" id="L109">                .fold(problem -&gt; {</span>
+<span class="nc" id="L110">                            return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);</span>
+                        },
+                        userVerification -&gt; {
+<span class="fc" id="L113">                            return ResponseEntity.ok().body(userVerification);</span>
+                        }
+                );
+    }
+
+    @RequestMapping(value = &quot;/check-verification&quot;, method = { POST }, produces = &quot;application/json&quot;)
+    @Timed(value = &quot;resource.discord.checkVerification&quot;, histogram = true)
+    @Operation(summary = &quot;Check the verification status for a Discord user&quot;,
+            description = &quot;Checks the verification status based on the provided DiscordCheckVerificationRequest.&quot;,
+            responses = {
+                    @ApiResponse(
+                            responseCode = &quot;200&quot;,
+                            description = &quot;Successfully retrieved the verification status.&quot;,
+                            content = @Content(
+                                    mediaType = &quot;application/json&quot;,
+                                    schema = @Schema(implementation = IsVerifiedResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = &quot;400&quot;,
+                            description = &quot;Bad request, possibly due to an invalid checkVerificationRequest or event ID mismatch.&quot;,
+                            content = {
+                                    @Content(mediaType = &quot;application/json&quot;,
+                                            schema = @Schema(implementation = Problem.class))
+                            }
+                    ),
+                    @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Server error&quot;)
+            }
+    )
+    public ResponseEntity&lt;?&gt; checkVerification(@RequestBody @Valid DiscordCheckVerificationRequest checkVerificationRequest) {
+<span class="fc" id="L143">        log.info(&quot;Received discord checkVerification request: {}&quot;, checkVerificationRequest);</span>
+
+<span class="pc bpc" id="L145" title="1 of 2 branches missed.">        if (!checkVerificationRequest.getEventId().equals(discordBotEventIdBinding)) {</span>
+<span class="nc" id="L146">            return ResponseEntity.badRequest().</span>
+<span class="nc" id="L147">                    body(Problem.builder().withTitle(&quot;EVENT_ID_AND_DISCORD_ID_BOT_MISMATCH&quot;)</span>
+<span class="nc" id="L148">                            .withDetail(&quot;Event id and discord id bot mismatch!&quot;)</span>
+<span class="nc" id="L149">                            .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L150">                            .build());</span>
+        }
+
+<span class="fc" id="L153">        return discordUserVerificationService.checkVerification(checkVerificationRequest)</span>
+<span class="fc" id="L154">                .fold(problem -&gt; {</span>
+<span class="fc" id="L155">                            return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);</span>
+                        },
+                        userVerification -&gt; {
+<span class="fc" id="L158">                            return ResponseEntity.ok().body(userVerification);</span>
+                        }
+                );
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

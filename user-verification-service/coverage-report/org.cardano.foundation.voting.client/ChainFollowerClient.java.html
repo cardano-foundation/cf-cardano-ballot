@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ChainFollowerClient.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">user-verification-service</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.client</a> &gt; <span class="el_source">ChainFollowerClient.java</span></div><h1>ChainFollowerClient.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.client;
+
+import io.vavr.control.Either;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
+import org.zalando.problem.Problem;
+import org.zalando.problem.spring.common.HttpStatusAdapter;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+
+@Component
+<span class="fc" id="L20">@Slf4j</span>
+<span class="fc" id="L21">public class ChainFollowerClient {</span>
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+    @Value(&quot;${ledger.follower.app.base.url}&quot;)
+    private String ledgerFollowerBaseUrl;
+
+    public Either&lt;Problem, Optional&lt;EventSummary&gt;&gt; findEventById(String eventId) {
+<span class="fc" id="L30">        return findAllEvents()</span>
+<span class="fc" id="L31">                .map(eventSummaries -&gt; eventSummaries.stream()</span>
+<span class="fc" id="L32">                        .filter(event -&gt; event.id().equals(eventId)).findFirst());</span>
+    }
+
+    public Either&lt;Problem, List&lt;EventSummary&gt;&gt; findAllEvents() {
+<span class="fc" id="L36">        var url = String.format(&quot;%s/api/reference/event&quot;, ledgerFollowerBaseUrl);</span>
+
+        try {
+<span class="fc" id="L39">            var allEventSummaries = Optional.ofNullable(restTemplate.getForObject(url, EventSummary[].class))</span>
+<span class="fc" id="L40">                    .map(Arrays::asList).orElse(List.of());</span>
+
+<span class="fc" id="L42">            return Either.right(allEventSummaries);</span>
+<span class="nc" id="L43">        } catch (HttpClientErrorException e) {</span>
+<span class="nc bnc" id="L44" title="All 2 branches missed.">            if (e.getStatusCode() == NOT_FOUND) {</span>
+<span class="nc" id="L45">                return Either.right(List.of());</span>
+            }
+
+<span class="nc" id="L48">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L49">                    .withTitle(&quot;REFERENCE_ERROR&quot;)</span>
+<span class="nc" id="L50">                    .withDetail(&quot;Unable to get event details from chain-tip follower service, reason:&quot; + e.getMessage())</span>
+<span class="nc" id="L51">                    .withStatus(new HttpStatusAdapter(e.getStatusCode()))</span>
+<span class="nc" id="L52">                    .build());</span>
+        }
+    }
+
+<span class="fc" id="L56">    public record EventSummary(String id,</span>
+                               boolean finished,
+                               boolean notStarted,
+                               boolean active) {
+
+        public boolean isEventInactive() {
+<span class="nc bnc" id="L62" title="All 2 branches missed.">            return !active;</span>
+        }
+
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

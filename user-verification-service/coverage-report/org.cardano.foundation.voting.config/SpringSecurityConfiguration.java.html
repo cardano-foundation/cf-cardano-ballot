@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SpringSecurityConfiguration.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">user-verification-service</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.config</a> &gt; <span class="el_source">SpringSecurityConfiguration.java</span></div><h1>SpringSecurityConfiguration.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.config;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.springframework.http.HttpMethod.*;
+
+@Configuration
+@Import(SecurityProblemSupport.class)
+<span class="fc" id="L31">public class SpringSecurityConfiguration {</span>
+
+    @Autowired
+    private SecurityProblemSupport problemSupport;
+
+    @Value(&quot;${cors.allowed.origins:http://localhost:3000}&quot;)
+    private String allowedUrls;
+
+    @Value(&quot;${discord.bot.username:discord_bot}&quot;)
+    private String discordBotUsername;
+
+    @Value(&quot;${discord.bot.password}&quot;)
+    private String discordBotPassword;
+
+    @ConditionalOnProperty( //to make sure it is active if console is enabled
+            value=&quot;spring.h2.console.enabled&quot;,
+            havingValue = &quot;true&quot;,
+            matchIfMissing = false)
+
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+<span class="fc" id="L52">        return (web) -&gt; web.ignoring().requestMatchers(new AntPathRequestMatcher(&quot;/h2-console/**&quot;));</span>
+    }
+
+    @Bean
+    public AuthenticationEntryPoint authenticationEntryPoint() {
+<span class="fc" id="L57">        var basicAuthenticationEntryPoint = new BasicAuthenticationEntryPoint();</span>
+<span class="fc" id="L58">        basicAuthenticationEntryPoint.setRealmName(&quot;DISCORD&quot;);</span>
+
+<span class="fc" id="L60">        return basicAuthenticationEntryPoint;</span>
+    }
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+<span class="fc" id="L65">        http</span>
+<span class="fc" id="L66">            .sessionManagement(AbstractHttpConfigurer::disable)</span>
+<span class="fc" id="L67">            .cors(c -&gt; c.configurationSource(request -&gt; {</span>
+<span class="fc" id="L68">                var cors = new CorsConfiguration();</span>
+<span class="fc" id="L69">                cors.setAllowedMethods(List.of(&quot;GET&quot;, &quot;POST&quot;, &quot;PUT&quot;));</span>
+<span class="fc" id="L70">                cors.setAllowedHeaders(List.of(&quot;*&quot;));</span>
+
+<span class="fc" id="L72">                var urls = Arrays.stream(allowedUrls.split(&quot;,&quot;)).toList();</span>
+
+<span class="fc" id="L74">                cors.setAllowedOrigins(urls);</span>
+
+<span class="fc" id="L76">                return cors;</span>
+            }))
+<span class="fc" id="L78">            .csrf(AbstractHttpConfigurer::disable)</span>
+<span class="fc" id="L79">            .anonymous(AbstractHttpConfigurer::disable)</span>
+<span class="fc" id="L80">            .authorizeHttpRequests(authorizeHttpRequests -&gt; authorizeHttpRequests</span>
+<span class="fc" id="L81">                    .requestMatchers(new AntPathRequestMatcher(&quot;/api/sms/**&quot;)).permitAll()</span>
+<span class="fc" id="L82">                    .requestMatchers(new AntPathRequestMatcher(&quot;/api/discord/user-verification/is-verified/**&quot;, GET.name())).hasRole(&quot;BOT&quot;)</span>
+<span class="fc" id="L83">                    .requestMatchers(new AntPathRequestMatcher(&quot;/api/discord/user-verification/start-verification&quot;, POST.name())).hasRole(&quot;BOT&quot;)</span>
+<span class="fc" id="L84">                    .requestMatchers(new AntPathRequestMatcher(&quot;/api/discord/user-verification/start-verification&quot;, PUT.name())).hasRole(&quot;BOT&quot;)</span>
+<span class="fc" id="L85">                    .requestMatchers(new AntPathRequestMatcher(&quot;/api/discord/user-verification/check-verification&quot;, POST.name())).permitAll()</span>
+
+<span class="fc" id="L87">                    .requestMatchers(new AntPathRequestMatcher(&quot;/api/user-verification/verified/**&quot;, GET.name())).permitAll()</span>
+
+<span class="fc" id="L89">                    .requestMatchers(new AntPathRequestMatcher(&quot;/actuator/**&quot;, GET.name())).permitAll()</span>
+<span class="fc" id="L90">                    .requestMatchers(new AntPathRequestMatcher(&quot;/h2-console/**&quot;)).permitAll()</span>
+
+<span class="fc" id="L92">                    .anyRequest().denyAll()</span>
+         )
+<span class="fc" id="L94">         .rememberMe(AbstractHttpConfigurer::disable)</span>
+<span class="fc" id="L95">         .anonymous(AbstractHttpConfigurer::disable)</span>
+<span class="fc" id="L96">         .formLogin(AbstractHttpConfigurer::disable)</span>
+<span class="fc" id="L97">         .logout(AbstractHttpConfigurer::disable)</span>
+
+<span class="fc" id="L99">        .httpBasic(c -&gt; c.authenticationEntryPoint(authenticationEntryPoint()))</span>
+<span class="fc" id="L100">        .exceptionHandling(c -&gt; c.authenticationEntryPoint(problemSupport)</span>
+<span class="fc" id="L101">        .accessDeniedHandler(problemSupport));</span>
+
+<span class="fc" id="L103">        return http.build();</span>
+    }
+
+    @Bean
+    public InMemoryUserDetailsManager userDetailsService() {
+<span class="fc" id="L108">        UserDetails user = User</span>
+<span class="fc" id="L109">                .withUsername(discordBotUsername)</span>
+<span class="fc" id="L110">                .password(passwordEncoder().encode(discordBotPassword))</span>
+<span class="fc" id="L111">                .roles(&quot;BOT&quot;)</span>
+<span class="fc" id="L112">                .build();</span>
+
+<span class="fc" id="L114">        return new InMemoryUserDetailsManager(user);</span>
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+<span class="fc" id="L119">        return new BCryptPasswordEncoder(8);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

@@ -10,6 +10,7 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
+    Box
 } from '@mui/material';
 import CallIcon from '@mui/icons-material/Call';
 import { MuiTelInput, matchIsValidTel, MuiTelInputCountry } from 'mui-tel-input';
@@ -27,6 +28,7 @@ import { CustomButton } from '../common/Button/CustomButton';
 import { getSignedMessagePromise, openNewTab, resolveCardanoNetwork } from '../../utils/utils';
 import { SignedWeb3Request } from '../../types/voting-app-types';
 import { parseError } from 'common/constants/errors';
+import {ErrorMessage} from '../common/ErrorMessage/ErrorMessage'
 
 // TODO: env.
 const excludedCountries: MuiTelInputCountry[] | undefined = [];
@@ -47,6 +49,7 @@ const VerifyWallet = (props: VerifyWalletProps) => {
   const [phoneCodeIsBeenSending, setPhoneCodeIsBeenSending] = useState<boolean>(false);
   const [phoneCodeIsBeenConfirming, setPhoneCodeIsBeenConfirming] = useState<boolean>(false);
   const [phoneCodeIsSent, setPhoneCodeIsSent] = useState<boolean>(false);
+  const [phoneCodeShowError, setPhoneCodeShowError] = useState<boolean>(false);
   const [checkImNotARobot, setCheckImNotARobot] = useState<boolean>(false);
   const [isPhoneInputDisabled] = useState<boolean>(false);
   const dispatch = useDispatch();
@@ -70,6 +73,7 @@ const VerifyWallet = (props: VerifyWalletProps) => {
     function clear() {
       setVerifyOption(undefined);
       setPhoneCodeIsSent(false);
+        setPhoneCodeShowError(false);
       setPhone('');
       setCodes(Array(6).fill(''));
     }
@@ -123,12 +127,14 @@ const VerifyWallet = (props: VerifyWalletProps) => {
           reset();
           setPhoneCodeIsBeenConfirming(false);
         } else {
-          onError('SMS code not valid');
+          // onError('SMS code not valid');
+            setPhoneCodeShowError(true)
           setPhoneCodeIsBeenConfirming(false);
         }
       })
       .catch(() => {
-        onError('SMS code verification failed');
+        // onError('SMS code verification failed');
+          setPhoneCodeShowError(true)
         setPhoneCodeIsBeenConfirming(false);
       });
   };
@@ -210,6 +216,8 @@ const VerifyWallet = (props: VerifyWalletProps) => {
       } else if (!value && index > 0) {
         inputRefs.current[index]?.focus();
       }
+
+        setPhoneCodeShowError(false);
     };
 
     const handleCancelConfirmChode = () => {
@@ -261,10 +269,18 @@ const VerifyWallet = (props: VerifyWalletProps) => {
             />
           ))}
         </div>
+          <Box className="container" sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              height: '16px',
+              marginTop: '4px'
+          }}>
+              <ErrorMessage show={phoneCodeShowError} message='SMS code not valid'/>
+          </Box>
         <Grid
           container
           spacing={2}
-          style={{ marginTop: '28px' }}
+          style={{ marginTop: '8px' }}
         >
           <Grid
             item

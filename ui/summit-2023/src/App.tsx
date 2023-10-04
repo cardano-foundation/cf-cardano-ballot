@@ -39,20 +39,17 @@ function App() {
   const fetchEvent = useCallback(async () => {
     try {
       const event = await getEvent(env.EVENT_ID);
-      /*if ('finished' in event) {
-        event.finished = true;
-      }*/
       const staticCategories: CategoryContent[] = SUMMIT2023CONTENT.categories;
 
       const joinedCategories = event.categories
-        .map((category) => {
-          const joinedCategory = staticCategories.find((staticCategory) => staticCategory.id === category.id);
-          if (joinedCategory) {
-            return { ...category, ...joinedCategory };
-          }
-          return null;
-        })
-        .filter((staticCategory) => staticCategory !== null);
+          .map((category) => {
+            const joinedCategory = staticCategories.find((staticCategory) => staticCategory.id === category.id);
+            if (joinedCategory) {
+              return { ...category, ...joinedCategory };
+            }
+            return null;
+          })
+          .filter((staticCategory) => staticCategory !== null);
 
       event.categories = joinedCategories;
       dispatch(setEventData({ event }));
@@ -83,21 +80,22 @@ function App() {
         dispatch(setWalletIsLoggedIn({ isLoggedIn: !isExpired }));
         if (!isExpired) {
           getUserVotes(session?.accessToken)
-            .then((response) => {
-              if (response) {
-                dispatch(setUserVotes({ userVotes: response }));
-              }
-            })
-            .catch((e) => {
-              eventBus.publish('showToast', parseError(e.message), 'error');
-            });
+              .then((response) => {
+                if (response) {
+                  dispatch(setUserVotes({ userVotes: response }));
+                }
+              })
+              .catch((e) => {
+                eventBus.publish('showToast', parseError(e.message), 'error');
+              });
         }
       }
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') {
         console.log(`Failed to fetch event, ${error?.info || error?.message || error?.toString()}`);
       }
-      eventBus.publish('showToast', parseError(error.message), 'error');
+
+      if (error.message !== 'EVENT_NOT_FOUND') eventBus.publish('showToast', parseError(error.message), 'error');
     }
   }, [dispatch, stakeAddress]);
 
@@ -116,10 +114,10 @@ function App() {
     const notDiscordVerification = !(action === 'verification' && secret.includes('|'));
 
     const showLoginModal =
-      termsAndConditionsChecked &&
-      isConnected &&
-      notDiscordVerification &&
-      ((isVerifiedEventNotEnded && sessionExpired) || notVerifiedEventEnded);
+        termsAndConditionsChecked &&
+        isConnected &&
+        notDiscordVerification &&
+        ((isVerifiedEventNotEnded && sessionExpired) || notVerifiedEventEnded);
 
     if (showLoginModal) {
       eventBus.publish('openLoginModal', 'If you already voted, please login to see your votes.');
@@ -131,64 +129,64 @@ function App() {
   }, []);
 
   return (
-    <Container maxWidth={isBigScreen ? 'lg' : 'xl'}>
-      <BrowserRouter>
-        <img
-          src={'/static/home-graphic-bg-top.svg'}
-          alt="Home graphic background top left"
-          className="home-graphic-bg-top"
-        />
-        <Grid
-          container
-          spacing={1}
-          direction="column"
-        >
+      <Container maxWidth={isBigScreen ? 'lg' : 'xl'}>
+        <BrowserRouter>
+          <img
+              src={'/static/home-graphic-bg-top.svg'}
+              alt="Home graphic background top left"
+              className="home-graphic-bg-top"
+          />
           <Grid
-            item
-            xs
+              container
+              spacing={1}
+              direction="column"
           >
-            <Header />
+            <Grid
+                item
+                xs
+            >
+              <Header />
+            </Grid>
+            <Grid
+                item
+                xs={6}
+            >
+              <Box className="content">
+                {eventCache !== undefined && eventCache?.id.length ? (
+                    <PageRouter />
+                ) : (
+                    <Box
+                        sx={{
+                          display: 'flex',
+                          height: '60vh',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                    >
+                      <CircularProgress
+                          className="app-spinner"
+                          style={{
+                            color: '#03021f',
+                            strokeWidth: '10',
+                          }}
+                      />
+                    </Box>
+                )}
+              </Box>
+            </Grid>
+            <Grid
+                item
+                xs
+            >
+              <Footer />
+            </Grid>
           </Grid>
-          <Grid
-            item
-            xs={6}
-          >
-            <Box className="content">
-              {eventCache !== undefined ? (
-                <PageRouter />
-              ) : (
-                <Box
-                  sx={{
-                    display: 'flex',
-                    height: '60vh',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <CircularProgress
-                    className="app-spinner"
-                    style={{
-                      color: '#03021f',
-                      strokeWidth: '10',
-                    }}
-                  />
-                </Box>
-              )}
-            </Box>
-          </Grid>
-          <Grid
-            item
-            xs
-          >
-            <Footer />
-          </Grid>
-        </Grid>
-        <TermsOptInModal
-          open={openTermDialog}
-          setOpen={(value) => setOpenTermDialog(value)}
-        />
-      </BrowserRouter>
-    </Container>
+          <TermsOptInModal
+              open={openTermDialog}
+              setOpen={(value) => setOpenTermDialog(value)}
+          />
+        </BrowserRouter>
+      </Container>
   );
 }
 

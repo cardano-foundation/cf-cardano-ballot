@@ -101,7 +101,7 @@ const Categories = () => {
                     <Card
                       sx={{
                         height: 'auto',
-                        width: { xs: '370px', sm: '410px' },
+                        width: { xs: '90vw' },
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -351,7 +351,7 @@ const Categories = () => {
                           {category.desc}
                         </Typography>
                       </Box>
-                      <Box sx={{ marginLeft: 'auto', display: { sm: 'none', md: 'block'}}}>
+                      <Box sx={{ marginLeft: 'auto', display: { sm: 'none', md: 'block' } }}>
                         <Button
                           component={Link}
                           to={{ pathname: `/nominees/${category.id}` }}
@@ -362,7 +362,7 @@ const Categories = () => {
                           variant="contained"
                           size="large"
                           sx={{
-                            width:'100%',
+                            width: '100%',
                             color: 'text.primary',
                             fontSize: 16,
                             fontWeight: 700,
@@ -370,38 +370,38 @@ const Categories = () => {
                             borderRadius: '8px',
                             backgroundColor: '#acfcc5 !important',
                             marginRight: '28px',
-                            minWidth: '166px'
+                            minWidth: '166px',
                           }}
                         >
                           View Nominees
                         </Button>
                       </Box>
                     </CardContent>
-                    <Box sx={{ display: { sm: 'block', md: 'none'}}}>
-                        <Button
-                          component={Link}
-                          to={{ pathname: `/nominees/${category.id}` }}
-                          state={{
-                            category,
-                          }}
-                          aria-label="View Nominees"
-                          variant="contained"
-                          size="large"
-                          sx={{
-                            width:'95%',
-                            color: 'text.primary',
-                            fontSize: 16,
-                            fontWeight: 700,
-                            textTransform: 'none',
-                            borderRadius: '8px',
-                            backgroundColor: '#acfcc5 !important',
-                            margin: '20px',
-                            minWidth: '166px'
-                          }}
-                        >
-                          View Nominees
-                        </Button>
-                      </Box>
+                    <Box sx={{ display: { sm: 'block', md: 'none' } }}>
+                      <Button
+                        component={Link}
+                        to={{ pathname: `/nominees/${category.id}` }}
+                        state={{
+                          category,
+                        }}
+                        aria-label="View Nominees"
+                        variant="contained"
+                        size="large"
+                        sx={{
+                          width: '95%',
+                          color: 'text.primary',
+                          fontSize: 16,
+                          fontWeight: 700,
+                          textTransform: 'none',
+                          borderRadius: '8px',
+                          backgroundColor: '#acfcc5 !important',
+                          margin: '20px',
+                          minWidth: '166px',
+                        }}
+                      >
+                        View Nominees
+                      </Button>
+                    </Box>
                   </Card>
                 </Fade>
               </Grid>
@@ -447,17 +447,23 @@ const Categories = () => {
         </Grid>
         <Grid item>
           <Hidden smDown>
-            <IconButton onClick={() => handleListView('grid')} className={listView === 'grid' ? styles.selected : styles.unSelected}>
+            <IconButton
+              onClick={() => handleListView('grid')}
+              className={listView === 'grid' ? styles.selected : styles.unSelected}
+            >
               <ViewModuleIcon />
             </IconButton>
-            <IconButton onClick={() => handleListView('list')} className={listView === 'list' ? styles.selected : styles.unSelected}>
+            <IconButton
+              onClick={() => handleListView('list')}
+              className={listView === 'list' ? styles.selected : styles.unSelected}
+            >
               <ViewListIcon />
             </IconButton>
           </Hidden>
         </Grid>
       </Grid>
 
-      <Box marginY={10}>
+      <Box my={6}>
         {isMobile || listView === 'grid' ? renderResponsiveGrid(categories) : renderResponsiveList(categories)}
       </Box>
     </div>

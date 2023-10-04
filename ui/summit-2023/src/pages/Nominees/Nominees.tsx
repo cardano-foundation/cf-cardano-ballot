@@ -591,7 +591,14 @@ const Nominees = () => {
                         <Typography
                           className="nominee-title"
                           variant="h4"
-                          sx={{ mb: 1, minHeight: '83px', height: '83px', fontWeight: 'bold', wordWrap: 'break-word', width: voted ? '260px' : '100%' }}
+                          sx={{
+                            mb: 1,
+                            minHeight: '83px',
+                            height: '83px',
+                            fontWeight: 'bold',
+                            wordWrap: 'break-word',
+                            width: voted ? '260px' : '100%',
+                          }}
                         >
                           {nominee.presentationName}
                           {isWinner ? (
@@ -1392,7 +1399,7 @@ const Nominees = () => {
             lineHeight: '22px',
           }}
         >
-          Please confirm your vote for ${votedNominee?.presentationName} [{selectedNomineeToVote?.id}]
+          Please confirm your vote for {votedNominee?.presentationName} [{selectedNomineeToVote?.id}]
         </Typography>
         <Box
           display="flex"

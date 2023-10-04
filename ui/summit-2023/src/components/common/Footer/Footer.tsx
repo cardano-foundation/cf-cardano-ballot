@@ -89,7 +89,7 @@ const Footer: React.FC = () => {
             >
               Version {env.APP_VERSION}
               <NavLink
-                to={'https://status.voting.summit.cardano.org/'}
+                to={'https://status2023.voting.summit.cardano.org/'}
                 target="_blank"
               >
                 <span
@@ -110,7 +110,7 @@ const Footer: React.FC = () => {
               title="Get support"
               placement="top"
               >
-              <IconButton 
+              <IconButton
                 onClick={() => openNewTab(env.DISCORD_SUPPORT_CHANNEL_URL)}
                 sx={{ m: -1 }}
                 >

@@ -45,7 +45,8 @@ const ConnectWalletList = (props: ConnectWalletModalProps) => {
                 />
               </ListItemAvatar>
               <Typography className="walletLabel">
-                Connect <span className="walletName">{walletName}</span> Wallet
+                Connect <span className="walletName">{walletName === 'typhoncip30' ? 'typhon' : walletName}</span>{' '}
+                Wallet
               </Typography>
             </ListItem>
           ))

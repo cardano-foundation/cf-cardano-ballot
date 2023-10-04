@@ -14,15 +14,12 @@ import { RootState } from '../../store';
 import { StatsTile } from './components/StatsTile';
 import SUMMIT2023CONTENT from '../../common/resources/data/summit2023Content.json';
 import { CategoryContent } from 'pages/Categories/Category.types';
-import { LeaderboardContent } from './Leaderboard.types';
 import { eventBus } from '../../utils/EventBus';
 
 const Leaderboard = () => {
   const event = useSelector((state: RootState) => state.user.event);
   const [stats, setStats] = useState<ByCategoryStats[]>();
   const summit2023Categories: CategoryContent[] = SUMMIT2023CONTENT.categories;
-  const summit2023Leaderboard: LeaderboardContent = SUMMIT2023CONTENT.leaderboard;
-
   const init = useCallback(async () => {
     try {
       await leaderboardService.getStats().then((response) => {
@@ -66,8 +63,7 @@ const Leaderboard = () => {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          marginTop: '20px',
-          marginBottom: 20,
+          marginBottom: 48
         }}
       >
         <Typography
@@ -90,15 +86,6 @@ const Leaderboard = () => {
           Leaderboard
         </Typography>
       </div>
-
-      <Typography
-        className={styles.description}
-        variant="body1"
-        gutterBottom
-      >
-        {summit2023Leaderboard.desc}
-      </Typography>
-
       <Grid
         container
         spacing={0}

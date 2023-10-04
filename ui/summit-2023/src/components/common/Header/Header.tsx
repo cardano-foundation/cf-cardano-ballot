@@ -13,6 +13,7 @@ import {
   Typography,
   Button,
   Box,
+  Tooltip,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
@@ -360,7 +361,7 @@ const Header: React.FC = () => {
         position={'static'}
         style={{ background: 'transparent', boxShadow: 'none', color: 'black' }}
       >
-        <Toolbar sx={{ pl: 0, pt: 2 }}>
+        <Toolbar sx={{ pl: 0, pt: 1 }}>
           {isTablet ? (
             <>
               <NavLink to="/">
@@ -374,7 +375,7 @@ const Header: React.FC = () => {
               <IconButton
                 edge="end"
                 color="inherit"
-                className="menu-button"
+                className="menuButton"
                 onClick={() => setDrawerOpen(true)}
               >
                 <MenuIcon className="close-icon" />
@@ -457,7 +458,7 @@ const Header: React.FC = () => {
         id="verify-wallet-modal"
         isOpen={verifyModalIsOpen}
         name="verify-wallet-modal"
-        title="Verify your Wallet"
+        title="Verify your wallet"
         onClose={handleCloseVerify}
         disableBackdropClick={true}
         width={isMobile ? '100%' : '400px'}
@@ -575,6 +576,26 @@ const Header: React.FC = () => {
                 Copy Peer ID
               </Typography>
             </div>
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                marginTop: '8px',
+              }}
+            >
+              <Tooltip title="Currently, only the beta version of the Eternl wallet v1.11.15 is fully supporting CIP-45. Mobile support will be available soon.">
+                <span style={{ fontSize: '14px', fontStyle: 'italic', cursor: 'pointer' }}>
+                  {' '}
+                  <a
+                    href="https://beta.eternl.io/"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Using Eternl Wallet
+                  </a>
+                </span>
+              </Tooltip>
+            </Box>
             <Button
               onClick={() => {
                 setStartPeerConnect(false);

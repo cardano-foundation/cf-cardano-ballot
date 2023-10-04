@@ -29,7 +29,7 @@ describe('QRCode:', () => {
     );
 
     await waitFor(async () => {
-      const toast = await screen.queryByTestId('qr-code');
+      const toast = screen.queryByTestId('qr-code');
       expect(appendMock).toBeCalledTimes(1);
       expect(appendMock).toBeCalledWith(toast);
       expect(updateMock).toBeCalledTimes(1);

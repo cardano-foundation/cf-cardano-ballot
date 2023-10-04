@@ -44,7 +44,6 @@ const StatusToInfoPanelDescription: Partial<Record<Status | 'VERIFIED', string>>
     'Don’t worry there’s nothing for you to do. We will automatically resubmit your vote. Please check back later (up to 30 minutes) to see your vote status.',
   BASIC:
     'Your vote has been successfully submitted. You might have to wait up to 30 minutes for this to be visible on chain. Please check back later to verify your vote.',
-  // TODO: provide copy
   VERIFIED: '',
 };
 
@@ -60,13 +59,9 @@ const FullStatusToInfoPanelDescription: Record<FinalityScore, string> = {
   FINAL: HIGHT_ASSURANCE,
 };
 
-type FetchReceiptProps = {
-  cb?: () => void;
-  refetch?: boolean;
-};
 type ReceiptInfoProps = {
   isVerified: boolean;
-  fetchReceipt: (props: FetchReceiptProps) => void;
+  fetchReceipt: () => void;
   receipt: VoteReceipt;
 };
 
@@ -93,7 +88,7 @@ export const ReceiptInfo = ({ isVerified, fetchReceipt, receipt }: ReceiptInfoPr
           className={styles.ctaButton}
           size="large"
           variant="outlined"
-          onClick={!isVerified ? () => fetchReceipt({ refetch: true }) : undefined}
+          onClick={!isVerified ? () => fetchReceipt() : undefined}
           data-testid="refetch-receipt-button"
         >
           {isVerified ? <QrCodeIcon className={styles.ctaIcon} /> : <ReplayIcon className={styles.ctaIcon} />}

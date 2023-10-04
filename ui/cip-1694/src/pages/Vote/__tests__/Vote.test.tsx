@@ -155,9 +155,9 @@ describe('For ongoing event:', () => {
     );
 
     await waitFor(async () => {
-      const votePage = await screen.queryByTestId('vote-page');
+      const votePage = screen.queryByTestId('vote-page');
 
-      const optionsLoaders = await within(votePage).queryAllByTestId('option-card-loader');
+      const optionsLoaders = within(votePage).queryAllByTestId('option-card-loader');
       expect(optionsLoaders.length).toEqual(3);
     });
   });
@@ -176,24 +176,24 @@ describe('For ongoing event:', () => {
     );
 
     await waitFor(async () => {
-      const votePage = await screen.queryByTestId('vote-page');
+      const votePage = screen.queryByTestId('vote-page');
       expect(votePage).not.toBeNull();
 
-      const eventTitle = await within(votePage).queryByTestId('event-title');
+      const eventTitle = within(votePage).queryByTestId('event-title');
       expect(eventTitle).not.toBeNull();
       expect(eventTitle.textContent).toEqual('The Governance of Cardano');
 
-      const eventTime = await within(votePage).queryByTestId('event-time');
+      const eventTime = within(votePage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
       expect(eventTime.textContent).toEqual(
         `Voting closes: ${formatUTCDate(eventMock_active.eventEndDate.toString())}`
       );
 
-      const eventDescription = await within(votePage).queryByTestId('event-description');
+      const eventDescription = within(votePage).queryByTestId('event-description');
       expect(eventDescription).not.toBeNull();
       expect(eventDescription.textContent).toEqual('Do you like pineapple pizza?');
 
-      const options = await within(votePage).queryAllByTestId('option-card');
+      const options = within(votePage).queryAllByTestId('option-card');
       expect(options.length).toEqual(eventMock_active.categories[0].proposals.length);
       for (const option in options) {
         expect(options[option].textContent).toEqual(
@@ -201,7 +201,7 @@ describe('For ongoing event:', () => {
         );
       }
 
-      const cta = await within(votePage).queryByTestId('proposal-connect-button');
+      const cta = within(votePage).queryByTestId('proposal-connect-button');
       expect(cta).not.toBeNull();
       expect(cta.textContent).toEqual('Connect wallet to vote');
     });
@@ -220,8 +220,8 @@ describe('For ongoing event:', () => {
     );
 
     await waitFor(async () => {
-      const votePage = await screen.queryByTestId('vote-page');
-      const cta = await within(votePage).queryByTestId('proposal-connect-button');
+      const votePage = screen.queryByTestId('vote-page');
+      const cta = within(votePage).queryByTestId('proposal-connect-button');
 
       expect(store.getState().user.isConnectWalletModalVisible).toBeFalsy();
       fireEvent.click(cta);
@@ -242,8 +242,8 @@ describe('For ongoing event:', () => {
     );
 
     await waitFor(async () => {
-      const votePage = await screen.queryByTestId('vote-page');
-      const options = await within(votePage).queryAllByTestId('option-card');
+      const votePage = screen.queryByTestId('vote-page');
+      const options = within(votePage).queryAllByTestId('option-card');
 
       expect(store.getState().user.isConnectWalletModalVisible).toBeFalsy();
       fireEvent.click(options[0]);
@@ -265,24 +265,24 @@ describe('For ongoing event:', () => {
     );
 
     await waitFor(async () => {
-      const votePage = await screen.queryByTestId('vote-page');
+      const votePage = screen.queryByTestId('vote-page');
       expect(votePage).not.toBeNull();
 
-      const eventTitle = await within(votePage).queryByTestId('event-title');
+      const eventTitle = within(votePage).queryByTestId('event-title');
       expect(eventTitle).not.toBeNull();
       expect(eventTitle.textContent).toEqual('The Governance of Cardano');
 
-      const eventTime = await within(votePage).queryByTestId('event-time');
+      const eventTime = within(votePage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
       expect(eventTime.textContent).toEqual(
         `Voting closes: ${formatUTCDate(eventMock_active.eventEndDate.toString())}`
       );
 
-      const eventDescription = await within(votePage).queryByTestId('event-description');
+      const eventDescription = within(votePage).queryByTestId('event-description');
       expect(eventDescription).not.toBeNull();
       expect(eventDescription.textContent).toEqual('Do you like pineapple pizza?');
 
-      const options = await within(votePage).queryAllByTestId('option-card');
+      const options = within(votePage).queryAllByTestId('option-card');
       expect(options.length).toEqual(eventMock_active.categories[0].proposals.length);
       for (const option in options) {
         expect(options[option].textContent).toEqual(
@@ -290,7 +290,7 @@ describe('For ongoing event:', () => {
         );
       }
 
-      const cta = await within(votePage).queryByTestId('proposal-submit-button');
+      const cta = within(votePage).queryByTestId('proposal-submit-button');
       expect(cta).not.toBeNull();
       expect(cta.textContent).toEqual('Submit your vote');
     });
@@ -307,8 +307,8 @@ describe('For ongoing event:', () => {
     );
 
     await waitFor(async () => {
-      const votePage = await screen.queryByTestId('vote-page');
-      const cta = await within(votePage).queryByTestId('proposal-submit-button');
+      const votePage = screen.queryByTestId('vote-page');
+      const cta = within(votePage).queryByTestId('proposal-submit-button');
 
       expect(cta.closest('button')).toBeDisabled();
 
@@ -681,11 +681,11 @@ describe('For ongoing event:', () => {
         )
       );
 
-      const cta = await within(votePage).queryByTestId('show-receipt-button');
+      const cta = within(votePage).queryByTestId('show-receipt-button');
       expect(cta).not.toBeNull();
       expect(cta.textContent).toEqual('Vote receipt');
 
-      expect(await screen.queryByTestId('confirm-with-signature-modal')).toBeNull();
+      expect(screen.queryByTestId('confirm-with-signature-modal')).toBeNull();
       expect(submitLoginMock).toBeCalledWith(canonicalVoteInput);
       expect(mockSaveUserInSession).toBeCalledWith(userInSessionMock);
     });
@@ -748,11 +748,11 @@ describe('For ongoing event:', () => {
         )
       );
 
-      const cta = await within(votePage).queryByTestId('show-receipt-button');
+      const cta = within(votePage).queryByTestId('show-receipt-button');
       expect(cta).not.toBeNull();
       expect(cta.textContent).toEqual('Vote receipt');
 
-      expect(await screen.queryByTestId('confirm-with-signature-modal')).toBeNull();
+      expect(screen.queryByTestId('confirm-with-signature-modal')).toBeNull();
     });
   });
 
@@ -898,19 +898,19 @@ describe('For ongoing event:', () => {
       fireEvent.click(cta);
     });
 
-    const eventTitle = await within(votePage).queryByTestId('event-title');
+    const eventTitle = within(votePage).queryByTestId('event-title');
     expect(eventTitle).not.toBeNull();
     expect(eventTitle.textContent).toEqual('The Governance of Cardano');
 
-    const eventTime = await within(votePage).queryByTestId('event-time');
+    const eventTime = within(votePage).queryByTestId('event-time');
     expect(eventTime).not.toBeNull();
     expect(eventTime.textContent).toEqual(`Voting closes: ${formatUTCDate(eventMock_active.eventEndDate.toString())}`);
 
-    const eventDescription = await within(votePage).queryByTestId('event-description');
+    const eventDescription = within(votePage).queryByTestId('event-description');
     expect(eventDescription).not.toBeNull();
     expect(eventDescription.textContent).toEqual('Do you like apples?');
 
-    const options = await within(votePage).queryAllByTestId('option-card');
+    const options = within(votePage).queryAllByTestId('option-card');
     expect(options.length).toEqual(eventMock_active.categories[1].proposals.length);
     for (const option in options) {
       expect(options[option].textContent).toEqual(
@@ -1007,9 +1007,9 @@ describe('For ongoing event:', () => {
       );
     });
 
-    const votePage = await screen.queryByTestId('vote-page');
+    const votePage = screen.queryByTestId('vote-page');
     expect(screen.queryByTestId('vote-receipt')).not.toBeInTheDocument();
-    const cta = await within(votePage).queryByTestId('show-receipt-button');
+    const cta = within(votePage).queryByTestId('show-receipt-button');
     await act(async () => fireEvent.click(cta));
 
     const receipt = await screen.findByTestId('vote-receipt');
@@ -1026,6 +1026,55 @@ describe('For ongoing event:', () => {
         icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
       />
     );
+  });
+
+  test('should handle refetch receipt functionality', async () => {
+    const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
+    mockGetVoteReceipt.mockReset();
+    mockGetVoteReceipt.mockReturnValue(VoteReceiptMock_Full_MediumAssurance);
+    mockUseCardano.mockReset();
+    mockUseCardano.mockReturnValue({
+      ...useCardanoMock,
+      signMessage: mockSignMessage,
+    });
+    mockGetSignedMessagePromise.mockReset();
+    mockGetSignedMessagePromise.mockImplementation(
+      (signMessage: (message: string) => string) => async (message: string) => await signMessage(message)
+    );
+    mockGetVotingPower.mockReset();
+    mockGetVotingPower.mockResolvedValue(accountDataMock);
+
+    mockGetUserInSession.mockReset();
+    mockGetUserInSession.mockReturnValue({ accessToken: true });
+    mockTokenIsExpired.mockReset();
+    mockTokenIsExpired.mockReturnValue(false);
+
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
+    await act(async () => {
+      renderWithProviders(
+        <CustomRouter history={history}>
+          <VotePage />
+        </CustomRouter>,
+        {
+          preloadedState: {
+            user: {
+              event: eventMock_active,
+              tip: chainTipMock,
+            } as UserState,
+          },
+        }
+      );
+    });
+
+    const votePage = screen.queryByTestId('vote-page');
+    expect(screen.queryByTestId('vote-receipt')).not.toBeInTheDocument();
+    const cta = within(votePage).queryByTestId('show-receipt-button');
+    await act(async () => fireEvent.click(cta));
+
+    const receipt = await screen.findByTestId('vote-receipt');
+
+    await act(async () => fireEvent.click(within(receipt).queryByTestId('refetch-receipt-button')));
+    expect(mockToast).toBeCalledWith(<Toast message="Receipt has been successfully refreshed" />);
   });
 });
 
@@ -1056,14 +1105,14 @@ describe("For the event that hasn't started yet", () => {
     );
 
     await waitFor(async () => {
-      const votePage = await screen.queryByTestId('vote-page');
+      const votePage = screen.queryByTestId('vote-page');
       expect(votePage).not.toBeNull();
 
-      const eventTitle = await within(votePage).queryByTestId('event-title');
+      const eventTitle = within(votePage).queryByTestId('event-title');
       expect(eventTitle).not.toBeNull();
       expect(eventTitle.textContent).toEqual('The Governance of Cardano');
 
-      const eventTime = await within(votePage).queryByTestId('event-time');
+      const eventTime = within(votePage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
       expect(eventTime.textContent).toEqual(
         `Vote from: ${formatUTCDate(eventMock_notStarted.eventStartDate.toString())} - ${formatUTCDate(
@@ -1071,11 +1120,11 @@ describe("For the event that hasn't started yet", () => {
         )}`
       );
 
-      const eventDescription = await within(votePage).queryByTestId('event-description');
+      const eventDescription = within(votePage).queryByTestId('event-description');
       expect(eventDescription).not.toBeNull();
       expect(eventDescription.textContent).toEqual('Do you like pineapple pizza?');
 
-      const options = await within(votePage).queryAllByTestId('option-card');
+      const options = within(votePage).queryAllByTestId('option-card');
       expect(options.length).toEqual(eventMock_notStarted.categories[0].proposals.length);
       for (const option in options) {
         expect(options[option].textContent).toEqual(
@@ -1084,7 +1133,7 @@ describe("For the event that hasn't started yet", () => {
         expect(options[option].closest('button')).toHaveAttribute('disabled');
       }
 
-      const cta = await within(votePage).queryByTestId('event-hasnt-started-submit-button');
+      const cta = within(votePage).queryByTestId('event-hasnt-started-submit-button');
       expect(cta).not.toBeNull();
       expect(cta.textContent).toEqual(
         `Submit your vote from ${getDateAndMonth(eventMock_notStarted.eventStartDate?.toString())}`
@@ -1120,24 +1169,24 @@ describe('For the event that has already finished', () => {
     );
 
     await waitFor(async () => {
-      const votePage = await screen.queryByTestId('vote-page');
+      const votePage = screen.queryByTestId('vote-page');
       expect(votePage).not.toBeNull();
 
-      const eventTitle = await within(votePage).queryByTestId('event-title');
+      const eventTitle = within(votePage).queryByTestId('event-title');
       expect(eventTitle).not.toBeNull();
       expect(eventTitle.textContent).toEqual('The Governance of Cardano');
 
-      const eventTime = await within(votePage).queryByTestId('event-time');
+      const eventTime = within(votePage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
       expect(eventTime.textContent).toEqual(
         `The vote closed on ${formatUTCDate(eventMock_finished.eventEndDate.toString())}`
       );
 
-      const eventDescription = await within(votePage).queryByTestId('event-description');
+      const eventDescription = within(votePage).queryByTestId('event-description');
       expect(eventDescription).not.toBeNull();
       expect(eventDescription.textContent).toEqual('Do you like pineapple pizza?');
 
-      const options = await within(votePage).queryAllByTestId('option-card');
+      const options = within(votePage).queryAllByTestId('option-card');
       expect(options.length).toEqual(eventMock_finished.categories[0].proposals.length);
       for (const option in options) {
         expect(options[option].textContent).toEqual(
@@ -1145,7 +1194,7 @@ describe('For the event that has already finished', () => {
         );
       }
 
-      const cta = await within(votePage).queryByTestId('proposal-connect-button');
+      const cta = within(votePage).queryByTestId('proposal-connect-button');
       expect(cta).not.toBeNull();
       expect(cta.textContent).toEqual('Connect wallet to see your vote');
     });
@@ -1164,8 +1213,8 @@ describe('For the event that has already finished', () => {
     );
 
     await waitFor(async () => {
-      const votePage = await screen.queryByTestId('vote-page');
-      const cta = await within(votePage).queryByTestId('proposal-connect-button');
+      const votePage = screen.queryByTestId('vote-page');
+      const cta = within(votePage).queryByTestId('proposal-connect-button');
 
       expect(store.getState().user.isConnectWalletModalVisible).toBeFalsy();
       fireEvent.click(cta);
@@ -1184,7 +1233,7 @@ describe('For the event that has already finished', () => {
     );
 
     const votePage = await screen.findByTestId('vote-page');
-    const options = await within(votePage).queryAllByTestId('option-card');
+    const options = within(votePage).queryAllByTestId('option-card');
 
     expect(store.getState().user.isConnectWalletModalVisible).toBeFalsy();
     fireEvent.click(options[0]);
@@ -1229,24 +1278,22 @@ describe('For the event that has already finished', () => {
       );
     });
 
-    const votePage = await screen.queryByTestId('vote-page');
+    const votePage = screen.queryByTestId('vote-page');
 
     expect(screen.queryByTestId('vote-receipt')).not.toBeInTheDocument();
-    const cta = await within(votePage).queryByTestId('show-receipt-button');
+    const cta = within(votePage).queryByTestId('show-receipt-button');
     await act(async () => {
       fireEvent.click(cta);
     });
 
     expect(screen.queryByTestId('vote-receipt')).toBeInTheDocument();
-    const closeVoteReceipt = await within(screen.queryByTestId('vote-receipt')).queryByTestId(
-      'vote-receipt-close-button'
-    );
+    const closeVoteReceipt = within(screen.queryByTestId('vote-receipt')).queryByTestId('vote-receipt-close-button');
     await act(async () => {
       fireEvent.click(closeVoteReceipt);
     });
     await waitForElementToBeRemoved(() => screen.queryByTestId('vote-receipt'));
 
-    const cta2 = await within(votePage).queryByTestId('view-results-button');
+    const cta2 = within(votePage).queryByTestId('view-results-button');
     await act(async () => {
       fireEvent.click(cta2);
     });

@@ -16,6 +16,7 @@ import { setChainTipData } from 'common/store/userSlice';
 import { Toast } from 'components/common/Toast/Toast';
 import { ResultsCommingSoonModal } from 'pages/Leaderboard/components/ResultsCommingSoonModal/ResultsCommingSoonModal';
 import { formatUTCDate } from 'pages/Leaderboard/utils';
+import { ChainTip } from 'types/voting-ledger-follower-types';
 import { ConnectWalletButton } from './ConnectWalletButton';
 import styles from './HeaderActions.module.scss';
 
@@ -35,9 +36,11 @@ export const HeaderActions = ({ isMobileMenu = false, onClick, showNavigationIte
   const tip = useSelector((state: RootState) => state.user.tip);
   const [isCommingSoonModalVisible, setIsCommingSoonModalVisible] = useState<boolean>(false);
 
-  const init = useCallback(async () => {
+  const fetchChainTip = useCallback(async () => {
+    let chainTip: ChainTip = null;
     try {
-      dispatch(setChainTipData({ tip: await voteService.getChainTip() }));
+      chainTip = await voteService.getChainTip();
+      dispatch(setChainTipData({ tip: chainTip }));
     } catch (error) {
       toast(
         <Toast
@@ -47,13 +50,14 @@ export const HeaderActions = ({ isMobileMenu = false, onClick, showNavigationIte
         />
       );
     }
+    return chainTip;
   }, [dispatch]);
 
   useEffect(() => {
     if (isConnected) {
-      init();
+      fetchChainTip();
     }
-  }, [init, isConnected]);
+  }, [fetchChainTip, isConnected]);
 
   const goToLeaderboard = () => {
     navigate(ROUTES.LEADERBOARD);
@@ -61,13 +65,14 @@ export const HeaderActions = ({ isMobileMenu = false, onClick, showNavigationIte
     onClick?.();
   };
 
-  const onGoToLeaderboard = () => {
-    if (event.proposalsRevealEpoch > tip.epochNo) {
+  const onGoToLeaderboard = useCallback(async () => {
+    const chainTip = await fetchChainTip();
+    if (event.proposalsRevealEpoch > chainTip.epochNo) {
       setIsCommingSoonModalVisible(true);
     } else {
       navigate(ROUTES.LEADERBOARD);
     }
-  };
+  }, [event?.proposalsRevealEpoch, fetchChainTip, navigate]);
 
   return (
     <>
@@ -111,7 +116,7 @@ export const HeaderActions = ({ isMobileMenu = false, onClick, showNavigationIte
                   [styles.activeRoute]: !!matchPath(location?.pathname, ROUTES.LEADERBOARD),
                 })}
                 startIcon={<LeaderboardIcon />}
-                disabled={!event || !tip?.epochNo}
+                disabled={!event || !tip}
               >
                 Leaderboard
               </Button>

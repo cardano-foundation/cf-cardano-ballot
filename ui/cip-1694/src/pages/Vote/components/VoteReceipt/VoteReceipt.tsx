@@ -23,7 +23,7 @@ import styles from './VoteReceipt.module.scss';
 
 type VoteReceiptProps = {
   setOpen: () => void;
-  fetchReceipt: (props: { cb?: () => void; refetch?: boolean }) => void;
+  fetchReceipt: () => void;
   receipt: VoteReceiptType;
 };
 

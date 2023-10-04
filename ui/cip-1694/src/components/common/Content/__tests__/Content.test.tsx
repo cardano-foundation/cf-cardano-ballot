@@ -1,6 +1,10 @@
 /* eslint-disable no-var */
 var mockConnectWalletList = jest.fn();
 var mockToast = jest.fn();
+var getItemMock = jest.fn();
+var setItemMock = jest.fn();
+var removeItemMock = jest.fn();
+var clearMock = jest.fn();
 var mockSupportedWallets = ['Wallet1', 'Wallet2'];
 import React from 'react';
 import '@testing-library/jest-dom';
@@ -11,9 +15,21 @@ import BlockIcon from '@mui/icons-material/Block';
 import { UserState } from 'common/store/types';
 import { ROUTES } from 'common/routes';
 import { Toast } from 'components/common/Toast/Toast';
+import { USER_SESSION_KEY } from 'common/utils/session';
 import { Content } from '../Content';
 import { renderWithProviders } from '../../../../test/mockProviders';
 import { CustomRouter } from '../../../../test/CustomRouter';
+
+const sessionStorageMock = (() => ({
+  getItem: getItemMock,
+  setItem: setItemMock,
+  removeItem: removeItemMock,
+  clear: clearMock,
+}))();
+
+Object.defineProperty(window, 'sessionStorage', {
+  value: sessionStorageMock,
+});
 
 jest.mock('swiper/react', () => ({
   Swiper: ({ children }: { children: React.ReactElement }) => <div data-testid="Swiper-testId">{children}</div>,
@@ -117,5 +133,7 @@ describe('ConnectWalletModal', () => {
 
     expect(mockToast).toBeCalledWith(<Toast message="Wallet Connected!" />);
     expect(store.getState().user.isConnectWalletModalVisible).toBeFalsy();
+    expect(removeItemMock).toBeCalledWith(USER_SESSION_KEY);
+    expect(clearMock).toBeCalled();
   });
 });

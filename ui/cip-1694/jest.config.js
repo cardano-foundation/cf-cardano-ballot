@@ -7,7 +7,7 @@ module.exports = {
       branches: 84,
       functions: 92,
       lines: 92,
-      statements: 92,
+      statements: 93,
     },
   },
   roots: ['<rootDir>/src'],

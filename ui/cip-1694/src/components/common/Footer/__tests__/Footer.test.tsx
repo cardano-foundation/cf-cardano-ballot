@@ -26,10 +26,10 @@ describe('Footer', () => {
     render(<Footer />);
 
     await waitFor(async () => {
-      const footer = await screen.queryByTestId('footer');
+      const footer = screen.queryByTestId('footer');
       expect(footer).not.toBeNull();
 
-      const copyright = await within(footer).queryByTestId('copyright');
+      const copyright = within(footer).queryByTestId('copyright');
       expect(copyright).not.toBeNull();
       expect(copyright.textContent).toEqual(
         `© ${new Date().getFullYear()} CIP-1694 Ratification. All rights reserved.`
@@ -41,10 +41,10 @@ describe('Footer', () => {
     render(<Footer />);
 
     await waitFor(async () => {
-      const footer = await screen.queryByTestId('footer');
+      const footer = screen.queryByTestId('footer');
       expect(footer).not.toBeNull();
 
-      const tandc = await within(footer).queryByTestId('t-and-c');
+      const tandc = within(footer).queryByTestId('t-and-c');
       expect(tandc).not.toBeNull();
       expect(tandc.textContent).toEqual('Terms & Conditions');
       expect(tandc.attributes.getNamedItem('href').value).toEqual('pdf');
@@ -56,10 +56,10 @@ describe('Footer', () => {
     render(<Footer />);
 
     await waitFor(async () => {
-      const footer = await screen.queryByTestId('footer');
+      const footer = screen.queryByTestId('footer');
       expect(footer).not.toBeNull();
 
-      const privacy = await within(footer).queryByTestId('privacy');
+      const privacy = within(footer).queryByTestId('privacy');
       expect(privacy).not.toBeNull();
       expect(privacy.textContent).toEqual('Privacy');
       expect(privacy.attributes.getNamedItem('href').value).toEqual('pdf');
@@ -71,10 +71,10 @@ describe('Footer', () => {
     render(<Footer />);
 
     await waitFor(async () => {
-      const footer = await screen.queryByTestId('footer');
+      const footer = screen.queryByTestId('footer');
       expect(footer).not.toBeNull();
 
-      const discord = await within(footer).queryByTestId('discord');
+      const discord = within(footer).queryByTestId('discord');
       expect(discord).not.toBeNull();
       expect(discord.children.length).toEqual(1);
       expect(discord.attributes.getNamedItem('href').value).toEqual(discordMock);

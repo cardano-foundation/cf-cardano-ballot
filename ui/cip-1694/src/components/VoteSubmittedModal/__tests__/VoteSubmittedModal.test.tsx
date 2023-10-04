@@ -19,18 +19,18 @@ describe('VoteSubmittedModal:', () => {
     render(<VoteSubmittedModal {...props} />);
 
     await waitFor(async () => {
-      const modal = await screen.queryByTestId('vote-submitted-modal');
+      const modal = screen.queryByTestId('vote-submitted-modal');
       expect(modal).not.toBeNull();
 
-      const title = await within(modal).queryByTestId('vote-submitted-title');
+      const title = within(modal).queryByTestId('vote-submitted-title');
       expect(title).not.toBeNull();
       expect(title.textContent).toEqual(props.title);
 
-      const description = await within(modal).queryByTestId('vote-submitted-description');
+      const description = within(modal).queryByTestId('vote-submitted-description');
       expect(description).not.toBeNull();
       expect(description.textContent).toEqual(props.description);
 
-      const cta = await within(modal).queryByTestId('vote-submitted-cta');
+      const cta = within(modal).queryByTestId('vote-submitted-cta');
       expect(cta).not.toBeNull();
 
       fireEvent.click(cta);
@@ -46,7 +46,7 @@ describe('VoteSubmittedModal:', () => {
     );
 
     await waitFor(async () => {
-      const modal = await screen.queryByTestId('vote-submitted-modal');
+      const modal = screen.queryByTestId('vote-submitted-modal');
       expect(modal).toBeNull();
     });
   });

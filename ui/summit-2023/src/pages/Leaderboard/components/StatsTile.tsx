@@ -4,7 +4,7 @@ import styles from './StatsTile.module.scss';
 
 type StatsTilePorps = {
   title: string | React.ReactElement;
-  summary: string | React.ReactElement;
+  summary?: string | React.ReactElement;
   children: React.ReactNode;
   dataTestId: string;
 };

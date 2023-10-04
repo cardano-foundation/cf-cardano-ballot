@@ -1,15 +1,15 @@
 import React, { useMemo, useRef, useState } from 'react';
 
 import {
-    Checkbox,
-    FormControlLabel,
-    Grid,
-    List,
-    ListItem,
-    ListItemAvatar,
-    Typography,
-    useMediaQuery,
-    useTheme
+  Checkbox,
+  FormControlLabel,
+  Grid,
+  List,
+  ListItem,
+  ListItemAvatar,
+  Typography,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import CallIcon from '@mui/icons-material/Call';
 import { MuiTelInput, matchIsValidTel, MuiTelInputCountry } from 'mui-tel-input';
@@ -38,8 +38,8 @@ type VerifyWalletProps = {
 };
 const VerifyWallet = (props: VerifyWalletProps) => {
   const { onVerify, onError, method } = props;
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [verifyOption, setVerifyOption] = useState<string | undefined>(method || undefined);
   const [defaultCountryCode] = useState<MuiTelInputCountry | undefined>('ES');
   const [phone, setPhone] = useState<string>('');
@@ -244,19 +244,19 @@ const VerifyWallet = (props: VerifyWalletProps) => {
                 }
               }}
               style={{
-                  width: isMobile ? '43px' : '53px',
-                  height: isMobile ? '49px' : '58px',
-                  flexShrink: 0,
-                  borderRadius: '8px',
-                  border: '1px solid #6c6f89',
-                  background: '#fff',
-                  textAlign: 'center',
-                  outline: 'none',
-                  color: '#434656',
-                  fontSize: '18px',
-                  fontStyle: 'normal',
-                  fontWeight: '600',
-                  lineHeight: '22px'
+                width: isMobile ? '43px' : '53px',
+                height: isMobile ? '49px' : '58px',
+                flexShrink: 0,
+                borderRadius: '8px',
+                border: '1px solid #6c6f89',
+                background: '#fff',
+                textAlign: 'center',
+                outline: 'none',
+                color: '#434656',
+                fontSize: '18px',
+                fontStyle: 'normal',
+                fontWeight: '600',
+                lineHeight: '22px',
               }}
             />
           ))}

@@ -19,7 +19,7 @@ const ErrorMessage = (props: ErrorMessageProps) => {
 
       return () => clearTimeout(timer);
     } else {
-      setShowError(false)
+      setShowError(false);
     }
   }, [show]);
 

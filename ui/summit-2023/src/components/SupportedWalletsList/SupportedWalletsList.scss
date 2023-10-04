@@ -1,0 +1,47 @@
+@import './src/common/styles/colors';
+
+.closeButton.MuiButtonBase-root {
+  background-color: var(--color-ultra-light-blue);
+}
+
+.closeButton.MuiButtonBase-root:hover {
+  background-color: var(--color-ultra-light-blue);
+  opacity: 0.9;
+}
+
+.connect-wallet-modal-title {
+  color: var(--color-ultra-dark-blue);
+  font-size: 28px !important;
+  font-style: normal;
+  font-weight: 600 !important;
+  line-height: normal;
+  float: left;
+}
+
+.connect-wallet-modal-description {
+  color: var(--color-medium-grey);
+  font-size: 16px !important;
+  font-style: normal;
+  font-weight: 400 !important;
+  line-height: 22px;
+}
+.walletItem {
+  border-radius: 8px;
+  border: 1px solid var(--color-light-blue);
+  background: var(--color-ultra-light-grey);
+  margin-top: 12px;
+  padding: 16px !important;
+  cursor: pointer;
+}
+
+.walletLabel {
+  color: var(--color-medium-grey);
+  font-size: 16px !important;
+  font-style: normal;
+  font-weight: 600 !important;
+  line-height: 22px;
+}
+
+.walletName {
+  text-transform: capitalize;
+}

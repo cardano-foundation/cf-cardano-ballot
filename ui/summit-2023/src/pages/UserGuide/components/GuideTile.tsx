@@ -58,7 +58,7 @@ export const GuideTile = ({ width, height, media, graphic, stepNumber, stepTitle
             {link && (
               <NavLink
                 onClick={() => {
-                  eventBus.publish('openConnectWalletModal');
+                  eventBus.publish('openSupportedWalletModal');
                 }}
                 to={''}
                 className={styles.link}

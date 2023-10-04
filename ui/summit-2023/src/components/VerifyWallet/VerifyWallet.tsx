@@ -1,6 +1,17 @@
 import React, { useMemo, useRef, useState } from 'react';
 
-import { Checkbox, FormControlLabel, Grid, List, ListItem, ListItemAvatar, Typography } from '@mui/material';
+import {
+  Checkbox,
+  FormControlLabel,
+  Grid,
+  List,
+  ListItem,
+  ListItemAvatar,
+  Typography,
+  useMediaQuery,
+  useTheme,
+    Box
+} from '@mui/material';
 import CallIcon from '@mui/icons-material/Call';
 import { MuiTelInput, matchIsValidTel, MuiTelInputCountry } from 'mui-tel-input';
 import './VerifyWallet.scss';
@@ -17,7 +28,7 @@ import { CustomButton } from '../common/Button/CustomButton';
 import { getSignedMessagePromise, openNewTab, resolveCardanoNetwork } from '../../utils/utils';
 import { SignedWeb3Request } from '../../types/voting-app-types';
 import { parseError } from 'common/constants/errors';
-import { ErrorMessage } from '../common/ErrorMessage/ErrorMessage';
+import {ErrorMessage} from '../common/ErrorMessage/ErrorMessage'
 
 // TODO: env.
 const excludedCountries: MuiTelInputCountry[] | undefined = [];
@@ -29,7 +40,8 @@ type VerifyWalletProps = {
 };
 const VerifyWallet = (props: VerifyWalletProps) => {
   const { onVerify, onError, method } = props;
-
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [verifyOption, setVerifyOption] = useState<string | undefined>(method || undefined);
   const [defaultCountryCode] = useState<MuiTelInputCountry | undefined>('ES');
   const [phone, setPhone] = useState<string>('');
@@ -61,6 +73,7 @@ const VerifyWallet = (props: VerifyWalletProps) => {
     function clear() {
       setVerifyOption(undefined);
       setPhoneCodeIsSent(false);
+        setPhoneCodeShowError(false);
       setPhone('');
       setCodes(Array(6).fill(''));
     }
@@ -114,14 +127,14 @@ const VerifyWallet = (props: VerifyWalletProps) => {
           reset();
           setPhoneCodeIsBeenConfirming(false);
         } else {
-          //onError('SMS code not valid');
-          setPhoneCodeShowError(true);
+          // onError('SMS code not valid');
+            setPhoneCodeShowError(true)
           setPhoneCodeIsBeenConfirming(false);
         }
       })
       .catch(() => {
-        //onError('SMS code verification failed');
-        setPhoneCodeShowError(true);
+        // onError('SMS code verification failed');
+          setPhoneCodeShowError(true)
         setPhoneCodeIsBeenConfirming(false);
       });
   };
@@ -238,16 +251,32 @@ const VerifyWallet = (props: VerifyWalletProps) => {
                   }
                 }
               }}
-              className="confirm-phone-code-input"
+              style={{
+                width: isMobile ? '43px' : '53px',
+                height: isMobile ? '49px' : '58px',
+                flexShrink: 0,
+                borderRadius: '8px',
+                border: '1px solid #6c6f89',
+                background: '#fff',
+                textAlign: 'center',
+                outline: 'none',
+                color: '#434656',
+                fontSize: '18px',
+                fontStyle: 'normal',
+                fontWeight: '600',
+                lineHeight: '22px',
+              }}
             />
           ))}
         </div>
-        <div style={{ height: '20px', marginTop: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <ErrorMessage
-            show={phoneCodeShowError}
-            message="Verification code didn’t match"
-          />
-        </div>
+          <Box className="container" sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              height: '16px',
+              marginTop: '4px'
+          }}>
+              <ErrorMessage show={phoneCodeShowError} message='SMS code not valid'/>
+          </Box>
         <Grid
           container
           spacing={2}
@@ -427,23 +456,14 @@ const VerifyWallet = (props: VerifyWalletProps) => {
           verification process.
         </Typography>
         <CustomButton
-          styles={
-            secret
-              ? {
-                  background: '#ACFCC5',
-                  color: '#03021F',
-                  paddingLeft: '20px',
-                  margin: '24px 0px',
-                }
-              : {
-                  background: '#6C6F89',
-                  color: '#F6F9FF !important',
-                  margin: '24px 0px',
-                }
-          }
+          styles={{
+            background: '#ACFCC5',
+            color: '#03021F',
+            margin: '24px 0px',
+          }}
           label="Sign and verify"
-          disabled={!secret}
           onClick={() => handleVerifyDiscord()}
+          disabled={!secret}
           fullWidth={true}
         />
         <CustomButton

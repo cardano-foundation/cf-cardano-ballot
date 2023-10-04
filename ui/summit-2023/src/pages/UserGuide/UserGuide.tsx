@@ -1,5 +1,5 @@
-import { Grid, Typography } from '@mui/material';
-import React from 'react';
+import { Grid, Typography, useMediaQuery, useTheme } from '@mui/material';
+import React, { useEffect, useState } from 'react';
 import { GuideTile } from './components/GuideTile';
 import styles from './UserGuide.module.scss';
 import { i18n } from 'i18n';
@@ -10,8 +10,26 @@ import { ReactComponent as StepThreeIcon } from '../../common/resources/images/s
 import { ReactComponent as StepFourIcon } from '../../common/resources/images/step4.svg';
 import { ReactComponent as StepFiveIcon } from '../../common/resources/images/step5.svg';
 import { ReactComponent as StepSixIcon } from '../../common/resources/images/step6.svg';
+import { eventBus } from '../../utils/EventBus';
+import Modal from '../../components/common/Modal/Modal';
+import SupportedWalletsList from '../../components/SupportedWalletsList/SupportedWalletsList';
 
 const UserGuide = () => {
+  const [openSupportedWalletsModal, setOpenSupportedWalletsModal] = useState<boolean>(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  useEffect(() => {
+    const openSupportedWalletModal = () => {
+      setOpenSupportedWalletsModal(true);
+    };
+    eventBus.subscribe('openSupportedWalletModal', openSupportedWalletModal);
+
+    return () => {
+      eventBus.unsubscribe('openSupportedWalletModal', openSupportedWalletModal);
+    };
+  }, []);
+
   return (
     <div
       data-testid="userguide-page"
@@ -279,6 +297,17 @@ const UserGuide = () => {
           />
         </Grid>
       </Grid>
+
+      <Modal
+        id="supported-wallet-modal"
+        isOpen={openSupportedWalletsModal}
+        name="supported-wallet-modal"
+        title="Supported Wallets"
+        onClose={() => setOpenSupportedWalletsModal(false)}
+        width={isMobile ? 'auto' : '400px'}
+      >
+        <SupportedWalletsList description="In order to vote, first you will need to connect your Wallet." />
+      </Modal>
     </div>
   );
 };

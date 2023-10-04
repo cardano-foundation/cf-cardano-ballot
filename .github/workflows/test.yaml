@@ -29,10 +29,9 @@ jobs:
           
       - name: Generate JaCoCo Badge
         uses: cicirello/jacoco-badge-generator@v2
-        working-directory: ./backend-services/${{ matrix.service }}
         with:
           generate-branches-badge: true
-          badges-directory: build/reports/jacoco/test/html/badges
+          badges-directory: ./backend-services/${{ matrix.service }}/build/reports/jacoco/test/html/badges
 
       - name: Log coverage percentage
         run: |

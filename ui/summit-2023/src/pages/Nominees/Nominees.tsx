@@ -1417,7 +1417,7 @@ const Nominees = () => {
             lineHeight: '22px',
           }}
         >
-          Please confirm your vote for ${votedNominee?.presentationName} [{selectedNomineeToVote?.id}]
+          Please confirm your vote for {votedNominee?.presentationName} [{selectedNomineeToVote?.id}]
         </Typography>
         <Box
           display="flex"

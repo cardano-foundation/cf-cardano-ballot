@@ -36,7 +36,7 @@ spec:
     - host: {{ $domain }}
       http:
         paths:
-{{ if .Values.ingress.disableActuatorEndpoint }}
+{{ if $.Values.ingress.disableActuatorEndpoint }}
           - path: /actuator
             pathType: Prefix
             backend:

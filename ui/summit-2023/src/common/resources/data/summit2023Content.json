@@ -82,7 +82,7 @@
           "id": "07d4a8b3-dbfc-412c-9931-a5252db9082d",
           "presentationName": "World Mobile",
           "urls": ["https://worldmobile.io/"],
-          "desc": "World Mobile is the world's first community-driven mobile network, harnessing blockchain technology to achieve global connectivity by 2030\u2014even in remote areas normally deemed expensive and challenging to serve. Their core values prioritize social, economic, and environmental sustainability, highlighted by their use of off-the-shelf equipment and renewable solar energy."
+          "desc": "World Mobile is the world's first community-driven mobile network, harnessing blockchain technology to achieve global connectivity by 2030 even in remote areas normally deemed expensive and challenging to serve. Their core values prioritize social, economic, and environmental sustainability, highlighted by their use of off-the-shelf equipment and renewable solar energy."
         }
       ]
     },
@@ -131,7 +131,7 @@
     },
     {
       "id": "BEST_DEFI_DEX",
-      "presentationName": "DeFi  DEX",
+      "presentationName": "DeFi / DEX",
       "desc": "Decentralized finance (DeFi) or decentralized exchange (DEX) platform offering superlative solutions.",
       "proposals": [
         {
@@ -156,7 +156,7 @@
           "id": "8cf20a27-8bc8-49f3-8133-ef76e899e1c1",
           "presentationName": "Optim",
           "urls": ["https://www.optim.finance/"],
-          "desc": "Optim Finance is a Cardano-based DeFi protocol that empowers users with innovative yield products like ada staking\u2014optimizing capital allocation and facilitating participation."
+          "desc": "Optim Finance is a Cardano-based DeFi protocol that empowers users with innovative yield products like ada staking optimizing capital allocation and facilitating participation."
         },
         {
           "id": "91871e20-f9aa-422f-9213-3722ac47c1c6",
@@ -310,7 +310,7 @@
           "id": "6e16cdae-7696-4c41-a5f2-de373a17f488",
           "presentationName": "ADA4Good [A4G]",
           "urls": ["https://www.ada4good.com/"],
-          "desc": "Run by Vahid, ADA4Good [A4G] rewards its delegators with World Mobile Tokens (WMT) and ada, while also donating 50% of margin fees to Save The Children. As a Mission Drive Stake Pool, [A4G] is part of a collective that donates a portion of block rewards to charitable causes\u2014using ada where accepted, or fiat currency."
+          "desc": "Run by Vahid, ADA4Good [A4G] rewards its delegators with World Mobile Tokens (WMT) and ada, while also donating 50% of margin fees to Save The Children. As a Mission Drive Stake Pool, [A4G] is part of a collective that donates a portion of block rewards to charitable causes using ada where accepted, or fiat currency."
         },
         {
           "id": "46ea36b8-15b6-4d31-8c29-946342595756",
@@ -328,7 +328,7 @@
           "id": "cfe477d2-e7eb-46a7-a8ee-f721da2de399",
           "presentationName": "GimbalPool [GMBL]",
           "urls": ["https://gimbalabs.com/"],
-          "desc": "[GMBL] Stake Pool represents the community behind Gimbalabs. Dedicated to empowering the Cardano ecosystem, Gimbalabs creates community spaces, establishes robust technical infrastructure, offers educational programs, and contributes open-source code\u2014all with the ambition of ensuring Cardano's transformative impact on the world. Their emphasis on education and collaboration shines through in their Plutus Project-Based Learning program, which onboards developers into the ecosystem."
+          "desc": "[GMBL] Stake Pool represents the community behind Gimbalabs. Dedicated to empowering the Cardano ecosystem, Gimbalabs creates community spaces, establishes robust technical infrastructure, offers educational programs, and contributes open-source code all with the ambition of ensuring Cardano's transformative impact on the world. Their emphasis on education and collaboration shines through in their Plutus Project-Based Learning program, which onboards developers into the ecosystem."
         },
         {
           "id": "6ee41116-b60c-41d2-974c-c3de31b71a83",

@@ -11,10 +11,7 @@ jobs:
     runs-on: self-hosted
     strategy:
       matrix:
-        service: ['user-verification-service', 'voting-app']
-    defaults:
-      run:
-        working-directory: ./backend-services/${{ matrix.service }}
+        service: ['user-verification-service', 'voting-app']        
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -27,11 +24,12 @@ jobs:
           cache: gradle
 
       - name: Run tests
-        working-directory: backend-services/${{ env.APP_NAME }}
+        working-directory: ./backend-services/${{ matrix.service }}
         run: ./gradlew test
           
       - name: Generate JaCoCo Badge
         uses: cicirello/jacoco-badge-generator@v2
+        working-directory: ./backend-services/${{ matrix.service }}
         with:
           generate-branches-badge: true
           badges-directory: build/reports/jacoco/test/html/badges
@@ -47,5 +45,5 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages
-          folder: build/reports/jacoco/test/html
+          folder: ./backend-services/${{ matrix.service }}/build/reports/jacoco/test/html
           target-folder: ${{ matrix.service }}/coverage-report/

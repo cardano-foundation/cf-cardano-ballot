@@ -111,10 +111,13 @@ function App() {
     const isVerifiedEventNotEnded = walletIsVerified && !eventCache.finished;
     const notVerifiedEventEnded = !walletIsVerified && eventCache.finished;
     const sessionExpired = !session || isExpired;
-    const notDiscordVerification =  !(action === 'verification' && secret.includes('|'));
+    const notDiscordVerification = !(action === 'verification' && secret.includes('|'));
 
-    const showLoginModal = termsAndConditionsChecked &&
-        isConnected && notDiscordVerification && ((isVerifiedEventNotEnded && sessionExpired) || notVerifiedEventEnded);
+    const showLoginModal =
+      termsAndConditionsChecked &&
+      isConnected &&
+      notDiscordVerification &&
+      ((isVerifiedEventNotEnded && sessionExpired) || notVerifiedEventEnded);
 
     if (showLoginModal) {
       eventBus.publish('openLoginModal', 'If you already voted, please login to see your votes.');

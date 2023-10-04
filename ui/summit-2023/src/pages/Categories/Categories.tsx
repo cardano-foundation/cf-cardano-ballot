@@ -101,7 +101,7 @@ const Categories = () => {
                     <Card
                       sx={{
                         height: 'auto',
-                        width: { xs: '370px', sm: '410px' },
+                        width: { xs: '90vw' },
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -457,7 +457,7 @@ const Categories = () => {
         </Grid>
       </Grid>
 
-      <Box marginY={10}>
+      <Box my={6}>
         {isMobile || listView === 'grid' ? renderResponsiveGrid(categories) : renderResponsiveList(categories)}
       </Box>
     </div>

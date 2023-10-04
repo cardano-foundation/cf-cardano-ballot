@@ -53,7 +53,7 @@ const Home: React.FC = () => {
             <div className="event-time">
               <Box className="custom-chip-mobile">
                 <EventIcon sx={{ mt: 1 }} />
-                The Vote opens on {formatUTCDate(eventCache?.eventStartDate?.toString())}, and closes on {formatUTCDate(eventCache?.eventEndDate?.toString())}.
+                Voting opens on {formatUTCDate(eventCache?.eventStartDate?.toString())}, and closes on {formatUTCDate(eventCache?.eventEndDate?.toString())}.
               </Box>
             </div>
           ) : (
@@ -65,7 +65,7 @@ const Home: React.FC = () => {
                 px: '10px',
               }}
               icon={<EventIcon />}
-              label={`The Vote opens on ${formatUTCDate(
+              label={`Voting opens on ${formatUTCDate(
                 eventCache?.eventStartDate?.toString()
               )}, and closes on ${formatUTCDate(eventCache?.eventEndDate?.toString())}.`}
               color="primary"
@@ -116,7 +116,7 @@ const Home: React.FC = () => {
                       border: '1px solid #daeefb'
                     }}
                     fullWidth={isMobile ? true : false}
-                    label={'How to vote'}
+                    label={'How to Vote'}
                   />
                 </NavLink>
               </Grid>

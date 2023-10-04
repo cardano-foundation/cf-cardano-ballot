@@ -14,9 +14,9 @@ cf-summit-2023-ui:
   values:
     frontendUrl: https://{{ .Values.domain }}
     votingAppServerUrl: https://api.voting.summit.cardano.org
-    votingLedgerFollowerAppServerUrl: https://follower-api.pro.cf-summit-2023-mainnet.eu-west-1.voting.summit.cardano.org
-    votingVerificationAppServerUrl: https://verification-api.pro.cf-summit-2023-mainnet.eu-west-1.voting.summit.cardano.org
-    userVerificationServerUrl: https://user-verification.pro.cf-summit-2023-mainnet.eu-west-1.voting.summit.cardano.org
+    votingLedgerFollowerAppServerUrl: https://follower-api.voting.summit.cardano.org
+    votingVerificationAppServerUrl: https://verification-api.voting.summit.cardano.org
+    userVerificationServerUrl: https://user-verification.voting.summit.cardano.org
     targetNetwork: MAIN
     eventId: CARDANO_SUMMIT_AWARDS_2023
     discordChannelUrl: https://discord.gg/FeCbA2wYF8

@@ -92,11 +92,7 @@ const Footer: React.FC = () => {
                 to={'https://status.voting.summit.cardano.org/'}
                 target="_blank"
               >
-                <span
-                  className={styles.link}
-                >
-                  Status
-                </span>
+                <span className={styles.link}>Status</span>
               </NavLink>
             </Typography>
           </Grid>
@@ -109,12 +105,12 @@ const Footer: React.FC = () => {
             <Tooltip
               title="Get support"
               placement="top"
-              >
-              <IconButton 
+            >
+              <IconButton
                 onClick={() => openNewTab(env.DISCORD_SUPPORT_CHANNEL_URL)}
                 sx={{ m: -1 }}
-                >
-                <ContactSupportOutlinedIcon/>
+              >
+                <ContactSupportOutlinedIcon />
               </IconButton>
             </Tooltip>
           </Grid>
@@ -127,10 +123,8 @@ const Footer: React.FC = () => {
             <Tooltip
               title="Join our Discord"
               placement="top"
-              >
-              <Typography
-                variant="body2"
-                >
+            >
+              <Typography variant="body2">
                 <img
                   onClick={() => openNewTab(env.DISCORD_CHANNEL_URL)}
                   src={discordLogo}

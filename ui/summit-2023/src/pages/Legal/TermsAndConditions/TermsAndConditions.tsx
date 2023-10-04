@@ -16,20 +16,20 @@ const TermsAndConditions = () => {
         {/* Terms and Conditions 1 */}
         <Typography
           variant="h2"
-            fontSize={{
-              xs: '28px',
-              md: '32px',
-              lg: '48px',
-            }}
-            lineHeight={{
-              xs: '28px',
-              md: '32px',
-            }}
-            sx={{
-              color: '#24262E',
-              fontStyle: 'normal',
-              fontWeight: '600',
-            }}
+          fontSize={{
+            xs: '28px',
+            md: '32px',
+            lg: '48px',
+          }}
+          lineHeight={{
+            xs: '28px',
+            md: '32px',
+          }}
+          sx={{
+            color: '#24262E',
+            fontStyle: 'normal',
+            fontWeight: '600',
+          }}
         >
           {termsData.title}
         </Typography>

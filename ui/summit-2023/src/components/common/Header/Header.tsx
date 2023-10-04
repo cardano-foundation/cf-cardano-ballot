@@ -53,9 +53,9 @@ const Header: React.FC = () => {
   const walletIsVerified = useSelector((state: RootState) => state.user.walletIsVerified);
 
   const { stakeAddress, isConnected, disconnect, connect, dAppConnect, meerkatAddress, initDappConnect, signMessage } =
-      useCardano({
-        limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
-      });
+    useCardano({
+      limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
+    });
 
   const [openAuthDialog, setOpenAuthDialog] = useState<boolean>(false);
   const [loginModal, toggleLoginModal] = useToggle(false);
@@ -172,8 +172,8 @@ const Header: React.FC = () => {
   useEffect(() => {
     if (dAppConnect.current === null) {
       const verifyConnection = (
-          walletInfo: IWalletInfo,
-          callback: (granted: boolean, autoconnect: boolean) => void
+        walletInfo: IWalletInfo,
+        callback: (granted: boolean, autoconnect: boolean) => void
       ) => {
         setPeerConnectWalletInfo(walletInfo);
         setStartPeerConnect(true);
@@ -191,15 +191,15 @@ const Header: React.FC = () => {
 
       const onApiInject = (name: string, address: string): void => {
         connect(
-            name,
-            () => {
-              dispatch(setConnectedPeerWallet({ peerWallet: true }));
-              showToast('Peer wallet connected successfully');
-            },
-            () => {
-              dispatch(setConnectedPeerWallet({ peerWallet: false }));
-              showToast('Peer wallet connected failed', 'error');
-            }
+          name,
+          () => {
+            dispatch(setConnectedPeerWallet({ peerWallet: true }));
+            showToast('Peer wallet connected successfully');
+          },
+          () => {
+            dispatch(setConnectedPeerWallet({ peerWallet: false }));
+            showToast('Peer wallet connected failed', 'error');
+          }
         );
       };
 
@@ -214,13 +214,13 @@ const Header: React.FC = () => {
       };
 
       initDappConnect(
-          'Cardano Summit 2023',
-          env.FRONTEND_URL,
-          verifyConnection,
-          onApiInject,
-          onApiEject,
-          [],
-          onP2PConnect
+        'Cardano Summit 2023',
+        env.FRONTEND_URL,
+        verifyConnection,
+        onApiInject,
+        onApiEject,
+        [],
+        onP2PConnect
       );
     }
   }, []);
@@ -281,27 +281,27 @@ const Header: React.FC = () => {
       });
       const requestVoteObject = await signMessagePromisified(canonicalVoteInput);
       submitLogin(requestVoteObject)
-          .then((response) => {
-            const session = {
-              accessToken: response.accessToken,
-              expiresAt: response.expiresAt,
-            };
-            saveUserInSession(session);
-            dispatch(setWalletIsLoggedIn({ isLoggedIn: true }));
-            eventBus.publish('showToast', 'Login successfully');
-            toggleLoginModal();
+        .then((response) => {
+          const session = {
+            accessToken: response.accessToken,
+            expiresAt: response.expiresAt,
+          };
+          saveUserInSession(session);
+          dispatch(setWalletIsLoggedIn({ isLoggedIn: true }));
+          eventBus.publish('showToast', 'Login successfully');
+          toggleLoginModal();
 
-            getUserVotes(session?.accessToken)
-                .then((userVotes) => {
-                  if (userVotes) {
-                    dispatch(setUserVotes({ userVotes }));
-                  }
-                })
-                .catch((e) => {
-                  eventBus.publish('showToast', parseError(e.message), 'error');
-                });
-          })
-          .catch((e) => eventBus.publish('showToast', 'Login failed', 'error'));
+          getUserVotes(session?.accessToken)
+            .then((userVotes) => {
+              if (userVotes) {
+                dispatch(setUserVotes({ userVotes }));
+              }
+            })
+            .catch((e) => {
+              eventBus.publish('showToast', parseError(e.message), 'error');
+            });
+        })
+        .catch((e) => eventBus.publish('showToast', 'Login failed', 'error'));
     } catch (e) {
       eventBus.publish('showToast', parseError(e.message), 'error');
     }
@@ -313,407 +313,407 @@ const Header: React.FC = () => {
   };
 
   const drawerItems = (
-      <List>
-        <ListItem style={{ justifyContent: 'space-between' }}>
-          <ConnectWalletButton
-              onOpenConnectWalletModal={handleConnectWallet}
-              onOpenVerifyWalletModal={handleOpenVerify}
-              onLogin={handleLogin}
-          />
-          <IconButton
-              className="close-button"
-              onClick={() => setDrawerOpen(false)}
-          >
-            <CloseIcon className="close-icon" />
-          </IconButton>
-        </ListItem>
-        <ListItem
-            onClick={() => setDrawerOpen(false)}
-            component={NavLink}
-            to="/categories"
-            className="list-item"
-            style={{ marginTop: '20px' }}
+    <List>
+      <ListItem style={{ justifyContent: 'space-between' }}>
+        <ConnectWalletButton
+          onOpenConnectWalletModal={handleConnectWallet}
+          onOpenVerifyWalletModal={handleOpenVerify}
+          onLogin={handleLogin}
+        />
+        <IconButton
+          className="close-button"
+          onClick={() => setDrawerOpen(false)}
         >
-          {i18n.t('header.menu.categories')}
-        </ListItem>
-        <ListItem
-            onClick={() => setDrawerOpen(false)}
-            component={NavLink}
-            to="/leaderboard"
-            className="list-item"
-        >
-          {i18n.t('header.menu.leaderboard')}
-        </ListItem>
-        <ListItem
-            onClick={() => setDrawerOpen(false)}
-            component={NavLink}
-            to="/user-guide"
-            className="list-item"
-        >
-          {i18n.t('header.menu.userGuide')}
-        </ListItem>
-      </List>
+          <CloseIcon className="close-icon" />
+        </IconButton>
+      </ListItem>
+      <ListItem
+        onClick={() => setDrawerOpen(false)}
+        component={NavLink}
+        to="/categories"
+        className="list-item"
+        style={{ marginTop: '20px' }}
+      >
+        {i18n.t('header.menu.categories')}
+      </ListItem>
+      <ListItem
+        onClick={() => setDrawerOpen(false)}
+        component={NavLink}
+        to="/leaderboard"
+        className="list-item"
+      >
+        {i18n.t('header.menu.leaderboard')}
+      </ListItem>
+      <ListItem
+        onClick={() => setDrawerOpen(false)}
+        component={NavLink}
+        to="/user-guide"
+        className="list-item"
+      >
+        {i18n.t('header.menu.userGuide')}
+      </ListItem>
+    </List>
   );
 
   return (
-      <>
-        <AppBar
-            position={'static'}
-            style={{ background: 'transparent', boxShadow: 'none', color: 'black' }}
-        >
-          <Toolbar sx={{ pl: 0, pt: 1 }}>
-            {isTablet ? (
-                <>
-                  <NavLink to="/">
-                    <img
-                        src="/static/cardano-ballot.png"
-                        alt="Cardano Ballot Logo"
-                        style={{ height: isMobile ? '35px' : '40px' }}
-                    />
-                  </NavLink>
-                  <div style={{ flexGrow: 1 }}></div>
-                  <IconButton
-                      edge="end"
-                      color="inherit"
-                      className="menuButton"
-                      onClick={() => setDrawerOpen(true)}
-                  >
-                    <MenuIcon className="close-icon" />
-                  </IconButton>
-                </>
-            ) : (
-                <Grid
-                    container
-                    alignItems="center"
-                    justifyContent="space-between"
+    <>
+      <AppBar
+        position={'static'}
+        style={{ background: 'transparent', boxShadow: 'none', color: 'black' }}
+      >
+        <Toolbar sx={{ pl: 0, pt: 1 }}>
+          {isTablet ? (
+            <>
+              <NavLink to="/">
+                <img
+                  src="/static/cardano-ballot.png"
+                  alt="Cardano Ballot Logo"
+                  style={{ height: isMobile ? '35px' : '40px' }}
+                />
+              </NavLink>
+              <div style={{ flexGrow: 1 }}></div>
+              <IconButton
+                edge="end"
+                color="inherit"
+                className="menuButton"
+                onClick={() => setDrawerOpen(true)}
+              >
+                <MenuIcon className="close-icon" />
+              </IconButton>
+            </>
+          ) : (
+            <Grid
+              container
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              <Grid item>
+                <NavLink to="/">
+                  <img
+                    src="/static/cardano-ballot.png"
+                    alt="Cardano Ballot Logo"
+                    style={{ flexGrow: 1, height: '40px' }}
+                  />
+                </NavLink>
+              </Grid>
+              <Grid item>
+                <NavLink
+                  to="/categories"
+                  className="nav-link"
                 >
-                  <Grid item>
-                    <NavLink to="/">
-                      <img
-                          src="/static/cardano-ballot.png"
-                          alt="Cardano Ballot Logo"
-                          style={{ flexGrow: 1, height: '40px' }}
-                      />
-                    </NavLink>
-                  </Grid>
-                  <Grid item>
-                    <NavLink
-                        to="/categories"
-                        className="nav-link"
-                    >
-                      {i18n.t('header.menu.categories')}
-                    </NavLink>
-                    <NavLink
-                        to="/leaderboard"
-                        className="nav-link"
-                    >
-                      {i18n.t('header.menu.leaderboard')}
-                    </NavLink>
-                    <NavLink
-                        to="/user-guide"
-                        className="nav-link"
-                    >
-                      {i18n.t('header.menu.userGuide')}
-                    </NavLink>
-                  </Grid>
-                  <Grid item>
-                    <ConnectWalletButton
-                        onOpenConnectWalletModal={handleConnectWallet}
-                        onOpenVerifyWalletModal={handleOpenVerify}
-                        onLogin={handleLogin}
-                    />
-                  </Grid>
-                </Grid>
-            )}
-          </Toolbar>
-        </AppBar>
+                  {i18n.t('header.menu.categories')}
+                </NavLink>
+                <NavLink
+                  to="/leaderboard"
+                  className="nav-link"
+                >
+                  {i18n.t('header.menu.leaderboard')}
+                </NavLink>
+                <NavLink
+                  to="/user-guide"
+                  className="nav-link"
+                >
+                  {i18n.t('header.menu.userGuide')}
+                </NavLink>
+              </Grid>
+              <Grid item>
+                <ConnectWalletButton
+                  onOpenConnectWalletModal={handleConnectWallet}
+                  onOpenVerifyWalletModal={handleOpenVerify}
+                  onLogin={handleLogin}
+                />
+              </Grid>
+            </Grid>
+          )}
+        </Toolbar>
+      </AppBar>
 
-        <Drawer
-            anchor="right"
-            open={drawerOpen}
-            onClose={() => setDrawerOpen(false)}
-            PaperProps={{
-              style: isMobile ? { width: '100%' } : {},
-            }}
-        >
-          {drawerItems}
-        </Drawer>
+      <Drawer
+        anchor="right"
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        PaperProps={{
+          style: isMobile ? { width: '100%' } : {},
+        }}
+      >
+        {drawerItems}
+      </Drawer>
 
-        <Modal
-            id="connect-wallet-modal"
-            isOpen={openAuthDialog}
-            name="connect-wallet-modal"
-            title="Connect Wallet"
-            onClose={handleCloseAuthDialog}
-            width={isMobile ? 'auto' : '400px'}
+      <Modal
+        id="connect-wallet-modal"
+        isOpen={openAuthDialog}
+        name="connect-wallet-modal"
+        title="Connect Wallet"
+        onClose={handleCloseAuthDialog}
+        width={isMobile ? 'auto' : '400px'}
+      >
+        <ConnectWalletList
+          description="In order to vote, first you will need to connect your Wallet."
+          onConnectWallet={onConnectWallet}
+          onConnectError={(error: Error) => onConnectWalletError(error)}
+          onOpenPeerConnect={() => handleOpenPeerConnect()}
+        />
+      </Modal>
+      <Modal
+        id="verify-wallet-modal"
+        isOpen={verifyModalIsOpen}
+        name="verify-wallet-modal"
+        title="Verify your wallet"
+        onClose={handleCloseVerify}
+        disableBackdropClick={true}
+        width={isMobile ? '100%' : '400px'}
+      >
+        <VerifyWallet
+          method={verifyDiscordModalIsReady ? 'discord' : undefined}
+          onVerify={() => onVerify()}
+          onError={(error) => onError(error)}
+        />
+      </Modal>
+      <Modal
+        id="login-modal"
+        isOpen={isConnected && loginModal}
+        name="login-modal"
+        title="Login with your Wallet"
+        onClose={toggleLoginModal}
+        disableBackdropClick={true}
+        width={isMobile ? 'auto' : '500px'}
+      >
+        <Typography
+          variant="h6"
+          sx={{ color: '#24262E', fontSize: '18px', fontStyle: 'normal', fontWeight: '400', lineHeight: '22px' }}
         >
-          <ConnectWalletList
-              description="In order to vote, first you will need to connect your Wallet."
-              onConnectWallet={onConnectWallet}
-              onConnectError={(error: Error) => onConnectWalletError(error)}
-              onOpenPeerConnect={() => handleOpenPeerConnect()}
-          />
-        </Modal>
-        <Modal
-            id="verify-wallet-modal"
-            isOpen={verifyModalIsOpen}
-            name="verify-wallet-modal"
-            title="Verify your wallet"
-            onClose={handleCloseVerify}
-            disableBackdropClick={true}
-            width={isMobile ? '100%' : '400px'}
-        >
-          <VerifyWallet
-              method={verifyDiscordModalIsReady ? 'discord' : undefined}
-              onVerify={() => onVerify()}
-              onError={(error) => onError(error)}
-          />
-        </Modal>
-        <Modal
-            id="login-modal"
-            isOpen={isConnected && loginModal}
-            name="login-modal"
-            title="Login with your Wallet"
-            onClose={toggleLoginModal}
-            disableBackdropClick={true}
-            width={isMobile ? 'auto' : '500px'}
-        >
-          <Typography
-              variant="h6"
-              sx={{ color: '#24262E', fontSize: '18px', fontStyle: 'normal', fontWeight: '400', lineHeight: '22px' }}
-          >
-            {loginModalMessage.length
-                ? loginModalMessage
-                : 'The session has expired. In order to see your votes, please, login again with your Wallet.'}
-          </Typography>
-          <CustomButton
-              styles={{
-                background: '#ACFCC5',
-                color: '#03021F',
-                margin: '24px 0px',
+          {loginModalMessage.length
+            ? loginModalMessage
+            : 'The session has expired. In order to see your votes, please, login again with your Wallet.'}
+        </Typography>
+        <CustomButton
+          styles={{
+            background: '#ACFCC5',
+            color: '#03021F',
+            margin: '24px 0px',
+          }}
+          label="Login with Wallet"
+          onClick={() => handleLogin()}
+          fullWidth={true}
+        />
+      </Modal>
+
+      <Modal
+        id="cip45-wallet-modal"
+        isOpen={cip45ModalIsOpen}
+        name="cip45-wallet-modal"
+        title="Connect Peer Wallet"
+        onClose={() => setCip45ModalIsOpen(false)}
+        disableBackdropClick={true}
+      >
+        {!startPeerConnect ? (
+          <>
+            <Typography
+              variant="body1"
+              align="left"
+              sx={{
+                width: '344px',
+                color: '#434656',
+                fontSize: '16px',
+                fontStyle: 'normal',
+                fontWeight: '400',
+                lineHeight: '22px',
               }}
-              label="Login with Wallet"
-              onClick={() => handleLogin()}
-              fullWidth={true}
-          />
-        </Modal>
-
-        <Modal
-            id="cip45-wallet-modal"
-            isOpen={cip45ModalIsOpen}
-            name="cip45-wallet-modal"
-            title="Connect Peer Wallet"
-            onClose={() => setCip45ModalIsOpen(false)}
-            disableBackdropClick={true}
-        >
-          {!startPeerConnect ? (
-              <>
-                <Typography
-                    variant="body1"
-                    align="left"
-                    sx={{
-                      width: '344px',
-                      color: '#434656',
-                      fontSize: '16px',
-                      fontStyle: 'normal',
-                      fontWeight: '400',
-                      lineHeight: '22px',
-                    }}
-                >
-                  To connect your mobile wallet, simply use your wallet's app to scan the QR code below. If scanning isn't
-                  an option, you can also copy the Peer ID.{' '}
-                  <span style={{ fontSize: '14px', fontStyle: 'italic', cursor: 'pointer' }}>
+            >
+              To connect your mobile wallet, simply use your wallet's app to scan the QR code below. If scanning isn't
+              an option, you can also copy the Peer ID.{' '}
+              <span style={{ fontSize: '14px', fontStyle: 'italic', cursor: 'pointer' }}>
                 {' '}
-                    <a
-                        href="https://github.com/cardano-foundation/CIPs/pull/395"
-                        target="_blank"
-                        rel="noreferrer"
-                    >
+                <a
+                  href="https://github.com/cardano-foundation/CIPs/pull/395"
+                  target="_blank"
+                  rel="noreferrer"
+                >
                   Learn more about CIP-45
                 </a>
               </span>
-                </Typography>
-                <div style={{ display: 'flex', justifyContent: 'center', width: '100%', marginTop: '24px' }}>
-                  <QRCode
-                      size={256}
-                      style={{ height: 'auto', width: '200px' }}
-                      value={meerkatAddress}
-                      viewBox={'0 0 256 256'}
-                  />
-                </div>
-                <div
-                    onClick={() => {
-                      copyToClipboard(meerkatAddress)
-                          .then(() => eventBus.publish('showToast', 'Copied to clipboard'))
-                          .catch(() => eventBus.publish('showToast', 'Copied to clipboard failed', 'error'));
-                    }}
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      width: '100%',
-                      marginTop: '24px',
-                      cursor: 'pointer',
-                    }}
-                >
-                  <FileCopyIcon
-                      fontSize="small"
-                      style={{ color: '#434656', cursor: 'pointer' }}
-                  />
-                  <Typography
-                      variant="body1"
-                      align="center"
-                      sx={{
-                        color: '#434656',
-                        fontSize: '16px',
-                        fontStyle: 'normal',
-                        fontWeight: '600',
-                        lineHeight: '18.75px',
-                        cursor: 'pointer',
-                        marginLeft: '8px',
-                      }}
-                  >
-                    Copy Peer ID
-                  </Typography>
-                </div>
-                <Box
-                    sx={{
-                      display: 'flex',
-                      justifyContent: 'center',
-                      marginTop: '8px',
-                    }}
-                >
-                  <Tooltip title="Currently, only the beta version of the Eternl wallet v1.11.15 is fully supporting CIP-45. Mobile support will be available soon.">
+            </Typography>
+            <div style={{ display: 'flex', justifyContent: 'center', width: '100%', marginTop: '24px' }}>
+              <QRCode
+                size={256}
+                style={{ height: 'auto', width: '200px' }}
+                value={meerkatAddress}
+                viewBox={'0 0 256 256'}
+              />
+            </div>
+            <div
+              onClick={() => {
+                copyToClipboard(meerkatAddress)
+                  .then(() => eventBus.publish('showToast', 'Copied to clipboard'))
+                  .catch(() => eventBus.publish('showToast', 'Copied to clipboard failed', 'error'));
+              }}
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '100%',
+                marginTop: '24px',
+                cursor: 'pointer',
+              }}
+            >
+              <FileCopyIcon
+                fontSize="small"
+                style={{ color: '#434656', cursor: 'pointer' }}
+              />
+              <Typography
+                variant="body1"
+                align="center"
+                sx={{
+                  color: '#434656',
+                  fontSize: '16px',
+                  fontStyle: 'normal',
+                  fontWeight: '600',
+                  lineHeight: '18.75px',
+                  cursor: 'pointer',
+                  marginLeft: '8px',
+                }}
+              >
+                Copy Peer ID
+              </Typography>
+            </div>
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                marginTop: '8px',
+              }}
+            >
+              <Tooltip title="Currently, only the beta version of the Eternl wallet v1.11.15 is fully supporting CIP-45. Mobile support will be available soon.">
                 <span style={{ fontSize: '14px', fontStyle: 'italic', cursor: 'pointer' }}>
                   {' '}
                   <a
-                      href="https://beta.eternl.io/"
-                      target="_blank"
-                      rel="noreferrer"
+                    href="https://beta.eternl.io/"
+                    target="_blank"
+                    rel="noreferrer"
                   >
                     Using Eternl Wallet
                   </a>
                 </span>
-                  </Tooltip>
-                </Box>
-                <Button
-                    onClick={() => {
-                      setStartPeerConnect(false);
-                      setOpenAuthDialog(true);
-                    }}
-                    className="vote-nominee-button"
-                    style={{
-                      display: 'flex',
-                      width: '344px',
-                      padding: '12px',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      gap: '10px',
-                      borderRadius: '8px',
-                      background: 'transparent',
-                      border: '1px solid #DAEEFB',
-                      color: '#03021F',
-                      fontSize: '16px',
-                      fontStyle: 'normal',
-                      fontWeight: '600',
-                      lineHeight: 'normal',
-                      textTransform: 'none',
-                      marginTop: '24px',
-                      marginBottom: '28px',
-                    }}
-                >
-                  Cancel
-                </Button>
-              </>
-          ) : (
-              <>
-                <Box
-                    display="flex"
-                    flexDirection="column"
-                    alignItems="center"
-                    justifyContent="center"
-                >
-                  <img
-                      src={peerConnectWalletInfo?.icon}
-                      alt="Wallet"
-                      style={{ width: '64px', marginTop: '44px' }}
-                  />
-                  <Typography
-                      variant="body1"
-                      align="left"
-                      sx={{
-                        textAlign: 'center',
-                        color: '#434656',
-                        fontSize: '18px',
-                        fontStyle: 'normal',
-                        fontWeight: '500',
-                        lineHeight: '22px',
-                        marginTop: '24px',
-                        marginBottom: '44px',
-                      }}
-                  >
+              </Tooltip>
+            </Box>
+            <Button
+              onClick={() => {
+                setStartPeerConnect(false);
+                setOpenAuthDialog(true);
+              }}
+              className="vote-nominee-button"
+              style={{
+                display: 'flex',
+                width: '344px',
+                padding: '12px',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: '10px',
+                borderRadius: '8px',
+                background: 'transparent',
+                border: '1px solid #DAEEFB',
+                color: '#03021F',
+                fontSize: '16px',
+                fontStyle: 'normal',
+                fontWeight: '600',
+                lineHeight: 'normal',
+                textTransform: 'none',
+                marginTop: '24px',
+                marginBottom: '28px',
+              }}
+            >
+              Cancel
+            </Button>
+          </>
+        ) : (
+          <>
+            <Box
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <img
+                src={peerConnectWalletInfo?.icon}
+                alt="Wallet"
+                style={{ width: '64px', marginTop: '44px' }}
+              />
+              <Typography
+                variant="body1"
+                align="left"
+                sx={{
+                  textAlign: 'center',
+                  color: '#434656',
+                  fontSize: '18px',
+                  fontStyle: 'normal',
+                  fontWeight: '500',
+                  lineHeight: '22px',
+                  marginTop: '24px',
+                  marginBottom: '44px',
+                }}
+              >
                 <span style={{ textTransform: 'capitalize', fontStyle: 'italic', fontWeight: '600' }}>
                   {peerConnectWalletInfo?.name}{' '}
                 </span>
-                    wallet is trying to connect
-                  </Typography>
-                  <Button
-                      onClick={handleAccept}
-                      className="vote-nominee-button"
-                      style={{
-                        display: 'flex',
-                        padding: '12px',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        gap: '10px',
-                        borderRadius: '8px',
-                        background: '#ACFCC5',
-                        color: '#03021F',
-                        fontSize: '16px',
-                        fontStyle: 'normal',
-                        fontWeight: '600',
-                        lineHeight: 'normal',
-                        textTransform: 'none',
-                      }}
-                      fullWidth
-                  >
-                    Accept connection
-                  </Button>
-                  <Button
-                      onClick={handleReject}
-                      className="vote-nominee-button"
-                      style={{
-                        display: 'flex',
-                        width: '344px',
-                        padding: '12px',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        gap: '10px',
-                        borderRadius: '8px',
-                        background: 'transparent',
-                        border: '1px solid #DAEEFB',
-                        color: '#03021F',
-                        fontSize: '16px',
-                        fontStyle: 'normal',
-                        fontWeight: '600',
-                        lineHeight: 'normal',
-                        textTransform: 'none',
-                        marginTop: '10px',
-                      }}
-                  >
-                    Deny
-                  </Button>
-                </Box>
-              </>
-          )}
-        </Modal>
-        <Toast
-            isOpen={toastOpen}
-            type={toastType}
-            message={toastMessage}
-            onClose={handleToastClose}
-        />
-      </>
+                wallet is trying to connect
+              </Typography>
+              <Button
+                onClick={handleAccept}
+                className="vote-nominee-button"
+                style={{
+                  display: 'flex',
+                  padding: '12px',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: '10px',
+                  borderRadius: '8px',
+                  background: '#ACFCC5',
+                  color: '#03021F',
+                  fontSize: '16px',
+                  fontStyle: 'normal',
+                  fontWeight: '600',
+                  lineHeight: 'normal',
+                  textTransform: 'none',
+                }}
+                fullWidth
+              >
+                Accept connection
+              </Button>
+              <Button
+                onClick={handleReject}
+                className="vote-nominee-button"
+                style={{
+                  display: 'flex',
+                  width: '344px',
+                  padding: '12px',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: '10px',
+                  borderRadius: '8px',
+                  background: 'transparent',
+                  border: '1px solid #DAEEFB',
+                  color: '#03021F',
+                  fontSize: '16px',
+                  fontStyle: 'normal',
+                  fontWeight: '600',
+                  lineHeight: 'normal',
+                  textTransform: 'none',
+                  marginTop: '10px',
+                }}
+              >
+                Deny
+              </Button>
+            </Box>
+          </>
+        )}
+      </Modal>
+      <Toast
+        isOpen={toastOpen}
+        type={toastType}
+        message={toastMessage}
+        onClose={handleToastClose}
+      />
+    </>
   );
 };
 

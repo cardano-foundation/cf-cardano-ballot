@@ -591,7 +591,14 @@ const Nominees = () => {
                         <Typography
                           className="nominee-title"
                           variant="h4"
-                          sx={{ mb: 1, minHeight: '83px', height: '83px', fontWeight: 'bold', wordWrap: 'break-word', width: voted ? '260px' : '100%' }}
+                          sx={{
+                            mb: 1,
+                            minHeight: '83px',
+                            height: '83px',
+                            fontWeight: 'bold',
+                            wordWrap: 'break-word',
+                            width: voted ? '260px' : '100%',
+                          }}
                         >
                           {nominee.presentationName}
                           {isWinner ? (

@@ -1,3 +1,6 @@
+.nominees-page{
+  width: 100%;
+}
 .nominees-page-title {
   color: var(--color-dark-grey);
   font-style: normal;
@@ -26,15 +29,14 @@
   box-shadow: 2px 3px 10px 0px rgba(67, 70, 86, 0.45);
 
   .nominee-title {
-    color: var(--color-ultra-dark-blue);
-    font-size: 36px;
+    color: var(---color-primary);
     font-style: normal;
-    font-weight: 600 !important;
     line-height: normal;
   }
   .nominee-description {
     margin-top: 20px;
     margin-right: 50px;
+    margin-bottom: 20px !important;
     color: var(--color-medium-grey);
     font-size: 16px;
     font-style: normal;

@@ -12,7 +12,7 @@ import {
   Grid,
   Typography,
   Button,
-  Box,
+  Box, Tooltip,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
@@ -575,6 +575,24 @@ const Header: React.FC = () => {
                 Copy Peer ID
               </Typography>
             </div>
+            <Box sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              marginTop: '4px',
+            }}>
+              <Tooltip title="Currently, only the beta version of the Eternl wallet v1.11.15 is supporting CIP-45. Mobile support will be available soon.">
+                <span style={{ fontSize: '14px', fontStyle: 'italic', cursor: 'pointer' }}>
+                  {' '}
+                  <a
+                      href="https://beta.eternl.io/"
+                      target="_blank"
+                      rel="noreferrer"
+                  >
+                      Use Eternl
+                  </a>
+              </span>
+              </Tooltip>
+            </Box>
             <Button
               onClick={() => {
                 setStartPeerConnect(false);

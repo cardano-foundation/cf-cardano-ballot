@@ -80,7 +80,7 @@ const Categories = () => {
 
   const renderResponsiveGrid = (items): ReactElement => {
     return (
-      <div style={{ width: '100%' }}>
+      <div>
         <Grid
           container
           spacing={3}
@@ -101,7 +101,7 @@ const Categories = () => {
                     <Card
                       sx={{
                         height: 'auto',
-                        width: { xs: '90vw' },
+                        width: { xs: '90vw', sm: '50vw' },
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',

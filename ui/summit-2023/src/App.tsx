@@ -150,6 +150,7 @@ function App() {
           <Grid
             item
             xs={6}
+            sx={{maxWidth: '100% !important'}}
           >
             <Box className="content">
               {eventCache !== undefined && eventCache?.id.length ? (

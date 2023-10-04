@@ -65,6 +65,9 @@ cf-summit-2023-voting-api:
     monitoring:
       alerting:
         enabled: false
+    ingress:
+      additionalDomains:
+        - voting.summit.cardano.org
 
 cf-summit-2023-verification-api:
   enabled: true

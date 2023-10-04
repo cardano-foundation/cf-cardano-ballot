@@ -11,6 +11,7 @@ plugins {
 	id("cz.habarta.typescript-generator") version "3.2.1263"
     id("com.github.ben-manes.versions") version "0.48.0"
     id("com.gorylenko.gradle-git-properties") version "2.4.1"
+	jacoco
 }
 
 springBoot {
@@ -83,6 +84,13 @@ dependencies {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+tasks.test {
+	finalizedBy(tasks.jacocoTestReport)
+}
+tasks.jacocoTestReport {
+	dependsOn(tasks.test)
 }
 
 tasks {

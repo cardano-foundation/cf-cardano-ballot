@@ -16,6 +16,7 @@ const DISCORD_CHANNEL_URL =
   process.env.REACT_APP_DISCORD_CHANNEL_URL || get(window, 'env.REACT_APP_DISCORD_CHANNEL_URL');
 const COMMIT_HASH = process.env.REACT_APP_COMMIT_HASH || get(window, 'env.REACT_APP_COMMIT_HASH');
 const DISCORD_BOT_URL = process.env.REACT_APP_DISCORD_BOT_URL || get(window, 'env.REACT_APP_DISCORD_BOT_URL');
+const DISCORD_SUPPORT_CHANNEL_URL = process.env.REACT_APP_DISCORD_SUPPORT_CHANNEL_URL || get(window, 'env.REACT_APP_DISCORD_SUPPORT_CHANNEL_URL');
 // config vars
 const TARGET_NETWORK = process.env.REACT_APP_TARGET_NETWORK || get(window, 'env.REACT_APP_TARGET_NETWORK');
 const EVENT_ID = process.env.REACT_APP_EVENT_ID || get(window, 'env.REACT_APP_EVENT_ID');
@@ -37,4 +38,5 @@ export const env = {
   COMMIT_HASH,
   DISCORD_CHANNEL_URL,
   DISCORD_BOT_URL,
+  DISCORD_SUPPORT_CHANNEL_URL,
 };

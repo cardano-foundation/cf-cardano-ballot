@@ -360,7 +360,7 @@ const Header: React.FC = () => {
         position={'static'}
         style={{ background: 'transparent', boxShadow: 'none', color: 'black' }}
       >
-        <Toolbar sx={{ pl: 0, pt: 1 }}>
+        <Toolbar sx={{ pl: 0, pt: 2 }}>
           {isTablet ? (
             <>
               <NavLink to="/">
@@ -374,7 +374,7 @@ const Header: React.FC = () => {
               <IconButton
                 edge="end"
                 color="inherit"
-                className="menuButton"
+                className="menu-button"
                 onClick={() => setDrawerOpen(true)}
               >
                 <MenuIcon className="close-icon" />
@@ -457,7 +457,7 @@ const Header: React.FC = () => {
         id="verify-wallet-modal"
         isOpen={verifyModalIsOpen}
         name="verify-wallet-modal"
-        title="Verify your wallet"
+        title="Verify your Wallet"
         onClose={handleCloseVerify}
         disableBackdropClick={true}
         width={isMobile ? '100%' : '400px'}

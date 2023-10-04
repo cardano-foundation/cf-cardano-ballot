@@ -15,6 +15,7 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  Button,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
@@ -567,9 +568,9 @@ const Nominees = () => {
                         borderRadius: '16px',
                       }}
                     >
-                      <CardContent>
-                        <Box sx={{ position: 'relative', marginTop: '12px' }}>
-                          {voted ? (
+                      <CardContent sx={{ minHeight: '385px', maxHeight: '385px' }}>
+                        {voted ? (
+                          <Box sx={{ position: 'relative', marginTop: '12px' }}>
                             <Tooltip title="Already Voted">
                               <img
                                 height={40}
@@ -585,12 +586,12 @@ const Nominees = () => {
                                 }}
                               />
                             </Tooltip>
-                          ) : null}
-                        </Box>
+                          </Box>
+                        ) : null}
                         <Typography
                           className="nominee-title"
                           variant="h4"
-                          sx={{ mb: 1, fontWeight: 'bold', wordWrap: 'break-word', width: voted ? '260px' : '100%' }}
+                          sx={{ mb: 1, minHeight: '83px', height: '83px', fontWeight: 'bold', wordWrap: 'break-word', width: voted ? '260px' : '100%' }}
                         >
                           {nominee.presentationName}
                           {isWinner ? (
@@ -609,7 +610,7 @@ const Nominees = () => {
                             <Typography
                               className="nominee-description"
                               variant="body2"
-                              sx={{ height: '110px' }}
+                              sx={{ minHeight: '115px', height: '115px', mt: '10px' }}
                             >
                               {shortenString(nominee.desc, 210)}
                             </Typography>
@@ -622,7 +623,6 @@ const Nominees = () => {
                             color: '#03021F',
                             border: '1px solid #daeefb',
                             width: '100%',
-                            marginTop: '28px',
                           }}
                           label="Read more"
                           onClick={() => handleReadMore(nominee)}
@@ -697,10 +697,16 @@ const Nominees = () => {
           </Typography>
           {!isMobile && (
             <div>
-              <IconButton onClick={() => handleListView('grid')}>
+              <IconButton
+                onClick={() => handleListView('grid')}
+                className={viewMode === 'grid' ? 'selected' : 'un-selected'}
+              >
                 <ViewModuleIcon />
               </IconButton>
-              <IconButton onClick={() => handleListView('list')}>
+              <IconButton
+                onClick={() => handleListView('list')}
+                className={viewMode === 'list' ? 'selected' : 'un-selected'}
+              >
                 <ViewListIcon />
               </IconButton>
             </div>
@@ -1009,18 +1015,6 @@ const Nominees = () => {
                 >
                   Event
                 </Typography>
-                <Tooltip title="Cardano Summit 2023 Awards.">
-                  <InfoIcon
-                    style={{
-                      color: '#434656A6',
-                      width: '22px',
-                      marginLeft: '3px',
-                      marginBottom: '5px',
-                      verticalAlign: 'middle',
-                      cursor: 'pointer',
-                    }}
-                  />
-                </Tooltip>
               </div>
               <Typography
                 variant="body1"
@@ -1386,28 +1380,70 @@ const Nominees = () => {
       <Modal
         isOpen={confirmVoteModal}
         id="confirm-vote"
-        title="Confirm Vote"
+        title="Review vote"
         onClose={toggleConfirmVoteModal}
       >
-        <CustomButton
-          styles={{
-            background: '#ACFCC5',
-            color: '#03021F',
-            margin: '20px 0px',
+        <Typography
+          sx={{
+            color: '#39486C',
+            fontSize: '16px',
+            fontStyle: 'normal',
+            fontWeight: '400',
+            lineHeight: '22px',
           }}
-          label={`Vote for ${votedNominee?.presentationName} [${selectedNomineeToVote?.id}]`}
-          fullWidth={true}
-          onClick={() => handleVoteNomineeButton()}
-        />
-        <CustomButton
-          styles={{
-            background: 'transparent !important',
-            color: '#03021F',
-          }}
-          label="Cancel"
-          fullWidth={true}
-          onClick={toggleConfirmVoteModal}
-        />
+        >
+          Please confirm your vote for ${votedNominee?.presentationName} [{selectedNomineeToVote?.id}]
+        </Typography>
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          sx={{ marginTop: '24px' }}
+        >
+          <Button
+            onClick={toggleConfirmVoteModal}
+            sx={{
+              display: 'flex',
+              width: '162px',
+              padding: '16px 24px',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: '10px',
+              borderRadius: '8px',
+              border: '1px solid #DAEEFB',
+              textTransform: 'none',
+              color: '#434656',
+              fontSize: '16px',
+              fontStyle: 'normal',
+              fontWeight: '600',
+              lineHeight: 'normal',
+              '&:hover': { backgroundColor: 'inherit' },
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() => handleVoteNomineeButton()}
+            sx={{
+              display: 'flex',
+              width: '162px',
+              padding: '16px 24px',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: '10px',
+              borderRadius: '8px',
+              background: '#ACFCC5',
+              textTransform: 'none',
+              color: '#03021F',
+              fontSize: '16px',
+              fontStyle: 'normal',
+              fontWeight: '600',
+              lineHeight: 'normal',
+              '&:hover': { backgroundColor: '#ACFCC5' },
+            }}
+          >
+            Confirm vote
+          </Button>
+        </Box>
       </Modal>
     </>
   );

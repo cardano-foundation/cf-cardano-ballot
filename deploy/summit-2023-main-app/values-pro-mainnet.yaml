@@ -13,7 +13,7 @@ cf-summit-2023-ui:
   enabled: true
   values:
     frontendUrl: https://{{ .Values.domain }}
-    votingAppServerUrl: https://api.pro.cf-summit-2023-mainnet.eu-west-1.voting.summit.cardano.org
+    votingAppServerUrl: https://api.voting.summit.cardano.org
     votingLedgerFollowerAppServerUrl: https://follower-api.pro.cf-summit-2023-mainnet.eu-west-1.voting.summit.cardano.org
     votingVerificationAppServerUrl: https://verification-api.pro.cf-summit-2023-mainnet.eu-west-1.voting.summit.cardano.org
     userVerificationServerUrl: https://user-verification.pro.cf-summit-2023-mainnet.eu-west-1.voting.summit.cardano.org

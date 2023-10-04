@@ -11,7 +11,7 @@ import VerifiedIcon from '@mui/icons-material/Verified';
 import React from 'react';
 import './ConnectWalletButton.scss';
 import { env } from 'common/constants/env';
-import { getUserInSession, tokenIsExpired } from '../../../utils/session';
+import {clearUserInSessionStorage, getUserInSession, tokenIsExpired} from '../../../utils/session';
 
 type ConnectWalletButtonProps = {
   disableBackdropClick?: boolean;
@@ -39,6 +39,7 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
 
   const onDisconnectWallet = () => {
     disconnect();
+    clearUserInSessionStorage();
     eventBus.publish('showToast', 'Wallet disconnected successfully');
   };
 

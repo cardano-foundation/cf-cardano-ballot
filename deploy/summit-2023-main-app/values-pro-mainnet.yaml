@@ -64,7 +64,7 @@ cf-summit-2023-voting-api:
       cardanoNodeProtocolMagic: "764824073"
     monitoring:
       alerting:
-        enabled: false
+        enabled: true
     ingress:
       additionalDomains:
         - api.voting.summit.cardano.org

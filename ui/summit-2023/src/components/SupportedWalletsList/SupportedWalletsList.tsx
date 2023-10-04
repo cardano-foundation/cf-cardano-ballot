@@ -28,7 +28,6 @@ const SupportedWalletsList = (props: ConnectWalletModalProps) => {
   const { installedExtensions } = useCardano({ limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK) });
 
   const walletIcon = (walletName) => {
-    console.log(walletName);
     if (walletName === 'typhoncip30') {
       return '/static/typhon-icon.png';
     }

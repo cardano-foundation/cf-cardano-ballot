@@ -23,7 +23,7 @@ cf-summit-2023-ui:
     discordBotUrl: https://discord.com/channels/945974991718068254/1149627691310530570
     discordSupportChannelUrl: https://discord.gg/svAcdYjMXx
     image:
-      tag: 0.2.64-783-783
+      tag: 0.2.64-827-65a9b
 
 cf-summit-2023-voting-api:
   enabled: true

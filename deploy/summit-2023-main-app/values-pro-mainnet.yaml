@@ -67,7 +67,7 @@ cf-summit-2023-voting-api:
         enabled: false
     ingress:
       additionalDomains:
-        - voting.summit.cardano.org
+        - api.voting.summit.cardano.org
 
 cf-summit-2023-verification-api:
   enabled: true
@@ -77,6 +77,9 @@ cf-summit-2023-verification-api:
     springProfiles: prod
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
     corsAllowedOrigins: https://voting.summit.cardano.org,https://{{ .Values.domain }}
+    ingress:
+      additionalDomains:
+        - verification-api.voting.summit.cardano.org
 
 cf-user-verification-service:
   enabled: true
@@ -87,6 +90,9 @@ cf-user-verification-service:
     discordBotEventIdBinding: CARDANO_SUMMIT_AWARDS_2023
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
     corsAllowedOrigins: https://voting.summit.cardano.org,https://{{ .Values.domain }}
+    ingress:
+      additionalDomains:
+        - user-verification.voting.summit.cardano.org
 
 cf-summit-2023-ledger-follower-api:
   enabled: true
@@ -117,6 +123,9 @@ cf-summit-2023-ledger-follower-api:
       initialDelaySeconds: 0
       periodSeconds: 30
       failureThreshold: 20
+    ingress:
+      additionalDomains:
+        - follower-api.voting.summit.cardano.org
 
 cf-discord-wallet-verification-bot:
   enabled: true

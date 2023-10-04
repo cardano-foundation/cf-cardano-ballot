@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LeaderboardResource.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.resource</a> &gt; <span class="el_source">LeaderboardResource.java</span></div><h1>LeaderboardResource.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.resource;
+
+import io.micrometer.core.annotation.Timed;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.service.leader_board.LeaderBoardService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.CacheControl;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.zalando.problem.Problem;
+import org.zalando.problem.Status;
+
+import static java.util.concurrent.TimeUnit.MINUTES;
+import static org.cardano.foundation.voting.resource.Headers.XForceLeaderBoardResults;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
+
+@RestController
+@RequestMapping(&quot;/api/leaderboard&quot;)
+<span class="fc" id="L30">@Slf4j</span>
+@Tag(name = &quot;Leaderboard&quot;, description = &quot;Operations related to the leaderboard&quot;)
+<span class="fc" id="L32">public class LeaderboardResource {</span>
+
+    @Autowired
+    private LeaderBoardService leaderBoardService;
+
+    @Value(&quot;${leaderboard.force.results:false}&quot;)
+    private boolean forceLeaderboardResultsAvailability;
+
+    @RequestMapping(value = &quot;/event/{eventId}/&quot;, method = HEAD, produces = &quot;application/json&quot;)
+    @Timed(value = &quot;resource.leaderboard.high.level.event.available&quot;, histogram = true)
+    @Operation(summary = &quot;Check availability of the high-level event leaderboard&quot;,
+            description = &quot;Verifies if the high-level leaderboard for a specific event is available.&quot;,
+            responses = {
+                    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Leaderboard is available&quot;),
+                    @ApiResponse(responseCode = &quot;403&quot;, description = &quot;Leaderboard not available yet for event&quot;,
+                            content = { @Content(mediaType = &quot;application/json&quot;,
+                                    schema = @Schema(implementation = Problem.class)) }),
+                    @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error&quot;)
+            }
+    )
+    public ResponseEntity&lt;?&gt; isHighLevelEventLeaderBoardAvailable(
+            @Parameter(name = &quot;eventId&quot;, description = &quot;ID of the event&quot;, required = true)
+            @PathVariable(&quot;eventId&quot;) String eventId,
+            @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = &quot;false&quot;) boolean forceLeaderboardResults) {
+<span class="nc" id="L56">        var cacheControl = CacheControl.maxAge(1, MINUTES)</span>
+<span class="nc" id="L57">                .noTransform()</span>
+<span class="nc" id="L58">                .mustRevalidate();</span>
+
+<span class="nc bnc" id="L60" title="All 4 branches missed.">        var forceLeaderboard = forceLeaderboardResults &amp;&amp; forceLeaderboardResultsAvailability;</span>
+
+<span class="nc" id="L62">        var availableE = leaderBoardService.isHighLevelEventLeaderboardAvailable(eventId, forceLeaderboard);</span>
+
+<span class="nc" id="L64">        return availableE.fold(problem -&gt; {</span>
+<span class="nc" id="L65">                    return ResponseEntity</span>
+<span class="nc" id="L66">                            .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L67">                            .cacheControl(cacheControl)</span>
+<span class="nc" id="L68">                            .body(problem);</span>
+                },
+                isAvailable -&gt; {
+<span class="nc bnc" id="L71" title="All 2 branches missed.">                    if (isAvailable) {</span>
+<span class="nc" id="L72">                        return ResponseEntity</span>
+<span class="nc" id="L73">                                .ok()</span>
+<span class="nc" id="L74">                                .cacheControl(cacheControl)</span>
+<span class="nc" id="L75">                                .build();</span>
+                    }
+
+<span class="nc" id="L78">                    var problem = Problem.builder()</span>
+<span class="nc" id="L79">                            .withTitle(&quot;VOTING_RESULTS_NOT_AVAILABLE&quot;)</span>
+<span class="nc" id="L80">                            .withDetail(&quot;Leaderboard not yet available for event: &quot; + eventId)</span>
+<span class="nc" id="L81">                            .withStatus(Status.FORBIDDEN)</span>
+<span class="nc" id="L82">                            .build();</span>
+
+
+<span class="nc" id="L85">                    return ResponseEntity</span>
+<span class="nc" id="L86">                            .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L87">                            .cacheControl(cacheControl)</span>
+<span class="nc" id="L88">                            .body(problem);</span>
+                }
+        );
+    }
+
+    @RequestMapping(value = &quot;/event-category/{eventId}&quot;, method = HEAD, produces = &quot;application/json&quot;)
+    @Timed(value = &quot;resource.leaderboard.high.level.category.available&quot;, histogram = true)
+    @Operation(summary = &quot;Check availability of the high-level category leaderboard for an event&quot;,
+            description = &quot;Verifies if the high-level category leaderboard for a specific event is available.&quot;,
+            responses = {
+                    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Category leaderboard is available&quot;),
+                    @ApiResponse(responseCode = &quot;403&quot;, description = &quot;Category leaderboard not available&quot;,
+                            content = { @Content(mediaType = &quot;application/json&quot;,
+                                    schema = @Schema(implementation = Problem.class)) }),
+                    @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error&quot;)
+            }
+    )
+    public ResponseEntity&lt;?&gt; isHighLevelCategoryLeaderBoardAvailable(
+            @Parameter(name = &quot;eventId&quot;, description = &quot;ID of the event&quot;, required = true)
+            @PathVariable(&quot;eventId&quot;) String eventId,
+            @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = &quot;false&quot;) boolean forceLeaderboardResults) {
+<span class="nc" id="L109">        var cacheControl = CacheControl.maxAge(1, MINUTES)</span>
+<span class="nc" id="L110">                .noTransform()</span>
+<span class="nc" id="L111">                .mustRevalidate();</span>
+
+<span class="nc bnc" id="L113" title="All 4 branches missed.">        var forceLeaderboard = forceLeaderboardResults &amp;&amp; forceLeaderboardResultsAvailability;</span>
+
+<span class="nc" id="L115">        var availableE = leaderBoardService.isHighLevelCategoryLeaderboardAvailable(eventId, forceLeaderboard);</span>
+
+<span class="nc" id="L117">        return availableE.fold(problem -&gt; {</span>
+<span class="nc" id="L118">                    return ResponseEntity</span>
+<span class="nc" id="L119">                            .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L120">                            .cacheControl(cacheControl)</span>
+<span class="nc" id="L121">                            .body(problem);</span>
+                },
+                isAvailable -&gt; {
+<span class="nc bnc" id="L124" title="All 2 branches missed.">                    if (isAvailable) {</span>
+<span class="nc" id="L125">                        return ResponseEntity</span>
+<span class="nc" id="L126">                                .ok()</span>
+<span class="nc" id="L127">                                .cacheControl(cacheControl)</span>
+<span class="nc" id="L128">                                .build();</span>
+                    }
+<span class="nc" id="L130">                    var problem = Problem.builder()</span>
+<span class="nc" id="L131">                            .withTitle(&quot;VOTING_RESULTS_NOT_AVAILABLE&quot;)</span>
+<span class="nc" id="L132">                            .withDetail(&quot;Leaderboard not yet available for event: &quot; + eventId)</span>
+<span class="nc" id="L133">                            .withStatus(Status.FORBIDDEN)</span>
+<span class="nc" id="L134">                            .build();</span>
+
+<span class="nc" id="L136">                    return ResponseEntity</span>
+<span class="nc" id="L137">                            .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L138">                            .cacheControl(cacheControl)</span>
+<span class="nc" id="L139">                            .body(problem);</span>
+                }
+        );
+    }
+
+    @RequestMapping(value = &quot;/{eventId}/{categoryId}&quot;, method = HEAD, produces = &quot;application/json&quot;)
+    @Timed(value = &quot;resource.leaderboard.category.available&quot;, histogram = true)
+    @Operation(summary = &quot;Check if Category Leaderboard is Available&quot;,
+            description = &quot;Checks if the leaderboard for the specified event and category is available.&quot;,
+            responses = {
+                    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Category leaderboard is available&quot;),
+                    @ApiResponse(responseCode = &quot;403&quot;, description = &quot;Category leaderboard not available&quot;,
+                            content = { @Content(mediaType = &quot;application/json&quot;,
+                                    schema = @Schema(implementation = Problem.class)) }),
+                    @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error&quot;)
+            }
+    )
+    public ResponseEntity&lt;?&gt; getCategoryLeaderBoardAvailable(
+            @Parameter(name = &quot;eventId&quot;, description = &quot;ID of the event&quot;, required = true)
+            @PathVariable(&quot;eventId&quot;) String eventId,
+            @Parameter(name = &quot;categoryId&quot;, description = &quot;ID of the category&quot;, required = true)
+            @PathVariable(&quot;categoryId&quot;) String categoryId,
+            @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = &quot;false&quot;) boolean forceLeaderboardResults) {
+<span class="fc" id="L162">        var cacheControl = CacheControl.maxAge(1, MINUTES)</span>
+<span class="fc" id="L163">                .noTransform()</span>
+<span class="fc" id="L164">                .mustRevalidate();</span>
+
+<span class="pc bpc" id="L166" title="3 of 4 branches missed.">        var forceLeaderboard = forceLeaderboardResults &amp;&amp; forceLeaderboardResultsAvailability;</span>
+
+<span class="fc" id="L168">        var categoryLeaderboardAvailableE = leaderBoardService.isCategoryLeaderboardAvailable(eventId, categoryId, forceLeaderboard);</span>
+
+<span class="fc" id="L170">        return categoryLeaderboardAvailableE</span>
+<span class="fc" id="L171">                .fold(problem -&gt; {</span>
+<span class="fc" id="L172">                            return ResponseEntity</span>
+<span class="fc" id="L173">                                    .status(problem.getStatus().getStatusCode())</span>
+<span class="fc" id="L174">                                    .cacheControl(cacheControl)</span>
+<span class="fc" id="L175">                                    .body(problem);</span>
+                        },
+                        isAvailable -&gt; {
+<span class="nc bnc" id="L178" title="All 2 branches missed.">                            if (isAvailable) {</span>
+<span class="nc" id="L179">                                return ResponseEntity</span>
+<span class="nc" id="L180">                                        .ok()</span>
+<span class="nc" id="L181">                                        .cacheControl(cacheControl)</span>
+<span class="nc" id="L182">                                        .build();</span>
+                            }
+<span class="nc" id="L184">                            var problem = Problem.builder()</span>
+<span class="nc" id="L185">                                    .withTitle(&quot;VOTING_RESULTS_NOT_AVAILABLE&quot;)</span>
+<span class="nc" id="L186">                                    .withDetail(&quot;Leaderboard not yet available for event: &quot; + eventId)</span>
+<span class="nc" id="L187">                                    .withStatus(Status.FORBIDDEN)</span>
+<span class="nc" id="L188">                                    .build();</span>
+
+<span class="nc" id="L190">                            return ResponseEntity</span>
+<span class="nc" id="L191">                                    .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L192">                                    .cacheControl(cacheControl)</span>
+<span class="nc" id="L193">                                    .body(problem);</span>
+                        }
+                );
+    }
+
+    @RequestMapping(value = &quot;/{eventId}&quot;, method = GET, produces = &quot;application/json&quot;)
+    @Timed(value = &quot;resource.leaderboard.event&quot;, histogram = true)
+    @Operation(
+            summary = &quot;Retrieve Event Leaderboard&quot;,
+            description = &quot;Fetches the leaderboard for the specified event.&quot;,
+            responses = {
+                    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Successfully retrieved leaderboard for the specified event.&quot;),
+                    @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Bad request or incorrect event ID.&quot;),
+                    @ApiResponse(responseCode = &quot;403&quot;, description = &quot;Leaderboard not yet available for the specified event.&quot;),
+                    @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error or other issues.&quot;)
+            }
+    )
+    public ResponseEntity&lt;?&gt; getEventLeaderBoard(
+            @Parameter(name = &quot;eventId&quot;, description = &quot;ID of the event&quot;, required = true)
+            @PathVariable(&quot;eventId&quot;) String eventId,
+            @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = &quot;false&quot;) boolean forceLeaderboardResults) {
+<span class="fc" id="L214">        var cacheControl = CacheControl.maxAge(1, MINUTES)</span>
+<span class="fc" id="L215">                .noTransform()</span>
+<span class="fc" id="L216">                .mustRevalidate();</span>
+
+<span class="pc bpc" id="L218" title="3 of 4 branches missed.">        var forceLeaderboard = forceLeaderboardResults &amp;&amp; forceLeaderboardResultsAvailability;</span>
+
+<span class="fc" id="L220">        var eventLeaderboardE = leaderBoardService.getEventLeaderboard(eventId, forceLeaderboard);</span>
+
+<span class="fc" id="L222">        return eventLeaderboardE.fold(problem -&gt; {</span>
+<span class="nc" id="L223">                    return ResponseEntity</span>
+<span class="nc" id="L224">                            .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L225">                            .cacheControl(cacheControl)</span>
+<span class="nc" id="L226">                            .body(problem);</span>
+                },
+                response -&gt; {
+<span class="fc" id="L229">                    return ResponseEntity</span>
+<span class="fc" id="L230">                            .ok()</span>
+<span class="fc" id="L231">                            .cacheControl(cacheControl)</span>
+<span class="fc" id="L232">                            .body(response);</span>
+                }
+        );
+    }
+
+    @RequestMapping(value = &quot;/{eventId}/{categoryId}&quot;, method = GET, produces = &quot;application/json&quot;)
+    @Timed(value = &quot;resource.leaderboard.category&quot;, histogram = true)
+    @Operation(
+            summary = &quot;Retrieve Category Leaderboard for an Event&quot;,
+            description = &quot;Fetches the leaderboard for a specified category within an event.&quot;,
+            responses = {
+                    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Successfully retrieved leaderboard for the specified category in the event.&quot;),
+                    @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Bad request, incorrect event ID or category ID.&quot;),
+                    @ApiResponse(responseCode = &quot;403&quot;, description = &quot;Leaderboard not yet available for the specified category in the event.&quot;),
+                    @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error or other issues.&quot;)
+            }
+    )
+    public ResponseEntity&lt;?&gt; getCategoryLeaderBoard(
+            @Parameter(name = &quot;eventId&quot;, description = &quot;ID of the event&quot;, required = true)
+            @PathVariable(&quot;eventId&quot;) String eventId,
+            @Parameter(name = &quot;categoryId&quot;, description = &quot;ID of the category&quot;, required = true)
+            @PathVariable(&quot;categoryId&quot;) String categoryId,
+            @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = &quot;false&quot;) boolean forceLeaderboardResults) {
+<span class="fc" id="L255">        var cacheControl = CacheControl.maxAge(1, MINUTES)</span>
+<span class="fc" id="L256">                .noTransform()</span>
+<span class="fc" id="L257">                .mustRevalidate();</span>
+
+<span class="pc bpc" id="L259" title="3 of 4 branches missed.">        var forceLeaderboard = forceLeaderboardResults &amp;&amp; forceLeaderboardResultsAvailability;</span>
+
+<span class="fc" id="L261">        var categoryLeaderboardE = leaderBoardService.getCategoryLeaderboard(eventId, categoryId, forceLeaderboard);</span>
+
+<span class="fc" id="L263">        return categoryLeaderboardE</span>
+<span class="fc" id="L264">                .fold(problem -&gt; {</span>
+<span class="fc" id="L265">                            return ResponseEntity</span>
+<span class="fc" id="L266">                                    .status(problem.getStatus().getStatusCode())</span>
+<span class="fc" id="L267">                                    .cacheControl(cacheControl)</span>
+<span class="fc" id="L268">                                    .body(problem);</span>
+                        },
+                        response -&gt; {
+<span class="fc" id="L271">                            return ResponseEntity</span>
+<span class="fc" id="L272">                                    .ok()</span>
+<span class="fc" id="L273">                                    .cacheControl(cacheControl)</span>
+<span class="fc" id="L274">                                    .body(response);</span>
+                        }
+                );
+    }
+
+    @RequestMapping(value = &quot;/{eventId}/winners&quot;, method = GET, produces = &quot;application/json&quot;)
+    @Timed(value = &quot;resource.leaderboard.category.winners&quot;, histogram = true)
+    @Operation(
+            summary = &quot;Retrieve Winners for an Event&quot;,
+            description = &quot;Fetches the winners for a specified event.&quot;,
+            responses = {
+                    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Successfully retrieved winners for the event.&quot;),
+                    @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Bad request, incorrect event ID.&quot;),
+                    @ApiResponse(responseCode = &quot;403&quot;, description = &quot;Winners not yet available for the event.&quot;),
+                    @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error or other issues.&quot;)
+            }
+    )
+    public ResponseEntity&lt;?&gt; getWinners(
+            @Parameter(name = &quot;eventId&quot;, description = &quot;ID of the event&quot;, required = true)
+            @PathVariable(&quot;eventId&quot;) String eventId,
+            @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = &quot;false&quot;) boolean forceLeaderboardResults) {
+<span class="nc" id="L295">        var cacheControl = CacheControl.maxAge(1, MINUTES)</span>
+<span class="nc" id="L296">                .noTransform()</span>
+<span class="nc" id="L297">                .mustRevalidate();</span>
+
+<span class="nc bnc" id="L299" title="All 4 branches missed.">        var forceLeaderboard = forceLeaderboardResults &amp;&amp; forceLeaderboardResultsAvailability;</span>
+
+<span class="nc" id="L301">        var categoryLeaderboardE = leaderBoardService.getEventWinners(eventId, forceLeaderboard);</span>
+
+<span class="nc" id="L303">        return categoryLeaderboardE</span>
+<span class="nc" id="L304">                .fold(problem -&gt; {</span>
+<span class="nc" id="L305">                            return ResponseEntity</span>
+<span class="nc" id="L306">                                    .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L307">                                    .cacheControl(cacheControl)</span>
+<span class="nc" id="L308">                                    .body(problem);</span>
+                        },
+                        response -&gt; {
+<span class="nc" id="L311">                            return ResponseEntity</span>
+<span class="nc" id="L312">                                    .ok()</span>
+<span class="nc" id="L313">                                    .cacheControl(cacheControl)</span>
+<span class="nc" id="L314">                                    .body(response);</span>
+                        }
+                );
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

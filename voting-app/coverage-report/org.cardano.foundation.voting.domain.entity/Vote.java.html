@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Vote.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.domain.entity</a> &gt; <span class="el_source">Vote.java</span></div><h1>Vote.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.domain.entity;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.*;
+import lombok.extern.slf4j.Slf4j;
+
+import javax.annotation.Nullable;
+import java.util.Optional;
+
+<span class="fc" id="L13">@NoArgsConstructor</span>
+<span class="nc" id="L14">@AllArgsConstructor</span>
+@Entity
+@Table(name = &quot;vote&quot;)
+<span class="nc" id="L17">@Builder</span>
+<span class="fc" id="L18">@Slf4j</span>
+<span class="nc" id="L19">@ToString(exclude = { &quot;coseSignature&quot;, &quot;cosePublicKey&quot;} )</span>
+public class Vote extends AbstractTimestampEntity {
+
+    @Id
+    @Column(name = &quot;id&quot;, nullable = false)
+<span class="fc" id="L24">    @Getter</span>
+<span class="fc" id="L25">    @Setter</span>
+    private String id;
+
+    @Column(name = &quot;id_numeric_hash&quot;, nullable = false)
+<span class="nc" id="L29">    @Getter</span>
+<span class="fc" id="L30">    @Setter</span>
+    private long idNumericHash;
+
+    @Column(name = &quot;event_id&quot;, nullable = false)
+<span class="nc" id="L34">    @Getter</span>
+<span class="fc" id="L35">    @Setter</span>
+    private String eventId;
+
+    @Column(name = &quot;category_id&quot;, nullable = false)
+<span class="nc" id="L39">    @Getter</span>
+<span class="fc" id="L40">    @Setter</span>
+    private String categoryId;
+
+    @Column(name = &quot;proposal_id&quot;, nullable = false)
+<span class="fc" id="L44">    @Getter</span>
+<span class="fc" id="L45">    @Setter</span>
+    private String proposalId;
+
+    @Column(name = &quot;voter_stake_address&quot;, nullable = false)
+<span class="fc" id="L49">    @Getter</span>
+<span class="fc" id="L50">    @Setter</span>
+    private String voterStakingAddress;
+
+    @Column(name = &quot;cose_signature&quot;, nullable = false, columnDefinition = &quot;text&quot;, length = 2048)
+<span class="fc" id="L54">    @Getter</span>
+<span class="fc" id="L55">    @Setter</span>
+    private String coseSignature;
+
+    @Column(name = &quot;cose_public_key&quot;)
+    @Nullable
+    private String cosePublicKey;
+
+    @Column(name = &quot;voting_power&quot;)
+    @Nullable
+    // nullable since it makes sense only for STAKE_BASED or BALANCE_BASED events
+    private Long votingPower;
+
+    @Column(name = &quot;voted_at_slot&quot;, nullable = false)
+<span class="fc" id="L68">    @Getter</span>
+<span class="fc" id="L69">    @Setter</span>
+    private long votedAtSlot;
+
+    @Nullable
+    public Optional&lt;String&gt; getCosePublicKey() {
+<span class="fc" id="L74">        return Optional.ofNullable(cosePublicKey);</span>
+    }
+
+    public void setCosePublicKey(Optional&lt;String&gt; cosePublicKey) {
+<span class="fc" id="L78">        this.cosePublicKey = cosePublicKey.orElse(null);</span>
+<span class="fc" id="L79">    }</span>
+
+    public Optional&lt;Long&gt; getVotingPower() {
+<span class="fc" id="L82">        return Optional.ofNullable(votingPower);</span>
+    }
+
+    public void setVotingPower(Optional&lt;Long&gt; votingPower) {
+<span class="fc" id="L86">        this.votingPower = votingPower.orElse(null);</span>
+<span class="fc" id="L87">    }</span>
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

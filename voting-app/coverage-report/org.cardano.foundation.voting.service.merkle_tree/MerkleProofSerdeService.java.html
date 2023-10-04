@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MerkleProofSerdeService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.service.merkle_tree</a> &gt; <span class="el_source">MerkleProofSerdeService.java</span></div><h1>MerkleProofSerdeService.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.service.merkle_tree;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.cardanofoundation.merkle.ProofItem;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import static com.bloxbean.cardano.client.util.HexUtil.decodeHexString;
+
+@Service
+<span class="fc" id="L18">@RequiredArgsConstructor</span>
+<span class="fc" id="L19">@Slf4j</span>
+public class MerkleProofSerdeService {
+
+    private final ObjectMapper objectMapper;
+
+<span class="nc" id="L24">    @SneakyThrows</span>
+    public List&lt;ProofItem&gt; deserialise(String proofItemJson) {
+<span class="fc" id="L26">        var root = objectMapper.readTree(proofItemJson);</span>
+
+<span class="fc" id="L28">        var steps = root.get(&quot;steps&quot;);</span>
+
+<span class="pc bpc" id="L30" title="1 of 2 branches missed.">        if (!steps.isArray()) {</span>
+<span class="nc" id="L31">            return List.of();</span>
+        }
+
+<span class="fc" id="L34">        ArrayList&lt;ProofItem&gt; items = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L35" title="All 2 branches covered.">        for (Iterator&lt;JsonNode&gt; it = steps.iterator(); it.hasNext();) {</span>
+<span class="fc" id="L36">            var item = it.next();</span>
+<span class="fc" id="L37">            items.add(deserialiseProofItem(item));</span>
+<span class="fc" id="L38">        }</span>
+
+<span class="fc" id="L40">        return items;</span>
+    }
+
+    private ProofItem deserialiseProofItem(JsonNode item) {
+<span class="pc bpc" id="L44" title="1 of 2 branches missed.">        if (item.has(&quot;L&quot;)) {</span>
+<span class="nc" id="L45">            return new ProofItem.Left(decodeHexString(item.get(&quot;L&quot;).asText()));</span>
+        }
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">        if (item.has(&quot;R&quot;)) {</span>
+<span class="fc" id="L48">            return new ProofItem.Right(decodeHexString(item.get(&quot;R&quot;).asText()));</span>
+        }
+
+<span class="nc" id="L51">        throw new IllegalArgumentException(&quot;Invalid proof item: &quot; + item);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

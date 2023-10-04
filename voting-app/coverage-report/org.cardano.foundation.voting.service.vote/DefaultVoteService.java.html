@@ -1,0 +1,585 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DefaultVoteService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.service.vote</a> &gt; <span class="el_source">DefaultVoteService.java</span></div><h1>DefaultVoteService.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.service.vote;
+
+import io.micrometer.core.annotation.Timed;
+import io.vavr.control.Either;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.client.ChainFollowerClient;
+import org.cardano.foundation.voting.client.UserVerificationClient;
+import org.cardano.foundation.voting.domain.UserVotes;
+import org.cardano.foundation.voting.domain.VoteReceipt;
+import org.cardano.foundation.voting.domain.entity.Vote;
+import org.cardano.foundation.voting.domain.entity.VoteMerkleProof;
+import org.cardano.foundation.voting.repository.VoteRepository;
+import org.cardano.foundation.voting.service.auth.jwt.JwtAuthenticationToken;
+import org.cardano.foundation.voting.service.auth.web3.Web3AuthenticationToken;
+import org.cardano.foundation.voting.service.json.JsonService;
+import org.cardano.foundation.voting.service.merkle_tree.MerkleProofSerdeService;
+import org.cardano.foundation.voting.service.merkle_tree.VoteMerkleProofService;
+import org.cardano.foundation.voting.utils.MoreUUID;
+import org.cardanofoundation.merkle.ProofItem;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.zalando.problem.Problem;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import static com.bloxbean.cardano.client.util.HexUtil.encodeHexString;
+import static org.cardano.foundation.voting.domain.VoteReceipt.Status.*;
+import static org.cardano.foundation.voting.domain.VotingEventType.*;
+import static org.cardano.foundation.voting.domain.web3.Web3Action.*;
+import static org.cardano.foundation.voting.utils.MoreNumber.isNumeric;
+import static org.cardanofoundation.cip30.MessageFormat.TEXT;
+import static org.zalando.problem.Status.*;
+
+@Service
+<span class="fc" id="L38">@Slf4j</span>
+<span class="fc" id="L39">@RequiredArgsConstructor</span>
+public class DefaultVoteService implements VoteService {
+
+    private final VoteRepository voteRepository;
+
+    private final VoteMerkleProofService voteMerkleProofService;
+
+    private final MerkleProofSerdeService merkleProofSerdeService;
+
+    private final ChainFollowerClient chainFollowerClient;
+
+    private final UserVerificationClient userVerificationClient;
+
+    private final JsonService jsonService;
+
+    @Override
+    @Transactional(readOnly = true)
+    @Timed(value = &quot;service.vote.getVotes&quot;, histogram = true)
+    public Either&lt;Problem, List&lt;UserVotes&gt;&gt; getVotes(JwtAuthenticationToken auth) {
+<span class="fc" id="L58">        var jwtEventId = auth.eventDetails().id();</span>
+<span class="fc" id="L59">        var jwtStakeAddress = auth.getStakeAddress();</span>
+
+<span class="pc bpc" id="L61" title="1 of 2 branches missed.">        if (auth.isActionNotAllowed(VOTES)) {</span>
+<span class="nc" id="L62">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L63">                    .withTitle(&quot;ACTION_NOT_ALLOWED&quot;)</span>
+<span class="nc" id="L64">                    .withDetail(&quot;Action VOTES not allowed for the role:&quot; + auth.role().name())</span>
+<span class="nc" id="L65">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L66">                    .build());</span>
+        }
+
+<span class="fc" id="L69">        var userVotesList = voteRepository.getVotesByStakeAddress(jwtEventId, jwtStakeAddress)</span>
+<span class="fc" id="L70">                .stream().map(p -&gt; {</span>
+<span class="fc" id="L71">                    var cid = p.getCategoryId();</span>
+<span class="fc" id="L72">                    var pid = p.getProposalId();</span>
+
+<span class="fc" id="L74">                    return new UserVotes(cid, pid);</span>
+<span class="fc" id="L75">                }).toList();</span>
+
+<span class="fc" id="L77">        return Either.right(userVotesList);</span>
+    }
+
+    @Transactional(readOnly = true)
+    @Timed(value = &quot;service.vote.isVoteChangingPossible&quot;, histogram = true)
+    public Either&lt;Problem, Boolean&gt; isVoteChangingPossible(String voteId,
+                                                           JwtAuthenticationToken auth) {
+<span class="nc" id="L84">        var jwtEventId = auth.eventDetails().id();</span>
+
+<span class="nc bnc" id="L86" title="All 2 branches missed.">        if (auth.isActionNotAllowed(IS_VOTE_CHANGING_ALLOWED)) {</span>
+<span class="nc" id="L87">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L88">                    .withTitle(&quot;ACTION_NOT_ALLOWED&quot;)</span>
+<span class="nc" id="L89">                    .withDetail(&quot;Action IS_VOTE_CASTING_ALLOWED not allowed for the role:&quot; + auth.role().name())</span>
+<span class="nc" id="L90">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L91">                    .build());</span>
+        }
+<span class="nc bnc" id="L93" title="All 2 branches missed.">        if (auth.eventDetails().isEventInactive()) {</span>
+<span class="nc" id="L94">            return Either.right(false);</span>
+        }
+
+<span class="nc" id="L97">        var maybeExistingVote = voteRepository.findById(voteId);</span>
+<span class="nc bnc" id="L98" title="All 2 branches missed.">        if (maybeExistingVote.isEmpty()) {</span>
+<span class="nc" id="L99">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L100">                    .withTitle(&quot;VOTE_NOT_FOUND&quot;)</span>
+<span class="nc" id="L101">                    .withDetail(&quot;Vote not found, voteId:&quot; + voteId)</span>
+<span class="nc" id="L102">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L103">                    .build()</span>
+            );
+        }
+
+<span class="nc" id="L107">        var maybeExistingProof = voteMerkleProofService.findLatestProof(jwtEventId, voteId);</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">        if (maybeExistingProof.isPresent()) {</span>
+<span class="nc" id="L109">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L110">                    .withTitle(&quot;VOTE_CANNOT_BE_CHANGED&quot;)</span>
+<span class="nc" id="L111">                    .withDetail(&quot;Vote cannot be changed, voteId:&quot; + voteId)</span>
+<span class="nc" id="L112">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L113">                    .build()</span>
+            );
+        }
+
+<span class="nc" id="L117">        return Either.right(true);</span>
+    }
+
+    @Override
+    @Transactional
+    @Timed(value = &quot;service.vote.castVote&quot;, histogram = true)
+    public Either&lt;Problem, Vote&gt; castVote(Web3AuthenticationToken web3AuthenticationToken) {
+<span class="fc" id="L124">        var details = web3AuthenticationToken.getDetails();</span>
+<span class="fc" id="L125">        var cip30VerificationResult = details.getCip30VerificationResult();</span>
+
+<span class="fc" id="L127">        var event = details.getEvent();</span>
+<span class="fc" id="L128">        var eventId = event.id();</span>
+<span class="fc" id="L129">        var stakeAddress = details.getStakeAddress();</span>
+
+<span class="fc" id="L131">        var signedJson = cip30VerificationResult.getMessage(TEXT);</span>
+
+<span class="fc" id="L133">        var castVoteRequestBodyJsonE = jsonService.decodeCIP93VoteEnvelope(signedJson);</span>
+<span class="pc bpc" id="L134" title="1 of 2 branches missed.">        if (castVoteRequestBodyJsonE.isLeft()) {</span>
+<span class="nc bnc" id="L135" title="All 2 branches missed.">            if (castVoteRequestBodyJsonE.isLeft()) {</span>
+<span class="nc" id="L136">                return Either.left(</span>
+<span class="nc" id="L137">                        Problem.builder()</span>
+<span class="nc" id="L138">                                .withTitle(&quot;INVALID_CIP30_DATA_SIGNATURE&quot;)</span>
+<span class="nc" id="L139">                                .withDetail(&quot;Invalid cast vote signature!&quot;)</span>
+<span class="nc" id="L140">                                .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L141">                                .build()</span>
+                );
+            }
+        }
+<span class="fc" id="L145">        var cip93VoteEnvelope = castVoteRequestBodyJsonE.get();</span>
+
+<span class="pc bpc" id="L147" title="1 of 2 branches missed.">        if (details.getAction() != CAST_VOTE) {</span>
+<span class="nc" id="L148">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L149">                    .withTitle(&quot;INVALID_ACTION&quot;)</span>
+<span class="nc" id="L150">                    .withDetail(&quot;Action is not CAST_VOTE, expected action:&quot; + CAST_VOTE.name())</span>
+<span class="nc" id="L151">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L152">                    .build()</span>
+            );
+        }
+
+<span class="pc bpc" id="L156" title="1 of 2 branches missed.">        if (event.isEventInactive()) {</span>
+<span class="nc" id="L157">            log.warn(&quot;Event is not active, id:{}&quot;, eventId);</span>
+
+<span class="nc" id="L159">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L160">                    .withTitle(&quot;EVENT_IS_NOT_ACTIVE&quot;)</span>
+<span class="nc" id="L161">                    .withDetail(&quot;Event is not active (not started or already finished), id:&quot; + eventId)</span>
+<span class="nc" id="L162">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L163">                    .build());</span>
+        }
+
+<span class="pc bpc" id="L166" title="1 of 2 branches missed.">        if (web3AuthenticationToken.getDetails().getChainTip().isNotSynced()) {</span>
+<span class="nc" id="L167">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L168">                    .withTitle(&quot;CHAIN_FOLLOWER_NOT_SYNCED&quot;)</span>
+<span class="nc" id="L169">                    .withDetail(&quot;Chain follower service not fully synced, please try again later!&quot;)</span>
+<span class="nc" id="L170">                    .withStatus(INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L171">                    .build());</span>
+        }
+
+        // check which is specific for the USER_BASED event type
+<span class="pc bpc" id="L175" title="1 of 2 branches missed.">        if (event.votingEventType() == USER_BASED) {</span>
+<span class="nc" id="L176">            var userVerifiedE = userVerificationClient.isVerified(eventId, details.getStakeAddress());</span>
+<span class="nc bnc" id="L177" title="All 2 branches missed.">            if (userVerifiedE.isEmpty()) {</span>
+<span class="nc" id="L178">                return Either.left(Problem.builder()</span>
+<span class="nc" id="L179">                        .withTitle(&quot;ERROR_GETTING_USER_VERIFICATION_STATUS&quot;)</span>
+<span class="nc" id="L180">                        .withDetail(&quot;Unable to get user verification status from user-verification service, reason: user verification service not available&quot;)</span>
+<span class="nc" id="L181">                        .withStatus(INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L182">                        .build()</span>
+                );
+            }
+<span class="nc" id="L185">            var userVerifiedResponse = userVerifiedE.get();</span>
+
+<span class="nc bnc" id="L187" title="All 2 branches missed.">            if (userVerifiedResponse.isNotYetVerified()) {</span>
+<span class="nc" id="L188">                log.warn(&quot;User is not verified, id:{}&quot;, eventId);</span>
+
+<span class="nc" id="L190">                return Either.left(Problem.builder()</span>
+<span class="nc" id="L191">                        .withTitle(&quot;USER_IS_NOT_VERIFIED&quot;)</span>
+<span class="nc" id="L192">                        .withDetail(&quot;User is not verified, id:&quot; + eventId)</span>
+<span class="nc" id="L193">                        .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L194">                        .build());</span>
+            }
+        }
+
+<span class="fc" id="L198">        var categoryId = cip93VoteEnvelope.getData().getCategory();</span>
+<span class="fc" id="L199">        var maybeCategory = event.categoryDetailsById(categoryId);</span>
+<span class="pc bpc" id="L200" title="1 of 2 branches missed.">        if (maybeCategory.isEmpty()) {</span>
+<span class="nc" id="L201">            log.warn(&quot;Unrecognised category, id:{}&quot;, categoryId);</span>
+
+<span class="nc" id="L203">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L204">                    .withTitle(&quot;UNRECOGNISED_CATEGORY&quot;)</span>
+<span class="nc" id="L205">                    .withDetail(&quot;Unrecognised category, id:&quot; + categoryId)</span>
+<span class="nc" id="L206">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L207">                    .build());</span>
+        }
+<span class="fc" id="L209">        var category = maybeCategory.orElseThrow();</span>
+
+<span class="fc" id="L211">        var proposalIdOrName = cip93VoteEnvelope.getData().getProposal();</span>
+
+        ChainFollowerClient.ProposalDetailsResponse proposal;
+<span class="pc bpc" id="L214" title="1 of 2 branches missed.">        if (category.gdprProtection()) {</span>
+<span class="nc" id="L215">            var maybeProposal = category.findProposalById(proposalIdOrName);</span>
+<span class="nc bnc" id="L216" title="All 2 branches missed.">            if (maybeProposal.isEmpty()) {</span>
+<span class="nc" id="L217">                log.warn(&quot;Unrecognised proposal, proposalId:{}&quot;, proposalIdOrName);</span>
+
+<span class="nc" id="L219">                return Either.left(Problem.builder()</span>
+<span class="nc" id="L220">                        .withTitle(&quot;UNRECOGNISED_PROPOSAL&quot;)</span>
+<span class="nc" id="L221">                        .withDetail(&quot;Unrecognised proposal, proposal:&quot; + proposalIdOrName)</span>
+<span class="nc" id="L222">                        .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L223">                        .build());</span>
+            }
+<span class="nc" id="L225">            proposal = maybeProposal.orElseThrow();</span>
+<span class="nc" id="L226">        } else {</span>
+<span class="fc" id="L227">            var maybeProposal = category.findProposalByName(proposalIdOrName);</span>
+<span class="pc bpc" id="L228" title="1 of 2 branches missed.">            if (maybeProposal.isEmpty()) {</span>
+<span class="nc" id="L229">                log.warn(&quot;Unrecognised proposal, proposalId:{}&quot;, proposalIdOrName);</span>
+
+<span class="nc" id="L231">                return Either.left(Problem.builder()</span>
+<span class="nc" id="L232">                        .withTitle(&quot;UNRECOGNISED_PROPOSAL&quot;)</span>
+<span class="nc" id="L233">                        .withDetail(&quot;Unrecognised proposal, proposal:&quot; + proposalIdOrName)</span>
+<span class="nc" id="L234">                        .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L235">                        .build());</span>
+            }
+<span class="fc" id="L237">            proposal = maybeProposal.orElseThrow();</span>
+        }
+
+<span class="fc" id="L240">        String voteId = cip93VoteEnvelope.getData().getId();</span>
+<span class="pc bpc" id="L241" title="2 of 4 branches missed.">        if (voteId == null || !MoreUUID.isUUIDv4(voteId)) {</span>
+<span class="nc" id="L242">            return Either.left(</span>
+<span class="nc" id="L243">                    Problem.builder()</span>
+<span class="nc" id="L244">                            .withTitle(&quot;INVALID_VOTE_ID&quot;)</span>
+<span class="nc" id="L245">                            .withDetail(&quot;Invalid vote voteId: &quot; + voteId)</span>
+<span class="nc" id="L246">                            .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L247">                            .build());</span>
+        }
+
+<span class="fc" id="L250">        var votedAtSlotStr = cip93VoteEnvelope.getData().getVotedAt();</span>
+<span class="pc bpc" id="L251" title="1 of 2 branches missed.">        if (!isNumeric(votedAtSlotStr)) {</span>
+<span class="nc" id="L252">            return Either.left(</span>
+<span class="nc" id="L253">                    Problem.builder()</span>
+<span class="nc" id="L254">                            .withTitle(&quot;INVALID_SLOT&quot;)</span>
+<span class="nc" id="L255">                            .withDetail(&quot;Vote's votedAt slot is not numeric!&quot;)</span>
+<span class="nc" id="L256">                            .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L257">                            .build()</span>
+            );
+        }
+<span class="fc" id="L260">        var votedAtSlot = cip93VoteEnvelope.getData().getVotedAtSlot();</span>
+
+<span class="pc bpc" id="L262" title="1 of 2 branches missed.">        if (votedAtSlot != details.getEnvelope().getSlotAsLong()) {</span>
+<span class="nc" id="L263">            log.warn(&quot;Slots mismatch, votedAt slot:{}, CIP-93 slot:{}&quot;, votedAtSlot, details.getEnvelope().getSlotAsLong());</span>
+
+<span class="nc" id="L265">            return Either.left(</span>
+<span class="nc" id="L266">                    Problem.builder()</span>
+<span class="nc" id="L267">                            .withTitle(&quot;SLOT_MISMATCH&quot;)</span>
+<span class="nc" id="L268">                            .withDetail(&quot;CIP93 envelope slot and votedAt slot mismatch!&quot;)</span>
+<span class="nc" id="L269">                            .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L270">                            .build()</span>
+            );
+        }
+
+<span class="fc" id="L274">        var maybeExistingVote = voteRepository.findByEventIdAndCategoryIdAndVoterStakingAddress(eventId, category.id(), details.getStakeAddress());</span>
+<span class="pc bpc" id="L275" title="1 of 2 branches missed.">        if (maybeExistingVote.isPresent()) {</span>
+
+<span class="nc bnc" id="L277" title="All 2 branches missed.">            if (!event.allowVoteChanging()) {</span>
+<span class="nc" id="L278">                return Either.left(Problem.builder()</span>
+<span class="nc" id="L279">                        .withTitle(&quot;VOTE_CANNOT_BE_CHANGED&quot;)</span>
+<span class="nc" id="L280">                        .withDetail(&quot;Vote cannot be changed for the stake address: &quot; + stakeAddress + &quot;, within category: &quot; + category.id() + &quot;, for event: &quot; + eventId)</span>
+<span class="nc" id="L281">                        .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L282">                        .build()</span>
+                );
+            }
+<span class="nc" id="L285">            var existingVote = maybeExistingVote.orElseThrow();</span>
+
+<span class="nc" id="L287">            var maybeLatestProof = voteMerkleProofService.findLatestProof(eventId, maybeExistingVote.orElseThrow().getId());</span>
+<span class="nc bnc" id="L288" title="All 2 branches missed.">            if (maybeLatestProof.isPresent()) {</span>
+<span class="nc" id="L289">                log.warn(&quot;Cannot change existing vote for the stake address: &quot; + stakeAddress, &quot;, within category: &quot; + category.id() + &quot;, for event: &quot; + eventId);</span>
+
+<span class="nc" id="L291">                return Either.left(</span>
+<span class="nc" id="L292">                        Problem.builder()</span>
+<span class="nc" id="L293">                                .withTitle(&quot;VOTE_CANNOT_BE_CHANGED&quot;)</span>
+<span class="nc" id="L294">                                .withDetail(&quot;Vote cannot be changed for the stake address: &quot; + stakeAddress + &quot;, within category: &quot; + category.id() + &quot;, for event: &quot; + eventId)</span>
+<span class="nc" id="L295">                                .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L296">                                .build()</span>
+                );
+            }
+<span class="nc" id="L299">            existingVote.setId(existingVote.getId());</span>
+<span class="nc" id="L300">            existingVote.setProposalId(proposal.id());</span>
+<span class="nc" id="L301">            existingVote.setVotedAtSlot(cip93VoteEnvelope.getSlotAsLong());</span>
+<span class="nc" id="L302">            existingVote.setCoseSignature(details.getSignedWeb3Request().getCoseSignature());</span>
+<span class="nc" id="L303">            existingVote.setCosePublicKey(details.getSignedWeb3Request().getCosePublicKey());</span>
+
+<span class="nc" id="L305">            return Either.right(voteRepository.saveAndFlush(existingVote));</span>
+        }
+
+<span class="fc" id="L308">        var vote = new Vote();</span>
+<span class="fc" id="L309">        vote.setId(voteId);</span>
+<span class="fc" id="L310">        vote.setEventId(event.id());</span>
+<span class="fc" id="L311">        vote.setCategoryId(category.id());</span>
+<span class="fc" id="L312">        vote.setProposalId(proposal.id());</span>
+<span class="fc" id="L313">        vote.setVoterStakingAddress(stakeAddress);</span>
+<span class="fc" id="L314">        vote.setVotedAtSlot(cip93VoteEnvelope.getSlotAsLong());</span>
+<span class="fc" id="L315">        vote.setCoseSignature(details.getSignedWeb3Request().getCoseSignature());</span>
+<span class="fc" id="L316">        vote.setCosePublicKey(details.getSignedWeb3Request().getCosePublicKey());</span>
+<span class="fc" id="L317">        vote.setIdNumericHash(UUID.fromString(voteId).hashCode() &amp; 0xFFFFFFF);</span>
+
+<span class="pc bpc" id="L319" title="1 of 2 branches missed.">        if (List.of(STAKE_BASED, BALANCE_BASED).contains(event.votingEventType())) {</span>
+<span class="fc" id="L320">            var accountE = chainFollowerClient.findAccount(eventId, stakeAddress);</span>
+<span class="pc bpc" id="L321" title="1 of 2 branches missed.">            if (accountE.isEmpty()) {</span>
+<span class="nc" id="L322">                return Either.left(Problem.builder()</span>
+<span class="nc" id="L323">                        .withTitle(&quot;ERROR_GETTING_ACCOUNT&quot;)</span>
+<span class="nc" id="L324">                        .withDetail(&quot;Unable to get account from chain-tip follower service, stakeAddress:&quot; + stakeAddress)</span>
+<span class="nc" id="L325">                        .withStatus(INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L326">                        .build()</span>
+                );
+            }
+<span class="fc" id="L329">            var maybeAccount = accountE.get();</span>
+<span class="pc bpc" id="L330" title="1 of 2 branches missed.">            if (maybeAccount.isEmpty()) {</span>
+<span class="nc" id="L331">                log.warn(&quot;State account not eligible to vote, e.g. not staked or power is less than equal 0 for the stake address: &quot; + stakeAddress);</span>
+
+<span class="nc" id="L333">                return Either.left(</span>
+<span class="nc" id="L334">                        Problem.builder()</span>
+<span class="nc" id="L335">                                .withTitle(&quot;NOT_ELIGIBLE&quot;)</span>
+<span class="nc" id="L336">                                .withDetail(&quot;State account not eligible to vote, e.g. account not staked at snapshot epoch or voting power is less than equal 0 for the stake address:&quot; + stakeAddress)</span>
+<span class="nc" id="L337">                                .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L338">                                .build()</span>
+                );
+            }
+<span class="fc" id="L341">            var account = maybeAccount.get();</span>
+
+            // if we are eligible then we will have voting power
+<span class="fc" id="L344">            var blockchainVotingPowerStr = account.votingPower();</span>
+<span class="pc bpc" id="L345" title="1 of 2 branches missed.">            if (!isNumeric(blockchainVotingPowerStr)) {</span>
+<span class="nc" id="L346">                return Either.left(</span>
+<span class="nc" id="L347">                        Problem.builder()</span>
+<span class="nc" id="L348">                                .withTitle(&quot;INVALID_VOTING_POWER&quot;)</span>
+<span class="nc" id="L349">                                .withDetail(&quot;Invalid blockchain voting power for the stake address: &quot; + stakeAddress)</span>
+<span class="nc" id="L350">                                .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L351">                                .build()</span>
+                );
+            }
+<span class="fc" id="L354">            var blockchainVotingPower = Long.parseLong(blockchainVotingPowerStr);</span>
+
+<span class="pc bpc" id="L356" title="1 of 2 branches missed.">            if (!isNumeric(cip93VoteEnvelope.getData().getVotingPower().orElseThrow())) {</span>
+<span class="nc" id="L357">                return Either.left(</span>
+<span class="nc" id="L358">                        Problem.builder()</span>
+<span class="nc" id="L359">                                .withTitle(&quot;INVALID_VOTING_POWER&quot;)</span>
+<span class="nc" id="L360">                                .withDetail(&quot;CIP-93's envelope votingPower is not numeric for the stake address: &quot; + stakeAddress)</span>
+<span class="nc" id="L361">                                .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L362">                                .build()</span>
+                );
+            }
+<span class="fc" id="L365">            var signedVotingPower = Long.parseLong(cip93VoteEnvelope.getData().getVotingPower().orElseThrow());</span>
+<span class="pc bpc" id="L366" title="1 of 2 branches missed.">            if (signedVotingPower != blockchainVotingPower) {</span>
+<span class="nc" id="L367">                return Either.left(</span>
+<span class="nc" id="L368">                        Problem.builder()</span>
+<span class="nc" id="L369">                                .withTitle(&quot;VOTING_POWER_MISMATCH&quot;)</span>
+<span class="nc" id="L370">                                .withDetail(&quot;Signed voting power is not equal to blockchain voting power for the stake address: &quot; + stakeAddress)</span>
+<span class="nc" id="L371">                                .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L372">                                .build()</span>
+                );
+            }
+
+<span class="fc" id="L376">            vote.setVotingPower(Optional.of(blockchainVotingPower));</span>
+        }
+
+<span class="pc bpc" id="L379" title="1 of 2 branches missed.">        if (event.votingEventType() == USER_BASED) {</span>
+<span class="nc bnc" id="L380" title="All 2 branches missed.">            if (vote.getVotingPower().isPresent()) {</span>
+<span class="nc" id="L381">                return Either.left(</span>
+<span class="nc" id="L382">                        Problem.builder()</span>
+<span class="nc" id="L383">                                .withTitle(&quot;VOTING_POWER_NOT_SUPPORTED&quot;)</span>
+<span class="nc" id="L384">                                .withDetail(&quot;Voting power makes no sense for USER_BASED events, please remove it from the cast vote's envelope.&quot;)</span>
+<span class="nc" id="L385">                                .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L386">                                .build()</span>
+                );
+            }
+        }
+
+<span class="fc" id="L391">        return Either.right(voteRepository.saveAndFlush(vote));</span>
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    @Timed(value = &quot;service.vote.voteReceipt&quot;, histogram = true)
+    public Either&lt;Problem, VoteReceipt&gt; voteReceipt(Web3AuthenticationToken web3AuthenticationToken) {
+<span class="fc" id="L398">        log.info(&quot;Fetching voter's receipt for the signed data...&quot;);</span>
+
+<span class="fc" id="L400">        var details = web3AuthenticationToken.getDetails();</span>
+<span class="fc" id="L401">        var cip30VerificationResult = details.getCip30VerificationResult();</span>
+
+<span class="fc" id="L403">        var event = details.getEvent();</span>
+<span class="fc" id="L404">        var stakeAddress = details.getStakeAddress();</span>
+
+<span class="fc" id="L406">        var signedJson = cip30VerificationResult.getMessage(TEXT);</span>
+
+<span class="fc" id="L408">        var viewVoteReceiptEnvelopeE = jsonService.decodeCIP93ViewVoteReceiptEnvelope(signedJson);</span>
+<span class="pc bpc" id="L409" title="1 of 2 branches missed.">        if (viewVoteReceiptEnvelopeE.isLeft()) {</span>
+<span class="nc" id="L410">            return Either.left(</span>
+<span class="nc" id="L411">                    Problem.builder()</span>
+<span class="nc" id="L412">                            .withTitle(&quot;INVALID_CIP30_DATA_SIGNATURE&quot;)</span>
+<span class="nc" id="L413">                            .withDetail(&quot;Invalid view vote receipt signature!&quot;)</span>
+<span class="nc" id="L414">                            .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L415">                            .build()</span>
+            );
+        }
+<span class="fc" id="L418">        var viewVoteReceiptEnvelope = viewVoteReceiptEnvelopeE.get();</span>
+
+<span class="pc bpc" id="L420" title="1 of 2 branches missed.">        if (details.getAction() != VIEW_VOTE_RECEIPT) {</span>
+<span class="nc" id="L421">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L422">                    .withTitle(&quot;INVALID_ACTION&quot;)</span>
+<span class="nc" id="L423">                    .withDetail(&quot;Action is not VIEW_VOTE_RECEIPT, action:&quot; + details.getAction())</span>
+<span class="nc" id="L424">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L425">                    .build()</span>
+            );
+        }
+
+<span class="fc" id="L429">        var categoryId = viewVoteReceiptEnvelope.getData().getCategory();</span>
+
+<span class="fc" id="L431">        return actualVoteReceipt(event, categoryId, stakeAddress);</span>
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Either&lt;Problem, VoteReceipt&gt; voteReceipt(String categoryId,
+                                                    JwtAuthenticationToken auth) {
+<span class="fc" id="L438">        var jwtStakeAddress = auth.getStakeAddress();</span>
+
+<span class="pc bpc" id="L440" title="1 of 2 branches missed.">        if (auth.isActionNotAllowed(VIEW_VOTE_RECEIPT)) {</span>
+<span class="nc" id="L441">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L442">                    .withTitle(&quot;ACTION_NOT_ALLOWED&quot;)</span>
+<span class="nc" id="L443">                    .withDetail(&quot;Action VIEW_VOTE_RECEIPT not allowed for the role:&quot; + auth.role().name())</span>
+<span class="nc" id="L444">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L445">                    .build());</span>
+        }
+
+<span class="fc" id="L448">        return actualVoteReceipt(auth.eventDetails(), categoryId, jwtStakeAddress);</span>
+    }
+
+    private Either&lt;Problem, VoteReceipt&gt; actualVoteReceipt(ChainFollowerClient.EventDetailsResponse event,
+                                                           String categoryId,
+                                                           String stakeAddress) {
+<span class="fc" id="L454">        var maybeCategory = event.categoryDetailsById(categoryId);</span>
+<span class="pc bpc" id="L455" title="1 of 2 branches missed.">        if (maybeCategory.isEmpty()) {</span>
+<span class="nc" id="L456">            log.warn(&quot;Unrecognised category, id:{}&quot;, categoryId);</span>
+
+<span class="nc" id="L458">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L459">                    .withTitle(&quot;UNRECOGNISED_CATEGORY&quot;)</span>
+<span class="nc" id="L460">                    .withDetail(&quot;Unrecognised category, id:&quot; + categoryId)</span>
+<span class="nc" id="L461">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L462">                    .build());</span>
+        }
+<span class="fc" id="L464">        var category = maybeCategory.orElseThrow();</span>
+
+<span class="fc" id="L466">        var maybeVote = voteRepository.findByEventIdAndCategoryIdAndVoterStakingAddress(event.id(), category.id(), stakeAddress);</span>
+<span class="pc bpc" id="L467" title="1 of 2 branches missed.">        if (maybeVote.isEmpty()) {</span>
+<span class="nc" id="L468">            return Either.left(</span>
+<span class="nc" id="L469">                    Problem.builder()</span>
+<span class="nc" id="L470">                            .withTitle(&quot;VOTE_NOT_FOUND&quot;)</span>
+<span class="nc" id="L471">                            .withDetail(&quot;Not voted yet for stakeKey:&quot; + stakeAddress)</span>
+<span class="nc" id="L472">                            .withStatus(NOT_FOUND)</span>
+<span class="nc" id="L473">                            .build()</span>
+            );
+        }
+<span class="fc" id="L476">        var vote = maybeVote.orElseThrow();</span>
+
+<span class="fc" id="L478">        var maybeProposal = category.findProposalById(vote.getProposalId());</span>
+<span class="pc bpc" id="L479" title="1 of 2 branches missed.">        if (maybeProposal.isEmpty()) {</span>
+<span class="nc" id="L480">            return Either.left(</span>
+<span class="nc" id="L481">                    Problem.builder()</span>
+<span class="nc" id="L482">                            .withTitle(&quot;PROPOSAL_NOT_FOUND&quot;)</span>
+<span class="nc" id="L483">                            .withDetail(&quot;Proposal not found for voteId:&quot; + vote.getId())</span>
+<span class="nc" id="L484">                            .withStatus(NOT_FOUND)</span>
+<span class="nc" id="L485">                            .build()</span>
+            );
+        }
+<span class="fc" id="L488">        var proposal = maybeProposal.orElseThrow();</span>
+<span class="pc bpc" id="L489" title="1 of 2 branches missed.">        var proposalIdOrName = category.gdprProtection() ? proposal.id() : proposal.name();</span>
+
+<span class="fc" id="L491">        var latestVoteMerkleProof = voteMerkleProofService.findLatestProof(event.id(), vote.getId());</span>
+
+<span class="fc" id="L493">        return latestVoteMerkleProof.map(proof -&gt; {</span>
+<span class="nc" id="L494">            log.info(&quot;Latest merkle proof found for voteId:{}&quot;, vote.getId());</span>
+
+<span class="nc" id="L496">            var transactionDetailsE = chainFollowerClient.getTransactionDetails(proof.getL1TransactionHash());</span>
+<span class="nc bnc" id="L497" title="All 2 branches missed.">            if (transactionDetailsE.isEmpty()) {</span>
+<span class="nc" id="L498">                return Either.&lt;Problem, VoteReceipt&gt;left(Problem.builder()</span>
+<span class="nc" id="L499">                        .withTitle(&quot;ERROR_GETTING_TRANSACTION_DETAILS&quot;)</span>
+<span class="nc" id="L500">                        .withDetail(&quot;Unable to get transaction details from chain-tip follower service, transactionHash:&quot; + proof.getL1TransactionHash())</span>
+<span class="nc" id="L501">                        .withStatus(INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L502">                        .build());</span>
+            }
+<span class="nc" id="L504">            var maybeTransactionDetails = transactionDetailsE.get();</span>
+
+<span class="nc" id="L506">            var isL1CommitmentOnChain = maybeTransactionDetails.map(ChainFollowerClient.TransactionDetailsResponse::finalityScore);</span>
+
+<span class="nc" id="L508">            return Either.&lt;Problem, VoteReceipt&gt;right(VoteReceipt.builder()</span>
+<span class="nc" id="L509">                    .id(vote.getId())</span>
+<span class="nc" id="L510">                    .event(event.id())</span>
+<span class="nc" id="L511">                    .category(category.id())</span>
+<span class="nc" id="L512">                    .proposal(proposalIdOrName)</span>
+<span class="nc" id="L513">                    .coseSignature(vote.getCoseSignature())</span>
+<span class="nc" id="L514">                    .cosePublicKey(vote.getCosePublicKey())</span>
+<span class="nc" id="L515">                    .votedAtSlot(Long.valueOf(vote.getVotedAtSlot()).toString())</span>
+<span class="nc" id="L516">                    .voterStakingAddress(vote.getVoterStakingAddress())</span>
+<span class="nc" id="L517">                    .votingPower(vote.getVotingPower().map(String::valueOf))</span>
+<span class="nc" id="L518">                    .status(readMerkleProofStatus(proof, isL1CommitmentOnChain))</span>
+<span class="nc" id="L519">                    .finalityScore(isL1CommitmentOnChain)</span>
+<span class="nc" id="L520">                    .merkleProof(convertMerkleProof(proof, maybeTransactionDetails))</span>
+<span class="nc" id="L521">                    .build());</span>
+
+<span class="fc" id="L523">        }).orElseGet(() -&gt; {</span>
+<span class="fc" id="L524">            log.info(&quot;Merkle proof not found yet for voteId:{}&quot;, vote.getId());</span>
+
+<span class="fc" id="L526">            return Either.&lt;Problem, VoteReceipt&gt;right(VoteReceipt.builder()</span>
+<span class="fc" id="L527">                    .id(vote.getId())</span>
+<span class="fc" id="L528">                    .event(event.id())</span>
+<span class="fc" id="L529">                    .category(category.id())</span>
+<span class="fc" id="L530">                    .proposal(proposalIdOrName)</span>
+<span class="fc" id="L531">                    .coseSignature(vote.getCoseSignature())</span>
+<span class="fc" id="L532">                    .cosePublicKey(vote.getCosePublicKey())</span>
+<span class="fc" id="L533">                    .votedAtSlot(Long.valueOf(vote.getVotedAtSlot()).toString())</span>
+<span class="fc" id="L534">                    .voterStakingAddress(vote.getVoterStakingAddress())</span>
+<span class="fc" id="L535">                    .votingPower(vote.getVotingPower().map(String::valueOf))</span>
+<span class="fc" id="L536">                    .status(BASIC)</span>
+<span class="fc" id="L537">                    .build()</span>
+            );
+        });
+    }
+
+    private static VoteReceipt.Status readMerkleProofStatus(VoteMerkleProof merkleProof,
+                                                            Optional&lt;ChainFollowerClient.FinalityScore&gt; isL1CommitmentOnChain) {
+<span class="nc bnc" id="L544" title="All 2 branches missed.">        if (merkleProof.isInvalidated()) {</span>
+<span class="nc" id="L545">            return ROLLBACK;</span>
+        }
+
+<span class="nc bnc" id="L548" title="All 2 branches missed.">        return isL1CommitmentOnChain.isEmpty() ? PARTIAL : FULL;</span>
+    }
+
+    private VoteReceipt.MerkleProof convertMerkleProof(VoteMerkleProof proof,
+                                                       Optional&lt;ChainFollowerClient.TransactionDetailsResponse&gt; transactionDetails) {
+<span class="nc" id="L553">        return VoteReceipt.MerkleProof.builder()</span>
+<span class="nc" id="L554">                .blockHash(transactionDetails.map(ChainFollowerClient.TransactionDetailsResponse::blockHash))</span>
+<span class="nc" id="L555">                .absoluteSlot(transactionDetails.map(ChainFollowerClient.TransactionDetailsResponse::absoluteSlot))</span>
+<span class="nc" id="L556">                .rootHash(proof.getRootHash())</span>
+<span class="nc" id="L557">                .transactionHash(proof.getL1TransactionHash())</span>
+<span class="nc" id="L558">                .steps(convertSteps(proof))</span>
+<span class="nc" id="L559">                .build();</span>
+
+    }
+
+    private List&lt;VoteReceipt.MerkleProofItem&gt; convertSteps(VoteMerkleProof proof) {
+<span class="nc" id="L564">        return merkleProofSerdeService.deserialise(proof.getProofItemsJson()).stream().map(item -&gt; {</span>
+
+<span class="nc bnc" id="L566" title="All 2 branches missed.">            if (item instanceof ProofItem.Left pl) {</span>
+<span class="nc" id="L567">                return VoteReceipt.MerkleProofItem.builder()</span>
+<span class="nc" id="L568">                        .type(VoteReceipt.MerkleProofType.L)</span>
+<span class="nc" id="L569">                        .hash(encodeHexString(pl.hash()))</span>
+<span class="nc" id="L570">                        .build();</span>
+            }
+
+<span class="nc bnc" id="L573" title="All 2 branches missed.">            if (item instanceof ProofItem.Right pr) {</span>
+<span class="nc" id="L574">                return VoteReceipt.MerkleProofItem.builder()</span>
+<span class="nc" id="L575">                        .type(VoteReceipt.MerkleProofType.R)</span>
+<span class="nc" id="L576">                        .hash(encodeHexString(pr.hash()))</span>
+<span class="nc" id="L577">                        .build();</span>
+            }
+
+<span class="nc" id="L580">            throw new RuntimeException(&quot;Unknown proof item type:&quot; + item.getClass().getName());</span>
+<span class="nc" id="L581">        }).toList();</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

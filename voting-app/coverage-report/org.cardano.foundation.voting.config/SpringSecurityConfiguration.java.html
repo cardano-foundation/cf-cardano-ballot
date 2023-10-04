@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SpringSecurityConfiguration.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.config</a> &gt; <span class="el_source">SpringSecurityConfiguration.java</span></div><h1>SpringSecurityConfiguration.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.config;
+
+import org.cardano.foundation.voting.service.auth.jwt.JwtFilter;
+import org.cardano.foundation.voting.service.auth.web3.Web3Filter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.springframework.http.HttpMethod.*;
+
+@Configuration
+@EnableWebSecurity
+@Import(SecurityProblemSupport.class)
+<span class="fc" id="L29">public class SpringSecurityConfiguration {</span>
+
+    @Autowired
+    private SecurityProblemSupport problemSupport;
+
+    @Autowired
+    private JwtFilter jwtFilter;
+
+    @Autowired
+    private Web3Filter web3Filter;
+
+    @Value(&quot;${cors.allowed.origins:http://localhost:3000}&quot;)
+    private String allowedUrls;
+
+    @ConditionalOnProperty( //to make sure it is active if console is enabled
+            value=&quot;spring.h2.console.enabled&quot;,
+            havingValue = &quot;true&quot;,
+            matchIfMissing = false)
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+<span class="fc" id="L49">        return (web) -&gt; web.ignoring().requestMatchers(new AntPathRequestMatcher(&quot;/h2-console/**&quot;));</span>
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+<span class="fc" id="L54">        http</span>
+<span class="fc" id="L55">              .cors(c -&gt;</span>
+<span class="fc" id="L56">                c.configurationSource(request -&gt; {</span>
+<span class="fc" id="L57">                    var cors = new CorsConfiguration();</span>
+<span class="fc" id="L58">                    cors.setAllowedMethods(List.of(&quot;GET&quot;, &quot;HEAD&quot;, &quot;POST&quot;));</span>
+<span class="fc" id="L59">                    cors.setAllowedHeaders(List.of(&quot;*&quot;));</span>
+
+<span class="fc" id="L61">                    cors.setAllowedOrigins(Arrays.stream(allowedUrls.split(&quot;,&quot;)).toList());</span>
+
+<span class="fc" id="L63">                    return cors;</span>
+                }))
+<span class="fc" id="L65">                .csrf(AbstractHttpConfigurer::disable)</span>
+
+<span class="fc" id="L67">                .addFilterBefore(web3Filter, UsernamePasswordAuthenticationFilter.class)</span>
+<span class="fc" id="L68">                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)</span>
+
+<span class="fc" id="L70">                .sessionManagement(AbstractHttpConfigurer::disable)</span>
+
+<span class="fc" id="L72">                .rememberMe(AbstractHttpConfigurer::disable)</span>
+<span class="fc" id="L73">                .formLogin(AbstractHttpConfigurer::disable)</span>
+
+<span class="fc" id="L75">                .authorizeHttpRequests(requests -&gt; {</span>
+<span class="fc" id="L76">                    requests</span>
+                    // SECURED by Web3 auth
+<span class="fc" id="L78">                    .requestMatchers(new AntPathRequestMatcher(&quot;/api/vote/cast&quot;, POST.name())).authenticated()</span>
+                    // SECURED by JWT auth
+<span class="fc" id="L80">                    .requestMatchers(new AntPathRequestMatcher(&quot;/api/vote/votes/**&quot;, GET.name())).authenticated()</span>
+                    // SECURED by JWT auth
+<span class="fc" id="L82">                    .requestMatchers(new AntPathRequestMatcher(&quot;/api/vote/receipt/**&quot;, GET.name())).authenticated()</span>
+<span class="fc" id="L83">                    .requestMatchers(new AntPathRequestMatcher(&quot;/api/vote/receipt/**&quot;, HEAD.name())).authenticated()</span>
+                    // SECURED by Web3 auth
+<span class="fc" id="L85">                    .requestMatchers(new AntPathRequestMatcher(&quot;/api/vote/receipt&quot;, GET.name())).authenticated()</span>
+<span class="fc" id="L86">                    .requestMatchers(new AntPathRequestMatcher(&quot;/api/vote/receipt&quot;, HEAD.name())).authenticated()</span>
+                    // SECURED by Web3 auth
+<span class="fc" id="L88">                    .requestMatchers(new AntPathRequestMatcher(&quot;/api/auth/login&quot;, GET.name())).authenticated()</span>
+                    // SECURED by JWT auth
+                    //.requestMatchers(new AntPathRequestMatcher(&quot;/api/vote/vote-changing-available/**&quot;, HEAD.name())).authenticated()
+
+                    // without auth
+<span class="fc" id="L93">                    .requestMatchers(new AntPathRequestMatcher(&quot;/api/leaderboard/**&quot;, GET.name())).permitAll()</span>
+<span class="fc" id="L94">                    .requestMatchers(new AntPathRequestMatcher(&quot;/api/leaderboard/**&quot;, HEAD.name())).permitAll()</span>
+<span class="fc" id="L95">                    .requestMatchers(new AntPathRequestMatcher(&quot;/actuator/**&quot;, GET.name())).permitAll()</span>
+<span class="fc" id="L96">                    .requestMatchers(new AntPathRequestMatcher(&quot;/h2-console/**&quot;)).permitAll()</span>
+<span class="fc" id="L97">                    .requestMatchers(new AntPathRequestMatcher(&quot;/v3/api-docs/**&quot;)).permitAll()</span>
+<span class="fc" id="L98">                    .requestMatchers(new AntPathRequestMatcher(&quot;/swagger-ui/**&quot;)).permitAll()</span>
+<span class="fc" id="L99">                    .anyRequest().denyAll();</span>
+<span class="fc" id="L100">                })</span>
+
+<span class="fc" id="L102">                .exceptionHandling(c -&gt; c.accessDeniedHandler(problemSupport).authenticationEntryPoint(problemSupport))</span>
+<span class="fc" id="L103">                .sessionManagement(AbstractHttpConfigurer::disable);</span>
+
+<span class="fc" id="L105">        return http.build();</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

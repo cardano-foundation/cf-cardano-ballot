@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Web3AuthenticationToken.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.service.auth.web3</a> &gt; <span class="el_source">Web3AuthenticationToken.java</span></div><h1>Web3AuthenticationToken.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.service.auth.web3;
+
+import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+
+import javax.annotation.Nullable;
+import java.util.Collection;
+
+public class Web3AuthenticationToken extends AbstractAuthenticationToken {
+
+    private final Web3Details web3Details;
+
+    public Web3AuthenticationToken(Web3Details web3Details,
+                                   Collection&lt;? extends GrantedAuthority&gt; authorities) {
+<span class="fc" id="L15">        super(authorities);</span>
+<span class="fc" id="L16">        this.web3Details = web3Details;</span>
+<span class="fc" id="L17">        this.setAuthenticated(true);</span>
+<span class="fc" id="L18">    }</span>
+
+    @Override
+    public Web3Details getDetails() {
+<span class="fc" id="L22">        return web3Details;</span>
+    }
+
+    @Override
+    public Object getPrincipal() {
+<span class="fc" id="L27">        return web3Details.getStakeAddress();</span>
+    }
+
+    @Override
+    @Nullable
+    public Object getCredentials() {
+<span class="nc" id="L33">        return null;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

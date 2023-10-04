@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JwtFilter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.service.auth.jwt</a> &gt; <span class="el_source">JwtFilter.java</span></div><h1>JwtFilter.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.service.auth.jwt;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.client.ChainFollowerClient;
+import org.cardano.foundation.voting.domain.Role;
+import org.cardano.foundation.voting.service.auth.LoginSystemDetector;
+import org.cardano.foundation.voting.utils.Enums;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+import org.zalando.problem.Problem;
+
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.List;
+
+import static com.google.common.net.HttpHeaders.AUTHORIZATION;
+import static org.cardano.foundation.voting.service.auth.LoginSystem.JWT;
+import static org.zalando.problem.Status.BAD_REQUEST;
+import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
+
+@Component
+<span class="fc" id="L31">@Slf4j</span>
+<span class="fc" id="L32">@RequiredArgsConstructor</span>
+public class JwtFilter extends OncePerRequestFilter {
+
+    private final ChainFollowerClient chainFollowerClient;
+
+    private final JwtService jwtService;
+
+    private final LoginSystemDetector loginSystemDetector;
+
+    private final ObjectMapper objectMapper;
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain chain) throws ServletException, IOException {
+<span class="fc" id="L47">        var maybeLoginSystem = loginSystemDetector.detect(request);</span>
+
+<span class="fc bfc" id="L49" title="All 2 branches covered.">        if (maybeLoginSystem.isEmpty()) {</span>
+<span class="fc" id="L50">            chain.doFilter(request, response);</span>
+<span class="fc" id="L51">            return;</span>
+        }
+<span class="fc" id="L53">        var loginSystem = maybeLoginSystem.orElseThrow();</span>
+
+<span class="fc bfc" id="L55" title="All 2 branches covered.">        if (loginSystem != JWT) {</span>
+<span class="fc" id="L56">            chain.doFilter(request, response);</span>
+<span class="fc" id="L57">            return;</span>
+        }
+
+<span class="fc" id="L60">        var header = request.getHeader(AUTHORIZATION);</span>
+<span class="fc" id="L61">        var token = header.split(&quot; &quot;)[1].trim();</span>
+<span class="fc" id="L62">        var verificationResultE = jwtService.verify(token);</span>
+
+<span class="pc bpc" id="L64" title="1 of 2 branches missed.">        if (verificationResultE.isEmpty()) {</span>
+<span class="nc" id="L65">            sendBackProblem(response, verificationResultE.getLeft());</span>
+<span class="nc" id="L66">            return;</span>
+        }
+
+<span class="fc" id="L69">        var signedJwt = verificationResultE.get();</span>
+
+        try {
+<span class="fc" id="L72">            var jwtClaimsSet = signedJwt.getJWTClaimsSet();</span>
+<span class="fc" id="L73">            var eventId = jwtClaimsSet.getStringClaim(&quot;eventId&quot;);</span>
+<span class="fc" id="L74">            var stakeAddress = jwtClaimsSet.getStringClaim(&quot;stakeAddress&quot;);</span>
+<span class="fc" id="L75">            var role = Enums.getIfPresent(Role.class, jwtClaimsSet.getStringClaim(&quot;role&quot;)).orElseThrow();</span>
+<span class="fc" id="L76">            var principal = new JwtPrincipal(signedJwt);</span>
+<span class="fc" id="L77">            var authorities = List.of(new SimpleGrantedAuthority(role.name()));</span>
+
+<span class="fc" id="L79">            var eventDetailsE = chainFollowerClient.getEventDetails(eventId);</span>
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">            if (eventDetailsE.isEmpty()) {</span>
+<span class="nc" id="L81">                var problem = Problem.builder()</span>
+<span class="nc" id="L82">                        .withTitle(&quot;ERROR_GETTING_EVENT_DETAILS&quot;)</span>
+<span class="nc" id="L83">                        .withDetail(&quot;Unable to get eventDetails details from chain-tip follower service, eventDetails:&quot; + eventId)</span>
+<span class="nc" id="L84">                        .withStatus(INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L85">                        .build();</span>
+
+<span class="nc" id="L87">                sendBackProblem(response, problem);</span>
+<span class="nc" id="L88">                return;</span>
+            }
+
+<span class="fc" id="L91">            var maybeEventDetails = eventDetailsE.get();</span>
+<span class="pc bpc" id="L92" title="1 of 2 branches missed.">            if (maybeEventDetails.isEmpty()) {</span>
+<span class="nc" id="L93">                var problem = Problem.builder()</span>
+<span class="nc" id="L94">                        .withTitle(&quot;UNRECOGNISED_EVENT&quot;)</span>
+<span class="nc" id="L95">                        .withDetail(&quot;Event not found, id: &quot; + eventId)</span>
+<span class="nc" id="L96">                        .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L97">                        .build();</span>
+
+<span class="nc" id="L99">                sendBackProblem(response, problem);</span>
+<span class="nc" id="L100">                return;</span>
+            }
+<span class="fc" id="L102">            var eventDetails = maybeEventDetails.orElseThrow();</span>
+
+<span class="fc" id="L104">            var authentication = new JwtAuthenticationToken(principal, authorities)</span>
+<span class="fc" id="L105">                    .eventDetails(eventDetails)</span>
+<span class="fc" id="L106">                    .role(role)</span>
+<span class="fc" id="L107">                    .stakeAddress(stakeAddress)</span>
+                    ;
+
+<span class="fc" id="L110">            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));</span>
+
+<span class="fc" id="L112">            SecurityContextHolder.getContext().setAuthentication(authentication);</span>
+
+<span class="fc" id="L114">            chain.doFilter(request, response);</span>
+<span class="nc" id="L115">        } catch (ParseException e) {</span>
+<span class="nc" id="L116">            log.warn(&quot;JWT parse error, reason:{}&quot;, e.getMessage());</span>
+
+<span class="nc" id="L118">            var problem = Problem.builder()</span>
+<span class="nc" id="L119">                            .withTitle(&quot;JWT_PARSE_ERROR&quot;)</span>
+<span class="nc" id="L120">                            .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L121">                            .build();</span>
+
+<span class="nc" id="L123">            sendBackProblem(response, problem);</span>
+<span class="fc" id="L124">        }</span>
+<span class="fc" id="L125">    }</span>
+
+    private void sendBackProblem(HttpServletResponse response, Problem problem) throws IOException {
+<span class="nc" id="L128">        var statusCode = problem.getStatus().getStatusCode();</span>
+
+<span class="nc" id="L130">        response.setStatus(statusCode);</span>
+<span class="nc" id="L131">        response.setContentType(&quot;application/json&quot;);</span>
+<span class="nc" id="L132">        response.setCharacterEncoding(&quot;UTF-8&quot;);</span>
+<span class="nc" id="L133">        response.getOutputStream().println(objectMapper.writeValueAsString(problem));</span>
+<span class="nc" id="L134">        response.getOutputStream().flush();</span>
+<span class="nc" id="L135">    }</span>
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

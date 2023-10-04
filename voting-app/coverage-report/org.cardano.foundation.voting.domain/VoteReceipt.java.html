@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>VoteReceipt.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.domain</a> &gt; <span class="el_source">VoteReceipt.java</span></div><h1>VoteReceipt.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.domain;
+
+import lombok.Builder;
+import lombok.Data;
+import org.cardano.foundation.voting.client.ChainFollowerClient;
+
+import java.util.List;
+import java.util.Optional;
+
+<span class="nc bnc" id="L10" title="All 102 branches missed.">@Data</span>
+<span class="pc bpc" id="L11" title="3 of 6 branches missed.">@Builder</span>
+public class VoteReceipt {
+
+<span class="fc" id="L14">    private String id;</span>
+
+<span class="fc" id="L16">    private String event;</span>
+
+<span class="fc" id="L18">    private String category;</span>
+
+<span class="fc" id="L20">    private String proposal;</span>
+
+    @Builder.Default
+<span class="pc" id="L23">    private Optional&lt;String&gt; votingPower = Optional.empty();</span>
+
+<span class="fc" id="L25">    private String voterStakingAddress;</span>
+
+<span class="fc" id="L27">    private String coseSignature;</span>
+
+    @Builder.Default
+<span class="pc" id="L30">    private Optional&lt;String&gt; cosePublicKey = Optional.empty();</span>
+
+<span class="fc" id="L32">    private Status status;</span>
+
+<span class="fc" id="L34">    private MerkleProof merkleProof;</span>
+
+    @Builder.Default
+<span class="fc" id="L37">    private Optional&lt;ChainFollowerClient.FinalityScore&gt; finalityScore = Optional.empty();</span>
+
+<span class="fc" id="L39">    private String votedAtSlot;</span>
+
+<span class="fc" id="L41">    public enum Status {</span>
+<span class="fc" id="L42">        BASIC, // without merkle proof committed to L1 yet</span>
+
+<span class="fc" id="L44">        PARTIAL, // there is a merkle proof but L1 commitment is not visible on chain yet</span>
+
+        // with merkle proof committed to L1 but on L1 there has been a rollback - no longer visible on chain
+        //, in fact it has been on chain and it's gome
+<span class="fc" id="L48">        ROLLBACK,</span>
+
+<span class="fc" id="L50">        FULL // with merkle proof committed to L1 and visible on chain</span>
+    }
+
+<span class="nc bnc" id="L53" title="All 46 branches missed.">    @Data</span>
+<span class="nc bnc" id="L54" title="All 4 branches missed.">    @Builder</span>
+    public static class MerkleProof {
+
+<span class="nc" id="L57">        private String transactionHash;</span>
+        @Builder.Default
+<span class="nc" id="L59">        private Optional&lt;Long&gt; absoluteSlot = Optional.empty();</span>
+        @Builder.Default
+<span class="nc" id="L61">        private Optional&lt;String&gt; blockHash = Optional.empty();</span>
+<span class="nc" id="L62">        private String rootHash;</span>
+
+<span class="nc" id="L64">        private List&lt;MerkleProofItem&gt; steps;</span>
+
+    }
+
+<span class="nc bnc" id="L68" title="All 22 branches missed.">    @Data</span>
+<span class="nc" id="L69">    @Builder</span>
+    public static class MerkleProofItem {
+
+<span class="nc" id="L72">        private MerkleProofType type;</span>
+<span class="nc" id="L73">        private String hash;</span>
+
+    }
+
+<span class="fc" id="L77">    public enum MerkleProofType {</span>
+<span class="fc" id="L78">        L, R</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

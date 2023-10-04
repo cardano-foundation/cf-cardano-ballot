@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ChainFollowerClient.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.client</a> &gt; <span class="el_source">ChainFollowerClient.java</span></div><h1>ChainFollowerClient.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.client;
+
+import io.vavr.control.Either;
+import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.domain.CardanoNetwork;
+import org.cardano.foundation.voting.domain.VotingEventType;
+import org.cardano.foundation.voting.domain.VotingPowerAsset;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
+import org.zalando.problem.Problem;
+import org.zalando.problem.spring.common.HttpStatusAdapter;
+
+import java.util.List;
+import java.util.Optional;
+
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+
+@Component
+<span class="fc" id="L22">@Slf4j</span>
+<span class="fc" id="L23">public class ChainFollowerClient {</span>
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+    @Value(&quot;${ledger.follower.app.base.url}&quot;)
+    private String ledgerFollowerBaseUrl;
+
+    public Either&lt;Problem, ChainTipResponse&gt; getChainTip() {
+<span class="fc" id="L32">        var url = String.format(&quot;%s/api/blockchain/tip&quot;, ledgerFollowerBaseUrl);</span>
+
+        try {
+<span class="fc" id="L35">            return Either.right(restTemplate.getForObject(url, ChainTipResponse.class));</span>
+<span class="nc" id="L36">        } catch (HttpClientErrorException e) {</span>
+            // TODO pass on the exact error serialised by chain-tip follower service (title, detail)?
+<span class="nc" id="L38">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L39">                    .withTitle(&quot;CHAIN_TIP_ERROR&quot;)</span>
+<span class="nc" id="L40">                    .withDetail(&quot;Unable to get chain tip from chain-tip follower service, reason:&quot; + e.getMessage())</span>
+<span class="nc" id="L41">                    .withStatus(new HttpStatusAdapter(e.getStatusCode()))</span>
+<span class="nc" id="L42">                    .build());</span>
+        }
+    }
+
+    public Either&lt;Problem, Optional&lt;AccountResponse&gt;&gt; findAccount(String eventName, String stakeAddress) {
+<span class="fc" id="L47">        var url = String.format(&quot;%s/api/account/{event}/{stakeAddress}&quot;, ledgerFollowerBaseUrl);</span>
+
+        try {
+<span class="fc" id="L50">            return Either.right(Optional.ofNullable(restTemplate.getForObject(url, AccountResponse.class, eventName, stakeAddress)));</span>
+<span class="nc" id="L51">        } catch (HttpClientErrorException e) {</span>
+<span class="nc bnc" id="L52" title="All 2 branches missed.">            if (e.getStatusCode() == NOT_FOUND) {</span>
+<span class="nc" id="L53">                return Either.right(Optional.empty());</span>
+            }
+
+<span class="nc" id="L56">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L57">                    .withTitle(&quot;ACCOUNT_ERROR&quot;)</span>
+<span class="nc" id="L58">                    .withDetail(&quot;Unable to get account details from chain-tip follower service, reason:&quot; + e.getMessage())</span>
+<span class="nc" id="L59">                    .withStatus(new HttpStatusAdapter(e.getStatusCode()))</span>
+<span class="nc" id="L60">                    .build());</span>
+        }
+    }
+
+    public Either&lt;Problem, Optional&lt;TransactionDetailsResponse&gt;&gt; getTransactionDetails(String txHash) {
+<span class="nc" id="L65">        var url = String.format(&quot;%s/api/blockchain/tx-details/{txHash}&quot;, ledgerFollowerBaseUrl);</span>
+
+        try {
+<span class="nc" id="L68">            var txResponse = restTemplate.getForObject(url, TransactionDetailsResponse.class, txHash);</span>
+
+<span class="nc" id="L70">            return Either.right(Optional.of(txResponse));</span>
+<span class="nc" id="L71">        } catch (HttpClientErrorException e) {</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">            if (e.getStatusCode() == NOT_FOUND) {</span>
+<span class="nc" id="L73">                return Either.right(Optional.empty());</span>
+            }
+
+<span class="nc" id="L76">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L77">                    .withTitle(&quot;TRANSACTION_DETAILS_ERROR&quot;)</span>
+<span class="nc" id="L78">                    .withDetail(&quot;Unable to get account details from chain-tip follower service, reason:&quot; + e.getMessage())</span>
+<span class="nc" id="L79">                    .withStatus(new HttpStatusAdapter(e.getStatusCode()))</span>
+<span class="nc" id="L80">                    .build());</span>
+        }
+    }
+
+    public Either&lt;Problem, Optional&lt;EventDetailsResponse&gt;&gt; getEventDetails(String eventId) {
+<span class="fc" id="L85">        var url = String.format(&quot;%s/api/reference/event/{id}&quot;, ledgerFollowerBaseUrl);</span>
+
+        try {
+<span class="fc" id="L88">            return Either.right(Optional.ofNullable(restTemplate.getForObject(url, EventDetailsResponse.class, eventId)));</span>
+<span class="fc" id="L89">        } catch (HttpClientErrorException e) {</span>
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">            if (e.getStatusCode() == NOT_FOUND) {</span>
+<span class="fc" id="L91">                return Either.right(Optional.empty());</span>
+            }
+
+<span class="nc" id="L94">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L95">                    .withTitle(&quot;REFERENCE_ERROR&quot;)</span>
+<span class="nc" id="L96">                    .withDetail(&quot;Unable to get event details from chain-tip follower service, reason:&quot; + e.getMessage())</span>
+<span class="nc" id="L97">                    .withStatus(new HttpStatusAdapter(e.getStatusCode()))</span>
+<span class="nc" id="L98">                    .build());</span>
+        }
+    }
+
+<span class="fc" id="L102">    public record ProposalDetailsResponse(String id, String name) {}</span>
+
+<span class="fc" id="L104">    public record CategoryDetailsResponse(String id,</span>
+                                          boolean gdprProtection,
+                                          List&lt;ProposalDetailsResponse&gt; proposals) {
+
+        public Optional&lt;ProposalDetailsResponse&gt; findProposalById(String proposalId) {
+<span class="fc" id="L109">            return proposals.stream().filter(proposal -&gt; proposal.id().equals(proposalId)).findFirst();</span>
+        }
+
+        public Optional&lt;ProposalDetailsResponse&gt; findProposalByName(String name) {
+<span class="fc" id="L113">            return proposals.stream().filter(proposal -&gt; proposal.name().equals(name)).findFirst();</span>
+        }
+
+    }
+
+<span class="nc" id="L118">    public record EventSummary(String id,</span>
+                               boolean finished,
+                               boolean notStarted,
+                               boolean started,
+                               boolean active,
+                               boolean proposalsReveal,
+                               boolean commitmentsWindowOpen) {
+
+    }
+
+<span class="fc" id="L128">    public record EventDetailsResponse(String id,</span>
+                                       boolean finished,
+                                       boolean notStarted,
+                                       boolean isStarted,
+                                       boolean active,
+                                       boolean proposalsReveal,
+                                       boolean commitmentsWindowOpen,
+                                       boolean allowVoteChanging,
+                                       boolean highLevelEventResultsWhileVoting,
+                                       boolean highLevelCategoryResultsWhileVoting,
+                                       boolean categoryResultsWhileVoting,
+                                       VotingEventType votingEventType,
+                                       List&lt;CategoryDetailsResponse&gt; categories) {
+
+        public boolean isEventInactive() {
+<span class="pc bpc" id="L143" title="1 of 2 branches missed.">            return !active;</span>
+        }
+
+        public Optional&lt;CategoryDetailsResponse&gt; categoryDetailsById(String categoryId) {
+<span class="fc" id="L147">            return categories.stream().filter(category -&gt; category.id().equals(categoryId)).findFirst();</span>
+        }
+
+    }
+
+<span class="fc" id="L152">    public enum FinalityScore {</span>
+
+<span class="fc" id="L154">        LOW(0),</span>
+<span class="fc" id="L155">        MEDIUM(1),</span>
+<span class="fc" id="L156">        HIGH(2),</span>
+<span class="fc" id="L157">        VERY_HIGH(3),</span>
+<span class="fc" id="L158">        FINAL(4); // TRANSACTION IS FINAL(!) - NO ROLLBACK POSSIBLE</span>
+
+        private final int score;
+
+<span class="fc" id="L162">        FinalityScore(int score) {</span>
+<span class="fc" id="L163">            this.score = score;</span>
+<span class="fc" id="L164">        }</span>
+
+        public int getScore() {
+<span class="nc" id="L167">            return score;</span>
+        }
+
+    }
+
+<span class="nc" id="L172">    public record TransactionDetailsResponse(String transactionHash,</span>
+                                      long absoluteSlot,
+                                      String blockHash,
+                                      long transactionsConfirmations,
+                                      FinalityScore finalityScore,
+                                      CardanoNetwork network) {}
+
+<span class="fc" id="L179">    public record ChainTipResponse(String hash,</span>
+                                   int epochNo,
+                                   int absoluteSlot,
+                                   boolean synced,
+                                   CardanoNetwork network) {
+
+        public boolean isNotSynced() {
+<span class="pc bpc" id="L186" title="1 of 2 branches missed.">            return !synced;</span>
+        }
+
+    }
+
+<span class="fc" id="L191">    public record AccountResponse(</span>
+                           String stakeAddress,
+                           int epochNo,
+                           String votingPower,
+                           VotingPowerAsset votingPowerAsset) { }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

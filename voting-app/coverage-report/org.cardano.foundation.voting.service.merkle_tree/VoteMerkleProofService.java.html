@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>VoteMerkleProofService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.service.merkle_tree</a> &gt; <span class="el_source">VoteMerkleProofService.java</span></div><h1>VoteMerkleProofService.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.service.merkle_tree;
+
+import io.micrometer.core.annotation.Timed;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.domain.entity.VoteMerkleProof;
+import org.cardano.foundation.voting.repository.VoteMerkleProofRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
+
+@Service
+<span class="fc" id="L14">@Slf4j</span>
+<span class="fc" id="L15">@RequiredArgsConstructor</span>
+public class VoteMerkleProofService {
+
+    private final VoteMerkleProofRepository voteMerkleProofRepository;
+
+    @Transactional(readOnly = true)
+    @Timed(value = &quot;service.merkle.findLatestProof&quot;, histogram = true)
+    public Optional&lt;VoteMerkleProof&gt; findLatestProof(String eventId, String voteId) {
+<span class="fc" id="L23">        return voteMerkleProofRepository.findLatestProof(eventId, voteId);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

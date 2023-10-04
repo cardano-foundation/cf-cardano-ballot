@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JwtService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.service.auth.jwt</a> &gt; <span class="el_source">JwtService.java</span></div><h1>JwtService.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.service.auth.jwt;
+
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.crypto.Ed25519Signer;
+import com.nimbusds.jose.crypto.Ed25519Verifier;
+import com.nimbusds.jose.jwk.OctetKeyPair;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
+import io.micrometer.core.annotation.Timed;
+import io.vavr.control.Either;
+import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.domain.CardanoNetwork;
+import org.cardano.foundation.voting.domain.LoginResult;
+import org.cardano.foundation.voting.domain.Role;
+import org.cardano.foundation.voting.utils.Enums;
+import org.cardano.foundation.voting.utils.StakeAddress;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.zalando.problem.Problem;
+
+import java.text.ParseException;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+import static com.nimbusds.jose.JWSAlgorithm.EdDSA;
+import static org.cardano.foundation.voting.utils.MoreTime.convertToDateViaInstant;
+import static org.zalando.problem.Status.*;
+
+@Service
+<span class="fc" id="L33">@Slf4j</span>
+<span class="fc" id="L34">public class JwtService {</span>
+
+    @Autowired
+    private OctetKeyPair cfJWTKey;
+
+    @Autowired
+    private Clock clock;
+
+    @Autowired
+    private CardanoNetwork cardanoNetwork;
+
+    @Value(&quot;${cardano.jwt.iss}&quot;)
+    private String iss;
+
+    @Value(&quot;${cardano.jwt.tokenValidityDurationHours}&quot;)
+    private long tokenValidityDurationHours;
+
+    @Timed(value = &quot;service.jwt.generate&quot;, histogram = true)
+    public Either&lt;Problem, LoginResult&gt; generate(String stakeAddress,
+                                                 String eventId,
+                                                 Role role) {
+<span class="fc" id="L55">        var now = LocalDateTime.now(clock);</span>
+        try {
+<span class="fc" id="L57">            var signer = new Ed25519Signer(cfJWTKey);</span>
+<span class="fc" id="L58">            var expirationLocalDateTime = now.plusHours(tokenValidityDurationHours);</span>
+<span class="fc" id="L59">            var legacyExpirationDate = convertToDateViaInstant(expirationLocalDateTime);</span>
+
+<span class="fc" id="L61">            var claimsSet = new JWTClaimsSet.Builder()</span>
+<span class="fc" id="L62">                    .subject(stakeAddress)</span>
+<span class="fc" id="L63">                    .jwtID(UUID.randomUUID().toString())</span>
+<span class="fc" id="L64">                    .issuer(iss)</span>
+<span class="fc" id="L65">                    .claim(&quot;stakeAddress&quot;, stakeAddress)</span>
+<span class="fc" id="L66">                    .claim(&quot;eventId&quot;, eventId)</span>
+<span class="fc" id="L67">                    .claim(&quot;role&quot;, role)</span>
+<span class="fc" id="L68">                    .claim(&quot;cardanoNetwork&quot;, cardanoNetwork.name())</span>
+<span class="fc" id="L69">                    .issueTime(convertToDateViaInstant(now))</span>
+<span class="fc" id="L70">                    .expirationTime(legacyExpirationDate)</span>
+<span class="fc" id="L71">                    .build();</span>
+
+<span class="fc" id="L73">            var header = new JWSHeader.Builder(EdDSA)</span>
+<span class="fc" id="L74">                    .keyID(cfJWTKey.getKeyID())</span>
+<span class="fc" id="L75">                    .build();</span>
+
+<span class="fc" id="L77">            var signedJWT = new SignedJWT(header, claimsSet);</span>
+
+<span class="fc" id="L79">            signedJWT.sign(signer);</span>
+
+<span class="fc" id="L81">            var accessToken = signedJWT.serialize();</span>
+
+<span class="fc" id="L83">            return Either.right(new LoginResult(accessToken, expirationLocalDateTime));</span>
+<span class="nc" id="L84">        } catch (JOSEException e) {</span>
+<span class="nc" id="L85">            log.error(&quot;JWT token generation error&quot;, e);</span>
+
+<span class="nc" id="L87">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L88">                    .withTitle(&quot;JWT_GENERATION_FAILED&quot;)</span>
+<span class="nc" id="L89">                    .withDetail(e.getMessage())</span>
+<span class="nc" id="L90">                    .withStatus(INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L91">                    .build());</span>
+        }
+
+    }
+
+    @Timed(value = &quot;service.jwt.verify&quot;, histogram = true)
+    public Either&lt;Problem, SignedJWT&gt; verify(String token) {
+<span class="fc" id="L98">        var publicJWK = cfJWTKey.toPublicJWK();</span>
+
+        try {
+<span class="fc" id="L101">            var verifier = new Ed25519Verifier(publicJWK);</span>
+<span class="fc" id="L102">            var signedJWT = SignedJWT.parse(token);</span>
+
+<span class="pc bpc" id="L104" title="1 of 2 branches missed.">            if (signedJWT.verify(verifier)) {</span>
+<span class="fc" id="L105">                var jwtClaimsSet = signedJWT.getJWTClaimsSet();</span>
+<span class="fc" id="L106">                var sub = jwtClaimsSet.getSubject();</span>
+
+<span class="fc" id="L108">                var issuerCheck = jwtClaimsSet.getIssuer().equals(iss);</span>
+
+<span class="pc bpc" id="L110" title="1 of 2 branches missed.">                if (!issuerCheck) {</span>
+<span class="nc" id="L111">                    log.warn(&quot;JWT token verification failed for token:{}, issuer check failed.&quot;, token);</span>
+
+<span class="nc" id="L113">                    return Either.left(</span>
+<span class="nc" id="L114">                            Problem.builder()</span>
+<span class="nc" id="L115">                                    .withTitle(&quot;JWT_ISSUER_MISMATCH&quot;)</span>
+<span class="nc" id="L116">                                    .withDetail(&quot;JWT verification failed for token:&quot; + token + &quot; due to issuer check failed.&quot;)</span>
+<span class="nc" id="L117">                                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L118">                                    .build()</span>
+                    );
+                }
+
+<span class="fc" id="L122">                var now = LocalDateTime.now(clock);</span>
+<span class="fc" id="L123">                var nowDate = convertToDateViaInstant(now);</span>
+<span class="fc" id="L124">                var expDate = signedJWT.getJWTClaimsSet().getExpirationTime();</span>
+
+<span class="pc bpc" id="L126" title="1 of 2 branches missed.">                if (nowDate.after(expDate)) {</span>
+<span class="nc" id="L127">                    log.info(&quot;JWT token verification failed for token, token expired on: {}&quot;, expDate);</span>
+
+<span class="nc" id="L129">                    return Either.left(</span>
+<span class="nc" id="L130">                            Problem.builder()</span>
+<span class="nc" id="L131">                                    .withTitle(&quot;JWT_EXPIRED&quot;)</span>
+<span class="nc" id="L132">                                    .withDetail(&quot;JWT verification failed for token, token expired on: &quot; + expDate)</span>
+<span class="nc" id="L133">                                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L134">                                    .build());</span>
+                }
+
+<span class="fc" id="L137">                var jwtCardanoNetwork = jwtClaimsSet.getStringClaim(&quot;cardanoNetwork&quot;);</span>
+<span class="fc" id="L138">                var maybeNetwork = Enums.getIfPresent(CardanoNetwork.class, jwtCardanoNetwork);</span>
+<span class="pc bpc" id="L139" title="1 of 2 branches missed.">                if (maybeNetwork.isEmpty()) {</span>
+<span class="nc" id="L140">                    log.warn(&quot;Invalid network, network:{}&quot;, jwtCardanoNetwork);</span>
+
+<span class="nc" id="L142">                    return Either.left(Problem.builder()</span>
+<span class="nc" id="L143">                            .withTitle(&quot;INVALID_NETWORK&quot;)</span>
+<span class="nc" id="L144">                            .withDetail(&quot;Invalid network, supported networks: &quot; + CardanoNetwork.supportedNetworks())</span>
+<span class="nc" id="L145">                            .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L146">                            .build());</span>
+                }
+
+<span class="fc" id="L149">                var jwtNetwork = maybeNetwork.orElseThrow();</span>
+
+<span class="pc bpc" id="L151" title="1 of 2 branches missed.">                if (jwtNetwork != cardanoNetwork) {</span>
+<span class="nc" id="L152">                    log.warn(&quot;Network mismatch, network:{}&quot;, jwtNetwork);</span>
+
+<span class="nc" id="L154">                    return Either.left(Problem.builder()</span>
+<span class="nc" id="L155">                            .withTitle(&quot;NETWORK_MISMATCH&quot;)</span>
+<span class="nc" id="L156">                            .withDetail(&quot;Invalid network, backend configured with network: &quot; + cardanoNetwork + &quot;, however request is with network: &quot; + jwtNetwork)</span>
+<span class="nc" id="L157">                            .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L158">                            .build());</span>
+
+                }
+
+<span class="fc" id="L162">                var jwtStakeAddress = jwtClaimsSet.getStringClaim(&quot;stakeAddress&quot;);</span>
+
+<span class="fc" id="L164">                var stakeAddressCheckE = StakeAddress.checkStakeAddress(cardanoNetwork, jwtStakeAddress);</span>
+<span class="pc bpc" id="L165" title="1 of 2 branches missed.">                if (stakeAddressCheckE.isEmpty()) {</span>
+<span class="nc" id="L166">                    return Either.left(stakeAddressCheckE.getLeft());</span>
+                }
+
+<span class="fc" id="L169">                var maybeRole = Enums.getIfPresent(Role.class, jwtClaimsSet.getStringClaim(&quot;role&quot;));</span>
+
+<span class="pc bpc" id="L171" title="1 of 2 branches missed.">                if (maybeRole.isEmpty()) {</span>
+<span class="nc" id="L172">                    log.warn(&quot;Invalid role, role:{}&quot;, jwtClaimsSet.getStringClaim(&quot;role&quot;));</span>
+
+<span class="nc" id="L174">                    return Either.left(Problem.builder()</span>
+<span class="nc" id="L175">                            .withTitle(&quot;INVALID_ROLE&quot;)</span>
+<span class="nc" id="L176">                            .withDetail(&quot;Invalid role, supported roles:&quot; + Role.supportedRoles())</span>
+<span class="nc" id="L177">                            .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L178">                            .build());</span>
+                }
+
+<span class="fc" id="L181">                log.info(&quot;Verified sub:{}, &quot;, sub);</span>
+
+<span class="fc" id="L183">                return Either.right(signedJWT);</span>
+            }
+
+<span class="nc" id="L186">            log.error(&quot;JWT token verification failed for token:{}, signature verification failed.&quot;, token);</span>
+
+<span class="nc" id="L188">            return Either.left(</span>
+<span class="nc" id="L189">                    Problem.builder()</span>
+<span class="nc" id="L190">                            .withTitle(&quot;JWT_VERIFICATION_FAILED&quot;)</span>
+<span class="nc" id="L191">                            .withDetail(&quot;JWT verification failed for token:&quot; + token)</span>
+<span class="nc" id="L192">                            .withStatus(UNAUTHORIZED)</span>
+<span class="nc" id="L193">                            .build()</span>
+            );
+<span class="nc" id="L195">        } catch (JOSEException e) {</span>
+<span class="nc" id="L196">            log.warn(&quot;JWT token verification error&quot;, e);</span>
+
+<span class="nc" id="L198">            return Either.left(</span>
+<span class="nc" id="L199">                    Problem.builder()</span>
+<span class="nc" id="L200">                            .withTitle(&quot;JWT_VERIFICATION_FAILED&quot;)</span>
+<span class="nc" id="L201">                            .withDetail(&quot;JWT verification failed for token:&quot; + token)</span>
+<span class="nc" id="L202">                            .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L203">                            .build()</span>
+            );
+<span class="nc" id="L205">        } catch (ParseException e) {</span>
+<span class="nc" id="L206">            log.warn(&quot;JWT token parse error, reason:{}&quot;, e.getMessage());</span>
+
+<span class="nc" id="L208">            return Either.left(</span>
+<span class="nc" id="L209">                    Problem.builder()</span>
+<span class="nc" id="L210">                            .withTitle(&quot;JWT_VERIFICATION_FAILED&quot;)</span>
+<span class="nc" id="L211">                            .withDetail(&quot;JWT verification failed for token:&quot; + token)</span>
+<span class="nc" id="L212">                            .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L213">                            .build()</span>
+            );
+        }
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

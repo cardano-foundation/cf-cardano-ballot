@@ -41,7 +41,6 @@
   gap: 8px;
   border-radius: 8px;
   background-color: var(--color-ultra-dark-blue) !important;
-  transition: transform 0.3s ease;
   color: var(--color-light);
   font-size: 16px;
   font-style: normal;
@@ -60,7 +59,7 @@
   padding: 14px;
   align-items: flex-start;
   gap: 8px;
-  border-radius: 8px;
+  border-radius: 4px;
   background-color: var(--color-light-green) !important;
   transition: transform 0.3s ease;
   color: var(--color-ultra-dark-blue);
@@ -75,13 +74,9 @@
   }
 }
 
-.connect-button.MuiButton-root:hover {
-  transform: scale(1.02);
-}
-
 .connected-button.MuiButton-root {
-  width: 191px;
-  border-radius: 8px;
+  width: 210px;
+  border-radius: 4px;
   border: 1px solid var(--color-light-grey);
   background: var(--color-light-blue);
   display: inline-flex;
@@ -90,7 +85,6 @@
   align-items: center;
   gap: 10px;
   text-transform: none;
-
   color: var(--color-dark-grey);
   font-size: 16px;
   font-style: normal;

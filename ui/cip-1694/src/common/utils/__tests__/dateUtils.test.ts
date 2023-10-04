@@ -1,5 +1,5 @@
 import { eventMock_active } from 'test/mocks';
-import { formatUTCDate, getDateAndMonth } from '../dateUtils';
+import { formatUTCDate, getDateAndMonth, getMonthName } from '../dateUtils';
 
 describe('dateUtils: ', () => {
   test('formatUTCDate', () => {
@@ -7,5 +7,9 @@ describe('dateUtils: ', () => {
   });
   test('getDateAndMonth', () => {
     expect(getDateAndMonth(eventMock_active.eventStartDate.toString())).toEqual('14 September');
+    expect(getDateAndMonth('')).toEqual('');
+  });
+  test('getMonthName', () => {
+    expect(getMonthName(0)).toEqual('January');
   });
 });

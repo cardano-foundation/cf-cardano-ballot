@@ -32,7 +32,7 @@ public class VotingPowerService {
                 if (maybeAmount.isEmpty()) {
                     yield Either.left(Problem.builder()
                             .withTitle("STAKE_AMOUNT_NOT_AVAILABLE")
-                            .withDetail("Stake amount not found (like wallet not staked) for event: " + event + " and stake address: " + stakeAddress)
+                            .withDetail("Stake amount not found (like wallet not staked) for event: " + event.getId() + " and stake address: " + stakeAddress)
                             .withStatus(NOT_FOUND)
                             .build()
                     );
@@ -47,7 +47,7 @@ public class VotingPowerService {
                 if (maybeAmount.isEmpty()) {
                     yield Either.left(Problem.builder()
                             .withTitle("BALANCE_AMOUNT_NOT_AVAILABLE")
-                            .withDetail("Balance amount not found for event: " + event + " and stake address: " + stakeAddress)
+                            .withDetail("Balance amount not found for event: " + event.getId() + " and stake address: " + stakeAddress)
                             .withStatus(NOT_FOUND)
                             .build());
                 }

@@ -11,17 +11,21 @@ import VerifiedIcon from '@mui/icons-material/Verified';
 import React from 'react';
 import './ConnectWalletButton.scss';
 import { env } from 'common/constants/env';
+import { getUserInSession, tokenIsExpired } from '../../../utils/session';
 
 type ConnectWalletButtonProps = {
   disableBackdropClick?: boolean;
   onOpenConnectWalletModal: () => void;
   onOpenVerifyWalletModal: () => void;
+  onLogin: () => void;
 };
 
 const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
-  const { onOpenConnectWalletModal, onOpenVerifyWalletModal } = props;
+  const { onOpenConnectWalletModal, onOpenVerifyWalletModal, onLogin } = props;
   const eventCache = useSelector((state: RootState) => state.user.event);
   const walletIsVerified = useSelector((state: RootState) => state.user.walletIsVerified);
+  const session = getUserInSession();
+  const isExpired = tokenIsExpired(session?.expiresAt);
 
   const { stakeAddress, isConnected, disconnect, enabledWallet } = useCardano({
     limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
@@ -57,6 +61,9 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
         {isConnected ? (
           <>
             {stakeAddress ? addressSlice(stakeAddress, 5) : null}
+            {walletIsVerified ? (
+              <VerifiedIcon style={{ width: '20px', paddingBottom: '0px', color: '#1C9BEF' }} />
+            ) : null}
             <div className="arrow-icon">
               <KeyboardArrowDownIcon />
             </div>
@@ -69,7 +76,7 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
       </Button>
       {isConnected && (
         <div className="disconnect-wrapper">
-          {!eventCache?.finished ? (
+          {!walletIsVerified ? (
             <Button
               sx={{ zIndex: '99', cursor: walletIsVerified ? 'default' : 'pointer' }}
               className="connect-button verify-button"
@@ -77,14 +84,18 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
               onClick={() => onOpenVerifyWalletModal()}
               disabled={eventCache?.finished}
             >
-              {walletIsVerified ? (
-                <>
-                  <span style={{ paddingTop: '3px' }}>Verified</span>{' '}
-                  <VerifiedIcon style={{ width: '20px', paddingBottom: '0px', color: '#1C9BEF' }} />{' '}
-                </>
-              ) : (
-                'Verify'
-              )}
+              Verify
+            </Button>
+          ) : null}
+          {walletIsVerified || (!walletIsVerified && eventCache.finished) ? (
+            <Button
+              sx={{ zIndex: '99', cursor: 'pointer' }}
+              className="connect-button verify-button"
+              color="inherit"
+              onClick={() => onLogin()}
+              disabled={session && !isExpired}
+            >
+              Login
             </Button>
           ) : null}
           <Button

@@ -46,7 +46,7 @@ const Categories = () => {
   const categories = eventCache?.categories;
 
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('xs'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isBigScreen = useMediaQuery(theme.breakpoints.down('xl'));
 
   const [listView, setListView] = useState<'grid' | 'list'>('grid');
@@ -92,9 +92,8 @@ const Categories = () => {
               <Grid
                 item
                 xs={12}
-                sm={12}
+                sm={6}
                 md={4}
-                lg={4}
                 key={category.id}
               >
                 <Fade in={isVisible}>
@@ -102,7 +101,7 @@ const Categories = () => {
                     <Card
                       sx={{
                         height: 'auto',
-                        width: { xs: '380px', sm: '414px' },
+                        width: { xs: '370px', sm: '410px' },
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -119,7 +118,7 @@ const Categories = () => {
                             style={{ transformOrigin: '10 0 0' }}
                             {...{ timeout: 600 }}
                           >
-                            <CardContent sx={{ minHeight: '350px' }}>
+                            <CardContent sx={{ minHeight: '350px', maxHeight: '350px' }}>
                               <Box sx={{ position: 'relative' }}>
                                 {voted ? (
                                   <Tooltip title="Already Voted">
@@ -237,10 +236,14 @@ const Categories = () => {
                                 variant="h6"
                                 sx={{
                                   color: 'white',
-                                  fontSize: '36px',
+                                  fontSize: {
+                                    xs: '28px',
+                                    sm: '28px',
+                                    md: '32px',
+                                  },
                                   fontWeight: 600,
                                   wordBreak: 'break-word',
-                                  maxWidth: '285px',
+                                  maxWidth: '250px',
                                 }}
                               >
                                 {category.presentationName}
@@ -298,8 +301,8 @@ const Categories = () => {
                   <Card
                     className="categories-card"
                     sx={{
-                      width: listView === 'list' || isMobile ? '100%' : '414px',
-                      height: '156px',
+                      width: listView === 'list' || isMobile ? '100%' : '410px',
+                      height: 'auto',
                     }}
                     key={category.id}
                   >
@@ -333,7 +336,7 @@ const Categories = () => {
                           />
                         }
                       />
-                      <Box sx={{ marginLeft: 2, display: 'flex', flexDirection: 'column' }}>
+                      <Box sx={{ mx: 1, display: 'flex', flexDirection: 'column' }}>
                         <Typography
                           variant="h5"
                           color="text.primary"
@@ -348,7 +351,7 @@ const Categories = () => {
                           {category.desc}
                         </Typography>
                       </Box>
-                      <Box sx={{ marginLeft: 'auto' }}>
+                      <Box sx={{ marginLeft: 'auto', display: { sm: 'none', md: 'block'}}}>
                         <Button
                           component={Link}
                           to={{ pathname: `/nominees/${category.id}` }}
@@ -359,18 +362,46 @@ const Categories = () => {
                           variant="contained"
                           size="large"
                           sx={{
+                            width:'100%',
                             color: 'text.primary',
                             fontSize: 16,
                             fontWeight: 700,
                             textTransform: 'none',
+                            borderRadius: '8px',
                             backgroundColor: '#acfcc5 !important',
                             marginRight: '28px',
+                            minWidth: '166px'
                           }}
                         >
                           View Nominees
                         </Button>
                       </Box>
                     </CardContent>
+                    <Box sx={{ display: { sm: 'block', md: 'none'}}}>
+                        <Button
+                          component={Link}
+                          to={{ pathname: `/nominees/${category.id}` }}
+                          state={{
+                            category,
+                          }}
+                          aria-label="View Nominees"
+                          variant="contained"
+                          size="large"
+                          sx={{
+                            width:'95%',
+                            color: 'text.primary',
+                            fontSize: 16,
+                            fontWeight: 700,
+                            textTransform: 'none',
+                            borderRadius: '8px',
+                            backgroundColor: '#acfcc5 !important',
+                            margin: '20px',
+                            minWidth: '166px'
+                          }}
+                        >
+                          View Nominees
+                        </Button>
+                      </Box>
                   </Card>
                 </Fade>
               </Grid>
@@ -416,10 +447,10 @@ const Categories = () => {
         </Grid>
         <Grid item>
           <Hidden smDown>
-            <IconButton onClick={() => handleListView('grid')}>
+            <IconButton onClick={() => handleListView('grid')} className={listView === 'grid' ? styles.selected : styles.unSelected}>
               <ViewModuleIcon />
             </IconButton>
-            <IconButton onClick={() => handleListView('list')}>
+            <IconButton onClick={() => handleListView('list')} className={listView === 'list' ? styles.selected : styles.unSelected}>
               <ViewListIcon />
             </IconButton>
           </Hidden>

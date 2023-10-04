@@ -15,6 +15,7 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  Button,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
@@ -103,6 +104,8 @@ const Nominees = () => {
     limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
   });
 
+  const votedNominee = nominees.find((nominee) => nominee.id === selectedNomineeToVote?.id);
+
   const signMessagePromisified = useMemo(() => getSignedMessagePromise(signMessage), [signMessage]);
 
   const loadNominees = () => {
@@ -177,8 +180,6 @@ const Nominees = () => {
           eventBus.publish('showToast', 'Login successfully');
           getUserVotes(newSession?.accessToken)
             .then((uVotes) => {
-              console.log('uVotes');
-              console.log(uVotes);
               if (uVotes) {
                 dispatch(setUserVotes({ userVotes: uVotes }));
               }
@@ -222,10 +223,8 @@ const Nominees = () => {
       await castAVoteWithDigitalSignature(requestVoteObject);
       eventBus.publish('showToast', 'Vote submitted successfully');
       if (session && !tokenIsExpired(session?.expiresAt)) {
-        await getVoteReceipt(categoryId, session?.accessToken)
+        getVoteReceipt(categoryId, session?.accessToken)
           .then((r) => {
-            console.log('receipt');
-            console.log(r);
             dispatch(setVoteReceipt({ categoryId: categoryId, receipt: r }));
           })
           .catch((e) => {
@@ -233,8 +232,19 @@ const Nominees = () => {
               console.log(`Failed to fetch vote receipt, ${parseError(e.message)}`);
             }
           });
+        getUserVotes(session?.accessToken)
+          .then((response) => {
+            if (response) {
+              dispatch(setUserVotes({ userVotes: response }));
+            }
+          })
+          .catch((e) => {
+            if (process.env.NODE_ENV === 'development') {
+              console.log(`Failed to fetch user votes, ${parseError(e.message)}`);
+            }
+          });
       } else {
-        eventBus.publish('openLoginModal', 'Login to see your vote receipt');
+        eventBus.publish('openLoginModal', 'Login to see your vote receipt.');
       }
     } catch (e) {
       eventBus.publish('showToast', e.message && e.message.length ? parseError(e.message) : 'Action failed', 'error');
@@ -335,7 +345,7 @@ const Nominees = () => {
   };
 
   const handleViewVoteReceipt = () => {
-    if (isConnected) {
+    if (isConnected && walletIsLoggedIn && !tokenIsExpired(session?.expiresAt)) {
       viewVoteReceipt(true, true);
     } else {
       login();
@@ -550,7 +560,7 @@ const Nominees = () => {
                   <div style={{ height: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <Card
                       sx={{
-                        height: 'auto',
+                        height: '400px',
                         width: { xs: '380px', sm: '414px' },
                         display: 'flex',
                         alignItems: 'center',
@@ -558,9 +568,9 @@ const Nominees = () => {
                         borderRadius: '16px',
                       }}
                     >
-                      <CardContent>
-                        <Box sx={{ position: 'relative', marginTop: '12px' }}>
-                          {voted ? (
+                      <CardContent sx={{ minHeight: '385px', maxHeight: '385px' }}>
+                        {voted ? (
+                          <Box sx={{ position: 'relative', marginTop: '12px' }}>
                             <Tooltip title="Already Voted">
                               <img
                                 height={40}
@@ -576,12 +586,12 @@ const Nominees = () => {
                                 }}
                               />
                             </Tooltip>
-                          ) : null}
-                        </Box>
+                          </Box>
+                        ) : null}
                         <Typography
                           className="nominee-title"
                           variant="h4"
-                          sx={{ mb: 1, fontWeight: 'bold', wordWrap: 'break-word', width: voted ? '260px' : '100%' }}
+                          sx={{ mb: 1, minHeight: '83px', height: '83px', fontWeight: 'bold', wordWrap: 'break-word', width: voted ? '260px' : '100%' }}
                         >
                           {nominee.presentationName}
                           {isWinner ? (
@@ -600,7 +610,7 @@ const Nominees = () => {
                             <Typography
                               className="nominee-description"
                               variant="body2"
-                              sx={{ height: '110px' }}
+                              sx={{ minHeight: '115px', height: '115px', mt: '10px' }}
                             >
                               {shortenString(nominee.desc, 210)}
                             </Typography>
@@ -613,7 +623,6 @@ const Nominees = () => {
                             color: '#03021F',
                             border: '1px solid #daeefb',
                             width: '100%',
-                            marginTop: '28px',
                           }}
                           label="Read more"
                           onClick={() => handleReadMore(nominee)}
@@ -688,10 +697,16 @@ const Nominees = () => {
           </Typography>
           {!isMobile && (
             <div>
-              <IconButton onClick={() => handleListView('grid')}>
+              <IconButton
+                onClick={() => handleListView('grid')}
+                className={viewMode === 'grid' ? 'selected' : 'un-selected'}
+              >
                 <ViewModuleIcon />
               </IconButton>
-              <IconButton onClick={() => handleListView('list')}>
+              <IconButton
+                onClick={() => handleListView('list')}
+                className={viewMode === 'list' ? 'selected' : 'un-selected'}
+              >
                 <ViewListIcon />
               </IconButton>
             </div>
@@ -707,25 +722,25 @@ const Nominees = () => {
           {summit2023Category.desc}
         </Typography>
 
-        {(isConnected && categoryVoted) ||
-        (isConnected && eventCache?.finished) ||
-        (receipt && categoryId === receipt?.categorys) ? (
+        {isConnected && (categoryVoted || eventCache?.finished || (receipt && categoryId === receipt?.category)) ? (
           <Box
             sx={{
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              backgroundColor: walletIsLoggedIn ? 'rgba(5, 97, 34, 0.07)' : 'rgba(253, 135, 60, 0.07)',
+              backgroundColor: !tokenIsExpired(session?.expiresAt)
+                ? 'rgba(5, 97, 34, 0.07)'
+                : 'rgba(253, 135, 60, 0.07)',
               padding: '10px 20px',
               borderRadius: '8px',
-              border: walletIsLoggedIn ? '1px solid #056122' : '1px solid #FD873C',
+              border: !tokenIsExpired(session?.expiresAt) ? '1px solid #056122' : '1px solid #FD873C',
               color: 'white',
               width: '100%',
               marginBottom: '20px',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center' }}>
-              {walletIsLoggedIn ? (
+              {!tokenIsExpired(session?.expiresAt) ? (
                 <VerifiedUserIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#056122' }} />
               ) : (
                 <WarningAmberIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#FD873C' }} />
@@ -741,8 +756,8 @@ const Nominees = () => {
                   lineHeight: '22px',
                 }}
               >
-                {walletIsLoggedIn && !tokenIsExpired(session?.expiresAt)
-                  ? 'You have successfully cast a vote for Nominee'
+                {!tokenIsExpired(session?.expiresAt)
+                  ? `You have successfully cast a vote for ${votedNominee?.presentationName} in the ${summit2023Category.presentationName} category.`
                   : 'To see you vote receipt, please sign with your wallet'}
               </Typography>
             </div>
@@ -752,7 +767,7 @@ const Nominees = () => {
                 color: '#F6F9FF',
                 width: 'auto',
               }}
-              label={walletIsLoggedIn ? 'View vote receipt' : 'Login with Wallet'}
+              label={!tokenIsExpired(session?.expiresAt) ? 'View vote receipt' : 'Login with wallet'}
               onClick={() => handleViewVoteReceipt()}
               fullWidth={true}
             />
@@ -848,7 +863,7 @@ const Nominees = () => {
                       }}
                     >
                       Verified:
-                      <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
+                      <Tooltip title="The submitted vote has been successfully verified on-chain.">
                         <InfoIcon
                           style={{
                             color: '#434656A6',
@@ -931,7 +946,7 @@ const Nominees = () => {
                       ) : (
                         'Vote not ready for verification'
                       )}
-                      <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
+                      <Tooltip title="Assurance levels will update according to the finality of the transaction on-chain.">
                         <InfoIcon
                           style={{
                             color: '#434656A6',
@@ -1000,18 +1015,6 @@ const Nominees = () => {
                 >
                   Event
                 </Typography>
-                <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
-                  <InfoIcon
-                    style={{
-                      color: '#434656A6',
-                      width: '22px',
-                      marginLeft: '3px',
-                      marginBottom: '5px',
-                      verticalAlign: 'middle',
-                      cursor: 'pointer',
-                    }}
-                  />
-                </Tooltip>
               </div>
               <Typography
                 variant="body1"
@@ -1043,7 +1046,7 @@ const Nominees = () => {
                 >
                   Proposal
                 </Typography>
-                <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
+                <Tooltip title="Identifies the nominee selected for this category.">
                   <InfoIcon
                     style={{
                       color: '#434656A6',
@@ -1086,7 +1089,7 @@ const Nominees = () => {
                 >
                   Voter Staking Address
                 </Typography>
-                <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
+                <Tooltip title="The stake address associated with the Cardano wallet casting the vote.">
                   <InfoIcon
                     style={{
                       color: '#434656A6',
@@ -1129,7 +1132,7 @@ const Nominees = () => {
                 >
                   Status
                 </Typography>
-                <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
+                <Tooltip title="The current status of your vote receipt based on the current assurance level.">
                   <InfoIcon
                     style={{
                       color: '#434656A6',
@@ -1199,7 +1202,7 @@ const Nominees = () => {
                     >
                       ID
                     </Typography>
-                    <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
+                    <Tooltip title="This is a unique identifier associated with the vote submitted.">
                       <InfoIcon
                         style={{
                           color: '#434656A6',
@@ -1243,7 +1246,7 @@ const Nominees = () => {
                     >
                       Voted at Slot
                     </Typography>
-                    <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
+                    <Tooltip title="The time of the vote submission represented in Cardano blockchain epoch slots.">
                       <InfoIcon
                         style={{
                           color: '#434656A6',
@@ -1287,7 +1290,7 @@ const Nominees = () => {
                     >
                       Vote Proof
                     </Typography>
-                    <Tooltip title="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.">
+                    <Tooltip title="This is required to verify a vote was included on-chain.">
                       <InfoIcon
                         style={{
                           color: '#434656A6',
@@ -1377,30 +1380,70 @@ const Nominees = () => {
       <Modal
         isOpen={confirmVoteModal}
         id="confirm-vote"
-        title="Confirm Vote"
+        title="Review vote"
         onClose={toggleConfirmVoteModal}
       >
-        <CustomButton
-          styles={{
-            background: '#ACFCC5',
-            color: '#03021F',
-            margin: '20px 0px',
+        <Typography
+          sx={{
+            color: '#39486C',
+            fontSize: '16px',
+            fontStyle: 'normal',
+            fontWeight: '400',
+            lineHeight: '22px',
           }}
-          label={`Vote for ${nominees.find((nominee) => nominee.id === selectedNomineeToVote?.id)?.presentationName} [${
-            selectedNomineeToVote?.id
-          }]`}
-          fullWidth={true}
-          onClick={() => handleVoteNomineeButton()}
-        />
-        <CustomButton
-          styles={{
-            background: 'transparent !important',
-            color: '#03021F',
-          }}
-          label="Cancel"
-          fullWidth={true}
-          onClick={toggleConfirmVoteModal}
-        />
+        >
+          Please confirm your vote for ${votedNominee?.presentationName} [{selectedNomineeToVote?.id}]
+        </Typography>
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          sx={{ marginTop: '24px' }}
+        >
+          <Button
+            onClick={toggleConfirmVoteModal}
+            sx={{
+              display: 'flex',
+              width: '162px',
+              padding: '16px 24px',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: '10px',
+              borderRadius: '8px',
+              border: '1px solid #DAEEFB',
+              textTransform: 'none',
+              color: '#434656',
+              fontSize: '16px',
+              fontStyle: 'normal',
+              fontWeight: '600',
+              lineHeight: 'normal',
+              '&:hover': { backgroundColor: 'inherit' },
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={() => handleVoteNomineeButton()}
+            sx={{
+              display: 'flex',
+              width: '162px',
+              padding: '16px 24px',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: '10px',
+              borderRadius: '8px',
+              background: '#ACFCC5',
+              textTransform: 'none',
+              color: '#03021F',
+              fontSize: '16px',
+              fontStyle: 'normal',
+              fontWeight: '600',
+              lineHeight: 'normal',
+              '&:hover': { backgroundColor: '#ACFCC5' },
+            }}
+          >
+            Confirm vote
+          </Button>
+        </Box>
       </Modal>
     </>
   );

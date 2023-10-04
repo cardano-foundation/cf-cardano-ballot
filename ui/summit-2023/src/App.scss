@@ -9,12 +9,15 @@ body {
   background-color: #f5f9ff !important;
   background-image: url('./common/resources/images/home-graphic-bg-bottom.svg');
   background-repeat: no-repeat;
-  background-position: right;
-  background-size: contain;
-  height: 99vh;
+  background-position: bottom -24px right;
+  background-size: 100vh;
   @media only screen and (max-width: 1080px) {
     background-image: none;
   }
+}
+
+a, a:visited{
+  color: var(--color-primary) !important;
 }
 
 .content {

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.service.leader_board.LeaderBoardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 
+import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.cardano.foundation.voting.resource.Headers.XForceLeaderBoardResults;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
@@ -32,16 +34,26 @@ public class LeaderboardResource {
     @Timed(value = "resource.leaderboard.high.level.event.available", histogram = true)
     public ResponseEntity<?> isHighLevelEventLeaderBoardAvailable(@PathVariable("eventId") String eventId,
                                                                   @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = "false") boolean forceLeaderboardResults) {
+        var cacheControl = CacheControl.maxAge(1, MINUTES)
+                .noTransform()
+                .mustRevalidate();
+
         var forceLeaderboard = forceLeaderboardResults && forceLeaderboardResultsAvailability;
 
         var availableE = leaderBoardService.isHighLevelEventLeaderboardAvailable(eventId, forceLeaderboard);
 
         return availableE.fold(problem -> {
-                    return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
+                    return ResponseEntity
+                            .status(problem.getStatus().getStatusCode())
+                            .cacheControl(cacheControl)
+                            .body(problem);
                 },
                 isAvailable -> {
                     if (isAvailable) {
-                        return ResponseEntity.ok().build();
+                        return ResponseEntity
+                                .ok()
+                                .cacheControl(cacheControl)
+                                .build();
                     }
 
                     var problem = Problem.builder()
@@ -53,6 +65,7 @@ public class LeaderboardResource {
 
                     return ResponseEntity
                             .status(problem.getStatus().getStatusCode())
+                            .cacheControl(cacheControl)
                             .body(problem);
                 }
         );
@@ -62,16 +75,26 @@ public class LeaderboardResource {
     @Timed(value = "resource.leaderboard.high.level.category.available", histogram = true)
     public ResponseEntity<?> isHighLevelCategoryLeaderBoardAvailable(@PathVariable("eventId") String eventId,
                                                                      @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = "false") boolean forceLeaderboardResults) {
+        var cacheControl = CacheControl.maxAge(1, MINUTES)
+                .noTransform()
+                .mustRevalidate();
+
         var forceLeaderboard = forceLeaderboardResults && forceLeaderboardResultsAvailability;
 
         var availableE = leaderBoardService.isHighLevelCategoryLeaderboardAvailable(eventId, forceLeaderboard);
 
         return availableE.fold(problem -> {
-                    return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
+                    return ResponseEntity
+                            .status(problem.getStatus().getStatusCode())
+                            .cacheControl(cacheControl)
+                            .body(problem);
                 },
                 isAvailable -> {
                     if (isAvailable) {
-                        return ResponseEntity.ok().build();
+                        return ResponseEntity
+                                .ok()
+                                .cacheControl(cacheControl)
+                                .build();
                     }
                     var problem = Problem.builder()
                             .withTitle("VOTING_RESULTS_NOT_AVAILABLE")
@@ -81,6 +104,7 @@ public class LeaderboardResource {
 
                     return ResponseEntity
                             .status(problem.getStatus().getStatusCode())
+                            .cacheControl(cacheControl)
                             .body(problem);
                 }
         );
@@ -91,6 +115,10 @@ public class LeaderboardResource {
     public ResponseEntity<?> getCategoryLeaderBoardAvailable(@PathVariable("eventId") String eventId,
                                                              @PathVariable("categoryId") String categoryId,
                                                              @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = "false") boolean forceLeaderboardResults) {
+        var cacheControl = CacheControl.maxAge(1, MINUTES)
+                .noTransform()
+                .mustRevalidate();
+
         var forceLeaderboard = forceLeaderboardResults && forceLeaderboardResultsAvailability;
 
         var categoryLeaderboardAvailableE = leaderBoardService.isCategoryLeaderboardAvailable(eventId, categoryId, forceLeaderboard);
@@ -99,11 +127,15 @@ public class LeaderboardResource {
                 .fold(problem -> {
                             return ResponseEntity
                                     .status(problem.getStatus().getStatusCode())
+                                    .cacheControl(cacheControl)
                                     .body(problem);
                         },
                         isAvailable -> {
                             if (isAvailable) {
-                                return ResponseEntity.ok().build();
+                                return ResponseEntity
+                                        .ok()
+                                        .cacheControl(cacheControl)
+                                        .build();
                             }
                             var problem = Problem.builder()
                                     .withTitle("VOTING_RESULTS_NOT_AVAILABLE")
@@ -113,6 +145,7 @@ public class LeaderboardResource {
 
                             return ResponseEntity
                                     .status(problem.getStatus().getStatusCode())
+                                    .cacheControl(cacheControl)
                                     .body(problem);
                         }
                 );
@@ -122,15 +155,25 @@ public class LeaderboardResource {
     @Timed(value = "resource.leaderboard.event", histogram = true)
     public ResponseEntity<?> getEventLeaderBoard(@PathVariable("eventId") String eventId,
                                                  @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = "false") boolean forceLeaderboardResults) {
+        var cacheControl = CacheControl.maxAge(1, MINUTES)
+                .noTransform()
+                .mustRevalidate();
+
         var forceLeaderboard = forceLeaderboardResults && forceLeaderboardResultsAvailability;
 
         var eventLeaderboardE = leaderBoardService.getEventLeaderboard(eventId, forceLeaderboard);
 
         return eventLeaderboardE.fold(problem -> {
-                    return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
+                    return ResponseEntity
+                            .status(problem.getStatus().getStatusCode())
+                            .cacheControl(cacheControl)
+                            .body(problem);
                 },
                 response -> {
-                    return ResponseEntity.ok().body(response);
+                    return ResponseEntity
+                            .ok()
+                            .cacheControl(cacheControl)
+                            .body(response);
                 }
         );
     }
@@ -140,16 +183,26 @@ public class LeaderboardResource {
     public ResponseEntity<?> getCategoryLeaderBoard(@PathVariable("eventId") String eventId,
                                                     @PathVariable("categoryId") String categoryId,
                                                     @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = "false") boolean forceLeaderboardResults) {
+        var cacheControl = CacheControl.maxAge(1, MINUTES)
+                .noTransform()
+                .mustRevalidate();
+
         var forceLeaderboard = forceLeaderboardResults && forceLeaderboardResultsAvailability;
 
         var categoryLeaderboardE = leaderBoardService.getCategoryLeaderboard(eventId, categoryId, forceLeaderboard);
 
         return categoryLeaderboardE
                 .fold(problem -> {
-                            return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
+                            return ResponseEntity
+                                    .status(problem.getStatus().getStatusCode())
+                                    .cacheControl(cacheControl)
+                                    .body(problem);
                         },
                         response -> {
-                            return ResponseEntity.ok().body(response);
+                            return ResponseEntity
+                                    .ok()
+                                    .cacheControl(cacheControl)
+                                    .body(response);
                         }
                 );
     }
@@ -158,6 +211,10 @@ public class LeaderboardResource {
     @Timed(value = "resource.leaderboard.category.winners", histogram = true)
     public ResponseEntity<?> getWinners(@PathVariable("eventId") String eventId,
                                         @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = "false") boolean forceLeaderboardResults) {
+        var cacheControl = CacheControl.maxAge(1, MINUTES)
+                .noTransform()
+                .mustRevalidate();
+
         var forceLeaderboard = forceLeaderboardResults && forceLeaderboardResultsAvailability;
 
         var categoryLeaderboardE = leaderBoardService.getEventWinners(eventId, forceLeaderboard);
@@ -166,11 +223,14 @@ public class LeaderboardResource {
                 .fold(problem -> {
                             return ResponseEntity
                                     .status(problem.getStatus().getStatusCode())
-                                    //.cacheControl(noCache())
+                                    .cacheControl(cacheControl)
                                     .body(problem);
                         },
                         response -> {
-                            return ResponseEntity.ok().body(response);
+                            return ResponseEntity
+                                    .ok()
+                                    .cacheControl(cacheControl)
+                                    .body(response);
                         }
                 );
     }

@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "cf-discord-wallet-verification-bot.fullname" . }}
+  labels:
+    {{- include "cf-discord-wallet-verification-bot.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "cf-discord-wallet-verification-bot.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "cf-discord-wallet-verification-bot.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          {{- if $.Values.diagnosticMode.enabled }}
+          command: ["sh", "-c", "sleep infinity"]
+          {{- end }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: DISCORD_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: discord-secrets
+                  key: DISCORD_TOKEN
+            - name: GUILD_ID
+              valueFrom:
+                secretKeyRef:
+                  name: discord-secrets
+                  key: GUILD_ID
+            - name: CHANNEL_ID
+              valueFrom:
+                secretKeyRef:
+                  name: discord-secrets
+                  key: CHANNEL_ID
+            - name: VERIFIED_ROLE_ID
+              valueFrom:
+                secretKeyRef:
+                  name: discord-secrets
+                  key: VERIFIED_ROLE_ID
+            - name: BACKEND_BASE_URL
+              value: {{ tpl .Values.backendBaseUrl . }}
+            - name: BACKEND_BASIC_AUTH_USER
+              valueFrom:
+                secretKeyRef:
+                  name: discord-secrets
+                  key: BACKEND_BASIC_AUTH_USER
+            - name: BACKEND_BASIC_AUTH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: discord-secrets
+                  key: BACKEND_BASIC_AUTH_PASSWORD
+            - name: DISCORD_VERIFICATION_BOT_SALT
+              valueFrom:
+                secretKeyRef:
+                  name: discord-secrets
+                  key: DISCORD_VERIFICATION_BOT_SALT
+
+            - name: FRONTEND_URL
+              value: {{ tpl .Values.frontendUrl . }}
+
+#          livenessProbe:
+#            httpGet:
+#              path: /
+#              port: http
+#          readinessProbe:
+#            httpGet:
+#              path: /
+#              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}

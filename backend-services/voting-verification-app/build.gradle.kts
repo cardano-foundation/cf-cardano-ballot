@@ -7,7 +7,7 @@ plugins {
 	id("org.springframework.boot") version "3.1.3"
 	id("io.spring.dependency-management") version "1.1.3"
 	id("org.graalvm.buildtools.native") version "0.9.26"
-    id("org.flywaydb.flyway") version "9.22.0"
+    id("org.flywaydb.flyway") version "9.22.1"
 	id("cz.habarta.typescript-generator") version "3.2.1263"
     id("com.github.ben-manes.versions") version "0.48.0"
     id("com.gorylenko.gradle-git-properties") version "2.4.1"
@@ -18,7 +18,7 @@ springBoot {
 }
 
 group = "org.cardano.foundation"
-version = "0.0.1-SNAPSHOT"
+version = "1.0.0-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 configurations {
@@ -50,11 +50,11 @@ dependencies {
 
 	implementation("org.zalando:problem-spring-web-starter:0.29.1")
 
-	compileOnly("org.projectlombok:lombok:1.18.28")
-	annotationProcessor("org.projectlombok:lombok:1.18.28")
+	compileOnly("org.projectlombok:lombok:1.18.30")
+	annotationProcessor("org.projectlombok:lombok:1.18.30")
 
-	testCompileOnly("org.projectlombok:lombok:1.18.28")
-	testAnnotationProcessor("org.projectlombok:lombok:1.18.28")
+	testCompileOnly("org.projectlombok:lombok:1.18.30")
+	testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
 
 	implementation("com.querydsl:querydsl-jpa")
     annotationProcessor("com.querydsl:querydsl-apt")
@@ -65,7 +65,7 @@ dependencies {
 	implementation("io.vavr:vavr:0.10.4")
 
 	implementation("org.cardanofoundation:merkle-tree-java:0.0.7")
-	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.10")
+	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.11")
 }
 
 tasks.withType<Test> {
@@ -94,12 +94,15 @@ tasks {
 
 tasks.register<Copy>("buildAndCopyTypescriptTypes") {
 	val uiProject = properties["ui_project_name"]
-		?:
-		throw GradleException("UI project name not set. Please set ui_project_name property, e.g. ./gradlew buildAndCopyTypescriptTypes -Pui_project_name=summit-2023")
 
-	println("buildAndCopyTypescriptTypes UI project name: $uiProject")
+	if (uiProject != null) {
+		println("buildAndCopyTypescriptTypes UI project name: $uiProject")
 
-	dependsOn(tasks.generateTypeScript)
-	from(layout.buildDirectory.file("typescript-generator/voting-verification-app-types.ts"))
-	into(layout.projectDirectory.dir("../../ui/$uiProject/src/types"))
+		dependsOn(tasks.generateTypeScript)
+		from(layout.buildDirectory.file("typescript-generator/voting-verification-app-types.ts"))
+		into(layout.projectDirectory.dir("../../ui/$uiProject/src/types"))
+	} else {
+		println("buildAndCopyTypescriptTypes ui_project_name NOT set. Skipping.")
+	}
+
 }

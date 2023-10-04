@@ -35,6 +35,11 @@ cf-cardano-ballot-ledger-follower-api:
   # Whether Resources should be deployed.
   enabled: true
 
+# Voting Verification
+cf-voting-verification-ui:
+  # Whether Resources should be deployed.
+  enabled: true
+
 grafana-dashboards:
   enabled: true
 

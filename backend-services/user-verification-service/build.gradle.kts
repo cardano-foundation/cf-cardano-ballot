@@ -18,7 +18,7 @@ springBoot {
 }
 
 group = "org.cardano.foundation"
-version = "0.0.1-SNAPSHOT"
+version = "1.0.0-SNAPSHOT"
 java.sourceCompatibility = JavaVersion.VERSION_17
 
 configurations {
@@ -52,31 +52,31 @@ dependencies {
 
 	implementation("org.zalando:problem-spring-web-starter:0.29.1")
 
-	compileOnly("org.projectlombok:lombok:1.18.28")
-	annotationProcessor("org.projectlombok:lombok:1.18.28")
+	compileOnly("org.projectlombok:lombok:1.18.30")
+	annotationProcessor("org.projectlombok:lombok:1.18.30")
 
-	testCompileOnly("org.projectlombok:lombok:1.18.28")
-	testAnnotationProcessor("org.projectlombok:lombok:1.18.28")
+	testCompileOnly("org.projectlombok:lombok:1.18.30")
+	testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
 
 	implementation("org.flywaydb:flyway-core")
 
-	implementation("com.googlecode.libphonenumber:libphonenumber:8.13.20")
+	implementation("com.googlecode.libphonenumber:libphonenumber:8.13.21")
 
 	implementation("com.querydsl:querydsl-jpa")
     annotationProcessor("com.querydsl:querydsl-apt")
 
 	implementation("com.bloxbean.cardano:cardano-client-address:0.5.0-beta3")
 
-	implementation("software.amazon.awssdk:sns:2.20.149")
+	implementation("software.amazon.awssdk:sns:2.20.153")
 
 	implementation("io.vavr:vavr:0.10.4")
 
 	runtimeOnly("org.postgresql:postgresql")
 
-	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.10")
+	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.11")
 
 	// spring-boot overridden dependencies:
-    runtimeOnly("com.h2database:h2:2.2.222") // GraalVM compatibility
+    runtimeOnly("com.h2database:h2:2.2.224") // GraalVM compatibility
 }
 
 tasks.withType<Test> {
@@ -105,12 +105,15 @@ tasks {
 
 tasks.register<Copy>("buildAndCopyTypescriptTypes") {
 	val uiProject = properties["ui_project_name"]
-		?:
-		throw GradleException("UI project name not set. Please set ui_project_name property, e.g. ./gradlew buildAndCopyTypescriptTypes -Pui_project_name=summit-2023")
 
-	println("buildAndCopyTypescriptTypes UI project name: $uiProject")
+	if (uiProject != null) {
+		println("buildAndCopyTypescriptTypes UI project name: $uiProject")
 
-	dependsOn(tasks.generateTypeScript)
-    from(layout.buildDirectory.file("typescript-generator/user-verification-app-types.ts"))
-	into(layout.projectDirectory.dir("../../ui/$uiProject/src/types"))
+		dependsOn(tasks.generateTypeScript)
+		from(layout.buildDirectory.file("typescript-generator/user-verification-app-types.ts"))
+		into(layout.projectDirectory.dir("../../ui/$uiProject/src/types"))
+	} else {
+		println("buildAndCopyTypescriptTypes ui_project_name not set. Skipping.")
+	}
+
 }

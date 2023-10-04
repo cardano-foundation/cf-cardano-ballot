@@ -52,6 +52,9 @@ spec:
             - name: YACI_STORE_CARDANO_SYNC_START_SLOT
               value: {{ $.Values.yaci.startSlotNumber | quote }}
 
+            - name: CARDANO_SNAPSHOT_BOUNDS_CHECK_ENABLED
+              value: "false"
+
             - name: BLOCKFROST_URL
               valueFrom:
                 secretKeyRef:

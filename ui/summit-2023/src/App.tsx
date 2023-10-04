@@ -3,7 +3,7 @@ import { Footer } from './components/common/Footer/Footer';
 import { BrowserRouter } from 'react-router-dom';
 import './App.scss';
 import { useDispatch, useSelector } from 'react-redux';
-import { setEventData, setUserVotes, setWalletIsLoggedIn, setWalletIsVerified, setWinners} from './store/userSlice';
+import { setEventData, setUserVotes, setWalletIsLoggedIn, setWalletIsVerified, setWinners } from './store/userSlice';
 import { Box, CircularProgress, Container, Grid, useMediaQuery, useTheme } from '@mui/material';
 import Header from './components/common/Header/Header';
 import { PageRouter } from './routes';
@@ -27,6 +27,7 @@ import { getWinners } from 'common/api/leaderboardService';
 function App() {
   const theme = useTheme();
   const eventCache = useSelector((state: RootState) => state.user.event);
+  const walletIsVerified = useSelector((state: RootState) => state.user.walletIsVerified);
   const [termsAndConditionsChecked] = useLocalStorage(CB_TERMS_AND_PRIVACY, false);
   const [openTermDialog, setOpenTermDialog] = useState(false);
   const { isConnected, stakeAddress } = useCardano({ limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK) });
@@ -61,7 +62,6 @@ function App() {
           const isVerified = await getIsVerified(env.EVENT_ID, stakeAddress);
           dispatch(setWalletIsVerified({ isVerified: isVerified.verified }));
         } catch (e) {
-          console.log('error');
           if (process.env.NODE_ENV === 'development') {
             console.log(e.message);
           }
@@ -71,7 +71,7 @@ function App() {
       if ('finished' in event && event.finished) {
         try {
           const winners = await getWinners();
-          dispatch(setWinners({winners}));
+          dispatch(setWinners({ winners }));
         } catch (e) {
           if (process.env.NODE_ENV === 'development') {
             console.log(e.message);
@@ -104,6 +104,27 @@ function App() {
   useEffect(() => {
     fetchEvent();
   }, [fetchEvent, stakeAddress]);
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const action = queryParams.get('action');
+    const secret = queryParams.get('secret');
+
+    const isVerifiedEventNotEnded = walletIsVerified && !eventCache.finished;
+    const notVerifiedEventEnded = !walletIsVerified && eventCache.finished;
+    const sessionExpired = !session || isExpired;
+    const notDiscordVerification = !(action === 'verification' && secret.includes('|'));
+
+    const showLoginModal =
+      termsAndConditionsChecked &&
+      isConnected &&
+      notDiscordVerification &&
+      ((isVerifiedEventNotEnded && sessionExpired) || notVerifiedEventEnded);
+
+    if (showLoginModal) {
+      eventBus.publish('openLoginModal', 'If you already voted, please login to see your votes.');
+    }
+  }, [isConnected]);
 
   useEffect(() => {
     setOpenTermDialog(!termsAndConditionsChecked);

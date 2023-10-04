@@ -1,0 +1,15 @@
+body {
+  font-family: 'Roboto', sans-serif;
+}
+
+.toast {
+  padding: 0 !important;
+  border-radius: 8px !important;
+  color: #fff;
+  min-width: auto !important;
+  width: auto !important;
+  max-width: 450px !important;
+  & > div {
+    margin: 0px !important;
+  }
+}

@@ -12,7 +12,7 @@ import {
   Grid,
   Typography,
   Button,
-  Card,
+  Box,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
@@ -31,7 +31,7 @@ import { useToggle } from 'common/hooks/useToggle';
 import { CustomButton } from '../Button/CustomButton';
 import { getSlotNumber, getUserVotes } from 'common/api/voteService';
 import { buildCanonicalLoginJson, submitLogin } from 'common/api/loginService';
-import {clearUserInSessionStorage, saveUserInSession} from '../../../utils/session';
+import { clearUserInSessionStorage, saveUserInSession } from '../../../utils/session';
 import { setConnectedPeerWallet, setUserVotes, setWalletIsLoggedIn } from '../../../store/userSlice';
 import { copyToClipboard, getSignedMessagePromise, resolveCardanoNetwork } from '../../../utils/utils';
 import { Toast } from '../Toast/Toast';
@@ -87,6 +87,7 @@ const Header: React.FC = () => {
 
     if (action === 'verification' && secret.includes('|')) {
       toggleVerifyDiscordModalIsOpen();
+      setVerifyModalIsOpen(true);
     }
   }, []);
 
@@ -229,9 +230,6 @@ const Header: React.FC = () => {
   const onConnectWallet = () => {
     setOpenAuthDialog(false);
     showToast('Wallet connected successfully');
-    if (!walletIsVerified && !eventCache?.finished) {
-      setVerifyModalIsOpen(true);
-    }
   };
   const onConnectWalletError = (error: Error) => {
     setOpenAuthDialog(false);
@@ -319,6 +317,7 @@ const Header: React.FC = () => {
         <ConnectWalletButton
           onOpenConnectWalletModal={handleConnectWallet}
           onOpenVerifyWalletModal={handleOpenVerify}
+          onLogin={handleLogin}
         />
         <IconButton
           className="close-button"
@@ -361,7 +360,7 @@ const Header: React.FC = () => {
         position={'static'}
         style={{ background: 'transparent', boxShadow: 'none', color: 'black' }}
       >
-        <Toolbar sx={{pl: 0, pt: 1}}>
+        <Toolbar sx={{ pl: 0, pt: 2 }}>
           {isTablet ? (
             <>
               <NavLink to="/">
@@ -375,7 +374,7 @@ const Header: React.FC = () => {
               <IconButton
                 edge="end"
                 color="inherit"
-                className="menuButton"
+                className="menu-button"
                 onClick={() => setDrawerOpen(true)}
               >
                 <MenuIcon className="close-icon" />
@@ -420,6 +419,7 @@ const Header: React.FC = () => {
                 <ConnectWalletButton
                   onOpenConnectWalletModal={handleConnectWallet}
                   onOpenVerifyWalletModal={handleOpenVerify}
+                  onLogin={handleLogin}
                 />
               </Grid>
             </Grid>
@@ -455,7 +455,7 @@ const Header: React.FC = () => {
       </Modal>
       <Modal
         id="verify-wallet-modal"
-        isOpen={verifyModalIsOpen || verifyDiscordModalIsReady}
+        isOpen={verifyModalIsOpen}
         name="verify-wallet-modal"
         title="Verify your Wallet"
         onClose={handleCloseVerify}
@@ -491,7 +491,7 @@ const Header: React.FC = () => {
             color: '#03021F',
             margin: '24px 0px',
           }}
-          label="Login with wallet"
+          label="Login with Wallet"
           onClick={() => handleLogin()}
           fullWidth={true}
         />
@@ -505,32 +505,33 @@ const Header: React.FC = () => {
         onClose={() => setCip45ModalIsOpen(false)}
         disableBackdropClick={true}
       >
-        <Typography
-          variant="body1"
-          align="left"
-          sx={{
-            width: '344px',
-            color: '#434656',
-            fontSize: '16px',
-            fontStyle: 'normal',
-            fontWeight: '400',
-            lineHeight: '22px',
-          }}
-        >
-          P2P direct connection to remote wallet without intermediaries (Beta).{' '}
-          <span style={{ fontSize: '14px', fontStyle: 'italic', cursor: 'pointer' }}>
-            {' '}
-            <a
-              href="https://github.com/cardano-foundation/CIPs/pull/395"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Learn more about CIP-45
-            </a>
-          </span>
-        </Typography>
         {!startPeerConnect ? (
           <>
+            <Typography
+              variant="body1"
+              align="left"
+              sx={{
+                width: '344px',
+                color: '#434656',
+                fontSize: '16px',
+                fontStyle: 'normal',
+                fontWeight: '400',
+                lineHeight: '22px',
+              }}
+            >
+              To connect your mobile wallet, simply use your wallet's app to scan the QR code below. If scanning isn't
+              an option, you can also copy the Peer ID.{' '}
+              <span style={{ fontSize: '14px', fontStyle: 'italic', cursor: 'pointer' }}>
+                {' '}
+                <a
+                  href="https://github.com/cardano-foundation/CIPs/pull/395"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Learn more about CIP-45
+                </a>
+              </span>
+            </Typography>
             <div style={{ display: 'flex', justifyContent: 'center', width: '100%', marginTop: '24px' }}>
               <QRCode
                 size={256}
@@ -554,31 +555,68 @@ const Header: React.FC = () => {
                 cursor: 'pointer',
               }}
             >
+              <FileCopyIcon
+                fontSize="small"
+                style={{ color: '#434656', cursor: 'pointer' }}
+              />
               <Typography
                 variant="body1"
                 align="center"
                 sx={{
                   color: '#434656',
-                  fontSize: '14px',
+                  fontSize: '16px',
                   fontStyle: 'normal',
-                  fontWeight: '400',
-                  lineHeight: '22px',
+                  fontWeight: '600',
+                  lineHeight: '18.75px',
                   cursor: 'pointer',
-                  marginRight: '8px',
+                  marginLeft: '8px',
                 }}
               >
-                {meerkatAddress}
+                Copy Peer ID
               </Typography>
-              <FileCopyIcon
-                fontSize="small"
-                style={{ color: '#434656', cursor: 'pointer' }}
-              />
             </div>
+            <Button
+              onClick={() => {
+                setStartPeerConnect(false);
+                setOpenAuthDialog(true);
+              }}
+              className="vote-nominee-button"
+              style={{
+                display: 'flex',
+                width: '344px',
+                padding: '12px',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: '10px',
+                borderRadius: '8px',
+                background: 'transparent',
+                border: '1px solid #DAEEFB',
+                color: '#03021F',
+                fontSize: '16px',
+                fontStyle: 'normal',
+                fontWeight: '600',
+                lineHeight: 'normal',
+                textTransform: 'none',
+                marginTop: '24px',
+                marginBottom: '28px',
+              }}
+            >
+              Cancel
+            </Button>
           </>
-        ) : null}
-        {startPeerConnect ? (
+        ) : (
           <>
-            <Card sx={{ padding: '12px', marginTop: '24px' }}>
+            <Box
+              display="flex"
+              flexDirection="column"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <img
+                src={peerConnectWalletInfo?.icon}
+                alt="Wallet"
+                style={{ width: '64px', marginTop: '44px' }}
+              />
               <Typography
                 variant="body1"
                 align="left"
@@ -589,8 +627,8 @@ const Header: React.FC = () => {
                   fontStyle: 'normal',
                   fontWeight: '500',
                   lineHeight: '22px',
-                  marginTop: '4px',
-                  marginBottom: '8px',
+                  marginTop: '24px',
+                  marginBottom: '44px',
                 }}
               >
                 <span style={{ textTransform: 'capitalize', fontStyle: 'italic', fontWeight: '600' }}>
@@ -615,17 +653,10 @@ const Header: React.FC = () => {
                   fontWeight: '600',
                   lineHeight: 'normal',
                   textTransform: 'none',
-                  marginTop: '4px',
-                  marginBottom: '18px',
                 }}
                 fullWidth
               >
                 Accept connection
-                <img
-                  src={peerConnectWalletInfo?.icon}
-                  alt="Wallet"
-                  style={{ width: '28px' }}
-                />
               </Button>
               <Button
                 onClick={handleReject}
@@ -639,47 +670,19 @@ const Header: React.FC = () => {
                   gap: '10px',
                   borderRadius: '8px',
                   background: 'transparent',
+                  border: '1px solid #DAEEFB',
                   color: '#03021F',
                   fontSize: '16px',
                   fontStyle: 'normal',
                   fontWeight: '600',
                   lineHeight: 'normal',
                   textTransform: 'none',
+                  marginTop: '10px',
                 }}
               >
-                Cancel
+                Deny
               </Button>
-            </Card>
-          </>
-        ) : (
-          <>
-            <Button
-              onClick={() => {
-                setStartPeerConnect(false);
-                setOpenAuthDialog(true);
-              }}
-              className="vote-nominee-button"
-              style={{
-                display: 'flex',
-                width: '344px',
-                padding: '12px',
-                justifyContent: 'center',
-                alignItems: 'center',
-                gap: '10px',
-                borderRadius: '8px',
-                background: '#ACFCC5',
-                color: '#03021F',
-                fontSize: '16px',
-                fontStyle: 'normal',
-                fontWeight: '600',
-                lineHeight: 'normal',
-                textTransform: 'none',
-                marginTop: '24px',
-                marginBottom: '28px',
-              }}
-            >
-              Back
-            </Button>
+            </Box>
           </>
         )}
       </Modal>

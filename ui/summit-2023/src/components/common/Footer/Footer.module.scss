@@ -1,18 +1,22 @@
 .footer {
-  display: flex !important;
-  justify-content: space-between !important;
-  background: 'transparent';
-  box-shadow: 'none';
-  padding: '10px';
-  bottom: '0 !important';
+  background: transparent;
+  box-shadow: none;
+  min-height: 44px;
+  padding-left: 24px;
+  padding-right: 24px;
+  bottom: 0 !important;
+  text-align: left;
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  line-height: 18.75px !important;
+  @media only screen and (max-width: 900px) {
+    text-align: center;
+    margin-top: 20px;
+  }
 }
 
 .link {
-  justify-content: center !important;
-  color: #39486c !important;
+  color: var(--color-primary) !important;
   cursor: pointer !important;
-  display: flex !important;
-  font-size: 16px !important;
-  font-weight: 400 !important;
-  line-height: normal !important;
+  margin-left: 5px;
 }

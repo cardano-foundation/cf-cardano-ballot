@@ -183,3 +183,14 @@
     color: red;
   }
 }
+
+.selected {
+  background-color: #daeefb !important;
+  border: 2px var(--color-primary) !important;
+  border-radius: 8px !important;
+}
+.unSelected {
+  background-color: transparent !important;
+  border: 2px var(--color-primary) !important;
+  border-radius: 8px !important;
+}

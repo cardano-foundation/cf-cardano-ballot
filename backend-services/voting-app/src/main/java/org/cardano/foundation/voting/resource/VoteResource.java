@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.service.auth.jwt.JwtAuthenticationToken;
 import org.cardano.foundation.voting.service.auth.web3.Web3AuthenticationToken;
 import org.cardano.foundation.voting.service.vote.VoteService;
+import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,6 +32,10 @@ public class VoteResource {
     @Timed(value = "resource.vote.votes", histogram = true)
     public ResponseEntity<?> getVotes(@PathVariable(value = "eventId", required = false) Optional<String> maybeEventId,
                                       Authentication authentication) {
+        var cacheControl = CacheControl.noCache()
+                .noTransform()
+                .mustRevalidate();
+
         if (!(authentication instanceof JwtAuthenticationToken jwtAuth)) {
             var problem = Problem.builder()
                     .withTitle("JWT_REQUIRED")
@@ -40,6 +45,7 @@ public class VoteResource {
 
             return ResponseEntity
                     .status(problem.getStatus().getStatusCode())
+                    .cacheControl(cacheControl)
                     .body(problem);
         }
 
@@ -52,6 +58,7 @@ public class VoteResource {
 
             return ResponseEntity
                     .status(problem.getStatus().getStatusCode())
+                    .cacheControl(cacheControl)
                     .body(problem);
         }
 
@@ -61,11 +68,13 @@ public class VoteResource {
 
                             return ResponseEntity
                                     .status(problem.getStatus().getStatusCode())
+                                    .cacheControl(cacheControl)
                                     .body(problem);
                         },
                         categoryProposalPairs -> {
                             return ResponseEntity
                                     .ok()
+                                    .cacheControl(cacheControl)
                                     .body(categoryProposalPairs);
                         });
     }
@@ -104,9 +113,12 @@ public class VoteResource {
                         });
     }
 
-    @RequestMapping(value = "/receipt", method = GET, produces = "application/json")
+    @RequestMapping(value = "/receipt", method = { HEAD, GET } , produces = "application/json")
     @Timed(value = "resource.vote.receipt.web3", histogram = true)
     public ResponseEntity<?> getVoteReceipt(Authentication authentication) {
+        var cacheControl = CacheControl.noCache()
+                .noTransform()
+                .mustRevalidate();
 
         if (!(authentication instanceof Web3AuthenticationToken web3Auth)) {
             var problem = Problem.builder()
@@ -117,6 +129,7 @@ public class VoteResource {
 
             return ResponseEntity
                     .status(problem.getStatus().getStatusCode())
+                    .cacheControl(cacheControl)
                     .body(problem);
         }
 
@@ -124,18 +137,26 @@ public class VoteResource {
                 .fold(problem -> {
                             return ResponseEntity
                                     .status(problem.getStatus().getStatusCode())
+                                    .cacheControl(cacheControl)
                                     .body(problem);
                         },
                         voteReceipt -> {
-                            return ResponseEntity.ok().body(voteReceipt);
+                            return ResponseEntity
+                                    .ok()
+                                    .cacheControl(cacheControl)
+                                    .body(voteReceipt);
                         });
     }
 
-    @RequestMapping(value = "/receipt/{maybeEventId}/{categoryId}", method = GET, produces = "application/json")
+    @RequestMapping(value = "/receipt/{eventId}/{categoryId}", method = { HEAD, GET }, produces = "application/json")
     @Timed(value = "resource.vote.receipt.jwt", histogram = true)
     public ResponseEntity<?> getVoteReceipt(@PathVariable(value = "eventId", required = false) Optional<String> maybeEventId,
                                             @PathVariable("categoryId") String categoryId,
                                             Authentication authentication) {
+        var cacheControl = CacheControl.noCache()
+                .noTransform()
+                .mustRevalidate();
+
         if (!(authentication instanceof JwtAuthenticationToken jwtAuth)) {
             var problem = Problem.builder()
                     .withTitle("JWT_REQUIRED")
@@ -143,7 +164,10 @@ public class VoteResource {
                     .withStatus(BAD_REQUEST)
                     .build();
 
-            return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);
+            return ResponseEntity
+                    .status(problem.getStatus().getStatusCode())
+                    .cacheControl(cacheControl)
+                    .body(problem);
         }
 
         if (maybeEventId.isPresent() && !maybeEventId.orElseThrow().equals(jwtAuth.eventDetails().id())) {
@@ -155,6 +179,7 @@ public class VoteResource {
 
             return ResponseEntity
                     .status(problem.getStatus().getStatusCode())
+                    .cacheControl(cacheControl)
                     .body(problem);
         }
 
@@ -162,18 +187,26 @@ public class VoteResource {
                 .fold(problem -> {
                             return ResponseEntity
                                     .status(problem.getStatus().getStatusCode())
+                                    .cacheControl(cacheControl)
                                     .body(problem);
                         },
                         voteReceipt -> {
-                            return ResponseEntity.ok().body(voteReceipt);
+                            return ResponseEntity
+                                    .ok()
+                                    .cacheControl(cacheControl)
+                                    .body(voteReceipt);
                         });
     }
 
     @RequestMapping(value = "/vote-changing-available/{eventId}/{voteId}", method = HEAD, produces = "application/json")
-    @Timed(value = "resource.voteId.receipt", histogram = true)
+    @Timed(value = "resource.vote.vote.changing.available", histogram = true)
     public ResponseEntity<?> isVoteChangingAvailable(@PathVariable(value = "eventId", required = false) Optional<String> maybeEventId,
                                                      @PathVariable("voteId") String voteId,
                                                      Authentication authentication) {
+        var cacheControl = CacheControl.noCache()
+                .noTransform()
+                .mustRevalidate();
+
         if (!(authentication instanceof JwtAuthenticationToken jwtAuth)) {
             var problem = Problem.builder()
                     .withTitle("JWT_REQUIRED")
@@ -183,6 +216,7 @@ public class VoteResource {
 
             return ResponseEntity
                     .status(problem.getStatus().getStatusCode())
+                    .cacheControl(cacheControl)
                     .body(problem);
         }
 
@@ -195,16 +229,21 @@ public class VoteResource {
 
             return ResponseEntity
                     .status(problem.getStatus().getStatusCode())
+                    .cacheControl(cacheControl)
                     .body(problem);
         }
 
         return voteService.isVoteChangingPossible(voteId, jwtAuth)
                 .fold(problem -> ResponseEntity
                         .status(problem.getStatus().getStatusCode())
+                        .cacheControl(cacheControl)
                         .body(problem),
                         isAvailable -> {
                             if (isAvailable) {
-                                return ResponseEntity.ok().build();
+                                return ResponseEntity
+                                        .ok()
+                                        .cacheControl(cacheControl)
+                                        .build();
                             }
                             var problem = Problem.builder()
                                     .withTitle("VOTE_CHANGING_NOT_AVAILABLE")
@@ -214,6 +253,7 @@ public class VoteResource {
 
                             return ResponseEntity
                                     .status(problem.getStatus().getStatusCode())
+                                    .cacheControl(cacheControl)
                                     .body(problem);
                         });
     }

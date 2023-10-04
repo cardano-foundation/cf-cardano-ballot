@@ -51,7 +51,7 @@ public class DefaultAccountService implements AccountService {
         if (!List.of(STAKE_BASED, BALANCE_BASED).contains(event.getVotingEventType())) {
             return Either.left(Problem.builder()
                     .withTitle("ONLY_STAKE_AND_BALANCE_BASED_EVENTS_SUPPORTED")
-                    .withDetail("Only stake and balance based events are supported, event:" + event)
+                    .withDetail("Only stake and balance based events are supported, event:" + event.getId())
                     .withStatus(BAD_REQUEST)
                     .build());
         }

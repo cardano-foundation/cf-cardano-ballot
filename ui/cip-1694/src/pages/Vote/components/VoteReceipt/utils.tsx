@@ -7,6 +7,7 @@ export type RecordKeysToDisplay = Pick<
   'event' | 'proposal' | 'votingPower' | 'voterStakingAddress' | 'status' | 'id' | 'votedAtSlot'
 > & {
   voteProof: {
+    transactionHash: MerkleProof['transactionHash'];
     steps: MerkleProof['steps'];
     rootHash: MerkleProof['rootHash'];
     coseSignature: VoteReceipt['coseSignature'];

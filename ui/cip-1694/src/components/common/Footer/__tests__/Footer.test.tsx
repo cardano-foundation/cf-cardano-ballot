@@ -1,8 +1,20 @@
+const discordMock = 'DISCORD_URL';
 import React from 'react';
 import '@testing-library/jest-dom';
 import { expect } from '@jest/globals';
 import { screen, within, waitFor, cleanup, render } from '@testing-library/react';
 import { Footer } from '../Footer';
+
+jest.mock('../../../../env', () => {
+  const original = jest.requireActual('../../../../env');
+  return {
+    ...original,
+    env: {
+      ...original.env,
+      DISCORD_URL: discordMock,
+    },
+  };
+});
 
 describe('Footer', () => {
   beforeEach(() => {
@@ -55,6 +67,18 @@ describe('Footer', () => {
     });
   });
 
-  // add tests for status
-  // add tests for discord
+  test('should display proper discord icon', async () => {
+    render(<Footer />);
+
+    await waitFor(async () => {
+      const footer = await screen.queryByTestId('footer');
+      expect(footer).not.toBeNull();
+
+      const discord = await within(footer).queryByTestId('discord');
+      expect(discord).not.toBeNull();
+      expect(discord.children.length).toEqual(1);
+      expect(discord.attributes.getNamedItem('href').value).toEqual(discordMock);
+      expect(discord.attributes.getNamedItem('target').value).toEqual('_blank');
+    });
+  });
 });

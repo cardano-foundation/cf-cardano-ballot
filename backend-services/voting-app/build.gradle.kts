@@ -102,6 +102,9 @@ tasks.test {
 }
 tasks.jacocoTestReport {
 	dependsOn(tasks.test)
+	reports {
+		csv.required.set(true)
+	}
 }
 
 tasks {

@@ -32,6 +32,7 @@ jobs:
         with:
           generate-branches-badge: true
           badges-directory: ./backend-services/${{ matrix.service }}/build/reports/jacoco/test/html/badges
+          jacoco-csv-file: ./backend-services/${{ matrix.service }}/build/reports/jacoco/test/jacocoTestReport.csv
 
       - name: Log coverage percentage
         run: |

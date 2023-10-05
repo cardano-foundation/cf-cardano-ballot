@@ -649,7 +649,7 @@ const Nominees = () => {
                     >
                       <CardContent sx={{ padding: '24px' }}>
                         {voted ? (
-                          <Box sx={{ position: 'relative', marginTop: '12px' }}>
+                          <Box sx={{ position: 'relative' }}>
                             <Tooltip title="Already Voted">
                               <img
                                 height={40}

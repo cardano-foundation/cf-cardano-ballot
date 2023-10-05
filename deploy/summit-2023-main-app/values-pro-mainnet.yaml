@@ -13,20 +13,25 @@ cf-summit-2023-ui:
   enabled: true
   values:
     frontendUrl: https://{{ .Values.domain }}
-    votingAppServerUrl: https://api.pro.cf-summit-2023-mainnet.eu-west-1.voting.summit.cardano.org
-    votingLedgerFollowerAppServerUrl: https://follower-api.pro.cf-summit-2023-mainnet.eu-west-1.voting.summit.cardano.org
-    votingVerificationAppServerUrl: https://verification-api.pro.cf-summit-2023-mainnet.eu-west-1.voting.summit.cardano.org
-    userVerificationServerUrl: https://user-verification.pro.cf-summit-2023-mainnet.eu-west-1.voting.summit.cardano.org
+    votingAppServerUrl: https://api.voting.summit.cardano.org
+    votingLedgerFollowerAppServerUrl: https://follower-api.voting.summit.cardano.org
+    votingVerificationAppServerUrl: https://verification-api.voting.summit.cardano.org
+    userVerificationServerUrl: https://user-verification.voting.summit.cardano.org
     targetNetwork: MAIN
-    eventId: CF_SUMMIT_2023_TEST2
-    discordChannelUrl: https://discord.gg/XekFHYXNmu
-    discordBotUrl: https://discord.com/channels/945974991718068254/1149627691310530570
+    eventId: CARDANO_SUMMIT_AWARDS_2023
+    discordChannelUrl: https://discord.gg/FeCbA2wYF8
+    discordBotUrl: https://discord.gg/65Hq3gqFwE
+    discordSupportChannelUrl: https://discord.gg/svAcdYjMXx
     image:
-      tag: 0.2.55
+      tag: 0.2.64-834-3fca3
+    ingress:
+      additionalDomains:
+        - voting.summit.cardano.org
 
 cf-summit-2023-voting-api:
   enabled: true
   values:
+    springProfiles: prod
     useJwt: true
     leaderboardForceResults: "false"
     resources:
@@ -47,44 +52,63 @@ cf-summit-2023-voting-api:
         active: "true"
         voteCommitmentCronExpression: "0 30 * * * *"
     image:
-      tag: 0.2.55
+      tag: 0.2.64-783
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
-    corsAllowedOrigins: https://{{ .Values.domain }}
+    corsAllowedOrigins: https://voting.summit.cardano.org,https://{{ .Values.domain }}
+    yaci:
+      startBlockHash: 285f58fd09cbb95ac5ffd6f644f7907dfb3faff63155b8a86a9c7b0e99503397
+      startSlotNumber: "103737886"
+      network: main
+      cardanoNodeHost: relays-new.cardano-mainnet.iohk.io
+      cardanoNodePort: "3001"
+      cardanoNodeProtocolMagic: "764824073"
     monitoring:
       alerting:
-        enabled: false
+        enabled: true
+    ingress:
+      additionalDomains:
+        - api.voting.summit.cardano.org
 
 cf-summit-2023-verification-api:
   enabled: true
   values:
     image:
-      tag: 0.2.55
+      tag: 0.2.64-783
+    springProfiles: prod
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
-    corsAllowedOrigins: https://{{ .Values.domain }}
+    corsAllowedOrigins: https://voting.summit.cardano.org,https://{{ .Values.domain }}
+    ingress:
+      additionalDomains:
+        - verification-api.voting.summit.cardano.org
 
 cf-user-verification-service:
   enabled: true
   values:
     image:
-      tag: 0.2.55
-    discordBotEventIdBinding: CF_SUMMIT_2023_TEST2
+      tag: 0.2.64-783
+    springProfiles: prod
+    discordBotEventIdBinding: CARDANO_SUMMIT_AWARDS_2023
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
-    corsAllowedOrigins: https://{{ .Values.domain }}
+    corsAllowedOrigins: https://voting.summit.cardano.org,https://{{ .Values.domain }}
+    ingress:
+      additionalDomains:
+        - user-verification.voting.summit.cardano.org
 
 cf-summit-2023-ledger-follower-api:
   enabled: true
   values:
     image:
-      tag: 0.2.55
-    bindOnEventIds: CF_SUMMIT_2023_TEST1,CF_SUMMIT_2023_TEST2,CF_SUMMIT_2023_TEST3
+      tag: 0.2.64-783
+    springProfiles: prod
+    bindOnEventIds: CARDANO_SUMMIT_AWARDS_2023
     yaci:
-      startBlockHash: 6bb9228e3b746366e24f2681021d619395b850b34c2db020c4928285dcf7b0c2
-      startSlotNumber: "103209875"
+      startBlockHash: 285f58fd09cbb95ac5ffd6f644f7907dfb3faff63155b8a86a9c7b0e99503397
+      startSlotNumber: "103737886"
       network: main
       cardanoNodeHost: relays-new.cardano-mainnet.iohk.io
       cardanoNodePort: "3001"
       cardanoNodeProtocolMagic: "764824073"
-    corsAllowedOrigins: https://{{ .Values.domain }}
+    corsAllowedOrigins: https://voting.summit.cardano.org,https://{{ .Values.domain }}
     instances:
       - name: follower-1
         enabled: true
@@ -94,17 +118,22 @@ cf-summit-2023-ledger-follower-api:
         enabled: true
 #        imageTag: 0.2.37
         schemaName: follower_2
+    cardanoSnapshotBoundsCheckEnabled: "true"
     startupProbe:
       initialDelaySeconds: 0
       periodSeconds: 30
       failureThreshold: 20
+    ingress:
+      additionalDomains:
+        - follower-api.voting.summit.cardano.org
 
 cf-discord-wallet-verification-bot:
   enabled: true
   values:
     image:
       tag: 11f6f15
-    backendBaseUrl: https://user-verification.{{ .Values.domain }}
-    frontendUrl: https://{{ .Values.domain }}
+    springProfiles: prod
+    backendBaseUrl: https://user-verification.voting.summit.cardano.org
+    frontendUrl: https://voting.summit.cardano.org
     diagnosticMode:
       enabled: false

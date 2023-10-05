@@ -16,6 +16,7 @@ service:
 
 ingress:
   enabled: true
+  additionalDomains: []
 
 resources: {}
   # limits:

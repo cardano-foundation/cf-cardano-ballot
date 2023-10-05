@@ -12,14 +12,14 @@ spec:
       rules:
         - alert: NoVotes5m
           expr: sum(rate(resource_vote_cast_seconds_count[1m])) == 0
-          for: 5m
+          for: 45m
           labels:
             severity: warning
           annotations:
             message: No votes have been cast for the past 5 minutes
         - alert: NoVotes15m
           expr: sum(rate(resource_vote_cast_seconds_count[1m])) == 0
-          for: 15m
+          for: 60m
           labels:
             severity: critical
           annotations:

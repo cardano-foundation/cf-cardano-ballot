@@ -29,7 +29,7 @@
   gap: 8px;
   border-radius: 8px;
   .MuiSnackbarContent-root {
-    background-color: var(--color-ultra-dark-blue);
+    background-color: var(--color-primary);
   }
 }
 .header-toast-error {
@@ -79,7 +79,7 @@
   align-items: flex-start;
   gap: 8px;
   border-radius: 8px;
-  background-color: var(--color-ultra-dark-blue) !important;
+  background-color: var(--color-primary) !important;
   transition: transform 0.3s ease;
   color: var(--color-light);
   font-size: 16px;
@@ -157,7 +157,7 @@
   flex-shrink: 0;
   border-radius: 8px;
   border: 2px solid var(--color-primary);
-  background: var(--color-ultra-light-blue);
+  background: transparent;
 }
 
 .menu-button.MuiSvgIcon-root,
@@ -165,7 +165,7 @@
   width: 29px;
   height: 29px;
   flex-shrink: 0;
-  color: var(--color-ultra-dark-blue);
+  color: var(--color-primary);
 }
 
 .list-item.MuiListItem-root {

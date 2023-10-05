@@ -58,7 +58,7 @@ const Categories = () => {
       setListView('list');
     }
   }, [isMobile]);
-
+  console.log(listView);
   const handleListView = (viewType: 'grid' | 'list') => {
     if (listView === viewType) return;
     setIsVisible(false);
@@ -108,24 +108,97 @@ const Categories = () => {
                         borderRadius: '16px',
                       }}
                     >
-                      <CardActionArea
-                        onMouseOver={handleMouseOver(category.id)}
-                        onMouseOut={handleMouseOut}
-                      >
-                        {isHoveredId == category.id ? (
-                          <Grow
-                            in
-                            style={{ transformOrigin: '10 0 0' }}
-                            {...{ timeout: 600 }}
-                          >
-                            <CardContent sx={{ minHeight: '350px', maxHeight: '350px' }}>
+                      {!isMobile ? (
+                        <CardActionArea
+                          onMouseOver={handleMouseOver(category.id)}
+                          onMouseOut={handleMouseOut}
+                        >
+                          {isHoveredId == category.id ? (
+                            <Grow
+                              in
+                              style={{ transformOrigin: '10 0 0' }}
+                              {...{ timeout: 600 }}
+                            >
+                              <CardContent sx={{ minHeight: '350px', maxHeight: '350px' }}>
+                                <Box sx={{ position: 'relative' }}>
+                                  {voted ? (
+                                    <Tooltip title="Already Voted">
+                                      <img
+                                        height={40}
+                                        width={102}
+                                        src={labelVoted}
+                                        alt="Already Voted"
+                                        style={{
+                                          margin: '12px',
+                                          position: 'absolute',
+                                          float: 'right',
+                                          right: 0,
+                                          zIndex: 99,
+                                          opacity: 1,
+                                        }}
+                                      />
+                                    </Tooltip>
+                                  ) : null}
+                                </Box>
+                                <CardHeader
+                                  avatar={
+                                    <Avatar
+                                      src={CATEGORY_IMAGES[index]}
+                                      alt={category.presentationName}
+                                      sx={{ width: 100, height: 100 }}
+                                    />
+                                  }
+                                />
+                                <Box m={1}>
+                                  <Typography
+                                    variant="h5"
+                                    color="text.primary"
+                                    fontWeight="700"
+                                  >
+                                    {category.presentationName}
+                                  </Typography>
+                                </Box>
+                                <Box m={1}>
+                                  <Typography
+                                    variant="body1"
+                                    color="text.primary"
+                                  >
+                                    {category.desc}
+                                  </Typography>
+                                </Box>
+                                <CardActions>
+                                  <Button
+                                    component={Link}
+                                    to={{ pathname: `/nominees/${category.id}` }}
+                                    state={{
+                                      category,
+                                    }}
+                                    aria-label="View Nominees"
+                                    variant="contained"
+                                    size="large"
+                                    sx={{
+                                      color: 'text.primary',
+                                      fontSize: 16,
+                                      fontWeight: 700,
+                                      textTransform: 'none',
+                                      width: '100%',
+                                      backgroundColor: '#acfcc5 !important',
+                                    }}
+                                  >
+                                    View Nominees
+                                  </Button>
+                                </CardActions>
+                              </CardContent>
+                            </Grow>
+                          ) : (
+                            <Box>
                               <Box sx={{ position: 'relative' }}>
                                 {voted ? (
                                   <Tooltip title="Already Voted">
                                     <img
                                       height={40}
-                                      width={102}
-                                      src={labelVoted}
+                                      width={40}
+                                      src={checkMark}
                                       alt="Already Voted"
                                       style={{
                                         margin: '12px',
@@ -138,139 +211,139 @@ const Categories = () => {
                                     />
                                   </Tooltip>
                                 ) : null}
+                                <CardMedia
+                                  sx={{
+                                    height: 350,
+                                    cursor: 'pointer',
+                                    '&:hover': {
+                                      borderRadius: '50%',
+                                      transition: 'all 1s ease',
+                                    },
+                                  }}
+                                  image={CATEGORY_IMAGES[index]}
+                                />
                               </Box>
-                              <CardHeader
-                                avatar={
-                                  <Avatar
-                                    src={CATEGORY_IMAGES[index]}
-                                    alt={category.presentationName}
-                                    sx={{ width: 100, height: 100 }}
-                                  />
-                                }
-                              />
-                              <Box m={1}>
+                              <Box
+                                sx={{
+                                  position: 'absolute',
+                                  bottom: '20%',
+                                  left: 0,
+                                  width: '100%',
+                                  paddingLeft: '20px',
+                                  textAlign: 'left',
+                                }}
+                              >
                                 <Typography
-                                  variant="h5"
-                                  color="text.primary"
-                                  fontWeight="700"
+                                  variant="h6"
+                                  sx={{
+                                    color: 'white',
+                                    fontSize: {
+                                      xs: '28px',
+                                      sm: '28px',
+                                      md: '32px',
+                                    },
+                                    fontWeight: 600,
+                                    wordBreak: 'break-word',
+                                    maxWidth: '250px',
+                                  }}
                                 >
                                   {category.presentationName}
                                 </Typography>
                               </Box>
-                              <Box m={1}>
-                                <Typography
-                                  variant="body1"
-                                  color="text.primary"
-                                >
-                                  {category.desc}
-                                </Typography>
-                              </Box>
-                              <CardActions>
-                                <Button
-                                  component={Link}
-                                  to={{ pathname: `/nominees/${category.id}` }}
-                                  state={{
-                                    category,
-                                  }}
-                                  aria-label="View Nominees"
-                                  variant="contained"
-                                  size="large"
-                                  sx={{
-                                    color: 'text.primary',
-                                    fontSize: 16,
-                                    fontWeight: 700,
-                                    textTransform: 'none',
-                                    width: '100%',
-                                    backgroundColor: '#acfcc5 !important',
-                                  }}
-                                >
-                                  View Nominees
-                                </Button>
-                              </CardActions>
-                            </CardContent>
-                          </Grow>
-                        ) : (
-                          <Box>
-                            <Box sx={{ position: 'relative' }}>
-                              {voted ? (
-                                <Tooltip title="Already Voted">
-                                  <img
-                                    height={40}
-                                    width={40}
-                                    src={checkMark}
-                                    alt="Already Voted"
-                                    style={{
-                                      margin: '12px',
-                                      position: 'absolute',
-                                      float: 'right',
-                                      right: 0,
-                                      zIndex: 99,
-                                      opacity: 1,
-                                    }}
-                                  />
-                                </Tooltip>
-                              ) : null}
-                              <CardMedia
+                              <Box
                                 sx={{
-                                  height: 350,
-                                  cursor: 'pointer',
-                                  '&:hover': {
-                                    borderRadius: '50%',
-                                    transition: 'all 1s ease',
-                                  },
-                                }}
-                                image={CATEGORY_IMAGES[index]}
-                              />
-                            </Box>
-                            <Box
-                              sx={{
-                                position: 'absolute',
-                                bottom: '20%',
-                                left: 0,
-                                width: '100%',
-                                paddingLeft: '20px',
-                                textAlign: 'left',
-                              }}
-                            >
-                              <Typography
-                                variant="h6"
-                                sx={{
-                                  color: 'white',
-                                  fontSize: {
-                                    xs: '28px',
-                                    sm: '28px',
-                                    md: '32px',
-                                  },
-                                  fontWeight: 600,
-                                  wordBreak: 'break-word',
-                                  maxWidth: '250px',
+                                  position: 'absolute',
+                                  bottom: isMobile ? '8%' : '20%',
+                                  right: 0,
+                                  width: '100%',
+                                  paddingLeft: '20px',
+                                  textAlign: 'right',
                                 }}
                               >
-                                {category.presentationName}
-                              </Typography>
+                                <NavigateNextIcon
+                                  sx={{
+                                    fontSize: '50px',
+                                    margin: '0px 20px -7px 20px',
+                                    borderRadius: 25,
+                                    backgroundColor: '#acfcc5 !important',
+                                  }}
+                                />
+                              </Box>
                             </Box>
-                            <Box
+                          )}
+                        </CardActionArea>
+                      ) : (
+                        <CardContent sx={{ minHeight: '350px', maxHeight: '350px' }}>
+                          <Box sx={{ position: 'relative' }}>
+                            {voted ? (
+                              <Tooltip title="Already Voted">
+                                <img
+                                  height={40}
+                                  width={102}
+                                  src={labelVoted}
+                                  alt="Already Voted"
+                                  style={{
+                                    margin: '12px',
+                                    position: 'absolute',
+                                    float: 'right',
+                                    right: 0,
+                                    zIndex: 99,
+                                    opacity: 1,
+                                  }}
+                                />
+                              </Tooltip>
+                            ) : null}
+                          </Box>
+                          <CardHeader
+                            avatar={
+                              <Avatar
+                                src={CATEGORY_IMAGES[index]}
+                                alt={category.presentationName}
+                                sx={{ width: 100, height: 100 }}
+                              />
+                            }
+                          />
+                          <Box m={1}>
+                            <Typography
+                              variant="h5"
+                              color="text.primary"
+                              fontWeight="700"
+                            >
+                              {category.presentationName}
+                            </Typography>
+                          </Box>
+                          <Box m={1}>
+                            <Typography
+                              variant="body1"
+                              color="text.primary"
+                            >
+                              {category.desc}
+                            </Typography>
+                          </Box>
+                          <CardActions>
+                            <Button
+                              component={Link}
+                              to={{ pathname: `/nominees/${category.id}` }}
+                              state={{
+                                category,
+                              }}
+                              aria-label="View Nominees"
+                              variant="contained"
+                              size="large"
                               sx={{
-                                position: 'absolute',
-                                bottom: isMobile ? '8%' : '20%',
-                                right: 0,
+                                color: 'text.primary',
+                                fontSize: 16,
+                                fontWeight: 700,
+                                textTransform: 'none',
                                 width: '100%',
-                                paddingLeft: '20px',
-                                textAlign: 'right',
+                                backgroundColor: '#acfcc5 !important',
                               }}
                             >
-                              <NavigateNextIcon
-                                sx={{
-                                  fontSize: '50px',
-                                  margin: '0px 20px -7px 20px',
-                                  borderRadius: 25,
-                                  backgroundColor: '#acfcc5 !important',
-                                }}
-                              />
-                            </Box>
-                          </Box>
-                        )}
-                      </CardActionArea>
+                              View Nominees
+                            </Button>
+                          </CardActions>
+                        </CardContent>
+                      )}
                     </Card>
                   </div>
                 </Fade>

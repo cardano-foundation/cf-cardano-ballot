@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.66](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.65...v0.2.66) (2023-10-05)
+
+
+### Features
+
+* added begin and cardwallet to cip1694 ([8071d3f](https://github.com/cardano-foundation/cf-cardano-ballot/commit/8071d3f0af1f965c8707f2bd766044473743b6ae))
+
 ## [0.2.65](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.64...v0.2.65) (2023-10-05)
 
 

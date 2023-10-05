@@ -782,7 +782,7 @@ const Nominees = () => {
                 }}
               >
                 {!tokenIsExpired(session?.expiresAt)
-                  ? `You have successfully cast a vote for ${votedNominee?.presentationName} in the ${summit2023Category.presentationName} category.`
+                  ? `You have successfully cast a vote in the ${summit2023Category.presentationName} category.`
                   : 'To see you vote receipt, please sign with your wallet'}
               </Typography>
             </div>

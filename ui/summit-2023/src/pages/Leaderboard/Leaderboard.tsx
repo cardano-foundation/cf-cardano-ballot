@@ -63,7 +63,7 @@ const Leaderboard = () => {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          marginBottom: 48
+          marginBottom: 48,
         }}
       >
         <Typography

@@ -33,22 +33,22 @@ import java.time.LocalDateTime;
 
     @Scheduled(cron = &quot;${pending.verification.phone.cleanup.job.cron}&quot;)
     public void run() {
-<span class="fc" id="L36">        log.info(&quot;Running pending phone cleanup job...&quot;);</span>
+<span class="nc" id="L36">        log.info(&quot;Running pending phone cleanup job...&quot;);</span>
 
-<span class="fc" id="L38">        var allEventsE = chainFollowerClient.findAllEvents();</span>
+<span class="nc" id="L38">        var allEventsE = chainFollowerClient.findAllEvents();</span>
 
-<span class="pc bpc" id="L40" title="1 of 2 branches missed.">        if (allEventsE.isEmpty()) {</span>
+<span class="nc bnc" id="L40" title="All 2 branches missed.">        if (allEventsE.isEmpty()) {</span>
 <span class="nc" id="L41">            log.warn(&quot;No events found in ledger follower, skipping pending phone cleanup job&quot;);</span>
 <span class="nc" id="L42">            return;</span>
         }
 
-<span class="fc" id="L45">        var allEvents = allEventsE.get();</span>
+<span class="nc" id="L45">        var allEvents = allEventsE.get();</span>
 
-<span class="fc" id="L47">        allEvents.forEach(eventSummary -&gt; {</span>
-<span class="fc" id="L48">            var id = eventSummary.id();</span>
+<span class="nc" id="L47">        allEvents.forEach(eventSummary -&gt; {</span>
+<span class="nc" id="L48">            var id = eventSummary.id();</span>
 
-<span class="fc" id="L50">            log.info(&quot;Cleaning up pending phone verifications for event: {}&quot;, id);</span>
-<span class="fc" id="L51">            smsUserVerificationService.findAllPending(id).forEach(userVerification -&gt; {</span>
+<span class="nc" id="L50">            log.info(&quot;Cleaning up pending phone verifications for event: {}&quot;, id);</span>
+<span class="nc" id="L51">            smsUserVerificationService.findAllPending(id).forEach(userVerification -&gt; {</span>
 <span class="nc" id="L52">                var now = LocalDateTime.now(clock);</span>
 
 <span class="nc" id="L54">                boolean expiredVerification = now.isAfter(userVerification.getCreatedAt()</span>
@@ -61,8 +61,8 @@ import java.time.LocalDateTime;
                 }
 <span class="nc" id="L62">            });</span>
 
-<span class="fc" id="L64">            log.info(&quot;Cleaning up pending discord verifications for event: {}&quot;, id);</span>
-<span class="fc" id="L65">            discordUserVerificationService.findAllPending(id).forEach(userVerification -&gt; {</span>
+<span class="nc" id="L64">            log.info(&quot;Cleaning up pending discord verifications for event: {}&quot;, id);</span>
+<span class="nc" id="L65">            discordUserVerificationService.findAllPending(id).forEach(userVerification -&gt; {</span>
 <span class="nc" id="L66">                var now = LocalDateTime.now(clock);</span>
 
 <span class="nc" id="L68">                boolean expiredVerification = now.isAfter(userVerification.getCreatedAt()</span>
@@ -74,8 +74,8 @@ import java.time.LocalDateTime;
                 }
 <span class="nc" id="L75">            });</span>
 
-<span class="fc" id="L77">        });</span>
-<span class="fc" id="L78">    }</span>
+<span class="nc" id="L77">        });</span>
+<span class="nc" id="L78">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

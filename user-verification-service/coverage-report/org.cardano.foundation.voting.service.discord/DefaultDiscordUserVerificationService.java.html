@@ -315,7 +315,7 @@ import static org.zalando.problem.Status.BAD_REQUEST;
     @Override
     @Transactional(readOnly = true)
     public List&lt;DiscordUserVerification&gt; findAllPending(String eventId) {
-<span class="fc" id="L318">        return userVerificationRepository.findAllPending(eventId);</span>
+<span class="nc" id="L318">        return userVerificationRepository.findAllPending(eventId);</span>
     }
 
 }

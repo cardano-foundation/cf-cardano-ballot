@@ -88,7 +88,7 @@ jobs:
   publish-voting-commitment-app:
     runs-on: self-hosted
     env:
-      APP_NAME: voting-commitment-app
+      APP_NAME: vote-commitment-app
     needs: build-version
     steps:
       - name: Checkout

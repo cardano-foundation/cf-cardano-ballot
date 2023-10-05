@@ -404,7 +404,7 @@ const VerifyWallet = (props: VerifyWalletProps) => {
                       color: '#F6F9FF !important',
                     }
               }
-              label="Send code"
+              label="Send Code"
               disabled={!matchIsValidTel(phone) || !checkImNotARobot || phoneCodeIsBeenSending}
               onClick={() => handleSendCode()}
               fullWidth={true}
@@ -466,7 +466,7 @@ const VerifyWallet = (props: VerifyWalletProps) => {
             color: '#03021F',
             margin: '24px 0px',
           }}
-          label="Sign and verify"
+          label="Sign and Verify"
           onClick={() => handleVerifyDiscord()}
           disabled={!secret}
           fullWidth={true}

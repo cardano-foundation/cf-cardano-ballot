@@ -18,6 +18,8 @@
     "title": "Vote for the Cardano Summit Awards",
     "description": "10 categories, 10 winners awarded for their work and exceptional contributions within the Cardano ecosystem. Vote for the shortlisted nominees and watch the winners announced live at the Cardano Summit 2023 Gala Awards Dinner.",
     "getStartedButton": "Start Voting",
+    "votingEndedButton": "Voting Ended",
+    "howToVoteButton": "How to Vote",
     "hexagon": {
       "title": "CARDANO SUMMIT 2023"
     }
@@ -54,10 +56,10 @@
       "steps": {
         "1": "Navigate to Cardano Ballot's category section.",
         "2": "Scroll through the proposed voting categories.",
-        "3": "To vote in a category, click on 'View nominees'.",
-        "4": "Review the nominees and click on 'Vote for nominee'.",
-        "5": "To finalize your vote, select 'Sign with wallet'.",
-        "6": "Click on 'Submit your vote' to complete the process."
+        "3": "To vote in a category, click on 'View Nominees'.",
+        "4": "Review the nominees and click on 'Vote for Nominee'.",
+        "5": "To finalize your vote, select 'Sign with Wallet'.",
+        "6": "Click on 'Submit your Vote' to complete the process."
       }
     }
   },

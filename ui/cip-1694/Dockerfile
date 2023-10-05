@@ -13,7 +13,7 @@ ENV NODE_ENV="production" \
     REACT_APP_TARGET_NETWORK="PREPROD" \
     REACT_APP_EVENT_ID=${REACT_APP_EVENT_ID} \
     REACT_APP_CATEGORY_ID=${REACT_APP_CATEGORY_ID} \
-    REACT_APP_SUPPORTED_WALLETS="flint,eternl,nami,typhoncip30,yoroi,nufi,gerowallet,lace"
+    REACT_APP_SUPPORTED_WALLETS="flint,eternl,nami,typhoncip30,yoroi,nufi,gerowallet,lace,begin,cardwallet"
 
 # Add a work directory
 WORKDIR /app

@@ -42,7 +42,7 @@ const Footer: React.FC = () => {
       >
         <Grid
           container
-          spacing={1}
+          spacing={2}
           direction={{ sm: 'column', md: 'row' }}
           sx={{ textAlignLast: { xs: 'center', sm: 'center', md: 'right' } }}
         >
@@ -83,38 +83,53 @@ const Footer: React.FC = () => {
             xs={12}
             sm={'auto'}
           >
-            <Tooltip
-              title="Get support"
-              placement="top"
+            <Grid
+              container
+              spacing={1}
+              direction="row"
+              justifyContent="center"
+              alignItems="center"
             >
-              <IconButton
-                onClick={() => openNewTab(env.DISCORD_SUPPORT_CHANNEL_URL)}
-                size="large"
-                sx={{ p: 0, color: '#434656' }}
+              <Grid
+                item
+                xs={6}
+                sm={'auto'}
+                sx={{ pt: '0 !important', textAlign: {xs: 'end'}}}
               >
-                <SupportIcon />
-              </IconButton>
-            </Tooltip>
-          </Grid>
-
-          <Grid
-            item
-            xs={12}
-            sm={'auto'}
-          >
-            <Tooltip
-              title="Join our Discord"
-              placement="top"
-            >
-              <Typography variant="body2">
-                <img
-                  onClick={() => openNewTab(env.DISCORD_CHANNEL_URL)}
-                  src={discordLogo}
-                  alt="Discord"
-                  style={{ height: '25px', cursor: 'pointer' }}
-                />
-              </Typography>
-            </Tooltip>
+                <Tooltip
+                  title="Get support"
+                  placement="top"
+                >
+                  <IconButton
+                    onClick={() => openNewTab(env.DISCORD_SUPPORT_CHANNEL_URL)}
+                    size="large"
+                    sx={{ p: 0, color: '#434656' }}
+                  >
+                    <SupportIcon />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+              <Grid
+                item
+                xs={6}
+                sm={'auto'}
+                sx={{ textAlign: {xs: 'start'}}}
+              >
+                <Tooltip
+                  title="Join our Discord"
+                  placement="top"
+                >
+                  <Typography variant="body2">
+                    <img
+                      onClick={() => openNewTab(env.DISCORD_CHANNEL_URL)}
+                      src={discordLogo}
+                      alt="Discord"
+                      style={{ height: '25px', cursor: 'pointer' }}
+                    />
+                  </Typography>
+                </Tooltip>
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
       </Grid>

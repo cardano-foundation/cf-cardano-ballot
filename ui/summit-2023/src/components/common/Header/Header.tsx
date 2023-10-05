@@ -301,7 +301,7 @@ const Header: React.FC = () => {
           };
           saveUserInSession(session);
           dispatch(setWalletIsLoggedIn({ isLoggedIn: true }));
-          eventBus.publish('showToast', 'Login successfully');
+          eventBus.publish('showToast', 'Login successful');
           toggleLoginModal();
 
           getUserVotes(session?.accessToken)

@@ -209,9 +209,9 @@
         },
         {
           "id": "204a8d71-adb1-4fff-b59d-5fb391d0078d",
-          "presentationName": "txPipe/Santiago",
+          "presentationName": "TxPipe",
           "urls": ["https://txpipe.io/"],
-          "desc": "txPipe is an open-source software project dedicated to enhancing the developer experience in the Cardano blockchain ecosystem. The project focuses on developing blockchain tools that support the open-source community, accelerating blockchain adoption."
+          "desc": "TxPipe is an open-source software project dedicated to enhancing the developer experience in the Cardano blockchain ecosystem. The project focuses on developing blockchain tools that support the open-source community, accelerating blockchain adoption."
         }
       ]
     },

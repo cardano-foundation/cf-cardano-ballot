@@ -86,13 +86,13 @@ const Footer: React.FC = () => {
             <Tooltip
               title="Get support"
               placement="top"
-              >
+            >
               <IconButton
                 onClick={() => openNewTab(env.DISCORD_SUPPORT_CHANNEL_URL)}
                 size="large"
-                sx={{p: 0, color: '#434656'}}
-                >
-                <SupportIcon/>
+                sx={{ p: 0, color: '#434656' }}
+              >
+                <SupportIcon />
               </IconButton>
             </Tooltip>
           </Grid>
@@ -105,10 +105,8 @@ const Footer: React.FC = () => {
             <Tooltip
               title="Join our Discord"
               placement="top"
-              >
-              <Typography
-                variant="body2"
-                >
+            >
+              <Typography variant="body2">
                 <img
                   onClick={() => openNewTab(env.DISCORD_CHANNEL_URL)}
                   src={discordLogo}

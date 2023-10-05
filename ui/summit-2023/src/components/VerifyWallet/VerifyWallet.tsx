@@ -10,7 +10,7 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
-    Box
+  Box,
 } from '@mui/material';
 import CallIcon from '@mui/icons-material/Call';
 import { MuiTelInput, matchIsValidTel, MuiTelInputCountry } from 'mui-tel-input';
@@ -28,7 +28,7 @@ import { CustomButton } from '../common/Button/CustomButton';
 import { getSignedMessagePromise, openNewTab, resolveCardanoNetwork } from '../../utils/utils';
 import { SignedWeb3Request } from '../../types/voting-app-types';
 import { parseError } from 'common/constants/errors';
-import {ErrorMessage} from '../common/ErrorMessage/ErrorMessage'
+import { ErrorMessage } from '../common/ErrorMessage/ErrorMessage';
 
 // TODO: env.
 const excludedCountries: MuiTelInputCountry[] | undefined = [];
@@ -73,7 +73,7 @@ const VerifyWallet = (props: VerifyWalletProps) => {
     function clear() {
       setVerifyOption(undefined);
       setPhoneCodeIsSent(false);
-        setPhoneCodeShowError(false);
+      setPhoneCodeShowError(false);
       setPhone('');
       setCodes(Array(6).fill(''));
     }
@@ -128,13 +128,13 @@ const VerifyWallet = (props: VerifyWalletProps) => {
           setPhoneCodeIsBeenConfirming(false);
         } else {
           // onError('SMS code not valid');
-            setPhoneCodeShowError(true)
+          setPhoneCodeShowError(true);
           setPhoneCodeIsBeenConfirming(false);
         }
       })
       .catch(() => {
         // onError('SMS code verification failed');
-          setPhoneCodeShowError(true)
+        setPhoneCodeShowError(true);
         setPhoneCodeIsBeenConfirming(false);
       });
   };
@@ -217,7 +217,7 @@ const VerifyWallet = (props: VerifyWalletProps) => {
         inputRefs.current[index]?.focus();
       }
 
-        setPhoneCodeShowError(false);
+      setPhoneCodeShowError(false);
     };
 
     const handleCancelConfirmChode = () => {
@@ -269,14 +269,20 @@ const VerifyWallet = (props: VerifyWalletProps) => {
             />
           ))}
         </div>
-          <Box className="container" sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              height: '16px',
-              marginTop: '4px'
-          }}>
-              <ErrorMessage show={phoneCodeShowError} message='SMS code not valid'/>
-          </Box>
+        <Box
+          className="container"
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            height: '16px',
+            marginTop: '4px',
+          }}
+        >
+          <ErrorMessage
+            show={phoneCodeShowError}
+            message="SMS code not valid"
+          />
+        </Box>
         <Grid
           container
           spacing={2}

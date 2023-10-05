@@ -302,10 +302,9 @@ const Nominees = () => {
       .catch(() => eventBus.publish('showToast', 'Copied to clipboard failed', 'error'));
   };
   const getStatusTheme = () => {
-
     const finalityScore = receipt?.finalityScore;
 
-    if (receipt?.status === 'FULL'){
+    if (receipt?.status === 'FULL') {
       switch (finalityScore) {
         case 'VERY_HIGH':
           return {
@@ -313,9 +312,10 @@ const Nominees = () => {
             backgroundColor: 'rgba(16, 101, 147, 0.07)',
             border: 'border: 1px solid #106593',
             color: '#056122',
-            icon:  <NotificationsIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#106593' }} />,
-            description: 'Your vote is currently being verified. While in VERY HIGH, the chance of a rollback is very unlikely. Check back later to see if verification has completed.',
-            status: 'FULL'
+            icon: <NotificationsIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#106593' }} />,
+            description:
+              'Your vote is currently being verified. While in VERY HIGH, the chance of a rollback is very unlikely. Check back later to see if verification has completed.',
+            status: 'FULL',
           };
         case 'HIGH':
           return {
@@ -323,9 +323,10 @@ const Nominees = () => {
             backgroundColor: 'rgba(16, 101, 147, 0.07)',
             border: 'border: 1px solid #106593',
             color: '#056122',
-            icon:  <NotificationsIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#106593' }} />,
-            description: 'Your vote is currently being verified. While in HIGH, the chance of a rollback is very unlikely. Check back later to see if verification has completed.',
-            status: 'FULL'
+            icon: <NotificationsIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#106593' }} />,
+            description:
+              'Your vote is currently being verified. While in HIGH, the chance of a rollback is very unlikely. Check back later to see if verification has completed.',
+            status: 'FULL',
           };
         case 'MEDIUM':
           return {
@@ -333,9 +334,10 @@ const Nominees = () => {
             backgroundColor: 'rgba(16, 101, 147, 0.07)',
             border: 'border: 1px solid #106593',
             color: '#652701',
-            icon:  <NotificationsIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#106593' }} />,
-            description: 'Your vote is currently being verified. While in MEDIUM, the chance of rollback is still possible. Check back later to see if verification has completed.',
-            status: 'FULL'
+            icon: <NotificationsIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#106593' }} />,
+            description:
+              'Your vote is currently being verified. While in MEDIUM, the chance of rollback is still possible. Check back later to see if verification has completed.',
+            status: 'FULL',
           };
         case 'LOW':
           return {
@@ -343,9 +345,10 @@ const Nominees = () => {
             backgroundColor: 'rgba(16, 101, 147, 0.07)',
             border: 'border: 1px solid #106593',
             color: '#C20024',
-            icon:  <NotificationsIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#106593' }} />,
-            description: 'Your vote is currently being verified. While in LOW, there is the highest chance of a rollback. Check back later to see if verification has completed.',
-            status: 'FULL'
+            icon: <NotificationsIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#106593' }} />,
+            description:
+              'Your vote is currently being verified. While in LOW, there is the highest chance of a rollback. Check back later to see if verification has completed.',
+            status: 'FULL',
           };
         case 'FINAL':
           return {
@@ -354,45 +357,50 @@ const Nominees = () => {
             border: '1px solid #056122',
             icon: <VerifiedUserIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#056122' }} />,
             description: '',
-            status: 'FULL'
+            status: 'FULL',
           };
         default:
           return {
             backgroundColor: 'rgba(16, 101, 147, 0.07)',
             color: '#24262E',
-            icon:  <NotificationsIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#106593' }} />,
-            description: 'Your vote has been successfully submitted. You might have to wait up to 30 minutes for this to be visible on chain. Please check back later to verify your vote.',
-            status: 'FULL'
+            icon: <NotificationsIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#106593' }} />,
+            description:
+              'Your vote has been successfully submitted. You might have to wait up to 30 minutes for this to be visible on chain. Please check back later to verify your vote.',
+            status: 'FULL',
           };
       }
-    } else if (receipt?.status === 'PARTIAL'){
+    } else if (receipt?.status === 'PARTIAL') {
       return {
         label: 'Vote in progress',
         backgroundColor: 'rgba(253, 135, 60, 0.07)',
         border: '1px solid #FD873C',
         color: '#24262E',
-        icon:  <WarningAmberIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#652701' }} />,
-        description: 'Your transaction has been sent and is awaiting confirmation from the Cardano network (this could be 5-10 minutes). Once this has been confirmed you’ll be able to verify your vote.',
-        status: 'PARTIAL'
+        icon: <WarningAmberIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#652701' }} />,
+        description:
+          'Your transaction has been sent and is awaiting confirmation from the Cardano network (this could be 5-10 minutes). Once this has been confirmed you’ll be able to verify your vote.',
+        status: 'PARTIAL',
       };
-    } else if (receipt?.status === 'ROLLBACK'){
+    } else if (receipt?.status === 'ROLLBACK') {
       return {
         label: 'There’s been a rollback',
         backgroundColor: 'rgba(194, 0, 36, 0.07)',
         border: '1px solid #C20024',
         color: '#24262E',
-        icon:  <GppBadOutlinedIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#C20024' }} />,
-        description: 'Don’t worry there’s nothing for you to do. We will automatically resubmit your vote. Please check back later (up to 30 minutes) to see your vote status.',
-        status: 'ROLLBACK'
+        icon: <GppBadOutlinedIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#C20024' }} />,
+        description:
+          'Don’t worry there’s nothing for you to do. We will automatically resubmit your vote. Please check back later (up to 30 minutes) to see your vote status.',
+        status: 'ROLLBACK',
       };
-    } else { // BASIC
+    } else {
+      // BASIC
       return {
         label: 'Vote not ready for verification',
         backgroundColor: 'rgba(16, 101, 147, 0.07)',
         border: '1px solid #106593',
         color: '#24262E',
-        icon:  <NotificationsIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#106593' }} />,
-        description: 'Your vote has been successfully submitted. You might have to wait up to 30 minutes for this to be visible on chain. Please check back later to verify your vote.'
+        icon: <NotificationsIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#106593' }} />,
+        description:
+          'Your vote has been successfully submitted. You might have to wait up to 30 minutes for this to be visible on chain. Please check back later to verify your vote.',
       };
     }
   };
@@ -558,7 +566,7 @@ const Nominees = () => {
                             item
                             sm={12}
                             md={2}
-                            width={{sm: '100%', md: 'auto'}}
+                            width={{ sm: '100%', md: 'auto' }}
                           >
                             <CustomButton
                               styles={
@@ -584,7 +592,7 @@ const Nominees = () => {
                         item
                         sm={12}
                         md={2}
-                        width={{sm: '100%', md: 'auto'}}
+                        width={{ sm: '100%', md: 'auto' }}
                       >
                         <CustomButton
                           styles={{
@@ -1003,7 +1011,7 @@ const Nominees = () => {
                   padding: '10px 20px',
                   borderRadius: '8px',
                   border: getStatusTheme()?.border,
-                  color:  getStatusTheme()?.color,
+                  color: getStatusTheme()?.color,
                   width: '100%',
                   marginBottom: '20px',
                   backgroundColor: getStatusTheme()?.backgroundColor,
@@ -1027,7 +1035,7 @@ const Nominees = () => {
                           Assurance: <span style={{ color: getStatusTheme()?.color }}>{getStatusTheme()?.label}</span>
                         </>
                       ) : (
-                          <>{ getStatusTheme()?.label }</>
+                        <>{getStatusTheme()?.label}</>
                       )}
                       <Tooltip title="Assurance levels will update according to the finality of the transaction on-chain.">
                         <InfoIcon

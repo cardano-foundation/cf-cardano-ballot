@@ -101,15 +101,10 @@ export const VotePage = () => {
   useEffect(() => {
     const session = getUserInSession();
 
-    if (
-      tip?.absoluteSlot &&
-      stakeAddress &&
-      event?.notStarted === false &&
-      ((session && tokenIsExpired(session.expiresAt)) || !session)
-    ) {
+    if (stakeAddress && event?.notStarted === false && ((session && tokenIsExpired(session.expiresAt)) || !session)) {
       setIsConfirmWithWalletSignatureModalVisible(true);
     }
-  }, [event?.notStarted, tip?.absoluteSlot, stakeAddress]);
+  }, [event?.notStarted, stakeAddress]);
 
   const items: OptionItem<ProposalPresentation['name']>[] = event?.categories
     ?.find(({ id }) => id === activeCategoryId)
@@ -200,17 +195,10 @@ export const VotePage = () => {
 
   useEffect(() => {
     const session = getUserInSession();
-    if (
-      isConnected &&
-      tip?.absoluteSlot &&
-      stakeAddress &&
-      session &&
-      !tokenIsExpired(session.expiresAt) &&
-      activeCategoryId
-    ) {
+    if (isConnected && stakeAddress && session && !tokenIsExpired(session.expiresAt) && activeCategoryId) {
       fetchReceipt({});
     }
-  }, [fetchReceipt, isConnected, stakeAddress, tip?.absoluteSlot, activeCategoryId]);
+  }, [fetchReceipt, isConnected, stakeAddress, activeCategoryId]);
 
   const openReceiptDrawer = async () => {
     setIsReceiptDrawerInitializing(true);

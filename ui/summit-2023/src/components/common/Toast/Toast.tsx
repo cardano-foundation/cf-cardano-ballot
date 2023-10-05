@@ -15,11 +15,11 @@ const Toast = (props: ToastProps) => {
     switch (type) {
       case 'verified':
         return {
-          backgroundColor: '#EBFEF1',
-          color: '#03021F',
+          backgroundColor: '#03021f',
+          color: '#F5F9FF',
           icon: <VerifiedUserIcon />,
-          fontWeight: '600',
-          fontSize: '18px',
+          fontWeight: '400',
+          fontSize: '16px',
         };
       case 'error':
         return {

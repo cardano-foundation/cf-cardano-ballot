@@ -96,7 +96,7 @@ const Home: React.FC = () => {
                     textDecoration: 'none !important',
                   }}
                   fullWidth={isMobile ? true : false}
-                  label={eventCache?.finished ? 'Voting ended' : i18n.t('landing.getStartedButton')}
+                  label={eventCache?.finished ?  i18n.t('landing.votingEndedButton') : i18n.t('landing.getStartedButton')}
                 />
               </NavLink>
             </Grid>
@@ -115,7 +115,7 @@ const Home: React.FC = () => {
                       border: '1px solid #daeefb',
                     }}
                     fullWidth={isMobile ? true : false}
-                    label={'How to Vote'}
+                    label={i18n.t('landing.howToVoteButton')}
                   />
                 </NavLink>
               </Grid>

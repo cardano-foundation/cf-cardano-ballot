@@ -283,9 +283,9 @@ const Nominees = () => {
   const renderNomineeButtonLabel = () => {
     if (isConnected) {
       if (!walletIsVerified) {
-        return 'Verify your wallet';
+        return 'Verify your Wallet';
       } else {
-        return 'Vote for nominee';
+        return 'Vote for Nominee';
       }
     } else {
       return (
@@ -602,7 +602,7 @@ const Nominees = () => {
                             width: '100%',
                             marginTop: '15px',
                           }}
-                          label="Read more"
+                          label="Read More"
                           onClick={() => handleReadMore(nominee)}
                         />
                       </Grid>
@@ -712,7 +712,7 @@ const Nominees = () => {
                                 border: '1px solid #daeefb',
                                 width: '100%',
                               }}
-                              label="Read more"
+                              label="Read More"
                               onClick={() => handleReadMore(nominee)}
                               fullWidth={true}
                             />
@@ -858,7 +858,7 @@ const Nominees = () => {
                 color: '#F6F9FF',
                 width: 'auto',
               }}
-              label={!tokenIsExpired(session?.expiresAt) ? 'View vote receipt' : 'Login with wallet'}
+              label={!tokenIsExpired(session?.expiresAt) ? 'View Vote Receipt' : 'Login with Wallet'}
               onClick={() => handleViewVoteReceipt()}
               fullWidth={true}
             />
@@ -1418,7 +1418,7 @@ const Nominees = () => {
                         color: '#03021F',
                         width: 'auto',
                       }}
-                      label="Verify vote proof"
+                      label="Verify Vote Proof"
                       onClick={verifyVoteProof}
                     />
                   ) : null}
@@ -1470,7 +1470,7 @@ const Nominees = () => {
       <Modal
         isOpen={confirmVoteModal}
         id="confirm-vote"
-        title="Review vote"
+        title="Review Vote"
         onClose={toggleConfirmVoteModal}
       >
         <Typography
@@ -1531,7 +1531,7 @@ const Nominees = () => {
               '&:hover': { backgroundColor: '#ACFCC5' },
             }}
           >
-            Confirm vote
+            Confirm Vote
           </Button>
         </Box>
       </Modal>

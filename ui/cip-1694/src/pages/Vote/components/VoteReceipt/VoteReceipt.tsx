@@ -23,7 +23,7 @@ import styles from './VoteReceipt.module.scss';
 
 type VoteReceiptProps = {
   setOpen: () => void;
-  fetchReceipt: (props: { cb?: () => void; refetch?: boolean }) => void;
+  fetchReceipt: () => void;
   receipt: VoteReceiptType;
 };
 
@@ -33,7 +33,7 @@ export const VoteReceipt = ({ setOpen, fetchReceipt, receipt }: VoteReceiptProps
   const verifyVote = useCallback(async () => {
     try {
       const {
-        merkleProof: { rootHash = '', steps = [] } = {},
+        merkleProof: { rootHash, steps },
         coseSignature: voteCoseSignature,
         cosePublicKey: voteCosePublicKey,
       } = receipt;
@@ -44,13 +44,10 @@ export const VoteReceipt = ({ setOpen, fetchReceipt, receipt }: VoteReceiptProps
         voteCosePublicKey,
         steps: steps as unknown as VoteVerificationRequest['steps'],
       });
-      if ('verified' in verified && typeof verified?.verified === 'boolean') {
-        setIsVerified(verified?.verified);
+      if ('verified' in verified && typeof verified.verified === 'boolean') {
+        setIsVerified(verified.verified);
       }
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
-        console.log('Failed to verify vote', error?.message);
-      }
       toast(
         <Toast
           message="Unable to verify vote receipt. Please try again"

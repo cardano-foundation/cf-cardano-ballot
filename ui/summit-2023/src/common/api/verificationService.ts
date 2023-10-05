@@ -60,8 +60,6 @@ export const verifyDiscord = async (
   secret: string,
   signedMessaged: SignedWeb3Request
 ) => {
-  console.log('JSON.stringify({ eventId, stakeAddress, secret, ...signedMessaged })');
-  console.log(JSON.stringify({ eventId, stakeAddress, secret, ...signedMessaged }));
   return await doRequest<{ verified: boolean }>(
     HttpMethods.POST,
     `${DISCORD_VERIFICATION_URL}`,

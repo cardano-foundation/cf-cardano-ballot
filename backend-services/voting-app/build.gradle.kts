@@ -11,6 +11,7 @@ plugins {
 	id("cz.habarta.typescript-generator") version "3.2.1263"
     id("com.github.ben-manes.versions") version "0.48.0"
     id("com.gorylenko.gradle-git-properties") version "2.4.1"
+	jacoco
 }
 
 springBoot {
@@ -38,6 +39,8 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-aop")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-data-rest")
+	testImplementation("io.rest-assured:rest-assured:5.3.2")
+	testImplementation("org.wiremock:wiremock:3.2.0")
 	testCompileOnly("org.springframework.boot:spring-boot-starter-test")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -56,8 +59,6 @@ dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
 
-    implementation("com.bloxbean.cardano:yaci:0.2.3")
-
 	compileOnly("org.projectlombok:lombok:1.18.30")
 	annotationProcessor("org.projectlombok:lombok:1.18.30")
 
@@ -70,11 +71,6 @@ dependencies {
 	implementation("com.nimbusds:nimbus-jose-jwt:9.35")
 	implementation("com.google.crypto.tink:tink:1.11.0")
 
-	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0-beta3")
-    implementation("com.bloxbean.cardano:cardano-client-address:0.5.0-beta3")
-    implementation("com.bloxbean.cardano:cardano-client-metadata:0.5.0-beta3")
-	implementation("com.bloxbean.cardano:cardano-client-quicktx:0.5.0-beta3")
-	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.0-beta3")
 	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0-beta3")
 
 	implementation("io.blockfrost:blockfrost-java:0.1.3")
@@ -84,7 +80,9 @@ dependencies {
 	runtimeOnly("org.postgresql:postgresql")
 
 	implementation("org.cardanofoundation:merkle-tree-java:0.0.7")
-	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.10")
+	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.11")
+
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
 
     // spring-boot overridden dependencies:
     runtimeOnly("com.h2database:h2:2.2.224") // GraalVM compatibility
@@ -92,6 +90,16 @@ dependencies {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+tasks.test {
+	finalizedBy(tasks.jacocoTestReport)
+}
+tasks.jacocoTestReport {
+	dependsOn(tasks.test)
+	reports {
+		csv.required.set(true)
+	}
 }
 
 tasks {

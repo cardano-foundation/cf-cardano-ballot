@@ -10,8 +10,8 @@ body {
   background-image: url('./common/resources/images/home-graphic-bg-bottom.svg');
   background-repeat: no-repeat;
   background-position: right;
-  background-size: contain;
-  height: 99vh;
+  background-size: calc(100vw - 50%);
+  height: 100%;
   @media only screen and (max-width: 1080px) {
     background-image: none;
   }
@@ -22,7 +22,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 71vh;
+  min-height: 69vh;
 }
 
 .container {
@@ -39,7 +39,7 @@ body {
   transform: rotate(1.27deg);
   opacity: 0.6;
   z-index: -1;
-
+  height: 80%;
   @media (max-width: 420px) {
     display: none;
   }

@@ -60,13 +60,13 @@ describe('For ongoing event:', () => {
     );
 
     await waitFor(async () => {
-      const introductionPage = await screen.queryByTestId('introduction-page');
+      const introductionPage = screen.queryByTestId('introduction-page');
 
-      const eventTime = await within(introductionPage).queryByTestId('event-time');
+      const eventTime = within(introductionPage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
       expect(eventTime.textContent).toEqual('Voting closes: ');
 
-      const preloader = await within(introductionPage).queryByTestId('event-time-loader');
+      const preloader = within(introductionPage).queryByTestId('event-time-loader');
       expect(preloader).not.toBeNull();
     });
   });
@@ -82,26 +82,28 @@ describe('For ongoing event:', () => {
     );
 
     await waitFor(async () => {
-      const introductionPage = await screen.queryByTestId('introduction-page');
+      const introductionPage = screen.queryByTestId('introduction-page');
       expect(introductionPage).not.toBeNull();
 
-      const eventTitle = await within(introductionPage).queryByTestId('event-title');
+      const eventTitle = within(introductionPage).queryByTestId('event-title');
       expect(eventTitle).not.toBeNull();
       expect(eventTitle.textContent).toEqual(introItems[0].title);
 
-      const eventTime = await within(introductionPage).queryByTestId('event-time');
+      const eventTime = within(introductionPage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
-      expect(eventTime.textContent).toEqual(`Voting closes: ${formatUTCDate(eventMock_active.eventEndDate.toString())}`);
+      expect(eventTime.textContent).toEqual(
+        `Voting closes: ${formatUTCDate(eventMock_active.eventEndDate.toString())}`
+      );
 
-      const eventDescription = await within(introductionPage).queryByTestId('event-description');
+      const eventDescription = within(introductionPage).queryByTestId('event-description');
       expect(eventDescription).not.toBeNull();
       expect(eventDescription.textContent).toEqual(introItems[0].description);
 
-      const cta = await within(introductionPage).queryByTestId('event-cta');
+      const cta = within(introductionPage).queryByTestId('event-cta');
       expect(cta).not.toBeNull();
       expect(cta.textContent).toEqual('Get started');
 
-      const image = await within(introductionPage).queryByTestId('event-image');
+      const image = within(introductionPage).queryByTestId('event-image');
       expect(image).not.toBeNull();
       expect(image.tagName).toEqual('IMG');
       expect(image.attributes.getNamedItem('src').value).toEqual(introItems[0].image);
@@ -120,11 +122,12 @@ describe('For ongoing event:', () => {
     );
 
     await waitFor(async () => {
-      const cta = await within(await screen.queryByTestId('introduction-page')).queryByTestId('event-cta');
+      const cta = within(screen.queryByTestId('introduction-page')).queryByTestId('event-cta');
 
       fireEvent.click(cta);
       expect((historyPushSpy.mock.lastCall[0] as unknown as any).pathname).toEqual(ROUTES.VOTE);
     });
+    historyPushSpy.mockRestore();
   });
 });
 
@@ -148,14 +151,14 @@ describe("For the event that hasn't started yet", () => {
     );
 
     await waitFor(async () => {
-      const introductionPage = await screen.queryByTestId('introduction-page');
+      const introductionPage = screen.queryByTestId('introduction-page');
       expect(introductionPage).not.toBeNull();
 
-      const eventTitle = await within(introductionPage).queryByTestId('event-title');
+      const eventTitle = within(introductionPage).queryByTestId('event-title');
       expect(eventTitle).not.toBeNull();
       expect(eventTitle.textContent).toEqual(introItems[0].title);
 
-      const eventTime = await within(introductionPage).queryByTestId('event-time');
+      const eventTime = within(introductionPage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
       expect(eventTime.textContent).toEqual(
         `Vote from: ${formatUTCDate(eventMock_active.eventStartDate.toString())} - ${formatUTCDate(
@@ -163,15 +166,15 @@ describe("For the event that hasn't started yet", () => {
         )}`
       );
 
-      const eventDescription = await within(introductionPage).queryByTestId('event-description');
+      const eventDescription = within(introductionPage).queryByTestId('event-description');
       expect(eventDescription).not.toBeNull();
       expect(eventDescription.textContent).toEqual(introItems[0].description);
 
-      const cta = await within(introductionPage).queryByTestId('event-cta');
+      const cta = within(introductionPage).queryByTestId('event-cta');
       expect(cta).not.toBeNull();
       expect(cta.textContent).toEqual('View the vote');
 
-      const image = await within(introductionPage).queryByTestId('event-image');
+      const image = within(introductionPage).queryByTestId('event-image');
       expect(image).not.toBeNull();
       expect(image.tagName).toEqual('IMG');
       expect(image.attributes.getNamedItem('src').value).toEqual(introItems[0].image);
@@ -190,11 +193,12 @@ describe("For the event that hasn't started yet", () => {
     );
 
     await waitFor(async () => {
-      const cta = await within(await screen.queryByTestId('introduction-page')).queryByTestId('event-cta');
+      const cta = within(screen.queryByTestId('introduction-page')).queryByTestId('event-cta');
 
       fireEvent.click(cta);
       expect((historyPushSpy.mock.lastCall[0] as unknown as any).pathname).toEqual(ROUTES.VOTE);
     });
+    historyPushSpy.mockRestore();
   });
 });
 
@@ -218,28 +222,28 @@ describe('For the event that has already finished', () => {
     );
 
     await waitFor(async () => {
-      const introductionPage = await screen.queryByTestId('introduction-page');
+      const introductionPage = screen.queryByTestId('introduction-page');
       expect(introductionPage).not.toBeNull();
 
-      const eventTitle = await within(introductionPage).queryByTestId('event-title');
+      const eventTitle = within(introductionPage).queryByTestId('event-title');
       expect(eventTitle).not.toBeNull();
       expect(eventTitle.textContent).toEqual(introItems[0].title);
 
-      const eventTime = await within(introductionPage).queryByTestId('event-time');
+      const eventTime = within(introductionPage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
       expect(eventTime.textContent).toEqual(
         `The vote closed on ${formatUTCDate(eventMock_active.eventEndDate.toString())}`
       );
 
-      const eventDescription = await within(introductionPage).queryByTestId('event-description');
+      const eventDescription = within(introductionPage).queryByTestId('event-description');
       expect(eventDescription).not.toBeNull();
       expect(eventDescription.textContent).toEqual(introItems[0].description);
 
-      const cta = await within(introductionPage).queryByTestId('event-cta');
+      const cta = within(introductionPage).queryByTestId('event-cta');
       expect(cta).not.toBeNull();
       expect(cta.textContent).toEqual('See the results');
 
-      const image = await within(introductionPage).queryByTestId('event-image');
+      const image = within(introductionPage).queryByTestId('event-image');
       expect(image).not.toBeNull();
       expect(image.tagName).toEqual('IMG');
       expect(image.attributes.getNamedItem('src').value).toEqual(introItems[0].image);
@@ -258,10 +262,11 @@ describe('For the event that has already finished', () => {
     );
 
     await waitFor(async () => {
-      const cta = await within(await screen.queryByTestId('introduction-page')).queryByTestId('event-cta');
+      const cta = within(screen.queryByTestId('introduction-page')).queryByTestId('event-cta');
 
       fireEvent.click(cta);
       expect((historyPushSpy.mock.lastCall[0] as unknown as any).pathname).toEqual(ROUTES.LEADERBOARD);
     });
+    historyPushSpy.mockRestore();
   });
 });

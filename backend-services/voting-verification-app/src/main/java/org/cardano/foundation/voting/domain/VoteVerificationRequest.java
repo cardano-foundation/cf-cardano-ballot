@@ -1,5 +1,6 @@
 package org.cardano.foundation.voting.domain;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
@@ -10,17 +11,22 @@ import java.util.Optional;
 @Builder
 @Setter
 @ToString
+@Schema(description = "Request object for vote verification")
 public class VoteVerificationRequest {
 
     @NotBlank
+    @Schema(description = "Root hash of the markle tree", required = true)
     private String rootHash;
 
     @NotBlank
+    @Schema(description = "COSE signature of the vote", required = true)
     protected String voteCoseSignature;
 
+    @Schema(description = "Public key for the vote", required = false)
     protected Optional<@NotBlank String> voteCosePublicKey;
 
     @Builder.Default
+    @Schema(description = "Merkle proof", required = false)
     private Optional<List<MerkleProofItem>> steps = Optional.empty();
 
     @Data

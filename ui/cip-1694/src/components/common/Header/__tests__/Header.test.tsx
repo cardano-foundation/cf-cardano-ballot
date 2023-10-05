@@ -8,7 +8,7 @@ import '@testing-library/jest-dom';
 import React from 'react';
 import { expect } from '@jest/globals';
 import BlockIcon from '@mui/icons-material/Block';
-import { screen, within, waitFor, fireEvent, cleanup } from '@testing-library/react';
+import { screen, within, waitFor, fireEvent, cleanup, act } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import { UserState } from 'common/store/types';
 import { ROUTES } from 'common/routes';
@@ -83,18 +83,18 @@ describe('For ongoing event:', () => {
     );
 
     await waitFor(async () => {
-      const header = await screen.queryByTestId('header');
+      const header = screen.queryByTestId('header');
       expect(header).not.toBeNull();
 
-      const headerLogo = await within(header).queryByTestId('header-logo');
+      const headerLogo = within(header).queryByTestId('header-logo');
       expect(headerLogo).not.toBeNull();
       expect(headerLogo.textContent).toEqual('Referendum on Governance');
 
-      const leaderboardLink = await within(header).queryByTestId('leaderboard-link');
+      const leaderboardLink = within(header).queryByTestId('leaderboard-link');
       expect(leaderboardLink).not.toBeNull();
       expect(leaderboardLink.textContent).toEqual('Leaderboard');
 
-      const voteLink = await within(header).queryByTestId('vote-link');
+      const voteLink = within(header).queryByTestId('vote-link');
       expect(voteLink).not.toBeNull();
       expect(voteLink.textContent).toEqual('Your vote');
 
@@ -114,11 +114,11 @@ describe('For ongoing event:', () => {
     );
 
     await waitFor(async () => {
-      const header = await screen.queryByTestId('header');
-      const headerLogo = await within(header).queryByTestId('header-logo');
+      const header = screen.queryByTestId('header');
+      const headerLogo = within(header).queryByTestId('header-logo');
       expect(headerLogo.textContent).toEqual('Referendum on Governance');
 
-      const voteLink = await within(header).queryByTestId('vote-link');
+      const voteLink = within(header).queryByTestId('vote-link');
       expect(voteLink.textContent).toEqual('Your vote');
 
       fireEvent.click(voteLink);
@@ -127,6 +127,7 @@ describe('For ongoing event:', () => {
       fireEvent.click(headerLogo);
       expect((historyPushSpy.mock.lastCall[0] as unknown as any).pathname).toEqual(ROUTES.INTRO);
     });
+    historyPushSpy.mockRestore();
   });
 
   test('should render connect wallet button and open connect wallet modal once clicked', async () => {
@@ -142,8 +143,8 @@ describe('For ongoing event:', () => {
     );
 
     await waitFor(async () => {
-      const header = await screen.queryByTestId('header');
-      const connectWalletButton = await within(header).queryByTestId('connect-wallet-button');
+      const header = screen.queryByTestId('header');
+      const connectWalletButton = within(header).queryByTestId('connect-wallet-button');
       expect(connectWalletButton.textContent).toEqual('Connect wallet');
 
       expect(store.getState().user.isConnectWalletModalVisible).toBeFalsy;
@@ -165,9 +166,9 @@ describe('For ongoing event:', () => {
     );
 
     await waitFor(async () => {
-      const header = await screen.queryByTestId('header');
-      const connectWalletButton = await within(header).queryByTestId('connect-wallet-button');
-      const connectedWalletButton = await within(header).queryByTestId('connected-wallet-button');
+      const header = screen.queryByTestId('header');
+      const connectWalletButton = within(header).queryByTestId('connect-wallet-button');
+      const connectedWalletButton = within(header).queryByTestId('connected-wallet-button');
       expect(connectedWalletButton).not.toBeNull();
       expect(connectWalletButton).toBeNull();
     });
@@ -192,7 +193,9 @@ describe('For ongoing event:', () => {
     const leaderboardLink = within(header).queryByTestId('leaderboard-link');
     expect(screen.queryByTestId('result-comming-soon-modal')).toBeNull();
 
-    fireEvent.click(leaderboardLink);
+    await act(async () => {
+      fireEvent.click(leaderboardLink);
+    });
 
     const confirmModal = screen.queryByTestId('result-comming-soon-modal');
     expect(confirmModal).not.toBeNull();
@@ -203,6 +206,7 @@ describe('For ongoing event:', () => {
     });
 
     expect((historyPushSpy.mock.lastCall[0] as unknown as any).pathname).toEqual(ROUTES.LEADERBOARD);
+    historyPushSpy.mockRestore();
   });
 
   test('should show confirmation modal and discard redirection to leadeboard page', async () => {
@@ -224,7 +228,9 @@ describe('For ongoing event:', () => {
     const leaderboardLink = within(header).queryByTestId('leaderboard-link');
     expect(screen.queryByTestId('result-comming-soon-modal')).toBeNull();
 
-    fireEvent.click(leaderboardLink);
+    await act(async () => {
+      fireEvent.click(leaderboardLink);
+    });
 
     const confirmModal = screen.queryByTestId('result-comming-soon-modal');
     expect(confirmModal).not.toBeNull();
@@ -248,6 +254,7 @@ describe('For ongoing event:', () => {
     });
 
     expect(historyPushSpy.mock.lastCall).toBeUndefined();
+    historyPushSpy.mockRestore();
   });
 
   test('should show confirmation modal and discard redirection to leadeboard page on close icon click', async () => {
@@ -269,8 +276,9 @@ describe('For ongoing event:', () => {
     const leaderboardLink = within(header).queryByTestId('leaderboard-link');
     expect(screen.queryByTestId('result-comming-soon-modal')).toBeNull();
 
-    fireEvent.click(leaderboardLink);
-
+    await act(async () => {
+      fireEvent.click(leaderboardLink);
+    });
     const confirmModal = screen.queryByTestId('result-comming-soon-modal');
     expect(confirmModal).not.toBeNull();
 
@@ -281,6 +289,7 @@ describe('For ongoing event:', () => {
     });
 
     expect(historyPushSpy.mock.lastCall).toBeUndefined();
+    historyPushSpy.mockRestore();
   });
 
   test('should have leaderboard link disabled if there is no tip fetched', async () => {
@@ -302,8 +311,9 @@ describe('For ongoing event:', () => {
     expect(leaderboardLink.closest('button')).toHaveAttribute('disabled');
     expect(screen.queryByTestId('result-comming-soon-modal')).toBeNull();
 
-    fireEvent.click(leaderboardLink);
-
+    await act(async () => {
+      fireEvent.click(leaderboardLink);
+    });
     const confirmModal = screen.queryByTestId('result-comming-soon-modal');
     expect(confirmModal).toBeNull();
     expect(mockGetChainTip).not.toHaveBeenCalled();
@@ -335,6 +345,7 @@ describe('For ongoing event:', () => {
 describe("For the event that hasn't started yet", () => {
   beforeEach(() => {
     mockUseCardano.mockReturnValue(useCardanoMock_notConnected);
+    mockGetChainTip.mockReturnValue(chainTipMock);
   });
   afterEach(() => {
     jest.clearAllMocks();
@@ -351,19 +362,19 @@ describe("For the event that hasn't started yet", () => {
     );
 
     await waitFor(async () => {
-      const header = await screen.queryByTestId('header');
+      const header = screen.queryByTestId('header');
       expect(header).not.toBeNull();
 
-      const headerLogo = await within(header).queryByTestId('header-logo');
+      const headerLogo = within(header).queryByTestId('header-logo');
       expect(headerLogo).not.toBeNull();
 
-      const leaderboardLink = await within(header).queryByTestId('leaderboard-link');
+      const leaderboardLink = within(header).queryByTestId('leaderboard-link');
       expect(leaderboardLink).toBeNull();
 
-      const voteLink = await within(header).queryByTestId('vote-link');
+      const voteLink = within(header).queryByTestId('vote-link');
       expect(voteLink).toBeNull();
 
-      const connectWalletButton = await within(header).queryByTestId('connect-wallet-button');
+      const connectWalletButton = within(header).queryByTestId('connect-wallet-button');
       expect(connectWalletButton).not.toBeNull();
     });
   });
@@ -372,6 +383,7 @@ describe("For the event that hasn't started yet", () => {
 describe('For the event that has already finished', () => {
   beforeEach(() => {
     mockUseCardano.mockReturnValue(useCardanoMock_notConnected);
+    mockGetChainTip.mockReturnValue(chainTipMock);
   });
   afterEach(() => {
     jest.clearAllMocks();
@@ -388,20 +400,20 @@ describe('For the event that has already finished', () => {
     );
 
     await waitFor(async () => {
-      const header = await screen.queryByTestId('header');
+      const header = screen.queryByTestId('header');
       expect(header).not.toBeNull();
 
-      const headerLogo = await within(header).queryByTestId('header-logo');
+      const headerLogo = within(header).queryByTestId('header-logo');
       expect(headerLogo).not.toBeNull();
 
-      const leaderboardLink = await within(header).queryByTestId('leaderboard-link');
+      const leaderboardLink = within(header).queryByTestId('leaderboard-link');
       expect(leaderboardLink).not.toBeNull();
       expect(leaderboardLink.textContent).toEqual('Leaderboard');
 
-      const voteLink = await within(header).queryByTestId('vote-link');
+      const voteLink = within(header).queryByTestId('vote-link');
       expect(voteLink).not.toBeNull();
 
-      const connectWalletButton = await within(header).queryByTestId('connect-wallet-button');
+      const connectWalletButton = within(header).queryByTestId('connect-wallet-button');
       expect(connectWalletButton).not.toBeNull();
     });
   });
@@ -409,31 +421,64 @@ describe('For the event that has already finished', () => {
   test('should handle redirection to leadeboard page', async () => {
     mockUseCardano.mockReset();
     mockUseCardano.mockReturnValue(useCardanoMock);
+    mockGetChainTip.mockReset();
+    mockGetChainTip.mockReturnValue({ ...chainTipMock, epochNo: eventMock_finished.proposalsRevealEpoch });
 
     const history = createMemoryHistory({ initialEntries: [ROUTES.INTRO] });
 
     const historyPushSpy = jest.spyOn(history, 'push');
+    await act(async () => {
+      renderWithProviders(
+        <CustomRouter history={history}>
+          <Header />
+        </CustomRouter>,
+        {
+          preloadedState: {
+            user: {
+              event: eventMock_finished,
+              tip: { ...chainTipMock, epochNo: eventMock_finished.proposalsRevealEpoch },
+            } as UserState,
+          },
+        }
+      );
+    });
+
+    const header = screen.queryByTestId('header');
+    const leaderboardLink = within(header).queryByTestId('leaderboard-link');
+    await act(async () => {
+      fireEvent.click(leaderboardLink);
+    });
+    expect((historyPushSpy.mock.lastCall[0] as unknown as any).pathname).toEqual(ROUTES.LEADERBOARD);
+    historyPushSpy.mockRestore();
+  });
+});
+
+describe('When there is no event:', () => {
+  beforeEach(() => {
+    mockUseCardano.mockReturnValue(useCardanoMock);
+    mockGetChainTip.mockReturnValue(chainTipMock);
+  });
+  afterEach(() => {
+    jest.clearAllMocks();
+    cleanup();
+  });
+
+  test('should display proper state', async () => {
+    const history = createMemoryHistory({ initialEntries: [ROUTES.INTRO] });
     renderWithProviders(
       <CustomRouter history={history}>
         <Header />
       </CustomRouter>,
-      {
-        preloadedState: {
-          user: {
-            event: eventMock_finished,
-            tip: { ...chainTipMock, epochNo: eventMock_finished.proposalsRevealEpoch },
-          } as UserState,
-        },
-      }
+      { preloadedState: { user: {} as UserState } }
     );
 
     await waitFor(async () => {
-      const header = await screen.queryByTestId('header');
+      const header = screen.queryByTestId('header');
+      expect(header).not.toBeNull();
 
-      const leaderboardLink = await within(header).queryByTestId('leaderboard-link');
-
-      fireEvent.click(leaderboardLink);
-      expect((historyPushSpy.mock.lastCall[0] as unknown as any).pathname).toEqual(ROUTES.LEADERBOARD);
+      const headerActions = within(header).queryByTestId('header-actions');
+      expect(within(headerActions).queryByTestId('vote-link')).toBeNull();
+      expect(within(headerActions).queryByTestId('leaderboard-link')).toBeNull();
     });
   });
 });

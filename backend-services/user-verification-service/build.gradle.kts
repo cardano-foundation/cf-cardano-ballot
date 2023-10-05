@@ -11,6 +11,7 @@ plugins {
 	id("cz.habarta.typescript-generator") version "3.2.1263"
     id("com.github.ben-manes.versions") version "0.48.0"
     id("com.gorylenko.gradle-git-properties") version "2.4.1"
+	jacoco
 }
 
 springBoot {
@@ -38,6 +39,8 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-aop")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-data-rest")
+	testImplementation("io.rest-assured:rest-assured:5.3.2")
+	testImplementation("org.wiremock:wiremock:3.2.0")
 	testCompileOnly("org.springframework.boot:spring-boot-starter-test")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -73,7 +76,9 @@ dependencies {
 
 	runtimeOnly("org.postgresql:postgresql")
 
-	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.10")
+	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.11")
+
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
 
 	// spring-boot overridden dependencies:
     runtimeOnly("com.h2database:h2:2.2.224") // GraalVM compatibility
@@ -81,6 +86,16 @@ dependencies {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+tasks.test {
+	finalizedBy(tasks.jacocoTestReport)
+}
+tasks.jacocoTestReport {
+	dependsOn(tasks.test)
+	reports {
+		csv.required.set(true)
+	}
 }
 
 tasks {

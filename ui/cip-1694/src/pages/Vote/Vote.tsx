@@ -15,8 +15,12 @@ import BlockIcon from '@mui/icons-material/Block';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import { ROUTES } from 'common/routes';
 import { EventTime } from 'components/EventTime/EventTime';
-import { setIsConnectWalletModalVisible, setIsVoteSubmittedModalVisible } from 'common/store/userSlice';
-import { ProposalPresentation, Account } from 'types/voting-ledger-follower-types';
+import {
+  setIsConnectWalletModalVisible,
+  setIsVoteSubmittedModalVisible,
+  setChainTipData,
+} from 'common/store/userSlice';
+import { ProposalPresentation, Account, ChainTip } from 'types/voting-ledger-follower-types';
 import { VoteReceipt as VoteReceiptType } from 'types/voting-app-types';
 import { RootState } from 'common/store';
 import { VoteReceipt } from 'pages/Vote/components/VoteReceipt/VoteReceipt';
@@ -47,12 +51,6 @@ const copies = [
   },
 ];
 
-const errorsMap = {
-  INVALID_VOTING_POWER: 'To cast a vote, Voting Power should be more than 0',
-  EXPIRED_SLOT: "CIP-93's envelope slot is expired!",
-  VOTE_CANNOT_BE_CHANGED: 'You have already voted! Vote cannot be changed for this stake address',
-};
-
 const iconsMap: Record<ProposalPresentation['name'], React.ReactElement | null> = {
   YES: <DoneIcon sx={{ fontSize: { xs: '30px', md: '52px' }, color: '#39486C' }} />,
   NO: <CloseIcon sx={{ fontSize: { xs: '30px', md: '52px' }, color: '#39486C' }} />,
@@ -76,6 +74,23 @@ export const VotePage = () => {
   const [isToggledReceipt, toggleReceipt] = useToggle(false);
   const dispatch = useDispatch();
 
+  const fetchChainTip = useCallback(async () => {
+    let chainTip: ChainTip = null;
+    try {
+      chainTip = await voteService.getChainTip();
+      dispatch(setChainTipData({ tip: chainTip }));
+    } catch (error) {
+      toast(
+        <Toast
+          message="Failed to fecth chain tip"
+          error
+          icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
+        />
+      );
+    }
+    return chainTip;
+  }, [dispatch]);
+
   useEffect(() => {
     setCategory(event?.categories?.[0].id);
   }, [event]);
@@ -96,6 +111,7 @@ export const VotePage = () => {
   const items: OptionItem<ProposalPresentation['name']>[] = event?.categories
     ?.find(({ id }) => id === category)
     ?.proposals?.map(({ name }) => ({
+      id: `${category}-${name}`,
       name,
       label: capitalize(name.toLowerCase()),
       icon: iconsMap[name] || null,
@@ -104,11 +120,12 @@ export const VotePage = () => {
   const signMessagePromisified = useMemo(() => getSignedMessagePromise(signMessage), [signMessage]);
 
   const login = useCallback(async () => {
-    const canonicalVoteInput = loginService.buildCanonicalLoginJson({
-      stakeAddress,
-      slotNumber: tip.absoluteSlot.toString(),
-    });
     try {
+      const chainTip = await fetchChainTip();
+      const canonicalVoteInput = loginService.buildCanonicalLoginJson({
+        stakeAddress,
+        slotNumber: chainTip.absoluteSlot.toString(),
+      });
       const requestVoteObject = await signMessagePromisified(canonicalVoteInput);
       const response = await loginService.submitLogin(requestVoteObject);
       const session = {
@@ -126,9 +143,8 @@ export const VotePage = () => {
           icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
         />
       );
-      console.log(message);
     }
-  }, [signMessagePromisified, stakeAddress, tip?.absoluteSlot]);
+  }, [fetchChainTip, signMessagePromisified, stakeAddress]);
 
   const fetchReceipt = useCallback(
     async ({ cb, refetch = false }: { cb?: () => void; refetch?: boolean }) => {
@@ -147,8 +163,6 @@ export const VotePage = () => {
         if ('id' in receiptResponse) {
           setReceipt(receiptResponse);
         } else {
-          const message = `${errorPrefix}', ${receiptResponse?.title}, ${receiptResponse?.detail}`;
-          console.log(message);
           toast(
             <Toast
               message={errorPrefix}
@@ -167,7 +181,6 @@ export const VotePage = () => {
           setIsConfirmWithWalletSignatureModalVisible(false);
           return;
         }
-        const message = `${errorPrefix}, ${error?.info || error?.message || error?.toString()}`;
         toast(
           <Toast
             message={errorPrefix}
@@ -175,7 +188,6 @@ export const VotePage = () => {
             icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
           />
         );
-        console.log(message);
       }
       setIsReceiptDrawerInitializing(false);
       setIsConfirmWithWalletSignatureModalVisible(false);
@@ -206,6 +218,8 @@ export const VotePage = () => {
   };
 
   const onChangeCategory = () => {
+    setReceipt(null);
+    setOptionId(null);
     setVoteSubmitted(false);
     setIsReceiptFetched(false);
     const currentCategoryIndex = findIndex(event?.categories, ['id', category]);
@@ -213,17 +227,10 @@ export const VotePage = () => {
   };
 
   const handleSubmit = async () => {
-    if (!isConnected) return;
-
     let votingPower: Account['votingPower'];
     try {
       ({ votingPower } = await voteService.getVotingPower(env.EVENT_ID, stakeAddress));
     } catch (error) {
-      const message = `Failed to fetch votingPower ${
-        error instanceof Error || error instanceof HttpError ? error?.message : error
-      }`;
-
-      console.log(message);
       toast(
         <Toast
           error
@@ -231,19 +238,21 @@ export const VotePage = () => {
           icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
         />
       );
-      return;
     }
 
-    const canonicalVoteInput = buildCanonicalVoteInputJson({
-      option: optionId?.toUpperCase(),
-      voter: stakeAddress,
-      voteId: uuidv4(),
-      slotNumber: tip.absoluteSlot.toString(),
-      votePower: votingPower,
-      category,
-    });
+    if (!votingPower) return;
 
     try {
+      const chainTip = await fetchChainTip();
+
+      const canonicalVoteInput = buildCanonicalVoteInputJson({
+        option: optionId?.toUpperCase(),
+        voter: stakeAddress,
+        voteId: uuidv4(),
+        slotNumber: chainTip.absoluteSlot.toString(),
+        votingPower,
+        category,
+      });
       setIsCastingAVote(true);
       const requestVoteObject = await signMessagePromisified(canonicalVoteInput);
       await voteService.castAVoteWithDigitalSignature(requestVoteObject);
@@ -264,7 +273,6 @@ export const VotePage = () => {
           />
         );
         setOptionId('');
-        console.log('Failed to cast e vote', errorsMap[error?.message as keyof typeof errorsMap] || error?.message);
       } else if (error instanceof Error) {
         toast(
           <Toast
@@ -273,17 +281,21 @@ export const VotePage = () => {
             icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
           />
         );
-        console.log('Failed to cast e vote', error?.message || error.toString());
       }
     }
     setIsCastingAVote(false);
   };
 
+  const onRefetchSuccess = useCallback(() => {
+    toast(<Toast message="Receipt has been successfully refreshed" />);
+  }, []);
+
   const cantSelectOptions =
     !!receipt || voteSubmitted || (isConnected && !isReceiptFetched) || event?.notStarted || event?.finished;
   const showViewReceiptButton = receipt?.id || voteSubmitted || (isReceiptFetched && event?.finished);
-  const showConnectButton = !isConnected && !event?.notStarted;
-  const showSubmitButton = isConnected && !event?.notStarted && !event?.finished && !showViewReceiptButton;
+  const showConnectButton = event && !isConnected && event?.notStarted === false;
+  const showSubmitButton =
+    event && isConnected && event?.notStarted === false && event?.finished === false && !showViewReceiptButton;
   const showPagination = isConnected && receipt && category === receipt?.category && numOfCategories > 1;
 
   return (
@@ -340,6 +352,7 @@ export const VotePage = () => {
           </Grid>
           <Grid item>
             <OptionCard
+              key={category}
               selectedOption={isConnected && receipt?.proposal}
               disabled={cantSelectOptions}
               items={items}
@@ -478,7 +491,7 @@ export const VotePage = () => {
           setOpen={toggleReceipt}
         >
           <VoteReceipt
-            fetchReceipt={fetchReceipt}
+            fetchReceipt={() => fetchReceipt({ refetch: true, cb: onRefetchSuccess })}
             setOpen={toggleReceipt}
             receipt={receipt}
           />

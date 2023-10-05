@@ -80,8 +80,10 @@ public class SpringSecurityConfiguration {
                     .requestMatchers(new AntPathRequestMatcher("/api/vote/votes/**", GET.name())).authenticated()
                     // SECURED by JWT auth
                     .requestMatchers(new AntPathRequestMatcher("/api/vote/receipt/**", GET.name())).authenticated()
+                    .requestMatchers(new AntPathRequestMatcher("/api/vote/receipt/**", HEAD.name())).authenticated()
                     // SECURED by Web3 auth
                     .requestMatchers(new AntPathRequestMatcher("/api/vote/receipt", GET.name())).authenticated()
+                    .requestMatchers(new AntPathRequestMatcher("/api/vote/receipt", HEAD.name())).authenticated()
                     // SECURED by Web3 auth
                     .requestMatchers(new AntPathRequestMatcher("/api/auth/login", GET.name())).authenticated()
                     // SECURED by JWT auth
@@ -92,6 +94,8 @@ public class SpringSecurityConfiguration {
                     .requestMatchers(new AntPathRequestMatcher("/api/leaderboard/**", HEAD.name())).permitAll()
                     .requestMatchers(new AntPathRequestMatcher("/actuator/**", GET.name())).permitAll()
                     .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
+                    .requestMatchers(new AntPathRequestMatcher("/v3/api-docs/**")).permitAll()
+                    .requestMatchers(new AntPathRequestMatcher("/swagger-ui/**")).permitAll()
                     .anyRequest().denyAll();
                 })
 

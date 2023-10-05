@@ -1,7 +1,7 @@
 /* eslint-disable no-var */
 var mockv4 = jest.fn();
 import { accountDataMock, chainTipMock } from 'test/mocks';
-import { buildCanonicalVoteInputJson } from '../voteUtils';
+import { buildCanonicalVoteInputJson, getSignedMessagePromise } from '../voteUtils';
 
 jest.mock('uuid', () => ({
   v4: mockv4,
@@ -23,6 +23,10 @@ jest.mock('../../../env', () => {
 describe('voteUtils: ', () => {
   const mockv4Value = 'mockv4';
   mockv4.mockReturnValue(mockv4Value);
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
   test('buildCanonicalVoteInputJson', () => {
     expect(
       buildCanonicalVoteInputJson({
@@ -30,7 +34,7 @@ describe('voteUtils: ', () => {
         voter: accountDataMock.stakeAddress,
         voteId: mockv4Value,
         slotNumber: chainTipMock.absoluteSlot.toString(),
-        votePower: accountDataMock.votingPower,
+        votingPower: accountDataMock.votingPower,
         category: 'CHANGE_GOV_STRUCTURE',
       })
     ).toEqual(
@@ -38,5 +42,42 @@ describe('voteUtils: ', () => {
     );
   });
 
-  test.todo('getSignedMessagePromise');
+  test('getSignedMessagePromise', async () => {
+    const signature = 'signature';
+    const key = 'key';
+    const message = 'message';
+
+    expect(
+      await getSignedMessagePromise(
+        jest.fn(async (_message, sucessCb) => {
+          await sucessCb(signature, key);
+        })
+      )(message)
+    ).toEqual({
+      coseSignature: signature,
+      cosePublicKey: key,
+    });
+
+    expect(
+      await getSignedMessagePromise(
+        jest.fn(async (_message, sucessCb) => {
+          await sucessCb(signature, null);
+        })
+      )(message)
+    ).toEqual({
+      coseSignature: signature,
+      cosePublicKey: '',
+    });
+
+    const error = 'error';
+    try {
+      await getSignedMessagePromise(
+        jest.fn(async (_message, _sucessCb, onErrorCb) => {
+          await onErrorCb(error as unknown as Error);
+        })
+      )(message);
+    } catch (_error) {
+      expect(_error).toEqual(error);
+    }
+  });
 });

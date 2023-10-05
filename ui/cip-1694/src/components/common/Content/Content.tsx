@@ -8,6 +8,7 @@ import { ConnectWalletModal } from 'components/ConnectWalletModal/ConnectWalletM
 import { PageRoutes } from 'common/routes';
 import { RootState } from 'common/store';
 import { setIsConnectWalletModalVisible } from 'common/store/userSlice';
+import { clearUserInSessionStorage } from 'common/utils/session';
 import styles from './Content.module.scss';
 import { Toast } from '../Toast/Toast';
 
@@ -20,6 +21,7 @@ export const Content = () => {
 
   // FIXME: triggered multiple times on connect for Flint wallet by @cardano-foundation/cardano-connect-with-wallet
   const onConnectWallet = useCallback(() => {
+    clearUserInSessionStorage();
     dispatch(setIsConnectWalletModalVisible({ isVisible: false }));
     debouncedToast(<Toast message="Wallet Connected!" />);
   }, [dispatch, debouncedToast]);

@@ -1,0 +1,7 @@
+.eslintrc.js
+*.d.ts
+*.cy.tsx
+*jest.config.js
+public/*
+src/types/*.ts
+**/*.js

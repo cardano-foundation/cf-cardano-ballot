@@ -155,9 +155,9 @@ describe('For ongoing event:', () => {
     );
 
     await waitFor(async () => {
-      const votePage = await screen.queryByTestId('vote-page');
+      const votePage = screen.queryByTestId('vote-page');
 
-      const optionsLoaders = await within(votePage).queryAllByTestId('option-card-loader');
+      const optionsLoaders = within(votePage).queryAllByTestId('option-card-loader');
       expect(optionsLoaders.length).toEqual(3);
     });
   });
@@ -176,24 +176,24 @@ describe('For ongoing event:', () => {
     );
 
     await waitFor(async () => {
-      const votePage = await screen.queryByTestId('vote-page');
+      const votePage = screen.queryByTestId('vote-page');
       expect(votePage).not.toBeNull();
 
-      const eventTitle = await within(votePage).queryByTestId('event-title');
+      const eventTitle = within(votePage).queryByTestId('event-title');
       expect(eventTitle).not.toBeNull();
       expect(eventTitle.textContent).toEqual('The Governance of Cardano');
 
-      const eventTime = await within(votePage).queryByTestId('event-time');
+      const eventTime = within(votePage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
       expect(eventTime.textContent).toEqual(
         `Voting closes: ${formatUTCDate(eventMock_active.eventEndDate.toString())}`
       );
 
-      const eventDescription = await within(votePage).queryByTestId('event-description');
+      const eventDescription = within(votePage).queryByTestId('event-description');
       expect(eventDescription).not.toBeNull();
       expect(eventDescription.textContent).toEqual('Do you like pineapple pizza?');
 
-      const options = await within(votePage).queryAllByTestId('option-card');
+      const options = within(votePage).queryAllByTestId('option-card');
       expect(options.length).toEqual(eventMock_active.categories[0].proposals.length);
       for (const option in options) {
         expect(options[option].textContent).toEqual(
@@ -201,7 +201,7 @@ describe('For ongoing event:', () => {
         );
       }
 
-      const cta = await within(votePage).queryByTestId('proposal-connect-button');
+      const cta = within(votePage).queryByTestId('proposal-connect-button');
       expect(cta).not.toBeNull();
       expect(cta.textContent).toEqual('Connect wallet to vote');
     });
@@ -220,8 +220,8 @@ describe('For ongoing event:', () => {
     );
 
     await waitFor(async () => {
-      const votePage = await screen.queryByTestId('vote-page');
-      const cta = await within(votePage).queryByTestId('proposal-connect-button');
+      const votePage = screen.queryByTestId('vote-page');
+      const cta = within(votePage).queryByTestId('proposal-connect-button');
 
       expect(store.getState().user.isConnectWalletModalVisible).toBeFalsy();
       fireEvent.click(cta);
@@ -242,8 +242,8 @@ describe('For ongoing event:', () => {
     );
 
     await waitFor(async () => {
-      const votePage = await screen.queryByTestId('vote-page');
-      const options = await within(votePage).queryAllByTestId('option-card');
+      const votePage = screen.queryByTestId('vote-page');
+      const options = within(votePage).queryAllByTestId('option-card');
 
       expect(store.getState().user.isConnectWalletModalVisible).toBeFalsy();
       fireEvent.click(options[0]);
@@ -265,24 +265,24 @@ describe('For ongoing event:', () => {
     );
 
     await waitFor(async () => {
-      const votePage = await screen.queryByTestId('vote-page');
+      const votePage = screen.queryByTestId('vote-page');
       expect(votePage).not.toBeNull();
 
-      const eventTitle = await within(votePage).queryByTestId('event-title');
+      const eventTitle = within(votePage).queryByTestId('event-title');
       expect(eventTitle).not.toBeNull();
       expect(eventTitle.textContent).toEqual('The Governance of Cardano');
 
-      const eventTime = await within(votePage).queryByTestId('event-time');
+      const eventTime = within(votePage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
       expect(eventTime.textContent).toEqual(
         `Voting closes: ${formatUTCDate(eventMock_active.eventEndDate.toString())}`
       );
 
-      const eventDescription = await within(votePage).queryByTestId('event-description');
+      const eventDescription = within(votePage).queryByTestId('event-description');
       expect(eventDescription).not.toBeNull();
       expect(eventDescription.textContent).toEqual('Do you like pineapple pizza?');
 
-      const options = await within(votePage).queryAllByTestId('option-card');
+      const options = within(votePage).queryAllByTestId('option-card');
       expect(options.length).toEqual(eventMock_active.categories[0].proposals.length);
       for (const option in options) {
         expect(options[option].textContent).toEqual(
@@ -290,7 +290,7 @@ describe('For ongoing event:', () => {
         );
       }
 
-      const cta = await within(votePage).queryByTestId('proposal-submit-button');
+      const cta = within(votePage).queryByTestId('proposal-submit-button');
       expect(cta).not.toBeNull();
       expect(cta.textContent).toEqual('Submit your vote');
     });
@@ -307,17 +307,134 @@ describe('For ongoing event:', () => {
     );
 
     await waitFor(async () => {
-      const votePage = await screen.queryByTestId('vote-page');
-      const cta = await within(votePage).queryByTestId('proposal-submit-button');
+      const votePage = screen.queryByTestId('vote-page');
+      const cta = within(votePage).queryByTestId('proposal-submit-button');
 
-      expect(cta.closest('button')).toHaveAttribute('disabled');
+      expect(cta.closest('button')).toBeDisabled();
 
       fireEvent.click(cta);
       expect(mockCastAVoteWithDigitalSignature).not.toHaveBeenCalled();
     });
   });
 
-  test('should submit vote', async () => {
+  test('should handle error during submit vote', async () => {
+    const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
+
+    mockUseCardano.mockReset();
+    mockUseCardano.mockReturnValue({
+      ...useCardanoMock,
+      signMessage: mockSignMessage,
+    });
+    mockGetSignedMessagePromise.mockReset();
+    mockGetSignedMessagePromise.mockImplementation(
+      (signMessage: (message: string) => string) => async (message: string) => await signMessage(message)
+    );
+    mockGetVotingPower.mockReset();
+    mockGetVotingPower.mockResolvedValue(accountDataMock);
+    mockBuildCanonicalVoteInputJson.mockReset();
+    mockBuildCanonicalVoteInputJson.mockReturnValue(canonicalVoteInputJsonMock);
+
+    const errorMessage = 'error';
+    const error = new Error(errorMessage);
+    mockCastAVoteWithDigitalSignature.mockReset();
+    mockCastAVoteWithDigitalSignature.mockImplementation(async () => await Promise.reject(error));
+
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
+
+    await act(async () => {
+      renderWithProviders(
+        <CustomRouter history={history}>
+          <VotePage />
+        </CustomRouter>,
+        { preloadedState: { user: { event: eventMock_active, tip: chainTipMock } as UserState } }
+      );
+    });
+
+    const votePage = screen.queryByTestId('vote-page');
+
+    const options = within(votePage).queryAllByTestId('option-card');
+
+    fireEvent.click(options[0]);
+
+    const cta = within(votePage).queryByTestId('proposal-submit-button');
+    await act(async () => {
+      fireEvent.click(cta);
+    });
+
+    expect(mockToast).toBeCalledWith(
+      <Toast
+        message={'Unable to submit your vote. Please try again'}
+        error
+        icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
+      />
+    );
+    mockCastAVoteWithDigitalSignature.mockReset();
+  });
+
+  test('should submit vote and fetch vote receipt if there are more that on category', async () => {
+    const accessToken = 'accessToken';
+    mockGetUserInSession.mockReset();
+    mockGetUserInSession.mockReturnValue({ accessToken });
+    const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
+
+    mockUseCardano.mockReset();
+    mockUseCardano.mockReturnValue({
+      ...useCardanoMock,
+      signMessage: mockSignMessage,
+    });
+    mockGetSignedMessagePromise.mockReset();
+    mockGetSignedMessagePromise.mockImplementation(
+      (signMessage: (message: string) => string) => async (message: string) => await signMessage(message)
+    );
+    mockGetVotingPower.mockReset();
+    mockGetVotingPower.mockResolvedValue(accountDataMock);
+    mockBuildCanonicalVoteInputJson.mockReset();
+    mockBuildCanonicalVoteInputJson.mockReturnValue(canonicalVoteInputJsonMock);
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
+
+    let store: ReturnType<typeof renderWithProviders>['store'];
+    await act(async () => {
+      ({ store } = renderWithProviders(
+        <CustomRouter history={history}>
+          <VotePage />
+        </CustomRouter>,
+        { preloadedState: { user: { event: eventMock_active, tip: chainTipMock } as UserState } }
+      ));
+    });
+
+    const votePage = screen.queryByTestId('vote-page');
+
+    const options = within(votePage).queryAllByTestId('option-card');
+
+    await act(async () => {
+      fireEvent.click(options[0]);
+    });
+
+    const cta = within(votePage).queryByTestId('proposal-submit-button');
+    expect(cta).not.toBeNull();
+    expect(cta.closest('button')).not.toBeDisabled();
+    expect(mockGetVoteReceipt.mock.calls[0]).toEqual([eventMock_active.categories[0].id, accessToken]);
+
+    expect(store.getState().user.isVoteSubmittedModalVisible).toBeFalsy();
+    await act(async () => {
+      fireEvent.click(cta);
+    });
+
+    expect(mockCastAVoteWithDigitalSignature).toHaveBeenCalledWith(canonicalVoteInputJsonMock);
+    expect(store.getState().user.isVoteSubmittedModalVisible).toBeTruthy;
+
+    await act(async () => {
+      fireEvent.click(screen.queryByTestId('vote-submitted-close'));
+    });
+
+    expect(store.getState().user.isVoteSubmittedModalVisible).toBeFalsy;
+    expect(mockGetVoteReceipt).toBeCalledTimes(2);
+    expect(mockGetVoteReceipt.mock.calls[1]).toEqual([eventMock_active.categories[1].id, accessToken]);
+    expect(screen.queryAllByRole('button', { pressed: true }).length).toEqual(0);
+    expect(within(votePage).queryByTestId('next-question-button')).toBeNull();
+  });
+
+  test('should submit vote and fetch receipt for single category', async () => {
     const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
 
     mockUseCardano.mockReset();
@@ -336,37 +453,88 @@ describe('For ongoing event:', () => {
 
     const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
 
-    let store: ReturnType<typeof renderWithProviders>['store'];
     await act(async () => {
-      ({ store } = renderWithProviders(
+      renderWithProviders(
+        <CustomRouter history={history}>
+          <VotePage />
+        </CustomRouter>,
+        {
+          preloadedState: {
+            user: {
+              event: {
+                ...eventMock_active,
+                categories: [eventMock_active.categories[0]],
+              },
+              tip: chainTipMock,
+            } as UserState,
+          },
+        }
+      );
+    });
+
+    const votePage = screen.queryByTestId('vote-page');
+
+    const options = within(votePage).queryAllByTestId('option-card');
+
+    await act(async () => {
+      fireEvent.click(options[0]);
+    });
+    const cta = within(votePage).queryByTestId('proposal-submit-button');
+    await act(async () => {
+      fireEvent.click(cta);
+    });
+
+    expect(mockGetVoteReceipt).toBeCalledTimes(2);
+  });
+
+  test('should show proper error if failed to fetch voting power during vote submitting', async () => {
+    const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
+
+    mockUseCardano.mockReset();
+    mockUseCardano.mockReturnValue({
+      ...useCardanoMock,
+      signMessage: mockSignMessage,
+    });
+    mockGetSignedMessagePromise.mockReset();
+    mockGetSignedMessagePromise.mockImplementation(
+      (signMessage: (message: string) => string) => async (message: string) => await signMessage(message)
+    );
+    const error = { message: 'error' };
+    mockGetVotingPower.mockReset();
+    mockGetVotingPower.mockImplementation(async () => await Promise.reject(error));
+    mockBuildCanonicalVoteInputJson.mockReset();
+    mockBuildCanonicalVoteInputJson.mockReturnValue(canonicalVoteInputJsonMock);
+
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
+
+    await act(async () => {
+      renderWithProviders(
         <CustomRouter history={history}>
           <VotePage />
         </CustomRouter>,
         { preloadedState: { user: { event: eventMock_active, tip: chainTipMock } as UserState } }
-      ));
+      );
     });
 
-    await waitFor(async () => {
-      const votePage = screen.queryByTestId('vote-page');
+    const votePage = screen.queryByTestId('vote-page');
 
-      const options = within(votePage).queryAllByTestId('option-card');
+    const options = within(votePage).queryAllByTestId('option-card');
 
-      await act(async () => {
-        fireEvent.click(options[0]);
-      });
-
-      const cta = within(votePage).queryByTestId('proposal-submit-button');
-      expect(cta).not.toBeNull();
-      expect(cta.closest('button')).not.toBeDisabled();
-
-      expect(store.getState().user.isVoteSubmittedModalVisible).toBeFalsy();
-      await act(async () => {
-        fireEvent.click(cta);
-      });
-
-      expect(mockCastAVoteWithDigitalSignature).toHaveBeenCalledWith(canonicalVoteInputJsonMock);
-      expect(store.getState().user.isVoteSubmittedModalVisible).toBeTruthy;
+    await act(async () => {
+      fireEvent.click(options[0]);
     });
+    const cta = within(votePage).queryByTestId('proposal-submit-button');
+
+    await act(async () => {
+      fireEvent.click(cta);
+    });
+    expect(mockToast).toBeCalledWith(
+      <Toast
+        message={'Unable to submit your vote. Please try again'}
+        error
+        icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
+      />
+    );
   });
 
   test('should ask to fetch receipt and display proper state if present and user session is active', async () => {
@@ -401,6 +569,58 @@ describe('For ongoing event:', () => {
     await waitFor(async () => {
       const confirmationModal = screen.queryByTestId('confirm-with-signature-modal');
       expect(confirmationModal).toBeNull();
+    });
+  });
+
+  test('should show proper message if user login servce throws', async () => {
+    const canonicalVoteInput = 'canonicalVoteInput';
+    buildCanonicalLoginJsonMock.mockReset();
+    buildCanonicalLoginJsonMock.mockReturnValue(canonicalVoteInput);
+    const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
+    mockGetVoteReceipt.mockReset();
+    mockGetVoteReceipt.mockReturnValue(VoteReceiptMock_Basic);
+    mockUseCardano.mockReset();
+    mockUseCardano.mockReturnValue({
+      ...useCardanoMock,
+      signMessage: mockSignMessage,
+    });
+    mockGetSignedMessagePromise.mockReset();
+    mockGetSignedMessagePromise.mockImplementation(
+      (signMessage: (message: string) => string) => async (message: string) => await signMessage(message)
+    );
+    mockGetVotingPower.mockReset();
+    mockGetVotingPower.mockResolvedValue(accountDataMock);
+
+    mockGetUserInSession.mockReset();
+    mockGetUserInSession.mockReturnValue(null);
+
+    const error = { message: 'error' };
+    submitLoginMock.mockReset();
+    submitLoginMock.mockImplementation(async () => await Promise.reject(error));
+
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
+    renderWithProviders(
+      <CustomRouter history={history}>
+        <VotePage />
+      </CustomRouter>,
+      { preloadedState: { user: { event: eventMock_active, tip: chainTipMock } as UserState } }
+    );
+
+    const confirmationModal = await screen.findByTestId('confirm-with-signature-modal');
+    const confirmCta = await within(confirmationModal).findByTestId('confirm-with-signature-cta');
+    expect(confirmCta).toHaveTextContent('Confirm');
+
+    await act(async () => {
+      fireEvent.click(confirmCta);
+    });
+    await waitFor(async () => {
+      expect(mockToast).toBeCalledWith(
+        <Toast
+          message={error.message}
+          error
+          icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
+        />
+      );
     });
   });
 
@@ -461,11 +681,11 @@ describe('For ongoing event:', () => {
         )
       );
 
-      const cta = await within(votePage).queryByTestId('show-receipt-button');
+      const cta = within(votePage).queryByTestId('show-receipt-button');
       expect(cta).not.toBeNull();
       expect(cta.textContent).toEqual('Vote receipt');
 
-      expect(await screen.queryByTestId('confirm-with-signature-modal')).toBeNull();
+      expect(screen.queryByTestId('confirm-with-signature-modal')).toBeNull();
       expect(submitLoginMock).toBeCalledWith(canonicalVoteInput);
       expect(mockSaveUserInSession).toBeCalledWith(userInSessionMock);
     });
@@ -528,12 +748,57 @@ describe('For ongoing event:', () => {
         )
       );
 
-      const cta = await within(votePage).queryByTestId('show-receipt-button');
+      const cta = within(votePage).queryByTestId('show-receipt-button');
       expect(cta).not.toBeNull();
       expect(cta.textContent).toEqual('Vote receipt');
 
-      expect(await screen.queryByTestId('confirm-with-signature-modal')).toBeNull();
+      expect(screen.queryByTestId('confirm-with-signature-modal')).toBeNull();
     });
+  });
+
+  test('should show proper error if vote is not found', async () => {
+    const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
+    const error = { message: 'VOTE_NOT_FOUND' };
+    mockGetVoteReceipt.mockReset();
+    mockGetVoteReceipt.mockImplementation(async () => await Promise.reject(error));
+
+    mockUseCardano.mockReset();
+    mockUseCardano.mockReturnValue({
+      ...useCardanoMock,
+      signMessage: mockSignMessage,
+    });
+    mockGetSignedMessagePromise.mockReset();
+    mockGetSignedMessagePromise.mockImplementation(
+      (signMessage: (message: string) => string) => async (message: string) => await signMessage(message)
+    );
+    mockGetVotingPower.mockReset();
+    mockGetVotingPower.mockResolvedValue(accountDataMock);
+
+    mockGetUserInSession.mockReset();
+    mockGetUserInSession.mockReturnValue({ accessToken: true });
+    mockTokenIsExpired.mockReset();
+    mockTokenIsExpired.mockReturnValue(false);
+
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
+    await act(async () => {
+      renderWithProviders(
+        <CustomRouter history={history}>
+          <VotePage />
+        </CustomRouter>,
+        {
+          preloadedState: {
+            user: {
+              event: eventMock_active,
+              tip: chainTipMock,
+            } as UserState,
+          },
+        }
+      );
+    });
+
+    const options = screen.queryAllByTestId('option-card');
+    fireEvent.click(options[0]);
+    expect(screen.queryByTestId('proposal-submit-button').closest('button')).not.toBeDisabled();
   });
 
   test('should handle show vote receipt', async () => {
@@ -621,25 +886,31 @@ describe('For ongoing event:', () => {
 
     const cta = within(votePage).queryByTestId('next-question-button');
     expect(cta.closest('button')).not.toBeDisabled();
+    expect(mockGetVoteReceipt).toHaveBeenLastCalledWith(eventMock_active.categories[0].id, true);
     expect(cta).toHaveTextContent('Next question');
 
     await act(async () => {
+      mockGetVoteReceipt.mockReset();
+      mockGetVoteReceipt.mockReturnValue({
+        ...VoteReceiptMock_Basic,
+        category: eventMock_active.categories[1].id,
+      });
       fireEvent.click(cta);
     });
 
-    const eventTitle = await within(votePage).queryByTestId('event-title');
+    const eventTitle = within(votePage).queryByTestId('event-title');
     expect(eventTitle).not.toBeNull();
     expect(eventTitle.textContent).toEqual('The Governance of Cardano');
 
-    const eventTime = await within(votePage).queryByTestId('event-time');
+    const eventTime = within(votePage).queryByTestId('event-time');
     expect(eventTime).not.toBeNull();
     expect(eventTime.textContent).toEqual(`Voting closes: ${formatUTCDate(eventMock_active.eventEndDate.toString())}`);
 
-    const eventDescription = await within(votePage).queryByTestId('event-description');
+    const eventDescription = within(votePage).queryByTestId('event-description');
     expect(eventDescription).not.toBeNull();
     expect(eventDescription.textContent).toEqual('Do you like apples?');
 
-    const options = await within(votePage).queryAllByTestId('option-card');
+    const options = within(votePage).queryAllByTestId('option-card');
     expect(options.length).toEqual(eventMock_active.categories[1].proposals.length);
     for (const option in options) {
       expect(options[option].textContent).toEqual(
@@ -647,7 +918,8 @@ describe('For ongoing event:', () => {
       );
     }
     expect(screen.queryByTestId('vote-receipt')).not.toBeInTheDocument();
-    expect(mockGetVoteReceipt).toHaveBeenLastCalledWith('MIN_VIABLE_GOV_STRUCTURE', true);
+    expect(mockGetVoteReceipt).toHaveBeenLastCalledWith(eventMock_active.categories[1].id, true);
+    expect(within(votePage).queryByTestId('next-question-button')).toHaveTextContent('Previous question');
   });
 
   test('should handle show vote receipt for inactive user session', async () => {
@@ -735,9 +1007,9 @@ describe('For ongoing event:', () => {
       );
     });
 
-    const votePage = await screen.queryByTestId('vote-page');
+    const votePage = screen.queryByTestId('vote-page');
     expect(screen.queryByTestId('vote-receipt')).not.toBeInTheDocument();
-    const cta = await within(votePage).queryByTestId('show-receipt-button');
+    const cta = within(votePage).queryByTestId('show-receipt-button');
     await act(async () => fireEvent.click(cta));
 
     const receipt = await screen.findByTestId('vote-receipt');
@@ -754,6 +1026,55 @@ describe('For ongoing event:', () => {
         icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
       />
     );
+  });
+
+  test('should handle refetch receipt functionality', async () => {
+    const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
+    mockGetVoteReceipt.mockReset();
+    mockGetVoteReceipt.mockReturnValue(VoteReceiptMock_Full_MediumAssurance);
+    mockUseCardano.mockReset();
+    mockUseCardano.mockReturnValue({
+      ...useCardanoMock,
+      signMessage: mockSignMessage,
+    });
+    mockGetSignedMessagePromise.mockReset();
+    mockGetSignedMessagePromise.mockImplementation(
+      (signMessage: (message: string) => string) => async (message: string) => await signMessage(message)
+    );
+    mockGetVotingPower.mockReset();
+    mockGetVotingPower.mockResolvedValue(accountDataMock);
+
+    mockGetUserInSession.mockReset();
+    mockGetUserInSession.mockReturnValue({ accessToken: true });
+    mockTokenIsExpired.mockReset();
+    mockTokenIsExpired.mockReturnValue(false);
+
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
+    await act(async () => {
+      renderWithProviders(
+        <CustomRouter history={history}>
+          <VotePage />
+        </CustomRouter>,
+        {
+          preloadedState: {
+            user: {
+              event: eventMock_active,
+              tip: chainTipMock,
+            } as UserState,
+          },
+        }
+      );
+    });
+
+    const votePage = screen.queryByTestId('vote-page');
+    expect(screen.queryByTestId('vote-receipt')).not.toBeInTheDocument();
+    const cta = within(votePage).queryByTestId('show-receipt-button');
+    await act(async () => fireEvent.click(cta));
+
+    const receipt = await screen.findByTestId('vote-receipt');
+
+    await act(async () => fireEvent.click(within(receipt).queryByTestId('refetch-receipt-button')));
+    expect(mockToast).toBeCalledWith(<Toast message="Receipt has been successfully refreshed" />);
   });
 });
 
@@ -784,14 +1105,14 @@ describe("For the event that hasn't started yet", () => {
     );
 
     await waitFor(async () => {
-      const votePage = await screen.queryByTestId('vote-page');
+      const votePage = screen.queryByTestId('vote-page');
       expect(votePage).not.toBeNull();
 
-      const eventTitle = await within(votePage).queryByTestId('event-title');
+      const eventTitle = within(votePage).queryByTestId('event-title');
       expect(eventTitle).not.toBeNull();
       expect(eventTitle.textContent).toEqual('The Governance of Cardano');
 
-      const eventTime = await within(votePage).queryByTestId('event-time');
+      const eventTime = within(votePage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
       expect(eventTime.textContent).toEqual(
         `Vote from: ${formatUTCDate(eventMock_notStarted.eventStartDate.toString())} - ${formatUTCDate(
@@ -799,11 +1120,11 @@ describe("For the event that hasn't started yet", () => {
         )}`
       );
 
-      const eventDescription = await within(votePage).queryByTestId('event-description');
+      const eventDescription = within(votePage).queryByTestId('event-description');
       expect(eventDescription).not.toBeNull();
       expect(eventDescription.textContent).toEqual('Do you like pineapple pizza?');
 
-      const options = await within(votePage).queryAllByTestId('option-card');
+      const options = within(votePage).queryAllByTestId('option-card');
       expect(options.length).toEqual(eventMock_notStarted.categories[0].proposals.length);
       for (const option in options) {
         expect(options[option].textContent).toEqual(
@@ -812,7 +1133,7 @@ describe("For the event that hasn't started yet", () => {
         expect(options[option].closest('button')).toHaveAttribute('disabled');
       }
 
-      const cta = await within(votePage).queryByTestId('event-hasnt-started-submit-button');
+      const cta = within(votePage).queryByTestId('event-hasnt-started-submit-button');
       expect(cta).not.toBeNull();
       expect(cta.textContent).toEqual(
         `Submit your vote from ${getDateAndMonth(eventMock_notStarted.eventStartDate?.toString())}`
@@ -848,24 +1169,24 @@ describe('For the event that has already finished', () => {
     );
 
     await waitFor(async () => {
-      const votePage = await screen.queryByTestId('vote-page');
+      const votePage = screen.queryByTestId('vote-page');
       expect(votePage).not.toBeNull();
 
-      const eventTitle = await within(votePage).queryByTestId('event-title');
+      const eventTitle = within(votePage).queryByTestId('event-title');
       expect(eventTitle).not.toBeNull();
       expect(eventTitle.textContent).toEqual('The Governance of Cardano');
 
-      const eventTime = await within(votePage).queryByTestId('event-time');
+      const eventTime = within(votePage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
       expect(eventTime.textContent).toEqual(
         `The vote closed on ${formatUTCDate(eventMock_finished.eventEndDate.toString())}`
       );
 
-      const eventDescription = await within(votePage).queryByTestId('event-description');
+      const eventDescription = within(votePage).queryByTestId('event-description');
       expect(eventDescription).not.toBeNull();
       expect(eventDescription.textContent).toEqual('Do you like pineapple pizza?');
 
-      const options = await within(votePage).queryAllByTestId('option-card');
+      const options = within(votePage).queryAllByTestId('option-card');
       expect(options.length).toEqual(eventMock_finished.categories[0].proposals.length);
       for (const option in options) {
         expect(options[option].textContent).toEqual(
@@ -873,7 +1194,7 @@ describe('For the event that has already finished', () => {
         );
       }
 
-      const cta = await within(votePage).queryByTestId('proposal-connect-button');
+      const cta = within(votePage).queryByTestId('proposal-connect-button');
       expect(cta).not.toBeNull();
       expect(cta.textContent).toEqual('Connect wallet to see your vote');
     });
@@ -892,8 +1213,8 @@ describe('For the event that has already finished', () => {
     );
 
     await waitFor(async () => {
-      const votePage = await screen.queryByTestId('vote-page');
-      const cta = await within(votePage).queryByTestId('proposal-connect-button');
+      const votePage = screen.queryByTestId('vote-page');
+      const cta = within(votePage).queryByTestId('proposal-connect-button');
 
       expect(store.getState().user.isConnectWalletModalVisible).toBeFalsy();
       fireEvent.click(cta);
@@ -912,7 +1233,7 @@ describe('For the event that has already finished', () => {
     );
 
     const votePage = await screen.findByTestId('vote-page');
-    const options = await within(votePage).queryAllByTestId('option-card');
+    const options = within(votePage).queryAllByTestId('option-card');
 
     expect(store.getState().user.isConnectWalletModalVisible).toBeFalsy();
     fireEvent.click(options[0]);
@@ -957,27 +1278,26 @@ describe('For the event that has already finished', () => {
       );
     });
 
-    const votePage = await screen.queryByTestId('vote-page');
+    const votePage = screen.queryByTestId('vote-page');
 
     expect(screen.queryByTestId('vote-receipt')).not.toBeInTheDocument();
-    const cta = await within(votePage).queryByTestId('show-receipt-button');
+    const cta = within(votePage).queryByTestId('show-receipt-button');
     await act(async () => {
       fireEvent.click(cta);
     });
 
     expect(screen.queryByTestId('vote-receipt')).toBeInTheDocument();
-    const closeVoteReceipt = await within(screen.queryByTestId('vote-receipt')).queryByTestId(
-      'vote-receipt-close-button'
-    );
+    const closeVoteReceipt = within(screen.queryByTestId('vote-receipt')).queryByTestId('vote-receipt-close-button');
     await act(async () => {
       fireEvent.click(closeVoteReceipt);
     });
     await waitForElementToBeRemoved(() => screen.queryByTestId('vote-receipt'));
 
-    const cta2 = await within(votePage).queryByTestId('view-results-button');
+    const cta2 = within(votePage).queryByTestId('view-results-button');
     await act(async () => {
       fireEvent.click(cta2);
     });
     expect((historyPushSpy.mock.lastCall[0] as unknown as any).pathname).toEqual(ROUTES.LEADERBOARD);
+    historyPushSpy.mockRestore();
   });
 });

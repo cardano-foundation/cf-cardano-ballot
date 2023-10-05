@@ -1,7 +1,7 @@
-import React from "react";
-import cn from "classnames";
-import TextField from "@mui/material/TextField";
-import styles from "./VerifyVoteSection.module.scss";
+import React from 'react';
+import cn from 'classnames';
+import TextField from '@mui/material/TextField';
+import styles from './VerifyVoteSection.module.scss';
 
 type VerifyProps = {
   voteProof: string;
@@ -10,6 +10,7 @@ type VerifyProps = {
 
 export const VerifyVoteSection = ({ voteProof, setVoteProof }: VerifyProps) => (
   <TextField
+    data-testid="verify-vote-input"
     value={voteProof}
     onChange={(e) => setVoteProof(e.target.value)}
     InputLabelProps={{ shrink: false }}

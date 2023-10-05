@@ -23,7 +23,7 @@ cf-summit-2023-ui:
     discordBotUrl: https://discord.gg/65Hq3gqFwE
     discordSupportChannelUrl: https://discord.gg/svAcdYjMXx
     image:
-      tag: 0.2.64-4-6cf59
+      tag: 0.2.64-6-c9857
     ingress:
       additionalDomains:
         - voting.summit.cardano.org

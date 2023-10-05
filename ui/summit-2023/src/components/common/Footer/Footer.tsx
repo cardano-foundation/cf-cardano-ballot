@@ -2,7 +2,7 @@ import React from 'react';
 import { Typography, Grid, IconButton, Tooltip } from '@mui/material';
 import styles from './Footer.module.scss';
 import discordLogo from '../../../common/resources/images/discord-icon.svg';
-import ContactSupportOutlinedIcon from '@mui/icons-material/ContactSupportOutlined';
+import SupportIcon from '@mui/icons-material/SupportAgent';
 import { env } from 'common/constants/env';
 import { NavLink } from 'react-router-dom';
 import { i18n } from 'i18n';
@@ -14,7 +14,7 @@ const Footer: React.FC = () => {
       container
       spacing={1}
       direction={{ sm: 'column', md: 'row' }}
-      justifyContent="center"
+      justifyContent="space-between"
       alignItems="center"
       className={styles.footer}
     >
@@ -38,7 +38,7 @@ const Footer: React.FC = () => {
       <Grid
         item
         xs={12}
-        sm={6}
+        sm={'auto'}
       >
         <Grid
           container
@@ -49,7 +49,7 @@ const Footer: React.FC = () => {
           <Grid
             item
             xs={12}
-            sm={3}
+            sm={'auto'}
           >
             <NavLink to="/termsandconditions">
               <Typography
@@ -65,7 +65,7 @@ const Footer: React.FC = () => {
           <Grid
             item
             xs={12}
-            sm={3}
+            sm={'auto'}
           >
             <NavLink to="/privacypolicy">
               <Typography
@@ -81,30 +81,7 @@ const Footer: React.FC = () => {
           <Grid
             item
             xs={12}
-            sm={4}
-          >
-            <Typography
-              variant="body2"
-              justifyContent="center"
-            >
-              Version {env.APP_VERSION}
-              <NavLink
-                to={'https://status2023.voting.summit.cardano.org/'}
-                target="_blank"
-              >
-                <span
-                  className={styles.link}
-                >
-                  Status
-                </span>
-              </NavLink>
-            </Typography>
-          </Grid>
-
-          <Grid
-            item
-            xs={12}
-            sm={1}
+            sm={'auto'}
           >
             <Tooltip
               title="Get support"
@@ -112,9 +89,10 @@ const Footer: React.FC = () => {
               >
               <IconButton
                 onClick={() => openNewTab(env.DISCORD_SUPPORT_CHANNEL_URL)}
-                sx={{ m: -1 }}
+                size="large"
+                sx={{p: 0, color: '#434656'}}
                 >
-                <ContactSupportOutlinedIcon/>
+                <SupportIcon/>
               </IconButton>
             </Tooltip>
           </Grid>
@@ -122,7 +100,7 @@ const Footer: React.FC = () => {
           <Grid
             item
             xs={12}
-            sm={1}
+            sm={'auto'}
           >
             <Tooltip
               title="Join our Discord"

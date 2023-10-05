@@ -149,7 +149,6 @@ const Leaderboard = () => {
         </StatsTile>
         <StatsTile
           title="Votes Per Category"
-          summary={<span style={{ color: '#061d3c' }}>{statsSum || placeholder}</span>}
           dataTestId="votes-per-category"
         >
           <Grid

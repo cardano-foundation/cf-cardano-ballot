@@ -33,7 +33,13 @@ import { CustomButton } from '../Button/CustomButton';
 import { getSlotNumber, getUserVotes } from 'common/api/voteService';
 import { buildCanonicalLoginJson, submitLogin } from 'common/api/loginService';
 import { clearUserInSessionStorage, saveUserInSession } from '../../../utils/session';
-import { setConnectedPeerWallet, setUserVotes, setWalletIsLoggedIn } from '../../../store/userSlice';
+import {
+  setConnectedPeerWallet,
+  setUserVotes,
+  setVoteReceipt,
+  setWalletIsLoggedIn,
+  setWalletIsVerified
+} from '../../../store/userSlice';
 import { copyToClipboard, getSignedMessagePromise, resolveCardanoNetwork } from '../../../utils/utils';
 import { Toast } from '../Toast/Toast';
 import { ToastType } from '../Toast/Toast.types';
@@ -42,6 +48,7 @@ import { parseError } from 'common/constants/errors';
 import { IWalletInfo } from 'components/ConnectWalletList/ConnectWalletList.types';
 import { removeFromLocalStorage } from 'utils/storage';
 import QRCode from 'react-qr-code';
+import { VoteReceipt } from '../../../types/voting-app-types';
 
 const Header: React.FC = () => {
   const dispatch = useDispatch();
@@ -167,6 +174,12 @@ const Header: React.FC = () => {
     setPeerConnectWalletInfo(undefined);
     removeFromLocalStorage('cardano-peer-autoconnect-id');
     removeFromLocalStorage('cardano-wallet-discovery-address');
+
+    // TODO: clean redux
+    dispatch(setConnectedPeerWallet({ peerWallet: false }));
+    dispatch(setWalletIsVerified({ isVerified: false }));
+    dispatch(setUserVotes({ userVotes: [] }));
+    dispatch(setVoteReceipt({ categoryId: '', receipt: {} as VoteReceipt }));
   };
 
   useEffect(() => {
@@ -319,6 +332,7 @@ const Header: React.FC = () => {
           onOpenConnectWalletModal={handleConnectWallet}
           onOpenVerifyWalletModal={handleOpenVerify}
           onLogin={handleLogin}
+          onDisconnectWallet={onDisconnectWallet}
         />
         <IconButton
           className="close-button"
@@ -421,6 +435,7 @@ const Header: React.FC = () => {
                   onOpenConnectWalletModal={handleConnectWallet}
                   onOpenVerifyWalletModal={handleOpenVerify}
                   onLogin={handleLogin}
+                  onDisconnectWallet={onDisconnectWallet}
                 />
               </Grid>
             </Grid>

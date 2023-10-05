@@ -18,6 +18,8 @@ if [ $? != 0 ]; then
   kubectl create ns cf-cardano-ballot > /dev/null 2>&1
 fi
 
+# Installing ArgoCD CRD
+kubectl apply -k "https://github.com/argoproj/argo-cd/manifests/crds?ref=v2.8.4"
 
 ## Blockfrost secrets
 kubectl create secret -n cf-cardano-ballot generic blockfrost-secrets \

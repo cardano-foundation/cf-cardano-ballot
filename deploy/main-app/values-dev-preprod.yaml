@@ -5,7 +5,7 @@ network: preprod
 domain: dev.cf-cip1694-preprod.eu-west-1.metadata.dev.cf-deployments.org
 
 cf-cardano-ballot-infra:
-  enabled: false
+  enabled: true
 
 cf-cardano-ballot-ui:
   enabled: true

@@ -487,6 +487,70 @@ describe('For ongoing event:', () => {
     expect(mockGetVoteReceipt).toBeCalledTimes(2);
   });
 
+  test('should submit vote, fetch receipt for the last category and stay on the last category', async () => {
+    const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
+
+    mockUseCardano.mockReset();
+    mockUseCardano.mockReturnValue({
+      ...useCardanoMock,
+      signMessage: mockSignMessage,
+    });
+    mockGetSignedMessagePromise.mockReset();
+    mockGetSignedMessagePromise.mockImplementation(
+      (signMessage: (message: string) => string) => async (message: string) => await signMessage(message)
+    );
+    mockGetVotingPower.mockReset();
+    mockGetVotingPower.mockResolvedValue(accountDataMock);
+    mockBuildCanonicalVoteInputJson.mockReset();
+    mockBuildCanonicalVoteInputJson.mockReturnValue(canonicalVoteInputJsonMock);
+    mockGetVoteReceipt.mockReset();
+    mockGetVoteReceipt.mockReturnValue(VoteReceiptMock_Basic);
+
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
+
+    await act(async () => {
+      renderWithProviders(
+        <CustomRouter history={history}>
+          <VotePage />
+        </CustomRouter>,
+        {
+          preloadedState: {
+            user: {
+              event: eventMock_active,
+              tip: chainTipMock,
+            } as UserState,
+          },
+        }
+      );
+    });
+
+    const votePage = screen.queryByTestId('vote-page');
+    await act(async () => {
+      const error = { message: 'VOTE_NOT_FOUND' };
+      mockGetVoteReceipt.mockReset();
+      mockGetVoteReceipt.mockImplementation(async () => await Promise.reject(error));
+      fireEvent.click(within(votePage).queryByText('Next question'));
+    });
+
+    expect(mockGetVoteReceipt).toBeCalledTimes(1);
+    expect(mockGetVoteReceipt).toHaveBeenLastCalledWith(eventMock_active.categories[1].id, true);
+    expect(within(votePage).queryByTestId('next-question-button')).not.toBeInTheDocument();
+
+    const options = within(votePage).queryAllByTestId('option-card');
+    await act(async () => {
+      fireEvent.click(options[0]);
+    });
+
+    await act(async () => {
+      fireEvent.click(within(votePage).queryByTestId('proposal-submit-button'));
+    });
+
+    expect(mockGetVoteReceipt).toBeCalledTimes(2);
+    expect(mockGetVoteReceipt).toHaveBeenLastCalledWith(eventMock_active.categories[1].id, true);
+    expect(within(votePage).queryByText('Previous question')).not.toBeInTheDocument();
+    expect(within(votePage).queryByTestId('show-receipt-button')).toBeInTheDocument();
+  });
+
   test('should show proper error if failed to fetch voting power during vote submitting', async () => {
     const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
 
@@ -848,7 +912,7 @@ describe('For ongoing event:', () => {
     expect(screen.queryByTestId('vote-receipt')).toBeInTheDocument();
   });
 
-  test('should switch between categories', async () => {
+  test('should switch between categories and show pagination', async () => {
     const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
     mockGetVoteReceipt.mockReset();
     mockGetVoteReceipt.mockReturnValue(VoteReceiptMock_Basic);
@@ -888,6 +952,7 @@ describe('For ongoing event:', () => {
     expect(cta.closest('button')).not.toBeDisabled();
     expect(mockGetVoteReceipt).toHaveBeenLastCalledWith(eventMock_active.categories[0].id, true);
     expect(cta).toHaveTextContent('Next question');
+    expect(within(votePage).queryByTestId('category-pagination')).toHaveTextContent('Question 1 of 2');
 
     await act(async () => {
       mockGetVoteReceipt.mockReset();
@@ -920,6 +985,7 @@ describe('For ongoing event:', () => {
     expect(screen.queryByTestId('vote-receipt')).not.toBeInTheDocument();
     expect(mockGetVoteReceipt).toHaveBeenLastCalledWith(eventMock_active.categories[1].id, true);
     expect(within(votePage).queryByTestId('next-question-button')).toHaveTextContent('Previous question');
+    expect(within(votePage).queryByTestId('category-pagination')).toHaveTextContent('Question 2 of 2');
   });
 
   test('should handle show vote receipt for inactive user session', async () => {

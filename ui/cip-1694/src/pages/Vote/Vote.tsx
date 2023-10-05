@@ -11,6 +11,8 @@ import DoneIcon from '@mui/icons-material/Done';
 import CloseIcon from '@mui/icons-material/Close';
 import DoDisturbIcon from '@mui/icons-material/DoDisturb';
 import ReceiptIcon from '@mui/icons-material/ReceiptLongOutlined';
+import ArrowBack from '@mui/icons-material/ArrowBack';
+import ArrowForward from '@mui/icons-material/ArrowForward';
 import BlockIcon from '@mui/icons-material/Block';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import { ROUTES } from 'common/routes';
@@ -69,8 +71,9 @@ export const VotePage = () => {
   const [optionId, setOptionId] = useState<string | null>();
   const [isConfirmWithWalletSignatureModalVisible, setIsConfirmWithWalletSignatureModalVisible] = useState(false);
   const [voteSubmitted, setVoteSubmitted] = useState(false);
-  const [category, setCategory] = useState(event?.categories?.[0].id);
+  const [activeCategoryId, setActiveCategoryId] = useState(event?.categories?.[0].id);
   const numOfCategories = event?.categories?.length;
+  const activeCategoryIndex = findIndex(event?.categories, ['id', activeCategoryId]);
   const [isToggledReceipt, toggleReceipt] = useToggle(false);
   const dispatch = useDispatch();
 
@@ -92,7 +95,7 @@ export const VotePage = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    setCategory(event?.categories?.[0].id);
+    setActiveCategoryId(event?.categories?.[0].id);
   }, [event]);
 
   useEffect(() => {
@@ -109,9 +112,9 @@ export const VotePage = () => {
   }, [event?.notStarted, tip?.absoluteSlot, stakeAddress]);
 
   const items: OptionItem<ProposalPresentation['name']>[] = event?.categories
-    ?.find(({ id }) => id === category)
+    ?.find(({ id }) => id === activeCategoryId)
     ?.proposals?.map(({ name }) => ({
-      id: `${category}-${name}`,
+      id: `${activeCategoryId}-${name}`,
       name,
       label: capitalize(name.toLowerCase()),
       icon: iconsMap[name] || null,
@@ -158,7 +161,7 @@ export const VotePage = () => {
           token = await login();
         }
         if (!token) return;
-        const receiptResponse = await voteService.getVoteReceipt(category, token);
+        const receiptResponse = await voteService.getVoteReceipt(activeCategoryId, token);
 
         if ('id' in receiptResponse) {
           setReceipt(receiptResponse);
@@ -192,15 +195,22 @@ export const VotePage = () => {
       setIsReceiptDrawerInitializing(false);
       setIsConfirmWithWalletSignatureModalVisible(false);
     },
-    [login, category]
+    [login, activeCategoryId]
   );
 
   useEffect(() => {
     const session = getUserInSession();
-    if (isConnected && tip?.absoluteSlot && stakeAddress && session && !tokenIsExpired(session.expiresAt) && category) {
+    if (
+      isConnected &&
+      tip?.absoluteSlot &&
+      stakeAddress &&
+      session &&
+      !tokenIsExpired(session.expiresAt) &&
+      activeCategoryId
+    ) {
       fetchReceipt({});
     }
-  }, [fetchReceipt, isConnected, stakeAddress, tip?.absoluteSlot, category]);
+  }, [fetchReceipt, isConnected, stakeAddress, tip?.absoluteSlot, activeCategoryId]);
 
   const openReceiptDrawer = async () => {
     setIsReceiptDrawerInitializing(true);
@@ -214,16 +224,15 @@ export const VotePage = () => {
 
   const onChangeOption = (option: string | null) => {
     setOptionId(option);
-    if (!isConnected) dispatch(setIsConnectWalletModalVisible({ isVisible: true }));
+    if (!isConnected && option) dispatch(setIsConnectWalletModalVisible({ isVisible: true }));
   };
 
-  const onChangeCategory = () => {
+  const onChangeCategory = (categoryIndex: number) => {
     setReceipt(null);
     setOptionId(null);
     setVoteSubmitted(false);
     setIsReceiptFetched(false);
-    const currentCategoryIndex = findIndex(event?.categories, ['id', category]);
-    setCategory(event?.categories[(currentCategoryIndex + 1) % numOfCategories]?.id);
+    setActiveCategoryId(event?.categories[categoryIndex]?.id);
   };
 
   const handleSubmit = async () => {
@@ -251,17 +260,17 @@ export const VotePage = () => {
         voteId: uuidv4(),
         slotNumber: chainTip.absoluteSlot.toString(),
         votingPower,
-        category,
+        category: activeCategoryId,
       });
       setIsCastingAVote(true);
       const requestVoteObject = await signMessagePromisified(canonicalVoteInput);
       await voteService.castAVoteWithDigitalSignature(requestVoteObject);
       dispatch(setIsVoteSubmittedModalVisible({ isVisible: true }));
       setVoteSubmitted(true);
-      if (numOfCategories === 1) {
+      if (numOfCategories === 1 || activeCategoryIndex === numOfCategories - 1) {
         await fetchReceipt({});
       } else {
-        onChangeCategory();
+        onChangeCategory(activeCategoryIndex + 1);
       }
     } catch (error) {
       if (error instanceof HttpError && error.code === 400) {
@@ -296,7 +305,7 @@ export const VotePage = () => {
   const showConnectButton = event && !isConnected && event?.notStarted === false;
   const showSubmitButton =
     event && isConnected && event?.notStarted === false && event?.finished === false && !showViewReceiptButton;
-  const showPagination = isConnected && receipt && category === receipt?.category && numOfCategories > 1;
+  const showPagination = isConnected && receipt && activeCategoryId === receipt?.category && numOfCategories > 1;
 
   return (
     <>
@@ -326,7 +335,7 @@ export const VotePage = () => {
                 md: '65px',
               }}
             >
-              {copies[findIndex(event?.categories, ['id', category])]?.title}
+              {copies[activeCategoryIndex]?.title}
             </Typography>
           </Grid>
           <Grid item>
@@ -339,7 +348,12 @@ export const VotePage = () => {
               />
             </Typography>
           </Grid>
-          <Grid item>
+          <Grid
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            item
+          >
             <Typography
               variant="h5"
               className={styles.description}
@@ -347,12 +361,23 @@ export const VotePage = () => {
               fontSize={{ xs: '16px', md: '28px' }}
               data-testid="event-description"
             >
-              {copies[findIndex(event?.categories, ['id', category])]?.body}
+              {copies[activeCategoryIndex]?.body}
             </Typography>
+            {numOfCategories > 1 && (
+              <Typography
+                variant="h5"
+                className={styles.categoryPagination}
+                data-testid="category-pagination"
+                lineHeight={{ xs: '16px', md: '22px' }}
+                fontSize={{ xs: '16px', md: '22px' }}
+              >
+                Question {activeCategoryIndex + 1} of {numOfCategories}
+              </Typography>
+            )}
           </Grid>
           <Grid item>
             <OptionCard
-              key={category}
+              key={activeCategoryId}
               selectedOption={isConnected && receipt?.proposal}
               disabled={cantSelectOptions}
               items={items}
@@ -462,13 +487,16 @@ export const VotePage = () => {
                 )}
                 {showPagination && (
                   <Button
-                    onClick={() => onChangeCategory()}
+                    startIcon={activeCategoryIndex === 1 && <ArrowBack style={{ fontSize: '20px', margin: '0' }} />}
+                    endIcon={activeCategoryIndex === 0 && <ArrowForward style={{ fontSize: '20px', margin: '0' }} />}
+                    onClick={() => onChangeCategory(activeCategoryIndex === 0 ? 1 : 0)}
+                    sx={{ gap: '10px' }}
                     className={styles.button}
                     size="large"
                     variant="contained"
                     data-testid="next-question-button"
                   >
-                    {findIndex(event?.categories, ['id', category]) === 0 ? 'Next question' : 'Previous question'}
+                    {activeCategoryIndex === 0 ? 'Next question' : 'Previous question'}
                   </Button>
                 )}
               </Grid>

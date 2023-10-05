@@ -305,12 +305,11 @@ const Nominees = () => {
 
     const finalityScore = receipt?.finalityScore;
 
-    console.log('receipt');
-    console.log(receipt);
     if (receipt?.status === 'FULL'){
       switch (finalityScore) {
         case 'VERY_HIGH':
           return {
+            label: 'VERY HIGH',
             backgroundColor: 'rgba(16, 101, 147, 0.07)',
             border: 'border: 1px solid #106593',
             color: '#056122',
@@ -320,6 +319,7 @@ const Nominees = () => {
           };
         case 'HIGH':
           return {
+            label: 'HIGH',
             backgroundColor: 'rgba(16, 101, 147, 0.07)',
             border: 'border: 1px solid #106593',
             color: '#056122',
@@ -329,6 +329,7 @@ const Nominees = () => {
           };
         case 'MEDIUM':
           return {
+            label: 'MEDIUM',
             backgroundColor: 'rgba(16, 101, 147, 0.07)',
             border: 'border: 1px solid #106593',
             color: '#652701',
@@ -338,6 +339,7 @@ const Nominees = () => {
           };
         case 'LOW':
           return {
+            label: 'LOW',
             backgroundColor: 'rgba(16, 101, 147, 0.07)',
             border: 'border: 1px solid #106593',
             color: '#C20024',
@@ -347,6 +349,7 @@ const Nominees = () => {
           };
         case 'FINAL':
           return {
+            label: 'FINAL',
             backgroundColor: 'rgba(5, 97, 34, 0.07)',
             border: '1px solid #056122',
             icon: <VerifiedUserIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#056122' }} />,
@@ -364,6 +367,7 @@ const Nominees = () => {
       }
     } else if (receipt?.status === 'PARTIAL'){
       return {
+        label: 'Vote in progress',
         backgroundColor: 'rgba(253, 135, 60, 0.07)',
         border: '1px solid #FD873C',
         color: '#24262E',
@@ -373,6 +377,7 @@ const Nominees = () => {
       };
     } else if (receipt?.status === 'ROLLBACK'){
       return {
+        label: 'There’s been a rollback',
         backgroundColor: 'rgba(194, 0, 36, 0.07)',
         border: '1px solid #C20024',
         color: '#24262E',
@@ -382,6 +387,7 @@ const Nominees = () => {
       };
     } else { // BASIC
       return {
+        label: 'Vote not ready for verification',
         backgroundColor: 'rgba(16, 101, 147, 0.07)',
         border: '1px solid #106593',
         color: '#24262E',
@@ -389,7 +395,6 @@ const Nominees = () => {
         description: 'Your vote has been successfully submitted. You might have to wait up to 30 minutes for this to be visible on chain. Please check back later to verify your vote.'
       };
     }
-
   };
 
   const handleReadMore = (nominee) => {
@@ -997,8 +1002,8 @@ const Nominees = () => {
                   alignItems: 'center',
                   padding: '10px 20px',
                   borderRadius: '8px',
-                  border: '1px solid #106593',
-                  color: 'white',
+                  border: getStatusTheme()?.border,
+                  color:  getStatusTheme()?.color,
                   width: '100%',
                   marginBottom: '20px',
                   backgroundColor: getStatusTheme()?.backgroundColor,
@@ -1006,7 +1011,7 @@ const Nominees = () => {
               >
                 <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <NotificationsIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#106593' }} />
+                    {getStatusTheme()?.icon}
                     <Typography
                       variant="h6"
                       style={{
@@ -1019,10 +1024,10 @@ const Nominees = () => {
                     >
                       {receipt?.finalityScore ? (
                         <>
-                          Assurance: <span style={{ color: getStatusTheme()?.color }}>{receipt?.finalityScore}</span>
+                          Assurance: <span style={{ color: getStatusTheme()?.color }}>{getStatusTheme()?.label}</span>
                         </>
                       ) : (
-                        'Vote not ready for verification'
+                          <>{ getStatusTheme()?.label }</>
                       )}
                       <Tooltip title="Assurance levels will update according to the finality of the transaction on-chain.">
                         <InfoIcon

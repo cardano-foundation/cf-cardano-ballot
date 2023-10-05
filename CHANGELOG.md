@@ -1,5 +1,39 @@
 # Changelog
 
+## [0.2.65](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.64...v0.2.65) (2023-10-05)
+
+
+### Features
+
+* add api test for casting votes ([dfd2ac4](https://github.com/cardano-foundation/cf-cardano-ballot/commit/dfd2ac4352613c75de07c7b6ddd0ae968c7d35aa))
+* add badge and coverage report generation to ci pipeline ([dfb63c0](https://github.com/cardano-foundation/cf-cardano-ballot/commit/dfb63c0b4a98fa60934aefe39376e859199f1540))
+* add eternl beta version for cip45 ([6503f1f](https://github.com/cardano-foundation/cf-cardano-ballot/commit/6503f1f659e05be1e7d400f4377d51e0939413fa))
+* add leaderboard tests and jacoco plugin ([d0474ea](https://github.com/cardano-foundation/cf-cardano-ballot/commit/d0474ea2ea6ad8de0d47cad7e33bbe87080b56b7))
+* add login api tests for voting-app ([d09848d](https://github.com/cardano-foundation/cf-cardano-ballot/commit/d09848db94bb98ab7dde540ae36c607a129ea152))
+* add SupportedWalletsList component ([7e36bfb](https://github.com/cardano-foundation/cf-cardano-ballot/commit/7e36bfbff4c738100ab41c7fe3225d97f8b71964))
+* finish testing for VoteResource ([580e583](https://github.com/cardano-foundation/cf-cardano-ballot/commit/580e583038e2e9d14d77e4b36af4e488813dfcf2))
+* separate vote commitment service ([#357](https://github.com/cardano-foundation/cf-cardano-ballot/issues/357)) ([db146e8](https://github.com/cardano-foundation/cf-cardano-ballot/commit/db146e8c3acc9449d7a9cb7a019aabbd3d21a318))
+
+
+### Bug Fixes
+
+* add EVENT_IS_NOT_ACTIVE to errors ([396fbf3](https://github.com/cardano-foundation/cf-cardano-ballot/commit/396fbf34a88dc7c56a3d0cf67989b7ce0c2616f5))
+* fixed the layout on userguide ([a9f5833](https://github.com/cardano-foundation/cf-cardano-ballot/commit/a9f58330c22f01caedb658b465bd997c5935cc18))
+* fullwidth button on homepage in mobile view ([4ad437b](https://github.com/cardano-foundation/cf-cardano-ballot/commit/4ad437b29e78fec3e12e8f611e2432a41e6a7ee0))
+* hexagon breaking on tablet or small laptops ([664ccc7](https://github.com/cardano-foundation/cf-cardano-ballot/commit/664ccc78d97d37cb7d509c73f5338076bc6de3a5))
+* hide toast error on event not found ([e6507d6](https://github.com/cardano-foundation/cf-cardano-ballot/commit/e6507d6c501082a1152f072955aff1c76fa45ff6))
+* merge develop ([6fd3703](https://github.com/cardano-foundation/cf-cardano-ballot/commit/6fd3703fd366a75a30c774b35d0e721db4ed2436))
+* openSupportedWalletModal event name ([99aa76b](https://github.com/cardano-foundation/cf-cardano-ballot/commit/99aa76b5ea96b326470b16c5aeaa668993122f3d))
+* phone code inputs in mobile ([500f6b0](https://github.com/cardano-foundation/cf-cardano-ballot/commit/500f6b0df0585dac613a6423a4c17055165d5a60))
+* reduce login popups and add login button ([805c75c](https://github.com/cardano-foundation/cf-cardano-ballot/commit/805c75ca3ff07d2ff9ec20c19180bf8f26447000))
+* remove comment ([089568b](https://github.com/cardano-foundation/cf-cardano-ballot/commit/089568b1bb01ec67fc2377f7d38b37ee3c01a87e))
+* remove debugs ([824a7d7](https://github.com/cardano-foundation/cf-cardano-ballot/commit/824a7d7d153e337afe3eff68a325314f73a2cc2e))
+* remove debugs ([db45ea1](https://github.com/cardano-foundation/cf-cardano-ballot/commit/db45ea1c99dd827eda14e5cfc6fc6fa4ac4c9575))
+* remove debugs ([af40e18](https://github.com/cardano-foundation/cf-cardano-ballot/commit/af40e183249541c7189e0fd7e1f994e0ce3c46e7))
+* remove unused css class ([e0f341d](https://github.com/cardano-foundation/cf-cardano-ballot/commit/e0f341d5a9ebcbed23b682ca23a9134e712ec8e8))
+* run prettier ([ab2a2ea](https://github.com/cardano-foundation/cf-cardano-ballot/commit/ab2a2ea13263d3aef814c478dbab27f1cfc00202))
+* wallet name ([d8e2c1c](https://github.com/cardano-foundation/cf-cardano-ballot/commit/d8e2c1c2db97c54fde7a9a51154b200c59b8c3f1))
+
 ## [0.2.64](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.63...v0.2.64) (2023-10-02)
 
 

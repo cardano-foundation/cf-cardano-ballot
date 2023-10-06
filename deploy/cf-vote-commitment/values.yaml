@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-vote-commitment
+  repository: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/vote-commitment-app
   tag: "0.0.1"
   pullPolicy: Always
 

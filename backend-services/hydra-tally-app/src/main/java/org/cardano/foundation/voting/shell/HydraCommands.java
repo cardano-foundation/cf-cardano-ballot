@@ -2,22 +2,28 @@ package org.cardano.foundation.voting.shell;
 
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import one.util.streamex.StreamEx;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
+import org.cardano.foundation.voting.domain.CompactVote;
 import org.cardano.foundation.voting.repository.VoteRepository;
+import org.cardano.foundation.voting.service.HydraVoteImporter;
 import org.cardano.foundation.voting.utils.Partitioner;
 import org.cardanofoundation.hydra.client.HydraClientOptions;
 import org.cardanofoundation.hydra.client.HydraWSClient;
 import org.cardanofoundation.hydra.client.SLF4JHydraLogger;
 import org.cardanofoundation.hydra.core.model.UTXO;
-import org.cardanofoundation.hydra.core.store.InMemoryUTxOStore;
+import org.cardanofoundation.hydra.core.store.UTxOStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.shell.command.annotation.Command;
+import org.springframework.shell.standard.ShellOption;
+import shaded.com.google.common.collect.Lists;
 
 import java.math.BigInteger;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.cardano.foundation.voting.utils.MoreComparators.createVoteComparator;
 import static org.cardanofoundation.hydra.core.model.HydraState.*;
 
 @Slf4j
@@ -28,12 +34,18 @@ public class HydraCommands {
     private CardanoNetwork network;
 
     @Autowired
+    private UTxOStore uTxOStore;
+
+    @Autowired
     private VoteRepository voteRepository;
+
+    @Autowired
+    private HydraVoteImporter hydraVoteImporter;
 
     @Value("${hydra.ws.url}")
     private String hydraWsUrl;
 
-    @Value("${spring.profiles.active}")
+    @Value("${hydra.operator.name}")
     private String actor;
 
     @Value("${cardano.commit.address}")
@@ -59,7 +71,7 @@ public class HydraCommands {
     @PostConstruct
     public void init() {
         var options = HydraClientOptions.builder(hydraWsUrl)
-                .withUTxOStore(new InMemoryUTxOStore())
+                .withUTxOStore(uTxOStore)
                 .history(false)
                 .build();
 
@@ -146,33 +158,36 @@ public class HydraCommands {
     }
 
     @Command(command = "import-votes", description = "import votes.")
-    public String importVotes() {
+    public String importVotes(@ShellOption(value = "batch-size", defaultValue = "10") int batchSize) throws Exception {
         log.info("Import votes...");
 
-        var allVotes = voteRepository.findAllVotes(eventId);
+        var participantVotes = StreamEx.of(voteRepository.findAllVotes(eventId))
+                .filter(v -> v.eventId().equals(eventId))
+                .filter(v -> {
+                    var uuid = UUID.fromString(v.voteId());
 
-        for (var vote : allVotes) {
-            var uuid = UUID.fromString(vote.voteId());
+                    int participant = Partitioner.partition(uuid, participants);
 
-            int participant = Partitioner.partition(uuid, participants);
+                    return participant == participantNumber;
+                })
+                .sorted(createVoteComparator())
+                .distinct(CompactVote::voteId)
+                .toList();
 
-            if (participant == this.participantNumber) {
-                log.info("Importing vote: {}", vote);
-
-                // send vote to hydra network as a transaction to the smart contract address
-            } else {
-                log.info("Skipping vote: {}", vote);
-            }
-
+        for (var vote : participantVotes) {
+            log.info("Vote: {}", vote);
         }
 
-        // get all the votes
-        // partition them by participant number
-        // batch them up
-        // send then to contract address
+        var partitioned = Lists.partition(participantVotes, batchSize);
+
+        for (var batch : partitioned) {
+            var txId = hydraVoteImporter.importVotes(batch);
+
+            log.info("Imported votes, txId:{}", txId);
+        }
 
         return "Importing votes...";
-    }
+}
 
     @Command(command = "batch-votes", description = "batch votes.")
     public String batchVotes() {
@@ -196,4 +211,3 @@ public class HydraCommands {
     }
 
 }
-

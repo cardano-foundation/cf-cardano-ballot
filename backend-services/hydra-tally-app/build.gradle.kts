@@ -47,6 +47,11 @@ dependencies {
 	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0")
 
 	implementation("org.cardanofoundation:hydra-java-client:0.0.6")
+	implementation("org.cardanofoundation:hydra-java-cardano-client-lib-adapter:0.0.6")
+
+	implementation("one.util:streamex:0.6.5")
+
+	implementation("com.bloxbean.cardano:aiken-java-binding:0.0.7")
 }
 
 dependencyManagement {

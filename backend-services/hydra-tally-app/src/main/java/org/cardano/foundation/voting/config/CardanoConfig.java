@@ -1,5 +1,7 @@
 package org.cardano.foundation.voting.config;
 
+import com.bloxbean.cardano.client.common.model.Network;
+import com.bloxbean.cardano.client.common.model.Networks;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +17,16 @@ public class CardanoConfig {
         log.info("Configured backend network:{}", network);
 
         return network;
+    }
+
+    @Bean
+    public Network cardanoNetwork(CardanoNetwork cardanoNetwork) {
+        return switch(cardanoNetwork) {
+            case MAIN -> Networks.mainnet();
+            case PREPROD -> Networks.preprod();
+            case PREVIEW -> Networks.preview();
+            case DEV -> Networks.testnet();
+        };
     }
 
 }

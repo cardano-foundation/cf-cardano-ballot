@@ -38,9 +38,6 @@ spec:
             - name: CARDANO_NETWORK
               value: {{ $.Values.network | default "preprod" | upper}}
 
-            - name: CORS_ALLOWED_ORIGINS
-              value: {{ tpl $.Values.corsAllowedOrigins $ }}
-
             - name: VOTING_METADATA_LABEL
               value: {{ $.Values.votingMetadataLabel | default "11113" | quote }}
 

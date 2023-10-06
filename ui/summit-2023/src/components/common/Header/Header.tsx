@@ -32,7 +32,7 @@ import { useToggle } from 'common/hooks/useToggle';
 import { CustomButton } from '../Button/CustomButton';
 import { getSlotNumber, getUserVotes } from 'common/api/voteService';
 import { buildCanonicalLoginJson, submitLogin } from 'common/api/loginService';
-import { clearUserInSessionStorage, saveUserInSession } from '../../../utils/session';
+import {clearUserInSessionStorage, getUserInSession, saveUserInSession, tokenIsExpired} from '../../../utils/session';
 import {
   setConnectedPeerWallet,
   setUserVotes,
@@ -65,7 +65,7 @@ const Header: React.FC = () => {
     });
 
   const [openAuthDialog, setOpenAuthDialog] = useState<boolean>(false);
-  const [loginModal, toggleLoginModal] = useToggle(false);
+  const [loginModal, setLoginModal] = useState(false);
   const [loginModalMessage, setLoginModalMessage] = useState<string>('');
   const [verifyModalIsOpen, setVerifyModalIsOpen] = useState<boolean>(false);
   const [verifyDiscordModalIsReady, toggleVerifyDiscordModalIsOpen] = useToggle(false);
@@ -73,6 +73,9 @@ const Header: React.FC = () => {
   const [toastType, setToastType] = useState<ToastType>('common');
   const [toastOpen, setToastOpen] = useState(false);
   const eventCache = useSelector((state: RootState) => state.user.event);
+
+  const session = getUserInSession();
+  const isExpired = tokenIsExpired(session?.expiresAt);
 
   const [cip45ModalIsOpen, setCip45ModalIsOpen] = useState<boolean>(false);
   const [startPeerConnect, setStartPeerConnect] = useState(false);
@@ -112,9 +115,10 @@ const Header: React.FC = () => {
 
   useEffect(() => {
     const openLoginModal = (message?: string) => {
+      if (session || !isExpired) return;
       if (message && message.length) setLoginModalMessage(message);
       else setLoginModalMessage('');
-      toggleLoginModal();
+      setLoginModal(false);
     };
     eventBus.subscribe('openLoginModal', openLoginModal);
 
@@ -295,16 +299,16 @@ const Header: React.FC = () => {
       const requestVoteObject = await signMessagePromisified(canonicalVoteInput);
       submitLogin(requestVoteObject)
         .then((response) => {
-          const session = {
+          const newSession = {
             accessToken: response.accessToken,
             expiresAt: response.expiresAt,
           };
-          saveUserInSession(session);
+          saveUserInSession(newSession);
           dispatch(setWalletIsLoggedIn({ isLoggedIn: true }));
           eventBus.publish('showToast', 'Login successful');
-          toggleLoginModal();
+          setLoginModal(false);
 
-          getUserVotes(session?.accessToken)
+          getUserVotes(newSession?.accessToken)
             .then((userVotes) => {
               if (userVotes) {
                 dispatch(setUserVotes({ userVotes }));
@@ -489,7 +493,7 @@ const Header: React.FC = () => {
         isOpen={isConnected && loginModal}
         name="login-modal"
         title="Login with your Wallet"
-        onClose={toggleLoginModal}
+        onClose={() => setLoginModal(false)}
         disableBackdropClick={true}
         width={isMobile ? 'auto' : '500px'}
       >

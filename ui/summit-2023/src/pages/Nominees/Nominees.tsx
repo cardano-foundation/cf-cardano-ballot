@@ -69,7 +69,6 @@ const Nominees = () => {
   const navigate = useNavigate();
   const eventCache = useSelector((state: RootState) => state.user.event);
   const walletIsVerified = useSelector((state: RootState) => state.user.walletIsVerified);
-  const walletIsLoggedIn = useSelector((state: RootState) => state.user.walletIsLoggedIn);
   const receipts = useSelector((state: RootState) => state.user.receipts);
   const receipt = receipts && Object.keys(receipts).length && receipts[categoryId] ? receipts[categoryId] : undefined;
   const userVotes = useSelector((state: RootState) => state.user.userVotes);
@@ -99,6 +98,7 @@ const Nominees = () => {
   const [nominees, setNominees] = useState<ProposalPresentationExtended[]>([]);
 
   const session = getUserInSession();
+  const isExpired = !session || tokenIsExpired(session?.expiresAt);
 
   const { isConnected, stakeAddress, signMessage } = useCardano({
     limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
@@ -411,7 +411,7 @@ const Nominees = () => {
   };
 
   const handleViewVoteReceipt = () => {
-    if (isConnected && walletIsLoggedIn && !tokenIsExpired(session?.expiresAt)) {
+    if (isConnected && !isExpired) {
       viewVoteReceipt(true, true);
     } else {
       login();
@@ -751,6 +751,8 @@ const Nominees = () => {
     );
   };
 
+  const showBanner = isConnected && isExpired || (!isExpired && (categoryVoted || eventCache?.finished || (receipt && categoryId === receipt?.category)));
+
   return (
     <>
       <div
@@ -813,31 +815,30 @@ const Nominees = () => {
           {summit2023Category.desc}
         </Typography>
 
-        {isConnected && (categoryVoted || eventCache?.finished || (receipt && categoryId === receipt?.category)) ? (
-          <Box
+        { showBanner ? <Box
             sx={{
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              backgroundColor: !tokenIsExpired(session?.expiresAt)
-                ? 'rgba(5, 97, 34, 0.07)'
-                : 'rgba(253, 135, 60, 0.07)',
+              backgroundColor: !isExpired
+                  ? 'rgba(5, 97, 34, 0.07)'
+                  : 'rgba(253, 135, 60, 0.07)',
               padding: '10px 20px',
               borderRadius: '8px',
-              border: !tokenIsExpired(session?.expiresAt) ? '1px solid #056122' : '1px solid #FD873C',
+              border: !isExpired ? '1px solid #056122' : '1px solid #FD873C',
               color: 'white',
               width: '100%',
               marginBottom: '20px',
             }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              {!tokenIsExpired(session?.expiresAt) ? (
+        >
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            {!isExpired ? (
                 <VerifiedUserIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#056122' }} />
-              ) : (
+            ) : (
                 <WarningAmberIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#FD873C' }} />
-              )}
+            )}
 
-              <Typography
+            <Typography
                 variant="h6"
                 style={{
                   color: '#24262E',
@@ -846,24 +847,24 @@ const Nominees = () => {
                   fontWeight: '600',
                   lineHeight: '22px',
                 }}
-              >
-                {!tokenIsExpired(session?.expiresAt)
+            >
+              {!isExpired
                   ? `You have successfully cast a vote in the ${summit2023Category.presentationName} category.`
-                  : 'To see you vote receipt, please sign with your wallet'}
-              </Typography>
-            </div>
-            <CustomButton
+                  : 'To see you vote receipt, please sign in with your wallet'}
+            </Typography>
+          </div>
+          <CustomButton
               styles={{
                 background: '#03021F',
                 color: '#F6F9FF',
                 width: 'auto',
               }}
-              label={!tokenIsExpired(session?.expiresAt) ? 'View Vote Receipt' : 'Login with Wallet'}
+              label={!isExpired ? 'View Vote Receipt' : 'Login with Wallet'}
               onClick={() => handleViewVoteReceipt()}
               fullWidth={true}
-            />
-          </Box>
-        ) : null}
+          />
+        </Box> : null}
+
 
         {isMobile || viewMode === 'grid' ? renderResponsiveGrid() : renderResponsiveList()}
       </div>

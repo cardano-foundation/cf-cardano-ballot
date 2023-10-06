@@ -27,11 +27,17 @@ dependencies {
 	implementation("org.springframework.shell:spring-shell-starter")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 
+	implementation("org.springframework.shell:spring-shell-starter")
+
 	compileOnly("org.projectlombok:lombok:1.18.28")
 	annotationProcessor("org.projectlombok:lombok:1.18.28")
 
 	testCompileOnly("org.projectlombok:lombok:1.18.28")
 	testAnnotationProcessor("org.projectlombok:lombok:1.18.28")
+
+	implementation("org.apache.commons:commons-csv:1.10.0")
+
+	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.11")
 
 	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0")
 	implementation("com.bloxbean.cardano:cardano-client-address:0.5.0")

@@ -3,6 +3,8 @@ package org.cardano.foundation.voting.shell;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
+import org.cardano.foundation.voting.repository.VoteRepository;
+import org.cardano.foundation.voting.utils.Partitioner;
 import org.cardanofoundation.hydra.client.HydraClientOptions;
 import org.cardanofoundation.hydra.client.HydraWSClient;
 import org.cardanofoundation.hydra.client.SLF4JHydraLogger;
@@ -14,6 +16,7 @@ import org.springframework.shell.command.annotation.Command;
 
 import java.math.BigInteger;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.cardanofoundation.hydra.core.model.HydraState.*;
 
@@ -23,6 +26,9 @@ public class HydraCommands {
 
     @Autowired
     private CardanoNetwork network;
+
+    @Autowired
+    private VoteRepository voteRepository;
 
     @Value("${hydra.ws.url}")
     private String hydraWsUrl;
@@ -36,8 +42,17 @@ public class HydraCommands {
     @Value("${cardano.commit.utxo}")
     private String cardanoCommitUtxo;
 
+    @Value("${hydra.participants.count}")
+    private int participants;
+
+    @Value("${hydra.participant.number}")
+    private int participantNumber;
+
     @Value("${cardano.commit.amount}")
     private Long cardanoCommitAmount;
+
+    @Value("${ballot.event.id}")
+    private String eventId;
 
     private HydraWSClient hydraClient;
 
@@ -130,13 +145,29 @@ public class HydraCommands {
         return "Cannot close the head, unsupported state, hydra state:" + hydraClient.getHydraState();
     }
 
-
     @Command(command = "import-votes", description = "import votes.")
     public String importVotes() {
         log.info("Import votes...");
 
-        // connect to postgres db
+        var allVotes = voteRepository.findAllVotes(eventId);
+
+        for (var vote : allVotes) {
+            var uuid = UUID.fromString(vote.voteId());
+
+            int participant = Partitioner.partition(uuid, participants);
+
+            if (participant == this.participantNumber) {
+                log.info("Importing vote: {}", vote);
+
+                // send vote to hydra network as a transaction to the smart contract address
+            } else {
+                log.info("Skipping vote: {}", vote);
+            }
+
+        }
+
         // get all the votes
+        // partition them by participant number
         // batch them up
         // send then to contract address
 
@@ -165,3 +196,4 @@ public class HydraCommands {
     }
 
 }
+

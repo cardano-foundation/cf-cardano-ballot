@@ -63,7 +63,7 @@ const VerifyWallet = (props: VerifyWalletProps) => {
 
   const queryParams = new URLSearchParams(location.search);
   const action = queryParams.get('action');
-  const secret = queryParams.get('secret');
+  const discordSecret = queryParams.get('secret');
 
   inputRefs.current = [];
 
@@ -140,10 +140,10 @@ const VerifyWallet = (props: VerifyWalletProps) => {
   };
 
   const handleVerifyDiscord = async () => {
-    if (action === 'verification' && secret.includes('|')) {
-      signMessagePromisified(secret.trim())
+    if (action === 'verification' && discordSecret.includes('|')) {
+      signMessagePromisified(discordSecret.trim())
         .then((signedMessaged: SignedWeb3Request) => {
-          const parsedSecret = secret.split('|')[1];
+          const parsedSecret = discordSecret.split('|')[1];
           verifyDiscord(env.EVENT_ID, stakeAddress, parsedSecret, signedMessaged)
             .then((response: { verified: boolean }) => {
               dispatch(setWalletIsVerified({ isVerified: response.verified }));
@@ -462,7 +462,7 @@ const VerifyWallet = (props: VerifyWalletProps) => {
         </Typography>
         <CustomButton
           styles={
-            !secret
+            !discordSecret
               ? {
                   background: '#ACFCC5',
                   color: '#03021F',
@@ -476,7 +476,7 @@ const VerifyWallet = (props: VerifyWalletProps) => {
           }
           label="Sign and Verify"
           onClick={() => handleVerifyDiscord()}
-          disabled={!secret}
+          disabled={!discordSecret}
           fullWidth={true}
         />
         <CustomButton

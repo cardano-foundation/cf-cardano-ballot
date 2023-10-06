@@ -461,11 +461,19 @@ const VerifyWallet = (props: VerifyWalletProps) => {
           verification process.
         </Typography>
         <CustomButton
-          styles={{
-            background: '#ACFCC5',
-            color: '#03021F',
-            margin: '24px 0px',
-          }}
+          styles={
+            !secret
+              ? {
+                  background: '#ACFCC5',
+                  color: '#03021F',
+                  margin: '12px 0px',
+                }
+              : {
+                  background: '#6C6F89',
+                  color: '#F6F9FF !important',
+                  margin: '12px 0px',
+                }
+          }
           label="Sign and Verify"
           onClick={() => handleVerifyDiscord()}
           disabled={!secret}
@@ -476,7 +484,7 @@ const VerifyWallet = (props: VerifyWalletProps) => {
             background: 'transparent !important',
             color: '#03021F',
             border: '1px solid #daeefb',
-            margin: '24px 0px',
+            margin: '12px 0px',
           }}
           label="Cancel"
           onClick={() => reset()}

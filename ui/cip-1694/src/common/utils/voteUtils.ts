@@ -47,7 +47,10 @@ export const getSignedMessagePromise = (signMessage: ReturnType<typeof useCardan
       signMessage(
         message,
         (signature, key) => resolve({ coseSignature: signature, cosePublicKey: key || '' }),
-        (error: Error) => reject(error)
+        (error: Error) => {
+          console.log(error);
+          return reject(error);
+        }
       );
     });
 };

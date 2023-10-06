@@ -31,6 +31,6 @@ spec:
       - CreateNamespace=true
 
   destination:
-    namespace: cf-summit-2023
+    namespace: cf-cardano-ballot
     server: {{ .Values.spec.destination.server }}
 {{ end }}

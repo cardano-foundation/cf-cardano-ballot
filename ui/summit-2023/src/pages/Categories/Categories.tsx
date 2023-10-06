@@ -58,7 +58,7 @@ const Categories = () => {
       setListView('list');
     }
   }, [isMobile]);
-  console.log(listView);
+  
   const handleListView = (viewType: 'grid' | 'list') => {
     if (listView === viewType) return;
     setIsVisible(false);

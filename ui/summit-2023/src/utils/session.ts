@@ -16,6 +16,11 @@ const clearUserInSessionStorage = () => {
 const tokenIsExpired = (expiresAt: string) => {
   const currentDate = new Date();
   const givenDate = new Date(expiresAt);
+  console.log('currentDate');
+  console.log(currentDate);
+  console.log('givenDate');
+  console.log(givenDate);
+  console.log(givenDate < currentDate)
   return givenDate < currentDate;
 };
 

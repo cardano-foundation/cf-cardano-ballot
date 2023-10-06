@@ -65,7 +65,7 @@ cf-voting-verification-ui:
 cf-vote-commitment:
   values:
     image:
-      tag: 0.2.65
+      tag: 0.2.66
     instances:
       - name: active-hour
         voteCommitmentCronExpression: "0 0 * * * *"

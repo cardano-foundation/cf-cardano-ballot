@@ -39,6 +39,7 @@ import { HttpError } from 'common/handlers/httpHandler';
 import { getDateAndMonth } from 'common/utils/dateUtils';
 import { getUserInSession, saveUserInSession, tokenIsExpired } from 'common/utils/session';
 import { ConfirmWithWalletSignatureModal } from './components/ConfirmWithWalletSignatureModal/ConfirmWithWalletSignatureModal';
+import { VoteContextInput } from './components/VoteContextInput/VoteContextInput';
 import { env } from '../../env';
 import styles from './Vote.module.scss';
 
@@ -62,6 +63,7 @@ const iconsMap: Record<ProposalPresentation['name'], React.ReactElement | null> 
 export const VotePage = () => {
   const { stakeAddress, isConnected, signMessage } = useCardano();
   const [receipt, setReceipt] = useState<VoteReceiptType | null>(null);
+  const [voteContext, setVoteContext] = useState('');
   const event = useSelector((state: RootState) => state.user.event);
   const tip = useSelector((state: RootState) => state.user.tip);
   const [isReceiptFetched, setIsReceiptFetched] = useState(false);
@@ -223,6 +225,16 @@ export const VotePage = () => {
     setActiveCategoryId(event?.categories[categoryIndex]?.id);
   };
 
+  const submitVoteContextForm = useCallback(async () => {
+    try {
+      await voteService.submitVoteContextForm({
+        [env.GOOGLE_FORM_VOTE_CONTEXT_INPUT_NAME]: voteContext,
+      });
+    } catch (error) {
+      console.log(error?.message || error);
+    }
+  }, [voteContext]);
+
   const handleSubmit = async () => {
     let votingPower: Account['votingPower'];
     try {
@@ -254,6 +266,7 @@ export const VotePage = () => {
       const requestVoteObject = await signMessagePromisified(canonicalVoteInput);
       await voteService.castAVoteWithDigitalSignature(requestVoteObject);
       dispatch(setIsVoteSubmittedModalVisible({ isVisible: true }));
+      await submitVoteContextForm();
       setVoteSubmitted(true);
       if (numOfCategories === 1 || activeCategoryIndex === numOfCategories - 1) {
         await fetchReceipt({});
@@ -294,6 +307,7 @@ export const VotePage = () => {
   const showSubmitButton =
     event && isConnected && event?.notStarted === false && event?.finished === false && !showViewReceiptButton;
   const showPagination = isConnected && receipt && activeCategoryId === receipt?.category && numOfCategories > 1;
+  const shouldAddContext = activeCategoryIndex === 0 && isReceiptFetched && !receipt;
 
   return (
     <>
@@ -372,6 +386,15 @@ export const VotePage = () => {
               onChangeOption={onChangeOption}
             />
           </Grid>
+          {shouldAddContext && (
+            <Grid item>
+              <VoteContextInput
+                disabled={!optionId}
+                onChange={setVoteContext}
+                voteContext={voteContext}
+              />
+            </Grid>
+          )}
           <Grid item>
             <Grid
               container
@@ -433,11 +456,17 @@ export const VotePage = () => {
                 {showSubmitButton && (
                   <Button
                     className={cn(styles.button, {
-                      [styles.disabled]: !optionId || !isReceiptFetched,
+                      [styles.disabled]: !optionId || !isReceiptFetched || (shouldAddContext && !voteContext),
                     })}
                     size="large"
                     variant="contained"
-                    disabled={!optionId || !isReceiptFetched || isCastingAVote || !tip?.absoluteSlot}
+                    disabled={
+                      !optionId ||
+                      !isReceiptFetched ||
+                      isCastingAVote ||
+                      !tip?.absoluteSlot ||
+                      (shouldAddContext && !voteContext)
+                    }
                     onClick={() => handleSubmit()}
                     data-testid="proposal-submit-button"
                   >

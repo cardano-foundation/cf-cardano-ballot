@@ -1,8 +1,8 @@
 // brew install amm
 // amm cip_30_sign.sc
 
-import $ivy.`com.bloxbean.cardano:cardano-client-lib:0.5.0-beta2`
-import $ivy.`com.bloxbean.cardano:cardano-client-cip30:0.5.0-beta2`
+import $ivy.`com.bloxbean.cardano:cardano-client-lib:0.5.0`
+import $ivy.`com.bloxbean.cardano:cardano-client-cip30:0.5.0`
 
 import $ivy.`com.lihaoyi:requests_3:0.8.0`
 import $ivy.`com.fasterxml.jackson.core:jackson-core:2.15.2`

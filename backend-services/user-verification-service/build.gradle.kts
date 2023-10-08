@@ -68,7 +68,7 @@ dependencies {
 	implementation("com.querydsl:querydsl-jpa")
     annotationProcessor("com.querydsl:querydsl-apt")
 
-	implementation("com.bloxbean.cardano:cardano-client-address:0.5.0-beta3")
+	implementation("com.bloxbean.cardano:cardano-client-address:0.5.0")
 
 	implementation("software.amazon.awssdk:sns:2.20.153")
 

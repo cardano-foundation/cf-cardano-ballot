@@ -1,5 +1,6 @@
 package org.cardano.foundation.voting.utils;
 
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 public final class MoreUUID {
@@ -15,6 +16,14 @@ public final class MoreUUID {
 
     public static String shortUUID(int length) {
         return java.util.UUID.randomUUID().toString().substring(0, length).toUpperCase();
+    }
+
+    public static long uuidHash(String uuid) {
+        return UUID.fromString(uuid).hashCode() & 0xFFFFFFF;
+    }
+
+    public static long uuidHash(UUID uuid) {
+        return uuid.hashCode() & 0xFFFFFFF;
     }
 
 }

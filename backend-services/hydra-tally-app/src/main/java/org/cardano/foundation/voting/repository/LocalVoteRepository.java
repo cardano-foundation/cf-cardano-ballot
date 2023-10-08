@@ -2,8 +2,9 @@ package org.cardano.foundation.voting.repository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
-import org.cardano.foundation.voting.domain.CompactVote;
+import org.cardano.foundation.voting.domain.Vote;
 
 import java.io.FileReader;
 import java.util.ArrayList;
@@ -11,16 +12,17 @@ import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
+@Slf4j
 public class LocalVoteRepository implements VoteRepository {
 
     private final String votesPath;
 
     @Override
     @SneakyThrows
-    public List<CompactVote> findAllVotes(String eventId) {
+    public List<Vote> findAllVotes(String eventId) {
         var reader = new FileReader(votesPath);
 
-        var votes = new ArrayList<CompactVote>();
+        var votes = new ArrayList<Vote>();
 
         var format = CSVFormat.POSTGRESQL_CSV.builder()
                 .setSkipHeaderRecord(true)
@@ -47,14 +49,28 @@ public class LocalVoteRepository implements VoteRepository {
             var voteEventId = vote.get("event_id");
             var coseSignature = vote.get("cose_signature");
             var cosePublicKey = vote.get("cose_public_key");
+            var categoryId = vote.get("category_id");
+            var proposalId = vote.get("proposal_id");
+            var voterStakeAddress = vote.get("voter_stake_address");
 
             if (!voteEventId.equals(eventId)) {
                 continue;
             }
 
-            var compactVote = new CompactVote(voteId, voteEventId, coseSignature, Optional.ofNullable(cosePublicKey));
+            var voteE = Vote.create(
+                    voteId,
+                    voteEventId,
+                    categoryId,
+                    proposalId,
+                    voterStakeAddress,
+                    coseSignature,
+                    Optional.ofNullable(cosePublicKey));
 
-            votes.add(compactVote);
+            if (voteE.isEmpty()) {
+                log.error("Vote creation failed, reason:{}", voteE.getLeft());
+            }
+
+            votes.add(voteE.get());
         }
 
         return votes;

@@ -2,7 +2,7 @@ package org.cardano.foundation.voting.utils;
 
 import com.bloxbean.cardano.client.api.model.Utxo;
 import com.bloxbean.cardano.client.util.Tuple;
-import org.cardano.foundation.voting.domain.CompactVote;
+import org.cardano.foundation.voting.domain.Vote;
 
 import java.util.Comparator;
 import java.util.function.Function;
@@ -14,8 +14,8 @@ public class MoreComparators {
                 .thenComparing(t -> t._1.getOutputIndex());
     }
 
-    public static <T> Comparator<CompactVote> createVoteComparator() {
-        return Comparator.comparing(CompactVote::voteId);
+    public static <T> Comparator<Vote> createVoteComparator() {
+        return Comparator.comparing(Vote::voteId);
     }
 
 }

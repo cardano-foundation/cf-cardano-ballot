@@ -15,10 +15,11 @@ import com.bloxbean.cardano.client.plutus.spec.PlutusData;
 import com.bloxbean.cardano.client.transaction.spec.Transaction;
 import com.bloxbean.cardano.client.transaction.spec.TransactionOutput;
 import com.bloxbean.cardano.client.transaction.spec.Value;
+import com.bloxbean.cardano.client.util.HexUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.cardano.foundation.voting.domain.CompactVote;
+import org.cardano.foundation.voting.domain.Vote;
 import org.cardano.foundation.voting.domain.VoteDatum;
 import org.cardanofoundation.hydra.cardano.client.lib.HydraOperatorSupplier;
 import org.springframework.stereotype.Component;
@@ -29,6 +30,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static com.bloxbean.cardano.client.common.ADAConversionUtil.adaToLovelace;
+import static org.cardano.foundation.voting.utils.MoreUUID.uuidHash;
 
 @Component
 @RequiredArgsConstructor
@@ -43,18 +45,18 @@ public class HydraVoteImporter {
 
     private final PlutusObjectConverter plutusObjectConverter;
 
-    public String importVotes(List<CompactVote> votes) throws Exception {
+    public String importVotes(List<Vote> votes) throws Exception {
         return createTransactionWithDatum(votes);
     }
 
-    private String createTransactionWithDatum(Collection<CompactVote> votes) throws Exception {
+    private String createTransactionWithDatum(Collection<Vote> votes) throws Exception {
         val voteDatumList = votes.stream()
                 .map(vote -> VoteDatum.builder()
-                        .voterKey(vote.getVoterKey()) // TODO
+                        .voterKey(HexUtil.decodeHexString(vote.voterStakeAddress())) // TODO ???
                         .votingPower(1) // TODO hard-coded for USER-BASED events for now
-                        .challenge(vote.getChallenge()) // TODO
-                        .proposal(vote.getProposal()) // TODO
-                        .choice(vote.getChoice().toValue()) // TODO
+                        .challenge(uuidHash(vote.categoryId()))
+                        .proposal(uuidHash(vote.proposalId()))
+                        //.choice(vote.getChoice().toValue()) // TODO
                         .build()
                 ).toList();
 

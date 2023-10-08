@@ -4,7 +4,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import one.util.streamex.StreamEx;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
-import org.cardano.foundation.voting.domain.CompactVote;
+import org.cardano.foundation.voting.domain.Vote;
 import org.cardano.foundation.voting.repository.VoteRepository;
 import org.cardano.foundation.voting.service.HydraVoteImporter;
 import org.cardano.foundation.voting.utils.Partitioner;
@@ -21,7 +21,6 @@ import shaded.com.google.common.collect.Lists;
 
 import java.math.BigInteger;
 import java.util.Map;
-import java.util.UUID;
 
 import static org.cardano.foundation.voting.utils.MoreComparators.createVoteComparator;
 import static org.cardanofoundation.hydra.core.model.HydraState.*;
@@ -164,14 +163,12 @@ public class HydraCommands {
         var participantVotes = StreamEx.of(voteRepository.findAllVotes(eventId))
                 .filter(v -> v.eventId().equals(eventId))
                 .filter(v -> {
-                    var uuid = UUID.fromString(v.voteId());
-
-                    int participant = Partitioner.partition(uuid, participants);
+                    int participant = Partitioner.partition(v.voteId(), participants);
 
                     return participant == participantNumber;
                 })
                 .sorted(createVoteComparator())
-                .distinct(CompactVote::voteId)
+                .distinct(Vote::voteId)
                 .toList();
 
         for (var vote : participantVotes) {

@@ -49,7 +49,10 @@ dependencies {
 	implementation("org.cardanofoundation:hydra-java-client:0.0.6")
 	implementation("org.cardanofoundation:hydra-java-cardano-client-lib-adapter:0.0.6")
 
-	implementation("one.util:streamex:0.6.5")
+	implementation("one.util:streamex:0.8.1")
+
+    implementation("io.vavr:vavr:0.10.4")
+    implementation("org.zalando:problem-spring-web-starter:0.29.1")
 
 	implementation("com.bloxbean.cardano:aiken-java-binding:0.0.7")
 }

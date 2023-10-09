@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, ReactElement } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
+import { i18n } from 'i18n';
 import {
   useTheme,
   useMediaQuery,
@@ -297,8 +298,8 @@ const Nominees = () => {
 
   const handleCopyToClipboard = (text: string) => {
     copyToClipboard(text)
-      .then(() => eventBus.publish('showToast', 'Copied to clipboard'))
-      .catch(() => eventBus.publish('showToast', 'Copied to clipboard failed', 'error'));
+      .then(() => eventBus.publish('showToast', i18n.t('toast.copy')))
+      .catch(() => eventBus.publish('showToast', i18n.t('toast.copyError'), 'error'));
   };
   const getStatusTheme = () => {
     const finalityScore = receipt?.finalityScore;
@@ -312,8 +313,7 @@ const Nominees = () => {
             border: 'border: 1px solid #106593',
             color: '#056122',
             icon: <NotificationsIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#106593' }} />,
-            description:
-              'Your vote is currently being verified. While in VERY HIGH, the chance of a rollback is very unlikely. Check back later to see if verification has completed.',
+            description: i18n.t('nominees.receipt.status.FULL.VERY_HIGH.description'),
             status: 'FULL',
           };
         case 'HIGH':
@@ -323,8 +323,7 @@ const Nominees = () => {
             border: 'border: 1px solid #106593',
             color: '#056122',
             icon: <NotificationsIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#106593' }} />,
-            description:
-              'Your vote is currently being verified. While in HIGH, the chance of a rollback is very unlikely. Check back later to see if verification has completed.',
+            description: i18n.t('nominees.receipt.status.FULL.HIGH.description'),
             status: 'FULL',
           };
         case 'MEDIUM':
@@ -334,8 +333,7 @@ const Nominees = () => {
             border: 'border: 1px solid #106593',
             color: '#652701',
             icon: <NotificationsIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#106593' }} />,
-            description:
-              'Your vote is currently being verified. While in MEDIUM, the chance of rollback is still possible. Check back later to see if verification has completed.',
+            description: i18n.t('nominees.receipt.status.FULL.MEDIUM.description'),
             status: 'FULL',
           };
         case 'LOW':
@@ -345,8 +343,7 @@ const Nominees = () => {
             border: 'border: 1px solid #106593',
             color: '#C20024',
             icon: <NotificationsIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#106593' }} />,
-            description:
-              'Your vote is currently being verified. While in LOW, there is the highest chance of a rollback. Check back later to see if verification has completed.',
+            description: i18n.t('nominees.receipt.status.FULL.LOW.description'),
             status: 'FULL',
           };
         case 'FINAL':
@@ -363,8 +360,7 @@ const Nominees = () => {
             backgroundColor: 'rgba(16, 101, 147, 0.07)',
             color: '#24262E',
             icon: <NotificationsIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#106593' }} />,
-            description:
-              'Your vote has been successfully submitted. You might have to wait up to 30 minutes for this to be visible on chain. Please check back later to verify your vote.',
+            description: i18n.t('nominees.receipt.status.FULL.DEFAULT.description'),
             status: 'FULL',
           };
       }
@@ -375,8 +371,7 @@ const Nominees = () => {
         border: '1px solid #FD873C',
         color: '#24262E',
         icon: <WarningAmberIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#652701' }} />,
-        description:
-          'Your transaction has been sent and is awaiting confirmation from the Cardano network (this could be 5-10 minutes). Once this has been confirmed you’ll be able to verify your vote.',
+        description: i18n.t('nominees.receipt.status.PARTIAL.description'),
         status: 'PARTIAL',
       };
     } else if (receipt?.status === 'ROLLBACK') {
@@ -386,8 +381,7 @@ const Nominees = () => {
         border: '1px solid #C20024',
         color: '#24262E',
         icon: <GppBadOutlinedIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#C20024' }} />,
-        description:
-          'Don’t worry there’s nothing for you to do. We will automatically resubmit your vote. Please check back later (up to 30 minutes) to see your vote status.',
+        description: i18n.t('nominees.receipt.status.ROLLBACK.description'),
         status: 'ROLLBACK',
       };
     } else {
@@ -398,8 +392,7 @@ const Nominees = () => {
         border: '1px solid #106593',
         color: '#24262E',
         icon: <NotificationsIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#106593' }} />,
-        description:
-          'Your vote has been successfully submitted. You might have to wait up to 30 minutes for this to be visible on chain. Please check back later to verify your vote.',
+        description: i18n.t('nominees.receipt.status.BASIC.description'),
       };
     }
   };
@@ -470,9 +463,9 @@ const Nominees = () => {
       verifyVote(body)
         .then((result) => {
           if ('verified' in result && result.verified) {
-            eventBus.publish('showToast', 'Vote proof verified', 'verified');
+            eventBus.publish('showToast', i18n.t('toast.voteVerified'), 'verified');
           } else {
-            eventBus.publish('showToast', 'Vote proof not verified', 'error');
+            eventBus.publish('showToast', i18n.t('toast.voteNotVerified'), 'error');
           }
         })
         .catch((e) => {
@@ -510,12 +503,12 @@ const Nominees = () => {
                     <CardContent>
                       <Box sx={{ position: 'relative' }}>
                         {voted ? (
-                          <Tooltip title="Already Voted">
+                          <Tooltip title={i18n.t('nominees.alreadyVoted')}>
                             <img
                               height={40}
                               width={102}
                               src={labelVoted}
-                              alt="Already Voted"
+                              alt={i18n.t('nominees.alreadyVoted')}
                               style={{
                                 position: 'absolute',
                                 float: 'right',
@@ -540,7 +533,7 @@ const Nominees = () => {
                       >
                         {nominee.presentationName}
                         {isWinner ? (
-                          <Tooltip title="Winner">
+                          <Tooltip title={i18n.t('nominees.winner')}>
                             <EmojiEventsIcon
                               sx={{ fontSize: '40px', position: 'absolute', marginLeft: '4px', color: '#efb810' }}
                             />
@@ -649,12 +642,12 @@ const Nominees = () => {
                       <CardContent sx={{ padding: '24px' }}>
                         {voted ? (
                           <Box sx={{ position: 'relative' }}>
-                            <Tooltip title="Already Voted">
+                            <Tooltip title={i18n.t('nominees.alreadyVoted')}>
                               <img
                                 height={40}
                                 width={102}
                                 src={labelVoted}
-                                alt="Already Voted"
+                                alt={i18n.t('nominees.alreadyVoted')}
                                 style={{
                                   position: 'absolute',
                                   float: 'right',
@@ -680,7 +673,7 @@ const Nominees = () => {
                         >
                           {nominee.presentationName}
                           {isWinner ? (
-                            <Tooltip title="Winner">
+                            <Tooltip title={i18n.t('nominees.winner')}>
                               <EmojiEventsIcon
                                 sx={{ fontSize: '40px', position: 'absolute', marginLeft: '4px', color: '#efb810' }}
                               />
@@ -711,7 +704,7 @@ const Nominees = () => {
                                 border: '1px solid #daeefb',
                                 width: '100%',
                               }}
-                              label="Read More"
+                              label={i18n.t('nominees.readMore')}
                               onClick={() => handleReadMore(nominee)}
                               fullWidth={true}
                             />
@@ -849,8 +842,9 @@ const Nominees = () => {
                 }}
               >
                 {!isExpired
-                  ? `You have successfully cast a vote in the ${summit2023Category.presentationName} category.`
-                  : 'To see you vote receipt, please sign in with your wallet'}
+                  ? `${i18n.t('nominees.successfullyVoteCast')} ${summit2023Category.presentationName} category.`
+                  : `${i18n.t('nominees.signIn')}`
+                }
               </Typography>
             </div>
             <CustomButton
@@ -859,7 +853,7 @@ const Nominees = () => {
                 color: '#F6F9FF',
                 width: 'auto',
               }}
-              label={!isExpired ? 'View Vote Receipt' : 'Login with Wallet'}
+              label={!isExpired ? i18n.t('nominees.viewReceipt') : i18n.t('nominees.loginWithWallet')}
               onClick={() => handleViewVoteReceipt()}
               fullWidth={true}
             />
@@ -922,7 +916,7 @@ const Nominees = () => {
                 lineHeight: '36px',
               }}
             >
-              Vote Receipt
+              {i18n.t('nominees.receipt.voteReceipt')}
             </Typography>
 
             {receipt?.finalityScore === 'FINAL' ? (
@@ -954,8 +948,8 @@ const Nominees = () => {
                         lineHeight: '22px',
                       }}
                     >
-                      Verified:
-                      <Tooltip title="The submitted vote has been successfully verified on-chain.">
+                      {i18n.t('nominees.receipt.verified')}:
+                      <Tooltip title={i18n.t('nominees.verifiedOnChainTooltip')}>
                         <InfoIcon
                           style={{
                             color: '#434656A6',
@@ -998,8 +992,7 @@ const Nominees = () => {
                     maxWidth: '406px',
                   }}
                 >
-                  Your vote has been successfully submitted. You might have to wait up to 30 minutes for this to be
-                  visible on chain. Please check back later to verify your vote.
+                  {i18n.t('nominees.receipt.status.BASIC.description')}
                 </Typography>
               </Box>
             ) : (
@@ -1038,7 +1031,7 @@ const Nominees = () => {
                       ) : (
                         <>{getStatusTheme()?.label}</>
                       )}
-                      <Tooltip title="Assurance levels will update according to the finality of the transaction on-chain.">
+                      <Tooltip title={i18n.t('nominees.assuranceTooltip')}>
                         <InfoIcon
                           style={{
                             color: '#434656A6',
@@ -1104,7 +1097,7 @@ const Nominees = () => {
                     lineHeight: '22px',
                   }}
                 >
-                  Event
+                  {i18n.t('nominees.receipt.event')}:
                 </Typography>
               </div>
               <Typography
@@ -1135,9 +1128,9 @@ const Nominees = () => {
                     lineHeight: '22px',
                   }}
                 >
-                  Nominee [Proposal]
+                  {i18n.t('nominees.receipt.nominee')}:
                 </Typography>
-                <Tooltip title="Identifies the nominee selected for this category.">
+                <Tooltip title={i18n.t('nominees.nomineeSelectedTooltip')}>
                   <InfoIcon
                     style={{
                       color: '#434656A6',
@@ -1178,9 +1171,9 @@ const Nominees = () => {
                     lineHeight: '22px',
                   }}
                 >
-                  Voter’s Staking Address
+                  {i18n.t('nominees.receipt.nominee')}:
                 </Typography>
-                <Tooltip title="The stake address associated with the Cardano wallet casting the vote.">
+                <Tooltip title={i18n.t('nominees.stakeAddressTooltip')}>
                   <InfoIcon
                     style={{
                       color: '#434656A6',
@@ -1221,9 +1214,9 @@ const Nominees = () => {
                     lineHeight: '22px',
                   }}
                 >
-                  Status
+                  {i18n.t('nominees.receipt.statusTitle')}:
                 </Typography>
-                <Tooltip title="The current status of your vote receipt based on the current assurance level.">
+                <Tooltip title={i18n.t('nominees.currentStatusTooltip')}>
                   <InfoIcon
                     style={{
                       color: '#434656A6',
@@ -1267,7 +1260,7 @@ const Nominees = () => {
                     lineHeight: 'normal',
                   }}
                 >
-                  Show Advanced Information
+                  {i18n.t('nominees.receipt.showAdvancedInfo')}:
                 </Typography>
               </AccordionSummary>
               <AccordionDetails>
@@ -1293,7 +1286,7 @@ const Nominees = () => {
                     >
                       ID
                     </Typography>
-                    <Tooltip title="This is a unique identifier associated with the vote submitted.">
+                    <Tooltip title={i18n.t('nominees.uniqueIDTooltip')}>
                       <InfoIcon
                         style={{
                           color: '#434656A6',
@@ -1335,9 +1328,9 @@ const Nominees = () => {
                         lineHeight: '22px',
                       }}
                     >
-                      Voted at Slot
+                      {i18n.t('nominees.receipt.votedAtSlot')}:
                     </Typography>
-                    <Tooltip title="The time of the vote submission represented in Cardano blockchain epoch slots.">
+                    <Tooltip title={i18n.t('nominees.slotTooltip')}>
                       <InfoIcon
                         style={{
                           color: '#434656A6',
@@ -1379,9 +1372,9 @@ const Nominees = () => {
                         lineHeight: '22px',
                       }}
                     >
-                      Vote Proof
+                      {i18n.t('nominees.receipt.voteProof')}:
                     </Typography>
-                    <Tooltip title="This is required to verify a vote was included on-chain.">
+                    <Tooltip title={i18n.t('nominees.voteProofTooltip')}>
                       <InfoIcon
                         style={{
                           color: '#434656A6',
@@ -1409,7 +1402,7 @@ const Nominees = () => {
                       variant="body2"
                       sx={{ pointer: 'cursor' }}
                     >
-                      {receipt?.merkleProof ? JSON.stringify(receipt?.merkleProof || '', null, 4) : 'Not available yet'}
+                      {receipt?.merkleProof ? JSON.stringify(receipt?.merkleProof || '', null, 4) : i18n.t('nominees.notAvailable')}
                     </Typography>
                   </Box>
                   {receipt?.merkleProof ? (
@@ -1419,7 +1412,7 @@ const Nominees = () => {
                         color: '#03021F',
                         width: 'auto',
                       }}
-                      label="Verify Vote Proof"
+                      label={i18n.t('nominees.verifyVoteProof')}
                       onClick={verifyVoteProof}
                     />
                   ) : null}
@@ -1432,7 +1425,7 @@ const Nominees = () => {
       <Modal
         isOpen={isViewFinalReceipt}
         id="final-receipt"
-        title="Vote verified"
+        title={i18n.t('nominees.voteVerified')}
         onClose={toggleViewFinalReceipt}
       >
         <Typography
@@ -1447,13 +1440,13 @@ const Nominees = () => {
             lineHeight: '22px',
           }}
         >
-          Your vote has been successfully verified. Click the link or scan the QR code to view the transaction.
+          {i18n.t('nominees.successfullyVerified')}
         </Typography>
         <div style={{ display: 'flex', justifyContent: 'center', width: '100%', marginTop: '24px' }}>
           <QRCode
             size={256}
             style={{ height: 'auto', width: '200px' }}
-            value="heeeeeey"
+            value=""
             viewBox={'0 0 256 256'}
           />
         </div>
@@ -1463,7 +1456,7 @@ const Nominees = () => {
             color: '#03021F',
             width: 'auto',
           }}
-          label="Done"
+          label={i18n.t('nominees.done')}
           onClick={toggleViewFinalReceipt}
         />
       </Modal>
@@ -1471,7 +1464,7 @@ const Nominees = () => {
       <Modal
         isOpen={confirmVoteModal}
         id="confirm-vote"
-        title="Review Vote"
+        title={i18n.t('nominees.reviewVote')}
         onClose={toggleConfirmVoteModal}
       >
         <Typography
@@ -1483,7 +1476,7 @@ const Nominees = () => {
             lineHeight: '22px',
           }}
         >
-          Please confirm your vote for {votedNominee?.presentationName} [{selectedNomineeToVote?.id}]
+          {i18n.t('nominees.confirmVoteFor')}{' '}{votedNominee?.presentationName} [{selectedNomineeToVote?.id}]
         </Typography>
         <Box
           display="flex"
@@ -1510,7 +1503,7 @@ const Nominees = () => {
               '&:hover': { backgroundColor: 'inherit' },
             }}
           >
-            Cancel
+            {i18n.t('nominees.cancel')}
           </Button>
           <Button
             onClick={() => handleVoteNomineeButton()}
@@ -1532,7 +1525,7 @@ const Nominees = () => {
               '&:hover': { backgroundColor: '#ACFCC5' },
             }}
           >
-            Confirm Vote
+            {i18n.t('nominees.confirmVote')}
           </Button>
         </Box>
       </Modal>

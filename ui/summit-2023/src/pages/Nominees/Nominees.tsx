@@ -751,7 +751,9 @@ const Nominees = () => {
     );
   };
 
-  const showBanner = isConnected && isExpired || (!isExpired && (categoryVoted || eventCache?.finished || (receipt && categoryId === receipt?.category)));
+  const showBanner =
+    (isConnected && isExpired) ||
+    (!isExpired && (categoryVoted || eventCache?.finished || (receipt && categoryId === receipt?.category)));
 
   return (
     <>
@@ -815,14 +817,13 @@ const Nominees = () => {
           {summit2023Category.desc}
         </Typography>
 
-        { showBanner ? <Box
+        {showBanner ? (
+          <Box
             sx={{
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              backgroundColor: !isExpired
-                  ? 'rgba(5, 97, 34, 0.07)'
-                  : 'rgba(253, 135, 60, 0.07)',
+              backgroundColor: !isExpired ? 'rgba(5, 97, 34, 0.07)' : 'rgba(253, 135, 60, 0.07)',
               padding: '10px 20px',
               borderRadius: '8px',
               border: !isExpired ? '1px solid #056122' : '1px solid #FD873C',
@@ -830,15 +831,15 @@ const Nominees = () => {
               width: '100%',
               marginBottom: '20px',
             }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            {!isExpired ? (
+          >
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              {!isExpired ? (
                 <VerifiedUserIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#056122' }} />
-            ) : (
+              ) : (
                 <WarningAmberIcon sx={{ marginRight: '8px', width: '24px', height: '24px', color: '#FD873C' }} />
-            )}
+              )}
 
-            <Typography
+              <Typography
                 variant="h6"
                 style={{
                   color: '#24262E',
@@ -847,13 +848,13 @@ const Nominees = () => {
                   fontWeight: '600',
                   lineHeight: '22px',
                 }}
-            >
-              {!isExpired
+              >
+                {!isExpired
                   ? `You have successfully cast a vote in the ${summit2023Category.presentationName} category.`
                   : 'To see you vote receipt, please sign in with your wallet'}
-            </Typography>
-          </div>
-          <CustomButton
+              </Typography>
+            </div>
+            <CustomButton
               styles={{
                 background: '#03021F',
                 color: '#F6F9FF',
@@ -862,9 +863,9 @@ const Nominees = () => {
               label={!isExpired ? 'View Vote Receipt' : 'Login with Wallet'}
               onClick={() => handleViewVoteReceipt()}
               fullWidth={true}
-          />
-        </Box> : null}
-
+            />
+          </Box>
+        ) : null}
 
         {isMobile || viewMode === 'grid' ? renderResponsiveGrid() : renderResponsiveList()}
       </div>

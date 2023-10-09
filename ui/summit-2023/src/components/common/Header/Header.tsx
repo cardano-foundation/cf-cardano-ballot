@@ -32,13 +32,13 @@ import { useToggle } from 'common/hooks/useToggle';
 import { CustomButton } from '../Button/CustomButton';
 import { getSlotNumber, getUserVotes } from 'common/api/voteService';
 import { buildCanonicalLoginJson, submitLogin } from 'common/api/loginService';
-import {clearUserInSessionStorage, getUserInSession, saveUserInSession, tokenIsExpired} from '../../../utils/session';
+import { clearUserInSessionStorage, getUserInSession, saveUserInSession, tokenIsExpired } from '../../../utils/session';
 import {
   setConnectedPeerWallet,
   setUserVotes,
   setVoteReceipt,
   setWalletIsLoggedIn,
-  setWalletIsVerified
+  setWalletIsVerified,
 } from '../../../store/userSlice';
 import { copyToClipboard, getSignedMessagePromise, resolveCardanoNetwork } from '../../../utils/utils';
 import { Toast } from '../Toast/Toast';

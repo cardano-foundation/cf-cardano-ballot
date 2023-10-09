@@ -1,16 +1,16 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Footer } from './components/common/Footer/Footer';
-import { BrowserRouter } from 'react-router-dom';
-import './App.scss';
-import { useDispatch, useSelector } from 'react-redux';
-import { setEventData, setUserVotes, setWalletIsLoggedIn, setWalletIsVerified, setWinners } from './store/userSlice';
+import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import { Box, CircularProgress, Container, Grid, useMediaQuery, useTheme } from '@mui/material';
+import { useDispatch, useSelector } from 'react-redux';
+import { BrowserRouter } from 'react-router-dom';
+
+import { Footer } from './components/common/Footer/Footer';
+import { setEventData, setUserVotes, setWalletIsLoggedIn, setWalletIsVerified, setWinners } from './store/userSlice';
 import Header from './components/common/Header/Header';
 import { PageRouter } from './routes';
 import { env } from './common/constants/env';
 import { RootState } from './store';
 import { useLocalStorage } from './common/hooks/useLocalStorage';
-import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import { getIsVerified } from 'common/api/verificationService';
 import { getEvent } from 'common/api/referenceDataService';
 import { getUserInSession, tokenIsExpired } from './utils/session';
@@ -23,19 +23,24 @@ import { resolveCardanoNetwork } from './utils/utils';
 import { parseError } from 'common/constants/errors';
 import { getUserVotes } from 'common/api/voteService';
 import { getWinners } from 'common/api/leaderboardService';
+import './App.scss';
 
 function App() {
+  const dispatch = useDispatch();
   const theme = useTheme();
-  const eventCache = useSelector((state: RootState) => state.user.event);
-  const walletIsVerified = useSelector((state: RootState) => state.user.walletIsVerified);
-  const [termsAndConditionsChecked] = useLocalStorage(CB_TERMS_AND_PRIVACY, false);
-  const [openTermDialog, setOpenTermDialog] = useState(false);
-  const { isConnected, stakeAddress } = useCardano({ limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK) });
-  const session = getUserInSession();
-  const isExpired = tokenIsExpired(session?.expiresAt);
   const isBigScreen = useMediaQuery(theme.breakpoints.up('lg'));
 
-  const dispatch = useDispatch();
+  const eventCache = useSelector((state: RootState) => state.user.event);
+  const walletIsVerified = useSelector((state: RootState) => state.user.walletIsVerified);
+
+  const [termsAndConditionsChecked] = useLocalStorage(CB_TERMS_AND_PRIVACY, false);
+  const [openTermDialog, setOpenTermDialog] = useState(false);
+
+  const session = getUserInSession();
+  const isExpired = tokenIsExpired(session?.expiresAt);
+
+  const { isConnected, stakeAddress } = useCardano({ limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK) });
+
   const fetchEvent = useCallback(async () => {
     try {
       const event = await getEvent(env.EVENT_ID);

@@ -45,7 +45,10 @@ const Home: React.FC = () => {
           <Typography
             className="title"
             variant="h2"
-            sx={{ textAlign: { xs: 'center', sm: 'center', md: 'left' }, fontSize: { xs: '32px', sm: '48px', md: '56px' } }}
+            sx={{
+              textAlign: { xs: 'center', sm: 'center', md: 'left' },
+              fontSize: { xs: '32px', sm: '48px', md: '56px' },
+            }}
           >
             {i18n.t('landing.title')}
           </Typography>
@@ -61,17 +64,17 @@ const Home: React.FC = () => {
             </div>
           ) : (
             <Box sx={{ textAlign: { xs: 'center', sm: 'center', md: 'left' } }}>
-            <Chip
-              sx={{
-                height: '46px',
-                borderRadius: '8px',
-                my: '20px',
-                px: '10px',
-              }}
-              icon={<EventIcon />}
-              label={`Voting closes ${formatUTCDate(eventCache?.eventEndDate?.toString())}.`}
-              color="primary"
-            />
+              <Chip
+                sx={{
+                  height: '46px',
+                  borderRadius: '8px',
+                  my: '20px',
+                  px: '10px',
+                }}
+                icon={<EventIcon />}
+                label={`Voting closes ${formatUTCDate(eventCache?.eventEndDate?.toString())}.`}
+                color="primary"
+              />
             </Box>
           )}
 
@@ -104,7 +107,9 @@ const Home: React.FC = () => {
                     textDecoration: 'none !important',
                   }}
                   fullWidth
-                  label={eventCache?.finished ?  i18n.t('landing.votingEndedButton') : i18n.t('landing.getStartedButton')}
+                  label={
+                    eventCache?.finished ? i18n.t('landing.votingEndedButton') : i18n.t('landing.getStartedButton')
+                  }
                 />
               </NavLink>
             </Grid>

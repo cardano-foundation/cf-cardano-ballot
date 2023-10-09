@@ -462,7 +462,7 @@ const VerifyWallet = (props: VerifyWalletProps) => {
         </Typography>
         <CustomButton
           styles={
-            !discordSecret
+            discordSecret
               ? {
                   background: '#ACFCC5',
                   color: '#03021F',

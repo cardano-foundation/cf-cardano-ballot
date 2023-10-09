@@ -1,6 +1,6 @@
 import React from 'react';
 import Grid from '@mui/material/Grid';
-import { Button, IconButton, useMediaQuery, useTheme } from '@mui/material';
+import { Button, IconButton, Tooltip, Typography, useMediaQuery, useTheme } from '@mui/material';
 import QrCodeIcon from '@mui/icons-material/QrCode';
 import ReplayIcon from '@mui/icons-material/Replay';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
@@ -21,9 +21,28 @@ const InfoPanelTitle = ({ title, children }: { title: string; children?: React.R
     color="#061D3C"
   >
     {title} {children}
-    <IconButton sx={{ margin: '-8px' }}>
-      <InfoOutlinedIcon style={{ color: '#39486CA6', fontSize: '19px' }} />
-    </IconButton>
+    <Tooltip
+      classes={{ tooltip: styles.tooltip }}
+      title={
+        <Grid
+          container
+          direction="column"
+          alignItems="left"
+          gap={'8px'}
+        >
+          <Typography
+            className={styles.tooltipDescription}
+            variant="h4"
+          >
+            Assurance levels will update according to the finality of the transaction on-chain.
+          </Typography>
+        </Grid>
+      }
+    >
+      <IconButton sx={{ margin: '-8px' }}>
+        <InfoOutlinedIcon style={{ color: '#39486CA6', fontSize: '19px' }} />
+      </IconButton>
+    </Tooltip>
   </Grid>
 );
 

@@ -18,9 +18,16 @@ type VoteReceiptProps = {
   name: FieldsToDisplayArrayKeys | AdvancedFullFieldsToDisplayArrayKeys;
   value: string;
   dataTestId?: string;
+  description?: string;
 };
 
-export const ReceiptItem = ({ name, value, onItemClick, dataTestId = 'receipt-item' }: VoteReceiptProps) => (
+export const ReceiptItem = ({
+  name,
+  value,
+  onItemClick,
+  dataTestId = 'receipt-item',
+  description,
+}: VoteReceiptProps) => (
   <>
     <Grid item>
       <Typography
@@ -44,22 +51,19 @@ export const ReceiptItem = ({ name, value, onItemClick, dataTestId = 'receipt-it
                 gap={'8px'}
               >
                 <Typography
-                  className={styles.tooltipTitle}
-                  variant="h4"
-                >
-                  {labelTransformerMap[name]}
-                </Typography>
-                <Typography
                   className={styles.tooltipDescription}
                   variant="h4"
                 >
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                  dolore magna aliqua.
+                  {description}
                 </Typography>
               </Grid>
             }
           >
-            <IconButton className={styles.labelButton}>
+            <IconButton
+              data-id={name}
+              data-testid={`${dataTestId}-info-icon`}
+              className={styles.labelButton}
+            >
               <InfoOutlinedIcon className={styles.labelIcon} />
             </IconButton>
           </Tooltip>

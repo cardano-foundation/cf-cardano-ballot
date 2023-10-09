@@ -111,6 +111,10 @@ public class HydraTransactionClient extends HydraQueryEventListener.Stub impleme
     }
 
     public HydraState getHydraState() {
+        if (hydraWSClient == null) {
+            return Unknown;
+        }
+
         return hydraWSClient.getHydraState();
     }
 

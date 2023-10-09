@@ -61,6 +61,11 @@ public class HydraCommands {
     @Value("${ballot.event.id}")
     private String eventId;
 
+    @Command(command = "get-head-state", description = "gets the current hydra state.")
+    public String getHydraState() {
+        return hydraTransactionClient.getHydraState().toString();
+    }
+
     @Command(command = "connect", description = "connects to the hydra cluster.")
     public String connect() throws InterruptedException {
         hydraTransactionClient.openConnection(1, MINUTES);

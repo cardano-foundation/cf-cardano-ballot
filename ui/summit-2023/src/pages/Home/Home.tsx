@@ -49,7 +49,10 @@ const Home: React.FC = () => {
               fontSize: { xs: '32px', sm: '48px', md: '56px' },
             }}
           >
-            {i18n.t('landing.title')}
+            { hasEventFinished
+                  ? i18n.t('landing.eventFinishedTitle')
+                  : i18n.t('landing.title')
+            }
           </Typography>
           <Box sx={{ textAlign: { xs: 'center', sm: 'center', md: 'left' } }}>
             <Chip

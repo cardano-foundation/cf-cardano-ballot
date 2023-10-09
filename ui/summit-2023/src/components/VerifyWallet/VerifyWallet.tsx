@@ -63,7 +63,7 @@ const VerifyWallet = (props: VerifyWalletProps) => {
 
   const queryParams = new URLSearchParams(location.search);
   const action = queryParams.get('action');
-  const secret = queryParams.get('secret');
+  const discordSecret = queryParams.get('secret');
 
   inputRefs.current = [];
 
@@ -140,10 +140,10 @@ const VerifyWallet = (props: VerifyWalletProps) => {
   };
 
   const handleVerifyDiscord = async () => {
-    if (action === 'verification' && secret.includes('|')) {
-      signMessagePromisified(secret.trim())
+    if (action === 'verification' && discordSecret.includes('|')) {
+      signMessagePromisified(discordSecret.trim())
         .then((signedMessaged: SignedWeb3Request) => {
-          const parsedSecret = secret.split('|')[1];
+          const parsedSecret = discordSecret.split('|')[1];
           verifyDiscord(env.EVENT_ID, stakeAddress, parsedSecret, signedMessaged)
             .then((response: { verified: boolean }) => {
               dispatch(setWalletIsVerified({ isVerified: response.verified }));
@@ -404,7 +404,7 @@ const VerifyWallet = (props: VerifyWalletProps) => {
                       color: '#F6F9FF !important',
                     }
               }
-              label="Send code"
+              label="Send Code"
               disabled={!matchIsValidTel(phone) || !checkImNotARobot || phoneCodeIsBeenSending}
               onClick={() => handleSendCode()}
               fullWidth={true}
@@ -461,14 +461,22 @@ const VerifyWallet = (props: VerifyWalletProps) => {
           verification process.
         </Typography>
         <CustomButton
-          styles={{
-            background: '#ACFCC5',
-            color: '#03021F',
-            margin: '24px 0px',
-          }}
-          label="Sign and verify"
+          styles={
+            discordSecret
+              ? {
+                  background: '#ACFCC5',
+                  color: '#03021F',
+                  margin: '12px 0px',
+                }
+              : {
+                  background: '#6C6F89',
+                  color: '#F6F9FF !important',
+                  margin: '12px 0px',
+                }
+          }
+          label="Sign and Verify"
           onClick={() => handleVerifyDiscord()}
-          disabled={!secret}
+          disabled={!discordSecret}
           fullWidth={true}
         />
         <CustomButton
@@ -476,7 +484,7 @@ const VerifyWallet = (props: VerifyWalletProps) => {
             background: 'transparent !important',
             color: '#03021F',
             border: '1px solid #daeefb',
-            margin: '24px 0px',
+            margin: '12px 0px',
           }}
           label="Cancel"
           onClick={() => reset()}

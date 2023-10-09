@@ -45,19 +45,22 @@ const Home: React.FC = () => {
           <Typography
             className="title"
             variant="h2"
-            sx={{ textAlign: 'left', fontSize: { xs: '32px', sm: '48px', md: '56px' } }}
+            sx={{ textAlign: { xs: 'center', sm: 'center', md: 'left' }, fontSize: { xs: '32px', sm: '48px', md: '56px' } }}
           >
             {i18n.t('landing.title')}
           </Typography>
           {isMobile ? (
             <div className="event-time">
-              <Box className="custom-chip-mobile">
+              <Box
+                className="custom-chip-mobile"
+                sx={{ justifyContent: 'center' }}
+              >
                 <EventIcon sx={{ mt: 1 }} />
-                Voting closes{' '}
-                {formatUTCDate(eventCache?.eventEndDate?.toString())}.
+                Voting closes {formatUTCDate(eventCache?.eventEndDate?.toString())}.
               </Box>
             </div>
           ) : (
+            <Box sx={{ textAlign: { xs: 'center', sm: 'center', md: 'left' } }}>
             <Chip
               sx={{
                 height: '46px',
@@ -69,11 +72,12 @@ const Home: React.FC = () => {
               label={`Voting closes ${formatUTCDate(eventCache?.eventEndDate?.toString())}.`}
               color="primary"
             />
+            </Box>
           )}
 
           <Typography
             variant="body1"
-            sx={{ textAlign: 'left' }}
+            sx={{ textAlign: { xs: 'center', sm: 'center', md: 'left' } }}
           >
             {i18n.t('landing.description')}
           </Typography>
@@ -81,9 +85,13 @@ const Home: React.FC = () => {
           <Grid
             container
             spacing={1}
-            sx={{ justifyContent: 'left' }}
+            sx={{ justifyContent: { xs: 'center', sm: 'center', md: 'left' } }}
           >
-            <Grid item>
+            <Grid
+              item
+              xs={12}
+              sm={5}
+            >
               <NavLink
                 to="/categories"
                 style={{ textDecoration: 'none' }}
@@ -95,14 +103,19 @@ const Home: React.FC = () => {
                     marginTop: '20px',
                     textDecoration: 'none !important',
                   }}
-                  fullWidth={isMobile ? true : false}
-                  label={eventCache?.finished ? 'Voting ended' : i18n.t('landing.getStartedButton')}
+                  fullWidth
+                  label={eventCache?.finished ?  i18n.t('landing.votingEndedButton') : i18n.t('landing.getStartedButton')}
                 />
               </NavLink>
             </Grid>
 
             {!hasEventFinished && (
-              <Grid item>
+              <Grid
+                item
+                xs={12}
+                sm={5}
+                sx={{ mt: { xs: '0px', sm: '20px' } }}
+              >
                 <NavLink
                   to="/user-guide"
                   style={{ textDecoration: 'none' }}
@@ -111,11 +124,10 @@ const Home: React.FC = () => {
                     styles={{
                       background: 'transparent !important',
                       color: '#03021F',
-                      marginTop: '20px',
                       border: '1px solid #daeefb',
                     }}
-                    fullWidth={isMobile ? true : false}
-                    label={'How to Vote'}
+                    fullWidth
+                    label={i18n.t('landing.howToVoteButton')}
                   />
                 </NavLink>
               </Grid>

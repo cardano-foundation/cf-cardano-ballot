@@ -16,4 +16,5 @@ in which a malicous actor could exploit the tally process, currently it serves a
 In order to enable Hydra-Tally-App to work in a decentralised manner, the following limitations would have to lifted / solved:
 - Deduplication of votes within Smart Contract (e.g. using https://github.com/micahkendall/distributed-set)
 - Preventing any Hydra Operator to close the head while tallying the votes (e.g. by forcing them to lock up in a contract and slashing in case of early fan-out)
-- Prevent accumulator eUTxO fraud, any Hydra operator could commit fraudulent eUTxO to the contract address (e.g. Watch Towers to check if eUTxO is pointing to the root)
+- Prevent accumulator eUTxO fraud, any Hydra operator could commit fraudulent eUTxO to the contract address (e.g. Watch Towers to check if eUTxO is pointing to the root via a fraud proof transaction)
+- private votes on hydra without early results publishing to the network (no idea yet)

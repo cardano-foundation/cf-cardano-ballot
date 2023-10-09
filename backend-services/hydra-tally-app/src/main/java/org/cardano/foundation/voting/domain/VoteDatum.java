@@ -30,13 +30,10 @@ public class VoteDatum {
     private long votingPower;
 
     @PlutusField
-    private long challenge;
+    private long category;
 
     @PlutusField
     private long proposal;
-
-    @PlutusField
-    private int choice;
 
     public static Optional<VoteDatum> deserialize(byte[] datum) {
         try {
@@ -44,26 +41,28 @@ public class VoteDatum {
             if (!(plutusData instanceof ConstrPlutusData constr))
                 return Optional.empty();
 
-            if (constr.getData().getPlutusDataList().size() != 5)
+            if (constr.getData().getPlutusDataList().size() != 4) {
                 return Optional.empty();
+            }
 
             List<PlutusData> plutusDataList = constr.getData().getPlutusDataList();
             byte[] voterKey = ((BytesPlutusData) plutusDataList.get(0)).getValue();
             long votingPower = ((BigIntPlutusData) plutusDataList.get(1)).getValue().longValue();
-            long challenge = ((BigIntPlutusData) plutusDataList.get(2)).getValue().longValue();
+            long category = ((BigIntPlutusData) plutusDataList.get(2)).getValue().longValue();
             long proposal = ((BigIntPlutusData) plutusDataList.get(3)).getValue().longValue();
-            int choice = ((BigIntPlutusData) plutusDataList.get(4)).getValue().intValue();
 
             return Optional.of(VoteDatum.builder()
                     .voterKey(voterKey)
                     .votingPower(votingPower)
-                    .challenge(challenge)
+                    .category(category)
                     .proposal(proposal)
-                    .choice(choice)
-                    .build());
+                    .build()
+            );
+
         } catch (Exception e) {
             log.trace("Error in deserialization (VoteDatum)", e);
             return Optional.empty();
         }
     }
+
 }

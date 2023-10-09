@@ -14,7 +14,8 @@ public record Vote(
         String eventId,
         UUID categoryId,
         UUID proposalId,
-        String voterStakeAddress,
+        String voterStakeAddressBech32,
+        byte[] voterStakeAddress,
         String coseSignature,
         Optional<String> cosePublicKey) {
 
@@ -22,7 +23,7 @@ public record Vote(
                                                String eventId,
                                                String categoryId,
                                                String proposalId,
-                                               String voterStakeAddress,
+                                               String voterStakeAddressBech32,
                                                String coseSignature,
                                                Optional<String> cosePublicKey) {
         var parser = new CIP30Verifier(coseSignature, cosePublicKey);
@@ -53,12 +54,21 @@ public record Vote(
             return Either.left(problem);
         }
 
+        var addrAsByteArray = result.getAddress();
+
+        if (addrAsByteArray.isEmpty()) {
+            var problem = Problem.builder().withTitle("NO_UUID4").withDetail("Category must be UUID4").build();
+
+            return Either.left(problem);
+        }
+
         var vote = new Vote(
                 UUID.fromString(voteId),
                 eventId,
                 UUID.fromString(categoryId),
                 UUID.fromString(proposalId),
-                voterStakeAddress,
+                voterStakeAddressBech32,
+                addrAsByteArray.get(),
                 coseSignature,
                 cosePublicKey
         );
@@ -67,5 +77,3 @@ public record Vote(
     }
 
 }
-
-

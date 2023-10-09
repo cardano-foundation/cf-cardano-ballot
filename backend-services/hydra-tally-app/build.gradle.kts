@@ -26,6 +26,7 @@ extra["springShellVersion"] = "3.1.4"
 dependencies {
 	implementation("org.springframework.shell:spring-shell-starter")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	implementation("org.springframework.boot:spring-boot-starter-reactor-netty")
 
 	implementation("org.springframework.shell:spring-shell-starter")
 

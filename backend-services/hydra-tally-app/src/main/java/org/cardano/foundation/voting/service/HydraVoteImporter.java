@@ -15,7 +15,6 @@ import com.bloxbean.cardano.client.plutus.spec.PlutusData;
 import com.bloxbean.cardano.client.transaction.spec.Transaction;
 import com.bloxbean.cardano.client.transaction.spec.TransactionOutput;
 import com.bloxbean.cardano.client.transaction.spec.Value;
-import com.bloxbean.cardano.client.util.HexUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -39,7 +38,7 @@ public class HydraVoteImporter {
 
     private final UtxoSupplier utxoSupplier;
     private final ProtocolParamsSupplier protocolParamsSupplier;
-    //private final TransactionProcessor transactionProcessor;
+    private final TransactionProcessor transactionProcessor;
     private final HydraOperatorSupplier hydraOperatorSupplier;
     private final PlutusScripts plutusScripts;
 
@@ -52,9 +51,9 @@ public class HydraVoteImporter {
     private String createTransactionWithDatum(Collection<Vote> votes) throws Exception {
         val voteDatumList = votes.stream()
                 .map(vote -> VoteDatum.builder()
-                        .voterKey(HexUtil.decodeHexString(vote.voterStakeAddress())) // TODO ???
+                        .voterKey(vote.voterStakeAddress()) // TODO ???
                         .votingPower(1) // TODO hard-coded for USER-BASED events for now
-                        .challenge(uuidHash(vote.categoryId()))
+                        .category(uuidHash(vote.categoryId()))
                         .proposal(uuidHash(vote.proposalId()))
                         //.choice(vote.getChoice().toValue()) // TODO
                         .build()

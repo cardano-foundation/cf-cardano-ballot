@@ -1,17 +1,13 @@
 package org.cardano.foundation.voting.shell;
 
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import one.util.streamex.StreamEx;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.Vote;
 import org.cardano.foundation.voting.repository.VoteRepository;
+import org.cardano.foundation.voting.service.HydraTransactionClient;
 import org.cardano.foundation.voting.service.HydraVoteImporter;
 import org.cardano.foundation.voting.utils.Partitioner;
-import org.cardanofoundation.hydra.client.HydraClientOptions;
-import org.cardanofoundation.hydra.client.HydraWSClient;
-import org.cardanofoundation.hydra.client.SLF4JHydraLogger;
-import org.cardanofoundation.hydra.core.model.UTXO;
 import org.cardanofoundation.hydra.core.store.UTxOStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,11 +15,8 @@ import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.standard.ShellOption;
 import shaded.com.google.common.collect.Lists;
 
-import java.math.BigInteger;
-import java.util.Map;
-
+import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.cardano.foundation.voting.utils.MoreComparators.createVoteComparator;
-import static org.cardanofoundation.hydra.core.model.HydraState.*;
 
 @Slf4j
 @Command(group = "hydra")
@@ -40,6 +33,9 @@ public class HydraCommands {
 
     @Autowired
     private HydraVoteImporter hydraVoteImporter;
+
+    @Autowired
+    private HydraTransactionClient hydraTransactionClient;
 
     @Value("${hydra.ws.url}")
     private String hydraWsUrl;
@@ -65,95 +61,84 @@ public class HydraCommands {
     @Value("${ballot.event.id}")
     private String eventId;
 
-    private HydraWSClient hydraClient;
-
-    @PostConstruct
-    public void init() {
-        var options = HydraClientOptions.builder(hydraWsUrl)
-                .withUTxOStore(uTxOStore)
-                .history(false)
-                .build();
-
-        this.hydraClient = new HydraWSClient(options);
-
-        var slf4JHydraLogger = new SLF4JHydraLogger(log, actor, false);
-
-        //hydraClient.addHydraQueryEventListener(slf4JHydraLogger);
-        hydraClient.addHydraStateEventListener(slf4JHydraLogger);
-    }
-
     @Command(command = "connect", description = "connects to the hydra cluster.")
     public String connect() throws InterruptedException {
-        hydraClient.connect();
+        hydraTransactionClient.openConnection(1, MINUTES);
 
         return "Connecting...";
     }
 
     @Command(command = "disconnect", description = "disconnect from the hydra cluster.")
     public String disconnect() throws InterruptedException {
-        hydraClient.close();
+        hydraTransactionClient.closeConnection();
 
         return "Disconnecting...";
     }
 
     @Command(command = "abort", description = "aborting from the hydra cluster.")
     public String abort() {
-        if (hydraClient.getHydraState() == Initializing) {
-            hydraClient.abort();
+        var res = hydraTransactionClient.abortHead();
 
-            return "Aborting...";
+        if (res) {
+            log.info("Aborting from the hydra network...");
         }
 
-        return "Cannot abort, unsupported state, hydra state:" + hydraClient.getHydraState();
+        return "Cannot abort, unsupported state, hydra state:" + hydraTransactionClient.getHydraState();
+    }
+
+    @Command(command = "init", description = "init.")
+    public String init() throws InterruptedException {
+        var res = hydraTransactionClient.initHead();
+
+        if (res) {
+            return "Init...";
+        }
+
+        return "Cannot init..., network stake:" + hydraTransactionClient.getHydraState();
     }
 
     @Command(command = "commit-empty", description = "commit no funds.")
     public String commitEmpty() {
-        if (hydraClient.getHydraState() == Initializing) {
-            hydraClient.commit();
+        var res = hydraTransactionClient.commitEmptyToTheHead();
 
+        if (res) {
             return "Committing no funds...";
         }
 
-        return "Cannot commit, unsupported state, hydra state:" + hydraClient.getHydraState();
+        return "Cannot commit, unsupported state, hydra state:" + hydraTransactionClient.getHydraState();
     }
 
     @Command(command = "commit-funds", description = "commit funds.")
     public String commitFunds() {
-        if (hydraClient.getHydraState() == Initializing) {
-            var u = new UTXO();
+        var res = hydraTransactionClient.commitFundsToTheHead(cardanoCommitAddress, cardanoCommitUtxo, cardanoCommitAmount);
 
-            u.setAddress(cardanoCommitAddress);
-            u.setValue(Map.of("lovelace", BigInteger.valueOf(cardanoCommitAmount)));
-
-            hydraClient.commit(cardanoCommitUtxo, u);
-
-            return "Committing utxo... " + u;
+        if (res) {
+            return "Committing utxo... " + cardanoCommitUtxo + " with amount: " + cardanoCommitAmount + " to address: " + cardanoCommitAddress;
         }
 
-        return "Cannot commit, unsupported state, hydra state:" + hydraClient.getHydraState();
+        return "Cannot commit, unsupported state, hydra state:" + hydraTransactionClient.getHydraState();
     }
 
+    @Command(command = "fan-out", description = "fan out.")
     public String fanOut() {
-        if (hydraClient.getHydraState() == FanoutPossible) {
-            hydraClient.fanOut();
+        var res = hydraTransactionClient.fanOutHead();
 
+        if (res) {
             return "Fan out...";
         }
 
-        return "Cannot fan out, unsupported state, hydra state:" + hydraClient.getHydraState();
+        return "Cannot fan out, unsupported state, hydra state:" + hydraTransactionClient.getHydraState();
     }
 
+    @Command(command = "close-head", description = "close head.")
     public String closeHead() {
-        if (hydraClient.getHydraState() == Open) {
-            log.info("Closing the head...");
+        var res = hydraTransactionClient.closeHead();
 
-            hydraClient.closeHead();
-
+        if (res) {
             return "Closing the head...";
         }
 
-        return "Cannot close the head, unsupported state, hydra state:" + hydraClient.getHydraState();
+        return "Cannot close the head, unsupported state, hydra state:" + hydraTransactionClient.getHydraState();
     }
 
     @Command(command = "import-votes", description = "import votes.")
@@ -184,7 +169,7 @@ public class HydraCommands {
         }
 
         return "Importing votes...";
-}
+    }
 
     @Command(command = "batch-votes", description = "batch votes.")
     public String batchVotes() {

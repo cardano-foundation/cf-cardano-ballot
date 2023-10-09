@@ -6,7 +6,9 @@ import com.bloxbean.cardano.client.common.model.Network;
 import com.bloxbean.cardano.client.exception.CborSerializationException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.service.HydraTransactionClient;
 import org.cardanofoundation.hydra.cardano.client.lib.*;
+import org.cardanofoundation.hydra.client.HydraClientOptions;
 import org.cardanofoundation.hydra.core.store.InMemoryUTxOStore;
 import org.cardanofoundation.hydra.core.store.UTxOStore;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,9 +20,24 @@ import org.springframework.context.annotation.Configuration;
 public class HydraConfig {
 
     @Bean
+    public HydraClientOptions hydraClientOptions(UTxOStore uTxOStore,
+                                                 @Value("${hydra.ws.url}") String hydraWsUrl) {
+        return HydraClientOptions.builder(hydraWsUrl)
+                .withUTxOStore(uTxOStore)
+                .history(false)
+                .build();
+    }
+
+    @Bean
+    public HydraTransactionClient hydraTransactionClient(UTxOStore uTxOStore,
+                                                         HydraClientOptions hydraClientOptions) {
+        return new HydraTransactionClient(uTxOStore, hydraClientOptions);
+    }
+
+    @Bean
     public ProtocolParamsSupplier protocolParamsSupplier(ObjectMapper objectMapper,
                                                          @Value("${hydra.protocol.parameters.path}") String hydraProtocolParametersPath) {
-        return new JacksonClasspathProtocolParametersSupplier(objectMapper, "hydra/protocol-parameters.json");
+        return new JacksonClasspathProtocolParametersSupplier(objectMapper, hydraProtocolParametersPath);
     }
 
     @Bean

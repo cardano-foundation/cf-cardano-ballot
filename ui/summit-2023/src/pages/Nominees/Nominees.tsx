@@ -116,7 +116,7 @@ const Nominees = () => {
         }
       });
     } else {
-      navigate(ROUTES.PAGENOTFOUND);
+      navigate(ROUTES.PAGE_NOT_FOUND);
     }
   };
 

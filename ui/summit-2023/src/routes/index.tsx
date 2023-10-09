@@ -16,11 +16,11 @@ export const ROUTES = {
   CATEGORIES: `${PAGE_PATH}categories`,
   NOMINEES: `${PAGE_PATH}nominees`,
   LEADERBOARD: `${PAGE_PATH}leaderboard`,
-  USERGUIDE: `${PAGE_PATH}user-guide`,
-  TERMSANDCONDITIONS: `${PAGE_PATH}termsandconditions`,
-  PRIVACYPOLICY: `${PAGE_PATH}privacypolicy`,
+  USER_GUIDE: `${PAGE_PATH}user-guide`,
+  TERMS_AND_CONDITIONS: `${PAGE_PATH}termsandconditions`,
+  PRIVACY_POLICY: `${PAGE_PATH}privacypolicy`,
   NOMINEES_BY_ID: `${PAGE_PATH}nominees/:categoryId`,
-  PAGENOTFOUND: `${PAGE_PATH}404`,
+  PAGE_NOT_FOUND: `${PAGE_PATH}404`,
 };
 
 const PageRouter = () => {
@@ -48,19 +48,19 @@ const PageRouter = () => {
           element={<Leaderboard />}
         />
         <Route
-          path={ROUTES.USERGUIDE}
+          path={ROUTES.USER_GUIDE}
           element={<UserGuide />}
         />
         <Route
-          path={ROUTES.TERMSANDCONDITIONS}
+          path={ROUTES.TERMS_AND_CONDITIONS}
           element={<TermsAndConditions />}
         />
         <Route
-          path={ROUTES.PRIVACYPOLICY}
+          path={ROUTES.PRIVACY_POLICY}
           element={<PrivacyPolicy />}
         />
         <Route
-          path={ROUTES.PAGENOTFOUND}
+          path={ROUTES.PAGE_NOT_FOUND}
           element={<NotFound />}
         />
         <Route

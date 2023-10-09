@@ -1,22 +1,21 @@
 import React from 'react';
+import { NavLink } from 'react-router-dom';
 import { Typography, Grid, useTheme, useMediaQuery, Box } from '@mui/material';
+import Chip from '@mui/material/Chip';
+import EventIcon from '@mui/icons-material/Event';
 import CARDANOSUMMIT2023LOGO from '../../common/resources/images/cardanosummit2023.svg';
 import { Hexagon } from '../../components/common/Hexagon';
 import './Home.scss';
 import { i18n } from '../../i18n';
-import { NavLink } from 'react-router-dom';
 import { CustomButton } from '../../components/common/Button/CustomButton';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { formatUTCDate } from 'utils/dateUtils';
-import Chip from '@mui/material/Chip';
-import EventIcon from '@mui/icons-material/Event';
 
 const Home: React.FC = () => {
-  const eventCache = useSelector((state: RootState) => state.user.event);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const hasEventFinished = eventCache?.finished;
+  const eventCache = useSelector((state: RootState) => state.user.event);
 
   return (
     <Grid
@@ -114,7 +113,7 @@ const Home: React.FC = () => {
               </NavLink>
             </Grid>
 
-            {!hasEventFinished && (
+            {!eventCache?.finished && (
               <Grid
                 item
                 xs={12}

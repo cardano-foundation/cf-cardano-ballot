@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Grid, useTheme, useMediaQuery, Box } from '@mui/material';
+import { Typography, Grid, Box } from '@mui/material';
 import CARDANOSUMMIT2023LOGO from '../../common/resources/images/cardanosummit2023.svg';
 import { Hexagon } from '../../components/common/Hexagon';
 import './Home.scss';
@@ -11,11 +11,10 @@ import { RootState } from '../../store';
 import { formatUTCDate } from 'utils/dateUtils';
 import Chip from '@mui/material/Chip';
 import EventIcon from '@mui/icons-material/Event';
+import { Trans } from 'react-i18next';
 
 const Home: React.FC = () => {
   const eventCache = useSelector((state: RootState) => state.user.event);
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const hasEventFinished = eventCache?.finished;
 
   return (
@@ -45,22 +44,14 @@ const Home: React.FC = () => {
           <Typography
             className="title"
             variant="h2"
-            sx={{ textAlign: { xs: 'center', sm: 'center', md: 'left' }, fontSize: { xs: '32px', sm: '48px', md: '56px' } }}
+            sx={{
+              textAlign: { xs: 'center', sm: 'center', md: 'left' },
+              fontSize: { xs: '32px', sm: '48px', md: '56px' },
+            }}
           >
             {i18n.t('landing.title')}
           </Typography>
-          {isMobile ? (
-            <div className="event-time">
-              <Box
-                className="custom-chip-mobile"
-                sx={{ justifyContent: 'center' }}
-              >
-                <EventIcon sx={{ mt: 1 }} />
-                Voting closes {formatUTCDate(eventCache?.eventEndDate?.toString())}.
-              </Box>
-            </div>
-          ) : (
-            <Box sx={{ textAlign: { xs: 'center', sm: 'center', md: 'left' } }}>
+          <Box sx={{ textAlign: { xs: 'center', sm: 'center', md: 'left' } }}>
             <Chip
               sx={{
                 height: '46px',
@@ -69,17 +60,19 @@ const Home: React.FC = () => {
                 px: '10px',
               }}
               icon={<EventIcon />}
-              label={`Voting closes ${formatUTCDate(eventCache?.eventEndDate?.toString())}.`}
+              label={
+                hasEventFinished
+                  ? 'Voting is now closed.'
+                  : `Voting closes ${formatUTCDate(eventCache?.eventEndDate?.toString())}.`
+              }
               color="primary"
             />
-            </Box>
-          )}
-
+          </Box>
           <Typography
             variant="body1"
             sx={{ textAlign: { xs: 'center', sm: 'center', md: 'left' } }}
           >
-            {i18n.t('landing.description')}
+            <Trans i18nKey={ hasEventFinished ? 'landing.eventFinishedDescription' : 'landing.description'} components={{ bold: <strong /> }}  ></Trans>
           </Typography>
 
           <Grid
@@ -93,7 +86,7 @@ const Home: React.FC = () => {
               sm={5}
             >
               <NavLink
-                to="/categories"
+                to={hasEventFinished ? '/leaderboard' : '/categories'}
                 style={{ textDecoration: 'none' }}
               >
                 <CustomButton
@@ -104,7 +97,9 @@ const Home: React.FC = () => {
                     textDecoration: 'none !important',
                   }}
                   fullWidth
-                  label={eventCache?.finished ?  i18n.t('landing.votingEndedButton') : i18n.t('landing.getStartedButton')}
+                  label={
+                    hasEventFinished ? i18n.t('landing.votingLeaderboardButton') : i18n.t('landing.getStartedButton')
+                  }
                 />
               </NavLink>
             </Grid>

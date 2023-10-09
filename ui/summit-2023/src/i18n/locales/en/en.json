@@ -16,9 +16,10 @@
   },
   "landing": {
     "title": "Vote for the Cardano Summit Awards",
+    "eventFinishedDescription": "10 categories, 10 winners awarded for their work and exceptional contributions within the Cardano ecosystem. Watch the <strong>winners announced live at the Cardano Summit 2023 Gala Awards Dinner</strong> on 4 November 2023.",
     "description": "10 categories, 10 winners awarded for their work and exceptional contributions within the Cardano ecosystem. Vote for the shortlisted nominees and watch the winners announced live at the Cardano Summit 2023 Gala Awards Dinner.",
     "getStartedButton": "Start Voting",
-    "votingEndedButton": "Voting Ended",
+    "votingLeaderboardButton": "View Leaderboard",
     "howToVoteButton": "How to Vote",
     "hexagon": {
       "title": "CARDANO SUMMIT 2023"

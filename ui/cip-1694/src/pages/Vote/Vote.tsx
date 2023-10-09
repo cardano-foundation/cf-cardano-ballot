@@ -77,6 +77,7 @@ export const VotePage = () => {
   const numOfCategories = event?.categories?.length;
   const activeCategoryIndex = findIndex(event?.categories, ['id', activeCategoryId]);
   const [isToggledReceipt, toggleReceipt] = useToggle(false);
+  const couldAddContext = activeCategoryIndex === 0 && isReceiptFetched && !receipt;
   const dispatch = useDispatch();
 
   const fetchChainTip = useCallback(async () => {
@@ -232,6 +233,8 @@ export const VotePage = () => {
       });
     } catch (error) {
       console.log(error?.message || error);
+    } finally {
+      setVoteContext('');
     }
   }, [voteContext]);
 
@@ -266,7 +269,9 @@ export const VotePage = () => {
       const requestVoteObject = await signMessagePromisified(canonicalVoteInput);
       await voteService.castAVoteWithDigitalSignature(requestVoteObject);
       dispatch(setIsVoteSubmittedModalVisible({ isVisible: true }));
-      await submitVoteContextForm();
+      if (couldAddContext && voteContext) {
+        await submitVoteContextForm();
+      }
       setVoteSubmitted(true);
       if (numOfCategories === 1 || activeCategoryIndex === numOfCategories - 1) {
         await fetchReceipt({});
@@ -307,7 +312,6 @@ export const VotePage = () => {
   const showSubmitButton =
     event && isConnected && event?.notStarted === false && event?.finished === false && !showViewReceiptButton;
   const showPagination = isConnected && receipt && activeCategoryId === receipt?.category && numOfCategories > 1;
-  const shouldAddContext = activeCategoryIndex === 0 && isReceiptFetched && !receipt;
 
   return (
     <>
@@ -386,7 +390,7 @@ export const VotePage = () => {
               onChangeOption={onChangeOption}
             />
           </Grid>
-          {shouldAddContext && (
+          {couldAddContext && (
             <Grid item>
               <VoteContextInput
                 disabled={!optionId}
@@ -456,17 +460,11 @@ export const VotePage = () => {
                 {showSubmitButton && (
                   <Button
                     className={cn(styles.button, {
-                      [styles.disabled]: !optionId || !isReceiptFetched || (shouldAddContext && !voteContext),
+                      [styles.disabled]: !optionId || !isReceiptFetched,
                     })}
                     size="large"
                     variant="contained"
-                    disabled={
-                      !optionId ||
-                      !isReceiptFetched ||
-                      isCastingAVote ||
-                      !tip?.absoluteSlot ||
-                      (shouldAddContext && !voteContext)
-                    }
+                    disabled={!optionId || !isReceiptFetched || isCastingAVote || !tip?.absoluteSlot}
                     onClick={() => handleSubmit()}
                     data-testid="proposal-submit-button"
                   >

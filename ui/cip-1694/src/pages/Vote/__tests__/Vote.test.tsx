@@ -423,7 +423,6 @@ describe('For ongoing event:', () => {
 
     const cta = within(votePage).queryByTestId('proposal-submit-button');
     expect(cta).not.toBeNull();
-    expect(cta.closest('button')).toBeDisabled();
 
     expect(within(votePage).queryByTestId('vote-context-label').textContent).toEqual(
       'Do you have any additional comments or details about your voting decision?'
@@ -509,19 +508,12 @@ describe('For ongoing event:', () => {
       fireEvent.click(options[0]);
     });
 
-    const voteContext = 'voteContext';
-
-    await act(async () => {
-      fireEvent.change(screen.queryByTestId('vote-context-input').querySelector('textarea'), {
-        target: { value: voteContext },
-      });
-    });
-
     const cta = within(votePage).queryByTestId('proposal-submit-button');
     await act(async () => {
       fireEvent.click(cta);
     });
 
+    expect(mockSubmitVoteContextForm).not.toBeCalled();
     expect(mockGetVoteReceipt).toBeCalledTimes(2);
   });
 

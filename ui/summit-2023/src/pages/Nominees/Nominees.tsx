@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, ReactElement } from 'react';
 import { useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import {
   useTheme,
@@ -31,15 +32,14 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import labelVoted from '../../common/resources/images/checkmark-green.png';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import CloseIcon from '@mui/icons-material/Close';
 import { Fade } from '@mui/material';
-import './Nominees.scss';
+import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
+import QRCode from 'react-qr-code';
 import { CategoryContent } from '../Categories/Category.types';
 import SUMMIT2023CONTENT from '../../common/resources/data/summit2023Content.json';
 import { eventBus } from '../../utils/EventBus';
-import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
-import CloseIcon from '@mui/icons-material/Close';
 import { ROUTES } from '../../routes';
-import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import {
   buildCanonicalVoteInputJson,
@@ -56,15 +56,16 @@ import SidePage from '../../components/common/SidePage/SidePage';
 import { useToggle } from 'common/hooks/useToggle';
 import ReadMore from './ReadMore';
 import Modal from '../../components/common/Modal/Modal';
-import QRCode from 'react-qr-code';
 import { CustomButton } from '../../components/common/Button/CustomButton';
 import { env } from 'common/constants/env';
 import { parseError } from 'common/constants/errors';
 import { categoryAlreadyVoted } from '../Categories';
 import { ProposalPresentationExtended } from '../../store/types';
 import { verifyVote } from 'common/api/verificationService';
+import './Nominees.scss';
 
 const Nominees = () => {
+  const dispatch = useDispatch();
   const { categoryId } = useParams();
   const navigate = useNavigate();
   const eventCache = useSelector((state: RootState) => state.user.event);
@@ -75,9 +76,6 @@ const Nominees = () => {
   const winners = useSelector((state: RootState) => state.user.winners);
 
   const categoryVoted = categoryAlreadyVoted(categoryId, userVotes);
-
-  const dispatch = useDispatch();
-
   const categories = eventCache?.categories;
 
   const summit2023Category: CategoryContent = SUMMIT2023CONTENT.categories.find(
@@ -87,6 +85,7 @@ const Nominees = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isBigScreen = useMediaQuery(theme.breakpoints.down('xl'));
+
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [isVisible, setIsVisible] = useState(true);
   const [isToggleReadMore, toggleReadMore] = useToggle(false);

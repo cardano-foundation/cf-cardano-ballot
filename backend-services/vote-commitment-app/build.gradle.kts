@@ -57,12 +57,12 @@ dependencies {
 	implementation("com.querydsl:querydsl-jpa")
     annotationProcessor("com.querydsl:querydsl-apt")
 
-	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0-beta3")
-    implementation("com.bloxbean.cardano:cardano-client-address:0.5.0-beta3")
-    implementation("com.bloxbean.cardano:cardano-client-metadata:0.5.0-beta3")
-	implementation("com.bloxbean.cardano:cardano-client-quicktx:0.5.0-beta3")
-	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.0-beta3")
-	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0-beta3")
+	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0")
+    implementation("com.bloxbean.cardano:cardano-client-address:0.5.0")
+    implementation("com.bloxbean.cardano:cardano-client-metadata:0.5.0")
+	implementation("com.bloxbean.cardano:cardano-client-quicktx:0.5.0")
+	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.0")
+	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0")
 
 	implementation("io.blockfrost:blockfrost-java:0.1.3")
 

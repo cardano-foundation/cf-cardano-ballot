@@ -39,6 +39,7 @@ import { HttpError } from 'common/handlers/httpHandler';
 import { getDateAndMonth } from 'common/utils/dateUtils';
 import { getUserInSession, saveUserInSession, tokenIsExpired } from 'common/utils/session';
 import { ConfirmWithWalletSignatureModal } from './components/ConfirmWithWalletSignatureModal/ConfirmWithWalletSignatureModal';
+import { VoteContextInput } from './components/VoteContextInput/VoteContextInput';
 import { env } from '../../env';
 import styles from './Vote.module.scss';
 
@@ -62,6 +63,7 @@ const iconsMap: Record<ProposalPresentation['name'], React.ReactElement | null> 
 export const VotePage = () => {
   const { stakeAddress, isConnected, signMessage } = useCardano();
   const [receipt, setReceipt] = useState<VoteReceiptType | null>(null);
+  const [voteContext, setVoteContext] = useState('');
   const event = useSelector((state: RootState) => state.user.event);
   const tip = useSelector((state: RootState) => state.user.tip);
   const [isReceiptFetched, setIsReceiptFetched] = useState(false);
@@ -75,6 +77,7 @@ export const VotePage = () => {
   const numOfCategories = event?.categories?.length;
   const activeCategoryIndex = findIndex(event?.categories, ['id', activeCategoryId]);
   const [isToggledReceipt, toggleReceipt] = useToggle(false);
+  const couldAddContext = activeCategoryIndex === 0 && isReceiptFetched && !receipt;
   const dispatch = useDispatch();
 
   const fetchChainTip = useCallback(async () => {
@@ -101,15 +104,10 @@ export const VotePage = () => {
   useEffect(() => {
     const session = getUserInSession();
 
-    if (
-      tip?.absoluteSlot &&
-      stakeAddress &&
-      event?.notStarted === false &&
-      ((session && tokenIsExpired(session.expiresAt)) || !session)
-    ) {
+    if (stakeAddress && event?.notStarted === false && ((session && tokenIsExpired(session.expiresAt)) || !session)) {
       setIsConfirmWithWalletSignatureModalVisible(true);
     }
-  }, [event?.notStarted, tip?.absoluteSlot, stakeAddress]);
+  }, [event?.notStarted, stakeAddress]);
 
   const items: OptionItem<ProposalPresentation['name']>[] = event?.categories
     ?.find(({ id }) => id === activeCategoryId)
@@ -200,17 +198,10 @@ export const VotePage = () => {
 
   useEffect(() => {
     const session = getUserInSession();
-    if (
-      isConnected &&
-      tip?.absoluteSlot &&
-      stakeAddress &&
-      session &&
-      !tokenIsExpired(session.expiresAt) &&
-      activeCategoryId
-    ) {
+    if (isConnected && stakeAddress && session && !tokenIsExpired(session.expiresAt) && activeCategoryId) {
       fetchReceipt({});
     }
-  }, [fetchReceipt, isConnected, stakeAddress, tip?.absoluteSlot, activeCategoryId]);
+  }, [fetchReceipt, isConnected, stakeAddress, activeCategoryId]);
 
   const openReceiptDrawer = async () => {
     setIsReceiptDrawerInitializing(true);
@@ -234,6 +225,18 @@ export const VotePage = () => {
     setIsReceiptFetched(false);
     setActiveCategoryId(event?.categories[categoryIndex]?.id);
   };
+
+  const submitVoteContextForm = useCallback(async () => {
+    try {
+      await voteService.submitVoteContextForm({
+        [env.GOOGLE_FORM_VOTE_CONTEXT_INPUT_NAME]: voteContext,
+      });
+    } catch (error) {
+      console.log(error?.message || error);
+    } finally {
+      setVoteContext('');
+    }
+  }, [voteContext]);
 
   const handleSubmit = async () => {
     let votingPower: Account['votingPower'];
@@ -266,6 +269,9 @@ export const VotePage = () => {
       const requestVoteObject = await signMessagePromisified(canonicalVoteInput);
       await voteService.castAVoteWithDigitalSignature(requestVoteObject);
       dispatch(setIsVoteSubmittedModalVisible({ isVisible: true }));
+      if (couldAddContext && voteContext) {
+        await submitVoteContextForm();
+      }
       setVoteSubmitted(true);
       if (numOfCategories === 1 || activeCategoryIndex === numOfCategories - 1) {
         await fetchReceipt({});
@@ -384,6 +390,15 @@ export const VotePage = () => {
               onChangeOption={onChangeOption}
             />
           </Grid>
+          {couldAddContext && (
+            <Grid item>
+              <VoteContextInput
+                disabled={!optionId}
+                onChange={setVoteContext}
+                voteContext={voteContext}
+              />
+            </Grid>
+          )}
           <Grid item>
             <Grid
               container

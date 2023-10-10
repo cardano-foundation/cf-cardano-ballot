@@ -8,6 +8,7 @@ var mockBuildCanonicalVoteInputJson = jest.fn();
 var mockGetSignedMessagePromise = jest.fn();
 var mockGetChainTip = jest.fn();
 var mockGetVoteReceipt = jest.fn();
+var mockSubmitVoteContextForm = jest.fn();
 var mockToast = jest.fn();
 var mockGetUserInSession = jest.fn();
 var mockSaveUserInSession = jest.fn();
@@ -44,7 +45,6 @@ import {
   eventMock_finished,
   VoteReceiptMock_Full_MediumAssurance,
   userInSessionMock,
-  // VoteReceiptMock_Full_MediumAssurance,
 } from 'test/mocks';
 import { CustomRouter } from 'test/CustomRouter';
 import { capitalize } from 'lodash';
@@ -86,6 +86,7 @@ jest.mock('../../../env', () => {
       ...original.env,
       CATEGORY_ID: 'CHANGE_GOV_STRUCTURE',
       EVENT_ID: 'CIP-1694_Pre_Ratification_3316',
+      GOOGLE_FORM_VOTE_CONTEXT_INPUT_NAME: 'GOOGLE_FORM_VOTE_CONTEXT_INPUT_NAME',
     },
   };
 });
@@ -96,6 +97,7 @@ jest.mock('common/api/voteService', () => ({
   getVotingPower: mockGetVotingPower,
   getChainTip: mockGetChainTip,
   getVoteReceipt: mockGetVoteReceipt,
+  submitVoteContextForm: mockSubmitVoteContextForm,
 }));
 
 jest.mock('common/api/loginService', () => ({
@@ -139,6 +141,7 @@ describe('For ongoing event:', () => {
     mockGetUserInSession.mockReturnValue({ accessToken: true });
     mockTokenIsExpired.mockReturnValue(false);
     mockGetVoteReceipt.mockReturnValue({});
+    mockSubmitVoteContextForm.mockImplementation(async () => await Promise.resolve());
   });
   afterEach(() => {
     jest.clearAllMocks();
@@ -356,6 +359,14 @@ describe('For ongoing event:', () => {
 
     fireEvent.click(options[0]);
 
+    const voteContext = 'voteContext';
+
+    await act(async () => {
+      fireEvent.change(screen.queryByTestId('vote-context-input').querySelector('textarea'), {
+        target: { value: voteContext },
+      });
+    });
+
     const cta = within(votePage).queryByTestId('proposal-submit-button');
     await act(async () => {
       fireEvent.click(cta);
@@ -371,7 +382,7 @@ describe('For ongoing event:', () => {
     mockCastAVoteWithDigitalSignature.mockReset();
   });
 
-  test('should submit vote and fetch vote receipt if there are more that on category', async () => {
+  test('should submit vote and fetch vote receipt if there are more than one category', async () => {
     const accessToken = 'accessToken';
     mockGetUserInSession.mockReset();
     mockGetUserInSession.mockReturnValue({ accessToken });
@@ -412,6 +423,19 @@ describe('For ongoing event:', () => {
 
     const cta = within(votePage).queryByTestId('proposal-submit-button');
     expect(cta).not.toBeNull();
+
+    expect(within(votePage).queryByTestId('vote-context-label').textContent).toEqual(
+      'Do you have any additional comments or details about your voting decision?'
+    );
+
+    const voteContext = 'voteContext';
+
+    await act(async () => {
+      fireEvent.change(screen.queryByTestId('vote-context-input').querySelector('textarea'), {
+        target: { value: voteContext },
+      });
+    });
+
     expect(cta.closest('button')).not.toBeDisabled();
     expect(mockGetVoteReceipt.mock.calls[0]).toEqual([eventMock_active.categories[0].id, accessToken]);
 
@@ -421,6 +445,9 @@ describe('For ongoing event:', () => {
     });
 
     expect(mockCastAVoteWithDigitalSignature).toHaveBeenCalledWith(canonicalVoteInputJsonMock);
+    expect(mockSubmitVoteContextForm).toHaveBeenCalledWith({
+      GOOGLE_FORM_VOTE_CONTEXT_INPUT_NAME: voteContext,
+    });
     expect(store.getState().user.isVoteSubmittedModalVisible).toBeTruthy;
 
     await act(async () => {
@@ -430,6 +457,7 @@ describe('For ongoing event:', () => {
     expect(store.getState().user.isVoteSubmittedModalVisible).toBeFalsy;
     expect(mockGetVoteReceipt).toBeCalledTimes(2);
     expect(mockGetVoteReceipt.mock.calls[1]).toEqual([eventMock_active.categories[1].id, accessToken]);
+    expect(screen.queryByTestId('vote-context-input')).not.toBeInTheDocument();
     expect(screen.queryAllByRole('button', { pressed: true }).length).toEqual(0);
     expect(within(votePage).queryByTestId('next-question-button')).toBeNull();
   });
@@ -479,11 +507,13 @@ describe('For ongoing event:', () => {
     await act(async () => {
       fireEvent.click(options[0]);
     });
+
     const cta = within(votePage).queryByTestId('proposal-submit-button');
     await act(async () => {
       fireEvent.click(cta);
     });
 
+    expect(mockSubmitVoteContextForm).not.toBeCalled();
     expect(mockGetVoteReceipt).toBeCalledTimes(2);
   });
 
@@ -587,6 +617,15 @@ describe('For ongoing event:', () => {
     await act(async () => {
       fireEvent.click(options[0]);
     });
+
+    const voteContext = 'voteContext';
+
+    await act(async () => {
+      fireEvent.change(screen.queryByTestId('vote-context-input').querySelector('textarea'), {
+        target: { value: voteContext },
+      });
+    });
+
     const cta = within(votePage).queryByTestId('proposal-submit-button');
 
     await act(async () => {
@@ -820,7 +859,7 @@ describe('For ongoing event:', () => {
     });
   });
 
-  test('should show proper error if vote is not found', async () => {
+  test('should show proper state if vote is not found', async () => {
     const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
     const error = { message: 'VOTE_NOT_FOUND' };
     mockGetVoteReceipt.mockReset();
@@ -862,6 +901,15 @@ describe('For ongoing event:', () => {
 
     const options = screen.queryAllByTestId('option-card');
     fireEvent.click(options[0]);
+
+    const voteContext = 'voteContext';
+
+    await act(async () => {
+      fireEvent.change(screen.queryByTestId('vote-context-input').querySelector('textarea'), {
+        target: { value: voteContext },
+      });
+    });
+
     expect(screen.queryByTestId('proposal-submit-button').closest('button')).not.toBeDisabled();
   });
 

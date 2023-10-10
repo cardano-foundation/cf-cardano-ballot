@@ -1,0 +1,34 @@
+.label {
+  color: #061d3c !important;
+  font-weight: 500 !important;
+  letter-spacing: 0em !important;
+}
+
+.root {
+  :global(.MuiInputBase-input) {
+    border: 1px solid #ccc !important;
+    border-radius: 8px !important;
+  }
+
+  :global(.MuiInputBase-root) {
+    padding: 0px !important;
+  }
+
+  &.filled {
+    textarea {
+      color: #39486c !important;
+    }
+  }
+
+  & :focus {
+    border: 1px solid #39486c !important;
+  }
+
+  textarea {
+    min-height: 150px !important;
+    max-height: 150px !important;
+    padding: 16px !important;
+    color: rgba(57, 72, 108, 0.65);
+    overflow: auto !important;
+  }
+}

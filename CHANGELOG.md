@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.67](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.66...v0.2.67) (2023-10-09)
+
+
+### Features
+
+* bloxbean CCL: 0.5.0 ([#434](https://github.com/cardano-foundation/cf-cardano-ballot/issues/434)) ([6421723](https://github.com/cardano-foundation/cf-cardano-ballot/commit/64217236dff1f6c9df779e662db682f8f4fcfa8b))
+
 ## [0.2.66](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.65...v0.2.66) (2023-10-05)
 
 

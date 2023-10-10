@@ -19,7 +19,7 @@ type ConnectWalletModalProps = {
   title: string;
   description: string;
   onConnectWallet: () => void;
-  onConnectWalletError: () => void;
+  onConnectWalletError: (walletName: string, error: Error) => void;
   onCloseFn: () => void;
 };
 

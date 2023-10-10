@@ -32,3 +32,5 @@ monitoring:
 
 diagnosticMode:
   enabled: false
+
+springProfiles: dev--preprod

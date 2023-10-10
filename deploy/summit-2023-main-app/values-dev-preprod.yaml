@@ -41,7 +41,7 @@ cf-summit-2023-voting-api:
         active: "true"
         voteCommitmentCronExpression: "0 45 * * * *"
     image:
-      tag: v0.2.67-5-gba04f018
+      tag: 0.2.64-21-e16cb
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
     corsAllowedOrigins: https://{{ .Values.domain }},https://api.{{ .Values.domain }},http://localhost:3000
     monitoring:

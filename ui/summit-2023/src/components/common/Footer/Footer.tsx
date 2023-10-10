@@ -51,7 +51,7 @@ const Footer: React.FC = () => {
             xs={12}
             sm={'auto'}
           >
-            <NavLink to="/termsandconditions">
+            <NavLink to="/terms-and-conditions">
               <Typography
                 variant="body2"
                 justifyContent="center"
@@ -67,7 +67,7 @@ const Footer: React.FC = () => {
             xs={12}
             sm={'auto'}
           >
-            <NavLink to="/privacypolicy">
+            <NavLink to="/privacy-policy">
               <Typography
                 variant="body2"
                 justifyContent="center"

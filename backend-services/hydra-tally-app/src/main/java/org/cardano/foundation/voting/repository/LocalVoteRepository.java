@@ -16,7 +16,7 @@ import java.util.Optional;
 @Slf4j
 public class LocalVoteRepository implements VoteRepository {
 
-    private ResourceLoader resourceLoader;
+    private final ResourceLoader resourceLoader;
 
     private final String votesPath;
 
@@ -67,7 +67,8 @@ public class LocalVoteRepository implements VoteRepository {
                     proposalId,
                     voterStakeAddress,
                     coseSignature,
-                    Optional.ofNullable(cosePublicKey));
+                    Optional.ofNullable(cosePublicKey)
+            );
 
             if (voteE.isEmpty()) {
                 log.error("Vote creation failed, reason:{}", voteE.getLeft());

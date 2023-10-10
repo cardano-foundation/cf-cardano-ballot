@@ -15,20 +15,23 @@ import com.bloxbean.cardano.client.plutus.spec.PlutusData;
 import com.bloxbean.cardano.client.transaction.spec.Transaction;
 import com.bloxbean.cardano.client.transaction.spec.TransactionOutput;
 import com.bloxbean.cardano.client.transaction.spec.Value;
+import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardano.foundation.voting.domain.Vote;
 import org.cardano.foundation.voting.domain.VoteDatum;
+import org.cardano.foundation.voting.utils.MoreHash;
 import org.cardanofoundation.hydra.cardano.client.lib.HydraOperatorSupplier;
 import org.springframework.stereotype.Component;
+import org.zalando.problem.Problem;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Collection;
 import java.util.List;
 
 import static com.bloxbean.cardano.client.common.ADAConversionUtil.adaToLovelace;
+import static org.cardano.foundation.voting.utils.MoreHash.unsignedHash;
 import static org.cardano.foundation.voting.utils.MoreUUID.uuidHash;
 
 @Component
@@ -44,27 +47,31 @@ public class HydraVoteImporter {
 
     private final PlutusObjectConverter plutusObjectConverter;
 
-    public String importVotes(List<Vote> votes) throws Exception {
-        return createTransactionWithDatum(votes);
-    }
+    public Either<Problem, String> importVotes(List<Vote> votes) throws Exception {
+        log.info("Importing number: {} votes", votes.size());
 
-    private String createTransactionWithDatum(Collection<Vote> votes) throws Exception {
+        if (votes.isEmpty()) {
+            return Either.left(Problem.builder()
+                    .withTitle("No votes to import")
+                    .withDetail("No votes to import")
+                    .build());
+        }
+
         val voteDatumList = votes.stream()
                 .map(vote -> VoteDatum.builder()
                         .voterKey(vote.voterStakeAddress()) // TODO ???
                         .votingPower(1) // TODO hard-coded for USER-BASED events for now
-                        .category(uuidHash(vote.categoryId()))
-                        .proposal(uuidHash(vote.proposalId()))
-                        //.choice(vote.getChoice().toValue()) // TODO
+                        .category(unsignedHash(vote.categoryId()))
+                        .proposal(unsignedHash(vote.proposalId()))
                         .build()
                 ).toList();
 
         String sender = hydraOperatorSupplier.getOperator().getAddress();
-        log.info("Sender Address: " + sender);
+        log.debug("Sender Address: " + sender);
         String voteBatchContractAddress = plutusScripts.getContractAddress();
-        log.info("Contract Address: " + voteBatchContractAddress);
+        log.debug("Contract Address: " + voteBatchContractAddress);
 
-        // Create a empty output builder
+        // Create an empty output builder
         TxOutputBuilder txOutputBuilder = (context, outputs) -> {};
 
         // Iterate through voteDatumLists and create TransactionOutputs
@@ -88,7 +95,6 @@ public class HydraVoteImporter {
             });
         }
 
-        //Create txInputs and balance tx
         TxBuilder txBuilder = txOutputBuilder
                 .buildInputs(InputBuilders.createFromSender(sender, sender))
                 .andThen(BalanceTxBuilders.balanceTx(sender));
@@ -100,12 +106,13 @@ public class HydraVoteImporter {
 
         Result<String> result = transactionProcessor.submitTransaction(transaction.serialize());
         if (!result.isSuccessful()) {
-            throw new RuntimeException("Transaction failed. " + result.getResponse());
+            return Either.left(Problem.builder()
+                            .withTitle("Transaction submission failed")
+                            .withDetail("Failure reason:" + result.getResponse())
+                    .build());
         }
 
-        System.out.println("Import Transaction Id : " + result.getValue());
-
-        return result.getValue();
+        return Either.right(result.getValue());
     }
 
 }

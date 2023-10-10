@@ -1,12 +1,15 @@
 package org.cardano.foundation.voting.shell;
 
+import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import one.util.streamex.StreamEx;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.Vote;
 import org.cardano.foundation.voting.repository.VoteRepository;
 import org.cardano.foundation.voting.service.HydraVoteImporter;
 import org.cardano.foundation.voting.utils.Partitioner;
+import org.cardanofoundation.hydra.core.model.UTXO;
 import org.cardanofoundation.hydra.core.model.query.response.CommittedResponse;
 import org.cardanofoundation.hydra.core.model.query.response.GreetingsResponse;
 import org.cardanofoundation.hydra.core.model.query.response.HeadIsAbortedResponse;
@@ -17,9 +20,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.standard.ShellOption;
+import org.zalando.problem.Problem;
 import shaded.com.google.common.collect.Lists;
 
+import java.math.BigInteger;
 import java.time.Duration;
+import java.util.Map;
 
 import static org.cardano.foundation.voting.utils.MoreComparators.createVoteComparator;
 
@@ -77,16 +83,6 @@ public class HydraCommands {
 
         GreetingsResponse greetingsResponse = hydraClient.openConnection().block(Duration.ofMinutes(1));
 
-        hydraClient.getHydraStatesStream().doOnEach(hydraStateSignal -> {
-            if (hydraStateSignal.hasValue()) {
-                log.info("Hydra state: {}", hydraStateSignal.get());
-            }
-            if (hydraStateSignal.hasError()) {
-                log.error("Error in hydra state:", hydraStateSignal.getThrowable());
-            }
-        })
-        .subscribe();
-
         if (greetingsResponse == null) {
             return "Cannot connect, unsupported state, hydra state:" + hydraClient.getHydraState();
         }
@@ -107,7 +103,7 @@ public class HydraCommands {
         return "Disconnected.";
     }
 
-    @Command(command = "abort", description = "aborting from the hydra cluster.")
+    @Command(command = "abort-head", description = "aborting from the hydra network.")
     public String abort() {
         log.info("Aborting from the hydra network...");
 
@@ -129,6 +125,10 @@ public class HydraCommands {
             return "Cannot init, unsupported state, hydra state:" + hydraClient.getHydraState();
         }
 
+        for (var party : headIsInitializingResponse.getParties()) {
+            log.info("Party: {}", party);
+        }
+
         return "Head is initialized.";
     }
 
@@ -140,27 +140,46 @@ public class HydraCommands {
             return "Cannot commit, unsupported state, hydra state:" + hydraClient.getHydraState();
         }
 
+        committedResponse.getUtxo().forEach((key, value) -> {
+            log.info("utxo: {}, value: {}", key, value);
+        });
+
         return "Committed empty (no funds).";
     }
 
     @Command(command = "head-commit-funds", description = "head commit funds.")
     public String commitFunds() {
-        CommittedResponse committedResponse = hydraClient.commitEmptyToTheHead().block(Duration.ofMinutes(1));
+        val utxo = new UTXO();
+        utxo.setAddress(cardanoCommitAddress);
+        utxo.setValue(Map.of("lovelace", BigInteger.valueOf(cardanoCommitAmount)));
+
+        var commitMap = Map.of(cardanoCommitUtxo, utxo);
+
+        CommittedResponse committedResponse = hydraClient.commitFundsToTheHead(commitMap)
+                .block(Duration.ofMinutes(1));
 
         if (committedResponse == null) {
             return "Cannot commit, unsupported state, hydra state:" + hydraClient.getHydraState();
         }
+
+        committedResponse.getUtxo().forEach((key, value) -> {
+            log.info("utxo: {}, value: {}", key, value);
+        });
 
         return "Committed funds.";
     }
 
     @Command(command = "head-fan-out", description = "head fan out.")
     public String fanOut() {
-        var readyToFanoutResponse = hydraClient.fanOutHead().block(Duration.ofMinutes(1));
+        var headIsFinalizedResponse = hydraClient.fanOutHead().block(Duration.ofMinutes(1));
 
-        if (readyToFanoutResponse == null) {
+        if (headIsFinalizedResponse == null) {
             return "Cannot fan out, unsupported state, hydra state:" + hydraClient.getHydraState();
         }
+
+        headIsFinalizedResponse.getUtxo().forEach((key, value) -> {
+            log.info("utxo: {}, value: {}", key, value);
+        });
 
         return "Fan out completed.";
     }
@@ -209,12 +228,15 @@ public class HydraCommands {
         var partitioned = Lists.partition(participantVotes, batchSize);
 
         for (var batch : partitioned) {
-            var txId = hydraVoteImporter.importVotes(batch);
+            Either<Problem, String> txIdE = hydraVoteImporter.importVotes(batch);
+            if (txIdE.isEmpty()) {
+                return "Importing votes failed, reason:" + txIdE.getLeft();
+            }
 
-            log.info("Imported votes, txId:{}", txId);
+            log.info("Imported votes batch, txId:{}", txIdE.get());
         }
 
-        return "Importing votes...";
+        return "Imported votes.";
     }
 
     @Command(command = "batch-votes", description = "batch votes.")

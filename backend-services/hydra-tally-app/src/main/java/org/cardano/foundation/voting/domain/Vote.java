@@ -12,7 +12,7 @@ import static org.cardano.foundation.voting.utils.MoreUUID.isUUIDv4;
 public record Vote(
         UUID voteId,
         String eventId,
-        UUID categoryId,
+        String categoryId,
         UUID proposalId,
         String voterStakeAddressBech32,
         byte[] voterStakeAddress,
@@ -42,12 +42,6 @@ public record Vote(
             return Either.left(problem);
         }
 
-        if (!isUUIDv4(categoryId)) {
-            var problem = Problem.builder().withTitle("NO_UUID4").withDetail("Category must be UUID4").build();
-
-            return Either.left(problem);
-        }
-
         if (!isUUIDv4(proposalId)) {
             var problem = Problem.builder().withTitle("NO_UUID4").withDetail("Proposal must be UUID4").build();
 
@@ -65,7 +59,7 @@ public record Vote(
         var vote = new Vote(
                 UUID.fromString(voteId),
                 eventId,
-                UUID.fromString(categoryId),
+                categoryId,
                 UUID.fromString(proposalId),
                 voterStakeAddressBech32,
                 addrAsByteArray.get(),

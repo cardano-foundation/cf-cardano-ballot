@@ -19,8 +19,8 @@ import com.bloxbean.cardano.client.util.HexUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
 import lombok.val;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
@@ -33,14 +33,16 @@ import static com.bloxbean.cardano.client.plutus.spec.Language.PLUTUS_V2;
 import static com.bloxbean.cardano.client.transaction.util.CostModelUtil.getCostModelFromProtocolParams;
 
 @Component
-@RequiredArgsConstructor
 public class PlutusScripts {
 
-    private final Network network;
+    @Autowired
+    private Network network;
 
-    private final ObjectMapper objectMapper;
+    @Autowired
+    private ObjectMapper objectMapper;
 
-    private final ResourceLoader resourceLoader;
+    @Autowired
+    private ResourceLoader resourceLoader;
 
     @Value("${plutus.contract.path}")
     private String plutusCodePath;

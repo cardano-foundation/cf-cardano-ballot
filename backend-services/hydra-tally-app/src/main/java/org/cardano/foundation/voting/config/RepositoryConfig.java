@@ -17,9 +17,7 @@ public class RepositoryConfig {
     @Bean
     @SneakyThrows
     public VoteRepository voteRepository(ResourceLoader resourceLoader) {
-        var r = resourceLoader.getResource(votesPath);
-
-        return new LocalVoteRepository(votesPath);
+        return new LocalVoteRepository(resourceLoader, votesPath);
     }
 
 }

@@ -25,6 +25,7 @@ public class HydraConfig {
         return HydraClientOptions.builder(hydraWsUrl)
                 .utxoStore(uTxOStore)
                 .history(false)
+                .doNotPropagateLowLevelFailures(true)
                 .build();
     }
 

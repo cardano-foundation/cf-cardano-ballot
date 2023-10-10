@@ -1171,7 +1171,7 @@ const Nominees = () => {
                     lineHeight: '22px',
                   }}
                 >
-                  {i18n.t('nominees.receipt.nominee')}:
+                  {i18n.t('nominees.receipt.stakingAddress')}:
                 </Typography>
                 <Tooltip title={i18n.t('nominees.stakeAddressTooltip')}>
                   <InfoIcon

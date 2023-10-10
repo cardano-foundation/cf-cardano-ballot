@@ -69,6 +69,12 @@ const Leaderboard = () => {
     setValue(newValue);
   };
 
+  const breakpointColumnsObj = {
+    default: 3,
+    1100: 2,
+    700: 1,
+  };
+
   return (
     <div
       data-testid="leaderboard-page"
@@ -129,7 +135,7 @@ const Leaderboard = () => {
           </Box>
           <TabPanel value="1">
             <Masonry
-              breakpointCols={3}
+              breakpointCols={breakpointColumnsObj}
               className={styles.masonryGrid}
               columnClassName={styles.masonryGridColumn}
             >
@@ -137,62 +143,8 @@ const Leaderboard = () => {
                 <AwardsTile
                   key={index}
                   title={item.label}
-                >
-                  <Grid
-                    container
-                    spacing={0}
-                    direction="column"
-                    sx={{ marginTop: '25px' }}
-                  >
-                    <Grid
-                      container
-                      justifyContent="space-between"
-                    >
-                      <Typography
-                        variant="h5"
-                        className={styles.optionTitle}
-                      >
-                        Rank
-                      </Typography>
-                      <Typography
-                        variant="h5"
-                        className={styles.optionTitle}
-                      >
-                        Nominee
-                      </Typography>
-                      <Typography
-                        variant="h5"
-                        className={styles.optionTitle}
-                      >
-                        Votes
-                      </Typography>
-                    </Grid>
-                    {statsItems.map(({ label, id }) => (
-                      <React.Fragment key={id}>
-                        <div className={styles.divider} />
-                        <Grid
-                          container
-                          justifyContent="space-between"
-                          data-testid="total-stats-item"
-                          sx={{ my: '15px' }}
-                        >
-                          <Typography
-                            variant="h5"
-                            className={cn(styles.optionTitle, styles.statTitle)}
-                          >
-                            {label}
-                          </Typography>
-                          <Typography
-                            variant="h5"
-                            className={cn(styles.optionTitle, styles.statTitle)}
-                          >
-                            {stats?.find((category) => category.id === id).votes || placeholder}
-                          </Typography>
-                        </Grid>
-                      </React.Fragment>
-                    ))}
-                  </Grid>
-                </AwardsTile>
+                  categoryId={item.id}
+                />
               ))}
             </Masonry>
           </TabPanel>

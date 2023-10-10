@@ -6,6 +6,36 @@
   flex-direction: column !important;
   margin: 10px !important;
   background-color: white;
+  width: 414px;
+
+  .rankCard,
+  .rankCardNext {
+    border: 1px solid transparent !important;
+    border-radius: 8px;
+    background: #FFF;
+    text-align: center;
+    font-size: 12px;
+    margin: 2px !important;
+    .rankTitle {
+      width: 97px;
+      font-weight: 600;
+    }
+  }
+
+  .rankCard {
+    height: 224px;
+    vertical-align: middle;
+    flex-shrink: 0;
+    margin-top: -20px !important;
+    box-shadow: 4px 6px 20px 0px rgba(67, 70, 86, 0.10);
+  }
+  
+  .rankCardNext {
+    width: 118px;
+    height: 180px;
+    flex-shrink: 0;
+    box-shadow: 2px 3px 10px 0px rgba(67, 70, 86, 0.10);
+  }
 
   .awardTitle {
     color: #39486c !important;
@@ -14,5 +44,22 @@
     font-weight: 600 !important;
     line-height: 22px !important;
     letter-spacing: 0em !important;
+  }
+  .optionTitle {
+    color: #39486c !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    line-height: 22px !important;
+    letter-spacing: 0em !important;
+  }
+
+  .statTitle {
+    font-size: 16px !important;
+    color: #39486c !important;
+    font-weight: 400 !important;
+  }
+  .divider {
+    height: 1px;
+    background: #dfdfdf;
   }
 }

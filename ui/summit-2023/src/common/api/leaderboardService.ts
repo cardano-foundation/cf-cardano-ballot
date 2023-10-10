@@ -1,4 +1,4 @@
-import { ByEventStats } from 'types/voting-app-types';
+import { ByProposalsInCategoryStats, ByEventStats } from 'types/voting-app-types';
 import { DEFAULT_CONTENT_TYPE_HEADERS, doRequest, HttpMethods } from '../handlers/httpHandler';
 import { env } from '../constants/env';
 
@@ -10,7 +10,7 @@ const getStats = async () =>
   });
 
 const getCategoryLevelStats = async (categoryId) =>
-  await doRequest<ByEventStats>(HttpMethods.GET, `${LEADERBOARD_URL}/${env.EVENT_ID}/${categoryId}`, {
+  await doRequest<ByProposalsInCategoryStats>(HttpMethods.GET, `${LEADERBOARD_URL}/${env.EVENT_ID}/${categoryId}`, {
     ...DEFAULT_CONTENT_TYPE_HEADERS,
   });
 

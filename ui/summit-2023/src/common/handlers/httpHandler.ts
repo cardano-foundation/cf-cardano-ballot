@@ -12,6 +12,7 @@ export enum MediaTypes {
   APPLICATION_JSON_UTF8_FORM_URLENCODED = 'application/x-www-form-urlencoded',
   MULTIPART_FORM_DATA = 'multipart/form-data',
   APPLICATION_OCTET_STREAM = 'application/octet-stream',
+  BOOLEAN_TRUE = 'true',
 }
 
 export enum Headers {
@@ -159,7 +160,7 @@ async function executeRequest<T>(
   if (body && (method === HttpMethods.POST || method === HttpMethods.PUT || method === HttpMethods.PATCH)) {
     request['body'] = body;
   }
-
+  request.headers['X-Force-Leaderboard-Results'] = true;
   const responseHandler = responseHandlerDelegate<T>();
   return responseHandler.parse(await fetch(requestUri, request));
 }

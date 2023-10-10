@@ -40,7 +40,7 @@ jobs:
       - name: 🎳 Build cip-1694
         run: |
           cd ui/cip-1694
-          npm run react-inject-env && npm run build
+          npm run build
 
       - name: 🧘‍♀️ Download verification-app dependencies
         run: |

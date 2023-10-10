@@ -1,6 +1,7 @@
 package org.cardano.foundation.voting.service;
 
 import com.bloxbean.cardano.client.api.model.Result;
+import com.bloxbean.cardano.client.transaction.util.TransactionUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardanofoundation.hydra.reactor.HydraReactiveClient;
@@ -23,7 +24,9 @@ public class HydraTxProcessor implements TransactionProcessor {
     public Result<String> submitTransaction(byte[] txCbor) {
         log.info("Transaction size: {}", humanReadableByteCountBin(txCbor.length));
 
-        Mono<TxResult> txResultM = hydraClient.submitTxFullConfirmation(txCbor);
+        var txHash = TransactionUtil.getTxHash(txCbor);
+
+        Mono<TxResult> txResultM = hydraClient.submitTxFullConfirmation(txHash, txCbor);
         TxResult txResult = txResultM.block(Duration.ofMinutes(1));
 
         return Result.create(txResult.isValid(), txResult.getMessage())

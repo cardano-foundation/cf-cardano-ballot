@@ -1,6 +1,8 @@
 package org.cardano.foundation.voting.shell;
 
+import io.netty.util.internal.StringUtil;
 import io.vavr.control.Either;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import one.util.streamex.StreamEx;
@@ -11,15 +13,13 @@ import org.cardano.foundation.voting.service.HydraVoteImporter;
 import org.cardano.foundation.voting.utils.Partitioner;
 import org.cardanofoundation.hydra.core.model.HydraState;
 import org.cardanofoundation.hydra.core.model.UTXO;
-import org.cardanofoundation.hydra.core.model.query.response.CommittedResponse;
-import org.cardanofoundation.hydra.core.model.query.response.GreetingsResponse;
-import org.cardanofoundation.hydra.core.model.query.response.HeadIsAbortedResponse;
-import org.cardanofoundation.hydra.core.model.query.response.HeadIsClosedResponse;
+import org.cardanofoundation.hydra.core.model.query.response.*;
 import org.cardanofoundation.hydra.core.store.UTxOStore;
 import org.cardanofoundation.hydra.reactor.HydraReactiveClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.shell.command.annotation.Command;
+import org.springframework.shell.command.annotation.Option;
 import org.springframework.shell.standard.ShellOption;
 import org.zalando.problem.Problem;
 import shaded.com.google.common.collect.Lists;
@@ -27,7 +27,9 @@ import shaded.com.google.common.collect.Lists;
 import java.math.BigInteger;
 import java.time.Duration;
 import java.util.Map;
+import java.util.Optional;
 
+import static io.netty.util.internal.StringUtil.isNullOrEmpty;
 import static org.cardano.foundation.voting.utils.MoreComparators.createVoteComparator;
 
 @Slf4j
@@ -73,9 +75,52 @@ public class HydraCommands {
     @Value("${ballot.event.id}")
     private String eventId;
 
+    @Value("${hydra.auto.connect:false}")
+    private boolean autoConnect;
+
+    @PostConstruct
+    public void init() {
+        if (autoConnect) {
+            connect();
+        }
+    }
+
     @Command(command = "get-head-state", description = "gets the current hydra state.")
     public String getHydraState() {
-        return hydraClient.getHydraState().toString().toUpperCase();
+        return hydraClient.getHydraState().toString();
+    }
+
+    @Command(command = "get-utxos", description = "gets current hydra's head UTxOs.")
+    public String getUtxOs(@ShellOption(value = "address") @Option(required = false) String address) {
+        GetUTxOResponse getUTxOResponse = hydraClient.getUTxOs().block(Duration.ofMinutes(1));
+
+        if (getUTxOResponse == null) {
+            return "Cannot connect, unsupported state, hydra state:" + hydraClient.getHydraState();
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("HeadId: ");
+        sb.append(getUTxOResponse.getHeadId());
+        sb.append("\n\n");
+
+        getUTxOResponse.getUtxo()
+                .entrySet()
+                .stream()
+                .filter(entry -> {
+                    if (StringUtil.isNullOrEmpty(address)) {
+                        return true;
+                    }
+
+                    return entry.getValue().getAddress().equalsIgnoreCase(address);
+                })
+                .forEach(entry -> {
+
+                    sb.append(String.format("%s: %s", entry.getKey(), entry.getValue()));
+                    sb.append("\n");
+                });
+
+        return sb.toString();
     }
 
     @Command(command = "connect", description = "connects to the hydra network.")
@@ -117,7 +162,7 @@ public class HydraCommands {
     }
 
     @Command(command = "init-head", description = "inits the head.")
-    public String init() throws InterruptedException {
+    public String initHead() throws InterruptedException {
         log.info("Init the head...");
 
         var headIsInitializingResponse = hydraClient.initHead().block(Duration.ofMinutes(1));
@@ -208,7 +253,7 @@ public class HydraCommands {
     }
 
     @Command(command = "import-votes", description = "import votes.")
-    public String importVotes(@ShellOption(value = "batch-size", defaultValue = "10") int batchSize) throws Exception {
+    public String importVotes(@ShellOption(value = "batch-size", defaultValue = "10") @Option(required = false) int batchSize) throws Exception {
         log.info("Import votes...");
 
         if (hydraClient.getHydraState() == HydraState.Open) {

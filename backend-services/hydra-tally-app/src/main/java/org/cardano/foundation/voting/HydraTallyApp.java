@@ -52,7 +52,7 @@ public class HydraTallyApp implements PromptProvider {
 
 	@Override
 	public AttributedString getPrompt() {
-		var prompt = String.format("%s:%s:%s>>", actor, hydraReactiveClient.getHydraState().toString().toUpperCase(), network);
+		var prompt = String.format("%s:%s:%s>>", actor, hydraReactiveClient.getHydraState().toString(), network);
 
 		return new AttributedString(prompt);
 	}

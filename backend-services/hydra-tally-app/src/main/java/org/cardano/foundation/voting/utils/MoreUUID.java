@@ -15,7 +15,7 @@ public final class MoreUUID {
     }
 
     public static String shortUUID(int length) {
-        return java.util.UUID.randomUUID().toString().substring(0, length).toUpperCase();
+        return java.util.UUID.randomUUID().toString().substring(0, length);
     }
 
     public static long uuidHash(String uuid) {

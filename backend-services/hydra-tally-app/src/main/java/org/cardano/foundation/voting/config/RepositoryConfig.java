@@ -19,7 +19,7 @@ public class RepositoryConfig {
     public VoteRepository voteRepository(ResourceLoader resourceLoader) {
         var r = resourceLoader.getResource(votesPath);
 
-        return new LocalVoteRepository(r.getFile().getPath());
+        return new LocalVoteRepository(votesPath);
     }
 
 }

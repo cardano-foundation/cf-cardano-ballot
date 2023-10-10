@@ -9,6 +9,7 @@ import org.cardano.foundation.voting.service.HydraVoteImporter;
 import org.cardano.foundation.voting.utils.Partitioner;
 import org.cardanofoundation.hydra.core.model.query.response.CommittedResponse;
 import org.cardanofoundation.hydra.core.model.query.response.GreetingsResponse;
+import org.cardanofoundation.hydra.core.model.query.response.HeadIsAbortedResponse;
 import org.cardanofoundation.hydra.core.model.query.response.HeadIsClosedResponse;
 import org.cardanofoundation.hydra.core.store.UTxOStore;
 import org.cardanofoundation.hydra.reactor.HydraReactiveClient;
@@ -71,10 +72,20 @@ public class HydraCommands {
     }
 
     @Command(command = "connect", description = "connects to the hydra network.")
-    public String connect() throws InterruptedException {
+    public String connect() {
         log.info("Connecting to the hydra network:{}", hydraWsUrl);
 
         GreetingsResponse greetingsResponse = hydraClient.openConnection().block(Duration.ofMinutes(1));
+
+        hydraClient.getHydraStatesStream().doOnEach(hydraStateSignal -> {
+            if (hydraStateSignal.hasValue()) {
+                log.info("Hydra state: {}", hydraStateSignal.get());
+            }
+            if (hydraStateSignal.hasError()) {
+                log.error("Error in hydra state:", hydraStateSignal.getThrowable());
+            }
+        })
+        .subscribe();
 
         if (greetingsResponse == null) {
             return "Cannot connect, unsupported state, hydra state:" + hydraClient.getHydraState();
@@ -100,12 +111,15 @@ public class HydraCommands {
     public String abort() {
         log.info("Aborting from the hydra network...");
 
-        hydraClient.abortHead().block(Duration.ofMinutes(1));
+        HeadIsAbortedResponse headIsAbortedResponse = hydraClient.abortHead().block(Duration.ofMinutes(1));
+        if (headIsAbortedResponse == null) {
+            return "Cannot abort, unsupported state, hydra state:" + hydraClient.getHydraState();
+        }
 
         return "Aborted.";
     }
 
-    @Command(command = "init", description = "init.")
+    @Command(command = "init-head", description = "inits the head.")
     public String init() throws InterruptedException {
         log.info("Init the head...");
 
@@ -118,7 +132,7 @@ public class HydraCommands {
         return "Head is initialized.";
     }
 
-    @Command(command = "commit-empty", description = "commit no funds.")
+    @Command(command = "head-commit-empty", description = "commit no funds.")
     public String commitEmpty() {
         CommittedResponse committedResponse = hydraClient.commitEmptyToTheHead().block(Duration.ofMinutes(1));
 
@@ -129,7 +143,7 @@ public class HydraCommands {
         return "Committed empty (no funds).";
     }
 
-    @Command(command = "commit-funds", description = "commit funds.")
+    @Command(command = "head-commit-funds", description = "head commit funds.")
     public String commitFunds() {
         CommittedResponse committedResponse = hydraClient.commitEmptyToTheHead().block(Duration.ofMinutes(1));
 
@@ -140,7 +154,7 @@ public class HydraCommands {
         return "Committed funds.";
     }
 
-    @Command(command = "fan-out", description = "fan out.")
+    @Command(command = "head-fan-out", description = "head fan out.")
     public String fanOut() {
         var readyToFanoutResponse = hydraClient.fanOutHead().block(Duration.ofMinutes(1));
 
@@ -162,7 +176,7 @@ public class HydraCommands {
         return "Fan out completed.";
     }
 
-    @Command(command = "close-head", description = "close head.")
+    @Command(command = "head-close", description = "close head.")
     public String closeHead() {
         HeadIsClosedResponse headIsClosedResponse = hydraClient.closeHead().block(Duration.ofMinutes(1));
 

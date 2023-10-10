@@ -10,7 +10,7 @@ import org.cardanofoundation.hydra.cardano.client.lib.*;
 import org.cardanofoundation.hydra.client.HydraClientOptions;
 import org.cardanofoundation.hydra.core.store.InMemoryUTxOStore;
 import org.cardanofoundation.hydra.core.store.UTxOStore;
-import org.cardanofoundation.hydra.reactor.HydraClient;
+import org.cardanofoundation.hydra.reactor.HydraReactiveClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,8 +29,8 @@ public class HydraConfig {
     }
 
     @Bean
-    public HydraClient hydraTransactionClient(HydraClientOptions hydraClientOptions) {
-        return new HydraClient(hydraClientOptions);
+    public HydraReactiveClient hydraReactiveClient(HydraClientOptions hydraClientOptions) {
+        return new HydraReactiveClient(hydraClientOptions);
     }
 
     @Bean

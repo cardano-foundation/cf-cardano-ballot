@@ -5,8 +5,9 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
 import org.cardano.foundation.voting.domain.Vote;
+import org.springframework.core.io.ResourceLoader;
 
-import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -15,12 +16,14 @@ import java.util.Optional;
 @Slf4j
 public class LocalVoteRepository implements VoteRepository {
 
+    private ResourceLoader resourceLoader;
+
     private final String votesPath;
 
     @Override
     @SneakyThrows
     public List<Vote> findAllVotes(String eventId) {
-        var reader = new FileReader(votesPath);
+        var r = resourceLoader.getResource(votesPath);
 
         var votes = new ArrayList<Vote>();
 
@@ -42,7 +45,7 @@ public class LocalVoteRepository implements VoteRepository {
                 )
                 .build();
 
-        var votesParsed = format.parse(reader);
+        var votesParsed = format.parse(new InputStreamReader(r.getInputStream()));
 
         for (var vote : votesParsed) {
             var voteId = vote.get("id");

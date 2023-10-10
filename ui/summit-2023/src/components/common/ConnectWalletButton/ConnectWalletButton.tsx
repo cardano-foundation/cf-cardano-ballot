@@ -71,7 +71,7 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
       </Button>
       {isConnected && (
         <div className="disconnect-wrapper">
-          {!walletIsVerified ? (
+          {!walletIsVerified && !eventCache?.finished ? (
             <Button
               sx={{ zIndex: '99', cursor: walletIsVerified ? 'default' : 'pointer', margin: '4px 0px' }}
               className="connect-button verify-button"
@@ -82,7 +82,7 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
               Verify
             </Button>
           ) : null}
-          {((!session || isExpired) && walletIsVerified) || (!walletIsVerified && eventCache.finished) ? (
+          {((!session || isExpired) && walletIsVerified) || (isExpired && !walletIsVerified && eventCache.finished) ? (
             <Button
               sx={{ zIndex: '99', cursor: 'pointer', margin: '4px 0px' }}
               className="connect-button verify-button"

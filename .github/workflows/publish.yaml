@@ -298,6 +298,8 @@ jobs:
           REACT_APP_VOTING_VERIFICATION_APP_SERVER_URL: https://verification-api.dev.cf-cip1694-preprod.eu-west-1.metadata.dev.cf-deployments.org
           REACT_APP_EVENT_ID: FRUITS_CF62
           REACT_APP_CATEGORY_ID: FRUITS_CF62
+          REACT_APP_GOOGLE_FORM_URL: https://docs.google.com/forms/u/0/d/e/1FAIpQLSe-dSU0-bi8bjk0wiOaRXj02nxYLvgnpKBgc-eYGRpPYO-y5Q
+          REACT_APP_GOOGLE_FORM_VOTE_CONTEXT_INPUT_NAME: entry.75173622
           ARTIFACT_VERSION: ${{needs.build-version.outputs.ARTIFACT_VERSION}}-preprod
         with:
           context: ui/cip-1694
@@ -308,6 +310,8 @@ jobs:
             "REACT_APP_VOTING_VERIFICATION_APP_SERVER_URL=${{ env.REACT_APP_VOTING_VERIFICATION_APP_SERVER_URL }}"
             "REACT_APP_EVENT_ID=${{ env.REACT_APP_EVENT_ID }}"
             "REACT_APP_CATEGORY_ID=${{ env.REACT_APP_CATEGORY_ID }}"
+            "REACT_APP_GOOGLE_FORM_URL=${{ env.REACT_APP_GOOGLE_FORM_URL }}"
+            "REACT_APP_GOOGLE_FORM_VOTE_CONTEXT_INPUT_NAME=${{ env.REACT_APP_GOOGLE_FORM_VOTE_CONTEXT_INPUT_NAME }}"
           tags: |
             ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}/${{ env.APP_NAME }}:${{ env.ARTIFACT_VERSION }}
 

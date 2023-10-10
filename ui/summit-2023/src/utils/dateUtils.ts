@@ -20,7 +20,7 @@ export const formatUTCDate = (date: string) => {
   const monthName = monthNames[parsedDate.getUTCMonth()];
 
   const isoDate = parsedDate.toISOString();
-  return `${isoDate.substring(0, 4)} ${monthName} ${isoDate.substring(5, 7)}th ${isoDate.substring(11, 16)} UTC`;
+  return `${isoDate.substring(0, 4)} ${monthName} ${isoDate.substring(8, 10)}th ${isoDate.substring(11, 16)} UTC`;
 };
 
 

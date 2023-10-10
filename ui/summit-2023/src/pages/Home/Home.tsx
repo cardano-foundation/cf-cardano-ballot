@@ -8,7 +8,6 @@ import { NavLink } from 'react-router-dom';
 import { CustomButton } from '../../components/common/Button/CustomButton';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
-import { formatUTCDate } from 'utils/dateUtils';
 import Chip from '@mui/material/Chip';
 import EventIcon from '@mui/icons-material/Event';
 import { Trans } from 'react-i18next';
@@ -66,7 +65,7 @@ const Home: React.FC = () => {
               label={
                 hasEventFinished
                   ? 'Voting is now closed.'
-                  : `Voting closes 11 October 2023 23:59 UTC.`
+                  : 'Voting closes 11 October 2023 23:59 UTC'
               }
               color="primary"
             />

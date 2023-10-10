@@ -9,9 +9,14 @@ const getStats = async () =>
     ...DEFAULT_CONTENT_TYPE_HEADERS,
   });
 
+const getCategoryLevelStats = async (categoryId) =>
+  await doRequest<ByEventStats>(HttpMethods.GET, `${LEADERBOARD_URL}/${env.EVENT_ID}/${categoryId}`, {
+    ...DEFAULT_CONTENT_TYPE_HEADERS,
+  });
+
 const getWinners = async () =>
   await doRequest<{ categoryId; proposalId }[]>(HttpMethods.GET, `${LEADERBOARD_URL}/${env.EVENT_ID}/winners`, {
     ...DEFAULT_CONTENT_TYPE_HEADERS,
   });
 
-export { getStats, getWinners };
+export { getStats, getCategoryLevelStats, getWinners };

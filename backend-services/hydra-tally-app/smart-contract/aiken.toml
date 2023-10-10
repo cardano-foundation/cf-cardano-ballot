@@ -1,0 +1,8 @@
+name = "cardano-foundation/hydra-voting-poc"
+version = "0.0.1"
+licences = []
+description = "Hydra Voting PoC"
+
+dependencies = [
+  { name = "Cardano-Fans/acca", version = "4b777f402ed484699c3d2e2de62fe4308aab9b8a", source = "github" }
+]

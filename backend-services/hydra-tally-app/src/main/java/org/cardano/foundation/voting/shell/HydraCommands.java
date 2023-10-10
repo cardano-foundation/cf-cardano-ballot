@@ -5,17 +5,21 @@ import one.util.streamex.StreamEx;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.Vote;
 import org.cardano.foundation.voting.repository.VoteRepository;
-import org.cardano.foundation.voting.service.HydraTransactionClient;
 import org.cardano.foundation.voting.service.HydraVoteImporter;
 import org.cardano.foundation.voting.utils.Partitioner;
+import org.cardanofoundation.hydra.core.model.query.response.CommittedResponse;
+import org.cardanofoundation.hydra.core.model.query.response.GreetingsResponse;
+import org.cardanofoundation.hydra.core.model.query.response.HeadIsClosedResponse;
 import org.cardanofoundation.hydra.core.store.UTxOStore;
+import org.cardanofoundation.hydra.reactor.HydraReactiveClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.standard.ShellOption;
 import shaded.com.google.common.collect.Lists;
 
-import static java.util.concurrent.TimeUnit.MINUTES;
+import java.time.Duration;
+
 import static org.cardano.foundation.voting.utils.MoreComparators.createVoteComparator;
 
 @Slf4j
@@ -35,7 +39,7 @@ public class HydraCommands {
     private HydraVoteImporter hydraVoteImporter;
 
     @Autowired
-    private HydraTransactionClient hydraTransactionClient;
+    private HydraReactiveClient hydraClient;
 
     @Value("${hydra.ws.url}")
     private String hydraWsUrl;
@@ -63,87 +67,110 @@ public class HydraCommands {
 
     @Command(command = "get-head-state", description = "gets the current hydra state.")
     public String getHydraState() {
-        return hydraTransactionClient.getHydraState().toString();
+        return hydraClient.getHydraState().toString();
     }
 
-    @Command(command = "connect", description = "connects to the hydra cluster.")
+    @Command(command = "connect", description = "connects to the hydra network.")
     public String connect() throws InterruptedException {
-        hydraTransactionClient.openConnection(1, MINUTES);
+        log.info("Connecting to the hydra network:{}", hydraWsUrl);
 
-        return "Connecting...";
+        GreetingsResponse greetingsResponse = hydraClient.openConnection().block(Duration.ofMinutes(1));
+
+        if (greetingsResponse == null) {
+            return "Cannot connect, unsupported state, hydra state:" + hydraClient.getHydraState();
+        }
+
+        return "Connected.";
     }
 
-    @Command(command = "disconnect", description = "disconnect from the hydra cluster.")
+    @Command(command = "disconnect", description = "disconnect from the hydra network.")
     public String disconnect() throws InterruptedException {
-        hydraTransactionClient.closeConnection();
+        log.info("Disconnecting from the hydra network:{}", hydraWsUrl);
 
-        return "Disconnecting...";
+        Boolean disconnected = hydraClient.closeConnection().block(Duration.ofMinutes(1));
+
+        if (disconnected == null) {
+            return "Cannot disconnect, unsupported state, hydra state:" + hydraClient.getHydraState();
+        }
+
+        return "Disconnected.";
     }
 
     @Command(command = "abort", description = "aborting from the hydra cluster.")
     public String abort() {
-        var res = hydraTransactionClient.abortHead();
+        log.info("Aborting from the hydra network...");
 
-        if (res) {
-            log.info("Aborting from the hydra network...");
-        }
+        hydraClient.abortHead().block(Duration.ofMinutes(1));
 
-        return "Cannot abort, unsupported state, hydra state:" + hydraTransactionClient.getHydraState();
+        return "Aborted.";
     }
 
     @Command(command = "init", description = "init.")
     public String init() throws InterruptedException {
-        var res = hydraTransactionClient.initHead();
+        log.info("Init the head...");
 
-        if (res) {
-            return "Init...";
+        var headIsInitializingResponse = hydraClient.initHead().block(Duration.ofMinutes(1));
+
+        if (headIsInitializingResponse == null) {
+            return "Cannot init, unsupported state, hydra state:" + hydraClient.getHydraState();
         }
 
-        return "Cannot init..., network stake:" + hydraTransactionClient.getHydraState();
+        return "Head is initialized.";
     }
 
     @Command(command = "commit-empty", description = "commit no funds.")
     public String commitEmpty() {
-        var res = hydraTransactionClient.commitEmptyToTheHead();
+        CommittedResponse committedResponse = hydraClient.commitEmptyToTheHead().block(Duration.ofMinutes(1));
 
-        if (res) {
-            return "Committing no funds...";
+        if (committedResponse == null) {
+            return "Cannot commit, unsupported state, hydra state:" + hydraClient.getHydraState();
         }
 
-        return "Cannot commit, unsupported state, hydra state:" + hydraTransactionClient.getHydraState();
+        return "Committed empty (no funds).";
     }
 
     @Command(command = "commit-funds", description = "commit funds.")
     public String commitFunds() {
-        var res = hydraTransactionClient.commitFundsToTheHead(cardanoCommitAddress, cardanoCommitUtxo, cardanoCommitAmount);
+        CommittedResponse committedResponse = hydraClient.commitEmptyToTheHead().block(Duration.ofMinutes(1));
 
-        if (res) {
-            return "Committing utxo... " + cardanoCommitUtxo + " with amount: " + cardanoCommitAmount + " to address: " + cardanoCommitAddress;
+        if (committedResponse == null) {
+            return "Cannot commit, unsupported state, hydra state:" + hydraClient.getHydraState();
         }
 
-        return "Cannot commit, unsupported state, hydra state:" + hydraTransactionClient.getHydraState();
+        return "Committed funds.";
     }
 
     @Command(command = "fan-out", description = "fan out.")
     public String fanOut() {
-        var res = hydraTransactionClient.fanOutHead();
+        var readyToFanoutResponse = hydraClient.fanOutHead().block(Duration.ofMinutes(1));
 
-        if (res) {
-            return "Fan out...";
+        if (readyToFanoutResponse == null) {
+            return "Cannot fan out, unsupported state, hydra state:" + hydraClient.getHydraState();
         }
 
-        return "Cannot fan out, unsupported state, hydra state:" + hydraTransactionClient.getHydraState();
+        return "Fan out completed.";
+    }
+
+    @Command(command = "ready-fan-out", description = "ready to fan out.")
+    public String readyFanOut() {
+        var readyToFanoutResponse = hydraClient.readyToFanOut().block(Duration.ofMinutes(1));
+
+        if (readyToFanoutResponse == null) {
+            return "Cannot fan out, unsupported state, hydra state:" + hydraClient.getHydraState();
+        }
+
+        return "Fan out completed.";
     }
 
     @Command(command = "close-head", description = "close head.")
     public String closeHead() {
-        var res = hydraTransactionClient.closeHead();
+        HeadIsClosedResponse headIsClosedResponse = hydraClient.closeHead().block(Duration.ofMinutes(1));
 
-        if (res) {
-            return "Closing the head...";
+        if (headIsClosedResponse == null) {
+            return "Cannot close the head, unsupported state, hydra state:" + hydraClient.getHydraState();
         }
 
-        return "Cannot close the head, unsupported state, hydra state:" + hydraTransactionClient.getHydraState();
+        return "Head is closed.";
     }
 
     @Command(command = "import-votes", description = "import votes.")

@@ -18,6 +18,7 @@ configurations {
 
 repositories {
 	mavenCentral()
+	mavenLocal()
 	maven { url = uri("https://repo.spring.io/milestone") }
 }
 
@@ -30,11 +31,11 @@ dependencies {
 
 	implementation("org.springframework.shell:spring-shell-starter")
 
-	compileOnly("org.projectlombok:lombok:1.18.28")
-	annotationProcessor("org.projectlombok:lombok:1.18.28")
+	compileOnly("org.projectlombok:lombok:1.18.30")
+	annotationProcessor("org.projectlombok:lombok:1.18.30")
 
-	testCompileOnly("org.projectlombok:lombok:1.18.28")
-	testAnnotationProcessor("org.projectlombok:lombok:1.18.28")
+	testCompileOnly("org.projectlombok:lombok:1.18.30")
+	testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
 
 	implementation("org.apache.commons:commons-csv:1.10.0")
 
@@ -47,8 +48,9 @@ dependencies {
 	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.0")
 	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0")
 
-	implementation("org.cardanofoundation:hydra-java-client:0.0.6")
-	implementation("org.cardanofoundation:hydra-java-cardano-client-lib-adapter:0.0.6")
+	implementation("org.cardanofoundation:hydra-java-client:0.0.7-SNAPSHOT")
+	implementation("org.cardanofoundation:hydra-java-cardano-client-lib-adapter:0.0.7-SNAPSHOT")
+	implementation("org.cardanofoundation:hydra-java-reactive-reactor-client:0.0.7-SNAPSHOT")
 
 	implementation("one.util:streamex:0.8.1")
 

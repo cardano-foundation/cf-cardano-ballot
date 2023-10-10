@@ -6,11 +6,11 @@ import com.bloxbean.cardano.client.common.model.Network;
 import com.bloxbean.cardano.client.exception.CborSerializationException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.service.HydraTransactionClient;
 import org.cardanofoundation.hydra.cardano.client.lib.*;
 import org.cardanofoundation.hydra.client.HydraClientOptions;
 import org.cardanofoundation.hydra.core.store.InMemoryUTxOStore;
 import org.cardanofoundation.hydra.core.store.UTxOStore;
+import org.cardanofoundation.hydra.reactor.HydraClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,15 +23,14 @@ public class HydraConfig {
     public HydraClientOptions hydraClientOptions(UTxOStore uTxOStore,
                                                  @Value("${hydra.ws.url}") String hydraWsUrl) {
         return HydraClientOptions.builder(hydraWsUrl)
-                .withUTxOStore(uTxOStore)
+                .utxoStore(uTxOStore)
                 .history(false)
                 .build();
     }
 
     @Bean
-    public HydraTransactionClient hydraTransactionClient(UTxOStore uTxOStore,
-                                                         HydraClientOptions hydraClientOptions) {
-        return new HydraTransactionClient(uTxOStore, hydraClientOptions);
+    public HydraClient hydraTransactionClient(HydraClientOptions hydraClientOptions) {
+        return new HydraClient(hydraClientOptions);
     }
 
     @Bean

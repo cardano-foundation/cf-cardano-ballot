@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.68](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.67...v0.2.68) (2023-10-10)
+
+
+### Features
+
+* **cip-1694-ui:** make vote context optional ([f30729a](https://github.com/cardano-foundation/cf-cardano-ballot/commit/f30729a47e905221f598eda4ed710fd9292fd10d))
+* fix for category level stats. ([#444](https://github.com/cardano-foundation/cf-cardano-ballot/issues/444)) ([b8e9ea9](https://github.com/cardano-foundation/cf-cardano-ballot/commit/b8e9ea968a2d5e50f1329d6ca994dbea410a00e7))
+
 ## [0.2.67](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.66...v0.2.67) (2023-10-09)
 
 

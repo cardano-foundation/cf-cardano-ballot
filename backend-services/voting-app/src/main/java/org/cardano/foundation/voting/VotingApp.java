@@ -1,6 +1,8 @@
 package org.cardano.foundation.voting;
 
 import io.micrometer.core.aop.TimedAspect;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.servers.Server;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -34,6 +36,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 @Slf4j
 @ImportRuntimeHints(VotingApp.Hints.class)
+@OpenAPIDefinition(servers = {@Server(url = "/", description = "Default Server URL")})
 public class VotingApp {
 
 	public static void main(String[] args) {

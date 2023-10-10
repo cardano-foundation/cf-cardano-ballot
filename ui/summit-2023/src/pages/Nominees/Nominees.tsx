@@ -744,8 +744,8 @@ const Nominees = () => {
   };
 
   const showBanner =
-    (isConnected && isExpired) ||
-    (!isExpired && (categoryVoted || eventCache?.finished || (receipt && categoryId === receipt?.category)));
+      (isConnected && isExpired) ||
+    (!isExpired && categoryVoted && ( eventCache?.finished || (receipt && categoryId === receipt?.category)));
 
   return (
     <>

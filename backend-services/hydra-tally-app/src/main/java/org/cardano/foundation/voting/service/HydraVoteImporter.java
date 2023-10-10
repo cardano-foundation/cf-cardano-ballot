@@ -31,6 +31,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 import static com.bloxbean.cardano.client.common.ADAConversionUtil.adaToLovelace;
+import static java.math.BigDecimal.ZERO;
 import static org.cardano.foundation.voting.utils.MoreHash.unsignedHash;
 import static org.cardano.foundation.voting.utils.MoreUUID.uuidHash;
 
@@ -82,7 +83,7 @@ public class HydraVoteImporter {
                         .address(voteBatchContractAddress)
                         .value(Value
                                 .builder()
-                                .coin(adaToLovelace(BigDecimal.ZERO))
+                                .coin(adaToLovelace(ZERO))
                                 .build()
                         )
                         .inlineDatum(datum)

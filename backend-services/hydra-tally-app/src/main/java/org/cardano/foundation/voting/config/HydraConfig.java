@@ -37,7 +37,12 @@ public class HydraConfig {
     @Bean
     public ProtocolParamsSupplier protocolParamsSupplier(ObjectMapper objectMapper,
                                                          @Value("${hydra.protocol.parameters.path}") String hydraProtocolParametersPath) {
-        return new JacksonClasspathProtocolParametersSupplier(objectMapper, hydraProtocolParametersPath);
+        var jacksonClasspathProtocolParametersSupplier = new JacksonClasspathProtocolParametersSupplier(objectMapper, hydraProtocolParametersPath);
+
+        jacksonClasspathProtocolParametersSupplier.setMinFeeA(1);
+        jacksonClasspathProtocolParametersSupplier.setMinFeeB(1);
+
+        return jacksonClasspathProtocolParametersSupplier;
     }
 
     @Bean
@@ -63,7 +68,6 @@ public class HydraConfig {
     public HydraOperatorSupplier hydraOperatorSupplier(ObjectMapper objectMapper,
                                                        @Value("${hydra.operator.secret.file.path}") String hydraSecretFilePath,
                                                        Network network) throws CborSerializationException {
-
         log.info("Hydra's secret file path: {}", hydraSecretFilePath);
 
         return new JacksonClasspathSecretKeySupplierHydra(objectMapper, hydraSecretFilePath, network);

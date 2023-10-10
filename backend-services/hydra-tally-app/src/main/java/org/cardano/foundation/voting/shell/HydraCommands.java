@@ -9,6 +9,7 @@ import org.cardano.foundation.voting.domain.Vote;
 import org.cardano.foundation.voting.repository.VoteRepository;
 import org.cardano.foundation.voting.service.HydraVoteImporter;
 import org.cardano.foundation.voting.utils.Partitioner;
+import org.cardanofoundation.hydra.core.model.HydraState;
 import org.cardanofoundation.hydra.core.model.UTXO;
 import org.cardanofoundation.hydra.core.model.query.response.CommittedResponse;
 import org.cardanofoundation.hydra.core.model.query.response.GreetingsResponse;
@@ -74,7 +75,7 @@ public class HydraCommands {
 
     @Command(command = "get-head-state", description = "gets the current hydra state.")
     public String getHydraState() {
-        return hydraClient.getHydraState().toString();
+        return hydraClient.getHydraState().toString().toUpperCase();
     }
 
     @Command(command = "connect", description = "connects to the hydra network.")
@@ -210,33 +211,38 @@ public class HydraCommands {
     public String importVotes(@ShellOption(value = "batch-size", defaultValue = "10") int batchSize) throws Exception {
         log.info("Import votes...");
 
-        var participantVotes = StreamEx.of(voteRepository.findAllVotes(eventId))
-                .filter(v -> v.eventId().equals(eventId))
-                .filter(v -> {
-                    int participant = Partitioner.partition(v.voteId(), participants);
+        if (hydraClient.getHydraState() == HydraState.Open) {
+            var participantVotes = StreamEx.of(voteRepository.findAllVotes(eventId))
+                    .filter(v -> v.eventId().equals(eventId))
+                    .filter(v -> {
+                        int participant = Partitioner.partition(v.voteId(), participants);
 
-                    return participant == participantNumber;
-                })
-                .sorted(createVoteComparator())
-                .distinct(Vote::voteId)
-                .toList();
+                        return participant == participantNumber;
+                    })
+                    .sorted(createVoteComparator())
+                    .distinct(Vote::voteId)
+                    .toList();
 
-        for (var vote : participantVotes) {
-            log.info("Vote: {}", vote);
-        }
-
-        var partitioned = Lists.partition(participantVotes, batchSize);
-
-        for (var batch : partitioned) {
-            Either<Problem, String> txIdE = hydraVoteImporter.importVotes(batch);
-            if (txIdE.isEmpty()) {
-                return "Importing votes failed, reason:" + txIdE.getLeft();
+            for (var vote : participantVotes) {
+                log.info("Vote: {}", vote);
             }
 
-            log.info("Imported votes batch, txId:{}", txIdE.get());
+            var partitioned = Lists.partition(participantVotes, batchSize);
+
+            for (var batch : partitioned) {
+                Either<Problem, String> txIdE = hydraVoteImporter.importVotes(batch);
+                if (txIdE.isEmpty()) {
+                    return "Importing votes failed, reason:" + txIdE.getLeft();
+                }
+
+                log.info("Imported votes batch, txId:{}", txIdE.get());
+            }
+
+            return "Imported votes.";
         }
 
-        return "Imported votes.";
+
+        return "Cannot import votes, unsupported state, hydra state:" + hydraClient.getHydraState();
     }
 
     @Command(command = "batch-votes", description = "batch votes.")

@@ -1,4 +1,6 @@
 import React, { useState, useEffect, ReactElement } from 'react';
+import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import {
   useTheme,
   useMediaQuery,
@@ -16,18 +18,15 @@ import {
   Tooltip,
   Hidden,
 } from '@mui/material';
-import checkMark from '../../common/resources/images/checkmark-white.png';
-import labelVoted from '../../common/resources/images/checkmark-green.png';
-import ViewModuleIcon from '@mui/icons-material/ViewModule';
-import ViewListIcon from '@mui/icons-material/ViewList';
-import { Fade } from '@mui/material';
-import styles from './Categories.module.scss';
-import Grow from '@mui/material/Grow';
-import CATEGORY_IMAGES from '../../common/resources/data/categoryImages.json';
-import { Link } from 'react-router-dom';
 import CardMedia from '@mui/material/CardMedia';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import { useSelector } from 'react-redux';
+import ViewListIcon from '@mui/icons-material/ViewList';
+import { Fade, Grow } from '@mui/material';
+import ViewModuleIcon from '@mui/icons-material/ViewModule';
+import checkMark from '../../common/resources/images/checkmark-white.png';
+import labelVoted from '../../common/resources/images/checkmark-green.png';
+import styles from './Categories.module.scss';
+import CATEGORY_IMAGES from '../../common/resources/data/categoryImages.json';
 import { RootState } from '../../store';
 import { getUserInSession, tokenIsExpired } from '../../utils/session';
 
@@ -58,7 +57,7 @@ const Categories = () => {
       setListView('list');
     }
   }, [isMobile]);
-  
+
   const handleListView = (viewType: 'grid' | 'list') => {
     if (listView === viewType) return;
     setIsVisible(false);

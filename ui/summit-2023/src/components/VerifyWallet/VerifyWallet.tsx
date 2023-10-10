@@ -431,26 +431,16 @@ const VerifyWallet = (props: VerifyWalletProps) => {
           gutterBottom
           style={{ wordWrap: 'break-word', marginTop: '16px' }}
         >
-          1.{' '}Join our{' '}
-          <a
-            onClick={() => openNewTab(env.DISCORD_CHANNEL_URL)}
-          >
-          Discord Server
-          </a>{' '}
-          and accept our terms and conditions by reacting with a 🚀 to the message in the verification channel.
+          1. Join our <a onClick={() => openNewTab(env.DISCORD_CHANNEL_URL)}>Discord Server</a> and accept our terms and
+          conditions by reacting with a 🚀 to the message in the verification channel.
         </Typography>
         <Typography
           className="verify-wallet-modal-description"
           gutterBottom
           style={{ wordWrap: 'break-word', marginTop: '16px' }}
         >
-          2.{' '}Open the{' '}
-          <a
-            onClick={() => openNewTab(env.DISCORD_BOT_URL)}
-          >
-            Wallet Verification channel
-          </a>{' '}
-          and follow the instructions in Discord.
+          2. Open the <a onClick={() => openNewTab(env.DISCORD_BOT_URL)}>Wallet Verification channel</a> and follow the
+          instructions in Discord.
         </Typography>
         <Typography
           className="verify-wallet-modal-description"

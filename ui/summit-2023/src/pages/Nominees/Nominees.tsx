@@ -1442,11 +1442,13 @@ const Nominees = () => {
         >
           {i18n.t('nominees.successfullyVerified')}
         </Typography>
-        <div style={{ display: 'flex', justifyContent: 'center', width: '100%', marginTop: '24px' }}>
+        <div
+            onClick={() => handleCopyToClipboard({`https://beta.explorer.cardano.org/en/transaction/${receipt?.merkleProof?.transactionHash}`})}
+            style={{ display: 'flex', justifyContent: 'center', width: '100%', marginTop: '24px', cursor: 'pointer' }}>
           <QRCode
             size={256}
             style={{ height: 'auto', width: '200px' }}
-            value=""
+            value={`https://beta.explorer.cardano.org/en/transaction/${receipt?.merkleProof?.transactionHash}`}
             viewBox={'0 0 256 256'}
           />
         </div>

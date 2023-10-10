@@ -23,11 +23,8 @@ public class HydraTxProcessor implements TransactionProcessor {
     public Result<String> submitTransaction(byte[] txCbor) {
         log.info("Transaction size: {}", humanReadableByteCountBin(txCbor.length));
 
-        //String txHash = TransactionUtil.getTxHash(txCbor);
-
-        Mono<TxResult> mono = hydraClient.submitTxFullConfirmation(txCbor);
-
-        TxResult txResult = mono.block(Duration.ofMinutes(10));
+        Mono<TxResult> txResultM = hydraClient.submitTxFullConfirmation(txCbor);
+        TxResult txResult = txResultM.block(Duration.ofMinutes(1));
 
         return Result.create(txResult.isValid(), txResult.getMessage())
                 .withValue(txResult.getTxId());

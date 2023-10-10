@@ -52,7 +52,7 @@ cf-summit-2023-verification-api:
   enabled: true
   values:
     image:
-      tag: 0.2.64-783
+      tag: 0.2.67
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
     corsAllowedOrigins: https://{{ .Values.domain }},http://localhost:3000
 
@@ -60,7 +60,7 @@ cf-user-verification-service:
   enabled: true
   values:
     image:
-      tag: 0.2.64-783
+      tag: 0.2.67
     discordBotEventIdBinding: CF_SUMMIT_2023_025E
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
     corsAllowedOrigins: https://{{ .Values.domain }},http://localhost:3000
@@ -69,7 +69,7 @@ cf-summit-2023-ledger-follower-api:
   enabled: true
   values:
     image:
-      tag: 0.2.64-783
+      tag: 0.2.67
     bindOnEventIds: CF_SUMMIT_2023_025E
     yaci:
       startBlockHash: 3337e297121fda1262372c28de3d917bd2a60bb1e3c6326e3b7e832eb8017615

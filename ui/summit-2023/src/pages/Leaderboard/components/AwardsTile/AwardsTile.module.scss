@@ -1,0 +1,18 @@
+.awardCard {
+  border-radius: 16px !important;
+  border: 1px solid transparent !important;
+  box-shadow: 2px 2px 5px 0px #061d3c40 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  margin: 10px !important;
+  background-color: white;
+
+  .awardTitle {
+    color: #39486c !important;
+    text-align: center;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    line-height: 22px !important;
+    letter-spacing: 0em !important;
+  }
+}

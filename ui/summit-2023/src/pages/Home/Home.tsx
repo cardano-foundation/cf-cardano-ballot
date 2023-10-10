@@ -66,7 +66,7 @@ const Home: React.FC = () => {
               label={
                 hasEventFinished
                   ? 'Voting is now closed.'
-                  : `Voting closes ${formatUTCDate(eventCache?.eventEndDate?.toString())}.`
+                  : `Voting closes 11 October 2023 23:59 UTC.`
               }
               color="primary"
             />

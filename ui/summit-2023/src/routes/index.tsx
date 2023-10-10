@@ -17,8 +17,8 @@ export const ROUTES = {
   NOMINEES: `${PAGE_PATH}nominees`,
   LEADERBOARD: `${PAGE_PATH}leaderboard`,
   USER_GUIDE: `${PAGE_PATH}user-guide`,
-  TERMS_AND_CONDITIONS: `${PAGE_PATH}termsandconditions`,
-  PRIVACY_POLICY: `${PAGE_PATH}privacypolicy`,
+  TERMS_AND_CONDITIONS: `${PAGE_PATH}terms-and-conditions`,
+  PRIVACY_POLICY: `${PAGE_PATH}privacy-policy`,
   NOMINEES_BY_ID: `${PAGE_PATH}nominees/:categoryId`,
   PAGE_NOT_FOUND: `${PAGE_PATH}404`,
 };

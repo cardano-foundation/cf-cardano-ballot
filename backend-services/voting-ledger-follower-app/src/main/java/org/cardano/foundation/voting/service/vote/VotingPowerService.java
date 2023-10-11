@@ -26,8 +26,9 @@ public class VotingPowerService {
                         .build());
             }
             case STAKE_BASED -> {
-                var maybeAmount = blockchainDataStakePoolService.getStakeAmount(event.getSnapshotEpoch().orElseThrow(), stakeAddress)
-                        .filter(amount -> amount > 0);
+                var snapshotEpoch = event.getSnapshotEpoch().orElseThrow();
+                var maybeStakeAmount = blockchainDataStakePoolService.getStakeAmount(event.getSnapshotEpoch().orElseThrow(), stakeAddress);
+                var maybeAmount = maybeStakeAmount.filter(amount -> amount > 0);
 
                 if (maybeAmount.isEmpty()) {
                     yield Either.left(Problem.builder()

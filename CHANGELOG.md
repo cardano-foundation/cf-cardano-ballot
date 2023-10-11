@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.69](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.68...v0.2.69) (2023-10-11)
+
+
+### Features
+
+* **cip-1694-ui:** inject env vars via script ([#447](https://github.com/cardano-foundation/cf-cardano-ballot/issues/447)) ([4209ee8](https://github.com/cardano-foundation/cf-cardano-ballot/commit/4209ee8a9f1a46de663f62e6bd24f6df9c65d8f4))
+
 ## [0.2.68](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.67...v0.2.68) (2023-10-10)
 
 

@@ -27,9 +27,7 @@ import shaded.com.google.common.collect.Lists;
 import java.math.BigInteger;
 import java.time.Duration;
 import java.util.Map;
-import java.util.Optional;
 
-import static io.netty.util.internal.StringUtil.isNullOrEmpty;
 import static org.cardano.foundation.voting.utils.MoreComparators.createVoteComparator;
 
 @Slf4j
@@ -129,6 +127,10 @@ public class HydraCommands {
 
         GreetingsResponse greetingsResponse = hydraClient.openConnection().block(Duration.ofMinutes(1));
 
+        hydraClient.getHydraStatesStream().doOnNext(hydraState -> {
+            System.out.printf("%n%s -> %s%n", hydraState.getOldState(), hydraState.getNewState());
+        }).subscribe();
+
         if (greetingsResponse == null) {
             return "Cannot connect, unsupported state, hydra state:" + hydraClient.getHydraState();
         }
@@ -161,8 +163,8 @@ public class HydraCommands {
         return "Aborted.";
     }
 
-    @Command(command = "init-head", description = "inits the head.")
-    public String initHead() throws InterruptedException {
+    @Command(command = "head-init", description = "inits the hydra head.")
+    public String initHead() {
         log.info("Init the head...");
 
         var headIsInitializingResponse = hydraClient.initHead().block(Duration.ofMinutes(1));
@@ -171,11 +173,19 @@ public class HydraCommands {
             return "Cannot init, unsupported state, hydra state:" + hydraClient.getHydraState();
         }
 
-        for (var party : headIsInitializingResponse.getParties()) {
-            log.info("Party: {}", party);
-        }
+        var sb = new StringBuilder();
+        sb.append("HeadId: " + headIsInitializingResponse.getHeadId());
+        sb.append("\n\n");
 
-        return "Head is initialized.";
+        for (var party : headIsInitializingResponse.getParties()) {
+            sb.append("Party: "  + party);
+            sb.append("\n");
+        }
+        sb.append("\n");
+
+        sb.append("Head is initialized.");
+
+        return sb.toString();
     }
 
     @Command(command = "head-commit-empty", description = "commit no funds.")

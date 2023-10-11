@@ -19,7 +19,6 @@ import java.util.Optional;
 import static org.cardano.foundation.voting.domain.CardanoNetwork.PREPROD;
 import static org.cardano.foundation.voting.domain.SchemaVersion.V1;
 import static org.cardano.foundation.voting.domain.VotingEventType.USER_BASED;
-import static org.cardano.foundation.voting.utils.MoreUUID.shortUUID;
 
 @ShellComponent
 @Slf4j
@@ -41,11 +40,12 @@ public class CardanoSummit2023PreProdCommands {
 
         log.info("Creating CF-Summit 2023 on a PRE-PROD network...");
 
-        long startSlot = 40127992;
-        long endSlot = startSlot + (604800 * 2); // two weeks since 604800 is 1 week in seconds
+        long startSlot = 41336975 + 1800;
+        long endSlot = startSlot + 10800 + 10800;
+        long proposalsRevealSlot = endSlot;
 
         var createEventCommand = CreateEventCommand.builder()
-                .id(EVENT_NAME + "_" + shortUUID(4))
+                .id(EVENT_NAME + "_" + "4BCC")
                 .startSlot(Optional.of(startSlot))
                 .endSlot(Optional.of(endSlot))
                 .votingPowerAsset(Optional.empty())
@@ -56,7 +56,7 @@ public class CardanoSummit2023PreProdCommands {
                 .highLevelEventResultsWhileVoting(true)
                 .highLevelCategoryResultsWhileVoting(true)
                 .categoryResultsWhileVoting(false)
-                .proposalsRevealSlot(Optional.of(endSlot + 43200))
+                .proposalsRevealSlot(Optional.of(proposalsRevealSlot))
                 .build();
 
         l1SubmissionService.submitEvent(createEventCommand);

@@ -12,9 +12,9 @@ cf-cardano-ballot-ui:
   values:
     image:
       tag: 0.2.69-preprod
-    votingAppServerUrl: "https://api.{{ .Values.domain }}"
-    votingLedgerFollowerAppServerUrl: "https://follower-api.{{ .Values.domain }}"
-    votingVerificationAppServerUrl: "https://verification-api.{{ .Values.domain }}"
+    votingAppServerUrl: "https://api.cip1694.metadata.dev.cf-deployments.org"
+    votingLedgerFollowerAppServerUrl: "https://follower-api.cip1694.metadata.dev.cf-deployments.org"
+    votingVerificationAppServerUrl: "https://verification-api.cip1694.metadata.dev.cf-deployments.org"
     eventId: "FRUITS_CF62"
     categoryId: "FRUITS_CF62"
     googleGormUrl: "https://docs.google.com/forms/u/0/d/e/1FAIpQLSe-dSU0-bi8bjk0wiOaRXj02nxYLvgnpKBgc-eYGRpPYO-y5Q"
@@ -56,7 +56,6 @@ cf-cardano-ballot-ledger-follower-api:
     yaci:
       startBlockHash: 3337e297121fda1262372c28de3d917bd2a60bb1e3c6326e3b7e832eb8017615
       startSlotNumber: "38748711"
-    corsAllowedOrigins: https://{{ .Values.domain }},http://localhost:3000
     instances:
       - name: follower-1
         enabled: true

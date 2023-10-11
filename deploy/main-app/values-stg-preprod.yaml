@@ -12,6 +12,13 @@ cf-cardano-ballot-ui:
   values:
     image:
       tag: 0.2.68-preprod
+    votingAppServerUrl: "https://api.{{ .Values.domain }}"
+    votingLedgerFollowerAppServerUrl: "https://follower-api.{{ .Values.domain }}"
+    votingVerificationAppServerUrl: "https://verification-api.{{ .Values.domain }}"
+    eventId: ""
+    categoryId: ""
+    googleGormUrl: ""
+    googleFormVoteContextInputName: ""
 
 cf-cardano-ballot-voting-api:
   enabled: true

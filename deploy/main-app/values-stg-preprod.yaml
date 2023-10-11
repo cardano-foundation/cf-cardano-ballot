@@ -15,10 +15,10 @@ cf-cardano-ballot-ui:
     votingAppServerUrl: "https://api.{{ .Values.domain }}"
     votingLedgerFollowerAppServerUrl: "https://follower-api.{{ .Values.domain }}"
     votingVerificationAppServerUrl: "https://verification-api.{{ .Values.domain }}"
-    eventId: ""
-    categoryId: ""
-    googleGormUrl: ""
-    googleFormVoteContextInputName: ""
+    eventId: "FRUITS_CF62"
+    categoryId: "FRUITS_CF62"
+    googleGormUrl: "https://docs.google.com/forms/u/0/d/e/1FAIpQLSe-dSU0-bi8bjk0wiOaRXj02nxYLvgnpKBgc-eYGRpPYO-y5Q"
+    googleFormVoteContextInputName: "entry.75173622"
 
 cf-cardano-ballot-voting-api:
   enabled: true

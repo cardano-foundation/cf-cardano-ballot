@@ -23,8 +23,6 @@ export const formatUTCDate = (date: string) => {
   return `${isoDate.substring(0, 4)} ${monthName} ${isoDate.substring(8, 10)}th ${isoDate.substring(11, 16)} UTC`;
 };
 
-
-
 export const getMonthName = (index: number) => monthNames[index];
 
 export const getDateAndMonth = (date: string) => {

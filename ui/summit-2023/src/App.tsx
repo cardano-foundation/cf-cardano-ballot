@@ -45,7 +45,7 @@ function App() {
     try {
       const event = await getEvent(env.EVENT_ID);
 
-      // event.finished = true;
+      //event.finished = true;
       const staticCategories: CategoryContent[] = SUMMIT2023CONTENT.categories;
 
       const joinedCategories = event.categories

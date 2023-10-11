@@ -743,9 +743,10 @@ const Nominees = () => {
     );
   };
 
-  const showBanner =
-      (isConnected && isExpired) ||
-    (!isExpired && categoryVoted && ( eventCache?.finished || (receipt && categoryId === receipt?.category)));
+
+  const showBanner = isConnected && (
+      (isExpired) || (!isExpired && categoryVoted)
+  )
 
   return (
     <>
@@ -843,8 +844,7 @@ const Nominees = () => {
               >
                 {!isExpired
                   ? `${i18n.t('nominees.successfullyVoteCast')} ${summit2023Category.presentationName} category.`
-                  : `${i18n.t('nominees.signIn')}`
-                }
+                  : `${i18n.t('nominees.signIn')}`}
               </Typography>
             </div>
             <CustomButton
@@ -1402,7 +1402,9 @@ const Nominees = () => {
                       variant="body2"
                       sx={{ pointer: 'cursor' }}
                     >
-                      {receipt?.merkleProof ? JSON.stringify(receipt?.merkleProof || '', null, 4) : i18n.t('nominees.notAvailable')}
+                      {receipt?.merkleProof
+                        ? JSON.stringify(receipt?.merkleProof || '', null, 4)
+                        : i18n.t('nominees.notAvailable')}
                     </Typography>
                   </Box>
                   {receipt?.merkleProof ? (
@@ -1443,8 +1445,13 @@ const Nominees = () => {
           {i18n.t('nominees.successfullyVerified')}
         </Typography>
         <div
-            onClick={() => handleCopyToClipboard(`https://beta.explorer.cardano.org/en/transaction/${receipt?.merkleProof?.transactionHash}`)}
-            style={{ display: 'flex', justifyContent: 'center', width: '100%', marginTop: '24px', cursor: 'pointer' }}>
+          onClick={() =>
+            handleCopyToClipboard(
+              `https://beta.explorer.cardano.org/en/transaction/${receipt?.merkleProof?.transactionHash}`
+            )
+          }
+          style={{ display: 'flex', justifyContent: 'center', width: '100%', marginTop: '24px', cursor: 'pointer' }}
+        >
           <QRCode
             size={256}
             style={{ height: 'auto', width: '200px' }}
@@ -1478,7 +1485,7 @@ const Nominees = () => {
             lineHeight: '22px',
           }}
         >
-          {i18n.t('nominees.confirmVoteFor')}{' '}{votedNominee?.presentationName} [{selectedNomineeToVote?.id}]
+          {i18n.t('nominees.confirmVoteFor')} {votedNominee?.presentationName} [{selectedNomineeToVote?.id}]
         </Typography>
         <Box
           display="flex"

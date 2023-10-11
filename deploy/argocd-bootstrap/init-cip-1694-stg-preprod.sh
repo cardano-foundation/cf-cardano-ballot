@@ -39,7 +39,7 @@ kubectl create secret -n cf-cardano-ballot generic submit-api-secrets \
 
 ## Wallet Mnemonic secrets
 kubectl create secret -n cf-cardano-ballot generic wallet-secrets \
-  --from-env-file=../../.keys/cip1694-wallet-stg-secrets \
+  --from-env-file=../../.keys/wallet-secrets \
   --save-config \
   --dry-run=client \
   -o yaml \

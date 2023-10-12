@@ -13,7 +13,6 @@ import org.springframework.web.client.RestTemplate;
 import org.zalando.problem.Problem;
 import org.zalando.problem.spring.common.HttpStatusAdapter;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -77,31 +76,6 @@ public class ChainFollowerClient {
             return Either.left(Problem.builder()
                     .withTitle("TRANSACTION_DETAILS_ERROR")
                     .withDetail("Unable to get account details from chain-tip follower service, reason:" + e.getMessage())
-                    .withStatus(new HttpStatusAdapter(e.getStatusCode()))
-                    .build());
-        }
-    }
-
-    public Either<Problem, List<EventSummary>> findAllCommitmentWindowOpenEvents() {
-        var url = String.format("%s/api/reference/event", ledgerFollowerBaseUrl);
-
-        try {
-            var allEventSummaries = Optional.ofNullable(restTemplate.getForObject(url, EventSummary[].class))
-                    .map(Arrays::asList).orElse(List.of());
-
-            var allCommitmentsOpenWindowEvents = allEventSummaries.stream()
-                    .filter(EventSummary::commitmentsWindowOpen)
-                    .toList();
-
-            return Either.right(allCommitmentsOpenWindowEvents);
-        } catch (HttpClientErrorException e) {
-            if (e.getStatusCode() == NOT_FOUND) {
-                return Either.right(List.of());
-            }
-
-            return Either.left(Problem.builder()
-                    .withTitle("REFERENCE_ERROR")
-                    .withDetail("Unable to get event details from ledger follower service, reason:" + e.getMessage())
                     .withStatus(new HttpStatusAdapter(e.getStatusCode()))
                     .build());
         }

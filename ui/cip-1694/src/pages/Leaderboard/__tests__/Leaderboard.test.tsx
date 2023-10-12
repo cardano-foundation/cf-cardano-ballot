@@ -3,16 +3,19 @@
 var mockUseCardano = jest.fn();
 var mockGetStats = jest.fn();
 var mockPieChart = jest.fn();
+var mockToast = jest.fn();
 /* eslint-disable import/imports-first */
 import 'whatwg-fetch';
 import '@testing-library/jest-dom';
 import { expect } from '@jest/globals';
 import { screen, within, waitFor, cleanup } from '@testing-library/react';
+import BlockIcon from '@mui/icons-material/Block';
 import React from 'react';
 import { createMemoryHistory } from 'history';
 import capitalize from 'lodash/capitalize';
 import { ROUTES } from 'common/routes';
 import { UserState } from 'common/store/types';
+import { Toast } from 'components/common/Toast/Toast';
 import { renderWithProviders } from 'test/mockProviders';
 import { useCardanoMock, eventMock_finished, voteStats, eventMock_active } from 'test/mocks';
 import { CustomRouter } from 'test/CustomRouter';
@@ -67,6 +70,12 @@ jest.mock('common/api/leaderboardService', () => ({
   getStats: mockGetStats,
 }));
 
+jest.mock('react-hot-toast', () => ({
+  __esModule: true,
+  ...jest.requireActual('react-hot-toast'),
+  default: mockToast,
+}));
+
 describe('For the event that has already finished', () => {
   beforeEach(() => {
     mockUseCardano.mockReturnValue(useCardanoMock);
@@ -99,43 +108,43 @@ describe('For the event that has already finished', () => {
         })) || [];
 
     await waitFor(async () => {
-      const leaderboardPage = await screen.queryByTestId('leaderboard-page');
+      const leaderboardPage = screen.queryByTestId('leaderboard-page');
       expect(leaderboardPage).not.toBeNull();
 
-      const leaderboardTitle = await within(leaderboardPage).queryByTestId('leaderboard-title');
+      const leaderboardTitle = within(leaderboardPage).queryByTestId('leaderboard-title');
       expect(leaderboardTitle).not.toBeNull();
       expect(leaderboardTitle.textContent).toEqual('Leaderboard');
 
-      const pollStatsTile = await within(leaderboardPage).queryByTestId('poll-stats-tile');
+      const pollStatsTile = within(leaderboardPage).queryByTestId('poll-stats-tile');
       expect(pollStatsTile).not.toBeNull();
 
-      const pollStatsTileTitle = await within(pollStatsTile).queryByTestId('tile-title');
+      const pollStatsTileTitle = within(pollStatsTile).queryByTestId('tile-title');
       expect(pollStatsTileTitle).not.toBeNull();
       expect(pollStatsTileTitle.textContent).toEqual('Poll stats');
 
-      const pollStatsTileSummary = await within(pollStatsTile).queryByTestId('tile-summary');
+      const pollStatsTileSummary = within(pollStatsTile).queryByTestId('tile-summary');
       expect(pollStatsTileSummary).not.toBeNull();
       expect(pollStatsTileSummary.textContent).toEqual(`${statsSum}`);
 
-      const pollStatsItems = await within(pollStatsTile).queryAllByTestId('poll-stats-item');
+      const pollStatsItems = within(pollStatsTile).queryAllByTestId('poll-stats-item');
       for (const item in pollStatsItems) {
         expect(pollStatsItems[item].textContent).toEqual(
           `${capitalize(stats[item][0].toLowerCase())}${stats[item][1].votes}`
         );
       }
 
-      const currentlyVotingTile = await within(leaderboardPage).queryByTestId('currently-voting-tile');
+      const currentlyVotingTile = within(leaderboardPage).queryByTestId('currently-voting-tile');
       expect(currentlyVotingTile).not.toBeNull();
 
-      const currentlyVotingTileTitle = await within(currentlyVotingTile).queryByTestId('tile-title');
+      const currentlyVotingTileTitle = within(currentlyVotingTile).queryByTestId('tile-title');
       expect(currentlyVotingTileTitle).not.toBeNull();
       expect(currentlyVotingTileTitle.textContent).toEqual('Current voting stats');
 
-      const currentlyVotingTileSummary = await within(currentlyVotingTile).queryByTestId('tile-summary');
+      const currentlyVotingTileSummary = within(currentlyVotingTile).queryByTestId('tile-summary');
       expect(currentlyVotingTileSummary).not.toBeNull();
       expect(currentlyVotingTileSummary.textContent).toEqual(`${statsSum}`);
 
-      const currentlyVotingItems = await within(currentlyVotingTile).queryAllByTestId('currently-voting-item');
+      const currentlyVotingItems = within(currentlyVotingTile).queryAllByTestId('currently-voting-item');
       for (const item in pollStatsItems) {
         expect(currentlyVotingItems[item].textContent).toEqual(
           `${capitalize(stats[item][0].toLowerCase())} - ${getPercentage(
@@ -145,7 +154,7 @@ describe('For the event that has already finished', () => {
         );
       }
 
-      const currentlyVotingChart = await within(currentlyVotingTile).queryByTestId('pie-chart');
+      const currentlyVotingChart = within(currentlyVotingTile).queryByTestId('pie-chart');
       expect(currentlyVotingChart).toBeInTheDocument();
       expect(mockPieChart.mock.lastCall[0]).toEqual({
         style: { height: '200px', width: '200px' },
@@ -156,6 +165,31 @@ describe('For the event that has already finished', () => {
           color: proposalColorsMap[name],
         })),
       });
+    });
+  });
+
+  test('should display proper error if getStats throws', async () => {
+    const error = 'error';
+    mockGetStats.mockReset();
+    mockGetStats.mockImplementation(async () => await Promise.reject(error));
+
+    const history = createMemoryHistory({ initialEntries: [ROUTES.LEADERBOARD] });
+
+    renderWithProviders(
+      <CustomRouter history={history}>
+        <Leaderboard />
+      </CustomRouter>,
+      { preloadedState: { user: { event: eventMock_finished } as UserState } }
+    );
+
+    await waitFor(async () => {
+      expect(mockToast).toBeCalledWith(
+        <Toast
+          message={`Failed to fecth stats: ${error}`}
+          error
+          icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
+        />
+      );
     });
   });
 });
@@ -186,46 +220,46 @@ describe("For the event that hasn't finished yet", () => {
     await waitFor(async () => {
       expect(mockGetStats).not.toBeCalled();
 
-      const leaderboardPage = await screen.queryByTestId('leaderboard-page');
+      const leaderboardPage = screen.queryByTestId('leaderboard-page');
       expect(leaderboardPage).not.toBeNull();
 
-      const leaderboardTitle = await within(leaderboardPage).queryByTestId('leaderboard-title');
+      const leaderboardTitle = within(leaderboardPage).queryByTestId('leaderboard-title');
       expect(leaderboardTitle).not.toBeNull();
       expect(leaderboardTitle.textContent).toEqual('Leaderboard');
 
-      const pollStatsTile = await within(leaderboardPage).queryByTestId('poll-stats-tile');
+      const pollStatsTile = within(leaderboardPage).queryByTestId('poll-stats-tile');
       expect(pollStatsTile).not.toBeNull();
 
-      const pollStatsTileTitle = await within(pollStatsTile).queryByTestId('tile-title');
+      const pollStatsTileTitle = within(pollStatsTile).queryByTestId('tile-title');
       expect(pollStatsTileTitle).not.toBeNull();
       expect(pollStatsTileTitle.textContent).toEqual('Poll stats');
 
-      const pollStatsTileSummary = await within(pollStatsTile).queryByTestId('tile-summary');
+      const pollStatsTileSummary = within(pollStatsTile).queryByTestId('tile-summary');
       expect(pollStatsTileSummary).not.toBeNull();
       expect(pollStatsTileSummary.textContent).toEqual(`${statsSum}`);
 
-      const pollStatsItems = await within(pollStatsTile).queryAllByTestId('poll-stats-item');
+      const pollStatsItems = within(pollStatsTile).queryAllByTestId('poll-stats-item');
       for (const item in pollStatsItems) {
         expect(pollStatsItems[item].textContent).toEqual(`${capitalize(stats[item][0].toLowerCase())}${placeholder}`);
       }
 
-      const currentlyVotingTile = await within(leaderboardPage).queryByTestId('currently-voting-tile');
+      const currentlyVotingTile = within(leaderboardPage).queryByTestId('currently-voting-tile');
       expect(currentlyVotingTile).not.toBeNull();
 
-      const currentlyVotingTileTitle = await within(currentlyVotingTile).queryByTestId('tile-title');
+      const currentlyVotingTileTitle = within(currentlyVotingTile).queryByTestId('tile-title');
       expect(currentlyVotingTileTitle).not.toBeNull();
       expect(currentlyVotingTileTitle.textContent).toEqual('Current voting stats');
 
-      const currentlyVotingTileSummary = await within(currentlyVotingTile).queryByTestId('tile-summary');
+      const currentlyVotingTileSummary = within(currentlyVotingTile).queryByTestId('tile-summary');
       expect(currentlyVotingTileSummary).not.toBeNull();
       expect(currentlyVotingTileSummary.textContent).toEqual(`${statsSum}`);
 
-      const currentlyVotingItems = await within(currentlyVotingTile).queryAllByTestId('currently-voting-item');
+      const currentlyVotingItems = within(currentlyVotingTile).queryAllByTestId('currently-voting-item');
       for (const item in pollStatsItems) {
         expect(currentlyVotingItems[item].textContent).toEqual(`${capitalize(stats[item][0].toLowerCase())}`);
       }
 
-      const currentlyVotingChart = await within(currentlyVotingTile).queryByTestId('pie-chart');
+      const currentlyVotingChart = within(currentlyVotingTile).queryByTestId('pie-chart');
       expect(currentlyVotingChart).toBeInTheDocument();
       expect(mockPieChart.mock.lastCall[0]).toEqual({
         style: { height: '200px', width: '200px' },

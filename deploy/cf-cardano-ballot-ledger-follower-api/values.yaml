@@ -15,6 +15,7 @@ service:
 ingress:
   enabled: true
   disableActuatorEndpoint: true
+  additionalDomains: []
 
 resources: {}
   # limits:
@@ -54,3 +55,5 @@ startupProbe:
   initialDelaySeconds: 0
   periodSeconds: 30
   failureThreshold: 10
+
+cardanoSnapshotBoundsCheckEnabled: "false"

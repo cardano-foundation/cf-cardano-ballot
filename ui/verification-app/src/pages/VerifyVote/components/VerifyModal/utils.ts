@@ -13,7 +13,7 @@ export const descriptions = {
 };
 
 export const errors = {
-  [ERRORS.VERIFY]: 'Unable to verify vote receipt. Please try again',
+  [ERRORS.VERIFY]: 'Unable to verify vote',
   [ERRORS.JSON]: 'Invalid JSON. Please try again',
   [ERRORS.UNSUPPORTED_EVENT]: 'Unsupported event',
 };

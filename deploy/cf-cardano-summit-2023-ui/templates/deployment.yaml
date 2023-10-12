@@ -23,6 +23,8 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
+            - name: REACT_APP_VERSION
+              value: {{ .Values.image.tag | default .Chart.AppVersion | quote }}
             - name: REACT_APP_FRONTEND_URL
               value: {{ .Values.frontendUrl }}
             - name: REACT_APP_VOTING_APP_SERVER_URL
@@ -38,13 +40,13 @@ spec:
             - name: REACT_APP_EVENT_ID
               value: {{ .Values.eventId }}
             - name: REACT_APP_SUPPORTED_WALLETS
-              value: {{ .Values.supportedWallets | default "flint,eternl,nami,typhon,yoroi,nufi,gerowallet,lace" }}
-            - name: REACT_APP_VERSION
-              value: {{ .Values.image.tag }}
+              value: {{ .Values.supportedWallets | default "flint,eternl,nami,typhoncip30,yoroi,nufi,gerowallet,lace" }}
             - name: REACT_APP_DISCORD_CHANNEL_URL
               value: {{ .Values.discordChannelUrl }}
             - name: REACT_APP_DISCORD_BOT_URL
               value: {{ .Values.discordBotUrl }}
+            - name: REACT_APP_DISCORD_SUPPORT_CHANNEL_URL
+              value: {{ .Values.discordSupportChannelUrl }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}

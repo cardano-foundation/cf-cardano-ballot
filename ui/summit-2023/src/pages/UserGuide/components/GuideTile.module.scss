@@ -4,7 +4,7 @@
   display: flex !important;
   flex-direction: column !important;
   margin: 20px !important;
-  min-width: 340px;
+  max-width: 630px;
   background-color: white;
 
   .guideTitle {
@@ -21,5 +21,10 @@
     font-size: 16px !important;
     letter-spacing: 0em !important;
     text-align: left !important;
+  }
+
+  .link {
+    color: var(--color-medium-grey) !important;
+    cursor: pointer !important;
   }
 }

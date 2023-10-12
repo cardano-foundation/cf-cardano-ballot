@@ -3,8 +3,8 @@ import { Footer } from './components/common/Footer/Footer';
 import { BrowserRouter } from 'react-router-dom';
 import './App.scss';
 import { useDispatch, useSelector } from 'react-redux';
-import { setEventData, setUserVotes, setWalletIsLoggedIn, setWalletIsVerified } from './store/userSlice';
-import { Box, CircularProgress, Container, Grid } from '@mui/material';
+import { setEventData, setUserVotes, setWalletIsLoggedIn, setWalletIsVerified, setWinners } from './store/userSlice';
+import { Box, CircularProgress, Container, Grid, useMediaQuery, useTheme } from '@mui/material';
 import Header from './components/common/Header/Header';
 import { PageRouter } from './routes';
 import { env } from './common/constants/env';
@@ -19,18 +19,21 @@ import { TermsOptInModal } from 'components/LegalOptInModal';
 import { eventBus } from './utils/EventBus';
 import { CategoryContent } from './pages/Categories/Category.types';
 import SUMMIT2023CONTENT from 'common/resources/data/summit2023Content.json';
-import {hasEventEnded, resolveCardanoNetwork} from './utils/utils';
+import { resolveCardanoNetwork } from './utils/utils';
 import { parseError } from 'common/constants/errors';
 import { getUserVotes } from 'common/api/voteService';
+import { getWinners } from 'common/api/leaderboardService';
 
 function App() {
+  const theme = useTheme();
   const eventCache = useSelector((state: RootState) => state.user.event);
+  const walletIsVerified = useSelector((state: RootState) => state.user.walletIsVerified);
   const [termsAndConditionsChecked] = useLocalStorage(CB_TERMS_AND_PRIVACY, false);
   const [openTermDialog, setOpenTermDialog] = useState(false);
   const { isConnected, stakeAddress } = useCardano({ limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK) });
-  const walletIsVerified = useSelector((state: RootState) => state.user.walletIsVerified);
   const session = getUserInSession();
-  const eventHasEnded = hasEventEnded(eventCache?.eventEndDate)
+  const isExpired = tokenIsExpired(session?.expiresAt);
+  const isBigScreen = useMediaQuery(theme.breakpoints.up('lg'));
 
   const dispatch = useDispatch();
   const fetchEvent = useCallback(async () => {
@@ -51,7 +54,7 @@ function App() {
       event.categories = joinedCategories;
       dispatch(setEventData({ event }));
 
-      if (isConnected && !eventHasEnded) {
+      if (isConnected && !eventCache.finished) {
         try {
           const isVerified = await getIsVerified(env.EVENT_ID, stakeAddress);
           dispatch(setWalletIsVerified({ isVerified: isVerified.verified }));
@@ -62,8 +65,18 @@ function App() {
         }
       }
 
+      if ('finished' in event && event.finished) {
+        try {
+          const winners = await getWinners();
+          dispatch(setWinners({ winners }));
+        } catch (e) {
+          if (process.env.NODE_ENV === 'development') {
+            console.log(e.message);
+          }
+        }
+      }
+
       if (session) {
-        const isExpired = tokenIsExpired(session?.expiresAt);
         dispatch(setWalletIsLoggedIn({ isLoggedIn: !isExpired }));
         if (!isExpired) {
           getUserVotes(session?.accessToken)
@@ -77,35 +90,46 @@ function App() {
             });
         }
       }
-
-      if (((isConnected && walletIsVerified) || (isConnected || eventHasEnded)) && tokenIsExpired(session?.expiresAt)) {
-        eventBus.publish('openLoginModal');
-      }
     } catch (error: any) {
       if (process.env.NODE_ENV === 'development') {
         console.log(`Failed to fetch event, ${error?.info || error?.message || error?.toString()}`);
       }
-      eventBus.publish('showToast', parseError(error.message), 'error');
+
+      if (error.message !== 'EVENT_NOT_FOUND') eventBus.publish('showToast', parseError(error.message), 'error');
     }
-  }, [dispatch]);
+  }, [dispatch, stakeAddress]);
 
   useEffect(() => {
-    console.log('useeEffect fetchEvent');
     fetchEvent();
   }, [fetchEvent, stakeAddress]);
 
   useEffect(() => {
-    if (((isConnected && walletIsVerified) || (isConnected || eventHasEnded)) && (!session || tokenIsExpired(session?.expiresAt))) {
-      eventBus.publish('openLoginModal');
+    const queryParams = new URLSearchParams(location.search);
+    const action = queryParams.get('action');
+    const secret = queryParams.get('secret');
+
+    const isVerifiedEventNotEnded = walletIsVerified && !eventCache.finished;
+    const notVerifiedEventEnded = !walletIsVerified && eventCache.finished;
+    const sessionExpired = !session || isExpired;
+    const notDiscordVerification = !(action === 'verification' && secret.includes('|'));
+
+    const showLoginModal =
+      termsAndConditionsChecked &&
+      isConnected &&
+      notDiscordVerification &&
+      ((isVerifiedEventNotEnded && sessionExpired) || notVerifiedEventEnded);
+
+    if (showLoginModal) {
+      eventBus.publish('openLoginModal', 'If you already voted, please login to see your votes.');
     }
-  }, [stakeAddress, session]);
+  }, [isConnected]);
 
   useEffect(() => {
     setOpenTermDialog(!termsAndConditionsChecked);
   }, []);
 
   return (
-    <Container maxWidth="xl">
+    <Container maxWidth={isBigScreen ? 'lg' : 'xl'}>
       <BrowserRouter>
         <img
           src={'/static/home-graphic-bg-top.svg'}
@@ -128,7 +152,7 @@ function App() {
             xs={6}
           >
             <Box className="content">
-              {eventCache !== undefined ? (
+              {eventCache !== undefined && eventCache?.id.length ? (
                 <PageRouter />
               ) : (
                 <Box

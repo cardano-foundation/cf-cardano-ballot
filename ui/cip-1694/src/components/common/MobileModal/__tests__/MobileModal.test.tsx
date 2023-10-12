@@ -19,18 +19,18 @@ describe('MobileModal:', () => {
     render(<MobileModal {...props} />);
 
     await waitFor(async () => {
-      const modal = await screen.queryByTestId('mobile-menu-modal');
+      const modal = screen.queryByTestId('mobile-menu-modal');
       expect(modal).not.toBeNull();
 
-      const title = await within(modal).queryByTestId('mobile-menu-title');
+      const title = within(modal).queryByTestId('mobile-menu-title');
       expect(title).not.toBeNull();
       expect(title.textContent).toEqual(props.title);
 
-      const content = await within(modal).queryByTestId('mobile-menu-content');
+      const content = within(modal).queryByTestId('mobile-menu-content');
       expect(content).not.toBeNull();
       expect(content.textContent).toEqual(props.children);
 
-      const cta = await within(modal).queryByTestId('mobile-menu-cta');
+      const cta = within(modal).queryByTestId('mobile-menu-cta');
       expect(cta).not.toBeNull();
 
       fireEvent.click(cta);
@@ -46,7 +46,7 @@ describe('MobileModal:', () => {
     );
 
     await waitFor(async () => {
-      const modal = await screen.queryByTestId('mobile-menu-modal');
+      const modal = screen.queryByTestId('mobile-menu-modal');
       expect(modal).toBeNull();
     });
   });

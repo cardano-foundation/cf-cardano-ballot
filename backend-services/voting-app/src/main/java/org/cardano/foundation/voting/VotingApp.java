@@ -19,8 +19,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication(exclude = { SecurityAutoConfiguration.class, ErrorMvcAutoConfiguration.class, UserDetailsServiceAutoConfiguration.class })
@@ -31,14 +29,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 		"org.cardano.foundation.voting.service",
 		"org.cardano.foundation.voting.resource",
 		"org.cardano.foundation.voting.config",
-		"org.cardano.foundation.voting.client",
-		"org.cardano.foundation.voting.jobs"
+		"org.cardano.foundation.voting.client"
 })
 @EnableTransactionManagement
-@EnableScheduling
 @Slf4j
 @ImportRuntimeHints(VotingApp.Hints.class)
-@EnableAsync
 public class VotingApp {
 
 	public static void main(String[] args) {

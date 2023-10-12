@@ -28,7 +28,7 @@ import BlockIcon from '@mui/icons-material/Block';
 import { ROUTES } from 'common/routes';
 import { UserState } from 'common/store/types';
 import { EVENT_BY_ID_REFERENCE_URL } from 'common/api/referenceDataService';
-import { VotePage } from 'pages/Vote/Vote';
+import { VotePage, errorsMap } from 'pages/Vote/Vote';
 import { Toast } from 'components/common/Toast/Toast';
 import { VERIFICATION_URL } from 'common/api/verificationService';
 import { formatUTCDate, getDateAndMonth } from 'common/utils/dateUtils';
@@ -634,6 +634,58 @@ describe('For ongoing event:', () => {
     expect(mockToast).toBeCalledWith(
       <Toast
         message={'Unable to submit your vote. Please try again'}
+        error
+        icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
+      />
+    );
+  });
+
+  test('should show proper error if failed to fetch voting power during vote submitting due to STAKE_AMOUNT_NOT_AVAILABLE error', async () => {
+    const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
+
+    mockUseCardano.mockReset();
+    mockUseCardano.mockReturnValue({
+      ...useCardanoMock,
+      stakeAddress: 'stakeAddress',
+      signMessage: mockSignMessage,
+    });
+    mockGetSignedMessagePromise.mockReset();
+    mockGetSignedMessagePromise.mockImplementation(
+      (signMessage: (message: string) => string) => async (message: string) => await signMessage(message)
+    );
+    const error = { message: 'STAKE_AMOUNT_NOT_AVAILABLE' };
+    mockGetVotingPower.mockReset();
+    mockGetVotingPower.mockImplementation(async () => await Promise.reject(error));
+    mockBuildCanonicalVoteInputJson.mockReset();
+    mockBuildCanonicalVoteInputJson.mockReturnValue(canonicalVoteInputJsonMock);
+
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
+
+    await act(async () => {
+      renderWithProviders(
+        <CustomRouter history={history}>
+          <VotePage />
+        </CustomRouter>,
+        { preloadedState: { user: { event: eventMock_active, tip: chainTipMock } as UserState } }
+      );
+    });
+
+    const votePage = screen.queryByTestId('vote-page');
+
+    const options = within(votePage).queryAllByTestId('option-card');
+
+    await act(async () => {
+      fireEvent.click(options[0]);
+    });
+
+    const cta = within(votePage).queryByTestId('proposal-submit-button');
+
+    await act(async () => {
+      fireEvent.click(cta);
+    });
+    expect(mockToast).toBeCalledWith(
+      <Toast
+        message={errorsMap['STAKE_AMOUNT_NOT_AVAILABLE']('stakeAddress')}
         error
         icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
       />

@@ -11,7 +11,7 @@ export const Toast = ({
   icon,
   error = false,
 }: {
-  message: string;
+  message: string | React.ReactNode;
   icon?: React.ReactNode;
   error?: boolean;
 }) => (

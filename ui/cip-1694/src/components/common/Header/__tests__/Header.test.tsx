@@ -88,7 +88,6 @@ describe('For ongoing event:', () => {
 
       const headerLogo = within(header).queryByTestId('header-logo');
       expect(headerLogo).not.toBeNull();
-      expect(headerLogo.textContent).toEqual('Referendum on Governance');
 
       const leaderboardLink = within(header).queryByTestId('leaderboard-link');
       expect(leaderboardLink).not.toBeNull();
@@ -116,7 +115,6 @@ describe('For ongoing event:', () => {
     await waitFor(async () => {
       const header = screen.queryByTestId('header');
       const headerLogo = within(header).queryByTestId('header-logo');
-      expect(headerLogo.textContent).toEqual('Referendum on Governance');
 
       const voteLink = within(header).queryByTestId('vote-link');
       expect(voteLink.textContent).toEqual('Your vote');

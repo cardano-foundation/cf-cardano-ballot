@@ -1,6 +1,7 @@
 package org.cardano.foundation.voting.shell;
 
-import io.netty.util.internal.StringUtil;
+import com.bloxbean.cardano.client.api.exception.ApiException;
+import com.bloxbean.cardano.client.exception.CborSerializationException;
 import io.vavr.control.Either;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
@@ -9,9 +10,10 @@ import one.util.streamex.StreamEx;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.Vote;
 import org.cardano.foundation.voting.repository.VoteRepository;
+import org.cardano.foundation.voting.service.HydraVoteBatcher;
 import org.cardano.foundation.voting.service.HydraVoteImporter;
+import org.cardano.foundation.voting.service.PlutusScriptLoader;
 import org.cardano.foundation.voting.utils.Partitioner;
-import org.cardanofoundation.hydra.core.model.HydraState;
 import org.cardanofoundation.hydra.core.model.UTXO;
 import org.cardanofoundation.hydra.core.model.query.response.*;
 import org.cardanofoundation.hydra.core.store.UTxOStore;
@@ -27,8 +29,11 @@ import shaded.com.google.common.collect.Lists;
 import java.math.BigInteger;
 import java.time.Duration;
 import java.util.Map;
+import java.util.Optional;
 
+import static io.netty.util.internal.StringUtil.isNullOrEmpty;
 import static org.cardano.foundation.voting.utils.MoreComparators.createVoteComparator;
+import static org.cardanofoundation.hydra.core.model.HydraState.Open;
 
 @Slf4j
 @Command(group = "hydra")
@@ -45,6 +50,12 @@ public class HydraCommands {
 
     @Autowired
     private HydraVoteImporter hydraVoteImporter;
+
+    @Autowired
+    private HydraVoteBatcher hydraVoteBatcher;
+
+    @Autowired
+    private PlutusScriptLoader plutusScriptLoader;
 
     @Autowired
     private HydraReactiveClient hydraClient;
@@ -80,6 +91,8 @@ public class HydraCommands {
     public void init() {
         if (autoConnect) {
             connect();
+            initHead();
+            commitFunds();
         }
     }
 
@@ -96,27 +109,28 @@ public class HydraCommands {
             return "Cannot connect, unsupported state, hydra state:" + hydraClient.getHydraState();
         }
 
-        StringBuilder sb = new StringBuilder();
-
+        val sb = new StringBuilder();
         sb.append("HeadId: ");
         sb.append(getUTxOResponse.getHeadId());
         sb.append("\n\n");
 
-        getUTxOResponse.getUtxo()
+        var no = 0;
+        var utxos = getUTxOResponse.getUtxo()
                 .entrySet()
                 .stream()
                 .filter(entry -> {
-                    if (StringUtil.isNullOrEmpty(address)) {
+                    if (isNullOrEmpty(address)) {
                         return true;
                     }
 
                     return entry.getValue().getAddress().equalsIgnoreCase(address);
                 })
-                .forEach(entry -> {
+                .toList();
 
-                    sb.append(String.format("%s: %s", entry.getKey(), entry.getValue()));
-                    sb.append("\n");
-                });
+        for (var utxo: utxos) {
+            sb.append(String.format("%d. %s: %s", ++no, utxo.getKey(), utxo.getValue()));
+            sb.append("\n");
+        }
 
         return sb.toString();
     }
@@ -188,21 +202,6 @@ public class HydraCommands {
         return sb.toString();
     }
 
-    @Command(command = "head-commit-empty", description = "commit no funds.")
-    public String commitEmpty() {
-        CommittedResponse committedResponse = hydraClient.commitEmptyToTheHead().block(Duration.ofMinutes(1));
-
-        if (committedResponse == null) {
-            return "Cannot commit, unsupported state, hydra state:" + hydraClient.getHydraState();
-        }
-
-        committedResponse.getUtxo().forEach((key, value) -> {
-            log.info("utxo: {}, value: {}", key, value);
-        });
-
-        return "Committed empty (no funds).";
-    }
-
     @Command(command = "head-commit-funds", description = "head commit funds.")
     public String commitFunds() {
         val utxo = new UTXO();
@@ -263,11 +262,14 @@ public class HydraCommands {
     }
 
     @Command(command = "import-votes", description = "import votes.")
-    public String importVotes(@ShellOption(value = "batch-size", defaultValue = "10") @Option(required = false) int batchSize) throws Exception {
-        log.info("Import votes...");
+    public String importVotes(@ShellOption(value = "batch-size", defaultValue = "10") @Option int batchSize) throws Exception {
+        log.info("Import votes, batchSize: {}", batchSize);
 
-        if (hydraClient.getHydraState() == HydraState.Open) {
-            var participantVotes = StreamEx.of(voteRepository.findAllVotes(eventId))
+        if (hydraClient.getHydraState() != Open) {
+            return "Importing votes failed, reason:" + hydraClient.getHydraState();
+        }
+
+        var participantVotes = StreamEx.of(voteRepository.findAllVotes(eventId))
                     .filter(v -> v.eventId().equals(eventId))
                     .filter(v -> {
                         int participant = Partitioner.partition(v.voteId(), participants);
@@ -278,14 +280,14 @@ public class HydraCommands {
                     .distinct(Vote::voteId)
                     .toList();
 
-            for (var vote : participantVotes) {
+            for (val vote : participantVotes) {
                 log.info("Vote: {}", vote);
             }
 
             var partitioned = Lists.partition(participantVotes, batchSize);
 
-            for (var batch : partitioned) {
-                Either<Problem, String> txIdE = hydraVoteImporter.importVotes(batch);
+            for (val batch : partitioned) {
+                val txIdE = hydraVoteImporter.importVotes(batch);
                 if (txIdE.isEmpty()) {
                     return "Importing votes failed, reason:" + txIdE.getLeft();
                 }
@@ -294,22 +296,52 @@ public class HydraCommands {
             }
 
             return "Imported votes.";
-        }
-
-
-        return "Cannot import votes, unsupported state, hydra state:" + hydraClient.getHydraState();
     }
 
     @Command(command = "batch-votes", description = "batch votes.")
-    public String batchVotes() {
-        log.info("Batch votes...");
+    public String batchVotes(@ShellOption(value = "batch-size", defaultValue = "10") @Option int batchSize) throws Exception {
+        log.info("Batch votes, batchSize: {}", batchSize);
 
-        // look at number of votes
-        // calculate tx count
-        // get from to contract address and
-        // send back to the contract address
+        if (hydraClient.getHydraState() != Open) {
+            return "Batching votes failed, reason:" + hydraClient.getHydraState();
+        }
 
-        return "Batching votes...";
+        val allCategories = voteRepository.getAllUniqueCategories(eventId);
+
+        for (val categoryId : allCategories) {
+            log.info("Processing category: {}", categoryId);
+
+            batchVotesPerCategory(batchSize, categoryId);
+        }
+
+        return "Vote batches creations done.";
+    }
+
+    private void batchVotesPerCategory(int batchSize, String categoryId) throws CborSerializationException, ApiException {
+        val contract = plutusScriptLoader.getContract(categoryId);
+        log.info("Contract Address: {}", plutusScriptLoader.getContractAddress(contract));
+
+        Either<Problem, Optional<String>> batchTransactionResultE;
+        do {
+            batchTransactionResultE = hydraVoteBatcher.createAndPostBatchTransaction(categoryId, batchSize);
+
+            if (batchTransactionResultE.isEmpty()) {
+                log.error("Batching votes failed, reason:{}", batchTransactionResultE.getLeft());
+                return;
+            }
+
+            val batchTransactionResultM = batchTransactionResultE.get();
+
+            if (batchTransactionResultM.isEmpty()) {
+                log.info("No more batches to create within category: {}", categoryId);
+                break;
+            }
+
+            val txId = batchTransactionResultM.orElseThrow();
+
+            log.info("Batched votes, txId: " + txId);
+
+        } while (batchTransactionResultE.isRight() && batchTransactionResultE.get().isPresent());
     }
 
     @Command(command = "reduce-votes", description = "reduce votes.")

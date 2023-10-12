@@ -57,7 +57,7 @@ dependencies {
     implementation("io.vavr:vavr:0.10.4")
     implementation("org.zalando:problem-spring-web-starter:0.29.1")
 
-	implementation("com.bloxbean.cardano:aiken-java-binding:0.0.7")
+	implementation("com.bloxbean.cardano:aiken-java-binding:0.0.8")
 }
 
 dependencyManagement {

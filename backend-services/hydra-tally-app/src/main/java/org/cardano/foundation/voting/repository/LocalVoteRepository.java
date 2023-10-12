@@ -1,16 +1,20 @@
 package org.cardano.foundation.voting.repository;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
 import org.cardano.foundation.voting.domain.Vote;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
 
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -19,6 +23,19 @@ public class LocalVoteRepository implements VoteRepository {
     private final ResourceLoader resourceLoader;
 
     private final String votesPath;
+
+    @Value("${ballot.event.id}")
+    private String ballotEventId;
+
+    private Set<String> allCategories;
+
+    @PostConstruct
+    public void init() {
+        this.allCategories = findAllVotes(ballotEventId)
+                .parallelStream()
+                .map(Vote::categoryId)
+                .collect(Collectors.toSet());
+    }
 
     @Override
     @SneakyThrows
@@ -78,6 +95,11 @@ public class LocalVoteRepository implements VoteRepository {
         }
 
         return votes;
+    }
+
+    @Override
+    public Set<String> getAllUniqueCategories(String eventId) {
+        return allCategories;
     }
 
 }

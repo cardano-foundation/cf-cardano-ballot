@@ -40,7 +40,7 @@ public class BackendServiceBlockchainDataTransactionDetailsService implements Bl
                         .finalityScore(TransactionDetails.FinalityScore.fromConfirmations(txConfirmations))
                         .network(network)
                         .absoluteSlot(trx.getSlot())
-                        .blockHash(trx.getHash())
+                        .blockHash(trx.getBlock())
                         .build())
                 );
             }

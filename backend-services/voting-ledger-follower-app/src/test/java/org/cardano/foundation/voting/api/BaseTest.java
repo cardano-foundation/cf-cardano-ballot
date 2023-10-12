@@ -9,9 +9,11 @@ import org.cardano.foundation.voting.domain.VotingEventType;
 import org.cardano.foundation.voting.domain.VotingPowerAsset;
 import org.cardano.foundation.voting.domain.entity.Category;
 import org.cardano.foundation.voting.domain.entity.Event;
+import org.cardano.foundation.voting.domain.entity.MerkleRootHash;
 import org.cardano.foundation.voting.domain.entity.Proposal;
 import org.cardano.foundation.voting.repository.CategoryRepository;
 import org.cardano.foundation.voting.repository.EventRepository;
+import org.cardano.foundation.voting.repository.MerkleRootHashRepository;
 import org.cardano.foundation.voting.repository.ProposalRepository;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -49,6 +51,9 @@ public class BaseTest {
 
     @Autowired
     private ProposalRepository proposalRepository;
+
+    @Autowired
+    private MerkleRootHashRepository merkleRootHashRepository;
 
     private WireMockServer wireMockServer;
 
@@ -119,6 +124,52 @@ public class BaseTest {
                                 .withHeader("Content-Type", "application/json")
                                 .withBody(latestBlockResponse)));
 
+        String transactionResponse = "{" +
+                "\"hash\": \"1e043f100dce12d107f679685acd2fc0610e10f72a92d412794c9773d11d8477\"," +
+                "\"block\": \"356b7d7dbb696ccd12775c016941057a9dc70898d87a63fc752271bb46856940\"," +
+                "\"block_height\": 123456," +
+                "\"block_time\": 1635505891," +
+                "\"slot\": 42000000," +
+                "\"index\": 1," +
+                "\"output_amount\": [" +
+                "{" +
+                "\"unit\": \"lovelace\"," +
+                "\"quantity\": \"42000000\"" +
+                "}," +
+                "{" +
+                "\"unit\": \"b0d07d45fe9514f80213f4020e5a61241458be626841cde717cb38a76e7574636f696e\"," +
+                "\"quantity\": \"12\"" +
+                "}" +
+                "]," +
+                "\"fees\": \"182485\"," +
+                "\"deposit\": \"0\"," +
+                "\"size\": 433," +
+                "\"invalid_before\": null," +
+                "\"invalid_hereafter\": \"13885913\"," +
+                "\"utxo_count\": 4," +
+                "\"withdrawal_count\": 0," +
+                "\"mir_cert_count\": 0," +
+                "\"delegation_count\": 0," +
+                "\"stake_cert_count\": 0," +
+                "\"pool_update_count\": 0," +
+                "\"pool_retire_count\": 0," +
+                "\"asset_mint_or_burn_count\": 0," +
+                "\"redeemer_count\": 0," +
+                "\"valid_contract\": true" +
+                "}";
+
+        wireMockServer.stubFor(
+                WireMock.get(urlEqualTo("/yaci-api/txs/1e043f100dce12d107f679685acd2fc0610e10f72a92d412794c9773d11d8477"))
+                        .willReturn(com.github.tomakehurst.wiremock.client.WireMock.aResponse()
+                                .withStatus(200)
+                                .withHeader("Content-Type", "application/json")
+                                .withBody(transactionResponse)));
+
+        wireMockServer.stubFor(
+                WireMock.get(urlEqualTo("/yaci-api/txs/23ab9463463eb149054d22249433f1bfd5acbbf8af38cc64f3840b0491230880"))
+                        .willReturn(com.github.tomakehurst.wiremock.client.WireMock.aResponse()
+                                .withStatus(404)));
+
         Event event = Event.builder()
                 .id("CF_TEST_EVENT_01")
                 .organisers("Cardano Foundation")
@@ -166,10 +217,22 @@ public class BaseTest {
         categoryRepository.save(category);
         proposalRepository.save(proposalYes);
         proposalRepository.save(proposalNo);
+
+        MerkleRootHash merkleRootHash = MerkleRootHash.builder()
+                .eventId("CF_TEST_EVENT_01")
+                .merkleRootHash("23ab9463463eb149054d22249433f1bfd5acbbf8af38cc64f3840b0491230880")
+                .absoluteSlot(412439L)
+                .build();
+
+        merkleRootHashRepository.save(merkleRootHash);
     }
 
     @AfterAll
     public void tearDown() {
         wireMockServer.stop();
+        proposalRepository.deleteAll();
+        categoryRepository.deleteAll();
+        eventRepository.deleteAll();
+        merkleRootHashRepository.deleteAll();
     }
 }

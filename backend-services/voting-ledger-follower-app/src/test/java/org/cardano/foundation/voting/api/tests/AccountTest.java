@@ -5,7 +5,6 @@ import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
 import org.apache.http.params.CoreConnectionPNames;
 import org.cardano.foundation.voting.api.BaseTest;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
@@ -19,7 +18,7 @@ public class AccountTest extends BaseTest {
         String eventId = "CF_TEST_EVENT_01";
         given()
                 .when()
-                .get( ACCOUNT_ENDPOINT + "/" + eventId + "/" + stakeAddress)
+                .get(ACCOUNT_ENDPOINT + "/" + eventId + "/" + stakeAddress)
                 .then()
                 .statusCode(200);
     }
@@ -31,23 +30,26 @@ public class AccountTest extends BaseTest {
         String eventId = "CF_TEST_EVENT_02";
         given()
                 .when()
-                .get( ACCOUNT_ENDPOINT + "/" + eventId + "/" + stakeAddress)
+                .get(ACCOUNT_ENDPOINT + "/" + eventId + "/" + stakeAddress)
                 .then()
                 .statusCode(400);
     }
 
-        // TODO: hangs in trying again and again to get the stake amount (should return 404)
+    @Test
+    public void shouldNotFindAccount() {
+        String stakeAddress = "stake_test1uq0zsej7gjyft8sy9dj7sn9rmqdgw32r8c0lpmr6xu3tu9szp6qre";
+        String eventId = "CF_TEST_EVENT_01";
 
-        @Test
-        @Disabled
-        public void shouldNotFindAccount() {
-            String stakeAddress = "stake_test1uq0zsej7gjyft8sy9dj7sn9rmqdgw32r8c0lpmr6xu3tu9szp6qre";
-            String eventId = "CF_TEST_EVENT_01";
+        RestAssuredConfig config = RestAssured.config()
+                .httpClient(HttpClientConfig.httpClientConfig()
+                        .setParam(CoreConnectionPNames.CONNECTION_TIMEOUT, 1000)
+                        .setParam(CoreConnectionPNames.SO_TIMEOUT, 1000));
 
-            given()
-                    .when()
-                    .get( ACCOUNT_ENDPOINT + "/" + eventId + "/" + stakeAddress)
-                    .then()
-                    .statusCode(404);
-        }
+        given()
+                .config(config)
+                .when()
+                .get(ACCOUNT_ENDPOINT + "/" + eventId + "/" + stakeAddress)
+                .then()
+                .statusCode(404);
+    }
 }

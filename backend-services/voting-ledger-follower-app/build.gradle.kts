@@ -37,6 +37,7 @@ repositories {
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+
 	implementation("org.springframework.boot:spring-boot-starter-data-rest")
 
 	testImplementation("io.rest-assured:rest-assured:5.3.2")
@@ -66,8 +67,8 @@ dependencies {
 	implementation("com.querydsl:querydsl-jpa")
     annotationProcessor("com.querydsl:querydsl-apt")
 
-	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0-beta3")
-	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.0-beta3")
+	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0")
+	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.0")
 
 	implementation("com.bloxbean.cardano:yaci-store-spring-boot-starter:0.0.12")
 	implementation("com.bloxbean.cardano:yaci-store-blocks-spring-boot-starter:0.0.12")
@@ -80,7 +81,9 @@ dependencies {
 
 	runtimeOnly("org.postgresql:postgresql")
 
-	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.10")
+	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.11")
+
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
 
     // spring-boot overridden dependencies:
     runtimeOnly("com.h2database:h2:2.2.224") // GraalVM compatibility

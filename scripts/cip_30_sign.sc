@@ -1,8 +1,8 @@
 // brew install amm
 // amm cip_30_sign.sc
 
-import $ivy.`com.bloxbean.cardano:cardano-client-lib:0.5.0-beta2`
-import $ivy.`com.bloxbean.cardano:cardano-client-cip30:0.5.0-beta2`
+import $ivy.`com.bloxbean.cardano:cardano-client-lib:0.5.0`
+import $ivy.`com.bloxbean.cardano:cardano-client-cip30:0.5.0`
 
 import $ivy.`com.lihaoyi:requests_3:0.8.0`
 import $ivy.`com.fasterxml.jackson.core:jackson-core:2.15.2`
@@ -25,7 +25,7 @@ val mapper = new ObjectMapper()
 
 val orgMnemonic = "ocean sad mixture disease faith once celery mind clay hidden brush brown you sponsor dawn good claim gloom market world online twist laptop thrive"
 
-val organiserAccount = new Account(Networks.testnet(), orgMnemonic)
+val organiserAccount = new Account(Networks.mainnet(), orgMnemonic)
 
 val logger = LoggerFactory.getLogger(getClass());
 
@@ -48,8 +48,8 @@ def signCIP30LoginEnvelope(): Unit = {
         "slot": "${lastSlot}",
         "data": {
             "address": "${stakeAddress}",
-            "event": "CIP-1694_Pre_Ratification_3316",
-            "network": "PREPROD",
+            "event": "CF_SUMMIT_2023_TEST2",
+            "network": "MAIN",
             "role": "VOTER"
         }
    }
@@ -169,7 +169,7 @@ def signCIP30ViewVoteReceiptEnvelope(): Unit = {
 
 def latestAbsoluteSlot(mapper: ObjectMapper): Long = {
     val r = requests.get(
-        "http://localhost:9090/yaci-api/blocks/latest",
+        "https://follower-api.pro.cf-summit-2023-mainnet.eu-west-1.voting.summit.cardano.org/yaci-api/blocks/latest",
         headers = Map("Content-Type" -> "application/json")
     )
 

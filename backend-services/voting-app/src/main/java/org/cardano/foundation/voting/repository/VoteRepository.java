@@ -16,9 +16,6 @@ public interface VoteRepository extends JpaRepository<Vote, String> {
     @Query("SELECT v.categoryId as categoryId, v.proposalId as proposalId FROM Vote v WHERE v.eventId = :eventId AND v.voterStakingAddress = :stakeAddress ORDER BY v.votedAtSlot, v.idNumericHash ASC")
     List<CategoryProposalProjection> getVotesByStakeAddress(@Param("eventId") String eventId, @Param("stakeAddress") String stakeAddress);
 
-    @Query("SELECT v FROM Vote v WHERE v.eventId = :eventId ORDER BY v.votedAtSlot, v.idNumericHash ASC")
-    List<CompactVote> findAllCompactVotesByEventId(@Param("eventId") String eventId);
-
     Optional<Vote> findByEventIdAndCategoryIdAndVoterStakingAddress(String eventId, String categoryId, String voterStakeAddress);
 
     @Query("SELECT COUNT(v) AS totalVoteCount, SUM(v.votingPower) AS totalVotingPower FROM Vote v WHERE v.eventId = :eventId")
@@ -27,7 +24,7 @@ public interface VoteRepository extends JpaRepository<Vote, String> {
     @Query("SELECT v.categoryId as categoryId, COUNT(v) AS totalVoteCount, SUM(v.votingPower) AS totalVotingPower FROM Vote v WHERE v.eventId = :eventId GROUP BY categoryId")
     List<HighLevelCategoryLevelStats> getHighLevelCategoryLevelStats(@Param("eventId") String eventId);
 
-    @Query("SELECT v.categoryId as categoryId, v.proposalId AS proposalId, COUNT(v) AS totalVoteCount, SUM(v.votingPower) AS totalVotingPower FROM Vote v WHERE v.eventId = :eventId AND v.categoryId = :categoryId GROUP BY proposalId")
+    @Query("SELECT v.categoryId as categoryId, v.proposalId AS proposalId, COUNT(v) AS totalVoteCount, SUM(v.votingPower) AS totalVotingPower FROM Vote v WHERE v.eventId = :eventId AND v.categoryId = :categoryId GROUP BY categoryId, proposalId ORDER BY totalVotingPower DESC, totalVoteCount DESC")
     List<CategoryLevelStats> getCategoryLevelStats(@Param("eventId") String eventId, @Param("categoryId") String categoryId);
 
     interface CategoryProposalProjection {
@@ -71,14 +68,6 @@ public interface VoteRepository extends JpaRepository<Vote, String> {
 
         @Nullable
         Long getTotalVotingPower();
-
-    }
-
-    interface CompactVote {
-
-        String getCoseSignature();
-
-        Optional<String> getCosePublicKey();
 
     }
 

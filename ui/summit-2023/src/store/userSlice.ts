@@ -11,6 +11,7 @@ const initialState: UserState = {
   walletIsLoggedIn: false,
   isReceiptFetched: false,
   receipts: {},
+  winners: [],
   userVotes: [],
   proposal: '',
   userVerification: {},
@@ -77,6 +78,9 @@ export const userSlice = createSlice({
     setEventData: (state, action: PayloadAction<{ event: EventPresentation }>) => {
       state.event = action.payload.event;
     },
+    setWinners: (state, action: PayloadAction<{ winners: { categoryId: string; proposalId: string }[] }>) => {
+      state.winners = action.payload.winners;
+    },
     setUserStartsVerification: (
       state,
       action: PayloadAction<{ stakeAddress: string; verificationStarts: VerificationStarts }>
@@ -94,5 +98,6 @@ export const {
   setWalletIsVerified,
   setUserVotes,
   setEventData,
+  setWinners,
 } = userSlice.actions;
 export default userSlice.reducer;

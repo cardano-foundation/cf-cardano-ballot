@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.entity.VoteMerkleProof;
 import org.cardano.foundation.voting.repository.VoteMerkleProofRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,20 +21,6 @@ public class VoteMerkleProofService {
     @Timed(value = "service.merkle.findLatestProof", histogram = true)
     public Optional<VoteMerkleProof> findLatestProof(String eventId, String voteId) {
         return voteMerkleProofRepository.findLatestProof(eventId, voteId);
-    }
-
-    @Transactional
-    @Timed(value = "service.merkle.store", histogram = true)
-    public VoteMerkleProof store(VoteMerkleProof voteMerkleProof) {
-        return voteMerkleProofRepository.saveAndFlush(voteMerkleProof);
-    }
-
-    @Transactional
-    @Timed(value = "service.merkle.softDeleteAllProofsAfterSlot", histogram = true)
-    public void softDeleteAllProofsAfterSlot(long slot) {
-        log.info("Soft deleting all proofs after slot:{}", slot);
-
-        voteMerkleProofRepository.invalidateMerkleProofsAfterSlot(slot);
     }
 
 }

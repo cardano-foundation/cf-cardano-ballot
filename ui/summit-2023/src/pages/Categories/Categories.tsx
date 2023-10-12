@@ -46,7 +46,7 @@ const Categories = () => {
   const categories = eventCache?.categories;
 
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('xs'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isBigScreen = useMediaQuery(theme.breakpoints.down('xl'));
 
   const [listView, setListView] = useState<'grid' | 'list'>('grid');
@@ -92,9 +92,8 @@ const Categories = () => {
               <Grid
                 item
                 xs={12}
-                sm={12}
+                sm={6}
                 md={4}
-                lg={4}
                 key={category.id}
               >
                 <Fade in={isVisible}>

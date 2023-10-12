@@ -56,13 +56,6 @@ const shortenString = (inputStr: string, x: number): string => {
   return inputStr.slice(0, x) + '...';
 };
 
-const hasEventEnded = (eventDate: Date): boolean => {
-  if (!eventDate) return true;
-  const currentDate = new Date();
-  const eDate = new Date(eventDate);
-  return currentDate.toISOString() > eDate.toISOString();
-};
-
 export {
   addressSlice,
   walletIcon,
@@ -72,5 +65,4 @@ export {
   resolveCardanoNetwork,
   openNewTab,
   shortenString,
-  hasEventEnded,
 };

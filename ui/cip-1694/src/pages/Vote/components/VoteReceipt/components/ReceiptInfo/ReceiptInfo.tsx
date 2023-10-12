@@ -1,6 +1,6 @@
 import React from 'react';
 import Grid from '@mui/material/Grid';
-import { Button, IconButton, useMediaQuery, useTheme } from '@mui/material';
+import { Button, IconButton, Tooltip, Typography, useMediaQuery, useTheme } from '@mui/material';
 import QrCodeIcon from '@mui/icons-material/QrCode';
 import ReplayIcon from '@mui/icons-material/Replay';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
@@ -21,9 +21,28 @@ const InfoPanelTitle = ({ title, children }: { title: string; children?: React.R
     color="#061D3C"
   >
     {title} {children}
-    <IconButton sx={{ margin: '-8px' }}>
-      <InfoOutlinedIcon style={{ color: '#39486CA6', fontSize: '19px' }} />
-    </IconButton>
+    <Tooltip
+      classes={{ tooltip: styles.tooltip }}
+      title={
+        <Grid
+          container
+          direction="column"
+          alignItems="left"
+          gap={'8px'}
+        >
+          <Typography
+            className={styles.tooltipDescription}
+            variant="h4"
+          >
+            Assurance levels will update according to the finality of the transaction on-chain.
+          </Typography>
+        </Grid>
+      }
+    >
+      <IconButton sx={{ margin: '-8px' }}>
+        <InfoOutlinedIcon style={{ color: '#39486CA6', fontSize: '19px' }} />
+      </IconButton>
+    </Tooltip>
   </Grid>
 );
 
@@ -44,7 +63,6 @@ const StatusToInfoPanelDescription: Partial<Record<Status | 'VERIFIED', string>>
     'Don’t worry there’s nothing for you to do. We will automatically resubmit your vote. Please check back later (up to 30 minutes) to see your vote status.',
   BASIC:
     'Your vote has been successfully submitted. You might have to wait up to 30 minutes for this to be visible on chain. Please check back later to verify your vote.',
-  // TODO: provide copy
   VERIFIED: '',
 };
 
@@ -60,13 +78,9 @@ const FullStatusToInfoPanelDescription: Record<FinalityScore, string> = {
   FINAL: HIGHT_ASSURANCE,
 };
 
-type FetchReceiptProps = {
-  cb?: () => void;
-  refetch?: boolean;
-};
 type ReceiptInfoProps = {
   isVerified: boolean;
-  fetchReceipt: (props: FetchReceiptProps) => void;
+  fetchReceipt: () => void;
   receipt: VoteReceipt;
 };
 
@@ -74,8 +88,10 @@ export const ReceiptInfo = ({ isVerified, fetchReceipt, receipt }: ReceiptInfoPr
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.up('sm'));
 
+  if (!receipt) return null;
+
   const status = isVerified ? 'VERIFIED' : receipt.status;
-  const finalityScore = ['VERY_HIGH', 'FINAL'].includes(receipt?.finalityScore) ? 'HIGH' : receipt?.finalityScore;
+  const finalityScore = ['VERY_HIGH', 'FINAL'].includes(receipt.finalityScore) ? 'HIGH' : receipt.finalityScore;
   const Title = StatusToInfoPanelTitle[status];
 
   return (
@@ -91,7 +107,7 @@ export const ReceiptInfo = ({ isVerified, fetchReceipt, receipt }: ReceiptInfoPr
           className={styles.ctaButton}
           size="large"
           variant="outlined"
-          onClick={!isVerified ? () => fetchReceipt({ refetch: true }) : () => undefined}
+          onClick={!isVerified ? () => fetchReceipt() : undefined}
           data-testid="refetch-receipt-button"
         >
           {isVerified ? <QrCodeIcon className={styles.ctaIcon} /> : <ReplayIcon className={styles.ctaIcon} />}

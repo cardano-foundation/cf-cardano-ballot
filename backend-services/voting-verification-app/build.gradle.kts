@@ -36,7 +36,6 @@ repositories {
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-aop")
-	implementation("org.springframework.boot:spring-boot-starter-data-rest")
 	testCompileOnly("org.springframework.boot:spring-boot-starter-test")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -59,13 +58,15 @@ dependencies {
 	implementation("com.querydsl:querydsl-jpa")
     annotationProcessor("com.querydsl:querydsl-apt")
 
-    implementation("com.bloxbean.cardano:cardano-client-address:0.5.0-beta3")
-	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0-beta3")
+    implementation("com.bloxbean.cardano:cardano-client-address:0.5.0")
+	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0")
 
 	implementation("io.vavr:vavr:0.10.4")
 
 	implementation("org.cardanofoundation:merkle-tree-java:0.0.7")
-	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.10")
+	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.11")
+
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
 }
 
 tasks.withType<Test> {

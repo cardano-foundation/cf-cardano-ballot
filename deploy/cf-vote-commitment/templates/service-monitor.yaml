@@ -1,0 +1,20 @@
+{{ if .Values.monitoring.enabled }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "cf-vote-commitment.fullname" . }}
+  labels:
+    release: prometheus-stack
+    {{- include "cf-vote-commitment.labels" . | nindent 4 }}
+spec:
+  endpoints:
+    - path: /actuator/prometheus
+      port: http
+  namespaceSelector:
+    matchNames:
+      - {{ $.Release.Namespace }}
+  selector:
+    matchLabels:
+      {{- include "cf-vote-commitment.labels" . | nindent 6 }}
+{{ end }}

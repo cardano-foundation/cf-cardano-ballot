@@ -8,7 +8,7 @@ type voteInput = {
   voteId: string;
   voter: string;
   slotNumber: string;
-  votePower: string;
+  votingPower: string;
   category: string;
 };
 
@@ -17,7 +17,7 @@ export const buildCanonicalVoteInputJson = ({
   voteId,
   voter,
   slotNumber,
-  votePower,
+  votingPower,
   category,
 }: voteInput): ReturnType<typeof canonicalize> => {
   const startOfCurrentDay = new Date();
@@ -36,7 +36,7 @@ export const buildCanonicalVoteInputJson = ({
       proposal: option,
       network: env.TARGET_NETWORK,
       votedAt: slotNumber,
-      votingPower: votePower,
+      votingPower,
     },
   });
 };
@@ -47,7 +47,10 @@ export const getSignedMessagePromise = (signMessage: ReturnType<typeof useCardan
       signMessage(
         message,
         (signature, key) => resolve({ coseSignature: signature, cosePublicKey: key || '' }),
-        (error: Error) => reject(error)
+        (error: Error) => {
+          console.log(error);
+          return reject(error);
+        }
       );
     });
 };

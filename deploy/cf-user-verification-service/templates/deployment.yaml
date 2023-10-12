@@ -64,6 +64,8 @@ spec:
                 secretKeyRef:
                   name: postgres-secrets
                   key: POSTGRES_PASSWORD
+            - name: H2_CONSOLE_ENABLED
+              value: "false"
 
             ## SNS Text
             - name: AWS_SNS_ACCESS_KEY_ID

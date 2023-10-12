@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { Grid, Button, Typography } from '@mui/material';
+import { Grid, Button } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { RootState } from 'common/store';
 import { HeaderActions } from './components/HeaderActions';
 import { MobileModal } from '../MobileModal/MobileModal';
 import { Footer } from '../Footer/Footer';
+import lofo from '../../../common/resources/images/cardano-ballot-logo.png';
 import styles from './Header.module.scss';
 
 export const Header = () => {
@@ -42,18 +43,15 @@ export const Header = () => {
           marginBottom={{ xs: '0px', md: '0px' }}
           marginTop={{ xs: '0px', md: '0px' }}
         >
-          <Typography
-            data-testid="header-logo"
-            lineHeight={{ sx: '23px', md: '29px' }}
-            fontSize={{ sx: '20px', md: '24px' }}
+          <img
+            src={lofo}
             onClick={handleLogoClick}
             className={styles.logo}
-          >
-            Referendum on Governance
-          </Typography>
+            data-testid="header-logo"
+          />
         </Grid>
         <Grid display={{ xs: 'none', md: 'flex' }}>
-          <HeaderActions showNavigationItems={!event?.notStarted} />
+          <HeaderActions showNavigationItems={event?.notStarted === false} />
         </Grid>
         <Grid
           display={{ xs: 'block', md: 'none' }}
@@ -67,6 +65,7 @@ export const Header = () => {
             className={styles.menuButton}
             size="large"
             variant="outlined"
+            data-testid="show-mobile-menu"
             onClick={() => setIsMobileMenuVisible(true)}
           >
             <MenuIcon className={styles.menuIcon} />
@@ -87,7 +86,7 @@ export const Header = () => {
           justifyContent="space-between"
         >
           <HeaderActions
-            showNavigationItems={!event?.notStarted}
+            showNavigationItems={event?.notStarted === false}
             onClick={() => setIsMobileMenuVisible(false)}
             isMobileMenu
           />

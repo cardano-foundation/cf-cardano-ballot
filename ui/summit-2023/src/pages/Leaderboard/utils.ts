@@ -9,7 +9,7 @@ export const categoryColorsMap: Record<CategoryPresentation['id'], string> = {
   EDUCATIONAL_INFLUENCER: '#1894D6',
   MARKETPLACE: '#C20024',
   MOST_IMPACTFUL_SSPO: '#056122',
-  NFT_PROJECTS: '#ad0ec5',
+  NFT_PROJECT: '#ad0ec5',
   SSI: '#DAEEFB',
 };
 

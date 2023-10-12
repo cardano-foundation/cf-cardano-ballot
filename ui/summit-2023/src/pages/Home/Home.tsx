@@ -1,69 +1,98 @@
 import React from 'react';
-import { Typography, Grid } from '@mui/material';
+import { Typography, Grid, useTheme, useMediaQuery } from '@mui/material';
 import CARDANOSUMMIT2023LOGO from '../../common/resources/images/cardanosummit2023.svg';
 import { Hexagon } from '../../components/common/Hexagon';
 import './Home.scss';
 import { i18n } from '../../i18n';
 import { NavLink } from 'react-router-dom';
 import { CustomButton } from '../../components/common/Button/CustomButton';
-import { hasEventEnded } from '../../utils/utils';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
+import { formatUTCDate } from 'utils/dateUtils';
+import Chip from '@mui/material/Chip';
+import EventIcon from '@mui/icons-material/Event';
 
 const Home: React.FC = () => {
   const eventCache = useSelector((state: RootState) => state.user.event);
-  const eventHasEnded = hasEventEnded(eventCache?.eventEndDate);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   return (
     <Grid
       container
       spacing={1}
       sx={{
-        height: { xs: '60%', md: '70%' },
+        height: { xs: '60%', md: '75vh', lg: '57vh', xl: '71vh' },
         margin: { xs: '0%', sm: '2%', md: '3%', lg: '4%' },
       }}
     >
       <Grid
         item
         xs={12}
-        md={7}
+        sm={12}
+        md={6}
         sx={{
           flex: '1',
           padding: '20px',
           order: '1',
           display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
         }}
       >
         <div className="left-title-container">
           <Typography
             className="title"
             variant="h2"
-            sx={{ textAlign: { xs: 'center', sm: 'left' }, fontSize: { xs: '32px', sm: '48px', md: '56px' } }}
+            sx={{ textAlign: 'left', fontSize: { xs: '32px', sm: '48px', md: '56px' } }}
           >
             {i18n.t('landing.title')}
           </Typography>
+          {isMobile ? (
+            <div className="event-time">
+              <p>Opens on: {formatUTCDate(eventCache?.eventStartDate?.toString())}</p>
+              <p>Closes on: {formatUTCDate(eventCache?.eventEndDate?.toString())}</p>
+            </div>
+          ) : (
+            <Chip
+              sx={{
+                height: '46px',
+                borderRadius: '8px',
+                my: '20px',
+                px: '10px',
+              }}
+              icon={<EventIcon />}
+              label={`The Vote opens on ${formatUTCDate(
+                eventCache?.eventStartDate?.toString()
+              )}, and closes on ${formatUTCDate(eventCache?.eventEndDate?.toString())}.`}
+              color="primary"
+            />
+          )}
+
           <Typography
             variant="body1"
-            sx={{ textAlign: { xs: 'center', sm: 'left' } }}
+            sx={{ textAlign: 'left' }}
           >
             {i18n.t('landing.description')}
           </Typography>
+
           <Grid
             container
-            sx={{ justifyContent: { xs: 'center', sm: 'left' } }}
+            sx={{ justifyContent: 'left' }}
           >
             <NavLink
               to="/categories"
-              style={{ textDecoration: 'none' }}
+              style={{ textDecoration: 'none', width: '100%' }}
             >
               <CustomButton
                 styles={{
                   background: '#ACFCC5',
                   color: '#03021F',
-                  marginTop: '40px',
+                  marginTop: '20px',
                   textDecoration: 'none !important',
                 }}
-                label={eventHasEnded ? 'Voting ended' : i18n.t('landing.getStartedButton')}
+                fullWidth={isMobile ? true : false}
+                label={eventCache?.finished ? 'Voting ended' : i18n.t('landing.getStartedButton')}
               />
             </NavLink>
           </Grid>
@@ -73,7 +102,8 @@ const Home: React.FC = () => {
       <Grid
         item
         xs={12}
-        md={5}
+        sm={12}
+        md={6}
         justifyContent="center"
         alignItems="center"
         sx={{

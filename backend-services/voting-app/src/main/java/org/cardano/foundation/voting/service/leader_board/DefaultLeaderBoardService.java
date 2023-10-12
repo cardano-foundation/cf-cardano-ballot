@@ -5,6 +5,8 @@ import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
+import org.cardano.foundation.voting.client.ChainFollowerClient.CategoryDetailsResponse;
+import org.cardano.foundation.voting.client.ChainFollowerClient.EventDetailsResponse;
 import org.cardano.foundation.voting.domain.Leaderboard;
 import org.cardano.foundation.voting.repository.CustomVoteRepository;
 import org.cardano.foundation.voting.repository.VoteRepository;
@@ -58,7 +60,8 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
 
     @Override
     @Transactional(readOnly = true)
-    public Either<Problem, Boolean> isHighLevelCategoryLeaderboardAvailable(String event, boolean forceLeaderboard) {
+    public Either<Problem, Boolean> isHighLevelCategoryLeaderboardAvailable(String event,
+                                                                            boolean forceLeaderboard) {
         var eventDetailsE = chainFollowerClient.getEventDetails(event);
         if (eventDetailsE.isEmpty()) {
             return Either.left(Problem.builder()
@@ -84,7 +87,8 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
 
     @Override
     @Transactional(readOnly = true)
-    public Either<Problem, Leaderboard.ByEventStats> getEventLeaderboard(String event, boolean forceLeaderboard) {
+    public Either<Problem, Leaderboard.ByEventStats> getEventLeaderboard(String event,
+                                                                         boolean forceLeaderboard) {
         var eventDetailsE = chainFollowerClient.getEventDetails(event);
         if (eventDetailsE.isEmpty()) {
             return Either.left(Problem.builder()
@@ -168,8 +172,13 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
                     byCategoryStatsBuilder.votes(Optional.ofNullable(categoryLevelStats.getTotalVoteCount()).orElse(0L));
 
                     switch (eventDetails.votingEventType()) {
-                        case BALANCE_BASED, STAKE_BASED ->
-                                byCategoryStatsBuilder.votingPower(Optional.ofNullable(categoryLevelStats.getTotalVotingPower()).map(String::valueOf).orElse("0"));
+                        case BALANCE_BASED, STAKE_BASED -> {
+                            var votingPowerM = Optional.ofNullable(categoryLevelStats.getTotalVotingPower())
+                                    .map(String::valueOf)
+                                    .orElse("0");
+
+                            byCategoryStatsBuilder.votingPower(votingPowerM);
+                        }
                     }
 
                     return byCategoryStatsBuilder.build();
@@ -181,6 +190,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
 
         var byCategoryStatsCopy = new ArrayList<>(byCategoryStats);
         // pre init with empty if category not returned from db
+
         eventDetails.categories().forEach(categoryDetails -> {
             if (!byCategoryStatsMap.containsKey(categoryDetails.id())) {
                 var b = Leaderboard.ByCategoryStats.builder();
@@ -203,7 +213,9 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
 
     @Override
     @Transactional(readOnly = true)
-    public Either<Problem, Leaderboard.ByProposalsInCategoryStats> getCategoryLeaderboard(String event, String category, boolean forceLeaderboard) {
+    public Either<Problem, Leaderboard.ByProposalsInCategoryStats> getCategoryLeaderboard(String event,
+                                                                                          String category,
+                                                                                          boolean forceLeaderboard) {
         var eventDetailsE = chainFollowerClient.getEventDetails(event);
         if (eventDetailsE.isEmpty()) {
             return Either.left(Problem.builder()
@@ -279,7 +291,8 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
 
     @Override
     @Transactional(readOnly = true, isolation = SERIALIZABLE)
-    public Either<Problem, List<Leaderboard.WinnerStats>> getEventWinners(String event, boolean forceLeaderboard) {
+    public Either<Problem, List<Leaderboard.WinnerStats>> getEventWinners(String event,
+                                                                          boolean forceLeaderboard) {
         var eventDetailsE = chainFollowerClient.getEventDetails(event);
 
         if (eventDetailsE.isEmpty()) {
@@ -316,13 +329,15 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
 
         var categoryIds = eventDetails.categories()
                 .stream()
-                .map(ChainFollowerClient.CategoryDetailsResponse::id)
+                .map(CategoryDetailsResponse::id)
                 .toList();
 
         return Either.right(customVoteRepository.getEventWinners(event, categoryIds));
     }
 
-    private static HashMap<String, Leaderboard.Votes> calcProposalsResults(ChainFollowerClient.CategoryDetailsResponse categoryDetails, Map<String, Leaderboard.Votes> proposalResultsMap, ChainFollowerClient.EventDetailsResponse eventDetails) {
+    private static HashMap<String, Leaderboard.Votes> calcProposalsResults(CategoryDetailsResponse categoryDetails,
+                                                                           Map<String, Leaderboard.Votes> proposalResultsMap,
+                                                                           EventDetailsResponse eventDetails) {
         var categoryProposals = categoryDetails.proposals();
 
         var proposalResultsMapCopy = new HashMap<>(proposalResultsMap);
@@ -345,7 +360,9 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
 
     @Override
     @Transactional(readOnly = true)
-    public Either<Problem, Boolean> isCategoryLeaderboardAvailable(String event, String category, boolean forceLeaderboard) {
+    public Either<Problem, Boolean> isCategoryLeaderboardAvailable(String event,
+                                                                   String category,
+                                                                   boolean forceLeaderboard) {
         var eventDetailsE = chainFollowerClient.getEventDetails(event);
         if (eventDetailsE.isEmpty()) {
             return Either.left(Problem.builder()
@@ -380,7 +397,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
         return isCategoryLeaderboardAvailable(eventDetails, forceLeaderboard);
     }
 
-    private Either<Problem, Boolean> isHighLevelEventLeaderboardAvailable(ChainFollowerClient.EventDetailsResponse eventDetails,
+    private Either<Problem, Boolean> isHighLevelEventLeaderboardAvailable(EventDetailsResponse eventDetails,
                                                                           boolean forceLeaderboard) {
         if (forceLeaderboard) {
             return Either.right(true);
@@ -393,7 +410,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
         return Either.right(eventDetails.proposalsReveal());
     }
 
-    private Either<Problem, Boolean> isHighLevelCategoryLeaderboardAvailable(ChainFollowerClient.EventDetailsResponse eventDetails,
+    private Either<Problem, Boolean> isHighLevelCategoryLeaderboardAvailable(EventDetailsResponse eventDetails,
                                                                              boolean forceLeaderboard) {
         if (forceLeaderboard) {
             return Either.right(true);
@@ -406,7 +423,7 @@ public class DefaultLeaderBoardService implements LeaderBoardService {
         return Either.right(eventDetails.proposalsReveal());
     }
 
-    private Either<Problem, Boolean> isCategoryLeaderboardAvailable(ChainFollowerClient.EventDetailsResponse eventDetails,
+    private Either<Problem, Boolean> isCategoryLeaderboardAvailable(EventDetailsResponse eventDetails,
                                                                     boolean forceLeaderboard) {
         if (forceLeaderboard) {
             return Either.right(true);

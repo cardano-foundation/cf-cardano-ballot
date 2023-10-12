@@ -43,6 +43,15 @@ import { VoteContextInput } from './components/VoteContextInput/VoteContextInput
 import { env } from '../../env';
 import styles from './Vote.module.scss';
 
+export const errorsMap = {
+  [voteService.ERRORS.STAKE_AMOUNT_NOT_AVAILABLE]: (stakeAddress: string) => (
+    <div>
+      <div>Stake amount not found for stake address:</div>
+      <div style={{ fontSize: '14px' }}>${stakeAddress}</div>
+    </div>
+  ),
+};
+
 const copies = [
   {
     title: 'The Governance of Cardano',
@@ -246,7 +255,7 @@ export const VotePage = () => {
       toast(
         <Toast
           error
-          message="Unable to submit your vote. Please try again"
+          message={errorsMap[error?.message]?.(stakeAddress) || 'Unable to submit your vote. Please try again'}
           icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
         />
       );

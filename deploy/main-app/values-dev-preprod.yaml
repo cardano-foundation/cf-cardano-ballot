@@ -40,7 +40,7 @@ cf-cardano-ballot-ledger-follower-api:
   enabled: true
   values:
     image:
-      tag: 0.2.65
+      tag: v0.2.67-4-g7de3db22
     bindOnEventIds: CIP-1694_Pre_Ratification_3316,FRUITS_CF62
     yaci:
       startBlockHash: 3337e297121fda1262372c28de3d917bd2a60bb1e3c6326e3b7e832eb8017615

@@ -25,7 +25,6 @@ import java.util.List;
 
 import static com.bloxbean.cardano.client.common.ADAConversionUtil.adaToLovelace;
 import static java.math.BigDecimal.ZERO;
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Component
 @RequiredArgsConstructor
@@ -34,13 +33,16 @@ public class HydraVoteImporter {
 
     private final UtxoSupplier utxoSupplier;
     private final ProtocolParamsSupplier protocolParamsSupplier;
-    private final TransactionProcessor transactionProcessor;
+    private final TransactionSubmissionService transactionProcessor;
     private final HydraOperatorSupplier hydraOperatorSupplier;
     private final PlutusScriptLoader plutusScriptLoader;
     private final PlutusObjectConverter plutusObjectConverter;
 
     public Either<Problem, String> importVotes(List<Vote> votes) throws Exception {
         log.info("Importing number: {} votes", votes.size());
+
+        val hydraOperator = hydraOperatorSupplier.getOperator();
+        val sender = hydraOperator.getAddress();
 
         if (votes.isEmpty()) {
             return Either.left(Problem.builder()
@@ -52,24 +54,22 @@ public class HydraVoteImporter {
         val voteDatumList = votes.stream()
                 .map(vote -> VoteDatum.builder()
                         .voterKey(vote.voterStakeAddress())
-                        .category(vote.categoryId().getBytes(UTF_8))
-                        .proposal(vote.proposalId().toString().getBytes(UTF_8))
+                        .category(vote.categoryId())
+                        .proposal(vote.proposalId().toString())
                         .build()
                 ).toList();
-
-        val sender = hydraOperatorSupplier.getOperator().getAddress();
 
         // Create an empty output builder
         TxOutputBuilder txOutputBuilder = (context, outputs) -> {};
 
         for (val voteDatum : voteDatumList) {
-            val categoryId = new String(voteDatum.getCategory());
+            val categoryId = voteDatum.getCategory();
             val contract = plutusScriptLoader.getContract(categoryId);
             val contractAddress = plutusScriptLoader.getContractAddress(contract);
 
             val datum = plutusObjectConverter.toPlutusData(voteDatum);
             txOutputBuilder = txOutputBuilder.and((context, outputs) -> {
-                TransactionOutput transactionOutput = TransactionOutput.builder()
+                val transactionOutput = TransactionOutput.builder()
                         .address(contractAddress)
                         .value(Value
                                 .builder()
@@ -81,6 +81,7 @@ public class HydraVoteImporter {
 
                 val additionalLoveLace = MinAdaCheckers.minAdaChecker()
                         .apply(context, transactionOutput);
+
                 val value = transactionOutput.getValue()
                         .plus(new Value(additionalLoveLace, null));
                 transactionOutput.setValue(value);
@@ -96,7 +97,7 @@ public class HydraVoteImporter {
         val txBuilderContext = TxBuilderContext.init(utxoSupplier, protocolParamsSupplier);
         txBuilderContext.setUtxoSelectionStrategy(new LargestFirstUtxoSelectionStrategy(utxoSupplier));
         val transaction = txBuilderContext
-                .buildAndSign(txBuilder, hydraOperatorSupplier.getOperator().getTxSigner());
+                .buildAndSign(txBuilder, hydraOperator.getTxSigner());
 
         val result = transactionProcessor.submitTransaction(transaction.serialize());
         if (!result.isSuccessful()) {

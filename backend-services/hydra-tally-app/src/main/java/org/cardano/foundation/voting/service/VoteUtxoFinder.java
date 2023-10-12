@@ -11,7 +11,6 @@ import org.cardano.foundation.voting.domain.VoteDatum;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static com.bloxbean.cardano.client.api.common.OrderEnum.asc;
@@ -27,13 +26,15 @@ public class VoteUtxoFinder {
     private final UtxoSupplier utxoSupplier;
     private final PlutusScriptLoader plutusScriptLoader;
 
-    public List<Tuple<Utxo, VoteDatum>> getUtxosWithVotes(String categoryId, int batchSize) {
+    public List<Tuple<Utxo, VoteDatum>> getUtxosWithVotes(String contractCategoryId,
+                                                          int batchSize) {
         boolean isContinue = true;
+
         List<Tuple<Utxo, VoteDatum>> utxos = new ArrayList<>();
         int page = 0;
 
-        var contract = plutusScriptLoader.getContract(categoryId);
-        var contractAddress = plutusScriptLoader.getContractAddress(contract);
+        val contract = plutusScriptLoader.getContract(contractCategoryId);
+        val contractAddress = plutusScriptLoader.getContractAddress(contract);
 
         while (isContinue) {
             var utxoList = utxoSupplier.getPage(contractAddress, batchSize, page++, asc);
@@ -46,12 +47,12 @@ public class VoteUtxoFinder {
             var utxoTuples = utxoList.stream()
                     .filter(utxo -> hasLength(utxo.getInlineDatum()))
                     .map(utxo -> {
-                        var voteDatumE = VoteDatum.deserialize(decodeHexString(utxo.getInlineDatum()));
+                        val voteDatumE = VoteDatum.deserialize(decodeHexString(utxo.getInlineDatum()));
 
                         return new Tuple<>(utxo, voteDatumE.orElse(null));
                     })
                     .filter(utxoOptionalTuple -> utxoOptionalTuple._2 != null)
-                    .filter(utxoOptionalTuple -> Arrays.equals(utxoOptionalTuple._2.getCategory(), categoryId.getBytes()))
+                    .filter(utxoOptionalTuple -> utxoOptionalTuple._2.getCategory().equals(contractCategoryId))
                     .sorted(createTxHashAndTransactionIndexComparator())
                     .toList();
 
@@ -67,9 +68,9 @@ public class VoteUtxoFinder {
         return utxos;
     }
 
-    public List<Tuple<Utxo, CategoryResultsDatum>> getUtxosWithVoteBatches(String categoryId, int batchSize) {
-        var contract = plutusScriptLoader.getContract(categoryId);
-        var contractAddress = plutusScriptLoader.getContractAddress(contract);
+    public List<Tuple<Utxo, CategoryResultsDatum>> getUtxosWithVoteBatches(String contractCategoryId, int batchSize) {
+        val contract = plutusScriptLoader.getContract(contractCategoryId);
+        val contractAddress = plutusScriptLoader.getContractAddress(contract);
 
         var isContinue = true;
 
@@ -80,21 +81,21 @@ public class VoteUtxoFinder {
             var utxoList = utxoSupplier.getPage(contractAddress, batchSize, page++, asc);
             if (utxoList.isEmpty()) {
                 isContinue = false;
-
                 continue;
             }
 
             val utxoTuples = utxoList.stream()
                     .filter(utxo -> hasLength(utxo.getInlineDatum()))
                     .map(utxo -> {
-                        String inlineDatum = utxo.getInlineDatum();
-                        byte[] inlineDatumHex = decodeHexString(inlineDatum);
+                        val inlineDatum = utxo.getInlineDatum();
+                        val inlineDatumHex = decodeHexString(inlineDatum);
 
-                        var categoryResultsDatumM = CategoryResultsDatum.deserialize(inlineDatumHex);
+                        val categoryResultsDatumM = CategoryResultsDatum.deserialize(inlineDatumHex);
 
-                        return new Tuple<>(utxo, categoryResultsDatumM.orElse(null));
+                        return new Tuple<>(utxo, categoryResultsDatumM.fold(problem -> null, v -> v.orElse(null)));
                     })
                     .filter(utxoOptionalTuple -> utxoOptionalTuple._2 != null)
+                    .filter(utxoOptionalTuple -> utxoOptionalTuple._2.getCategoryId().equals(contractCategoryId))
                     .sorted(createTxHashAndTransactionIndexComparator())
                     .toList();
 
@@ -104,7 +105,6 @@ public class VoteUtxoFinder {
                 utxos = utxos.subList(0, batchSize);
                 isContinue = false;
             }
-
         }
 
         return utxos;

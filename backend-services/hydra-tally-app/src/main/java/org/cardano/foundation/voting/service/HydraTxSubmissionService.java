@@ -4,10 +4,9 @@ import com.bloxbean.cardano.client.api.model.Result;
 import com.bloxbean.cardano.client.transaction.util.TransactionUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.cardanofoundation.hydra.reactor.HydraReactiveClient;
-import org.cardanofoundation.hydra.reactor.TxResult;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 
@@ -16,7 +15,7 @@ import static org.cardano.foundation.voting.utils.MoreBytes.humanReadableByteCou
 @Component
 @Slf4j
 @AllArgsConstructor
-public class HydraTxProcessor implements TransactionProcessor {
+public class HydraTxSubmissionService implements TransactionSubmissionService {
 
     private final HydraReactiveClient hydraClient;
 
@@ -24,10 +23,10 @@ public class HydraTxProcessor implements TransactionProcessor {
     public Result<String> submitTransaction(byte[] txCbor) {
         log.info("Transaction size: {}", humanReadableByteCountBin(txCbor.length));
 
-        var txHash = TransactionUtil.getTxHash(txCbor);
+        val txHash = TransactionUtil.getTxHash(txCbor);
 
-        Mono<TxResult> txResultM = hydraClient.submitTxFullConfirmation(txHash, txCbor);
-        TxResult txResult = txResultM.block(Duration.ofMinutes(1));
+        val txResultMono = hydraClient.submitTxFullConfirmation(txHash, txCbor);
+        val txResult = txResultMono.block(Duration.ofMinutes(1));
 
         return Result.create(txResult.isValid(), txResult.getMessage())
                 .withValue(txResult.getTxId());

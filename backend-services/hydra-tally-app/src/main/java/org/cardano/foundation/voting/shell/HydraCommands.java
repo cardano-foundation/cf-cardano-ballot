@@ -2,7 +2,6 @@ package org.cardano.foundation.voting.shell;
 
 import com.bloxbean.cardano.client.api.exception.ApiException;
 import com.bloxbean.cardano.client.exception.CborSerializationException;
-import io.vavr.control.Either;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -10,6 +9,7 @@ import one.util.streamex.StreamEx;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.Vote;
 import org.cardano.foundation.voting.repository.VoteRepository;
+import org.cardano.foundation.voting.service.HydraVoteBatchReducer;
 import org.cardano.foundation.voting.service.HydraVoteBatcher;
 import org.cardano.foundation.voting.service.HydraVoteImporter;
 import org.cardano.foundation.voting.service.PlutusScriptLoader;
@@ -23,13 +23,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.command.annotation.Option;
 import org.springframework.shell.standard.ShellOption;
-import org.zalando.problem.Problem;
 import shaded.com.google.common.collect.Lists;
 
 import java.math.BigInteger;
 import java.time.Duration;
 import java.util.Map;
-import java.util.Optional;
 
 import static io.netty.util.internal.StringUtil.isNullOrEmpty;
 import static org.cardano.foundation.voting.utils.MoreComparators.createVoteComparator;
@@ -53,6 +51,9 @@ public class HydraCommands {
 
     @Autowired
     private HydraVoteBatcher hydraVoteBatcher;
+
+    @Autowired
+    private HydraVoteBatchReducer hydraVoteBatchReducer;
 
     @Autowired
     private PlutusScriptLoader plutusScriptLoader;
@@ -280,22 +281,20 @@ public class HydraCommands {
                     .distinct(Vote::voteId)
                     .toList();
 
-            for (val vote : participantVotes) {
-                log.info("Vote: {}", vote);
+        log.info("Total votes to import: {}", participantVotes.size());
+
+        var partitioned = Lists.partition(participantVotes, batchSize);
+
+        for (val batch : partitioned) {
+            val txIdE = hydraVoteImporter.importVotes(batch);
+            if (txIdE.isEmpty()) {
+                return "Importing votes failed, reason:" + txIdE.getLeft();
             }
 
-            var partitioned = Lists.partition(participantVotes, batchSize);
+            log.info("Imported votes batch, txId: " + "{}", txIdE.get());
+        }
 
-            for (val batch : partitioned) {
-                val txIdE = hydraVoteImporter.importVotes(batch);
-                if (txIdE.isEmpty()) {
-                    return "Importing votes failed, reason:" + txIdE.getLeft();
-                }
-
-                log.info("Imported votes batch, txId:{}", txIdE.get());
-            }
-
-            return "Imported votes.";
+        return "Imported votes.";
     }
 
     @Command(command = "batch-votes", description = "batch votes.")
@@ -310,47 +309,28 @@ public class HydraCommands {
 
         for (val categoryId : allCategories) {
             log.info("Processing category: {}", categoryId);
-
-            batchVotesPerCategory(batchSize, categoryId);
+            hydraVoteBatcher.batchVotesPerCategory(batchSize, categoryId);
         }
 
         return "Vote batches creations done.";
     }
 
-    private void batchVotesPerCategory(int batchSize, String categoryId) throws CborSerializationException, ApiException {
-        val contract = plutusScriptLoader.getContract(categoryId);
-        log.info("Contract Address: {}", plutusScriptLoader.getContractAddress(contract));
+    @Command(command = "reduce-vote-results", description = "reduce vote results.")
+    public String reduceVotes(@ShellOption(value = "batch-size", defaultValue = "10") @Option int batchSize) throws CborSerializationException, ApiException {
+        log.info("Reduce vote results, batch size: {}", batchSize);
 
-        Either<Problem, Optional<String>> batchTransactionResultE;
-        do {
-            batchTransactionResultE = hydraVoteBatcher.createAndPostBatchTransaction(categoryId, batchSize);
+        if (hydraClient.getHydraState() != Open) {
+            return "Batching votes failed, reason:" + hydraClient.getHydraState();
+        }
 
-            if (batchTransactionResultE.isEmpty()) {
-                log.error("Batching votes failed, reason:{}", batchTransactionResultE.getLeft());
-                return;
-            }
+        val allCategories = voteRepository.getAllUniqueCategories(eventId);
 
-            val batchTransactionResultM = batchTransactionResultE.get();
+        for (val categoryId : allCategories) {
+            log.info("Processing category: {}", categoryId);
+            hydraVoteBatchReducer.batchVotesPerCategory(categoryId, batchSize);
+        }
 
-            if (batchTransactionResultM.isEmpty()) {
-                log.info("No more batches to create within category: {}", categoryId);
-                break;
-            }
-
-            val txId = batchTransactionResultM.orElseThrow();
-
-            log.info("Batched votes, txId: " + txId);
-
-        } while (batchTransactionResultE.isRight() && batchTransactionResultE.get().isPresent());
-    }
-
-    @Command(command = "reduce-votes", description = "reduce votes.")
-    public String reduceVotes() {
-        log.info("Reduce votes...");
-
-        // TODO
-
-        return "Reducing votes...";
+        return "Vote results reduced.";
     }
 
 }

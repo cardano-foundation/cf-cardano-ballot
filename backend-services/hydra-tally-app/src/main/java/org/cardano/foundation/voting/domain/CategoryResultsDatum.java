@@ -3,10 +3,12 @@ package org.cardano.foundation.voting.domain;
 import com.bloxbean.cardano.client.plutus.annotation.Constr;
 import com.bloxbean.cardano.client.plutus.annotation.PlutusField;
 import com.bloxbean.cardano.client.plutus.spec.*;
+import io.vavr.control.Either;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.zalando.problem.Problem;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,17 +44,21 @@ public class CategoryResultsDatum {
         return results.getOrDefault(proposal, defaultValue);
     }
 
-    public static Optional<CategoryResultsDatum> deserialize(byte[] datum) {
+    public static Either<Problem, Optional<CategoryResultsDatum>> deserialize(byte[] datum) {
         try {
             val constr = (ConstrPlutusData) PlutusData.deserialize(datum);
             val list = constr.getData().getPlutusDataList();
 
             if (list.isEmpty()) {
-                return Optional.empty();
+                return Either.right(Optional.empty());
+            }
+
+            if (list.size() != 2) {
+                return Either.right(Optional.empty());
             }
 
             val categoryIdPlutus = (BytesPlutusData) list.get(0);
-            val resultsMapPlutus = (MapPlutusData) list.get(0);
+            val resultsMapPlutus = (MapPlutusData) list.get(1);
 
             val entries = resultsMapPlutus.getMap().entrySet().iterator();
 
@@ -66,15 +72,18 @@ public class CategoryResultsDatum {
                 val proposalPlutus = ((BytesPlutusData) entry.getKey()).getValue();
                 val results = (BigIntPlutusData) entry.getValue();
 
-                var proposal = new String(proposalPlutus);
+                val proposal = new String(proposalPlutus);
+                val voteCount = results.getValue().longValue();
 
-                resultBatchDatum.add(proposal, results.getValue().longValue());
+                resultBatchDatum.add(proposal, voteCount);
             }
 
-            return Optional.of(resultBatchDatum);
+            return Either.right(Optional.of(resultBatchDatum));
         } catch (Exception e) {
-            log.trace("Error in deserialization (VoteDatum)", e);
-            return Optional.empty();
+            return Either.left(Problem.builder()
+                    .withTitle("Error in deserialization (VoteDatum)")
+                    .withDetail("Error in deserialization (VoteDatum)")
+                    .build());
         }
     }
 }

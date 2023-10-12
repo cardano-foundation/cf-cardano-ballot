@@ -22,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardano.foundation.voting.domain.CategoryResultsDatum;
 import org.cardano.foundation.voting.domain.CreateVoteBatchRedeemer;
-import org.cardano.foundation.voting.domain.VoteDatum;
 import org.cardano.foundation.voting.utils.BalanceUtil;
 import org.cardanofoundation.hydra.cardano.client.lib.HydraOperatorSupplier;
 import org.springframework.stereotype.Component;
@@ -46,13 +45,42 @@ public class HydraVoteBatcher {
 
     private final UtxoSupplier utxoSupplier;
     private final ProtocolParamsSupplier protocolParamsSupplier;
-    private final TransactionProcessor transactionProcessor;
+    private final TransactionSubmissionService transactionProcessor;
     private final HydraOperatorSupplier hydraOperatorSupplier;
     private final PlutusScriptLoader plutusScriptLoader;
     private final VoteUtxoFinder voteUtxoFinder;
     private final PlutusObjectConverter plutusObjectConverter;
 
-    public Either<Problem, Optional<String>> createAndPostBatchTransaction(
+    public void batchVotesPerCategory(int batchSize, String contractCategoryId) throws CborSerializationException, ApiException {
+        val contract = plutusScriptLoader.getContract(contractCategoryId);
+        val contractAddress = plutusScriptLoader.getContractAddress(contract);
+
+        log.info("Contract Address: {}", contractAddress);
+
+        Either<Problem, Optional<String>> transactionResultE;
+        do {
+            transactionResultE = createAndPostBatchTransaction(contractCategoryId, batchSize);
+
+            if (transactionResultE.isEmpty()) {
+                log.error("Batching votes failed, reason:{}", transactionResultE.getLeft());
+                return;
+            }
+
+            val batchTransactionResultM = transactionResultE.get();
+
+            if (batchTransactionResultM.isEmpty()) {
+                log.info("No more batches to create within category: {}", contractCategoryId);
+                break;
+            }
+
+            val txId = batchTransactionResultM.orElseThrow();
+
+            log.info("Batched votes, txId: " + txId);
+
+        } while (transactionResultE.isRight() && transactionResultE.get().isPresent());
+    }
+
+    private Either<Problem, Optional<String>> createAndPostBatchTransaction(
             String contractCategoryId,
             int batchSize)
             throws CborSerializationException, ApiException {
@@ -142,11 +170,10 @@ public class HydraVoteBatcher {
 
             val redeemers = txn.getWitnessSet().getRedeemers();
             for (val redeemer : redeemers) {
-                evalReedemers.stream().filter(evalReedemer -> evalReedemer.getIndex().equals(redeemer.getIndex()))
+                evalReedemers.stream()
+                        .filter(evalReedemer -> evalReedemer.getIndex().equals(redeemer.getIndex()))
                         .findFirst()
-                        .ifPresent(evalRedeemer -> {
-                            redeemer.setExUnits(evalRedeemer.getExUnits());
-                        });
+                        .ifPresent(evalRedeemer -> redeemer.setExUnits(evalRedeemer.getExUnits()));
             }
 
             // Remove all scripts from witness and just add one

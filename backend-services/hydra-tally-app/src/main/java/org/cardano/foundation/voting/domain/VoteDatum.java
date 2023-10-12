@@ -26,10 +26,10 @@ public class VoteDatum {
     private byte[] voterKey;
 
     @PlutusField
-    private byte[] category;
+    private String category;
 
     @PlutusField
-    private byte[] proposal;
+    private String proposal;
 
     public static Optional<VoteDatum> deserialize(byte[] datum) {
         try {
@@ -55,11 +55,10 @@ public class VoteDatum {
 
             return Optional.of(VoteDatum.builder()
                     .voterKey(voterKey)
-                    .category(category)
-                    .proposal(proposal)
+                    .category(new String(category))
+                    .proposal(new String(proposal))
                     .build()
             );
-
         } catch (Exception e) {
             log.trace("Error in deserialization (VoteDatum)", e);
             return Optional.empty();

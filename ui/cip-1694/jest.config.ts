@@ -5,9 +5,9 @@ export default {
   coverageThreshold: {
     global: {
       branches: 83,
-      functions: 90,
+      functions: 91,
       lines: 92,
-      statements: 92,
+      statements: 93,
     },
   },
   roots: ['<rootDir>/src'],

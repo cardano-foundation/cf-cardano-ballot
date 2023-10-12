@@ -2,10 +2,9 @@ import React from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { ReactComponent as DiscordIcon } from 'common/resources/images/discord-icon.svg';
-import styles from './Footer.module.scss';
-import TAndC from './resources/T&C.pdf';
-import Privacy from './resources/Privacy.pdf';
 import { env } from '../../../env';
+import { getFooterLinks } from './utils';
+import styles from './Footer.module.scss';
 
 const Copyright = () => (
   <Typography className={styles.copyright}>
@@ -52,30 +51,21 @@ export const Footer = ({ isMobileMenu = false }) => (
         display: 'flex',
       }}
     >
-      <span className={styles.link}>
-        <a
-          href={TAndC}
-          type="application/pdf"
-          data-testid="t-and-c"
-          className={styles.underline}
-          target="_blank"
-          rel="noreferrer"
+      {getFooterLinks().map(({ text, ...link }) => (
+        <span
+          key={text}
+          className={styles.link}
         >
-          Terms & Conditions
-        </a>
-      </span>
-      <span className={styles.link}>
-        <a
-          href={Privacy}
-          type="application/pdf"
-          data-testid="privacy"
-          className={styles.underline}
-          target="_blank"
-          rel="noreferrer"
-        >
-          Privacy
-        </a>
-      </span>
+          <a
+            {...link}
+            className={styles.underline}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {text}
+          </a>
+        </span>
+      ))}
       <span
         data-testid="status"
         className={styles.link}

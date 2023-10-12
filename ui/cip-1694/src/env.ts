@@ -20,6 +20,7 @@ type EnvType = {
   COMMIT_HASH: string;
   SUPPORTED_WALLETS: string[];
   DISCORD_URL: string;
+  FAQ_URL: string;
 };
 
 export const env: EnvType = {
@@ -45,4 +46,5 @@ export const env: EnvType = {
     .split(',')
     .filter((w: string) => !!w),
   DISCORD_URL: process.env.REACT_APP_DISCORD_URL || get(window, 'env.REACT_APP_DISCORD_URL'),
+  FAQ_URL: process.env.REACT_APP_FAQ_URL || get(window, 'env.REACT_APP_FAQ_URL'),
 };

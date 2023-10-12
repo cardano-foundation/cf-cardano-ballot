@@ -43,7 +43,7 @@ import { VoteContextInput } from './components/VoteContextInput/VoteContextInput
 import { env } from '../../env';
 import styles from './Vote.module.scss';
 
-const errorsMap = {
+export const errorsMap = {
   [voteService.ERRORS.STAKE_AMOUNT_NOT_AVAILABLE]: (stakeAddress: string) => (
     <div>
       <div>Stake amount not found for stake address:</div>

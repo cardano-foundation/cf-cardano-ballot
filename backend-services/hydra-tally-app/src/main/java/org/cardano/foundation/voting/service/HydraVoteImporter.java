@@ -54,8 +54,8 @@ public class HydraVoteImporter {
         val voteDatumList = votes.stream()
                 .map(vote -> VoteDatum.builder()
                         .voterKey(vote.voterStakeAddress())
-                        .category(vote.categoryId())
-                        .proposal(vote.proposalId().toString())
+                        .categoryId(vote.categoryId())
+                        .proposalId(vote.proposalId().toString())
                         .build()
                 ).toList();
 
@@ -63,7 +63,7 @@ public class HydraVoteImporter {
         TxOutputBuilder txOutputBuilder = (context, outputs) -> {};
 
         for (val voteDatum : voteDatumList) {
-            val categoryId = voteDatum.getCategory();
+            val categoryId = voteDatum.getCategoryId();
             val contract = plutusScriptLoader.getContract(categoryId);
             val contractAddress = plutusScriptLoader.getContractAddress(contract);
 

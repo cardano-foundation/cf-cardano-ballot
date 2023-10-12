@@ -11,7 +11,7 @@
       "datum": {
         "title": "_voting_datum",
         "schema": {
-          "$ref": "#/definitions/voting~1VotingDatum"
+          "$ref": "#/definitions/Void"
         }
       },
       "redeemer": {
@@ -28,13 +28,24 @@
           }
         }
       ],
-      "compiledCode": "5892010000323232323232323223222232533300932533300a3370e900118048008991919299980699b87480000045288a50300b006300f001300800116300d300e3007002149858c94ccc024cdc3a40000022a666018600e0062930b0a99980499b874800800454ccc030c01c00c5261616300700237326eb80048c014dd5000918019baa0015734aae7555cf2ab9f5742ae881",
-      "hash": "3ac48352e47e7c82c9d9e87f6e30554089d502314b9b7226e147a309"
+      "compiledCode": "586d01000032323232323223222232533300932533300a3370e90000008a5114a260100062930b19299980499b874800000454ccc030c01c00c52616153330093370e90010008a99980618038018a4c2c2c600e0046e64dd7000918029baa001230033754002ae6955ceaab9e5573f",
+      "hash": "2dcafebfef62fdf3bd4c19fa5f00a3e7f77e8b971983e547e80f68f2"
     }
   ],
   "definitions": {
     "String": {
       "dataType": "#string"
+    },
+    "Void": {
+      "title": "Unit",
+      "description": "The nullary constructor.",
+      "anyOf": [
+        {
+          "dataType": "constructor",
+          "index": 0,
+          "fields": []
+        }
+      ]
     },
     "voting/Redeemer": {
       "title": "Redeemer",
@@ -49,17 +60,6 @@
           "title": "ReduceVoteBatches",
           "dataType": "constructor",
           "index": 1,
-          "fields": []
-        }
-      ]
-    },
-    "voting/VotingDatum": {
-      "title": "VotingDatum",
-      "anyOf": [
-        {
-          "title": "VotingDatum",
-          "dataType": "constructor",
-          "index": 0,
           "fields": []
         }
       ]

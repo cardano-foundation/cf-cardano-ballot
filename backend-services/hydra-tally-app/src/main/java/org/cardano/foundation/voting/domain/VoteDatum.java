@@ -26,10 +26,10 @@ public class VoteDatum {
     private byte[] voterKey;
 
     @PlutusField
-    private String category;
+    private String categoryId;
 
     @PlutusField
-    private String proposal;
+    private String proposalId;
 
     public static Optional<VoteDatum> deserialize(byte[] datum) {
         try {
@@ -55,8 +55,8 @@ public class VoteDatum {
 
             return Optional.of(VoteDatum.builder()
                     .voterKey(voterKey)
-                    .category(new String(category))
-                    .proposal(new String(proposal))
+                    .categoryId(new String(category))
+                    .proposalId(new String(proposal))
                     .build()
             );
         } catch (Exception e) {

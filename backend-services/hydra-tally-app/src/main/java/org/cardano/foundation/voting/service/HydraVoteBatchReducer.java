@@ -16,12 +16,14 @@ import com.bloxbean.cardano.client.function.helper.model.ScriptCallContext;
 import com.bloxbean.cardano.client.plutus.api.PlutusObjectConverter;
 import com.bloxbean.cardano.client.plutus.spec.ExUnits;
 import com.bloxbean.cardano.client.plutus.spec.PlutusV2Script;
+import com.bloxbean.cardano.client.util.JsonUtil;
 import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardano.foundation.voting.domain.CategoryResultsDatum;
 import org.cardano.foundation.voting.domain.ReduceVoteBatchRedeemer;
+import org.cardano.foundation.voting.domain.UTxOCategoryResult;
 import org.cardanofoundation.hydra.cardano.client.lib.HydraOperatorSupplier;
 import org.springframework.stereotype.Component;
 import org.zalando.problem.Problem;
@@ -85,35 +87,34 @@ public class HydraVoteBatchReducer {
         val contractAddress = plutusScriptLoader.getContractAddress(contract);
 
         val hydraOperator = hydraOperatorSupplier.getOperator();
-
         val sender = hydraOperator.getAddress();
 
         log.info("Sender Address: " + sender);
         log.info("Script Address: " + contractAddress);
 
-        val utxoTuples = voteUtxoFinder.getUtxosWithVoteBatches(contractCategoryId, batchSize);
+        val utxosWithCategoryResults = voteUtxoFinder.getUtxosWithCategoryResults(contractCategoryId, batchSize);
 
-        if (utxoTuples.isEmpty()) {
+        if (utxosWithCategoryResults.isEmpty()) {
             log.warn("No utxo found");
 
             return Either.right(Optional.empty());
         }
 
-        if (utxoTuples.size() == 1) {
+        if (utxosWithCategoryResults.size() == 1) {
             log.info("Only final reduction left!");
 
             return Either.right(Optional.empty());
         }
 
-        val categoryResultsDatums = utxoTuples.stream()
-                .map(t -> t._2)
+        val categoryResultsDatums = utxosWithCategoryResults.stream()
+                .map(UTxOCategoryResult::categoryResultsDatum)
                 .toList();
 
         val reduceVoteBatchDatum = categoryResultsDatum(contractCategoryId, categoryResultsDatums);
 
         //log.info(JsonUtil.getPrettyJson(categoryResultsDatums));
         //log.info("########### Reduced Result Datum #############");
-        //log.info(JsonUtil.getPrettyJson(reduceVoteBatchDatum));
+        log.info(JsonUtil.getPrettyJson(reduceVoteBatchDatum));
 
         // Build and post contract txn
         val utxoSelectionStrategy = new LargestFirstUtxoSelectionStrategy(utxoSupplier);
@@ -130,13 +131,9 @@ public class HydraVoteBatchReducer {
                 .qty(adaToLovelace(1))
                 .build();
 
-//        val output2 = Output.builder()
-//                .address(sender)
-//                .assetName(LOVELACE)
-//                .qty(adaToLovelace(2))
-//                .build();
-
-        val scriptUtxos = utxoTuples.stream().map(utxoVoteDatumTuple -> utxoVoteDatumTuple._1)
+        val scriptUtxos = utxosWithCategoryResults
+                .stream()
+                .map(UTxOCategoryResult::utxo)
                 .toList();
 
         val extraInputs = utxoSelectionStrategy.select(sender, new Amount(LOVELACE, adaToLovelace(2)), Set.of());
@@ -146,15 +143,15 @@ public class HydraVoteBatchReducer {
         allInputs.addAll(extraInputs);
 
         val scriptCallContexts = scriptUtxos.stream().map(utxo -> ScriptCallContext
-                .builder()
-                .script(contract)
-                .utxo(utxo)
-                .exUnits(ExUnits.builder()  // Exact exUnits will be calculated later
-                        .mem(BigInteger.valueOf(0))
-                        .steps(BigInteger.valueOf(0))
-                        .build())
-                .redeemer(plutusObjectConverter.toPlutusData(ReduceVoteBatchRedeemer.create()))
-                .redeemerTag(Spend).build())
+                        .builder()
+                        .script(contract)
+                        .utxo(utxo)
+                        .exUnits(ExUnits.builder()  // Exact exUnits will be calculated later
+                                .mem(BigInteger.valueOf(0))
+                                .steps(BigInteger.valueOf(0))
+                                .build())
+                        .redeemer(plutusObjectConverter.toPlutusData(ReduceVoteBatchRedeemer.create()))
+                        .redeemerTag(Spend).build())
                 .toList();
 
         var txBuilder = output1.outputBuilder()

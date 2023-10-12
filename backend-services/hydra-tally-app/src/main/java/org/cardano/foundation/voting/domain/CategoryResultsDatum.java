@@ -32,8 +32,8 @@ public class CategoryResultsDatum {
         return new CategoryResultsDatum(categoryId, new HashMap<>());
     }
 
-    public void add(String proposal, long result) {
-        results.put(proposal, result);
+    public void add(String proposal, long newResult) {
+        results.put(proposal, newResult);
     }
 
     public Long get(String proposal) {

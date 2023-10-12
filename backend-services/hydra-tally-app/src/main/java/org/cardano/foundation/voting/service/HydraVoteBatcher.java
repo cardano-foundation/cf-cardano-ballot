@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardano.foundation.voting.domain.CategoryResultsDatum;
 import org.cardano.foundation.voting.domain.CreateVoteBatchRedeemer;
+import org.cardano.foundation.voting.domain.UTxOVote;
 import org.cardano.foundation.voting.utils.BalanceUtil;
 import org.cardanofoundation.hydra.cardano.client.lib.HydraOperatorSupplier;
 import org.springframework.stereotype.Component;
@@ -85,11 +86,11 @@ public class HydraVoteBatcher {
             int batchSize)
             throws CborSerializationException, ApiException {
 
-        val utxoTuples = voteUtxoFinder.getUtxosWithVotes(contractCategoryId, batchSize);
+        val utxosWithVotes = voteUtxoFinder.getUtxosWithVotes(contractCategoryId, batchSize);
 
-        log.info("Found votes[UTxOs]: {}", utxoTuples.size());
+        log.info("Found votes[UTxOs]: {}", utxosWithVotes.size());
 
-        if (utxoTuples.isEmpty()) {
+        if (utxosWithVotes.isEmpty()) {
             log.warn("No utxo found");
 
             return Either.right(Optional.empty());
@@ -104,15 +105,18 @@ public class HydraVoteBatcher {
         log.info("Script Address: " + contractAddress);
 
         val categoryResultsDatum = CategoryResultsDatum.empty(contractCategoryId);
-        for (val tuple : utxoTuples) {
-            val voteDatum = tuple._2;
-            val categoryId = new String(voteDatum.getCategory());
+
+        for (val uTxOVote : utxosWithVotes) {
+            val voteDatum = uTxOVote.voteDatum();
+            val categoryId = voteDatum.getCategoryId();
 
             if (contractCategoryId.equals(categoryId)) {
-                val proposal = new String(voteDatum.getProposal());
-                val accumulator = categoryResultsDatum.getOr(proposal, 0);
+                val proposalId = voteDatum.getProposalId();
+                val accumulator = categoryResultsDatum.getOr(proposalId, 0);
 
-                categoryResultsDatum.add(categoryId, accumulator + 1);
+                log.info("Category: {}, Proposal: {}, Accumulator + 1: {}", categoryId, proposalId, accumulator + 1);
+
+                categoryResultsDatum.add(proposalId, accumulator + 1);
             }
         }
 
@@ -130,8 +134,8 @@ public class HydraVoteBatcher {
                 .qty(adaToLovelace(1))
                 .build();
 
-        val scriptUtxos = utxoTuples.stream()
-                .map(utxoVoteDatumTuple -> utxoVoteDatumTuple._1)
+        val scriptUtxos = utxosWithVotes.stream()
+                .map(UTxOVote::utxo)
                 .toList();
 
         val extraInputs = utxoSelectionStrategy.select(operatorAddress, new Amount(LOVELACE, adaToLovelace(2)), Set.of());
@@ -164,7 +168,6 @@ public class HydraVoteBatcher {
         txBuilder = txBuilder.andThen((context, txn) -> {
             val protocolParams = protocolParamsSupplier.getProtocolParams();
             val utxos = context.getUtxos();
-            log.info("Votes utxos size: {}", utxos.size());
 
             val evalReedemers = PlutusScriptLoader.evaluateExUnits(txn, utxos, protocolParams);
 

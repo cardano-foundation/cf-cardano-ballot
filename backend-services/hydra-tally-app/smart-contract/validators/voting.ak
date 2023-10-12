@@ -14,11 +14,6 @@ type Category =
 type Proposal =
   String
 
-// respective pubkey hashes for authorised parties
-type VotingDatum {
-  VotingDatum
-}
-
 type Redeemer {
   CreateVoteBatch
   ReduceVoteBatches
@@ -44,15 +39,15 @@ fn compare_proposal(left: Proposal, right: Proposal) -> Ordering {
 
 validator(contract_category_id: String) {
   fn voting(
-    _voting_datum: VotingDatum,
+    _voting_datum: Void,
     redeemer: Redeemer,
     sc: ScriptContext,
   ) -> Bool {
     // On L2 (Hydra) one will typically lock votes with 0 ADA but on L1 of course each eUTxO is guarded by ca. 1,7 ADA
-    expect Spend(output_reference) = sc.purpose
+    //expect Spend(output_reference) = sc.purpose
 
-    let inputs: List<Input> = sc.transaction.inputs
-    let outputs: List<Output> = sc.transaction.outputs
+    // let inputs: List<Input> = sc.transaction.inputs
+    // let outputs: List<Output> = sc.transaction.outputs
 
     when redeemer is {
       CreateVoteBatch -> { 
@@ -110,49 +105,49 @@ validator(contract_category_id: String) {
 
 // checks that one of the outputs contains
 // computed on chain results
-fn output_contains_final_result(
-  outputs: List<Output>,
-  on_chain_results: CategoryResultsDatum,
-) -> Bool {
-  let result_checker =
-    fn(r: CategoryResultsDatum) { r == on_chain_results }
+// fn output_contains_final_result(
+//   outputs: List<Output>,
+//   on_chain_results: CategoryResultsDatum,
+// ) -> Bool {
+//   let result_checker =
+//     fn(r: CategoryResultsDatum) { r == on_chain_results }
 
-  let mapper =
-    fn(output) {
-      if adatums.is_inline_datum(output) {
-        expect InlineDatum(off_chain_results_data) = output.datum
+//   let mapper =
+//     fn(output) {
+//       if adatums.is_inline_datum(output) {
+//         expect InlineDatum(off_chain_results_data) = output.datum
 
-        expect off_chain_results: CategoryResultsDatum = off_chain_results_data
+//         expect off_chain_results: CategoryResultsDatum = off_chain_results_data
 
-        Some(off_chain_results)
-      } else {
-        None
-      }
-    }
+//         Some(off_chain_results)
+//       } else {
+//         None
+//       }
+//     }
 
-  list.filter_map(outputs, mapper)
-    |> list.any(result_checker)
-}
+//   list.filter_map(outputs, mapper)
+//     |> list.any(result_checker)
+// }
 
-fn get_votes_from_inputs(
-  contract_category_id: String,
-  inputs: List<Input>,
-) -> List<Vote> {
-  list.filter_map(
-    inputs,
-    fn(input) {
-      if adatums.is_inline_datum(input.output) {
-        expect InlineDatum(vote_data) = input.output.datum
-        expect vote: Vote = vote_data
+// fn get_votes_from_inputs(
+//   contract_category_id: String,
+//   inputs: List<Input>,
+// ) -> List<Vote> {
+//   list.filter_map(
+//     inputs,
+//     fn(input) {
+//       if adatums.is_inline_datum(input.output) {
+//         expect InlineDatum(vote_data) = input.output.datum
+//         expect vote: Vote = vote_data
 
-        Some(vote)
-      } else {
-        None
-      }
-    },
-  )
-    |> list.filter(fn(vote) { contract_category_id == vote.category })
-}
+//         Some(vote)
+//       } else {
+//         None
+//       }
+//     },
+//   )
+//     |> list.filter(fn(vote) { contract_category_id == vote.category })
+// }
 
 // fn get_vote_results_from_inputs(inputs: List<Input>) -> List<ResultsBatchDatum> {
 //   list.filter_map(
@@ -189,40 +184,26 @@ fn get_votes_from_inputs(
 //   list.reduce(dict_list_with_results, merging_fn, dict.new())
 // }
 
-fn do_count_votes(
-  votes: List<Vote>,
-  acc: Dict<Proposal, Int>,
-) -> Dict<Proposal, Int> {
-  when votes is {
-    [] -> acc
-    [h, ..t] -> {
-      let p: Proposal = h.proposal
-      dict.union_with(
-        left: do_count_votes(t, acc),
-        right: dict.insert(
-          self: dict.new(),
-          key: p,
-          value: 1,
-          compare: compare_proposal,
-        ),
-        with: results_conflict_resolver,
-        compare: compare_proposal,
-      )
-    }
-  }
-}
+// fn do_count_votes(
+//   votes: List<Vote>,
+//   acc: Dict<Proposal, Int>,
+// ) -> Dict<Proposal, Int> {
+//   when votes is {
+//     [] -> acc
+//     [h, ..t] -> {
+//       let p: Proposal = h.proposal
+//       dict.union_with(
+//         left: do_count_votes(t, acc),
+//         right: dict.insert(
+//           self: dict.new(),
+//           key: p,
+//           value: 1,
+//           compare: compare_proposal,
+//         ),
+//         with: results_conflict_resolver,
+//         compare: compare_proposal,
+//       )
+//     }
+//   }
+// }
 
-fn results_conflict_resolver(
-  _key: Proposal,
-  left: Int,
-  right: Int,
-) -> Option<Int> {
-  let sum = left + right
-
-  Some(sum)
-}
-
-fn count_votes(votes: List<Vote>) -> Dict<Proposal, Int> {
-  let empty = dict.new()
-  do_count_votes(votes, empty)
-}

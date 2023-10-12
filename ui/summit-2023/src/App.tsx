@@ -39,9 +39,6 @@ function App() {
   const fetchEvent = useCallback(async () => {
     try {
       const event = await getEvent(env.EVENT_ID);
-      /*if ('finished' in event) {
-        event.finished = true;
-      }*/
       const staticCategories: CategoryContent[] = SUMMIT2023CONTENT.categories;
 
       const joinedCategories = event.categories
@@ -97,7 +94,8 @@ function App() {
       if (process.env.NODE_ENV === 'development') {
         console.log(`Failed to fetch event, ${error?.info || error?.message || error?.toString()}`);
       }
-      eventBus.publish('showToast', parseError(error.message), 'error');
+
+      if (error.message !== 'EVENT_NOT_FOUND') eventBus.publish('showToast', parseError(error.message), 'error');
     }
   }, [dispatch, stakeAddress]);
 
@@ -113,10 +111,13 @@ function App() {
     const isVerifiedEventNotEnded = walletIsVerified && !eventCache.finished;
     const notVerifiedEventEnded = !walletIsVerified && eventCache.finished;
     const sessionExpired = !session || isExpired;
-    const notDiscordVerification =  !(action === 'verification' && secret.includes('|'));
+    const notDiscordVerification = !(action === 'verification' && secret.includes('|'));
 
-    const showLoginModal = termsAndConditionsChecked &&
-        isConnected && notDiscordVerification && ((isVerifiedEventNotEnded && sessionExpired) || notVerifiedEventEnded);
+    const showLoginModal =
+      termsAndConditionsChecked &&
+      isConnected &&
+      notDiscordVerification &&
+      ((isVerifiedEventNotEnded && sessionExpired) || notVerifiedEventEnded);
 
     if (showLoginModal) {
       eventBus.publish('openLoginModal', 'If you already voted, please login to see your votes.');
@@ -151,7 +152,7 @@ function App() {
             xs={6}
           >
             <Box className="content">
-              {eventCache !== undefined ? (
+              {eventCache !== undefined && eventCache?.id.length ? (
                 <PageRouter />
               ) : (
                 <Box

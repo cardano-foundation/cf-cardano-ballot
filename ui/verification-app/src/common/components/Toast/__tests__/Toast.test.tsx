@@ -24,14 +24,14 @@ describe('Toast:', () => {
     );
 
     await waitFor(async () => {
-      const toast = await screen.queryByTestId('toast');
+      const toast = screen.queryByTestId('toast');
       expect(toast).not.toBeNull();
 
-      const toastMessage = await within(toast).queryByTestId('toast-message');
+      const toastMessage = within(toast).queryByTestId('toast-message');
       expect(toastMessage).not.toBeNull();
       expect(toastMessage.textContent).toEqual(message);
 
-      const toastClose = await within(toast).queryByTestId('toast-close-button');
+      const toastClose = within(toast).queryByTestId('toast-close-button');
       expect(toastClose).not.toBeNull();
 
       fireEvent.click(toastClose);

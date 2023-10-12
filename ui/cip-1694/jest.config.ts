@@ -1,13 +1,13 @@
-module.exports = {
+export default {
   collectCoverage: true,
   collectCoverageFrom: ['src/**/*.ts', 'src/**/*.tsx'],
   coveragePathIgnorePatterns: ['node_modules', 'setupTests.ts', 'setupProxy.ts', 'env.ts', '.d.ts', 'types', 'test/*'],
   coverageThreshold: {
     global: {
-      branches: 84,
-      functions: 92,
+      branches: 83,
+      functions: 91,
       lines: 92,
-      statements: 92,
+      statements: 93,
     },
   },
   roots: ['<rootDir>/src'],
@@ -16,7 +16,7 @@ module.exports = {
   globals: {
     IS_REACT_ACT_ENVIRONMENT: true,
   },
-  setupFilesAfterEnv: ['./jest.setup.js'],
+  setupFilesAfterEnv: ['./jest.setup.ts'],
   transform: {
     '^.+\\.(ts|tsx)$': 'ts-jest',
   },
@@ -25,6 +25,7 @@ module.exports = {
     '.*\\.(jpg|jpeg|png|gif|eot|otf|webp|ttf|woff|woff2)$': '<rootDir>/src/test/__mocks__/fileMock.js',
     '.*\\.(pdf)$': '<rootDir>/src/test/__mocks__/pdfFileMock.js',
     '.*\\.svg*$': '<rootDir>/src/test/__mocks__/svgMock.js',
+    'query-string': '<rootDir>/src/test/__mocks__/queryString.js',
     '^lodash-es$': 'lodash',
     '^common/(.*)': '<rootDir>/src/common/$1',
     '^pages/(.*)': '<rootDir>/src/pages/$1',

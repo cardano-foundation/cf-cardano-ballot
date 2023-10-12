@@ -5,6 +5,7 @@
   flex-direction: column;
   margin: 0px !important;
   width: 100%;
+  position: relative;
 
   &.selected,
   &:hover,
@@ -21,4 +22,22 @@
   font-weight: 600 !important;
   line-height: normal !important;
   text-transform: none !important;
+}
+
+.checkContainer {
+  position: absolute;
+  right: 16px;
+  width: 23px;
+  height: 23px;
+  border: 1px solid #bbbbbb;
+  border-radius: 50%;
+
+  .checkIcon {
+    color: #1d439b;
+    font-size: 28px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
 }

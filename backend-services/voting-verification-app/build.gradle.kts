@@ -58,8 +58,8 @@ dependencies {
 	implementation("com.querydsl:querydsl-jpa")
     annotationProcessor("com.querydsl:querydsl-apt")
 
-    implementation("com.bloxbean.cardano:cardano-client-address:0.5.0-beta3")
-	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0-beta3")
+    implementation("com.bloxbean.cardano:cardano-client-address:0.5.0")
+	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0")
 
 	implementation("io.vavr:vavr:0.10.4")
 

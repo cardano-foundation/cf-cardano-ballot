@@ -16,6 +16,8 @@ import {
   advancedFieldsToDisplay,
   advancedFullFieldsToDisplay,
   generalFieldsToDisplay,
+  voteItemDescriptionMap,
+  voteItemAdvancedDescriptionMap,
 } from './utils';
 import { ReceiptItem } from './components/ReceiptItem/ReceipItem';
 import { ReceiptInfo } from './components/ReceiptInfo/ReceiptInfo';
@@ -23,7 +25,7 @@ import styles from './VoteReceipt.module.scss';
 
 type VoteReceiptProps = {
   setOpen: () => void;
-  fetchReceipt: (props: { cb?: () => void; refetch?: boolean }) => void;
+  fetchReceipt: () => void;
   receipt: VoteReceiptType;
 };
 
@@ -147,7 +149,7 @@ export const VoteReceipt = ({ setOpen, fetchReceipt, receipt }: VoteReceiptProps
         {Object.entries(fieldsToDisplay).map(([key, value]: [FieldsToDisplayArrayKeys, string]) => (
           <ReceiptItem
             key={key}
-            {...{ name: key, value, onItemClick }}
+            {...{ name: key, value, onItemClick, description: voteItemDescriptionMap[key] }}
           />
         ))}
         <Accordion
@@ -168,7 +170,7 @@ export const VoteReceipt = ({ setOpen, fetchReceipt, receipt }: VoteReceiptProps
               <ReceiptItem
                 dataTestId="receipt-item-extended"
                 key={key}
-                {...{ name: key, value, onItemClick }}
+                {...{ name: key, value, onItemClick, description: voteItemAdvancedDescriptionMap[key] }}
               />
             ))}
           </AccordionDetails>

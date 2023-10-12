@@ -54,7 +54,7 @@ describe('ReceiptInfo:', () => {
     );
 
     await waitFor(async () => {
-      expect(await screen.queryByTestId('receipt-info')).toBeNull();
+      expect(screen.queryByTestId('receipt-info')).toBeNull();
     });
   });
 
@@ -73,7 +73,7 @@ describe('ReceiptInfo:', () => {
       )
     );
 
-    fireEvent.click(await screen.queryByTestId('refetch-receipt-button'));
+    fireEvent.click(screen.queryByTestId('refetch-receipt-button'));
 
     await waitFor(async () => {
       expect(fetchReceiptMock).not.toBeCalled();

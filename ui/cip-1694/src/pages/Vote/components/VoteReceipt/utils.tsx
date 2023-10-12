@@ -64,3 +64,18 @@ export const valueTransformerMap: Partial<
     />
   ),
 };
+
+export const voteItemDescriptionMap: Record<FieldsToDisplayArrayKeys, string> = {
+  event: 'This field identifies the specific voting/polling event.',
+  proposal: 'Identifies the answer selected for this question.',
+  votingPower:
+    "This refers to the connected wallet's weighted voting power determined by the amount of ADA staked prior to the event.",
+  voterStakingAddress: 'The stake address associated with the Cardano wallet casting the vote.',
+  status: 'The current status of your vote receipt based on the current assurance level.',
+};
+
+export const voteItemAdvancedDescriptionMap: Record<AdvancedFullFieldsToDisplayArrayKeys, string> = {
+  id: 'This is a unique identifier associated with the vote submitted.',
+  votedAtSlot: 'The time of the vote submission represented in Cardano blockchain epoch slots.',
+  voteProof: 'This is required to verify a vote was included on-chain.',
+};

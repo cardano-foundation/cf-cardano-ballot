@@ -10,6 +10,10 @@ export const BLOCKCHAIN_TIP_URL = `${env.VOTING_LEDGER_FOLLOWER_APP_SERVER_URL}/
 export const VOTING_POWER_URL = `${env.VOTING_LEDGER_FOLLOWER_APP_SERVER_URL}/api/account`;
 export const GOOGLE_FORM_URL = env.GOOGLE_FORM_URL;
 
+export const ERRORS = {
+  STAKE_AMOUNT_NOT_AVAILABLE: 'STAKE_AMOUNT_NOT_AVAILABLE',
+};
+
 export const castAVoteWithDigitalSignature = async (jsonRequest: SignedWeb3Request) =>
   await doRequest<Problem | Vote>(
     HttpMethods.POST,

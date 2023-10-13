@@ -240,17 +240,6 @@ public class HydraCommands {
         return "Fan out completed.";
     }
 
-    @Command(command = "ready-fan-out", description = "ready to fan out.")
-    public String readyFanOut() {
-        var readyToFanoutResponse = hydraClient.readyToFanOut().block(Duration.ofMinutes(1));
-
-        if (readyToFanoutResponse == null) {
-            return "Cannot fan out, unsupported state, hydra state:" + hydraClient.getHydraState();
-        }
-
-        return "Fan out completed.";
-    }
-
     @Command(command = "head-close", description = "close head.")
     public String closeHead() {
         HeadIsClosedResponse headIsClosedResponse = hydraClient.closeHead().block(Duration.ofMinutes(1));

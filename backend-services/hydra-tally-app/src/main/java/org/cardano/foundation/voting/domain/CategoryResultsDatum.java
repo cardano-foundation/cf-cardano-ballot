@@ -38,14 +38,6 @@ public class CategoryResultsDatum {
         results.put(proposal, existingResult + newResult);
     }
 
-    public Long get(String proposal) {
-        return results.get(proposal);
-    }
-
-    public Long getOr(String proposal, long defaultValue) {
-        return results.getOrDefault(proposal, defaultValue);
-    }
-
     public static Either<Problem, Optional<CategoryResultsDatum>> deserialize(byte[] datum) {
         try {
             val constr = (ConstrPlutusData) PlutusData.deserialize(datum);

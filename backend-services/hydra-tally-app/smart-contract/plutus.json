@@ -22,14 +22,20 @@
       },
       "parameters": [
         {
+          "title": "event_id",
+          "schema": {
+            "$ref": "#/definitions/String"
+          }
+        },
+        {
           "title": "contract_category_id",
           "schema": {
             "$ref": "#/definitions/String"
           }
         }
       ],
-      "compiledCode": "586d01000032323232323223222232533300932533300a3370e90000008a5114a260100062930b19299980499b874800000454ccc030c01c00c52616153330093370e90010008a99980618038018a4c2c2c600e0046e64dd7000918029baa001230033754002ae6955ceaab9e5573f",
-      "hash": "2dcafebfef62fdf3bd4c19fa5f00a3e7f77e8b971983e547e80f68f2"
+      "compiledCode": "587401000032323232323223223222232533300b32533300c3370e90000008a5114a260140062930b19299980599b874800000454ccc038c02400c526161533300b3370e90010008a99980718048018a4c2c2c60120046e64dd70009b99375c0024600a6ea80048c00cdd5000ab9a5573aaae7955cf9",
+      "hash": "e834fa9541e8f6ca3a10699d590460873ef1d3832b87a19dbe7acb0d"
     }
   ],
   "definitions": {

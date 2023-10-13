@@ -52,15 +52,17 @@ public class HydraVoteBatcher {
     private final VoteUtxoFinder voteUtxoFinder;
     private final PlutusObjectConverter plutusObjectConverter;
 
-    public void batchVotesPerCategory(int batchSize, String contractCategoryId) throws CborSerializationException, ApiException {
-        val contract = plutusScriptLoader.getContract(contractCategoryId);
+    public void batchVotesPerCategory(String contractEventId,
+                                      String contractCategoryId,
+                                      int batchSize) throws CborSerializationException, ApiException {
+        val contract = plutusScriptLoader.getContract(contractEventId, contractCategoryId);
         val contractAddress = plutusScriptLoader.getContractAddress(contract);
 
         log.info("Contract Address: {}", contractAddress);
 
         Either<Problem, Optional<String>> transactionResultE;
         do {
-            transactionResultE = createAndPostBatchTransaction(contractCategoryId, batchSize);
+            transactionResultE = createAndPostBatchTransaction(contractEventId, contractCategoryId, batchSize);
 
             if (transactionResultE.isEmpty()) {
                 log.error("Batching votes failed, reason:{}", transactionResultE.getLeft());
@@ -82,11 +84,12 @@ public class HydraVoteBatcher {
     }
 
     private Either<Problem, Optional<String>> createAndPostBatchTransaction(
+            String contractEventId,
             String contractCategoryId,
             int batchSize)
             throws CborSerializationException, ApiException {
 
-        val utxosWithVotes = voteUtxoFinder.getUtxosWithVotes(contractCategoryId, batchSize);
+        val utxosWithVotes = voteUtxoFinder.getUtxosWithVotes(contractEventId, contractCategoryId, batchSize);
 
         log.info("Found votes[UTxOs]: {}", utxosWithVotes.size());
 
@@ -98,7 +101,7 @@ public class HydraVoteBatcher {
 
         val hydraOperator = hydraOperatorSupplier.getOperator();
         val operatorAddress = hydraOperator.getAddress();
-        val contract = plutusScriptLoader.getContract(contractCategoryId);
+        val contract = plutusScriptLoader.getContract(contractEventId, contractCategoryId);
         val contractAddress = plutusScriptLoader.getContractAddress(contract);
 
         log.info("Sender Address: " + operatorAddress);
@@ -183,11 +186,21 @@ public class HydraVoteBatcher {
         .andThen(BalanceUtil.balanceTx(operatorAddress, 1));
 
         val txBuilderContext = TxBuilderContext.init(utxoSupplier, protocolParamsSupplier);
+        // val transaction = txBuilderContext.build(txBuilder);
         val transaction = txBuilderContext.buildAndSign(txBuilder, hydraOperator.getTxSigner());
+//        var fee = transaction.getBody().getFee();
+//        transaction.getBody().setFee(ZERO);
+//
+//        var firstOutput = transaction.getBody().getOutputs().get(0);
+//        val newOutputValue = firstOutput.getValue().plus(new Value(firstOutput.getValue().getCoin().add(fee), List.of()));
+//        firstOutput.setValue(newOutputValue);
+//
+//        val signed = hydraOperator.getTxSigner().sign(transaction);
 
-        log.info("Fee:{} lovelaces", transaction.getBody().getFee());
+        log.info("Fee: {} lovelaces", transaction.getBody().getFee());
 
         val result = transactionProcessor.submitTransaction(transaction.serialize());
+
         if (!result.isSuccessful()) {
             return Either.left(Problem.builder()
                     .withTitle("Transaction failed")

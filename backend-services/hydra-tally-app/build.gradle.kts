@@ -48,9 +48,9 @@ dependencies {
 	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.0")
 	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0")
 
-	implementation("org.cardanofoundation:hydra-java-client:0.0.7-SNAPSHOT")
-	implementation("org.cardanofoundation:hydra-java-cardano-client-lib-adapter:0.0.7-SNAPSHOT")
-	implementation("org.cardanofoundation:hydra-java-reactive-reactor-client:0.0.7-SNAPSHOT")
+	implementation("org.cardanofoundation:hydra-java-client:0.0.8-SNAPSHOT")
+	implementation("org.cardanofoundation:hydra-java-cardano-client-lib-adapter:0.0.8-SNAPSHOT")
+	implementation("org.cardanofoundation:hydra-java-reactive-reactor-client:0.0.8-SNAPSHOT")
 
 	implementation("one.util:streamex:0.8.1")
 

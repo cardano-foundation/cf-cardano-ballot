@@ -23,6 +23,9 @@ import java.util.Optional;
 public class VoteDatum {
 
     @PlutusField
+    private String voteId;
+
+    @PlutusField
     private byte[] voterKey;
 
     @PlutusField
@@ -34,19 +37,21 @@ public class VoteDatum {
     public static Optional<VoteDatum> deserialize(byte[] datum) {
         try {
             PlutusData plutusData = PlutusData.deserialize(datum);
-            if (!(plutusData instanceof ConstrPlutusData constr))
+            if (!(plutusData instanceof ConstrPlutusData constr)) {
                 return Optional.empty();
+            }
 
-            if (constr.getData().getPlutusDataList().size() != 3) {
+            if (constr.getData().getPlutusDataList().size() != 4) {
                 return Optional.empty();
             }
 
             List<PlutusData> plutusDataList = constr.getData().getPlutusDataList();
-            byte[] voterKey = ((BytesPlutusData) plutusDataList.get(0)).getValue();
-            byte[] category = ((BytesPlutusData) plutusDataList.get(1)).getValue();
-            byte[] proposal = ((BytesPlutusData) plutusDataList.get(2)).getValue();
+            byte[] voteId = ((BytesPlutusData) plutusDataList.get(0)).getValue();
+            byte[] voterKey = ((BytesPlutusData) plutusDataList.get(1)).getValue();
+            byte[] category = ((BytesPlutusData) plutusDataList.get(2)).getValue();
+            byte[] proposal = ((BytesPlutusData) plutusDataList.get(3)).getValue();
 
-            if (voterKey == null || category == null || proposal == null) {
+            if (voteId == null || voterKey == null || category == null || proposal == null) {
                 log.warn("Invalid VoteDatum. One of the fields is null. voterKey: {}, category: {}, proposal: {}",
                         voterKey, category, proposal);
 
@@ -54,6 +59,7 @@ public class VoteDatum {
             }
 
             return Optional.of(VoteDatum.builder()
+                    .voteId(new String(voteId))
                     .voterKey(voterKey)
                     .categoryId(new String(category))
                     .proposalId(new String(proposal))

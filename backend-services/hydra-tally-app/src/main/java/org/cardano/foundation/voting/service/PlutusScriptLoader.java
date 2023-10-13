@@ -62,22 +62,14 @@ public class PlutusScriptLoader {
         return getEntAddress(plutusScript, network).toBech32();
     }
 
-    public PlutusScript getContract(String categoryId) {
-        val params = ListPlutusData.of(BytesPlutusData.of(categoryId));
+    public PlutusScript getContract(String eventId, String categoryId) {
+        val params = ListPlutusData.of(
+                BytesPlutusData.of(eventId),
+                BytesPlutusData.of(categoryId)
+        );
         val compiledCode = applyParamToScript(params, parametrisedCompiledTemplate);
 
         return getPlutusScriptFromCompiledCode(compiledCode, v2);
-    }
-
-    public static List<Redeemer> evaluateExUnitsDef(Transaction txn,
-                                                    Set<Utxo> utxos,
-                                                    ProtocolParams protocolParams) {
-        val txEvaluator = new TxEvaluator();
-        val costMdls = new CostMdls();
-        val costModelFromProtocolParams = getCostModelFromProtocolParams(protocolParams, PLUTUS_V2);
-        costMdls.add(costModelFromProtocolParams.orElseThrow());
-
-        return txEvaluator.evaluateTx(txn, utxos, costMdls);
     }
 
     public static List<Redeemer> evaluateExUnits(Transaction txn,

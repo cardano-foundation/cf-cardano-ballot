@@ -16,7 +16,6 @@ import com.bloxbean.cardano.client.function.helper.model.ScriptCallContext;
 import com.bloxbean.cardano.client.plutus.api.PlutusObjectConverter;
 import com.bloxbean.cardano.client.plutus.spec.ExUnits;
 import com.bloxbean.cardano.client.plutus.spec.PlutusV2Script;
-import com.bloxbean.cardano.client.util.JsonUtil;
 import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,14 +53,16 @@ public class HydraVoteBatchReducer {
     private final VoteUtxoFinder voteUtxoFinder;
     private final PlutusObjectConverter plutusObjectConverter;
 
-    public void batchVotesPerCategory(String contractCategoryId, int batchSize) throws CborSerializationException, ApiException {
-        val contract = plutusScriptLoader.getContract(contractCategoryId);
+    public void batchVotesPerCategory(String contractEventId,
+                                      String contractCategoryId,
+                                      int batchSize) throws CborSerializationException, ApiException {
+        val contract = plutusScriptLoader.getContract(contractEventId, contractCategoryId);
 
         log.info("Contract Address: {}", plutusScriptLoader.getContractAddress(contract));
 
         Either<Problem, Optional<String>> transactionResultE;
         do {
-            transactionResultE = postReduceBatchTransaction(contractCategoryId, batchSize);
+            transactionResultE = postReduceBatchTransaction(contractEventId, contractCategoryId, batchSize);
 
             if (transactionResultE.isEmpty()) {
                 log.error("Reducing votes failed, reason:{}", transactionResultE.getLeft());
@@ -82,8 +83,10 @@ public class HydraVoteBatchReducer {
         } while (transactionResultE.isRight() && transactionResultE.get().isPresent());
     }
 
-    private Either<Problem, Optional<String>> postReduceBatchTransaction(String contractCategoryId, int batchSize) throws CborSerializationException, ApiException {
-        val contract = plutusScriptLoader.getContract(contractCategoryId);
+    private Either<Problem, Optional<String>> postReduceBatchTransaction(String contractEventId,
+                                                                         String contractCategoryId,
+                                                                         int batchSize) throws CborSerializationException, ApiException {
+        val contract = plutusScriptLoader.getContract(contractEventId, contractCategoryId);
         val contractAddress = plutusScriptLoader.getContractAddress(contract);
 
         val hydraOperator = hydraOperatorSupplier.getOperator();
@@ -92,7 +95,7 @@ public class HydraVoteBatchReducer {
         log.info("Sender Address: " + sender);
         log.info("Script Address: " + contractAddress);
 
-        val utxosWithCategoryResults = voteUtxoFinder.getUtxosWithCategoryResults(contractCategoryId, batchSize);
+        val utxosWithCategoryResults = voteUtxoFinder.getUtxosWithCategoryResults(contractEventId, contractCategoryId, batchSize);
 
         if (utxosWithCategoryResults.isEmpty()) {
             log.warn("No utxo found");
@@ -112,15 +115,9 @@ public class HydraVoteBatchReducer {
 
         val reduceVoteBatchDatum = categoryResultsDatum(contractCategoryId, categoryResultsDatums);
 
-        //log.info(JsonUtil.getPrettyJson(categoryResultsDatums));
-        //log.info("########### Reduced Result Datum #############");
-        log.info(JsonUtil.getPrettyJson(reduceVoteBatchDatum));
-
-        // Build and post contract txn
         val utxoSelectionStrategy = new LargestFirstUtxoSelectionStrategy(utxoSupplier);
         val collateralUtxos = utxoSelectionStrategy.select(sender, new Amount(LOVELACE, adaToLovelace(2)), emptySet());
 
-        // Build the expected output
         val outputDatum = plutusObjectConverter.toPlutusData(reduceVoteBatchDatum);
 
         val output1 = Output.builder()

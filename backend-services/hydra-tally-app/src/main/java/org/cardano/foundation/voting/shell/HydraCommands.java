@@ -3,6 +3,7 @@ package org.cardano.foundation.voting.shell;
 import com.bloxbean.cardano.client.api.exception.ApiException;
 import com.bloxbean.cardano.client.exception.CborSerializationException;
 import com.bloxbean.cardano.client.util.JsonUtil;
+import jakarta.annotation.Nullable;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -24,6 +25,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.command.annotation.Option;
 import org.springframework.shell.standard.ShellOption;
+import reactor.core.Disposable;
 import shaded.com.google.common.collect.Lists;
 
 import java.math.BigInteger;
@@ -89,6 +91,10 @@ public class HydraCommands {
     @Value("${hydra.auto.connect:false}")
     private boolean autoConnect;
 
+    @Nullable private Disposable stateQuerySubscription;
+
+    @Nullable private Disposable responsesSubscription;
+
     @PostConstruct
     public void init() {
         if (autoConnect) {
@@ -146,25 +152,39 @@ public class HydraCommands {
 
         GreetingsResponse greetingsResponse = hydraClient.openConnection().block(Duration.ofMinutes(1));
 
-        hydraClient.getHydraStatesStream().doOnNext(hydraState -> {
-            System.out.printf("%n%s -> %s%n", hydraState.getOldState(), hydraState.getNewState());
-        }).subscribe();
-
         if (greetingsResponse == null) {
             return "Cannot connect, unsupported state, hydra state:" + hydraClient.getHydraState();
         }
+
+        this.stateQuerySubscription = hydraClient.getHydraStatesStream().doOnNext(hydraState -> {
+            System.out.printf("%n%s -> %s%n", hydraState.getOldState(), hydraState.getNewState());
+        }).subscribe();
+
+        this.responsesSubscription = hydraClient.getHydraResponsesStream().doOnNext(response -> {
+            if (response.isFailure()) {
+                log.error("Hydra error response: {}", response.getTag());
+            }
+        }).subscribe();
 
         return "Connected.";
     }
 
     @Command(command = "disconnect", description = "disconnect from the hydra network.")
     public String disconnect() throws InterruptedException {
-        log.info("Disconnecting from the hydra network:{}", hydraWsUrl);
+        log.info("Disconnecting from the hydra network: {}", hydraWsUrl);
+
+        if (stateQuerySubscription != null) {
+            stateQuerySubscription.dispose();
+        }
+
+        if (responsesSubscription != null) {
+            responsesSubscription.dispose();
+        }
 
         Boolean disconnected = hydraClient.closeConnection().block(Duration.ofMinutes(1));
 
         if (disconnected == null) {
-            return "Cannot disconnect, unsupported state, hydra state:" + hydraClient.getHydraState();
+            return "Cannot disconnect, unsupported state, hydra state: " + hydraClient.getHydraState();
         }
 
         return "Disconnected.";
@@ -214,6 +234,32 @@ public class HydraCommands {
         utxo.setValue(Map.of("lovelace", BigInteger.valueOf(cardanoCommitAmount)));
 
         var commitMap = Map.of(cardanoCommitUtxo, utxo);
+
+        CommittedResponse committedResponse = hydraClient.commitFundsToTheHead(commitMap)
+                .block(Duration.ofMinutes(1));
+
+        if (committedResponse == null) {
+            return "Cannot commit, unsupported state, hydra state:" + hydraClient.getHydraState();
+        }
+
+        committedResponse.getUtxo().forEach((key, value) -> {
+            log.info("utxo: {}, value: {}", key, value);
+        });
+
+        return "Committed funds.";
+    }
+
+    @Command(command = "head-commit-my-funds", description = "head commit my funds.")
+    public String commitFundsExplicitly(
+            @ShellOption(value = "address") String address,
+            @ShellOption(value = "utxo") String utxoString,
+            @ShellOption(value = "amount") long amount
+    ) {
+        val utxo = new UTXO();
+        utxo.setAddress(address);
+        utxo.setValue(Map.of("lovelace", BigInteger.valueOf(amount)));
+
+        var commitMap = Map.of(utxoString, utxo);
 
         CommittedResponse committedResponse = hydraClient.commitFundsToTheHead(commitMap)
                 .block(Duration.ofMinutes(1));
@@ -279,7 +325,7 @@ public class HydraCommands {
         var partitioned = Lists.partition(participantVotes, batchSize);
 
         for (val batch : partitioned) {
-            val txIdE = hydraVoteImporter.importVotes(batch);
+            val txIdE = hydraVoteImporter.importVotes(eventId, batch);
             if (txIdE.isEmpty()) {
                 return "Importing votes failed, reason:" + txIdE.getLeft();
             }
@@ -302,7 +348,7 @@ public class HydraCommands {
 
         for (val categoryId : allCategories) {
             log.info("Processing category: {}", categoryId);
-            hydraVoteBatcher.batchVotesPerCategory(batchSize, categoryId);
+            hydraVoteBatcher.batchVotesPerCategory(eventId, categoryId, batchSize);
         }
 
         return "Vote batches creations done.";
@@ -320,7 +366,7 @@ public class HydraCommands {
 
         for (val categoryId : allCategories) {
             log.info("Processing category: {}", categoryId);
-            hydraVoteBatchReducer.batchVotesPerCategory(categoryId, batchSize);
+            hydraVoteBatchReducer.batchVotesPerCategory(eventId, categoryId, batchSize);
         }
 
         return "Vote results reduced.";

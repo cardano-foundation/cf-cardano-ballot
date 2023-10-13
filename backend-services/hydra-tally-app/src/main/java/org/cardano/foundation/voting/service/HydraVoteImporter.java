@@ -21,10 +21,11 @@ import org.cardanofoundation.hydra.cardano.client.lib.HydraOperatorSupplier;
 import org.springframework.stereotype.Component;
 import org.zalando.problem.Problem;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static com.bloxbean.cardano.client.common.ADAConversionUtil.adaToLovelace;
-import static java.math.BigDecimal.ZERO;
+import static org.cardano.foundation.voting.utils.MoreFees.changeTransactionCost;
 
 @Component
 @RequiredArgsConstructor
@@ -38,7 +39,7 @@ public class HydraVoteImporter {
     private final PlutusScriptLoader plutusScriptLoader;
     private final PlutusObjectConverter plutusObjectConverter;
 
-    public Either<Problem, String> importVotes(List<Vote> votes) throws Exception {
+    public Either<Problem, String> importVotes(String contractEventId, List<Vote> votes) throws Exception {
         log.info("Importing number: {} votes", votes.size());
 
         val hydraOperator = hydraOperatorSupplier.getOperator();
@@ -53,6 +54,7 @@ public class HydraVoteImporter {
 
         val voteDatumList = votes.stream()
                 .map(vote -> VoteDatum.builder()
+                        .voteId(vote.voteId().toString())
                         .voterKey(vote.voterStakeAddress())
                         .categoryId(vote.categoryId())
                         .proposalId(vote.proposalId().toString())
@@ -64,7 +66,7 @@ public class HydraVoteImporter {
 
         for (val voteDatum : voteDatumList) {
             val categoryId = voteDatum.getCategoryId();
-            val contract = plutusScriptLoader.getContract(categoryId);
+            val contract = plutusScriptLoader.getContract(contractEventId, categoryId);
             val contractAddress = plutusScriptLoader.getContractAddress(contract);
 
             val datum = plutusObjectConverter.toPlutusData(voteDatum);
@@ -73,7 +75,7 @@ public class HydraVoteImporter {
                         .address(contractAddress)
                         .value(Value
                                 .builder()
-                                .coin(adaToLovelace(ZERO))
+                                .coin(adaToLovelace(BigDecimal.ZERO))
                                 .build()
                         )
                         .inlineDatum(datum)
@@ -96,8 +98,16 @@ public class HydraVoteImporter {
 
         val txBuilderContext = TxBuilderContext.init(utxoSupplier, protocolParamsSupplier);
         txBuilderContext.setUtxoSelectionStrategy(new LargestFirstUtxoSelectionStrategy(utxoSupplier));
-        val transaction = txBuilderContext
-                .buildAndSign(txBuilder, hydraOperator.getTxSigner());
+
+         val prepareTransaction = txBuilderContext.build(txBuilder);
+
+        //val prepareTransaction = txBuilderContext.buildAndSign(txBuilder, hydraOperator.getTxSigner());
+
+        changeTransactionCost(prepareTransaction);
+
+        val transaction = hydraOperator.getTxSigner().sign(prepareTransaction);
+
+        log.info("Trx fee: {}", transaction.getBody().getFee().toString());
 
         val result = transactionProcessor.submitTransaction(transaction.serialize());
         if (!result.isSuccessful()) {
@@ -109,5 +119,6 @@ public class HydraVoteImporter {
 
         return Either.right(result.getValue());
     }
+
 
 }

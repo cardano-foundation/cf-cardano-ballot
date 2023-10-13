@@ -25,9 +25,10 @@ public class VoteUtxoFinder {
     private final UtxoSupplier utxoSupplier;
     private final PlutusScriptLoader plutusScriptLoader;
 
-    public List<UTxOVote> getUtxosWithVotes(String contractCategoryId,
+    public List<UTxOVote> getUtxosWithVotes(String eventId,
+                                            String contractCategoryId,
                                             int batchSize) {
-        val contract = plutusScriptLoader.getContract(contractCategoryId);
+        val contract = plutusScriptLoader.getContract(eventId, contractCategoryId);
         val contractAddress = plutusScriptLoader.getContractAddress(contract);
 
         return utxoSupplier.getAll(contractAddress)
@@ -45,8 +46,10 @@ public class VoteUtxoFinder {
                 .toList();
     }
 
-    public List<UTxOCategoryResult> getUtxosWithCategoryResults(String contractCategoryId, int batchSize) {
-        val contract = plutusScriptLoader.getContract(contractCategoryId);
+    public List<UTxOCategoryResult> getUtxosWithCategoryResults(String eventId,
+                                                                String contractCategoryId,
+                                                                int batchSize) {
+        val contract = plutusScriptLoader.getContract(eventId, contractCategoryId);
         val contractAddress = plutusScriptLoader.getContractAddress(contract);
 
         return utxoSupplier.getAll(contractAddress)

@@ -8,36 +8,36 @@ use aiken/list
 use aiken/string
 use aiken/transaction.{InlineDatum, Input, Output, ScriptContext, Spend}
 
-type Category =
-  String
+// type Category =
+//   String
 
-type Proposal =
-  String
+// type Proposal =
+//   String
 
 type Redeemer {
   CreateVoteBatch
   ReduceVoteBatches
 }
 
-type CategoryResultsDatum {
-  category_id: String,
-  results: Dict<Proposal, Int>,
-}
+// type CategoryResultsDatum {
+//   category_id: String,
+//   results: Dict<Proposal, Int>,
+// }
 
-type Vote {
-  voter_key: PubKeyHash,
-  category: Category,
-  proposal: Proposal,
-}
+// type Vote {
+//   voter_key: PubKeyHash,
+//   category: Category,
+//   proposal: Proposal,
+// }
 
-fn compare_proposal(left: Proposal, right: Proposal) -> Ordering {
-  bytearray.compare(
-    builtin.serialise_data(string.to_bytearray(left)),
-    builtin.serialise_data(string.to_bytearray(right)),
-  )
-}
+// fn compare_proposal(left: Proposal, right: Proposal) -> Ordering {
+//   bytearray.compare(
+//     builtin.serialise_data(string.to_bytearray(left)),
+//     builtin.serialise_data(string.to_bytearray(right)),
+//   )
+// }
 
-validator(contract_category_id: String) {
+validator(event_id: String, contract_category_id: String) {
   fn voting(
     _voting_datum: Void,
     redeemer: Redeemer,

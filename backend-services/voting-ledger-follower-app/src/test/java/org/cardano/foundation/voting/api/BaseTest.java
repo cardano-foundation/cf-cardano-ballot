@@ -62,31 +62,29 @@ public class BaseTest {
         wireMockServer = new WireMockServer(9090);
         wireMockServer.start();
 
-        String accountResponse = "[\n" +
-                "  {\n" +
-                "    \"active_epoch\": 97,\n" +
-                "    \"amount\": \"12695385\",\n" +
-                "    \"pool_id\": \"pool1pu5jlj4q9w9jlxeu370a3c9myx47md5j5m2str0naunn2q3lkdy\"\n" +
-                "  },\n" +
-                "  {\n" +
-                "    \"active_epoch\": 97,\n" +
-                "    \"amount\": \"22695385\",\n" +
-                "    \"pool_id\": \"pool1pu5jlj4q9w9jlxeu370a3c9myx47md5j5m2str0naunn2q3lkdy\"\n" +
-                "  }\n" +
-                "]";
+        String accountResponse = "{" +
+                "    \"active\": true,\n" +
+                "    \"controlled_amount\": \"12695385\",\n" +
+                "    \"pool_id\": \"pool1pu5jlj4q9w9jlxeu370a3c9myx47md5j5m2str0naunn2q3lkdy\",\n" +
+                "    \"rewards_sum\": \"95385\",\n" +
+                "    \"reserves_sum\": \"0\",\n" +
+                "    \"withdrawable_amount\": \"12695385\",\n" +
+                "    \"withdrawals_sum\": \"0\",\n" +
+                "    \"treasury_sum\": \"0\"\n" +
+                "  }";
 
         RestAssured.port = serverPort;
         RestAssured.baseURI = "http://localhost";
 
         wireMockServer.stubFor(
-                WireMock.get(urlEqualTo("/accounts/stake_test1uzpq2pktpnj54e64kfgjkm8nrptdwfj7s7fvhp40e98qsusd9z7ek/history?count=100&page=1&order=asc"))
+                WireMock.get(urlEqualTo("/accounts/stake_test1uzpq2pktpnj54e64kfgjkm8nrptdwfj7s7fvhp40e98qsusd9z7ek"))
                 .willReturn(com.github.tomakehurst.wiremock.client.WireMock.aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
                         .withBody(accountResponse)));
 
         wireMockServer.stubFor(
-                WireMock.get(urlEqualTo("/accounts/stake_test1uq0zsej7gjyft8sy9dj7sn9rmqdgw32r8c0lpmr6xu3tu9szp6qre/history?count=100&page=1&order=asc"))
+                WireMock.get(urlEqualTo("/accounts/stake_test1uq0zsej7gjyft8sy9dj7sn9rmqdgw32r8c0lpmr6xu3tu9szp6qre"))
                         .willReturn(com.github.tomakehurst.wiremock.client.WireMock.aResponse()
                                 .withStatus(404)));
 

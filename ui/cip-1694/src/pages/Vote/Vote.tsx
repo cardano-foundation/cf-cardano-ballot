@@ -23,7 +23,7 @@ import {
   setChainTipData,
 } from 'common/store/userSlice';
 import { ProposalPresentation, Account, ChainTip } from 'types/voting-ledger-follower-types';
-import { VoteReceipt as VoteReceiptType } from 'types/voting-app-types';
+import { Vote, VoteReceipt as VoteReceiptType } from 'types/voting-app-types';
 import { RootState } from 'common/store';
 import { VoteReceipt } from 'pages/Vote/components/VoteReceipt/VoteReceipt';
 import { Toast } from 'components/common/Toast/Toast';
@@ -170,7 +170,7 @@ export const VotePage = () => {
         if (!token) return;
         const receiptResponse = await voteService.getVoteReceipt(activeCategoryId, token);
 
-        if ('id' in receiptResponse) {
+        if (receiptResponse && 'id' in receiptResponse) {
           setReceipt(receiptResponse);
         } else {
           toast(
@@ -235,17 +235,21 @@ export const VotePage = () => {
     setActiveCategoryId(event?.categories[categoryIndex]?.id);
   };
 
-  const submitVoteContextForm = useCallback(async () => {
-    try {
-      await voteService.submitVoteContextForm({
-        [env.GOOGLE_FORM_VOTE_CONTEXT_INPUT_NAME]: voteContext,
-      });
-    } catch (error) {
-      console.log(error?.message || error);
-    } finally {
-      setVoteContext('');
-    }
-  }, [voteContext]);
+  const submitVoteContextForm = useCallback(
+    async (voteId: Vote['id']) => {
+      try {
+        await voteService.submitVoteContextForm({
+          [env.GOOGLE_FORM_VOTE_CONTEXT_INPUT_NAME]: voteContext,
+          [env.GOOGLE_FORM_VOTE_ID_INPUT_NAME]: voteId,
+        });
+      } catch (error) {
+        console.log(error?.message || error);
+      } finally {
+        setVoteContext('');
+      }
+    },
+    [voteContext]
+  );
 
   const handleSubmit = async () => {
     let votingPower: Account['votingPower'];
@@ -276,10 +280,10 @@ export const VotePage = () => {
       });
       setIsCastingAVote(true);
       const requestVoteObject = await signMessagePromisified(canonicalVoteInput);
-      await voteService.castAVoteWithDigitalSignature(requestVoteObject);
+      const vote = await voteService.castAVoteWithDigitalSignature(requestVoteObject);
       dispatch(setIsVoteSubmittedModalVisible({ isVisible: true }));
-      if (couldAddContext && voteContext) {
-        await submitVoteContextForm();
+      if (couldAddContext && voteContext && vote) {
+        await submitVoteContextForm(vote.id);
       }
       setVoteSubmitted(true);
       if (numOfCategories === 1 || activeCategoryIndex === numOfCategories - 1) {

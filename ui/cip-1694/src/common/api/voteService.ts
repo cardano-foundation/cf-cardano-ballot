@@ -1,6 +1,6 @@
 import queryString, { StringifiableRecord } from 'query-string';
 import { EventPresentation, ChainTip, Account } from 'types/voting-ledger-follower-types';
-import { Problem, SignedWeb3Request, Vote, VoteReceipt } from 'types/voting-app-types';
+import { SignedWeb3Request, Vote, VoteReceipt } from 'types/voting-app-types';
 import { DEFAULT_CONTENT_TYPE_HEADERS, doRequest, HttpMethods, Headers, MediaTypes } from '../handlers/httpHandler';
 import { env } from '../../env';
 
@@ -15,7 +15,7 @@ export const ERRORS = {
 };
 
 export const castAVoteWithDigitalSignature = async (jsonRequest: SignedWeb3Request) =>
-  await doRequest<Problem | Vote>(
+  await doRequest<void | Vote>(
     HttpMethods.POST,
     CAST_VOTE_URL,
     DEFAULT_CONTENT_TYPE_HEADERS,
@@ -29,7 +29,7 @@ export const getChainTip = async () => {
 };
 
 export const getVoteReceipt = async (categoryId: string, token: string) =>
-  await doRequest<Problem | VoteReceipt>(
+  await doRequest<void | VoteReceipt>(
     HttpMethods.GET,
     `${VOTE_RECEIPT_URL}/${env.EVENT_ID}/${categoryId}`,
     {
@@ -48,7 +48,7 @@ export const getVotingPower = async (eventId: EventPresentation['id'], stakeAddr
 };
 
 export const submitVoteContextForm = async (data: StringifiableRecord) =>
-  await doRequest<Problem | void>(
+  await doRequest<void | void>(
     HttpMethods.POST,
     queryString.stringifyUrl({
       url: `${GOOGLE_FORM_URL}/formResponse`,

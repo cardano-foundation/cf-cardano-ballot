@@ -87,6 +87,7 @@ jest.mock('../../../env', () => {
       CATEGORY_ID: 'CHANGE_GOV_STRUCTURE',
       EVENT_ID: 'CIP-1694_Pre_Ratification_3316',
       GOOGLE_FORM_VOTE_CONTEXT_INPUT_NAME: 'GOOGLE_FORM_VOTE_CONTEXT_INPUT_NAME',
+      GOOGLE_FORM_VOTE_ID_INPUT_NAME: 'GOOGLE_FORM_VOTE_ID_INPUT_NAME',
     },
   };
 });
@@ -384,6 +385,7 @@ describe('For ongoing event:', () => {
 
   test('should submit vote and fetch vote receipt if there are more than one category', async () => {
     const accessToken = 'accessToken';
+    const voteIdMock = 'voteIdMock';
     mockGetUserInSession.mockReset();
     mockGetUserInSession.mockReturnValue({ accessToken });
     const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
@@ -401,6 +403,7 @@ describe('For ongoing event:', () => {
     mockGetVotingPower.mockResolvedValue(accountDataMock);
     mockBuildCanonicalVoteInputJson.mockReset();
     mockBuildCanonicalVoteInputJson.mockReturnValue(canonicalVoteInputJsonMock);
+    mockCastAVoteWithDigitalSignature.mockReturnValue({ id: voteIdMock });
     const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
 
     let store: ReturnType<typeof renderWithProviders>['store'];
@@ -447,6 +450,7 @@ describe('For ongoing event:', () => {
     expect(mockCastAVoteWithDigitalSignature).toHaveBeenCalledWith(canonicalVoteInputJsonMock);
     expect(mockSubmitVoteContextForm).toHaveBeenCalledWith({
       GOOGLE_FORM_VOTE_CONTEXT_INPUT_NAME: voteContext,
+      GOOGLE_FORM_VOTE_ID_INPUT_NAME: voteIdMock,
     });
     expect(store.getState().user.isVoteSubmittedModalVisible).toBeTruthy;
 
@@ -460,6 +464,7 @@ describe('For ongoing event:', () => {
     expect(screen.queryByTestId('vote-context-input')).not.toBeInTheDocument();
     expect(screen.queryAllByRole('button', { pressed: true }).length).toEqual(0);
     expect(within(votePage).queryByTestId('next-question-button')).toBeNull();
+    mockCastAVoteWithDigitalSignature.mockReset();
   });
 
   test('should submit vote and fetch receipt for single category', async () => {

@@ -34,7 +34,7 @@ public class BaseTest {
     protected String eventId;
     @Value("${cardano.network}")
     private String cardanoNetwork;
-        private WireMockServer wireMockServer;
+    private WireMockServer wireMockServer;
 
     @BeforeAll
     public void setUp() {

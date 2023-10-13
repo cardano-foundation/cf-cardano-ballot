@@ -112,11 +112,8 @@ public class HydraVoteBatcher {
 
             if (contractCategoryId.equals(categoryId)) {
                 val proposalId = voteDatum.getProposalId();
-                val accumulator = categoryResultsDatum.getOr(proposalId, 0);
 
-                log.info("Category: {}, Proposal: {}, Accumulator + 1: {}", categoryId, proposalId, accumulator + 1);
-
-                categoryResultsDatum.add(proposalId, accumulator + 1);
+                categoryResultsDatum.add(proposalId, 1);
             }
         }
 

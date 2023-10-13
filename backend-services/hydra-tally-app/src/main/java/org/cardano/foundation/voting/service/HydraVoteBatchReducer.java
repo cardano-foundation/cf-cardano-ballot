@@ -204,7 +204,8 @@ public class HydraVoteBatchReducer {
         val groupResultBatchDatum = CategoryResultsDatum.empty(contractCategoryId);
 
         for (val categoryResultsDatum : categoryResultsDataList) {
-            categoryResultsDatum.getResults().forEach(groupResultBatchDatum::add);
+            categoryResultsDatum.getResults()
+                    .forEach(groupResultBatchDatum::add);
         }
 
         return groupResultBatchDatum;

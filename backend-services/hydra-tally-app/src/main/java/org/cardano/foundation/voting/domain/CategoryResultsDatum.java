@@ -33,7 +33,9 @@ public class CategoryResultsDatum {
     }
 
     public void add(String proposal, long newResult) {
-        results.put(proposal, newResult);
+        val existingResult = results.getOrDefault(proposal, 0L);
+
+        results.put(proposal, existingResult + newResult);
     }
 
     public Long get(String proposal) {
@@ -64,7 +66,7 @@ public class CategoryResultsDatum {
 
             val categoryId = new String(categoryIdPlutus.getValue(), UTF_8);
 
-            val resultBatchDatum = CategoryResultsDatum.empty(categoryId);
+            val categoryResultsDatum = CategoryResultsDatum.empty(categoryId);
 
             while (entries.hasNext()) {
                 val entry = entries.next();
@@ -75,10 +77,10 @@ public class CategoryResultsDatum {
                 val proposal = new String(proposalPlutus);
                 val voteCount = results.getValue().longValue();
 
-                resultBatchDatum.add(proposal, voteCount);
+                categoryResultsDatum.add(proposal, voteCount);
             }
 
-            return Either.right(Optional.of(resultBatchDatum));
+            return Either.right(Optional.of(categoryResultsDatum));
         } catch (Exception e) {
             return Either.left(Problem.builder()
                     .withTitle("Error in deserialization (VoteDatum)")

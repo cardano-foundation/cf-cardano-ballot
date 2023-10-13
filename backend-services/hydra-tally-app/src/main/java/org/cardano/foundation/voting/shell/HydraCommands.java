@@ -2,6 +2,7 @@ package org.cardano.foundation.voting.shell;
 
 import com.bloxbean.cardano.client.api.exception.ApiException;
 import com.bloxbean.cardano.client.exception.CborSerializationException;
+import com.bloxbean.cardano.client.util.JsonUtil;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -128,8 +129,11 @@ public class HydraCommands {
                 })
                 .toList();
 
-        for (var utxo: utxos) {
+        for (val utxo: utxos) {
             sb.append(String.format("%d. %s: %s", ++no, utxo.getKey(), utxo.getValue()));
+            if (utxo.getValue().getInlineDatum() != null) {
+                sb.append(JsonUtil.getPrettyJson(utxo.getValue().getInlineDatum()));
+            }
             sb.append("\n");
         }
 

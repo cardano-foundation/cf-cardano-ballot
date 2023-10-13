@@ -38,6 +38,7 @@ import static com.bloxbean.cardano.client.common.ADAConversionUtil.adaToLovelace
 import static com.bloxbean.cardano.client.common.CardanoConstants.LOVELACE;
 import static com.bloxbean.cardano.client.plutus.spec.RedeemerTag.Spend;
 import static java.util.Collections.emptySet;
+import static org.cardano.foundation.voting.utils.MoreFees.changeTransactionCost;
 
 @Component
 @RequiredArgsConstructor
@@ -186,20 +187,11 @@ public class HydraVoteBatcher {
         .andThen(BalanceUtil.balanceTx(operatorAddress, 1));
 
         val txBuilderContext = TxBuilderContext.init(utxoSupplier, protocolParamsSupplier);
-        // val transaction = txBuilderContext.build(txBuilder);
-        val transaction = txBuilderContext.buildAndSign(txBuilder, hydraOperator.getTxSigner());
-//        var fee = transaction.getBody().getFee();
-//        transaction.getBody().setFee(ZERO);
-//
-//        var firstOutput = transaction.getBody().getOutputs().get(0);
-//        val newOutputValue = firstOutput.getValue().plus(new Value(firstOutput.getValue().getCoin().add(fee), List.of()));
-//        firstOutput.setValue(newOutputValue);
-//
-//        val signed = hydraOperator.getTxSigner().sign(transaction);
+        val transaction = txBuilderContext.build(txBuilder);
 
-        log.info("Fee: {} lovelaces", transaction.getBody().getFee());
+        changeTransactionCost(transaction);
 
-        val result = transactionProcessor.submitTransaction(transaction.serialize());
+        val result = transactionProcessor.submitTransaction(hydraOperator.getTxSigner().sign(transaction));
 
         if (!result.isSuccessful()) {
             return Either.left(Problem.builder()

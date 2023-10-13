@@ -1,6 +1,8 @@
 package org.cardano.foundation.voting.service;
 
 import com.bloxbean.cardano.client.api.model.Result;
+import com.bloxbean.cardano.client.exception.CborSerializationException;
+import com.bloxbean.cardano.client.transaction.spec.Transaction;
 import com.bloxbean.cardano.client.transaction.util.TransactionUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,9 +21,9 @@ public class HydraTxSubmissionService implements TransactionSubmissionService {
 
     private final HydraReactiveClient hydraClient;
 
-    @Override
-    public Result<String> submitTransaction(byte[] txCbor) {
-        log.info("Transaction size: {}", humanReadableByteCountBin(txCbor.length));
+    public Result<String> submitTransaction(Transaction transaction) throws CborSerializationException {
+        val txCbor = transaction.serialize();
+        log.info("Transaction size: {}, fee: {} lovelaces", humanReadableByteCountBin(txCbor.length), transaction.getBody().getFee());
 
         val txHash = TransactionUtil.getTxHash(txCbor);
 

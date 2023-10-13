@@ -21,10 +21,10 @@ import org.cardanofoundation.hydra.cardano.client.lib.HydraOperatorSupplier;
 import org.springframework.stereotype.Component;
 import org.zalando.problem.Problem;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import static com.bloxbean.cardano.client.common.ADAConversionUtil.adaToLovelace;
+import static java.math.BigDecimal.ZERO;
 import static org.cardano.foundation.voting.utils.MoreFees.changeTransactionCost;
 
 @Component
@@ -39,7 +39,8 @@ public class HydraVoteImporter {
     private final PlutusScriptLoader plutusScriptLoader;
     private final PlutusObjectConverter plutusObjectConverter;
 
-    public Either<Problem, String> importVotes(String contractEventId, List<Vote> votes) throws Exception {
+    public Either<Problem, String> importVotes(String contractEventId,
+                                               List<Vote> votes) throws Exception {
         log.info("Importing number: {} votes", votes.size());
 
         val hydraOperator = hydraOperatorSupplier.getOperator();
@@ -75,7 +76,7 @@ public class HydraVoteImporter {
                         .address(contractAddress)
                         .value(Value
                                 .builder()
-                                .coin(adaToLovelace(BigDecimal.ZERO))
+                                .coin(adaToLovelace(ZERO))
                                 .build()
                         )
                         .inlineDatum(datum)
@@ -99,17 +100,11 @@ public class HydraVoteImporter {
         val txBuilderContext = TxBuilderContext.init(utxoSupplier, protocolParamsSupplier);
         txBuilderContext.setUtxoSelectionStrategy(new LargestFirstUtxoSelectionStrategy(utxoSupplier));
 
-         val prepareTransaction = txBuilderContext.build(txBuilder);
+         val transaction = txBuilderContext.build(txBuilder);
 
-        //val prepareTransaction = txBuilderContext.buildAndSign(txBuilder, hydraOperator.getTxSigner());
+        changeTransactionCost(transaction);
 
-        changeTransactionCost(prepareTransaction);
-
-        val transaction = hydraOperator.getTxSigner().sign(prepareTransaction);
-
-        log.info("Trx fee: {}", transaction.getBody().getFee().toString());
-
-        val result = transactionProcessor.submitTransaction(transaction.serialize());
+        val result = transactionProcessor.submitTransaction(hydraOperator.getTxSigner().sign(transaction));
         if (!result.isSuccessful()) {
             return Either.left(Problem.builder()
                             .withTitle("Transaction submission failed")
@@ -119,6 +114,5 @@ public class HydraVoteImporter {
 
         return Either.right(result.getValue());
     }
-
 
 }

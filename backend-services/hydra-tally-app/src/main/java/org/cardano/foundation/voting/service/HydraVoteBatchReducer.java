@@ -39,6 +39,7 @@ import static com.bloxbean.cardano.client.plutus.spec.RedeemerTag.Spend;
 import static java.util.Collections.emptySet;
 import static org.cardano.foundation.voting.service.PlutusScriptLoader.evaluateExUnits;
 import static org.cardano.foundation.voting.utils.BalanceUtil.balanceTx;
+import static org.cardano.foundation.voting.utils.MoreFees.changeTransactionCost;
 
 @Component
 @RequiredArgsConstructor
@@ -181,11 +182,11 @@ public class HydraVoteBatchReducer {
                 .andThen(balanceTx(sender, 1));
 
         val txBuilderContext = TxBuilderContext.init(utxoSupplier, protocolParamsSupplier);
-        val transaction = txBuilderContext.buildAndSign(txBuilder, hydraOperator.getTxSigner());
+        val transaction = txBuilderContext.build(txBuilder);
 
-        log.info("Fee: {} lovelaces", transaction.getBody().getFee());
+        changeTransactionCost(transaction);
 
-        val result = transactionProcessor.submitTransaction(transaction.serialize());
+        val result = transactionProcessor.submitTransaction(hydraOperator.getTxSigner().sign(transaction));
         if (!result.isSuccessful()) {
             return Either.left(Problem.builder()
                     .withTitle("Transaction failed")

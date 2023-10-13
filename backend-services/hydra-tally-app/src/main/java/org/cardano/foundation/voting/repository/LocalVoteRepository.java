@@ -98,6 +98,13 @@ public class LocalVoteRepository implements VoteRepository {
     }
 
     @Override
+    public List<Vote> findAllVotes(String eventId, String categoryId) {
+        return findAllVotes(eventId)
+                .parallelStream().filter(v -> v.categoryId().equals(categoryId))
+                .toList();
+    }
+
+    @Override
     public Set<String> getAllUniqueCategories(String eventId) {
         return allCategories;
     }

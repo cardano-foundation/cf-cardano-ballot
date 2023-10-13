@@ -9,6 +9,8 @@ public interface VoteRepository {
 
     List<Vote> findAllVotes(String eventId);
 
+    List<Vote> findAllVotes(String eventId, String categoryId);
+
     Set<String> getAllUniqueCategories(String eventId);
 
 }

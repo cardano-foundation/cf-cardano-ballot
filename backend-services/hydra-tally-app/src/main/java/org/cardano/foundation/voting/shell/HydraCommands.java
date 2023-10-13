@@ -137,7 +137,7 @@ public class HydraCommands {
 
         for (val utxo: utxos) {
             sb.append(String.format("%d. %s: %s", ++no, utxo.getKey(), utxo.getValue()));
-            if (utxo.getValue().getInlineDatum() != null) {
+            if (utxo.getValue().getInlineDatum() != null && !utxo.getValue().getInlineDatum().asText().equals("null")) {
                 sb.append(JsonUtil.getPrettyJson(utxo.getValue().getInlineDatum()));
             }
             sb.append("\n");
@@ -299,6 +299,38 @@ public class HydraCommands {
         }
 
         return "Head is closed.";
+    }
+
+    @Command(command = "tally-all", description = "tally all the votes votes.")
+    public String tallyAll(@ShellOption(value = "batch-size", defaultValue = "50") @Option int batchSize) throws Exception {
+        log.info("Tally all votes, batchSize: {}", batchSize);
+
+        if (hydraClient.getHydraState() != Open) {
+            return "Tallying votes failed, reason:" + hydraClient.getHydraState();
+        }
+
+        var allCategories = voteRepository.getAllUniqueCategories(eventId);
+
+        for (val categoryId : allCategories) {
+            log.info("Processing category: {}", categoryId);
+
+            var allVotes = voteRepository.findAllVotes(eventId, categoryId);
+            var partitioned = Lists.partition(allVotes, batchSize);
+
+            for (val voteBatch : partitioned) {
+                val txIdE = hydraVoteImporter.importVotes(eventId, voteBatch);
+                if (txIdE.isEmpty()) {
+                    return "Importing votes failed, reason:" + txIdE.getLeft();
+                }
+
+                log.info("Imported votes voteBatch, txId: " + "{}", txIdE.get());
+
+                hydraVoteBatcher.batchVotesPerCategory(eventId, categoryId, batchSize);
+                hydraVoteBatchReducer.batchVotesPerCategory(eventId, categoryId, batchSize);
+            }
+        }
+
+        return "Tallying votes done.";
     }
 
     @Command(command = "import-votes", description = "import votes.")

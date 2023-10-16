@@ -992,7 +992,7 @@ const Nominees = () => {
                     maxWidth: '406px',
                   }}
                 >
-                  {i18n.t('nominees.receipt.status.BASIC.description')}
+                  {i18n.t('nominees.receipt.status.FINAL.description')}
                 </Typography>
               </Box>
             ) : (

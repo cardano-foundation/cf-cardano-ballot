@@ -48,10 +48,7 @@ const Home: React.FC = () => {
               fontSize: { xs: '32px', sm: '48px', md: '56px' },
             }}
           >
-            { hasEventFinished
-                  ? i18n.t('landing.eventFinishedTitle')
-                  : i18n.t('landing.title')
-            }
+            {hasEventFinished ? i18n.t('landing.eventFinishedTitle') : i18n.t('landing.title')}
           </Typography>
           <Box sx={{ textAlign: { xs: 'center', sm: 'center', md: 'left' } }}>
             <Chip
@@ -62,11 +59,7 @@ const Home: React.FC = () => {
                 px: '10px',
               }}
               icon={<EventIcon />}
-              label={
-                hasEventFinished
-                  ? 'Voting is now closed.'
-                  : 'Voting closes 11 October 2023 23:59 UTC'
-              }
+              label={hasEventFinished ? 'Voting is now closed.' : 'Voting closes 11 October 2023 23:59 UTC'}
               color="primary"
             />
           </Box>
@@ -74,7 +67,10 @@ const Home: React.FC = () => {
             variant="body1"
             sx={{ textAlign: { xs: 'center', sm: 'center', md: 'left' } }}
           >
-            <Trans i18nKey={ hasEventFinished ? 'landing.eventFinishedDescription' : 'landing.description'} components={{ bold: <strong /> }}  ></Trans>
+            <Trans
+              i18nKey={hasEventFinished ? 'landing.eventFinishedDescription' : 'landing.description'}
+              components={{ bold: <strong /> }}
+            ></Trans>
           </Typography>
 
           <Grid

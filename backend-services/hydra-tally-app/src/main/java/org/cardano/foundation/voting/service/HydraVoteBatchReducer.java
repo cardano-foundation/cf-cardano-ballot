@@ -101,7 +101,7 @@ public class HydraVoteBatchReducer {
 
     private Either<Problem, Optional<String>> postReduceBatchTransaction(String contractEventId,
                                                                          String contractCategoryId,
-                                                                         int batchSize) throws CborSerializationException, ApiException {
+                                                                         int batchSize) throws CborSerializationException {
         val contract = plutusScriptLoader.getContract(contractEventId, contractCategoryId);
         val contractAddress = plutusScriptLoader.getContractAddress(contract);
 
@@ -141,7 +141,7 @@ public class HydraVoteBatchReducer {
                 .datum(outputDatum)
                 .inlineDatum(true)
                 .assetName(LOVELACE)
-                .qty(adaToLovelace(3))
+                .qty(adaToLovelace(1))
                 .build();
 
         val scriptUtxos = utxosWithCategoryResults

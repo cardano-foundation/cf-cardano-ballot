@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Typography, Grid, Box } from '@mui/material';
+import { Typography, Grid, Box, styled } from '@mui/material';
 import styles from './Leaderboard.module.scss';
 import cn from 'classnames';
-
+import { makeStyles } from 'tss-react/mui';
 import { PieChart } from 'react-minimal-pie-chart';
 import { ByCategoryStats } from 'types/voting-app-types';
 import { EventPresentation } from 'types/voting-ledger-follower-types';
@@ -21,14 +21,75 @@ import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import { ReactComponent as WinnersIcon } from '../../common/resources/images/winnersIcon.svg';
-import { ReactComponent as VotesIcon } from '../../common/resources/images/votesIcon.svg';
-import { ReactComponent as HydraIcon } from '../../common/resources/images/hydraIcon.svg';
+import WinnersIcon from '@mui/icons-material/EmojiEvents';
+import VotesIcon from '@mui/icons-material/DonutLarge';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import { env } from '../../common/constants/env';
+import { HydraTile } from './components/HydraTile';
+import Tooltip, { tooltipClasses, TooltipProps } from '@mui/material/Tooltip';
+
+const WinnersDisabledText =
+  'Winners will be revealed following the Cardano Summit 2023 Gala Awards Dinner on 4 November.';
+const HydraTallyDisabledText =
+  'Hydra Tally results will be available on-chain following the Cardano Summit 2023 Awards Gala Dinner on 4 November.';
+
+const useStyles = makeStyles()(() => ({
+  customTab: {
+    '& .MuiTab-root': {
+      color: '#03021f',
+      textTransform: 'capitalize',
+      height: 3,
+      '&.Mui-selected': {
+        color: '#106593',
+        '&.svg': {
+          fill: '#106593 !important',
+        },
+      },
+      '&:hover': {
+        backgroundColor: '#DAEEFB',
+      },
+      '&:active': {
+        backgroundColor: '#DAEEFB',
+      },
+      '&.Mui-selected:hover': {
+        backgroundColor: '#DAEEFB',
+      },
+    },
+  },
+  customeTabIndicator: {
+    '& .MuiTabs-indicator': {
+      width: '90px',
+      borderTopLeftRadius: '20px',
+      borderTopRightRadius: '20px',
+      backgroundColor: '#106593',
+      height: '5px',
+    },
+  },
+}));
+
+const DisableTooltip = styled(({ className, ...props }: TooltipProps) => (
+  <Tooltip
+    {...props}
+    arrow
+    classes={{ popper: className }}
+  />
+))(({ theme }) => ({
+  [`& .${tooltipClasses.arrow}`]: {
+    color: theme.palette.primary.main,
+  },
+  [`& .${tooltipClasses.tooltip}`]: {
+    textAlign: 'center',
+    backgroundColor: theme.palette.primary.main,
+  },
+}));
 
 const Leaderboard = () => {
+  const classes = useStyles();
   const summitEvent = useSelector((state: RootState) => state.user.event);
   const [stats, setStats] = useState<ByCategoryStats[]>();
-  const [value, setValue] = React.useState('1');
+  const [value, setValue] = useState('2');
+  const [winnersAvailable, setWinnersAvailable] = useState(Boolean);
+  const [hydraTallyAvailable, setHydraTallyAvailable] = useState(Boolean);
 
   const summit2023Categories: CategoryContent[] = SUMMIT2023CONTENT.categories;
 
@@ -47,6 +108,16 @@ const Leaderboard = () => {
   }, []);
 
   useEffect(() => {
+    if (env.SHOW_WINNERS === 'true') {
+      setWinnersAvailable(true);
+    } else {
+      setWinnersAvailable(false);
+    }
+    if (env.SHOW_HYDRA_TALLY === 'true') {
+      setHydraTallyAvailable(true);
+    } else {
+      setHydraTallyAvailable(false);
+    }
     init();
   }, [init]);
 
@@ -71,8 +142,23 @@ const Leaderboard = () => {
 
   const breakpointColumnsObj = {
     default: 3,
-    1100: 2,
-    700: 1,
+    1337: 2,
+    909: 1,
+  };
+
+  const TabContextStyles = {
+    container: {
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderRadius: '40px',
+      background: '#F5F9FF',
+      boxShadow: '2px 2px 8px 0px rgba(67, 70, 86, 0.25)',
+      width: '429px',
+      height: '76px',
+      margin: '0 auto',
+    },
   };
 
   return (
@@ -110,43 +196,91 @@ const Leaderboard = () => {
       </div>
       <Box sx={{ width: '100%', typography: 'body1', justifyContent: 'center' }}>
         <TabContext value={value}>
-          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+          <Box
+            sx={TabContextStyles.container}
+            className={classes.classes.customeTabIndicator}
+          >
             <TabList
               onChange={handleChange}
               aria-label="lab API tabs example"
+              className={classes.classes.customTab}
+              textColor="primary"
+              indicatorColor="primary"
             >
-              <Tab
-                icon={<WinnersIcon />}
-                label="Winners"
-                value="1"
-              />
+              <DisableTooltip title={!winnersAvailable && WinnersDisabledText}>
+                {!winnersAvailable ? (
+                  <span>
+                    <Tab
+                      icon={<WinnersIcon />}
+                      label="Winners"
+                      value="1"
+                      disableRipple
+                      disabled={!winnersAvailable}
+                    />
+                  </span>
+                ) : (
+                  <Tab
+                    icon={<WinnersIcon />}
+                    label="Winners"
+                    value="1"
+                    disableRipple
+                  />
+                )}
+              </DisableTooltip>
               <Tab
                 icon={<VotesIcon />}
                 label="Total Votes"
                 value="2"
+                disableRipple
               />
-              <Tab
-                icon={<HydraIcon />}
-                label="Hydra Tally"
-                value="3"
-                disabled
-              />
+              <DisableTooltip title={!hydraTallyAvailable && HydraTallyDisabledText}>
+                {!hydraTallyAvailable ? (
+                  <span>
+                    <Tab
+                      icon={<BarChartIcon />}
+                      label="Hydra Tally"
+                      value="3"
+                      disableRipple
+                      disabled={!hydraTallyAvailable}
+                    />
+                  </span>
+                ) : (
+                  <Tab
+                    icon={<BarChartIcon />}
+                    label="Hydra Tally"
+                    value="3"
+                    disableRipple
+                  />
+                )}
+              </DisableTooltip>
             </TabList>
           </Box>
-          <TabPanel value="1">
-            <Masonry
-              breakpointCols={breakpointColumnsObj}
-              className={styles.masonryGrid}
-              columnClassName={styles.masonryGridColumn}
-            >
-              {statsItems.map((item, index) => (
-                <AwardsTile
-                  key={index}
-                  title={item.label}
-                  categoryId={item.id}
-                />
-              ))}
-            </Masonry>
+          <TabPanel
+            value="1"
+            sx={{ mx: 0, px: 0 }}
+          >
+            {winnersAvailable ? (
+              <Masonry
+                breakpointCols={breakpointColumnsObj}
+                className={styles.masonryGrid}
+                columnClassName={styles.masonryGridColumn}
+              >
+                {statsItems.map((item, index) => (
+                  <AwardsTile
+                    key={index}
+                    title={item.label}
+                    counter={index}
+                    categoryId={item.id}
+                  />
+                ))}
+              </Masonry>
+            ) : (
+              <Box sx={{ height: '20vw', justifyContent: 'center', textAlign: 'center' }}>
+                <Typography variant="h6">
+                Winners will be revealed following the Cardano Summit 2023 Gala Awards Dinner on 4 November.
+                </Typography>
+              </Box>
+            )}
           </TabPanel>
           <TabPanel value="2">
             <Grid
@@ -314,6 +448,45 @@ const Leaderboard = () => {
                 </Grid>
               </StatsTile>
             </Grid>
+          </TabPanel>
+          <TabPanel
+            value="3"
+            sx={{ mx: 0, px: 0 }}
+          >
+            <Grid
+              container
+              justifyContent="right"
+              alignItems="center"
+              textAlign="center"
+              m={2}
+              p={2}
+            >
+              <Grid item xs={12}>
+                <img src="/static/hydra-aiken.png"/>
+              </Grid>
+            </Grid>
+            {hydraTallyAvailable ? (
+              <Masonry
+                breakpointCols={breakpointColumnsObj}
+                className={styles.masonryGrid}
+                columnClassName={styles.masonryGridColumn}
+              >
+                {statsItems.map((item, index) => (
+                  <HydraTile
+                    key={index}
+                    title={item.label}
+                    counter={index}
+                    categoryId={item.id}
+                  />
+                ))}
+              </Masonry>
+            ) : (
+              <Box sx={{ height: '20vw', justifyContent: 'center', textAlign: 'center' }}>
+                <Typography variant="h6">
+                Hydra Tally results will be available on-chain following the Cardano Summit 2023 Awards Gala Dinner on 4 November.
+                </Typography>
+              </Box>
+            )}
           </TabPanel>
         </TabContext>
       </Box>

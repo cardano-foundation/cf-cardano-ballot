@@ -30,7 +30,7 @@ import QrCodeIcon from '@mui/icons-material/QrCode';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import InfoIcon from '@mui/icons-material/Info';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import { ReactComponent as WinnersIcon } from '../../common/resources/images/wwcd.svg';
 import labelVoted from '../../common/resources/images/checkmark-green.png';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import CloseIcon from '@mui/icons-material/Close';
@@ -497,10 +497,10 @@ const Nominees = () => {
                     style={{
                       padding: '8px',
                       width: '100%',
-                      height: 'auto',
+                      height: 'auto'
                     }}
                   >
-                    <CardContent>
+                    <CardContent sx={{ position: 'relative' }}>
                       <Box sx={{ position: 'relative' }}>
                         {voted ? (
                           <Tooltip title={i18n.t('nominees.alreadyVoted')}>
@@ -534,8 +534,15 @@ const Nominees = () => {
                         {nominee.presentationName}
                         {isWinner ? (
                           <Tooltip title={i18n.t('nominees.winner')}>
-                            <EmojiEventsIcon
-                              sx={{ fontSize: '40px', position: 'absolute', marginLeft: '4px', color: '#efb810' }}
+                            <WinnersIcon
+                              style={{ 
+                                position: 'absolute',
+                                top: 0,
+                                right: 0,
+                                width: '40px',
+                                height: 'auto',
+                                margin: '10px'
+                              }}
                             />
                           </Tooltip>
                         ) : null}
@@ -636,10 +643,10 @@ const Nominees = () => {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        borderRadius: '16px',
+                        borderRadius: '16px'
                       }}
                     >
-                      <CardContent sx={{ padding: '24px' }}>
+                      <CardContent sx={{ padding: '24px', position: 'relative' }}>
                         {voted ? (
                           <Box sx={{ position: 'relative' }}>
                             <Tooltip title={i18n.t('nominees.alreadyVoted')}>
@@ -668,14 +675,22 @@ const Nominees = () => {
                               md: '32px',
                             },
                             fontWeight: 600,
+                            maxWidth: '337px',
                             width: voted ? '250px' : '100%',
                           }}
                         >
                           {nominee.presentationName}
                           {isWinner ? (
                             <Tooltip title={i18n.t('nominees.winner')}>
-                              <EmojiEventsIcon
-                                sx={{ fontSize: '40px', position: 'absolute', marginLeft: '4px', color: '#efb810' }}
+                              <WinnersIcon
+                                style={{ 
+                                  position: 'absolute',
+                                  top: 0,
+                                  right: 0,
+                                  width: '40px',
+                                  height: 'auto',
+                                  margin: '10px'
+                                }}
                               />
                             </Tooltip>
                           ) : null}

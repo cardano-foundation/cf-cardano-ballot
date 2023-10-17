@@ -25,6 +25,8 @@ const APP_VERSION = process.env.REACT_APP_VERSION || get(window, 'env.REACT_APP_
 const SUPPORTED_WALLETS = (process.env.REACT_APP_SUPPORTED_WALLETS || get(window, 'env.REACT_APP_SUPPORTED_WALLETS'))
   .split(',')
   .filter((w) => !!w);
+const SHOW_WINNERS = process.env.REACT_APP_SHOW_WINNERS || get(window, 'env.REACT_APP_SHOW_WINNERS');
+const SHOW_HYDRA_TALLY = process.env.REACT_APP_SHOW_HYDRA_TALLY || get(window, 'env.REACT_APP_SHOW_HYDRA_TALLY');
 
 export const env = {
   VOTING_APP_SERVER_URL,
@@ -40,4 +42,6 @@ export const env = {
   DISCORD_CHANNEL_URL,
   DISCORD_BOT_URL,
   DISCORD_SUPPORT_CHANNEL_URL,
+  SHOW_WINNERS,
+  SHOW_HYDRA_TALLY
 };

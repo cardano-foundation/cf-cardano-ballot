@@ -8,11 +8,11 @@ import { eventBus } from 'utils/EventBus';
 import SUMMIT2023CONTENT from '../../../../common/resources/data/summit2023Content.json';
 import { ProposalContent } from 'pages/Nominees/Nominees.type';
 import { CategoryContent } from 'pages/Categories/Category.types';
-import styles from './AwardsTile.module.scss';
+import styles from './HydraTile.module.scss';
 import cn from 'classnames';
 import CATEGORY_IMAGES from '../../../../common/resources/data/categoryImages.json';
 
-const AwardsTile = ({ counter, title, categoryId }) => {
+const HydraTile = ({ counter, title, categoryId }) => {
   const summit2023Category: CategoryContent = SUMMIT2023CONTENT.categories.find(
     (category) => category.id === categoryId
   );
@@ -22,7 +22,7 @@ const AwardsTile = ({ counter, title, categoryId }) => {
 
   const init = useCallback(async () => {
     try {
-      await leaderboardService.getCategoryLevelStats(categoryId).then((response) => {
+      await leaderboardService.getHydraTallyStats(categoryId).then((response) => {
         const updatedAwards = summit2023Proposals.map((proposal) => {
           const id = proposal.id;
           const votes = response?.proposals[id] ? response?.proposals[id].votes : 0;
@@ -31,7 +31,6 @@ const AwardsTile = ({ counter, title, categoryId }) => {
         });
 
         updatedAwards.sort((a, b) => b.votes - a.votes);
-
         updatedAwards.forEach((item, index, array) => {
           if (index > 0 && item.votes === array[index - 1].votes) {
             item.rank = array[index - 1].rank;
@@ -39,7 +38,6 @@ const AwardsTile = ({ counter, title, categoryId }) => {
             item.rank = index + 1;
           }
         });
-
         setAwards(updatedAwards);
       });
       setLoaded(true);
@@ -57,12 +55,12 @@ const AwardsTile = ({ counter, title, categoryId }) => {
   }, [init]);
 
   return (
-    <div data-testid="award-tile">
+    <div data-testid="hydra-tally-tile">
       {loaded ? (
         <Card
-          className={styles.awardCard}
+          className={styles.hydraCard}
           key={categoryId}
-          sx={{width: '100%'}}
+          sx={{width: '100% !important'}}
         >
           <CardContent>
             <Chip
@@ -74,60 +72,9 @@ const AwardsTile = ({ counter, title, categoryId }) => {
               }
               color="default"
               label={title}
-              className={styles.awardTitle}
+              className={styles.hydraTallyTitle}
               variant="filled"
             />
-            {awards.length > 0 && (
-              <Grid
-                container
-                spacing={0}
-                direction="row"
-                sx={{ marginTop: '25px', justifyContent: 'center' }}
-              >
-                <Grid container>
-                  {awards.slice(0, 2).map((proposal, index) => (
-                    <Grid
-                      item
-                      xs={12}
-                      key={index}
-                    >
-                      {proposal.rank === 1 && (
-                        <Card
-                          key={index}
-                          variant="outlined"
-                          className={styles.rankCard}
-                        >
-                          <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-                            <Box className={styles.trophy}>
-                              <img
-                                src="/static/wwcd.svg"
-                                style={{ width: 54, height: 60 }}
-                              />
-                            </Box>
-                            <CardContent sx={{ flex: '1 0 auto' }}>
-                              <Typography
-                                component="div"
-                                variant="h6"
-                                className={styles.title}
-                              >
-                                {proposal.presentationName}
-                              </Typography>
-                              <Typography
-                                variant="subtitle1"
-                                color="text.secondary"
-                                component="div"
-                              >
-                                {proposal.votes} votes
-                              </Typography>
-                            </CardContent>
-                          </Box>
-                        </Card>
-                      )}
-                    </Grid>
-                  ))}
-                </Grid>
-              </Grid>
-            )}
 
             <Grid
               container
@@ -143,13 +90,7 @@ const AwardsTile = ({ counter, title, categoryId }) => {
                   variant="h5"
                   className={styles.listTitle}
                 >
-                  Rank
-                </Typography>
-                <Typography
-                  variant="h5"
-                  className={styles.listTitle}
-                >
-                  Nominee
+                  Winner
                 </Typography>
                 <Typography
                   variant="h5"
@@ -158,10 +99,9 @@ const AwardsTile = ({ counter, title, categoryId }) => {
                   Votes
                 </Typography>
               </Grid>
-              {awards.map((proposal, index) => (
+              {awards.slice(0, 2).map((proposal, index) => (
                 <React.Fragment key={index}>
-                  <div className={styles.divider} />
-                  {proposal.rank !== 1 && (
+                  {proposal.rank === 1 && (
                     <Grid
                       container
                       justifyContent="space-between"
@@ -170,12 +110,7 @@ const AwardsTile = ({ counter, title, categoryId }) => {
                     >
                       <Typography
                         variant="h5"
-                        className={cn(styles.optionTitle, styles.statTitle)}
-                      >
-                        {proposal.rank}
-                      </Typography>
-                      <Typography
-                        variant="h5"
+                        sx={{width: 200}}
                         className={cn(styles.optionTitle, styles.statTitle)}
                       >
                         {proposal.presentationName}
@@ -195,7 +130,7 @@ const AwardsTile = ({ counter, title, categoryId }) => {
               <Button
                 component={Link}
                 to={{ pathname: `/nominees/${categoryId}` }}
-                aria-label="View Nominees"
+                aria-label="View All Nominees"
                 variant="contained"
                 size="large"
                 sx={{
@@ -234,4 +169,4 @@ const AwardsTile = ({ counter, title, categoryId }) => {
   );
 };
 
-export { AwardsTile };
+export { HydraTile };

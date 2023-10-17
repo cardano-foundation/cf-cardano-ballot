@@ -71,6 +71,6 @@ helm dependency update
 
 helm upgrade --install argocd -n argocd . \
   --set git.targetRevision=infra-develop-cip1694 \
-  --set valueFile=values-dev-preprod.yaml \
+  --set valueFile=values-stg-preprod.yaml \
   -f values-secrets.yaml \
-  -f values-cip-1694-dev-preprod.yaml
+  -f values-cip-1694-stg-preprod.yaml

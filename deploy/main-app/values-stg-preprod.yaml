@@ -1,8 +1,8 @@
-stage: dev
+stage: stg
 
 network: preprod
 
-domain: dev.cf-cip1694-preprod.eu-west-1.metadata.dev.cf-deployments.org
+domain: stg.cf-cip1694-preprod.eu-west-1.metadata.dev.cf-deployments.org
 
 cf-cardano-ballot-infra:
   enabled: true
@@ -12,13 +12,16 @@ cf-cardano-ballot-ui:
   values:
     image:
       tag: 0.2.69-preprod
-    votingAppServerUrl: "https://api.{{ .Values.domain }}"
-    votingLedgerFollowerAppServerUrl: "https://follower-api.{{ .Values.domain }}"
-    votingVerificationAppServerUrl: "https://verification-api.{{ .Values.domain }}"
+    votingAppServerUrl: "https://api.cip1694.metadata.dev.cf-deployments.org"
+    votingLedgerFollowerAppServerUrl: "https://follower-api.cip1694.metadata.dev.cf-deployments.org"
+    votingVerificationAppServerUrl: "https://verification-api.cip1694.metadata.dev.cf-deployments.org"
     eventId: "FRUITS_CF62"
     categoryId: "FRUITS_CF62"
     googleGormUrl: "https://docs.google.com/forms/u/0/d/e/1FAIpQLSe-dSU0-bi8bjk0wiOaRXj02nxYLvgnpKBgc-eYGRpPYO-y5Q"
     googleFormVoteContextInputName: "entry.75173622"
+    ingress:
+      additionalDomains:
+        - cip1694.metadata.dev.cf-deployments.org
 
 cf-cardano-ballot-voting-api:
   enabled: true
@@ -29,12 +32,20 @@ cf-cardano-ballot-voting-api:
       alerting:
         enabled: false
     leaderboardForceResults: "true"
+    corsAllowedOrigins: https://{{ .Values.domain }},https://cip1694.metadata.dev.cf-deployments.org,http://localhost:3000
+    ingress:
+      additionalDomains:
+        - api.cip1694.metadata.dev.cf-deployments.org
 
 cf-cardano-ballot-verification-api:
   enabled: true
   values:
     image:
       tag: 0.2.65
+    corsAllowedOrigins: https://{{ .Values.domain }},https://cip1694.metadata.dev.cf-deployments.org,http://localhost:3000
+    ingress:
+      additionalDomains:
+        - verification-api.cip1694.metadata.dev.cf-deployments.org
 
 cf-cardano-ballot-ledger-follower-api:
   enabled: true
@@ -45,7 +56,6 @@ cf-cardano-ballot-ledger-follower-api:
     yaci:
       startBlockHash: 3337e297121fda1262372c28de3d917bd2a60bb1e3c6326e3b7e832eb8017615
       startSlotNumber: "38748711"
-    corsAllowedOrigins: https://{{ .Values.domain }},http://localhost:3000
     instances:
       - name: follower-1
         enabled: true
@@ -53,6 +63,10 @@ cf-cardano-ballot-ledger-follower-api:
       - name: follower-2
         enabled: true
         schemaName: follower_2
+    corsAllowedOrigins: https://{{ .Values.domain }},https://cip1694.metadata.dev.cf-deployments.org,http://localhost:3000
+    ingress:
+      additionalDomains:
+        - follower-api.cip1694.metadata.dev.cf-deployments.org
 
 cf-voting-verification-ui:
   values:

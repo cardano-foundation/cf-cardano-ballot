@@ -27,3 +27,11 @@ resources: {}
   #   memory: 128Mi
 
 nodeSelector: {}
+
+votingAppServerUrl: ""
+votingLedgerFollowerAppServerUrl: ""
+votingVerificationAppServerUrl: ""
+eventId: ""
+categoryId: ""
+googleGormUrl: ""
+googleFormVoteContextInputName: ""

@@ -9,15 +9,18 @@ import com.bloxbean.cardano.client.function.helper.BalanceTxBuilders;
 import com.bloxbean.cardano.client.function.helper.InputBuilders;
 import com.bloxbean.cardano.client.function.helper.MinAdaCheckers;
 import com.bloxbean.cardano.client.plutus.api.PlutusObjectConverter;
+import com.bloxbean.cardano.client.transaction.spec.Transaction;
 import com.bloxbean.cardano.client.transaction.spec.TransactionOutput;
 import com.bloxbean.cardano.client.transaction.spec.Value;
+import com.bloxbean.cardano.client.util.JsonUtil;
 import io.vavr.control.Either;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardano.foundation.voting.domain.Vote;
 import org.cardano.foundation.voting.domain.VoteDatum;
-import org.cardanofoundation.hydra.cardano.client.lib.HydraOperatorSupplier;
+import org.cardanofoundation.hydra.cardano.client.lib.CardanoOperatorSupplier;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.zalando.problem.Problem;
 
@@ -28,23 +31,35 @@ import static java.math.BigDecimal.ZERO;
 import static org.cardano.foundation.voting.utils.MoreFees.changeTransactionCost;
 
 @Component
-@RequiredArgsConstructor
 @Slf4j
 public class HydraVoteImporter {
 
-    private final UtxoSupplier utxoSupplier;
-    private final ProtocolParamsSupplier protocolParamsSupplier;
-    private final TransactionSubmissionService transactionProcessor;
-    private final HydraOperatorSupplier hydraOperatorSupplier;
-    private final PlutusScriptLoader plutusScriptLoader;
-    private final PlutusObjectConverter plutusObjectConverter;
+    @Autowired
+    private UtxoSupplier utxoSupplier;
+
+    @Autowired
+    private ProtocolParamsSupplier protocolParamsSupplier;
+
+    @Autowired
+    @Qualifier("hydra-transaction-submission-service")
+    private TransactionSubmissionService transactionProcessor;
+
+    @Autowired
+    //@Qualifier("hydra-operator-supplier")
+    private CardanoOperatorSupplier cardanoOperatorSupplier;
+
+    @Autowired
+    private PlutusScriptLoader plutusScriptLoader;
+
+    @Autowired
+    private PlutusObjectConverter plutusObjectConverter;
 
     public Either<Problem, String> importVotes(String contractEventId,
                                                List<Vote> votes) throws Exception {
         log.info("Importing number: {} votes", votes.size());
 
-        val hydraOperator = hydraOperatorSupplier.getOperator();
-        val sender = hydraOperator.getAddress();
+        val operator = cardanoOperatorSupplier.getOperator();
+        val sender = operator.getAddress();
 
         if (votes.isEmpty()) {
             return Either.left(Problem.builder()
@@ -104,7 +119,11 @@ public class HydraVoteImporter {
 
         changeTransactionCost(transaction);
 
-        val result = transactionProcessor.submitTransaction(hydraOperator.getTxSigner().sign(transaction));
+        val signedTx = operator.getTxSigner().sign(transaction);
+
+        //System.out.println(JsonUtil.getPrettyJson(signedTx));
+
+        val result = transactionProcessor.submitTransaction(signedTx);
         if (!result.isSuccessful()) {
             return Either.left(Problem.builder()
                             .withTitle("Transaction submission failed")

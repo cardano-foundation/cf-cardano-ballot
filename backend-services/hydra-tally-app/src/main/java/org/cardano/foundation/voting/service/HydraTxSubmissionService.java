@@ -8,13 +8,11 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardanofoundation.hydra.reactor.HydraReactiveClient;
-import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 
 import static org.cardano.foundation.voting.utils.MoreBytes.humanReadableByteCountBin;
 
-@Component
 @Slf4j
 @AllArgsConstructor
 public class HydraTxSubmissionService implements TransactionSubmissionService {
@@ -30,8 +28,13 @@ public class HydraTxSubmissionService implements TransactionSubmissionService {
         val txResultMono = hydraClient.submitTxFullConfirmation(txHash, txCbor);
         val txResult = txResultMono.block(Duration.ofMinutes(1));
 
-        return Result.create(txResult.isValid(), txResult.getMessage())
+        return Result.create(txResult.isValid(), txResult.getReason())
                 .withValue(txResult.getTxId());
+    }
+
+    @Override
+    public Result<String> submitTransaction(String cborHex) {
+        throw new UnsupportedOperationException();
     }
 
 }

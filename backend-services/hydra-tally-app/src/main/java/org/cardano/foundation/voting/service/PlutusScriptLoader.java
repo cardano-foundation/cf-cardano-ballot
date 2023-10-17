@@ -25,10 +25,10 @@ import java.util.Set;
 
 import static com.bloxbean.cardano.aiken.AikenScriptUtil.applyParamToScript;
 import static com.bloxbean.cardano.client.address.AddressProvider.getEntAddress;
+import static com.bloxbean.cardano.client.api.util.CostModelUtil.getCostModelFromProtocolParams;
 import static com.bloxbean.cardano.client.plutus.blueprint.PlutusBlueprintUtil.getPlutusScriptFromCompiledCode;
 import static com.bloxbean.cardano.client.plutus.blueprint.model.PlutusVersion.v2;
 import static com.bloxbean.cardano.client.plutus.spec.Language.PLUTUS_V2;
-import static com.bloxbean.cardano.client.transaction.util.CostModelUtil.getCostModelFromProtocolParams;
 
 @Component
 @Slf4j
@@ -86,8 +86,9 @@ public class PlutusScriptLoader {
             val initialBudgetConfig = new InitialBudgetConfig(txMem, txCpu)) {
             val txEvaluator = new TxEvaluator(slotConfig, initialBudgetConfig);
             val costMdls = new CostMdls();
+
             val costModelFromProtocolParams = getCostModelFromProtocolParams(protocolParams, PLUTUS_V2);
-            costMdls.add(costModelFromProtocolParams.orElseThrow());
+            costModelFromProtocolParams.ifPresent(costMdls::add);
 
             return txEvaluator.evaluateTx(txn, utxos, costMdls);
         } catch (IOException e) {

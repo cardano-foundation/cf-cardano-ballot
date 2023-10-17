@@ -17,13 +17,14 @@ import com.bloxbean.cardano.client.plutus.api.PlutusObjectConverter;
 import com.bloxbean.cardano.client.plutus.spec.ExUnits;
 import com.bloxbean.cardano.client.plutus.spec.PlutusV2Script;
 import io.vavr.control.Either;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardano.foundation.voting.domain.CategoryResultsDatum;
 import org.cardano.foundation.voting.domain.ReduceVoteBatchRedeemer;
 import org.cardano.foundation.voting.domain.UTxOCategoryResult;
-import org.cardanofoundation.hydra.cardano.client.lib.HydraOperatorSupplier;
+import org.cardanofoundation.hydra.cardano.client.lib.CardanoOperatorSupplier;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.zalando.problem.Problem;
 
@@ -42,17 +43,31 @@ import static org.cardano.foundation.voting.utils.BalanceUtil.balanceTx;
 import static org.cardano.foundation.voting.utils.MoreFees.changeTransactionCost;
 
 @Component
-@RequiredArgsConstructor
 @Slf4j
 public class HydraVoteBatchReducer {
 
-    private final UtxoSupplier utxoSupplier;
-    private final ProtocolParamsSupplier protocolParamsSupplier;
-    private final TransactionSubmissionService transactionProcessor;
-    private final HydraOperatorSupplier hydraOperatorSupplier;
-    private final PlutusScriptLoader plutusScriptLoader;
-    private final VoteUtxoFinder voteUtxoFinder;
-    private final PlutusObjectConverter plutusObjectConverter;
+    @Autowired
+    private VoteUtxoFinder voteUtxoFinder;
+
+    @Autowired
+    private UtxoSupplier utxoSupplier;
+
+    @Autowired
+    private ProtocolParamsSupplier protocolParamsSupplier;
+
+    @Autowired
+    @Qualifier("hydra-transaction-submission-service")
+    private TransactionSubmissionService transactionProcessor;
+
+    @Autowired
+    //@Qualifier("hydra-operator-supplier")
+    private CardanoOperatorSupplier cardanoOperatorSupplier;
+
+    @Autowired
+    private PlutusScriptLoader plutusScriptLoader;
+
+    @Autowired
+    private PlutusObjectConverter plutusObjectConverter;
 
     public void batchVotesPerCategory(String contractEventId,
                                       String contractCategoryId,
@@ -90,7 +105,7 @@ public class HydraVoteBatchReducer {
         val contract = plutusScriptLoader.getContract(contractEventId, contractCategoryId);
         val contractAddress = plutusScriptLoader.getContractAddress(contract);
 
-        val hydraOperator = hydraOperatorSupplier.getOperator();
+        val hydraOperator = cardanoOperatorSupplier.getOperator();
         val sender = hydraOperator.getAddress();
 
         log.info("Sender Address: " + sender);
@@ -126,7 +141,7 @@ public class HydraVoteBatchReducer {
                 .datum(outputDatum)
                 .inlineDatum(true)
                 .assetName(LOVELACE)
-                .qty(adaToLovelace(1))
+                .qty(adaToLovelace(3))
                 .build();
 
         val scriptUtxos = utxosWithCategoryResults
@@ -169,7 +184,6 @@ public class HydraVoteBatchReducer {
 
                     val redeemers = txn.getWitnessSet().getRedeemers();
                     for (val redeemer : redeemers) { //Update costs
-
                         evaluatedExUnits.stream().filter(evalReedemer -> evalReedemer.getIndex().equals(redeemer.getIndex()))
                                 .findFirst()
                                 .ifPresent(evalRedeemer -> redeemer.setExUnits(evalRedeemer.getExUnits()));

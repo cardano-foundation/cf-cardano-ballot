@@ -2,6 +2,7 @@ package org.cardano.foundation.voting.shell;
 
 import com.bloxbean.cardano.client.api.exception.ApiException;
 import com.bloxbean.cardano.client.exception.CborSerializationException;
+import com.bloxbean.cardano.client.util.HexUtil;
 import com.bloxbean.cardano.client.util.JsonUtil;
 import jakarta.annotation.Nullable;
 import jakarta.annotation.PostConstruct;
@@ -11,16 +12,19 @@ import one.util.streamex.StreamEx;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.Vote;
 import org.cardano.foundation.voting.repository.VoteRepository;
-import org.cardano.foundation.voting.service.HydraVoteBatchReducer;
-import org.cardano.foundation.voting.service.HydraVoteBatcher;
-import org.cardano.foundation.voting.service.HydraVoteImporter;
-import org.cardano.foundation.voting.service.PlutusScriptLoader;
+import org.cardano.foundation.voting.service.*;
 import org.cardano.foundation.voting.utils.Partitioner;
+import org.cardano.foundation.voting.utils.TransactionSigningUtil;
+import org.cardanofoundation.hydra.cardano.client.lib.CardanoOperator;
+import org.cardanofoundation.hydra.cardano.client.lib.CardanoOperatorSupplier;
 import org.cardanofoundation.hydra.core.model.UTXO;
+import org.cardanofoundation.hydra.core.model.http.HeadCommitResponse;
 import org.cardanofoundation.hydra.core.model.query.response.*;
 import org.cardanofoundation.hydra.core.store.UTxOStore;
 import org.cardanofoundation.hydra.reactor.HydraReactiveClient;
+import org.cardanofoundation.hydra.reactor.HydraReactiveWebClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.command.annotation.Option;
@@ -34,10 +38,11 @@ import java.util.Map;
 
 import static io.netty.util.internal.StringUtil.isNullOrEmpty;
 import static org.cardano.foundation.voting.utils.MoreComparators.createVoteComparator;
+import static org.cardanofoundation.hydra.core.model.HydraState.Initializing;
 import static org.cardanofoundation.hydra.core.model.HydraState.Open;
 
 @Slf4j
-@Command(group = "hydra")
+@Command(group = "cardano_l1")
 public class HydraCommands {
 
     @Autowired
@@ -62,7 +67,18 @@ public class HydraCommands {
     private PlutusScriptLoader plutusScriptLoader;
 
     @Autowired
+    //@Qualifier("l1-operator-supplier")
+    private CardanoOperatorSupplier cardanoOperatorSupplier;
+
+    @Autowired
     private HydraReactiveClient hydraClient;
+
+    @Autowired
+    private HydraReactiveWebClient hydraReactiveWebClient;
+
+    @Autowired
+    @Qualifier("l1-transaction-submission-service")
+    private TransactionSubmissionService l1TransactionSubmissionService;
 
     @Value("${hydra.ws.url}")
     private String hydraWsUrl;
@@ -95,8 +111,11 @@ public class HydraCommands {
 
     @Nullable private Disposable responsesSubscription;
 
+    private CardanoOperator l1Operator;
+
     @PostConstruct
-    public void init() {
+    public void init() throws Exception {
+        this.l1Operator = cardanoOperatorSupplier.getOperator();
         if (autoConnect) {
             connect();
             initHead();
@@ -157,12 +176,18 @@ public class HydraCommands {
         }
 
         this.stateQuerySubscription = hydraClient.getHydraStatesStream().doOnNext(hydraState -> {
-            System.out.printf("%n%s -> %s%n", hydraState.getOldState(), hydraState.getNewState());
+            System.out.printf("%n%s -> %s%n", hydraState.oldState(), hydraState.newState());
         }).subscribe();
 
         this.responsesSubscription = hydraClient.getHydraResponsesStream().doOnNext(response -> {
             if (response.isFailure()) {
                 log.error("Hydra error response: {}", response.getTag());
+            } else {
+                if (response instanceof CommittedResponse cr) {
+                    for (val utxo : cr.getUtxo().entrySet()) {
+                        log.info("utxo: {}, value: {}", utxo.getKey(), utxo.getValue());
+                    }
+                }
             }
         }).subscribe();
 
@@ -202,6 +227,11 @@ public class HydraCommands {
         return "Aborted.";
     }
 
+    @Command(command = "init", description = "inits the hydra head.")
+    public String headInit() {
+        return initHead();
+    }
+
     @Command(command = "head-init", description = "inits the hydra head.")
     public String initHead() {
         log.info("Init the head...");
@@ -229,24 +259,39 @@ public class HydraCommands {
 
     @Command(command = "head-commit-funds", description = "head commit funds.")
     public String commitFunds() {
+        if (hydraClient.getHydraState() != Initializing) {
+            return "Cannot commit, unsupported state, hydra state:" + hydraClient.getHydraState();
+        }
+
         val utxo = new UTXO();
+        log.info("Committing funds to the head, " +
+                "address: {}," +
+                " utxo: {}," +
+                " amount: {}", cardanoCommitAddress, cardanoCommitUtxo, cardanoCommitAmount);
+
         utxo.setAddress(cardanoCommitAddress);
         utxo.setValue(Map.of("lovelace", BigInteger.valueOf(cardanoCommitAmount)));
 
         var commitMap = Map.of(cardanoCommitUtxo, utxo);
 
-        CommittedResponse committedResponse = hydraClient.commitFundsToTheHead(commitMap)
+        HeadCommitResponse committedResponse = hydraReactiveWebClient.commitRequest(commitMap)
                 .block(Duration.ofMinutes(1));
 
         if (committedResponse == null) {
             return "Cannot commit, unsupported state, hydra state:" + hydraClient.getHydraState();
         }
 
-        committedResponse.getUtxo().forEach((key, value) -> {
-            log.info("utxo: {}, value: {}", key, value);
-        });
+        var transactionBytes = HexUtil.decodeHexString(committedResponse.getCborHex());
 
-        return "Committed funds.";
+        byte[] signedTx = TransactionSigningUtil.sign(transactionBytes, l1Operator.getSecretKey());
+
+        var txResult = l1TransactionSubmissionService.submitTransaction(HexUtil.encodeHexString(signedTx));
+
+        if (!txResult.isSuccessful()) {
+            return "Cannot commit, transaction submission failed, reason: " + txResult.getResponse();
+        }
+
+        return "Committed funds, L1 transactionId: " + txResult.getValue();
     }
 
     @Command(command = "head-commit-my-funds", description = "head commit my funds.")

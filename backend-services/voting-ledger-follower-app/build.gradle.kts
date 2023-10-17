@@ -11,6 +11,7 @@ plugins {
 	id("cz.habarta.typescript-generator") version "3.2.1263"
     id("com.github.ben-manes.versions") version "0.48.0"
     id("com.gorylenko.gradle-git-properties") version "2.4.1"
+	jacoco
 }
 
 springBoot {
@@ -36,6 +37,12 @@ repositories {
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+
+	implementation("org.springframework.boot:spring-boot-starter-data-rest")
+
+	testImplementation("io.rest-assured:rest-assured:5.3.2")
+	testImplementation("org.wiremock:wiremock:3.2.0")
+
 	testCompileOnly("org.springframework.boot:spring-boot-starter-test")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -84,6 +91,16 @@ dependencies {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+tasks.test {
+	finalizedBy(tasks.jacocoTestReport)
+}
+tasks.jacocoTestReport {
+	dependsOn(tasks.test)
+	reports {
+		csv.required.set(true)
+	}
 }
 
 tasks {

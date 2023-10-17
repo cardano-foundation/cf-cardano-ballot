@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DefaultAccountService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-ledger-follower-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.service.account</a> &gt; <span class="el_source">DefaultAccountService.java</span></div><h1>DefaultAccountService.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.service.account;
+
+import io.vavr.control.Either;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.domain.Account;
+import org.cardano.foundation.voting.domain.CardanoNetwork;
+import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
+import org.cardano.foundation.voting.service.vote.VotingPowerService;
+import org.cardano.foundation.voting.utils.StakeAddress;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.zalando.problem.Problem;
+
+import java.util.List;
+
+import static org.cardano.foundation.voting.domain.VotingEventType.BALANCE_BASED;
+import static org.cardano.foundation.voting.domain.VotingEventType.STAKE_BASED;
+import static org.zalando.problem.Status.BAD_REQUEST;
+@Service
+<span class="fc" id="L21">@Slf4j</span>
+<span class="fc" id="L22">@RequiredArgsConstructor</span>
+public class DefaultAccountService implements AccountService {
+
+    private final ReferenceDataService referenceDataService;
+
+    private final VotingPowerService votingPowerService;
+
+    private final CardanoNetwork network;
+
+    @Override
+    @Transactional(readOnly = true)
+    public Either&lt;Problem, Account&gt; findAccount(String eventName, String stakeAddress) {
+<span class="fc" id="L34">        var maybeEvent = referenceDataService.findValidEventByName(eventName);</span>
+<span class="fc bfc" id="L35" title="All 2 branches covered.">        if (maybeEvent.isEmpty()) {</span>
+<span class="fc" id="L36">            log.warn(&quot;Unrecognised event, eventName:{}&quot;, eventName);</span>
+
+<span class="fc" id="L38">            return Either.left(Problem.builder()</span>
+<span class="fc" id="L39">                    .withTitle(&quot;UNRECOGNISED_EVENT&quot;)</span>
+<span class="fc" id="L40">                    .withDetail(&quot;Unrecognised event, eventName:&quot; + eventName)</span>
+<span class="fc" id="L41">                    .withStatus(BAD_REQUEST)</span>
+<span class="fc" id="L42">                    .build());</span>
+        }
+<span class="fc" id="L44">        var event = maybeEvent.orElseThrow();</span>
+
+<span class="fc" id="L46">        var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, stakeAddress);</span>
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">        if (stakeAddressCheckE.isEmpty()) {</span>
+<span class="nc" id="L48">            return Either.left(stakeAddressCheckE.getLeft());</span>
+        }
+
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">        if (!List.of(STAKE_BASED, BALANCE_BASED).contains(event.getVotingEventType())) {</span>
+<span class="nc" id="L52">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L53">                    .withTitle(&quot;ONLY_STAKE_AND_BALANCE_BASED_EVENTS_SUPPORTED&quot;)</span>
+<span class="nc" id="L54">                    .withDetail(&quot;Only stake and balance based events are supported, event:&quot; + event.getId())</span>
+<span class="nc" id="L55">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L56">                    .build());</span>
+        }
+
+<span class="fc" id="L59">        var amountE = votingPowerService.getVotingPower(event, stakeAddress);</span>
+
+<span class="fc bfc" id="L61" title="All 2 branches covered.">        if (amountE.isEmpty()) {</span>
+<span class="fc" id="L62">            return Either.left(amountE.getLeft());</span>
+        }
+
+<span class="fc" id="L65">        var amount = amountE.get();</span>
+
+<span class="fc" id="L67">        return Either.right(Account.builder()</span>
+<span class="fc" id="L68">                .stakeAddress(stakeAddress)</span>
+<span class="fc" id="L69">                .network(network)</span>
+<span class="fc" id="L70">                .epochNo(event.getSnapshotEpoch().orElseThrow())</span>
+<span class="fc" id="L71">                .votingPower(String.valueOf(amount))</span>
+<span class="fc" id="L72">                .votingPowerAsset(event.getVotingPowerAsset().orElseThrow())</span>
+<span class="fc" id="L73">                .build()</span>
+        );
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

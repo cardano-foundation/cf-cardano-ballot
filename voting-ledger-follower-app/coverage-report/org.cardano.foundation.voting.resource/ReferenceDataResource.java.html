@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReferenceDataResource.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-ledger-follower-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.resource</a> &gt; <span class="el_source">ReferenceDataResource.java</span></div><h1>ReferenceDataResource.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.resource;
+
+import io.micrometer.core.annotation.Timed;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.domain.EventAdditionalInfo;
+import org.cardano.foundation.voting.domain.presentation.EventPresentation;
+import org.cardano.foundation.voting.service.reference_data.ReferencePresentationService;
+import org.springframework.http.CacheControl;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.zalando.problem.Problem;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.zalando.problem.Status.NOT_FOUND;
+
+@RestController
+@RequestMapping(&quot;/api/reference&quot;)
+<span class="fc" id="L29">@Slf4j</span>
+<span class="fc" id="L30">@RequiredArgsConstructor</span>
+@Tag(name = &quot;ReferenceData&quot;, description = &quot;The reference data API&quot;)
+public class ReferenceDataResource {
+
+    private final ReferencePresentationService referencePresentationService;
+
+    @RequestMapping(value = &quot;/event/{eventId}&quot;, method = GET, produces = &quot;application/json&quot;)
+    @Timed(value = &quot;resource.reference.event&quot;, histogram = true)
+    @Operation(summary = &quot;Retrieve event details by event ID&quot;,
+            description = &quot;Fetches details of an event based on the provided event ID.&quot;,
+            responses = {
+                    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Successfully retrieved event details&quot;,
+                            content = { @Content(mediaType = &quot;application/json&quot;,
+                                    schema = @Schema(implementation = EventPresentation.class)) }),
+                    @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error&quot;)
+            }
+    )
+    public ResponseEntity&lt;?&gt; getEventByName(
+            @Parameter(description = &quot;Event ID for which details are to be retrieved&quot;, required = true)
+            @PathVariable(&quot;eventId&quot;) String eventId) {
+<span class="fc" id="L50">        var cacheControl = CacheControl.maxAge(15, SECONDS)</span>
+<span class="fc" id="L51">                .noTransform()</span>
+<span class="fc" id="L52">                .mustRevalidate();</span>
+
+<span class="fc" id="L54">        return referencePresentationService.findEventReference(eventId)</span>
+<span class="fc" id="L55">                .fold(problem -&gt; {</span>
+<span class="nc" id="L56">                            return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);</span>
+                        },
+                        maybeEventPresentation -&gt; {
+<span class="fc bfc" id="L59" title="All 2 branches covered.">                            if (maybeEventPresentation.isEmpty()) {</span>
+<span class="fc" id="L60">                                var problem = Problem.builder()</span>
+<span class="fc" id="L61">                                        .withTitle(&quot;EVENT_NOT_FOUND&quot;)</span>
+<span class="fc" id="L62">                                        .withDetail(&quot;Event with id: &quot; + eventId + &quot; not found!&quot;)</span>
+<span class="fc" id="L63">                                        .withStatus(NOT_FOUND)</span>
+<span class="fc" id="L64">                                        .build();</span>
+
+<span class="fc" id="L66">                                return ResponseEntity</span>
+<span class="fc" id="L67">                                        .status(problem.getStatus().getStatusCode())</span>
+<span class="fc" id="L68">                                        .cacheControl(cacheControl)</span>
+<span class="fc" id="L69">                                        .body(problem);</span>
+                            }
+
+<span class="fc" id="L72">                            var eventPresentation = maybeEventPresentation.orElseThrow();</span>
+
+<span class="fc" id="L74">                            return ResponseEntity</span>
+<span class="fc" id="L75">                                    .ok()</span>
+<span class="fc" id="L76">                                    .cacheControl(cacheControl)</span>
+<span class="fc" id="L77">                                    .body(eventPresentation);</span>
+                        }
+                );
+    }
+
+    @RequestMapping(value = &quot;/event&quot;, method = GET, produces = &quot;application/json&quot;)
+    @Timed(value = &quot;resource.reference.events&quot;, histogram = true)
+    @Operation(summary = &quot;Retrieve summaries of all events&quot;,
+            description = &quot;Fetches summaries of all available events in the system.&quot;,
+            responses = {
+                    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Successfully retrieved event summaries&quot;,
+                            content = { @Content(mediaType = &quot;application/json&quot;,
+                                    array = @ArraySchema(schema = @Schema(implementation = EventAdditionalInfo.class))) }),
+                    @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error&quot;)
+            }
+    )
+    public ResponseEntity&lt;?&gt; events() {
+<span class="fc" id="L94">        var cacheControl = CacheControl.maxAge(15, SECONDS)</span>
+<span class="fc" id="L95">                .noTransform()</span>
+<span class="fc" id="L96">                .mustRevalidate();</span>
+
+<span class="fc" id="L98">        return referencePresentationService.eventsSummaries()</span>
+<span class="fc" id="L99">                .fold(problem -&gt; {</span>
+<span class="nc" id="L100">                            return ResponseEntity</span>
+<span class="nc" id="L101">                                    .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L102">                                    .cacheControl(cacheControl)</span>
+<span class="nc" id="L103">                                    .body(problem);</span>
+                        },
+                        eventSummaries -&gt; {
+<span class="fc" id="L106">                            return ResponseEntity</span>
+<span class="fc" id="L107">                                    .ok()</span>
+<span class="fc" id="L108">                                    .cacheControl(cacheControl)</span>
+<span class="fc" id="L109">                                    .body(eventSummaries);</span>
+                        }
+                );
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

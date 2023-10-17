@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CategoryRegistrationEnvelope.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-ledger-follower-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.domain.web3</a> &gt; <span class="el_source">CategoryRegistrationEnvelope.java</span></div><h1>CategoryRegistrationEnvelope.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.domain.web3;
+
+import lombok.Builder;
+import lombok.Getter;
+import lombok.ToString;
+import org.cardano.foundation.voting.domain.OnChainEventType;
+
+import java.util.List;
+
+@Getter
+<span class="nc bnc" id="L11" title="All 6 branches missed.">@Builder</span>
+<span class="nc" id="L12">@ToString</span>
+public class CategoryRegistrationEnvelope {
+
+<span class="nc" id="L15">    private OnChainEventType type;</span>
+<span class="nc" id="L16">    private String id;</span>
+<span class="nc" id="L17">    private String event;</span>
+<span class="nc" id="L18">    private String schemaVersion;</span>
+
+<span class="nc" id="L20">    private long creationSlot;</span>
+
+    @Builder.Default
+<span class="nc" id="L23">    private boolean gdprProtection = true; // TODO what should be the default?</span>
+
+    @Builder.Default
+<span class="nc" id="L26">    private boolean allowVoteChanging = false;</span>
+
+    @Builder.Default
+<span class="nc" id="L29">    private boolean categoryResultsWhileVoting = false;</span>
+
+<span class="nc" id="L31">    private List&lt;ProposalEnvelope&gt; proposals;</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

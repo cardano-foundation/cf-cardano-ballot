@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MerkleRootHashResource.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-ledger-follower-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.resource</a> &gt; <span class="el_source">MerkleRootHashResource.java</span></div><h1>MerkleRootHashResource.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.resource;
+
+import io.micrometer.core.annotation.Timed;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.service.vote.MerkleRootHashService;
+import org.springframework.http.CacheControl;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.zalando.problem.Problem;
+
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+
+@Controller
+<span class="fc" id="L23">@RequiredArgsConstructor</span>
+@RequestMapping(&quot;/api/merkle-root-hash&quot;)
+<span class="fc" id="L25">@Slf4j</span>
+@Tag(name = &quot;MerkleRootHashResource&quot;, description = &quot;Markle root hash operations API&quot;)
+public class MerkleRootHashResource {
+
+    private final MerkleRootHashService merkleRootHashService;
+
+    @RequestMapping(value = &quot;/{eventId}/{merkleRootHashHex}&quot;, method = GET, produces = &quot;application/json&quot;)
+    @Timed(value = &quot;resource.merkle_root_hash.find&quot;, histogram = true)
+    @Operation(summary = &quot;Check validity of a Merkle root hash for a given event ID&quot;,
+            description = &quot;Validates the presence of a given Merkle root hash for a specified event ID.&quot;,
+            responses = {
+                    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Successfully verified the presence of the Merkle root hash&quot;,
+                            content = { @Content(mediaType = &quot;application/json&quot;,
+                                    schema = @Schema(implementation = Boolean.class)) }),
+                    @ApiResponse(responseCode = &quot;400&quot;,
+                            description = &quot;Bad request due to validation issues or Merkle root hash not found for the provided event ID&quot;,
+                            content = { @Content(mediaType = &quot;application/json&quot;,
+                                    schema = @Schema(implementation = Problem.class)) }),
+                    @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error&quot;)
+            }
+    )
+    public ResponseEntity&lt;?&gt; isValidMerkleRootHash(
+            @Parameter(description = &quot;Event ID associated with the Merkle root hash&quot;, required = true)
+            @PathVariable(&quot;eventId&quot;) String eventId,
+            @Parameter(description = &quot;Merkle root hash to be validated&quot;, required = true)
+            @PathVariable(&quot;merkleRootHashHex&quot;) String merkleRootHashHex) {
+<span class="fc" id="L51">        var cacheControl = CacheControl.noCache()</span>
+<span class="fc" id="L52">                .noTransform()</span>
+<span class="fc" id="L53">                .mustRevalidate();</span>
+
+<span class="fc" id="L55">        return merkleRootHashService.isPresent(eventId, merkleRootHashHex)</span>
+<span class="fc" id="L56">                .fold(problem -&gt; {</span>
+<span class="fc" id="L57">                            return ResponseEntity</span>
+<span class="fc" id="L58">                                    .status(problem.getStatus().getStatusCode())</span>
+<span class="fc" id="L59">                                    .cacheControl(cacheControl)</span>
+<span class="fc" id="L60">                                    .body(problem);</span>
+                        },
+                        isMerkleRootPresentResult -&gt; {
+<span class="fc" id="L63">                            return ResponseEntity</span>
+<span class="fc" id="L64">                                    .ok()</span>
+<span class="fc" id="L65">                                    .cacheControl(cacheControl)</span>
+<span class="fc" id="L66">                                    .body(isMerkleRootPresentResult);</span>
+                        }
+                );
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

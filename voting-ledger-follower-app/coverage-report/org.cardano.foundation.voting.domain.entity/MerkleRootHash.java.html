@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MerkleRootHash.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-ledger-follower-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.domain.entity</a> &gt; <span class="el_source">MerkleRootHash.java</span></div><h1>MerkleRootHash.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.domain.entity;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.cardano.foundation.voting.domain.entity.AbstractTimestampEntity;
+import org.hibernate.annotations.Immutable;
+
+@Entity
+@Table(name = &quot;merkle_root_hash&quot;)
+<span class="pc" id="L16">@Builder</span>
+<span class="fc" id="L17">@RequiredArgsConstructor</span>
+<span class="fc" id="L18">@AllArgsConstructor</span>
+@Getter
+@Immutable
+public class MerkleRootHash extends AbstractTimestampEntity {
+
+    @Id
+    @Column(name = &quot;id&quot;, nullable = false)
+<span class="nc" id="L25">    private String merkleRootHash;</span>
+
+    @Column(name = &quot;event_id&quot;, nullable = false)
+<span class="nc" id="L28">    private String eventId;</span>
+
+    @Column(name = &quot;absolute_slot&quot;, nullable = false)
+<span class="nc" id="L31">    private long absoluteSlot;</span>
+
+    @Override
+    public String toString() {
+<span class="nc" id="L35">        return &quot;MerkleRootHash{&quot; +</span>
+                &quot;merkleRootHash='&quot; + merkleRootHash + '\'' +
+                &quot;, eventId='&quot; + eventId + '\'' +
+                &quot;, absoluteSlot=&quot; + absoluteSlot +
+                &quot;, createdAt=&quot; + createdAt +
+                '}';
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

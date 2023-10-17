@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CustomMetadataProcessor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-ledger-follower-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.service.metadata</a> &gt; <span class="el_source">CustomMetadataProcessor.java</span></div><h1>CustomMetadataProcessor.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.service.metadata;
+
+import co.nstant.in.cbor.CborException;
+import com.bloxbean.cardano.client.common.cbor.CborSerializationUtil;
+import com.bloxbean.cardano.client.metadata.cbor.CBORMetadata;
+import com.bloxbean.cardano.client.metadata.cbor.CBORMetadataMap;
+import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.domain.OnChainEventType;
+import org.cardano.foundation.voting.domain.SchemaVersion;
+import org.cardano.foundation.voting.domain.entity.Category;
+import org.cardano.foundation.voting.domain.entity.Event;
+import org.cardano.foundation.voting.domain.entity.MerkleRootHash;
+import org.cardano.foundation.voting.domain.entity.Proposal;
+import org.cardano.foundation.voting.service.cbor.CborService;
+import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
+import org.cardano.foundation.voting.service.vote.MerkleRootHashService;
+import org.cardano.foundation.voting.utils.ChunkedMetadataParser;
+import org.cardano.foundation.voting.utils.Enums;
+import org.cardanofoundation.cip30.CIP30Verifier;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import static com.bloxbean.cardano.client.crypto.Blake2bUtil.blake2bHash224;
+import static com.bloxbean.cardano.client.util.HexUtil.decodeHexString;
+import static com.bloxbean.cardano.client.util.HexUtil.encodeHexString;
+import static org.cardano.foundation.voting.domain.OnChainEventType.*;
+import static org.cardanofoundation.cip30.AddressFormat.TEXT;
+import static org.cardanofoundation.cip30.MessageFormat.HEX;
+
+@Service
+<span class="fc" id="L39">@Slf4j</span>
+@Primary
+<span class="fc" id="L41">public class CustomMetadataProcessor {</span>
+
+    @Autowired
+    private ReferenceDataService referenceDataService;
+
+    @Autowired
+    private MerkleRootHashService merkleRootHashService;
+
+    @Autowired
+    private CborService cborService;
+
+    @Value(&quot;${bind.on.event.ids}&quot;)
+    private List&lt;String&gt; bindOnEventIds;
+
+    @Value(&quot;${l1.transaction.metadata.label:12345}&quot;)
+    private long metadataLabel;
+
+    @Value(&quot;${organiser.account.stakeAddress}&quot;)
+    private String organiserStakeAddress;
+
+    @Transactional
+    public void processMetadataEvent(long slot, String txCbor) throws CborException {
+<span class="nc" id="L63">        var cborBytes = decodeHexString(txCbor.replace(&quot;\\x&quot;, &quot;&quot;));</span>
+
+<span class="nc" id="L65">        var cborMetadata = CBORMetadata.deserialize(cborBytes);</span>
+
+<span class="nc" id="L67">        var envelopeCborMap = Optional.ofNullable((CBORMetadataMap) cborMetadata.get(BigInteger.valueOf(metadataLabel))).orElseThrow();</span>
+
+<span class="nc" id="L69">        Optional&lt;String&gt; maybeSignatureHexString = ChunkedMetadataParser.deChunk(envelopeCborMap.get(&quot;signature&quot;));</span>
+<span class="nc" id="L70">        Optional&lt;String&gt; maybeKeyHexString = ChunkedMetadataParser.deChunk(envelopeCborMap.get(&quot;key&quot;));</span>
+<span class="nc" id="L71">        Optional&lt;CBORMetadataMap&gt; maybePayloadCborMap = Optional.ofNullable(envelopeCborMap.get(&quot;payload&quot;)).map(o -&gt; (CBORMetadataMap) o);</span>
+
+<span class="nc bnc" id="L73" title="All 2 branches missed.">        if (maybeSignatureHexString.isEmpty()) {</span>
+<span class="nc" id="L74">            log.warn(&quot;Missing signature from on chain event: {}&quot;, txCbor);</span>
+<span class="nc" id="L75">            return;</span>
+        }
+
+<span class="nc bnc" id="L78" title="All 2 branches missed.">        if (maybeKeyHexString.isEmpty()) {</span>
+<span class="nc" id="L79">            log.warn(&quot;Missing key from on chain event: {}&quot;, txCbor);</span>
+<span class="nc" id="L80">            return;</span>
+        }
+
+<span class="nc bnc" id="L83" title="All 2 branches missed.">        if (maybePayloadCborMap.isEmpty()) {</span>
+<span class="nc" id="L84">            log.warn(&quot;Missing payload from on chain event: {}&quot;, txCbor);</span>
+<span class="nc" id="L85">            return;</span>
+        }
+
+<span class="nc" id="L88">        var maybeOnChainVotingEventType = Enums.getIfPresent(OnChainEventType.class, ((String)envelopeCborMap.get(&quot;type&quot;)));</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">        if (maybeOnChainVotingEventType.isEmpty()) {</span>
+<span class="nc" id="L90">            log.warn(&quot;Unknown onChainEvenType chain event type: {}&quot;, envelopeCborMap.get(&quot;type&quot;));</span>
+<span class="nc" id="L91">            return;</span>
+        }
+<span class="nc" id="L93">        var onChainEvenType = maybeOnChainVotingEventType.orElseThrow();</span>
+
+<span class="nc bnc" id="L95" title="All 2 branches missed.">        if (onChainEvenType == EVENT_REGISTRATION) {</span>
+<span class="nc" id="L96">            processEventRegistration(slot, maybeSignatureHexString.orElseThrow(), maybeKeyHexString.orElseThrow(), maybePayloadCborMap.orElseThrow()).ifPresent(event -&gt; {</span>
+<span class="nc" id="L97">                log.info(&quot;Event registration processed: {}&quot;, event.getId());</span>
+<span class="nc" id="L98">            });</span>
+        }
+<span class="nc bnc" id="L100" title="All 2 branches missed.">        if (onChainEvenType == CATEGORY_REGISTRATION) {</span>
+<span class="nc" id="L101">            processCategoryRegistration(slot, maybeSignatureHexString.orElseThrow(), maybeKeyHexString.orElseThrow(), maybePayloadCborMap.orElseThrow()).ifPresent(category -&gt; {</span>
+<span class="nc" id="L102">                log.info(&quot;Category registration processed: {}&quot;, category.getId());</span>
+<span class="nc" id="L103">            });</span>
+        }
+<span class="nc bnc" id="L105" title="All 2 branches missed.">        if (onChainEvenType == COMMITMENTS) {</span>
+<span class="nc" id="L106">            processCommitments(slot, maybeSignatureHexString.orElseThrow(), maybeKeyHexString.orElseThrow(), maybePayloadCborMap.orElseThrow()).ifPresent(merkleRootHashes -&gt; {</span>
+<span class="nc" id="L107">                log.info(&quot;On chain commitments processed: {}&quot;, merkleRootHashes);</span>
+<span class="nc" id="L108">            });</span>
+        }
+<span class="nc" id="L110">    }</span>
+
+    private Optional&lt;Event&gt; processEventRegistration(long slot,
+                                                     String signatureHexString,
+                                                     String keyHexString,
+                                                     CBORMetadataMap payload) throws CborException {
+<span class="nc" id="L116">        var id = encodeHexString(blake2bHash224(decodeHexString(signatureHexString)));</span>
+<span class="nc" id="L117">        log.info(&quot;Processing event registration, hash: {}&quot;, id);</span>
+
+<span class="nc" id="L119">        var cip30Parser = new CIP30Verifier(signatureHexString, Optional.ofNullable(keyHexString));</span>
+<span class="nc" id="L120">        var cip30VerificationResult = cip30Parser.verify();</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">        if (!cip30VerificationResult.isValid()) {</span>
+<span class="nc" id="L122">            log.info(&quot;Signature invalid, ignoring id:{}&quot;, id);</span>
+
+<span class="nc" id="L124">            return Optional.empty();</span>
+        }
+
+<span class="nc" id="L127">        var maybeEventAddress = cip30VerificationResult.getAddress(TEXT);</span>
+<span class="nc bnc" id="L128" title="All 2 branches missed.">        if (maybeEventAddress.isEmpty()) {</span>
+<span class="nc" id="L129">            log.info(&quot;Address not found or invalid, ignoring id:{}&quot;, id);</span>
+
+<span class="nc" id="L131">            return Optional.empty();</span>
+        }
+<span class="nc" id="L133">        var eventAddress = maybeEventAddress.orElseThrow();</span>
+<span class="nc" id="L134">        log.info(&quot;eventAddress:{}&quot;, eventAddress);</span>
+
+<span class="nc" id="L136">        var signaturePayloadHexString = Optional.ofNullable(cip30VerificationResult.getMessage(HEX)).orElse(&quot;&quot;);</span>
+<span class="nc" id="L137">        var payloadHexString = encodeHexString(blake2bHash224(CborSerializationUtil.serialize(payload.getMap())));</span>
+
+<span class="nc bnc" id="L139" title="All 2 branches missed.">        if (!signaturePayloadHexString.equals(payloadHexString)) {</span>
+<span class="nc" id="L140">            log.warn(&quot;Payload hash mismatch, signaturePayloadHexString: {}, payloadHexString:{}&quot;, signaturePayloadHexString, payloadHexString);</span>
+
+<span class="nc" id="L142">            return Optional.empty();</span>
+        }
+
+<span class="nc bnc" id="L145" title="All 2 branches missed.">        if (!organiserStakeAddress.equals(eventAddress)) {</span>
+<span class="nc" id="L146">            log.warn(&quot;Addresses mismatch, orgAccountStakeAddress: {}, eventAddress:{}&quot;, organiserStakeAddress, eventAddress);</span>
+<span class="nc" id="L147">            return Optional.empty();</span>
+        }
+
+<span class="nc" id="L150">        var maybeEventRegistration = cborService.decodeEventRegistrationEnvelope(payload);</span>
+<span class="nc bnc" id="L151" title="All 2 branches missed.">        if (maybeEventRegistration.isLeft()) {</span>
+<span class="nc" id="L152">            log.info(&quot;Event registration invalid, reason:{} :{}&quot;, maybeEventRegistration.getLeft().getDetail(), id);</span>
+
+<span class="nc" id="L154">            return Optional.empty();</span>
+        }
+<span class="nc" id="L156">        var eventRegistration = maybeEventRegistration.get();</span>
+
+<span class="nc bnc" id="L158" title="All 2 branches missed.">        if (!bindOnEventIds.contains(eventRegistration.getName())) {</span>
+<span class="nc" id="L159">            log.info(&quot;Event NOT found in bindOnEventIds, ignoring id:{}&quot;, id);</span>
+
+<span class="nc" id="L161">            return Optional.empty();</span>
+        }
+
+<span class="nc" id="L164">        var maybeStoredEvent = referenceDataService.findEventByName(eventRegistration.getName());</span>
+<span class="nc bnc" id="L165" title="All 2 branches missed.">        if (maybeStoredEvent.isPresent()) {</span>
+<span class="nc" id="L166">            log.info(&quot;Event already found, ignoring id:{}&quot;, id);</span>
+
+<span class="nc" id="L168">            return Optional.empty();</span>
+        }
+
+<span class="nc" id="L171">        var event = new Event();</span>
+<span class="nc" id="L172">        event.setId(eventRegistration.getName());</span>
+<span class="nc" id="L173">        event.setVersion(event.getVersion());</span>
+<span class="nc" id="L174">        event.setOrganisers(eventRegistration.getOrganisers());</span>
+
+<span class="nc" id="L176">        event.setHighLevelEventResultsWhileVoting(Optional.of(eventRegistration.isHighLevelEventResultsWhileVoting()));</span>
+<span class="nc" id="L177">        event.setHighLevelCategoryResultsWhileVoting(Optional.of(eventRegistration.isHighLevelCategoryResultsWhileVoting()));</span>
+<span class="nc" id="L178">        event.setCategoryResultsWhileVoting(Optional.of(eventRegistration.isCategoryResultsWhileVoting()));</span>
+<span class="nc" id="L179">        event.setVersion(SchemaVersion.fromText(eventRegistration.getSchemaVersion()).orElseThrow());</span>
+
+<span class="nc" id="L181">        event.setStartEpoch(eventRegistration.getStartEpoch());</span>
+<span class="nc" id="L182">        event.setEndEpoch(eventRegistration.getEndEpoch());</span>
+<span class="nc" id="L183">        event.setSnapshotEpoch(eventRegistration.getSnapshotEpoch());</span>
+<span class="nc" id="L184">        event.setVotingPowerAsset(eventRegistration.getVotingPowerAsset());</span>
+
+<span class="nc" id="L186">        event.setVotingEventType(eventRegistration.getVotingEventType());</span>
+
+<span class="nc" id="L188">        event.setStartSlot(eventRegistration.getStartSlot());</span>
+<span class="nc" id="L189">        event.setEndSlot(eventRegistration.getEndSlot());</span>
+
+<span class="nc" id="L191">        event.setProposalsRevealEpoch(eventRegistration.getProposalsRevealEpoch());</span>
+<span class="nc" id="L192">        event.setProposalsRevealSlot(eventRegistration.getProposalsRevealSlot());</span>
+
+<span class="nc" id="L194">        event.setAbsoluteSlot(slot);</span>
+
+<span class="nc" id="L196">        return Optional.of(referenceDataService.storeEvent(event));</span>
+    }
+
+    private Optional&lt;Category&gt; processCategoryRegistration(long slot,
+                                                           String signature,
+                                                           String key,
+                                                           CBORMetadataMap payload) throws CborException {
+<span class="nc" id="L203">        var id = encodeHexString(blake2bHash224(decodeHexString(signature)));</span>
+
+<span class="nc" id="L205">        log.info(&quot;Processing category registration id: {}&quot;, id);</span>
+
+<span class="nc" id="L207">        var cip30Parser = new CIP30Verifier(signature, Optional.ofNullable(key));</span>
+<span class="nc" id="L208">        var cip30VerificationResult = cip30Parser.verify();</span>
+<span class="nc bnc" id="L209" title="All 2 branches missed.">        if (!cip30VerificationResult.isValid()) {</span>
+<span class="nc" id="L210">            log.info(&quot;Signature invalid, ignoring id: {}&quot;, id);</span>
+
+<span class="nc" id="L212">            return Optional.empty();</span>
+        }
+<span class="nc" id="L214">        var maybeEventAddress = cip30VerificationResult.getAddress(TEXT);</span>
+<span class="nc bnc" id="L215" title="All 2 branches missed.">        if (maybeEventAddress.isEmpty()) {</span>
+<span class="nc" id="L216">            log.info(&quot;Address not found or invalid, ignoring id: {}&quot;, id);</span>
+<span class="nc" id="L217">            return Optional.empty();</span>
+        }
+<span class="nc" id="L219">        var eventAddress = maybeEventAddress.orElseThrow();</span>
+
+<span class="nc bnc" id="L221" title="All 2 branches missed.">        if (!organiserStakeAddress.equals(eventAddress)) {</span>
+<span class="nc" id="L222">            log.warn(&quot;Addresses mismatch, orgAccountStakeAddress: {}, eventAddress:{}&quot;, organiserStakeAddress, eventAddress);</span>
+
+<span class="nc" id="L224">            return Optional.empty();</span>
+        }
+
+<span class="nc" id="L227">        var signaturePayloadHexString = Optional.ofNullable(cip30VerificationResult.getMessage(HEX)).orElse(&quot;&quot;);</span>
+<span class="nc" id="L228">        var payloadHexString = encodeHexString(blake2bHash224(CborSerializationUtil.serialize(payload.getMap())));</span>
+
+<span class="nc bnc" id="L230" title="All 2 branches missed.">        if (!signaturePayloadHexString.equals(payloadHexString)) {</span>
+<span class="nc" id="L231">            log.warn(&quot;Payload hash mismatch, signaturePayloadHexString: {}, payloadHexString:{}&quot;, signaturePayloadHexString, payloadHexString);</span>
+
+<span class="nc" id="L233">            return Optional.empty();</span>
+        }
+
+<span class="nc" id="L236">        var maybeCategoryRegistration = cborService.decodeCategoryRegistrationEnvelope(payload).toJavaOptional();</span>
+<span class="nc bnc" id="L237" title="All 2 branches missed.">        if (maybeCategoryRegistration.isEmpty()) {</span>
+<span class="nc" id="L238">            log.info(&quot;Category registration invalid, ignoring id: {}&quot;, id);</span>
+
+<span class="nc" id="L240">            return Optional.empty();</span>
+        }
+<span class="nc" id="L242">        var categoryRegistration = maybeCategoryRegistration.orElseThrow();</span>
+<span class="nc" id="L243">        log.info(categoryRegistration.toString());</span>
+
+<span class="nc bnc" id="L245" title="All 2 branches missed.">        if (!bindOnEventIds.contains(categoryRegistration.getEvent())) {</span>
+<span class="nc" id="L246">            log.info(&quot;Event in category NOT found in bindOnEventIds, ignoring id:{}&quot;, id);</span>
+
+<span class="nc" id="L248">            return Optional.empty();</span>
+        }
+
+<span class="nc" id="L251">        var maybeStoredEvent = referenceDataService.findEventByName(categoryRegistration.getEvent());</span>
+<span class="nc bnc" id="L252" title="All 2 branches missed.">        if (maybeStoredEvent.isEmpty()) {</span>
+<span class="nc" id="L253">            log.warn(&quot;Event not found, category registration id: {}&quot;, id);</span>
+
+<span class="nc" id="L255">            return Optional.empty();</span>
+        }
+<span class="nc" id="L257">        var event = maybeStoredEvent.orElseThrow();</span>
+
+<span class="nc" id="L259">        var maybeCategory = referenceDataService.findCategoryByName(categoryRegistration.getId());</span>
+<span class="nc bnc" id="L260" title="All 2 branches missed.">        if (maybeCategory.isPresent()) {</span>
+<span class="nc" id="L261">            log.info(&quot;Category already found, ignoring id: {}&quot;, categoryRegistration.getId());</span>
+
+<span class="nc" id="L263">            return Optional.empty();</span>
+        }
+
+<span class="nc" id="L266">        var category = new Category();</span>
+<span class="nc" id="L267">        category.setId(categoryRegistration.getId());</span>
+<span class="nc" id="L268">        category.setVersion(SchemaVersion.fromText(categoryRegistration.getSchemaVersion()).orElseThrow());</span>
+<span class="nc" id="L269">        category.setGdprProtection(categoryRegistration.isGdprProtection());</span>
+<span class="nc" id="L270">        category.setAbsoluteSlot(slot);</span>
+<span class="nc" id="L271">        category.setEvent(event);</span>
+
+<span class="nc" id="L273">        var proposals = categoryRegistration.getProposals().stream().map(proposalEnvelope -&gt; Proposal.builder()</span>
+<span class="nc" id="L274">                .id(proposalEnvelope.getId())</span>
+<span class="nc" id="L275">                .name(proposalEnvelope.getName())</span>
+<span class="nc" id="L276">                .category(category)</span>
+<span class="nc" id="L277">                .absoluteSlot(slot)</span>
+<span class="nc" id="L278">                .build()</span>
+<span class="nc" id="L279">        ).toList();</span>
+
+<span class="nc" id="L281">        category.setProposals(proposals);</span>
+
+<span class="nc" id="L283">        return Optional.of(referenceDataService.storeCategory(category));</span>
+    }
+
+    private Optional&lt;List&lt;MerkleRootHash&gt;&gt; processCommitments(long slot,
+                                                              String signature,
+                                                              String key,
+                                                              CBORMetadataMap payload) throws CborException {
+<span class="nc" id="L290">        var id = encodeHexString(blake2bHash224(decodeHexString(signature)));</span>
+
+<span class="nc" id="L292">        log.info(&quot;Processing on-chain commitments: {}&quot;, id);</span>
+
+<span class="nc" id="L294">        var cip30Parser = new CIP30Verifier(signature, Optional.ofNullable(key));</span>
+<span class="nc" id="L295">        var cip30VerificationResult = cip30Parser.verify();</span>
+<span class="nc bnc" id="L296" title="All 2 branches missed.">        if (!cip30VerificationResult.isValid()) {</span>
+<span class="nc" id="L297">            log.info(&quot;Signature invalid, ignoring id: {}&quot;, id);</span>
+
+<span class="nc" id="L299">            return Optional.empty();</span>
+        }
+<span class="nc" id="L301">        var maybeEventAddress = cip30VerificationResult.getAddress(TEXT);</span>
+<span class="nc bnc" id="L302" title="All 2 branches missed.">        if (maybeEventAddress.isEmpty()) {</span>
+<span class="nc" id="L303">            log.info(&quot;Address not found or invalid, ignoring id: {}&quot;, id);</span>
+<span class="nc" id="L304">            return Optional.empty();</span>
+        }
+<span class="nc" id="L306">        var eventAddress = maybeEventAddress.orElseThrow();</span>
+
+<span class="nc bnc" id="L308" title="All 2 branches missed.">        if (!organiserStakeAddress.equals(eventAddress)) {</span>
+<span class="nc" id="L309">            log.warn(&quot;Addresses mismatch, orgAccountStakeAddress: {}, eventAddress:{}&quot;, organiserStakeAddress, eventAddress);</span>
+
+<span class="nc" id="L311">            return Optional.empty();</span>
+        }
+
+<span class="nc" id="L314">        var signaturePayloadHexString = Optional.ofNullable(cip30VerificationResult.getMessage(HEX)).orElse(&quot;&quot;);</span>
+<span class="nc" id="L315">        var payloadHexString = encodeHexString(blake2bHash224(CborSerializationUtil.serialize(payload.getMap())));</span>
+
+<span class="nc bnc" id="L317" title="All 2 branches missed.">        if (!signaturePayloadHexString.equals(payloadHexString)) {</span>
+<span class="nc" id="L318">            log.warn(&quot;Payload hash mismatch, signaturePayloadHexString: {}, payloadHexString:{}&quot;, signaturePayloadHexString, payloadHexString);</span>
+
+<span class="nc" id="L320">            return Optional.empty();</span>
+        }
+
+<span class="nc" id="L323">        var maybeCommitmentsEnvelope = cborService.decodeCommitmentsEnvelope(payload).toJavaOptional();</span>
+<span class="nc bnc" id="L324" title="All 2 branches missed.">        if (maybeCommitmentsEnvelope.isEmpty()) {</span>
+<span class="nc" id="L325">            log.info(&quot;Category registration invalid, ignoring id: {}&quot;, id);</span>
+
+<span class="nc" id="L327">            return Optional.empty();</span>
+        }
+<span class="nc" id="L329">        var commitmentsEnvelope = maybeCommitmentsEnvelope.orElseThrow();</span>
+
+<span class="nc" id="L331">        var merkleRootHashes = new ArrayList&lt;MerkleRootHash&gt;();</span>
+<span class="nc bnc" id="L332" title="All 2 branches missed.">        for (var eventId : commitmentsEnvelope.getCommitments().keySet()) {</span>
+<span class="nc bnc" id="L333" title="All 2 branches missed.">            if (!bindOnEventIds.contains(eventId)) {</span>
+                // we have to remove commitments which we are not actively serving / running
+<span class="nc bnc" id="L335" title="All 2 branches missed.">                if (commitmentsEnvelope.removeCommitment(eventId)) {</span>
+<span class="nc" id="L336">                    log.info(&quot;Commitment removed for event id: {}&quot;, eventId);</span>
+                }
+                continue;
+            }
+
+<span class="nc" id="L341">            var maybeStoredEvent = referenceDataService.findEventByName(eventId);</span>
+<span class="nc bnc" id="L342" title="All 2 branches missed.">            if (maybeStoredEvent.isEmpty()) {</span>
+<span class="nc" id="L343">                log.info(&quot;Event not found, ignoring commitment, id: {}&quot;, eventId);</span>
+<span class="nc" id="L344">                continue;</span>
+            }
+
+<span class="nc" id="L347">            var maybeEventCommitment = commitmentsEnvelope.getCommitment(eventId);</span>
+<span class="nc bnc" id="L348" title="All 2 branches missed.">            if (maybeEventCommitment.isEmpty()) {</span>
+<span class="nc" id="L349">                log.info(&quot;Commitment not found, ignoring commitment, id: {}&quot;, eventId);</span>
+<span class="nc" id="L350">                continue;</span>
+            }
+
+<span class="nc" id="L353">            merkleRootHashes.add(MerkleRootHash.builder()</span>
+<span class="nc" id="L354">                    .eventId(eventId)</span>
+<span class="nc" id="L355">                    .merkleRootHash(maybeEventCommitment.orElseThrow())</span>
+<span class="nc" id="L356">                    .absoluteSlot(slot)</span>
+<span class="nc" id="L357">                    .build());</span>
+<span class="nc" id="L358">        }</span>
+
+<span class="nc bnc" id="L360" title="All 2 branches missed.">        if (merkleRootHashes.isEmpty()) {</span>
+<span class="nc" id="L361">            log.info(&quot;No actual commitments (merkle root hashes) found in the actual on-chain COMMITMENTS event.&quot;);</span>
+
+<span class="nc" id="L363">            return Optional.empty();</span>
+        }
+
+<span class="nc" id="L366">        return Optional.of(merkleRootHashService.storeCommitments(merkleRootHashes));</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

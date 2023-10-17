@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReferenceDataService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-ledger-follower-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.service.reference_data</a> &gt; <span class="el_source">ReferenceDataService.java</span></div><h1>ReferenceDataService.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.service.reference_data;
+
+import io.micrometer.core.annotation.Timed;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.domain.EventAdditionalInfo;
+import org.cardano.foundation.voting.domain.entity.Category;
+import org.cardano.foundation.voting.domain.entity.Event;
+import org.cardano.foundation.voting.domain.entity.Proposal;
+import org.cardano.foundation.voting.repository.CategoryRepository;
+import org.cardano.foundation.voting.repository.EventRepository;
+import org.cardano.foundation.voting.repository.ProposalRepository;
+import org.cardano.foundation.voting.service.expire.EventAdditionalInfoService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+<span class="fc" id="L21">@Slf4j</span>
+<span class="fc" id="L22">@RequiredArgsConstructor</span>
+public class ReferenceDataService {
+
+    private final EventRepository eventRepository;
+
+    private final CategoryRepository categoryRepository;
+
+    private final ProposalRepository proposalRepository;
+
+    private final EventAdditionalInfoService eventAdditionalInfoService;
+
+    @Timed(value = &quot;service.reference.findValidEventByName&quot;, histogram = true)
+    @Transactional(readOnly = true)
+    public Optional&lt;Event&gt; findValidEventByName(String name) {
+<span class="fc" id="L36">        return eventRepository.findById(name).filter(Event::isValid);</span>
+    }
+
+    @Timed(value = &quot;service.reference.findEventByName&quot;, histogram = true)
+    @Transactional(readOnly = true)
+    public Optional&lt;Event&gt; findEventByName(String name) {
+<span class="fc" id="L42">        return eventRepository.findById(name);</span>
+    }
+
+    @Timed(value = &quot;service.reference.findCategoryByName&quot;, histogram = true)
+    @Transactional(readOnly = true)
+    public Optional&lt;Category&gt; findCategoryByName(String name) {
+<span class="nc" id="L48">        return categoryRepository.findById(name);</span>
+    }
+
+    @Timed(value = &quot;service.reference.findProposalById&quot;, histogram = true)
+    @Transactional(readOnly = true)
+    public Optional&lt;Proposal&gt; findProposalById(String id) {
+<span class="nc" id="L54">        return proposalRepository.findById(id);</span>
+    }
+
+    @Timed(value = &quot;service.reference.findProposalByName&quot;, histogram = true)
+    @Transactional(readOnly = true)
+    public Optional&lt;Proposal&gt; findProposalByName(Category category, String name) {
+<span class="nc" id="L60">        return proposalRepository.findProposalByName(category.getId(), name);</span>
+    }
+
+    @Timed(value = &quot;service.reference.storeEvent&quot;, histogram = true)
+    @Transactional
+    public Event storeEvent(Event event) {
+<span class="nc" id="L66">        return eventRepository.saveAndFlush(event);</span>
+    }
+
+    @Timed(value = &quot;service.reference.findAllValidEvents&quot;, histogram = true)
+    @Transactional(readOnly = true)
+    public List&lt;Event&gt; findAllValidEvents() {
+<span class="fc" id="L72">        return eventRepository.findAll()</span>
+<span class="fc" id="L73">                .stream()</span>
+<span class="fc" id="L74">                .filter(Event::isValid)</span>
+<span class="fc" id="L75">                .toList();</span>
+    }
+
+    @Timed(value = &quot;service.reference.findAllActiveEvents&quot;, histogram = true)
+    @Transactional(readOnly = true)
+    public List&lt;Event&gt; findAllActiveEvents() {
+<span class="nc" id="L81">        return findAllValidEvents().stream()</span>
+<span class="nc" id="L82">                .filter(event -&gt; eventAdditionalInfoService.getEventAdditionalInfo(event).fold(problem -&gt; false, EventAdditionalInfo::active))</span>
+<span class="nc" id="L83">                .toList();</span>
+    }
+
+    @Timed(value = &quot;service.reference.storeCategory&quot;, histogram = true)
+    @Transactional
+    public Category storeCategory(Category category) {
+<span class="nc" id="L89">        return categoryRepository.saveAndFlush(category);</span>
+    }
+
+    @Timed(value = &quot;service.reference.rollback&quot;, histogram = true)
+    @Transactional
+    public void rollbackReferenceDataAfterSlot(long slot) {
+<span class="nc" id="L95">        proposalRepository.deleteAllAfterSlot(slot);</span>
+<span class="nc" id="L96">        proposalRepository.flush();</span>
+
+<span class="nc" id="L98">        categoryRepository.deleteAllAfterSlot(slot);</span>
+<span class="nc" id="L99">        categoryRepository.flush();</span>
+
+<span class="nc" id="L101">        eventRepository.deleteAllAfterSlot(slot);</span>
+<span class="nc" id="L102">        eventRepository.flush();</span>
+<span class="nc" id="L103">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

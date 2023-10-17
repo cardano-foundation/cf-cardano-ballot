@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BackendServiceBlockchainDataChainTipService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-ledger-follower-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.service.blockchain_state.backend_bridge</a> &gt; <span class="el_source">BackendServiceBlockchainDataChainTipService.java</span></div><h1>BackendServiceBlockchainDataChainTipService.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.service.blockchain_state.backend_bridge;
+
+import com.bloxbean.cardano.client.backend.api.BackendService;
+import io.vavr.control.Either;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.domain.CardanoNetwork;
+import org.cardano.foundation.voting.domain.ChainTip;
+import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataChainTipService;
+import org.cardano.foundation.voting.service.chain_sync.ChainSyncService;
+import org.springframework.transaction.annotation.Transactional;
+import org.zalando.problem.Problem;
+
+import java.util.Optional;
+
+import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
+
+<span class="fc" id="L18">@Slf4j</span>
+<span class="fc" id="L19">@RequiredArgsConstructor</span>
+public class BackendServiceBlockchainDataChainTipService implements BlockchainDataChainTipService {
+
+    private final BackendService backendService;
+
+    private final ChainSyncService chainSyncService;
+
+    private final CardanoNetwork cardanoNetwork;
+
+    @Override
+    @Transactional(readOnly = true)
+    public Either&lt;Problem, ChainTip&gt; getChainTip() {
+        try {
+<span class="fc" id="L32">            var latestBlock = backendService.getBlockService().getLatestBlock();</span>
+<span class="fc" id="L33">            var chainSync = chainSyncService.getSyncStatus(true);</span>
+
+<span class="pc bpc" id="L35" title="1 of 2 branches missed.">            if (latestBlock.isSuccessful()) {</span>
+<span class="fc" id="L36">                var block = latestBlock.getValue();</span>
+
+<span class="fc" id="L38">                return Either.right(ChainTip.builder()</span>
+<span class="fc" id="L39">                        .hash(block.getHash())</span>
+<span class="fc" id="L40">                        .epochNo(Optional.ofNullable(block.getEpoch()).orElse(-1))</span>
+<span class="fc" id="L41">                        .absoluteSlot(block.getSlot())</span>
+<span class="fc" id="L42">                        .network(cardanoNetwork)</span>
+<span class="fc" id="L43">                        .isSynced(chainSync.isSynced())</span>
+<span class="fc" id="L44">                        .build());</span>
+            }
+
+<span class="nc" id="L47">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L48">                    .withTitle(&quot;CHAIN_TIP_NOT_FOUND&quot;)</span>
+<span class="nc" id="L49">                    .withDetail(&quot;Unable to get chain tip from backend service.&quot;)</span>
+<span class="nc" id="L50">                    .withStatus(INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L51">                    .build()</span>
+            );
+
+<span class="nc" id="L54">        } catch (Exception e) {</span>
+<span class="nc" id="L55">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L56">                    .withTitle(&quot;CHAIN_TIP_NOT_FOUND&quot;)</span>
+<span class="nc" id="L57">                    .withDetail(&quot;Unable to get chain tip from backend service, reason:&quot; + e.getMessage())</span>
+<span class="nc" id="L58">                    .withStatus(INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L59">                    .build());</span>
+        }
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

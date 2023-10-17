@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MerkleRootHashService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-ledger-follower-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.service.vote</a> &gt; <span class="el_source">MerkleRootHashService.java</span></div><h1>MerkleRootHashService.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.service.vote;
+
+import io.micrometer.core.annotation.Timed;
+import io.vavr.control.Either;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.domain.CardanoNetwork;
+import org.cardano.foundation.voting.domain.IsMerkleRootPresentResult;
+import org.cardano.foundation.voting.domain.entity.MerkleRootHash;
+import org.cardano.foundation.voting.repository.MerkleRootHashRepository;
+import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.zalando.problem.Problem;
+
+import java.util.List;
+
+import static org.zalando.problem.Status.BAD_REQUEST;
+
+@Service
+<span class="fc" id="L21">@Slf4j</span>
+<span class="fc" id="L22">@RequiredArgsConstructor</span>
+public class MerkleRootHashService {
+
+    private final MerkleRootHashRepository merkleRootHashRepository;
+
+    private final ReferenceDataService referenceDataService;
+
+    private final CardanoNetwork network;
+
+    public Either&lt;Problem, IsMerkleRootPresentResult&gt; isPresent(String event, String merkleRootHashHex) {
+<span class="fc" id="L32">        var maybeEvent = referenceDataService.findEventByName(event);</span>
+
+<span class="fc bfc" id="L34" title="All 2 branches covered.">        if (maybeEvent.isEmpty()) {</span>
+<span class="fc" id="L35">            log.info(&quot;No event in db found for {}&quot;, event);</span>
+
+<span class="fc" id="L37">            return Either.left(Problem.builder()</span>
+<span class="fc" id="L38">                    .withTitle(&quot;EVENT_NOT_FOUND&quot;)</span>
+<span class="fc" id="L39">                    .withStatus(BAD_REQUEST)</span>
+<span class="fc" id="L40">                    .withDetail(&quot;No event in db found for:&quot; + event)</span>
+<span class="fc" id="L41">                    .build());</span>
+        }
+
+<span class="fc" id="L44">        return merkleRootHashRepository.findByEventIdAndId(event, merkleRootHashHex).map(merkleRootHash -&gt; {</span>
+<span class="fc" id="L45">            return Either.&lt;Problem, IsMerkleRootPresentResult&gt;right(new IsMerkleRootPresentResult(true, network));</span>
+<span class="fc" id="L46">        }).orElse(Either.right(new IsMerkleRootPresentResult(false, network)));</span>
+    }
+
+    @Timed(value = &quot;service.reference.storeCommitments&quot;, histogram = true)
+    @Transactional
+    public List&lt;MerkleRootHash&gt; storeCommitments(List&lt;MerkleRootHash&gt; merkleRootHashes) {
+<span class="nc" id="L52">        log.info(&quot;Storing commitments:{}&quot;, merkleRootHashes);</span>
+<span class="nc" id="L53">        return merkleRootHashRepository.saveAllAndFlush(merkleRootHashes);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

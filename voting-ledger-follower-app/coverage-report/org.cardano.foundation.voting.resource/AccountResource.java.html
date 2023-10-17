@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AccountResource.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-ledger-follower-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.resource</a> &gt; <span class="el_source">AccountResource.java</span></div><h1>AccountResource.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.resource;
+
+import io.micrometer.core.annotation.Timed;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.domain.Account;
+import org.cardano.foundation.voting.service.account.AccountService;
+import org.springframework.http.CacheControl;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.zalando.problem.Problem;
+
+import static java.util.concurrent.TimeUnit.HOURS;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+
+@RestController
+@RequestMapping(&quot;/api/account&quot;)
+<span class="fc" id="L26">@Slf4j</span>
+<span class="fc" id="L27">@RequiredArgsConstructor</span>
+@Tag(name = &quot;Account&quot;, description = &quot;The account API&quot;)
+public class AccountResource {
+
+    private final AccountService accountService;
+
+    @RequestMapping(value = &quot;/{eventId}/{stakeAddress}&quot;, method = GET, produces = &quot;application/json&quot;)
+    @Timed(value = &quot;resource.account.find&quot;, histogram = true)
+    @Operation(summary = &quot;Find account details associated with an event and stake address&quot;,
+            description = &quot;This endpoint fetches the account details based on a given event ID and stake address. &quot; +
+                    &quot;If the account is not found, an appropriate error is returned.&quot;,
+        responses = {
+                @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Successfully retrieved the Account object for event ID and stake address&quot;,
+                        content = { @Content(mediaType = &quot;application/json&quot;,
+                                schema = @Schema(implementation = Account.class)) }),
+                @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Bad request due to validation issues or malformed request&quot;,
+                        content = { @Content(mediaType = &quot;application/json&quot;,
+                                schema = @Schema(implementation = Problem.class)) }),
+                @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error&quot;)
+        }
+    )
+    public ResponseEntity&lt;?&gt; findAccount(
+            @Parameter(description = &quot;Event ID associated with the account&quot;, required = true)
+            @PathVariable(&quot;eventId&quot;) String eventId,
+            @Parameter(description = &quot;Stake address of the account&quot;, required = true)
+            @PathVariable String stakeAddress) {
+<span class="fc" id="L53">        var cacheControl = CacheControl.maxAge(1, HOURS)</span>
+<span class="fc" id="L54">                .noTransform()</span>
+<span class="fc" id="L55">                .mustRevalidate();</span>
+
+<span class="fc" id="L57">        return accountService.findAccount(eventId, stakeAddress)</span>
+<span class="fc" id="L58">                .fold(problem -&gt; {</span>
+<span class="fc" id="L59">                            return ResponseEntity</span>
+<span class="fc" id="L60">                                    .status(problem.getStatus().getStatusCode())</span>
+<span class="fc" id="L61">                                    .cacheControl(cacheControl)</span>
+<span class="fc" id="L62">                                    .body(problem);</span>
+                        },
+                        account -&gt; {
+<span class="fc" id="L65">                            return ResponseEntity</span>
+<span class="fc" id="L66">                                    .ok()</span>
+<span class="fc" id="L67">                                    .cacheControl(cacheControl)</span>
+<span class="fc" id="L68">                                    .body(account);</span>
+                        });
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

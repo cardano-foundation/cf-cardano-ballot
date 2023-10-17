@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Event.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-ledger-follower-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.domain.entity</a> &gt; <span class="el_source">Event.java</span></div><h1>Event.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.domain.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+import org.cardano.foundation.voting.domain.SchemaVersion;
+import org.cardano.foundation.voting.domain.VotingEventType;
+import org.cardano.foundation.voting.domain.VotingPowerAsset;
+import org.hibernate.annotations.Immutable;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import static org.cardano.foundation.voting.domain.VotingEventType.BALANCE_BASED;
+import static org.cardano.foundation.voting.domain.VotingEventType.STAKE_BASED;
+
+@Entity
+@Table(name = &quot;event&quot;)
+<span class="pc bpc" id="L20" title="5 of 10 branches missed.">@Builder</span>
+<span class="fc" id="L21">@RequiredArgsConstructor</span>
+<span class="fc" id="L22">@AllArgsConstructor</span>
+@Immutable
+public class Event extends AbstractTimestampEntity {
+
+<span class="fc" id="L26">    @Getter</span>
+<span class="nc" id="L27">    @Setter</span>
+    @Column(nullable = false)
+    @Id
+    private String id;
+
+    @Column(nullable = false)
+<span class="fc" id="L33">    @Getter</span>
+<span class="nc" id="L34">    @Setter</span>
+    private String organisers; // e.g. CF
+
+    @Column(name = &quot;event_type&quot;, nullable = false)
+<span class="fc" id="L38">    @Getter</span>
+<span class="nc" id="L39">    @Setter</span>
+    @Enumerated(EnumType.STRING)
+    private VotingEventType votingEventType;
+
+    @Column(name = &quot;voting_power_asset&quot;)
+    // voting power asset is only needed for stake based voting events
+    @Nullable
+    @Enumerated(EnumType.STRING)
+    private VotingPowerAsset votingPowerAsset;
+
+    @Column(name = &quot;allow_vote_changing&quot;)
+    @Nullable
+    @Builder.Default
+<span class="fc" id="L52">    private Boolean allowVoteChanging = false;</span>
+
+    @Column(name = &quot;high_level_event_results_while_voting&quot;)
+    @Nullable
+    @Builder.Default
+<span class="fc" id="L57">    private Boolean highLevelEventResultsWhileVoting = false;</span>
+
+    @Column(name = &quot;high_level_category_results_while_voting&quot;)
+    @Nullable
+    @Builder.Default
+<span class="fc" id="L62">    private Boolean highLevelCategoryResultsWhileVoting = false;</span>
+
+    @Column(name = &quot;category_results_while_voting&quot;)
+    @Nullable
+    @Builder.Default
+<span class="fc" id="L67">    private Boolean categoryResultsWhileVoting = false;</span>
+
+    @Column(name = &quot;start_epoch&quot;)
+    // startEpoch is only needed for stake based voting events
+    @Nullable
+    private Integer startEpoch;
+
+    @Column(name = &quot;end_epoch&quot;)
+    // endEpoch is only needed for stake based voting events
+    @Nullable
+    private Integer endEpoch;
+
+    @Column(name = &quot;snapshot_epoch&quot;)
+    // snapshotEpoch is only needed for stake based voting events
+    @Nullable
+    private Integer snapshotEpoch;
+
+    @Column(name = &quot;proposals_reveal_epoch&quot;)
+    // proposalsRevealEpoch is only needed for stake based voting events
+    @Nullable
+    private Integer proposalsRevealEpoch;
+
+    @Column(name = &quot;start_slot&quot;)
+    //startSlot is only needed for user based voting events
+    @Nullable
+    private Long startSlot;
+
+    @Column(name = &quot;end_slot&quot;)
+    // endSlot is only needed for user based voting events
+    @Nullable
+    private Long endSlot;
+
+    @Column(name = &quot;proposals_reveal_slot&quot;)
+    // proposalsRevealSlot is only needed for user based voting events
+    @Nullable
+    private Long proposalsRevealSlot;
+
+    @Column(name = &quot;schema_version&quot;)
+<span class="nc" id="L105">    @Getter</span>
+<span class="nc" id="L106">    @Setter</span>
+    @Enumerated(EnumType.STRING)
+    private SchemaVersion version;
+
+    @OneToMany(
+            mappedBy = &quot;event&quot;,
+            cascade = CascadeType.ALL,
+            fetch = FetchType.EAGER,
+            orphanRemoval = true
+    )
+    @Builder.Default
+<span class="fc" id="L117">    @Getter</span>
+<span class="nc" id="L118">    @Setter</span>
+    private List&lt;Category&gt; categories = new ArrayList&lt;&gt;();
+
+    @Column(name = &quot;absolute_slot&quot;)
+<span class="nc" id="L122">    @Getter</span>
+<span class="nc" id="L123">    @Setter</span>
+    private long absoluteSlot;
+
+    public Optional&lt;Category&gt; findCategoryByName(String categoryName) {
+<span class="nc" id="L127">        return categories.stream().filter(category -&gt; category.getId().equals(categoryName)).findFirst();</span>
+    }
+
+    public Optional&lt;VotingPowerAsset&gt; getVotingPowerAsset() {
+<span class="fc" id="L131">        return Optional.ofNullable(votingPowerAsset);</span>
+    }
+
+    public void setVotingPowerAsset(Optional&lt;VotingPowerAsset&gt; votingPowerAsset) {
+<span class="nc" id="L135">        this.votingPowerAsset = votingPowerAsset.orElse(null);</span>
+<span class="nc" id="L136">    }</span>
+
+    public boolean isAllowVoteChanging() {
+<span class="fc" id="L139">        return Optional.ofNullable(allowVoteChanging).orElse(false);</span>
+    }
+
+    public void setAllowVoteChanging(boolean allowVoteChanging) {
+<span class="nc" id="L143">        this.allowVoteChanging = allowVoteChanging;</span>
+<span class="nc" id="L144">    }</span>
+
+    public Optional&lt;Integer&gt; getStartEpoch() {
+<span class="fc" id="L147">        return Optional.ofNullable(startEpoch);</span>
+    }
+
+    public void setStartEpoch(Optional&lt;Integer&gt; startEpoch) {
+<span class="nc" id="L151">        this.startEpoch = startEpoch.orElse(null);</span>
+<span class="nc" id="L152">    }</span>
+
+    public Optional&lt;Integer&gt; getEndEpoch() {
+<span class="fc" id="L155">        return Optional.ofNullable(endEpoch);</span>
+    }
+
+    public void setEndEpoch(Optional&lt;Integer&gt; endEpoch) {
+<span class="nc" id="L159">        this.endEpoch = endEpoch.orElse(null);</span>
+<span class="nc" id="L160">    }</span>
+
+    public Optional&lt;Long&gt; getStartSlot() {
+<span class="fc" id="L163">        return Optional.ofNullable(startSlot);</span>
+    }
+
+    public void setStartSlot(Optional&lt;Long&gt; startSlot) {
+<span class="nc" id="L167">        this.startSlot = startSlot.orElse(null);</span>
+<span class="nc" id="L168">    }</span>
+
+    public Optional&lt;Long&gt; getEndSlot() {
+<span class="fc" id="L171">        return Optional.ofNullable(endSlot);</span>
+    }
+
+    public void setEndSlot(Optional&lt;Long&gt; endSlot) {
+<span class="nc" id="L175">        this.endSlot = endSlot.orElse(null);</span>
+<span class="nc" id="L176">    }</span>
+
+    public Optional&lt;Integer&gt; getSnapshotEpoch() {
+<span class="fc" id="L179">        return Optional.ofNullable(snapshotEpoch);</span>
+    }
+
+    public void setSnapshotEpoch(Optional&lt;Integer&gt; snapshotEpoch) {
+<span class="nc" id="L183">        this.snapshotEpoch = snapshotEpoch.orElse(null);</span>
+<span class="nc" id="L184">    }</span>
+
+    public boolean getHighLevelEventResultsWhileVoting() {
+<span class="fc" id="L187">        return Optional.ofNullable(highLevelEventResultsWhileVoting).orElse(false);</span>
+    }
+
+    public void setHighLevelEventResultsWhileVoting(Optional&lt;Boolean&gt; highLevelEventResultsWhileVoting) {
+<span class="nc" id="L191">        this.highLevelEventResultsWhileVoting = highLevelEventResultsWhileVoting.orElse(null);</span>
+<span class="nc" id="L192">    }</span>
+
+    public boolean getHighLevelCategoryResultsWhileVoting() {
+<span class="nc" id="L195">        return Optional.ofNullable(highLevelCategoryResultsWhileVoting).orElse(false);</span>
+    }
+
+    public void setHighLevelCategoryResultsWhileVoting(Optional&lt;Boolean&gt; highLevelCategoryResultsWhileVoting) {
+<span class="nc" id="L199">        this.highLevelCategoryResultsWhileVoting = highLevelCategoryResultsWhileVoting.orElse(null);</span>
+<span class="nc" id="L200">    }</span>
+
+    public boolean getCategoryResultsWhileVoting() {
+<span class="fc" id="L203">        return Optional.ofNullable(categoryResultsWhileVoting).orElse(false);</span>
+    }
+
+    public void setCategoryResultsWhileVoting(Optional&lt;Boolean&gt; categoryResultsWhileVoting) {
+<span class="nc" id="L207">        this.categoryResultsWhileVoting = categoryResultsWhileVoting.orElse(null);</span>
+<span class="nc" id="L208">    }</span>
+
+    public Optional&lt;Integer&gt; getProposalsRevealEpoch() {
+<span class="fc" id="L211">        return Optional.ofNullable(proposalsRevealEpoch);</span>
+    }
+
+    public void setProposalsRevealEpoch(Optional&lt;Integer&gt; proposalsRevealEpoch) {
+<span class="nc" id="L215">        this.proposalsRevealEpoch = proposalsRevealEpoch.orElse(null);</span>
+<span class="nc" id="L216">    }</span>
+
+    public Optional&lt;Long&gt; getProposalsRevealSlot() {
+<span class="nc" id="L219">        return Optional.ofNullable(proposalsRevealSlot);</span>
+    }
+
+    public void setProposalsRevealSlot(Optional&lt;Long&gt; proposalsRevealSlot) {
+<span class="nc" id="L223">        this.proposalsRevealSlot = proposalsRevealSlot.orElse(null);</span>
+<span class="nc" id="L224">    }</span>
+
+    public boolean isValid() {
+<span class="pc bpc" id="L227" title="1 of 2 branches missed.">        if (List.of(STAKE_BASED, BALANCE_BASED).contains(votingEventType)) {</span>
+<span class="pc bpc" id="L228" title="5 of 10 branches missed.">            if (getStartEpoch().isEmpty() || getEndEpoch().isEmpty() || getSnapshotEpoch().isEmpty() || getVotingPowerAsset().isEmpty() || getProposalsRevealEpoch().isEmpty()) {</span>
+<span class="nc" id="L229">                return false;</span>
+            }
+        }
+<span class="pc bpc" id="L232" title="1 of 2 branches missed.">        if (votingEventType == VotingEventType.USER_BASED) {</span>
+<span class="nc bnc" id="L233" title="All 6 branches missed.">            if (getStartSlot().isEmpty() || getEndSlot().isEmpty() || getProposalsRevealSlot().isEmpty()) {</span>
+<span class="nc" id="L234">                return false;</span>
+            }
+        }
+<span class="pc bpc" id="L237" title="1 of 2 branches missed.">        if (categories.isEmpty()) {</span>
+<span class="nc" id="L238">            return false;</span>
+        }
+<span class="pc bpc" id="L240" title="1 of 2 branches missed.">        var anyCategoryInvalid = categories.stream().anyMatch(category -&gt; !category.isValid());</span>
+
+<span class="pc bpc" id="L242" title="1 of 2 branches missed.">        if (anyCategoryInvalid) {</span>
+<span class="nc" id="L243">            return false;</span>
+        }
+
+<span class="fc" id="L246">        return true;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

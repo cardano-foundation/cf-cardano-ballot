@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReferencePresentationService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-ledger-follower-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.service.reference_data</a> &gt; <span class="el_source">ReferencePresentationService.java</span></div><h1>ReferencePresentationService.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.service.reference_data;
+
+import io.vavr.control.Either;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.domain.EventAdditionalInfo;
+import org.cardano.foundation.voting.domain.entity.Event;
+import org.cardano.foundation.voting.domain.presentation.CategoryPresentation;
+import org.cardano.foundation.voting.domain.presentation.EventPresentation;
+import org.cardano.foundation.voting.domain.presentation.ProposalPresentation;
+import org.cardano.foundation.voting.service.epoch.CustomEpochService;
+import org.cardano.foundation.voting.service.expire.EventAdditionalInfoService;
+import org.springframework.stereotype.Service;
+import org.zalando.problem.Problem;
+
+import java.util.List;
+import java.util.Optional;
+
+import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
+
+@Service
+<span class="fc" id="L22">@Slf4j</span>
+<span class="fc" id="L23">@RequiredArgsConstructor</span>
+public class ReferencePresentationService {
+
+    private final ReferenceDataService referenceDataService;
+
+    private final EventAdditionalInfoService eventAdditionalInfoService;
+
+    private final CustomEpochService customEpochService;
+
+    public Either&lt;Problem, Optional&lt;EventPresentation&gt;&gt; findEventReference(String name) {
+<span class="fc" id="L33">        var maybeValidEventByName = referenceDataService.findValidEventByName(name);</span>
+
+<span class="fc bfc" id="L35" title="All 2 branches covered.">        if (maybeValidEventByName.isEmpty()) {</span>
+<span class="fc" id="L36">            return Either.right(Optional.empty());</span>
+        }
+
+<span class="fc" id="L39">        var event = maybeValidEventByName.get();</span>
+<span class="fc" id="L40">        var categories = event.getCategories().stream().map(category -&gt; {</span>
+<span class="fc" id="L41">                    var proposals = category.getProposals().stream().map(proposal -&gt; ProposalPresentation.builder()</span>
+<span class="fc" id="L42">                                    .id(proposal.getId())</span>
+<span class="fc" id="L43">                                    .name(proposal.getName())</span>
+<span class="fc" id="L44">                                    .build())</span>
+<span class="fc" id="L45">                            .toList();</span>
+
+<span class="fc" id="L47">                    return CategoryPresentation.builder()</span>
+<span class="fc" id="L48">                            .id(category.getId())</span>
+<span class="fc" id="L49">                            .gdprProtection(category.isGdprProtection())</span>
+<span class="fc" id="L50">                            .proposals(proposals)</span>
+<span class="fc" id="L51">                            .build();</span>
+                }
+<span class="fc" id="L53">        ).toList();</span>
+
+<span class="fc" id="L55">        var eventAdditionalInfoE = eventAdditionalInfoService.getEventAdditionalInfo(event);</span>
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">        if (eventAdditionalInfoE.isEmpty()) {</span>
+<span class="nc" id="L57">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L58">                    .withTitle(&quot;REFERENCE_ERROR&quot;)</span>
+<span class="nc" id="L59">                    .withDetail(&quot;Unable to get expiration data.&quot;)</span>
+<span class="nc" id="L60">                    .withStatus(INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L61">                    .build());</span>
+        }
+<span class="fc" id="L63">        var eventAdditionalInfo = eventAdditionalInfoE.get();</span>
+
+<span class="fc" id="L65">        var eventBuilder = EventPresentation.builder()</span>
+<span class="fc" id="L66">                .id(event.getId())</span>
+<span class="fc" id="L67">                .organisers(event.getOrganisers())</span>
+<span class="fc" id="L68">                .votingEventType(event.getVotingEventType())</span>
+<span class="fc" id="L69">                .startEpoch(event.getStartEpoch())</span>
+<span class="fc" id="L70">                .endEpoch(event.getEndEpoch())</span>
+<span class="fc" id="L71">                .startSlot(event.getStartSlot())</span>
+<span class="fc" id="L72">                .endSlot(event.getEndSlot())</span>
+<span class="fc" id="L73">                .snapshotEpoch(event.getSnapshotEpoch())</span>
+<span class="fc" id="L74">                .categories(categories)</span>
+<span class="fc" id="L75">                .isNotStarted(eventAdditionalInfo.notStarted())</span>
+<span class="fc" id="L76">                .isStarted(eventAdditionalInfo.started())</span>
+<span class="fc" id="L77">                .isActive(eventAdditionalInfo.active())</span>
+<span class="fc" id="L78">                .isFinished(eventAdditionalInfo.finished())</span>
+<span class="fc" id="L79">                .isProposalsReveal(eventAdditionalInfo.proposalsReveal())</span>
+<span class="fc" id="L80">                .isCommitmentsWindowOpen(eventAdditionalInfo.commitmentsWindowOpen())</span>
+<span class="fc" id="L81">                .isAllowVoteChanging(event.isAllowVoteChanging())</span>
+<span class="fc" id="L82">                .isHighLevelEventResultsWhileVoting(event.getHighLevelEventResultsWhileVoting())</span>
+<span class="fc" id="L83">                .isHighLevelCategoryResultsWhileVoting(event.getHighLevelEventResultsWhileVoting())</span>
+<span class="fc" id="L84">                .isCategoryResultsWhileVoting(event.getCategoryResultsWhileVoting())</span>
+                ;
+
+<span class="pc bpc" id="L87" title="2 of 3 branches missed.">        switch (event.getVotingEventType()) {</span>
+            case STAKE_BASED, BALANCE_BASED -&gt; {
+<span class="fc" id="L89">                eventBuilder.eventStartDate(customEpochService.getEpochStartTime(event.getStartEpoch().orElseThrow()));</span>
+<span class="fc" id="L90">                eventBuilder.eventEndDate(customEpochService.getEpochEndTime(event.getEndEpoch().orElseThrow()));</span>
+<span class="fc" id="L91">                eventBuilder.snapshotTime(customEpochService.getEpochEndTime(event.getSnapshotEpoch().orElseThrow()));</span>
+<span class="fc" id="L92">                eventBuilder.proposalsRevealDate(customEpochService.getEpochStartTime(event.getProposalsRevealEpoch().orElseThrow()));</span>
+<span class="fc" id="L93">                eventBuilder.proposalsRevealEpoch(event.getProposalsRevealEpoch());</span>
+<span class="fc" id="L94">            }</span>
+            case USER_BASED -&gt; {
+<span class="nc" id="L96">                eventBuilder.eventStartDate(customEpochService.getTimeBasedOnAbsoluteSlot(event.getStartSlot().orElseThrow()));</span>
+<span class="nc" id="L97">                eventBuilder.eventEndDate(customEpochService.getTimeBasedOnAbsoluteSlot(event.getEndSlot().orElseThrow()));</span>
+<span class="nc" id="L98">                eventBuilder.proposalsRevealDate(customEpochService.getTimeBasedOnAbsoluteSlot(event.getProposalsRevealSlot().orElseThrow()));</span>
+<span class="nc" id="L99">                eventBuilder.proposalsRevealSlot(event.getProposalsRevealSlot());</span>
+            }
+        }
+
+<span class="fc" id="L103">        return Either.right(Optional.of(eventBuilder.build()));</span>
+    }
+
+    public Either&lt;Problem, List&lt;EventAdditionalInfo&gt;&gt; eventsSummaries() {
+<span class="fc" id="L107">        List&lt;Event&gt; allValidEvents = referenceDataService.findAllValidEvents();</span>
+
+<span class="fc" id="L109">        return eventAdditionalInfoService.getEventAdditionalInfo(allValidEvents);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

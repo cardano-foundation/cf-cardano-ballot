@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TransactionDetails.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-ledger-follower-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.domain</a> &gt; <span class="el_source">TransactionDetails.java</span></div><h1>TransactionDetails.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.domain;
+
+import lombok.Builder;
+import lombok.Getter;
+
+@Getter
+<span class="pc" id="L7">@Builder</span>
+public class TransactionDetails {
+
+<span class="fc" id="L10">    private String transactionHash;</span>
+
+<span class="fc" id="L12">    private long absoluteSlot;</span>
+<span class="fc" id="L13">    private String blockHash;</span>
+
+<span class="fc" id="L15">    private long transactionsConfirmations;</span>
+
+<span class="fc" id="L17">    private FinalityScore finalityScore;</span>
+
+<span class="fc" id="L19">    private CardanoNetwork network;</span>
+
+<span class="fc" id="L21">    public enum FinalityScore {</span>
+
+<span class="fc" id="L23">        LOW(0),</span>
+<span class="fc" id="L24">        MEDIUM(1),</span>
+<span class="fc" id="L25">        HIGH(2),</span>
+<span class="fc" id="L26">        VERY_HIGH(3),</span>
+<span class="fc" id="L27">        FINAL(4); // TRANSACTION IS FINAL(!) - NO ROLLBACK POSSIBLE</span>
+
+        private final int score;
+
+<span class="fc" id="L31">        FinalityScore(int score) {</span>
+<span class="fc" id="L32">            this.score = score;</span>
+<span class="fc" id="L33">        }</span>
+
+        public int getScore() {
+<span class="nc" id="L36">            return score;</span>
+        }
+
+        public static FinalityScore fromConfirmations(long transactionsConfirmations) {
+<span class="pc bpc" id="L40" title="1 of 2 branches missed.">            if (transactionsConfirmations &gt; 2160) { // 1,5 days</span>
+<span class="fc" id="L41">                return FinalityScore.FINAL;</span>
+            }
+
+<span class="nc bnc" id="L44" title="All 2 branches missed.">            if (transactionsConfirmations &gt; 100) {</span>
+<span class="nc" id="L45">                return VERY_HIGH;</span>
+            }
+
+<span class="nc bnc" id="L48" title="All 2 branches missed.">            if (transactionsConfirmations &gt;= 8) {</span>
+<span class="nc" id="L49">                return HIGH;</span>
+            }
+
+<span class="nc bnc" id="L52" title="All 2 branches missed.">            if (transactionsConfirmations &gt;= 4) {</span>
+<span class="nc" id="L53">                return MEDIUM;</span>
+            }
+
+<span class="nc" id="L56">            return LOW;</span>
+        }
+
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

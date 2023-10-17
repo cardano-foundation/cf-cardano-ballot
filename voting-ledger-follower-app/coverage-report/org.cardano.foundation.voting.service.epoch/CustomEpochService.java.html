@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CustomEpochService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-ledger-follower-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.service.epoch</a> &gt; <span class="el_source">CustomEpochService.java</span></div><h1>CustomEpochService.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.service.epoch;
+
+import com.bloxbean.cardano.yaci.core.model.Era;
+import com.bloxbean.cardano.yaci.store.core.StoreProperties;
+import com.bloxbean.cardano.yaci.store.core.configuration.GenesisConfig;
+import com.bloxbean.cardano.yaci.store.core.domain.CardanoEra;
+import com.bloxbean.cardano.yaci.store.core.service.EraService;
+import com.bloxbean.cardano.yaci.store.core.storage.api.EraStorage;
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.domain.CardanoNetwork;
+import org.springframework.stereotype.Service;
+
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Optional;
+
+import static com.bloxbean.cardano.yaci.core.model.Era.Byron;
+import static com.bloxbean.cardano.yaci.core.model.Era.Shelley;
+
+@Service
+<span class="fc" id="L25">@Slf4j</span>
+<span class="fc" id="L26">@RequiredArgsConstructor</span>
+public class CustomEpochService {
+
+    private final CardanoNetwork network;
+
+    private final GenesisConfig genesisConfig;
+
+    private final EraService eraService;
+
+    private final EraStorage eraStorage;
+
+    private final CustomEraService customEraService;
+
+    private final StoreProperties storeProperties;
+
+    private long firstShelleySlot;
+
+<span class="fc" id="L43">    private final static ZoneId UTC = ZoneId.of(&quot;UTC&quot;);</span>
+
+    @PostConstruct
+    public void init() {
+<span class="fc" id="L47">        firstShelleySlot = eraStorage.findFirstNonByronEra()</span>
+<span class="fc" id="L48">                .map(CardanoEra::getStartSlot)</span>
+<span class="fc" id="L49">                .orElse(0L);</span>
+<span class="fc" id="L50">    }</span>
+
+    public Optional&lt;ZonedDateTime&gt; getEpochStartTime(int epochNo) {
+<span class="fc" id="L53">        var maybeByronEraData = customEraService.getEraData(Byron, network);</span>
+
+<span class="pc bpc" id="L55" title="1 of 2 branches missed.">        if (maybeByronEraData.isEmpty()) {</span>
+<span class="nc" id="L56">            return Optional.empty();</span>
+        }
+<span class="fc" id="L58">        var byronEraData = maybeByronEraData.orElseThrow();</span>
+
+<span class="pc bpc" id="L60" title="1 of 2 branches missed.">        if (epochNo &lt;= byronEraData.endEpochNo()) {</span>
+<span class="nc" id="L61">            return Optional.empty();</span>
+        }
+
+<span class="fc" id="L64">        var shelleyStartTime = this.eraService.shelleyEraStartTime();</span>
+<span class="fc" id="L65">        var shelleySlotDuration = (long) this.genesisConfig.slotDuration(Shelley);</span>
+<span class="fc" id="L66">        var shelleySlotsPerEpoch = this.genesisConfig.slotsPerEpoch(Shelley);</span>
+
+<span class="fc" id="L68">        var diffEpochCount = epochNo - byronEraData.endEpochNo() - 1;</span>
+
+<span class="fc" id="L70">        var postShelleyDuration = diffEpochCount * shelleySlotsPerEpoch * shelleySlotDuration;</span>
+
+<span class="fc" id="L72">        var totalTimeInstant = Instant.ofEpochSecond(shelleyStartTime).plusSeconds(postShelleyDuration);</span>
+
+<span class="fc" id="L74">        return Optional.of(ZonedDateTime.ofInstant(totalTimeInstant, UTC));</span>
+    }
+
+    public long blockTime(Era era, long slot) {
+<span class="nc bnc" id="L78" title="All 2 branches missed.">        if (era == Byron) {</span>
+<span class="nc" id="L79">            return byronBlockTime(slot);</span>
+        }
+
+<span class="nc" id="L82">        long slotsFromShelleyStart = slot - firstShelleySlot;</span>
+
+<span class="nc" id="L84">        return (eraService.shelleyEraStartTime() + slotsFromShelleyStart * (long) genesisConfig.slotDuration(Shelley));</span>
+    }
+
+    private long byronBlockTime(long slot) {
+<span class="nc" id="L88">        long startTime = genesisConfig.getStartTime(storeProperties.getProtocolMagic());</span>
+
+<span class="nc" id="L90">        return startTime + slot * (long) genesisConfig.slotDuration(Byron);</span>
+    }
+
+    public Optional&lt;ZonedDateTime&gt; getEpochEndTime(int epochNo) {
+<span class="fc" id="L94">        return getEpochStartTime(epochNo + 1).map(time -&gt; time.minusSeconds(1));</span>
+    }
+
+    public Optional&lt;ZonedDateTime&gt; getTimeBasedOnAbsoluteSlot(long absoluteSlotNo) {
+<span class="nc" id="L98">        var millis = blockTime(Shelley, absoluteSlotNo);</span>
+
+<span class="nc" id="L100">        var t = LocalDateTime.ofInstant(Instant.ofEpochSecond(millis), UTC);</span>
+
+<span class="nc" id="L102">        return Optional.of(t.atZone(UTC));</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

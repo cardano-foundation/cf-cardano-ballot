@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CborService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-ledger-follower-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.service.cbor</a> &gt; <span class="el_source">CborService.java</span></div><h1>CborService.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.service.cbor;
+
+import com.bloxbean.cardano.client.metadata.cbor.CBORMetadataList;
+import com.bloxbean.cardano.client.metadata.cbor.CBORMetadataMap;
+import io.vavr.control.Either;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.domain.OnChainEventType;
+import org.cardano.foundation.voting.domain.VotingEventType;
+import org.cardano.foundation.voting.domain.VotingPowerAsset;
+import org.cardano.foundation.voting.domain.web3.CategoryRegistrationEnvelope;
+import org.cardano.foundation.voting.domain.web3.CommitmentsEnvelope;
+import org.cardano.foundation.voting.domain.web3.EventRegistrationEnvelope;
+import org.cardano.foundation.voting.domain.web3.ProposalEnvelope;
+import org.cardano.foundation.voting.utils.Enums;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.zalando.problem.Problem;
+
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import static org.cardano.foundation.voting.domain.OnChainEventType.COMMITMENTS;
+import static org.cardano.foundation.voting.domain.OnChainEventType.EVENT_REGISTRATION;
+import static org.cardano.foundation.voting.domain.VotingEventType.*;
+import static org.cardano.foundation.voting.utils.MoreBoolean.fromBigInteger;
+import static org.zalando.problem.Status.BAD_REQUEST;
+import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
+
+@Service
+<span class="fc" id="L33">@Slf4j</span>
+<span class="fc" id="L34">@RequiredArgsConstructor</span>
+public class CborService {
+
+    @Value(&quot;${cardano.snapshot.bounds.check.enabled:true}&quot;)
+    private boolean isSnapshotBoundCheck;
+
+    public Either&lt;Problem, CommitmentsEnvelope&gt; decodeCommitmentsEnvelope(CBORMetadataMap payload) {
+        try {
+<span class="nc" id="L42">            var maybeOnchainEventType = Enums.getIfPresent(OnChainEventType.class, (String) payload.get(&quot;type&quot;));</span>
+
+<span class="nc bnc" id="L44" title="All 4 branches missed.">            if (maybeOnchainEventType.isEmpty() || maybeOnchainEventType.orElseThrow() != COMMITMENTS) {</span>
+<span class="nc" id="L45">                return Either.left(</span>
+<span class="nc" id="L46">                        Problem.builder()</span>
+<span class="nc" id="L47">                                .withTitle(&quot;INVALID_COMMITMENTS&quot;)</span>
+<span class="nc" id="L48">                                .withDetail(&quot;Invalid commitments event, missing type field.&quot;)</span>
+<span class="nc" id="L49">                                .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L50">                                .build());</span>
+            }
+
+<span class="nc" id="L53">            var maybeCreationSlot = Optional.ofNullable(payload.get(&quot;creationSlot&quot;)).map(obj -&gt; ((BigInteger) obj).longValue());</span>
+<span class="nc bnc" id="L54" title="All 2 branches missed.">            if (maybeCreationSlot.isEmpty()) {</span>
+<span class="nc" id="L55">                return Either.left(</span>
+<span class="nc" id="L56">                        Problem.builder()</span>
+<span class="nc" id="L57">                                .withTitle(&quot;INVALID_COMMITMENTS_EVENT&quot;)</span>
+<span class="nc" id="L58">                                .withDetail(&quot;Invalid commitments event, missing creationSlot field.&quot;)</span>
+<span class="nc" id="L59">                                .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L60">                                .build());</span>
+            }
+
+<span class="nc" id="L63">            var maybeCommitments = Optional.ofNullable(payload.get(&quot;commitments&quot;)).map(obj -&gt; (CBORMetadataMap) obj);</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">            if (maybeCommitments.isEmpty()) {</span>
+<span class="nc" id="L65">                return Either.left(</span>
+<span class="nc" id="L66">                        Problem.builder()</span>
+<span class="nc" id="L67">                                .withTitle(&quot;INVALID_COMMITMENTS_EVENT&quot;)</span>
+<span class="nc" id="L68">                                .withDetail(&quot;Invalid category registration event, missing actual commitments field.&quot;)</span>
+<span class="nc" id="L69">                                .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L70">                                .build());</span>
+            }
+
+<span class="nc" id="L73">            var commitments = maybeCommitments.orElseThrow();</span>
+
+<span class="nc" id="L75">            var commitmentsEnvelope = CommitmentsEnvelope.builder()</span>
+<span class="nc" id="L76">                    .type(maybeOnchainEventType.orElseThrow())</span>
+<span class="nc" id="L77">                    .creationSlot(maybeCreationSlot.orElseThrow())</span>
+<span class="nc" id="L78">                    .schemaVersion((String) payload.get(&quot;schemaVersion&quot;))</span>
+<span class="nc" id="L79">                    .build();</span>
+
+<span class="nc bnc" id="L81" title="All 2 branches missed.">            for (Object eventId : commitments.keys()) {</span>
+<span class="nc" id="L82">                var commitmentMap = (CBORMetadataMap) commitments.get((String) eventId);</span>
+<span class="nc" id="L83">                var commitmentHash = (String) commitmentMap.get(&quot;hash&quot;);</span>
+<span class="nc" id="L84">                commitmentsEnvelope.addCommitment((String) eventId, commitmentHash);</span>
+<span class="nc" id="L85">            }</span>
+
+<span class="nc" id="L87">            return Either.right(commitmentsEnvelope);</span>
+<span class="nc" id="L88">        } catch (Exception e) {</span>
+<span class="nc" id="L89">            return Either.left(</span>
+<span class="nc" id="L90">                    Problem.builder()</span>
+<span class="nc" id="L91">                            .withTitle(&quot;INVALID_COMMITMENTS_EVENT&quot;)</span>
+<span class="nc" id="L92">                            .withDetail(&quot;Invalid commitments event&quot;)</span>
+<span class="nc" id="L93">                            .withStatus(INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L94">                            .withDetail(e.getMessage())</span>
+<span class="nc" id="L95">                            .build()</span>
+            );
+        }
+    }
+
+    public Either&lt;Problem, CategoryRegistrationEnvelope&gt; decodeCategoryRegistrationEnvelope(CBORMetadataMap payload) {
+        try {
+<span class="nc" id="L102">            var maybeOnchainEventType = Enums.getIfPresent(OnChainEventType.class, (String) payload.get(&quot;type&quot;));</span>
+
+<span class="nc bnc" id="L104" title="All 4 branches missed.">            if (maybeOnchainEventType.isEmpty() || maybeOnchainEventType.orElseThrow() != OnChainEventType.CATEGORY_REGISTRATION) {</span>
+<span class="nc" id="L105">                return Either.left(</span>
+<span class="nc" id="L106">                        Problem.builder()</span>
+<span class="nc" id="L107">                                .withTitle(&quot;INVALID_CATEGORY_REGISTRATION&quot;)</span>
+<span class="nc" id="L108">                                .withDetail(&quot;Invalid category event, missing type field.&quot;)</span>
+<span class="nc" id="L109">                                .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L110">                                .build());</span>
+            }
+
+<span class="nc" id="L113">            var maybeName = Optional.ofNullable((String) payload.get(&quot;id&quot;));</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">            if (maybeName.isEmpty()) {</span>
+<span class="nc" id="L115">                return Either.left(</span>
+<span class="nc" id="L116">                        Problem.builder()</span>
+<span class="nc" id="L117">                                .withTitle(&quot;INVALID_CATEGORY_REGISTRATION&quot;)</span>
+<span class="nc" id="L118">                                .withDetail(&quot;Invalid category registration event, missing name field.&quot;)</span>
+<span class="nc" id="L119">                                .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L120">                                .build());</span>
+            }
+<span class="nc" id="L122">            log.info(&quot;Category registration event name:{}&quot;, maybeName.orElseThrow());</span>
+
+<span class="nc" id="L124">            var maybeEvent = Optional.ofNullable((String) payload.get(&quot;event&quot;));</span>
+<span class="nc bnc" id="L125" title="All 2 branches missed.">            if (maybeEvent.isEmpty()) {</span>
+<span class="nc" id="L126">                return Either.left(</span>
+<span class="nc" id="L127">                        Problem.builder()</span>
+<span class="nc" id="L128">                                .withTitle(&quot;INVALID_CATEGORY_REGISTRATION&quot;)</span>
+<span class="nc" id="L129">                                .withDetail(&quot;Invalid category registration event, missing event field.&quot;)</span>
+<span class="nc" id="L130">                                .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L131">                                .build());</span>
+            }
+
+<span class="nc" id="L134">            var maybeCreationSlot = Optional.ofNullable(payload.get(&quot;creationSlot&quot;)).map(obj -&gt; ((BigInteger) obj).longValue());</span>
+<span class="nc bnc" id="L135" title="All 2 branches missed.">            if (maybeCreationSlot.isEmpty()) {</span>
+<span class="nc" id="L136">                return Either.left(</span>
+<span class="nc" id="L137">                        Problem.builder()</span>
+<span class="nc" id="L138">                                .withTitle(&quot;INVALID_CATEGORY_REGISTRATION&quot;)</span>
+<span class="nc" id="L139">                                .withDetail(&quot;Invalid category registration event, missing creationSlot field.&quot;)</span>
+<span class="nc" id="L140">                                .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L141">                                .build());</span>
+            }
+
+<span class="nc" id="L144">            var maybeOptions = Optional.ofNullable(payload.get(&quot;options&quot;)).map(obj -&gt; (CBORMetadataMap) obj);</span>
+<span class="nc bnc" id="L145" title="All 2 branches missed.">            if (maybeOptions.isEmpty()) {</span>
+<span class="nc" id="L146">                return Either.left(</span>
+<span class="nc" id="L147">                        Problem.builder()</span>
+<span class="nc" id="L148">                                .withTitle(&quot;INVALID_CATEGORY_REGISTRATION&quot;)</span>
+<span class="nc" id="L149">                                .withDetail(&quot;Invalid category registration event, missing options field.&quot;)</span>
+<span class="nc" id="L150">                                .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L151">                                .build());</span>
+            }
+<span class="nc" id="L153">            var options = maybeOptions.orElseThrow();</span>
+
+<span class="nc" id="L155">            var maybeProposals = Optional.ofNullable(payload.get(&quot;proposals&quot;)).map(obj -&gt; (CBORMetadataList) obj);</span>
+<span class="nc bnc" id="L156" title="All 4 branches missed.">            if (maybeProposals.isEmpty() || maybeProposals.orElseThrow().size() == 0) {</span>
+<span class="nc" id="L157">                return Either.left(</span>
+<span class="nc" id="L158">                        Problem.builder()</span>
+<span class="nc" id="L159">                                .withTitle(&quot;INVALID_CATEGORY_REGISTRATION&quot;)</span>
+<span class="nc" id="L160">                                .withDetail(&quot;Invalid category registration event, missing proposals field.&quot;)</span>
+<span class="nc" id="L161">                                .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L162">                                .build());</span>
+            }
+
+<span class="nc" id="L165">            boolean isGdprProtection = fromBigInteger((BigInteger) options.get(&quot;gdprProtection&quot;)).orElse(false);</span>
+<span class="nc" id="L166">            var categoryRegistration = CategoryRegistrationEnvelope.builder()</span>
+<span class="nc" id="L167">                    .type(maybeOnchainEventType.orElseThrow())</span>
+<span class="nc" id="L168">                    .id(maybeName.orElseThrow())</span>
+<span class="nc" id="L169">                    .event(maybeEvent.orElseThrow())</span>
+<span class="nc" id="L170">                    .creationSlot(maybeCreationSlot.orElseThrow())</span>
+<span class="nc" id="L171">                    .gdprProtection(isGdprProtection)</span>
+<span class="nc" id="L172">                    .proposals(readProposalsEnvelope(maybeProposals.orElseThrow(), isGdprProtection))</span>
+<span class="nc" id="L173">                    .schemaVersion((String) payload.get(&quot;schemaVersion&quot;))</span>
+<span class="nc" id="L174">                    .build();</span>
+
+<span class="nc" id="L176">            return Either.right(categoryRegistration);</span>
+<span class="nc" id="L177">        } catch (Exception e) {</span>
+<span class="nc" id="L178">            return Either.left(</span>
+<span class="nc" id="L179">                    Problem.builder()</span>
+<span class="nc" id="L180">                            .withTitle(&quot;INVALID_CATEGORY_EVENT&quot;)</span>
+<span class="nc" id="L181">                            .withDetail(&quot;Invalid category event&quot;)</span>
+<span class="nc" id="L182">                            .withStatus(INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L183">                            .withDetail(e.getMessage())</span>
+<span class="nc" id="L184">                            .build()</span>
+            );
+        }
+    }
+
+    public Either&lt;Problem, EventRegistrationEnvelope&gt; decodeEventRegistrationEnvelope(CBORMetadataMap payload) {
+        try {
+<span class="nc" id="L191">            String name = (String) payload.get(&quot;id&quot;);</span>
+
+<span class="nc" id="L193">            var maybeOnchainEventType = Enums.getIfPresent(OnChainEventType.class, (String) payload.get(&quot;type&quot;));</span>
+<span class="nc bnc" id="L194" title="All 4 branches missed.">            if (maybeOnchainEventType.isEmpty() || maybeOnchainEventType.orElseThrow() != EVENT_REGISTRATION) {</span>
+<span class="nc" id="L195">                return Either.left(</span>
+<span class="nc" id="L196">                        Problem.builder()</span>
+<span class="nc" id="L197">                                .withTitle(&quot;INVALID_EVENT_REGISTRATION&quot;)</span>
+<span class="nc" id="L198">                                .withDetail(&quot;Invalid event registration event, missing type field.&quot;)</span>
+<span class="nc" id="L199">                                .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L200">                                .build());</span>
+            }
+
+<span class="nc" id="L203">            var maybeOrganisers = Optional.ofNullable((String)payload.get(&quot;organisers&quot;));</span>
+<span class="nc bnc" id="L204" title="All 2 branches missed.">            if (maybeOrganisers.isEmpty()) {</span>
+<span class="nc" id="L205">                return Either.left(</span>
+<span class="nc" id="L206">                        Problem.builder()</span>
+<span class="nc" id="L207">                                .withTitle(&quot;INVALID_EVENT_REGISTRATION&quot;)</span>
+<span class="nc" id="L208">                                .withDetail(&quot;Invalid event registration event, missing organisers field.&quot;)</span>
+<span class="nc" id="L209">                                .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L210">                                .build());</span>
+            }
+
+<span class="nc" id="L213">            var maybeCreationSlot = Optional.ofNullable(payload.get(&quot;creationSlot&quot;)).map(obj -&gt; ((BigInteger) obj).longValue());</span>
+<span class="nc bnc" id="L214" title="All 2 branches missed.">            if (maybeCreationSlot.isEmpty()) {</span>
+<span class="nc" id="L215">                return Either.left(</span>
+<span class="nc" id="L216">                        Problem.builder()</span>
+<span class="nc" id="L217">                                .withTitle(&quot;INVALID_EVENT_REGISTRATION&quot;)</span>
+<span class="nc" id="L218">                                .withDetail(&quot;Invalid event registration event, missing creationSlot field.&quot;)</span>
+<span class="nc" id="L219">                                .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L220">                                .build());</span>
+            }
+
+<span class="nc" id="L223">            var maybeVotingEventType = Enums.getIfPresent(VotingEventType.class, (String) payload.get(&quot;votingEventType&quot;));</span>
+<span class="nc bnc" id="L224" title="All 2 branches missed.">            if (maybeVotingEventType.isEmpty()) {</span>
+<span class="nc" id="L225">                return Either.left(</span>
+<span class="nc" id="L226">                        Problem.builder()</span>
+<span class="nc" id="L227">                                .withTitle(&quot;INVALID_EVENT_REGISTRATION&quot;)</span>
+<span class="nc" id="L228">                                .withDetail(&quot;Invalid event registration event, missing votingEventType field.&quot;)</span>
+<span class="nc" id="L229">                                .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L230">                                .build());</span>
+            }
+
+<span class="nc" id="L233">            var votingEventType = maybeVotingEventType.orElseThrow();</span>
+
+<span class="nc" id="L235">            var maybeVotingPowerAsset = Enums.getIfPresent(VotingPowerAsset.class, (String) payload.get(&quot;votingPowerAsset&quot;));</span>
+<span class="nc bnc" id="L236" title="All 2 branches missed.">            if (List.of(STAKE_BASED, BALANCE_BASED).contains(votingEventType)) {</span>
+<span class="nc bnc" id="L237" title="All 2 branches missed.">                if (maybeVotingPowerAsset.isEmpty()) {</span>
+<span class="nc" id="L238">                    return Either.left(</span>
+<span class="nc" id="L239">                            Problem.builder()</span>
+<span class="nc" id="L240">                                    .withTitle(&quot;INVALID_EVENT_REGISTRATION&quot;)</span>
+<span class="nc" id="L241">                                    .withDetail(&quot;Invalid event registration event, missing votingPowerAsset field.&quot;)</span>
+<span class="nc" id="L242">                                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L243">                                    .build());</span>
+                }
+            }
+
+<span class="nc" id="L247">            var eventRegistrationEnvelopeBuilder = EventRegistrationEnvelope.builder()</span>
+<span class="nc" id="L248">                    .name(name)</span>
+<span class="nc" id="L249">                    .type(EVENT_REGISTRATION)</span>
+<span class="nc" id="L250">                    .organisers(maybeOrganisers.orElseThrow())</span>
+<span class="nc" id="L251">                    .creationSlot(maybeCreationSlot.orElseThrow())</span>
+<span class="nc" id="L252">                    .votingPowerAsset(maybeVotingPowerAsset)</span>
+<span class="nc" id="L253">                    .votingEventType(votingEventType);</span>
+
+<span class="nc bnc" id="L255" title="All 2 branches missed.">            if (List.of(STAKE_BASED, BALANCE_BASED).contains(votingEventType)) {</span>
+<span class="nc" id="L256">                var maybeStartEpoch = Optional.ofNullable(payload.get(&quot;startEpoch&quot;)).map(obj -&gt; ((BigInteger) obj).intValue());</span>
+
+<span class="nc bnc" id="L258" title="All 2 branches missed.">                if (maybeStartEpoch.isEmpty()) {</span>
+<span class="nc" id="L259">                    return Either.left(</span>
+<span class="nc" id="L260">                            Problem.builder()</span>
+<span class="nc" id="L261">                                    .withTitle(&quot;INVALID_EVENT_REGISTRATION&quot;)</span>
+<span class="nc" id="L262">                                    .withDetail(&quot;Invalid event registration event, missing startEpoch field.&quot;)</span>
+<span class="nc" id="L263">                                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L264">                                    .build());</span>
+                }
+<span class="nc" id="L266">                var maybeEndEpoch = Optional.ofNullable(payload.get(&quot;endEpoch&quot;)).map(obj -&gt; ((BigInteger) obj).intValue());</span>
+<span class="nc bnc" id="L267" title="All 2 branches missed.">                if (maybeEndEpoch.isEmpty()) {</span>
+<span class="nc" id="L268">                    return Either.left(</span>
+<span class="nc" id="L269">                            Problem.builder()</span>
+<span class="nc" id="L270">                                    .withTitle(&quot;INVALID_EVENT_REGISTRATION&quot;)</span>
+<span class="nc" id="L271">                                    .withDetail(&quot;Invalid event registration event, missing endEpoch field.&quot;)</span>
+<span class="nc" id="L272">                                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L273">                                    .build());</span>
+                }
+
+<span class="nc" id="L276">                var maybeSnapshotEpoch = Optional.ofNullable(payload.get(&quot;snapshotEpoch&quot;)).map(obj -&gt; ((BigInteger) obj).intValue());</span>
+<span class="nc bnc" id="L277" title="All 2 branches missed.">                if (maybeSnapshotEpoch.isEmpty()) {</span>
+<span class="nc" id="L278">                    return Either.left(</span>
+<span class="nc" id="L279">                            Problem.builder()</span>
+<span class="nc" id="L280">                                    .withTitle(&quot;INVALID_EVENT_REGISTRATION&quot;)</span>
+<span class="nc" id="L281">                                    .withDetail(&quot;Invalid event registration event, missing snapshotEpoch field.&quot;)</span>
+<span class="nc" id="L282">                                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L283">                                    .build()</span>
+                    );
+                }
+
+<span class="nc" id="L287">                var maybeProposalsRevealEpoch = Optional.ofNullable(payload.get(&quot;proposalsRevealEpoch&quot;)).map(obj -&gt; ((BigInteger) obj).intValue());</span>
+
+<span class="nc bnc" id="L289" title="All 2 branches missed.">                if (maybeProposalsRevealEpoch.isEmpty()) {</span>
+<span class="nc" id="L290">                    log.info(&quot;proposalsRevealEpoch for event:{} is not available, setting it to endEpoch&quot;, name);</span>
+
+<span class="nc" id="L292">                    maybeProposalsRevealEpoch = Optional.of(maybeEndEpoch.orElseThrow());</span>
+                } else {
+<span class="nc" id="L294">                    log.info(&quot;proposalsRevealEpoch for event:{} is available, setting it to {}&quot;, name, maybeProposalsRevealEpoch.orElseThrow());</span>
+                }
+
+<span class="nc bnc" id="L297" title="All 2 branches missed.">                if (maybeStartEpoch.orElseThrow() &gt; maybeEndEpoch.orElseThrow()) {</span>
+<span class="nc" id="L298">                    return Either.left(</span>
+<span class="nc" id="L299">                            Problem.builder()</span>
+<span class="nc" id="L300">                                    .withTitle(&quot;INVALID_EVENT_REGISTRATION&quot;)</span>
+<span class="nc" id="L301">                                    .withDetail(&quot;Invalid event registration event, startEpoch must be less than endEpoch.&quot;)</span>
+<span class="nc" id="L302">                                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L303">                                    .build());</span>
+                }
+
+<span class="nc bnc" id="L306" title="All 2 branches missed.">                if (isSnapshotBoundCheck) {</span>
+<span class="nc bnc" id="L307" title="All 2 branches missed.">                    if (maybeSnapshotEpoch.orElseThrow() &gt;= maybeStartEpoch.orElseThrow()) {</span>
+<span class="nc" id="L308">                        return Either.left(</span>
+<span class="nc" id="L309">                                Problem.builder()</span>
+<span class="nc" id="L310">                                        .withTitle(&quot;INVALID_EVENT_REGISTRATION&quot;)</span>
+<span class="nc" id="L311">                                        .withDetail(&quot;Invalid event registration event, snapshotEpoch must be before startEpoch.&quot;)</span>
+<span class="nc" id="L312">                                        .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L313">                                        .build()</span>
+                        );
+                    }
+                }
+
+<span class="nc bnc" id="L318" title="All 2 branches missed.">                if (maybeProposalsRevealEpoch.orElseThrow() &lt; maybeEndEpoch.orElseThrow()) {</span>
+<span class="nc" id="L319">                    return Either.left(</span>
+<span class="nc" id="L320">                            Problem.builder()</span>
+<span class="nc" id="L321">                                    .withTitle(&quot;INVALID_EVENT_REGISTRATION&quot;)</span>
+<span class="nc" id="L322">                                    .withDetail(&quot;Invalid event registration event, proposalsRevealEpoch must be greater than equal endEpoch.&quot;)</span>
+<span class="nc" id="L323">                                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L324">                                    .build()</span>
+                    );
+                }
+
+<span class="nc" id="L328">                eventRegistrationEnvelopeBuilder.startEpoch(maybeStartEpoch);</span>
+<span class="nc" id="L329">                eventRegistrationEnvelopeBuilder.endEpoch(maybeEndEpoch);</span>
+<span class="nc" id="L330">                eventRegistrationEnvelopeBuilder.snapshotEpoch(maybeSnapshotEpoch);</span>
+<span class="nc" id="L331">                eventRegistrationEnvelopeBuilder.proposalsRevealEpoch(maybeProposalsRevealEpoch);</span>
+            }
+
+<span class="nc bnc" id="L334" title="All 2 branches missed.">            if (votingEventType == USER_BASED) {</span>
+<span class="nc" id="L335">                var maybeStartSlot = Optional.ofNullable(payload.get(&quot;startSlot&quot;)).map(obj -&gt; ((BigInteger) obj).longValue());</span>
+<span class="nc bnc" id="L336" title="All 2 branches missed.">                if (maybeStartSlot.isEmpty()) {</span>
+<span class="nc" id="L337">                    return Either.left(</span>
+<span class="nc" id="L338">                            Problem.builder()</span>
+<span class="nc" id="L339">                                    .withTitle(&quot;INVALID_EVENT_REGISTRATION&quot;)</span>
+<span class="nc" id="L340">                                    .withDetail(&quot;Invalid event registration event, missing startSlot field.&quot;)</span>
+<span class="nc" id="L341">                                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L342">                                    .build());</span>
+                }
+<span class="nc" id="L344">                var maybeEndSlot = Optional.ofNullable(payload.get(&quot;endSlot&quot;)).map(obj -&gt; ((BigInteger) obj).longValue());</span>
+<span class="nc bnc" id="L345" title="All 2 branches missed.">                if (maybeEndSlot.isEmpty()) {</span>
+<span class="nc" id="L346">                    return Either.left(</span>
+<span class="nc" id="L347">                            Problem.builder()</span>
+<span class="nc" id="L348">                                    .withTitle(&quot;INVALID_EVENT_REGISTRATION&quot;)</span>
+<span class="nc" id="L349">                                    .withDetail(&quot;Invalid event registration event, missing endSlot field.&quot;)</span>
+<span class="nc" id="L350">                                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L351">                                    .build());</span>
+                }
+
+<span class="nc" id="L354">                var maybeProposalsRevealSlot = Optional.ofNullable(payload.get(&quot;proposalsRevealSlot&quot;)).map(obj -&gt; ((BigInteger) obj).longValue());</span>
+
+<span class="nc bnc" id="L356" title="All 2 branches missed.">                if (maybeProposalsRevealSlot.isEmpty()) {</span>
+<span class="nc" id="L357">                    log.info(&quot;proposalsRevealSlot for event:{} is not available, setting it to endSlot&quot;, name);</span>
+
+<span class="nc" id="L359">                    maybeProposalsRevealSlot = Optional.of(maybeEndSlot.orElseThrow());</span>
+                } else {
+<span class="nc" id="L361">                    log.info(&quot;proposalsRevealSlot for event:{} is available, setting it to {}&quot;, name, maybeProposalsRevealSlot.orElseThrow());</span>
+                }
+
+<span class="nc bnc" id="L364" title="All 2 branches missed.">                if (maybeEndSlot.orElseThrow() &lt; maybeStartSlot.orElseThrow()) {</span>
+<span class="nc" id="L365">                    return Either.left(</span>
+<span class="nc" id="L366">                            Problem.builder()</span>
+<span class="nc" id="L367">                                    .withTitle(&quot;INVALID_EVENT_REGISTRATION&quot;)</span>
+<span class="nc" id="L368">                                    .withDetail(&quot;Invalid event registration event, startSlot must be less than endSlot.&quot;)</span>
+<span class="nc" id="L369">                                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L370">                                    .build()</span>
+                    );
+                }
+
+<span class="nc bnc" id="L374" title="All 2 branches missed.">                if (maybeProposalsRevealSlot.orElseThrow() &lt; maybeEndSlot.orElseThrow()) {</span>
+<span class="nc" id="L375">                    return Either.left(</span>
+<span class="nc" id="L376">                            Problem.builder()</span>
+<span class="nc" id="L377">                                    .withTitle(&quot;INVALID_EVENT_REGISTRATION&quot;)</span>
+<span class="nc" id="L378">                                    .withDetail(&quot;Invalid event registration event, proposalsRevealSlot must be greater than equal endSlot.&quot;)</span>
+<span class="nc" id="L379">                                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L380">                                    .build()</span>
+                    );
+                }
+
+<span class="nc" id="L384">                eventRegistrationEnvelopeBuilder.startSlot(maybeStartSlot);</span>
+<span class="nc" id="L385">                eventRegistrationEnvelopeBuilder.endSlot(maybeEndSlot);</span>
+<span class="nc" id="L386">                eventRegistrationEnvelopeBuilder.proposalsRevealSlot(maybeProposalsRevealSlot);</span>
+            }
+
+<span class="nc" id="L389">            var maybeOptions = Optional.ofNullable((CBORMetadataMap) payload.get(&quot;options&quot;));</span>
+<span class="nc bnc" id="L390" title="All 2 branches missed.">            if (maybeOptions.isEmpty()) {</span>
+<span class="nc" id="L391">                return Either.left(</span>
+<span class="nc" id="L392">                        Problem.builder()</span>
+<span class="nc" id="L393">                                .withTitle(&quot;INVALID_EVENT_REGISTRATION&quot;)</span>
+<span class="nc" id="L394">                                .withDetail(&quot;Invalid event registration event, missing options field.&quot;)</span>
+<span class="nc" id="L395">                                .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L396">                                .build());</span>
+            }
+<span class="nc" id="L398">            var options = maybeOptions.orElseThrow();</span>
+
+<span class="nc" id="L400">            eventRegistrationEnvelopeBuilder.allowVoteChanging(fromBigInteger(((BigInteger)options.get(&quot;allowVoteChanging&quot;))).orElse(false));</span>
+
+<span class="nc" id="L402">            eventRegistrationEnvelopeBuilder.highLevelEventResultsWhileVoting(fromBigInteger(((BigInteger)options.get(&quot;highLevelEventResultsWhileVoting&quot;))).orElse(false));</span>
+<span class="nc" id="L403">            eventRegistrationEnvelopeBuilder.highLevelCategoryResultsWhileVoting(fromBigInteger(((BigInteger)options.get(&quot;highLevelCategoryResultsWhileVoting&quot;))).orElse(false));</span>
+<span class="nc" id="L404">            eventRegistrationEnvelopeBuilder.categoryResultsWhileVoting(fromBigInteger(((BigInteger)options.get(&quot;categoryResultsWhileVoting&quot;))).orElse(false));</span>
+
+<span class="nc" id="L406">            eventRegistrationEnvelopeBuilder.schemaVersion((String)payload.get(&quot;schemaVersion&quot;));</span>
+
+<span class="nc" id="L408">            return Either.right(eventRegistrationEnvelopeBuilder.build());</span>
+<span class="nc" id="L409">        } catch (Exception e) {</span>
+<span class="nc" id="L410">            return Either.left(</span>
+<span class="nc" id="L411">                    Problem.builder()</span>
+<span class="nc" id="L412">                            .withTitle(&quot;INVALID_EVENT_REGISTRATION&quot;)</span>
+<span class="nc" id="L413">                            .withDetail(&quot;Invalid event registration event&quot;)</span>
+<span class="nc" id="L414">                            .withStatus(INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L415">                            .withDetail(e.getMessage())</span>
+<span class="nc" id="L416">                            .build());</span>
+
+        }
+    }
+
+    private static List&lt;ProposalEnvelope&gt; readProposalsEnvelope(CBORMetadataList proposalsNode,
+                                                                boolean isGdprProtection) {
+<span class="nc" id="L423">        var proposals = new ArrayList&lt;ProposalEnvelope&gt;();</span>
+
+<span class="nc bnc" id="L425" title="All 2 branches missed.">        for (int i = 0; i &lt; proposalsNode.size(); i++) {</span>
+<span class="nc" id="L426">            var proposalCborMap = (CBORMetadataMap) proposalsNode.getValueAt(i);</span>
+
+<span class="nc" id="L428">            var proposalEnvelopeBuilder = ProposalEnvelope.builder()</span>
+<span class="nc" id="L429">                    .id((String) proposalCborMap.get(&quot;id&quot;));</span>
+
+<span class="nc bnc" id="L431" title="All 2 branches missed.">            if (!isGdprProtection) {</span>
+<span class="nc" id="L432">                proposalEnvelopeBuilder.name((String) proposalCborMap.get(&quot;name&quot;));</span>
+            }
+
+<span class="nc" id="L435">            proposals.add(proposalEnvelopeBuilder.build());</span>
+        }
+
+<span class="nc" id="L438">        return proposals;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

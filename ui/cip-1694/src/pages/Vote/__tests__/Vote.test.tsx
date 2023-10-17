@@ -697,6 +697,76 @@ describe('For ongoing event:', () => {
     );
   });
 
+  test('should show proper error if failed to submit vote due to VOTE_CANNOT_BE_CHANGED error', async () => {
+    const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
+
+    mockUseCardano.mockReset();
+    mockUseCardano.mockReturnValue({
+      ...useCardanoMock,
+      stakeAddress: 'stakeAddress',
+      signMessage: mockSignMessage,
+    });
+    mockGetSignedMessagePromise.mockReset();
+    mockGetSignedMessagePromise.mockImplementation(
+      (signMessage: (message: string) => string) => async (message: string) => await signMessage(message)
+    );
+    const error = { message: 'VOTE_CANNOT_BE_CHANGED' };
+    mockCastAVoteWithDigitalSignature.mockReset();
+    mockCastAVoteWithDigitalSignature.mockImplementation(async () => await Promise.reject(error));
+    mockBuildCanonicalVoteInputJson.mockReset();
+    mockBuildCanonicalVoteInputJson.mockReturnValue(canonicalVoteInputJsonMock);
+    mockGetVotingPower.mockReset();
+    mockGetVotingPower.mockResolvedValue(accountDataMock);
+    mockGetUserInSession.mockReset();
+    mockGetUserInSession.mockReturnValue(null);
+
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
+
+    await act(async () => {
+      renderWithProviders(
+        <CustomRouter history={history}>
+          <VotePage />
+        </CustomRouter>,
+        { preloadedState: { user: { event: eventMock_active, tip: chainTipMock } as UserState } }
+      );
+    });
+
+    const votePage = screen.queryByTestId('vote-page');
+    expect(screen.queryByTestId('confirm-with-signature-modal')).toBeInTheDocument();
+
+    await act(async () => {
+      fireEvent.click(
+        within(screen.queryByTestId('confirm-with-signature-modal')).queryByTestId('confirm-with-signature-close')
+      );
+    });
+
+    await waitFor(async () => {
+      expect(screen.queryByTestId('confirm-with-signature-modal')).not.toBeInTheDocument();
+    });
+
+    const options = within(votePage).queryAllByTestId('option-card');
+
+    await act(async () => {
+      fireEvent.click(options[0]);
+    });
+
+    const cta = within(votePage).queryByTestId('proposal-submit-button');
+
+    await act(async () => {
+      fireEvent.click(cta);
+    });
+    expect(mockToast).toBeCalledWith(
+      <Toast
+        message={errorsMap['VOTE_CANNOT_BE_CHANGED']('stakeAddress')}
+        error
+        icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
+      />
+    );
+    await waitFor(async () => {
+      expect(screen.queryByTestId('confirm-with-signature-modal')).toBeInTheDocument();
+    });
+  });
+
   test('should ask to fetch receipt and display proper state if present and user session is active', async () => {
     const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
     mockGetVoteReceipt.mockReset();

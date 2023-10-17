@@ -43,6 +43,10 @@ jest.mock('swiper', () => ({
 jest.mock('@cardano-foundation/cardano-connect-with-wallet', () => {
   return {
     useCardano: mockUseCardano,
+    NetworkType: {
+      MAINNET: 'mainnet',
+      TESTNET: 'testnet',
+    },
     getWalletIcon: () => <span data-testid="getWalletIcon" />,
     ConnectWalletList: () => {
       return <span data-testid="ConnectWalletList" />;
@@ -61,6 +65,7 @@ jest.mock('../../../env', () => {
       ...original.env,
       CATEGORY_ID: 'CHANGE_GOV_STRUCTURE',
       EVENT_ID: 'CIP-1694_Pre_Ratification_3316',
+      TARGET_NETWORK: 'Preprod',
     },
   };
 });

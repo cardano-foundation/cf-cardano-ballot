@@ -15,7 +15,7 @@ jest.mock('../../../env', () => {
       ...original.env,
       CATEGORY_ID: 'CHANGE_GOV_STRUCTURE',
       EVENT_ID: 'CIP-1694_Pre_Ratification_3316',
-      TARGET_NETWORK: 'PREVIEW',
+      TARGET_NETWORK: 'Preprod',
     },
   };
 });
@@ -38,7 +38,7 @@ describe('voteUtils: ', () => {
         category: 'CHANGE_GOV_STRUCTURE',
       })
     ).toEqual(
-      '{"action":"CAST_VOTE","actionText":"Cast Vote","data":{"address":"stake_test1uqwcz0754wwpuhm6xhdpda6u9enyahaj5ynlc9ay5l4mlms4pyqyg","category":"CHANGE_GOV_STRUCTURE","event":"CIP-1694_Pre_Ratification_3316","id":"mockv4","network":"PREVIEW","proposal":"YES","votedAt":"36004360","votingPower":"9997463457"},"slot":"36004360","uri":"https://evoting.cardano.org/voltaire"}'
+      '{"action":"CAST_VOTE","actionText":"Cast Vote","data":{"address":"stake_test1uqwcz0754wwpuhm6xhdpda6u9enyahaj5ynlc9ay5l4mlms4pyqyg","category":"CHANGE_GOV_STRUCTURE","event":"CIP-1694_Pre_Ratification_3316","id":"mockv4","network":"Preprod","proposal":"YES","votedAt":"36004360","votingPower":"9997463457"},"slot":"36004360","uri":"https://evoting.cardano.org/voltaire"}'
     );
   });
 

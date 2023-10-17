@@ -18,6 +18,10 @@ import { formatUTCDate } from 'common/utils/dateUtils';
 jest.mock('@cardano-foundation/cardano-connect-with-wallet', () => {
   return {
     useCardano: mockUseCardano,
+    NetworkType: {
+      MAINNET: 'mainnet',
+      TESTNET: 'testnet',
+    },
     getWalletIcon: () => <span data-testid="getWalletIcon" />,
     ConnectWalletList: () => {
       return <span data-testid="ConnectWalletList" />;

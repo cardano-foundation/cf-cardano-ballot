@@ -16,6 +16,7 @@ import { UserState } from 'common/store/types';
 import { ROUTES } from 'common/routes';
 import { Toast } from 'components/common/Toast/Toast';
 import { USER_SESSION_KEY } from 'common/utils/session';
+import { useCardanoMock } from 'test/mocks';
 import { Content } from '../Content';
 import { renderWithProviders } from '../../../../test/mockProviders';
 import { CustomRouter } from '../../../../test/CustomRouter';
@@ -55,12 +56,19 @@ jest.mock('../../../../env', () => {
       CATEGORY_ID: 'CHANGE_GOV_STRUCTURE',
       EVENT_ID: 'CIP-1694_Pre_Ratification_3316',
       SUPPORTED_WALLETS: mockSupportedWallets,
+      TARGET_NETWORK: 'Preprod',
     },
   };
 });
 
 jest.mock('@cardano-foundation/cardano-connect-with-wallet', () => ({
-  useCardano: jest.fn(),
+  useCardano: jest.fn(() => ({
+    installedExtensions: useCardanoMock.installedExtensions,
+  })),
+  NetworkType: {
+    MAINNET: 'mainnet',
+    TESTNET: 'testnet',
+  },
   getWalletIcon: () => <span data-testid="getWalletIcon" />,
   ConnectWalletList: mockConnectWalletList,
   ConnectWalletButton: () => {

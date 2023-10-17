@@ -44,6 +44,10 @@ jest.mock('@textea/json-viewer', () => ({
 
 jest.mock('@cardano-foundation/cardano-connect-with-wallet', () => ({
   useCardano: jest.fn(),
+  NetworkType: {
+    MAINNET: 'mainnet',
+    TESTNET: 'testnet',
+  },
   getWalletIcon: () => <span data-testid="getWalletIcon" />,
   ConnectWalletList: () => {
     return <span data-testid="connected-wallet-list" />;

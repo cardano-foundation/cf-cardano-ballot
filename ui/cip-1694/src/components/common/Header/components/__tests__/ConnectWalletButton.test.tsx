@@ -37,6 +37,10 @@ Object.defineProperty(window, 'sessionStorage', {
 
 jest.mock('@cardano-foundation/cardano-connect-with-wallet', () => ({
   useCardano: mockUseCardano,
+  NetworkType: {
+    MAINNET: 'mainnet',
+    TESTNET: 'testnet',
+  },
   getWalletIcon: () => <span data-testid="getWalletIcon" />,
   ConnectWalletList: () => {
     return <span data-testid="connect-wallet-list" />;
@@ -64,6 +68,7 @@ describe('ConnectWalletButton', () => {
 
   test('should display toast if no wallets provided', async () => {
     envFile.env.SUPPORTED_WALLETS = [];
+    envFile.env.TARGET_NETWORK = 'Preprod';
     const history = createMemoryHistory({ initialEntries: [ROUTES.INTRO] });
     renderWithProviders(
       <CustomRouter history={history}>
@@ -84,6 +89,7 @@ describe('ConnectWalletButton', () => {
   });
 
   test('should handle onConnect', async () => {
+    envFile.env.TARGET_NETWORK = 'Preprod';
     ConnectWalletButtonMock.mockReset();
     ConnectWalletButtonMock.mockImplementation(({ onConnect }: { onConnect: () => void }) => {
       useEffect(() => {
@@ -107,6 +113,7 @@ describe('ConnectWalletButton', () => {
   });
 
   test('should handle onDisconnect', async () => {
+    envFile.env.TARGET_NETWORK = 'Preprod';
     const connectedWallet = 'connectedWallet';
     ConnectWalletButtonMock.mockReset();
     ConnectWalletButtonMock.mockImplementation(({ onDisconnect }: { onDisconnect: () => void }) => {

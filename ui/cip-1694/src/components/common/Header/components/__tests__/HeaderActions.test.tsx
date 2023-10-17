@@ -21,6 +21,10 @@ import { HeaderActions } from '../HeaderActions';
 
 jest.mock('@cardano-foundation/cardano-connect-with-wallet', () => ({
   useCardano: mockUseCardano,
+  NetworkType: {
+    MAINNET: 'mainnet',
+    TESTNET: 'testnet',
+  },
   getWalletIcon: () => <span data-testid="getWalletIcon" />,
   ConnectWalletList: () => {
     return <span data-testid="connect-wallet-list" />;
@@ -47,6 +51,17 @@ jest.mock('common/api/voteService', () => ({
   ...jest.requireActual('common/api/voteService'),
   getChainTip: mockGetChainTip,
 }));
+
+jest.mock('../../../../../env', () => {
+  const original = jest.requireActual('../../../../../env');
+  return {
+    ...original,
+    env: {
+      ...original.env,
+      TARGET_NETWORK: 'Preprod',
+    },
+  };
+});
 
 describe('HeaderActions', () => {
   beforeEach(() => {

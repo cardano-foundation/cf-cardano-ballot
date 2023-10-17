@@ -29,6 +29,10 @@ import { Header } from '../Header';
 
 jest.mock('@cardano-foundation/cardano-connect-with-wallet', () => ({
   useCardano: mockUseCardano,
+  NetworkType: {
+    MAINNET: 'mainnet',
+    TESTNET: 'testnet',
+  },
   getWalletIcon: () => <span data-testid="getWalletIcon" />,
   ConnectWalletList: () => {
     return <span data-testid="connect-wallet-list" />;
@@ -58,6 +62,7 @@ jest.mock('../../../../env', () => {
     ...original,
     env: {
       ...original.env,
+      TARGET_NETWORK: 'Preprod',
       SUPPORTED_WALLETS: mockSupportedWallets,
     },
   };

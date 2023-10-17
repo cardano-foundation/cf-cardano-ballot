@@ -16,15 +16,20 @@ import { setConnectedWallet, setIsConnectWalletModalVisible } from 'common/store
 import { Toast } from 'components/common/Toast/Toast';
 import { RootState } from 'common/store';
 import { clearUserInSessionStorage } from 'common/utils/session';
+import { resolveCardanoNetwork } from 'common/utils/common';
 import styles from './ConnectWalletButton.module.scss';
 import { env } from '../../../../env';
 
 export const ConnectWalletButton = ({ isMobileMenu = false }) => {
-  const { disconnect, stakeAddress, enabledWallet } = useCardano();
+  const { disconnect, stakeAddress, enabledWallet, installedExtensions } = useCardano({
+    limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
+  });
   const dispatch = useDispatch();
   const connectedWallet = useSelector((state: RootState) => state.user.connectedWallet);
 
-  const supportedWallets = env.SUPPORTED_WALLETS;
+  const supportedWallets = installedExtensions.filter((installedWallet) =>
+    env.SUPPORTED_WALLETS.includes(installedWallet)
+  );
 
   // TODO: move to providers level and throw?
   useEffect(() => {
@@ -72,6 +77,7 @@ export const ConnectWalletButton = ({ isMobileMenu = false }) => {
     </Button>
   ) : (
     <CFConnectWalletButton
+      showUnavailableWallets={0}
       data-testid="connected-wallet-button"
       label="Connect wallet"
       borderRadius={8}
@@ -99,12 +105,12 @@ export const ConnectWalletButton = ({ isMobileMenu = false }) => {
         }
         span {
           color: #F5F9FF;
-          background: #061D3C;
+          background: #1D439B;
           border-radius: 8px;
           padding: 0 25px;
           : hover {
             color: #F5F9FF;
-            background: #061D3C;
+            background: #1D439B;
           }
         }
         span, button {

@@ -49,6 +49,7 @@ describe('ConnectWalletModal', () => {
     onConnectWallet: jest.fn(),
     onConnectWalletError: jest.fn(),
     onCloseFn: jest.fn(),
+    installedExtensions: ['Wallet1', 'Wallet2'],
   };
 
   test('should display proper state', async () => {

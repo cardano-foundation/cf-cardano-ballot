@@ -5,10 +5,9 @@ import com.bloxbean.cardano.client.common.model.Networks;
 import com.bloxbean.cardano.client.exception.CborSerializationException;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
-import org.cardanofoundation.hydra.cardano.client.lib.CardanoOperator;
-import org.cardanofoundation.hydra.cardano.client.lib.CardanoOperatorSupplier;
-import org.cardanofoundation.hydra.cardano.client.lib.JacksonClasspathSecretKeyCardanoOperatorSupplier;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.cardanofoundation.hydra.cardano.client.lib.wallet.CardanoOperator;
+import org.cardanofoundation.hydra.cardano.client.lib.wallet.CardanoOperatorSupplier;
+import org.cardanofoundation.hydra.cardano.client.lib.wallet.JacksonClasspathSecretKeyCardanoOperatorSupplier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,8 +34,7 @@ public class CardanoConfig {
     }
 
     @Bean
-    public CardanoOperator l1CardanoOperator(//@Qualifier("l1-operator-supplier")
-                                             CardanoOperatorSupplier cardanoOperatorSupplier) {
+    public CardanoOperator l1CardanoOperator(CardanoOperatorSupplier cardanoOperatorSupplier) {
         var op =  cardanoOperatorSupplier.getOperator();
 
         log.info("L1 operator address: {}", op.getAddress());

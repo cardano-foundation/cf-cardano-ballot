@@ -7,10 +7,10 @@ import java.util.Set;
 
 public interface VoteRepository {
 
-    List<Vote> findAllVotes(String eventId);
+    List<Vote> findAllVotes(byte[] eventId);
 
-    List<Vote> findAllVotes(String eventId, String categoryId);
+    List<Vote> findAllVotes(byte[] eventId, byte[] categoryId);
 
-    Set<String> getAllUniqueCategories(String eventId);
+    Set<String> getAllUniqueCategories(byte[] eventId);
 
 }

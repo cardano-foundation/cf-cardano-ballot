@@ -11,9 +11,11 @@ import com.bloxbean.cardano.client.plutus.spec.*;
 import com.bloxbean.cardano.client.transaction.spec.Transaction;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.google.common.hash.Hashing;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.cardanofoundation.hydra.core.utils.HexUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
@@ -56,13 +58,15 @@ public class PlutusScriptLoader {
         this.parametrisedCompiledTemplate = validatorsNode.get(0).get("compiledCode").asText();
 
         log.info("Contract Template Loaded: {}", parametrisedCompiledTemplate);
+        log.info("Contract Hash: {}", HexUtils.encodeHexString(Hashing.md5().hashBytes(parametrisedCompiledTemplate.getBytes()).asBytes()));
     }
 
     public String getContractAddress(PlutusScript plutusScript) {
         return getEntAddress(plutusScript, network).toBech32();
     }
 
-    public PlutusScript getContract(String eventId, String categoryId) {
+    public PlutusScript getContract(byte[] eventId,
+                                    byte[] categoryId) {
         val params = ListPlutusData.of(
                 BytesPlutusData.of(eventId),
                 BytesPlutusData.of(categoryId)

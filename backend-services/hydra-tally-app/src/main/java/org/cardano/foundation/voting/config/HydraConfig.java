@@ -3,10 +3,10 @@ package org.cardano.foundation.voting.config;
 import com.bloxbean.cardano.client.api.ProtocolParamsSupplier;
 import com.bloxbean.cardano.client.api.UtxoSupplier;
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.service.HydraTxSubmissionService;
-import org.cardano.foundation.voting.service.TransactionSubmissionService;
-import org.cardanofoundation.hydra.cardano.client.lib.HydraNodeProtocolParametersAdapter;
-import org.cardanofoundation.hydra.cardano.client.lib.SnapshotUTxOSupplier;
+import org.cardano.foundation.voting.service.ReactiveWebSocketHydraTxSubmissionService;
+import org.cardanofoundation.hydra.cardano.client.lib.params.HydraNodeProtocolParametersAdapter;
+import org.cardanofoundation.hydra.cardano.client.lib.submit.TransactionSubmissionService;
+import org.cardanofoundation.hydra.cardano.client.lib.utxo.SnapshotUTxOSupplier;
 import org.cardanofoundation.hydra.core.store.InMemoryUTxOStore;
 import org.cardanofoundation.hydra.core.store.UTxOStore;
 import org.cardanofoundation.hydra.reactor.HydraReactiveClient;
@@ -56,7 +56,7 @@ public class HydraConfig {
     @Bean
     @Qualifier("hydra-transaction-submission-service")
     public TransactionSubmissionService hydraTransactionSubmissionService(HydraReactiveClient hydraReactiveClient) {
-        return new HydraTxSubmissionService(hydraReactiveClient);
+        return new ReactiveWebSocketHydraTxSubmissionService(hydraReactiveClient);
     }
 
 }

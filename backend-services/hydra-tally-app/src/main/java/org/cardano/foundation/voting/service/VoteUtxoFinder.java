@@ -1,15 +1,16 @@
 package org.cardano.foundation.voting.service;
 
 import com.bloxbean.cardano.client.api.UtxoSupplier;
+import com.bloxbean.cardano.client.exception.CborSerializationException;
+import com.bloxbean.cardano.client.util.HexUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.cardano.foundation.voting.domain.CategoryResultsDatum;
 import org.cardano.foundation.voting.domain.UTxOCategoryResult;
 import org.cardano.foundation.voting.domain.UTxOVote;
-import org.cardano.foundation.voting.domain.VoteDatum;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static com.bloxbean.cardano.client.util.HexUtil.decodeHexString;
@@ -24,9 +25,11 @@ public class VoteUtxoFinder {
 
     private final UtxoSupplier utxoSupplier;
     private final PlutusScriptLoader plutusScriptLoader;
+    private final org.cardano.foundation.voting.domain.VoteDatumConverter voteDatumConverter;
+    private final org.cardano.foundation.voting.domain.CategoryResultsDatumConverter categoryResultsDatumConverter;
 
-    public List<UTxOVote> getUtxosWithVotes(String eventId,
-                                            String contractCategoryId,
+    public List<UTxOVote> getUtxosWithVotes(byte[] eventId,
+                                            byte[] contractCategoryId,
                                             int batchSize) {
         val contract = plutusScriptLoader.getContract(eventId, contractCategoryId);
         val contractAddress = plutusScriptLoader.getContractAddress(contract);
@@ -35,19 +38,24 @@ public class VoteUtxoFinder {
                 .parallelStream()
                 .filter(utxo -> hasLength(utxo.getInlineDatum()))
                 .map(utxo -> {
-                    val voteDatumE = VoteDatum.deserialize(decodeHexString(utxo.getInlineDatum()));
+                    try {
+                        val voteDatum = voteDatumConverter.deserialize(utxo.getInlineDatum());
 
-                    return new UTxOVote(utxo, voteDatumE.orElse(null));
+                        return new UTxOVote(utxo, voteDatum);
+                    } catch (Exception e) {
+                        return new UTxOVote(utxo, null);
+                    }
+
                 })
                 .filter(uTxOVote -> uTxOVote.voteDatum() != null)
-                .filter(uTxOVote -> uTxOVote.voteDatum().getCategoryId().equals(contractCategoryId))
+                .filter(uTxOVote -> Arrays.equals(uTxOVote.voteDatum().getCategoryId(), contractCategoryId))
                 .sorted(createVoteTxHashAndTransactionIndexComparator())
                 .limit(batchSize)
                 .toList();
     }
 
-    public List<UTxOCategoryResult> getUtxosWithCategoryResults(String eventId,
-                                                                String contractCategoryId,
+    public List<UTxOCategoryResult> getUtxosWithCategoryResults(byte[] eventId,
+                                                                byte[] contractCategoryId,
                                                                 int batchSize) {
         val contract = plutusScriptLoader.getContract(eventId, contractCategoryId);
         val contractAddress = plutusScriptLoader.getContractAddress(contract);
@@ -59,12 +67,12 @@ public class VoteUtxoFinder {
                     val inlineDatum = utxo.getInlineDatum();
                     val inlineDatumHex = decodeHexString(inlineDatum);
 
-                    val categoryResultsDatumM = CategoryResultsDatum.deserialize(inlineDatumHex);
+                    val categoryResultsDatum = categoryResultsDatumConverter.deserialize(inlineDatumHex);
 
-                    return new UTxOCategoryResult(utxo, categoryResultsDatumM.fold(problem -> null, v -> v.orElse(null)));
+                    return new UTxOCategoryResult(utxo, categoryResultsDatum);
                 })
                 .filter(uTxOCategoryResult -> uTxOCategoryResult.categoryResultsDatum() != null)
-                .filter(uTxOCategoryResult -> uTxOCategoryResult.categoryResultsDatum().getCategoryId().equals(contractCategoryId))
+                .filter(uTxOCategoryResult -> Arrays.equals(uTxOCategoryResult.categoryResultsDatum().getCategoryId(), contractCategoryId))
                 .sorted(createCategoryResultTxHashAndTransactionIndexComparator())
                 .limit(batchSize)
                 .toList();

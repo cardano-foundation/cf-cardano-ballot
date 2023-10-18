@@ -2,7 +2,6 @@ package org.cardano.foundation.voting.service;
 
 import com.bloxbean.cardano.client.api.ProtocolParamsSupplier;
 import com.bloxbean.cardano.client.api.UtxoSupplier;
-import com.bloxbean.cardano.client.api.exception.ApiException;
 import com.bloxbean.cardano.client.api.model.Amount;
 import com.bloxbean.cardano.client.api.model.Utxo;
 import com.bloxbean.cardano.client.coinselection.impl.LargestFirstUtxoSelectionStrategy;
@@ -13,27 +12,26 @@ import com.bloxbean.cardano.client.function.helper.CollateralBuilders;
 import com.bloxbean.cardano.client.function.helper.InputBuilders;
 import com.bloxbean.cardano.client.function.helper.ScriptCallContextProviders;
 import com.bloxbean.cardano.client.function.helper.model.ScriptCallContext;
-import com.bloxbean.cardano.client.plutus.api.PlutusObjectConverter;
 import com.bloxbean.cardano.client.plutus.spec.ExUnits;
 import com.bloxbean.cardano.client.plutus.spec.PlutusV2Script;
+import com.bloxbean.cardano.client.util.JsonUtil;
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardano.foundation.voting.domain.CategoryResultsDatum;
+import org.cardano.foundation.voting.domain.CategoryResultsDatumConverter;
 import org.cardano.foundation.voting.domain.CreateVoteBatchRedeemer;
 import org.cardano.foundation.voting.domain.UTxOVote;
 import org.cardano.foundation.voting.utils.BalanceUtil;
-import org.cardanofoundation.hydra.cardano.client.lib.CardanoOperatorSupplier;
+import org.cardanofoundation.hydra.cardano.client.lib.submit.TransactionSubmissionService;
+import org.cardanofoundation.hydra.cardano.client.lib.wallet.CardanoOperatorSupplier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.zalando.problem.Problem;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static com.bloxbean.cardano.client.common.ADAConversionUtil.adaToLovelace;
 import static com.bloxbean.cardano.client.common.CardanoConstants.LOVELACE;
@@ -59,18 +57,21 @@ public class HydraVoteBatcher {
     private TransactionSubmissionService transactionProcessor;
 
     @Autowired
-    //@Qualifier("hydra-operator-supplier")
     private CardanoOperatorSupplier cardanoOperatorSupplier;
 
     @Autowired
     private PlutusScriptLoader plutusScriptLoader;
 
     @Autowired
-    private PlutusObjectConverter plutusObjectConverter;
+    private CategoryResultsDatumConverter categoryResultsDatumConverter;
 
-    public void batchVotesPerCategory(String contractEventId,
-                                      String contractCategoryId,
-                                      int batchSize) throws CborSerializationException, ApiException {
+    @Autowired
+    private org.cardano.foundation.voting.domain.CreateVoteBatchRedeemerConverter createVoteBatchRedeemerConverter;
+
+
+    public void batchVotesPerCategory(byte[] contractEventId,
+                                      byte[] contractCategoryId,
+                                      int batchSize) throws CborSerializationException {
         val contract = plutusScriptLoader.getContract(contractEventId, contractCategoryId);
         val contractAddress = plutusScriptLoader.getContractAddress(contract);
 
@@ -100,12 +101,18 @@ public class HydraVoteBatcher {
     }
 
     private Either<Problem, Optional<String>> createAndPostBatchTransaction(
-            String contractEventId,
-            String contractCategoryId,
+            byte[] contractEventId,
+            byte[] contractCategoryId,
             int batchSize)
-            throws CborSerializationException, ApiException {
+            throws CborSerializationException {
 
         val utxosWithVotes = voteUtxoFinder.getUtxosWithVotes(contractEventId, contractCategoryId, batchSize);
+
+        for (val utxoWithVote : utxosWithVotes) {
+            val voteDatum = utxoWithVote.voteDatum();
+
+            System.out.println(JsonUtil.getPrettyJson(voteDatum));
+        }
 
         log.info("Found votes[UTxOs]: {}", utxosWithVotes.size());
 
@@ -129,19 +136,21 @@ public class HydraVoteBatcher {
             val voteDatum = uTxOVote.voteDatum();
             val categoryId = voteDatum.getCategoryId();
 
-            if (contractCategoryId.equals(categoryId)) {
+            if (Arrays.equals(contractCategoryId, categoryId)) {
                 val proposalId = voteDatum.getProposalId();
 
                 categoryResultsDatum.add(proposalId, 1);
             }
         }
 
+        System.out.println(JsonUtil.getPrettyJson(categoryResultsDatum));
+
         val utxoSelectionStrategy = new LargestFirstUtxoSelectionStrategy(utxoSupplier);
         val outputAmount = new Amount(LOVELACE, adaToLovelace(1));
         val collateralUtxos = utxoSelectionStrategy.select(operatorAddress, outputAmount, emptySet());
 
         // Build the expected output
-        val outputDatum = plutusObjectConverter.toPlutusData(categoryResultsDatum);
+        val outputDatum = categoryResultsDatumConverter.toPlutusData(categoryResultsDatum);
         val output = Output.builder()
                 .address(contractAddress)
                 .datum(outputDatum)
@@ -173,7 +182,7 @@ public class HydraVoteBatcher {
                                 .steps(BigInteger.valueOf(0))
                                 .build()
                         )
-                        .redeemer(plutusObjectConverter.toPlutusData(CreateVoteBatchRedeemer.create()))
+                        .redeemer(createVoteBatchRedeemerConverter.toPlutusData(CreateVoteBatchRedeemer.create()))
                         .redeemerTag(Spend).build())
                 .toList();
 

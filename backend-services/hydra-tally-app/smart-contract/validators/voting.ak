@@ -1,72 +1,77 @@
 use acca/datums as adatums
+use acca/dict as adict
 use acca/hash.{PubKeyHash} as ahash
+use acca/string as astring
 use acca/validators
 use aiken/builtin
 use aiken/bytearray
+use aiken/cbor
 use aiken/dict.{Dict}
 use aiken/list
 use aiken/string
 use aiken/transaction.{InlineDatum, Input, Output, ScriptContext, Spend}
 
-// type Category =
-//   String
+type VoteId =
+  ByteArray
 
-// type Proposal =
-//   String
+type Category =
+  ByteArray
+
+type Proposal =
+  ByteArray
 
 type Redeemer {
   CreateVoteBatch
   ReduceVoteBatches
 }
 
-// type CategoryResultsDatum {
-//   category_id: String,
-//   results: Dict<Proposal, Int>,
-// }
+type CategoryResultsDatum {
+  category_id: ByteArray,
+  results: Dict<Proposal, Int>,
+}
 
-// type Vote {
-//   voter_key: PubKeyHash,
-//   category: Category,
-//   proposal: Proposal,
-// }
+type Vote {
+  vote_id: ByteArray,
+  voter_key: ByteArray,
+  category: ByteArray,
+  proposal: ByteArray,
+}
 
-// fn compare_proposal(left: Proposal, right: Proposal) -> Ordering {
-//   bytearray.compare(
-//     builtin.serialise_data(string.to_bytearray(left)),
-//     builtin.serialise_data(string.to_bytearray(right)),
-//   )
-// }
+fn compare_proposal(left: Proposal, right: Proposal) -> Ordering {
+  bytearray.compare(builtin.serialise_data(left), builtin.serialise_data(right))
+}
 
-validator(event_id: String, contract_category_id: String) {
-  fn voting(
-    _voting_datum: Void,
-    redeemer: Redeemer,
-    sc: ScriptContext,
-  ) -> Bool {
+validator(event_id: ByteArray, contract_category_id: ByteArray) {
+  fn voting(_voting_datum: Void, redeemer: Redeemer, sc: ScriptContext) -> Bool {
     // On L2 (Hydra) one will typically lock votes with 0 ADA but on L1 of course each eUTxO is guarded by ca. 1,7 ADA
-    //expect Spend(output_reference) = sc.purpose
+    expect Spend(output_reference) = sc.purpose
 
-    // let inputs: List<Input> = sc.transaction.inputs
-    // let outputs: List<Output> = sc.transaction.outputs
+    let inputs: List<Input> = sc.transaction.inputs
+    let outputs: List<Output> = sc.transaction.outputs
 
     when redeemer is {
-      CreateVoteBatch -> { 
-        True
-        // let votes: List<Vote> =
-        //   get_votes_from_inputs(contract_category_id, inputs)
-        // let results: Dict<Proposal, Int> = count_votes(votes)
+      CreateVoteBatch -> {
+        let votes: List<Vote> =
+          get_votes_from_inputs(contract_category_id, inputs)
 
+        //let results: Dict<Proposal, Int> = count_votes(votes)
+        // let sorted = adict.sort(results, astring.compare)
         // let on_chain_results =
-        //   CategoryResultsDatum { category_id: contract_category_id, results }
-        // and {
-        //   validators.any_output_contains_own_validator_address(
-        //     inputs,
-        //     outputs,
-        //     output_reference,
-        //   )?,
-        //   output_contains_final_result(sc.transaction.outputs, on_chain_results)?,
-        // }
+        //   CategoryResultsDatum { category_id: contract_category_id, results: sorted }
+        // trace @"on_chain_results:"
+        // trace cbor.diagnostic(on_chain_results)
+        and {
+          validators.any_output_contains_own_validator_address(
+            inputs,
+            outputs,
+            output_reference,
+          )?,
+          //(dict.size(results) > 0)?,
+          (list.length(votes) > 0)?,
+        }
       }
+      //(list.length(inputs) == list.length(votes))?,
+      //output_contains_final_result(sc.transaction.outputs, on_chain_results)?,
       ReduceVoteBatches -> True
     }
     // ReduceResults { off_chain_batch_hash } -> {
@@ -105,49 +110,59 @@ validator(event_id: String, contract_category_id: String) {
 
 // checks that one of the outputs contains
 // computed on chain results
-// fn output_contains_final_result(
-//   outputs: List<Output>,
-//   on_chain_results: CategoryResultsDatum,
-// ) -> Bool {
-//   let result_checker =
-//     fn(r: CategoryResultsDatum) { r == on_chain_results }
+fn output_contains_final_result(
+  outputs: List<Output>,
+  on_chain_results: CategoryResultsDatum,
+) -> Bool {
+  let result_checker =
+    fn(r: CategoryResultsDatum) { r == on_chain_results }
 
-//   let mapper =
-//     fn(output) {
-//       if adatums.is_inline_datum(output) {
-//         expect InlineDatum(off_chain_results_data) = output.datum
+  let mapper =
+    fn(output) {
+      if adatums.is_inline_datum(output) {
+        expect InlineDatum(off_chain_results_data) = output.datum
 
-//         expect off_chain_results: CategoryResultsDatum = off_chain_results_data
+        expect off_chain_results: CategoryResultsDatum = off_chain_results_data
 
-//         Some(off_chain_results)
-//       } else {
-//         None
-//       }
-//     }
+        Some(off_chain_results)
+      } else {
+        None
+      }
+    }
 
-//   list.filter_map(outputs, mapper)
-//     |> list.any(result_checker)
-// }
+  list.filter_map(outputs, mapper)
+    |> list.any(result_checker)
+}
 
 // fn get_votes_from_inputs(
-//   contract_category_id: String,
+//   contract_category_id: ByteArray,
 //   inputs: List<Input>,
 // ) -> List<Vote> {
-//   list.filter_map(
-//     inputs,
-//     fn(input) {
-//       if adatums.is_inline_datum(input.output) {
-//         expect InlineDatum(vote_data) = input.output.datum
-//         expect vote: Vote = vote_data
-
-//         Some(vote)
-//       } else {
-//         None
-//       }
-//     },
-//   )
-//     |> list.filter(fn(vote) { contract_category_id == vote.category })
+//   list.filter_map(inputs, fn(_input) { Some(Vote(#"", #"", #"", #"")) })
 // }
+
+fn get_votes_from_inputs(
+  contract_category_id: ByteArray,
+  inputs: List<Input>,
+) -> List<Vote> {
+  list.filter_map(
+    inputs,
+    fn(input) {
+      if adatums.is_inline_datum(input.output) {
+        expect InlineDatum(vote_data) = input.output.datum
+        expect vote: Vote = vote_data
+
+        if bytearray.compare(contract_category_id, vote.category) == Equal {
+          Some(vote)
+        } else {
+          None
+        }
+      } else {
+        None
+      }
+    },
+  )
+}
 
 // fn get_vote_results_from_inputs(inputs: List<Input>) -> List<ResultsBatchDatum> {
 //   list.filter_map(
@@ -184,26 +199,32 @@ validator(event_id: String, contract_category_id: String) {
 //   list.reduce(dict_list_with_results, merging_fn, dict.new())
 // }
 
-// fn do_count_votes(
-//   votes: List<Vote>,
-//   acc: Dict<Proposal, Int>,
-// ) -> Dict<Proposal, Int> {
-//   when votes is {
-//     [] -> acc
-//     [h, ..t] -> {
-//       let p: Proposal = h.proposal
-//       dict.union_with(
-//         left: do_count_votes(t, acc),
-//         right: dict.insert(
-//           self: dict.new(),
-//           key: p,
-//           value: 1,
-//           compare: compare_proposal,
-//         ),
-//         with: results_conflict_resolver,
-//         compare: compare_proposal,
-//       )
-//     }
-//   }
-// }
+fn count_votes(votes: List<Vote>) -> Dict<Proposal, Int> {
+  let empty = dict.new()
 
+  do_count_votes(votes, empty)
+}
+
+fn do_count_votes(
+  votes: List<Vote>,
+  acc: Dict<Proposal, Int>,
+) -> Dict<Proposal, Int> {
+  when votes is {
+    [] -> acc
+    [h, ..t] -> {
+      let p: Proposal = h.proposal
+      dict.union_with(
+        left: do_count_votes(t, acc),
+        right: dict.insert(
+          self: dict.new(),
+          key: p,
+          value: 1,
+          compare: compare_proposal,
+        ),
+        with: fn(_key, a, b) { Some(a + b) },
+        compare: compare_proposal,
+      )
+    }
+  }
+}
+//   with: fn(key, value, value) -> Option<value>,

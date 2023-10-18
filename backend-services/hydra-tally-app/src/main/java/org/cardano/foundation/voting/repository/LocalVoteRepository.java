@@ -10,11 +10,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
 
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.nio.charset.StandardCharsets.US_ASCII;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -31,7 +30,7 @@ public class LocalVoteRepository implements VoteRepository {
 
     @PostConstruct
     public void init() {
-        this.allCategories = findAllVotes(ballotEventId)
+        this.allCategories = findAllVotes(ballotEventId.getBytes(US_ASCII))
                 .parallelStream()
                 .map(Vote::categoryId)
                 .collect(Collectors.toSet());
@@ -39,7 +38,7 @@ public class LocalVoteRepository implements VoteRepository {
 
     @Override
     @SneakyThrows
-    public List<Vote> findAllVotes(String eventId) {
+    public List<Vote> findAllVotes(byte[] eventId) {
         var r = resourceLoader.getResource(votesPath);
 
         var votes = new ArrayList<Vote>();
@@ -73,7 +72,7 @@ public class LocalVoteRepository implements VoteRepository {
             var proposalId = vote.get("proposal_id");
             var voterStakeAddress = vote.get("voter_stake_address");
 
-            if (!voteEventId.equals(eventId)) {
+            if (!Arrays.equals(voteEventId.getBytes(US_ASCII), eventId)) {
                 continue;
             }
 
@@ -98,14 +97,14 @@ public class LocalVoteRepository implements VoteRepository {
     }
 
     @Override
-    public List<Vote> findAllVotes(String eventId, String categoryId) {
+    public List<Vote> findAllVotes(byte[] eventId, byte[] categoryId) {
         return findAllVotes(eventId)
-                .parallelStream().filter(v -> v.categoryId().equals(categoryId))
+                .parallelStream().filter(v -> Arrays.equals(v.categoryId().getBytes(US_ASCII), categoryId))
                 .toList();
     }
 
     @Override
-    public Set<String> getAllUniqueCategories(String eventId) {
+    public Set<String> getAllUniqueCategories(byte[] eventId) {
         return allCategories;
     }
 

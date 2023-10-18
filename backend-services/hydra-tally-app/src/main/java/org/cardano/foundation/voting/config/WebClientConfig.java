@@ -1,8 +1,9 @@
 package org.cardano.foundation.voting.config;
 
-import org.cardano.foundation.voting.service.CardanoSubmitApiBlockchainTransactionSubmissionService;
-import org.cardano.foundation.voting.service.TransactionSubmissionService;
+import org.cardanofoundation.hydra.cardano.client.lib.submit.HttpCardanoTxSubmissionService;
+import org.cardanofoundation.hydra.cardano.client.lib.submit.TransactionSubmissionService;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -23,8 +24,9 @@ public class WebClientConfig {
 
     @Bean
     @Qualifier("l1-transaction-submission-service")
-    public TransactionSubmissionService blockchainTransactionSubmissionService(HttpClient httpClient) {
-        return new CardanoSubmitApiBlockchainTransactionSubmissionService(httpClient());
+    public TransactionSubmissionService blockchainTransactionSubmissionService(HttpClient httpClient,
+                                                                               @Value("${cardano.tx.submit.api.url}") String blockchainApiUrl) {
+        return new HttpCardanoTxSubmissionService(httpClient, blockchainApiUrl);
     }
 
 }

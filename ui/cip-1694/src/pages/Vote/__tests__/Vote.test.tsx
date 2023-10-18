@@ -895,7 +895,7 @@ describe('For ongoing event:', () => {
       'Wallet signature'
     );
     expect(await within(confirmationModal).findByTestId('confirm-with-signature-description')).toHaveTextContent(
-      'We need to check if you’ve already voted. Please confirm with your wallet signature.'
+      'We need to check if you’ve already voted.You will see a pop-up message from your wallet.Please confirm with your wallet signature.'
     );
     const confirmCta = await within(confirmationModal).findByTestId('confirm-with-signature-cta');
     expect(confirmCta).toHaveTextContent('Confirm');
@@ -962,7 +962,7 @@ describe('For ongoing event:', () => {
       'Wallet signature'
     );
     expect(await within(confirmationModal).findByTestId('confirm-with-signature-description')).toHaveTextContent(
-      'We need to check if you’ve already voted. Please confirm with your wallet signature.'
+      'We need to check if you’ve already voted.You will see a pop-up message from your wallet.Please confirm with your wallet signature.'
     );
     const confirmCta = await within(confirmationModal).findByTestId('confirm-with-signature-cta');
     expect(confirmCta).toHaveTextContent('Confirm');

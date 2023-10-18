@@ -25,7 +25,7 @@ export const ConfirmWithWalletSignatureModal = (props: ConfirmWithWalletSignatur
     <Dialog
       open={!!openStatus}
       aria-labelledby={name}
-      PaperProps={{ sx: { width: '400px', borderRadius: '16px' } }}
+      PaperProps={{ sx: { width: '410px', maxWidth: '410px', borderRadius: '16px' } }}
       data-testid="confirm-with-signature-modal"
     >
       <DialogTitle

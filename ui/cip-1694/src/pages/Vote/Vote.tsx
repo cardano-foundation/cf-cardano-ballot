@@ -581,7 +581,15 @@ export const VotePage = () => {
         name="vote-submitted-modal"
         id="vote-submitted-modal"
         title="Wallet signature"
-        description="We need to check if you’ve already voted. Please confirm with your wallet signature."
+        description={
+          <>
+            We need to check if you’ve already voted.
+            <br />
+            You will see a pop-up message from your wallet.
+            <br />
+            Please confirm with your wallet signature.
+          </>
+        }
       />
     </>
   );

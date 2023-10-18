@@ -7,6 +7,9 @@
   margin: 10px !important;
   background-color: white;
   width: 414px;
+  @media only screen and (max-width: 600px) {
+    margin: 0px !important;
+  }
 
   .hydraTallyTitle {
     color: var(---color-primary) !important;

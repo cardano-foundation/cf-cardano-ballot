@@ -7,7 +7,9 @@
   margin: 10px !important;
   background-color: white;
   width: 414px;
-
+  @media only screen and (max-width: 600px) {
+    margin: 0px !important;
+  }
   .rankCard {
     border: 1px solid transparent !important;
     border-radius: 8px;
@@ -20,15 +22,15 @@
     text-align: left;
     vertical-align: middle;
     flex-shrink: 0;
-    width: 95% !important;
+    width: 96% !important;
     word-wrap: break-word;
-    box-shadow: 4px 6px 20px 0px rgba(67, 70, 86, 0.1);
+    box-shadow: 1px 2px 7px 0px rgba(67, 70, 86, 0.1);
     .trophy {
       display: flex;
       margin: auto 6px;
     }
     .title {
-      width: 210px;
+      max-width: 250px;
       font-size: 20px !important;
       color: var(---color-primary) !important;
       font-weight: 600 !important;
@@ -55,7 +57,6 @@
     font-weight: 600 !important;
     line-height: 22px !important;
     letter-spacing: 0em !important;
-    text-align: left;
   }
 
   .statTitle {
@@ -64,7 +65,7 @@
     font-weight: 400 !important;
   }
   .divider {
-    height: 1px;
-    background: #dfdfdf;
+    height: 0.5px;
+    background: #f0f0f0;
   }
 }

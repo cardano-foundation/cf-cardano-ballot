@@ -62,7 +62,7 @@ const AwardsTile = ({ counter, title, categoryId }) => {
         <Card
           className={styles.awardCard}
           key={categoryId}
-          sx={{width: '100%'}}
+          sx={{ width: '100%' }}
         >
           <CardContent>
             <Chip
@@ -82,7 +82,7 @@ const AwardsTile = ({ counter, title, categoryId }) => {
                 container
                 spacing={0}
                 direction="row"
-                sx={{ marginTop: '25px', justifyContent: 'center' }}
+                sx={{ marginTop: '15px', justifyContent: 'center' }}
               >
                 <Grid container>
                   {awards.slice(0, 2).map((proposal, index) => (
@@ -133,30 +133,49 @@ const AwardsTile = ({ counter, title, categoryId }) => {
               container
               spacing={0}
               direction="column"
+              justifyContent="space-between"
               sx={{ marginTop: '25px' }}
             >
               <Grid
                 container
-                justifyContent="space-between"
               >
-                <Typography
-                  variant="h5"
-                  className={styles.listTitle}
+                <Grid
+                  item
+                  xs={3}
+                  textAlign="left"
                 >
-                  Rank
-                </Typography>
-                <Typography
-                  variant="h5"
-                  className={styles.listTitle}
+                  <Typography
+                    variant="h5"
+                    className={styles.listTitle}
+                  >
+                    Rank
+                  </Typography>
+                </Grid>
+                <Grid
+                  item
+                  xs={7}
+                  textAlign="left"
                 >
-                  Nominee
-                </Typography>
-                <Typography
-                  variant="h5"
-                  className={styles.listTitle}
+                  <Typography
+                    variant="h5"
+                    textAlign="left"
+                    className={styles.listTitle}
+                  >
+                    Nominee
+                  </Typography>
+                </Grid>
+                <Grid
+                  item
+                  xs={2}
+                  textAlign="right"
                 >
-                  Votes
-                </Typography>
+                  <Typography
+                    variant="h5"
+                    className={styles.listTitle}
+                  >
+                    Votes
+                  </Typography>
+                </Grid>
               </Grid>
               {awards.map((proposal, index) => (
                 <React.Fragment key={index}>
@@ -164,28 +183,45 @@ const AwardsTile = ({ counter, title, categoryId }) => {
                   {proposal.rank !== 1 && (
                     <Grid
                       container
-                      justifyContent="space-between"
                       data-testid="total-stats-item"
                       sx={{ my: '15px' }}
                     >
-                      <Typography
-                        variant="h5"
-                        className={cn(styles.optionTitle, styles.statTitle)}
+                      <Grid
+                        item
+                        xs={3}
+                        textAlign="left"
                       >
-                        {proposal.rank}
-                      </Typography>
-                      <Typography
-                        variant="h5"
-                        className={cn(styles.optionTitle, styles.statTitle)}
+                        <Typography
+                          variant="h5"
+                          className={cn(styles.optionTitle, styles.statTitle)}
+                        >
+                          {proposal.rank}
+                        </Typography>
+                      </Grid>
+                      <Grid
+                        item
+                        xs={7}
+                        textAlign="left"
                       >
-                        {proposal.presentationName}
-                      </Typography>
-                      <Typography
-                        variant="h5"
-                        className={cn(styles.optionTitle, styles.statTitle)}
+                        <Typography
+                          variant="h5"
+                          className={cn(styles.optionTitle, styles.statTitle)}
+                        >
+                          {proposal.presentationName}
+                        </Typography>
+                      </Grid>
+                      <Grid
+                        item
+                        xs={2}
+                        textAlign="right"
                       >
-                        {proposal.votes}
-                      </Typography>
+                        <Typography
+                          variant="h5"
+                          className={cn(styles.optionTitle, styles.statTitle)}
+                        >
+                          {proposal.votes}
+                        </Typography>
+                      </Grid>
                     </Grid>
                   )}
                 </React.Fragment>

@@ -59,10 +59,10 @@ const useStyles = makeStyles()(() => ({
   customeTabIndicator: {
     '& .MuiTabs-indicator': {
       width: '90px',
-      borderTopLeftRadius: '20px',
-      borderTopRightRadius: '20px',
-      backgroundColor: '#106593',
-      height: '5px',
+      borderTopLeftRadius: '20px !important',
+      borderTopRightRadius: '20px !important',
+      backgroundColor: '#106593 !important',
+      height: '5px !important',
     },
   },
 }));
@@ -108,12 +108,12 @@ const Leaderboard = () => {
   }, []);
 
   useEffect(() => {
-    if (env.SHOW_WINNERS === 'true') {
+    if (env?.SHOW_WINNERS === 'true') {
       setWinnersAvailable(true);
     } else {
       setWinnersAvailable(false);
     }
-    if (env.SHOW_HYDRA_TALLY === 'true') {
+    if (env?.SHOW_HYDRA_TALLY === 'true') {
       setHydraTallyAvailable(true);
     } else {
       setHydraTallyAvailable(false);
@@ -202,13 +202,13 @@ const Leaderboard = () => {
           >
             <TabList
               onChange={handleChange}
-              aria-label="lab API tabs example"
+              aria-label="Ballot Leaderboard"
               className={classes.classes.customTab}
               textColor="primary"
               indicatorColor="primary"
             >
-              <DisableTooltip title={!winnersAvailable && WinnersDisabledText}>
-                {!winnersAvailable ? (
+              {!winnersAvailable ? (
+                <DisableTooltip title={WinnersDisabledText}>
                   <span>
                     <Tab
                       icon={<WinnersIcon />}
@@ -218,23 +218,23 @@ const Leaderboard = () => {
                       disabled={!winnersAvailable}
                     />
                   </span>
-                ) : (
-                  <Tab
-                    icon={<WinnersIcon />}
-                    label="Winners"
-                    value="1"
-                    disableRipple
-                  />
-                )}
-              </DisableTooltip>
+                </DisableTooltip>
+              ) : (
+                <Tab
+                  icon={<WinnersIcon />}
+                  label="Winners"
+                  value="1"
+                  disableRipple
+                />
+              )}
               <Tab
                 icon={<VotesIcon />}
                 label="Total Votes"
                 value="2"
                 disableRipple
               />
-              <DisableTooltip title={!hydraTallyAvailable && HydraTallyDisabledText}>
-                {!hydraTallyAvailable ? (
+              {!hydraTallyAvailable ? (
+                <DisableTooltip title={!hydraTallyAvailable && HydraTallyDisabledText}>
                   <span>
                     <Tab
                       icon={<BarChartIcon />}
@@ -244,21 +244,17 @@ const Leaderboard = () => {
                       disabled={!hydraTallyAvailable}
                     />
                   </span>
-                ) : (
-                  <Tab
-                    icon={<BarChartIcon />}
-                    label="Hydra Tally"
-                    value="3"
-                    disableRipple
-                  />
-                )}
-              </DisableTooltip>
+                </DisableTooltip>
+              ) : (
+                <Tab
+                  icon={<BarChartIcon />}
+                  label="Hydra Tally"
+                  value="3"
+                />
+              )}
             </TabList>
           </Box>
-          <TabPanel
-            value="1"
-            sx={{ mx: 0, px: 0 }}
-          >
+          <TabPanel value="1">
             {winnersAvailable ? (
               <Masonry
                 breakpointCols={breakpointColumnsObj}
@@ -277,7 +273,7 @@ const Leaderboard = () => {
             ) : (
               <Box sx={{ height: '20vw', justifyContent: 'center', textAlign: 'center' }}>
                 <Typography variant="h6">
-                Winners will be revealed following the Cardano Summit 2023 Gala Awards Dinner on 4 November.
+                  Winners will be revealed following the Cardano Summit 2023 Gala Awards Dinner on 4 November.
                 </Typography>
               </Box>
             )}
@@ -461,8 +457,16 @@ const Leaderboard = () => {
               m={2}
               p={2}
             >
-              <Grid item xs={12}>
-                <img src="/static/hydra-aiken.png"/>
+              <Grid
+                item
+                xs={12}
+              >
+                <Tooltip title="Aiken | Hydra">
+                  <img
+                    src="/static/hydra-aiken.png"
+                    alt="Aiken | Hydra"
+                  />
+                </Tooltip>
               </Grid>
             </Grid>
             {hydraTallyAvailable ? (
@@ -483,7 +487,8 @@ const Leaderboard = () => {
             ) : (
               <Box sx={{ height: '20vw', justifyContent: 'center', textAlign: 'center' }}>
                 <Typography variant="h6">
-                Hydra Tally results will be available on-chain following the Cardano Summit 2023 Awards Gala Dinner on 4 November.
+                  Hydra Tally results will be available on-chain following the Cardano Summit 2023 Awards Gala Dinner on
+                  4 November.
                 </Typography>
               </Box>
             )}

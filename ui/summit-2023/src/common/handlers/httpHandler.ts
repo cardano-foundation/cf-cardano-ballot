@@ -12,7 +12,6 @@ export enum MediaTypes {
   APPLICATION_JSON_UTF8_FORM_URLENCODED = 'application/x-www-form-urlencoded',
   MULTIPART_FORM_DATA = 'multipart/form-data',
   APPLICATION_OCTET_STREAM = 'application/octet-stream',
-  BOOLEAN_TRUE = 'true',
 }
 
 export enum Headers {

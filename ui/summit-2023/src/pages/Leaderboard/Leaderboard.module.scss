@@ -66,21 +66,20 @@
   }
 
   .masonryGrid {
-    display: -webkit-box; /* Not needed if autoprefixing */
-    display: -ms-flexbox; /* Not needed if autoprefixing */
+    display: -webkit-box;
+    display: -ms-flexbox;
     display: flex;
     width: auto;
   }
   .masonryGridColumn {
-    padding-left: 30px; /* gutter size */
+    padding-left: 30px;
     background-clip: padding-box;
     @media only screen and (max-width: 600px) {
       padding-left: 0px; 
     }
   }
   
-  /* Style your items */
-  .masonryGridColumn > .MuiCard:root { /* change div to reference your elements you put in <Masonry> */
+  .masonryGridColumn > .MuiCard:root {
     background: grey;
     margin-bottom: 30px;
   }

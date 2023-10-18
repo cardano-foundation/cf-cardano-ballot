@@ -21,7 +21,7 @@ cf-cardano-ballot-ui:
     googleFormVoteContextInputName: "entry.75173622"
     ingress:
       additionalDomains:
-        - cip1694.metadata.dev.cf-deployments.org
+        - 1694ballot.cardano.org
 
 cf-cardano-ballot-voting-api:
   enabled: true

@@ -56,12 +56,9 @@ validator(event_id: ByteArray, contract_category_id: ByteArray) {
 
         let results: Dict<Proposal, Int> = count_votes(votes)
 
-        // let sorted = adict.sort(results, astring.compare)
         let on_chain_results =
           CategoryResultsDatum { category_id: contract_category_id, results }
 
-        // trace @"on_chain_results:"
-        // trace cbor.diagnostic(on_chain_results)
         and {
           validators.any_output_contains_own_validator_address(
             inputs,
@@ -71,10 +68,6 @@ validator(event_id: ByteArray, contract_category_id: ByteArray) {
           output_contains_final_result(sc.transaction.outputs, on_chain_results)?,
         }
       }
-      //(dict.size(results) > 1)?,
-      //(list.length(votes) > 1)?,
-      //(list.length(inputs) == list.length(votes))?,
-      //output_contains_final_result(sc.transaction.outputs, on_chain_results)?,
       ReduceVoteBatches -> True
     }
     // ReduceResults { off_chain_batch_hash } -> {

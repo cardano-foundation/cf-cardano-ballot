@@ -64,9 +64,13 @@ public class VoteUtxoFinder {
                     val inlineDatum = utxo.getInlineDatum();
                     val inlineDatumHex = decodeHexString(inlineDatum);
 
-                    val categoryResultsDatum = categoryResultsDatumConverter.deserialize(inlineDatumHex);
+                    try {
+                        val categoryResultsDatum = categoryResultsDatumConverter.deserialize(inlineDatumHex);
 
-                    return new UTxOCategoryResult(utxo, categoryResultsDatum);
+                        return new UTxOCategoryResult(utxo, categoryResultsDatum);
+                    } catch (Exception e) {
+                        return new UTxOCategoryResult(utxo, null);
+                    }
                 })
                 .filter(uTxOCategoryResult -> uTxOCategoryResult.categoryResultsDatum() != null)
                 .filter(uTxOCategoryResult -> uTxOCategoryResult.categoryResultsDatum().getCategoryId().equals(contractCategoryId))

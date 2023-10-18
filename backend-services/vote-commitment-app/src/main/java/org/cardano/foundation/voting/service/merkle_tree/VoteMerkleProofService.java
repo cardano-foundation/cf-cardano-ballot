@@ -30,21 +30,3 @@ public class VoteMerkleProofService {
     }
 
 }
-
-// Batching Advantages:
-// - overlapping easy to control (singleton)
-// - lower resources (on demand)
-// - no using of spring scheduled / quartz, etc
-// - easier monitoring via jobs
-
-// Batching Disadvantages:
-// -
-
-// 01:00
-// 00:30
-
-// 12:00
-// 15:00
-
-
-// FRP

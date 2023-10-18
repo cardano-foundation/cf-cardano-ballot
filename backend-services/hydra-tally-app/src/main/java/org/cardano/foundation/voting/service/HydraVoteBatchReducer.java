@@ -71,8 +71,8 @@ public class HydraVoteBatchReducer {
     @Autowired
     private org.cardano.foundation.voting.domain.ReduceVoteBatchRedeemerConverter reduceVoteBatchRedeemerConverter;
 
-    public void batchVotesPerCategory(byte[] contractEventId,
-                                      byte[] contractCategoryId,
+    public void batchVotesPerCategory(String contractEventId,
+                                      String contractCategoryId,
                                       int batchSize) throws CborSerializationException {
         val contract = plutusScriptLoader.getContract(contractEventId, contractCategoryId);
 
@@ -101,8 +101,8 @@ public class HydraVoteBatchReducer {
         } while (transactionResultE.isRight() && transactionResultE.get().isPresent());
     }
 
-    private Either<Problem, Optional<String>> postReduceBatchTransaction(byte[] contractEventId,
-                                                                         byte[] contractCategoryId,
+    private Either<Problem, Optional<String>> postReduceBatchTransaction(String contractEventId,
+                                                                         String contractCategoryId,
                                                                          int batchSize) throws CborSerializationException {
         val contract = plutusScriptLoader.getContract(contractEventId, contractCategoryId);
         val contractAddress = plutusScriptLoader.getContractAddress(contract);
@@ -213,7 +213,7 @@ public class HydraVoteBatchReducer {
         return Either.right(Optional.of(result.getValue()));
     }
 
-    public static CategoryResultsDatum categoryResultsDatum(byte[] contractCategoryId,
+    public static CategoryResultsDatum categoryResultsDatum(String contractCategoryId,
                                                             List<CategoryResultsDatum> categoryResultsDataList) {
         val groupResultBatchDatum = CategoryResultsDatum.empty(contractCategoryId);
 

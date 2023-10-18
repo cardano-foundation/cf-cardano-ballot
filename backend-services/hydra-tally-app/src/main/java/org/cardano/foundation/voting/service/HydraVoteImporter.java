@@ -28,7 +28,6 @@ import java.util.List;
 
 import static com.bloxbean.cardano.client.common.ADAConversionUtil.adaToLovelace;
 import static java.math.BigDecimal.ZERO;
-import static java.nio.charset.StandardCharsets.US_ASCII;
 import static org.cardano.foundation.voting.utils.MoreFees.changeTransactionCost;
 
 @Component
@@ -70,10 +69,10 @@ public class HydraVoteImporter {
 
         val voteDatumList = votes.stream()
                 .map(vote -> VoteDatum.builder()
-                        .voteId(vote.voteId().toString().getBytes(US_ASCII))
+                        .voteId(vote.voteId().toString())
                         .voterKey(vote.voterStakeAddress())
-                        .categoryId(vote.categoryId().getBytes(US_ASCII))
-                        .proposalId(vote.proposalId().toString().getBytes(US_ASCII))
+                        .categoryId(vote.categoryId())
+                        .proposalId(vote.proposalId().toString())
                         .build()
                 ).toList();
 
@@ -82,7 +81,7 @@ public class HydraVoteImporter {
 
         for (val voteDatum : voteDatumList) {
             val categoryId = voteDatum.getCategoryId();
-            val contract = plutusScriptLoader.getContract(contractEventId.getBytes(US_ASCII), categoryId);
+            val contract = plutusScriptLoader.getContract(contractEventId, categoryId);
             val contractAddress = plutusScriptLoader.getContractAddress(contract);
 
             val datum = voteDatumConverter.toPlutusData(voteDatum);

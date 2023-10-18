@@ -56,17 +56,17 @@ public class PlutusScriptLoader {
 
         var validatorsNode =  ((ArrayNode) objectMapper.readTree(plutusFileAsString).get("validators"));
         this.parametrisedCompiledTemplate = validatorsNode.get(0).get("compiledCode").asText();
+        String hash = validatorsNode.get(0).get("hash").asText();
 
-        log.info("Contract Template Loaded: {}", parametrisedCompiledTemplate);
-        log.info("Contract Hash: {}", HexUtils.encodeHexString(Hashing.md5().hashBytes(parametrisedCompiledTemplate.getBytes()).asBytes()));
+        log.info("Contract Hash: {}", hash);
     }
 
     public String getContractAddress(PlutusScript plutusScript) {
         return getEntAddress(plutusScript, network).toBech32();
     }
 
-    public PlutusScript getContract(byte[] eventId,
-                                    byte[] categoryId) {
+    public PlutusScript getContract(String eventId,
+                                    String categoryId) {
         val params = ListPlutusData.of(
                 BytesPlutusData.of(eventId),
                 BytesPlutusData.of(categoryId)

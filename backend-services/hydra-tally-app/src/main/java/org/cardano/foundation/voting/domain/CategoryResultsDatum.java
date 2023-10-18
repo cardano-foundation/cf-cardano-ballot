@@ -16,16 +16,15 @@ import java.util.Map;
 @AllArgsConstructor
 public class CategoryResultsDatum {
 
-    @Enc(value = "US_ASCII")
-    private byte[] categoryId;
+    private String categoryId;
 
-    private Map<byte[], Long> results;
+    private Map<String, Long> results;
 
-    public static CategoryResultsDatum empty(byte[] categoryId) {
+    public static CategoryResultsDatum empty(String categoryId) {
         return new CategoryResultsDatum(categoryId, new LinkedHashMap<>());
     }
 
-    public void add(byte[] proposalId, long newResult) {
+    public void add(String proposalId, long newResult) {
         val existingResult = results.getOrDefault(proposalId, 0L);
 
         results.put(proposalId, existingResult + newResult);

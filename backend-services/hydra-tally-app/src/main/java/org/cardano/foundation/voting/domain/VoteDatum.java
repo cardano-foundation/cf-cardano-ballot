@@ -14,16 +14,12 @@ import lombok.NoArgsConstructor;
 @Builder
 public class VoteDatum {
 
-    @Enc(value = "US_ASCII")
-    private byte[] voteId;
+    private String voteId;
 
-    @Enc(value = "US_ASCII")
     private byte[] voterKey;
 
-    @Enc(value = "US_ASCII")
-    private byte[] categoryId;
+    private String categoryId;
 
-    @Enc(value = "US_ASCII")
-    private byte[] proposalId;
+    private String proposalId;
 
 }

@@ -39,7 +39,6 @@ import java.time.Duration;
 import java.util.Map;
 
 import static io.netty.util.internal.StringUtil.isNullOrEmpty;
-import static java.nio.charset.StandardCharsets.US_ASCII;
 import static org.cardano.foundation.voting.utils.MoreComparators.createVoteComparator;
 import static org.cardanofoundation.hydra.cardano.client.lib.utils.TransactionSigningUtil.sign;
 import static org.cardanofoundation.hydra.core.model.HydraState.Initializing;
@@ -357,16 +356,12 @@ public class HydraCommands {
             return "Tallying votes failed, reason:" + hydraClient.getHydraState();
         }
 
-        byte[] eventIdBytes = eventId.getBytes(US_ASCII);
-
-        var allCategories = voteRepository.getAllUniqueCategories(eventIdBytes);
+        var allCategories = voteRepository.getAllUniqueCategories(eventId);
 
         for (val categoryId : allCategories) {
             log.info("Processing category: {}", categoryId);
 
-            var categoryIdBytes = categoryId.getBytes(US_ASCII);
-
-            var allVotes = voteRepository.findAllVotes(eventIdBytes, categoryId.getBytes(US_ASCII));
+            var allVotes = voteRepository.findAllVotes(eventId, categoryId);
             var partitioned = Lists.partition(allVotes, batchSize);
 
             for (val voteBatch : partitioned) {
@@ -377,8 +372,8 @@ public class HydraCommands {
 
                 log.info("Imported votes voteBatch, txId: " + "{}", txIdE.get());
 
-                hydraVoteBatcher.batchVotesPerCategory(eventIdBytes, categoryIdBytes, batchSize);
-                hydraVoteBatchReducer.batchVotesPerCategory(eventIdBytes, categoryIdBytes, batchSize);
+                hydraVoteBatcher.batchVotesPerCategory(eventId, categoryId, batchSize);
+                hydraVoteBatchReducer.batchVotesPerCategory(eventId, categoryId, batchSize);
             }
         }
 
@@ -393,7 +388,7 @@ public class HydraCommands {
             return "Importing votes failed, reason:" + hydraClient.getHydraState();
         }
 
-        var participantVotes = StreamEx.of(voteRepository.findAllVotes(eventId.getBytes(US_ASCII)))
+        var participantVotes = StreamEx.of(voteRepository.findAllVotes(eventId))
                     .filter(v -> v.eventId().equals(eventId))
                     .filter(v -> {
                         int participant = Partitioner.partition(v.voteId(), participants);
@@ -428,13 +423,11 @@ public class HydraCommands {
             return "Batching votes failed, reason:" + hydraClient.getHydraState();
         }
 
-        byte[] eventBytes = eventId.getBytes(US_ASCII);
-        val allCategories = voteRepository.getAllUniqueCategories(eventBytes);
+        val allCategories = voteRepository.getAllUniqueCategories(eventId);
 
         for (val categoryId : allCategories) {
-            var categoryIdBytes = categoryId.getBytes(US_ASCII);
             log.info("Processing category: {}", categoryId);
-            hydraVoteBatcher.batchVotesPerCategory(eventBytes, categoryIdBytes, batchSize);
+            hydraVoteBatcher.batchVotesPerCategory(eventId, categoryId, batchSize);
         }
 
         return "Vote batches creations done.";
@@ -448,16 +441,12 @@ public class HydraCommands {
             return "Batching votes failed, reason:" + hydraClient.getHydraState();
         }
 
-        byte[] eventBytesId = eventId.getBytes(US_ASCII);
-
-        val allCategories = voteRepository.getAllUniqueCategories(eventBytesId);
+        val allCategories = voteRepository.getAllUniqueCategories(eventId);
 
         for (val categoryId : allCategories) {
-            var categoryIdBytes = categoryId.getBytes(US_ASCII);
-
             log.info("Processing category: {}", categoryId);
 
-            hydraVoteBatchReducer.batchVotesPerCategory(eventBytesId, categoryIdBytes, batchSize);
+            hydraVoteBatchReducer.batchVotesPerCategory(eventId, categoryId, batchSize);
         }
 
         return "Vote results reduced.";

@@ -67,7 +67,7 @@ validator(event_id: ByteArray, contract_category_id: ByteArray) {
             output_reference,
           )?,
           //(dict.size(results) > 0)?,
-          (list.length(votes) > 0)?,
+          (list.length(votes) > 1)?,
         }
       }
       //(list.length(inputs) == list.length(votes))?,
@@ -133,13 +133,6 @@ fn output_contains_final_result(
   list.filter_map(outputs, mapper)
     |> list.any(result_checker)
 }
-
-// fn get_votes_from_inputs(
-//   contract_category_id: ByteArray,
-//   inputs: List<Input>,
-// ) -> List<Vote> {
-//   list.filter_map(inputs, fn(_input) { Some(Vote(#"", #"", #"", #"")) })
-// }
 
 fn get_votes_from_inputs(
   contract_category_id: ByteArray,
@@ -227,4 +220,3 @@ fn do_count_votes(
     }
   }
 }
-//   with: fn(key, value, value) -> Option<value>,

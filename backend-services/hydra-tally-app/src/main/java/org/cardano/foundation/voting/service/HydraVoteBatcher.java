@@ -69,8 +69,8 @@ public class HydraVoteBatcher {
     private org.cardano.foundation.voting.domain.CreateVoteBatchRedeemerConverter createVoteBatchRedeemerConverter;
 
 
-    public void batchVotesPerCategory(byte[] contractEventId,
-                                      byte[] contractCategoryId,
+    public void batchVotesPerCategory(String contractEventId,
+                                      String contractCategoryId,
                                       int batchSize) throws CborSerializationException {
         val contract = plutusScriptLoader.getContract(contractEventId, contractCategoryId);
         val contractAddress = plutusScriptLoader.getContractAddress(contract);
@@ -101,8 +101,8 @@ public class HydraVoteBatcher {
     }
 
     private Either<Problem, Optional<String>> createAndPostBatchTransaction(
-            byte[] contractEventId,
-            byte[] contractCategoryId,
+            String contractEventId,
+            String contractCategoryId,
             int batchSize)
             throws CborSerializationException {
 
@@ -136,7 +136,7 @@ public class HydraVoteBatcher {
             val voteDatum = uTxOVote.voteDatum();
             val categoryId = voteDatum.getCategoryId();
 
-            if (Arrays.equals(contractCategoryId, categoryId)) {
+            if (contractCategoryId.equals(categoryId)) {
                 val proposalId = voteDatum.getProposalId();
 
                 categoryResultsDatum.add(proposalId, 1);

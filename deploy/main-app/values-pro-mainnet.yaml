@@ -12,9 +12,9 @@ cf-cardano-ballot-ui:
   values:
     image:
       tag: 0.2.69-preprod
-    votingAppServerUrl: "https://api.pro.cf-cip1694-mainnet.eu-west-1.1694ballot.cardano.org"
-    votingLedgerFollowerAppServerUrl: "https://follower-api.pro.cf-cip1694-mainnet.eu-west-1.1694ballot.cardano.org"
-    votingVerificationAppServerUrl: "https://verification-api.pro.cf-cip1694-mainnet.eu-west-1.1694ballot.cardano.org"
+    votingAppServerUrl: "https://api.1694ballot.cardano.org"
+    votingLedgerFollowerAppServerUrl: "https://follower-api.1694ballot.cardano.org"
+    votingVerificationAppServerUrl: "https://verification-api.1694ballot.cardano.org"
     eventId: "FRUITS_CF62"
     categoryId: "FRUITS_CF62"
     googleGormUrl: "https://docs.google.com/forms/u/0/d/e/1FAIpQLSe-dSU0-bi8bjk0wiOaRXj02nxYLvgnpKBgc-eYGRpPYO-y5Q"

@@ -51,6 +51,12 @@ export const errorsMap = {
       <div style={{ fontSize: '14px' }}>${stakeAddress}</div>
     </div>
   ),
+  [voteService.ERRORS.VOTE_CANNOT_BE_CHANGED]: (stakeAddress: string) => (
+    <div>
+      <div>Vote cannot be changed for the stake address:</div>
+      <div style={{ fontSize: '14px' }}>${stakeAddress}</div>
+    </div>
+  ),
 };
 
 const copies = [
@@ -291,23 +297,20 @@ export const VotePage = () => {
         onChangeCategory(activeCategoryIndex + 1);
       }
     } catch (error) {
+      toast(
+        <Toast
+          error
+          message={errorsMap[error?.message]?.(stakeAddress) || 'Unable to submit your vote. Please try again'}
+          icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
+        />
+      );
       if (error instanceof HttpError && error.code === 400) {
-        toast(
-          <Toast
-            error
-            message="Unable to submit your vote. Please try again"
-            icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
-          />
-        );
         setOptionId('');
-      } else if (error instanceof Error) {
-        toast(
-          <Toast
-            error
-            message="Unable to submit your vote. Please try again"
-            icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
-          />
-        );
+      }
+
+      if (error.message === 'VOTE_CANNOT_BE_CHANGED') {
+        setOptionId('');
+        setIsConfirmWithWalletSignatureModalVisible(true);
       }
     }
     setIsCastingAVote(false);
@@ -396,7 +399,7 @@ export const VotePage = () => {
           <Grid item>
             <OptionCard
               key={activeCategoryId}
-              selectedOption={isConnected && receipt?.proposal}
+              selectedOption={(isConnected && receipt?.proposal) || optionId}
               disabled={cantSelectOptions}
               items={items}
               onChangeOption={onChangeOption}
@@ -571,10 +574,22 @@ export const VotePage = () => {
       <ConfirmWithWalletSignatureModal
         openStatus={isConfirmWithWalletSignatureModalVisible}
         onConfirm={() => fetchReceipt({ cb: () => setIsConfirmWithWalletSignatureModalVisible(false) })}
+        onCloseFn={() => {
+          setIsReceiptFetched(true);
+          setIsConfirmWithWalletSignatureModalVisible(false);
+        }}
         name="vote-submitted-modal"
         id="vote-submitted-modal"
         title="Wallet signature"
-        description="We need to check if you’ve already voted. Please confirm with your wallet signature."
+        description={
+          <>
+            We need to check if you’ve already voted.
+            <br />
+            You will see a pop-up message from your wallet.
+            <br />
+            Please confirm with your wallet signature.
+          </>
+        }
       />
     </>
   );

@@ -12,6 +12,7 @@ export const GOOGLE_FORM_URL = env.GOOGLE_FORM_URL;
 
 export const ERRORS = {
   STAKE_AMOUNT_NOT_AVAILABLE: 'STAKE_AMOUNT_NOT_AVAILABLE',
+  VOTE_CANNOT_BE_CHANGED: 'VOTE_CANNOT_BE_CHANGED',
 };
 
 export const castAVoteWithDigitalSignature = async (jsonRequest: SignedWeb3Request) =>

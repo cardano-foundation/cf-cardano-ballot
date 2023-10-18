@@ -349,8 +349,13 @@ public class HydraCommands {
     }
 
     @Command(command = "tally-all", description = "tally all the votes votes.")
-    public String tallyAll(@ShellOption(value = "batch-size", defaultValue = "50") @Option int batchSize) throws Exception {
-        log.info("Tally all votes, batchSize: {}", batchSize);
+    public String tallyAll(
+            @ShellOption(value = "import-batch-size", defaultValue = "50") @Option int importBatchSize,
+            @ShellOption(value = "create-batch-size", defaultValue = "50") @Option int createBatchSize,
+            @ShellOption(value = "reduce-batch-size", defaultValue = "50") @Option int reduceBatchSize
+    ) throws Exception {
+        log.info("Tally all votes, importBatchSize: {}, createBatchSize: {}, reduceBatchSize: {}",
+                importBatchSize, createBatchSize, reduceBatchSize);
 
         if (hydraClient.getHydraState() != Open) {
             return "Tallying votes failed, reason:" + hydraClient.getHydraState();
@@ -362,7 +367,7 @@ public class HydraCommands {
             log.info("Processing category: {}", categoryId);
 
             var allVotes = voteRepository.findAllVotes(eventId, categoryId);
-            var partitioned = Lists.partition(allVotes, batchSize);
+            var partitioned = Lists.partition(allVotes, importBatchSize);
 
             for (val voteBatch : partitioned) {
                 val txIdE = hydraVoteImporter.importVotes(eventId, voteBatch);
@@ -372,8 +377,8 @@ public class HydraCommands {
 
                 log.info("Imported votes voteBatch, txId: " + "{}", txIdE.get());
 
-                hydraVoteBatcher.batchVotesPerCategory(eventId, categoryId, batchSize);
-                hydraVoteBatchReducer.batchVotesPerCategory(eventId, categoryId, batchSize);
+                hydraVoteBatcher.batchVotesPerCategory(eventId, categoryId, createBatchSize);
+                hydraVoteBatchReducer.batchVotesPerCategory(eventId, categoryId, reduceBatchSize);
             }
         }
 

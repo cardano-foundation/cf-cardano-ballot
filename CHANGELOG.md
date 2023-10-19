@@ -1,5 +1,31 @@
 # Changelog
 
+## [0.2.70](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.69...v0.2.70) (2023-10-19)
+
+
+### Features
+
+* add api tests for ledger follower app ([2e33736](https://github.com/cardano-foundation/cf-cardano-ballot/commit/2e33736cd9df2df0bbcc3986bff1d8055c052acc))
+* add BlockchainDataTest, fix minor issue regarding block hash ([d8e87cb](https://github.com/cardano-foundation/cf-cardano-ballot/commit/d8e87cb92a2ade10dc79111cd28cd16c74e6999e))
+* add ledger follower app to the test pipeline ([192519e](https://github.com/cardano-foundation/cf-cardano-ballot/commit/192519e6ce2009a3848ac235ebe2ca0ef7647f3d))
+* add tests for reference data endpoints ([3116d12](https://github.com/cardano-foundation/cf-cardano-ballot/commit/3116d125c09826141d6fd08bdf09d76e7369b1b8))
+* **cip-1694-ui:** add faq link in the footer ([85f51e9](https://github.com/cardano-foundation/cf-cardano-ballot/commit/85f51e9088e05483ace174df143a09dc781a623b))
+* **cip-1694-ui:** allow closing confirm with signature modal ([41efa07](https://github.com/cardano-foundation/cf-cardano-ballot/commit/41efa075f8059b56a3f0c939dd40293c1bdc94f2))
+* **cip-1694-ui:** change copy for the description in the confirm with wallet signature modal ([281a7ed](https://github.com/cardano-foundation/cf-cardano-ballot/commit/281a7ed25f69bcbb3c1e99539a018fb58cfe3504))
+* **cip-1694-ui:** change voting closes and connect button colors ([b908387](https://github.com/cardano-foundation/cf-cardano-ballot/commit/b908387c3b0a485b6f349c7eff2e8f53ae815e63))
+* more intelligent caching voting receipt. ([#332](https://github.com/cardano-foundation/cf-cardano-ballot/issues/332)) ([d7a91a7](https://github.com/cardano-foundation/cf-cardano-ballot/commit/d7a91a711b7df286acb3231fc4d64c6d8ee15b10))
+
+
+### Bug Fixes
+
+* change wiremock call to support new account info structure ([f12d729](https://github.com/cardano-foundation/cf-cardano-ballot/commit/f12d729b80c7041f6401763cae38299bf34eb3a6))
+* **cip-1694-ui:** after event closes fixes ([308c344](https://github.com/cardano-foundation/cf-cardano-ballot/commit/308c34432e2cf835276fdb04c71880a347371ce1))
+* fixed issue where BackendService would fall in an infinite loop instead of returning stake key not found. ([05451b5](https://github.com/cardano-foundation/cf-cardano-ballot/commit/05451b538c12b11d1f78d0087e23c63e116bf895))
+* improve leaderboard queries performance ([#455](https://github.com/cardano-foundation/cf-cardano-ballot/issues/455)) ([91c9450](https://github.com/cardano-foundation/cf-cardano-ballot/commit/91c9450359e9ab9e5c8d112bfc59d5b1fd651b5b))
+* re-enabled periodic vote commitment. ([#462](https://github.com/cardano-foundation/cf-cardano-ballot/issues/462)) ([ed47660](https://github.com/cardano-foundation/cf-cardano-ballot/commit/ed4766095c434f65b2ffb275075a0a0a3e97c760))
+* Remove spring-boot-starter-data-rest dependency to avoid auto-generation of REST apis for domain models and JPA repositories. ([#392](https://github.com/cardano-foundation/cf-cardano-ballot/issues/392)) ([7f75d8e](https://github.com/cardano-foundation/cf-cardano-ballot/commit/7f75d8ef2baf82ecfde36ac9369c51ddeea78c1c))
+* rollback issue fix after event window commitment finishes. ([#463](https://github.com/cardano-foundation/cf-cardano-ballot/issues/463)) ([36c6741](https://github.com/cardano-foundation/cf-cardano-ballot/commit/36c6741652bd63c349d7e89d2e30522165f3bb9e))
+
 ## [0.2.69](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.68...v0.2.69) (2023-10-11)
 
 

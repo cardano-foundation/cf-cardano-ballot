@@ -133,10 +133,59 @@
     "slotTooltip": "The time of the vote submission represented in Cardano blockchain epoch slots.",
     "voteProofTooltip": "This is required to verify a vote was included on-chain."
   },
+  "categories": {
+    "alreadyVoted": "Already Voted",
+    "winner": "Winner"
+  },
   "toast": {
     "copy": "Copied to clipboard",
     "copyError": "Copied to clipboard failed",
     "voteVerified": "Vote proof verified",
     "voteNotVerified": "Vote proof not verified"
+  },
+  "leaderboard": {
+    "title": "Leaderboard",
+    "tabs": {
+      "tab1": {
+        "label": "Winners",
+        "tooltipText": "Winners will be revealed following the Cardano Summit 2023 Gala Awards Dinner on 4 November.",
+        "tile": {
+          "votesLabel": "votes",
+          "tableHeadings": {
+            "column1": "Rank",
+            "column2": "Nominee",
+            "column3": "Votes"
+          }
+        }
+      },
+      "tab2": {
+        "label": "Total Votes",
+        "tooltipText": "",
+        "tiles": {
+          "totalVotes": {
+            "title": "Total Votes",
+            "tableHeadings": {
+              "column1": "Category",
+              "column2": "Number of votes"
+            }
+          },
+          "votesPerCategory": {
+            "title": "Votes Per Category"
+          }
+        }
+      },
+      "tab3": {
+        "label": "Hydra Tally",
+        "tooltipText": "Hydra Tally results will be available on-chain after the Cardano Summit 2023 event.",
+        "tile": {
+          
+        }
+      }
+    }
+  },
+  "button": {
+    "viewNominees": "View Nominees",
+    "viewAllNominees": "View All Nominees"
   }
+
 }

@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Typography, Grid, Box, styled } from '@mui/material';
 import styles from './Leaderboard.module.scss';
 import cn from 'classnames';
+import { i18n } from 'i18n';
 import { makeStyles } from 'tss-react/mui';
 import { PieChart } from 'react-minimal-pie-chart';
 import { ByCategoryStats } from 'types/voting-app-types';
@@ -27,11 +28,6 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import { env } from '../../common/constants/env';
 import { HydraTile } from './components/HydraTile';
 import Tooltip, { tooltipClasses, TooltipProps } from '@mui/material/Tooltip';
-
-const WinnersDisabledText =
-  'Winners will be revealed following the Cardano Summit 2023 Gala Awards Dinner on 4 November.';
-const HydraTallyDisabledText =
-  'Hydra Tally results will be available on-chain following the Cardano Summit 2023 Awards Gala Dinner on 4 November.';
 
 const useStyles = makeStyles()(() => ({
   customTab: {
@@ -191,7 +187,7 @@ const Leaderboard = () => {
             fontWeight: '600',
           }}
         >
-          Leaderboard
+          {i18n.t('leaderboard.title')}
         </Typography>
       </div>
       <Box sx={{ width: '100%', typography: 'body1', justifyContent: 'center' }}>
@@ -208,11 +204,11 @@ const Leaderboard = () => {
               indicatorColor="primary"
             >
               {!winnersAvailable ? (
-                <DisableTooltip title={WinnersDisabledText}>
+                <DisableTooltip title={i18n.t('leaderboard.tabs.tab1.tooltipText')}>
                   <span>
                     <Tab
                       icon={<WinnersIcon />}
-                      label="Winners"
+                      label={i18n.t('leaderboard.tabs.tab1.label')}
                       value="1"
                       disableRipple
                       disabled={!winnersAvailable}
@@ -222,23 +218,23 @@ const Leaderboard = () => {
               ) : (
                 <Tab
                   icon={<WinnersIcon />}
-                  label="Winners"
+                  label={i18n.t('leaderboard.tabs.tab1.label')}
                   value="1"
                   disableRipple
                 />
               )}
               <Tab
                 icon={<VotesIcon />}
-                label="Total Votes"
+                label={i18n.t('leaderboard.tabs.tab2.label')}
                 value="2"
                 disableRipple
               />
               {!hydraTallyAvailable ? (
-                <DisableTooltip title={!hydraTallyAvailable && HydraTallyDisabledText}>
+                <DisableTooltip title={!hydraTallyAvailable && i18n.t('leaderboard.tabs.tab3.tooltipText')}>
                   <span>
                     <Tab
                       icon={<BarChartIcon />}
-                      label="Hydra Tally"
+                      label={i18n.t('leaderboard.tabs.tab3.label')}
                       value="3"
                       disableRipple
                       disabled={!hydraTallyAvailable}
@@ -248,7 +244,7 @@ const Leaderboard = () => {
               ) : (
                 <Tab
                   icon={<BarChartIcon />}
-                  label="Hydra Tally"
+                  label={i18n.t('leaderboard.tabs.tab3.label')}
                   value="3"
                 />
               )}
@@ -273,7 +269,7 @@ const Leaderboard = () => {
             ) : (
               <Box sx={{ height: '20vw', justifyContent: 'center', textAlign: 'center' }}>
                 <Typography variant="h6">
-                  Winners will be revealed following the Cardano Summit 2023 Gala Awards Dinner on 4 November.
+                  {i18n.t('leaderboard.tabs.tab1.tooltipText')}
                 </Typography>
               </Box>
             )}
@@ -287,7 +283,7 @@ const Leaderboard = () => {
               sx={{ flexWrap: { md: 'nowrap', xs: 'wrap' } }}
             >
               <StatsTile
-                title="Total Votes"
+                title={i18n.t('leaderboard.tabs.tab2.tiles.totalVotes.title')}
                 dataTestId="total-votes-tile"
                 summary={<span style={{ color: '#061d3c' }}>{statsSum || placeholder}</span>}
               >
@@ -305,13 +301,13 @@ const Leaderboard = () => {
                       variant="h5"
                       className={styles.optionTitle}
                     >
-                      Category
+                      {i18n.t('leaderboard.tabs.tab2.tiles.totalVotes.tableHeadings.column1')}
                     </Typography>
                     <Typography
                       variant="h5"
                       className={styles.optionTitle}
                     >
-                      Number of votes
+                      {i18n.t('leaderboard.tabs.tab2.tiles.totalVotes.tableHeadings.column2')}
                     </Typography>
                   </Grid>
                   {statsItems.map(({ label, id }) => (
@@ -341,8 +337,8 @@ const Leaderboard = () => {
                 </Grid>
               </StatsTile>
               <StatsTile
-                title="Votes Per Category"
-                dataTestId="votes-per-category"
+                title={i18n.t('leaderboard.tabs.tab2.tiles.votesPerCategory.title')}
+                dataTestId="votes-per-category-tile"
               >
                 <Grid
                   container
@@ -487,8 +483,7 @@ const Leaderboard = () => {
             ) : (
               <Box sx={{ height: '20vw', justifyContent: 'center', textAlign: 'center' }}>
                 <Typography variant="h6">
-                  Hydra Tally results will be available on-chain following the Cardano Summit 2023 Awards Gala Dinner on
-                  4 November.
+                  {i18n.t('leaderboard.tabs.tab3.tooltipText')}
                 </Typography>
               </Box>
             )}

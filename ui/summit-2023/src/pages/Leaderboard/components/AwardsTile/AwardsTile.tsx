@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Avatar, Box, Button, CardActions, Chip, CircularProgress, Grid, Typography } from '@mui/material';
 import { Link } from 'react-router-dom';
 import Card from '@mui/material/Card';
+import { i18n } from 'i18n';
 import CardContent from '@mui/material/CardContent';
 import * as leaderboardService from '../../../../common/api/leaderboardService';
 import { eventBus } from 'utils/EventBus';
@@ -117,7 +118,7 @@ const AwardsTile = ({ counter, title, categoryId }) => {
                                 color="text.secondary"
                                 component="div"
                               >
-                                {proposal.votes} votes
+                                {proposal.votes} {i18n.t('leaderboard.tabs.tab1.tile.votesLabel')}
                               </Typography>
                             </CardContent>
                           </Box>
@@ -148,7 +149,7 @@ const AwardsTile = ({ counter, title, categoryId }) => {
                     variant="h5"
                     className={styles.listTitle}
                   >
-                    Rank
+                    {i18n.t('leaderboard.tabs.tab1.tile.tableHeadings.column1')}
                   </Typography>
                 </Grid>
                 <Grid
@@ -161,7 +162,7 @@ const AwardsTile = ({ counter, title, categoryId }) => {
                     textAlign="left"
                     className={styles.listTitle}
                   >
-                    Nominee
+                    {i18n.t('leaderboard.tabs.tab1.tile.tableHeadings.column2')}
                   </Typography>
                 </Grid>
                 <Grid
@@ -173,7 +174,7 @@ const AwardsTile = ({ counter, title, categoryId }) => {
                     variant="h5"
                     className={styles.listTitle}
                   >
-                    Votes
+                    {i18n.t('leaderboard.tabs.tab1.tile.tableHeadings.column3')}
                   </Typography>
                 </Grid>
               </Grid>
@@ -243,7 +244,7 @@ const AwardsTile = ({ counter, title, categoryId }) => {
                   backgroundColor: '#acfcc5 !important',
                 }}
               >
-                View All Nominees
+                {i18n.t('button.viewAllNominees')}
               </Button>
             </CardActions>
           </CardContent>

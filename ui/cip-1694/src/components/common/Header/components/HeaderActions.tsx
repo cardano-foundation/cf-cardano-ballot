@@ -46,7 +46,7 @@ export const HeaderActions = ({ isMobileMenu = false, onClick, showNavigationIte
     } catch (error) {
       toast(
         <Toast
-          message="Failed to fecth chain tip"
+          message="Failed to fetch chain tip"
           error
           icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
         />

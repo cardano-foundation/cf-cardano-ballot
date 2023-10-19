@@ -190,7 +190,7 @@ describe('For the event that has already finished', () => {
     await waitFor(async () => {
       expect(mockToast).toBeCalledWith(
         <Toast
-          message={`Failed to fecth stats: ${error}`}
+          message={`Failed to fetch stats: ${error}`}
           error
           icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
         />

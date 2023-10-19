@@ -48,9 +48,9 @@ spec:
             - name: REACT_APP_DISCORD_SUPPORT_CHANNEL_URL
               value: {{ .Values.discordSupportChannelUrl }}
             - name: REACT_APP_SHOW_WINNERS
-              value: {{ .Values.showWinners }}
+              value: {{ .Values.showWinners | quote }}
             - name: REACT_APP_SHOW_HYDRA_TALLY
-              value: {{ .Values.showHydraTally }}
+              value: {{ .Values.showHydraTally | quote }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}

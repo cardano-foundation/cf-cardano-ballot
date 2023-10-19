@@ -14,6 +14,7 @@ import org.cardano.foundation.voting.domain.WellKnownPointWithProtocolMagic;
 import org.cardano.foundation.voting.service.merkle_tree.VoteMerkleProofService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.util.List;

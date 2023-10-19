@@ -62,6 +62,7 @@ cf-summit-2023-voting-api:
       cardanoNodeHost: relays-new.cardano-mainnet.iohk.io
       cardanoNodePort: "3001"
       cardanoNodeProtocolMagic: "764824073"
+    rollbackHandlingEnabled: "false"
     monitoring:
       alerting:
         enabled: false

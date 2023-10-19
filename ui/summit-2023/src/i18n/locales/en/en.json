@@ -142,7 +142,8 @@
     "copyError": "Copied to clipboard failed",
     "voteVerified": "Vote proof verified",
     "voteNotVerified": "Vote proof not verified",
-    "failedToFecthStats": "Failed to fecth stats"
+    "failedToFecthStats": "Failed to fecth stats",
+    "failedToFecthNomineeStats": "Failed to fecth Nominee stats"
   },
   "leaderboard": {
     "title": "Leaderboard",

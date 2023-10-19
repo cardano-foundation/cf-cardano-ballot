@@ -49,7 +49,7 @@ const AwardsTile = ({ counter, title, categoryId }) => {
       if (process.env.NODE_ENV === 'development') {
         console.log(message);
       }
-      eventBus.publish('showToast', 'Failed to fecth Nominee stats', 'error');
+      eventBus.publish('showToast', i18n.t('toast.failedToFecthNomineeStats'), 'error');
     }
   }, []);
 

@@ -10,6 +10,7 @@ import { ProposalContent } from 'pages/Nominees/Nominees.type';
 import { CategoryContent } from 'pages/Categories/Category.types';
 import styles from './HydraTile.module.scss';
 import cn from 'classnames';
+import { i18n } from 'i18n';
 import CATEGORY_IMAGES from '../../../../common/resources/data/categoryImages.json';
 
 const HydraTile = ({ counter, title, categoryId }) => {
@@ -90,13 +91,13 @@ const HydraTile = ({ counter, title, categoryId }) => {
                   variant="h5"
                   className={styles.listTitle}
                 >
-                  Winner
+                  {i18n.t('leaderboard.tabs.tab3.tile.tableHeadings.column1')}
                 </Typography>
                 <Typography
                   variant="h5"
                   className={styles.listTitle}
                 >
-                  Votes
+                  {i18n.t('leaderboard.tabs.tab3.tile.tableHeadings.column2')}
                 </Typography>
               </Grid>
               {awards.slice(0, 2).map((proposal, index) => (
@@ -142,7 +143,7 @@ const HydraTile = ({ counter, title, categoryId }) => {
                   backgroundColor: '#acfcc5 !important',
                 }}
               >
-                View All Nominees
+                {i18n.t('button.viewAllNominees')}
               </Button>
             </CardActions>
           </CardContent>

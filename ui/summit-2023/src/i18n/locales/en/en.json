@@ -179,7 +179,10 @@
         "label": "Hydra Tally",
         "tooltipText": "Hydra Tally results will be available on-chain after the Cardano Summit 2023 event.",
         "tile": {
-          
+          "tableHeadings": {
+            "column1": "Winner",
+            "column2": "Votes"
+          }
         }
       }
     }

@@ -99,7 +99,7 @@ const Leaderboard = () => {
       if (process.env.NODE_ENV === 'development') {
         console.log(message);
       }
-      eventBus.publish('showToast', 'Failed to fecth stats', 'error');
+      eventBus.publish('showToast', i18n.t('toast.failedToFecthStats'), 'error');
     }
   }, []);
 

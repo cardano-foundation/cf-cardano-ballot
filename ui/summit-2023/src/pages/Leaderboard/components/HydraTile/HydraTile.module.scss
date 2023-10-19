@@ -1,0 +1,46 @@
+.hydraCard {
+  border-radius: 16px !important;
+  border: 1px solid transparent !important;
+  box-shadow: 2px 2px 5px 0px #061d3c40 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  margin: 10px !important;
+  background-color: white;
+  width: 414px;
+  @media only screen and (max-width: 600px) {
+    margin: 0px !important;
+  }
+
+  .hydraTallyTitle {
+    color: var(---color-primary) !important;
+    text-align: center;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    line-height: 22px !important;
+    letter-spacing: 0em !important;
+    justify-content: center;
+    display: flex;
+    background-color: transparent;
+    margin: 0 auto;
+    align-items: center;
+  }
+
+  .listTitle {
+    color: var(---color-primary) !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    line-height: 22px !important;
+    letter-spacing: 0em !important;
+    text-align: left;
+  }
+
+  .statTitle {
+    font-size: 16px !important;
+    color: var(---color-primary) !important;
+    font-weight: 400 !important;
+  }
+  .divider {
+    height: 1px;
+    background: #dfdfdf;
+  }
+}

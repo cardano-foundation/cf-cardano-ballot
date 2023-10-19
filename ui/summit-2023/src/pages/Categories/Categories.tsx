@@ -29,6 +29,7 @@ import styles from './Categories.module.scss';
 import CATEGORY_IMAGES from '../../common/resources/data/categoryImages.json';
 import { RootState } from '../../store';
 import { getUserInSession, tokenIsExpired } from '../../utils/session';
+import { i18n } from 'i18n';
 
 const categoryAlreadyVoted = (categoryId, userVotes) => {
   let alreadyVoted = false;
@@ -121,12 +122,12 @@ const Categories = () => {
                               <CardContent sx={{ minHeight: '350px', maxHeight: '350px' }}>
                                 <Box sx={{ position: 'relative' }}>
                                   {voted ? (
-                                    <Tooltip title="Already Voted">
+                                    <Tooltip title={i18n.t('categories.alreadyVoted')}>
                                       <img
                                         height={40}
                                         width={102}
                                         src={labelVoted}
-                                        alt="Already Voted"
+                                        alt={i18n.t('categories.alreadyVoted')}
                                         style={{
                                           margin: '12px',
                                           position: 'absolute',
@@ -172,7 +173,7 @@ const Categories = () => {
                                     state={{
                                       category,
                                     }}
-                                    aria-label="View Nominees"
+                                    aria-label={i18n.t('button.viewNominees')}
                                     variant="contained"
                                     size="large"
                                     sx={{
@@ -184,7 +185,7 @@ const Categories = () => {
                                       backgroundColor: '#acfcc5 !important',
                                     }}
                                   >
-                                    View Nominees
+                                    {i18n.t('button.viewNominees')}
                                   </Button>
                                 </CardActions>
                               </CardContent>
@@ -193,12 +194,12 @@ const Categories = () => {
                             <Box>
                               <Box sx={{ position: 'relative' }}>
                                 {voted ? (
-                                  <Tooltip title="Already Voted">
+                                  <Tooltip title={i18n.t('categories.alreadyVoted')}>
                                     <img
                                       height={40}
                                       width={40}
                                       src={checkMark}
-                                      alt="Already Voted"
+                                      alt={i18n.t('categories.alreadyVoted')}
                                       style={{
                                         margin: '12px',
                                         position: 'absolute',
@@ -275,12 +276,12 @@ const Categories = () => {
                         <CardContent sx={{ minHeight: '350px', maxHeight: '350px' }}>
                           <Box sx={{ position: 'relative' }}>
                             {voted ? (
-                              <Tooltip title="Already Voted">
+                              <Tooltip title={i18n.t('categories.alreadyVoted')}>
                                 <img
                                   height={40}
                                   width={102}
                                   src={labelVoted}
-                                  alt="Already Voted"
+                                  alt={i18n.t('categories.alreadyVoted')}
                                   style={{
                                     margin: '12px',
                                     position: 'absolute',
@@ -326,7 +327,7 @@ const Categories = () => {
                               state={{
                                 category,
                               }}
-                              aria-label="View Nominees"
+                              aria-label={i18n.t('button.viewNominees')}
                               variant="contained"
                               size="large"
                               sx={{
@@ -338,7 +339,7 @@ const Categories = () => {
                                 backgroundColor: '#acfcc5 !important',
                               }}
                             >
-                              View Nominees
+                              {i18n.t('button.viewNominees')}
                             </Button>
                           </CardActions>
                         </CardContent>
@@ -380,12 +381,12 @@ const Categories = () => {
                   >
                     <Box sx={{ position: 'relative' }}>
                       {voted ? (
-                        <Tooltip title="Already Voted">
+                        <Tooltip title={i18n.t('categories.alreadyVoted')}>
                           <img
                             height={40}
                             width={102}
                             src={labelVoted}
-                            alt="Already Voted"
+                            alt={i18n.t('categories.alreadyVoted')}
                             style={{
                               margin: '12px',
                               position: 'absolute',
@@ -430,7 +431,7 @@ const Categories = () => {
                           state={{
                             category,
                           }}
-                          aria-label="View Nominees"
+                          aria-label={i18n.t('button.viewNominees')}
                           variant="contained"
                           size="large"
                           sx={{
@@ -445,7 +446,7 @@ const Categories = () => {
                             minWidth: '166px',
                           }}
                         >
-                          View Nominees
+                          {i18n.t('button.viewNominees')}
                         </Button>
                       </Box>
                     </CardContent>
@@ -456,7 +457,7 @@ const Categories = () => {
                         state={{
                           category,
                         }}
-                        aria-label="View Nominees"
+                        aria-label={i18n.t('button.viewNominees')}
                         variant="contained"
                         size="large"
                         sx={{
@@ -471,7 +472,7 @@ const Categories = () => {
                           minWidth: '166px',
                         }}
                       >
-                        View Nominees
+                        {i18n.t('button.viewNominees')}
                       </Button>
                     </Box>
                   </Card>

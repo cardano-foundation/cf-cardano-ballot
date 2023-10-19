@@ -9,7 +9,7 @@ type StatsTilePorps = {
   dataTestId: string;
 };
 
-export const StatsTile = ({ title, summary, children, dataTestId }: StatsTilePorps) => {
+const StatsTile = ({ title, summary, children, dataTestId }: StatsTilePorps) => {
   return (
     <Grid
       data-testid={dataTestId}
@@ -48,3 +48,6 @@ export const StatsTile = ({ title, summary, children, dataTestId }: StatsTilePor
     </Grid>
   );
 };
+
+
+export { StatsTile };

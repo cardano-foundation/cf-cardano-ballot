@@ -108,7 +108,7 @@ public class RollbackHandler {
 
                     int updatedVoteProofs = voteMerkleProofService.softDeleteAllProofsAfterSlot(eventId, absoluteSlot);
 
-                    log.info("Soft deleted {} vote proofs after slot: {}", updatedVoteProofs, absoluteSlot);
+                    log.info("Soft deleted {} vote proofs after slot: {} for eventId: {}", updatedVoteProofs, absoluteSlot, eventId);
                 }
 
             }

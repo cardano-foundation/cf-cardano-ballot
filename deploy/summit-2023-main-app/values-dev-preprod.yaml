@@ -25,7 +25,7 @@ cf-summit-2023-ui:
     showWinners: "true"
     showHydraTally: "true"
     image:
-      tag: 0.2.64-29-34312
+      tag: 0.2.64-30-20f37
 
 cf-summit-2023-voting-api:
   enabled: true

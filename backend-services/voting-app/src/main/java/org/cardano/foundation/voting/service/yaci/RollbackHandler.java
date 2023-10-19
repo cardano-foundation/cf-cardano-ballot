@@ -21,6 +21,7 @@ import java.util.Optional;
 
 @Component
 @Slf4j
+@ConditionalOnProperty(prefix = "rollback.handling", value = "enabled", havingValue = "true")
 public class RollbackHandler {
 
     @Value("${cardano.node.ip}")

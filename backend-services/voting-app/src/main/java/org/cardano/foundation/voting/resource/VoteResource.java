@@ -25,6 +25,7 @@ import org.zalando.problem.Problem;
 
 import java.util.Optional;
 
+import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 import static org.zalando.problem.Status.BAD_REQUEST;
 import static org.zalando.problem.Status.NOT_ACCEPTABLE;
@@ -63,10 +64,6 @@ public class VoteResource {
             @Parameter(name = "eventId", required = false, description = "ID of the event for which votes are being fetched.")
             @PathVariable(value = "eventId", required = false) Optional<String> maybeEventId,
                                       Authentication authentication) {
-        var cacheControl = CacheControl.noCache()
-                .noTransform()
-                .mustRevalidate();
-
         if (!(authentication instanceof JwtAuthenticationToken jwtAuth)) {
             var problem = Problem.builder()
                     .withTitle("JWT_REQUIRED")
@@ -76,7 +73,6 @@ public class VoteResource {
 
             return ResponseEntity
                     .status(problem.getStatus().getStatusCode())
-                    .cacheControl(cacheControl)
                     .body(problem);
         }
 
@@ -89,7 +85,6 @@ public class VoteResource {
 
             return ResponseEntity
                     .status(problem.getStatus().getStatusCode())
-                    .cacheControl(cacheControl)
                     .body(problem);
         }
 
@@ -99,10 +94,13 @@ public class VoteResource {
 
                             return ResponseEntity
                                     .status(problem.getStatus().getStatusCode())
-                                    .cacheControl(cacheControl)
                                     .body(problem);
                         },
                         categoryProposalPairs -> {
+                            var cacheControl = CacheControl.maxAge(1, MINUTES)
+                                    .noTransform()
+                                    .mustRevalidate();
+
                             return ResponseEntity
                                     .ok()
                                     .cacheControl(cacheControl)
@@ -176,10 +174,6 @@ public class VoteResource {
             }
     )
     public ResponseEntity<?> getVoteReceipt(Authentication authentication) {
-        var cacheControl = CacheControl.noCache()
-                .noTransform()
-                .mustRevalidate();
-
         if (!(authentication instanceof Web3AuthenticationToken web3Auth)) {
             var problem = Problem.builder()
                     .withTitle("WEB3_AUTH_REQUIRED")
@@ -189,7 +183,6 @@ public class VoteResource {
 
             return ResponseEntity
                     .status(problem.getStatus().getStatusCode())
-                    .cacheControl(cacheControl)
                     .body(problem);
         }
 
@@ -197,10 +190,13 @@ public class VoteResource {
                 .fold(problem -> {
                             return ResponseEntity
                                     .status(problem.getStatus().getStatusCode())
-                                    .cacheControl(cacheControl)
                                     .body(problem);
                         },
                         voteReceipt -> {
+                            var cacheControl = CacheControl.maxAge(1, MINUTES)
+                                    .noTransform()
+                                    .mustRevalidate();
+
                             return ResponseEntity
                                     .ok()
                                     .cacheControl(cacheControl)
@@ -235,10 +231,6 @@ public class VoteResource {
     public ResponseEntity<?> getVoteReceipt(@PathVariable(value = "eventId", required = false) Optional<String> maybeEventId,
                                             @PathVariable("categoryId") String categoryId,
                                             Authentication authentication) {
-        var cacheControl = CacheControl.noCache()
-                .noTransform()
-                .mustRevalidate();
-
         if (!(authentication instanceof JwtAuthenticationToken jwtAuth)) {
             var problem = Problem.builder()
                     .withTitle("JWT_REQUIRED")
@@ -248,7 +240,6 @@ public class VoteResource {
 
             return ResponseEntity
                     .status(problem.getStatus().getStatusCode())
-                    .cacheControl(cacheControl)
                     .body(problem);
         }
 
@@ -261,7 +252,6 @@ public class VoteResource {
 
             return ResponseEntity
                     .status(problem.getStatus().getStatusCode())
-                    .cacheControl(cacheControl)
                     .body(problem);
         }
 
@@ -269,10 +259,13 @@ public class VoteResource {
                 .fold(problem -> {
                             return ResponseEntity
                                     .status(problem.getStatus().getStatusCode())
-                                    .cacheControl(cacheControl)
                                     .body(problem);
                         },
                         voteReceipt -> {
+                            var cacheControl = CacheControl.maxAge(1, MINUTES)
+                                    .noTransform()
+                                    .mustRevalidate();
+
                             return ResponseEntity
                                     .ok()
                                     .cacheControl(cacheControl)
@@ -307,10 +300,6 @@ public class VoteResource {
     public ResponseEntity<?> isVoteChangingAvailable(@PathVariable(value = "eventId", required = false) Optional<String> maybeEventId,
                                                      @PathVariable("voteId") String voteId,
                                                      Authentication authentication) {
-        var cacheControl = CacheControl.noCache()
-                .noTransform()
-                .mustRevalidate();
-
         if (!(authentication instanceof JwtAuthenticationToken jwtAuth)) {
             var problem = Problem.builder()
                     .withTitle("JWT_REQUIRED")
@@ -320,7 +309,6 @@ public class VoteResource {
 
             return ResponseEntity
                     .status(problem.getStatus().getStatusCode())
-                    .cacheControl(cacheControl)
                     .body(problem);
         }
 
@@ -333,20 +321,17 @@ public class VoteResource {
 
             return ResponseEntity
                     .status(problem.getStatus().getStatusCode())
-                    .cacheControl(cacheControl)
                     .body(problem);
         }
 
         return voteService.isVoteChangingPossible(voteId, jwtAuth)
                 .fold(problem -> ResponseEntity
                         .status(problem.getStatus().getStatusCode())
-                        .cacheControl(cacheControl)
                         .body(problem),
                         isAvailable -> {
                             if (isAvailable) {
                                 return ResponseEntity
                                         .ok()
-                                        .cacheControl(cacheControl)
                                         .build();
                             }
                             var problem = Problem.builder()
@@ -357,7 +342,6 @@ public class VoteResource {
 
                             return ResponseEntity
                                     .status(problem.getStatus().getStatusCode())
-                                    .cacheControl(cacheControl)
                                     .body(problem);
                         });
     }

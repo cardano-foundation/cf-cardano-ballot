@@ -25,15 +25,14 @@ import org.zalando.problem.Problem;
 
 import java.util.Optional;
 
-import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 import static org.zalando.problem.Status.BAD_REQUEST;
 import static org.zalando.problem.Status.NOT_ACCEPTABLE;
 
 @RestController
 @RequestMapping(&quot;/api/vote&quot;)
-<span class="fc" id="L35">@Slf4j</span>
-<span class="fc" id="L36">@RequiredArgsConstructor</span>
+<span class="fc" id="L34">@Slf4j</span>
+<span class="fc" id="L35">@RequiredArgsConstructor</span>
 @Tag(name = &quot;Vote&quot;, description = &quot;Operations related to voting&quot;)
 public class VoteResource {
 
@@ -64,47 +63,50 @@ public class VoteResource {
             @Parameter(name = &quot;eventId&quot;, required = false, description = &quot;ID of the event for which votes are being fetched.&quot;)
             @PathVariable(value = &quot;eventId&quot;, required = false) Optional&lt;String&gt; maybeEventId,
                                       Authentication authentication) {
-<span class="pc bpc" id="L67" title="1 of 2 branches missed.">        if (!(authentication instanceof JwtAuthenticationToken jwtAuth)) {</span>
-<span class="nc" id="L68">            var problem = Problem.builder()</span>
-<span class="nc" id="L69">                    .withTitle(&quot;JWT_REQUIRED&quot;)</span>
-<span class="nc" id="L70">                    .withDetail(&quot;JWT auth Bearer Auth token needed!&quot;)</span>
-<span class="nc" id="L71">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L72">                    .build();</span>
+<span class="fc" id="L66">        var cacheControl = CacheControl.noCache()</span>
+<span class="fc" id="L67">                .noTransform()</span>
+<span class="fc" id="L68">                .mustRevalidate();</span>
 
-<span class="nc" id="L74">            return ResponseEntity</span>
-<span class="nc" id="L75">                    .status(problem.getStatus().getStatusCode())</span>
-<span class="nc" id="L76">                    .body(problem);</span>
+<span class="pc bpc" id="L70" title="1 of 2 branches missed.">        if (!(authentication instanceof JwtAuthenticationToken jwtAuth)) {</span>
+<span class="nc" id="L71">            var problem = Problem.builder()</span>
+<span class="nc" id="L72">                    .withTitle(&quot;JWT_REQUIRED&quot;)</span>
+<span class="nc" id="L73">                    .withDetail(&quot;JWT auth Bearer Auth token needed!&quot;)</span>
+<span class="nc" id="L74">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L75">                    .build();</span>
+
+<span class="nc" id="L77">            return ResponseEntity</span>
+<span class="nc" id="L78">                    .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L79">                    .cacheControl(cacheControl)</span>
+<span class="nc" id="L80">                    .body(problem);</span>
         }
 
-<span class="pc bpc" id="L79" title="2 of 4 branches missed.">        if (maybeEventId.isPresent() &amp;&amp; !maybeEventId.orElseThrow().equals(jwtAuth.eventDetails().id())) {</span>
-<span class="nc" id="L80">            var problem = Problem.builder()</span>
-<span class="nc" id="L81">                    .withTitle(&quot;EVENT_ID_MISMATCH&quot;)</span>
-<span class="nc" id="L82">                    .withDetail(&quot;Event id in path and in JWT token do not match!&quot;)</span>
-<span class="nc" id="L83">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L84">                    .build();</span>
+<span class="pc bpc" id="L83" title="2 of 4 branches missed.">        if (maybeEventId.isPresent() &amp;&amp; !maybeEventId.orElseThrow().equals(jwtAuth.eventDetails().id())) {</span>
+<span class="nc" id="L84">            var problem = Problem.builder()</span>
+<span class="nc" id="L85">                    .withTitle(&quot;EVENT_ID_MISMATCH&quot;)</span>
+<span class="nc" id="L86">                    .withDetail(&quot;Event id in path and in JWT token do not match!&quot;)</span>
+<span class="nc" id="L87">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L88">                    .build();</span>
 
-<span class="nc" id="L86">            return ResponseEntity</span>
-<span class="nc" id="L87">                    .status(problem.getStatus().getStatusCode())</span>
-<span class="nc" id="L88">                    .body(problem);</span>
+<span class="nc" id="L90">            return ResponseEntity</span>
+<span class="nc" id="L91">                    .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L92">                    .cacheControl(cacheControl)</span>
+<span class="nc" id="L93">                    .body(problem);</span>
         }
 
-<span class="fc" id="L91">        return voteService.getVotes(jwtAuth)</span>
-<span class="fc" id="L92">                .fold(problem -&gt; {</span>
-<span class="nc" id="L93">                            log.warn(&quot;Vote get voted on failed, problem:{}&quot;, problem);</span>
+<span class="fc" id="L96">        return voteService.getVotes(jwtAuth)</span>
+<span class="fc" id="L97">                .fold(problem -&gt; {</span>
+<span class="nc" id="L98">                            log.warn(&quot;Vote get voted on failed, problem:{}&quot;, problem);</span>
 
-<span class="nc" id="L95">                            return ResponseEntity</span>
-<span class="nc" id="L96">                                    .status(problem.getStatus().getStatusCode())</span>
-<span class="nc" id="L97">                                    .body(problem);</span>
+<span class="nc" id="L100">                            return ResponseEntity</span>
+<span class="nc" id="L101">                                    .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L102">                                    .cacheControl(cacheControl)</span>
+<span class="nc" id="L103">                                    .body(problem);</span>
                         },
                         categoryProposalPairs -&gt; {
-<span class="fc" id="L100">                            var cacheControl = CacheControl.maxAge(1, MINUTES)</span>
-<span class="fc" id="L101">                                    .noTransform()</span>
-<span class="fc" id="L102">                                    .mustRevalidate();</span>
-
-<span class="fc" id="L104">                            return ResponseEntity</span>
-<span class="fc" id="L105">                                    .ok()</span>
-<span class="fc" id="L106">                                    .cacheControl(cacheControl)</span>
-<span class="fc" id="L107">                                    .body(categoryProposalPairs);</span>
+<span class="fc" id="L106">                            return ResponseEntity</span>
+<span class="fc" id="L107">                                    .ok()</span>
+<span class="fc" id="L108">                                    .cacheControl(cacheControl)</span>
+<span class="fc" id="L109">                                    .body(categoryProposalPairs);</span>
                         });
     }
 
@@ -123,34 +125,34 @@ public class VoteResource {
         }
     )
     public ResponseEntity&lt;?&gt; castVote(Authentication authentication) {
-<span class="fc" id="L126">        log.info(&quot;Casting vote...&quot;);</span>
+<span class="fc" id="L128">        log.info(&quot;Casting vote...&quot;);</span>
 
-<span class="pc bpc" id="L128" title="1 of 2 branches missed.">        if (!(authentication instanceof Web3AuthenticationToken web3Auth)) {</span>
-<span class="nc" id="L129">            var problem = Problem.builder()</span>
-<span class="nc" id="L130">                    .withTitle(&quot;WEB3_AUTH_REQUIRED&quot;)</span>
-<span class="nc" id="L131">                    .withDetail(&quot;CIP-93 auth headers tokens needed!&quot;)</span>
-<span class="nc" id="L132">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L133">                    .build();</span>
+<span class="pc bpc" id="L130" title="1 of 2 branches missed.">        if (!(authentication instanceof Web3AuthenticationToken web3Auth)) {</span>
+<span class="nc" id="L131">            var problem = Problem.builder()</span>
+<span class="nc" id="L132">                    .withTitle(&quot;WEB3_AUTH_REQUIRED&quot;)</span>
+<span class="nc" id="L133">                    .withDetail(&quot;CIP-93 auth headers tokens needed!&quot;)</span>
+<span class="nc" id="L134">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L135">                    .build();</span>
 
-<span class="nc" id="L135">            return ResponseEntity</span>
-<span class="nc" id="L136">                    .status(problem.getStatus().getStatusCode())</span>
-<span class="nc" id="L137">                    .body(problem);</span>
+<span class="nc" id="L137">            return ResponseEntity</span>
+<span class="nc" id="L138">                    .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L139">                    .body(problem);</span>
         }
 
-<span class="fc" id="L140">        return voteService.castVote(web3Auth)</span>
-<span class="fc" id="L141">                .fold(problem -&gt; {</span>
-<span class="nc" id="L142">                            log.warn(&quot;Vote cast failed, problem:{}&quot;, problem);</span>
+<span class="fc" id="L142">        return voteService.castVote(web3Auth)</span>
+<span class="fc" id="L143">                .fold(problem -&gt; {</span>
+<span class="nc" id="L144">                            log.warn(&quot;Vote cast failed, problem:{}&quot;, problem);</span>
 
-<span class="nc" id="L144">                            return ResponseEntity</span>
-<span class="nc" id="L145">                                    .status(problem.getStatus().getStatusCode())</span>
-<span class="nc" id="L146">                                    .body(problem);</span>
+<span class="nc" id="L146">                            return ResponseEntity</span>
+<span class="nc" id="L147">                                    .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L148">                                    .body(problem);</span>
                         },
                         vote -&gt; {
-<span class="fc" id="L149">                            log.info(&quot;Vote cast just fine.&quot;);</span>
+<span class="fc" id="L151">                            log.info(&quot;Vote cast just fine.&quot;);</span>
 
-<span class="fc" id="L151">                            return ResponseEntity</span>
-<span class="fc" id="L152">                                    .ok()</span>
-<span class="fc" id="L153">                                    .build();</span>
+<span class="fc" id="L153">                            return ResponseEntity</span>
+<span class="fc" id="L154">                                    .ok()</span>
+<span class="fc" id="L155">                                    .build();</span>
                         });
     }
 
@@ -174,33 +176,35 @@ public class VoteResource {
             }
     )
     public ResponseEntity&lt;?&gt; getVoteReceipt(Authentication authentication) {
-<span class="pc bpc" id="L177" title="1 of 2 branches missed.">        if (!(authentication instanceof Web3AuthenticationToken web3Auth)) {</span>
-<span class="nc" id="L178">            var problem = Problem.builder()</span>
-<span class="nc" id="L179">                    .withTitle(&quot;WEB3_AUTH_REQUIRED&quot;)</span>
-<span class="nc" id="L180">                    .withDetail(&quot;CIP-93 auth headers tokens needed!&quot;)</span>
-<span class="nc" id="L181">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L182">                    .build();</span>
+<span class="fc" id="L179">        var cacheControl = CacheControl.noCache()</span>
+<span class="fc" id="L180">                .noTransform()</span>
+<span class="fc" id="L181">                .mustRevalidate();</span>
 
-<span class="nc" id="L184">            return ResponseEntity</span>
-<span class="nc" id="L185">                    .status(problem.getStatus().getStatusCode())</span>
-<span class="nc" id="L186">                    .body(problem);</span>
+<span class="pc bpc" id="L183" title="1 of 2 branches missed.">        if (!(authentication instanceof Web3AuthenticationToken web3Auth)) {</span>
+<span class="nc" id="L184">            var problem = Problem.builder()</span>
+<span class="nc" id="L185">                    .withTitle(&quot;WEB3_AUTH_REQUIRED&quot;)</span>
+<span class="nc" id="L186">                    .withDetail(&quot;CIP-93 auth headers tokens needed!&quot;)</span>
+<span class="nc" id="L187">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L188">                    .build();</span>
+
+<span class="nc" id="L190">            return ResponseEntity</span>
+<span class="nc" id="L191">                    .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L192">                    .cacheControl(cacheControl)</span>
+<span class="nc" id="L193">                    .body(problem);</span>
         }
 
-<span class="fc" id="L189">        return voteService.voteReceipt(web3Auth)</span>
-<span class="fc" id="L190">                .fold(problem -&gt; {</span>
-<span class="nc" id="L191">                            return ResponseEntity</span>
-<span class="nc" id="L192">                                    .status(problem.getStatus().getStatusCode())</span>
-<span class="nc" id="L193">                                    .body(problem);</span>
+<span class="fc" id="L196">        return voteService.voteReceipt(web3Auth)</span>
+<span class="fc" id="L197">                .fold(problem -&gt; {</span>
+<span class="nc" id="L198">                            return ResponseEntity</span>
+<span class="nc" id="L199">                                    .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L200">                                    .cacheControl(cacheControl)</span>
+<span class="nc" id="L201">                                    .body(problem);</span>
                         },
                         voteReceipt -&gt; {
-<span class="fc" id="L196">                            var cacheControl = CacheControl.maxAge(1, MINUTES)</span>
-<span class="fc" id="L197">                                    .noTransform()</span>
-<span class="fc" id="L198">                                    .mustRevalidate();</span>
-
-<span class="fc" id="L200">                            return ResponseEntity</span>
-<span class="fc" id="L201">                                    .ok()</span>
-<span class="fc" id="L202">                                    .cacheControl(cacheControl)</span>
-<span class="fc" id="L203">                                    .body(voteReceipt);</span>
+<span class="fc" id="L204">                            return ResponseEntity</span>
+<span class="fc" id="L205">                                    .ok()</span>
+<span class="fc" id="L206">                                    .cacheControl(cacheControl)</span>
+<span class="fc" id="L207">                                    .body(voteReceipt);</span>
                         });
     }
 
@@ -231,45 +235,48 @@ public class VoteResource {
     public ResponseEntity&lt;?&gt; getVoteReceipt(@PathVariable(value = &quot;eventId&quot;, required = false) Optional&lt;String&gt; maybeEventId,
                                             @PathVariable(&quot;categoryId&quot;) String categoryId,
                                             Authentication authentication) {
-<span class="pc bpc" id="L234" title="1 of 2 branches missed.">        if (!(authentication instanceof JwtAuthenticationToken jwtAuth)) {</span>
-<span class="nc" id="L235">            var problem = Problem.builder()</span>
-<span class="nc" id="L236">                    .withTitle(&quot;JWT_REQUIRED&quot;)</span>
-<span class="nc" id="L237">                    .withDetail(&quot;JWT auth token needed!&quot;)</span>
-<span class="nc" id="L238">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L239">                    .build();</span>
+<span class="fc" id="L238">        var cacheControl = CacheControl.noCache()</span>
+<span class="fc" id="L239">                .noTransform()</span>
+<span class="fc" id="L240">                .mustRevalidate();</span>
 
-<span class="nc" id="L241">            return ResponseEntity</span>
-<span class="nc" id="L242">                    .status(problem.getStatus().getStatusCode())</span>
-<span class="nc" id="L243">                    .body(problem);</span>
+<span class="pc bpc" id="L242" title="1 of 2 branches missed.">        if (!(authentication instanceof JwtAuthenticationToken jwtAuth)) {</span>
+<span class="nc" id="L243">            var problem = Problem.builder()</span>
+<span class="nc" id="L244">                    .withTitle(&quot;JWT_REQUIRED&quot;)</span>
+<span class="nc" id="L245">                    .withDetail(&quot;JWT auth token needed!&quot;)</span>
+<span class="nc" id="L246">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L247">                    .build();</span>
+
+<span class="nc" id="L249">            return ResponseEntity</span>
+<span class="nc" id="L250">                    .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L251">                    .cacheControl(cacheControl)</span>
+<span class="nc" id="L252">                    .body(problem);</span>
         }
 
-<span class="pc bpc" id="L246" title="2 of 4 branches missed.">        if (maybeEventId.isPresent() &amp;&amp; !maybeEventId.orElseThrow().equals(jwtAuth.eventDetails().id())) {</span>
-<span class="nc" id="L247">            var problem = Problem.builder()</span>
-<span class="nc" id="L248">                    .withTitle(&quot;EVENT_ID_MISMATCH&quot;)</span>
-<span class="nc" id="L249">                    .withDetail(&quot;Event id in path and in JWT token do not match!&quot;)</span>
-<span class="nc" id="L250">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L251">                    .build();</span>
+<span class="pc bpc" id="L255" title="2 of 4 branches missed.">        if (maybeEventId.isPresent() &amp;&amp; !maybeEventId.orElseThrow().equals(jwtAuth.eventDetails().id())) {</span>
+<span class="nc" id="L256">            var problem = Problem.builder()</span>
+<span class="nc" id="L257">                    .withTitle(&quot;EVENT_ID_MISMATCH&quot;)</span>
+<span class="nc" id="L258">                    .withDetail(&quot;Event id in path and in JWT token do not match!&quot;)</span>
+<span class="nc" id="L259">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L260">                    .build();</span>
 
-<span class="nc" id="L253">            return ResponseEntity</span>
-<span class="nc" id="L254">                    .status(problem.getStatus().getStatusCode())</span>
-<span class="nc" id="L255">                    .body(problem);</span>
+<span class="nc" id="L262">            return ResponseEntity</span>
+<span class="nc" id="L263">                    .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L264">                    .cacheControl(cacheControl)</span>
+<span class="nc" id="L265">                    .body(problem);</span>
         }
 
-<span class="fc" id="L258">        return voteService.voteReceipt(categoryId, jwtAuth)</span>
-<span class="fc" id="L259">                .fold(problem -&gt; {</span>
-<span class="nc" id="L260">                            return ResponseEntity</span>
-<span class="nc" id="L261">                                    .status(problem.getStatus().getStatusCode())</span>
-<span class="nc" id="L262">                                    .body(problem);</span>
+<span class="fc" id="L268">        return voteService.voteReceipt(categoryId, jwtAuth)</span>
+<span class="fc" id="L269">                .fold(problem -&gt; {</span>
+<span class="nc" id="L270">                            return ResponseEntity</span>
+<span class="nc" id="L271">                                    .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L272">                                    .cacheControl(cacheControl)</span>
+<span class="nc" id="L273">                                    .body(problem);</span>
                         },
                         voteReceipt -&gt; {
-<span class="fc" id="L265">                            var cacheControl = CacheControl.maxAge(1, MINUTES)</span>
-<span class="fc" id="L266">                                    .noTransform()</span>
-<span class="fc" id="L267">                                    .mustRevalidate();</span>
-
-<span class="fc" id="L269">                            return ResponseEntity</span>
-<span class="fc" id="L270">                                    .ok()</span>
-<span class="fc" id="L271">                                    .cacheControl(cacheControl)</span>
-<span class="fc" id="L272">                                    .body(voteReceipt);</span>
+<span class="fc" id="L276">                            return ResponseEntity</span>
+<span class="fc" id="L277">                                    .ok()</span>
+<span class="fc" id="L278">                                    .cacheControl(cacheControl)</span>
+<span class="fc" id="L279">                                    .body(voteReceipt);</span>
                         });
     }
 
@@ -300,49 +307,58 @@ public class VoteResource {
     public ResponseEntity&lt;?&gt; isVoteChangingAvailable(@PathVariable(value = &quot;eventId&quot;, required = false) Optional&lt;String&gt; maybeEventId,
                                                      @PathVariable(&quot;voteId&quot;) String voteId,
                                                      Authentication authentication) {
-<span class="nc bnc" id="L303" title="All 2 branches missed.">        if (!(authentication instanceof JwtAuthenticationToken jwtAuth)) {</span>
-<span class="nc" id="L304">            var problem = Problem.builder()</span>
-<span class="nc" id="L305">                    .withTitle(&quot;JWT_REQUIRED&quot;)</span>
-<span class="nc" id="L306">                    .withDetail(&quot;JWT auth Bearer Auth token needed!&quot;)</span>
-<span class="nc" id="L307">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L308">                    .build();</span>
+<span class="nc" id="L310">        var cacheControl = CacheControl.noCache()</span>
+<span class="nc" id="L311">                .noTransform()</span>
+<span class="nc" id="L312">                .mustRevalidate();</span>
 
-<span class="nc" id="L310">            return ResponseEntity</span>
-<span class="nc" id="L311">                    .status(problem.getStatus().getStatusCode())</span>
-<span class="nc" id="L312">                    .body(problem);</span>
-        }
+<span class="nc bnc" id="L314" title="All 2 branches missed.">        if (!(authentication instanceof JwtAuthenticationToken jwtAuth)) {</span>
+<span class="nc" id="L315">            var problem = Problem.builder()</span>
+<span class="nc" id="L316">                    .withTitle(&quot;JWT_REQUIRED&quot;)</span>
+<span class="nc" id="L317">                    .withDetail(&quot;JWT auth Bearer Auth token needed!&quot;)</span>
+<span class="nc" id="L318">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L319">                    .build();</span>
 
-<span class="nc bnc" id="L315" title="All 4 branches missed.">        if (maybeEventId.isPresent() &amp;&amp; maybeEventId.orElseThrow().equals(jwtAuth.eventDetails().id())) {</span>
-<span class="nc" id="L316">            var problem = Problem.builder()</span>
-<span class="nc" id="L317">                    .withTitle(&quot;EVENT_ID_MISMATCH&quot;)</span>
-<span class="nc" id="L318">                    .withDetail(&quot;Event id in path and in JWT token do not match!&quot;)</span>
-<span class="nc" id="L319">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L320">                    .build();</span>
-
-<span class="nc" id="L322">            return ResponseEntity</span>
-<span class="nc" id="L323">                    .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L321">            return ResponseEntity</span>
+<span class="nc" id="L322">                    .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L323">                    .cacheControl(cacheControl)</span>
 <span class="nc" id="L324">                    .body(problem);</span>
         }
 
-<span class="nc" id="L327">        return voteService.isVoteChangingPossible(voteId, jwtAuth)</span>
-<span class="nc" id="L328">                .fold(problem -&gt; ResponseEntity</span>
-<span class="nc" id="L329">                        .status(problem.getStatus().getStatusCode())</span>
-<span class="nc" id="L330">                        .body(problem),</span>
-                        isAvailable -&gt; {
-<span class="nc bnc" id="L332" title="All 2 branches missed.">                            if (isAvailable) {</span>
-<span class="nc" id="L333">                                return ResponseEntity</span>
-<span class="nc" id="L334">                                        .ok()</span>
-<span class="nc" id="L335">                                        .build();</span>
-                            }
-<span class="nc" id="L337">                            var problem = Problem.builder()</span>
-<span class="nc" id="L338">                                    .withTitle(&quot;VOTE_CHANGING_NOT_AVAILABLE&quot;)</span>
-<span class="nc" id="L339">                                    .withDetail(&quot;Vote changing is not available for this vote!&quot;)</span>
-<span class="nc" id="L340">                                    .withStatus(NOT_ACCEPTABLE)</span>
-<span class="nc" id="L341">                                    .build();</span>
+<span class="nc bnc" id="L327" title="All 4 branches missed.">        if (maybeEventId.isPresent() &amp;&amp; maybeEventId.orElseThrow().equals(jwtAuth.eventDetails().id())) {</span>
+<span class="nc" id="L328">            var problem = Problem.builder()</span>
+<span class="nc" id="L329">                    .withTitle(&quot;EVENT_ID_MISMATCH&quot;)</span>
+<span class="nc" id="L330">                    .withDetail(&quot;Event id in path and in JWT token do not match!&quot;)</span>
+<span class="nc" id="L331">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L332">                    .build();</span>
 
-<span class="nc" id="L343">                            return ResponseEntity</span>
-<span class="nc" id="L344">                                    .status(problem.getStatus().getStatusCode())</span>
-<span class="nc" id="L345">                                    .body(problem);</span>
+<span class="nc" id="L334">            return ResponseEntity</span>
+<span class="nc" id="L335">                    .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L336">                    .cacheControl(cacheControl)</span>
+<span class="nc" id="L337">                    .body(problem);</span>
+        }
+
+<span class="nc" id="L340">        return voteService.isVoteChangingPossible(voteId, jwtAuth)</span>
+<span class="nc" id="L341">                .fold(problem -&gt; ResponseEntity</span>
+<span class="nc" id="L342">                        .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L343">                        .cacheControl(cacheControl)</span>
+<span class="nc" id="L344">                        .body(problem),</span>
+                        isAvailable -&gt; {
+<span class="nc bnc" id="L346" title="All 2 branches missed.">                            if (isAvailable) {</span>
+<span class="nc" id="L347">                                return ResponseEntity</span>
+<span class="nc" id="L348">                                        .ok()</span>
+<span class="nc" id="L349">                                        .cacheControl(cacheControl)</span>
+<span class="nc" id="L350">                                        .build();</span>
+                            }
+<span class="nc" id="L352">                            var problem = Problem.builder()</span>
+<span class="nc" id="L353">                                    .withTitle(&quot;VOTE_CHANGING_NOT_AVAILABLE&quot;)</span>
+<span class="nc" id="L354">                                    .withDetail(&quot;Vote changing is not available for this vote!&quot;)</span>
+<span class="nc" id="L355">                                    .withStatus(NOT_ACCEPTABLE)</span>
+<span class="nc" id="L356">                                    .build();</span>
+
+<span class="nc" id="L358">                            return ResponseEntity</span>
+<span class="nc" id="L359">                                    .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L360">                                    .cacheControl(cacheControl)</span>
+<span class="nc" id="L361">                                    .body(problem);</span>
                         });
     }
 

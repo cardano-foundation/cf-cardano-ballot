@@ -28,3 +28,6 @@ resources: {}
   #   memory: 128Mi
 
 nodeSelector: {}
+
+showWinners: "false"
+showHydraTally: "false"

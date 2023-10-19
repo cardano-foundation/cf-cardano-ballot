@@ -460,13 +460,15 @@ export const VotePage = () => {
                     data-testid="show-receipt-button"
                     disabled={isReceiptDrawerInitializing || !tip?.absoluteSlot}
                   >
-                    Vote receipt
-                    {isReceiptDrawerInitializing && (
-                      <CircularProgress
-                        size={20}
-                        sx={{ marginLeft: '10px' }}
-                      />
-                    )}
+                    <span className={styles.buttonContent}>
+                      Vote receipt
+                      {isReceiptDrawerInitializing && (
+                        <CircularProgress
+                          className={styles.loader}
+                          size={20}
+                        />
+                      )}
+                    </span>
                   </Button>
                 )}
                 {showConnectButton && (
@@ -491,13 +493,15 @@ export const VotePage = () => {
                     onClick={() => handleSubmit()}
                     data-testid="proposal-submit-button"
                   >
-                    Submit your vote
-                    {isCastingAVote && (
-                      <CircularProgress
-                        size={20}
-                        sx={{ marginLeft: '10px' }}
-                      />
-                    )}
+                    <span className={styles.buttonContent}>
+                      Submit your vote
+                      {isCastingAVote && (
+                        <CircularProgress
+                          size={20}
+                          className={styles.loader}
+                        />
+                      )}
+                    </span>
                   </Button>
                 )}
                 {event?.notStarted && (

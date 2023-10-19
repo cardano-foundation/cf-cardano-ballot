@@ -86,13 +86,16 @@ export const ConfirmWithWalletSignatureModal = (props: ConfirmWithWalletSignatur
                   disabled={isConfirming}
                   data-testid="confirm-with-signature-cta"
                 >
-                  Confirm
-                  {isConfirming && (
-                    <CircularProgress
-                      size={20}
-                      sx={{ marginLeft: '10px' }}
-                    />
-                  )}
+                  <span className={styles.buttonContent}>
+                    Confirm
+                    {isConfirming && (
+                      <CircularProgress
+                        size={20}
+                        className={styles.loader}
+                        color="inherit"
+                      />
+                    )}
+                  </span>
                 </Button>
               </Box>
             </Grid>

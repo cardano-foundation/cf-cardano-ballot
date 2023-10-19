@@ -39,6 +39,15 @@
       background: #bbbbbb;
       color: #39486c !important;
     }
+
+    .buttonContent {
+      position: relative;
+
+      .loader {
+        position: absolute;
+        right: -30px;
+      }
+    }
   }
 }
 

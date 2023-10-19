@@ -296,32 +296,6 @@ public class HydraCommands {
         return "Committed funds, L1 transactionId: " + txResult.getValue();
     }
 
-    @Command(command = "head-commit-my-funds", description = "head commit my funds.")
-    public String commitFundsExplicitly(
-            @ShellOption(value = "address") String address,
-            @ShellOption(value = "utxo") String utxoString,
-            @ShellOption(value = "amount") long amount
-    ) {
-        val utxo = new UTXO();
-        utxo.setAddress(address);
-        utxo.setValue(Map.of("lovelace", BigInteger.valueOf(amount)));
-
-        var commitMap = Map.of(utxoString, utxo);
-
-        CommittedResponse committedResponse = hydraClient.commitFundsToTheHead(commitMap)
-                .block(Duration.ofMinutes(1));
-
-        if (committedResponse == null) {
-            return "Cannot commit, unsupported state, hydra state:" + hydraClient.getHydraState();
-        }
-
-        committedResponse.getUtxo().forEach((key, value) -> {
-            log.info("utxo: {}, value: {}", key, value);
-        });
-
-        return "Committed funds.";
-    }
-
     @Command(command = "head-fan-out", description = "head fan out.")
     public String fanOut() {
         var headIsFinalizedResponse = hydraClient.fanOutHead().block(Duration.ofMinutes(1));

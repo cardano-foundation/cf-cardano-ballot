@@ -52,7 +52,7 @@ cf-summit-2023-voting-api:
         active: "true"
         voteCommitmentCronExpression: "0 30 * * * *"
     image:
-      tag: 0.2.64-783
+      tag: 0.2.64-26-ce3df
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
     corsAllowedOrigins: https://voting.summit.cardano.org,https://{{ .Values.domain }}
     yaci:

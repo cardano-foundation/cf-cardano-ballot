@@ -11,7 +11,6 @@ var clearMock = jest.fn();
 import '@testing-library/jest-dom';
 import React, { useEffect } from 'react';
 import { expect } from '@jest/globals';
-import BlockIcon from '@mui/icons-material/Block';
 import { waitFor, cleanup } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import { UserState } from 'common/store/types';
@@ -19,7 +18,6 @@ import { ROUTES } from 'common/routes';
 import { renderWithProviders } from 'test/mockProviders';
 import { eventMock_active, useCardanoMock } from 'test/mocks';
 import { CustomRouter } from 'test/CustomRouter';
-import { Toast } from 'components/common/Toast/Toast';
 import { USER_SESSION_KEY } from 'common/utils/session';
 import { ConnectWalletButton } from '../ConnectWalletButton';
 import * as envFile from '../../../../../env';
@@ -64,28 +62,6 @@ describe('ConnectWalletButton', () => {
   afterEach(() => {
     jest.clearAllMocks();
     cleanup();
-  });
-
-  test('should display toast if no wallets provided', async () => {
-    envFile.env.SUPPORTED_WALLETS = [];
-    envFile.env.TARGET_NETWORK = 'Preprod';
-    const history = createMemoryHistory({ initialEntries: [ROUTES.INTRO] });
-    renderWithProviders(
-      <CustomRouter history={history}>
-        <ConnectWalletButton />
-      </CustomRouter>,
-      { preloadedState: { user: { event: eventMock_active } as UserState } }
-    );
-
-    await waitFor(async () => {
-      expect(mockToast).toBeCalledWith(
-        <Toast
-          message="No supported wallets specified"
-          error
-          icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
-        />
-      );
-    });
   });
 
   test('should handle onConnect', async () => {

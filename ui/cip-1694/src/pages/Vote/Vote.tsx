@@ -88,6 +88,7 @@ export const VotePage = () => {
   const isVoteSubmittedModalVisible = useSelector((state: RootState) => state.user.isVoteSubmittedModalVisible);
   const [isReceiptDrawerInitializing, setIsReceiptDrawerInitializing] = useState(false);
   const [isCastingAVote, setIsCastingAVote] = useState(false);
+  const [isConfirmingWithSignature, setIsConfirmingWithSignature] = useState(false);
   const [optionId, setOptionId] = useState<string | null>();
   const [isConfirmWithWalletSignatureModalVisible, setIsConfirmWithWalletSignatureModalVisible] = useState(false);
   const [voteSubmitted, setVoteSubmitted] = useState(false);
@@ -95,7 +96,8 @@ export const VotePage = () => {
   const numOfCategories = event?.categories?.length;
   const activeCategoryIndex = findIndex(event?.categories, ['id', activeCategoryId]);
   const [isToggledReceipt, toggleReceipt] = useToggle(false);
-  const couldAddContext = activeCategoryIndex === 0 && isReceiptFetched && !receipt;
+  const couldAddContext =
+    activeCategoryIndex === 0 && isReceiptFetched && !receipt && event?.finished !== true && event?.notStarted !== true;
   const dispatch = useDispatch();
 
   const fetchChainTip = useCallback(async () => {
@@ -106,7 +108,7 @@ export const VotePage = () => {
     } catch (error) {
       toast(
         <Toast
-          message="Failed to fecth chain tip"
+          message="Failed to fetch chain tip"
           error
           icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
         />
@@ -125,7 +127,7 @@ export const VotePage = () => {
     if (stakeAddress && event?.notStarted === false && ((session && tokenIsExpired(session.expiresAt)) || !session)) {
       setIsConfirmWithWalletSignatureModalVisible(true);
     }
-  }, [event?.notStarted, stakeAddress]);
+  }, [event?.notStarted, stakeAddress, activeCategoryId]);
 
   const items: OptionItem<ProposalPresentation['name']>[] = event?.categories
     ?.find(({ id }) => id === activeCategoryId)
@@ -140,6 +142,7 @@ export const VotePage = () => {
 
   const login = useCallback(async () => {
     try {
+      setIsConfirmingWithSignature(true);
       const chainTip = await fetchChainTip();
       const canonicalVoteInput = loginService.buildCanonicalLoginJson({
         stakeAddress,
@@ -162,6 +165,8 @@ export const VotePage = () => {
           icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
         />
       );
+    } finally {
+      setIsConfirmingWithSignature(false);
     }
   }, [fetchChainTip, signMessagePromisified, stakeAddress]);
 
@@ -226,9 +231,9 @@ export const VotePage = () => {
     await fetchReceipt({
       cb: () => {
         toggleReceipt();
-        setIsReceiptDrawerInitializing(false);
       },
     });
+    setIsReceiptDrawerInitializing(false);
   };
 
   const onChangeOption = (option: string | null) => {
@@ -322,11 +327,14 @@ export const VotePage = () => {
 
   const cantSelectOptions =
     !!receipt || voteSubmitted || (isConnected && !isReceiptFetched) || event?.notStarted || event?.finished;
-  const showViewReceiptButton = receipt?.id || voteSubmitted || (isReceiptFetched && event?.finished);
+  const showViewReceiptButton = receipt?.id || voteSubmitted;
   const showConnectButton = event && !isConnected && event?.notStarted === false;
   const showSubmitButton =
     event && isConnected && event?.notStarted === false && event?.finished === false && !showViewReceiptButton;
-  const showPagination = isConnected && receipt && activeCategoryId === receipt?.category && numOfCategories > 1;
+  const showPagination =
+    isConnected &&
+    numOfCategories > 1 &&
+    ((receipt && activeCategoryId === receipt?.category) || event?.finished === true);
 
   return (
     <>
@@ -574,6 +582,7 @@ export const VotePage = () => {
       <ConfirmWithWalletSignatureModal
         openStatus={isConfirmWithWalletSignatureModalVisible}
         onConfirm={() => fetchReceipt({ cb: () => setIsConfirmWithWalletSignatureModalVisible(false) })}
+        showCloseBtn={event?.finished === false}
         onCloseFn={() => {
           setIsReceiptFetched(true);
           setIsConfirmWithWalletSignatureModalVisible(false);
@@ -581,6 +590,7 @@ export const VotePage = () => {
         name="vote-submitted-modal"
         id="vote-submitted-modal"
         title="Wallet signature"
+        isConfirming={isConfirmingWithSignature}
         description={
           <>
             We need to check if you’ve already voted.

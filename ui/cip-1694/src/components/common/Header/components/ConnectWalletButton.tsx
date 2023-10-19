@@ -1,19 +1,16 @@
 /* eslint-disable indent */
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import toast from 'react-hot-toast';
 import cn from 'classnames';
 import { Button } from '@mui/material';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import BlockIcon from '@mui/icons-material/Block';
 import {
   useCardano,
   ConnectWalletButton as CFConnectWalletButton,
   getWalletIcon,
 } from '@cardano-foundation/cardano-connect-with-wallet';
 import { setConnectedWallet, setIsConnectWalletModalVisible } from 'common/store/userSlice';
-import { Toast } from 'components/common/Toast/Toast';
 import { RootState } from 'common/store';
 import { clearUserInSessionStorage } from 'common/utils/session';
 import { resolveCardanoNetwork } from 'common/utils/common';
@@ -30,20 +27,6 @@ export const ConnectWalletButton = ({ isMobileMenu = false }) => {
   const supportedWallets = installedExtensions.filter((installedWallet) =>
     env.SUPPORTED_WALLETS.includes(installedWallet)
   );
-
-  // TODO: move to providers level and throw?
-  useEffect(() => {
-    if (supportedWallets.length === 0) {
-      toast(
-        <Toast
-          error
-          message="No supported wallets specified"
-          icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
-        />
-      );
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   useEffect(() => {
     const init = async () => {

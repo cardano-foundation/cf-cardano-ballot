@@ -1500,6 +1500,10 @@ describe('For the event that has already finished', () => {
     );
     mockGetVotingPower.mockReset();
     mockGetVotingPower.mockResolvedValue(accountDataMock);
+
+    mockGetUserInSession.mockReset();
+    mockGetUserInSession.mockReturnValue(null);
+
     const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
     const historyPushSpy = jest.spyOn(history, 'push');
 
@@ -1521,7 +1525,18 @@ describe('For the event that has already finished', () => {
 
     const votePage = screen.queryByTestId('vote-page');
 
+    expect(screen.queryByTestId('confirm-with-signature-modal')).toBeInTheDocument();
+
+    const confirmCta = await within(screen.queryByTestId('confirm-with-signature-modal')).findByTestId(
+      'confirm-with-signature-cta'
+    );
+
+    await act(async () => {
+      fireEvent.click(confirmCta);
+    });
+
     expect(screen.queryByTestId('vote-receipt')).not.toBeInTheDocument();
+
     const cta = within(votePage).queryByTestId('show-receipt-button');
     await act(async () => {
       fireEvent.click(cta);
@@ -1540,5 +1555,62 @@ describe('For the event that has already finished', () => {
     });
     expect((historyPushSpy.mock.lastCall[0] as unknown as any).pathname).toEqual(ROUTES.LEADERBOARD);
     historyPushSpy.mockRestore();
+  });
+
+  test('should not show view receipt button if vote is not found but should show pagination', async () => {
+    const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
+    const error = { message: 'VOTE_NOT_FOUND' };
+    mockGetVoteReceipt.mockReset();
+    mockGetVoteReceipt.mockImplementation(async () => await Promise.reject(error));
+    mockUseCardano.mockReset();
+    mockUseCardano.mockReturnValue({
+      ...useCardanoMock,
+      signMessage: mockSignMessage,
+    });
+    mockGetSignedMessagePromise.mockReset();
+    mockGetSignedMessagePromise.mockImplementation(
+      (signMessage: (message: string) => string) => async (message: string) => await signMessage(message)
+    );
+    mockGetVotingPower.mockReset();
+    mockGetVotingPower.mockResolvedValue(accountDataMock);
+
+    mockGetUserInSession.mockReset();
+    mockGetUserInSession.mockReturnValue(null);
+
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
+
+    await act(async () => {
+      renderWithProviders(
+        <CustomRouter history={history}>
+          <VotePage />
+        </CustomRouter>,
+        {
+          preloadedState: {
+            user: {
+              event: eventMock_finished,
+              tip: chainTipMock,
+            } as UserState,
+          },
+        }
+      );
+    });
+
+    const votePage = screen.queryByTestId('vote-page');
+
+    expect(screen.queryByTestId('confirm-with-signature-modal')).toBeInTheDocument();
+    expect(
+      within(screen.queryByTestId('confirm-with-signature-modal')).queryByTestId('confirm-with-signature-close')
+    ).not.toBeInTheDocument();
+
+    const confirmCta = await within(screen.queryByTestId('confirm-with-signature-modal')).findByTestId(
+      'confirm-with-signature-cta'
+    );
+
+    await act(async () => {
+      fireEvent.click(confirmCta);
+    });
+
+    expect(within(votePage).queryByTestId('show-receipt-button')).not.toBeInTheDocument();
+    expect(within(votePage).queryByTestId('next-question-button')).toBeInTheDocument();
   });
 });

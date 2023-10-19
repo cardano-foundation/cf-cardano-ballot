@@ -29,11 +29,11 @@ const Leaderboard = () => {
         setStats(response.categories);
       });
     } catch (error) {
-      const message = `Failed to fecth stats: ${error?.message || error?.toString()}`;
+      const message = `Failed to fetch stats: ${error?.message || error?.toString()}`;
       if (process.env.NODE_ENV === 'development') {
         console.log(message);
       }
-      eventBus.publish('showToast', 'Failed to fecth stats', 'error');
+      eventBus.publish('showToast', 'Failed to fetch stats', 'error');
     }
   }, []);
 

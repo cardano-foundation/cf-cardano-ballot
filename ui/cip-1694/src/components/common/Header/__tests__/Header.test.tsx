@@ -336,7 +336,7 @@ describe('For ongoing event:', () => {
     await waitFor(async () => {
       expect(mockToast).toBeCalledWith(
         <Toast
-          message="Failed to fecth chain tip"
+          message="Failed to fetch chain tip"
           error
           icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
         />

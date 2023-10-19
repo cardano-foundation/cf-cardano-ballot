@@ -29,7 +29,7 @@ export const Leaderboard = () => {
     try {
       setStats((await leaderboardService.getStats(event?.categories?.[0]?.id))?.proposals);
     } catch (error) {
-      const message = `Failed to fecth stats: ${error?.message || error?.toString()}`;
+      const message = `Failed to fetch stats: ${error?.message || error?.toString()}`;
       toast(
         <Toast
           error

@@ -13,7 +13,7 @@ import java.util.List;
 public interface VoteMerkleProofRepository extends JpaRepository<VoteMerkleProof, String> {
 
     @Modifying
-    @Query("UPDATE VoteMerkleProof vmp SET vmp.invalidated = true WHERE vmp.eventId = :eventId vmp.absoluteSlot > :slot")
+    @Query("UPDATE VoteMerkleProof vmp SET vmp.invalidated = true WHERE vmp.eventId = :eventId AND vmp.absoluteSlot > :slot")
     int invalidateMerkleProofsAfterSlot(@Param("eventId") String eventId, @Param("slot") long slot);
 
     List<VoteMerkleProof> findTop1ByEventIdAndInvalidatedOrderByCreatedAtDesc(String eventId, boolean invalidated);

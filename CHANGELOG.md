@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.73](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.72...v0.2.73) (2023-10-20)
+
+
+### Features
+
+* **cip-1694-ui:** show not installed dependencies for mobile ([2fa7172](https://github.com/cardano-foundation/cf-cardano-ballot/commit/2fa717211193e02bf037caab0edbc894b45c6384))
+
 ## [0.2.72](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.71...v0.2.72) (2023-10-20)
 
 

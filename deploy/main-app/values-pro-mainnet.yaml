@@ -11,7 +11,7 @@ cf-cardano-ballot-ui:
   enabled: true
   values:
     image:
-      tag: 0.2.69-preprod
+      tag: 0.2.70
     votingAppServerUrl: "https://api.1694ballot.cardano.org"
     votingLedgerFollowerAppServerUrl: "https://follower-api.1694ballot.cardano.org"
     votingVerificationAppServerUrl: "https://verification-api.1694ballot.cardano.org"
@@ -27,7 +27,7 @@ cf-cardano-ballot-voting-api:
   enabled: true
   values:
     image:
-      tag: v0.2.67-3-g0bc4fd6f
+      tag: 0.2.70
     monitoring:
       alerting:
         enabled: false
@@ -41,7 +41,7 @@ cf-cardano-ballot-verification-api:
   enabled: true
   values:
     image:
-      tag: 0.2.65
+      tag: 0.2.70
     corsAllowedOrigins: https://{{ .Values.domain }},https://1694ballot.cardano.org,http://localhost:3000
     ingress:
       additionalDomains:
@@ -51,7 +51,7 @@ cf-cardano-ballot-ledger-follower-api:
   enabled: true
   values:
     image:
-      tag: v0.2.67-4-g7de3db22
+      tag: 0.2.70
     bindOnEventIds: CIP-1694_Pre_Ratification_3316,FRUITS_CF62
     yaci:
       startBlockHash: 3337e297121fda1262372c28de3d917bd2a60bb1e3c6326e3b7e832eb8017615
@@ -71,12 +71,12 @@ cf-cardano-ballot-ledger-follower-api:
 cf-voting-verification-ui:
   values:
     image:
-      tag: 0.2.65
+      tag: 0.2.70
 
 cf-vote-commitment:
   values:
     image:
-      tag: 0.2.66
+      tag: 0.2.70
     instances:
       - name: active-hour
         voteCommitmentCronExpression: "0 0 * * * *"

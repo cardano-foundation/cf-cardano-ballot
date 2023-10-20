@@ -1,24 +1,19 @@
 use acca/datums as adatums
-use acca/dict as adict
 use acca/hash.{PubKeyHash} as ahash
 use acca/string as astring
 use acca/validators
-use aiken/builtin
-use aiken/bytearray
-use aiken/cbor
 use aiken/dict.{Dict}
 use aiken/list
-use aiken/string
 use aiken/transaction.{InlineDatum, Input, Output, ScriptContext, Spend}
 
 type VoteId =
-  ByteArray
+  String
 
 type Category =
-  ByteArray
+  String
 
 type Proposal =
-  ByteArray
+  String
 
 type Redeemer {
   CreateVoteBatch
@@ -38,11 +33,11 @@ type Vote {
 }
 
 fn compare_proposal(left: Proposal, right: Proposal) -> Ordering {
-  bytearray.compare(builtin.serialise_data(left), builtin.serialise_data(right))
+  astring.compare(left, right)
 }
 
 // admins: List<PubKeyHash>
-validator(event_id: ByteArray, contract_category_id: ByteArray) {
+validator(_event_id: String, contract_category_id: String) {
   fn voting(_voting_datum: Void, redeemer: Redeemer, sc: ScriptContext) -> Bool {
     // On L2 (Hydra) one will typically lock votes with 0 ADA but on L1 of course each eUTxO is guarded by ca. 1,7 ADA
     expect Spend(output_reference) = sc.purpose
@@ -128,7 +123,7 @@ fn output_contains_final_result(
 }
 
 fn get_vote_results_from_inputs(
-  contract_category_id: ByteArray,
+  contract_category_id: String,
   inputs: List<Input>,
 ) -> List<CategoryResultsDatum> {
   list.filter_map(
@@ -139,10 +134,7 @@ fn get_vote_results_from_inputs(
         expect categoryResultsDatum: CategoryResultsDatum = category_data
 
         if
-        bytearray.compare(
-          contract_category_id,
-          categoryResultsDatum.category_id,
-        ) == Equal{
+        astring.compare(contract_category_id, categoryResultsDatum.category_id) == Equal{
         
           Some(categoryResultsDatum)
         } else {
@@ -156,7 +148,7 @@ fn get_vote_results_from_inputs(
 }
 
 fn get_votes_from_inputs(
-  contract_category_id: ByteArray,
+  contract_category_id: String,
   inputs: List<Input>,
 ) -> List<Vote> {
   list.filter_map(
@@ -166,7 +158,7 @@ fn get_votes_from_inputs(
         expect InlineDatum(vote_data) = input.output.datum
         expect vote: Vote = vote_data
 
-        if bytearray.compare(contract_category_id, vote.category) == Equal {
+        if astring.compare(contract_category_id, vote.category) == Equal {
           Some(vote)
         } else {
           None

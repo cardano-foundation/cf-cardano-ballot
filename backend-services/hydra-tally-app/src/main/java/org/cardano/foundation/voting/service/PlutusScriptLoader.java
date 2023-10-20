@@ -11,11 +11,9 @@ import com.bloxbean.cardano.client.plutus.spec.*;
 import com.bloxbean.cardano.client.transaction.spec.Transaction;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.google.common.hash.Hashing;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.cardanofoundation.hydra.core.utils.HexUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
@@ -31,6 +29,7 @@ import static com.bloxbean.cardano.client.api.util.CostModelUtil.getCostModelFro
 import static com.bloxbean.cardano.client.plutus.blueprint.PlutusBlueprintUtil.getPlutusScriptFromCompiledCode;
 import static com.bloxbean.cardano.client.plutus.blueprint.model.PlutusVersion.v2;
 import static com.bloxbean.cardano.client.plutus.spec.Language.PLUTUS_V2;
+import static org.cardanofoundation.hydra.core.utils.HexUtils.decodeHexString;
 
 @Component
 @Slf4j
@@ -48,15 +47,25 @@ public class PlutusScriptLoader {
     @Value("${plutus.contract.path}")
     private String plutusCodePath;
 
+    @Value("${operators.verification.keys}")
+    private List<String> operatorVerificationKeys;
+
     private String parametrisedCompiledTemplate;
 
     @PostConstruct
     public void init() throws IOException {
-        var plutusFileAsString = resourceLoader.getResource(plutusCodePath).getInputStream();
+        if (operatorVerificationKeys.isEmpty()) {
+            throw new RuntimeException("No operator verification keys configured!");
+        }
+
+        var plutusFileAsString = resourceLoader.getResource(plutusCodePath)
+                .getInputStream();
 
         var validatorsNode =  ((ArrayNode) objectMapper.readTree(plutusFileAsString).get("validators"));
         this.parametrisedCompiledTemplate = validatorsNode.get(0).get("compiledCode").asText();
         String hash = validatorsNode.get(0).get("hash").asText();
+
+        log.info("Operator verification keys: {}", operatorVerificationKeys);
 
         log.info("Contract Hash: {}", hash);
     }
@@ -69,9 +78,21 @@ public class PlutusScriptLoader {
                                     String organiser,
                                     String categoryId) {
 
-        log.info("EventId: {}, Organiser: {}, CategoryId: {}", eventId, organiser, categoryId);
+        log.info("EventId: {}," +
+                " Organiser: {}," +
+                " CategoryId: {}", eventId, organiser, categoryId);
+
+        var operatorVerificationKeysPlutus = ListPlutusData.builder()
+                .plutusDataList(this.operatorVerificationKeys
+                        .stream()
+                        .map(cborKey -> {
+                            return (PlutusData) BytesPlutusData.of(decodeHexString(cborKey));
+                        })
+                        .toList())
+        .build();
 
         val params = ListPlutusData.of(
+                operatorVerificationKeysPlutus,
                 BytesPlutusData.of(eventId),
                 BytesPlutusData.of(organiser),
                 BytesPlutusData.of(categoryId)

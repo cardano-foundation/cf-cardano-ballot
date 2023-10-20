@@ -1,5 +1,6 @@
 package org.cardano.foundation.voting.config;
 
+import com.bloxbean.cardano.client.address.Address;
 import com.bloxbean.cardano.client.common.model.Network;
 import com.bloxbean.cardano.client.common.model.Networks;
 import com.bloxbean.cardano.client.exception.CborSerializationException;
@@ -11,6 +12,8 @@ import org.cardanofoundation.hydra.cardano.client.lib.wallet.JacksonClasspathSec
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import static org.cardanofoundation.hydra.core.utils.HexUtils.encodeHexString;
 
 @Configuration
 @Slf4j
@@ -38,6 +41,10 @@ public class CardanoConfig {
         var op =  cardanoOperatorSupplier.getOperator();
 
         log.info("L1 operator address: {}", op.getAddress());
+
+        new Address(op.getAddress()).getPaymentCredentialHash().ifPresent(hash -> log.info("L1 operator verification key address (blake 224): {}", encodeHexString(hash)));
+
+//        log.info("L1 operator verification key address (blake 224): {}", encodeHexString(blake2bHash224(HexUtils.decodeHexString(op.getVerificationKey().getCborHex()))));
 
         return op;
     }

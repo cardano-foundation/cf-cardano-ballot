@@ -2,6 +2,7 @@ use acca/datums as adatums
 use acca/hash.{PubKeyHash} as ahash
 use acca/string as astring
 use acca/validators
+use aiken/cbor
 use aiken/dict.{Dict}
 use aiken/list
 use aiken/transaction.{InlineDatum, Input, Output, ScriptContext, Spend}
@@ -40,14 +41,13 @@ fn compare_proposal(left: Proposal, right: Proposal) -> Ordering {
   astring.compare(left, right)
 }
 
-// admins: List<PubKeyHash>
 validator(
+  organiser_keys: List<PubKeyHash>,
   contract_event_id: String,
   contract_organiser: String,
   contract_category_id: String,
 ) {
   fn voting(_voting_datum: Void, redeemer: Redeemer, sc: ScriptContext) -> Bool {
-    // On L2 (Hydra) one will typically lock votes with 0 ADA but on L1 of course each eUTxO is guarded by ca. 1,7 ADA
     expect Spend(output_reference) = sc.purpose
 
     let inputs: List<Input> = sc.transaction.inputs
@@ -73,19 +73,25 @@ validator(
             results,
           }
 
+        let must_be_signed =
+          list.any(
+            sc.transaction.extra_signatories,
+            fn(key) { list.has(organiser_keys, key) },
+          )
+
+        trace cbor.diagnostic(sc.transaction.extra_signatories)
+
         and {
           validators.any_output_contains_own_validator_address(
             inputs,
             outputs,
             output_reference,
           )?,
+          //must_be_signed?,
           output_contains_final_result(sc.transaction.outputs, on_chain_results)?,
         }
       }
       ReduceVoteBatches -> {
-        // collect results from all inputs (fail if there are still votes in smart contract)
-        // take existing results and compress them, into one
-        // check if resulting output datum contains votes counted up properly and that they send result back to the same address
         let on_chain_results: List<CategoryResultsDatum> =
           get_vote_results_from_inputs(
             contract_event_id,
@@ -97,32 +103,36 @@ validator(
         let counted_on_chain_results: Dict<Proposal, Int> =
           count_vote_results(on_chain_results)
 
-        // this is not a mistake that we are passing here off-chain hash
-        // this is onchain data structure but hash verification is in a differrent step
-        // for this we have validate_results function
+        let must_be_signed =
+          list.any(
+            sc.transaction.extra_signatories,
+            fn(key) { list.has(organiser_keys, key) },
+          )
+
+        trace cbor.diagnostic(sc.transaction.extra_signatories)
+
+        let final_result =
+          CategoryResultsDatum {
+            event_id: contract_event_id,
+            organiser: contract_organiser,
+            category_id: contract_category_id,
+            results: counted_on_chain_results,
+          }
+
         and {
           validators.any_output_contains_own_validator_address(
             inputs,
             outputs,
             output_reference,
           )?,
-          output_contains_final_result(
-            sc.transaction.outputs,
-            CategoryResultsDatum {
-              event_id: contract_event_id,
-              organiser: contract_organiser,
-              category_id: contract_category_id,
-              results: counted_on_chain_results,
-            },
-          )?,
+          //must_be_signed?,
+          output_contains_final_result(sc.transaction.outputs, final_result)?,
         }
       }
     }
   }
 }
 
-// checks that one of the outputs contains
-// computed on chain results
 fn output_contains_final_result(
   outputs: List<Output>,
   on_chain_results: CategoryResultsDatum,
@@ -251,7 +261,7 @@ fn do_count_votes(
           value: 1,
           compare: compare_proposal,
         ),
-        with: fn(_key, a, b) { Some(a + b) },
+        with: fn(_key, left, right) { Some(left + right) },
         compare: compare_proposal,
       )
     }

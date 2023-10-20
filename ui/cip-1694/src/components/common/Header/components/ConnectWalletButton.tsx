@@ -13,20 +13,15 @@ import {
 import { setConnectedWallet, setIsConnectWalletModalVisible } from 'common/store/userSlice';
 import { RootState } from 'common/store';
 import { clearUserInSessionStorage } from 'common/utils/session';
-import { resolveCardanoNetwork } from 'common/utils/common';
 import styles from './ConnectWalletButton.module.scss';
 import { env } from '../../../../env';
 
 export const ConnectWalletButton = ({ isMobileMenu = false }) => {
-  const { disconnect, stakeAddress, enabledWallet, installedExtensions } = useCardano({
-    limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
-  });
+  const { disconnect, stakeAddress, enabledWallet } = useCardano();
   const dispatch = useDispatch();
   const connectedWallet = useSelector((state: RootState) => state.user.connectedWallet);
 
-  const supportedWallets = installedExtensions.filter((installedWallet) =>
-    env.SUPPORTED_WALLETS.includes(installedWallet)
-  );
+  const supportedWallets = env.SUPPORTED_WALLETS;
 
   useEffect(() => {
     const init = async () => {

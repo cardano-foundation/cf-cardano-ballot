@@ -37,7 +37,6 @@ import * as loginService from 'common/api/loginService';
 import { useToggle } from 'common/hooks/useToggle';
 import { HttpError } from 'common/handlers/httpHandler';
 import { getDateAndMonth } from 'common/utils/dateUtils';
-import { resolveCardanoNetwork } from 'common/utils/common';
 import { getUserInSession, saveUserInSession, tokenIsExpired } from 'common/utils/session';
 import { ConfirmWithWalletSignatureModal } from './components/ConfirmWithWalletSignatureModal/ConfirmWithWalletSignatureModal';
 import { VoteContextInput } from './components/VoteContextInput/VoteContextInput';
@@ -66,9 +65,7 @@ const iconsMap: Record<ProposalPresentation['name'], React.ReactElement | null> 
 };
 
 export const VotePage = () => {
-  const { stakeAddress, isConnected, signMessage } = useCardano({
-    limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
-  });
+  const { stakeAddress, isConnected, signMessage } = useCardano();
   const [receipt, setReceipt] = useState<VoteReceiptType | null>(null);
   const [voteContext, setVoteContext] = useState('');
   const event = useSelector((state: RootState) => state.user.event);

@@ -13,14 +13,12 @@ import { RootState } from 'common/store';
 import { getDateAndMonth } from 'common/utils/dateUtils';
 import * as voteService from 'common/api/voteService';
 import { setChainTipData } from 'common/store/userSlice';
-import { resolveCardanoNetwork } from 'common/utils/common';
 import { Toast } from 'components/common/Toast/Toast';
 import { ResultsCommingSoonModal } from 'pages/Leaderboard/components/ResultsCommingSoonModal/ResultsCommingSoonModal';
 import { formatUTCDate } from 'pages/Leaderboard/utils';
 import { ChainTip } from 'types/voting-ledger-follower-types';
 import { ConnectWalletButton } from './ConnectWalletButton';
 import styles from './HeaderActions.module.scss';
-import { env } from '../../../../env';
 
 type HeaderActionsProps = {
   onClick?: () => void;
@@ -29,7 +27,7 @@ type HeaderActionsProps = {
 };
 
 export const HeaderActions = ({ isMobileMenu = false, onClick, showNavigationItems }: HeaderActionsProps) => {
-  const { isConnected } = useCardano({ limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK) });
+  const { isConnected } = useCardano();
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();

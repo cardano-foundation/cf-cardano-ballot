@@ -80,7 +80,7 @@ public class CIP1694PreProdCommands {
 
         Proposal abstainProposal = Proposal.builder()
                 .id("fd9f03e8-8ee9-4de5-93a3-40779216f151")
-                .name("NO")
+                .name("ABSTAIN")
                 .build();
 
         CreateCategoryCommand createCategoryCommand = CreateCategoryCommand.builder()

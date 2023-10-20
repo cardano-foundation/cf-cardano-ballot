@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.72](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.71...v0.2.72) (2023-10-20)
+
+
+### Features
+
+* **cip-1694-ui:** change copy for the main question, change before event started intro page behaviour ([544c83f](https://github.com/cardano-foundation/cf-cardano-ballot/commit/544c83fc000aeb67ab9780dff12d07d21e0a8006))
+
 ## [0.2.71](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.70...v0.2.71) (2023-10-20)
 
 

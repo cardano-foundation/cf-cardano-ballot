@@ -41,10 +41,10 @@ public class CIP1694PreProdCommands {
 
         CreateEventCommand createEventCommand = CreateEventCommand.builder()
                 .id(EVENT_NAME + "_" + shortUUID(4))
-                .startEpoch(Optional.of(101))
-                .endEpoch(Optional.of(101))
+                .startEpoch(Optional.of(102))
+                .endEpoch(Optional.of(102))
                 .snapshotEpoch(Optional.of(99))
-                .proposalsRevealEpoch(Optional.of(102))
+                .proposalsRevealEpoch(Optional.of(103))
                 .votingPowerAsset(Optional.of(ADA))
                 .organisers("IOG")
                 .votingEventType(STAKE_BASED)

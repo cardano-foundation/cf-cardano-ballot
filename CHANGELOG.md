@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.71](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.70...v0.2.71) (2023-10-20)
+
+
+### Bug Fixes
+
+* **cip-1694-ui:** add proper styles for button loaders ([a674f9f](https://github.com/cardano-foundation/cf-cardano-ballot/commit/a674f9f42b1f4d57f46fa6a72b115042715624e3))
+
 ## [0.2.70](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.69...v0.2.70) (2023-10-19)
 
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import cn from 'classnames';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -7,16 +7,24 @@ import { Pagination, Navigation, Autoplay } from 'swiper';
 import { Swiper as SwiperClass } from 'swiper/types';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Grid, Container, Typography, Button, Box } from '@mui/material';
+import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import { RootState } from 'common/store';
+import { setIsConnectWalletModalVisible } from 'common/store/userSlice';
 import { ROUTES } from 'common/routes';
 import { EventTime } from 'components/EventTime/EventTime';
+import { resolveCardanoNetwork } from 'common/utils/common';
 import { SlideProps } from './Slides.types';
 import styles from './Slides.module.scss';
+import { env } from '../../../env';
 
 export const Slides = ({ items }: SlideProps) => {
+  const { isConnected } = useCardano({
+    limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
+  });
   const event = useSelector((state: RootState) => state.user.event);
   const [swiper, setSwiper] = useState<SwiperClass | undefined>(undefined);
   const [activeIndex, setActiveIndex] = useState(0);
+  const dispatch = useDispatch();
 
   return (
     <Box
@@ -108,16 +116,32 @@ export const Slides = ({ items }: SlideProps) => {
                   >
                     {slide.description}
                   </Typography>
-                  <Button
-                    size="large"
-                    component={Link}
-                    variant="contained"
-                    className={styles.button}
-                    data-testid="event-cta"
-                    to={{ pathname: ROUTES[event?.finished ? 'LEADERBOARD' : 'VOTE'] }}
-                  >
-                    {event?.notStarted ? 'View the vote' : event?.finished ? 'See the results' : 'Get started'}
-                  </Button>
+                  {event?.notStarted ? (
+                    <Button
+                      size="large"
+                      component={isConnected ? Link : undefined}
+                      onClick={
+                        !isConnected ? () => dispatch(setIsConnectWalletModalVisible({ isVisible: true })) : undefined
+                      }
+                      variant="contained"
+                      className={styles.button}
+                      data-testid="event-cta"
+                      to={isConnected ? { pathname: ROUTES['VOTE'] } : undefined}
+                    >
+                      {isConnected ? 'Preview the question' : 'Get started'}
+                    </Button>
+                  ) : (
+                    <Button
+                      size="large"
+                      component={Link}
+                      variant="contained"
+                      className={styles.button}
+                      data-testid="event-cta"
+                      to={{ pathname: ROUTES[event?.finished ? 'LEADERBOARD' : 'VOTE'] }}
+                    >
+                      {event?.finished ? 'See the results' : 'Get started'}
+                    </Button>
+                  )}
                 </Grid>
                 <Grid
                   item

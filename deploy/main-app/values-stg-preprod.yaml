@@ -11,7 +11,7 @@ cf-cardano-ballot-ui:
   enabled: true
   values:
     image:
-      tag: 0.2.71
+      tag: 0.2.72
     votingAppServerUrl: "https://api.cip1694.metadata.dev.cf-deployments.org"
     votingLedgerFollowerAppServerUrl: "https://follower-api.cip1694.metadata.dev.cf-deployments.org"
     votingVerificationAppServerUrl: "https://verification-api.cip1694.metadata.dev.cf-deployments.org"

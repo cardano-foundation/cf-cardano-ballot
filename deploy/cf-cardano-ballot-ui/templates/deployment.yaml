@@ -41,6 +41,10 @@ spec:
               value: {{ .Values.network | default "preprod" | upper | quote }}
             - name: REACT_APP_SUPPORTED_WALLETS
               value: "flint,eternl,nami,typhoncip30,yoroi,nufi,gerowallet,lace,begin,cardwallet"
+            - name: REACT_APP_QUESTIONS
+              value: {{ .Values.questions }}
+            - name: REACT_APP_FAQ_URL
+              value: {{ .Values.faqUrl }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}

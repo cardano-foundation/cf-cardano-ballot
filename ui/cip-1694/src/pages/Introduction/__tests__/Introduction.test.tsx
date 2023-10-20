@@ -5,7 +5,7 @@ var mockUseCardano = jest.fn();
 import React from 'react';
 import '@testing-library/jest-dom';
 import { expect } from '@jest/globals';
-import { screen, within, waitFor, fireEvent, cleanup } from '@testing-library/react';
+import { screen, within, waitFor, fireEvent, cleanup, act } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import { ROUTES } from 'common/routes';
 import { UserState } from 'common/store/types';
@@ -14,6 +14,17 @@ import { renderWithProviders } from 'test/mockProviders';
 import { eventMock_active, useCardanoMock, eventMock_notStarted, eventMock_finished } from 'test/mocks';
 import { CustomRouter } from 'test/CustomRouter';
 import { formatUTCDate } from 'common/utils/dateUtils';
+
+jest.mock('../../../env', () => {
+  const original = jest.requireActual('../../../env');
+  return {
+    ...original,
+    env: {
+      ...original.env,
+      TARGET_NETWORK: 'Preprod',
+    },
+  };
+});
 
 jest.mock('@cardano-foundation/cardano-connect-with-wallet', () => {
   return {
@@ -145,6 +156,12 @@ describe("For the event that hasn't started yet", () => {
   });
 
   test('should display proper state', async () => {
+    mockUseCardano.mockReset();
+    mockUseCardano.mockReturnValue({
+      useCardanoMock,
+      isConnected: false,
+    });
+
     const history = createMemoryHistory({ initialEntries: [ROUTES.INTRO] });
 
     renderWithProviders(
@@ -176,13 +193,41 @@ describe("For the event that hasn't started yet", () => {
 
       const cta = within(introductionPage).queryByTestId('event-cta');
       expect(cta).not.toBeNull();
-      expect(cta.textContent).toEqual('View the vote');
+      expect(cta.textContent).toEqual('Get started');
 
       const image = within(introductionPage).queryByTestId('event-image');
       expect(image).not.toBeNull();
       expect(image.tagName).toEqual('IMG');
       expect(image.attributes.getNamedItem('src').value).toEqual(introItems[0].image);
     });
+  });
+
+  test('should display connect wallet modal', async () => {
+    mockUseCardano.mockReset();
+    mockUseCardano.mockReturnValue({
+      useCardanoMock,
+      isConnected: false,
+    });
+    const history = createMemoryHistory({ initialEntries: [ROUTES.INTRO] });
+    const historyPushSpy = jest.spyOn(history, 'push');
+
+    const { store } = renderWithProviders(
+      <CustomRouter history={history}>
+        <IntroductionPage />
+      </CustomRouter>,
+      { preloadedState: { user: { event: eventMock_notStarted } as UserState } }
+    );
+
+    const cta = within(screen.queryByTestId('introduction-page')).queryByTestId('event-cta');
+
+    await act(async () => {
+      fireEvent.click(cta);
+    });
+
+    await waitFor(async () => {
+      expect(store.getState().user.isConnectWalletModalVisible).toBeTruthy();
+    });
+    historyPushSpy.mockRestore();
   });
 
   test('should redirect to vote page', async () => {
@@ -195,6 +240,9 @@ describe("For the event that hasn't started yet", () => {
       </CustomRouter>,
       { preloadedState: { user: { event: eventMock_notStarted } as UserState } }
     );
+
+    const introductionPage = screen.queryByTestId('introduction-page');
+    expect(within(introductionPage).queryByTestId('event-cta').textContent).toEqual('Preview the question');
 
     await waitFor(async () => {
       const cta = within(screen.queryByTestId('introduction-page')).queryByTestId('event-cta');

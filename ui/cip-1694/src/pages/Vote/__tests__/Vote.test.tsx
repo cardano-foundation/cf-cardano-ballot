@@ -88,6 +88,7 @@ jest.mock('../../../env', () => {
     ...original,
     env: {
       ...original.env,
+      QUESTIONS: ['Do you like pineapple pizza?', 'Do you like apples?'],
       CATEGORY_ID: 'CHANGE_GOV_STRUCTURE',
       EVENT_ID: 'CIP-1694_Pre_Ratification_3316',
       GOOGLE_FORM_VOTE_CONTEXT_INPUT_NAME: 'GOOGLE_FORM_VOTE_CONTEXT_INPUT_NAME',

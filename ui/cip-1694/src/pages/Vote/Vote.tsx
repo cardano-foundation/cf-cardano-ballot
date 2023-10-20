@@ -59,17 +59,6 @@ export const errorsMap = {
   ),
 };
 
-const copies = [
-  {
-    title: 'The Governance of Cardano',
-    body: 'Do you like pineapple pizza?',
-  },
-  {
-    title: 'The Governance of Cardano',
-    body: 'Do you like apples?',
-  },
-];
-
 const iconsMap: Record<ProposalPresentation['name'], React.ReactElement | null> = {
   YES: <DoneIcon sx={{ fontSize: { xs: '30px', md: '52px' }, color: '#39486C' }} />,
   NO: <CloseIcon sx={{ fontSize: { xs: '30px', md: '52px' }, color: '#39486C' }} />,
@@ -93,8 +82,12 @@ export const VotePage = () => {
   const [isConfirmWithWalletSignatureModalVisible, setIsConfirmWithWalletSignatureModalVisible] = useState(false);
   const [voteSubmitted, setVoteSubmitted] = useState(false);
   const [activeCategoryId, setActiveCategoryId] = useState(event?.categories?.[0].id);
-  const numOfCategories = event?.categories?.length;
-  const activeCategoryIndex = findIndex(event?.categories, ['id', activeCategoryId]);
+  const categories = useMemo(
+    () => event?.categories?.filter((_category, index) => env.QUESTIONS?.[index]),
+    [event?.categories]
+  );
+  const numOfCategories = categories?.length;
+  const activeCategoryIndex = findIndex(categories, ['id', activeCategoryId]);
   const [isToggledReceipt, toggleReceipt] = useToggle(false);
   const couldAddContext =
     activeCategoryIndex === 0 && isReceiptFetched && !receipt && event?.finished !== true && event?.notStarted !== true;
@@ -118,8 +111,8 @@ export const VotePage = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    setActiveCategoryId(event?.categories?.[0].id);
-  }, [event]);
+    setActiveCategoryId(categories?.[0].id);
+  }, [categories]);
 
   useEffect(() => {
     const session = getUserInSession();
@@ -129,7 +122,7 @@ export const VotePage = () => {
     }
   }, [event?.notStarted, stakeAddress, activeCategoryId]);
 
-  const items: OptionItem<ProposalPresentation['name']>[] = event?.categories
+  const items: OptionItem<ProposalPresentation['name']>[] = categories
     ?.find(({ id }) => id === activeCategoryId)
     ?.proposals?.map(({ name }) => ({
       id: `${activeCategoryId}-${name}`,
@@ -246,7 +239,7 @@ export const VotePage = () => {
     setOptionId(null);
     setVoteSubmitted(false);
     setIsReceiptFetched(false);
-    setActiveCategoryId(event?.categories[categoryIndex]?.id);
+    setActiveCategoryId(categories[categoryIndex]?.id);
   };
 
   const submitVoteContextForm = useCallback(async () => {
@@ -364,7 +357,7 @@ export const VotePage = () => {
                 md: '65px',
               }}
             >
-              {copies[activeCategoryIndex]?.title}
+              The Governance of Cardano
             </Typography>
           </Grid>
           <Grid item>
@@ -390,7 +383,7 @@ export const VotePage = () => {
               fontSize={{ xs: '16px', md: '28px' }}
               data-testid="event-description"
             >
-              {copies[activeCategoryIndex]?.body}
+              {env.QUESTIONS[activeCategoryIndex]}
             </Typography>
             {numOfCategories > 1 && (
               <Typography

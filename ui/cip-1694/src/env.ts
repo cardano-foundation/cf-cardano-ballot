@@ -19,6 +19,7 @@ type EnvType = {
   CATEGORY_ID: string;
   COMMIT_HASH: string;
   SUPPORTED_WALLETS: string[];
+  QUESTIONS: string[];
   DISCORD_URL: string;
   FAQ_URL: string;
 };
@@ -45,6 +46,9 @@ export const env: EnvType = {
   SUPPORTED_WALLETS: (process.env.REACT_APP_SUPPORTED_WALLETS || get(window, 'env.REACT_APP_SUPPORTED_WALLETS') || '')
     .split(',')
     .filter((w: string) => !!w),
+  QUESTIONS: (process.env.REACT_APP_QUESTIONS || get(window, 'env.REACT_APP_QUESTIONS') || '')
+    .split(';')
+    .filter((q: string) => !!q),
   DISCORD_URL: process.env.REACT_APP_DISCORD_URL || get(window, 'env.REACT_APP_DISCORD_URL'),
   FAQ_URL: process.env.REACT_APP_FAQ_URL || get(window, 'env.REACT_APP_FAQ_URL'),
 };

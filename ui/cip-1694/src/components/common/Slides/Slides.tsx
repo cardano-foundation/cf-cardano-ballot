@@ -12,15 +12,11 @@ import { RootState } from 'common/store';
 import { setIsConnectWalletModalVisible } from 'common/store/userSlice';
 import { ROUTES } from 'common/routes';
 import { EventTime } from 'components/EventTime/EventTime';
-import { resolveCardanoNetwork } from 'common/utils/common';
 import { SlideProps } from './Slides.types';
 import styles from './Slides.module.scss';
-import { env } from '../../../env';
 
 export const Slides = ({ items }: SlideProps) => {
-  const { isConnected } = useCardano({
-    limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
-  });
+  const { isConnected } = useCardano();
   const event = useSelector((state: RootState) => state.user.event);
   const [swiper, setSwiper] = useState<SwiperClass | undefined>(undefined);
   const [activeIndex, setActiveIndex] = useState(0);

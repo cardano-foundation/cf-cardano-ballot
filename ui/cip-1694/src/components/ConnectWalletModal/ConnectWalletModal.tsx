@@ -21,24 +21,11 @@ type ConnectWalletModalProps = {
   onConnectWallet: () => void;
   onConnectWalletError: (walletName: string, error: Error) => void;
   onCloseFn: () => void;
-  installedExtensions: string[];
 };
 
 export const ConnectWalletModal = (props: ConnectWalletModalProps) => {
-  const {
-    name,
-    id,
-    openStatus,
-    title,
-    description,
-    onConnectWallet,
-    onConnectWalletError,
-    onCloseFn,
-    installedExtensions,
-  } = props;
-  const supportedWallets = installedExtensions.filter((installedWallet) =>
-    env.SUPPORTED_WALLETS.includes(installedWallet)
-  );
+  const { name, id, openStatus, title, description, onConnectWallet, onConnectWalletError, onCloseFn } = props;
+  const supportedWallets = env.SUPPORTED_WALLETS;
 
   return (
     <Dialog

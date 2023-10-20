@@ -10,17 +10,15 @@ import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import { ByProposalsInCategoryStats } from 'types/voting-app-types';
 import { ProposalPresentation } from 'types/voting-ledger-follower-types';
 import { RootState } from 'common/store';
-import { resolveCardanoNetwork } from 'common/utils/common';
 import * as leaderboardService from 'common/api/leaderboardService';
 import { Toast } from 'components/common/Toast/Toast';
 import { getPercentage, proposalColorsMap } from './utils';
 import { StatsTile } from './components/StatsTile';
 import styles from './Leaderboard.module.scss';
 import { StatItem } from './types';
-import { env } from '../../env';
 
 export const Leaderboard = () => {
-  const { isConnected } = useCardano({ limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK) });
+  const { isConnected } = useCardano();
   const event = useSelector((state: RootState) => state.user.event);
   const [stats, setStats] = useState<ByProposalsInCategoryStats['proposals']>();
 

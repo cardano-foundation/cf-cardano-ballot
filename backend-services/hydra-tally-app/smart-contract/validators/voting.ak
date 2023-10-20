@@ -26,21 +26,22 @@ type Redeemer {
 }
 
 type CategoryResultsDatum {
-  category_id: ByteArray,
+  category_id: Category,
   results: Dict<Proposal, Int>,
 }
 
 type Vote {
-  vote_id: ByteArray,
-  voter_key: ByteArray,
-  category: ByteArray,
-  proposal: ByteArray,
+  vote_id: VoteId,
+  voter_key: PubKeyHash,
+  category: Category,
+  proposal: Proposal,
 }
 
 fn compare_proposal(left: Proposal, right: Proposal) -> Ordering {
   bytearray.compare(builtin.serialise_data(left), builtin.serialise_data(right))
 }
 
+// admins: List<PubKeyHash>
 validator(event_id: ByteArray, contract_category_id: ByteArray) {
   fn voting(_voting_datum: Void, redeemer: Redeemer, sc: ScriptContext) -> Bool {
     // On L2 (Hydra) one will typically lock votes with 0 ADA but on L1 of course each eUTxO is guarded by ca. 1,7 ADA
@@ -68,39 +69,35 @@ validator(event_id: ByteArray, contract_category_id: ByteArray) {
           output_contains_final_result(sc.transaction.outputs, on_chain_results)?,
         }
       }
-      ReduceVoteBatches -> True
+      ReduceVoteBatches -> {
+        // collect results from all inputs (fail if there are still votes in smart contract)
+        // take existing results and compress them, into one
+        // check if resulting output datum contains votes counted up properly and that they send result back to the same address
+        let on_chain_results: List<CategoryResultsDatum> =
+          get_vote_results_from_inputs(contract_category_id, inputs)
+
+        let counted_on_chain_results: Dict<Proposal, Int> =
+          count_vote_results(on_chain_results)
+
+        // this is not a mistake that we are passing here off-chain hash
+        // this is onchain data structure but hash verification is in a differrent step
+        // for this we have validate_results function
+        and {
+          validators.any_output_contains_own_validator_address(
+            inputs,
+            outputs,
+            output_reference,
+          )?,
+          output_contains_final_result(
+            sc.transaction.outputs,
+            CategoryResultsDatum {
+              category_id: contract_category_id,
+              results: counted_on_chain_results,
+            },
+          )?,
+        }
+      }
     }
-    // ReduceResults { off_chain_batch_hash } -> {
-    //   // collect results from all inputs (fail if there are still votes in smart contract)
-    //   // take existing results and compress them, into one
-    //   // check if resulting output datum contains votes counted up properly and that they send result back to the same address
-    //   let on_chain_results: List<ResultsBatchDatum> =
-    //     get_vote_results_from_inputs(inputs)
-    //   let counted_on_chain_results: Dict<ChallengeProposal, Result> =
-    //     count_vote_results(on_chain_results)
-    //   // this is not a mistake that we are passing here off-chain hash
-    //   // this is onchain data structure but hash verification is in a differrent step
-    //   // for this we have validate_results function
-    //   let on_chain_results_hash = get_vote_results_hash(on_chain_results)
-    //   let on_chain_results_with_hash =
-    //     ResultsBatchDatum {
-    //       results: counted_on_chain_results,
-    //       batch_hash: on_chain_results_hash,
-    //     }
-    //   let hashes_match = (off_chain_batch_hash == on_chain_results_hash)?
-    //   and {
-    //     validators.any_output_contains_own_validator_address(
-    //       inputs,
-    //       outputs,
-    //       output_reference,
-    //     )?,
-    //     hashes_match?,
-    //     output_contains_final_result(
-    //       sc.transaction.outputs,
-    //       on_chain_results_with_hash,
-    //     )?,
-    //   }
-    // }
   }
 }
 
@@ -130,6 +127,34 @@ fn output_contains_final_result(
     |> list.any(result_checker)
 }
 
+fn get_vote_results_from_inputs(
+  contract_category_id: ByteArray,
+  inputs: List<Input>,
+) -> List<CategoryResultsDatum> {
+  list.filter_map(
+    inputs,
+    fn(input) {
+      if adatums.is_inline_datum(input.output) {
+        expect InlineDatum(category_data) = input.output.datum
+        expect categoryResultsDatum: CategoryResultsDatum = category_data
+
+        if
+        bytearray.compare(
+          contract_category_id,
+          categoryResultsDatum.category_id,
+        ) == Equal{
+        
+          Some(categoryResultsDatum)
+        } else {
+          None
+        }
+      } else {
+        None
+      }
+    },
+  )
+}
+
 fn get_votes_from_inputs(
   contract_category_id: ByteArray,
   inputs: List<Input>,
@@ -153,34 +178,25 @@ fn get_votes_from_inputs(
   )
 }
 
-// fn get_vote_results_from_inputs(inputs: List<Input>) -> List<ResultsBatchDatum> {
-//   list.filter_map(
-//     inputs,
-//     fn(input) {
-//       if adatums.is_inline_datum(input.output) {
-//         expect InlineDatum(vote_results_data) = input.output.datum
-//         expect results_data_datum: ResultsBatchDatum = vote_results_data
+fn count_vote_results(
+  on_chain_results: List<CategoryResultsDatum>,
+) -> Dict<Proposal, Int> {
+  let merging_fn =
+    fn(r1: Dict<Proposal, Int>, r2: Dict<Proposal, Int>) {
+      dict.union_with(
+        left: r1,
+        right: r2,
+        with: fn(_key, a, b) { Some(a + b) },
+        compare: compare_proposal,
+      )
+    }
 
-//         Some(results_data_datum)
-//       } else {
-//         None
-//       }
-//     },
-//   )
-// }
+  let dict_list_with_results: List<Dict<Proposal, Int>> =
+    list.map(on_chain_results, fn(rbd) { rbd.results })
 
-// fn count_vote_results(
-//   on_chain_results: List<ResultsBatchDatum>,
-// ) -> Dict<ChallengeProposal, Result> {
-//   let merging_fn =
-//     fn(r1: Dict<ChallengeProposal, Result>, r2: Dict<ChallengeProposal, Result>) {
-//       dict.union_with(
-//         left: r1,
-//         right: r2,
-//         with: results_conflict_resolver,
-//         compare: challenge_proposal.compare,
-//       )
-//     }
+  let empty = dict.new()
+  list.reduce(dict_list_with_results, empty, merging_fn)
+}
 
 //   let dict_list_with_results: List<Dict<ChallengeProposal, Result>> =
 //     list.map(on_chain_results, fn(rbd) { rbd.results })

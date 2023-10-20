@@ -11,7 +11,7 @@ cf-cardano-ballot-ui:
   enabled: true
   values:
     image:
-      tag: 0.2.70
+      tag: 0.2.71
     votingAppServerUrl: "https://api.cip1694.metadata.dev.cf-deployments.org"
     votingLedgerFollowerAppServerUrl: "https://follower-api.cip1694.metadata.dev.cf-deployments.org"
     votingVerificationAppServerUrl: "https://verification-api.cip1694.metadata.dev.cf-deployments.org"
@@ -41,7 +41,7 @@ cf-cardano-ballot-verification-api:
   enabled: true
   values:
     image:
-      tag: 0.2.70
+      tag: 0.2.71
     corsAllowedOrigins: https://{{ .Values.domain }},https://cip1694.metadata.dev.cf-deployments.org,http://localhost:3000
     ingress:
       additionalDomains:
@@ -71,12 +71,12 @@ cf-cardano-ballot-ledger-follower-api:
 cf-voting-verification-ui:
   values:
     image:
-      tag: 0.2.70
+      tag: 0.2.71
 
 cf-vote-commitment:
   values:
     image:
-      tag: 0.2.70
+      tag: 0.2.71
     instances:
       - name: active-hour
         voteCommitmentCronExpression: "0 0 * * * *"

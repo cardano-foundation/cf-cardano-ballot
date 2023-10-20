@@ -40,3 +40,4 @@ application-prod.properties
 bin
 
 votes.csv
+processed_votes.csv

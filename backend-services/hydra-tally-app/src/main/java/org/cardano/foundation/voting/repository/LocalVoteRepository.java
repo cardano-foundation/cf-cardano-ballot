@@ -1,12 +1,10 @@
 package org.cardano.foundation.voting.repository;
 
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
 import org.cardano.foundation.voting.domain.Vote;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
 
 import java.io.InputStreamReader;
@@ -23,19 +21,6 @@ public class LocalVoteRepository implements VoteRepository {
     private final ResourceLoader resourceLoader;
 
     private final String votesPath;
-
-    @Value("${ballot.event.id}")
-    private String ballotEventId;
-
-    private Set<String> allCategories;
-
-    @PostConstruct
-    public void init() {
-        this.allCategories = findAllVotes(ballotEventId)
-                .parallelStream()
-                .map(Vote::categoryId)
-                .collect(Collectors.toSet());
-    }
 
     @Override
     @SneakyThrows
@@ -58,8 +43,9 @@ public class LocalVoteRepository implements VoteRepository {
                         "voting_power",
                         "voted_at_slot",
                         "created_at",
-                        "updated_at"
-                )
+                        "updated_at",
+                        "organiser"
+                        )
                 .build();
 
         var votesParsed = format.parse(new InputStreamReader(r.getInputStream()));
@@ -72,6 +58,7 @@ public class LocalVoteRepository implements VoteRepository {
             var categoryId = vote.get("category_id");
             var proposalId = vote.get("proposal_id");
             var voterStakeAddress = vote.get("voter_stake_address");
+            var organiser = vote.get("organiser");
 
             if (!voteEventId.equals(eventId)) {
                 continue;
@@ -80,6 +67,7 @@ public class LocalVoteRepository implements VoteRepository {
             var voteE = Vote.create(
                     voteId,
                     voteEventId,
+                    organiser,
                     categoryId,
                     proposalId,
                     voterStakeAddress,
@@ -100,13 +88,19 @@ public class LocalVoteRepository implements VoteRepository {
     @Override
     public List<Vote> findAllVotes(String eventId, String categoryId) {
         return findAllVotes(eventId)
-                .parallelStream().filter(v -> v.categoryId().equals(categoryId))
+                .parallelStream()
+                .filter(v -> {
+                    return v.categoryId().equals(categoryId);
+                })
                 .toList();
     }
 
     @Override
     public Set<String> getAllUniqueCategories(String eventId) {
-        return allCategories;
+        return findAllVotes(eventId)
+                .parallelStream()
+                .map(Vote::categoryId)
+                .collect(Collectors.toSet());
     }
 
 }

@@ -14,6 +14,7 @@ import com.bloxbean.cardano.client.function.helper.ScriptCallContextProviders;
 import com.bloxbean.cardano.client.function.helper.model.ScriptCallContext;
 import com.bloxbean.cardano.client.plutus.spec.ExUnits;
 import com.bloxbean.cardano.client.plutus.spec.PlutusV2Script;
+import com.bloxbean.cardano.client.util.JsonUtil;
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -72,15 +73,20 @@ public class HydraVoteBatchReducer {
     private org.cardano.foundation.voting.domain.ReduceVoteBatchRedeemerConverter reduceVoteBatchRedeemerConverter;
 
     public void batchVotesPerCategory(String contractEventId,
+                                      String contractOrganiser,
                                       String contractCategoryId,
                                       int batchSize) throws CborSerializationException {
-        val contract = plutusScriptLoader.getContract(contractEventId, contractCategoryId);
+        val contract = plutusScriptLoader.getContract(contractEventId, contractOrganiser, contractCategoryId);
 
         log.info("Contract Address: {}", plutusScriptLoader.getContractAddress(contract));
 
         Either<Problem, Optional<String>> transactionResultE;
         do {
-            transactionResultE = postReduceBatchTransaction(contractEventId, contractCategoryId, batchSize);
+            transactionResultE = postReduceBatchTransaction(contractEventId,
+                    contractOrganiser,
+                    contractCategoryId,
+                    batchSize
+            );
 
             if (transactionResultE.isEmpty()) {
                 log.error("Reducing votes failed, reason:{}", transactionResultE.getLeft());
@@ -102,9 +108,10 @@ public class HydraVoteBatchReducer {
     }
 
     private Either<Problem, Optional<String>> postReduceBatchTransaction(String contractEventId,
+                                                                         String contractOrganiser,
                                                                          String contractCategoryId,
                                                                          int batchSize) throws CborSerializationException {
-        val contract = plutusScriptLoader.getContract(contractEventId, contractCategoryId);
+        val contract = plutusScriptLoader.getContract(contractEventId, contractOrganiser, contractCategoryId);
         val contractAddress = plutusScriptLoader.getContractAddress(contract);
 
         val hydraOperator = cardanoOperatorSupplier.getOperator();
@@ -113,7 +120,11 @@ public class HydraVoteBatchReducer {
         log.info("Sender Address: " + sender);
         log.info("Script Address: " + contractAddress);
 
-        val utxosWithCategoryResults = voteUtxoFinder.getUtxosWithCategoryResults(contractEventId, contractCategoryId, batchSize);
+        val utxosWithCategoryResults = voteUtxoFinder.getUtxosWithCategoryResults(contractEventId,
+                contractOrganiser,
+                contractCategoryId,
+                batchSize
+        );
 
         if (utxosWithCategoryResults.isEmpty()) {
             log.warn("No utxo found");
@@ -131,7 +142,13 @@ public class HydraVoteBatchReducer {
                 .map(UTxOCategoryResult::categoryResultsDatum)
                 .toList();
 
-        val reduceVoteBatchDatum = categoryResultsDatum(contractCategoryId, categoryResultsDatums);
+        val reduceVoteBatchDatum = categoryResultsDatum(contractEventId,
+                contractOrganiser,
+                contractCategoryId,
+                categoryResultsDatums
+        );
+
+        System.out.println("Reduction:" + JsonUtil.getPrettyJson(reduceVoteBatchDatum));
 
         val utxoSelectionStrategy = new LargestFirstUtxoSelectionStrategy(utxoSupplier);
         val collateralUtxos = utxoSelectionStrategy.select(sender, new Amount(LOVELACE, adaToLovelace(2)), emptySet());
@@ -213,9 +230,11 @@ public class HydraVoteBatchReducer {
         return Either.right(Optional.of(result.getValue()));
     }
 
-    public static CategoryResultsDatum categoryResultsDatum(String contractCategoryId,
+    public static CategoryResultsDatum categoryResultsDatum(String eventId,
+                                                            String contractOrganiser,
+                                                            String contractCategoryId,
                                                             List<CategoryResultsDatum> categoryResultsDataList) {
-        val groupResultBatchDatum = CategoryResultsDatum.empty(contractCategoryId);
+        val groupResultBatchDatum = CategoryResultsDatum.empty(eventId, contractOrganiser, contractCategoryId);
 
         for (val categoryResultsDatum : categoryResultsDataList) {
             categoryResultsDatum.getResults()

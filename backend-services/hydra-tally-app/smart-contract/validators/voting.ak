@@ -21,15 +21,19 @@ type Redeemer {
 }
 
 type CategoryResultsDatum {
+  event_id: String,
+  organiser: String,
   category_id: Category,
   results: Dict<Proposal, Int>,
 }
 
 type Vote {
+  event_id: String,
+  organiser: String,
   vote_id: VoteId,
   voter_key: PubKeyHash,
-  category: Category,
-  proposal: Proposal,
+  category_id: Category,
+  proposal_id: Proposal,
 }
 
 fn compare_proposal(left: Proposal, right: Proposal) -> Ordering {
@@ -37,7 +41,11 @@ fn compare_proposal(left: Proposal, right: Proposal) -> Ordering {
 }
 
 // admins: List<PubKeyHash>
-validator(_event_id: String, contract_category_id: String) {
+validator(
+  contract_event_id: String,
+  contract_organiser: String,
+  contract_category_id: String,
+) {
   fn voting(_voting_datum: Void, redeemer: Redeemer, sc: ScriptContext) -> Bool {
     // On L2 (Hydra) one will typically lock votes with 0 ADA but on L1 of course each eUTxO is guarded by ca. 1,7 ADA
     expect Spend(output_reference) = sc.purpose
@@ -48,12 +56,22 @@ validator(_event_id: String, contract_category_id: String) {
     when redeemer is {
       CreateVoteBatch -> {
         let votes: List<Vote> =
-          get_votes_from_inputs(contract_category_id, inputs)
+          get_votes_from_inputs(
+            contract_event_id,
+            contract_organiser,
+            contract_category_id,
+            inputs,
+          )
 
         let results: Dict<Proposal, Int> = count_votes(votes)
 
         let on_chain_results =
-          CategoryResultsDatum { category_id: contract_category_id, results }
+          CategoryResultsDatum {
+            event_id: contract_event_id,
+            organiser: contract_organiser,
+            category_id: contract_category_id,
+            results,
+          }
 
         and {
           validators.any_output_contains_own_validator_address(
@@ -69,7 +87,12 @@ validator(_event_id: String, contract_category_id: String) {
         // take existing results and compress them, into one
         // check if resulting output datum contains votes counted up properly and that they send result back to the same address
         let on_chain_results: List<CategoryResultsDatum> =
-          get_vote_results_from_inputs(contract_category_id, inputs)
+          get_vote_results_from_inputs(
+            contract_event_id,
+            contract_organiser,
+            contract_category_id,
+            inputs,
+          )
 
         let counted_on_chain_results: Dict<Proposal, Int> =
           count_vote_results(on_chain_results)
@@ -86,6 +109,8 @@ validator(_event_id: String, contract_category_id: String) {
           output_contains_final_result(
             sc.transaction.outputs,
             CategoryResultsDatum {
+              event_id: contract_event_id,
+              organiser: contract_organiser,
               category_id: contract_category_id,
               results: counted_on_chain_results,
             },
@@ -108,9 +133,9 @@ fn output_contains_final_result(
   let mapper =
     fn(output) {
       if adatums.is_inline_datum(output) {
-        expect InlineDatum(off_chain_results_data) = output.datum
+        expect InlineDatum(results_data) = output.datum
 
-        expect off_chain_results: CategoryResultsDatum = off_chain_results_data
+        expect off_chain_results: CategoryResultsDatum = results_data
 
         Some(off_chain_results)
       } else {
@@ -123,6 +148,8 @@ fn output_contains_final_result(
 }
 
 fn get_vote_results_from_inputs(
+  contract_event_id: String,
+  contract_organiser: String,
   contract_category_id: String,
   inputs: List<Input>,
 ) -> List<CategoryResultsDatum> {
@@ -133,9 +160,13 @@ fn get_vote_results_from_inputs(
         expect InlineDatum(category_data) = input.output.datum
         expect categoryResultsDatum: CategoryResultsDatum = category_data
 
-        if
-        astring.compare(contract_category_id, categoryResultsDatum.category_id) == Equal{
-        
+        let conditionsFullfilled = and {
+            contract_event_id == categoryResultsDatum.event_id,
+            contract_organiser == categoryResultsDatum.organiser,
+            contract_category_id == categoryResultsDatum.category_id,
+          }
+
+        if conditionsFullfilled {
           Some(categoryResultsDatum)
         } else {
           None
@@ -148,6 +179,8 @@ fn get_vote_results_from_inputs(
 }
 
 fn get_votes_from_inputs(
+  contract_event_id: String,
+  contract_organiser: String,
   contract_category_id: String,
   inputs: List<Input>,
 ) -> List<Vote> {
@@ -158,7 +191,13 @@ fn get_votes_from_inputs(
         expect InlineDatum(vote_data) = input.output.datum
         expect vote: Vote = vote_data
 
-        if astring.compare(contract_category_id, vote.category) == Equal {
+        let conditionsFullfilled = and {
+            contract_event_id == vote.event_id,
+            contract_category_id == vote.category_id,
+            contract_organiser == vote.organiser,
+          }
+
+        if conditionsFullfilled {
           Some(vote)
         } else {
           None
@@ -190,12 +229,6 @@ fn count_vote_results(
   list.reduce(dict_list_with_results, empty, merging_fn)
 }
 
-//   let dict_list_with_results: List<Dict<ChallengeProposal, Result>> =
-//     list.map(on_chain_results, fn(rbd) { rbd.results })
-
-//   list.reduce(dict_list_with_results, merging_fn, dict.new())
-// }
-
 fn count_votes(votes: List<Vote>) -> Dict<Proposal, Int> {
   let empty = dict.new()
 
@@ -209,7 +242,7 @@ fn do_count_votes(
   when votes is {
     [] -> acc
     [h, ..t] -> {
-      let p: Proposal = h.proposal
+      let p: Proposal = h.proposal_id
       dict.union_with(
         left: do_count_votes(t, acc),
         right: dict.insert(

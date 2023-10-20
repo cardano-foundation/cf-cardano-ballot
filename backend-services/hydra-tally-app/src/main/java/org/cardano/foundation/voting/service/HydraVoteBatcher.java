@@ -70,16 +70,17 @@ public class HydraVoteBatcher {
 
 
     public void batchVotesPerCategory(String contractEventId,
+                                      String contractOrganiser,
                                       String contractCategoryId,
                                       int batchSize) throws CborSerializationException {
-        val contract = plutusScriptLoader.getContract(contractEventId, contractCategoryId);
+        val contract = plutusScriptLoader.getContract(contractEventId, contractOrganiser, contractCategoryId);
         val contractAddress = plutusScriptLoader.getContractAddress(contract);
 
         log.info("Contract Address: {}", contractAddress);
 
         Either<Problem, Optional<String>> transactionResultE;
         do {
-            transactionResultE = createAndPostBatchTransaction(contractEventId, contractCategoryId, batchSize);
+            transactionResultE = createAndPostBatchTransaction(contractEventId, contractOrganiser, contractCategoryId, batchSize);
 
             if (transactionResultE.isEmpty()) {
                 log.error("Batching votes failed, reason:{}", transactionResultE.getLeft());
@@ -102,17 +103,12 @@ public class HydraVoteBatcher {
 
     private Either<Problem, Optional<String>> createAndPostBatchTransaction(
             String contractEventId,
+            String contractOrganiser,
             String contractCategoryId,
             int batchSize)
             throws CborSerializationException {
 
-        val utxosWithVotes = voteUtxoFinder.getUtxosWithVotes(contractEventId, contractCategoryId, batchSize);
-
-        for (val utxoWithVote : utxosWithVotes) {
-            val voteDatum = utxoWithVote.voteDatum();
-
-            System.out.println(JsonUtil.getPrettyJson(voteDatum));
-        }
+        val utxosWithVotes = voteUtxoFinder.getUtxosWithVotes(contractEventId, contractOrganiser, contractCategoryId, batchSize);
 
         log.info("Found votes[UTxOs]: {}", utxosWithVotes.size());
 
@@ -124,13 +120,13 @@ public class HydraVoteBatcher {
 
         val hydraOperator = cardanoOperatorSupplier.getOperator();
         val operatorAddress = hydraOperator.getAddress();
-        val contract = plutusScriptLoader.getContract(contractEventId, contractCategoryId);
+        val contract = plutusScriptLoader.getContract(contractEventId, contractOrganiser, contractCategoryId);
         val contractAddress = plutusScriptLoader.getContractAddress(contract);
 
         log.info("Sender Address: " + operatorAddress);
         log.info("Script Address: " + contractAddress);
 
-        val categoryResultsDatum = CategoryResultsDatum.empty(contractCategoryId);
+        val categoryResultsDatum = CategoryResultsDatum.empty(contractEventId, contractOrganiser, contractCategoryId);
 
         for (val uTxOVote : utxosWithVotes) {
             val voteDatum = uTxOVote.voteDatum();
@@ -143,7 +139,7 @@ public class HydraVoteBatcher {
             }
         }
 
-        System.out.println(JsonUtil.getPrettyJson(categoryResultsDatum));
+        System.out.println("Batch:" + JsonUtil.getPrettyJson(categoryResultsDatum));
 
         val utxoSelectionStrategy = new LargestFirstUtxoSelectionStrategy(utxoSupplier);
         val outputAmount = new Amount(LOVELACE, adaToLovelace(1));

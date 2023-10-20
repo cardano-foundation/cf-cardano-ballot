@@ -103,11 +103,14 @@ public class HydraCommands {
     @Value("${cardano.commit.amount}")
     private Long cardanoCommitAmount;
 
+    @Value("${hydra.auto.connect:false}")
+    private boolean autoConnect;
+
     @Value("${ballot.event.id}")
     private String eventId;
 
-    @Value("${hydra.auto.connect:false}")
-    private boolean autoConnect;
+    @Value("${ballot.organiser}")
+    private String organiser;
 
     @Nullable private Disposable stateQuerySubscription;
 
@@ -325,8 +328,8 @@ public class HydraCommands {
     @Command(command = "tally-all", description = "tally all the votes votes.")
     public String tallyAll(
             @ShellOption(value = "import-batch-size", defaultValue = "50") @Option int importBatchSize,
-            @ShellOption(value = "create-batch-size", defaultValue = "50") @Option int createBatchSize,
-            @ShellOption(value = "reduce-batch-size", defaultValue = "50") @Option int reduceBatchSize
+            @ShellOption(value = "create-batch-size", defaultValue = "25") @Option int createBatchSize,
+            @ShellOption(value = "reduce-batch-size", defaultValue = "25") @Option int reduceBatchSize
     ) throws Exception {
         log.info("Tally all votes, importBatchSize: {}, createBatchSize: {}, reduceBatchSize: {}",
                 importBatchSize, createBatchSize, reduceBatchSize);
@@ -344,15 +347,15 @@ public class HydraCommands {
             var partitioned = Lists.partition(allVotes, importBatchSize);
 
             for (val voteBatch : partitioned) {
-                val txIdE = hydraVoteImporter.importVotes(eventId, voteBatch);
+                val txIdE = hydraVoteImporter.importVotes(eventId, organiser, voteBatch);
                 if (txIdE.isEmpty()) {
                     return "Importing votes failed, reason:" + txIdE.getLeft();
                 }
 
                 log.info("Imported votes voteBatch, txId: " + "{}", txIdE.get());
 
-                hydraVoteBatcher.batchVotesPerCategory(eventId, categoryId, createBatchSize);
-                hydraVoteBatchReducer.batchVotesPerCategory(eventId, categoryId, reduceBatchSize);
+                hydraVoteBatcher.batchVotesPerCategory(eventId, organiser, categoryId, createBatchSize);
+                hydraVoteBatchReducer.batchVotesPerCategory(eventId, organiser, categoryId, reduceBatchSize);
             }
         }
 
@@ -383,7 +386,7 @@ public class HydraCommands {
         var partitioned = Lists.partition(participantVotes, batchSize);
 
         for (val batch : partitioned) {
-            val txIdE = hydraVoteImporter.importVotes(eventId, batch);
+            val txIdE = hydraVoteImporter.importVotes(eventId, organiser, batch);
             if (txIdE.isEmpty()) {
                 return "Importing votes failed, reason:" + txIdE.getLeft();
             }
@@ -406,7 +409,7 @@ public class HydraCommands {
 
         for (val categoryId : allCategories) {
             log.info("Processing category: {}", categoryId);
-            hydraVoteBatcher.batchVotesPerCategory(eventId, categoryId, batchSize);
+            hydraVoteBatcher.batchVotesPerCategory(eventId, organiser, categoryId, batchSize);
         }
 
         return "Vote batches creations done.";
@@ -425,7 +428,7 @@ public class HydraCommands {
         for (val categoryId : allCategories) {
             log.info("Processing category: {}", categoryId);
 
-            hydraVoteBatchReducer.batchVotesPerCategory(eventId, categoryId, batchSize);
+            hydraVoteBatchReducer.batchVotesPerCategory(eventId, organiser, categoryId, batchSize);
         }
 
         return "Vote results reduced.";

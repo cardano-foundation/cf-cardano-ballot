@@ -1,7 +1,6 @@
 package org.cardano.foundation.voting.domain;
 
 import com.bloxbean.cardano.client.plutus.annotation.Constr;
-import com.bloxbean.cardano.client.plutus.annotation.Enc;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,12 +15,16 @@ import java.util.Map;
 @AllArgsConstructor
 public class CategoryResultsDatum {
 
+    private String eventId;
+
+    private String organiser;
+
     private String categoryId;
 
     private Map<String, Long> results;
 
-    public static CategoryResultsDatum empty(String categoryId) {
-        return new CategoryResultsDatum(categoryId, new LinkedHashMap<>());
+    public static CategoryResultsDatum empty(String eventId, String organiser, String categoryId) {
+        return new CategoryResultsDatum(eventId, organiser, categoryId, new LinkedHashMap<>());
     }
 
     public void add(String proposalId, long newResult) {

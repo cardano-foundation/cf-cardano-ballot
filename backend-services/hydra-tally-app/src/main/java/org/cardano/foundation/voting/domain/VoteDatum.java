@@ -14,6 +14,10 @@ import lombok.NoArgsConstructor;
 @Builder
 public class VoteDatum {
 
+    private String eventId;
+
+    private String organiser;
+
     private String voteId;
 
     private byte[] voterKey;

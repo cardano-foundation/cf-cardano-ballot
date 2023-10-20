@@ -25,10 +25,11 @@ public class VoteUtxoFinder {
     private final org.cardano.foundation.voting.domain.VoteDatumConverter voteDatumConverter;
     private final org.cardano.foundation.voting.domain.CategoryResultsDatumConverter categoryResultsDatumConverter;
 
-    public List<UTxOVote> getUtxosWithVotes(String eventId,
+    public List<UTxOVote> getUtxosWithVotes(String contractEventId,
+                                            String contractOrganiser,
                                             String contractCategoryId,
                                             int batchSize) {
-        val contract = plutusScriptLoader.getContract(eventId, contractCategoryId);
+        val contract = plutusScriptLoader.getContract(contractEventId, contractOrganiser, contractCategoryId);
         val contractAddress = plutusScriptLoader.getContractAddress(contract);
 
         return utxoSupplier.getAll(contractAddress)
@@ -45,16 +46,19 @@ public class VoteUtxoFinder {
 
                 })
                 .filter(uTxOVote -> uTxOVote.voteDatum() != null)
+                .filter(uTxOVote -> uTxOVote.voteDatum().getEventId().equals(contractEventId))
                 .filter(uTxOVote -> uTxOVote.voteDatum().getCategoryId().equals(contractCategoryId))
+                .filter(uTxOVote -> uTxOVote.voteDatum().getOrganiser().equals(contractOrganiser))
                 .sorted(createVoteTxHashAndTransactionIndexComparator())
                 .limit(batchSize)
                 .toList();
     }
 
     public List<UTxOCategoryResult> getUtxosWithCategoryResults(String eventId,
+                                                                String organiser,
                                                                 String contractCategoryId,
                                                                 int batchSize) {
-        val contract = plutusScriptLoader.getContract(eventId, contractCategoryId);
+        val contract = plutusScriptLoader.getContract(eventId, organiser, contractCategoryId);
         val contractAddress = plutusScriptLoader.getContractAddress(contract);
 
         return utxoSupplier.getAll(contractAddress)
@@ -73,6 +77,8 @@ public class VoteUtxoFinder {
                     }
                 })
                 .filter(uTxOCategoryResult -> uTxOCategoryResult.categoryResultsDatum() != null)
+                .filter(uTxOCategoryResult -> uTxOCategoryResult.categoryResultsDatum().getEventId().equals(eventId))
+                .filter(uTxOCategoryResult -> uTxOCategoryResult.categoryResultsDatum().getOrganiser().equals(organiser))
                 .filter(uTxOCategoryResult -> uTxOCategoryResult.categoryResultsDatum().getCategoryId().equals(contractCategoryId))
                 .sorted(createCategoryResultTxHashAndTransactionIndexComparator())
                 .limit(batchSize)

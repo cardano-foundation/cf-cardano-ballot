@@ -66,9 +66,14 @@ public class PlutusScriptLoader {
     }
 
     public PlutusScript getContract(String eventId,
+                                    String organiser,
                                     String categoryId) {
+
+        log.info("EventId: {}, Organiser: {}, CategoryId: {}", eventId, organiser, categoryId);
+
         val params = ListPlutusData.of(
                 BytesPlutusData.of(eventId),
+                BytesPlutusData.of(organiser),
                 BytesPlutusData.of(categoryId)
         );
         val compiledCode = applyParamToScript(params, parametrisedCompiledTemplate);

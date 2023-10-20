@@ -54,6 +54,7 @@ public class HydraVoteImporter {
     private VoteDatumConverter voteDatumConverter;
 
     public Either<Problem, String> importVotes(String contractEventId,
+                                               String contractOrganiser,
                                                List<Vote> votes) throws Exception {
         log.info("Importing number: {} votes", votes.size());
 
@@ -69,6 +70,8 @@ public class HydraVoteImporter {
 
         val voteDatumList = votes.stream()
                 .map(vote -> VoteDatum.builder()
+                        .eventId(vote.eventId())
+                        .organiser(vote.organiser())
                         .voteId(vote.voteId().toString())
                         .voterKey(vote.voterStakeAddress())
                         .categoryId(vote.categoryId())
@@ -81,12 +84,12 @@ public class HydraVoteImporter {
 
         for (val voteDatum : voteDatumList) {
             val categoryId = voteDatum.getCategoryId();
-            val contract = plutusScriptLoader.getContract(contractEventId, categoryId);
+            val contract = plutusScriptLoader.getContract(contractEventId, contractOrganiser, categoryId);
             val contractAddress = plutusScriptLoader.getContractAddress(contract);
 
             val datum = voteDatumConverter.toPlutusData(voteDatum);
 
-            System.out.println(JsonUtil.getPrettyJson(datum));
+            System.out.println("Vote:" + JsonUtil.getPrettyJson(datum));
 
             txOutputBuilder = txOutputBuilder.and((context, outputs) -> {
                 val transactionOutput = TransactionOutput.builder()

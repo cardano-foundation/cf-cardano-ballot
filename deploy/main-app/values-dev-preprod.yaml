@@ -24,7 +24,7 @@ cf-cardano-ballot-voting-api:
   enabled: true
   values:
     image:
-      tag: v0.2.67-3-g0bc4fd6f
+      tag: v0.2.70-2-g51b6485d
     monitoring:
       alerting:
         enabled: false
@@ -40,7 +40,7 @@ cf-cardano-ballot-ledger-follower-api:
   enabled: true
   values:
     image:
-      tag: v0.2.67-4-g7de3db22
+      tag: v0.2.70-2-g51b6485d
     bindOnEventIds: CIP-1694_Pre_Ratification_3316,FRUITS_CF62
     yaci:
       startBlockHash: 3337e297121fda1262372c28de3d917bd2a60bb1e3c6326e3b7e832eb8017615

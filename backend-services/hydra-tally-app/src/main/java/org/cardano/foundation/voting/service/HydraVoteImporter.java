@@ -89,7 +89,7 @@ public class HydraVoteImporter {
 
             val datum = voteDatumConverter.toPlutusData(voteDatum);
 
-            System.out.println("Vote:" + JsonUtil.getPrettyJson(datum));
+//            System.out.println("Vote:" + JsonUtil.getPrettyJson(datum));
 
             txOutputBuilder = txOutputBuilder.and((context, outputs) -> {
                 val transactionOutput = TransactionOutput.builder()

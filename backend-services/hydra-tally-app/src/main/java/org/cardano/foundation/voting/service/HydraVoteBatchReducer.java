@@ -37,11 +37,13 @@ import java.util.Set;
 
 import static com.bloxbean.cardano.client.common.ADAConversionUtil.adaToLovelace;
 import static com.bloxbean.cardano.client.common.CardanoConstants.LOVELACE;
+import static com.bloxbean.cardano.client.crypto.KeyGenUtil.getKeyHash;
 import static com.bloxbean.cardano.client.plutus.spec.RedeemerTag.Spend;
 import static java.util.Collections.emptySet;
 import static org.cardano.foundation.voting.service.PlutusScriptLoader.evaluateExUnits;
 import static org.cardano.foundation.voting.utils.BalanceUtil.balanceTx;
 import static org.cardano.foundation.voting.utils.MoreFees.changeTransactionCost;
+import static org.cardanofoundation.hydra.core.utils.HexUtils.decodeHexString;
 
 @Component
 @Slf4j
@@ -78,8 +80,6 @@ public class HydraVoteBatchReducer {
                                       int batchSize) throws CborSerializationException {
         val contract = plutusScriptLoader.getContract(contractEventId, contractOrganiser, contractCategoryId);
 
-        log.info("Contract Address: {}", plutusScriptLoader.getContractAddress(contract));
-
         Either<Problem, Optional<String>> transactionResultE;
         do {
             transactionResultE = postReduceBatchTransaction(contractEventId,
@@ -96,7 +96,7 @@ public class HydraVoteBatchReducer {
             val resultM = transactionResultE.get();
 
             if (resultM.isEmpty()) {
-                log.info("No more reducers to create within category: {}", contractCategoryId);
+                //log.info("No more reducers to create within category: {}", contractCategoryId);
                 break;
             }
 
@@ -116,9 +116,7 @@ public class HydraVoteBatchReducer {
 
         val hydraOperator = cardanoOperatorSupplier.getOperator();
         val sender = hydraOperator.getAddress();
-
-        log.info("Sender Address: " + sender);
-        log.info("Script Address: " + contractAddress);
+        val senderVerificationKeyBlake224 =  getKeyHash(hydraOperator.getVerificationKey());
 
         val utxosWithCategoryResults = voteUtxoFinder.getUtxosWithCategoryResults(contractEventId,
                 contractOrganiser,
@@ -127,13 +125,13 @@ public class HydraVoteBatchReducer {
         );
 
         if (utxosWithCategoryResults.isEmpty()) {
-            log.warn("No utxo found");
+            //log.warn("No utxo found");
 
             return Either.right(Optional.empty());
         }
 
         if (utxosWithCategoryResults.size() == 1) {
-            log.info("Only final reduction left!");
+            //log.info("Only final reduction left!");
 
             return Either.right(Optional.empty());
         }
@@ -148,7 +146,7 @@ public class HydraVoteBatchReducer {
                 categoryResultsDatums
         );
 
-        System.out.println("Reduction:" + JsonUtil.getPrettyJson(reduceVoteBatchDatum));
+        //System.out.println("Reduction:" + JsonUtil.getPrettyJson(reduceVoteBatchDatum));
 
         val utxoSelectionStrategy = new LargestFirstUtxoSelectionStrategy(utxoSupplier);
         val collateralUtxos = utxoSelectionStrategy.select(sender, new Amount(LOVELACE, adaToLovelace(2)), emptySet());
@@ -198,6 +196,8 @@ public class HydraVoteBatchReducer {
         txBuilder = txBuilder.andThen((context, txn) -> {
                     val protocolParams = protocolParamsSupplier.getProtocolParams();
                     val utxos = context.getUtxos();
+
+                    txn.getBody().getRequiredSigners().add(decodeHexString(senderVerificationKeyBlake224));
 
                     val evaluatedExUnits = evaluateExUnits(txn, utxos, protocolParams);
 

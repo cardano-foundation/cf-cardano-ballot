@@ -31,13 +31,18 @@ import org.springframework.stereotype.Component;
 import org.zalando.problem.Problem;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import static com.bloxbean.cardano.client.common.ADAConversionUtil.adaToLovelace;
 import static com.bloxbean.cardano.client.common.CardanoConstants.LOVELACE;
+import static com.bloxbean.cardano.client.crypto.KeyGenUtil.getKeyHash;
 import static com.bloxbean.cardano.client.plutus.spec.RedeemerTag.Spend;
 import static java.util.Collections.emptySet;
 import static org.cardano.foundation.voting.utils.MoreFees.changeTransactionCost;
+import static org.cardanofoundation.hydra.core.utils.HexUtils.decodeHexString;
 
 @Component
 @Slf4j
@@ -76,7 +81,7 @@ public class HydraVoteBatcher {
         val contract = plutusScriptLoader.getContract(contractEventId, contractOrganiser, contractCategoryId);
         val contractAddress = plutusScriptLoader.getContractAddress(contract);
 
-        log.info("Contract Address: {}", contractAddress);
+        //log.info("Contract Address: {}", contractAddress);
 
         Either<Problem, Optional<String>> transactionResultE;
         do {
@@ -90,7 +95,7 @@ public class HydraVoteBatcher {
             val batchTransactionResultM = transactionResultE.get();
 
             if (batchTransactionResultM.isEmpty()) {
-                log.info("No more batches to create within category: {}", contractCategoryId);
+                //log.info("No more batches to create within category: {}", contractCategoryId);
                 break;
             }
 
@@ -110,21 +115,19 @@ public class HydraVoteBatcher {
 
         val utxosWithVotes = voteUtxoFinder.getUtxosWithVotes(contractEventId, contractOrganiser, contractCategoryId, batchSize);
 
-        log.info("Found votes[UTxOs]: {}", utxosWithVotes.size());
+        //log.info("Found votes[UTxOs]: {}", utxosWithVotes.size());
 
         if (utxosWithVotes.isEmpty()) {
-            log.warn("No utxo found");
+            //log.warn("No utxo found");
 
             return Either.right(Optional.empty());
         }
 
         val hydraOperator = cardanoOperatorSupplier.getOperator();
-        val operatorAddress = hydraOperator.getAddress();
+        val sender = hydraOperator.getAddress();
         val contract = plutusScriptLoader.getContract(contractEventId, contractOrganiser, contractCategoryId);
         val contractAddress = plutusScriptLoader.getContractAddress(contract);
-
-        log.info("Sender Address: " + operatorAddress);
-        log.info("Script Address: " + contractAddress);
+        val senderVerificationKeyBlake224 = getKeyHash(hydraOperator.getVerificationKey());
 
         val categoryResultsDatum = CategoryResultsDatum.empty(contractEventId, contractOrganiser, contractCategoryId);
 
@@ -139,11 +142,11 @@ public class HydraVoteBatcher {
             }
         }
 
-        System.out.println("Batch:" + JsonUtil.getPrettyJson(categoryResultsDatum));
+        //System.out.println("Batch:" + JsonUtil.getPrettyJson(categoryResultsDatum));
 
         val utxoSelectionStrategy = new LargestFirstUtxoSelectionStrategy(utxoSupplier);
         val outputAmount = new Amount(LOVELACE, adaToLovelace(1));
-        val collateralUtxos = utxoSelectionStrategy.select(operatorAddress, outputAmount, emptySet());
+        val collateralUtxos = utxoSelectionStrategy.select(sender, outputAmount, emptySet());
 
         // Build the expected output
         val outputDatum = categoryResultsDatumConverter.toPlutusData(categoryResultsDatum);
@@ -159,15 +162,15 @@ public class HydraVoteBatcher {
                 .map(UTxOVote::utxo)
                 .toList();
 
-        val extraInputs = utxoSelectionStrategy.select(operatorAddress, new Amount(LOVELACE, adaToLovelace(2)), Set.of());
+        val extraInputs = utxoSelectionStrategy.select(sender, new Amount(LOVELACE, adaToLovelace(2)), Set.of());
 
         List<Utxo> allInputs = new ArrayList<>();
         allInputs.addAll(scriptUtxos);
         allInputs.addAll(extraInputs);
 
         var txBuilder = output.outputBuilder()
-                .buildInputs(InputBuilders.createFromUtxos(allInputs, operatorAddress))
-                .andThen(CollateralBuilders.collateralOutputs(operatorAddress, new ArrayList<>(collateralUtxos))); // CIP-40
+                .buildInputs(InputBuilders.createFromUtxos(allInputs, sender))
+                .andThen(CollateralBuilders.collateralOutputs(sender, new ArrayList<>(collateralUtxos))); // CIP-40
 
         val scriptCallContexts = scriptUtxos.stream().map(utxo -> ScriptCallContext
                         .builder()
@@ -190,6 +193,8 @@ public class HydraVoteBatcher {
             val protocolParams = protocolParamsSupplier.getProtocolParams();
             val utxos = context.getUtxos();
 
+            txn.getBody().getRequiredSigners().add(decodeHexString(senderVerificationKeyBlake224));
+
             val evalReedemers = PlutusScriptLoader.evaluateExUnits(txn, utxos, protocolParams);
 
             val redeemers = txn.getWitnessSet().getRedeemers();
@@ -203,8 +208,9 @@ public class HydraVoteBatcher {
             // Remove all scripts from witness and just add one
             txn.getWitnessSet().getPlutusV2Scripts().clear();
             txn.getWitnessSet().getPlutusV2Scripts().add((PlutusV2Script) contract);
+
         })
-        .andThen(BalanceUtil.balanceTx(operatorAddress, 1));
+        .andThen(BalanceUtil.balanceTx(sender, 1));
 
         val txBuilderContext = TxBuilderContext.init(utxoSupplier, protocolParamsSupplier);
         val transaction = txBuilderContext.build(txBuilder);

@@ -2,7 +2,6 @@ use acca/datums as adatums
 use acca/hash.{PubKeyHash} as ahash
 use acca/string as astring
 use acca/validators
-use aiken/cbor
 use aiken/dict.{Dict}
 use aiken/list
 use aiken/transaction.{InlineDatum, Input, Output, ScriptContext, Spend}
@@ -79,15 +78,13 @@ validator(
             fn(key) { list.has(organiser_keys, key) },
           )
 
-        trace cbor.diagnostic(sc.transaction.extra_signatories)
-
         and {
           validators.any_output_contains_own_validator_address(
             inputs,
             outputs,
             output_reference,
           )?,
-          //must_be_signed?,
+          must_be_signed?,
           output_contains_final_result(sc.transaction.outputs, on_chain_results)?,
         }
       }
@@ -109,8 +106,6 @@ validator(
             fn(key) { list.has(organiser_keys, key) },
           )
 
-        trace cbor.diagnostic(sc.transaction.extra_signatories)
-
         let final_result =
           CategoryResultsDatum {
             event_id: contract_event_id,
@@ -125,7 +120,7 @@ validator(
             outputs,
             output_reference,
           )?,
-          //must_be_signed?,
+          must_be_signed?,
           output_contains_final_result(sc.transaction.outputs, final_result)?,
         }
       }

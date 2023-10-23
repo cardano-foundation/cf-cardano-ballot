@@ -7,6 +7,8 @@ import com.bloxbean.cardano.client.api.exception.ApiRuntimeException;
 import com.bloxbean.cardano.client.api.model.ProtocolParams;
 import com.bloxbean.cardano.client.api.model.Utxo;
 import com.bloxbean.cardano.client.common.model.Network;
+import com.bloxbean.cardano.client.crypto.KeyGenUtil;
+import com.bloxbean.cardano.client.crypto.VerificationKey;
 import com.bloxbean.cardano.client.plutus.spec.*;
 import com.bloxbean.cardano.client.transaction.spec.Transaction;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,6 +16,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.cardanofoundation.hydra.core.utils.HexUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
@@ -29,7 +32,6 @@ import static com.bloxbean.cardano.client.api.util.CostModelUtil.getCostModelFro
 import static com.bloxbean.cardano.client.plutus.blueprint.PlutusBlueprintUtil.getPlutusScriptFromCompiledCode;
 import static com.bloxbean.cardano.client.plutus.blueprint.model.PlutusVersion.v2;
 import static com.bloxbean.cardano.client.plutus.spec.Language.PLUTUS_V2;
-import static org.cardanofoundation.hydra.core.utils.HexUtils.decodeHexString;
 
 @Component
 @Slf4j
@@ -58,6 +60,8 @@ public class PlutusScriptLoader {
             throw new RuntimeException("No operator verification keys configured!");
         }
 
+        log.info("Operator verification keys: {}", operatorVerificationKeys);
+
         var plutusFileAsString = resourceLoader.getResource(plutusCodePath)
                 .getInputStream();
 
@@ -78,21 +82,18 @@ public class PlutusScriptLoader {
                                     String organiser,
                                     String categoryId) {
 
-        log.info("EventId: {}," +
-                " Organiser: {}," +
-                " CategoryId: {}", eventId, organiser, categoryId);
+        ListPlutusData.ListPlutusDataBuilder builder = ListPlutusData.builder();
 
-        var operatorVerificationKeysPlutus = ListPlutusData.builder()
-                .plutusDataList(this.operatorVerificationKeys
-                        .stream()
-                        .map(cborKey -> {
-                            return (PlutusData) BytesPlutusData.of(decodeHexString(cborKey));
-                        })
-                        .toList())
-        .build();
+        builder.plutusDataList(this.operatorVerificationKeys
+                .stream()
+                .map(VerificationKey::new)
+                .map(KeyGenUtil::getKeyHash)
+                .map(HexUtils::decodeHexString)
+                .map(blake224Hash -> (PlutusData) BytesPlutusData.of(blake224Hash))
+                .toList());
 
         val params = ListPlutusData.of(
-                operatorVerificationKeysPlutus,
+                builder.build(),
                 BytesPlutusData.of(eventId),
                 BytesPlutusData.of(organiser),
                 BytesPlutusData.of(categoryId)

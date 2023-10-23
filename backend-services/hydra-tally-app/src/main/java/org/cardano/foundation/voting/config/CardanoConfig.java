@@ -3,6 +3,7 @@ package org.cardano.foundation.voting.config;
 import com.bloxbean.cardano.client.address.Address;
 import com.bloxbean.cardano.client.common.model.Network;
 import com.bloxbean.cardano.client.common.model.Networks;
+import com.bloxbean.cardano.client.crypto.KeyGenUtil;
 import com.bloxbean.cardano.client.exception.CborSerializationException;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
@@ -41,10 +42,6 @@ public class CardanoConfig {
         var op =  cardanoOperatorSupplier.getOperator();
 
         log.info("L1 operator address: {}", op.getAddress());
-
-        new Address(op.getAddress()).getPaymentCredentialHash().ifPresent(hash -> log.info("L1 operator verification key address (blake 224): {}", encodeHexString(hash)));
-
-//        log.info("L1 operator verification key address (blake 224): {}", encodeHexString(blake2bHash224(HexUtils.decodeHexString(op.getVerificationKey().getCborHex()))));
 
         return op;
     }

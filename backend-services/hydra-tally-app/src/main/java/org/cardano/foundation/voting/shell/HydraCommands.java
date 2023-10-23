@@ -316,7 +316,8 @@ public class HydraCommands {
 
     @Command(command = "head-close", description = "close head.")
     public String closeHead() {
-        HeadIsClosedResponse headIsClosedResponse = hydraClient.closeHead().block(Duration.ofMinutes(1));
+        HeadIsClosedResponse headIsClosedResponse = hydraClient.closeHead()
+                .block(Duration.ofMinutes(1));
 
         if (headIsClosedResponse == null) {
             return "Cannot close the head, unsupported state, hydra state:" + hydraClient.getHydraState();
@@ -360,6 +361,50 @@ public class HydraCommands {
         }
 
         return "Tallying votes done.";
+    }
+
+    @Command(command = "tally-all-shard", description = "tally all the votes votes (sharded).")
+    public String tallyAllShard(
+            @ShellOption(value = "import-batch-size", defaultValue = "25") @Option int importBatchSize,
+            @ShellOption(value = "create-batch-size", defaultValue = "10") @Option int createBatchSize,
+            @ShellOption(value = "reduce-batch-size", defaultValue = "10") @Option int reduceBatchSize
+    ) throws Exception {
+        log.info("Tally all with votes sharding, importBatchSize: {}, createBatchSize: {}, reduceBatchSize: {}",
+                importBatchSize, createBatchSize, reduceBatchSize);
+
+        if (hydraClient.getHydraState() != Open) {
+            return "Tallying votes failed, reason:" + hydraClient.getHydraState();
+        }
+
+        var allCategories = voteRepository.getAllUniqueCategories(eventId);
+
+        for (val categoryId : allCategories) {
+            log.info("Processing category: {}", categoryId);
+
+            var allVotes = voteRepository.findAllVotes(eventId, categoryId)
+                    .stream()
+                    .filter(vote -> {
+                        int partition = Partitioner.partition(vote.voteId(), participants);
+
+                        return partition == participantNumber;
+                    }).toList();
+
+            var partitioned = Lists.partition(allVotes, importBatchSize);
+
+            for (val voteBatch : partitioned) {
+                val txIdE = hydraVoteImporter.importVotes(eventId, organiser, voteBatch);
+                if (txIdE.isEmpty()) {
+                    return "Importing votes failed, reason:" + txIdE.getLeft();
+                }
+
+                log.info("Imported votes voteBatch, txId: " + "{}", txIdE.get());
+
+                hydraVoteBatcher.batchVotesPerCategory(eventId, organiser, categoryId, createBatchSize);
+                hydraVoteBatchReducer.batchVotesPerCategory(eventId, organiser, categoryId, reduceBatchSize);
+            }
+        }
+
+        return "Tallying votes (sharded) done.";
     }
 
     @Command(command = "import-votes", description = "import votes.")

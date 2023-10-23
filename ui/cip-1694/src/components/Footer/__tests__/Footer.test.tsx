@@ -5,7 +5,7 @@ import '@testing-library/jest-dom';
 import { expect } from '@jest/globals';
 import { screen, within, waitFor, cleanup, render } from '@testing-library/react';
 import { Footer } from '../Footer';
-import * as env from '../../../../env';
+import * as env from '../../../env';
 
 const oldEnv = env.env;
 

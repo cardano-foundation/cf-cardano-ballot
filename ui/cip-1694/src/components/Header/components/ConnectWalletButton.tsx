@@ -14,7 +14,7 @@ import { setConnectedWallet, setIsConnectWalletModalVisible } from 'common/store
 import { RootState } from 'common/store';
 import { clearUserInSessionStorage } from 'common/utils/session';
 import styles from './ConnectWalletButton.module.scss';
-import { env } from '../../../../env';
+import { env } from '../../../env';
 
 export const ConnectWalletButton = ({ isMobileMenu = false }) => {
   const { disconnect, stakeAddress, enabledWallet } = useCardano();

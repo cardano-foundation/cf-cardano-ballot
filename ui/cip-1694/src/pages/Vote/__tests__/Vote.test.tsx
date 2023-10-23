@@ -29,7 +29,7 @@ import { ROUTES } from 'common/routes';
 import { UserState } from 'common/store/types';
 import { EVENT_BY_ID_REFERENCE_URL } from 'common/api/referenceDataService';
 import { VotePage, errorsMap } from 'pages/Vote/Vote';
-import { Toast } from 'components/common/Toast/Toast';
+import { Toast } from 'components/Toast/Toast';
 import { VERIFICATION_URL } from 'common/api/verificationService';
 import { formatUTCDate, getDateAndMonth } from 'common/utils/dateUtils';
 import { renderWithProviders } from 'test/mockProviders';
@@ -68,19 +68,6 @@ jest.mock('@cardano-foundation/cardano-connect-with-wallet', () => {
     },
   };
 });
-
-jest.mock('swiper/react', () => ({
-  Swiper: ({ children }: { children: React.ReactElement }) => <div data-testid="Swiper-testId">{children}</div>,
-  SwiperSlide: ({ children }: { children: React.ReactElement }) => (
-    <div data-testid="SwiperSlide-testId">{children}</div>
-  ),
-}));
-
-jest.mock('swiper', () => ({
-  Pagination: () => null,
-  Navigation: () => null,
-  Autoplay: () => null,
-}));
 
 jest.mock('../../../env', () => {
   const original = jest.requireActual('../../../env');
@@ -585,6 +572,66 @@ describe('For ongoing event:', () => {
     expect(mockGetVoteReceipt).toHaveBeenLastCalledWith(eventMock_active.categories[1].id, true);
     expect(within(votePage).queryByText('Previous question')).not.toBeInTheDocument();
     expect(within(votePage).queryByTestId('show-receipt-button')).toBeInTheDocument();
+  });
+
+  test('should show proper error if failed to fetch tip during vote submitting', async () => {
+    const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
+
+    mockUseCardano.mockReset();
+    mockUseCardano.mockReturnValue({
+      ...useCardanoMock,
+      signMessage: mockSignMessage,
+    });
+    mockGetSignedMessagePromise.mockReset();
+    mockGetSignedMessagePromise.mockImplementation(
+      (signMessage: (message: string) => string) => async (message: string) => await signMessage(message)
+    );
+    const error = { message: 'error' };
+    mockGetChainTip.mockReset();
+    mockGetChainTip.mockImplementation(async () => await Promise.reject(error));
+    mockBuildCanonicalVoteInputJson.mockReset();
+    mockBuildCanonicalVoteInputJson.mockReturnValue(canonicalVoteInputJsonMock);
+
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
+
+    await act(async () => {
+      renderWithProviders(
+        <CustomRouter history={history}>
+          <VotePage />
+        </CustomRouter>,
+        { preloadedState: { user: { event: eventMock_active, tip: chainTipMock } as UserState } }
+      );
+    });
+
+    const votePage = screen.queryByTestId('vote-page');
+
+    const options = within(votePage).queryAllByTestId('option-card');
+
+    await act(async () => {
+      fireEvent.click(options[0]);
+    });
+
+    const voteContext = 'voteContext';
+
+    await act(async () => {
+      fireEvent.change(screen.queryByTestId('vote-context-input').querySelector('textarea'), {
+        target: { value: voteContext },
+      });
+    });
+
+    const cta = within(votePage).queryByTestId('proposal-submit-button');
+
+    await act(async () => {
+      fireEvent.click(cta);
+    });
+
+    expect(mockToast).toBeCalledWith(
+      <Toast
+        message="Failed to fetch chain tip"
+        error
+        icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
+      />
+    );
   });
 
   test('should show proper error if failed to fetch voting power during vote submitting', async () => {

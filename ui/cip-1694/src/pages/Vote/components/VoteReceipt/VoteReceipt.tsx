@@ -9,7 +9,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { VoteVerificationRequest } from 'types/voting-verification-app-types';
 import * as verificationService from 'common/api/verificationService';
 import { VoteReceipt as VoteReceiptType } from 'types/voting-app-types';
-import { Toast } from 'components/common/Toast/Toast';
+import { Toast } from 'components/Toast/Toast';
 import {
   AdvancedFullFieldsToDisplayArrayKeys,
   FieldsToDisplayArrayKeys,

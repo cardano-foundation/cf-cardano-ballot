@@ -10,19 +10,19 @@ import { expect } from '@jest/globals';
 import { screen, within, cleanup, waitFor } from '@testing-library/react';
 import { eventMock_active } from 'test/mocks';
 import { renderWithProviders } from 'test/mockProviders';
-import { Toast } from 'components/common/Toast/Toast';
+import { Toast } from 'components/Toast/Toast';
 import BlockIcon from '@mui/icons-material/Block';
 import { App } from './App';
 
-jest.mock('./components/common/Header/Header', () => ({
+jest.mock('./components/Header/Header', () => ({
   Header: mockHeader,
 }));
 
-jest.mock('./components/common/Content/Content', () => ({
+jest.mock('./components/Content/Content', () => ({
   Content: mockContent,
 }));
 
-jest.mock('./components/common/Footer/Footer', () => ({
+jest.mock('./components/Footer/Footer', () => ({
   Footer: mockFooter,
 }));
 

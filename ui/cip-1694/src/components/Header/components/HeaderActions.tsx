@@ -13,7 +13,7 @@ import { RootState } from 'common/store';
 import { getDateAndMonth } from 'common/utils/dateUtils';
 import * as voteService from 'common/api/voteService';
 import { setChainTipData } from 'common/store/userSlice';
-import { Toast } from 'components/common/Toast/Toast';
+import { Toast } from 'components/Toast/Toast';
 import { ResultsCommingSoonModal } from 'pages/Leaderboard/components/ResultsCommingSoonModal/ResultsCommingSoonModal';
 import { formatUTCDate } from 'pages/Leaderboard/utils';
 import { ChainTip } from 'types/voting-ledger-follower-types';

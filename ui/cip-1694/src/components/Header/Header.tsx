@@ -7,7 +7,7 @@ import { RootState } from 'common/store';
 import { HeaderActions } from './components/HeaderActions';
 import { MobileModal } from '../MobileModal/MobileModal';
 import { Footer } from '../Footer/Footer';
-import lofo from '../../../common/resources/images/cardano-ballot-logo.png';
+import lofo from '../../common/resources/images/cardano-ballot-logo.png';
 import styles from './Header.module.scss';
 
 export const Header = () => {

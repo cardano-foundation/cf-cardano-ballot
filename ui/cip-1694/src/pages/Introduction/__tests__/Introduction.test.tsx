@@ -9,11 +9,16 @@ import { screen, within, waitFor, fireEvent, cleanup, act } from '@testing-libra
 import { createMemoryHistory } from 'history';
 import { ROUTES } from 'common/routes';
 import { UserState } from 'common/store/types';
-import { IntroductionPage, introItems } from 'pages/Introduction/Introduction';
+import { IntroductionPage } from 'pages/Introduction/Introduction';
 import { renderWithProviders } from 'test/mockProviders';
 import { eventMock_active, useCardanoMock, eventMock_notStarted, eventMock_finished } from 'test/mocks';
 import { CustomRouter } from 'test/CustomRouter';
 import { formatUTCDate } from 'common/utils/dateUtils';
+
+const title = 'A Vote on Minimum-Viable Governance';
+const description =
+  'Cardano has reached an incredible milestone. After six years of initial development and feature cultivation, the Cardano blockchain has reached the age of Voltaire. Guided by a principles-first approach and led by the community, this new age of Cardano advances inclusive accountability for all participants in the ecosystem. The time has come for a vote by the community on the way forward.';
+const imageSrc = '/static/cip-1694.jpg';
 
 jest.mock('../../../env', () => {
   const original = jest.requireActual('../../../env');
@@ -42,19 +47,6 @@ jest.mock('@cardano-foundation/cardano-connect-with-wallet', () => {
     },
   };
 });
-
-jest.mock('swiper/react', () => ({
-  Swiper: ({ children }: { children: React.ReactElement }) => <div data-testid="Swiper-testId">{children}</div>,
-  SwiperSlide: ({ children }: { children: React.ReactElement }) => (
-    <div data-testid="SwiperSlide-testId">{children}</div>
-  ),
-}));
-
-jest.mock('swiper', () => ({
-  Pagination: () => null,
-  Navigation: () => null,
-  Autoplay: () => null,
-}));
 
 describe('For ongoing event:', () => {
   beforeEach(() => {
@@ -102,7 +94,7 @@ describe('For ongoing event:', () => {
 
       const eventTitle = within(introductionPage).queryByTestId('event-title');
       expect(eventTitle).not.toBeNull();
-      expect(eventTitle.textContent).toEqual(introItems[0].title);
+      expect(eventTitle.textContent).toEqual(title);
 
       const eventTime = within(introductionPage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
@@ -112,7 +104,7 @@ describe('For ongoing event:', () => {
 
       const eventDescription = within(introductionPage).queryByTestId('event-description');
       expect(eventDescription).not.toBeNull();
-      expect(eventDescription.textContent).toEqual(introItems[0].description);
+      expect(eventDescription.textContent).toEqual(description);
 
       const cta = within(introductionPage).queryByTestId('event-cta');
       expect(cta).not.toBeNull();
@@ -121,7 +113,7 @@ describe('For ongoing event:', () => {
       const image = within(introductionPage).queryByTestId('event-image');
       expect(image).not.toBeNull();
       expect(image.tagName).toEqual('IMG');
-      expect(image.attributes.getNamedItem('src').value).toEqual(introItems[0].image);
+      expect(image.attributes.getNamedItem('src').value).toEqual(imageSrc);
     });
   });
 
@@ -177,7 +169,7 @@ describe("For the event that hasn't started yet", () => {
 
       const eventTitle = within(introductionPage).queryByTestId('event-title');
       expect(eventTitle).not.toBeNull();
-      expect(eventTitle.textContent).toEqual(introItems[0].title);
+      expect(eventTitle.textContent).toEqual(title);
 
       const eventTime = within(introductionPage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
@@ -189,7 +181,7 @@ describe("For the event that hasn't started yet", () => {
 
       const eventDescription = within(introductionPage).queryByTestId('event-description');
       expect(eventDescription).not.toBeNull();
-      expect(eventDescription.textContent).toEqual(introItems[0].description);
+      expect(eventDescription.textContent).toEqual(description);
 
       const cta = within(introductionPage).queryByTestId('event-cta');
       expect(cta).not.toBeNull();
@@ -198,7 +190,7 @@ describe("For the event that hasn't started yet", () => {
       const image = within(introductionPage).queryByTestId('event-image');
       expect(image).not.toBeNull();
       expect(image.tagName).toEqual('IMG');
-      expect(image.attributes.getNamedItem('src').value).toEqual(introItems[0].image);
+      expect(image.attributes.getNamedItem('src').value).toEqual(imageSrc);
     });
   });
 
@@ -279,7 +271,7 @@ describe('For the event that has already finished', () => {
 
       const eventTitle = within(introductionPage).queryByTestId('event-title');
       expect(eventTitle).not.toBeNull();
-      expect(eventTitle.textContent).toEqual(introItems[0].title);
+      expect(eventTitle.textContent).toEqual(title);
 
       const eventTime = within(introductionPage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
@@ -289,7 +281,7 @@ describe('For the event that has already finished', () => {
 
       const eventDescription = within(introductionPage).queryByTestId('event-description');
       expect(eventDescription).not.toBeNull();
-      expect(eventDescription.textContent).toEqual(introItems[0].description);
+      expect(eventDescription.textContent).toEqual(description);
 
       const cta = within(introductionPage).queryByTestId('event-cta');
       expect(cta).not.toBeNull();
@@ -298,7 +290,7 @@ describe('For the event that has already finished', () => {
       const image = within(introductionPage).queryByTestId('event-image');
       expect(image).not.toBeNull();
       expect(image.tagName).toEqual('IMG');
-      expect(image.attributes.getNamedItem('src').value).toEqual(introItems[0].image);
+      expect(image.attributes.getNamedItem('src').value).toEqual(imageSrc);
     });
   });
 

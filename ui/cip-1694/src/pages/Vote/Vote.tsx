@@ -26,11 +26,11 @@ import { ProposalPresentation, Account, ChainTip } from 'types/voting-ledger-fol
 import { VoteReceipt as VoteReceiptType } from 'types/voting-app-types';
 import { RootState } from 'common/store';
 import { VoteReceipt } from 'pages/Vote/components/VoteReceipt/VoteReceipt';
-import { Toast } from 'components/common/Toast/Toast';
+import { Toast } from 'components/Toast/Toast';
 import { VoteSubmittedModal } from 'components/VoteSubmittedModal/VoteSubmittedModal';
 import { OptionCard } from 'components/OptionCard/OptionCard';
 import { OptionItem } from 'components/OptionCard/OptionCard.types';
-import SidePage from 'components/common/SidePage/SidePage';
+import SidePage from 'components/SidePage/SidePage';
 import { buildCanonicalVoteInputJson, getSignedMessagePromise } from 'common/utils/voteUtils';
 import * as voteService from 'common/api/voteService';
 import * as loginService from 'common/api/loginService';

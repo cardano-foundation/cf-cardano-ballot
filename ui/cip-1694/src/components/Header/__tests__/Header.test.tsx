@@ -24,7 +24,7 @@ import {
 import { CustomRouter } from 'test/CustomRouter';
 import { formatUTCDate } from 'pages/Leaderboard/utils';
 import { getDateAndMonth } from 'common/utils/dateUtils';
-import { Toast } from 'components/common/Toast/Toast';
+import { Toast } from 'components/Toast/Toast';
 import { Header } from '../Header';
 
 jest.mock('@cardano-foundation/cardano-connect-with-wallet', () => ({
@@ -42,9 +42,6 @@ jest.mock('@cardano-foundation/cardano-connect-with-wallet', () => ({
   },
 }));
 
-jest.mock('swiper/react', () => ({}));
-jest.mock('swiper', () => ({}));
-
 jest.mock('common/api/voteService', () => ({
   ...jest.requireActual('common/api/voteService'),
   getChainTip: mockGetChainTip,
@@ -56,8 +53,8 @@ jest.mock('react-hot-toast', () => ({
   default: mockToast,
 }));
 
-jest.mock('../../../../env', () => {
-  const original = jest.requireActual('../../../../env');
+jest.mock('../../../env', () => {
+  const original = jest.requireActual('../../../env');
   return {
     ...original,
     env: {
@@ -482,6 +479,147 @@ describe('When there is no event:', () => {
       const headerActions = within(header).queryByTestId('header-actions');
       expect(within(headerActions).queryByTestId('vote-link')).toBeNull();
       expect(within(headerActions).queryByTestId('leaderboard-link')).toBeNull();
+    });
+  });
+});
+
+describe('Mobile menu:', () => {
+  beforeEach(() => {
+    mockUseCardano.mockReturnValue(useCardanoMock);
+    mockGetChainTip.mockReturnValue(chainTipMock);
+  });
+  afterEach(() => {
+    jest.clearAllMocks();
+    cleanup();
+  });
+
+  test('should display proper state', async () => {
+    const history = createMemoryHistory({ initialEntries: [ROUTES.INTRO] });
+    renderWithProviders(
+      <CustomRouter history={history}>
+        <Header />
+      </CustomRouter>,
+      { preloadedState: { user: { event: eventMock_active, tip: chainTipMock } as UserState } }
+    );
+
+    expect(screen.queryByTestId('mobile-menu-modal')).not.toBeInTheDocument();
+
+    const header = screen.queryByTestId('header');
+    const menuCta = within(header).queryByTestId('show-mobile-menu');
+
+    await act(async () => {
+      fireEvent.click(menuCta);
+    });
+
+    expect(screen.queryByTestId('mobile-menu-modal')).toBeInTheDocument();
+    expect(within(screen.queryByTestId('mobile-menu-modal')).queryByTestId('header-actions')).toBeInTheDocument();
+    expect(within(screen.queryByTestId('mobile-menu-modal')).queryByTestId('footer')).toBeInTheDocument();
+
+    await act(async () => {
+      fireEvent.click(within(screen.queryByTestId('mobile-menu-modal')).queryByTestId('vote-link'));
+    });
+
+    await waitFor(async () => {
+      expect(screen.queryByTestId('mobile-menu-modal')).not.toBeInTheDocument();
+    });
+  });
+
+  test('should handle onClose', async () => {
+    const history = createMemoryHistory({ initialEntries: [ROUTES.INTRO] });
+    renderWithProviders(
+      <CustomRouter history={history}>
+        <Header />
+      </CustomRouter>,
+      { preloadedState: { user: { event: eventMock_active, tip: chainTipMock } as UserState } }
+    );
+
+    expect(screen.queryByTestId('mobile-menu-modal')).not.toBeInTheDocument();
+
+    const header = screen.queryByTestId('header');
+    const menuCta = within(header).queryByTestId('show-mobile-menu');
+
+    await act(async () => {
+      fireEvent.click(menuCta);
+    });
+
+    expect(screen.queryByTestId('mobile-menu-modal')).toBeInTheDocument();
+
+    await act(async () => {
+      fireEvent.click(within(screen.queryByTestId('mobile-menu-modal')).queryByTestId('mobile-menu-cta'));
+    });
+
+    await waitFor(async () => {
+      expect(screen.queryByTestId('mobile-menu-modal')).not.toBeInTheDocument();
+    });
+  });
+
+  test('should handle onClose for ResultsCommingSoonModal', async () => {
+    const history = createMemoryHistory({ initialEntries: [ROUTES.INTRO] });
+    renderWithProviders(
+      <CustomRouter history={history}>
+        <Header />
+      </CustomRouter>,
+      { preloadedState: { user: { event: eventMock_active, tip: chainTipMock } as UserState } }
+    );
+
+    expect(screen.queryByTestId('mobile-menu-modal')).not.toBeInTheDocument();
+
+    const header = screen.queryByTestId('header');
+    const menuCta = within(header).queryByTestId('show-mobile-menu');
+
+    await act(async () => {
+      fireEvent.click(menuCta);
+    });
+
+    const leaderboardLink = within(screen.queryByTestId('mobile-menu-modal')).queryByTestId('leaderboard-link');
+
+    await act(async () => {
+      fireEvent.click(leaderboardLink);
+    });
+
+    const commingSoonModal = screen.queryByTestId('result-comming-soon-modal');
+
+    await act(async () => {
+      fireEvent.click(within(commingSoonModal).queryByTestId('result-comming-soon-modal-close-icon'));
+    });
+
+    await waitFor(async () => {
+      expect(screen.queryByTestId('mobile-menu-modal')).not.toBeInTheDocument();
+    });
+  });
+
+  test('should handle onGoBackFn for ResultsCommingSoonModal', async () => {
+    const history = createMemoryHistory({ initialEntries: [ROUTES.INTRO] });
+    renderWithProviders(
+      <CustomRouter history={history}>
+        <Header />
+      </CustomRouter>,
+      { preloadedState: { user: { event: eventMock_active, tip: chainTipMock } as UserState } }
+    );
+
+    expect(screen.queryByTestId('mobile-menu-modal')).not.toBeInTheDocument();
+
+    const header = screen.queryByTestId('header');
+    const menuCta = within(header).queryByTestId('show-mobile-menu');
+
+    await act(async () => {
+      fireEvent.click(menuCta);
+    });
+
+    const leaderboardLink = within(screen.queryByTestId('mobile-menu-modal')).queryByTestId('leaderboard-link');
+
+    await act(async () => {
+      fireEvent.click(leaderboardLink);
+    });
+
+    const commingSoonModal = screen.queryByTestId('result-comming-soon-modal');
+
+    await act(async () => {
+      fireEvent.click(within(commingSoonModal).queryByTestId('result-comming-soon-modal-close-cta'));
+    });
+
+    await waitFor(async () => {
+      expect(screen.queryByTestId('mobile-menu-modal')).not.toBeInTheDocument();
     });
   });
 });

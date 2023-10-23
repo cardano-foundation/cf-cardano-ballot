@@ -24,19 +24,6 @@ jest.mock('@cardano-foundation/cardano-connect-with-wallet', () => ({
   },
 }));
 
-jest.mock('swiper/react', () => ({
-  Swiper: ({ children }: { children: React.ReactElement }) => <div data-testid="Swiper-testId">{children}</div>,
-  SwiperSlide: ({ children }: { children: React.ReactElement }) => (
-    <div data-testid="SwiperSlide-testId">{children}</div>
-  ),
-}));
-
-jest.mock('swiper', () => ({
-  Pagination: () => null,
-  Navigation: () => null,
-  Autoplay: () => null,
-}));
-
 describe('ReceiptInfo:', () => {
   beforeEach(() => {
     jest.clearAllMocks();

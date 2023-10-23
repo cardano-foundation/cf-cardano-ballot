@@ -11,7 +11,7 @@ import { ByProposalsInCategoryStats } from 'types/voting-app-types';
 import { ProposalPresentation } from 'types/voting-ledger-follower-types';
 import { RootState } from 'common/store';
 import * as leaderboardService from 'common/api/leaderboardService';
-import { Toast } from 'components/common/Toast/Toast';
+import { Toast } from 'components/Toast/Toast';
 import { getPercentage, proposalColorsMap } from './utils';
 import { StatsTile } from './components/StatsTile';
 import styles from './Leaderboard.module.scss';

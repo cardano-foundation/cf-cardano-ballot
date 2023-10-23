@@ -9,7 +9,7 @@ import { cleanup, act, waitFor, screen, within, fireEvent } from '@testing-libra
 import { createMemoryHistory } from 'history';
 import BlockIcon from '@mui/icons-material/Block';
 import { ROUTES } from 'common/routes';
-import { Toast } from 'components/common/Toast/Toast';
+import { Toast } from 'components/Toast/Toast';
 import { renderWithProviders } from 'test/mockProviders';
 import { CustomRouter } from 'test/CustomRouter';
 import {
@@ -22,19 +22,6 @@ import {
 } from 'test/mocks';
 import { VoteReceipt } from '../VoteReceipt';
 import { shortenString } from '../utils';
-
-jest.mock('swiper/react', () => ({
-  Swiper: ({ children }: { children: React.ReactElement }) => <div data-testid="Swiper-testId">{children}</div>,
-  SwiperSlide: ({ children }: { children: React.ReactElement }) => (
-    <div data-testid="SwiperSlide-testId">{children}</div>
-  ),
-}));
-
-jest.mock('swiper', () => ({
-  Pagination: () => null,
-  Navigation: () => null,
-  Autoplay: () => null,
-}));
 
 jest.mock('react-hot-toast', () => mockToast);
 

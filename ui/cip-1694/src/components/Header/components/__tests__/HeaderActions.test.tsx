@@ -16,7 +16,7 @@ import { ROUTES } from 'common/routes';
 import { renderWithProviders } from 'test/mockProviders';
 import { eventMock_active, useCardanoMock } from 'test/mocks';
 import { CustomRouter } from 'test/CustomRouter';
-import { Toast } from 'components/common/Toast/Toast';
+import { Toast } from 'components/Toast/Toast';
 import { HeaderActions } from '../HeaderActions';
 
 jest.mock('@cardano-foundation/cardano-connect-with-wallet', () => ({
@@ -38,9 +38,6 @@ jest.mock('pages/Leaderboard/components/ResultsCommingSoonModal/ResultsCommingSo
   ResultsCommingSoonModal: mockResultsCommingSoonModal,
 }));
 
-jest.mock('swiper/react', () => ({}));
-jest.mock('swiper', () => ({}));
-
 jest.mock('react-hot-toast', () => ({
   __esModule: true,
   ...jest.requireActual('react-hot-toast'),
@@ -52,8 +49,8 @@ jest.mock('common/api/voteService', () => ({
   getChainTip: mockGetChainTip,
 }));
 
-jest.mock('../../../../../env', () => {
-  const original = jest.requireActual('../../../../../env');
+jest.mock('../../../../env', () => {
+  const original = jest.requireActual('../../../../env');
   return {
     ...original,
     env: {

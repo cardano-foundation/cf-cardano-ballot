@@ -20,7 +20,7 @@ import { eventMock_active, useCardanoMock } from 'test/mocks';
 import { CustomRouter } from 'test/CustomRouter';
 import { USER_SESSION_KEY } from 'common/utils/session';
 import { ConnectWalletButton } from '../ConnectWalletButton';
-import * as envFile from '../../../../../env';
+import * as envFile from '../../../../env';
 
 const sessionStorageMock = (() => ({
   getItem: getItemMock,
@@ -45,9 +45,6 @@ jest.mock('@cardano-foundation/cardano-connect-with-wallet', () => ({
   },
   ConnectWalletButton: ConnectWalletButtonMock,
 }));
-
-jest.mock('swiper/react', () => ({}));
-jest.mock('swiper', () => ({}));
 
 jest.mock('react-hot-toast', () => ({
   __esModule: true,

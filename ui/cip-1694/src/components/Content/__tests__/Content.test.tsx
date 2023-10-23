@@ -9,17 +9,17 @@ var mockSupportedWallets = ['Wallet1', 'Wallet2'];
 import React from 'react';
 import '@testing-library/jest-dom';
 import { expect } from '@jest/globals';
-import { screen, within, cleanup, act } from '@testing-library/react';
+import { screen, within, cleanup, act, fireEvent } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import BlockIcon from '@mui/icons-material/Block';
 import { UserState } from 'common/store/types';
 import { ROUTES } from 'common/routes';
-import { Toast } from 'components/common/Toast/Toast';
+import { Toast } from 'components/Toast/Toast';
 import { USER_SESSION_KEY } from 'common/utils/session';
 import { useCardanoMock } from 'test/mocks';
 import { Content } from '../Content';
-import { renderWithProviders } from '../../../../test/mockProviders';
-import { CustomRouter } from '../../../../test/CustomRouter';
+import { renderWithProviders } from '../../../test/mockProviders';
+import { CustomRouter } from '../../../test/CustomRouter';
 
 const sessionStorageMock = (() => ({
   getItem: getItemMock,
@@ -32,23 +32,10 @@ Object.defineProperty(window, 'sessionStorage', {
   value: sessionStorageMock,
 });
 
-jest.mock('swiper/react', () => ({
-  Swiper: ({ children }: { children: React.ReactElement }) => <div data-testid="Swiper-testId">{children}</div>,
-  SwiperSlide: ({ children }: { children: React.ReactElement }) => (
-    <div data-testid="SwiperSlide-testId">{children}</div>
-  ),
-}));
-
-jest.mock('swiper', () => ({
-  Pagination: () => null,
-  Navigation: () => null,
-  Autoplay: () => null,
-}));
-
 jest.mock('react-hot-toast', () => mockToast);
 
-jest.mock('../../../../env', () => {
-  const original = jest.requireActual('../../../../env');
+jest.mock('../../../env', () => {
+  const original = jest.requireActual('../../../env');
   return {
     ...original,
     env: {
@@ -93,13 +80,14 @@ describe('ConnectWalletModal', () => {
     });
 
     const history = createMemoryHistory({ initialEntries: [ROUTES.INTRO] });
-    renderWithProviders(
+    const { store } = renderWithProviders(
       <CustomRouter history={history}>
         <Content />
       </CustomRouter>,
       { preloadedState: { user: { isConnectWalletModalVisible: true } as UserState } }
     );
 
+    expect(store.getState().user.isConnectWalletModalVisible).toBeTruthy();
     const modal = await screen.findByTestId('connected-wallet-modal');
     expect(modal).not.toBeNull();
 
@@ -120,6 +108,11 @@ describe('ConnectWalletModal', () => {
         message="Unable to connect your wallet. Please try again"
       />
     );
+
+    await act(async () => {
+      fireEvent.click(within(modal).queryByTestId('connected-wallet-modal-close'));
+    });
+    expect(store.getState().user.isConnectWalletModalVisible).toBeFalsy();
   });
 
   test('should properly react to wallet on connect scenario', async () => {

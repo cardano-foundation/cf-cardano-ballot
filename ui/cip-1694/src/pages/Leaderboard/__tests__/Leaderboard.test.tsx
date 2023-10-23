@@ -15,7 +15,7 @@ import { createMemoryHistory } from 'history';
 import capitalize from 'lodash/capitalize';
 import { ROUTES } from 'common/routes';
 import { UserState } from 'common/store/types';
-import { Toast } from 'components/common/Toast/Toast';
+import { Toast } from 'components/Toast/Toast';
 import { renderWithProviders } from 'test/mockProviders';
 import { useCardanoMock, eventMock_finished, voteStats, eventMock_active } from 'test/mocks';
 import { CustomRouter } from 'test/CustomRouter';
@@ -25,19 +25,6 @@ import { proposalColorsMap, getPercentage } from '../utils';
 
 jest.mock('react-minimal-pie-chart', () => ({
   PieChart: mockPieChart,
-}));
-
-jest.mock('swiper/react', () => ({
-  Swiper: ({ children }: { children: React.ReactElement }) => <div data-testid="Swiper-testId">{children}</div>,
-  SwiperSlide: ({ children }: { children: React.ReactElement }) => (
-    <div data-testid="SwiperSlide-testId">{children}</div>
-  ),
-}));
-
-jest.mock('swiper', () => ({
-  Pagination: () => null,
-  Navigation: () => null,
-  Autoplay: () => null,
 }));
 
 jest.mock('@cardano-foundation/cardano-connect-with-wallet', () => {

@@ -1,6 +1,6 @@
 import TAndC from './resources/T&C.pdf';
 import Privacy from './resources/Privacy.pdf';
-import { env } from '../../../env';
+import { env } from '../../env';
 
 export const getFooterLinks = () =>
   [

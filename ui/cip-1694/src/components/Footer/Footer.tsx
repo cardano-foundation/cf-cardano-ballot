@@ -2,7 +2,7 @@ import React from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { ReactComponent as DiscordIcon } from 'common/resources/images/discord-icon.svg';
-import { env } from '../../../env';
+import { env } from '../../env';
 import { getFooterLinks } from './utils';
 import styles from './Footer.module.scss';
 

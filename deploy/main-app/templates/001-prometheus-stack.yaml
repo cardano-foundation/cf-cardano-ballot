@@ -38,7 +38,7 @@ spec:
             receivers:
             - name: slack
               slack_configs:
-                - api_url: /etc/secrets/slack-api-url
+                - api_url: /etc/secrets/SLACK_API_URL
                   send_resolved: true
                   channel: '#cf-voting-infra-alerts'
             - name: 'null'

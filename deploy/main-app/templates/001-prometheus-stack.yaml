@@ -29,13 +29,18 @@ spec:
               group_wait: 30s
               group_interval: 5m
               repeat_interval: 12h
-              receiver: 'null'
+              receiver: 'slack'
               routes:
                 - receiver: 'null'
                   continue: false
                   matchers:
                     - alertname =~ "InfoInhibitor|Watchdog"
             receivers:
+            - name: slack
+              slack_configs:
+                - api_url_file: /etc/secrets/slack-api-url
+                  send_resolved: true
+                  channel: '#cf-voting-infra-alerts'
             - name: 'null'
           extraSecretMounts:
             - name: secret-files

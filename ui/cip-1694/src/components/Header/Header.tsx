@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Grid, Button } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { RootState } from 'common/store';
+import { ROUTES } from 'common/routes';
 import { HeaderActions } from './components/HeaderActions';
 import { MobileModal } from '../MobileModal/MobileModal';
 import { Footer } from '../Footer/Footer';
@@ -11,13 +12,8 @@ import lofo from '../../common/resources/images/cardano-ballot-logo.png';
 import styles from './Header.module.scss';
 
 export const Header = () => {
-  const navigate = useNavigate();
   const event = useSelector((state: RootState) => state.user.event);
   const [isMobileMenuVisible, setIsMobileMenuVisible] = useState(false);
-
-  const handleLogoClick = () => {
-    navigate('/');
-  };
 
   return (
     <>
@@ -43,12 +39,13 @@ export const Header = () => {
           marginBottom={{ xs: '0px', md: '0px' }}
           marginTop={{ xs: '0px', md: '0px' }}
         >
-          <img
-            src={lofo}
-            onClick={handleLogoClick}
-            className={styles.logo}
-            data-testid="header-logo"
-          />
+          <Link to={ROUTES.INTRO}>
+            <img
+              src={lofo}
+              className={styles.logo}
+              data-testid="header-logo"
+            />
+          </Link>
         </Grid>
         <Grid display={{ xs: 'none', md: 'flex' }}>
           <HeaderActions showNavigationItems={event?.notStarted === false} />

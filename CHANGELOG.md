@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.74](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.73...v0.2.74) (2023-10-24)
+
+
+### Bug Fixes
+
+* **cip-1694-ui:** add onClose handlers for each dialog ([c78caf8](https://github.com/cardano-foundation/cf-cardano-ballot/commit/c78caf83e9efd1b88ef96b2088edefd12f2e211d))
+* **cip-1694-ui:** change stats mapping for the leaderboard page ([10a394f](https://github.com/cardano-foundation/cf-cardano-ballot/commit/10a394f216e1f37e75e648ae4f2b97dc4f9a5c07))
+
 ## [0.2.73](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.72...v0.2.73) (2023-10-20)
 
 

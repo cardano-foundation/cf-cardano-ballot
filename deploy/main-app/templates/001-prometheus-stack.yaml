@@ -36,11 +36,6 @@ spec:
                   matchers:
                     - alertname =~ "InfoInhibitor|Watchdog"
             receivers:
-            - name: slack
-              slack_configs:
-                - slack_api_url_file: /etc/secrets/SLACK_API_URL
-                  send_resolved: true
-                  channel: '#cf-voting-infra-alerts'
             - name: 'null'
         extraSecretMounts:
           - name: secret-files

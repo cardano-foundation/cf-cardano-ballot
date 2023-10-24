@@ -22,6 +22,27 @@ spec:
           enabled: false
         kubeControllerManager:
           enabled: false
+        alertmanager:
+          config:
+            route:
+              group_by: ['namespace']
+              group_wait: 30s
+              group_interval: 5m
+              repeat_interval: 12h
+              receiver: 'null'
+              routes:
+                - receiver: 'null'
+                  continue: false
+                  matchers:
+                    - alertname =~ "InfoInhibitor|Watchdog"
+            receivers:
+            - name: 'null'
+          extraSecretMounts:
+            - name: secret-files
+              mountPath: /etc/secrets
+              subPath: ""
+              secretName: prometheus-alertmanager-secrets
+              readOnly: true
   syncPolicy:
     automated:
       prune: true

@@ -49,7 +49,7 @@ describe('Footer', () => {
 
       const faq = within(footer).queryByTestId('f-a-q');
       expect(faq).not.toBeNull();
-      expect(faq.textContent).toEqual('FAQ');
+      expect(faq.textContent).toEqual('Guides');
       expect(faq.attributes.getNamedItem('href').value).toEqual(faqMock);
     });
   });

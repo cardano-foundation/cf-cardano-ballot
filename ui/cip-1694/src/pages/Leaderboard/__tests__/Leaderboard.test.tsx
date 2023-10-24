@@ -94,7 +94,8 @@ describe('For the event that has already finished', () => {
     const statsItems =
       eventMock_finished?.categories
         ?.find(({ id }) => id === 'CHANGE_GOV_STRUCTURE')
-        ?.proposals?.map(({ name }) => ({
+        ?.proposals?.map(({ name, id }) => ({
+          id,
           name,
           label: capitalize(name.toLowerCase()),
         })) || [];
@@ -119,9 +120,9 @@ describe('For the event that has already finished', () => {
       expect(pollStatsTileSummary.textContent).toEqual(`${statsSum}`);
 
       const pollStatsItems = within(pollStatsTile).queryAllByTestId('poll-stats-item');
-      for (const item in pollStatsItems) {
+      for (const item in statsItems) {
         expect(pollStatsItems[item].textContent).toEqual(
-          `${capitalize(stats[item][0].toLowerCase())}${stats[item][1].votes}`
+          `${capitalize(statsItems[item].name.toLowerCase())}${stats[item][1].votes}`
         );
       }
 
@@ -137,10 +138,10 @@ describe('For the event that has already finished', () => {
       expect(currentlyVotingTileSummary.textContent).toEqual(`${statsSum}`);
 
       const currentlyVotingItems = within(currentlyVotingTile).queryAllByTestId('currently-voting-item');
-      for (const item in pollStatsItems) {
+      for (const item in statsItems) {
         expect(currentlyVotingItems[item].textContent).toEqual(
-          `${capitalize(stats[item][0].toLowerCase())} - ${getPercentage(
-            voteStats.proposals[stats[item][0]]?.votes,
+          `${capitalize(statsItems[item].name.toLowerCase())} - ${getPercentage(
+            voteStats.proposals[statsItems[item].id]?.votes,
             statsSum
           ).toFixed(2)}%`
         );
@@ -151,9 +152,9 @@ describe('For the event that has already finished', () => {
       expect(mockPieChart.mock.lastCall[0]).toEqual({
         style: { height: '200px', width: '200px' },
         lineWidth: 32,
-        data: statsItems.map(({ label, name }) => ({
+        data: statsItems.map(({ label, name, id }) => ({
           title: label,
-          value: (voteStats.proposals?.[name as any] as unknown as ByProposalsInCategoryStats['proposals'])?.votes,
+          value: (voteStats.proposals?.[id as any] as unknown as ByProposalsInCategoryStats['proposals'])?.votes,
           color: proposalColorsMap[name],
         })),
       });
@@ -207,7 +208,15 @@ describe("For the event that hasn't finished yet", () => {
 
     const statsSum = '--';
     const placeholder = '--';
-    const stats = Object.entries(voteStats.proposals);
+
+    const statsItems =
+      eventMock_finished?.categories
+        ?.find(({ id }) => id === 'CHANGE_GOV_STRUCTURE')
+        ?.proposals?.map(({ name, id }) => ({
+          id,
+          name,
+          label: capitalize(name.toLowerCase()),
+        })) || [];
 
     await waitFor(async () => {
       expect(mockGetStats).not.toBeCalled();
@@ -231,8 +240,10 @@ describe("For the event that hasn't finished yet", () => {
       expect(pollStatsTileSummary.textContent).toEqual(`${statsSum}`);
 
       const pollStatsItems = within(pollStatsTile).queryAllByTestId('poll-stats-item');
-      for (const item in pollStatsItems) {
-        expect(pollStatsItems[item].textContent).toEqual(`${capitalize(stats[item][0].toLowerCase())}${placeholder}`);
+      for (const item in statsItems) {
+        expect(pollStatsItems[item].textContent).toEqual(
+          `${capitalize(statsItems[item].name.toLowerCase())}${placeholder}`
+        );
       }
 
       const currentlyVotingTile = within(leaderboardPage).queryByTestId('currently-voting-tile');
@@ -247,8 +258,8 @@ describe("For the event that hasn't finished yet", () => {
       expect(currentlyVotingTileSummary.textContent).toEqual(`${statsSum}`);
 
       const currentlyVotingItems = within(currentlyVotingTile).queryAllByTestId('currently-voting-item');
-      for (const item in pollStatsItems) {
-        expect(currentlyVotingItems[item].textContent).toEqual(`${capitalize(stats[item][0].toLowerCase())}`);
+      for (const item in statsItems) {
+        expect(currentlyVotingItems[item].textContent).toEqual(`${capitalize(statsItems[item].name.toLowerCase())}`);
       }
 
       const currentlyVotingChart = within(currentlyVotingTile).queryByTestId('pie-chart');

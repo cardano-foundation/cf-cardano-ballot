@@ -23,6 +23,7 @@ export const VoteSubmittedModal = (props: VoteSubmittedModalProps) => {
 
   return (
     <Dialog
+      onClose={onCloseFn}
       open={!!openStatus}
       aria-labelledby={name}
       PaperProps={{ sx: { width: '400px', borderRadius: '16px' } }}

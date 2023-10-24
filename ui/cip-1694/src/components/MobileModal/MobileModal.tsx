@@ -22,6 +22,7 @@ export const MobileModal = (props: VoteSubmittedModalProps) => {
     <Dialog
       open={!!openStatus}
       aria-labelledby={name}
+      onClose={onCloseFn}
       PaperProps={{
         sx: {
           width: '100vw',

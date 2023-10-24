@@ -25,6 +25,7 @@ export const ConfirmWithWalletSignatureModal = (props: ConfirmWithWalletSignatur
 
   return (
     <Dialog
+      onClose={showCloseBtn ? onCloseFn : undefined}
       open={!!openStatus}
       aria-labelledby={name}
       PaperProps={{ sx: { width: '410px', maxWidth: '410px', borderRadius: '16px' } }}

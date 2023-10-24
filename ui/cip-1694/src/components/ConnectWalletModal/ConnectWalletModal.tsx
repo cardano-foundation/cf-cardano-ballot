@@ -33,6 +33,7 @@ export const ConnectWalletModal = (props: ConnectWalletModalProps) => {
       open={!!openStatus}
       aria-labelledby={name}
       PaperProps={{ sx: { width: '400px', borderRadius: '16px' } }}
+      onClose={onCloseFn}
     >
       <DialogTitle
         sx={{ padding: { xs: '20px', md: '30px 30px 20px 30px' } }}

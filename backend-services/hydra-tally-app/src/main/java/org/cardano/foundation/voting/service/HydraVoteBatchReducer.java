@@ -5,6 +5,7 @@ import com.bloxbean.cardano.client.api.UtxoSupplier;
 import com.bloxbean.cardano.client.api.model.Amount;
 import com.bloxbean.cardano.client.api.model.Utxo;
 import com.bloxbean.cardano.client.coinselection.impl.LargestFirstUtxoSelectionStrategy;
+import com.bloxbean.cardano.client.common.model.Network;
 import com.bloxbean.cardano.client.exception.CborSerializationException;
 import com.bloxbean.cardano.client.function.Output;
 import com.bloxbean.cardano.client.function.TxBuilderContext;
@@ -14,7 +15,6 @@ import com.bloxbean.cardano.client.function.helper.ScriptCallContextProviders;
 import com.bloxbean.cardano.client.function.helper.model.ScriptCallContext;
 import com.bloxbean.cardano.client.plutus.spec.ExUnits;
 import com.bloxbean.cardano.client.plutus.spec.PlutusV2Script;
-import com.bloxbean.cardano.client.util.JsonUtil;
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -23,7 +23,7 @@ import org.cardano.foundation.voting.domain.CategoryResultsDatumConverter;
 import org.cardano.foundation.voting.domain.ReduceVoteBatchRedeemer;
 import org.cardano.foundation.voting.domain.UTxOCategoryResult;
 import org.cardanofoundation.hydra.cardano.client.lib.submit.TransactionSubmissionService;
-import org.cardanofoundation.hydra.cardano.client.lib.wallet.CardanoOperatorSupplier;
+import org.cardanofoundation.hydra.cardano.client.lib.wallet.WalletSupplier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -63,10 +63,13 @@ public class HydraVoteBatchReducer {
     private TransactionSubmissionService transactionProcessor;
 
     @Autowired
-    private CardanoOperatorSupplier cardanoOperatorSupplier;
+    private WalletSupplier walletSupplier;
 
     @Autowired
     private PlutusScriptLoader plutusScriptLoader;
+
+    @Autowired
+    private Network network;
 
     @Autowired
     private CategoryResultsDatumConverter categoryResultsDatumConverter;
@@ -114,9 +117,9 @@ public class HydraVoteBatchReducer {
         val contract = plutusScriptLoader.getContract(contractEventId, contractOrganiser, contractCategoryId);
         val contractAddress = plutusScriptLoader.getContractAddress(contract);
 
-        val hydraOperator = cardanoOperatorSupplier.getOperator();
-        val sender = hydraOperator.getAddress();
-        val senderVerificationKeyBlake224 =  getKeyHash(hydraOperator.getVerificationKey());
+        val wallet = walletSupplier.getWallet();
+        val sender = wallet.getAddress(network);
+        val senderVerificationKeyBlake224 = getKeyHash(wallet.getVerificationKey());
 
         val utxosWithCategoryResults = voteUtxoFinder.getUtxosWithCategoryResults(contractEventId,
                 contractOrganiser,
@@ -219,7 +222,7 @@ public class HydraVoteBatchReducer {
 
         changeTransactionCost(transaction);
 
-        val result = transactionProcessor.submitTransaction(hydraOperator.getTxSigner().sign(transaction));
+        val result = transactionProcessor.submitTransaction(wallet.getTxSigner().sign(transaction));
         if (!result.isSuccessful()) {
             return Either.left(Problem.builder()
                     .withTitle("Transaction failed")

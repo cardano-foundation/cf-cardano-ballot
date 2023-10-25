@@ -18,6 +18,7 @@ configurations {
 
 repositories {
 	mavenCentral()
+	mavenLocal()
 	maven { url = uri("https://repo.spring.io/milestone") }
 }
 
@@ -49,9 +50,9 @@ dependencies {
 	implementation("com.bloxbean.cardano:cardano-client-core:0.5.0")
 	annotationProcessor("com.bloxbean.cardano:cardano-client-annotation-processor:0.5.0")
 
-	implementation("org.cardanofoundation:hydra-java-client:0.0.9")
-	implementation("org.cardanofoundation:hydra-java-cardano-client-lib-adapter:0.0.9")
-	implementation("org.cardanofoundation:hydra-java-reactive-reactor-client:0.0.9")
+	implementation("org.cardanofoundation:hydra-java-client:0.0.10-SNAPSHOT")
+	implementation("org.cardanofoundation:hydra-java-cardano-client-lib-adapter:0.0.10-SNAPSHOT")
+	implementation("org.cardanofoundation:hydra-java-reactive-reactor-client:0.0.10-SNAPSHOT")
 
 	implementation("one.util:streamex:0.8.1")
 

@@ -7,9 +7,9 @@ import jakarta.annotation.Nullable;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import one.util.streamex.StreamEx;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
-import org.cardano.foundation.voting.domain.Vote;
+import org.cardano.foundation.voting.domain.CommitType;
+import org.cardano.foundation.voting.domain.LocalBootstrap;
 import org.cardano.foundation.voting.repository.VoteRepository;
 import org.cardano.foundation.voting.service.HydraVoteBatchReducer;
 import org.cardano.foundation.voting.service.HydraVoteBatcher;
@@ -17,8 +17,8 @@ import org.cardano.foundation.voting.service.HydraVoteImporter;
 import org.cardano.foundation.voting.service.PlutusScriptLoader;
 import org.cardano.foundation.voting.utils.Partitioner;
 import org.cardanofoundation.hydra.cardano.client.lib.submit.TransactionSubmissionService;
-import org.cardanofoundation.hydra.cardano.client.lib.wallet.CardanoOperator;
-import org.cardanofoundation.hydra.cardano.client.lib.wallet.CardanoOperatorSupplier;
+import org.cardanofoundation.hydra.cardano.client.lib.wallet.Wallet;
+import org.cardanofoundation.hydra.cardano.client.lib.wallet.WalletSupplier;
 import org.cardanofoundation.hydra.core.model.UTXO;
 import org.cardanofoundation.hydra.core.model.http.HeadCommitResponse;
 import org.cardanofoundation.hydra.core.model.query.response.*;
@@ -28,6 +28,7 @@ import org.cardanofoundation.hydra.reactor.HydraReactiveWebClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.command.annotation.Option;
 import org.springframework.shell.standard.ShellOption;
@@ -39,7 +40,6 @@ import java.time.Duration;
 import java.util.Map;
 
 import static io.netty.util.internal.StringUtil.isNullOrEmpty;
-import static org.cardano.foundation.voting.utils.MoreComparators.createVoteComparator;
 import static org.cardanofoundation.hydra.cardano.client.lib.utils.TransactionSigningUtil.sign;
 import static org.cardanofoundation.hydra.core.model.HydraState.Initializing;
 import static org.cardanofoundation.hydra.core.model.HydraState.Open;
@@ -70,7 +70,7 @@ public class HydraCommands {
     private PlutusScriptLoader plutusScriptLoader;
 
     @Autowired
-    private CardanoOperatorSupplier cardanoOperatorSupplier;
+    private WalletSupplier walletSupplier;
 
     @Autowired
     private HydraReactiveClient hydraClient;
@@ -88,23 +88,17 @@ public class HydraCommands {
     @Value("${hydra.operator.name}")
     private String actor;
 
-    @Value("${cardano.commit.address}")
-    private String cardanoCommitAddress;
-
-    @Value("${cardano.commit.utxo}")
-    private String cardanoCommitUtxo;
-
-    @Value("${hydra.participants.count}")
-    private int participants;
-
-    @Value("${hydra.participant.number}")
-    private int participantNumber;
-
-    @Value("${cardano.commit.amount}")
-    private Long cardanoCommitAmount;
+    @Autowired
+    private Environment environment;
 
     @Value("${hydra.auto.connect:false}")
     private boolean autoConnect;
+
+    @Value("${cardano.commit.type}")
+    private CommitType commitType;
+
+    @Value("${local.bootstrap}")
+    private LocalBootstrap localBootstrap;
 
     @Value("${ballot.event.id}")
     private String eventId;
@@ -116,11 +110,11 @@ public class HydraCommands {
 
     @Nullable private Disposable responsesSubscription;
 
-    private CardanoOperator l1Operator;
+    private Wallet l1Wallet;
 
     @PostConstruct
     public void init() throws Exception {
-        this.l1Operator = cardanoOperatorSupplier.getOperator();
+        this.l1Wallet = walletSupplier.getWallet();
         if (autoConnect) {
             connect();
             initHead();
@@ -268,35 +262,68 @@ public class HydraCommands {
             return "Cannot commit, unsupported state, hydra state:" + hydraClient.getHydraState();
         }
 
-        val utxo = new UTXO();
-        log.info("Committing funds to the head, " +
-                "address: {}," +
-                " utxo: {}," +
-                " amount: {}", cardanoCommitAddress, cardanoCommitUtxo, cardanoCommitAmount);
+        return switch (commitType) {
+            case COMMIT_FUNDS -> {
+                val cardanoCommitAddress = environment.getProperty("cardano.commit.address");
+                val cardanoCommitUtxo = environment.getProperty("cardano.commit.utxo");
+                val cardanoCommitAmount = environment.getProperty("cardano.commit.amount", Long.class);
 
-        utxo.setAddress(cardanoCommitAddress);
-        utxo.setValue(Map.of("lovelace", BigInteger.valueOf(cardanoCommitAmount)));
+                log.info("Committing funds to the head, " +
+                        "address: {}," +
+                        " utxo: {}," +
+                        " amount: {}", cardanoCommitAddress, cardanoCommitUtxo, cardanoCommitAmount);
 
-        var commitMap = Map.of(cardanoCommitUtxo, utxo);
+                val utxo = new UTXO();
 
-        HeadCommitResponse committedResponse = hydraReactiveWebClient.commitRequest(commitMap)
-                .block(Duration.ofMinutes(1));
+                utxo.setAddress(cardanoCommitAddress);
+                utxo.setValue(Map.of("lovelace", BigInteger.valueOf(cardanoCommitAmount.longValue())));
 
-        if (committedResponse == null) {
-            return "Cannot commit, unsupported state, hydra state:" + hydraClient.getHydraState();
-        }
+                var commitMap = Map.of(cardanoCommitUtxo, utxo);
 
-        var transactionBytes = HexUtil.decodeHexString(committedResponse.getCborHex());
+                HeadCommitResponse committedResponse = hydraReactiveWebClient.commitRequest(commitMap)
+                        .block(Duration.ofMinutes(1));
 
-        byte[] signedTx = sign(transactionBytes, l1Operator.getSecretKey());
+                if (committedResponse == null) {
+                    yield "Cannot commit, unsupported state, hydra state:" + hydraClient.getHydraState();
+                }
 
-        var txResult = l1TransactionSubmissionService.submitTransaction(HexUtil.encodeHexString(signedTx));
+                var transactionBytes = HexUtil.decodeHexString(committedResponse.getCborHex());
 
-        if (!txResult.isSuccessful()) {
-            return "Cannot commit, transaction submission failed, reason: " + txResult.getResponse();
-        }
+                byte[] signedTx = sign(transactionBytes, l1Wallet.getSecretKey());
 
-        return "Committed funds, L1 transactionId: " + txResult.getValue();
+                var txResult = l1TransactionSubmissionService.submitTransaction(HexUtil.encodeHexString(signedTx));
+
+                if (!txResult.isSuccessful()) {
+                    yield "Cannot commit, transaction submission failed, reason: " + txResult.getResponse();
+                }
+
+                yield "Committed funds, L1 transactionId: " + txResult.getValue();
+            }
+            case COMMIT_EMPTY -> {
+                log.info("Committing empty to the head...");
+
+                var commitMap = Map.<String, UTXO>of();
+
+                HeadCommitResponse committedResponse = hydraReactiveWebClient.commitRequest(commitMap)
+                        .block(Duration.ofMinutes(1));
+
+                if (committedResponse == null) {
+                    yield "Cannot commit, unsupported state, hydra state:" + hydraClient.getHydraState();
+                }
+
+                var transactionBytes = HexUtil.decodeHexString(committedResponse.getCborHex());
+
+                byte[] signedTx = sign(transactionBytes, l1Wallet.getSecretKey());
+
+                var txResult = l1TransactionSubmissionService.submitTransaction(HexUtil.encodeHexString(signedTx));
+
+                if (!txResult.isSuccessful()) {
+                    yield "Cannot commit, transaction submission failed, reason: " + txResult.getResponse();
+                }
+
+                yield "Committed funds, L1 transactionId: " + txResult.getValue();
+            }
+        };
     }
 
     @Command(command = "head-fan-out", description = "head fan out.")
@@ -372,8 +399,19 @@ public class HydraCommands {
         log.info("Tally all with votes sharding, importBatchSize: {}, createBatchSize: {}, reduceBatchSize: {}",
                 importBatchSize, createBatchSize, reduceBatchSize);
 
+        if (localBootstrap != LocalBootstrap.SHARDED) {
+            return "Tallying votes failed, reason: local bootstrap is NOT SHARDED";
+        }
+
         if (hydraClient.getHydraState() != Open) {
             return "Tallying votes failed, reason:" + hydraClient.getHydraState();
+        }
+
+        var participantNumber = environment.getProperty("hydra.participant.number", Integer.class);
+        var participantCount = environment.getProperty("hydra.participant.count", Integer.class);
+
+        if (participantCount.intValue() == 0) {
+            return "Tallying votes failed, reason: participants count is 0";
         }
 
         var allCategories = voteRepository.getAllUniqueCategories(eventId);
@@ -384,9 +422,9 @@ public class HydraCommands {
             var allVotes = voteRepository.findAllVotes(eventId, categoryId)
                     .stream()
                     .filter(vote -> {
-                        int partition = Partitioner.partition(vote.voteId(), participants);
+                        int partition = Partitioner.partition(vote.voteId(), participantCount);
 
-                        return partition == participantNumber;
+                        return partition == participantNumber.intValue();
                     }).toList();
 
             var partitioned = Lists.partition(allVotes, importBatchSize);
@@ -415,16 +453,7 @@ public class HydraCommands {
             return "Importing votes failed, reason:" + hydraClient.getHydraState();
         }
 
-        var participantVotes = StreamEx.of(voteRepository.findAllVotes(eventId))
-                    .filter(v -> v.eventId().equals(eventId))
-                    .filter(v -> {
-                        int participant = Partitioner.partition(v.voteId(), participants);
-
-                        return participant == participantNumber;
-                    })
-                    .sorted(createVoteComparator())
-                    .distinct(Vote::voteId)
-                    .toList();
+        var participantVotes = voteRepository.findAllVotes(eventId);
 
         log.info("Total votes to import: {}", participantVotes.size());
 

@@ -60,8 +60,6 @@ public class PlutusScriptLoader {
             throw new RuntimeException("No operator verification keys configured!");
         }
 
-        log.info("Operator verification keys: {}", operatorVerificationKeys);
-
         var plutusFileAsString = resourceLoader.getResource(plutusCodePath)
                 .getInputStream();
 

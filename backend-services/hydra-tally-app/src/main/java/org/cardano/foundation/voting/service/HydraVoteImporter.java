@@ -3,6 +3,7 @@ package org.cardano.foundation.voting.service;
 import com.bloxbean.cardano.client.api.ProtocolParamsSupplier;
 import com.bloxbean.cardano.client.api.UtxoSupplier;
 import com.bloxbean.cardano.client.coinselection.impl.LargestFirstUtxoSelectionStrategy;
+import com.bloxbean.cardano.client.common.model.Network;
 import com.bloxbean.cardano.client.function.TxBuilderContext;
 import com.bloxbean.cardano.client.function.TxOutputBuilder;
 import com.bloxbean.cardano.client.function.helper.BalanceTxBuilders;
@@ -10,7 +11,6 @@ import com.bloxbean.cardano.client.function.helper.InputBuilders;
 import com.bloxbean.cardano.client.function.helper.MinAdaCheckers;
 import com.bloxbean.cardano.client.transaction.spec.TransactionOutput;
 import com.bloxbean.cardano.client.transaction.spec.Value;
-import com.bloxbean.cardano.client.util.JsonUtil;
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -18,7 +18,7 @@ import org.cardano.foundation.voting.domain.Vote;
 import org.cardano.foundation.voting.domain.VoteDatum;
 import org.cardano.foundation.voting.domain.VoteDatumConverter;
 import org.cardanofoundation.hydra.cardano.client.lib.submit.TransactionSubmissionService;
-import org.cardanofoundation.hydra.cardano.client.lib.wallet.CardanoOperatorSupplier;
+import org.cardanofoundation.hydra.cardano.client.lib.wallet.WalletSupplier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -45,7 +45,7 @@ public class HydraVoteImporter {
     private TransactionSubmissionService transactionSubmissionService;
 
     @Autowired
-    private CardanoOperatorSupplier cardanoOperatorSupplier;
+    private WalletSupplier walletSupplier;
 
     @Autowired
     private PlutusScriptLoader plutusScriptLoader;
@@ -53,13 +53,16 @@ public class HydraVoteImporter {
     @Autowired
     private VoteDatumConverter voteDatumConverter;
 
+    @Autowired
+    private Network network;
+
     public Either<Problem, String> importVotes(String contractEventId,
                                                String contractOrganiser,
                                                List<Vote> votes) throws Exception {
         log.info("Importing number: {} votes", votes.size());
 
-        val operator = cardanoOperatorSupplier.getOperator();
-        val sender = operator.getAddress();
+        val operator = walletSupplier.getWallet();
+        val sender = operator.getAddress(network);
 
         if (votes.isEmpty()) {
             return Either.left(Problem.builder()

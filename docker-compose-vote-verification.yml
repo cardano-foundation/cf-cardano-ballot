@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  follower-api:
+    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/voting-ledger-follower-app:v0.2.74
+    restart: always
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - CORS_ALLOWED_ORIGINS:http://localhost:8080
+      - CARDANO_NETWORK=PREPROD
+      - ORGANISER_STAKE_ADDRESS=stake_test1uqwcz0754wwpuhm6xhdpda6u9enyahaj5ynlc9ay5l4mlms4pyqyg
+      - BIND_ON_EVENT_IDS=CF_SUMMIT_2023_025E,CIP-1694_Pre_Ratification_3316,FRUITS_CF62
+      - CARDANO_NODE_PROTOCOL_MAGIC=1
+      - YACI_STORE_CARDANO_SYNC_START_BLOCK_HASH=3337e297121fda1262372c28de3d917bd2a60bb1e3c6326e3b7e832eb8017615
+      - YACI_STORE_CARDANO_SYNC_START_SLOT=38748711
+      - '9090:9090'
+  verification-app:
+    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/voting-verification-app:v0.2.74-1
+    restart: always
+    environment:
+      - LEDGER_FOLLOWER_APP_URL=http://follower-api:9090
+    ports:
+      - '9092:9092'
+  verification-ui:
+    build:
+      context: ui/verification-app
+      args:
+        REACT_APP_VOTING_VERIFICATION_APP_SERVER_URL: http://verification-app:9092
+        REACT_APP_TARGET_NETWORK: preprod
+    restart: always
+    ports:
+      - '8080:8080'

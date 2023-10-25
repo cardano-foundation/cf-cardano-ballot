@@ -21,6 +21,7 @@
 
 A set of backend services and UI applications to facilitate CIP-1694 voting as well as Cardano Summit 2023 voting.
 
+![alt text](ui/summit-2023/src/common/resources/images/intro.png)
 # Features
 
 TODO: Include project features
@@ -59,7 +60,7 @@ this will launch voting-verification-app on port: 9092 by default.
 ```bash
 export AWS_SNS_ACCESS_KEY_ID=...
 export AWS_SNS_SECRET_ACCESS_KEY=...
-cd user-verification-service
+cd cf-ballot-app/backend-services/user-verification-service
 ./gradlew bootRun
 ```
 
@@ -75,9 +76,11 @@ SERVER_PORT=8888 ./gradlew bootRun
 
 use `setupProxy.js` to proxy services urls
 
-- create `.env` file on the same level as `.env.development`
+### Run the frontend
+Create `.env` file on the same level as `.env.development`. Then run:
 
 ```shell
+cd cf-ballot-app/ui/summit-2023
 npm i
 npm run start
 ```
@@ -119,7 +122,7 @@ On start up of the app, you can verify if the right profile has been used, there
 - ui - contains React.JS frontend code apps to cast votes / display voting results
 
 # Backend -> Frontend Types Generation
-All Backend Apps will generate TypeScript types for the frontend by using the following command:
+All backend apps will generate TypeScript types for the frontend by using the following command:
 
 As an example:
 ```shell

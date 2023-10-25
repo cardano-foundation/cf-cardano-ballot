@@ -75,6 +75,9 @@ public class LocalVoteRepository implements VoteRepository {
                     Optional.ofNullable(cosePublicKey)
             );
 
+
+
+
             if (voteE.isEmpty()) {
                 log.error("Vote creation failed, reason:{}", voteE.getLeft());
             }

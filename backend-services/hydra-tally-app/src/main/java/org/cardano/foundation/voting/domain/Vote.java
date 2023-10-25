@@ -33,7 +33,9 @@ public record Vote(
         var result = parser.verify();
 
         if (!result.isValid()) {
-            var problem = Problem.builder().withTitle("COSE_ERROR").withDetail("Cose signature failed").build();
+            var problem = Problem.builder()
+                    .withTitle("COSE_ERROR")
+                    .withDetail("Cose signature failed for voteId:" + voteId).build();
 
             return Either.left(problem);
         }

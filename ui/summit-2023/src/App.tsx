@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 
 import { Footer } from './components/common/Footer/Footer';
-import { setEventData, setUserVotes, setWalletIsLoggedIn, setWalletIsVerified, setWinners } from './store/userSlice';
+import { setEventData, setUserVotes, setWalletIsLoggedIn, setWalletIsVerified } from './store/userSlice';
 import Header from './components/common/Header/Header';
 import { PageRouter } from './routes';
 import { env } from './common/constants/env';
@@ -22,7 +22,7 @@ import SUMMIT2023CONTENT from 'common/resources/data/summit2023Content.json';
 import { resolveCardanoNetwork } from './utils/utils';
 import { parseError } from 'common/constants/errors';
 import { getUserVotes } from 'common/api/voteService';
-import { getWinners } from 'common/api/leaderboardService';
+//import { getWinners } from 'common/api/leaderboardService';
 import './App.scss';
 
 function App() {
@@ -72,10 +72,10 @@ function App() {
         }
       }
 
-      if ('finished' in event && event.finished) {
+      if ('proposalsReveal' in event && event.proposalsReveal) {
         try {
-          const winners = await getWinners();
-          dispatch(setWinners({ winners }));
+          //const winners = await getWinners();
+          //dispatch(setWinners({ winners }));
         } catch (e) {
           if (process.env.NODE_ENV === 'development') {
             console.log(e.message);

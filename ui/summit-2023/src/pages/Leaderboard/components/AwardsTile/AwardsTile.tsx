@@ -12,6 +12,8 @@ import { CategoryContent } from 'pages/Categories/Category.types';
 import styles from './AwardsTile.module.scss';
 import cn from 'classnames';
 import CATEGORY_IMAGES from '../../../../common/resources/data/categoryImages.json';
+import { setWinners } from '../../../../store/userSlice';
+import { useDispatch } from 'react-redux';
 
 const AwardsTile = ({ counter, title, categoryId }) => {
   const summit2023Category: CategoryContent = SUMMIT2023CONTENT.categories.find(
@@ -20,7 +22,8 @@ const AwardsTile = ({ counter, title, categoryId }) => {
   const summit2023Proposals: ProposalContent[] = summit2023Category.proposals;
   const [awards, setAwards] = useState([]);
   const [loaded, setLoaded] = useState(false);
-
+  const dispatch = useDispatch();
+  
   const init = useCallback(async () => {
     try {
       await leaderboardService.getCategoryLevelStats(categoryId).then((response) => {
@@ -28,7 +31,7 @@ const AwardsTile = ({ counter, title, categoryId }) => {
           const id = proposal.id;
           const votes = response?.proposals[id] ? response?.proposals[id].votes : 0;
           const rank = 0;
-          return { ...proposal, votes, rank };
+          return { ...proposal, votes, rank, categoryId};
         });
 
         updatedAwards.sort((a, b) => b.votes - a.votes);
@@ -40,8 +43,17 @@ const AwardsTile = ({ counter, title, categoryId }) => {
             item.rank = index + 1;
           }
         });
-
         setAwards(updatedAwards);
+
+        const categoryWinners = updatedAwards.map((winner) => {
+          if(winner.rank === 1) {
+            const proposalId = winner.id;
+            return { categoryId, proposalId};
+          }
+        });
+
+        dispatch(setWinners({ winners: categoryWinners }));
+
       });
       setLoaded(true);
     } catch (error) {

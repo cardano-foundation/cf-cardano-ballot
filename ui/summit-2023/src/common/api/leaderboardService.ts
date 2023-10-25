@@ -20,7 +20,7 @@ const getHydraTallyStats = async (categoryId) =>
   });
 
 const getWinners = async () =>
-  await doRequest<{ categoryId; proposalId }[]>(HttpMethods.GET, `${LEADERBOARD_URL}/${env.EVENT_ID}/winners`, {
+  await doRequest<{ categoryId; proposalIds }[]>(HttpMethods.GET, `${LEADERBOARD_URL}/${env.EVENT_ID}/winners`, {
     ...DEFAULT_CONTENT_TYPE_HEADERS,
   });
 

@@ -427,7 +427,7 @@ const Nominees = () => {
     if (
       winners?.length &&
       winners?.find((c) => c.categoryId === categoryId) &&
-      winners?.find((p) => p.proposalId === nominee.id)
+      winners?.find((p) => p[0].proposalId === nominee.id)
     ) {
       isWinner = true;
     }
@@ -537,11 +537,12 @@ const Nominees = () => {
                             <WinnersIcon
                               style={{ 
                                 position: 'absolute',
-                                top: 0,
-                                right: 0,
+                                top: -6,
+                                right: -5,
                                 width: '40px',
                                 height: 'auto',
-                                margin: '10px'
+                                margin: '10px',
+                                zIndex: 999
                               }}
                             />
                           </Tooltip>
@@ -685,11 +686,12 @@ const Nominees = () => {
                               <WinnersIcon
                                 style={{ 
                                   position: 'absolute',
-                                  top: 0,
-                                  right: 0,
+                                  top: -6,
+                                  right: -5,
                                   width: '40px',
                                   height: 'auto',
-                                  margin: '10px'
+                                  margin: '10px',
+                                  zIndex: 999
                                 }}
                               />
                             </Tooltip>

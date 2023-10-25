@@ -21,7 +21,6 @@
 
 A set of backend services and UI applications to facilitate CIP-1694 voting as well as Cardano Summit 2023 voting.
 
-![alt text](ui/summit-2023/src/common/resources/images/intro.png)
 # Features
 
 TODO: Include project features

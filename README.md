@@ -4,8 +4,10 @@
     <h1 align="center" style="border-bottom: none">Cardano Foundation | Cardano Ballot</h1>
 
 [![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)
+[![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white)](https://conventionalcommits.org)
 ![GitHub release (with filter)](https://img.shields.io/github/v/release/cardano-foundation/cf-cardano-ballot)
 ![Discord](https://img.shields.io/discord/1022471509173882950)
+
 [![Voting-App-Build](https://github.com/cardano-foundation/cf-cardano-ballot/actions/workflows/voting-app-build.yml/badge.svg)](https://github.com/cardano-foundation/cf-cardano-ballot/actions/workflows/voting-app-build.yml)
 [![Voting-Verification-App-Build](https://github.com/cardano-foundation/cf-cardano-ballot/actions/workflows/voting-verification-app-build.yml/badge.svg)](https://github.com/cardano-foundation/cf-cardano-ballot/actions/workflows/voting-verification-app-build.yml)
 [![User-Verification-App-Build](https://github.com/cardano-foundation/cf-cardano-ballot/actions/workflows/user-verification-app-build.yml/badge.svg)](https://github.com/cardano-foundation/cf-cardano-ballot/actions/workflows/user-verification-app-build.yml)
@@ -21,7 +23,7 @@ A set of backend services and UI applications to facilitate CIP-1694 voting as w
 
 # Features
 
-TODO: Include proyect features
+TODO: Include project features
 
 ## Requirements
 

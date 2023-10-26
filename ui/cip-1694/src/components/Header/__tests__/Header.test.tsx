@@ -97,7 +97,7 @@ describe('For ongoing event:', () => {
 
       const voteLink = within(header).queryByTestId('vote-link');
       expect(voteLink).not.toBeNull();
-      expect(voteLink.textContent).toEqual('Your vote');
+      expect(voteLink.textContent).toEqual('Your Ballot');
 
       expect(mockGetChainTip).toHaveBeenCalledTimes(1);
     });
@@ -119,7 +119,7 @@ describe('For ongoing event:', () => {
       const headerLogo = within(header).queryByTestId('header-logo');
 
       const voteLink = within(header).queryByTestId('vote-link');
-      expect(voteLink.textContent).toEqual('Your vote');
+      expect(voteLink.textContent).toEqual('Your Ballot');
 
       fireEvent.click(voteLink);
       expect((historyPushSpy.mock.lastCall[0] as unknown as any).pathname).toEqual(ROUTES.VOTE);

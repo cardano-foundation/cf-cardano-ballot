@@ -19,9 +19,4 @@ const getHydraTallyStats = async (categoryId) =>
     ...DEFAULT_CONTENT_TYPE_HEADERS,
   });
 
-const getWinners = async () =>
-  await doRequest<{ categoryId; proposalIds }[]>(HttpMethods.GET, `${LEADERBOARD_URL}/${env.EVENT_ID}/winners`, {
-    ...DEFAULT_CONTENT_TYPE_HEADERS,
-  });
-
-export { getStats, getCategoryLevelStats, getHydraTallyStats, getWinners };
+export { getStats, getCategoryLevelStats, getHydraTallyStats };

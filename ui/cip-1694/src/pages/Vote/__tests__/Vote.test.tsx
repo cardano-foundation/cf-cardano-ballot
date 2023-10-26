@@ -182,7 +182,7 @@ describe('For ongoing event:', () => {
       const eventTime = within(votePage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
       expect(eventTime.textContent).toEqual(
-        `Voting closes: ${formatUTCDate(eventMock_active.eventEndDate.toString())}`
+        `Ballot closes: ${formatUTCDate(eventMock_active.eventEndDate.toString())}`
       );
 
       const eventDescription = within(votePage).queryByTestId('event-description');
@@ -271,7 +271,7 @@ describe('For ongoing event:', () => {
       const eventTime = within(votePage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
       expect(eventTime.textContent).toEqual(
-        `Voting closes: ${formatUTCDate(eventMock_active.eventEndDate.toString())}`
+        `Ballot closes: ${formatUTCDate(eventMock_active.eventEndDate.toString())}`
       );
 
       const eventDescription = within(votePage).queryByTestId('event-description');
@@ -1192,7 +1192,7 @@ describe('For ongoing event:', () => {
 
     const eventTime = within(votePage).queryByTestId('event-time');
     expect(eventTime).not.toBeNull();
-    expect(eventTime.textContent).toEqual(`Voting closes: ${formatUTCDate(eventMock_active.eventEndDate.toString())}`);
+    expect(eventTime.textContent).toEqual(`Ballot closes: ${formatUTCDate(eventMock_active.eventEndDate.toString())}`);
 
     const eventDescription = within(votePage).queryByTestId('event-description');
     expect(eventDescription).not.toBeNull();

@@ -39,13 +39,14 @@ import java.math.BigInteger;
 import java.time.Duration;
 import java.util.Map;
 
+import static com.bloxbean.cardano.client.util.HexUtil.decodeHexString;
 import static io.netty.util.internal.StringUtil.isNullOrEmpty;
 import static org.cardanofoundation.hydra.cardano.client.lib.utils.TransactionSigningUtil.sign;
 import static org.cardanofoundation.hydra.core.model.HydraState.Initializing;
 import static org.cardanofoundation.hydra.core.model.HydraState.Open;
 
 @Slf4j
-@Command(group = "cardano_l1")
+@Command(group = "hydra-tally-app")
 public class HydraCommands {
 
     @Autowired
@@ -129,7 +130,7 @@ public class HydraCommands {
 
     @Command(command = "get-utxos", description = "gets current hydra's head UTxOs.")
     public String getUtxOs(@ShellOption(value = "address") @Option(required = false) String address) {
-        GetUTxOResponse getUTxOResponse = hydraClient.getUTxOs().block(Duration.ofMinutes(1));
+        GetUTxOResponse getUTxOResponse = hydraClient.getUTxOs().block(Duration.ofMinutes(5));
 
         if (getUTxOResponse == null) {
             return "Cannot connect, unsupported state, hydra state:" + hydraClient.getHydraState();
@@ -168,7 +169,7 @@ public class HydraCommands {
     public String connect() {
         log.info("Connecting to the hydra network:{}", hydraWsUrl);
 
-        GreetingsResponse greetingsResponse = hydraClient.openConnection().block(Duration.ofMinutes(1));
+        GreetingsResponse greetingsResponse = hydraClient.openConnection().block(Duration.ofMinutes(5));
 
         if (greetingsResponse == null) {
             return "Cannot connect, unsupported state, hydra state:" + hydraClient.getHydraState();
@@ -205,7 +206,8 @@ public class HydraCommands {
             responsesSubscription.dispose();
         }
 
-        Boolean disconnected = hydraClient.closeConnection().block(Duration.ofMinutes(1));
+        Boolean disconnected = hydraClient.closeConnection()
+                .block(Duration.ofMinutes(5));
 
         if (disconnected == null) {
             return "Cannot disconnect, unsupported state, hydra state: " + hydraClient.getHydraState();
@@ -218,7 +220,7 @@ public class HydraCommands {
     public String abort() {
         log.info("Aborting from the hydra network...");
 
-        HeadIsAbortedResponse headIsAbortedResponse = hydraClient.abortHead().block(Duration.ofMinutes(1));
+        HeadIsAbortedResponse headIsAbortedResponse = hydraClient.abortHead().block(Duration.ofMinutes(5));
         if (headIsAbortedResponse == null) {
             return "Cannot abort, unsupported state, hydra state:" + hydraClient.getHydraState();
         }
@@ -235,7 +237,7 @@ public class HydraCommands {
     public String initHead() {
         log.info("Init the head...");
 
-        var headIsInitializingResponse = hydraClient.initHead().block(Duration.ofMinutes(1));
+        var headIsInitializingResponse = hydraClient.initHead().block(Duration.ofMinutes(5));
 
         if (headIsInitializingResponse == null) {
             return "Cannot init, unsupported state, hydra state:" + hydraClient.getHydraState();
@@ -281,13 +283,13 @@ public class HydraCommands {
                 var commitMap = Map.of(cardanoCommitUtxo, utxo);
 
                 HeadCommitResponse committedResponse = hydraReactiveWebClient.commitRequest(commitMap)
-                        .block(Duration.ofMinutes(1));
+                        .block(Duration.ofMinutes(5));
 
                 if (committedResponse == null) {
                     yield "Cannot commit, unsupported state, hydra state:" + hydraClient.getHydraState();
                 }
 
-                var transactionBytes = HexUtil.decodeHexString(committedResponse.getCborHex());
+                var transactionBytes = decodeHexString(committedResponse.getCborHex());
 
                 byte[] signedTx = sign(transactionBytes, l1Wallet.getSecretKey());
 
@@ -305,13 +307,13 @@ public class HydraCommands {
                 var commitMap = Map.<String, UTXO>of();
 
                 HeadCommitResponse committedResponse = hydraReactiveWebClient.commitRequest(commitMap)
-                        .block(Duration.ofMinutes(1));
+                        .block(Duration.ofMinutes(5));
 
                 if (committedResponse == null) {
                     yield "Cannot commit, unsupported state, hydra state:" + hydraClient.getHydraState();
                 }
 
-                var transactionBytes = HexUtil.decodeHexString(committedResponse.getCborHex());
+                var transactionBytes = decodeHexString(committedResponse.getCborHex());
 
                 byte[] signedTx = sign(transactionBytes, l1Wallet.getSecretKey());
 
@@ -328,7 +330,8 @@ public class HydraCommands {
 
     @Command(command = "head-fan-out", description = "head fan out.")
     public String fanOut() {
-        var headIsFinalizedResponse = hydraClient.fanOutHead().block(Duration.ofMinutes(1));
+        var headIsFinalizedResponse = hydraClient.fanOutHead()
+                .block(Duration.ofMinutes(5));
 
         if (headIsFinalizedResponse == null) {
             return "Cannot fan out, unsupported state, hydra state:" + hydraClient.getHydraState();
@@ -344,7 +347,7 @@ public class HydraCommands {
     @Command(command = "head-close", description = "close head.")
     public String closeHead() {
         HeadIsClosedResponse headIsClosedResponse = hydraClient.closeHead()
-                .block(Duration.ofMinutes(1));
+                .block(Duration.ofMinutes(5));
 
         if (headIsClosedResponse == null) {
             return "Cannot close the head, unsupported state, hydra state:" + hydraClient.getHydraState();

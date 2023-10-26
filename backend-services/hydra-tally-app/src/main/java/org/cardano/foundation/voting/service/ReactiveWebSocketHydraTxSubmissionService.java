@@ -33,7 +33,7 @@ public class ReactiveWebSocketHydraTxSubmissionService implements TransactionSub
         val txHash = TransactionUtil.getTxHash(transaction);
 
         val txResultMono = hydraClient.submitTxFullConfirmation(txHash, txData);
-        val txResult = txResultMono.block(Duration.ofMinutes(1));
+        val txResult = txResultMono.block(Duration.ofMinutes(5));
 
         return Result.create(txResult.isValid(), txResult.getReason())
                 .withValue(txResult.getTxId());
@@ -48,7 +48,7 @@ public class ReactiveWebSocketHydraTxSubmissionService implements TransactionSub
         val txHash = TransactionUtil.getTxHash(transaction);
 
         val txResultMono = hydraClient.submitTxFullConfirmation(txHash, txData);
-        val txResult = txResultMono.block(Duration.ofMinutes(1));
+        val txResult = txResultMono.block(Duration.ofMinutes(5));
 
         return Result.create(txResult.isValid(), txResult.getReason())
                 .withValue(txResult.getTxId());

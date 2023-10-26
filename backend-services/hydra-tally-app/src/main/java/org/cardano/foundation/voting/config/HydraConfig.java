@@ -48,7 +48,7 @@ public class HydraConfig {
     @Bean
     public ProtocolParamsSupplier protocolParamsSupplier(HydraReactiveWebClient hydraReactiveWebClient) {
         var hydraProtocolParameters = hydraReactiveWebClient.fetchProtocolParameters()
-                .block(Duration.ofMinutes(1));
+                .block(Duration.ofMinutes(5));
 
         return new HydraNodeProtocolParametersAdapter(hydraProtocolParameters);
     }

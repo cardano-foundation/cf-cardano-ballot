@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
-import { UserVotes, VoteReceipt, WinnerStats } from '../types/voting-app-types';
+import { UserVotes, VoteReceipt } from '../types/voting-app-types';
 import { EventPresentation } from '../types/voting-ledger-follower-types';
 import { UserState, VerificationStarts } from './types';
 
@@ -78,8 +78,12 @@ export const userSlice = createSlice({
     setEventData: (state, action: PayloadAction<{ event: EventPresentation }>) => {
       state.event = action.payload.event;
     },
-    setWinners: (state, action: PayloadAction<{ winners: WinnerStats[] }>) => {
-      state.winners = action.payload.winners;
+    setWinners: (state, action: PayloadAction<{ winners: { categoryId: string; proposalId: string }[] }>) => {
+      let filteredWinners = state.winners.filter(
+        (oldWinner) => !action.payload.winners.some((winner) => winner.categoryId === oldWinner.categoryId)
+      );
+      filteredWinners = [...filteredWinners, ...action.payload.winners];
+      state.winners = filteredWinners;
     },
     setUserStartsVerification: (
       state,

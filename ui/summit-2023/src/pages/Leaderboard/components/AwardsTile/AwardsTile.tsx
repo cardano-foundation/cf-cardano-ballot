@@ -12,8 +12,6 @@ import { CategoryContent } from 'pages/Categories/Category.types';
 import styles from './AwardsTile.module.scss';
 import cn from 'classnames';
 import CATEGORY_IMAGES from '../../../../common/resources/data/categoryImages.json';
-import { setWinners } from '../../../../store/userSlice';
-import { useDispatch } from 'react-redux';
 
 const AwardsTile = ({ counter, title, categoryId }) => {
   const summit2023Category: CategoryContent = SUMMIT2023CONTENT.categories.find(
@@ -22,7 +20,6 @@ const AwardsTile = ({ counter, title, categoryId }) => {
   const summit2023Proposals: ProposalContent[] = summit2023Category.proposals;
   const [awards, setAwards] = useState([]);
   const [loaded, setLoaded] = useState(false);
-  const dispatch = useDispatch();
   
   const init = useCallback(async () => {
     try {
@@ -31,7 +28,7 @@ const AwardsTile = ({ counter, title, categoryId }) => {
           const id = proposal.id;
           const votes = response?.proposals[id] ? response?.proposals[id].votes : 0;
           const rank = 0;
-          return { ...proposal, votes, rank, categoryId};
+          return { ...proposal, votes, rank };
         });
 
         updatedAwards.sort((a, b) => b.votes - a.votes);
@@ -44,16 +41,6 @@ const AwardsTile = ({ counter, title, categoryId }) => {
           }
         });
         setAwards(updatedAwards);
-
-        const categoryWinners = updatedAwards.map((winner) => {
-          if(winner.rank === 1) {
-            const proposalId = winner.id;
-            return { categoryId, proposalId};
-          }
-        });
-
-        dispatch(setWinners({ winners: categoryWinners }));
-
       });
       setLoaded(true);
     } catch (error) {
@@ -82,6 +69,7 @@ const AwardsTile = ({ counter, title, categoryId }) => {
               avatar={
                 <Avatar
                   alt={title}
+                  sx={{filter: 'opacity(0.7)'}}
                   src={CATEGORY_IMAGES[counter]}
                 />
               }
@@ -113,8 +101,8 @@ const AwardsTile = ({ counter, title, categoryId }) => {
                           <Box sx={{ display: 'flex', flexDirection: 'row' }}>
                             <Box className={styles.trophy}>
                               <img
-                                src="/static/wwcd.svg"
-                                style={{ width: 54, height: 60 }}
+                                src="/static/cardano-summit-award.png"
+                                style={{ width: 'auto', height: 94 }}
                               />
                             </Box>
                             <CardContent sx={{ flex: '1 0 auto' }}>
@@ -192,7 +180,6 @@ const AwardsTile = ({ counter, title, categoryId }) => {
               </Grid>
               {awards.map((proposal, index) => (
                 <React.Fragment key={index}>
-                  <div className={styles.divider} />
                   {proposal.rank !== 1 && (
                     <Grid
                       container
@@ -250,10 +237,14 @@ const AwardsTile = ({ counter, title, categoryId }) => {
                 sx={{
                   color: 'text.primary',
                   fontSize: 16,
-                  fontWeight: 700,
+                  fontWeight: 600,
                   textTransform: 'none',
                   width: '100%',
                   backgroundColor: '#acfcc5 !important',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: '10px',
+                  borderRadius: '8px',
                 }}
               >
                 {i18n.t('button.viewAllNominees')}

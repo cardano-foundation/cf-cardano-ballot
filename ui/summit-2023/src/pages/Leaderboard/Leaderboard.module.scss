@@ -72,10 +72,10 @@
     width: auto;
   }
   .masonryGridColumn {
-    padding-left: 30px;
+    padding-left: 16px;
     background-clip: padding-box;
     @media only screen and (max-width: 600px) {
-      padding-left: 0px; 
+      padding-left: 0px;
     }
   }
   
@@ -83,5 +83,4 @@
     background: grey;
     margin-bottom: 30px;
   }
-  
 }

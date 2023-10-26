@@ -45,6 +45,8 @@ spec:
               value: {{ .Values.questions }}
             - name: REACT_APP_FAQ_URL
               value: {{ .Values.faqUrl }}
+            - name: REACT_APP_DISCORD_URL
+              value: "https://discord.gg/ePx29kgcTD"
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}

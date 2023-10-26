@@ -7,11 +7,7 @@ metadata:
   labels:
     {{- include "cf-vote-commitment.labels" $ | nindent 4 }}
 spec:
-  {{- if eq $instance.active "true" }}
   replicas: 1
-  {{- else }}
-  replicas: {{ $instance.replicas | default 1 }}
-  {{- end }}
   selector:
     matchLabels:
       {{- include "cf-vote-commitment.selectorLabels" $ | nindent 6 }}
@@ -102,7 +98,7 @@ spec:
                   key: POSTGRES_PASSWORD
 
             - name: VOTE_COMMITMENT_ENABLED
-              value: {{ $instance.active | default "false" | quote }}
+              value: {{ $.Values.voteCommitmentEnabled | default "true" | quote }}
 
             - name: VOTE_COMMITMENT_CRON_EXPRESSION
               value: {{ $instance.voteCommitmentCronExpression | quote }}

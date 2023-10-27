@@ -4,6 +4,8 @@ network: preprod
 
 domain: perf.cf-cip1694-perf.eu-west-1.metadata.dev.cf-deployments.org
 
+namespace: cf-cip1694
+
 cf-cardano-ballot-infra:
   enabled: true
 

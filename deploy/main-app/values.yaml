@@ -10,6 +10,8 @@ network: null
 # domain: something like "grafana.dev.ggargiulo-clusters.eu-west-1.metadata.dev.cf-deployments.org"
 domain: null
 
+namespace: cf-cardano-ballot
+
 # Infra Parameters
 cf-cardano-ballot-infra:
   # Whether Infra resources should be deployed.

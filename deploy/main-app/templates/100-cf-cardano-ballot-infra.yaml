@@ -35,6 +35,6 @@ spec:
       - RespectIgnoreDifferences=true
 
   destination:
-    namespace: cf-cardano-ballot
+    namespace: {{ .Values.namespace }}
     server: {{ .Values.spec.destination.server }}
 {{ end }}

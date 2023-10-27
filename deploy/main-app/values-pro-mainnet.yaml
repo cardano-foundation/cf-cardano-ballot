@@ -4,6 +4,8 @@ network: mainnet
 
 domain: pro.cf-cip1694-mainnet.eu-west-1.1694ballot.cardano.org
 
+namespace: cf-cip1694
+
 cf-cardano-ballot-infra:
   enabled: true
 

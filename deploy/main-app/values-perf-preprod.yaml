@@ -69,8 +69,8 @@ cf-vote-commitment:
     image:
       tag: 0.2.74
     instances:
-      - name: active-hour
-        voteCommitmentCronExpression: "0 10 * * * *"
+#      - name: active-hour
+#        voteCommitmentCronExpression: "0 10 * * * *"
       - name: active-half-hour
         voteCommitmentCronExpression: "0 40 * * * *"
     ledgerFollowerAppUrl: http://cf-cardano-ballot-ledger-follower-api-voting-ledger-follower-ap:9090

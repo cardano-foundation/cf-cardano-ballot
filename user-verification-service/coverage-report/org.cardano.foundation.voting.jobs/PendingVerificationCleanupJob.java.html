@@ -33,7 +33,7 @@ import java.time.LocalDateTime;
 
     @Scheduled(cron = &quot;${pending.verification.phone.cleanup.job.cron}&quot;)
     public void run() {
-<span class="nc" id="L36">        log.info(&quot;Running pending phone cleanup job...&quot;);</span>
+<span class="fc" id="L36">        log.info(&quot;Running pending phone cleanup job...&quot;);</span>
 
 <span class="nc" id="L38">        var allEventsE = chainFollowerClient.findAllEvents();</span>
 

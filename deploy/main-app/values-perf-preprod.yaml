@@ -8,7 +8,9 @@ namespace: cf-cip1694
 
 cf-cardano-ballot-infra:
   enabled: true
-
+  postgresql:
+    enabled: false
+    
 cf-cardano-ballot-ui:
   enabled: true
   values:

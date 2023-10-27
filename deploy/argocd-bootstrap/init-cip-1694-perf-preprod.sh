@@ -15,7 +15,15 @@ kubectl get ns cf-cip1694 > /dev/null 2>&1
 
 if [ $? != 0 ]; then
   echo "cf-cardano-ballot namespace does not exist, creating..."
-  kubectl create ns cf-cardano-ballot > /dev/null 2>&1
+  kubectl create ns cf-cip1694 > /dev/null 2>&1
+fi
+
+echo "Checking observe namespace existence"
+kubectl get ns observe > /dev/null 2>&1
+
+if [ $? != 0 ]; then
+  echo "observe namespace does not exist, creating..."
+  kubectl create ns observe > /dev/null 2>&1
 fi
 
 # Installing ArgoCD CRD

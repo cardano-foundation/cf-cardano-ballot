@@ -6,4 +6,4 @@ argo-cd:
   server:
     ingress:
       hosts:
-        - argocd.perf.cf-cip1694-preprod.eu-west-1.metadata.dev.cf-deployments.org
+        - argocd.perf.cf-cip1694-perf.eu-west-1.metadata.dev.cf-deployments.org

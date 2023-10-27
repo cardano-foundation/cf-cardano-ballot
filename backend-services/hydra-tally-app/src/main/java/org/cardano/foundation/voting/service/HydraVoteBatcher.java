@@ -127,7 +127,7 @@ public class HydraVoteBatcher {
         }
 
         val wallet = walletSupplier.getWallet();
-        val sender = wallet.getAddress(network);
+        val sender = wallet.getBech32Address(network);
         val contract = plutusScriptLoader.getContract(contractEventId, contractOrganiser, contractCategoryId);
         val contractAddress = plutusScriptLoader.getContractAddress(contract);
         val senderVerificationKeyBlake224 = getKeyHash(wallet.getVerificationKey());

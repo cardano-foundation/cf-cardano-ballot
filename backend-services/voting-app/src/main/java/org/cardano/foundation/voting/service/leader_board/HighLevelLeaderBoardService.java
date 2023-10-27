@@ -4,20 +4,12 @@ import io.vavr.control.Either;
 import org.cardano.foundation.voting.domain.Leaderboard;
 import org.zalando.problem.Problem;
 
-import java.util.List;
-
-public interface LeaderBoardService {
+public interface HighLevelLeaderBoardService {
 
     Either<Problem, Boolean> isHighLevelEventLeaderboardAvailable(String event, boolean forceLeaderboard);
 
     Either<Problem, Boolean> isHighLevelCategoryLeaderboardAvailable(String event, boolean forceLeaderboard);
 
-    Either<Problem, Boolean> isCategoryLeaderboardAvailable(String event, String category, boolean forceLeaderboard);
-
     Either<Problem, Leaderboard.ByEventStats> getEventLeaderboard(String event, boolean forceLeaderboard);
-
-    Either<Problem, Leaderboard.ByProposalsInCategoryStats> getCategoryLeaderboard(String event, String category, boolean forceLeaderboard);
-
-    Either<Problem, List<Leaderboard.WinnerStats>> getEventWinners(String event, boolean forceLeaderboard);
 
 }

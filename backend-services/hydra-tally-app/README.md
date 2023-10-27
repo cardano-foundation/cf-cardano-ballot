@@ -17,5 +17,7 @@ In order to enable Hydra-Tally-App to work in a decentralised manner, the follow
 - Deduplication of votes within Smart Contract (e.g. using https://github.com/micahkendall/distributed-set)
 - Preventing any Hydra Operator to close the head while tallying the votes (e.g. by forcing them to lock up in a contract and slashing in case of early fan-out)
 - Prevent accumulator eUTxO fraud, any Hydra operator could commit fraudulent eUTxO to the contract address (e.g. Watch Towers to check if eUTxO is pointing to the root via a fraud proof transaction, 2 contracts idea)
- 
+- Multi-Sig for closing the head (e.g. 2 out of 3 Hydra Operators have to sign the transaction). We need to make sure that one hydra operator won't be able to spend UTxO on L1 and "rug" others
+
 - private votes on hydra without early results publishing to the network (no idea yet) 
+

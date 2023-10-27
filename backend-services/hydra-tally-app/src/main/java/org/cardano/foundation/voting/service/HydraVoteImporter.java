@@ -62,7 +62,7 @@ public class HydraVoteImporter {
         log.info("Importing number: {} votes", votes.size());
 
         val operator = walletSupplier.getWallet();
-        val sender = operator.getAddress(network);
+        val sender = operator.getBech32Address(network);
 
         if (votes.isEmpty()) {
             return Either.left(Problem.builder()

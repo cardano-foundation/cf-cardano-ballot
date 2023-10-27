@@ -2,19 +2,21 @@ package org.cardano.foundation.voting.resource;
 
 import io.micrometer.core.annotation.Timed;
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.service.leader_board.LeaderBoardService;
+import org.cardano.foundation.voting.domain.WinnerLeaderboardSource;
+import org.cardano.foundation.voting.service.leader_board.HighLevelLeaderBoardService;
+import org.cardano.foundation.voting.service.leader_board.LeaderboardWinnersProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 
+import java.util.Optional;
+
 import static java.util.concurrent.TimeUnit.MINUTES;
+import static org.cardano.foundation.voting.domain.WinnerLeaderboardSource.DB;
 import static org.cardano.foundation.voting.resource.Headers.XForceLeaderBoardResults;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
@@ -25,7 +27,10 @@ import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
 public class LeaderboardResource {
 
     @Autowired
-    private LeaderBoardService leaderBoardService;
+    private HighLevelLeaderBoardService highLevelLeaderBoardService;
+
+    @Autowired
+    private LeaderboardWinnersProvider leaderboardWinnersProvider;
 
     @Value("${leaderboard.force.results:false}")
     private boolean forceLeaderboardResultsAvailability;
@@ -40,7 +45,7 @@ public class LeaderboardResource {
 
         var forceLeaderboard = forceLeaderboardResults && forceLeaderboardResultsAvailability;
 
-        var availableE = leaderBoardService.isHighLevelEventLeaderboardAvailable(eventId, forceLeaderboard);
+        var availableE = highLevelLeaderBoardService.isHighLevelEventLeaderboardAvailable(eventId, forceLeaderboard);
 
         return availableE.fold(problem -> {
                     return ResponseEntity
@@ -81,7 +86,7 @@ public class LeaderboardResource {
 
         var forceLeaderboard = forceLeaderboardResults && forceLeaderboardResultsAvailability;
 
-        var availableE = leaderBoardService.isHighLevelCategoryLeaderboardAvailable(eventId, forceLeaderboard);
+        var availableE = highLevelLeaderBoardService.isHighLevelCategoryLeaderboardAvailable(eventId, forceLeaderboard);
 
         return availableE.fold(problem -> {
                     return ResponseEntity
@@ -114,14 +119,20 @@ public class LeaderboardResource {
     @Timed(value = "resource.leaderboard.category.available", histogram = true)
     public ResponseEntity<?> getCategoryLeaderBoardAvailable(@PathVariable("eventId") String eventId,
                                                              @PathVariable("categoryId") String categoryId,
-                                                             @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = "false") boolean forceLeaderboardResults) {
+                                                             @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = "false") boolean forceLeaderboardResults,
+                                                             @RequestParam(name = "source") Optional<WinnerLeaderboardSource> winnerLeaderboardSourceM
+    ) {
+        var winnerLeaderboardSource = winnerLeaderboardSourceM.orElse(DB);
+
         var cacheControl = CacheControl.maxAge(1, MINUTES)
                 .noTransform()
                 .mustRevalidate();
 
         var forceLeaderboard = forceLeaderboardResults && forceLeaderboardResultsAvailability;
 
-        var categoryLeaderboardAvailableE = leaderBoardService.isCategoryLeaderboardAvailable(eventId, categoryId, forceLeaderboard);
+        var categoryLeaderboardAvailableE = leaderboardWinnersProvider
+                .getWinnerLeaderboardSource(winnerLeaderboardSource)
+                .isCategoryLeaderboardAvailable(eventId, categoryId, forceLeaderboard);
 
         return categoryLeaderboardAvailableE
                 .fold(problem -> {
@@ -161,7 +172,7 @@ public class LeaderboardResource {
 
         var forceLeaderboard = forceLeaderboardResults && forceLeaderboardResultsAvailability;
 
-        var eventLeaderboardE = leaderBoardService.getEventLeaderboard(eventId, forceLeaderboard);
+        var eventLeaderboardE = highLevelLeaderBoardService.getEventLeaderboard(eventId, forceLeaderboard);
 
         return eventLeaderboardE.fold(problem -> {
                     return ResponseEntity
@@ -182,42 +193,19 @@ public class LeaderboardResource {
     @Timed(value = "resource.leaderboard.category", histogram = true)
     public ResponseEntity<?> getCategoryLeaderBoard(@PathVariable("eventId") String eventId,
                                                     @PathVariable("categoryId") String categoryId,
-                                                    @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = "false") boolean forceLeaderboardResults) {
+                                                    @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = "false") boolean forceLeaderboardResults,
+                                                    @RequestParam(name = "source") Optional<WinnerLeaderboardSource> winnerLeaderboardSourceM) {
+        var winnerLeaderboardSource = winnerLeaderboardSourceM.orElse(DB);
+
         var cacheControl = CacheControl.maxAge(1, MINUTES)
                 .noTransform()
                 .mustRevalidate();
 
         var forceLeaderboard = forceLeaderboardResults && forceLeaderboardResultsAvailability;
 
-        var categoryLeaderboardE = leaderBoardService.getCategoryLeaderboard(eventId, categoryId, forceLeaderboard);
-
-        return categoryLeaderboardE
-                .fold(problem -> {
-                            return ResponseEntity
-                                    .status(problem.getStatus().getStatusCode())
-                                    .cacheControl(cacheControl)
-                                    .body(problem);
-                        },
-                        response -> {
-                            return ResponseEntity
-                                    .ok()
-                                    .cacheControl(cacheControl)
-                                    .body(response);
-                        }
-                );
-    }
-
-    @RequestMapping(value = "/{eventId}/winners", method = GET, produces = "application/json")
-    @Timed(value = "resource.leaderboard.category.winners", histogram = true)
-    public ResponseEntity<?> getWinners(@PathVariable("eventId") String eventId,
-                                        @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = "false") boolean forceLeaderboardResults) {
-        var cacheControl = CacheControl.maxAge(1, MINUTES)
-                .noTransform()
-                .mustRevalidate();
-
-        var forceLeaderboard = forceLeaderboardResults && forceLeaderboardResultsAvailability;
-
-        var categoryLeaderboardE = leaderBoardService.getEventWinners(eventId, forceLeaderboard);
+        var categoryLeaderboardE = leaderboardWinnersProvider
+                .getWinnerLeaderboardSource(winnerLeaderboardSource)
+                .getCategoryLeaderboard(eventId, categoryId, forceLeaderboard);
 
         return categoryLeaderboardE
                 .fold(problem -> {

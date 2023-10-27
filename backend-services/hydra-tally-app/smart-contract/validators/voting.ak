@@ -21,11 +21,28 @@ type Redeemer {
 }
 
 type CategoryResultsDatum {
-  event_id: String,
-  organiser: String,
-  category_id: Category,
-  results: Dict<Proposal, Int>,
+  header: CategoryResultsDatumHeader
+  body: CategoryResultsDatumBody
 }
+
+// type CategoryResultsDatumHeader {
+//   signature: String,
+//   key: String
+// }
+
+// type CategoryResultsDatumBody {
+//   event_id: String,
+//   organiser: String,
+//   category_id: Category,
+//   results: Dict<Proposal, Int>,
+// }
+
+// type CategoryResultsDatum {
+//   event_id: String,
+//   organiser: String,
+//   category_id: Category,
+//   results: Dict<Proposal, Int>,
+// }
 
 type Vote {
   event_id: String,

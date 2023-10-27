@@ -118,7 +118,7 @@ public class HydraVoteBatchReducer {
         val contractAddress = plutusScriptLoader.getContractAddress(contract);
 
         val wallet = walletSupplier.getWallet();
-        val sender = wallet.getAddress(network);
+        val sender = wallet.getBech32Address(network);
         val senderVerificationKeyBlake224 = getKeyHash(wallet.getVerificationKey());
 
         val utxosWithCategoryResults = voteUtxoFinder.getUtxosWithCategoryResults(contractEventId,

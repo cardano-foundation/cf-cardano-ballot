@@ -3,7 +3,6 @@ package org.cardano.foundation.voting.config;
 import com.bloxbean.cardano.client.account.Account;
 import com.bloxbean.cardano.client.common.model.Network;
 import com.bloxbean.cardano.client.common.model.Networks;
-import com.bloxbean.cardano.client.exception.CborSerializationException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +10,7 @@ import lombok.val;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.WalletType;
 import org.cardanofoundation.hydra.cardano.client.lib.wallet.AccountWalletSupplier;
-import org.cardanofoundation.hydra.cardano.client.lib.wallet.JsonUriWalletSupplierFactory;
+import org.cardanofoundation.hydra.cardano.client.lib.wallet.JsonURLWalletSupplierFactory;
 import org.cardanofoundation.hydra.cardano.client.lib.wallet.Wallet;
 import org.cardanofoundation.hydra.cardano.client.lib.wallet.WalletSupplier;
 import org.springframework.beans.factory.annotation.Value;
@@ -69,7 +68,7 @@ public class CardanoConfig {
                 assert signingKeyFilePath != null;
                 assert verificationKeyFilePath != null;
 
-                val jsonFileWalletSupplierFactory = new JsonUriWalletSupplierFactory(
+                val jsonFileWalletSupplierFactory = new JsonURLWalletSupplierFactory(
                         resourceLoader.getResource(signingKeyFilePath).getURL(),
                         resourceLoader.getResource(verificationKeyFilePath).getURL(),
                         objectMapper
@@ -82,12 +81,12 @@ public class CardanoConfig {
 
     @Bean
     public Wallet l1Wallet(Network network,
-                           WalletSupplier walletSupplier) throws CborSerializationException {
+                           WalletSupplier walletSupplier) {
         val wallet = walletSupplier.getWallet();
         val verificationKey = wallet.getVerificationKey();
         val secretKey = wallet.getSecretKey();
 
-        log.info("L1 wallet address: {}", wallet.getAddress(network));
+        log.info("L1 wallet address: {}", wallet.getBech32Address(network));
         log.info("L1 wallet verification key: {}", verificationKey.getCborHex());
         log.info("L1 wallet verification key type: {}", verificationKey.getType());
         log.info("L1 wallet verification key desc: {}", verificationKey.getDescription());

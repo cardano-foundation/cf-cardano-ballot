@@ -1,5 +1,6 @@
 const discordMock = 'DISCORD_URL';
 const faqMock = 'FAQ_URL';
+const statusMock = 'STATUS_PAGE_URL';
 import React from 'react';
 import '@testing-library/jest-dom';
 import { expect } from '@jest/globals';
@@ -126,6 +127,35 @@ describe('Footer', () => {
       expect(discord.children.length).toEqual(1);
       expect(discord.attributes.getNamedItem('href').value).toEqual(discordMock);
       expect(discord.attributes.getNamedItem('target').value).toEqual('_blank');
+    });
+  });
+
+  test('should display proper status page link', async () => {
+    Object.defineProperty(env, 'env', {
+      value: { STATUS_PAGE_URL: statusMock },
+    });
+    render(<Footer />);
+
+    await waitFor(async () => {
+      const footer = screen.queryByTestId('footer');
+      expect(footer).not.toBeNull();
+
+      const status = within(footer).queryByTestId('status');
+      expect(status).not.toBeNull();
+      expect(status.textContent).toEqual('(Status)');
+      expect(status.attributes.getNamedItem('href').value).toEqual(statusMock);
+      expect(status.attributes.getNamedItem('target').value).toEqual('_blank');
+    });
+  });
+
+  test('should not display status page link', async () => {
+    render(<Footer />);
+
+    await waitFor(async () => {
+      const footer = screen.queryByTestId('footer');
+
+      const status = within(footer).queryByTestId('status');
+      expect(status).toBeNull();
     });
   });
 });

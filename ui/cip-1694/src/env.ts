@@ -21,6 +21,7 @@ type EnvType = {
   SUPPORTED_WALLETS: string[];
   QUESTIONS: string[];
   DISCORD_URL: string;
+  STATUS_PAGE_URL: string;
   FAQ_URL: string;
 };
 
@@ -50,5 +51,6 @@ export const env: EnvType = {
     .split(';')
     .filter((q: string) => !!q),
   DISCORD_URL: process.env.REACT_APP_DISCORD_URL || get(window, 'env.REACT_APP_DISCORD_URL'),
+  STATUS_PAGE_URL: process.env.REACT_APP_STATUS_PAGE_URL || get(window, 'env.REACT_APP_STATUS_PAGE_URL'),
   FAQ_URL: process.env.REACT_APP_FAQ_URL || get(window, 'env.REACT_APP_FAQ_URL'),
 };

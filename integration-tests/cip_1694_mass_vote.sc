@@ -60,17 +60,17 @@ case class CreateCategoryCommand(id: String,
                                  schemaVersion: String
                               )
 
-val blockfrostUrl = "http://localhost:8080/api/v1/"
+val blockfrostUrl = "https://blockfrost-api.pro.dandelion-preprod.eu-west-1.metadata.dev.cf-deployments.org/api/v1"
 val blockfrostApiKey = ""
 val backendService = new BFBackendService(blockfrostUrl, blockfrostApiKey)
 
 val metadataLabel = 11113
 val amountAda: Int = 1000
 
-val eventName = "CIP-1694_Pre_Ratification_YACI"
+val eventName = "CIP-1694_Pre_Ratification_PER1"
 val orgMnemonic = "ocean sad mixture disease faith once celery mind clay hidden brush brown you sponsor dawn good claim gloom market world online twist laptop thrive"
 
-val organiserAccount = new Account(Networks.testnet(), orgMnemonic)
+val organiserAccount = new Account(Networks.preprod(), orgMnemonic)
 val mapper = new ObjectMapper()
 
 val endEpoch = Some(10)
@@ -84,10 +84,10 @@ val cip1694Event = CreateEventCommand(
     categoryResultsWhileVoting = false,
     votingEventType = "STAKE_BASED",
     votingPowerAsset = Some("ADA"),
-    startEpoch = Some(0),
-    endEpoch = endEpoch,
+    startEpoch = Some(102),
+    endEpoch = Some(103),
     snapshotEpoch = Some(0),
-    proposalsRevealEpoch = endEpoch.map(e => e + 10),
+    proposalsRevealEpoch = endEpoch.map(e => e + 1),
     schemaVersion = "1.0.0"
 )
 
@@ -176,10 +176,10 @@ def castVote(acc: Account, amountAda: Int): Boolean = {
         "data": {
             "id": "${voteId}",
             "address": "${stakeAddress}",
-            "event": "CIP-1694_Pre_Ratification_YACI",
+            "event": "$eventName",
             "category": "CIP-1694_Pre_Ratification",
             "proposal": "${randomP.name}",
-            "network": "DEV",
+            "network": "PREPROD",
             "votedAt": "${lastSlot}",
             "votingPower": "${ADAConversionUtil.adaToLovelace(amountAda)}"
         }
@@ -196,7 +196,7 @@ def castVote(acc: Account, amountAda: Int): Boolean = {
     );
 
     val r = requests.post(
-        "http://localhost:9091/api/vote/cast", 
+        "https://voting-api.perf.cf-cip1694-perf.eu-west-1.metadata.dev.cf-deployments.org/api/vote/cast",
         headers = Map(
          "Content-Type" -> "application/json",
          "X-CIP93-Signature" -> castCoteCIP30Result.signature(),
@@ -218,7 +218,7 @@ def castVote(acc: Account, amountAda: Int): Boolean = {
 
 def latestAbsoluteSlot(mapper: ObjectMapper): Long = {
     val r = requests.get(
-        "http://localhost:8080/api/v1/blocks/latest",
+        "https://follower-api.perf.cf-cip1694-perf.eu-west-1.metadata.dev.cf-deployments.org/api/v1/blocks/latest",
         headers = Map("Content-Type" -> "application/json")
     )
 

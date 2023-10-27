@@ -47,8 +47,8 @@ cf-cardano-ballot-ledger-follower-api:
       tag: v0.2.70-2-g51b6485d
     bindOnEventIds: CIP-1694_Pre_Ratification_PER1
     yaci:
-      startBlockHash: ad03698d53d72b86b40c7747ffd5a960fbb3a71ac2f1189169e9d315449c24dc
-      startSlotNumber: "41558438"
+      startBlockHash: 0eddbc1f4cd11b3f6f5f1484975708a17159b5ebb9e2a86efe01307c100352a0
+      startSlotNumber: "42735178"
     corsAllowedOrigins: https://{{ .Values.domain }},http://localhost:3000
     instances:
       - name: follower-1

@@ -552,7 +552,7 @@ const Nominees = () => {
                             <Grid
                               item
                               xs={12}
-                              sm={isWinner? 8 : 10}
+                              sm={isWinner ? 8 : 10}
                             >
                               <Typography
                                 className="nominee-description"
@@ -725,9 +725,14 @@ const Nominees = () => {
                         <Typography
                           className="nominee-description"
                           variant="body2"
-                          sx={{ minHeight: 'auto', height: 'auto', mt: '10px', color: isWinner ? '#fff' : '#03021F' }}
+                          sx={{
+                            minHeight: 'auto',
+                            height: 'auto',
+                            mt: '10px',
+                            color: isWinner ? '#fff' : '#03021F'
+                          }}
                         >
-                          {shortenString(nominee.desc, 150)}
+                          {shortenString(nominee.desc, 200)}
                         </Typography>
                       </Grid>
                       <Grid

@@ -27,6 +27,7 @@ cf-cardano-ballot-ui:
 cf-cardano-ballot-voting-api:
   enabled: true
   values:
+    replicaCount: 4
     image:
       tag: v0.2.70-2-g51b6485d
     monitoring:

@@ -268,9 +268,7 @@ const Leaderboard = () => {
               </Masonry>
             ) : (
               <Box sx={{ height: '20vw', justifyContent: 'center', textAlign: 'center' }}>
-                <Typography variant="h6">
-                  {i18n.t('leaderboard.tabs.tab1.tooltipText')}
-                </Typography>
+                <Typography variant="h6">{i18n.t('leaderboard.tabs.tab1.tooltipText')}</Typography>
               </Box>
             )}
           </TabPanel>
@@ -482,9 +480,7 @@ const Leaderboard = () => {
               </Masonry>
             ) : (
               <Box sx={{ height: '20vw', justifyContent: 'center', textAlign: 'center' }}>
-                <Typography variant="h6">
-                  {i18n.t('leaderboard.tabs.tab3.tooltipText')}
-                </Typography>
+                <Typography variant="h6">{i18n.t('leaderboard.tabs.tab3.tooltipText')}</Typography>
               </Box>
             )}
           </TabPanel>

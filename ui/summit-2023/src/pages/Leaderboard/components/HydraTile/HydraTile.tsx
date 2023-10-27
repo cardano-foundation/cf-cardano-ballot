@@ -137,10 +137,14 @@ const HydraTile = ({ counter, title, categoryId }) => {
                 sx={{
                   color: 'text.primary',
                   fontSize: 16,
-                  fontWeight: 700,
+                  fontWeight: 600,
                   textTransform: 'none',
                   width: '100%',
                   backgroundColor: '#acfcc5 !important',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: '10px',
+                  borderRadius: '8px',
                 }}
               >
                 {i18n.t('button.viewAllNominees')}

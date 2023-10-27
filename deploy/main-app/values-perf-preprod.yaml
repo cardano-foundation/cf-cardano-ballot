@@ -19,8 +19,8 @@ cf-cardano-ballot-ui:
     votingAppServerUrl: "https://api.{{ .Values.domain }}"
     votingLedgerFollowerAppServerUrl: "https://follower-api.{{ .Values.domain }}"
     votingVerificationAppServerUrl: "https://verification-api.{{ .Values.domain }}"
-    eventId: "CIP-1694_Pre_Ratification_PER1"
-    categoryId: "CIP-1694_Pre_Ratification_PER1"
+    eventId: "CIP-1694_Pre_Ratification_PER2"
+    categoryId: "CIP-1694_Pre_Ratification_PER2"
     googleGormUrl: "https://docs.google.com/forms/u/0/d/e/1FAIpQLSe-dSU0-bi8bjk0wiOaRXj02nxYLvgnpKBgc-eYGRpPYO-y5Q"
     googleFormVoteContextInputName: "entry.75173622"
 
@@ -45,7 +45,7 @@ cf-cardano-ballot-ledger-follower-api:
   values:
     image:
       tag: v0.2.70-2-g51b6485d
-    bindOnEventIds: CIP-1694_Pre_Ratification_PER1
+    bindOnEventIds: CIP-1694_Pre_Ratification_PER2
     yaci:
       startBlockHash: 0eddbc1f4cd11b3f6f5f1484975708a17159b5ebb9e2a86efe01307c100352a0
       startSlotNumber: "42735178"

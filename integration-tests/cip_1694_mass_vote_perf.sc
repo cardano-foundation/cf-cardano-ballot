@@ -437,7 +437,7 @@ def main(isAlreadyRegistered: Boolean = true) = {
 //
 //            println("woke up...")
 
-            for (i <- 1 to 10) {
+            for (i <- 1 to 100_000) {
                 try {
                     val account = Account(Networks.testnet())
                     //val isPreloaded = topUpAccount(account, amountAda)

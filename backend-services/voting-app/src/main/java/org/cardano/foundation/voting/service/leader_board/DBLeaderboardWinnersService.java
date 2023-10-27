@@ -3,7 +3,6 @@ package org.cardano.foundation.voting.service.leader_board;
 import io.vavr.control.Either;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.domain.Leaderboard;
-import org.cardano.foundation.voting.repository.CustomVoteRepository;
 import org.cardano.foundation.voting.repository.VoteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -12,12 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import static java.util.stream.Collectors.toMap;
-import static org.springframework.transaction.annotation.Isolation.SERIALIZABLE;
 import static org.zalando.problem.Status.*;
 
 @Service
@@ -26,9 +23,6 @@ public class DBLeaderboardWinnersService extends AbstractWinnersService implemen
 
     @Autowired
     private VoteRepository voteRepository;
-
-    @Autowired
-    private CustomVoteRepository customVoteRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -104,51 +98,6 @@ public class DBLeaderboardWinnersService extends AbstractWinnersService implemen
                 .proposals(proposalResults)
                 .build()
         );
-    }
-
-    @Override
-    @Transactional(readOnly = true, isolation = SERIALIZABLE)
-    public Either<Problem, List<Leaderboard.WinnerStats>> getEventWinners(String event, boolean forceLeaderboard) {
-        var eventDetailsE = chainFollowerClient.getEventDetails(event);
-
-        if (eventDetailsE.isEmpty()) {
-            return Either.left(eventDetailsE.getLeft());
-        }
-
-        var maybeEventDetails = eventDetailsE.get();
-
-        if (maybeEventDetails.isEmpty()) {
-            return Either.left(Problem.builder()
-                    .withTitle("UNRECOGNISED_EVENT")
-                    .withDetail("Unrecognised event, event:" + event)
-                    .withStatus(BAD_REQUEST)
-                    .build()
-            );
-        }
-
-        var eventDetails = maybeEventDetails.orElseThrow();
-
-        var categoryLeaderboardAvailableE = isCategoryLeaderboardAvailable(eventDetails, forceLeaderboard);
-        if (categoryLeaderboardAvailableE.isEmpty()) {
-            return Either.left(categoryLeaderboardAvailableE.getLeft());
-        }
-
-        var isCategoryLeaderBoardAvailable = categoryLeaderboardAvailableE.get();
-        if (!isCategoryLeaderBoardAvailable) {
-            return Either.left(Problem.builder()
-                    .withTitle("VOTING_RESULTS_NOT_AVAILABLE")
-                    .withDetail("Category level voting results not available until results can be revealed!")
-                    .withStatus(FORBIDDEN)
-                    .build()
-            );
-        }
-
-        var categoryIds = eventDetails.categories()
-                .stream()
-                .map(ChainFollowerClient.CategoryDetailsResponse::id)
-                .toList();
-
-        return Either.right(customVoteRepository.getEventWinners(event, categoryIds));
     }
 
     private static HashMap<String, Leaderboard.Votes> calcProposalsResults(ChainFollowerClient.CategoryDetailsResponse categoryDetails,

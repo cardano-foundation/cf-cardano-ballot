@@ -15,6 +15,7 @@ import org.zalando.problem.spring.common.HttpStatusAdapter;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -28,6 +29,21 @@ public class ChainFollowerClient {
 
     @Value("${ledger.follower.app.base.url}")
     private String ledgerFollowerBaseUrl;
+
+    public Either<Problem, CategoryResults> getVotingResults(String eventId,
+                                                             String categoryId) {
+        var url = String.format("%s/api/results/{eventId}/{categoryId}", ledgerFollowerBaseUrl);
+
+        try {
+            return Either.right(restTemplate.getForObject(url, CategoryResults.class, eventId, categoryId));
+        } catch (HttpClientErrorException e) {
+            return Either.left(Problem.builder()
+                    .withTitle("CATEGORY_RESULTS_ERROR")
+                    .withDetail("Unable to get category results from chain-tip follower service, reason:" + e.getMessage())
+                    .withStatus(new HttpStatusAdapter(e.getStatusCode()))
+                    .build());
+        }
+    }
 
     public Either<Problem, ChainTipResponse> getChainTip() {
         var url = String.format("%s/api/blockchain/tip", ledgerFollowerBaseUrl);
@@ -152,6 +168,7 @@ public class ChainFollowerClient {
     }
 
     public record EventDetailsResponse(String id,
+                                       String organisers,
                                        boolean finished,
                                        boolean notStarted,
                                        boolean isStarted,
@@ -219,5 +236,11 @@ public class ChainFollowerClient {
                            int epochNo,
                            String votingPower,
                            VotingPowerAsset votingPowerAsset) { }
+
+    public record CategoryResults(String eventId,
+                                  String organiser,
+                                  String categoryId,
+                                  Map<String, Long> results) {
+    }
 
 }

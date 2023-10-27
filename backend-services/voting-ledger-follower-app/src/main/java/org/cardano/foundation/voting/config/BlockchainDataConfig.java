@@ -2,14 +2,8 @@ package org.cardano.foundation.voting.config;
 
 import com.bloxbean.cardano.client.backend.api.BackendService;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
-import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataChainTipService;
-import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataStakePoolService;
-import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataTransactionDetailsService;
-import org.cardano.foundation.voting.service.blockchain_state.FixedBlockchainDataStakePoolService;
-import org.cardano.foundation.voting.service.blockchain_state.backend_bridge.BackendServiceBlockchainDataChainTipService;
-import org.cardano.foundation.voting.service.blockchain_state.backend_bridge.BackendServiceBlockchainDataCurrentStakePoolService;
-import org.cardano.foundation.voting.service.blockchain_state.backend_bridge.BackendServiceBlockchainDataStakePoolService;
-import org.cardano.foundation.voting.service.blockchain_state.backend_bridge.BackendServiceBlockchainDataTransactionDetailsService;
+import org.cardano.foundation.voting.service.blockchain_state.*;
+import org.cardano.foundation.voting.service.blockchain_state.backend_bridge.*;
 import org.cardano.foundation.voting.service.chain_sync.ChainSyncService;
 import org.cardano.foundation.voting.service.chain_sync.DefaultChainSyncService;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -21,6 +15,14 @@ import org.springframework.context.annotation.Profile;
 
 @Configuration
 public class BlockchainDataConfig {
+
+    // TODO move reading UTxO state from Yaci's backend service
+    @Bean
+    public BlockchainDataUtxoStateReader blockchainDataUtxoStateReader(
+            @Qualifier("original_blockfrost") BackendService backendService
+    ) {
+        return new BackendServiceBlockchainDataUtxoStateReader(backendService);
+    }
 
     @Bean
     public BlockchainDataChainTipService blockchainDataChainTipService(CardanoNetwork network,

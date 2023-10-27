@@ -47,6 +47,8 @@ spec:
               value: {{ .Values.faqUrl }}
             - name: REACT_APP_DISCORD_URL
               value: "https://discord.gg/ePx29kgcTD"
+            - name: REACT_APP_STATUS_PAGE_URL
+              value: "https://status.1694ballot.cardano.org/"
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}

@@ -91,6 +91,7 @@ public class PlutusScriptLoader {
                 .toList());
 
         val params = ListPlutusData.of(
+                BytesPlutusData.of("TODO PARAMS"), // TODO
                 builder.build(),
                 BytesPlutusData.of(eventId),
                 BytesPlutusData.of(organiser),

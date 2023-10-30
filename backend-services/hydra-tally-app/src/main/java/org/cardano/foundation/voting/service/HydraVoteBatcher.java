@@ -141,7 +141,7 @@ public class HydraVoteBatcher {
             if (contractCategoryId.equals(categoryId)) {
                 val proposalId = voteDatum.getProposalId();
 
-                categoryResultsDatum.add(proposalId, 1);
+                categoryResultsDatum.add(proposalId, voteDatum.getVoteScore());
             }
         }
 

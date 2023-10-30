@@ -3,15 +3,14 @@ package org.cardano.foundation.voting.service.transaction_submit;
 import com.bloxbean.cardano.client.metadata.MetadataBuilder;
 import com.bloxbean.cardano.client.metadata.MetadataList;
 import com.bloxbean.cardano.client.metadata.MetadataMap;
-import org.cardano.foundation.voting.domain.CreateCategoryCommand;
-import org.cardano.foundation.voting.domain.CreateEventCommand;
-import org.cardano.foundation.voting.domain.OnChainEventType;
+import org.cardano.foundation.voting.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 import java.util.List;
 
 import static org.cardano.foundation.voting.domain.OnChainEventType.EVENT_REGISTRATION;
+import static org.cardano.foundation.voting.domain.TallyCommand.TallyType.HYDRA;
 import static org.cardano.foundation.voting.domain.VotingEventType.*;
 import static org.cardano.foundation.voting.utils.MoreBoolean.toBigInteger;
 
@@ -44,9 +43,54 @@ public class MetadataSerialiser {
             map.put("proposalsRevealSlot", BigInteger.valueOf(createEventCommand.getProposalsRevealSlot().orElseThrow()));
         }
 
+        List<TallyCommand> tallies = createEventCommand.getTallies();
+
+        var tallyList = MetadataBuilder.createList();
+
+        for (var tally : tallies) {
+            var tallyBag = MetadataBuilder.createMap();
+
+            tallyBag.put("name", tally.getName());
+            tallyBag.put("desc", tally.getDescription());
+            tallyBag.put("type", tally.getType().name().toUpperCase());
+            tallyBag.put("mode", tally.getMode().name().toUpperCase());
+            tallyBag.put("partiesCount", BigInteger.valueOf(tally.getIndependentPartiesCount()));
+
+            if (tally.getType() == HYDRA) {
+                tallyBag.put("config", createHydraTallyConfig(tally));
+            }
+
+            tallyList.add(tallyBag);
+        }
+
+        map.put("tallies", tallyList);
+
         map.put("options", createEventOptions(createEventCommand));
 
         return map;
+    }
+
+    private static MetadataMap createHydraTallyConfig(TallyCommand tally) {
+        var tallyHydra = (HydraTallyConfig) tally.getConfig();
+
+        var tallyHydraConfig = MetadataBuilder.createMap();
+        tallyHydraConfig.put("contractName", tallyHydra.getContractName());
+        tallyHydraConfig.put("contractDesc", tallyHydra.getContractDescription());
+        tallyHydraConfig.put("contractVersion", tallyHydra.getContractVersion());
+
+        tallyHydraConfig.put("compiledScript", tallyHydra.getCompiledScript());
+        tallyHydraConfig.put("compiledScriptHash", tallyHydra.getCompiledScriptHash());
+
+        tallyHydraConfig.put("compilerName", tallyHydra.getCompilerName());
+        tallyHydraConfig.put("compilerVersion", tallyHydra.getCompilerVersion());
+        tallyHydraConfig.put("plutusVersion", tallyHydra.getPlutusVersion());
+
+        var verificationKeys = MetadataBuilder.createList();
+        tallyHydra.getPartiesVerificationKeys().forEach(verificationKeys::add);
+
+        tallyHydraConfig.put("verificationKeys", verificationKeys);
+
+        return tallyHydraConfig;
     }
 
     private static MetadataMap createEventOptions(CreateEventCommand createEventCommand) {

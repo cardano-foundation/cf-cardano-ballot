@@ -1,11 +1,10 @@
 package org.cardano.foundation.voting.shell;
 
+import com.bloxbean.cardano.client.crypto.KeyGenUtil;
+import com.bloxbean.cardano.client.crypto.VerificationKey;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.domain.CardanoNetwork;
-import org.cardano.foundation.voting.domain.CreateCategoryCommand;
-import org.cardano.foundation.voting.domain.CreateEventCommand;
-import org.cardano.foundation.voting.domain.Proposal;
+import org.cardano.foundation.voting.domain.*;
 import org.cardano.foundation.voting.service.transaction_submit.L1SubmissionService;
 import org.springframework.core.annotation.Order;
 import org.springframework.shell.standard.ShellComponent;
@@ -15,9 +14,12 @@ import org.springframework.shell.standard.ShellOption;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.cardano.foundation.voting.domain.CardanoNetwork.PREPROD;
-import static org.cardano.foundation.voting.domain.SchemaVersion.V1;
+import static org.cardano.foundation.voting.domain.SchemaVersion.V11;
+import static org.cardano.foundation.voting.domain.TallyCommand.TallyMode.CENTRALISED;
+import static org.cardano.foundation.voting.domain.TallyCommand.TallyType.HYDRA;
 import static org.cardano.foundation.voting.domain.VotingEventType.USER_BASED;
 import static org.cardano.foundation.voting.utils.MoreUUID.shortUUID;
 
@@ -41,8 +43,37 @@ public class CardanoSummit2023PreProdCommands {
 
         log.info("Creating CF-Summit 2023 on a PRE-PROD network...");
 
-        long startSlot = 40127992;
-        long endSlot = startSlot + (604800 * 2); // two weeks since 604800 is 1 week in seconds
+        long startSlot = 43014497;
+        long endSlot = startSlot + (3 * 86400L);
+
+        var partiesVerificationKeys = Stream.of(
+                "582071fa3a7188a0076f54f90445e572aada05626beda5067e6dcc5afd0ecd7bb3b3",
+                "5820e5549f7ee1a6b40f5bf8c1ac6c3fcb4da43be4430c7c5148e815c43353ffbd1e"
+                )
+                .map(VerificationKey::new)
+                .map(KeyGenUtil::getKeyHash)
+                .toList();
+
+        var hydraTallyConfig = new HydraTallyConfig(
+                "cardano-foundation/hydra-tally",
+                "Experimental Hydra Tally Contract",
+                "0.0.1",
+                "59082c010000323232323232323232232232232232232222325333011323253330133370e90011809000899191919191919191919191919191919191919299981319b87480000344c8c8c8c94ccc0a8ccc02c05004805854ccc0a80044cc030dd618099814180a981400d8010a5014a06600e6eb0c020c09cc050c09c0688cc028090004cdd2a4000660586ea4dcc010198161ba9373003c660586ea4dcc00e198161ba60014bd7019198008008011129998160008a5eb7bdb1804c8c8c8cccc024cc014014008cc88c8cc0040052f5bded8c044a66606600226606866ec0dd49b98005375000897adef6c6013232323253330343375e6600e012004980103d8798000133038337606ea4dcc0049ba8008005153330343372e01200426607066ec0dd49b98009375001000626607066ec0dd49b9800237500026600c00c0066eb4c0d400cdcc9bae303300230370023035001375a6062606460646064606460646064605400600e44466e95200033033375066e000080052f5c000e6e64dd718181818981898189818981898148011818001181700099805008129998139806980b1812800899299981419b8748010c09c0044c8c8c8c94ccc0b00044cdd2a40006606000697ae014c0103d87a8000533302b3372e0466e64dd7180b18148010a99981599b9701f37326eb8c0c0c0c4c0c4c0c4c0c4c0a40084cdcb8109b99375c60346052004294052819299981599b87480000044c8c8c8c8c8c8c8c8c8c8c8c8c8c94ccc0f0c0fc00852616375a607a002607a0046e64dd7181d800981d8011b99375c607200260720046eb8c0dc004c0dc008dcc9bae3035001303500237326eb8c0cc004c0cc008dcc9bae30310013029002163029001302e001302600116301030253016302500114c0103d87a8000132323232533302a33300b0140120161533302a00213300c375860266050602a6050036002294052819ba548000cc0b4dd49b980213302d37526e6007ccc0b4dd49b9801d3302d374c00497ae0330063758600e604c6026604c03246601204600266644464666002002008006444a66606000420022666006006606600466446600c0020046eacc0c8008004c8cc004004008894ccc0b000452f5c026605a6e98dd5981718179817981798139817000998010011817800a5eb7bdb18088cccc018008004888cdd2a4000660606ea0cdc0001000a5eb80010cc02804094ccc09cc034c058c0940044c94ccc0a0cdc3a4008604e002264646464a666058002266e952000330300034bd700a60103d87a8000533302b3372e0466e64dd7180b18148010a99981599b9702137326eb8c068c0a40084cdcb80f9b99375c6028605200429405281807800981700098130008b18081812980b18128008a6103d87a8000223322533302933720004002298103d8798000153330293371e0040022980103d87a800014c103d87b8000300300230030012373000244446466600200200a008444a66605a0042002264666008008606200666664444646600200200e44a66606800226606a66ec0dd49b98006375000a97adef6c6013232323253330353375e6600e014004980103d8798000133039337606ea4dcc0051ba8009005153330353372e01400426464a66606e66e1d200000113303b337606ea4dcc006181e181a8010028802981a80099980400500480089981c99bb037526e60008dd4000998030030019bad303600337326eb8c0d0008c0e0008c0d8004dcc9bae302c001375a605a00200c00a605e00444646600200200644a66605200229404c8c94ccc0a0c01400852889980200200098168011bae302b001230273028302830283028302830283028302800122323300100100322533302700114a026464a66604c66e3c00801452889980200200098158011bae302900122232323300700123253330263370e90011812800899b8f375c605660480020082c6020604660206046002646600200200844a666050002297ae0132325333027323253330293370e90010008a5114a0604e0026024604a6024604a004266056004660080080022660080080026058004605400264a66604666e1d20003022001132323253330263370e9001181280089bae302b3024001163010302330103023301430230013029001302100116323300100100422533302700114c0103d87a80001323253330263375e6022604800400a266e9520003302a0024bd7009980200200098158011814800911980199802001129998109803800899299981119b8748010c0840044c8c8c8cdd2a40006605200497ae030090013028001302000116300a301f00114c103d87a800023375e00200444646600200200644a66604800229404c8c94ccc08cc014008528899802002000981400118130009119198008008019129998118008a5eb804c8c8c8c94ccc090cdc3a400400226600c00c006266050605260440046600c00c0066044002600a004604e004604a002464a66603a66e1d2000001132323232323232325333028302b002132498c8cc004004008894ccc0a800452613233003003302e0023232375a60560046e64dd7181480098160008b1bab3029001302900237326eb8c09c004c09c008dcc9bae3025001302500237326eb8c08c004c06c00858c06c0048c8c94ccc074cdc3a40080022944528180d8009802180c800980c0059bac30013016300330160092301d301e301e0013758600260286002602800e46036002603200260220022c600260200064602e603000229309b2b19299980899b874800000454ccc050c03c00c52616153330113370e90010008a99980a18078018a4c2c2c601e0046e64dd70009b99375c0026e64dd70009bac00137326eb80048c014dd5000918019baa0015734aae7555cf2ab9f5740ae855d101",
+                "38739804d5fdcd43eae2b694943cfa1b50c1a0aabf167228191ec4e0",
+                "Aiken",
+                "v1.0.20-alpha+49bd4ba",
+                partiesVerificationKeys,
+                "v2"
+        );
+
+        var tallyCommand = new TallyCommand(
+                "CF-Summit 2023 Hydra Tally Experiment",
+                "",
+                HYDRA,
+                CENTRALISED,
+                1,
+                hydraTallyConfig
+        );
 
         var createEventCommand = CreateEventCommand.builder()
                 .id(EVENT_NAME + "_" + shortUUID(4))
@@ -51,12 +82,13 @@ public class CardanoSummit2023PreProdCommands {
                 .votingPowerAsset(Optional.empty())
                 .organisers("CF")
                 .votingEventType(USER_BASED)
-                .schemaVersion(V1)
+                .schemaVersion(V11)
                 .allowVoteChanging(false)
                 .highLevelEventResultsWhileVoting(true)
                 .highLevelCategoryResultsWhileVoting(true)
                 .categoryResultsWhileVoting(false)
-                .proposalsRevealSlot(Optional.of(endSlot + 43200))
+                .proposalsRevealSlot(Optional.of(endSlot + 1))
+                .tallies(List.of(tallyCommand))
                 .build();
 
         l1SubmissionService.submitEvent(createEventCommand);
@@ -104,7 +136,7 @@ public class CardanoSummit2023PreProdCommands {
                 .id("AMBASSADOR")
                 .event(event)
                 .gdprProtection(true)
-                .schemaVersion(V1)
+                .schemaVersion(V11)
                 .proposals(allProposals)
                 .build();
 
@@ -156,7 +188,7 @@ public class CardanoSummit2023PreProdCommands {
                 .id("BLOCKCHAIN_FOR_GOOD")
                 .event(event)
                 .gdprProtection(true)
-                .schemaVersion(V1)
+                .schemaVersion(V11)
                 .proposals(allProposals)
                 .build();
 
@@ -208,7 +240,7 @@ public class CardanoSummit2023PreProdCommands {
                 .id("CIPS")
                 .event(event)
                 .gdprProtection(true)
-                .schemaVersion(V1)
+                .schemaVersion(V11)
                 .proposals(allProposals)
                 .build();
 
@@ -261,7 +293,7 @@ public class CardanoSummit2023PreProdCommands {
                 .id("BEST_DEFI_DEX")
                 .event(event)
                 .gdprProtection(true)
-                .schemaVersion(V1)
+                .schemaVersion(V11)
                 .proposals(allProposals)
                 .build();
 
@@ -313,7 +345,7 @@ public class CardanoSummit2023PreProdCommands {
                 .id("BEST_DEVELOPER_OR_DEVELOPER_TOOLS")
                 .event(event)
                 .gdprProtection(true)
-                .schemaVersion(V1)
+                .schemaVersion(V11)
                 .proposals(allProposals)
                 .build();
 
@@ -366,7 +398,7 @@ public class CardanoSummit2023PreProdCommands {
                 .id("EDUCATIONAL_INFLUENCER")
                 .event(event)
                 .gdprProtection(true)
-                .schemaVersion(V1)
+                .schemaVersion(V11)
                 .proposals(allProposals)
                 .build();
 
@@ -419,7 +451,7 @@ public class CardanoSummit2023PreProdCommands {
                 .id("MARKETPLACE")
                 .event(event)
                 .gdprProtection(true)
-                .schemaVersion(V1)
+                .schemaVersion(V11)
                 .proposals(allProposals)
                 .build();
 
@@ -471,7 +503,7 @@ public class CardanoSummit2023PreProdCommands {
                 .id("MOST_IMPACTFUL_SSPO")
                 .event(event)
                 .gdprProtection(true)
-                .schemaVersion(V1)
+                .schemaVersion(V11)
                 .proposals(allProposals)
                 .build();
 
@@ -523,7 +555,7 @@ public class CardanoSummit2023PreProdCommands {
                 .id("NFT_PROJECT")
                 .event(event)
                 .gdprProtection(true)
-                .schemaVersion(V1)
+                .schemaVersion(V11)
                 .proposals(allProposals)
                 .build();
 
@@ -571,7 +603,7 @@ public class CardanoSummit2023PreProdCommands {
                 .id("SSI")
                 .event(event)
                 .gdprProtection(true)
-                .schemaVersion(V1)
+                .schemaVersion(V11)
                 .proposals(allProposals)
                 .build();
 

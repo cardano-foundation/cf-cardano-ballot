@@ -17,6 +17,7 @@ public record Vote(
         UUID proposalId,
         String voterStakeAddressBech32,
         byte[] voterStakeAddress,
+        Optional<Long> votingPower,
         String coseSignature,
         Optional<String> cosePublicKey) {
 
@@ -26,6 +27,7 @@ public record Vote(
                                                String categoryId,
                                                String proposalId,
                                                String voterStakeAddressBech32,
+                                               Optional<String> votingPower,
                                                String coseSignature,
                                                Optional<String> cosePublicKey) {
         var parser = new CIP30Verifier(coseSignature, cosePublicKey);
@@ -68,6 +70,7 @@ public record Vote(
                 UUID.fromString(proposalId),
                 voterStakeAddressBech32,
                 addrAsByteArray.get(),
+                votingPower.map(Long::parseLong),
                 coseSignature,
                 cosePublicKey
         );

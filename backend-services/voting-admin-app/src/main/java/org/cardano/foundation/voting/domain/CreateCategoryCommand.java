@@ -22,6 +22,6 @@ public class CreateCategoryCommand {
     private List<Proposal> proposals = List.of();
 
     @Builder.Default
-    private SchemaVersion schemaVersion = SchemaVersion.V1;
+    private SchemaVersion schemaVersion = SchemaVersion.V11;
 
 }

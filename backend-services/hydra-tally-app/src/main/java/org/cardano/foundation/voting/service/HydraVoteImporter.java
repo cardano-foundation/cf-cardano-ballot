@@ -17,6 +17,7 @@ import lombok.val;
 import org.cardano.foundation.voting.domain.Vote;
 import org.cardano.foundation.voting.domain.VoteDatum;
 import org.cardano.foundation.voting.domain.VoteDatumConverter;
+import org.cardano.foundation.voting.domain.VotingEventType;
 import org.cardanofoundation.hydra.cardano.client.lib.submit.TransactionSubmissionService;
 import org.cardanofoundation.hydra.cardano.client.lib.wallet.WalletSupplier;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +58,7 @@ public class HydraVoteImporter {
     private Network network;
 
     public Either<Problem, String> importVotes(String contractEventId,
+                                               VotingEventType votingEventType,
                                                String contractOrganiser,
                                                List<Vote> votes) throws Exception {
         log.info("Importing number: {} votes", votes.size());
@@ -72,14 +74,24 @@ public class HydraVoteImporter {
         }
 
         val voteDatumList = votes.stream()
-                .map(vote -> VoteDatum.builder()
-                        .eventId(vote.eventId())
-                        .organiser(vote.organiser())
-                        .voteId(vote.voteId().toString())
-                        .voterKey(vote.voterStakeAddress())
-                        .categoryId(vote.categoryId())
-                        .proposalId(vote.proposalId().toString())
-                        .build()
+                .map(vote -> {
+                    val voteScore = switch (votingEventType) {
+                        case USER_BASED:
+                            yield vote.votingPower().orElse(1L);
+                        case STAKE_BASED, BALANCE_BASED:
+                            yield vote.votingPower().orElse(0L);
+                    };
+
+                    return VoteDatum.builder()
+                                    .eventId(vote.eventId())
+                                    .organiser(vote.organiser())
+                                    .voteId(vote.voteId().toString())
+                                    .voterKey(vote.voterStakeAddress())
+                                    .categoryId(vote.categoryId())
+                                    .proposalId(vote.proposalId().toString())
+                                    .voteScore(voteScore)
+                                    .build();
+                        }
                 ).toList();
 
         // Create an empty output builder

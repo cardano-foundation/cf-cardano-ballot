@@ -10,6 +10,7 @@ import lombok.val;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.CommitType;
 import org.cardano.foundation.voting.domain.LocalBootstrap;
+import org.cardano.foundation.voting.domain.VotingEventType;
 import org.cardano.foundation.voting.repository.VoteRepository;
 import org.cardano.foundation.voting.service.HydraVoteBatchReducer;
 import org.cardano.foundation.voting.service.HydraVoteBatcher;
@@ -104,6 +105,9 @@ public class HydraCommands {
     @Value("${ballot.event.id}")
     private String eventId;
 
+    @Value("${ballot.event.type}")
+    private VotingEventType votingEventType;
+
     @Value("${ballot.organiser}")
     private String organiser;
 
@@ -118,8 +122,8 @@ public class HydraCommands {
         this.l1Wallet = walletSupplier.getWallet();
         if (autoConnect) {
             connect();
-            initHead();
-            commitFunds();
+//            initHead();
+//            commitFunds();
         }
     }
 
@@ -378,7 +382,7 @@ public class HydraCommands {
             var partitioned = Lists.partition(allVotes, importBatchSize);
 
             for (val voteBatch : partitioned) {
-                val txIdE = hydraVoteImporter.importVotes(eventId, organiser, voteBatch);
+                val txIdE = hydraVoteImporter.importVotes(eventId, votingEventType, organiser, voteBatch);
                 if (txIdE.isEmpty()) {
                     return "Importing votes failed, reason:" + txIdE.getLeft();
                 }
@@ -433,7 +437,7 @@ public class HydraCommands {
             var partitioned = Lists.partition(allVotes, importBatchSize);
 
             for (val voteBatch : partitioned) {
-                val txIdE = hydraVoteImporter.importVotes(eventId, organiser, voteBatch);
+                val txIdE = hydraVoteImporter.importVotes(eventId, votingEventType, organiser, voteBatch);
                 if (txIdE.isEmpty()) {
                     return "Importing votes failed, reason:" + txIdE.getLeft();
                 }
@@ -463,7 +467,7 @@ public class HydraCommands {
         var partitioned = Lists.partition(participantVotes, batchSize);
 
         for (val batch : partitioned) {
-            val txIdE = hydraVoteImporter.importVotes(eventId, organiser, batch);
+            val txIdE = hydraVoteImporter.importVotes(eventId, votingEventType, organiser, batch);
             if (txIdE.isEmpty()) {
                 return "Importing votes failed, reason:" + txIdE.getLeft();
             }

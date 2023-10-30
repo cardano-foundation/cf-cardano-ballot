@@ -58,6 +58,7 @@ public class LocalVoteRepository implements VoteRepository {
             var categoryId = vote.get("category_id");
             var proposalId = vote.get("proposal_id");
             var voterStakeAddress = vote.get("voter_stake_address");
+            var votingPower = Optional.ofNullable(vote.get("voting_power"));
             var organiser = vote.get("organiser");
 
             if (!voteEventId.equals(eventId)) {
@@ -71,12 +72,10 @@ public class LocalVoteRepository implements VoteRepository {
                     categoryId,
                     proposalId,
                     voterStakeAddress,
+                    votingPower,
                     coseSignature,
                     Optional.ofNullable(cosePublicKey)
             );
-
-
-
 
             if (voteE.isEmpty()) {
                 log.error("Vote creation failed, reason:{}", voteE.getLeft());

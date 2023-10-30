@@ -5,6 +5,7 @@ import lombok.*;
 import org.cardano.foundation.voting.domain.SchemaVersion;
 import org.cardano.foundation.voting.domain.VotingEventType;
 import org.cardano.foundation.voting.domain.VotingPowerAsset;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Immutable;
 
 import javax.annotation.Nullable;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static jakarta.persistence.EnumType.STRING;
 import static org.cardano.foundation.voting.domain.VotingEventType.BALANCE_BASED;
 import static org.cardano.foundation.voting.domain.VotingEventType.STAKE_BASED;
 
@@ -37,13 +39,13 @@ public class Event extends AbstractTimestampEntity {
     @Column(name = "event_type", nullable = false)
     @Getter
     @Setter
-    @Enumerated(EnumType.STRING)
+    @Enumerated(STRING)
     private VotingEventType votingEventType;
 
     @Column(name = "voting_power_asset")
     // voting power asset is only needed for stake based voting events
     @Nullable
-    @Enumerated(EnumType.STRING)
+    @Enumerated(STRING)
     private VotingPowerAsset votingPowerAsset;
 
     @Column(name = "allow_vote_changing")
@@ -104,7 +106,7 @@ public class Event extends AbstractTimestampEntity {
     @Column(name = "schema_version")
     @Getter
     @Setter
-    @Enumerated(EnumType.STRING)
+    @Enumerated(STRING)
     private SchemaVersion version;
 
     @OneToMany(
@@ -123,8 +125,20 @@ public class Event extends AbstractTimestampEntity {
     @Setter
     private long absoluteSlot;
 
+    @Setter
+    @Getter
+    @ElementCollection
+    @CollectionTable(
+        name = "event_tally",
+        joinColumns = @JoinColumn(name = "event_id")
+    )
+    private List<Tally> tallies;
+
     public Optional<Category> findCategoryByName(String categoryName) {
-        return categories.stream().filter(category -> category.getId().equals(categoryName)).findFirst();
+        return categories
+                .stream()
+                .filter(category -> category.getId().equals(categoryName))
+                .findFirst();
     }
 
     public Optional<VotingPowerAsset> getVotingPowerAsset() {

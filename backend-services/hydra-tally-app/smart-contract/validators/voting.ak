@@ -21,28 +21,11 @@ type Redeemer {
 }
 
 type CategoryResultsDatum {
-  header: CategoryResultsDatumHeader
-  body: CategoryResultsDatumBody
+  event_id: String,
+  organiser: String,
+  category_id: Category,
+  results: Dict<Proposal, Int>,
 }
-
-// type CategoryResultsDatumHeader {
-//   signature: String,
-//   key: String
-// }
-
-// type CategoryResultsDatumBody {
-//   event_id: String,
-//   organiser: String,
-//   category_id: Category,
-//   results: Dict<Proposal, Int>,
-// }
-
-// type CategoryResultsDatum {
-//   event_id: String,
-//   organiser: String,
-//   category_id: Category,
-//   results: Dict<Proposal, Int>,
-// }
 
 type Vote {
   event_id: String,
@@ -51,6 +34,7 @@ type Vote {
   voter_key: PubKeyHash,
   category_id: Category,
   proposal_id: Proposal,
+  vote_score: Int,
 }
 
 fn compare_proposal(left: Proposal, right: Proposal) -> Ordering {
@@ -58,7 +42,8 @@ fn compare_proposal(left: Proposal, right: Proposal) -> Ordering {
 }
 
 validator(
-  organiser_keys: List<PubKeyHash>,
+  _tallyName: String,
+  authorised_parties_keys: List<PubKeyHash>,
   contract_event_id: String,
   contract_organiser: String,
   contract_category_id: String,
@@ -92,7 +77,7 @@ validator(
         let must_be_signed =
           list.any(
             sc.transaction.extra_signatories,
-            fn(key) { list.has(organiser_keys, key) },
+            fn(key) { list.has(authorised_parties_keys, key) },
           )
 
         and {
@@ -120,7 +105,7 @@ validator(
         let must_be_signed =
           list.any(
             sc.transaction.extra_signatories,
-            fn(key) { list.has(organiser_keys, key) },
+            fn(key) { list.has(authorised_parties_keys, key) },
           )
 
         let final_result =
@@ -270,7 +255,7 @@ fn do_count_votes(
         right: dict.insert(
           self: dict.new(),
           key: p,
-          value: 1,
+          value: h.vote_score,
           compare: compare_proposal,
         ),
         with: fn(_key, left, right) { Some(left + right) },

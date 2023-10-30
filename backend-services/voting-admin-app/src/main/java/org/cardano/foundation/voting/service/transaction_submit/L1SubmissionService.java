@@ -3,12 +3,14 @@ package org.cardano.foundation.voting.service.transaction_submit;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CreateCategoryCommand;
 import org.cardano.foundation.voting.domain.CreateEventCommand;
+import org.cardano.foundation.voting.domain.HydraTallyConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static org.cardano.foundation.voting.domain.TallyCommand.TallyType.HYDRA;
 import static org.cardano.foundation.voting.domain.VotingEventType.*;
 
 @Service
@@ -63,6 +65,26 @@ public class L1SubmissionService {
             }
             if (event.getSnapshotEpoch().isPresent()) {
                 throw new IllegalArgumentException("Event's snapshot epoch must not be specified for USER_BASED voting event!");
+            }
+
+            for (var tally : event.getTallies()) {
+                if (tally.getIndependentPartiesCount() <= 0) {
+                    throw new IllegalArgumentException("Tally independent parties count must be greater than 0!");
+                }
+
+                if (tally.getType() == HYDRA) {
+                    if (tally.getConfig() == null) {
+                        throw new IllegalArgumentException("Hydra tally config must be specified!");
+                    }
+                    if (!(tally.getConfig() instanceof HydraTallyConfig)) {
+                        throw new IllegalArgumentException("Hydra tally config must be specified!");
+                    }
+                    var hydraTallyConfig = (HydraTallyConfig) tally.getConfig();
+
+                    if (hydraTallyConfig.getPartiesVerificationKeys().isEmpty()) {
+                        throw new IllegalArgumentException("Hydra tally config must contain at least one party verification key!");
+                    }
+                }
             }
         }
 

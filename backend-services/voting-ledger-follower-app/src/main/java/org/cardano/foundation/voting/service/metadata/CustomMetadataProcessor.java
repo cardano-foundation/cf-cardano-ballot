@@ -5,12 +5,13 @@ import com.bloxbean.cardano.client.common.cbor.CborSerializationUtil;
 import com.bloxbean.cardano.client.metadata.cbor.CBORMetadata;
 import com.bloxbean.cardano.client.metadata.cbor.CBORMetadataMap;
 import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.domain.HydraTally;
 import org.cardano.foundation.voting.domain.OnChainEventType;
-import org.cardano.foundation.voting.domain.SchemaVersion;
-import org.cardano.foundation.voting.domain.entity.Category;
-import org.cardano.foundation.voting.domain.entity.Event;
-import org.cardano.foundation.voting.domain.entity.MerkleRootHash;
-import org.cardano.foundation.voting.domain.entity.Proposal;
+import org.cardano.foundation.voting.domain.entity.*;
+import org.cardano.foundation.voting.domain.web3.CategoryRegistrationEnvelope;
+import org.cardano.foundation.voting.domain.web3.EventRegistrationEnvelope;
+import org.cardano.foundation.voting.domain.web3.HydraTallyRegistrationEnvelope;
+import org.cardano.foundation.voting.domain.web3.TallyRegistrationEnvelope;
 import org.cardano.foundation.voting.service.cbor.CborService;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
 import org.cardano.foundation.voting.service.vote.MerkleRootHashService;
@@ -31,7 +32,9 @@ import java.util.Optional;
 import static com.bloxbean.cardano.client.crypto.Blake2bUtil.blake2bHash224;
 import static com.bloxbean.cardano.client.util.HexUtil.decodeHexString;
 import static com.bloxbean.cardano.client.util.HexUtil.encodeHexString;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.cardano.foundation.voting.domain.OnChainEventType.*;
+import static org.cardano.foundation.voting.domain.entity.Tally.TallyType.HYDRA;
 import static org.cardanofoundation.cip30.AddressFormat.TEXT;
 import static org.cardanofoundation.cip30.MessageFormat.HEX;
 
@@ -119,7 +122,7 @@ public class CustomMetadataProcessor {
         var cip30Parser = new CIP30Verifier(signatureHexString, Optional.ofNullable(keyHexString));
         var cip30VerificationResult = cip30Parser.verify();
         if (!cip30VerificationResult.isValid()) {
-            log.info("Signature invalid, ignoring id:{}", id);
+            log.info("Event registration signature invalid, ignoring id:{}", id);
 
             return Optional.empty();
         }
@@ -161,14 +164,7 @@ public class CustomMetadataProcessor {
             return Optional.empty();
         }
 
-        var maybeStoredEvent = referenceDataService.findEventByName(eventRegistration.getName());
-        if (maybeStoredEvent.isPresent()) {
-            log.info("Event already found, ignoring id:{}", id);
-
-            return Optional.empty();
-        }
-
-        var event = new Event();
+        var event = getOrCreateEvent(eventRegistration);
         event.setId(eventRegistration.getName());
         event.setVersion(event.getVersion());
         event.setOrganisers(eventRegistration.getOrganisers());
@@ -176,7 +172,7 @@ public class CustomMetadataProcessor {
         event.setHighLevelEventResultsWhileVoting(Optional.of(eventRegistration.isHighLevelEventResultsWhileVoting()));
         event.setHighLevelCategoryResultsWhileVoting(Optional.of(eventRegistration.isHighLevelCategoryResultsWhileVoting()));
         event.setCategoryResultsWhileVoting(Optional.of(eventRegistration.isCategoryResultsWhileVoting()));
-        event.setVersion(SchemaVersion.fromText(eventRegistration.getSchemaVersion()).orElseThrow());
+        event.setVersion(eventRegistration.getSchemaVersion());
 
         event.setStartEpoch(eventRegistration.getStartEpoch());
         event.setEndEpoch(eventRegistration.getEndEpoch());
@@ -193,7 +189,55 @@ public class CustomMetadataProcessor {
 
         event.setAbsoluteSlot(slot);
 
+        var tallies = eventRegistration.getTallies()
+                .stream()
+                .map(tally -> {
+                    var tallyBuilder = Tally.builder()
+                            .name(encodeHexString(blake2bHash224(tally.getName().getBytes(UTF_8))))
+                            .type(tally.getType())
+                            .description(tally.getDescription());
+
+                    if (tally.getType() == HYDRA) {
+                        tallyBuilder.hydraTallyConfig(createTallyConfig(tally));
+                    }
+
+                    return tallyBuilder.build();
+                }
+        ).toList();
+
+        event.setTallies(tallies);
+
         return Optional.of(referenceDataService.storeEvent(event));
+    }
+
+    private Event getOrCreateEvent(EventRegistrationEnvelope eventRegistration) {
+        var maybeStoredEvent = referenceDataService.findEventByName(eventRegistration.getName());
+
+        if (maybeStoredEvent.isPresent()) {
+            var event = maybeStoredEvent.orElseThrow();
+
+            log.info("Event already found, will be overwriting it, id:{}", event.getId());
+
+            return event;
+        }
+
+        return new Event();
+    }
+
+    private static HydraTally createTallyConfig(TallyRegistrationEnvelope tally) {
+        var tallyConfig = (HydraTallyRegistrationEnvelope) tally.getConfig();
+
+        return HydraTally.builder()
+                .contractName(tallyConfig.getContractName())
+                .contractDescription(tallyConfig.getContractDesc())
+                .contractVersion(tallyConfig.getContractVersion())
+                .compiledScript(tallyConfig.getCompiledScript())
+                .compiledScriptHash(tallyConfig.getCompiledScriptHash())
+                .compilerName(tallyConfig.getCompilerName())
+                .compilerVersion(tallyConfig.getCompilerVersion())
+                .plutusVersion(tallyConfig.getPlutusVersion())
+                .verificationKeys(String.join(":", tallyConfig.getVerificationKeys()))
+                .build();
     }
 
     private Optional<Category> processCategoryRegistration(long slot,
@@ -207,7 +251,7 @@ public class CustomMetadataProcessor {
         var cip30Parser = new CIP30Verifier(signature, Optional.ofNullable(key));
         var cip30VerificationResult = cip30Parser.verify();
         if (!cip30VerificationResult.isValid()) {
-            log.info("Signature invalid, ignoring id: {}", id);
+            log.info("Category registration signature invalid, ignoring id: {}", id);
 
             return Optional.empty();
         }
@@ -254,21 +298,21 @@ public class CustomMetadataProcessor {
 
             return Optional.empty();
         }
-        var event = maybeStoredEvent.orElseThrow();
 
-        var maybeCategory = referenceDataService.findCategoryByName(categoryRegistration.getId());
-        if (maybeCategory.isPresent()) {
-            log.info("Category already found, ignoring id: {}", categoryRegistration.getId());
+        var eventM = referenceDataService.findEventByName(categoryRegistration.getEvent());
+
+        if (eventM.isEmpty()) {
+            log.warn("Category registration failed, event not found, category registration id: {}", id);
 
             return Optional.empty();
         }
 
-        var category = new Category();
+        var category = getOrCreateCategory(categoryRegistration);
         category.setId(categoryRegistration.getId());
-        category.setVersion(SchemaVersion.fromText(categoryRegistration.getSchemaVersion()).orElseThrow());
+        category.setVersion(categoryRegistration.getSchemaVersion());
         category.setGdprProtection(categoryRegistration.isGdprProtection());
         category.setAbsoluteSlot(slot);
-        category.setEvent(event);
+        category.setEvent(eventM.orElseThrow());
 
         var proposals = categoryRegistration.getProposals().stream().map(proposalEnvelope -> Proposal.builder()
                 .id(proposalEnvelope.getId())
@@ -281,6 +325,20 @@ public class CustomMetadataProcessor {
         category.setProposals(proposals);
 
         return Optional.of(referenceDataService.storeCategory(category));
+    }
+
+    private Category getOrCreateCategory(CategoryRegistrationEnvelope categoryRegistration) {
+        var maybeCategory = referenceDataService.findCategoryByName(categoryRegistration.getId());
+
+        if (maybeCategory.isPresent()) {
+            var category = maybeCategory.orElseThrow();
+
+            log.info("Category already found, will be overwriting it, id: {}", category.getId());
+
+            return category;
+        }
+
+        return new Category();
     }
 
     private Optional<List<MerkleRootHash>> processCommitments(long slot,

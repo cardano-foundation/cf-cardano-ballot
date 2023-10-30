@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 import org.cardano.foundation.voting.domain.OnChainEventType;
+import org.cardano.foundation.voting.domain.SchemaVersion;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ public class CategoryRegistrationEnvelope {
     private OnChainEventType type;
     private String id;
     private String event;
-    private String schemaVersion;
+    private SchemaVersion schemaVersion;
 
     private long creationSlot;
 

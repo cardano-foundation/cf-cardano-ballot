@@ -41,8 +41,8 @@ public class CardanoSummit2023PreProdCommands {
 
         log.info("Creating CF-Summit 2023 on a PRE-PROD network...");
 
-        long startSlot = 40127992;
-        long endSlot = startSlot + (604800 * 2); // two weeks since 604800 is 1 week in seconds
+        long startSlot = 42994805;
+        long endSlot = startSlot + (42994805 + 3600); // very short 1 hour event
 
         var createEventCommand = CreateEventCommand.builder()
                 .id(EVENT_NAME + "_" + shortUUID(4))
@@ -56,7 +56,7 @@ public class CardanoSummit2023PreProdCommands {
                 .highLevelEventResultsWhileVoting(true)
                 .highLevelCategoryResultsWhileVoting(true)
                 .categoryResultsWhileVoting(false)
-                .proposalsRevealSlot(Optional.of(endSlot + 43200))
+                .proposalsRevealSlot(Optional.of(endSlot + (2* 604800))) // 2 weeks for proposals reveal
                 .build();
 
         l1SubmissionService.submitEvent(createEventCommand);

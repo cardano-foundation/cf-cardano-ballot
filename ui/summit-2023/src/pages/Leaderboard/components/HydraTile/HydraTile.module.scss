@@ -6,9 +6,8 @@
   flex-direction: column !important;
   margin: 10px !important;
   background-color: white;
-  width: 414px;
   @media only screen and (max-width: 600px) {
-    margin: 0px !important;
+    margin: 0 0 10px 0 !important;
   }
 
   .hydraTallyTitle {

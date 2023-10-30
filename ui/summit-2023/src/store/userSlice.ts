@@ -79,7 +79,11 @@ export const userSlice = createSlice({
       state.event = action.payload.event;
     },
     setWinners: (state, action: PayloadAction<{ winners: { categoryId: string; proposalId: string }[] }>) => {
-      state.winners = action.payload.winners;
+      let filteredWinners = state.winners.filter(
+        (oldWinner) => !action.payload.winners.some((winner) => winner.categoryId === oldWinner.categoryId)
+      );
+      filteredWinners = [...filteredWinners, ...action.payload.winners];
+      state.winners = filteredWinners;
     },
     setUserStartsVerification: (
       state,

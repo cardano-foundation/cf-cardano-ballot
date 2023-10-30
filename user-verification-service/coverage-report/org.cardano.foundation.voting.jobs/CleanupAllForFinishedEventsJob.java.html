@@ -21,7 +21,7 @@ public class CleanupAllForFinishedEventsJob implements Runnable {
 
     @Scheduled(cron = &quot;${finished.verifications.cleanup.job.cron}&quot;)
     public void run() {
-<span class="fc" id="L24">        log.info(&quot;Cleaning up verified phones for event...&quot;);</span>
+<span class="nc" id="L24">        log.info(&quot;Cleaning up verified phones for event...&quot;);</span>
 
 <span class="nc" id="L26">        var allEventsE = chainFollowerClient.findAllEvents();</span>
 

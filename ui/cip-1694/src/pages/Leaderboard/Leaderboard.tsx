@@ -6,11 +6,11 @@ import toast from 'react-hot-toast';
 import { PieChart } from 'react-minimal-pie-chart';
 import { Grid, Typography } from '@mui/material';
 import BlockIcon from '@mui/icons-material/Block';
+import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import { ByProposalsInCategoryStats } from 'types/voting-app-types';
-import { ChainTip, ProposalPresentation } from 'types/voting-ledger-follower-types';
-import * as voteService from 'common/api/voteService';
-import * as leaderboardService from 'common/api/leaderboardService';
+import { ProposalPresentation } from 'types/voting-ledger-follower-types';
 import { RootState } from 'common/store';
+import * as leaderboardService from 'common/api/leaderboardService';
 import { Toast } from 'components/Toast/Toast';
 import { getPercentage, proposalColorsMap } from './utils';
 import { StatsTile } from './components/StatsTile';
@@ -18,29 +18,12 @@ import styles from './Leaderboard.module.scss';
 import { StatItem } from './types';
 
 export const Leaderboard = () => {
+  const { isConnected } = useCardano();
   const event = useSelector((state: RootState) => state.user.event);
   const [stats, setStats] = useState<ByProposalsInCategoryStats['proposals']>();
 
-  const fetchChainTip = useCallback(async () => {
-    let chainTip: ChainTip = null;
-    try {
-      chainTip = await voteService.getChainTip();
-    } catch (error) {
-      toast(
-        <Toast
-          message="Failed to fetch chain tip"
-          error
-          icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
-        />
-      );
-    }
-    return chainTip;
-  }, []);
-
   const init = useCallback(async () => {
-    const chainTip = await fetchChainTip();
-    if (!event || !chainTip || event.proposalsRevealEpoch > chainTip.epochNo) return;
-
+    if (!event?.categories?.[0]?.id) return;
     try {
       setStats((await leaderboardService.getStats(event?.categories?.[0]?.id))?.proposals);
     } catch (error) {
@@ -53,9 +36,9 @@ export const Leaderboard = () => {
         />
       );
     }
-  }, [event, fetchChainTip]);
+  }, [event?.categories]);
 
-  const canViewResults = useMemo(() => event?.finished === true, [event?.finished]);
+  const canViewResults = useMemo(() => isConnected && event?.finished === true, [event?.finished, isConnected]);
 
   useEffect(() => {
     if (canViewResults) {

@@ -102,7 +102,7 @@ const HydraTile = ({ counter, title, categoryId }) => {
               </Grid>
               {awards.slice(0, 2).map((proposal, index) => (
                 <React.Fragment key={index}>
-                  {proposal.rank === 1 && (
+                  {(proposal.rank === 1 && proposal.votes > 0 ) && (
                     <Grid
                       container
                       justifyContent="space-between"

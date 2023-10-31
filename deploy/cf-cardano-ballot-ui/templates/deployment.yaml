@@ -40,7 +40,7 @@ spec:
             - name: REACT_APP_TARGET_NETWORK
               value: {{ .Values.network | default "preprod" | upper | quote }}
             - name: REACT_APP_SUPPORTED_WALLETS
-              value: "flint,eternl,nami,typhoncip30,yoroi,nufi,gerowallet,lace,begin,cardwallet"
+              value: "flint,eternl,nami,typhoncip30,yoroi,nufi,gerowallet,lace"
             - name: REACT_APP_QUESTIONS
               value: {{ .Values.questions }}
             - name: REACT_APP_FAQ_URL

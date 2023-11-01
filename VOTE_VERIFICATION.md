@@ -1,6 +1,6 @@
 # Vote Verification
 
-The Vote Verification application allows users to autonomously verify theis vote is on correctly persisted on-chain.
+The Vote Verification application allows users to autonomously verify their vote is on correctly persisted on-chain.
 
 In order to run the Vote Verification app, it is required to run three components:
 

@@ -19,19 +19,19 @@ cf-cardano-ballot-ui:
     votingAppServerUrl: "https://api.1694ballot.cardano.org"
     votingLedgerFollowerAppServerUrl: "https://follower-api.1694ballot.cardano.org"
     votingVerificationAppServerUrl: "https://verification-api.1694ballot.cardano.org"
-    eventId: "FRUITS_CF62"
-    categoryId: "FRUITS_CF62"
+    eventId: "CIP-1694_Pre_Ratification_TEST_2"
+    categoryId: "CIP-1694_Pre_Ratification_TEST_2"
     googleGormUrl: "https://docs.google.com/forms/u/0/d/e/1FAIpQLSe-dSU0-bi8bjk0wiOaRXj02nxYLvgnpKBgc-eYGRpPYO-y5Q"
     googleFormVoteContextInputName: "entry.75173622"
-#    ingress:
-#      additionalDomains:
-#        - 1694ballot.cardano.org
+    ingress:
+      additionalDomains:
+        - 1694ballot.cardano.org
 
 cf-cardano-ballot-voting-api:
   enabled: true
   values:
     image:
-      tag: 0.2.71
+      tag: 0.2.75
     monitoring:
       alerting:
         enabled: false
@@ -45,7 +45,7 @@ cf-cardano-ballot-verification-api:
   enabled: true
   values:
     image:
-      tag: 0.2.71
+      tag: 0.2.75
     corsAllowedOrigins: https://{{ .Values.domain }},https://1694ballot.cardano.org,http://localhost:3000
     ingress:
       additionalDomains:
@@ -55,11 +55,11 @@ cf-cardano-ballot-ledger-follower-api:
   enabled: true
   values:
     image:
-      tag: 0.2.71
-    bindOnEventIds: CIP-1694_Pre_Ratification_3316,FRUITS_CF62
+      tag: 0.2.75
+    bindOnEventIds: CIP-1694_Pre_Ratification_TEST_2
     yaci:
-      startBlockHash: 3337e297121fda1262372c28de3d917bd2a60bb1e3c6326e3b7e832eb8017615
-      startSlotNumber: "38748711"
+      startBlockHash: 5fbd74e502832d31301b3473117cb99d162b3b0fc149656391f806170c93e1c0
+      startSlotNumber: "106876819"
     instances:
       - name: follower-1
         enabled: true
@@ -75,12 +75,12 @@ cf-cardano-ballot-ledger-follower-api:
 cf-voting-verification-ui:
   values:
     image:
-      tag: 0.2.71
+      tag: 0.2.75
 
 cf-vote-commitment:
   values:
     image:
-      tag: 0.2.71
+      tag: 0.2.75
     instances:
       - name: active-hour
         voteCommitmentCronExpression: "0 0 * * * *"

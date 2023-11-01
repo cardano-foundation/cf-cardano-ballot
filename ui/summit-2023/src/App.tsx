@@ -66,7 +66,7 @@ function App() {
         });
 
         const categoryWinners = updatedAwards
-          .filter((winner) => winner.rank === 1)
+          .filter((winner) => (winner.rank === 1 && winner.votes > 0))
           .map((winner) => {
             return { categoryId: filteredCategory.id, proposalId: winner.id };
           });

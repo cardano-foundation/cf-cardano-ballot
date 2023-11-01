@@ -74,7 +74,7 @@ export const ConnectWalletModal = (props: ConnectWalletModalProps) => {
             direction="column"
             justifyContent="center"
             alignItems="center"
-            gap={'25px'}
+            gap={supportedWallets?.length > 0 ? '25px' : '0px'}
           >
             <Grid
               item
@@ -86,7 +86,7 @@ export const ConnectWalletModal = (props: ConnectWalletModalProps) => {
                 variant="h5"
                 data-testid="connected-wallet-modal-description"
               >
-                {description}
+                {supportedWallets?.length > 0 ? description : 'No extension wallets installed'}
               </Typography>
             </Grid>
             <Grid

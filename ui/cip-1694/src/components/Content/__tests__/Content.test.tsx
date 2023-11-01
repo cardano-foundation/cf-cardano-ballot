@@ -93,7 +93,7 @@ describe('ConnectWalletModal', () => {
 
     expect(within(modal).queryByTestId('connected-wallet-modal-title')).toHaveTextContent('Connect wallet');
     expect(within(modal).queryByTestId('connected-wallet-modal-description')).toHaveTextContent(
-      'In order to vote, first you will need to connect your wallet.'
+      'No extension wallets installed'
     );
 
     expect(within(modal).queryByTestId('connect-wallet-list')).not.toBeNull();

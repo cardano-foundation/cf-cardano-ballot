@@ -51,7 +51,7 @@ CREATE TABLE event_tally (
     created_at TIMESTAMP WITHOUT TIME ZONE,
     updated_at TIMESTAMP WITHOUT TIME ZONE,
 
-   CONSTRAINT event_tally PRIMARY KEY (name)
+   CONSTRAINT pk_event_tally PRIMARY KEY (name)
 );
 
 DROP TABLE IF EXISTS category;

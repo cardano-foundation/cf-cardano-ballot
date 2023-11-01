@@ -28,6 +28,7 @@ public class MerkleRootHashService {
 
     private final CardanoNetwork network;
 
+    @Timed(value = "service.merkle_root.isPresent", histogram = true)
     public Either<Problem, IsMerkleRootPresentResult> isPresent(String event, String merkleRootHashHex) {
         var maybeEvent = referenceDataService.findEventByName(event);
 
@@ -46,7 +47,7 @@ public class MerkleRootHashService {
         }).orElse(Either.right(new IsMerkleRootPresentResult(false, network)));
     }
 
-    @Timed(value = "service.reference.storeCommitments", histogram = true)
+    @Timed(value = "service.merkle_root.storeCommitments", histogram = true)
     @Transactional
     public List<MerkleRootHash> storeCommitments(List<MerkleRootHash> merkleRootHashes) {
         log.info("Storing commitments:{}", merkleRootHashes);

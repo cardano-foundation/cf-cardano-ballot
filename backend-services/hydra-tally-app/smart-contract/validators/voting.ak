@@ -42,7 +42,7 @@ fn compare_proposal(left: Proposal, right: Proposal) -> Ordering {
 }
 
 validator(
-  _tallyName: String,
+  _tallyNameHash: ByteArray,
   authorised_parties_keys: List<PubKeyHash>,
   contract_event_id: String,
   contract_organiser: String,

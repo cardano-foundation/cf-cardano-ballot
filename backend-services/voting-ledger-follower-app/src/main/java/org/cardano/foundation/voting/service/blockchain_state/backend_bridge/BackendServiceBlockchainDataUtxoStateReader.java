@@ -20,8 +20,10 @@ public class BackendServiceBlockchainDataUtxoStateReader implements BlockchainDa
 
     private final BackendService backendService;
 
+    // TODO add utxo validation by checking witness against verification keys
+
     @Override
-    public Either<Problem, List<Utxo>> getUTxOs(String address) {
+    public Either<Problem, List<Utxo>> getUTxOs(String address, List<String> verificationKeys) {
         try {
             var response = backendService.getUtxoService().getUtxos(address, 10, 0);
 

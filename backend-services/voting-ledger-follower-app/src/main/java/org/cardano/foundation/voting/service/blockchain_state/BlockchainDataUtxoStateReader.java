@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface BlockchainDataUtxoStateReader {
 
-    Either<Problem, List<Utxo>> getUTxOs(String address);
+    Either<Problem, List<Utxo>> getUTxOs(String address, List<String> verificationLKeys);
 
 }

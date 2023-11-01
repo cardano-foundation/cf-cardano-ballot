@@ -132,7 +132,7 @@ public class Event extends AbstractTimestampEntity {
         name = "event_tally",
         joinColumns = @JoinColumn(name = "event_id")
     )
-    private List<Tally> tallies;
+    private List<Tally> tallies = new ArrayList<>();
 
     public Optional<Category> findCategoryByName(String categoryName) {
         return categories

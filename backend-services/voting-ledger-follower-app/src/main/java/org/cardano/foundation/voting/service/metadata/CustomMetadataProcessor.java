@@ -193,7 +193,7 @@ public class CustomMetadataProcessor {
                 .stream()
                 .map(tally -> {
                     var tallyBuilder = Tally.builder()
-                            .name(encodeHexString(blake2bHash224(tally.getName().getBytes(UTF_8))))
+                            .name(tally.getName())
                             .type(tally.getType())
                             .description(tally.getDescription());
 

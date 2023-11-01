@@ -5,6 +5,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.*;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @Embeddable
@@ -59,6 +61,10 @@ public class HydraTally {
     @Column(name = "hydra_tally_config__verification_keys", nullable = false, columnDefinition = "text", length = 1024)
     // comma separated list of blake224 hashes of the verification keys
     private String verificationKeys;
+
+    public List<String> getVerificationKeysAsList() {
+        return Arrays.asList(verificationKeys.split(":"));
+    }
 
     public void setDescription(Optional<String> description) {
         this.contractDescription = description.orElse(null);

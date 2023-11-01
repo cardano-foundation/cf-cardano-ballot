@@ -87,4 +87,7 @@ public class EventPresentation {
     @Builder.Default
     private List<CategoryPresentation> categories = new ArrayList<>();
 
+    @Builder.Default
+    private List<TallyPresentation> tallies = new ArrayList<>();
+
 }

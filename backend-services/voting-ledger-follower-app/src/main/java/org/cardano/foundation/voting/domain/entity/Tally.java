@@ -28,6 +28,7 @@ public class Tally extends AbstractTimestampEntity {
     @Enumerated(EnumType.STRING)
     private TallyType type;
 
+    @Getter
     @Embedded
     @AttributeOverrides({
         @AttributeOverride(name = "contract_name", column = @Column(name = "hydra_tally_config__contract_name")),

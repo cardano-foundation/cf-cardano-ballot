@@ -17,7 +17,7 @@ type ConnectWalletModalProps = {
   id: string;
   openStatus: boolean;
   title: string;
-  description: string;
+  description: React.ReactNode;
   onConnectWallet: () => void;
   onConnectWalletError: (walletName: string, error: Error) => void;
   onCloseFn: () => void;
@@ -36,9 +36,9 @@ export const ConnectWalletModal = (props: ConnectWalletModalProps) => {
     onCloseFn,
     installedExtensions,
   } = props;
-  const supportedWallets = installedExtensions.filter((installedWallet) =>
-    env.SUPPORTED_WALLETS.includes(installedWallet)
-  );
+  const supportedWallets = installedExtensions
+    .filter((installedWallet) => env.SUPPORTED_WALLETS.includes(installedWallet))
+    .sort((a, b) => a.localeCompare(b));
 
   return (
     <Dialog

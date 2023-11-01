@@ -12,6 +12,7 @@ import { setIsConnectWalletModalVisible } from 'common/store/userSlice';
 import { clearUserInSessionStorage } from 'common/utils/session';
 import styles from './Content.module.scss';
 import { Toast } from '../Toast/Toast';
+import { env } from '../../env';
 
 export const Content = () => {
   const { installedExtensions } = useCardano();
@@ -52,7 +53,15 @@ export const Content = () => {
         name="connect-wallet-list"
         id="connect-wallet-list"
         title="Connect wallet"
-        description="In order to vote, first you will need to connect your wallet."
+        description={
+          <>
+            In order to participate, first you will need to connect your wallet. Following wallets are accepted:{' '}
+            <span style={{ fontWeight: '500' }}>
+              {env.SUPPORTED_WALLETS?.map((w) => `${w[0].toUpperCase()}${w.slice(1)}`)?.join(', ')}
+            </span>
+            .
+          </>
+        }
         onConnectWallet={onConnectWallet}
         onConnectWalletError={onConnectWalletError}
       />

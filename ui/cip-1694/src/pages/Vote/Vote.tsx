@@ -52,7 +52,7 @@ export const errorsMap = {
   ),
   [voteService.ERRORS.VOTE_CANNOT_BE_CHANGED]: (stakeAddress: string) => (
     <div>
-      <div>Vote cannot be changed for the stake address:</div>
+      <div>Ballot cannot be changed for the stake address:</div>
       <div style={{ fontSize: '14px' }}>${stakeAddress}</div>
     </div>
   ),
@@ -163,8 +163,8 @@ export const VotePage = () => {
   const fetchReceipt = useCallback(
     async ({ cb, refetch = false }: { cb?: () => void; refetch?: boolean }) => {
       const errorPrefix = refetch
-        ? 'Unable to refresh your vote receipt. Please try again'
-        : 'Unable to fetch your vote receipt. Please try again';
+        ? 'Unable to refresh your ballot receipt. Please try again'
+        : 'Unable to fetch your ballot receipt. Please try again';
       try {
         const session = getUserInSession();
         let token = session?.accessToken;
@@ -259,7 +259,7 @@ export const VotePage = () => {
       toast(
         <Toast
           error
-          message={errorsMap[error?.message]?.(stakeAddress) || 'Unable to submit your vote. Please try again'}
+          message={errorsMap[error?.message]?.(stakeAddress) || 'Unable to submit your ballot. Please try again'}
           icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
         />
       );
@@ -295,7 +295,7 @@ export const VotePage = () => {
       toast(
         <Toast
           error
-          message={errorsMap[error?.message]?.(stakeAddress) || 'Unable to submit your vote. Please try again'}
+          message={errorsMap[error?.message]?.(stakeAddress) || 'Unable to submit your ballot. Please try again'}
           icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
         />
       );
@@ -451,7 +451,7 @@ export const VotePage = () => {
                     disabled={isReceiptDrawerInitializing || !tip?.absoluteSlot}
                   >
                     <span className={styles.buttonContent}>
-                      Vote receipt
+                      Ballot receipt
                       {isReceiptDrawerInitializing && (
                         <CircularProgress
                           className={styles.loader}
@@ -469,7 +469,7 @@ export const VotePage = () => {
                     onClick={() => dispatch(setIsConnectWalletModalVisible({ isVisible: true }))}
                     data-testid="proposal-connect-button"
                   >
-                    {event?.finished ? 'Connect wallet to see your vote' : 'Connect wallet to vote'}
+                    {event?.finished ? 'Connect wallet to see your ballot' : 'Connect wallet to participate'}
                   </Button>
                 )}
                 {showSubmitButton && (
@@ -484,7 +484,7 @@ export const VotePage = () => {
                     data-testid="proposal-submit-button"
                   >
                     <span className={styles.buttonContent}>
-                      Submit your vote
+                      Submit your ballot
                       {isCastingAVote && (
                         <CircularProgress
                           size={20}
@@ -502,7 +502,7 @@ export const VotePage = () => {
                     disabled
                     data-testid="event-hasnt-started-submit-button"
                   >
-                    Submit your vote from {event?.eventStartDate && getDateAndMonth(event?.eventStartDate?.toString())}
+                    Submit your ballot from {event?.eventStartDate && getDateAndMonth(event?.eventStartDate?.toString())}
                   </Button>
                 )}
                 {isConnected && event?.finished && (
@@ -567,7 +567,7 @@ export const VotePage = () => {
         title="Vote submitted"
         description={
           <>
-            <div style={{ marginBottom: '10px' }}>Thank you, your vote has been submitted.</div>
+            <div style={{ marginBottom: '10px' }}>Thank you, your ballot has been submitted.</div>
             Make sure to check back on{' '}
             <b>{event?.eventStartDate && getDateAndMonth(event?.eventEndDate?.toString())}</b> to see the results!
           </>
@@ -587,7 +587,7 @@ export const VotePage = () => {
         isConfirming={isConfirmingWithSignature}
         description={
           <>
-            We need to check if you’ve already voted.
+            We need to check if you’ve already submitted yor ballot.
             <br />
             You will see a pop-up message from your wallet.
             <br />

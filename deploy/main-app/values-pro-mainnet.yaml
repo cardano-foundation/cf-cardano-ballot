@@ -15,7 +15,7 @@ cf-cardano-ballot-ui:
   enabled: true
   values:
     image:
-      tag: 0.2.75
+      tag: 0.2.75-1-9cbf8
     votingAppServerUrl: "https://api.1694ballot.cardano.org"
     votingLedgerFollowerAppServerUrl: "https://follower-api.1694ballot.cardano.org"
     votingVerificationAppServerUrl: "https://verification-api.1694ballot.cardano.org"

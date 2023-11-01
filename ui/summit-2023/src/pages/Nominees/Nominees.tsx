@@ -66,7 +66,7 @@ import { ProposalPresentationExtended } from '../../store/types';
 import { verifyVote } from 'common/api/verificationService';
 import './Nominees.scss';
 import Masonry from 'react-masonry-css';
-import { ReactComponent as WinnersIcon } from '../../common/resources/images/winnerbadge.svg';
+import { ReactComponent as WinnersIcon } from '../../common/resources/images/cardano-summit-2023-winner-badge.svg';
 
 const Nominees = () => {
   const dispatch = useDispatch();
@@ -502,8 +502,12 @@ const Nominees = () => {
               >
                 <Fade in={isVisible}>
                   <Badge
-                    badgeContent={<WinnersIcon style={{ width: 48 }} />}
+                    badgeContent={<WinnersIcon style={{ width: 59, position: 'absolute', right: 29  }} />}
                     invisible={!isWinner}
+                    anchorOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right',
+                    }}
                   >
                     <Card
                       className={'nominee-card'}
@@ -534,31 +538,45 @@ const Nominees = () => {
                             </Tooltip>
                           ) : null}
                         </Box>
-                        <Typography
-                          variant="h6"
-                          sx={{
-                            fontSize: {
-                              xs: '28px',
-                              sm: '28px',
-                              md: '32px',
-                            },
-                            color: isWinner ? '#fff' : '#03021f',
-                            fontWeight: 600,
-                          }}
+                        <Grid
+                          container
+                          direction="row"
+                          justifyContent="left"
                         >
-                          {nominee.presentationName}
-                        </Typography>
-                        <Grid container>
                           <Grid
                             item
                             xs={12}
-                            sm={10}
+                            sm={8}
                           >
-                            <Grid container>
+                            <Grid
+                              container
+                              direction="column"
+                              justifyContent="left"
+                            >
                               <Grid
                                 item
                                 xs={12}
-                                sm={isWinner ? 8 : 10}
+                                sm={10}
+                              >
+                                <Typography
+                                  variant="h6"
+                                  sx={{
+                                    fontSize: {
+                                      xs: '28px',
+                                      sm: '28px',
+                                      md: '32px',
+                                    },
+                                    color: isWinner ? '#fff' : '#03021f',
+                                    fontWeight: 600,
+                                  }}
+                                >
+                                  {nominee.presentationName}
+                                </Typography>
+                              </Grid>
+                              <Grid
+                                item
+                                xs={12}
+                                sm={10}
                               >
                                 <Typography
                                   className="nominee-description"
@@ -568,53 +586,53 @@ const Nominees = () => {
                                   {shortenString(nominee.desc, 210)}
                                 </Typography>
                               </Grid>
-                              {isWinner ? (
+                              {!eventCache?.finished && !categoryVoted ? (
                                 <Grid
                                   item
                                   xs={12}
                                   sm={2}
+                                  width={{ sm: '100%', md: 'auto' }}
                                 >
-                                  <CardMedia
-                                    component="video"
-                                    src="/static/cardano-summit-award.mp4"
-                                    autoPlay
-                                    loop
-                                    muted
-                                    style={{
-                                      position: 'relative',
-                                      width: 'auto',
-                                      height: '190px',
-                                      margin: '10px',
-                                      zIndex: 999,
-                                    }}
+                                  <CustomButton
+                                    styles={
+                                      isConnected
+                                        ? {
+                                            background: '#ACFCC5',
+                                            color: '#03021F',
+                                            width: '100%',
+                                          }
+                                        : {
+                                            background: '#03021F',
+                                            color: '#F6F9FF',
+                                            width: '100%',
+                                          }
+                                    }
+                                    label={renderNomineeButtonLabel() as string}
+                                    onClick={() => handleNomineeButton(nominee)}
                                   />
                                 </Grid>
                               ) : null}
                             </Grid>
                           </Grid>
-                          {!eventCache?.finished && !categoryVoted ? (
+                          {isWinner ? (
                             <Grid
                               item
                               xs={12}
-                              sm={2}
-                              width={{ sm: '100%', md: 'auto' }}
+                              sm={4}
                             >
-                              <CustomButton
-                                styles={
-                                  isConnected
-                                    ? {
-                                        background: '#ACFCC5',
-                                        color: '#03021F',
-                                        width: '100%',
-                                      }
-                                    : {
-                                        background: '#03021F',
-                                        color: '#F6F9FF',
-                                        width: '100%',
-                                      }
-                                }
-                                label={renderNomineeButtonLabel() as string}
-                                onClick={() => handleNomineeButton(nominee)}
+                              <CardMedia
+                                component="video"
+                                src="/static/cardano-summit-award.mp4"
+                                autoPlay
+                                loop
+                                muted
+                                style={{
+                                  position: 'relative',
+                                  width: 'auto',
+                                  height: '190px',
+                                  margin: '10px',
+                                  zIndex: 999,
+                                }}
                               />
                             </Grid>
                           ) : null}
@@ -663,9 +681,13 @@ const Nominees = () => {
 
               return (
                 <Badge
-                  badgeContent={<WinnersIcon style={{ width: 48 }} />}
+                  badgeContent={<WinnersIcon style={{ width: 59, position: 'absolute', right: 29 }} />}
                   invisible={!isWinner}
                   key={nominee.id}
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
                 >
                   <Card
                     className={'nominee-card'}

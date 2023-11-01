@@ -1,6 +1,6 @@
 stage: pro
 
-network: mainnet
+network: main
 
 domain: pro.cf-cip1694-mainnet.eu-west-1.1694ballot.cardano.org
 

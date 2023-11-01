@@ -19,6 +19,7 @@ import {
   AccordionDetails,
   Button,
   CardMedia,
+  Badge,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
@@ -65,17 +66,18 @@ import { ProposalPresentationExtended } from '../../store/types';
 import { verifyVote } from 'common/api/verificationService';
 import './Nominees.scss';
 import Masonry from 'react-masonry-css';
+import { ReactComponent as WinnersIcon } from '../../common/resources/images/cardano-summit-2023-winner-badge.svg';
 
 const Nominees = () => {
   const dispatch = useDispatch();
   const { categoryId } = useParams();
   const navigate = useNavigate();
-  const eventCache = useSelector((state: RootState) => state.user.event);
-  const walletIsVerified = useSelector((state: RootState) => state.user.walletIsVerified);
-  const receipts = useSelector((state: RootState) => state.user.receipts);
+  const eventCache = useSelector((state: RootState) => state.user?.event);
+  const walletIsVerified = useSelector((state: RootState) => state.user?.walletIsVerified);
+  const receipts = useSelector((state: RootState) => state.user?.receipts);
   const receipt = receipts && Object.keys(receipts).length && receipts[categoryId] ? receipts[categoryId] : undefined;
-  const userVotes = useSelector((state: RootState) => state.user.userVotes);
-  const winners = useSelector((state: RootState) => state.user.winners);
+  const userVotes = useSelector((state: RootState) => state.user?.userVotes);
+  const winners = useSelector((state: RootState) => state.user?.winners);
 
   const categoryVoted = categoryAlreadyVoted(categoryId, userVotes);
   const categories = eventCache?.categories;
@@ -499,140 +501,163 @@ const Nominees = () => {
                 key={nominee.id}
               >
                 <Fade in={isVisible}>
-                  <Card
-                    className={'nominee-card'}
-                    style={{
-                      padding: '8px',
-                      width: '100%',
-                      height: 'auto',
-                      background: isWinner ? '#000' : '#fff',
+                  <Badge
+                    badgeContent={<WinnersIcon style={{ width: 59, position: 'absolute', right: 29  }} />}
+                    invisible={!isWinner}
+                    anchorOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right',
                     }}
                   >
-                    <CardContent sx={{ position: 'relative' }}>
-                      <Box sx={{ position: 'relative' }}>
-                        {voted ? (
-                          <Tooltip title={i18n.t('nominees.alreadyVoted')}>
-                            <img
-                              height={40}
-                              width={102}
-                              src={labelVoted}
-                              alt={i18n.t('nominees.alreadyVoted')}
-                              style={{
-                                position: 'absolute',
-                                float: 'right',
-                                right: 0,
-                                zIndex: 99,
-                                opacity: 1,
-                              }}
-                            />
-                          </Tooltip>
-                        ) : null}
-                      </Box>
-                      <Typography
-                        variant="h6"
-                        sx={{
-                          fontSize: {
-                            xs: '28px',
-                            sm: '28px',
-                            md: '32px',
-                          },
-                          color: isWinner ? '#fff' : '#03021f',
-                          fontWeight: 600,
-                        }}
-                      >
-                        {nominee.presentationName}
-                      </Typography>
-                      <Grid container>
+                    <Card
+                      className={'nominee-card'}
+                      style={{
+                        padding: '8px',
+                        width: '100%',
+                        height: 'auto',
+                        background: isWinner ? '#000' : '#fff',
+                      }}
+                    >
+                      <CardContent sx={{ position: 'relative' }}>
+                        <Box sx={{ position: 'relative' }}>
+                          {voted ? (
+                            <Tooltip title={i18n.t('nominees.alreadyVoted')}>
+                              <img
+                                height={40}
+                                width={102}
+                                src={labelVoted}
+                                alt={i18n.t('nominees.alreadyVoted')}
+                                style={{
+                                  position: 'absolute',
+                                  float: 'right',
+                                  right: 0,
+                                  zIndex: 99,
+                                  opacity: 1,
+                                }}
+                              />
+                            </Tooltip>
+                          ) : null}
+                        </Box>
                         <Grid
-                          item
-                          xs={12}
-                          sm={10}
+                          container
+                          direction="row"
+                          justifyContent="left"
                         >
-                          <Grid container>
-                            <Grid
-                              item
-                              xs={12}
-                              sm={isWinner ? 8 : 10}
-                            >
-                              <Typography
-                                className="nominee-description"
-                                sx={{ color: isWinner ? '#fff' : '#03021F' }}
-                                variant="body2"
-                              >
-                                {shortenString(nominee.desc, 210)}
-                              </Typography>
-                            </Grid>
-                            {isWinner ? (
-                              <Grid
-                                item
-                                xs={12}
-                                sm={2}
-                              >
-                                <CardMedia
-                                  component="video"
-                                  src="/static/cardano-summit-award.mp4"
-                                  autoPlay
-                                  loop
-                                  muted
-                                  style={{
-                                    position: 'relative',
-                                    width: 'auto',
-                                    height: '190px',
-                                    margin: '10px',
-                                    zIndex: 999,
-                                  }}
-                                />
-                              </Grid>
-                            ) : null}
-                          </Grid>
-                        </Grid>
-                        {!eventCache?.finished && !categoryVoted ? (
                           <Grid
                             item
                             xs={12}
-                            sm={2}
-                            width={{ sm: '100%', md: 'auto' }}
+                            sm={8}
                           >
-                            <CustomButton
-                              styles={
-                                isConnected
-                                  ? {
-                                      background: '#ACFCC5',
-                                      color: '#03021F',
-                                      width: '100%',
+                            <Grid
+                              container
+                              direction="column"
+                              justifyContent="left"
+                            >
+                              <Grid
+                                item
+                                xs={12}
+                                sm={10}
+                              >
+                                <Typography
+                                  variant="h6"
+                                  sx={{
+                                    fontSize: {
+                                      xs: '28px',
+                                      sm: '28px',
+                                      md: '32px',
+                                    },
+                                    color: isWinner ? '#fff' : '#03021f',
+                                    fontWeight: 600,
+                                  }}
+                                >
+                                  {nominee.presentationName}
+                                </Typography>
+                              </Grid>
+                              <Grid
+                                item
+                                xs={12}
+                                sm={10}
+                              >
+                                <Typography
+                                  className="nominee-description"
+                                  sx={{ color: isWinner ? '#fff' : '#03021F' }}
+                                  variant="body2"
+                                >
+                                  {shortenString(nominee.desc, 210)}
+                                </Typography>
+                              </Grid>
+                              {!eventCache?.finished && !categoryVoted ? (
+                                <Grid
+                                  item
+                                  xs={12}
+                                  sm={2}
+                                  width={{ sm: '100%', md: 'auto' }}
+                                >
+                                  <CustomButton
+                                    styles={
+                                      isConnected
+                                        ? {
+                                            background: '#ACFCC5',
+                                            color: '#03021F',
+                                            width: '100%',
+                                          }
+                                        : {
+                                            background: '#03021F',
+                                            color: '#F6F9FF',
+                                            width: '100%',
+                                          }
                                     }
-                                  : {
-                                      background: '#03021F',
-                                      color: '#F6F9FF',
-                                      width: '100%',
-                                    }
-                              }
-                              label={renderNomineeButtonLabel() as string}
-                              onClick={() => handleNomineeButton(nominee)}
-                            />
+                                    label={renderNomineeButtonLabel() as string}
+                                    onClick={() => handleNomineeButton(nominee)}
+                                  />
+                                </Grid>
+                              ) : null}
+                            </Grid>
                           </Grid>
-                        ) : null}
-                      </Grid>
-                      <Grid
-                        item
-                        xs={12}
-                        sm={4}
-                        width={{ sm: '100%', md: 'auto' }}
-                      >
-                        <CustomButton
-                          styles={{
-                            background: 'transparent !important',
-                            color: isWinner ? '#fff' : '#03021F',
-                            border: '1px solid #daeefb',
-                            width: '100%',
-                            marginTop: '15px',
-                          }}
-                          label="Read More"
-                          onClick={() => handleReadMore(nominee)}
-                        />
-                      </Grid>
-                    </CardContent>
-                  </Card>
+                          {isWinner ? (
+                            <Grid
+                              item
+                              xs={12}
+                              sm={4}
+                            >
+                              <CardMedia
+                                component="video"
+                                src="/static/cardano-summit-award.mp4"
+                                autoPlay
+                                loop
+                                muted
+                                style={{
+                                  position: 'relative',
+                                  width: 'auto',
+                                  height: '190px',
+                                  margin: '10px',
+                                  zIndex: 999,
+                                }}
+                              />
+                            </Grid>
+                          ) : null}
+                        </Grid>
+                        <Grid
+                          item
+                          xs={12}
+                          sm={4}
+                          width={{ sm: '100%', md: 'auto' }}
+                        >
+                          <CustomButton
+                            styles={{
+                              background: 'transparent !important',
+                              color: isWinner ? '#fff' : '#03021F',
+                              border: '1px solid #daeefb',
+                              width: '100%',
+                              marginTop: '15px',
+                            }}
+                            label="Read More"
+                            onClick={() => handleReadMore(nominee)}
+                          />
+                        </Grid>
+                      </CardContent>
+                    </Card>
+                  </Badge>
                 </Fade>
               </Grid>
             );
@@ -655,126 +680,136 @@ const Nominees = () => {
               const isWinner = nomineeIsWinner(nominee);
 
               return (
-                <Card
-                  className={'nominee-card'}
+                <Badge
+                  badgeContent={<WinnersIcon style={{ width: 59, position: 'absolute', right: 29 }} />}
+                  invisible={!isWinner}
                   key={nominee.id}
-                  style={{
-                    padding: '8px',
-                    width: '100%',
-                    height: 'auto',
-                    background: isWinner ? '#000' : '#fff',
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
                   }}
                 >
-                  <CardContent sx={{ padding: '24px', position: 'relative' }}>
-                    {voted ? (
-                      <Box sx={{ position: 'relative' }}>
-                        <Tooltip title={i18n.t('nominees.alreadyVoted')}>
-                          <img
-                            height={40}
-                            width={102}
-                            src={labelVoted}
-                            alt={i18n.t('nominees.alreadyVoted')}
-                            style={{
-                              position: 'absolute',
-                              float: 'right',
-                              right: 0,
-                              zIndex: 99,
-                              opacity: 1,
-                            }}
-                          />
-                        </Tooltip>
-                      </Box>
-                    ) : null}
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        fontSize: {
-                          xs: '28px',
-                          sm: '28px',
-                          md: '32px',
-                        },
-                        fontWeight: 600,
-                        color: isWinner ? '#fff' : '#03021F',
-                        maxWidth: '337px',
-                        width: voted ? '250px' : '100%',
-                      }}
-                    >
-                      {nominee.presentationName}
-                    </Typography>
-                    {isWinner ? (
-                      <CardMedia
-                        component="video"
-                        src="/static/cardano-summit-award.mp4"
-                        autoPlay
-                        loop
-                        muted
-                        style={{
-                          position: 'relative',
-                          width: '100%',
-                          height: '250px',
-                          margin: '10px',
-                          zIndex: 999,
+                  <Card
+                    className={'nominee-card'}
+                    key={nominee.id}
+                    style={{
+                      padding: '8px',
+                      width: '100%',
+                      height: 'auto',
+                      background: isWinner ? '#000' : '#fff',
+                    }}
+                  >
+                    <CardContent sx={{ padding: '24px', position: 'relative' }}>
+                      {voted ? (
+                        <Box sx={{ position: 'relative' }}>
+                          <Tooltip title={i18n.t('nominees.alreadyVoted')}>
+                            <img
+                              height={40}
+                              width={102}
+                              src={labelVoted}
+                              alt={i18n.t('nominees.alreadyVoted')}
+                              style={{
+                                position: 'absolute',
+                                float: 'right',
+                                right: 0,
+                                zIndex: 99,
+                                opacity: 1,
+                              }}
+                            />
+                          </Tooltip>
+                        </Box>
+                      ) : null}
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontSize: {
+                            xs: '28px',
+                            sm: '28px',
+                            md: '32px',
+                          },
+                          fontWeight: 600,
+                          color: isWinner ? '#fff' : '#03021F',
+                          maxWidth: '337px',
+                          width: voted ? '250px' : '100%',
                         }}
-                      />
-                    ) : null}
-                    <Grid container>
-                      <Grid
-                        item
-                        xs={12}
                       >
-                        <Typography
-                          className="nominee-description"
-                          variant="body2"
-                          sx={{
-                            minHeight: 'auto',
-                            height: 'auto',
-                            mt: '10px',
-                            color: isWinner ? '#fff' : '#03021F'
-                          }}
-                        >
-                          {shortenString(nominee.desc, 200)}
-                        </Typography>
-                      </Grid>
-                      <Grid
-                        item
-                        xs={12}
-                      >
-                        <CustomButton
-                          styles={{
-                            background: 'transparent !important',
-                            color: isWinner ? '#fff' : '#03021F',
-                            border: '1px solid #daeefb',
+                        {nominee.presentationName}
+                      </Typography>
+                      {isWinner ? (
+                        <CardMedia
+                          component="video"
+                          src="/static/cardano-summit-award.mp4"
+                          autoPlay
+                          loop
+                          muted
+                          style={{
+                            position: 'relative',
                             width: '100%',
+                            height: '250px',
+                            margin: '10px',
+                            zIndex: 999,
                           }}
-                          label={i18n.t('nominees.readMore')}
-                          onClick={() => handleReadMore(nominee)}
-                          fullWidth={true}
                         />
-
-                        {!eventCache?.finished && !categoryVoted ? (
+                      ) : null}
+                      <Grid container>
+                        <Grid
+                          item
+                          xs={12}
+                        >
+                          <Typography
+                            className="nominee-description"
+                            variant="body2"
+                            sx={{
+                              minHeight: 'auto',
+                              height: 'auto',
+                              mt: '10px',
+                              color: isWinner ? '#fff' : '#03021F',
+                            }}
+                          >
+                            {shortenString(nominee.desc, 200)}
+                          </Typography>
+                        </Grid>
+                        <Grid
+                          item
+                          xs={12}
+                        >
                           <CustomButton
-                            styles={
-                              isConnected
-                                ? {
-                                    background: '#ACFCC5',
-                                    color: '#03021F',
-                                    marginTop: '18px',
-                                  }
-                                : {
-                                    background: '#03021F',
-                                    color: '#F6F9FF',
-                                    marginTop: '18px',
-                                  }
-                            }
-                            label={renderNomineeButtonLabel() as string}
-                            onClick={() => handleNomineeButton(nominee)}
+                            styles={{
+                              background: 'transparent !important',
+                              color: isWinner ? '#fff' : '#03021F',
+                              border: '1px solid #daeefb',
+                              width: '100%',
+                            }}
+                            label={i18n.t('nominees.readMore')}
+                            onClick={() => handleReadMore(nominee)}
                             fullWidth={true}
                           />
-                        ) : null}
+
+                          {!eventCache?.finished && !categoryVoted ? (
+                            <CustomButton
+                              styles={
+                                isConnected
+                                  ? {
+                                      background: '#ACFCC5',
+                                      color: '#03021F',
+                                      marginTop: '18px',
+                                    }
+                                  : {
+                                      background: '#03021F',
+                                      color: '#F6F9FF',
+                                      marginTop: '18px',
+                                    }
+                              }
+                              label={renderNomineeButtonLabel() as string}
+                              onClick={() => handleNomineeButton(nominee)}
+                              fullWidth={true}
+                            />
+                          ) : null}
+                        </Grid>
                       </Grid>
-                    </Grid>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                </Badge>
               );
             })}
           </Masonry>

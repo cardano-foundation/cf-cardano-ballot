@@ -92,7 +92,7 @@ const AwardsTile = ({ counter, title, categoryId }) => {
                       xs={12}
                       key={index}
                     >
-                      {proposal.rank === 1 && (
+                      {(proposal.rank === 1 && proposal.votes > 0 ) && (
                         <Card
                           key={index}
                           variant="outlined"

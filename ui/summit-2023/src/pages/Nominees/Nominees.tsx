@@ -66,7 +66,7 @@ import { ProposalPresentationExtended } from '../../store/types';
 import { verifyVote } from 'common/api/verificationService';
 import './Nominees.scss';
 import Masonry from 'react-masonry-css';
-import { ReactComponent as WinnersIcon } from '../../common/resources/images/cardano-summit-2023-winner-badge.svg';
+import { ReactComponent as WinnersIcon } from '../../common/resources/images/winner-badge-summit-2023.svg';
 
 const Nominees = () => {
   const dispatch = useDispatch();
@@ -894,7 +894,7 @@ const Nominees = () => {
               border: !isExpired ? '1px solid #056122' : '1px solid #FD873C',
               color: 'white',
               width: '100%',
-              marginBottom: '20px',
+              marginBottom: '35px',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center' }}>

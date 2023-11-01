@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Box, debounce } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import BlockIcon from '@mui/icons-material/Block';
+import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import { ConnectWalletModal } from 'components/ConnectWalletModal/ConnectWalletModal';
 import { PageRoutes } from 'common/routes';
 import { RootState } from 'common/store';
@@ -13,6 +14,7 @@ import styles from './Content.module.scss';
 import { Toast } from '../Toast/Toast';
 
 export const Content = () => {
+  const { installedExtensions } = useCardano();
   const isConnectWalletModalVisible = useSelector((state: RootState) => state.user.isConnectWalletModalVisible);
   const dispatch = useDispatch();
 
@@ -44,6 +46,7 @@ export const Content = () => {
       <CssBaseline />
       <PageRoutes />
       <ConnectWalletModal
+        installedExtensions={installedExtensions}
         openStatus={isConnectWalletModalVisible}
         onCloseFn={onCloseFn}
         name="connect-wallet-list"

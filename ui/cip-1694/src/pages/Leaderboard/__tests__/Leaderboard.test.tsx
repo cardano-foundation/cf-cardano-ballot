@@ -120,7 +120,7 @@ describe('For the event that has already finished', () => {
 
       const pollStatsTileTitle = within(pollStatsTile).queryByTestId('tile-title');
       expect(pollStatsTileTitle).not.toBeNull();
-      expect(pollStatsTileTitle.textContent).toEqual('Poll stats');
+      expect(pollStatsTileTitle.textContent).toEqual('Ballot stats');
 
       const pollStatsTileSummary = within(pollStatsTile).queryByTestId('tile-summary');
       expect(pollStatsTileSummary).not.toBeNull();
@@ -138,7 +138,7 @@ describe('For the event that has already finished', () => {
 
       const currentlyVotingTileTitle = within(currentlyVotingTile).queryByTestId('tile-title');
       expect(currentlyVotingTileTitle).not.toBeNull();
-      expect(currentlyVotingTileTitle.textContent).toEqual('Current voting stats');
+      expect(currentlyVotingTileTitle.textContent).toEqual('Current ballot stats');
 
       const currentlyVotingTileSummary = within(currentlyVotingTile).queryByTestId('tile-summary');
       expect(currentlyVotingTileSummary).not.toBeNull();
@@ -233,7 +233,7 @@ describe('For the event that has already finished', () => {
 
       const pollStatsTileTitle = within(pollStatsTile).queryByTestId('tile-title');
       expect(pollStatsTileTitle).not.toBeNull();
-      expect(pollStatsTileTitle.textContent).toEqual('Poll stats');
+      expect(pollStatsTileTitle.textContent).toEqual('Ballot stats');
 
       const pollStatsTileSummary = within(pollStatsTile).queryByTestId('tile-summary');
       expect(pollStatsTileSummary).not.toBeNull();
@@ -251,7 +251,7 @@ describe('For the event that has already finished', () => {
 
       const currentlyVotingTileTitle = within(currentlyVotingTile).queryByTestId('tile-title');
       expect(currentlyVotingTileTitle).not.toBeNull();
-      expect(currentlyVotingTileTitle.textContent).toEqual('Current voting stats');
+      expect(currentlyVotingTileTitle.textContent).toEqual('Current ballot stats');
 
       const currentlyVotingTileSummary = within(currentlyVotingTile).queryByTestId('tile-summary');
       expect(currentlyVotingTileSummary).not.toBeNull();
@@ -344,7 +344,7 @@ describe("For the event that hasn't finished yet", () => {
 
       const pollStatsTileTitle = within(pollStatsTile).queryByTestId('tile-title');
       expect(pollStatsTileTitle).not.toBeNull();
-      expect(pollStatsTileTitle.textContent).toEqual('Poll stats');
+      expect(pollStatsTileTitle.textContent).toEqual('Ballot stats');
 
       const pollStatsTileSummary = within(pollStatsTile).queryByTestId('tile-summary');
       expect(pollStatsTileSummary).not.toBeNull();
@@ -362,7 +362,7 @@ describe("For the event that hasn't finished yet", () => {
 
       const currentlyVotingTileTitle = within(currentlyVotingTile).queryByTestId('tile-title');
       expect(currentlyVotingTileTitle).not.toBeNull();
-      expect(currentlyVotingTileTitle.textContent).toEqual('Current voting stats');
+      expect(currentlyVotingTileTitle.textContent).toEqual('Current ballot stats');
 
       const currentlyVotingTileSummary = within(currentlyVotingTile).queryByTestId('tile-summary');
       expect(currentlyVotingTileSummary).not.toBeNull();

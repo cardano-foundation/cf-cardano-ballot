@@ -11,7 +11,7 @@ type Props = {
 };
 
 export const EventTime = ({ endTime, startTime, eventHasntStarted, eventHasFinished }: Props) => {
-  const title = eventHasntStarted ? 'Vote from:' : eventHasFinished ? 'The vote closed on' : 'Ballot closes:';
+  const title = eventHasntStarted ? 'The ballot will be opened from:' : eventHasFinished ? 'The ballot closed on' : 'Ballot closes:';
   const time = eventHasntStarted ? `${formatUTCDate(startTime)} - ${formatUTCDate(endTime)}` : formatUTCDate(endTime);
   const showPlaceholder = !endTime && !startTime;
 

@@ -58,7 +58,7 @@ export const IntroductionPage = () => {
                     md: '65px',
                   }}
                 >
-                 A Vote on Minimum-Viable on chain Governance
+                  Cardano Ballot on CIP-1694
                 </Typography>
                 <Typography
                   component={'span'}
@@ -90,7 +90,9 @@ export const IntroductionPage = () => {
                   Cardano has reached an incredible milestone. After six years of initial development and feature
                   cultivation, the Cardano blockchain has reached the age of Voltaire. Guided by a principles-first
                   approach and led by the community, this new age of Cardano advances inclusive accountability for all
-                  participants in the ecosystem. The time has come for a vote by the community on the way forward.
+                  participants in the ecosystem. Now is the time for the community to help guide our journey toward a
+                  shared future by participating in the Cardano Ballot on the deployment of on-chain governance, as
+                  described in CIP-1694.
                 </Typography>
                 {event?.notStarted ? (
                   <Button

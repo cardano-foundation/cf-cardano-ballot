@@ -199,7 +199,7 @@ describe('For ongoing event:', () => {
 
       const cta = within(votePage).queryByTestId('proposal-connect-button');
       expect(cta).not.toBeNull();
-      expect(cta.textContent).toEqual('Connect wallet to vote');
+      expect(cta.textContent).toEqual('Connect wallet to participate');
     });
   });
 
@@ -288,7 +288,7 @@ describe('For ongoing event:', () => {
 
       const cta = within(votePage).queryByTestId('proposal-submit-button');
       expect(cta).not.toBeNull();
-      expect(cta.textContent).toEqual('Submit your vote');
+      expect(cta.textContent).toEqual('Submit your ballot');
     });
   });
 
@@ -367,7 +367,7 @@ describe('For ongoing event:', () => {
 
     expect(mockToast).toBeCalledWith(
       <Toast
-        message={'Unable to submit your vote. Please try again'}
+        message={'Unable to submit your ballot. Please try again'}
         error
         icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
       />
@@ -418,7 +418,7 @@ describe('For ongoing event:', () => {
     expect(cta).not.toBeNull();
 
     expect(within(votePage).queryByTestId('vote-context-label').textContent).toEqual(
-      'Do you have any additional comments or details about your voting decision?'
+      'Do you have any additional comments or details about your ballot decision?'
     );
 
     const voteContext = 'voteContext';
@@ -686,7 +686,7 @@ describe('For ongoing event:', () => {
     });
     expect(mockToast).toBeCalledWith(
       <Toast
-        message={'Unable to submit your vote. Please try again'}
+        message={'Unable to submit your ballot. Please try again'}
         error
         icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
       />
@@ -943,7 +943,7 @@ describe('For ongoing event:', () => {
       'Wallet signature'
     );
     expect(await within(confirmationModal).findByTestId('confirm-with-signature-description')).toHaveTextContent(
-      'We need to check if you’ve already voted.You will see a pop-up message from your wallet.Please confirm with your wallet signature.'
+      'We need to check if you’ve already submitted yor ballot.You will see a pop-up message from your wallet.Please confirm with your wallet signature.'
     );
     const confirmCta = await within(confirmationModal).findByTestId('confirm-with-signature-cta');
     expect(confirmCta).toHaveTextContent('Confirm');
@@ -961,7 +961,7 @@ describe('For ongoing event:', () => {
 
       const cta = within(votePage).queryByTestId('show-receipt-button');
       expect(cta).not.toBeNull();
-      expect(cta.textContent).toEqual('Vote receipt');
+      expect(cta.textContent).toEqual('Ballot receipt');
 
       expect(screen.queryByTestId('confirm-with-signature-modal')).toBeNull();
       expect(submitLoginMock).toBeCalledWith(canonicalVoteInput);
@@ -1010,7 +1010,7 @@ describe('For ongoing event:', () => {
       'Wallet signature'
     );
     expect(await within(confirmationModal).findByTestId('confirm-with-signature-description')).toHaveTextContent(
-      'We need to check if you’ve already voted.You will see a pop-up message from your wallet.Please confirm with your wallet signature.'
+      'We need to check if you’ve already submitted yor ballot.You will see a pop-up message from your wallet.Please confirm with your wallet signature.'
     );
     const confirmCta = await within(confirmationModal).findByTestId('confirm-with-signature-cta');
     expect(confirmCta).toHaveTextContent('Confirm');
@@ -1028,7 +1028,7 @@ describe('For ongoing event:', () => {
 
       const cta = within(votePage).queryByTestId('show-receipt-button');
       expect(cta).not.toBeNull();
-      expect(cta.textContent).toEqual('Vote receipt');
+      expect(cta.textContent).toEqual('Ballot receipt');
 
       expect(screen.queryByTestId('confirm-with-signature-modal')).toBeNull();
     });
@@ -1310,7 +1310,7 @@ describe('For ongoing event:', () => {
     await act(async () => fireEvent.click(within(receipt).queryByTestId('refetch-receipt-button')));
     expect(mockToast).toBeCalledWith(
       <Toast
-        message="Unable to refresh your vote receipt. Please try again"
+        message="Unable to refresh your ballot receipt. Please try again"
         error
         icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
       />
@@ -1404,7 +1404,7 @@ describe("For the event that hasn't started yet", () => {
       const eventTime = within(votePage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
       expect(eventTime.textContent).toEqual(
-        `Vote from: ${formatUTCDate(eventMock_notStarted.eventStartDate.toString())} - ${formatUTCDate(
+        `The ballot will be opened from: ${formatUTCDate(eventMock_notStarted.eventStartDate.toString())} - ${formatUTCDate(
           eventMock_notStarted.eventEndDate.toString()
         )}`
       );
@@ -1425,7 +1425,7 @@ describe("For the event that hasn't started yet", () => {
       const cta = within(votePage).queryByTestId('event-hasnt-started-submit-button');
       expect(cta).not.toBeNull();
       expect(cta.textContent).toEqual(
-        `Submit your vote from ${getDateAndMonth(eventMock_notStarted.eventStartDate?.toString())}`
+        `Submit your ballot from ${getDateAndMonth(eventMock_notStarted.eventStartDate?.toString())}`
       );
     });
   });
@@ -1468,7 +1468,7 @@ describe('For the event that has already finished', () => {
       const eventTime = within(votePage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
       expect(eventTime.textContent).toEqual(
-        `The vote closed on ${formatUTCDate(eventMock_finished.eventEndDate.toString())}`
+        `The ballot closed on ${formatUTCDate(eventMock_finished.eventEndDate.toString())}`
       );
 
       const eventDescription = within(votePage).queryByTestId('event-description');
@@ -1485,7 +1485,7 @@ describe('For the event that has already finished', () => {
 
       const cta = within(votePage).queryByTestId('proposal-connect-button');
       expect(cta).not.toBeNull();
-      expect(cta.textContent).toEqual('Connect wallet to see your vote');
+      expect(cta.textContent).toEqual('Connect wallet to see your ballot');
     });
   });
 

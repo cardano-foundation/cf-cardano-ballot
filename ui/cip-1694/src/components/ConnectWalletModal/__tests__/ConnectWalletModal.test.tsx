@@ -45,7 +45,9 @@ describe('ConnectWalletModal', () => {
     name: 'connect-wallet-modal',
     id: 'connect-wallet-modal',
     title: 'Connect wallet',
-    description: 'In order to vote, first you will need to connect your wallet.',
+    description: `In order to participate, first you will need to connect your wallet. Following wallets are accepted: ${mockSupportedWallets
+      ?.map((w) => `${w[0].toUpperCase()}${w.slice(1)}`)
+      ?.join(', ')}.`,
     onConnectWallet: jest.fn(),
     onConnectWalletError: jest.fn(),
     onCloseFn: jest.fn(),

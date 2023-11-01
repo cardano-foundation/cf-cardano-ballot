@@ -4,7 +4,7 @@
   "private": true,
   "author": "Cardano Foundation Team",
   "repository": "https://github.com/cardano-foundation/cf-voting-app/app",
-  "description": "Cardano Voting Application",
+  "description": "Cardano Ballot Application",
   "dependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@cardano-foundation/cardano-connect-with-wallet": "^0.1.57",

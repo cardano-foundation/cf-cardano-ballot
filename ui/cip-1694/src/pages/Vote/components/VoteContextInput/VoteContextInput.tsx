@@ -38,7 +38,7 @@ export const VoteContextInput = ({ onChange, voteContext, maxChar = MAX_CHARS, d
         fontSize={{ xs: '16px', md: '18px' }}
         data-testid="vote-context-label"
       >
-        Do you have any additional comments or details about your voting decision?
+        Do you have any additional comments or details about your ballot decision?
       </Typography>
     </Grid>
     <Grid

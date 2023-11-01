@@ -118,7 +118,7 @@ export const Leaderboard = () => {
           sx={{ flexWrap: { md: 'nowrap', xs: 'wrap' } }}
         >
           <StatsTile
-            title="Poll stats"
+            title="Ballot stats"
             dataTestId="poll-stats-tile"
             summary={<span style={{ color: '#061d3c' }}>{statsSum || placeholder}</span>}
           >
@@ -172,7 +172,7 @@ export const Leaderboard = () => {
             </Grid>
           </StatsTile>
           <StatsTile
-            title="Current voting stats"
+            title="Current ballot stats"
             summary={<span style={{ color: '#061d3c' }}>{statsSum || placeholder}</span>}
             dataTestId="currently-voting-tile"
           >

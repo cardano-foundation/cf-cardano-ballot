@@ -21,9 +21,9 @@ export const ConnectWalletButton = ({ isMobileMenu = false }) => {
   const dispatch = useDispatch();
   const connectedWallet = useSelector((state: RootState) => state.user.connectedWallet);
 
-  const supportedWallets = installedExtensions.filter((installedWallet) =>
-    env.SUPPORTED_WALLETS.includes(installedWallet)
-  );
+  const supportedWallets = installedExtensions
+    .filter((installedWallet) => env.SUPPORTED_WALLETS.includes(installedWallet))
+    .sort((a, b) => a.localeCompare(b));
 
   useEffect(() => {
     const init = async () => {

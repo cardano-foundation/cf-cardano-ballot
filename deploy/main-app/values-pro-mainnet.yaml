@@ -114,4 +114,11 @@ cf-vote-commitment:
         voteCommitmentCronExpression: "0 0 * * * *"
       - name: active-half-hour
         voteCommitmentCronExpression: "0 30 * * * *"
+    yaci:
+      startBlockHash: 285f58fd09cbb95ac5ffd6f644f7907dfb3faff63155b8a86a9c7b0e99503397
+      startSlotNumber: "103737886"
+      network: main
+      cardanoNodeHost: relays-new.cardano-mainnet.iohk.io
+      cardanoNodePort: "3001"
+      cardanoNodeProtocolMagic: "764824073"
     ledgerFollowerAppUrl: http://cf-cardano-ballot-ledger-follower-api-voting-ledger-follower-ap:9090

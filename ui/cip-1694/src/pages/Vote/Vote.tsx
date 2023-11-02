@@ -587,7 +587,7 @@ export const VotePage = () => {
         isConfirming={isConfirmingWithSignature}
         description={
           <>
-            We need to check if you’ve already submitted yor ballot.
+            We need to check if you’ve already submitted your ballot.
             <br />
             You will see a pop-up message from your wallet.
             <br />

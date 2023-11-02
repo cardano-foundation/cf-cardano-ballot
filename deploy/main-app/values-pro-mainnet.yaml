@@ -111,7 +111,7 @@ cf-vote-commitment:
     springProfiles: prod
     instances:
       - name: active-even-hour
-        voteCommitmentCronExpression: "0 0 *2 * * *"
+        voteCommitmentCronExpression: "0 0 */2 * * *"
       - name: active-odd-hour
         voteCommitmentCronExpression: "0 0 1-23/2 * * *"
     yaci:

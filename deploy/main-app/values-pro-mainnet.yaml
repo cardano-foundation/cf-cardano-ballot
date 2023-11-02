@@ -31,6 +31,7 @@ cf-cardano-ballot-voting-api:
   enabled: true
   values:
     springProfiles: prod
+    replicaCount: 4
     useJwt: true
     leaderboardForceResults: "false"
     resources:

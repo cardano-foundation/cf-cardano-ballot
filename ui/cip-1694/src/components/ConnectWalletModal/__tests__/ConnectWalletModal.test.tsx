@@ -46,7 +46,10 @@ describe('ConnectWalletModal', () => {
     id: 'connect-wallet-modal',
     title: 'Connect wallet',
     description: `In order to participate, first you will need to connect your wallet. Following wallets are accepted: ${mockSupportedWallets
-      ?.map((w) => `${w[0].toUpperCase()}${w.slice(1)}`)
+      ?.map((w) => {
+        const walletName = w.replace('typhoncip30', 'Typhon');
+        return `${walletName[0].toUpperCase()}${walletName.slice(1)}`;
+      })
       ?.join(', ')}.`,
     onConnectWallet: jest.fn(),
     onConnectWalletError: jest.fn(),

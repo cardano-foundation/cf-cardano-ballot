@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useLayoutEffect } from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
@@ -39,6 +39,15 @@ export const ConnectWalletModal = (props: ConnectWalletModalProps) => {
   const supportedWallets = installedExtensions
     .filter((installedWallet) => env.SUPPORTED_WALLETS.includes(installedWallet))
     .sort((a, b) => a.localeCompare(b));
+
+  useLayoutEffect(() => {
+    setTimeout(() => {
+      Array.from(document.querySelector("[data-testid='connect-wallet-list']")?.children || [])?.forEach((wallet) => {
+        const content = wallet.innerHTML;
+        wallet.innerHTML = content.replace('Typhoncip30', 'Typhon');
+      });
+    }, 0);
+  }, []);
 
   return (
     <Dialog

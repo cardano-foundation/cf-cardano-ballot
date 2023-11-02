@@ -46,25 +46,31 @@ export const Content = () => {
     <Box className={styles.content}>
       <CssBaseline />
       <PageRoutes />
-      <ConnectWalletModal
-        installedExtensions={installedExtensions}
-        openStatus={isConnectWalletModalVisible}
-        onCloseFn={onCloseFn}
-        name="connect-wallet-list"
-        id="connect-wallet-list"
-        title="Connect wallet"
-        description={
-          <>
-            In order to participate, first you will need to connect your wallet. Following wallets are accepted:{' '}
-            <span style={{ fontWeight: '500' }}>
-              {env.SUPPORTED_WALLETS?.map((w) => `${w[0].toUpperCase()}${w.slice(1)}`)?.join(', ')}
-            </span>
-            .
-          </>
-        }
-        onConnectWallet={onConnectWallet}
-        onConnectWalletError={onConnectWalletError}
-      />
+      {isConnectWalletModalVisible && (
+        <ConnectWalletModal
+          installedExtensions={installedExtensions}
+          openStatus={isConnectWalletModalVisible}
+          onCloseFn={onCloseFn}
+          name="connect-wallet-list"
+          id="connect-wallet-list"
+          title="Connect wallet"
+          description={
+            <>
+              In order to participate, first you will need to connect your wallet. Following wallets are accepted:{' '}
+              <span style={{ fontWeight: '500' }}>
+                {env.SUPPORTED_WALLETS?.map((w) => {
+                  const walletName = w.replace('typhoncip30', 'Typhon');
+                  console.log(w);
+                  return `${walletName[0].toUpperCase()}${walletName.slice(1)}`;
+                })?.join(', ')}
+              </span>
+              .
+            </>
+          }
+          onConnectWallet={onConnectWallet}
+          onConnectWalletError={onConnectWalletError}
+        />
+      )}
     </Box>
   );
 };

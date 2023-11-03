@@ -277,6 +277,7 @@ export const VotePage = () => {
         slotNumber: chainTip.absoluteSlot.toString(),
         votingPower,
         category: activeCategoryId,
+        uri: env.ENV_URI,
       });
       setIsCastingAVote(true);
       const requestVoteObject = await signMessagePromisified(canonicalVoteInput);
@@ -502,7 +503,8 @@ export const VotePage = () => {
                     disabled
                     data-testid="event-hasnt-started-submit-button"
                   >
-                    Submit your ballot from {event?.eventStartDate && getDateAndMonth(event?.eventStartDate?.toString())}
+                    Submit your ballot from{' '}
+                    {event?.eventStartDate && getDateAndMonth(event?.eventStartDate?.toString())}
                   </Button>
                 )}
                 {isConnected && event?.finished && (

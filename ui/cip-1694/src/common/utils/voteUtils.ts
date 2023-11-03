@@ -10,6 +10,7 @@ type voteInput = {
   slotNumber: string;
   votingPower: string;
   category: string;
+  uri: string;
 };
 
 export const buildCanonicalVoteInputJson = ({
@@ -19,12 +20,12 @@ export const buildCanonicalVoteInputJson = ({
   slotNumber,
   votingPower,
   category,
+  uri,
 }: voteInput): ReturnType<typeof canonicalize> => {
   const startOfCurrentDay = new Date();
   startOfCurrentDay.setUTCMinutes(0, 0, 0);
   return canonicalize({
-    // TODO: should this one be hardcoded?
-    uri: 'https://evoting.cardano.org/voltaire',
+    uri,
     action: 'CAST_VOTE',
     actionText: 'Cast Vote',
     slot: slotNumber,

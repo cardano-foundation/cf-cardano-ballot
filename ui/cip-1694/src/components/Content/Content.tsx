@@ -60,7 +60,6 @@ export const Content = () => {
               <span style={{ fontWeight: '500' }}>
                 {env.SUPPORTED_WALLETS?.map((w) => {
                   const walletName = w.replace('typhoncip30', 'Typhon');
-                  console.log(w);
                   return `${walletName[0].toUpperCase()}${walletName.slice(1)}`;
                 })?.join(', ')}
               </span>

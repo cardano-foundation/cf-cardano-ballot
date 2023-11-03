@@ -1,6 +1,6 @@
 /* eslint-disable no-var */
 var mockConnectWalletList = jest.fn();
-var mockSupportedWallets = ['Wallet1', 'Wallet2'];
+var mockSupportedWallets = ['Wallet1', 'Wallet2', 'Typhoncip30'];
 import React from 'react';
 import '@testing-library/jest-dom';
 import { expect } from '@jest/globals';
@@ -54,7 +54,7 @@ describe('ConnectWalletModal', () => {
     onConnectWallet: jest.fn(),
     onConnectWalletError: jest.fn(),
     onCloseFn: jest.fn(),
-    installedExtensions: ['Wallet1', 'Wallet2'],
+    installedExtensions: ['Wallet2'],
   };
 
   test('should display proper state', async () => {
@@ -83,7 +83,7 @@ describe('ConnectWalletModal', () => {
     expect(within(modal).queryByTestId('connect-wallet-list')).not.toBeNull();
     expect(mockConnectWalletList.mock.lastCall[0]).toEqual({
       showUnavailableWallets: 0,
-      supportedWallets: mockSupportedWallets,
+      supportedWallets: props.installedExtensions,
       onConnect: props.onConnectWallet,
       onConnectError: props.onConnectWalletError,
       customCSS: connectWalletListCustomCss,
@@ -105,6 +105,59 @@ describe('ConnectWalletModal', () => {
     await waitFor(() => {
       const modal = screen.queryByTestId('connected-wallet-modal');
       expect(modal).toBeNull();
+    });
+  });
+
+  test('should render proper name for typhon wallet', async () => {
+    mockConnectWalletList.mockImplementation(({ supportedWallets }: { supportedWallets: string[] }) => {
+      return (
+        <span data-testid="connect-wallet-list">
+          {supportedWallets.map((extension) => (
+            <span key={extension}>{extension}</span>
+          ))}
+        </span>
+      );
+    });
+
+    render(
+      <ConnectWalletModal
+        {...props}
+        installedExtensions={['Typhoncip30']}
+        openStatus
+      />
+    );
+
+    await waitFor(() => {
+      const listItems = Array.from(screen.queryByTestId('connect-wallet-list').children);
+      expect(listItems.length).toEqual(1);
+      expect(listItems[0].textContent).toEqual('Typhon');
+    });
+  });
+
+  test('should render installed extensions in alphabetical order', async () => {
+    mockConnectWalletList.mockImplementation(({ supportedWallets }: { supportedWallets: string[] }) => {
+      return (
+        <span data-testid="connect-wallet-list">
+          {supportedWallets.map((extension) => (
+            <span key={extension}>{extension}</span>
+          ))}
+        </span>
+      );
+    });
+
+    render(
+      <ConnectWalletModal
+        {...props}
+        installedExtensions={['Wallet2', 'Wallet1']}
+        openStatus
+      />
+    );
+
+    await waitFor(() => {
+      const listItems = Array.from(screen.queryByTestId('connect-wallet-list').children);
+      expect(listItems.length).toEqual(2);
+      expect(listItems[0].textContent).toEqual('Wallet1');
+      expect(listItems[1].textContent).toEqual('Wallet2');
     });
   });
 });

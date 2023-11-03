@@ -38,14 +38,21 @@ public class CIP1694ProductionCommands {
 
         log.info("Creating CIP-1694 event on MAINNET network...");
 
+//        Last day for users to stake their ada - 21 Nov - Last day of Epoch 449
+
+//        Snapshot  - 21 Nov- End of Epoch 449 - Before 21:44 UTC
+//        Poll Starts  - 01 Dec - First day of Epoch 452 at 21:45 UTC
+//        Poll Ends - 11 Dec - Last day of Epoch 453 at 21:44 UTC
+//        Poll Results/Reveal date - 16 Dec - First day of Epoch 455 at 21:45 UTC
+
         CreateEventCommand createEventCommand = CreateEventCommand.builder()
-                .id(EVENT_NAME + "_" + "TEST_2")
-                .startEpoch(Optional.of(446))
-                .endEpoch(Optional.of(446))
-                .snapshotEpoch(Optional.of(444))
-                .proposalsRevealEpoch(Optional.of(448))
+                .id(EVENT_NAME)
+                .startEpoch(Optional.of(452))
+                .endEpoch(Optional.of(453))
+                .snapshotEpoch(Optional.of(449))
+                .proposalsRevealEpoch(Optional.of(455))
                 .votingPowerAsset(Optional.of(ADA))
-                .organisers("IOG with technical support from CF")
+                .organisers("IOG with CF Technical Support")
                 .votingEventType(STAKE_BASED)
                 .schemaVersion(V1)
                 .allowVoteChanging(false)

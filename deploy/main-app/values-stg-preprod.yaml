@@ -1,6 +1,6 @@
 stage: stg
 
-network: main
+network: preprod
 
 domain: stg.cf-cip1694-preprod.eu-west-1.metadata.dev.cf-deployments.org
 
@@ -15,8 +15,8 @@ cf-cardano-ballot-ui:
     votingAppServerUrl: "https://api.cip1694.metadata.dev.cf-deployments.org"
     votingLedgerFollowerAppServerUrl: "https://follower-api.cip1694.metadata.dev.cf-deployments.org"
     votingVerificationAppServerUrl: "https://verification-api.cip1694.metadata.dev.cf-deployments.org"
-    eventId: "CIP-1694_Pre_Ratification_TEST_2"
-    categoryId: "CIP-1694_Pre_Ratification_TEST_2"
+    eventId: "CIP-1694_Pre_Ratification_B240"
+    categoryId: "CIP-1694_Pre_Ratification_B240"
     googleGormUrl: "https://docs.google.com/forms/u/0/d/e/1FAIpQLSe-dSU0-bi8bjk0wiOaRXj02nxYLvgnpKBgc-eYGRpPYO-y5Q"
     googleFormVoteContextInputName: "entry.75173622"
     ingress:
@@ -26,17 +26,8 @@ cf-cardano-ballot-ui:
 cf-cardano-ballot-voting-api:
   enabled: true
   values:
-    springProfiles: prod
-    useJwt: true
     image:
-      tag: 0.2.75
-    yaci:
-      startBlockHash: 285f58fd09cbb95ac5ffd6f644f7907dfb3faff63155b8a86a9c7b0e99503397
-      startSlotNumber: "103737886"
-      network: main
-      cardanoNodeHost: relays-new.cardano-mainnet.iohk.io
-      cardanoNodePort: "3001"
-      cardanoNodeProtocolMagic: "764824073"
+      tag: v0.2.70-2-g51b6485d
     monitoring:
       alerting:
         enabled: false
@@ -50,8 +41,7 @@ cf-cardano-ballot-verification-api:
   enabled: true
   values:
     image:
-      tag: 0.2.75
-    springProfiles: prod
+      tag: 0.2.71
     corsAllowedOrigins: https://{{ .Values.domain }},https://cip1694.metadata.dev.cf-deployments.org,http://localhost:3000
     ingress:
       additionalDomains:
@@ -61,16 +51,11 @@ cf-cardano-ballot-ledger-follower-api:
   enabled: true
   values:
     image:
-      tag: 0.2.75
-    springProfiles: prod
-    bindOnEventIds: CIP-1694_Pre_Ratification_TEST_2
+      tag: v0.2.70-2-g51b6485d
+    bindOnEventIds: CIP-1694_Pre_Ratification_B240
     yaci:
-      startBlockHash: 5fbd74e502832d31301b3473117cb99d162b3b0fc149656391f806170c93e1c0
-      startSlotNumber: "106876819"
-      network: main
-      cardanoNodeHost: relays-new.cardano-mainnet.iohk.io
-      cardanoNodePort: "3001"
-      cardanoNodeProtocolMagic: "764824073"
+      startBlockHash: ad03698d53d72b86b40c7747ffd5a960fbb3a71ac2f1189169e9d315449c24dc
+      startSlotNumber: "41558438"
     instances:
       - name: follower-1
         enabled: true
@@ -79,11 +64,6 @@ cf-cardano-ballot-ledger-follower-api:
         enabled: true
         schemaName: follower_2
     corsAllowedOrigins: https://{{ .Values.domain }},https://cip1694.metadata.dev.cf-deployments.org,http://localhost:3000
-    cardanoSnapshotBoundsCheckEnabled: "true"
-    startupProbe:
-      initialDelaySeconds: 0
-      periodSeconds: 30
-      failureThreshold: 20
     ingress:
       additionalDomains:
         - follower-api.cip1694.metadata.dev.cf-deployments.org
@@ -91,16 +71,15 @@ cf-cardano-ballot-ledger-follower-api:
 cf-voting-verification-ui:
   values:
     image:
-      tag: 0.2.75
+      tag: 0.2.71
 
 cf-vote-commitment:
   values:
     image:
-      tag: 0.2.75
-    springProfiles: prod
+      tag: 0.2.71
     instances:
       - name: active-hour
-        voteCommitmentCronExpression: "0 00 * * * *"
+        voteCommitmentCronExpression: "0 15 * * * *"
       - name: active-half-hour
-        voteCommitmentCronExpression: "0 30 * * * *"
+        voteCommitmentCronExpression: "0 45 * * * *"
     ledgerFollowerAppUrl: http://cf-cardano-ballot-ledger-follower-api-voting-ledger-follower-ap:9090

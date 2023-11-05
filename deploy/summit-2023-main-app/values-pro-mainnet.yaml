@@ -22,6 +22,8 @@ cf-summit-2023-ui:
     discordChannelUrl: https://discord.gg/FeCbA2wYF8
     discordBotUrl: https://discord.gg/65Hq3gqFwE
     discordSupportChannelUrl: https://discord.gg/svAcdYjMXx
+    showWinners: "true"
+    showHydraTally: "true"
     image:
       tag: 0.2.64-36-45850
     ingress:

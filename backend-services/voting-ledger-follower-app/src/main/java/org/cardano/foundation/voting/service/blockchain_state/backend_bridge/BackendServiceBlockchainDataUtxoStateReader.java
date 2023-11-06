@@ -25,7 +25,7 @@ public class BackendServiceBlockchainDataUtxoStateReader implements BlockchainDa
     @Override
     public Either<Problem, List<Utxo>> getUTxOs(String address, List<String> verificationKeys) {
         try {
-            var response = backendService.getUtxoService().getUtxos(address, 10, 0);
+            var response = backendService.getUtxoService().getUtxos(address, 10, 1);
 
             if (!response.isSuccessful()) {
                 if (response.code() == 404) {

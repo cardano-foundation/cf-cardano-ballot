@@ -48,7 +48,7 @@ public class VoteUtxoFinder {
                 .filter(uTxOVote -> uTxOVote.voteDatum() != null)
                 .filter(uTxOVote -> uTxOVote.voteDatum().getEventId().equals(contractEventId))
                 .filter(uTxOVote -> uTxOVote.voteDatum().getCategoryId().equals(contractCategoryId))
-                .filter(uTxOVote -> uTxOVote.voteDatum().getOrganiser().equals(contractOrganiser))
+                .filter(uTxOVote -> uTxOVote.voteDatum().getOrganisers().equals(contractOrganiser))
                 .sorted(createVoteTxHashAndTransactionIndexComparator())
                 .limit(batchSize)
                 .toList();

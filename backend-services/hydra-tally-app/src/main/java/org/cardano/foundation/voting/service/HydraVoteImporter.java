@@ -82,7 +82,7 @@ public class HydraVoteImporter {
 
                     return VoteDatum.builder()
                                     .eventId(vote.eventId())
-                                    .organiser(plutusScriptLoader.getOrganisers())
+                                    .organisers(plutusScriptLoader.getEventDetails().organisers())
                                     .voteId(vote.voteId().toString())
                                     .voterKey(vote.voterStakeAddress())
                                     .categoryId(vote.categoryId())

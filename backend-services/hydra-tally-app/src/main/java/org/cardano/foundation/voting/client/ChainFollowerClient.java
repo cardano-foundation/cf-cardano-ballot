@@ -1,5 +1,6 @@
 package org.cardano.foundation.voting.client;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.TallyType;
@@ -45,6 +46,7 @@ public class ChainFollowerClient {
         }
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public record EventDetailsResponse(String id,
                                        String organisers,
                                        boolean proposalsReveal,
@@ -63,11 +65,12 @@ public class ChainFollowerClient {
             String name,
             String description,
             TallyType type,
-            Object config) {
+            HydraTallyConfig config) {
     }
 
     public record HydraTallyConfig(String compiledScript,
                                    String contractName,
+                                   String contractVersion,
                                    String compiledScriptHash,
                                    String compilerVersion,
                                    String compilerName,

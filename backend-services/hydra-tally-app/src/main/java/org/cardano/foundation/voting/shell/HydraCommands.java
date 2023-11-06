@@ -372,8 +372,8 @@ public class HydraCommands {
 
         var allCategories = voteRepository.getAllUniqueCategories(eventId);
 
-        var organisers = plutusScriptLoader.getOrganisers();
-        var votingEventType = plutusScriptLoader.getVotingEventType();
+        var organisers = plutusScriptLoader.getEventDetails().organisers();
+        var votingEventType = plutusScriptLoader.getEventDetails().votingEventType();
 
         for (val categoryId : allCategories) {
             log.info("Processing category: {}", categoryId);
@@ -398,123 +398,5 @@ public class HydraCommands {
 
         return "Tallying votes done.";
     }
-
-//    @Command(command = "tally-all-shard", description = "tally all the votes votes (sharded).")
-//    public String tallyAllShard(
-//            @ShellOption(value = "import-batch-size", defaultValue = "25") @Option int importBatchSize,
-//            @ShellOption(value = "create-batch-size", defaultValue = "10") @Option int createBatchSize,
-//            @ShellOption(value = "reduce-batch-size", defaultValue = "10") @Option int reduceBatchSize
-//    ) throws Exception {
-//        log.info("Tally all with votes sharding, importBatchSize: {}, createBatchSize: {}, reduceBatchSize: {}",
-//                importBatchSize, createBatchSize, reduceBatchSize);
-//
-//        if (localBootstrap != LocalBootstrap.SHARDED) {
-//            return "Tallying votes failed, reason: local bootstrap is NOT SHARDED";
-//        }
-//
-//        if (hydraClient.getHydraState() != Open) {
-//            return "Tallying votes failed, reason:" + hydraClient.getHydraState();
-//        }
-//
-//        var participantNumber = environment.getProperty("hydra.participant.number", Integer.class);
-//        var participantCount = environment.getProperty("hydra.participant.count", Integer.class);
-//
-//        if (participantCount.intValue() == 0) {
-//            return "Tallying votes failed, reason: participants count is 0";
-//        }
-//
-//        var allCategories = voteRepository.getAllUniqueCategories(eventId);
-//
-//        for (val categoryId : allCategories) {
-//            log.info("Processing category: {}", categoryId);
-//
-//            var allVotes = voteRepository.findAllVotes(eventId, categoryId)
-//                    .stream()
-//                    .filter(vote -> {
-//                        int partition = Partitioner.partition(vote.voteId(), participantCount);
-//
-//                        return partition == participantNumber.intValue();
-//                    }).toList();
-//
-//            var partitioned = Lists.partition(allVotes, importBatchSize);
-//
-//            for (val voteBatch : partitioned) {
-//                val txIdE = hydraVoteImporter.importVotes(eventId, votingEventType, organiser, voteBatch);
-//                if (txIdE.isEmpty()) {
-//                    return "Importing votes failed, reason:" + txIdE.getLeft();
-//                }
-//
-//                log.info("Imported votes voteBatch, txId: " + "{}", txIdE.get());
-//
-//                hydraVoteBatcher.batchVotesPerCategory(eventId, organiser, categoryId, createBatchSize);
-//                hydraVoteBatchReducer.batchVotesPerCategory(eventId, organiser, categoryId, reduceBatchSize);
-//            }
-//        }
-//
-//        return "Tallying votes (sharded) done.";
-//    }
-
-//    @Command(command = "import-votes", description = "import votes.")
-//    public String importVotes(@ShellOption(value = "batch-size", defaultValue = "10") @Option int batchSize) throws Exception {
-//        log.info("Import votes, batchSize: {}", batchSize);
-//
-//        if (hydraClient.getHydraState() != Open) {
-//            return "Importing votes failed, reason:" + hydraClient.getHydraState();
-//        }
-//
-//        var participantVotes = voteRepository.findAllVotes(eventId);
-//
-//        log.info("Total votes to import: {}", participantVotes.size());
-//
-//        var partitioned = Lists.partition(participantVotes, batchSize);
-//
-//        for (val batch : partitioned) {
-//            val txIdE = hydraVoteImporter.importVotes(eventId, votingEventType, organiser, batch);
-//            if (txIdE.isEmpty()) {
-//                return "Importing votes failed, reason:" + txIdE.getLeft();
-//            }
-//
-//            log.info("Imported votes batch, txId: " + "{}", txIdE.get());
-//        }
-//
-//        return "Imported votes.";
-//    }
-
-//    @Command(command = "batch-votes", description = "batch votes.")
-//    public String batchVotes(@ShellOption(value = "batch-size", defaultValue = "10") @Option int batchSize) throws Exception {
-//        log.info("Batch votes, batchSize: {}", batchSize);
-//
-//        if (hydraClient.getHydraState() != Open) {
-//            return "Batching votes failed, reason:" + hydraClient.getHydraState();
-//        }
-//
-//        val allCategories = voteRepository.getAllUniqueCategories(eventId);
-//
-//        for (val categoryId : allCategories) {
-//            log.info("Processing category: {}", categoryId);
-//            hydraVoteBatcher.batchVotesPerCategory(eventId, organiser, categoryId, batchSize);
-//        }
-//
-//        return "Vote batches creations done.";
-//    }
-
-//    @Command(command = "reduce-vote-results", description = "reduce vote results.")
-//    public String reduceVotes(@ShellOption(value = "batch-size", defaultValue = "10") @Option int batchSize) throws CborSerializationException {
-//        log.info("Reduce vote results, batch size: {}", batchSize);
-//
-//        if (hydraClient.getHydraState() != Open) {
-//            return "Batching votes failed, reason:" + hydraClient.getHydraState();
-//        }
-//
-//        val allCategories = voteRepository.getAllUniqueCategories(eventId);
-//
-//        for (val categoryId : allCategories) {
-//            log.info("Processing category: {}", categoryId);
-//
-//            hydraVoteBatchReducer.batchVotesPerCategory(eventId, organiser, categoryId, batchSize);
-//        }
-//
-//        return "Vote results reduced.";
-//    }
 
 }

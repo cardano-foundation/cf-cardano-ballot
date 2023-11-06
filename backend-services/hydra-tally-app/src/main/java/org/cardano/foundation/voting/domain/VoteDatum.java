@@ -15,7 +15,7 @@ public class VoteDatum {
 
     private String eventId;
 
-    private String organiser;
+    private String organisers;
 
     private String voteId;
 

@@ -16,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.domain.TallyType;
-import org.cardano.foundation.voting.domain.VotingEventType;
 import org.cardanofoundation.hydra.core.HydraException;
 import org.cardanofoundation.hydra.core.utils.HexUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,10 +64,7 @@ public class PlutusScriptLoader {
     private List<String> verificationKeys;
 
     @Getter
-    private String organisers;
-
-    @Getter
-    private VotingEventType votingEventType;
+    private ChainFollowerClient.EventDetailsResponse eventDetails;
 
     @PostConstruct
     public void init() throws IOException {
@@ -88,6 +84,8 @@ public class PlutusScriptLoader {
 
         var eventDetailsResponse = eventDetailsResponseM.orElseThrow();
 
+        this.eventDetails = eventDetailsResponse;
+
         var tally = eventDetailsResponse.findTallyByName(tallyName)
                 .orElseThrow(() -> new HydraException("Tally not found on ledger follower service, tallyName:" + tallyName));
 
@@ -98,7 +96,6 @@ public class PlutusScriptLoader {
         var hydraTally = (ChainFollowerClient.HydraTallyConfig) tally.config();
 
         this.parametrisedCompiledTemplate = hydraTally.compiledScript();
-        this.organisers = eventDetailsResponse.organisers();
         var compiledScriptHash = hydraTally.compiledScriptHash();
 
         log.info("Plutus contract hash: {}", compiledScriptHash);
@@ -127,7 +124,7 @@ public class PlutusScriptLoader {
                 BytesPlutusData.of(blake2bHash224(tallyName.getBytes(UTF_8))),
                 verificationKeys,
                 BytesPlutusData.of(eventId),
-                BytesPlutusData.of(organisers),
+                BytesPlutusData.of(eventDetails.organisers()),
                 BytesPlutusData.of(categoryId)
         );
         val compiledCode = applyParamToScript(params, parametrisedCompiledTemplate);

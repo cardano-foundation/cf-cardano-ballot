@@ -81,7 +81,7 @@ public class HydraVoteBatcher {
                                       String contractOrganiser,
                                       String contractCategoryId,
                                       int batchSize) throws CborSerializationException {
-        val contract = plutusScriptLoader.getContract(contractEventId, contractOrganiser, contractCategoryId);
+        val contract = plutusScriptLoader.getContract(contractCategoryId);
         val contractAddress = plutusScriptLoader.getContractAddress(contract);
 
         //log.info("Contract Address: {}", contractAddress);
@@ -128,7 +128,7 @@ public class HydraVoteBatcher {
 
         val wallet = walletSupplier.getWallet();
         val sender = wallet.getBech32Address(network);
-        val contract = plutusScriptLoader.getContract(contractEventId, contractOrganiser, contractCategoryId);
+        val contract = plutusScriptLoader.getContract(contractCategoryId);
         val contractAddress = plutusScriptLoader.getContractAddress(contract);
         val senderVerificationKeyBlake224 = getKeyHash(wallet.getVerificationKey());
 

@@ -43,8 +43,7 @@ public class LocalVoteRepository implements VoteRepository {
                         "voting_power",
                         "voted_at_slot",
                         "created_at",
-                        "updated_at",
-                        "organiser"
+                        "updated_at"
                         )
                 .build();
 
@@ -59,7 +58,6 @@ public class LocalVoteRepository implements VoteRepository {
             var proposalId = vote.get("proposal_id");
             var voterStakeAddress = vote.get("voter_stake_address");
             var votingPower = Optional.ofNullable(vote.get("voting_power"));
-            var organiser = vote.get("organiser");
 
             if (!voteEventId.equals(eventId)) {
                 continue;
@@ -68,7 +66,6 @@ public class LocalVoteRepository implements VoteRepository {
             var voteE = Vote.create(
                     voteId,
                     voteEventId,
-                    organiser,
                     categoryId,
                     proposalId,
                     voterStakeAddress,

@@ -57,9 +57,7 @@ public class HydraVoteImporter {
     @Autowired
     private Network network;
 
-    public Either<Problem, String> importVotes(String contractEventId,
-                                               VotingEventType votingEventType,
-                                               String contractOrganiser,
+    public Either<Problem, String> importVotes(VotingEventType votingEventType,
                                                List<Vote> votes) throws Exception {
         log.info("Importing number: {} votes", votes.size());
 
@@ -84,7 +82,7 @@ public class HydraVoteImporter {
 
                     return VoteDatum.builder()
                                     .eventId(vote.eventId())
-                                    .organiser(vote.organiser())
+                                    .organiser(plutusScriptLoader.getOrganisers())
                                     .voteId(vote.voteId().toString())
                                     .voterKey(vote.voterStakeAddress())
                                     .categoryId(vote.categoryId())
@@ -99,7 +97,7 @@ public class HydraVoteImporter {
 
         for (val voteDatum : voteDatumList) {
             val categoryId = voteDatum.getCategoryId();
-            val contract = plutusScriptLoader.getContract(contractEventId, contractOrganiser, categoryId);
+            val contract = plutusScriptLoader.getContract(categoryId);
             val contractAddress = plutusScriptLoader.getContractAddress(contract);
 
             val datum = voteDatumConverter.toPlutusData(voteDatum);

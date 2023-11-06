@@ -19,14 +19,4 @@ public class TallyCommand {
 
     private final Object config;
 
-    public enum TallyType {
-        HYDRA,
-    }
-
-    public enum TallyMode {
-        CENTRALISED,
-        FEDERATED,
-        DECENTRALISED
-    }
-
 }

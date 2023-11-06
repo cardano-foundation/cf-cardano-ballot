@@ -20,7 +20,8 @@ import org.springframework.shell.jline.PromptProvider;
 @SpringBootApplication
 @ComponentScan(basePackages = {
 		"org.cardano.foundation.voting.service",
-		"org.cardano.foundation.voting.config"
+		"org.cardano.foundation.voting.config",
+		"org.cardano.foundation.voting.client",
 })
 @EnableCommand
 @CommandScan(basePackages = { "org.cardano.foundation.voting.shell" })

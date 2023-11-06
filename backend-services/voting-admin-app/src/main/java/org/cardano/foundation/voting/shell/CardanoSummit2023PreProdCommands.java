@@ -18,10 +18,9 @@ import java.util.stream.Stream;
 
 import static org.cardano.foundation.voting.domain.CardanoNetwork.PREPROD;
 import static org.cardano.foundation.voting.domain.SchemaVersion.V11;
-import static org.cardano.foundation.voting.domain.TallyCommand.TallyMode.CENTRALISED;
-import static org.cardano.foundation.voting.domain.TallyCommand.TallyType.HYDRA;
+import static org.cardano.foundation.voting.domain.TallyMode.CENTRALISED;
+import static org.cardano.foundation.voting.domain.TallyType.HYDRA;
 import static org.cardano.foundation.voting.domain.VotingEventType.USER_BASED;
-import static org.cardano.foundation.voting.utils.MoreUUID.shortUUID;
 
 @ShellComponent
 @Slf4j
@@ -44,7 +43,7 @@ public class CardanoSummit2023PreProdCommands {
         log.info("Creating CF-Summit 2023 on a PRE-PROD network...");
 
         long startSlot = 43096000;
-        long endSlot = startSlot + (4 * 86400L);
+        long endSlot = startSlot + 60;
 
         var partiesVerificationKeys = Stream.of(
                 "582071fa3a7188a0076f54f90445e572aada05626beda5067e6dcc5afd0ecd7bb3b3",
@@ -76,7 +75,8 @@ public class CardanoSummit2023PreProdCommands {
         );
 
         var createEventCommand = CreateEventCommand.builder()
-                .id(EVENT_NAME + "_" + shortUUID(4))
+                //.id(EVENT_NAME + "_" + shortUUID(4))
+                .id(EVENT_NAME + "_" + "4BCC")
                 .startSlot(Optional.of(startSlot))
                 .endSlot(Optional.of(endSlot))
                 .votingPowerAsset(Optional.empty())

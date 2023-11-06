@@ -13,7 +13,6 @@ public record Vote(
         UUID voteId,
         String eventId,
         String categoryId,
-        String organiser,
         UUID proposalId,
         String voterStakeAddressBech32,
         byte[] voterStakeAddress,
@@ -23,7 +22,6 @@ public record Vote(
 
     public static Either<Problem, Vote> create(String voteId,
                                                String eventId,
-                                               String organiser,
                                                String categoryId,
                                                String proposalId,
                                                String voterStakeAddressBech32,
@@ -66,10 +64,9 @@ public record Vote(
                 UUID.fromString(voteId),
                 eventId,
                 categoryId,
-                organiser,
                 UUID.fromString(proposalId),
                 voterStakeAddressBech32,
-                addrAsByteArray.get(),
+                addrAsByteArray.orElseThrow(),
                 votingPower.map(Long::parseLong),
                 coseSignature,
                 cosePublicKey

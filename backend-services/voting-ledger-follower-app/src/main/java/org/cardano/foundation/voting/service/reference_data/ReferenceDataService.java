@@ -7,7 +7,6 @@ import org.cardano.foundation.voting.domain.EventAdditionalInfo;
 import org.cardano.foundation.voting.domain.entity.Category;
 import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.domain.entity.Proposal;
-import org.cardano.foundation.voting.domain.entity.Tally;
 import org.cardano.foundation.voting.repository.CategoryRepository;
 import org.cardano.foundation.voting.repository.EventRepository;
 import org.cardano.foundation.voting.repository.ProposalRepository;
@@ -67,6 +66,12 @@ public class ReferenceDataService {
         return eventRepository.saveAndFlush(event);
     }
 
+    @Timed(value = "service.reference.removeEvent", histogram = true)
+    @Transactional
+    public void removeEvent(Event event) {
+        eventRepository.delete(event);
+    }
+
     @Timed(value = "service.reference.findAllValidEvents", histogram = true)
     @Transactional(readOnly = true)
     public List<Event> findAllValidEvents() {
@@ -88,6 +93,12 @@ public class ReferenceDataService {
     @Transactional
     public Category storeCategory(Category category) {
         return categoryRepository.saveAndFlush(category);
+    }
+
+    @Timed(value = "service.reference.removeCategory", histogram = true)
+    @Transactional
+    public void removeCategory(Category category) {
+        categoryRepository.delete(category);
     }
 
     @Timed(value = "service.reference.rollback", histogram = true)

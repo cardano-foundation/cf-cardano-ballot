@@ -7,16 +7,17 @@ import com.bloxbean.cardano.client.api.exception.ApiRuntimeException;
 import com.bloxbean.cardano.client.api.model.ProtocolParams;
 import com.bloxbean.cardano.client.api.model.Utxo;
 import com.bloxbean.cardano.client.common.model.Network;
-import com.bloxbean.cardano.client.crypto.Blake2bUtil;
-import com.bloxbean.cardano.client.crypto.KeyGenUtil;
-import com.bloxbean.cardano.client.crypto.VerificationKey;
 import com.bloxbean.cardano.client.plutus.spec.*;
 import com.bloxbean.cardano.client.transaction.spec.Transaction;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import jakarta.annotation.PostConstruct;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.cardano.foundation.voting.client.ChainFollowerClient;
+import org.cardano.foundation.voting.domain.TallyType;
+import org.cardano.foundation.voting.domain.VotingEventType;
+import org.cardanofoundation.hydra.core.HydraException;
 import org.cardanofoundation.hydra.core.utils.HexUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,49 +50,73 @@ public class PlutusScriptLoader {
     @Autowired
     private ResourceLoader resourceLoader;
 
-    @Value("${plutus.contract.path}")
-    private String plutusCodePath;
+    @Autowired
+    private ChainFollowerClient chainFollowerClient;
 
-    @Value("${operators.verification.keys}")
-    private List<String> operatorVerificationKeys;
+    @Value("${ballot.event.id}")
+    private String eventId;
 
     @Value("${ballot.tally.name}")
     private String tallyName;
 
     private String parametrisedCompiledTemplate;
 
+    @Getter
+    private List<String> verificationKeys;
+
+    @Getter
+    private String organisers;
+
+    @Getter
+    private VotingEventType votingEventType;
+
     @PostConstruct
     public void init() throws IOException {
-        if (operatorVerificationKeys.isEmpty()) {
-            throw new RuntimeException("No operator verification keys configured!");
+        var eventDetailsE = chainFollowerClient.getEventDetails(eventId);
+
+        if (eventDetailsE.isEmpty()) {
+            var issue = eventDetailsE.swap().get();
+
+            throw new HydraException("Error while retrieving event, issue:" + issue);
         }
 
-        var plutusFileAsString = resourceLoader.getResource(plutusCodePath)
-                .getInputStream();
+        var eventDetailsResponseM = eventDetailsE.get();
 
-        var validatorsNode =  ((ArrayNode) objectMapper.readTree(plutusFileAsString).get("validators"));
-        this.parametrisedCompiledTemplate = validatorsNode.get(0).get("compiledCode").asText();
-        String hash = validatorsNode.get(0).get("hash").asText();
+        if (eventDetailsResponseM.isEmpty()) {
+            throw new HydraException("Event not found on ledger follower service, eventId:" + eventId);
+        }
 
-        log.info("Operator verification keys: {}", operatorVerificationKeys);
+        var eventDetailsResponse = eventDetailsResponseM.orElseThrow();
 
-        log.info("Contract Hash: {}", hash);
+        var tally = eventDetailsResponse.findTallyByName(tallyName)
+                .orElseThrow(() -> new HydraException("Tally not found on ledger follower service, tallyName:" + tallyName));
+
+        if (tally.type() != TallyType.HYDRA) {
+            throw new HydraException("Tally type is not HYDRA, tallyName:" + tallyName);
+        }
+
+        var hydraTally = (ChainFollowerClient.HydraTallyConfig) tally.config();
+
+        this.parametrisedCompiledTemplate = hydraTally.compiledScript();
+        this.organisers = eventDetailsResponse.organisers();
+        var compiledScriptHash = hydraTally.compiledScriptHash();
+
+        log.info("Plutus contract hash: {}", compiledScriptHash);
+
+        this.verificationKeys = hydraTally.verificationKeys();
+
+        log.info("Operator verification keys: {}", verificationKeys);
     }
 
     public String getContractAddress(PlutusScript plutusScript) {
         return getEntAddress(plutusScript, network).toBech32();
     }
 
-    public PlutusScript getContract(String eventId,
-                                    String organiser,
-                                    String categoryId) {
-
+    public PlutusScript getContract(String categoryId) {
         ListPlutusData.ListPlutusDataBuilder builder = ListPlutusData.builder();
 
-        builder.plutusDataList(this.operatorVerificationKeys
+        builder.plutusDataList(this.verificationKeys
                 .stream()
-                .map(VerificationKey::new)
-                .map(KeyGenUtil::getKeyHash)
                 .map(HexUtils::decodeHexString)
                 .map(blake224Hash -> (PlutusData) BytesPlutusData.of(blake224Hash))
                 .toList());
@@ -102,7 +127,7 @@ public class PlutusScriptLoader {
                 BytesPlutusData.of(blake2bHash224(tallyName.getBytes(UTF_8))),
                 verificationKeys,
                 BytesPlutusData.of(eventId),
-                BytesPlutusData.of(organiser),
+                BytesPlutusData.of(organisers),
                 BytesPlutusData.of(categoryId)
         );
         val compiledCode = applyParamToScript(params, parametrisedCompiledTemplate);

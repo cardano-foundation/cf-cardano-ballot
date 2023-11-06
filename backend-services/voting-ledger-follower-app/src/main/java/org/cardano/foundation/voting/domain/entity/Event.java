@@ -22,7 +22,6 @@ import static org.cardano.foundation.voting.domain.VotingEventType.STAKE_BASED;
 @Builder
 @RequiredArgsConstructor
 @AllArgsConstructor
-@Immutable
 public class Event extends AbstractTimestampEntity {
 
     @Getter
@@ -34,7 +33,7 @@ public class Event extends AbstractTimestampEntity {
     @Column(nullable = false)
     @Getter
     @Setter
-    private String organisers; // e.g. CF
+    private String organisers;
 
     @Column(name = "event_type", nullable = false)
     @Getter
@@ -132,6 +131,7 @@ public class Event extends AbstractTimestampEntity {
         name = "event_tally",
         joinColumns = @JoinColumn(name = "event_id")
     )
+    @Builder.Default
     private List<Tally> tallies = new ArrayList<>();
 
     public Optional<Category> findCategoryByName(String categoryName) {

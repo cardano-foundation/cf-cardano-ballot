@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static org.cardano.foundation.voting.domain.TallyCommand.TallyType.HYDRA;
+import static org.cardano.foundation.voting.domain.TallyType.HYDRA;
 import static org.cardano.foundation.voting.domain.VotingEventType.*;
 
 @Service

@@ -10,7 +10,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 import static org.cardano.foundation.voting.domain.OnChainEventType.EVENT_REGISTRATION;
-import static org.cardano.foundation.voting.domain.TallyCommand.TallyType.HYDRA;
+import static org.cardano.foundation.voting.domain.TallyType.HYDRA;
 import static org.cardano.foundation.voting.domain.VotingEventType.*;
 import static org.cardano.foundation.voting.utils.MoreBoolean.toBigInteger;
 

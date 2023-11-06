@@ -7,6 +7,7 @@ import org.cardano.foundation.voting.domain.SchemaVersion;
 import org.cardano.foundation.voting.domain.VotingEventType;
 import org.cardano.foundation.voting.domain.VotingPowerAsset;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,6 +54,6 @@ public class EventRegistrationEnvelope {
     private Optional<Integer> proposalsRevealEpoch = Optional.empty();
 
     @Builder.Default
-    private List<TallyRegistrationEnvelope> tallies = List.of();
+    private List<TallyRegistrationEnvelope> tallies = new ArrayList<>();
 
 }

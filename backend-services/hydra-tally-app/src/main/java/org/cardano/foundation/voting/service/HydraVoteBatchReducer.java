@@ -81,7 +81,7 @@ public class HydraVoteBatchReducer {
                                       String contractOrganiser,
                                       String contractCategoryId,
                                       int batchSize) throws CborSerializationException {
-        val contract = plutusScriptLoader.getContract(contractEventId, contractOrganiser, contractCategoryId);
+        val contract = plutusScriptLoader.getContract(contractCategoryId);
 
         Either<Problem, Optional<String>> transactionResultE;
         do {
@@ -114,7 +114,7 @@ public class HydraVoteBatchReducer {
                                                                          String contractOrganiser,
                                                                          String contractCategoryId,
                                                                          int batchSize) throws CborSerializationException {
-        val contract = plutusScriptLoader.getContract(contractEventId, contractOrganiser, contractCategoryId);
+        val contract = plutusScriptLoader.getContract(contractCategoryId);
         val contractAddress = plutusScriptLoader.getContractAddress(contract);
 
         val wallet = walletSupplier.getWallet();

@@ -29,7 +29,7 @@ public class VoteUtxoFinder {
                                             String contractOrganiser,
                                             String contractCategoryId,
                                             int batchSize) {
-        val contract = plutusScriptLoader.getContract(contractEventId, contractOrganiser, contractCategoryId);
+        val contract = plutusScriptLoader.getContract(contractCategoryId);
         val contractAddress = plutusScriptLoader.getContractAddress(contract);
 
         return utxoSupplier.getAll(contractAddress)
@@ -58,7 +58,7 @@ public class VoteUtxoFinder {
                                                                 String organiser,
                                                                 String contractCategoryId,
                                                                 int batchSize) {
-        val contract = plutusScriptLoader.getContract(eventId, organiser, contractCategoryId);
+        val contract = plutusScriptLoader.getContract(contractCategoryId);
         val contractAddress = plutusScriptLoader.getContractAddress(contract);
 
         return utxoSupplier.getAll(contractAddress)

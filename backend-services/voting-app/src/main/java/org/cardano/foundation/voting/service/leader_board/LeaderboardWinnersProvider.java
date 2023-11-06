@@ -18,9 +18,9 @@ public class LeaderboardWinnersProvider {
 
     public LeaderboardWinnersService getWinnerLeaderboardSource(WinnerLeaderboardSource winnerLeaderboardSource) {
         return switch (winnerLeaderboardSource) {
-            case DB:
+            case db:
                 yield dbLeaderboardWinnersService;
-            case L1:
+            case l1:
                 yield l1LeaderboardWinnersService;
         };
     }

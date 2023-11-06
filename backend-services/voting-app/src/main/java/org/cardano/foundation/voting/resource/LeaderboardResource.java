@@ -1,6 +1,7 @@
 package org.cardano.foundation.voting.resource;
 
 import io.micrometer.core.annotation.Timed;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.WinnerLeaderboardSource;
 import org.cardano.foundation.voting.service.leader_board.HighLevelLeaderBoardService;
@@ -16,10 +17,11 @@ import org.zalando.problem.Status;
 import java.util.Optional;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
-import static org.cardano.foundation.voting.domain.WinnerLeaderboardSource.DB;
+import static org.cardano.foundation.voting.domain.WinnerLeaderboardSource.db;
 import static org.cardano.foundation.voting.resource.Headers.XForceLeaderBoardResults;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
+import static org.zalando.problem.Status.NOT_FOUND;
 
 @RestController
 @RequestMapping("/api/leaderboard")
@@ -122,7 +124,7 @@ public class LeaderboardResource {
                                                              @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = "false") boolean forceLeaderboardResults,
                                                              @RequestParam(name = "source") Optional<WinnerLeaderboardSource> winnerLeaderboardSourceM
     ) {
-        var winnerLeaderboardSource = winnerLeaderboardSourceM.orElse(DB);
+        var winnerLeaderboardSource = winnerLeaderboardSourceM.orElse(db);
 
         var cacheControl = CacheControl.maxAge(1, MINUTES)
                 .noTransform()
@@ -194,8 +196,8 @@ public class LeaderboardResource {
     public ResponseEntity<?> getCategoryLeaderBoard(@PathVariable("eventId") String eventId,
                                                     @PathVariable("categoryId") String categoryId,
                                                     @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = "false") boolean forceLeaderboardResults,
-                                                    @RequestParam(name = "source") Optional<WinnerLeaderboardSource> winnerLeaderboardSourceM) {
-        var winnerLeaderboardSource = winnerLeaderboardSourceM.orElse(DB);
+                                                    @Valid @RequestParam(name = "source") Optional<WinnerLeaderboardSource> winnerLeaderboardSourceM) {
+        var winnerLeaderboardSource = winnerLeaderboardSourceM.orElse(db);
 
         var cacheControl = CacheControl.maxAge(1, MINUTES)
                 .noTransform()
@@ -214,11 +216,25 @@ public class LeaderboardResource {
                                     .cacheControl(cacheControl)
                                     .body(problem);
                         },
-                        response -> {
+                        proposalsInCategoryStatsM -> {
+                            if (proposalsInCategoryStatsM.isEmpty()) {
+
+                                var problem = Problem.builder()
+                                        .withTitle("VOTING_RESULTS_NOT_YET_AVAILABLE")
+                                        .withDetail("Leaderboard not yet available for event: " + eventId)
+                                        .withStatus(NOT_FOUND)
+                                        .build();
+
+                                return ResponseEntity
+                                        .status(problem.getStatus().getStatusCode())
+                                        .cacheControl(cacheControl)
+                                        .body(problem);
+                            }
+
                             return ResponseEntity
                                     .ok()
                                     .cacheControl(cacheControl)
-                                    .body(response);
+                                    .body(proposalsInCategoryStatsM.orElseThrow());
                         }
                 );
     }

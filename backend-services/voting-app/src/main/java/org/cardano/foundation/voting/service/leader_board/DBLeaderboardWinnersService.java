@@ -26,7 +26,7 @@ public class DBLeaderboardWinnersService extends AbstractWinnersService implemen
 
     @Override
     @Transactional(readOnly = true)
-    public Either<Problem, Leaderboard.ByProposalsInCategoryStats> getCategoryLeaderboard(String event, String category, boolean forceLeaderboard) {
+    public Either<Problem, Optional<Leaderboard.ByProposalsInCategoryStats>> getCategoryLeaderboard(String event, String category, boolean forceLeaderboard) {
         var eventDetailsE = chainFollowerClient.getEventDetails(event);
         if (eventDetailsE.isEmpty()) {
             return Either.left(Problem.builder()
@@ -93,10 +93,10 @@ public class DBLeaderboardWinnersService extends AbstractWinnersService implemen
 
         var proposalResults = calcProposalsResults(categoryDetails, proposalResultsMap, eventDetails);
 
-        return Either.right(Leaderboard.ByProposalsInCategoryStats.builder()
+        return Either.right(Optional.of(Leaderboard.ByProposalsInCategoryStats.builder()
                 .category(categoryDetails.id())
                 .proposals(proposalResults)
-                .build()
+                .build())
         );
     }
 

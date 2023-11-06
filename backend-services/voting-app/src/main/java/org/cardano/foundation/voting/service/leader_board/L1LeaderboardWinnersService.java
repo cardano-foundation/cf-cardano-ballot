@@ -1,16 +1,17 @@
 package org.cardano.foundation.voting.service.leader_board;
 
 import io.vavr.control.Either;
-import lombok.RequiredArgsConstructor;
+import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.domain.Leaderboard;
+import org.cardano.foundation.voting.domain.TallyType;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.toMap;
-import static org.cardano.foundation.voting.domain.VotingEventType.USER_BASED;
 import static org.zalando.problem.Status.*;
 
 @Service
@@ -18,7 +19,7 @@ import static org.zalando.problem.Status.*;
 public class L1LeaderboardWinnersService extends AbstractWinnersService implements LeaderboardWinnersService {
 
     @Override
-    public Either<Problem, Leaderboard.ByProposalsInCategoryStats> getCategoryLeaderboard(String event,
+    public Either<Problem, Optional<Leaderboard.ByProposalsInCategoryStats>> getCategoryLeaderboard(String event,
                                                                                           String category,
                                                                                           boolean forceLeaderboard) {
         var eventDetailsE = chainFollowerClient.getEventDetails(event);
@@ -30,8 +31,8 @@ public class L1LeaderboardWinnersService extends AbstractWinnersService implemen
                     .build()
             );
         }
-        var maybeEventDetails = eventDetailsE.get();
-        if (maybeEventDetails.isEmpty()) {
+        var eventDetailsResponseM = eventDetailsE.get();
+        if (eventDetailsResponseM.isEmpty()) {
             return Either.left(Problem.builder()
                     .withTitle("UNRECOGNISED_EVENT")
                     .withDetail("Unrecognised event, event:" + event)
@@ -39,22 +40,10 @@ public class L1LeaderboardWinnersService extends AbstractWinnersService implemen
                     .build()
             );
         }
-        var eventDetails = maybeEventDetails.orElseThrow();
+        var eventDetails = eventDetailsResponseM.orElseThrow();
 
-        // for now we only support user based voting via Hydra and L1 Leaderboard winners service
-        // contract needs to be modified to support vote count and voting power based voting
-        if (eventDetails.votingEventType() != USER_BASED) {
-            return Either.left(Problem.builder()
-                    .withTitle("VOTING_EVENT_TYPE_NOT_SUPPORTED")
-                    .withDetail("Voting event type not supported, event:" + event + ", votingEventType:" + eventDetails.votingEventType())
-                    .withStatus(BAD_REQUEST)
-                    .build()
-            );
-        }
-
-        var maybeCategory = eventDetails.categoryDetailsById(category);
-
-        if (maybeCategory.isEmpty()) {
+        var categoryM = eventDetails.categoryDetailsById(category);
+        if (categoryM.isEmpty()) {
             return Either.left(Problem.builder()
                     .withTitle("UNRECOGNISED_CATEGORY")
                     .withDetail("Unrecognised category, category:" + category)
@@ -62,7 +51,7 @@ public class L1LeaderboardWinnersService extends AbstractWinnersService implemen
                     .build()
             );
         }
-        var categoryDetails = maybeCategory.orElseThrow();
+        var categoryDetails = categoryM.orElseThrow();
 
         var categoryLeaderboardAvailableE = isCategoryLeaderboardAvailable(eventDetails, forceLeaderboard);
         if (categoryLeaderboardAvailableE.isEmpty()) {
@@ -79,12 +68,32 @@ public class L1LeaderboardWinnersService extends AbstractWinnersService implemen
             );
         }
 
+        var hydraTallyNameM = findFirstHydraTallyName(eventDetails);
+
+        if (hydraTallyNameM.isEmpty()) {
+            return Either.left(Problem.builder()
+                    .withTitle("UNRECOGNISED_TALLY")
+                    .withDetail("Unrecognised tally, tally:" + "Hydra Tally Experiment")
+                    .withStatus(NO_CONTENT)
+                    .build()
+            );
+        }
+
+        ChainFollowerClient.Tally tally = hydraTallyNameM.orElseThrow();
+
         var votingResultsE = chainFollowerClient.getVotingResults(
                 eventDetails.id(),
-                categoryDetails.id()
+                categoryDetails.id(),
+                tally.name()
         );
 
         if (votingResultsE.isEmpty()) {
+            var issue = votingResultsE.swap().get();
+
+            if (issue.getStatus().getStatusCode() == 404) {
+                return Either.right(Optional.empty());
+            }
+
             return Either.left(Problem.builder()
                     .withTitle("ERROR_GETTING_VOTING_RESULTS")
                     .withDetail("Unable to get voting results from chain-tip follower service, event:" + event + ", category:" + category)
@@ -95,15 +104,42 @@ public class L1LeaderboardWinnersService extends AbstractWinnersService implemen
 
         var votingResults = votingResultsE.get();
 
-        return Either.right(Leaderboard.ByProposalsInCategoryStats.builder()
-                .category(category)
-                .proposals(votingResults.results().entrySet().stream().collect(toMap(Map.Entry::getKey, e -> {
-                    var votes = e.getValue();
+        return switch (eventDetails.votingEventType()) {
+            case STAKE_BASED, BALANCE_BASED -> {
+                yield Either.right(Optional.of(Leaderboard.ByProposalsInCategoryStats.builder()
+                        .category(category)
+                        .proposals(votingResults.results().entrySet().stream().collect(toMap(Map.Entry::getKey, e -> {
+                            var score = e.getValue();
 
-                    return new Leaderboard.Votes(votes, "0"); // TODO support for voting power from L1 data
-                }))).build()
-        );
+                            var b = Leaderboard.Votes.builder();
+                            b.votingPower(String.valueOf(score));
+                            b.votes(0); // TODO support for vote count from L1 data
 
+                            return b.build();
+                        }))).build()
+                ));
+            }
+            case USER_BASED -> {
+                yield Either.right(Optional.of(Leaderboard.ByProposalsInCategoryStats.builder()
+                        .category(category)
+                        .proposals(votingResults.results().entrySet().stream().collect(toMap(Map.Entry::getKey, e -> {
+                            var score = e.getValue();
+
+                            var b = Leaderboard.Votes.builder();
+                            b.votes(score);
+                            b.votingPower("0");
+
+                            return b.build();
+                        }))).build()
+                ));
+            }
+        };
+    }
+
+    private Optional<ChainFollowerClient.Tally> findFirstHydraTallyName(ChainFollowerClient.EventDetailsResponse eventDetailsResponse) {
+        return eventDetailsResponse.tallies().stream()
+                .filter(tally -> tally.type() == TallyType.HYDRA)
+                .findFirst();
     }
 
 }

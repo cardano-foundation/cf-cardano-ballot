@@ -382,7 +382,7 @@ public class CustomMetadataProcessor {
         }
         var commitmentsEnvelope = maybeCommitmentsEnvelope.orElseThrow();
 
-        Map<String, Map<String, String>> revelantCommitments = findOutRevelantCommitments(commitmentsEnvelope.getCommitments());
+        var revelantCommitments = findOutRelevantEvents(commitmentsEnvelope.getCommitments());
 
         var merkleRootHashes = new ArrayList<MerkleRootHash>();
         for (var eventId : revelantCommitments.keySet()) {
@@ -417,7 +417,7 @@ public class CustomMetadataProcessor {
     /**
      * We are only interested in commitments based on events we are binding into
      */
-    private Map<String, Map<String, String>> findOutRevelantCommitments(Map<String, Map<String, String>> commitments) {
+    private Map<String, Map<String, String>> findOutRelevantEvents(Map<String, Map<String, String>> commitments) {
         return commitments.entrySet()
                 .stream()
                 .filter(entry -> bindOnEventIds.contains(entry.getKey()))

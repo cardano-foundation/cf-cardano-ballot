@@ -254,7 +254,7 @@ describe('For ongoing event:', () => {
     historyPushSpy.mockRestore();
   });
 
-  test('should have leaderboard link disabled if there is no tip fetched', async () => {
+  test('should not have leaderboard link disabled if there is no tip fetched', async () => {
     mockUseCardano.mockReset();
     mockUseCardano.mockReturnValue(useCardanoMock_notConnected);
 
@@ -270,15 +270,15 @@ describe('For ongoing event:', () => {
     const header = await screen.findByTestId('header');
 
     const leaderboardLink = within(header).queryByTestId('leaderboard-link');
-    expect(leaderboardLink.closest('button')).toHaveAttribute('disabled');
+    expect(leaderboardLink.closest('button')).not.toHaveAttribute('disabled');
     expect(screen.queryByTestId('result-comming-soon-modal')).toBeNull();
 
     await act(async () => {
       fireEvent.click(leaderboardLink);
     });
     const confirmModal = screen.queryByTestId('result-comming-soon-modal');
-    expect(confirmModal).toBeNull();
-    expect(mockGetChainTip).not.toHaveBeenCalled();
+    expect(confirmModal).not.toBeNull();
+    expect(mockGetChainTip).toHaveBeenCalled();
   });
 
   test('should display toast if fetch chain tip request failed', async () => {
@@ -331,10 +331,10 @@ describe("For the event that hasn't started yet", () => {
       expect(headerLogo).not.toBeNull();
 
       const leaderboardLink = within(header).queryByTestId('leaderboard-link');
-      expect(leaderboardLink).toBeNull();
+      expect(leaderboardLink).not.toBeNull();
 
       const voteLink = within(header).queryByTestId('vote-link');
-      expect(voteLink).toBeNull();
+      expect(voteLink).not.toBeNull();
 
       const connectWalletButton = within(header).queryByTestId('connect-wallet-button');
       expect(connectWalletButton).not.toBeNull();
@@ -439,8 +439,8 @@ describe('When there is no event:', () => {
       expect(header).not.toBeNull();
 
       const headerActions = within(header).queryByTestId('header-actions');
-      expect(within(headerActions).queryByTestId('vote-link')).toBeNull();
-      expect(within(headerActions).queryByTestId('leaderboard-link')).toBeNull();
+      expect(within(headerActions).queryByTestId('vote-link')).not.toBeNull();
+      expect(within(headerActions).queryByTestId('leaderboard-link')).not.toBeNull();
     });
   });
 });

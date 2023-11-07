@@ -8,7 +8,6 @@ import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined';
 import BlockIcon from '@mui/icons-material/Block';
 import LeaderboardIcon from '@mui/icons-material/Leaderboard';
 import { ROUTES } from 'common/routes';
-import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import { RootState } from 'common/store';
 import { getDateAndMonth } from 'common/utils/dateUtils';
 import * as voteService from 'common/api/voteService';
@@ -23,11 +22,9 @@ import styles from './HeaderActions.module.scss';
 type HeaderActionsProps = {
   onClick?: () => void;
   isMobileMenu?: boolean;
-  showNavigationItems?: boolean;
 };
 
-export const HeaderActions = ({ isMobileMenu = false, onClick, showNavigationItems }: HeaderActionsProps) => {
-  const { isConnected } = useCardano();
+export const HeaderActions = ({ isMobileMenu = false, onClick }: HeaderActionsProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -54,10 +51,8 @@ export const HeaderActions = ({ isMobileMenu = false, onClick, showNavigationIte
   }, [dispatch]);
 
   useEffect(() => {
-    if (isConnected) {
-      fetchChainTip();
-    }
-  }, [fetchChainTip, isConnected]);
+    fetchChainTip();
+  }, [fetchChainTip]);
 
   const goToLeaderboard = () => {
     navigate(ROUTES.LEADERBOARD);
@@ -86,43 +81,41 @@ export const HeaderActions = ({ isMobileMenu = false, onClick, showNavigationIte
         direction={{ xs: 'column', md: 'row' }}
         container
       >
-        {showNavigationItems && (
-          <>
-            <Grid
-              width={{ xs: '100% !important', md: 'auto !important' }}
-              container
+        <>
+          <Grid
+            width={{ xs: '100% !important', md: 'auto !important' }}
+            container
+          >
+            <Button
+              data-testid="vote-link"
+              onClick={onClick}
+              component={Link}
+              to={ROUTES.VOTE}
+              className={cn(styles.button, { [styles.activeRoute]: !!matchPath(location?.pathname, ROUTES.VOTE) })}
+              startIcon={<CheckBoxOutlinedIcon />}
+              disabled={!event}
             >
-              <Button
-                data-testid="vote-link"
-                onClick={onClick}
-                component={Link}
-                to={ROUTES.VOTE}
-                className={cn(styles.button, { [styles.activeRoute]: !!matchPath(location?.pathname, ROUTES.VOTE) })}
-                startIcon={<CheckBoxOutlinedIcon />}
-                disabled={!event}
-              >
-                Your Ballot
-              </Button>
-            </Grid>
-            <Grid
-              width={{ xs: '100% !important', md: 'auto !important' }}
-              container
+              Your Ballot
+            </Button>
+          </Grid>
+          <Grid
+            width={{ xs: '100% !important', md: 'auto !important' }}
+            container
+          >
+            <Button
+              data-testid="leaderboard-link"
+              onClick={() => onGoToLeaderboard()}
+              sx={{ xs: { width: '100% !important' }, md: { width: 'auto !important' } }}
+              className={cn(styles.button, {
+                [styles.activeRoute]: !!matchPath(location?.pathname, ROUTES.LEADERBOARD),
+              })}
+              startIcon={<LeaderboardIcon />}
+              disabled={!event || !tip}
             >
-              <Button
-                data-testid="leaderboard-link"
-                onClick={() => onGoToLeaderboard()}
-                sx={{ xs: { width: '100% !important' }, md: { width: 'auto !important' } }}
-                className={cn(styles.button, {
-                  [styles.activeRoute]: !!matchPath(location?.pathname, ROUTES.LEADERBOARD),
-                })}
-                startIcon={<LeaderboardIcon />}
-                disabled={!event || !tip}
-              >
-                Leaderboard
-              </Button>
-            </Grid>
-          </>
-        )}
+              Leaderboard
+            </Button>
+          </Grid>
+        </>
         <Typography
           className={cn(styles.walletButtonWrapper, { [styles.walletButtonWrapperMobile]: isMobileMenu })}
           variant="body2"

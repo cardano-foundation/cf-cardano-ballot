@@ -23,6 +23,7 @@ cf-cardano-ballot-ui:
     categoryId: "CIP-1694_Pre_Ratification"
     googleGormUrl: "https://docs.google.com/forms/u/0/d/e/1FAIpQLSe-dSU0-bi8bjk0wiOaRXj02nxYLvgnpKBgc-eYGRpPYO-y5Q"
     googleFormVoteContextInputName: "entry.75173622"
+    eventUri: "https://1694ballot.cardano.org"
     ingress:
       additionalDomains:
         - 1694ballot.cardano.org

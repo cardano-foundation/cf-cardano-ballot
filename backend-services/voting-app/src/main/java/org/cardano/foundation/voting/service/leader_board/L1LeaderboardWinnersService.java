@@ -104,35 +104,43 @@ public class L1LeaderboardWinnersService extends AbstractWinnersService implemen
 
         var votingResults = votingResultsE.get();
 
-        return switch (eventDetails.votingEventType()) {
+        var byProposalsInCategoryStatsM = switch (eventDetails.votingEventType()) {
             case STAKE_BASED, BALANCE_BASED -> {
-                yield Either.right(Optional.of(Leaderboard.ByProposalsInCategoryStats.builder()
+                var proposalResults = votingResults.results().entrySet().stream().collect(toMap(Map.Entry::getKey, e -> {
+                    var score = e.getValue();
+
+                    var b = Leaderboard.Votes.builder();
+                    b.votingPower(String.valueOf(score));
+                    b.votes(0); // TODO support for vote count from L1 data
+
+                    return b.build();
+                }));
+
+                yield Optional.of(Leaderboard.ByProposalsInCategoryStats.builder()
                         .category(category)
-                        .proposals(votingResults.results().entrySet().stream().collect(toMap(Map.Entry::getKey, e -> {
-                            var score = e.getValue();
-
-                            var b = Leaderboard.Votes.builder();
-                            b.votingPower(String.valueOf(score));
-                            b.votes(0); // TODO support for vote count from L1 data
-
-                            return b.build();
-                        }))).build()
-                ));
+                        .proposals(reInitialiseResultsToEmptyIfMissing(categoryDetails, proposalResults, eventDetails))
+                        .build()
+                );
             }
             case USER_BASED -> {
-                yield Either.right(Optional.of(Leaderboard.ByProposalsInCategoryStats.builder()
+                var proposalResults = votingResults.results().entrySet().stream().collect(toMap(Map.Entry::getKey, e -> {
+                    var score = e.getValue();
+
+                    var b = Leaderboard.Votes.builder();
+                    b.votes(score);
+
+                    return b.build();
+                }));
+
+                yield Optional.of(Leaderboard.ByProposalsInCategoryStats.builder()
                         .category(category)
-                        .proposals(votingResults.results().entrySet().stream().collect(toMap(Map.Entry::getKey, e -> {
-                            var score = e.getValue();
-
-                            var b = Leaderboard.Votes.builder();
-                            b.votes(score);
-
-                            return b.build();
-                        }))).build()
-                ));
+                        .proposals(reInitialiseResultsToEmptyIfMissing(categoryDetails, proposalResults, eventDetails))
+                        .build()
+                );
             }
         };
+
+        return Either.right(byProposalsInCategoryStatsM);
     }
 
     private Optional<ChainFollowerClient.Tally> findFirstHydraTallyName(ChainFollowerClient.EventDetailsResponse eventDetailsResponse) {

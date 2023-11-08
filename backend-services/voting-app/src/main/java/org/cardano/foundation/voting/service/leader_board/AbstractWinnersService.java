@@ -1,11 +1,14 @@
 package org.cardano.foundation.voting.service.leader_board;
 
 import io.vavr.control.Either;
-import lombok.AllArgsConstructor;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
+import org.cardano.foundation.voting.domain.Leaderboard;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.zalando.problem.Status.BAD_REQUEST;
 import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
@@ -62,6 +65,30 @@ public class AbstractWinnersService {
         }
 
         return Either.right(eventDetails.proposalsReveal());
+    }
+
+    protected static Map<String, Leaderboard.Votes> reInitialiseResultsToEmptyIfMissing(ChainFollowerClient.CategoryDetailsResponse categoryDetails,
+                                                                                        Map<String, Leaderboard.Votes> proposalResultsMap,
+                                                                                        ChainFollowerClient.EventDetailsResponse eventDetails) {
+        var categoryProposals = categoryDetails.proposals();
+
+        var proposalResultsMapCopy = new HashMap<>(proposalResultsMap);
+
+        categoryProposals.forEach(proposalDetails -> {
+            if (!proposalResultsMap.containsKey(proposalDetails.id())) {
+                var b = Leaderboard.Votes.builder();
+
+                b.votes(0L);
+
+                switch (eventDetails.votingEventType()) {
+                    case BALANCE_BASED, STAKE_BASED -> b.votingPower("0");
+                }
+
+                proposalResultsMapCopy.put(proposalDetails.id(), b.build());
+            }
+        });
+
+        return proposalResultsMapCopy;
     }
 
 }

@@ -1,7 +1,6 @@
 package org.cardano.foundation.voting.service.leader_board;
 
 import io.vavr.control.Either;
-import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.domain.Leaderboard;
 import org.cardano.foundation.voting.repository.VoteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -91,36 +89,11 @@ public class DBLeaderboardWinnersService extends AbstractWinnersService implemen
                     return b.build();
                 }));
 
-        var proposalResults = calcProposalsResults(categoryDetails, proposalResultsMap, eventDetails);
-
         return Either.right(Optional.of(Leaderboard.ByProposalsInCategoryStats.builder()
                 .category(categoryDetails.id())
-                .proposals(proposalResults)
+                .proposals(reInitialiseResultsToEmptyIfMissing(categoryDetails, proposalResultsMap, eventDetails))
                 .build())
         );
-    }
-
-    private static HashMap<String, Leaderboard.Votes> calcProposalsResults(ChainFollowerClient.CategoryDetailsResponse categoryDetails,
-                                                                           Map<String, Leaderboard.Votes> proposalResultsMap,
-                                                                           ChainFollowerClient.EventDetailsResponse eventDetails) {
-        var categoryProposals = categoryDetails.proposals();
-
-        var proposalResultsMapCopy = new HashMap<>(proposalResultsMap);
-
-        categoryProposals.forEach(proposalDetails -> {
-            if (!proposalResultsMap.containsKey(proposalDetails.id())) {
-                var b = Leaderboard.Votes.builder();
-
-                b.votes(0L);
-
-                switch (eventDetails.votingEventType()) {
-                    case BALANCE_BASED, STAKE_BASED -> b.votingPower("0");
-                }
-
-                proposalResultsMapCopy.put(proposalDetails.id(), b.build());
-            }
-        });
-        return proposalResultsMapCopy;
     }
 
 }

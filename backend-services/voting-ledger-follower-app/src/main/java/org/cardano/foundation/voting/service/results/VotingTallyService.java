@@ -6,12 +6,11 @@ import io.vavr.control.Either;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.cardano.foundation.voting.domain.CategoryResultsDatum;
 import org.cardano.foundation.voting.domain.CategoryResultsDatumConverter;
 import org.cardano.foundation.voting.domain.TallyResults;
-import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataUtxoStateReader;
 import org.cardano.foundation.voting.service.plutus.PlutusScriptLoader;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
+import org.cardano.foundation.voting.service.utxo.EventResultsUtxoDataService;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 
@@ -30,7 +29,9 @@ public class VotingTallyService {
 
     private final CategoryResultsDatumConverter categoryResultsDatumConverter;
 
-    private final BlockchainDataUtxoStateReader blockchainDataUtxoStateReader;
+    private final EventResultsUtxoDataService eventResultsUtxoDataService;
+
+    private final PlutusScriptLoader plutusScriptLoader;
 
     private final Network network;
 
@@ -92,69 +93,50 @@ public class VotingTallyService {
 
         var hydraTally = tally.getHydraTallyConfig();
 
-        var verificationKeys = hydraTally.getVerificationKeysAsList();
-        var compiledContractTemplate = hydraTally.getCompiledScript();
+        var plutusScriptM = plutusScriptLoader.compileScriptBy(eventDetails, categoryId, tallyName);
 
-        var scriptLoader = PlutusScriptLoader.builder()
-                .eventId(eventDetails.getId())
-                .categoryId(categoryId)
-                .organiser(eventDetails.getOrganisers())
-                .verificationKeys(verificationKeys)
-                .tallyName(tallyName)
-                .parametrisedCompiledTemplate(compiledContractTemplate)
-                .build();
-
-        var compiledScript = scriptLoader.getCompiledScript();
-
-        var contractAddress = scriptLoader.getContractAddress(compiledScript, network);
-
-        var uTxOsE = blockchainDataUtxoStateReader.getUTxOs(contractAddress, verificationKeys);
-
-        if (uTxOsE.isEmpty()) {
-            return Either.left(uTxOsE.getLeft());
+        if (plutusScriptM.isEmpty()) {
+            return Either.left(Problem.builder()
+                    .withTitle("UNRECOGNISED_TALLY")
+                    .withDetail("Unrecognised tally, tally:" + tallyName)
+                    .withStatus(BAD_REQUEST)
+                    .build()
+            );
         }
 
-        var uTxOs = uTxOsE.get();
+        var plutusScript = plutusScriptM.orElseThrow();
 
-        if (uTxOs.isEmpty()) {
+        var contractAddress = plutusScriptLoader.getContractAddress(plutusScript, network);
+
+        var resultsUtxoM = eventResultsUtxoDataService.findLastValidResult(contractAddress);
+
+        if (resultsUtxoM.isEmpty()) {
             return Either.right(Optional.empty());
         }
 
-        var categoryResultsDatumM = uTxOs.stream()
-                .filter(utxo -> utxo.getInlineDatum().isPresent())
-                .map(utxo -> utxo.getInlineDatum().get())
-                .map(inlineDatum -> {
-                    try {
-                        return Optional.of(categoryResultsDatumConverter.deserialize(inlineDatum));
-                    } catch (Exception e) {
-                        log.warn("Unable to deserialize inline datum to CategoryResultsDatum", e);
+        var resultsUtxo = resultsUtxoM.get();
 
-                        return Optional.<CategoryResultsDatum>empty();
-                    }
-                })
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .findFirst();
+        var categoryResultsDatum = categoryResultsDatumConverter.deserialize(resultsUtxo.getInlineDatum());
 
-        return Either.right(categoryResultsDatumM.map(categoryResultsDatum -> {
-            return TallyResults.builder()
-                    .tallyName(tallyName)
-                    .tallyDescription(tally.getDescription())
-                    .tallyType(tally.getType())
-                    .eventId(categoryResultsDatum.getEventId())
-                    .categoryId(categoryResultsDatum.getCategoryId())
-                    .results(categoryResultsDatum.getResults())
-                    .metadata(Map.of(
-                            "contractAddress", contractAddress,
-                            "contractName", hydraTally.getContractName(),
-                            "contractVersion", hydraTally.getContractVersion(),
-                            "contractHash", hydraTally.getCompiledScriptHash(),
-                            "compilerName", hydraTally.getCompilerName(),
-                            "compilerVersion", hydraTally.getCompilerVersion(),
-                            "plutusVersion", hydraTally.getPlutusVersion())
-                    )
-                    .build();
-        }));
+        var tallyResults = TallyResults.builder()
+                .tallyName(tallyName)
+                .tallyDescription(tally.getDescription())
+                .tallyType(tally.getType())
+                .eventId(categoryResultsDatum.getEventId())
+                .categoryId(categoryResultsDatum.getCategoryId())
+                .results(categoryResultsDatum.getResults())
+                .metadata(Map.of(
+                        "contractAddress", contractAddress,
+                        "contractName", hydraTally.getContractName(),
+                        "contractVersion", hydraTally.getContractVersion(),
+                        "contractHash", hydraTally.getCompiledScriptHash(),
+                        "compilerName", hydraTally.getCompilerName(),
+                        "compilerVersion", hydraTally.getCompilerVersion(),
+                        "plutusVersion", hydraTally.getPlutusVersion())
+                )
+                .build();
+
+        return Either.right(Optional.of(tallyResults));
     }
 
 }

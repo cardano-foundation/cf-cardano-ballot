@@ -1,19 +1,21 @@
 package org.cardano.foundation.voting.service.rollback;
 
 import com.bloxbean.cardano.yaci.store.events.RollbackEvent;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.cardano.foundation.voting.service.utxo.EventResultsUtxoDataService;
+import org.cardano.foundation.voting.service.vote.MerkleRootHashService;
 import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
-@Service
+@RequiredArgsConstructor
 public class RollbackHandler {
 
-    @Autowired
-    private ReferenceDataService referenceDataService;
+    private final EventResultsUtxoDataService eventResultsUtxoDataService;
+    private final ReferenceDataService referenceDataService;
+    private final MerkleRootHashService merkleRootHashService;
 
     @EventListener
     @Transactional
@@ -22,6 +24,8 @@ public class RollbackHandler {
 
         long rollbackToSlot = rollbackEvent.getRollbackTo().getSlot();
 
+        eventResultsUtxoDataService.rollbackAfterSlot(rollbackToSlot);
+        merkleRootHashService.rollbackAfterSlot(rollbackToSlot);
         referenceDataService.rollbackReferenceDataAfterSlot(rollbackToSlot);
 
         log.info("Rollbacked handled.");

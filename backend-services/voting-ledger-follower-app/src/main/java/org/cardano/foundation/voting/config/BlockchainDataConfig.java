@@ -16,14 +16,6 @@ import org.springframework.context.annotation.Profile;
 @Configuration
 public class BlockchainDataConfig {
 
-    // TODO move reading UTxO state from Yaci's backend service
-    @Bean
-    public BlockchainDataUtxoStateReader blockchainDataUtxoStateReader(
-            @Qualifier("original_blockfrost") BackendService backendService
-    ) {
-        return new BackendServiceBlockchainDataUtxoStateReader(backendService);
-    }
-
     @Bean
     public BlockchainDataChainTipService blockchainDataChainTipService(CardanoNetwork network,
                                                                        @Qualifier("yaci_blockfrost") BackendService backendService,

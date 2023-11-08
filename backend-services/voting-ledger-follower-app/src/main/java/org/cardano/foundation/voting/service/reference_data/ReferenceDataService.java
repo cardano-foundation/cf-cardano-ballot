@@ -9,6 +9,7 @@ import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.domain.entity.Proposal;
 import org.cardano.foundation.voting.repository.CategoryRepository;
 import org.cardano.foundation.voting.repository.EventRepository;
+import org.cardano.foundation.voting.repository.MerkleRootHashRepository;
 import org.cardano.foundation.voting.repository.ProposalRepository;
 import org.cardano.foundation.voting.service.expire.EventAdditionalInfoService;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import java.util.Optional;
 @Slf4j
 @RequiredArgsConstructor
 public class ReferenceDataService {
+    private final MerkleRootHashRepository merkleRootHashRepository;
 
     private final EventRepository eventRepository;
 

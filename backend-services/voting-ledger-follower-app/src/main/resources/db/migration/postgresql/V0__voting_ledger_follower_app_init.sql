@@ -106,3 +106,23 @@ CREATE INDEX idx_merkle_root_hash_event_id_and_id
 
 CREATE INDEX idx_merkle_root_hash_rollback
     ON merkle_root_hash(absolute_slot);
+
+DROP TABLE IF EXISTS utxo_category_result;
+
+CREATE TABLE utxo_category_result (
+    id VARCHAR(255) NOT NULL,
+    address VARCHAR(255) NOT NULL,
+    tx_hash VARCHAR(255) NOT NULL,
+    index INT NOT NULL,
+    inline_datum TEXT NOT NULL,
+    datum_hash VARCHAR(255),
+    absolute_slot BIGINT NOT NULL,
+
+    CONSTRAINT pk_utxo_category_result PRIMARY KEY (id)
+);
+
+CREATE INDEX idx_utxo_category_result_address
+    ON utxo_category_result(address);
+
+CREATE INDEX idx_utxo_category_result_rollback
+    ON utxo_category_result(absolute_slot);

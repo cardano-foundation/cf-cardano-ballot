@@ -382,10 +382,10 @@ public class CustomMetadataProcessor {
         }
         var commitmentsEnvelope = maybeCommitmentsEnvelope.orElseThrow();
 
-        var revelantCommitments = findOutRelevantEvents(commitmentsEnvelope.getCommitments());
+        var relevantCommitments = findOutRelevantEvents(commitmentsEnvelope.getCommitments());
 
         var merkleRootHashes = new ArrayList<MerkleRootHash>();
-        for (var eventId : revelantCommitments.keySet()) {
+        for (var eventId : relevantCommitments.keySet()) {
             var maybeStoredEvent = referenceDataService.findEventByName(eventId);
             if (maybeStoredEvent.isEmpty()) {
                 log.info("Event not found, ignoring commitment, id: {}", eventId);
@@ -402,11 +402,12 @@ public class CustomMetadataProcessor {
                     .eventId(eventId)
                     .merkleRootHash(maybeEventCommitment.orElseThrow())
                     .absoluteSlot(slot)
-                    .build());
+                    .build()
+            );
         }
 
         if (merkleRootHashes.isEmpty()) {
-            log.info("No actual commitments (merkle root hashes) found in the actual on-chain COMMITMENTS event.");
+            //log.info("No actual commitments (merkle root hashes) found in the actual on-chain COMMITMENTS event.");
 
             return Optional.empty();
         }

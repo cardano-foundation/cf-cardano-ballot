@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static jakarta.persistence.EnumType.STRING;
+import static jakarta.persistence.FetchType.EAGER;
 import static org.cardano.foundation.voting.domain.VotingEventType.BALANCE_BASED;
 import static org.cardano.foundation.voting.domain.VotingEventType.STAKE_BASED;
 
@@ -111,7 +112,7 @@ public class Event extends AbstractTimestampEntity {
     @OneToMany(
             mappedBy = "event",
             cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER,
+            fetch = EAGER,
             orphanRemoval = true
     )
     @Builder.Default
@@ -126,7 +127,7 @@ public class Event extends AbstractTimestampEntity {
 
     @Setter
     @Getter
-    @ElementCollection
+    @ElementCollection(fetch = EAGER)
     @CollectionTable(
         name = "event_tally",
         joinColumns = @JoinColumn(name = "event_id")

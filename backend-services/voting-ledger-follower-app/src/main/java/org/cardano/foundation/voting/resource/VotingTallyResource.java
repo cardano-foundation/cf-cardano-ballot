@@ -14,6 +14,7 @@ import org.zalando.problem.Problem;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.zalando.problem.Status.BAD_REQUEST;
+import static org.zalando.problem.Status.NOT_FOUND;
 
 @RestController
 @RequestMapping("/api/tally/voting-results")
@@ -43,7 +44,7 @@ public class VotingTallyResource {
                                 var problem = Problem.builder()
                                         .withTitle("NO_RESULTS_FOUND")
                                         .withDetail("No results found for event: " + eventId + " and category: " + categoryId)
-                                        .withStatus(BAD_REQUEST)
+                                        .withStatus(NOT_FOUND)
                                         .build();
 
                                 return ResponseEntity

@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.Optional;
-
 @Data
 @Builder
 public class Utxo {
@@ -20,7 +18,6 @@ public class Utxo {
     private int txIndex;
 
     @JsonProperty("inline_datum")
-    @Builder.Default
-    private Optional<String> inlineDatum = Optional.empty();
+    private String inlineDatum;
 
 }

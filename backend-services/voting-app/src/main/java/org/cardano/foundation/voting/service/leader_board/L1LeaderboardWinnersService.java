@@ -127,7 +127,6 @@ public class L1LeaderboardWinnersService extends AbstractWinnersService implemen
 
                             var b = Leaderboard.Votes.builder();
                             b.votes(score);
-                            b.votingPower("0");
 
                             return b.build();
                         }))).build()

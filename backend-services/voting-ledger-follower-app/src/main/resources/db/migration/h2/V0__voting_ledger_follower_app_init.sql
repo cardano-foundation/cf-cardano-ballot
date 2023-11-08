@@ -116,8 +116,8 @@ CREATE TABLE utxo_category_result (
     tx_hash VARCHAR(255) NOT NULL,
     index INT NOT NULL,
     inline_datum TEXT NOT NULL,
-    datum_hash VARCHAR(255),
     absolute_slot BIGINT NOT NULL,
+    witnesses TEXT NOT NULL,
 
     CONSTRAINT pk_utxo_category_result PRIMARY KEY (id)
 );

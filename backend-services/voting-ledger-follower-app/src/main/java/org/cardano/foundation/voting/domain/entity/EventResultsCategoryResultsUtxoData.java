@@ -1,6 +1,5 @@
 package org.cardano.foundation.voting.domain.entity;
 
-import com.bloxbean.cardano.client.util.HexUtil;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -9,9 +8,6 @@ import lombok.*;
 
 import java.util.Arrays;
 import java.util.List;
-
-import static com.bloxbean.cardano.client.crypto.KeyGenUtil.getKeyHash;
-import static com.bloxbean.cardano.client.util.HexUtil.decodeHexString;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -41,18 +37,12 @@ public class EventResultsCategoryResultsUtxoData {
     @Column(name = "absolute_slot", nullable = false)
     private long absoluteSlot;
 
-    @Column(name = "witnesses", nullable = false, columnDefinition = "text", length = 2048)
-    private String witnesses;
+    // blake2b 224 hashes of the verification keys of the witnesses
+    @Column(name = "witnesses_hashes", nullable = false, columnDefinition = "text", length = 2048)
+    private String witnessesHashes;
 
-    public List<String> getWitnessesAsList() {
-        return Arrays.asList(witnesses.split(":"));
-    }
-
-    public List<String> getWitnessHashesesAsList() {
-        return getWitnessesAsList()
-                .stream()
-                .map(witness -> getKeyHash(decodeHexString(witness)))
-                .toList();
+    public List<String> getWitnessesHashes() {
+        return Arrays.asList(witnessesHashes.split(":"));
     }
 
 }

@@ -42,7 +42,7 @@ public class PlutusScriptLoader {
 
         var tally = tallyM.orElseThrow();
         var hydraTallyConfig = tally.getHydraTallyConfig();
-        var verificationKeys = hydraTallyConfig.getVerificationKeysAsList();
+        var verificationKeys = hydraTallyConfig.getVerificationKeysHashesAsList();
 
         builder.plutusDataList(verificationKeys
                 .stream()

@@ -42,7 +42,7 @@ public class CardanoSummit2023PreProdCommands {
 
         log.info("Creating CF-Summit 2023 on a PRE-PROD network...");
 
-        long startSlot = 43096000;
+        long startSlot = 43760099;
         long endSlot = startSlot + 60;
 
         var partiesVerificationKeys = Stream.of(

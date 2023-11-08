@@ -58,12 +58,13 @@ public class HydraTally {
 
     @Getter
     @Setter
-    @Column(name = "hydra_tally_config__verification_keys", nullable = false, columnDefinition = "text", length = 1024)
+    @Column(name = "hydra_tally_config__verification_key_hashes", nullable = false, columnDefinition = "text", length = 1024)
+    //@Column(name = "hydra_tally_config__verification_key", nullable = false, columnDefinition = "text", length = 1024)
     // comma separated list of blake224 hashes of the verification keys
-    private String verificationKeys;
+    private String verificationKeyHashes;
 
-    public List<String> getVerificationKeysAsList() {
-        return Arrays.asList(verificationKeys.split(":"));
+    public List<String> getVerificationKeysHashesAsList() {
+        return Arrays.asList(verificationKeyHashes.split(":"));
     }
 
     public void setDescription(Optional<String> description) {

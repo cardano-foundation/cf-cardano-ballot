@@ -46,7 +46,7 @@ CREATE TABLE event_tally (
     hydra_tally_config__compiler_name VARCHAR(255) NOT NULL,
     hydra_tally_config__compiler_version VARCHAR(255) NOT NULL,
     hydra_tally_config__plutus_version VARCHAR(255) NOT NULL,
-    hydra_tally_config__verification_keys TEXT NOT NULL,
+    hydra_tally_config__verification_key_hashes TEXT NOT NULL,
 
     created_at TIMESTAMP WITHOUT TIME ZONE,
     updated_at TIMESTAMP WITHOUT TIME ZONE,
@@ -116,7 +116,7 @@ CREATE TABLE event_category_result_utxo_data (
     index INT NOT NULL,
     inline_datum TEXT NOT NULL,
     absolute_slot BIGINT NOT NULL,
-    witnesses TEXT NOT NULL,
+    witnesses_hashes TEXT NOT NULL,
 
     CONSTRAINT pk_event_category_result_utxo_data PRIMARY KEY (id)
 );

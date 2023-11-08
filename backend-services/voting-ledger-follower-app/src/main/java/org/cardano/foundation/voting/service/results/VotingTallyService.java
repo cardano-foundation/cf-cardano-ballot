@@ -113,14 +113,10 @@ public class VotingTallyService {
             return Either.right(Optional.empty());
         }
 
-        var foundValidEventResultsUtxoM = eventResultsUtxoDataServiceAllResults.stream()
-                .filter(resultsUtxo -> {
-                    return resultsUtxo.getWitnessHashesesAsList().stream().anyMatch(witness -> {
-                        var verificationKeyHashes = tally.getHydraTallyConfig().getVerificationKeysAsList();
+        var eventValidVerificationKeyHashes = tally.getHydraTallyConfig().getVerificationKeysHashesAsList();
 
-                        return verificationKeyHashes.stream().anyMatch(witness::contains);
-                    });
-                })
+        var foundValidEventResultsUtxoM = eventResultsUtxoDataServiceAllResults.stream()
+                .filter(resultsUtxo -> resultsUtxo.getWitnessesHashes().stream().anyMatch(eventValidVerificationKeyHashes::contains))
                 .findFirst();
 
         if (foundValidEventResultsUtxoM.isEmpty()) {

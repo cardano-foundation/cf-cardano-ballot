@@ -72,7 +72,7 @@ public class ReferencePresentationService {
                                     .compiledScript(hydraTally.getCompiledScript())
                                     .compiledScriptHash(hydraTally.getCompiledScriptHash())
                                     .contractVersion(hydraTally.getContractVersion())
-                                    .verificationKeys(hydraTally.getVerificationKeysAsList())
+                                    .verificationKeys(hydraTally.getVerificationKeysHashesAsList())
                                     .compilerName(hydraTally.getCompilerName())
                                     .plutusVersion(hydraTally.getPlutusVersion())
                                     .compilerVersion(hydraTally.getCompilerVersion())

@@ -95,7 +95,7 @@ public class EventResultsUtxoHandler {
         utxoCategoryResultsData.setIndex(utxo.getIndex());
         utxoCategoryResultsData.setInlineDatum(utxo.getInlineDatum());
         utxoCategoryResultsData.setAbsoluteSlot(txMetadata.getSlot());
-        utxoCategoryResultsData.setWitnesses(joiner.toString());
+        utxoCategoryResultsData.setWitnessesHashes(joiner.toString());
 
         return utxoCategoryResultsData;
     }

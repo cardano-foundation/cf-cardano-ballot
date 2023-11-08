@@ -232,7 +232,7 @@ public class CustomMetadataProcessor {
                 .compilerName(tallyConfig.getCompilerName())
                 .compilerVersion(tallyConfig.getCompilerVersion())
                 .plutusVersion(tallyConfig.getPlutusVersion())
-                .verificationKeys(String.join(":", tallyConfig.getVerificationKeys()))
+                .verificationKeyHashes(String.join(":", tallyConfig.getVerificationKeys()))
                 .build();
     }
 

@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
-import java.util.Map;
 import java.util.Optional;
 
 import static java.util.stream.Collectors.toMap;
@@ -74,7 +73,7 @@ public class DBLeaderboardWinnersService extends AbstractWinnersService implemen
 
         var votes = voteRepository.getCategoryLevelStats(event, categoryDetails.id());
 
-        Map<String, Leaderboard.Votes> proposalResultsMap = votes.stream()
+        var proposalResultsMap = votes.stream()
                 .collect(toMap(VoteRepository.CategoryLevelStats::getProposalId, v -> {
                     var totalVotesCount = Optional.ofNullable(v.getTotalVoteCount()).orElse(0L);
                     var totalVotingPower = Optional.ofNullable(v.getTotalVotingPower()).map(String::valueOf).orElse("0");

@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CategoryResultsDatum;
 import org.cardano.foundation.voting.domain.CategoryResultsDatumConverter;
-import org.cardano.foundation.voting.domain.entity.UtxoCategoryResultsData;
+import org.cardano.foundation.voting.domain.entity.EventResultsCategoryResultsUtxoData;
 import org.cardano.foundation.voting.service.utxo.EventResultsUtxoDataService;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -50,7 +50,7 @@ public class EventResultsUtxoHandler {
                             .map(VkeyWitness::getKey)
                             .toList();
 
-                    log.info("witness keys:" + keys);
+//                    log.info("witness keys:" + keys);
 
                     var keyHashes = trx.getWitnesses().getVkeyWitnesses()
                             .stream()
@@ -58,11 +58,11 @@ public class EventResultsUtxoHandler {
                             .map(this::getKeyHash)
                             .toList();
 
-                    log.info("witness keys (hashes):" + keyHashes);
+//                    log.info("witness keys (hashes):" + keyHashes);
 
                     var utxoCategoryResultsData = prepareUtxoCategoryResults(utxo, address, keyHashes, txMetadata);
 
-                    eventResultsUtxoDataService.storeUtxoData(utxoCategoryResultsData);
+                    eventResultsUtxoDataService.storeEventResultsUtxoData(utxoCategoryResultsData);
             };
         }
     } catch (Exception e) {
@@ -79,16 +79,16 @@ public class EventResultsUtxoHandler {
         return null;
     }
 
-    private static UtxoCategoryResultsData prepareUtxoCategoryResults(Utxo utxo,
-                                                                      String address,
-                                                                      List<String> witnesses,
-                                                                      EventMetadata txMetadata) {
+    private static EventResultsCategoryResultsUtxoData prepareUtxoCategoryResults(Utxo utxo,
+                                                                                  String address,
+                                                                                  List<String> witnesses,
+                                                                                  EventMetadata txMetadata) {
 
         var joiner = new StringJoiner(":");
         witnesses.forEach(joiner::add);
 
         log.info("Preparing utxo category results data for utxo:{}", utxo);
-        var utxoCategoryResultsData = new UtxoCategoryResultsData();
+        var utxoCategoryResultsData = new EventResultsCategoryResultsUtxoData();
         utxoCategoryResultsData.setId(utxo.getTxHash() + "#" + utxo.getIndex());
         utxoCategoryResultsData.setAddress(address);
         utxoCategoryResultsData.setTxHash(utxo.getTxHash());

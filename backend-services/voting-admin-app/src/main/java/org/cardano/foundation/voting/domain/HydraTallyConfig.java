@@ -19,7 +19,7 @@ public class HydraTallyConfig {
     private final String compilerName;
     private final String compilerVersion;
 
-    // verification keys as CBOR
+    // verification key hashes
     private final List<String> partiesVerificationKeys;
 
     private final String plutusVersion;

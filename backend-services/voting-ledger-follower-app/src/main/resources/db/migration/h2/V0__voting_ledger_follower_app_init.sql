@@ -110,7 +110,7 @@ CREATE INDEX idx_merkle_root_hash_rollback
 
 DROP TABLE IF EXISTS utxo_category_result;
 
-CREATE TABLE utxo_category_result (
+CREATE TABLE event_category_result_utxo_data (
     id VARCHAR(255) NOT NULL,
     address VARCHAR(255) NOT NULL,
     tx_hash VARCHAR(255) NOT NULL,
@@ -119,11 +119,11 @@ CREATE TABLE utxo_category_result (
     absolute_slot BIGINT NOT NULL,
     witnesses TEXT NOT NULL,
 
-    CONSTRAINT pk_utxo_category_result PRIMARY KEY (id)
+    CONSTRAINT pk_event_category_result_utxo_data PRIMARY KEY (id)
 );
 
 CREATE INDEX idx_utxo_category_result_address
-    ON utxo_category_result(address);
+    ON event_category_result_utxo_data(address);
 
 CREATE INDEX idx_utxo_category_result_rollback
-    ON utxo_category_result(absolute_slot);
+    ON event_category_result_utxo_data(absolute_slot);

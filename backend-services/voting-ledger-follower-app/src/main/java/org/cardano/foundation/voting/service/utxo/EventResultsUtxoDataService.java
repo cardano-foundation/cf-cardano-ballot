@@ -3,12 +3,12 @@ package org.cardano.foundation.voting.service.utxo;
 import io.micrometer.core.annotation.Timed;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.domain.entity.UtxoCategoryResultsData;
+import org.cardano.foundation.voting.domain.entity.EventResultsCategoryResultsUtxoData;
 import org.cardano.foundation.voting.repository.UtxoCategoryResultsDataRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -18,26 +18,27 @@ public class EventResultsUtxoDataService {
     private final UtxoCategoryResultsDataRepository utxoCategoryResultsDataRepository;
 
     @Transactional
-    @Timed(value = "service.utxo.store", histogram = true)
-    public void storeUtxoData(UtxoCategoryResultsData utxoCategoryResultsData) {
-        utxoCategoryResultsDataRepository.saveAndFlush(utxoCategoryResultsData);
+    @Timed(value = "service.results.store", histogram = true)
+    public void storeEventResultsUtxoData(EventResultsCategoryResultsUtxoData eventResultsCategoryResultsUtxoData) {
+        utxoCategoryResultsDataRepository.saveAndFlush(eventResultsCategoryResultsUtxoData);
     }
 
     @Transactional
-    @Timed(value = "service.utxo.getLastValidResult", histogram = true)
-    public Optional<UtxoCategoryResultsData> findLastValidResult(String contractAddress) {
+    @Timed(value = "service.results.findAllResults", histogram = true)
+    public List<EventResultsCategoryResultsUtxoData> findAllResults(String contractAddress) {
         return utxoCategoryResultsDataRepository.findByAddress(contractAddress)
-                .stream().max((utxoCategoryResultsData1, utxoCategoryResultsData2) -> {
-                    if (utxoCategoryResultsData1.getAbsoluteSlot() == utxoCategoryResultsData2.getAbsoluteSlot()) {
+                .stream().sorted((eventResultsCategoryResultsUtxoData1, eventResultsCategoryResultsUtxoData2) -> {
+                    if (eventResultsCategoryResultsUtxoData1.getAbsoluteSlot() == eventResultsCategoryResultsUtxoData2.getAbsoluteSlot()) {
                         return 0;
                     }
 
-                    return (utxoCategoryResultsData1.getAbsoluteSlot() > utxoCategoryResultsData2.getAbsoluteSlot()) ? 1 : -1;
-                });
+                    return (eventResultsCategoryResultsUtxoData1.getAbsoluteSlot() > eventResultsCategoryResultsUtxoData2.getAbsoluteSlot()) ? 1 : -1;
+                })
+                .toList();
     }
 
     @Transactional
-    @Timed(value = "service.utxo.rollbackAfterSlot", histogram = true)
+    @Timed(value = "service.results.rollbackAfterSlot", histogram = true)
     public int rollbackAfterSlot(long slot) {
         log.info("Rollbacking UtxoData after slot:{}", slot);
 

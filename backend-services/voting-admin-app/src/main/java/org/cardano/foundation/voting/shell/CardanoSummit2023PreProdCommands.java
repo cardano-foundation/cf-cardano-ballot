@@ -46,7 +46,7 @@ public class CardanoSummit2023PreProdCommands {
         long endSlot = startSlot + 60;
 
         var partiesVerificationKeys = Stream.of(
-                "582071fa3a7188a0076f54f90445e572aada05626beda5067e6dcc5afd0ecd7bb3b3",
+                "582007b16713dd36364b22bf2f594235bba8b38e209f2e3aea80b8ec982ee8c7db35",
                 "5820e5549f7ee1a6b40f5bf8c1ac6c3fcb4da43be4430c7c5148e815c43353ffbd1e"
                 )
                 .map(VerificationKey::new)
@@ -66,7 +66,7 @@ public class CardanoSummit2023PreProdCommands {
         );
 
         var tallyCommand = new TallyCommand(
-                "Hydra Tally Experiment",
+                "Hydra_Tally_Experiment",
                 "",
                 HYDRA,
                 CENTRALISED,

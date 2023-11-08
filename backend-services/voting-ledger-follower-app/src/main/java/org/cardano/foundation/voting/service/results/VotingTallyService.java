@@ -92,7 +92,6 @@ public class VotingTallyService {
         }
 
         var hydraTally = tally.getHydraTallyConfig();
-
         var plutusScriptM = plutusScriptLoader.compileScriptBy(eventDetails, categoryId, tallyName);
 
         if (plutusScriptM.isEmpty()) {
@@ -108,13 +107,27 @@ public class VotingTallyService {
 
         var contractAddress = plutusScriptLoader.getContractAddress(plutusScript, network);
 
-        var resultsUtxoM = eventResultsUtxoDataService.findLastValidResult(contractAddress);
+        var eventResultsUtxoDataServiceAllResults = eventResultsUtxoDataService.findAllResults(contractAddress);
 
-        if (resultsUtxoM.isEmpty()) {
+        if (eventResultsUtxoDataServiceAllResults.isEmpty()) {
             return Either.right(Optional.empty());
         }
 
-        var resultsUtxo = resultsUtxoM.get();
+        var foundValidEventResultsUtxoM = eventResultsUtxoDataServiceAllResults.stream()
+                .filter(resultsUtxo -> {
+                    return resultsUtxo.getWitnessHashesesAsList().stream().anyMatch(witness -> {
+                        var verificationKeyHashes = tally.getHydraTallyConfig().getVerificationKeysAsList();
+
+                        return verificationKeyHashes.stream().anyMatch(witness::contains);
+                    });
+                })
+                .findFirst();
+
+        if (foundValidEventResultsUtxoM.isEmpty()) {
+            return Either.right(Optional.empty());
+        }
+
+        var resultsUtxo = foundValidEventResultsUtxoM.orElseThrow();
 
         var categoryResultsDatum = categoryResultsDatumConverter.deserialize(resultsUtxo.getInlineDatum());
 

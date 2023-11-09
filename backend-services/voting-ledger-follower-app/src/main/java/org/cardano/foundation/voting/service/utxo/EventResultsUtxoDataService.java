@@ -27,7 +27,8 @@ public class EventResultsUtxoDataService {
     @Timed(value = "service.results.findAllResults", histogram = true)
     public List<EventResultsCategoryResultsUtxoData> findAllResults(String contractAddress) {
         return utxoCategoryResultsDataRepository.findByAddress(contractAddress)
-                .stream().sorted((eventResultsCategoryResultsUtxoData1, eventResultsCategoryResultsUtxoData2) -> {
+                .stream()
+                .sorted((eventResultsCategoryResultsUtxoData1, eventResultsCategoryResultsUtxoData2) -> {
                     if (eventResultsCategoryResultsUtxoData1.getAbsoluteSlot() == eventResultsCategoryResultsUtxoData2.getAbsoluteSlot()) {
                         return 0;
                     }

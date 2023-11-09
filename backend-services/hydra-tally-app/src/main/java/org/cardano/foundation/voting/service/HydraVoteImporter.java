@@ -29,7 +29,6 @@ import java.util.List;
 
 import static com.bloxbean.cardano.client.common.ADAConversionUtil.adaToLovelace;
 import static java.math.BigDecimal.ZERO;
-import static org.cardano.foundation.voting.utils.MoreFees.changeTransactionCost;
 
 @Component
 @Slf4j
@@ -134,8 +133,6 @@ public class HydraVoteImporter {
         txBuilderContext.setUtxoSelectionStrategy(new LargestFirstUtxoSelectionStrategy(utxoSupplier));
 
          val transaction = txBuilderContext.build(txBuilder);
-
-        changeTransactionCost(transaction);
 
         val signedTx = operator.getTxSigner().sign(transaction);
 

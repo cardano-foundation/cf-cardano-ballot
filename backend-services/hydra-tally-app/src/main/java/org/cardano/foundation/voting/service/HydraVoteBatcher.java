@@ -41,7 +41,6 @@ import static com.bloxbean.cardano.client.common.CardanoConstants.LOVELACE;
 import static com.bloxbean.cardano.client.crypto.KeyGenUtil.getKeyHash;
 import static com.bloxbean.cardano.client.plutus.spec.RedeemerTag.Spend;
 import static java.util.Collections.emptySet;
-import static org.cardano.foundation.voting.utils.MoreFees.changeTransactionCost;
 import static org.cardanofoundation.hydra.core.utils.HexUtils.decodeHexString;
 
 @Component
@@ -217,8 +216,6 @@ public class HydraVoteBatcher {
 
         val txBuilderContext = TxBuilderContext.init(utxoSupplier, protocolParamsSupplier);
         val transaction = txBuilderContext.build(txBuilder);
-
-        changeTransactionCost(transaction);
 
         val result = transactionProcessor.submitTransaction(wallet.getTxSigner().sign(transaction));
 

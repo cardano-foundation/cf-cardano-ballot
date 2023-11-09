@@ -20,7 +20,7 @@ const AwardsTile = ({ counter, title, categoryId }) => {
   const summit2023Proposals: ProposalContent[] = summit2023Category.proposals;
   const [awards, setAwards] = useState([]);
   const [loaded, setLoaded] = useState(false);
-
+  
   const init = useCallback(async () => {
     try {
       await leaderboardService.getCategoryLevelStats(categoryId).then((response) => {
@@ -40,7 +40,6 @@ const AwardsTile = ({ counter, title, categoryId }) => {
             item.rank = index + 1;
           }
         });
-
         setAwards(updatedAwards);
       });
       setLoaded(true);
@@ -70,6 +69,7 @@ const AwardsTile = ({ counter, title, categoryId }) => {
               avatar={
                 <Avatar
                   alt={title}
+                  sx={{filter: 'opacity(0.7)'}}
                   src={CATEGORY_IMAGES[counter]}
                 />
               }
@@ -92,7 +92,7 @@ const AwardsTile = ({ counter, title, categoryId }) => {
                       xs={12}
                       key={index}
                     >
-                      {proposal.rank === 1 && (
+                      {(proposal.rank === 1 && proposal.votes > 0 ) && (
                         <Card
                           key={index}
                           variant="outlined"
@@ -101,8 +101,8 @@ const AwardsTile = ({ counter, title, categoryId }) => {
                           <Box sx={{ display: 'flex', flexDirection: 'row' }}>
                             <Box className={styles.trophy}>
                               <img
-                                src="/static/wwcd.svg"
-                                style={{ width: 54, height: 60 }}
+                                src="/static/cardano-summit-award.png"
+                                style={{ width: 'auto', height: 94 }}
                               />
                             </Box>
                             <CardContent sx={{ flex: '1 0 auto' }}>
@@ -180,7 +180,6 @@ const AwardsTile = ({ counter, title, categoryId }) => {
               </Grid>
               {awards.map((proposal, index) => (
                 <React.Fragment key={index}>
-                  <div className={styles.divider} />
                   {proposal.rank !== 1 && (
                     <Grid
                       container
@@ -238,10 +237,14 @@ const AwardsTile = ({ counter, title, categoryId }) => {
                 sx={{
                   color: 'text.primary',
                   fontSize: 16,
-                  fontWeight: 700,
+                  fontWeight: 600,
                   textTransform: 'none',
                   width: '100%',
                   backgroundColor: '#acfcc5 !important',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: '10px',
+                  borderRadius: '8px',
                 }}
               >
                 {i18n.t('button.viewAllNominees')}

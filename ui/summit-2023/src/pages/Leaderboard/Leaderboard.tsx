@@ -151,8 +151,8 @@ const Leaderboard = () => {
       borderRadius: '40px',
       background: '#F5F9FF',
       boxShadow: '2px 2px 8px 0px rgba(67, 70, 86, 0.25)',
-      width: '429px',
-      height: '76px',
+      width: { xs: '100%', sm: '429px'},
+      height: { xs: '72px', sm: '76px' },
       margin: '0 auto',
     },
   };
@@ -268,9 +268,7 @@ const Leaderboard = () => {
               </Masonry>
             ) : (
               <Box sx={{ height: '20vw', justifyContent: 'center', textAlign: 'center' }}>
-                <Typography variant="h6">
-                  {i18n.t('leaderboard.tabs.tab1.tooltipText')}
-                </Typography>
+                <Typography variant="h6">{i18n.t('leaderboard.tabs.tab1.tooltipText')}</Typography>
               </Box>
             )}
           </TabPanel>
@@ -482,9 +480,7 @@ const Leaderboard = () => {
               </Masonry>
             ) : (
               <Box sx={{ height: '20vw', justifyContent: 'center', textAlign: 'center' }}>
-                <Typography variant="h6">
-                  {i18n.t('leaderboard.tabs.tab3.tooltipText')}
-                </Typography>
+                <Typography variant="h6">{i18n.t('leaderboard.tabs.tab3.tooltipText')}</Typography>
               </Box>
             )}
           </TabPanel>

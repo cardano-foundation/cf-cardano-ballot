@@ -102,7 +102,7 @@ const HydraTile = ({ counter, title, categoryId }) => {
               </Grid>
               {awards.slice(0, 2).map((proposal, index) => (
                 <React.Fragment key={index}>
-                  {proposal.rank === 1 && (
+                  {(proposal.rank === 1 && proposal.votes > 0 ) && (
                     <Grid
                       container
                       justifyContent="space-between"
@@ -137,10 +137,14 @@ const HydraTile = ({ counter, title, categoryId }) => {
                 sx={{
                   color: 'text.primary',
                   fontSize: 16,
-                  fontWeight: 700,
+                  fontWeight: 600,
                   textTransform: 'none',
                   width: '100%',
                   backgroundColor: '#acfcc5 !important',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: '10px',
+                  borderRadius: '8px',
                 }}
               >
                 {i18n.t('button.viewAllNominees')}

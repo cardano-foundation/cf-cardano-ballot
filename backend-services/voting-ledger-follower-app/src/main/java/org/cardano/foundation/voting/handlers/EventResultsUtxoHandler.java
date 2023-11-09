@@ -45,20 +45,11 @@ public class EventResultsUtxoHandler {
                         continue;
                     }
 
-                    var keys = trx.getWitnesses().getVkeyWitnesses()
-                            .stream()
-                            .map(VkeyWitness::getKey)
-                            .toList();
-
-//                    log.info("witness keys:" + keys);
-
                     var keyHashes = trx.getWitnesses().getVkeyWitnesses()
                             .stream()
                             .map(VkeyWitness::getKey)
                             .map(this::getKeyHash)
                             .toList();
-
-//                    log.info("witness keys (hashes):" + keyHashes);
 
                     var utxoCategoryResultsData = prepareUtxoCategoryResults(utxo, address, keyHashes, txMetadata);
 
@@ -83,7 +74,6 @@ public class EventResultsUtxoHandler {
                                                                                   String address,
                                                                                   List<String> witnesses,
                                                                                   EventMetadata txMetadata) {
-
         var joiner = new StringJoiner(":");
         witnesses.forEach(joiner::add);
 

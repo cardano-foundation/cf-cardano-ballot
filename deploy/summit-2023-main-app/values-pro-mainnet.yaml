@@ -114,11 +114,11 @@ cf-summit-2023-ledger-follower-api:
     corsAllowedOrigins: https://voting.summit.cardano.org,https://{{ .Values.domain }}
     instances:
       - name: follower-1
-        enabled: false
+        enabled: true
 #        imageTag: 0.2.37
         schemaName: follower_1
       - name: follower-2
-        enabled: false
+        enabled: true
 #        imageTag: 0.2.37
         schemaName: follower_2
       - name: follower-hydra-tally

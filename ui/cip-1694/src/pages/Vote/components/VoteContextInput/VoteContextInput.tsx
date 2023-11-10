@@ -21,7 +21,6 @@ export const VoteContextInput = ({ onChange, voteContext, maxChar = MAX_CHARS, d
     flexDirection="column"
     gap="20px"
     container
-    marginBottom={{ xs: '20px', md: '40px' }}
     data-testid="vote-context"
   >
     <Grid

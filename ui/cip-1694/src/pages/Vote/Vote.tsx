@@ -380,8 +380,8 @@ export const VotePage = () => {
             <Typography
               variant="h5"
               className={styles.description}
-              lineHeight={{ xs: '19px', md: '36px' }}
-              fontSize={{ xs: '16px', md: '28px' }}
+              lineHeight={{ xs: '19px', md: '24px' }}
+              fontSize={{ xs: '16px', md: '24px' }}
               data-testid="event-description"
             >
               {env.QUESTIONS[activeCategoryIndex]}
@@ -408,7 +408,10 @@ export const VotePage = () => {
             />
           </Grid>
           {couldAddContext && (
-            <Grid item>
+            <Grid
+              marginBottom={{ xs: '12px' }}
+              item
+            >
               <VoteContextInput
                 disabled={!optionId}
                 onChange={setVoteContext}
@@ -421,7 +424,7 @@ export const VotePage = () => {
               container
               direction={{ xs: 'column', md: 'row' }}
               justifyContent={'center'}
-              gap={{ xs: '0px', md: '51px' }}
+              gap={{ xs: '0px', md: '24px' }}
               wrap="nowrap"
             >
               <Grid
@@ -477,28 +480,73 @@ export const VotePage = () => {
                   </Button>
                 )}
                 {showSubmitButton && (
-                  <Button
-                    className={cn(styles.button, {
-                      [styles.disabled]: !optionId || !isReceiptFetched || !isTAndCAndPPChecked,
-                    })}
-                    size="large"
-                    variant="contained"
-                    disabled={
-                      !optionId || !isReceiptFetched || isCastingAVote || !tip?.absoluteSlot || !isTAndCAndPPChecked
-                    }
-                    onClick={() => handleSubmit()}
-                    data-testid="proposal-submit-button"
-                  >
-                    <span className={styles.buttonContent}>
-                      Submit your ballot
-                      {isCastingAVote && (
-                        <CircularProgress
-                          size={20}
-                          className={styles.loader}
+                  <>
+                    <FormControlLabel
+                      sx={{ alignContent: 'baseline' }}
+                      label={
+                        <div
+                          data-testid="submit-agreement"
+                          className={styles.submitLabel}
+                        >
+                          I have read and agree to the Cardano Ballot
+                          <span className={styles.link}>
+                            <a
+                              data-testid="t-and-c"
+                              type="application/pdf"
+                              href={TAndC}
+                              className={styles.underline}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              Terms & Conditions
+                            </a>
+                          </span>
+                          and
+                          <span className={styles.link}>
+                            <a
+                              data-testid="privacy"
+                              type="application/pdf"
+                              href={PrivacyPolicy}
+                              className={styles.underline}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              Privacy Policy.
+                            </a>
+                          </span>
+                        </div>
+                      }
+                      control={
+                        <Checkbox
+                          data-testid="submit-agreement-checkbox"
+                          checked={isTAndCAndPPChecked}
+                          onChange={({ target: { checked } }) => setIsTAndCAndPPChecked(!!checked)}
                         />
-                      )}
-                    </span>
-                  </Button>
+                      }
+                    />
+                    <Button
+                      className={cn(styles.button, {
+                        [styles.disabled]: !optionId || !isReceiptFetched || !isTAndCAndPPChecked,
+                      })}
+                      size="large"
+                      variant="contained"
+                      disabled={
+                        !optionId || !isReceiptFetched || isCastingAVote || !tip?.absoluteSlot || !isTAndCAndPPChecked
+                      }
+                      onClick={() => handleSubmit()}
+                      data-testid="proposal-submit-button"
+                    >
+                      <span className={styles.buttonContent}>
+                        Submit your ballot
+                        {isCastingAVote && (
+                          <CircularProgress
+                            size={20}
+                            className={styles.loader}
+                          />
+                        )}
+                      </span>
+                    </Button>
+                  </>
                 )}
                 {event?.notStarted && (
                   <Button
@@ -552,56 +600,7 @@ export const VotePage = () => {
             </Grid>
           </Grid>
         </Grid>
-        {showSubmitButton && (
-          <Grid
-            marginTop="12px"
-            item
-          >
-            <FormControlLabel
-              sx={{ alignContent: 'baseline' }}
-              label={
-                <div
-                  data-testid="submit-agreement"
-                  className={styles.submitLabel}
-                >
-                  I have read and agree to the Cardano Ballot
-                  <span className={styles.link}>
-                    <a
-                      data-testid="t-and-c"
-                      type="application/pdf"
-                      href={TAndC}
-                      className={styles.underline}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      Terms & Conditions
-                    </a>
-                  </span>
-                  and
-                  <span className={styles.link}>
-                    <a
-                      data-testid="privacy"
-                      type="application/pdf"
-                      href={PrivacyPolicy}
-                      className={styles.underline}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      Privacy Policy.
-                    </a>
-                  </span>
-                </div>
-              }
-              control={
-                <Checkbox
-                  data-testid="submit-agreement-checkbox"
-                  checked={isTAndCAndPPChecked}
-                  onChange={({ target: { checked } }) => setIsTAndCAndPPChecked(!!checked)}
-                />
-              }
-            />
-          </Grid>
-        )}
+
         <SidePage
           anchor="right"
           open={isToggledReceipt}

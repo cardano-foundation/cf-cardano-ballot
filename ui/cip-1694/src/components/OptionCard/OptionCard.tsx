@@ -52,7 +52,6 @@ export const OptionCard = ({
               xs={12}
               container
               direction={{ xs: 'row', md: 'column' }}
-              gap="15px"
               justifyContent={{ md: 'center', xs: 'flex-start' }}
               alignItems="center"
               height={{ xs: '62px', md: '138px' }}

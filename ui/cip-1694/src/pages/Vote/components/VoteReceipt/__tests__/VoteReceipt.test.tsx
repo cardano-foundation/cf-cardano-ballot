@@ -50,9 +50,16 @@ jest.mock('common/api/verificationService', () => ({
 }));
 
 describe('Ballot receipt:', () => {
+  const jsdomAlert = window.prompt;
+  beforeAll(() => {
+    window.prompt = (message?: string) => message;
+  });
   beforeEach(() => {
     jest.clearAllMocks();
     cleanup();
+  });
+  afterAll(() => {
+    window.prompt = jsdomAlert;
   });
   describe('should handle error scenarios:', () => {
     test('should display proper message if fails to verify ballot', async () => {

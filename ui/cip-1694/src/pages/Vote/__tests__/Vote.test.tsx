@@ -360,6 +360,10 @@ describe('For ongoing event:', () => {
       });
     });
 
+    await act(async () => {
+      fireEvent.click(within(votePage).queryByTestId('submit-agreement-checkbox'));
+    });
+
     const cta = within(votePage).queryByTestId('proposal-submit-button');
     await act(async () => {
       fireEvent.click(cta);
@@ -414,6 +418,26 @@ describe('For ongoing event:', () => {
       fireEvent.click(options[0]);
     });
 
+    const submitAgreement = within(votePage).queryByTestId('submit-agreement');
+    expect(submitAgreement).toHaveTextContent(
+      'I have read and agree to the Cardano BallotTerms & ConditionsandPrivacy Policy.'
+    );
+
+    const privacy = within(submitAgreement).queryByTestId('privacy');
+    expect(privacy).not.toBeNull();
+    expect(privacy.textContent).toEqual('Privacy Policy.');
+    expect(privacy.attributes.getNamedItem('href').value).toEqual('pdf');
+    expect(privacy.attributes.getNamedItem('type').value).toEqual('application/pdf');
+
+    const tAc = within(submitAgreement).queryByTestId('t-and-c');
+    expect(tAc).not.toBeNull();
+    expect(tAc.textContent).toEqual('Terms & Conditions');
+    expect(tAc.attributes.getNamedItem('href').value).toEqual('pdf');
+    expect(tAc.attributes.getNamedItem('type').value).toEqual('application/pdf');
+
+    const checkbox = within(votePage).queryByTestId('submit-agreement-checkbox');
+    expect(checkbox).not.toBeChecked();
+
     const cta = within(votePage).queryByTestId('proposal-submit-button');
     expect(cta).not.toBeNull();
 
@@ -429,7 +453,14 @@ describe('For ongoing event:', () => {
       });
     });
 
+    expect(cta.closest('button')).toBeDisabled();
+
+    await act(async () => {
+      fireEvent.click(checkbox);
+    });
+
     expect(cta.closest('button')).not.toBeDisabled();
+
     expect(mockGetVoteReceipt.mock.calls[0]).toEqual([eventMock_active.categories[0].id, accessToken]);
 
     expect(store.getState().user.isVoteSubmittedModalVisible).toBeFalsy();
@@ -501,7 +532,13 @@ describe('For ongoing event:', () => {
       fireEvent.click(options[0]);
     });
 
+    await act(async () => {
+      fireEvent.click(within(votePage).queryByTestId('submit-agreement-checkbox'));
+    });
+
     const cta = within(votePage).queryByTestId('proposal-submit-button');
+    expect(cta).not.toBeDisabled();
+
     await act(async () => {
       fireEvent.click(cta);
     });
@@ -565,6 +602,10 @@ describe('For ongoing event:', () => {
     });
 
     await act(async () => {
+      fireEvent.click(within(votePage).queryByTestId('submit-agreement-checkbox'));
+    });
+
+    await act(async () => {
       fireEvent.click(within(votePage).queryByTestId('proposal-submit-button'));
     });
 
@@ -617,6 +658,10 @@ describe('For ongoing event:', () => {
       fireEvent.change(screen.queryByTestId('vote-context-input').querySelector('textarea'), {
         target: { value: voteContext },
       });
+    });
+
+    await act(async () => {
+      fireEvent.click(within(votePage).queryByTestId('submit-agreement-checkbox'));
     });
 
     const cta = within(votePage).queryByTestId('proposal-submit-button');
@@ -679,6 +724,10 @@ describe('For ongoing event:', () => {
       });
     });
 
+    await act(async () => {
+      fireEvent.click(within(votePage).queryByTestId('submit-agreement-checkbox'));
+    });
+
     const cta = within(votePage).queryByTestId('proposal-submit-button');
 
     await act(async () => {
@@ -729,6 +778,10 @@ describe('For ongoing event:', () => {
 
     await act(async () => {
       fireEvent.click(options[0]);
+    });
+
+    await act(async () => {
+      fireEvent.click(within(votePage).queryByTestId('submit-agreement-checkbox'));
     });
 
     const cta = within(votePage).queryByTestId('proposal-submit-button');
@@ -796,6 +849,10 @@ describe('For ongoing event:', () => {
 
     await act(async () => {
       fireEvent.click(options[0]);
+    });
+
+    await act(async () => {
+      fireEvent.click(within(votePage).queryByTestId('submit-agreement-checkbox'));
     });
 
     const cta = within(votePage).queryByTestId('proposal-submit-button');
@@ -1083,6 +1140,10 @@ describe('For ongoing event:', () => {
       fireEvent.change(screen.queryByTestId('vote-context-input').querySelector('textarea'), {
         target: { value: voteContext },
       });
+    });
+
+    await act(async () => {
+      fireEvent.click(screen.queryByTestId('submit-agreement-checkbox'));
     });
 
     expect(screen.queryByTestId('proposal-submit-button').closest('button')).not.toBeDisabled();
@@ -1404,9 +1465,9 @@ describe("For the event that hasn't started yet", () => {
       const eventTime = within(votePage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
       expect(eventTime.textContent).toEqual(
-        `The ballot will be opened from: ${formatUTCDate(eventMock_notStarted.eventStartDate.toString())} - ${formatUTCDate(
-          eventMock_notStarted.eventEndDate.toString()
-        )}`
+        `The ballot will be opened from: ${formatUTCDate(
+          eventMock_notStarted.eventStartDate.toString()
+        )} - ${formatUTCDate(eventMock_notStarted.eventEndDate.toString())}`
       );
 
       const eventDescription = within(votePage).queryByTestId('event-description');

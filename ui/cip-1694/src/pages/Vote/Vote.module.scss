@@ -58,3 +58,25 @@
   letter-spacing: 0em !important;
   padding-left: 20px !important;
 }
+
+.submitLabel {
+  align-self: center;
+  color: #061d3c;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.link {
+  align-items: center !important;
+  color: #39486c !important;
+  cursor: pointer !important;
+  display: flex !important;
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  line-height: normal !important;
+  .underline {
+    text-decoration: underline !important;
+    color: #39486c !important;
+  }
+}

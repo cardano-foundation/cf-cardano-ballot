@@ -209,8 +209,9 @@ describe('For ongoing event:', () => {
     );
 
     expect(within(confirmModal).queryByTestId('result-comming-soon-modal-title')).toHaveTextContent('Coming soon');
-    fireEvent.click(within(confirmModal).queryByTestId('result-comming-soon-modal-close-cta'));
-
+    await act(async () => {
+      fireEvent.click(within(confirmModal).queryByTestId('result-comming-soon-modal-close-cta'));
+    });
     await waitFor(() => {
       expect(screen.queryByTestId('result-comming-soon-modal')).toBeNull();
     });
@@ -244,7 +245,9 @@ describe('For ongoing event:', () => {
     const confirmModal = screen.queryByTestId('result-comming-soon-modal');
     expect(confirmModal).not.toBeNull();
 
-    fireEvent.click(within(confirmModal).queryByTestId('result-comming-soon-modal-close-icon'));
+    await act(async () => {
+      fireEvent.click(within(confirmModal).queryByTestId('result-comming-soon-modal-close-icon'));
+    });
 
     await waitFor(() => {
       expect(screen.queryByTestId('result-comming-soon-modal')).toBeNull();

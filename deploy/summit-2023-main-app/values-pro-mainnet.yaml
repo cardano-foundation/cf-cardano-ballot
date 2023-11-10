@@ -126,7 +126,7 @@ cf-summit-2023-ledger-follower-api:
         imageTag: v0.2.64-233-g1c0accbf
         schemaName: follower_hydra_tally
       - name: follower-hydra-tally-2
-        enabled: true
+        enabled: false
         imageTag: v0.2.64-229-g0e48563d
         schemaName: follower_hydra_tally_2
     cardanoSnapshotBoundsCheckEnabled: "true"

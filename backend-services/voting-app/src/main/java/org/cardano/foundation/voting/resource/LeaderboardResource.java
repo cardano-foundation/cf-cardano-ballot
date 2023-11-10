@@ -41,7 +41,7 @@ public class LeaderboardResource {
     @Timed(value = "resource.leaderboard.high.level.event.available", histogram = true)
     public ResponseEntity<?> isHighLevelEventLeaderBoardAvailable(@PathVariable("eventId") String eventId,
                                                                   @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = "false") boolean forceLeaderboardResults) {
-        var cacheControl = CacheControl.maxAge(1, MINUTES)
+        var cacheControl = CacheControl.maxAge(5, MINUTES)
                 .noTransform()
                 .mustRevalidate();
 
@@ -82,7 +82,7 @@ public class LeaderboardResource {
     @Timed(value = "resource.leaderboard.high.level.category.available", histogram = true)
     public ResponseEntity<?> isHighLevelCategoryLeaderBoardAvailable(@PathVariable("eventId") String eventId,
                                                                      @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = "false") boolean forceLeaderboardResults) {
-        var cacheControl = CacheControl.maxAge(1, MINUTES)
+        var cacheControl = CacheControl.maxAge(5, MINUTES)
                 .noTransform()
                 .mustRevalidate();
 
@@ -126,7 +126,7 @@ public class LeaderboardResource {
     ) {
         var winnerLeaderboardSource = winnerLeaderboardSourceM.orElse(db);
 
-        var cacheControl = CacheControl.maxAge(1, MINUTES)
+        var cacheControl = CacheControl.maxAge(5, MINUTES)
                 .noTransform()
                 .mustRevalidate();
 
@@ -140,7 +140,6 @@ public class LeaderboardResource {
                 .fold(problem -> {
                             return ResponseEntity
                                     .status(problem.getStatus().getStatusCode())
-                                    .cacheControl(cacheControl)
                                     .body(problem);
                         },
                         isAvailable -> {
@@ -168,7 +167,7 @@ public class LeaderboardResource {
     @Timed(value = "resource.leaderboard.event", histogram = true)
     public ResponseEntity<?> getEventLeaderBoard(@PathVariable("eventId") String eventId,
                                                  @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = "false") boolean forceLeaderboardResults) {
-        var cacheControl = CacheControl.maxAge(1, MINUTES)
+        var cacheControl = CacheControl.maxAge(5, MINUTES)
                 .noTransform()
                 .mustRevalidate();
 
@@ -179,7 +178,6 @@ public class LeaderboardResource {
         return eventLeaderboardE.fold(problem -> {
                     return ResponseEntity
                             .status(problem.getStatus().getStatusCode())
-                            .cacheControl(cacheControl)
                             .body(problem);
                 },
                 response -> {
@@ -199,7 +197,7 @@ public class LeaderboardResource {
                                                     @Valid @RequestParam(name = "source") Optional<WinnerLeaderboardSource> winnerLeaderboardSourceM) {
         var winnerLeaderboardSource = winnerLeaderboardSourceM.orElse(db);
 
-        var cacheControl = CacheControl.maxAge(1, MINUTES)
+        var cacheControl = CacheControl.maxAge(5, MINUTES)
                 .noTransform()
                 .mustRevalidate();
 
@@ -213,12 +211,10 @@ public class LeaderboardResource {
                 .fold(problem -> {
                             return ResponseEntity
                                     .status(problem.getStatus().getStatusCode())
-                                    .cacheControl(cacheControl)
                                     .body(problem);
                         },
                         proposalsInCategoryStatsM -> {
                             if (proposalsInCategoryStatsM.isEmpty()) {
-
                                 var problem = Problem.builder()
                                         .withTitle("VOTING_RESULTS_NOT_YET_AVAILABLE")
                                         .withDetail("Leaderboard not yet available for event: " + eventId)
@@ -227,7 +223,6 @@ public class LeaderboardResource {
 
                                 return ResponseEntity
                                         .status(problem.getStatus().getStatusCode())
-                                        .cacheControl(cacheControl)
                                         .body(problem);
                             }
 

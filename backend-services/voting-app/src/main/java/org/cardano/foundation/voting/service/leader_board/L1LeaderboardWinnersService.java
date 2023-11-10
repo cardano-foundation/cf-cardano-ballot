@@ -3,7 +3,6 @@ package org.cardano.foundation.voting.service.leader_board;
 import io.vavr.control.Either;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.domain.Leaderboard;
-import org.cardano.foundation.voting.domain.TallyType;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
@@ -12,6 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static java.util.stream.Collectors.toMap;
+import static org.cardano.foundation.voting.domain.TallyType.HYDRA;
 import static org.zalando.problem.Status.*;
 
 @Service
@@ -145,7 +145,7 @@ public class L1LeaderboardWinnersService extends AbstractWinnersService implemen
 
     private Optional<ChainFollowerClient.Tally> findFirstHydraTallyName(ChainFollowerClient.EventDetailsResponse eventDetailsResponse) {
         return eventDetailsResponse.tallies().stream()
-                .filter(tally -> tally.type() == TallyType.HYDRA)
+                .filter(tally -> tally.type() == HYDRA)
                 .findFirst();
     }
 

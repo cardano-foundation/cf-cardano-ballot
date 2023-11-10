@@ -123,7 +123,7 @@ cf-summit-2023-ledger-follower-api:
 #        schemaName: follower_2
       - name: follower-hydra-tally
         enabled: true
-        imageTag: v0.2.64-229-g0e48563d
+        imageTag: v0.2.64-232-gbb16714a
         schemaName: follower_hydra_tally
       - name: follower-hydra-tally-2
         enabled: true

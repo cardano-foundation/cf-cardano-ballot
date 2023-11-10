@@ -23,7 +23,7 @@ cf-summit-2023-ui:
     discordBotUrl: https://discord.gg/65Hq3gqFwE
     discordSupportChannelUrl: https://discord.gg/svAcdYjMXx
     showWinners: "true"
-    showHydraTally: "false"
+    showHydraTally: "true"
     image:
       tag: 0.2.64-36-45850
     ingress:
@@ -54,7 +54,7 @@ cf-summit-2023-voting-api:
         active: "true"
         voteCommitmentCronExpression: "0 30 * * * *"
     image:
-      tag: 0.2.64-28-e40f8
+      tag: v0.2.64-229-g0e48563d
     ledgerFollowerAppUrl: http://cf-summit-2023-ledger-follower-api-voting-ledger-follower-app:9090
     corsAllowedOrigins: https://voting.summit.cardano.org,https://{{ .Values.domain }}
     yaci:

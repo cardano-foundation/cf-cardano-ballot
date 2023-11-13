@@ -89,34 +89,37 @@ import static org.springframework.http.HttpMethod.*;
 <span class="fc" id="L89">                    .requestMatchers(new AntPathRequestMatcher(&quot;/actuator/**&quot;, GET.name())).permitAll()</span>
 <span class="fc" id="L90">                    .requestMatchers(new AntPathRequestMatcher(&quot;/h2-console/**&quot;)).permitAll()</span>
 
-<span class="fc" id="L92">                    .anyRequest().denyAll()</span>
+<span class="fc" id="L92">                    .requestMatchers(new AntPathRequestMatcher(&quot;/v3/api-docs/**&quot;)).permitAll()</span>
+<span class="fc" id="L93">                    .requestMatchers(new AntPathRequestMatcher(&quot;/swagger-ui/**&quot;)).permitAll()</span>
+
+<span class="fc" id="L95">                    .anyRequest().denyAll()</span>
          )
-<span class="fc" id="L94">         .rememberMe(AbstractHttpConfigurer::disable)</span>
-<span class="fc" id="L95">         .anonymous(AbstractHttpConfigurer::disable)</span>
-<span class="fc" id="L96">         .formLogin(AbstractHttpConfigurer::disable)</span>
-<span class="fc" id="L97">         .logout(AbstractHttpConfigurer::disable)</span>
+<span class="fc" id="L97">         .rememberMe(AbstractHttpConfigurer::disable)</span>
+<span class="fc" id="L98">         .anonymous(AbstractHttpConfigurer::disable)</span>
+<span class="fc" id="L99">         .formLogin(AbstractHttpConfigurer::disable)</span>
+<span class="fc" id="L100">         .logout(AbstractHttpConfigurer::disable)</span>
 
-<span class="fc" id="L99">        .httpBasic(c -&gt; c.authenticationEntryPoint(authenticationEntryPoint()))</span>
-<span class="fc" id="L100">        .exceptionHandling(c -&gt; c.authenticationEntryPoint(problemSupport)</span>
-<span class="fc" id="L101">        .accessDeniedHandler(problemSupport));</span>
+<span class="fc" id="L102">        .httpBasic(c -&gt; c.authenticationEntryPoint(authenticationEntryPoint()))</span>
+<span class="fc" id="L103">        .exceptionHandling(c -&gt; c.authenticationEntryPoint(problemSupport)</span>
+<span class="fc" id="L104">        .accessDeniedHandler(problemSupport));</span>
 
-<span class="fc" id="L103">        return http.build();</span>
+<span class="fc" id="L106">        return http.build();</span>
     }
 
     @Bean
     public InMemoryUserDetailsManager userDetailsService() {
-<span class="fc" id="L108">        UserDetails user = User</span>
-<span class="fc" id="L109">                .withUsername(discordBotUsername)</span>
-<span class="fc" id="L110">                .password(passwordEncoder().encode(discordBotPassword))</span>
-<span class="fc" id="L111">                .roles(&quot;BOT&quot;)</span>
-<span class="fc" id="L112">                .build();</span>
+<span class="fc" id="L111">        UserDetails user = User</span>
+<span class="fc" id="L112">                .withUsername(discordBotUsername)</span>
+<span class="fc" id="L113">                .password(passwordEncoder().encode(discordBotPassword))</span>
+<span class="fc" id="L114">                .roles(&quot;BOT&quot;)</span>
+<span class="fc" id="L115">                .build();</span>
 
-<span class="fc" id="L114">        return new InMemoryUserDetailsManager(user);</span>
+<span class="fc" id="L117">        return new InMemoryUserDetailsManager(user);</span>
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-<span class="fc" id="L119">        return new BCryptPasswordEncoder(8);</span>
+<span class="fc" id="L122">        return new BCryptPasswordEncoder(8);</span>
     }
 
 }

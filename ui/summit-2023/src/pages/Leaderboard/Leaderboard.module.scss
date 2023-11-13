@@ -1,4 +1,5 @@
 .leaderboard {
+  width: 100%;
   .description {
     max-height: 110px;
     margin-bottom: 40px !important;
@@ -62,5 +63,24 @@
     &[data-proposal='SSI'] {
       background: #daeefb;
     }
+  }
+
+  .masonryGrid {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    width: auto;
+  }
+  .masonryGridColumn {
+    padding-left: 16px;
+    background-clip: padding-box;
+    @media only screen and (max-width: 600px) {
+      padding-left: 0px;
+    }
+  }
+  
+  .masonryGridColumn > .MuiCard:root {
+    background: grey;
+    margin-bottom: 30px;
   }
 }

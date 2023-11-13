@@ -30,7 +30,6 @@ configurations {
 
 repositories {
     mavenCentral()
-    mavenLocal()
     maven { url = uri("https://repo.spring.io/milestone") }
 }
 
@@ -70,7 +69,7 @@ dependencies {
     implementation("com.nimbusds:nimbus-jose-jwt:9.35")
     implementation("com.google.crypto.tink:tink:1.11.0")
 
-    implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0")
+	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0")
 
     implementation("io.blockfrost:blockfrost-java:0.1.3")
 

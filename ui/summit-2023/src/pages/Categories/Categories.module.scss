@@ -1,8 +1,19 @@
 .categories {
+  width: 100%;
   .card {
     flex-shrink: 0;
     border-radius: 16px !important;
     background: #fff;
     box-shadow: 2px 3px 10px 0px rgba(67, 70, 86, 0.45);
+  }
+  .selected {
+    background-color: #daeefb !important;
+    border: 2px var(--color-primary) !important;
+    border-radius: 8px !important;
+  }
+  .unSelected {
+    background-color: transparent !important;
+    border: 2px var(--color-primary) !important;
+    border-radius: 8px !important;
   }
 }

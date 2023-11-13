@@ -69,6 +69,8 @@ dependencies {
 
 	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0")
 	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.0")
+	implementation("com.bloxbean.cardano:aiken-java-binding:0.0.8")
+	annotationProcessor("com.bloxbean.cardano:cardano-client-annotation-processor:0.5.0")
 
 	implementation("com.bloxbean.cardano:yaci-store-spring-boot-starter:0.0.12")
 	implementation("com.bloxbean.cardano:yaci-store-blocks-spring-boot-starter:0.0.12")

@@ -55,7 +55,6 @@ public class BlockchainDataResource {
                 .fold(problem -> {
                             return ResponseEntity
                                     .status(problem.getStatus().getStatusCode())
-                                    .cacheControl(cacheControl)
                                     .body(problem);
                         },
                         chainTip -> {

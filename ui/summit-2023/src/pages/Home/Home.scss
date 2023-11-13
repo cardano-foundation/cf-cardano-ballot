@@ -1,12 +1,14 @@
 .hero-banner {
-  width: 420px;
+  width: 375px;
   height: auto;
   min-width: 375px;
   max-width: 19vw;
+  margin-top: -24px;
   @media only screen and (max-width: 600px) {
     width: 313px;
     height: auto;
     min-width: 313px;
+    margin-top: 0px;
   }
 }
 
@@ -26,7 +28,7 @@
 
 .hexagon-content {
   position: absolute;
-  top: 15px;
+  top: -20px;
   left: 0;
   right: 0;
   bottom: 0;
@@ -82,16 +84,31 @@
     font-style: normal;
     text-align: center;
     margin: 20px;
-    p {
-      margin: 0;
-      font-weight: 600;
+    @media only screen and (max-width: 600px) {
+      text-align: left;
+      margin: 0px;
+    }
+    .custom-chip-mobile {
+      display: flex;
+      align-items: center;
+      vertical-align: middle;
+      box-sizing: border-box;
+      height: auto;
+      border-radius: 8px;
+      margin-top: 20px;
+      margin-bottom: 20px;
+      padding: 10px;
+      color: #fff;
+      background-color: #03021f;
+      font-size: 0.8125rem;
+      transition:
+        background-color 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
+        box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+      cursor: unset;
+      outline: 0;
       gap: 5px;
       letter-spacing: normal;
       line-height: 22px;
-    }
-    @media only screen and (max-width: 600px) {
-      text-align: left;
-      margin-left: 0px;
     }
   }
 }

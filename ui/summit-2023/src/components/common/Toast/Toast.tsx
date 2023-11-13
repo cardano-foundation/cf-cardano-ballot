@@ -6,7 +6,6 @@ import CloseIcon from '@mui/icons-material/Close';
 import WarningIcon from '@mui/icons-material/Warning';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import { ToastProps, ToastStylesProps } from './Toast.types';
-import './Toast.scss';
 
 const Toast = (props: ToastProps) => {
   const { message, isOpen, type, onClose } = props;
@@ -15,35 +14,27 @@ const Toast = (props: ToastProps) => {
     switch (type) {
       case 'verified':
         return {
-          backgroundColor: '#EBFEF1',
-          color: '#03021F',
+          backgroundColor: '#03021f',
+          color: '#F5F9FF',
           icon: <VerifiedUserIcon />,
-          fontWeight: '600',
-          fontSize: '18px',
         };
       case 'error':
         return {
           backgroundColor: '#c20024',
           color: '#F5F9FF',
           icon: <DoNotDisturbAltIcon />,
-          fontWeight: '400',
-          fontSize: '16px',
         };
       case 'warn':
         return {
           backgroundColor: '#FD873C',
           color: '#652701',
           icon: <WarningIcon />,
-          fontWeight: '400',
-          fontSize: '16px',
         };
       case 'common':
         return {
           backgroundColor: '#03021f',
           color: '#F5F9FF',
           icon: <CheckCircleOutlineIcon />,
-          fontWeight: '400',
-          fontSize: '16px',
         };
       default:
         return {};
@@ -59,8 +50,8 @@ const Toast = (props: ToastProps) => {
           sx: {
             background: toastStyles.backgroundColor,
             color: toastStyles.color,
-            fontWeight: toastStyles.fontWeight,
-            fontSize: toastStyles.fontSize,
+            fontWeight: '400',
+            fontSize: '16px',
           },
         }}
         open={isOpen}

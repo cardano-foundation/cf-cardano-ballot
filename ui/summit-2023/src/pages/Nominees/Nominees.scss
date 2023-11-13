@@ -1,3 +1,6 @@
+.nominees-page {
+  width: 100%;
+}
 .nominees-page-title {
   color: var(--color-dark-grey);
   font-style: normal;
@@ -20,22 +23,27 @@
 }
 
 .nominee-card.MuiPaper-root {
-  width: 414px;
-  flex-shrink: 0;
-  border-radius: 8px;
   box-shadow: 2px 3px 10px 0px rgba(67, 70, 86, 0.45);
+  border-radius: 16px !important;
+  border: 1px solid transparent !important;
+  box-shadow: 2px 2px 5px 0px #061d3c40 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  margin: 10px !important;
+  background-color: white;
+  @media only screen and (max-width: 600px) {
+    margin: 0 0 10px 0 !important;
+  }
 
   .nominee-title {
-    color: var(--color-ultra-dark-blue);
-    font-size: 36px;
+    color: var(---color-primary);
     font-style: normal;
-    font-weight: 600 !important;
     line-height: normal;
   }
   .nominee-description {
     margin-top: 20px;
     margin-right: 50px;
-    color: var(--color-medium-grey);
+    margin-bottom: 20px !important;
     font-size: 16px;
     font-style: normal;
     font-weight: 400;
@@ -182,4 +190,34 @@
   .key {
     color: red;
   }
+}
+
+.selected {
+  background-color: #daeefb !important;
+  border: 2px var(--color-primary) !important;
+  border-radius: 8px !important;
+}
+.unSelected {
+  background-color: transparent !important;
+  border: 2px var(--color-primary) !important;
+  border-radius: 8px !important;
+}
+
+.masonryGrid {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  width: auto;
+}
+.masonryGridColumn {
+  padding-left: 10px;
+  background-clip: padding-box;
+  @media only screen and (max-width: 600px) {
+    padding-left: 0px; 
+  }
+}
+
+.masonryGridColumn > .MuiCard:root {
+  background: grey;
+  margin-bottom: 30px;
 }

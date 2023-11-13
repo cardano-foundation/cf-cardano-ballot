@@ -9,6 +9,7 @@ import org.cardano.foundation.voting.domain.IsMerkleRootPresentResult;
 import org.cardano.foundation.voting.domain.entity.MerkleRootHash;
 import org.cardano.foundation.voting.repository.MerkleRootHashRepository;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
@@ -28,6 +29,7 @@ public class MerkleRootHashService {
 
     private final CardanoNetwork network;
 
+    @Timed(value = "service.merkle_root.isPresent", histogram = true)
     public Either<Problem, IsMerkleRootPresentResult> isPresent(String event, String merkleRootHashHex) {
         var maybeEvent = referenceDataService.findEventByName(event);
 
@@ -46,11 +48,19 @@ public class MerkleRootHashService {
         }).orElse(Either.right(new IsMerkleRootPresentResult(false, network)));
     }
 
-    @Timed(value = "service.reference.storeCommitments", histogram = true)
+    @Timed(value = "service.merkle_root.storeCommitments", histogram = true)
     @Transactional
     public List<MerkleRootHash> storeCommitments(List<MerkleRootHash> merkleRootHashes) {
         log.info("Storing commitments:{}", merkleRootHashes);
         return merkleRootHashRepository.saveAllAndFlush(merkleRootHashes);
+    }
+
+    @Timed(value = "service.merkle_root.rollbackAfterSlot", histogram = true)
+    @Transactional
+    public int rollbackAfterSlot(@Param("slot") long slot) {
+        log.info("Deleting all after slot:{}", slot);
+
+        return merkleRootHashRepository.deleteAllAfterSlot(slot);
     }
 
 }

@@ -1,4 +1,6 @@
 import React, { useState, useEffect, ReactElement } from 'react';
+import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import {
   useTheme,
   useMediaQuery,
@@ -16,20 +18,18 @@ import {
   Tooltip,
   Hidden,
 } from '@mui/material';
-import checkMark from '../../common/resources/images/checkmark-white.png';
-import labelVoted from '../../common/resources/images/checkmark-green.png';
-import ViewModuleIcon from '@mui/icons-material/ViewModule';
-import ViewListIcon from '@mui/icons-material/ViewList';
-import { Fade } from '@mui/material';
-import styles from './Categories.module.scss';
-import Grow from '@mui/material/Grow';
-import CATEGORY_IMAGES from '../../common/resources/data/categoryImages.json';
-import { Link } from 'react-router-dom';
 import CardMedia from '@mui/material/CardMedia';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import { useSelector } from 'react-redux';
+import ViewListIcon from '@mui/icons-material/ViewList';
+import { Fade, Grow } from '@mui/material';
+import ViewModuleIcon from '@mui/icons-material/ViewModule';
+import checkMark from '../../common/resources/images/checkmark-white.png';
+import labelVoted from '../../common/resources/images/checkmark-green.png';
+import styles from './Categories.module.scss';
+import CATEGORY_IMAGES from '../../common/resources/data/categoryImages.json';
 import { RootState } from '../../store';
 import { getUserInSession, tokenIsExpired } from '../../utils/session';
+import { i18n } from 'i18n';
 
 const categoryAlreadyVoted = (categoryId, userVotes) => {
   let alreadyVoted = false;
@@ -80,7 +80,7 @@ const Categories = () => {
 
   const renderResponsiveGrid = (items): ReactElement => {
     return (
-      <div style={{ width: '100%' }}>
+      <div>
         <Grid
           container
           spacing={3}
@@ -101,32 +101,105 @@ const Categories = () => {
                     <Card
                       sx={{
                         height: 'auto',
-                        width: { xs: '380px', sm: '414px' },
+                        width: { xs: '90vw', sm: '50vw' },
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         borderRadius: '16px',
                       }}
                     >
-                      <CardActionArea
-                        onMouseOver={handleMouseOver(category.id)}
-                        onMouseOut={handleMouseOut}
-                      >
-                        {isHoveredId == category.id ? (
-                          <Grow
-                            in
-                            style={{ transformOrigin: '10 0 0' }}
-                            {...{ timeout: 600 }}
-                          >
-                            <CardContent sx={{ minHeight: '350px' }}>
+                      {!isMobile ? (
+                        <CardActionArea
+                          onMouseOver={handleMouseOver(category.id)}
+                          onMouseOut={handleMouseOut}
+                        >
+                          {isHoveredId == category.id ? (
+                            <Grow
+                              in
+                              style={{ transformOrigin: '10 0 0' }}
+                              {...{ timeout: 600 }}
+                            >
+                              <CardContent sx={{ minHeight: '350px', maxHeight: '350px' }}>
+                                <Box sx={{ position: 'relative' }}>
+                                  {voted ? (
+                                    <Tooltip title={i18n.t('categories.alreadyVoted')}>
+                                      <img
+                                        height={40}
+                                        width={102}
+                                        src={labelVoted}
+                                        alt={i18n.t('categories.alreadyVoted')}
+                                        style={{
+                                          margin: '12px',
+                                          position: 'absolute',
+                                          float: 'right',
+                                          right: 0,
+                                          zIndex: 99,
+                                          opacity: 1,
+                                        }}
+                                      />
+                                    </Tooltip>
+                                  ) : null}
+                                </Box>
+                                <CardHeader
+                                  avatar={
+                                    <Avatar
+                                      src={CATEGORY_IMAGES[index]}
+                                      alt={category.presentationName}
+                                      sx={{ width: 100, height: 100 }}
+                                    />
+                                  }
+                                />
+                                <Box m={1}>
+                                  <Typography
+                                    variant="h5"
+                                    color="text.primary"
+                                    fontWeight="700"
+                                  >
+                                    {category.presentationName}
+                                  </Typography>
+                                </Box>
+                                <Box m={1}>
+                                  <Typography
+                                    variant="body1"
+                                    color="text.primary"
+                                  >
+                                    {category.desc}
+                                  </Typography>
+                                </Box>
+                                <CardActions>
+                                  <Button
+                                    component={Link}
+                                    to={{ pathname: `/nominees/${category.id}` }}
+                                    state={{
+                                      category,
+                                    }}
+                                    aria-label={i18n.t('button.viewNominees')}
+                                    variant="contained"
+                                    size="large"
+                                    sx={{
+                                      color: 'text.primary',
+                                      fontSize: 16,
+                                      fontWeight: 700,
+                                      textTransform: 'none',
+                                      width: '100%',
+                                      backgroundColor: '#acfcc5 !important',
+                                    }}
+                                  >
+                                    {i18n.t('button.viewNominees')}
+                                  </Button>
+                                </CardActions>
+                              </CardContent>
+                            </Grow>
+                          ) : (
+                            <Box>
                               <Box sx={{ position: 'relative' }}>
                                 {voted ? (
-                                  <Tooltip title="Already Voted">
+                                  <Tooltip title={i18n.t('categories.alreadyVoted')}>
                                     <img
                                       height={40}
-                                      width={102}
-                                      src={labelVoted}
-                                      alt="Already Voted"
+                                      width={40}
+                                      src={checkMark}
+                                      alt={i18n.t('categories.alreadyVoted')}
                                       style={{
                                         margin: '12px',
                                         position: 'absolute',
@@ -138,135 +211,139 @@ const Categories = () => {
                                     />
                                   </Tooltip>
                                 ) : null}
+                                <CardMedia
+                                  sx={{
+                                    height: 350,
+                                    cursor: 'pointer',
+                                    '&:hover': {
+                                      borderRadius: '50%',
+                                      transition: 'all 1s ease',
+                                    },
+                                  }}
+                                  image={CATEGORY_IMAGES[index]}
+                                />
                               </Box>
-                              <CardHeader
-                                avatar={
-                                  <Avatar
-                                    src={CATEGORY_IMAGES[index]}
-                                    alt={category.presentationName}
-                                    sx={{ width: 100, height: 100 }}
-                                  />
-                                }
-                              />
-                              <Box m={1}>
+                              <Box
+                                sx={{
+                                  position: 'absolute',
+                                  bottom: '20%',
+                                  left: 0,
+                                  width: '100%',
+                                  paddingLeft: '20px',
+                                  textAlign: 'left',
+                                }}
+                              >
                                 <Typography
-                                  variant="h5"
-                                  color="text.primary"
-                                  fontWeight="700"
+                                  variant="h6"
+                                  sx={{
+                                    color: 'white',
+                                    fontSize: {
+                                      xs: '28px',
+                                      sm: '28px',
+                                      md: '32px',
+                                    },
+                                    fontWeight: 600,
+                                    wordBreak: 'break-word',
+                                    maxWidth: '250px',
+                                  }}
                                 >
                                   {category.presentationName}
                                 </Typography>
                               </Box>
-                              <Box m={1}>
-                                <Typography
-                                  variant="body1"
-                                  color="text.primary"
-                                >
-                                  {category.desc}
-                                </Typography>
-                              </Box>
-                              <CardActions>
-                                <Button
-                                  component={Link}
-                                  to={{ pathname: `/nominees/${category.id}` }}
-                                  state={{
-                                    category,
-                                  }}
-                                  aria-label="View Nominees"
-                                  variant="contained"
-                                  size="large"
-                                  sx={{
-                                    color: 'text.primary',
-                                    fontSize: 16,
-                                    fontWeight: 700,
-                                    textTransform: 'none',
-                                    width: '100%',
-                                    backgroundColor: '#acfcc5 !important',
-                                  }}
-                                >
-                                  View Nominees
-                                </Button>
-                              </CardActions>
-                            </CardContent>
-                          </Grow>
-                        ) : (
-                          <Box>
-                            <Box sx={{ position: 'relative' }}>
-                              {voted ? (
-                                <Tooltip title="Already Voted">
-                                  <img
-                                    height={40}
-                                    width={40}
-                                    src={checkMark}
-                                    alt="Already Voted"
-                                    style={{
-                                      margin: '12px',
-                                      position: 'absolute',
-                                      float: 'right',
-                                      right: 0,
-                                      zIndex: 99,
-                                      opacity: 1,
-                                    }}
-                                  />
-                                </Tooltip>
-                              ) : null}
-                              <CardMedia
+                              <Box
                                 sx={{
-                                  height: 350,
-                                  cursor: 'pointer',
-                                  '&:hover': {
-                                    borderRadius: '50%',
-                                    transition: 'all 1s ease',
-                                  },
-                                }}
-                                image={CATEGORY_IMAGES[index]}
-                              />
-                            </Box>
-                            <Box
-                              sx={{
-                                position: 'absolute',
-                                bottom: '20%',
-                                left: 0,
-                                width: '100%',
-                                paddingLeft: '20px',
-                                textAlign: 'left',
-                              }}
-                            >
-                              <Typography
-                                variant="h6"
-                                sx={{
-                                  color: 'white',
-                                  fontSize: '36px',
-                                  fontWeight: 600,
-                                  wordBreak: 'break-word',
-                                  maxWidth: '285px',
+                                  position: 'absolute',
+                                  bottom: isMobile ? '8%' : '20%',
+                                  right: 0,
+                                  width: '100%',
+                                  paddingLeft: '20px',
+                                  textAlign: 'right',
                                 }}
                               >
-                                {category.presentationName}
-                              </Typography>
+                                <NavigateNextIcon
+                                  sx={{
+                                    fontSize: '50px',
+                                    margin: '0px 20px -7px 20px',
+                                    borderRadius: 25,
+                                    backgroundColor: '#acfcc5 !important',
+                                  }}
+                                />
+                              </Box>
                             </Box>
-                            <Box
+                          )}
+                        </CardActionArea>
+                      ) : (
+                        <CardContent sx={{ minHeight: '350px', maxHeight: '350px' }}>
+                          <Box sx={{ position: 'relative' }}>
+                            {voted ? (
+                              <Tooltip title={i18n.t('categories.alreadyVoted')}>
+                                <img
+                                  height={40}
+                                  width={102}
+                                  src={labelVoted}
+                                  alt={i18n.t('categories.alreadyVoted')}
+                                  style={{
+                                    margin: '12px',
+                                    position: 'absolute',
+                                    float: 'right',
+                                    right: 0,
+                                    zIndex: 99,
+                                    opacity: 1,
+                                  }}
+                                />
+                              </Tooltip>
+                            ) : null}
+                          </Box>
+                          <CardHeader
+                            avatar={
+                              <Avatar
+                                src={CATEGORY_IMAGES[index]}
+                                alt={category.presentationName}
+                                sx={{ width: 100, height: 100 }}
+                              />
+                            }
+                          />
+                          <Box m={1}>
+                            <Typography
+                              variant="h5"
+                              color="text.primary"
+                              fontWeight="700"
+                            >
+                              {category.presentationName}
+                            </Typography>
+                          </Box>
+                          <Box m={1}>
+                            <Typography
+                              variant="body1"
+                              color="text.primary"
+                            >
+                              {category.desc}
+                            </Typography>
+                          </Box>
+                          <CardActions>
+                            <Button
+                              component={Link}
+                              to={{ pathname: `/nominees/${category.id}` }}
+                              state={{
+                                category,
+                              }}
+                              aria-label={i18n.t('button.viewNominees')}
+                              variant="contained"
+                              size="large"
                               sx={{
-                                position: 'absolute',
-                                bottom: isMobile ? '8%' : '20%',
-                                right: 0,
+                                color: 'text.primary',
+                                fontSize: 16,
+                                fontWeight: 700,
+                                textTransform: 'none',
                                 width: '100%',
-                                paddingLeft: '20px',
-                                textAlign: 'right',
+                                backgroundColor: '#acfcc5 !important',
                               }}
                             >
-                              <NavigateNextIcon
-                                sx={{
-                                  fontSize: '50px',
-                                  margin: '0px 20px -7px 20px',
-                                  borderRadius: 25,
-                                  backgroundColor: '#acfcc5 !important',
-                                }}
-                              />
-                            </Box>
-                          </Box>
-                        )}
-                      </CardActionArea>
+                              {i18n.t('button.viewNominees')}
+                            </Button>
+                          </CardActions>
+                        </CardContent>
+                      )}
                     </Card>
                   </div>
                 </Fade>
@@ -297,19 +374,19 @@ const Categories = () => {
                   <Card
                     className="categories-card"
                     sx={{
-                      width: listView === 'list' || isMobile ? '100%' : '414px',
-                      height: '156px',
+                      width: listView === 'list' || isMobile ? '100%' : '410px',
+                      height: 'auto',
                     }}
                     key={category.id}
                   >
                     <Box sx={{ position: 'relative' }}>
                       {voted ? (
-                        <Tooltip title="Already Voted">
+                        <Tooltip title={i18n.t('categories.alreadyVoted')}>
                           <img
                             height={40}
                             width={102}
                             src={labelVoted}
-                            alt="Already Voted"
+                            alt={i18n.t('categories.alreadyVoted')}
                             style={{
                               margin: '12px',
                               position: 'absolute',
@@ -332,7 +409,7 @@ const Categories = () => {
                           />
                         }
                       />
-                      <Box sx={{ marginLeft: 2, display: 'flex', flexDirection: 'column' }}>
+                      <Box sx={{ mx: 1, display: 'flex', flexDirection: 'column' }}>
                         <Typography
                           variant="h5"
                           color="text.primary"
@@ -347,29 +424,57 @@ const Categories = () => {
                           {category.desc}
                         </Typography>
                       </Box>
-                      <Box sx={{ marginLeft: 'auto' }}>
+                      <Box sx={{ marginLeft: 'auto', display: { sm: 'none', md: 'block' } }}>
                         <Button
                           component={Link}
                           to={{ pathname: `/nominees/${category.id}` }}
                           state={{
                             category,
                           }}
-                          aria-label="View Nominees"
+                          aria-label={i18n.t('button.viewNominees')}
                           variant="contained"
                           size="large"
                           sx={{
+                            width: '100%',
                             color: 'text.primary',
                             fontSize: 16,
                             fontWeight: 700,
                             textTransform: 'none',
+                            borderRadius: '8px',
                             backgroundColor: '#acfcc5 !important',
                             marginRight: '28px',
+                            minWidth: '166px',
                           }}
                         >
-                          View Nominees
+                          {i18n.t('button.viewNominees')}
                         </Button>
                       </Box>
                     </CardContent>
+                    <Box sx={{ display: { sm: 'block', md: 'none' } }}>
+                      <Button
+                        component={Link}
+                        to={{ pathname: `/nominees/${category.id}` }}
+                        state={{
+                          category,
+                        }}
+                        aria-label={i18n.t('button.viewNominees')}
+                        variant="contained"
+                        size="large"
+                        sx={{
+                          width: '95%',
+                          color: 'text.primary',
+                          fontSize: 16,
+                          fontWeight: 700,
+                          textTransform: 'none',
+                          borderRadius: '8px',
+                          backgroundColor: '#acfcc5 !important',
+                          margin: '20px',
+                          minWidth: '166px',
+                        }}
+                      >
+                        {i18n.t('button.viewNominees')}
+                      </Button>
+                    </Box>
                   </Card>
                 </Fade>
               </Grid>
@@ -415,17 +520,23 @@ const Categories = () => {
         </Grid>
         <Grid item>
           <Hidden smDown>
-            <IconButton onClick={() => handleListView('grid')}>
+            <IconButton
+              onClick={() => handleListView('grid')}
+              className={listView === 'grid' ? styles.selected : styles.unSelected}
+            >
               <ViewModuleIcon />
             </IconButton>
-            <IconButton onClick={() => handleListView('list')}>
+            <IconButton
+              onClick={() => handleListView('list')}
+              className={listView === 'list' ? styles.selected : styles.unSelected}
+            >
               <ViewListIcon />
             </IconButton>
           </Hidden>
         </Grid>
       </Grid>
 
-      <Box marginY={10}>
+      <Box my={6}>
         {isMobile || listView === 'grid' ? renderResponsiveGrid(categories) : renderResponsiveList(categories)}
       </Box>
     </div>

@@ -52,6 +52,8 @@ public class BackendServiceBlockchainDataChainTipService implements BlockchainDa
             );
 
         } catch (Exception e) {
+            log.error("Unable to get chain tip from backend service", e);
+
             return Either.left(Problem.builder()
                     .withTitle("CHAIN_TIP_NOT_FOUND")
                     .withDetail("Unable to get chain tip from backend service, reason:" + e.getMessage())

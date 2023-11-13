@@ -5,7 +5,6 @@ import { EventPresentation } from '../types/voting-ledger-follower-types';
 import { UserState, VerificationStarts } from './types';
 
 const initialState: UserState = {
-  connectedWallet: '',
   connectedPeerWallet: false,
   walletIsVerified: false,
   walletIsLoggedIn: false,
@@ -48,9 +47,6 @@ export const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    setConnectedWallet: (state, action: PayloadAction<{ wallet: string }>) => {
-      state.connectedWallet = action.payload.wallet;
-    },
     setConnectedPeerWallet: (state, action: PayloadAction<{ peerWallet: boolean }>) => {
       state.connectedPeerWallet = action.payload.peerWallet;
     },
@@ -61,6 +57,10 @@ export const userSlice = createSlice({
       state.walletIsLoggedIn = action.payload.isLoggedIn;
     },
     setVoteReceipt: (state, action: PayloadAction<{ categoryId: string; receipt: VoteReceipt }>) => {
+      if (!action.payload.categoryId.length) {
+        state.receipts = {};
+        return;
+      }
       state.receipts = {
         ...state.receipts,
         [action.payload.categoryId]: action.payload.receipt,
@@ -79,7 +79,11 @@ export const userSlice = createSlice({
       state.event = action.payload.event;
     },
     setWinners: (state, action: PayloadAction<{ winners: { categoryId: string; proposalId: string }[] }>) => {
-      state.winners = action.payload.winners;
+      let filteredWinners = state.winners.filter(
+        (oldWinner) => !action.payload.winners.some((winner) => winner.categoryId === oldWinner.categoryId)
+      );
+      filteredWinners = [...filteredWinners, ...action.payload.winners];
+      state.winners = filteredWinners;
     },
     setUserStartsVerification: (
       state,

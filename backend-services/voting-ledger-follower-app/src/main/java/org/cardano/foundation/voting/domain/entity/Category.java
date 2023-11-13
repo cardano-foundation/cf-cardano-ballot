@@ -15,7 +15,6 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "category")
-@Immutable
 public class Category extends AbstractTimestampEntity {
 
     @Id

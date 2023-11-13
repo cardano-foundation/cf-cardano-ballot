@@ -30,7 +30,6 @@ configurations {
 
 repositories {
 	mavenCentral()
-    mavenLocal()
 	maven { url = uri("https://repo.spring.io/milestone") }
 }
 

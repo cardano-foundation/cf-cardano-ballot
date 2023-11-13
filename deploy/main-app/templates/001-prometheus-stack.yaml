@@ -38,7 +38,7 @@ spec:
             receivers:
             - name: slack
               slack_configs:
-                - api_url_file: /etc/alertmanager/configmaps/slack-api-url
+                - api_url_file: /etc/alertmanager/secrets/prometheus-alertmanager-secrets/SLACK_API_URL
                   send_resolved: true
                   channel: '#cf-voting-infra-alerts'
             - name: 'null'

@@ -20,8 +20,8 @@ public class L1LeaderboardWinnersService extends AbstractWinnersService implemen
 
     @Override
     public Either<Problem, Optional<Leaderboard.ByProposalsInCategoryStats>> getCategoryLeaderboard(String event,
-                                                                                          String category,
-                                                                                          boolean forceLeaderboard) {
+                                                                                                    String category,
+                                                                                                    boolean forceLeaderboard) {
         var eventDetailsE = chainFollowerClient.getEventDetails(event);
         if (eventDetailsE.isEmpty()) {
             return Either.left(Problem.builder()

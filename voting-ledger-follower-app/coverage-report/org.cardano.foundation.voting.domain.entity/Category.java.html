@@ -15,25 +15,24 @@ import java.util.List;
 <span class="fc" id="L15">@NoArgsConstructor</span>
 @Entity
 @Table(name = &quot;category&quot;)
-@Immutable
 public class Category extends AbstractTimestampEntity {
 
     @Id
     @Column(name = &quot;id&quot;, nullable = false)
-<span class="fc" id="L23">    private String id;</span>
+<span class="fc" id="L22">    private String id;</span>
 
     @Column(name = &quot;gdpr_protection&quot;, nullable = false)
     @Builder.Default
-<span class="fc" id="L27">    private boolean gdprProtection = true;</span>
+<span class="fc" id="L26">    private boolean gdprProtection = true;</span>
 
     @Column(name = &quot;schema_version&quot;, nullable = false)
-<span class="nc" id="L30">    private SchemaVersion version;</span>
+<span class="nc" id="L29">    private SchemaVersion version;</span>
 
     @ManyToOne(
             fetch = FetchType.EAGER, cascade = CascadeType.ALL
     )
     @JoinColumn(name = &quot;event_id&quot;, nullable = false)
-<span class="nc" id="L36">    private Event event;</span>
+<span class="nc" id="L35">    private Event event;</span>
 
     @OneToMany(
             mappedBy = &quot;category&quot;,
@@ -42,13 +41,13 @@ public class Category extends AbstractTimestampEntity {
             orphanRemoval = true
     )
     @Builder.Default
-<span class="fc" id="L45">    private List&lt;Proposal&gt; proposals =  new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L44">    private List&lt;Proposal&gt; proposals =  new ArrayList&lt;&gt;();</span>
 
     @Column(name = &quot;absolute_slot&quot;)
-<span class="nc" id="L48">    private long absoluteSlot;</span>
+<span class="nc" id="L47">    private long absoluteSlot;</span>
 
     public boolean isValid() {
-<span class="pc bpc" id="L51" title="1 of 2 branches missed.">        return proposals.size() &gt; 1;</span>
+<span class="pc bpc" id="L50" title="1 of 2 branches missed.">        return proposals.size() &gt; 1;</span>
     }
 
 }

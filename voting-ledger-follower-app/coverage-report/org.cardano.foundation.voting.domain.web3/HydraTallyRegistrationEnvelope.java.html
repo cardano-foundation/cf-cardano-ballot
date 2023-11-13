@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HydraTallyRegistrationEnvelope.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-ledger-follower-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.domain.web3</a> &gt; <span class="el_source">HydraTallyRegistrationEnvelope.java</span></div><h1>HydraTallyRegistrationEnvelope.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.domain.web3;
+
+import lombok.Builder;
+import lombok.Getter;
+import lombok.ToString;
+
+import java.util.List;
+
+@Getter
+<span class="nc" id="L10">@Builder</span>
+<span class="nc" id="L11">@ToString</span>
+public class HydraTallyRegistrationEnvelope {
+
+<span class="nc" id="L14">    private String contractName;</span>
+
+<span class="nc" id="L16">    private String contractDesc;</span>
+
+<span class="nc" id="L18">    private String contractVersion;</span>
+
+<span class="nc" id="L20">    private String compiledScript;</span>
+
+<span class="nc" id="L22">    private String compiledScriptHash;</span>
+
+<span class="nc" id="L24">    private String compilerName;</span>
+
+<span class="nc" id="L26">    private String compilerVersion;</span>
+
+<span class="nc" id="L28">    private String plutusVersion;</span>
+
+<span class="nc" id="L30">    private List&lt;String&gt; verificationKeys;</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

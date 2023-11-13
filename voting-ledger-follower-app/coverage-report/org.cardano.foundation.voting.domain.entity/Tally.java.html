@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Tally.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-ledger-follower-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.domain.entity</a> &gt; <span class="el_source">Tally.java</span></div><h1>Tally.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.domain.entity;
+
+import jakarta.annotation.Nullable;
+import jakarta.persistence.*;
+import lombok.*;
+import org.cardano.foundation.voting.domain.HydraTally;
+
+import java.util.Optional;
+
+<span class="nc" id="L10">@Builder</span>
+@Embeddable
+<span class="nc" id="L12">@AllArgsConstructor</span>
+<span class="nc" id="L13">@NoArgsConstructor</span>
+public class Tally extends AbstractTimestampEntity {
+
+<span class="nc" id="L16">    @Getter</span>
+<span class="nc" id="L17">    @Setter</span>
+    @Column(name = &quot;name&quot;, nullable = false)
+    private String name;
+
+    @Column(name = &quot;description&quot;)
+    @Nullable
+    private String description;
+
+<span class="nc" id="L25">    @Getter</span>
+<span class="nc" id="L26">    @Setter</span>
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private TallyType type;
+
+<span class="nc" id="L31">    @Getter</span>
+    @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = &quot;contract_name&quot;, column = @Column(name = &quot;hydra_tally_config__contract_name&quot;)),
+        @AttributeOverride(name = &quot;contract_description&quot;, column = @Column(name = &quot;hydra_tally_config__contract_description&quot;)),
+        @AttributeOverride(name = &quot;contract_version&quot;, column = @Column(name = &quot;hydra_tally_config__contract_version&quot;)),
+        @AttributeOverride(name = &quot;compiled_script&quot;, column = @Column(name = &quot;hydra_tally_config__compiled_script&quot;)),
+        @AttributeOverride(name = &quot;compiled_script_hash&quot;, column = @Column(name = &quot;hydra_tally_config__compiled_script_hash&quot;)),
+        @AttributeOverride(name = &quot;compiler_name&quot;, column = @Column(name = &quot;hydra_tally_config__compiler_name&quot;)),
+        @AttributeOverride(name = &quot;compiler_version&quot;, column = @Column(name = &quot;hydra_tally_config__compiler_version&quot;)),
+        @AttributeOverride(name = &quot;plutus_version&quot;, column = @Column(name = &quot;hydra_tally_config__plutus_version&quot;)),
+    })
+    private HydraTally hydraTallyConfig;
+
+<span class="fc" id="L45">    public enum TallyType {</span>
+<span class="fc" id="L46">        HYDRA</span>
+    }
+
+    public void setDescription(Optional&lt;String&gt; description) {
+<span class="nc" id="L50">        this.description = description.orElse(null);</span>
+<span class="nc" id="L51">    }</span>
+
+    public Optional&lt;String&gt; getDescription() {
+<span class="nc" id="L54">        return Optional.ofNullable(description);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

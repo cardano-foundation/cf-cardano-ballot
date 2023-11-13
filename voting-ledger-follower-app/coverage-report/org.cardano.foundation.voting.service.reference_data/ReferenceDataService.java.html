@@ -9,6 +9,7 @@ import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.domain.entity.Proposal;
 import org.cardano.foundation.voting.repository.CategoryRepository;
 import org.cardano.foundation.voting.repository.EventRepository;
+import org.cardano.foundation.voting.repository.MerkleRootHashRepository;
 import org.cardano.foundation.voting.repository.ProposalRepository;
 import org.cardano.foundation.voting.service.expire.EventAdditionalInfoService;
 import org.springframework.stereotype.Service;
@@ -18,9 +19,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-<span class="fc" id="L21">@Slf4j</span>
-<span class="fc" id="L22">@RequiredArgsConstructor</span>
+<span class="fc" id="L22">@Slf4j</span>
+<span class="fc" id="L23">@RequiredArgsConstructor</span>
 public class ReferenceDataService {
+    private final MerkleRootHashRepository merkleRootHashRepository;
 
     private final EventRepository eventRepository;
 
@@ -33,74 +35,86 @@ public class ReferenceDataService {
     @Timed(value = &quot;service.reference.findValidEventByName&quot;, histogram = true)
     @Transactional(readOnly = true)
     public Optional&lt;Event&gt; findValidEventByName(String name) {
-<span class="fc" id="L36">        return eventRepository.findById(name).filter(Event::isValid);</span>
+<span class="fc" id="L38">        return eventRepository.findById(name).filter(Event::isValid);</span>
     }
 
     @Timed(value = &quot;service.reference.findEventByName&quot;, histogram = true)
     @Transactional(readOnly = true)
     public Optional&lt;Event&gt; findEventByName(String name) {
-<span class="fc" id="L42">        return eventRepository.findById(name);</span>
+<span class="fc" id="L44">        return eventRepository.findById(name);</span>
     }
 
     @Timed(value = &quot;service.reference.findCategoryByName&quot;, histogram = true)
     @Transactional(readOnly = true)
     public Optional&lt;Category&gt; findCategoryByName(String name) {
-<span class="nc" id="L48">        return categoryRepository.findById(name);</span>
+<span class="nc" id="L50">        return categoryRepository.findById(name);</span>
     }
 
     @Timed(value = &quot;service.reference.findProposalById&quot;, histogram = true)
     @Transactional(readOnly = true)
     public Optional&lt;Proposal&gt; findProposalById(String id) {
-<span class="nc" id="L54">        return proposalRepository.findById(id);</span>
+<span class="nc" id="L56">        return proposalRepository.findById(id);</span>
     }
 
     @Timed(value = &quot;service.reference.findProposalByName&quot;, histogram = true)
     @Transactional(readOnly = true)
     public Optional&lt;Proposal&gt; findProposalByName(Category category, String name) {
-<span class="nc" id="L60">        return proposalRepository.findProposalByName(category.getId(), name);</span>
+<span class="nc" id="L62">        return proposalRepository.findProposalByName(category.getId(), name);</span>
     }
 
     @Timed(value = &quot;service.reference.storeEvent&quot;, histogram = true)
     @Transactional
     public Event storeEvent(Event event) {
-<span class="nc" id="L66">        return eventRepository.saveAndFlush(event);</span>
+<span class="nc" id="L68">        return eventRepository.saveAndFlush(event);</span>
     }
+
+    @Timed(value = &quot;service.reference.removeEvent&quot;, histogram = true)
+    @Transactional
+    public void removeEvent(Event event) {
+<span class="nc" id="L74">        eventRepository.delete(event);</span>
+<span class="nc" id="L75">    }</span>
 
     @Timed(value = &quot;service.reference.findAllValidEvents&quot;, histogram = true)
     @Transactional(readOnly = true)
     public List&lt;Event&gt; findAllValidEvents() {
-<span class="fc" id="L72">        return eventRepository.findAll()</span>
-<span class="fc" id="L73">                .stream()</span>
-<span class="fc" id="L74">                .filter(Event::isValid)</span>
-<span class="fc" id="L75">                .toList();</span>
+<span class="fc" id="L80">        return eventRepository.findAll()</span>
+<span class="fc" id="L81">                .stream()</span>
+<span class="fc" id="L82">                .filter(Event::isValid)</span>
+<span class="fc" id="L83">                .toList();</span>
     }
 
     @Timed(value = &quot;service.reference.findAllActiveEvents&quot;, histogram = true)
     @Transactional(readOnly = true)
     public List&lt;Event&gt; findAllActiveEvents() {
-<span class="nc" id="L81">        return findAllValidEvents().stream()</span>
-<span class="nc" id="L82">                .filter(event -&gt; eventAdditionalInfoService.getEventAdditionalInfo(event).fold(problem -&gt; false, EventAdditionalInfo::active))</span>
-<span class="nc" id="L83">                .toList();</span>
+<span class="nc" id="L89">        return findAllValidEvents().stream()</span>
+<span class="nc" id="L90">                .filter(event -&gt; eventAdditionalInfoService.getEventAdditionalInfo(event).fold(problem -&gt; false, EventAdditionalInfo::active))</span>
+<span class="nc" id="L91">                .toList();</span>
     }
 
     @Timed(value = &quot;service.reference.storeCategory&quot;, histogram = true)
     @Transactional
     public Category storeCategory(Category category) {
-<span class="nc" id="L89">        return categoryRepository.saveAndFlush(category);</span>
+<span class="nc" id="L97">        return categoryRepository.saveAndFlush(category);</span>
     }
+
+    @Timed(value = &quot;service.reference.removeCategory&quot;, histogram = true)
+    @Transactional
+    public void removeCategory(Category category) {
+<span class="nc" id="L103">        categoryRepository.delete(category);</span>
+<span class="nc" id="L104">    }</span>
 
     @Timed(value = &quot;service.reference.rollback&quot;, histogram = true)
     @Transactional
     public void rollbackReferenceDataAfterSlot(long slot) {
-<span class="nc" id="L95">        proposalRepository.deleteAllAfterSlot(slot);</span>
-<span class="nc" id="L96">        proposalRepository.flush();</span>
+<span class="nc" id="L109">        proposalRepository.deleteAllAfterSlot(slot);</span>
+<span class="nc" id="L110">        proposalRepository.flush();</span>
 
-<span class="nc" id="L98">        categoryRepository.deleteAllAfterSlot(slot);</span>
-<span class="nc" id="L99">        categoryRepository.flush();</span>
+<span class="nc" id="L112">        categoryRepository.deleteAllAfterSlot(slot);</span>
+<span class="nc" id="L113">        categoryRepository.flush();</span>
 
-<span class="nc" id="L101">        eventRepository.deleteAllAfterSlot(slot);</span>
-<span class="nc" id="L102">        eventRepository.flush();</span>
-<span class="nc" id="L103">    }</span>
+<span class="nc" id="L115">        eventRepository.deleteAllAfterSlot(slot);</span>
+<span class="nc" id="L116">        eventRepository.flush();</span>
+<span class="nc" id="L117">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

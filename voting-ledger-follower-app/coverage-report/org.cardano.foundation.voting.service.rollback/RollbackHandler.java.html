@@ -1,31 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RollbackHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-ledger-follower-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.service.rollback</a> &gt; <span class="el_source">RollbackHandler.java</span></div><h1>RollbackHandler.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.service.rollback;
 
 import com.bloxbean.cardano.yaci.store.events.RollbackEvent;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.cardano.foundation.voting.service.utxo.EventResultsUtxoDataService;
+import org.cardano.foundation.voting.service.vote.MerkleRootHashService;
 import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-<span class="fc" id="L11">@Slf4j</span>
-@Service
-<span class="fc" id="L13">public class RollbackHandler {</span>
+<span class="nc" id="L12">@Slf4j</span>
+<span class="nc" id="L13">@RequiredArgsConstructor</span>
+public class RollbackHandler {
 
-    @Autowired
-    private ReferenceDataService referenceDataService;
+    private final EventResultsUtxoDataService eventResultsUtxoDataService;
+    private final ReferenceDataService referenceDataService;
+    private final MerkleRootHashService merkleRootHashService;
 
     @EventListener
     @Transactional
     public void handleRollbackEvent(RollbackEvent rollbackEvent) {
-<span class="nc" id="L21">        log.info(&quot;Rollback, event:{}&quot;, rollbackEvent);</span>
+<span class="nc" id="L23">        log.info(&quot;Rollback, event:{}&quot;, rollbackEvent);</span>
 
-<span class="nc" id="L23">        long rollbackToSlot = rollbackEvent.getRollbackTo().getSlot();</span>
+<span class="nc" id="L25">        long rollbackToSlot = rollbackEvent.getRollbackTo().getSlot();</span>
 
-<span class="nc" id="L25">        referenceDataService.rollbackReferenceDataAfterSlot(rollbackToSlot);</span>
+<span class="nc" id="L27">        eventResultsUtxoDataService.rollbackAfterSlot(rollbackToSlot);</span>
+<span class="nc" id="L28">        merkleRootHashService.rollbackAfterSlot(rollbackToSlot);</span>
+<span class="nc" id="L29">        referenceDataService.rollbackReferenceDataAfterSlot(rollbackToSlot);</span>
 
-<span class="nc" id="L27">        log.info(&quot;Rollbacked handled.&quot;);</span>
-<span class="nc" id="L28">    }</span>
+<span class="nc" id="L31">        log.info(&quot;Rollbacked handled.&quot;);</span>
+<span class="nc" id="L32">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

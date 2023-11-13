@@ -4,31 +4,32 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 import org.cardano.foundation.voting.domain.OnChainEventType;
+import org.cardano.foundation.voting.domain.SchemaVersion;
 
 import java.util.List;
 
 @Getter
-<span class="nc bnc" id="L11" title="All 6 branches missed.">@Builder</span>
-<span class="nc" id="L12">@ToString</span>
+<span class="nc bnc" id="L12" title="All 6 branches missed.">@Builder</span>
+<span class="nc" id="L13">@ToString</span>
 public class CategoryRegistrationEnvelope {
 
-<span class="nc" id="L15">    private OnChainEventType type;</span>
-<span class="nc" id="L16">    private String id;</span>
-<span class="nc" id="L17">    private String event;</span>
-<span class="nc" id="L18">    private String schemaVersion;</span>
+<span class="nc" id="L16">    private OnChainEventType type;</span>
+<span class="nc" id="L17">    private String id;</span>
+<span class="nc" id="L18">    private String event;</span>
+<span class="nc" id="L19">    private SchemaVersion schemaVersion;</span>
 
-<span class="nc" id="L20">    private long creationSlot;</span>
-
-    @Builder.Default
-<span class="nc" id="L23">    private boolean gdprProtection = true; // TODO what should be the default?</span>
+<span class="nc" id="L21">    private long creationSlot;</span>
 
     @Builder.Default
-<span class="nc" id="L26">    private boolean allowVoteChanging = false;</span>
+<span class="nc" id="L24">    private boolean gdprProtection = true; // TODO what should be the default?</span>
 
     @Builder.Default
-<span class="nc" id="L29">    private boolean categoryResultsWhileVoting = false;</span>
+<span class="nc" id="L27">    private boolean allowVoteChanging = false;</span>
 
-<span class="nc" id="L31">    private List&lt;ProposalEnvelope&gt; proposals;</span>
+    @Builder.Default
+<span class="nc" id="L30">    private boolean categoryResultsWhileVoting = false;</span>
+
+<span class="nc" id="L32">    private List&lt;ProposalEnvelope&gt; proposals;</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

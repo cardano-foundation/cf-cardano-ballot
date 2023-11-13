@@ -3,52 +3,58 @@
 import lombok.Builder;
 import lombok.Getter;
 import org.cardano.foundation.voting.domain.OnChainEventType;
+import org.cardano.foundation.voting.domain.SchemaVersion;
 import org.cardano.foundation.voting.domain.VotingEventType;
 import org.cardano.foundation.voting.domain.VotingPowerAsset;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Getter
-<span class="nc bnc" id="L12" title="All 16 branches missed.">@Builder</span>
+<span class="nc bnc" id="L15" title="All 18 branches missed.">@Builder</span>
 public class EventRegistrationEnvelope {
 
-<span class="nc" id="L15">    private OnChainEventType type;</span>
-<span class="nc" id="L16">    private String name;</span>
-<span class="nc" id="L17">    private String organisers;</span>
-<span class="nc" id="L18">    private String schemaVersion;</span>
-<span class="nc" id="L19">    private long creationSlot;</span>
+<span class="nc" id="L18">    private OnChainEventType type;</span>
+<span class="nc" id="L19">    private String name;</span>
+<span class="nc" id="L20">    private String organisers;</span>
+<span class="nc" id="L21">    private SchemaVersion schemaVersion;</span>
+<span class="nc" id="L22">    private long creationSlot;</span>
 
-<span class="nc" id="L21">    private boolean allowVoteChanging;</span>
+<span class="nc" id="L24">    private boolean allowVoteChanging;</span>
 
-<span class="nc" id="L23">    private boolean highLevelEventResultsWhileVoting;</span>
-<span class="nc" id="L24">    private boolean highLevelCategoryResultsWhileVoting;</span>
-<span class="nc" id="L25">    private boolean categoryResultsWhileVoting;</span>
+<span class="nc" id="L26">    private boolean highLevelEventResultsWhileVoting;</span>
+<span class="nc" id="L27">    private boolean highLevelCategoryResultsWhileVoting;</span>
+<span class="nc" id="L28">    private boolean categoryResultsWhileVoting;</span>
 
-<span class="nc" id="L27">    private VotingEventType votingEventType;</span>
-
-    @Builder.Default
-<span class="nc" id="L30">    private Optional&lt;VotingPowerAsset&gt; votingPowerAsset = Optional.empty();</span>
+<span class="nc" id="L30">    private VotingEventType votingEventType;</span>
 
     @Builder.Default
-<span class="nc" id="L33">    private Optional&lt;Long&gt; startSlot = Optional.empty();</span>
+<span class="nc" id="L33">    private Optional&lt;VotingPowerAsset&gt; votingPowerAsset = Optional.empty();</span>
 
     @Builder.Default
-<span class="nc" id="L36">    private Optional&lt;Long&gt; endSlot = Optional.empty();</span>
+<span class="nc" id="L36">    private Optional&lt;Long&gt; startSlot = Optional.empty();</span>
 
     @Builder.Default
-<span class="nc" id="L39">    private Optional&lt;Long&gt; proposalsRevealSlot = Optional.empty();</span>
+<span class="nc" id="L39">    private Optional&lt;Long&gt; endSlot = Optional.empty();</span>
 
     @Builder.Default
-<span class="nc" id="L42">    private Optional&lt;Integer&gt; startEpoch = Optional.empty();</span>
+<span class="nc" id="L42">    private Optional&lt;Long&gt; proposalsRevealSlot = Optional.empty();</span>
 
     @Builder.Default
-<span class="nc" id="L45">    private Optional&lt;Integer&gt; endEpoch = Optional.empty();</span>
+<span class="nc" id="L45">    private Optional&lt;Integer&gt; startEpoch = Optional.empty();</span>
 
     @Builder.Default
-<span class="nc" id="L48">    private Optional&lt;Integer&gt; snapshotEpoch = Optional.empty();</span>
+<span class="nc" id="L48">    private Optional&lt;Integer&gt; endEpoch = Optional.empty();</span>
 
     @Builder.Default
-<span class="nc" id="L51">    private Optional&lt;Integer&gt; proposalsRevealEpoch = Optional.empty();</span>
+<span class="nc" id="L51">    private Optional&lt;Integer&gt; snapshotEpoch = Optional.empty();</span>
+
+    @Builder.Default
+<span class="nc" id="L54">    private Optional&lt;Integer&gt; proposalsRevealEpoch = Optional.empty();</span>
+
+    @Builder.Default
+<span class="nc" id="L57">    private List&lt;TallyRegistrationEnvelope&gt; tallies = new ArrayList&lt;&gt;();</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

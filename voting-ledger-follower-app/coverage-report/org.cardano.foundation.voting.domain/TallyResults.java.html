@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TallyResults.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-ledger-follower-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.domain</a> &gt; <span class="el_source">TallyResults.java</span></div><h1>TallyResults.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.domain;
+
+import lombok.Builder;
+import lombok.Getter;
+import org.cardano.foundation.voting.domain.entity.Tally;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
+<span class="nc bnc" id="L11" title="All 2 branches missed.">@Builder</span>
+@Getter
+public class TallyResults {
+
+<span class="nc" id="L15">    private String tallyName;</span>
+<span class="nc" id="L16">    private Optional&lt;String&gt; tallyDescription;</span>
+<span class="nc" id="L17">    private Tally.TallyType tallyType;</span>
+<span class="nc" id="L18">    private String eventId;</span>
+<span class="nc" id="L19">    private String categoryId;</span>
+
+<span class="nc" id="L21">    private Map&lt;String, Long&gt; results;</span>
+
+    @Builder.Default
+<span class="nc" id="L24">    private Map&lt;String, Object&gt; metadata = new HashMap&lt;&gt;();</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

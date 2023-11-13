@@ -9,6 +9,7 @@ import org.cardano.foundation.voting.domain.IsMerkleRootPresentResult;
 import org.cardano.foundation.voting.domain.entity.MerkleRootHash;
 import org.cardano.foundation.voting.repository.MerkleRootHashRepository;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
@@ -18,8 +19,8 @@ import java.util.List;
 import static org.zalando.problem.Status.BAD_REQUEST;
 
 @Service
-<span class="fc" id="L21">@Slf4j</span>
-<span class="fc" id="L22">@RequiredArgsConstructor</span>
+<span class="fc" id="L22">@Slf4j</span>
+<span class="fc" id="L23">@RequiredArgsConstructor</span>
 public class MerkleRootHashService {
 
     private final MerkleRootHashRepository merkleRootHashRepository;
@@ -28,29 +29,38 @@ public class MerkleRootHashService {
 
     private final CardanoNetwork network;
 
+    @Timed(value = &quot;service.merkle_root.isPresent&quot;, histogram = true)
     public Either&lt;Problem, IsMerkleRootPresentResult&gt; isPresent(String event, String merkleRootHashHex) {
-<span class="fc" id="L32">        var maybeEvent = referenceDataService.findEventByName(event);</span>
+<span class="fc" id="L34">        var maybeEvent = referenceDataService.findEventByName(event);</span>
 
-<span class="fc bfc" id="L34" title="All 2 branches covered.">        if (maybeEvent.isEmpty()) {</span>
-<span class="fc" id="L35">            log.info(&quot;No event in db found for {}&quot;, event);</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">        if (maybeEvent.isEmpty()) {</span>
+<span class="fc" id="L37">            log.info(&quot;No event in db found for {}&quot;, event);</span>
 
-<span class="fc" id="L37">            return Either.left(Problem.builder()</span>
-<span class="fc" id="L38">                    .withTitle(&quot;EVENT_NOT_FOUND&quot;)</span>
-<span class="fc" id="L39">                    .withStatus(BAD_REQUEST)</span>
-<span class="fc" id="L40">                    .withDetail(&quot;No event in db found for:&quot; + event)</span>
-<span class="fc" id="L41">                    .build());</span>
+<span class="fc" id="L39">            return Either.left(Problem.builder()</span>
+<span class="fc" id="L40">                    .withTitle(&quot;EVENT_NOT_FOUND&quot;)</span>
+<span class="fc" id="L41">                    .withStatus(BAD_REQUEST)</span>
+<span class="fc" id="L42">                    .withDetail(&quot;No event in db found for:&quot; + event)</span>
+<span class="fc" id="L43">                    .build());</span>
         }
 
-<span class="fc" id="L44">        return merkleRootHashRepository.findByEventIdAndId(event, merkleRootHashHex).map(merkleRootHash -&gt; {</span>
-<span class="fc" id="L45">            return Either.&lt;Problem, IsMerkleRootPresentResult&gt;right(new IsMerkleRootPresentResult(true, network));</span>
-<span class="fc" id="L46">        }).orElse(Either.right(new IsMerkleRootPresentResult(false, network)));</span>
+<span class="fc" id="L46">        return merkleRootHashRepository.findByEventIdAndId(event, merkleRootHashHex).map(merkleRootHash -&gt; {</span>
+<span class="fc" id="L47">            return Either.&lt;Problem, IsMerkleRootPresentResult&gt;right(new IsMerkleRootPresentResult(true, network));</span>
+<span class="fc" id="L48">        }).orElse(Either.right(new IsMerkleRootPresentResult(false, network)));</span>
     }
 
-    @Timed(value = &quot;service.reference.storeCommitments&quot;, histogram = true)
+    @Timed(value = &quot;service.merkle_root.storeCommitments&quot;, histogram = true)
     @Transactional
     public List&lt;MerkleRootHash&gt; storeCommitments(List&lt;MerkleRootHash&gt; merkleRootHashes) {
-<span class="nc" id="L52">        log.info(&quot;Storing commitments:{}&quot;, merkleRootHashes);</span>
-<span class="nc" id="L53">        return merkleRootHashRepository.saveAllAndFlush(merkleRootHashes);</span>
+<span class="nc" id="L54">        log.info(&quot;Storing commitments:{}&quot;, merkleRootHashes);</span>
+<span class="nc" id="L55">        return merkleRootHashRepository.saveAllAndFlush(merkleRootHashes);</span>
+    }
+
+    @Timed(value = &quot;service.merkle_root.rollbackAfterSlot&quot;, histogram = true)
+    @Transactional
+    public int rollbackAfterSlot(@Param(&quot;slot&quot;) long slot) {
+<span class="nc" id="L61">        log.info(&quot;Deleting all after slot:{}&quot;, slot);</span>
+
+<span class="nc" id="L63">        return merkleRootHashRepository.deleteAllAfterSlot(slot);</span>
     }
 
 }

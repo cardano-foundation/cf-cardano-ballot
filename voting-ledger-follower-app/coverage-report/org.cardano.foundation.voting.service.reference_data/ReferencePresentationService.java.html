@@ -4,10 +4,9 @@ import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.EventAdditionalInfo;
+import org.cardano.foundation.voting.domain.HydraTally;
 import org.cardano.foundation.voting.domain.entity.Event;
-import org.cardano.foundation.voting.domain.presentation.CategoryPresentation;
-import org.cardano.foundation.voting.domain.presentation.EventPresentation;
-import org.cardano.foundation.voting.domain.presentation.ProposalPresentation;
+import org.cardano.foundation.voting.domain.presentation.*;
 import org.cardano.foundation.voting.service.epoch.CustomEpochService;
 import org.cardano.foundation.voting.service.expire.EventAdditionalInfoService;
 import org.springframework.stereotype.Service;
@@ -19,8 +18,8 @@ import java.util.Optional;
 import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 
 @Service
-<span class="fc" id="L22">@Slf4j</span>
-<span class="fc" id="L23">@RequiredArgsConstructor</span>
+<span class="fc" id="L21">@Slf4j</span>
+<span class="fc" id="L22">@RequiredArgsConstructor</span>
 public class ReferencePresentationService {
 
     private final ReferenceDataService referenceDataService;
@@ -30,83 +29,114 @@ public class ReferencePresentationService {
     private final CustomEpochService customEpochService;
 
     public Either&lt;Problem, Optional&lt;EventPresentation&gt;&gt; findEventReference(String name) {
-<span class="fc" id="L33">        var maybeValidEventByName = referenceDataService.findValidEventByName(name);</span>
+<span class="fc" id="L32">        var maybeValidEventByName = referenceDataService.findValidEventByName(name);</span>
 
-<span class="fc bfc" id="L35" title="All 2 branches covered.">        if (maybeValidEventByName.isEmpty()) {</span>
-<span class="fc" id="L36">            return Either.right(Optional.empty());</span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">        if (maybeValidEventByName.isEmpty()) {</span>
+<span class="fc" id="L35">            return Either.right(Optional.empty());</span>
         }
 
-<span class="fc" id="L39">        var event = maybeValidEventByName.get();</span>
-<span class="fc" id="L40">        var categories = event.getCategories().stream().map(category -&gt; {</span>
-<span class="fc" id="L41">                    var proposals = category.getProposals().stream().map(proposal -&gt; ProposalPresentation.builder()</span>
-<span class="fc" id="L42">                                    .id(proposal.getId())</span>
-<span class="fc" id="L43">                                    .name(proposal.getName())</span>
-<span class="fc" id="L44">                                    .build())</span>
-<span class="fc" id="L45">                            .toList();</span>
+<span class="fc" id="L38">        var event = maybeValidEventByName.get();</span>
+<span class="fc" id="L39">        var categories = event.getCategories().stream().map(category -&gt; {</span>
+<span class="fc" id="L40">                    var proposals = category.getProposals().stream().map(proposal -&gt; ProposalPresentation.builder()</span>
+<span class="fc" id="L41">                                    .id(proposal.getId())</span>
+<span class="fc" id="L42">                                    .name(proposal.getName())</span>
+<span class="fc" id="L43">                                    .build())</span>
+<span class="fc" id="L44">                            .toList();</span>
 
-<span class="fc" id="L47">                    return CategoryPresentation.builder()</span>
-<span class="fc" id="L48">                            .id(category.getId())</span>
-<span class="fc" id="L49">                            .gdprProtection(category.isGdprProtection())</span>
-<span class="fc" id="L50">                            .proposals(proposals)</span>
-<span class="fc" id="L51">                            .build();</span>
+<span class="fc" id="L46">                    return CategoryPresentation.builder()</span>
+<span class="fc" id="L47">                            .id(category.getId())</span>
+<span class="fc" id="L48">                            .gdprProtection(category.isGdprProtection())</span>
+<span class="fc" id="L49">                            .proposals(proposals)</span>
+<span class="fc" id="L50">                            .build();</span>
                 }
-<span class="fc" id="L53">        ).toList();</span>
+<span class="fc" id="L52">        ).toList();</span>
 
-<span class="fc" id="L55">        var eventAdditionalInfoE = eventAdditionalInfoService.getEventAdditionalInfo(event);</span>
-<span class="pc bpc" id="L56" title="1 of 2 branches missed.">        if (eventAdditionalInfoE.isEmpty()) {</span>
-<span class="nc" id="L57">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L58">                    .withTitle(&quot;REFERENCE_ERROR&quot;)</span>
-<span class="nc" id="L59">                    .withDetail(&quot;Unable to get expiration data.&quot;)</span>
-<span class="nc" id="L60">                    .withStatus(INTERNAL_SERVER_ERROR)</span>
-<span class="nc" id="L61">                    .build());</span>
+<span class="fc" id="L54">        var eventAdditionalInfoE = eventAdditionalInfoService.getEventAdditionalInfo(event);</span>
+<span class="pc bpc" id="L55" title="1 of 2 branches missed.">        if (eventAdditionalInfoE.isEmpty()) {</span>
+<span class="nc" id="L56">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L57">                    .withTitle(&quot;REFERENCE_ERROR&quot;)</span>
+<span class="nc" id="L58">                    .withDetail(&quot;Unable to get expiration data.&quot;)</span>
+<span class="nc" id="L59">                    .withStatus(INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L60">                    .build());</span>
         }
-<span class="fc" id="L63">        var eventAdditionalInfo = eventAdditionalInfoE.get();</span>
+<span class="fc" id="L62">        var eventAdditionalInfo = eventAdditionalInfoE.get();</span>
 
-<span class="fc" id="L65">        var eventBuilder = EventPresentation.builder()</span>
-<span class="fc" id="L66">                .id(event.getId())</span>
-<span class="fc" id="L67">                .organisers(event.getOrganisers())</span>
-<span class="fc" id="L68">                .votingEventType(event.getVotingEventType())</span>
-<span class="fc" id="L69">                .startEpoch(event.getStartEpoch())</span>
-<span class="fc" id="L70">                .endEpoch(event.getEndEpoch())</span>
-<span class="fc" id="L71">                .startSlot(event.getStartSlot())</span>
-<span class="fc" id="L72">                .endSlot(event.getEndSlot())</span>
-<span class="fc" id="L73">                .snapshotEpoch(event.getSnapshotEpoch())</span>
-<span class="fc" id="L74">                .categories(categories)</span>
-<span class="fc" id="L75">                .isNotStarted(eventAdditionalInfo.notStarted())</span>
-<span class="fc" id="L76">                .isStarted(eventAdditionalInfo.started())</span>
-<span class="fc" id="L77">                .isActive(eventAdditionalInfo.active())</span>
-<span class="fc" id="L78">                .isFinished(eventAdditionalInfo.finished())</span>
-<span class="fc" id="L79">                .isProposalsReveal(eventAdditionalInfo.proposalsReveal())</span>
-<span class="fc" id="L80">                .isCommitmentsWindowOpen(eventAdditionalInfo.commitmentsWindowOpen())</span>
-<span class="fc" id="L81">                .isAllowVoteChanging(event.isAllowVoteChanging())</span>
-<span class="fc" id="L82">                .isHighLevelEventResultsWhileVoting(event.getHighLevelEventResultsWhileVoting())</span>
-<span class="fc" id="L83">                .isHighLevelCategoryResultsWhileVoting(event.getHighLevelEventResultsWhileVoting())</span>
-<span class="fc" id="L84">                .isCategoryResultsWhileVoting(event.getCategoryResultsWhileVoting())</span>
+<span class="fc" id="L64">        var tallyPresentations = event.getTallies().stream().map(</span>
+                tally -&gt; {
+<span class="nc bnc" id="L66" title="All 2 branches missed.">                    var hydraTallyPresentationConfigM = switch (tally.getType()) {</span>
+                        case HYDRA: {
+<span class="nc" id="L68">                            var hydraTally = (HydraTally) tally.getHydraTallyConfig();</span>
+
+<span class="nc" id="L70">                            yield Optional.of(HydraTallyConfigPresentation.builder()</span>
+<span class="nc" id="L71">                                    .contractName(hydraTally.getContractName())</span>
+<span class="nc" id="L72">                                    .compiledScript(hydraTally.getCompiledScript())</span>
+<span class="nc" id="L73">                                    .compiledScriptHash(hydraTally.getCompiledScriptHash())</span>
+<span class="nc" id="L74">                                    .contractVersion(hydraTally.getContractVersion())</span>
+<span class="nc" id="L75">                                    .verificationKeys(hydraTally.getVerificationKeysHashesAsList())</span>
+<span class="nc" id="L76">                                    .compilerName(hydraTally.getCompilerName())</span>
+<span class="nc" id="L77">                                    .plutusVersion(hydraTally.getPlutusVersion())</span>
+<span class="nc" id="L78">                                    .compilerVersion(hydraTally.getCompilerVersion())</span>
+<span class="nc" id="L79">                                    .build());</span>
+                        }
+                    };
+
+<span class="nc" id="L83">                    var tallyPresentationBuilder = TallyPresentation.builder()</span>
+<span class="nc" id="L84">                            .name(tally.getName())</span>
+<span class="nc" id="L85">                            .type(tally.getType())</span>
+<span class="nc" id="L86">                            .description(tally.getDescription());</span>
+
+<span class="nc" id="L88">                    tallyPresentationBuilder.config(hydraTallyPresentationConfigM);</span>
+
+<span class="nc" id="L90">                    return tallyPresentationBuilder.build();</span>
+                }
+<span class="fc" id="L92">        ).toList();</span>
+
+<span class="fc" id="L94">        var eventBuilder = EventPresentation.builder()</span>
+<span class="fc" id="L95">                .id(event.getId())</span>
+<span class="fc" id="L96">                .organisers(event.getOrganisers())</span>
+<span class="fc" id="L97">                .votingEventType(event.getVotingEventType())</span>
+<span class="fc" id="L98">                .startEpoch(event.getStartEpoch())</span>
+<span class="fc" id="L99">                .endEpoch(event.getEndEpoch())</span>
+<span class="fc" id="L100">                .startSlot(event.getStartSlot())</span>
+<span class="fc" id="L101">                .endSlot(event.getEndSlot())</span>
+<span class="fc" id="L102">                .snapshotEpoch(event.getSnapshotEpoch())</span>
+<span class="fc" id="L103">                .categories(categories)</span>
+<span class="fc" id="L104">                .isNotStarted(eventAdditionalInfo.notStarted())</span>
+<span class="fc" id="L105">                .isStarted(eventAdditionalInfo.started())</span>
+<span class="fc" id="L106">                .isActive(eventAdditionalInfo.active())</span>
+<span class="fc" id="L107">                .isFinished(eventAdditionalInfo.finished())</span>
+<span class="fc" id="L108">                .isProposalsReveal(eventAdditionalInfo.proposalsReveal())</span>
+<span class="fc" id="L109">                .isCommitmentsWindowOpen(eventAdditionalInfo.commitmentsWindowOpen())</span>
+<span class="fc" id="L110">                .isAllowVoteChanging(event.isAllowVoteChanging())</span>
+<span class="fc" id="L111">                .isHighLevelEventResultsWhileVoting(event.getHighLevelEventResultsWhileVoting())</span>
+<span class="fc" id="L112">                .isHighLevelCategoryResultsWhileVoting(event.getHighLevelEventResultsWhileVoting())</span>
+<span class="fc" id="L113">                .isCategoryResultsWhileVoting(event.getCategoryResultsWhileVoting())</span>
+<span class="fc" id="L114">                .tallies(tallyPresentations)</span>
                 ;
 
-<span class="pc bpc" id="L87" title="2 of 3 branches missed.">        switch (event.getVotingEventType()) {</span>
+<span class="pc bpc" id="L117" title="2 of 3 branches missed.">        switch (event.getVotingEventType()) {</span>
             case STAKE_BASED, BALANCE_BASED -&gt; {
-<span class="fc" id="L89">                eventBuilder.eventStartDate(customEpochService.getEpochStartTime(event.getStartEpoch().orElseThrow()));</span>
-<span class="fc" id="L90">                eventBuilder.eventEndDate(customEpochService.getEpochEndTime(event.getEndEpoch().orElseThrow()));</span>
-<span class="fc" id="L91">                eventBuilder.snapshotTime(customEpochService.getEpochEndTime(event.getSnapshotEpoch().orElseThrow()));</span>
-<span class="fc" id="L92">                eventBuilder.proposalsRevealDate(customEpochService.getEpochStartTime(event.getProposalsRevealEpoch().orElseThrow()));</span>
-<span class="fc" id="L93">                eventBuilder.proposalsRevealEpoch(event.getProposalsRevealEpoch());</span>
-<span class="fc" id="L94">            }</span>
+<span class="fc" id="L119">                eventBuilder.eventStartDate(customEpochService.getEpochStartTime(event.getStartEpoch().orElseThrow()));</span>
+<span class="fc" id="L120">                eventBuilder.eventEndDate(customEpochService.getEpochEndTime(event.getEndEpoch().orElseThrow()));</span>
+<span class="fc" id="L121">                eventBuilder.snapshotTime(customEpochService.getEpochEndTime(event.getSnapshotEpoch().orElseThrow()));</span>
+<span class="fc" id="L122">                eventBuilder.proposalsRevealDate(customEpochService.getEpochStartTime(event.getProposalsRevealEpoch().orElseThrow()));</span>
+<span class="fc" id="L123">                eventBuilder.proposalsRevealEpoch(event.getProposalsRevealEpoch());</span>
+<span class="fc" id="L124">            }</span>
             case USER_BASED -&gt; {
-<span class="nc" id="L96">                eventBuilder.eventStartDate(customEpochService.getTimeBasedOnAbsoluteSlot(event.getStartSlot().orElseThrow()));</span>
-<span class="nc" id="L97">                eventBuilder.eventEndDate(customEpochService.getTimeBasedOnAbsoluteSlot(event.getEndSlot().orElseThrow()));</span>
-<span class="nc" id="L98">                eventBuilder.proposalsRevealDate(customEpochService.getTimeBasedOnAbsoluteSlot(event.getProposalsRevealSlot().orElseThrow()));</span>
-<span class="nc" id="L99">                eventBuilder.proposalsRevealSlot(event.getProposalsRevealSlot());</span>
+<span class="nc" id="L126">                eventBuilder.eventStartDate(customEpochService.getTimeBasedOnAbsoluteSlot(event.getStartSlot().orElseThrow()));</span>
+<span class="nc" id="L127">                eventBuilder.eventEndDate(customEpochService.getTimeBasedOnAbsoluteSlot(event.getEndSlot().orElseThrow()));</span>
+<span class="nc" id="L128">                eventBuilder.proposalsRevealDate(customEpochService.getTimeBasedOnAbsoluteSlot(event.getProposalsRevealSlot().orElseThrow()));</span>
+<span class="nc" id="L129">                eventBuilder.proposalsRevealSlot(event.getProposalsRevealSlot());</span>
             }
         }
 
-<span class="fc" id="L103">        return Either.right(Optional.of(eventBuilder.build()));</span>
+<span class="fc" id="L133">        return Either.right(Optional.of(eventBuilder.build()));</span>
     }
 
     public Either&lt;Problem, List&lt;EventAdditionalInfo&gt;&gt; eventsSummaries() {
-<span class="fc" id="L107">        List&lt;Event&gt; allValidEvents = referenceDataService.findAllValidEvents();</span>
+<span class="fc" id="L137">        List&lt;Event&gt; allValidEvents = referenceDataService.findAllValidEvents();</span>
 
-<span class="fc" id="L109">        return eventAdditionalInfoService.getEventAdditionalInfo(allValidEvents);</span>
+<span class="fc" id="L139">        return eventAdditionalInfoService.getEventAdditionalInfo(allValidEvents);</span>
     }
 
 }

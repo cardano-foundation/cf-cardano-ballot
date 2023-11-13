@@ -2,27 +2,40 @@
 
 import com.bloxbean.cardano.client.backend.api.BackendService;
 import com.bloxbean.cardano.client.backend.blockfrost.service.BFBackendService;
+import com.bloxbean.cardano.client.common.model.Network;
+import com.bloxbean.cardano.client.common.model.Networks;
 import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-<span class="fc" id="L12">@Slf4j</span>
-<span class="fc" id="L13">public class CardanoClientLibConfig {</span>
+<span class="fc" id="L15">@Slf4j</span>
+<span class="fc" id="L16">public class CardanoClientLibConfig {</span>
 
     @Bean
     @Qualifier(&quot;original_blockfrost&quot;)
     public BackendService orgBackendService(@Value(&quot;${blockfrost.url}&quot;) String blockfrostUrl,
                                             @Value(&quot;${blockfrost.api.key}&quot;) String blockfrostApiKey) {
-<span class="fc" id="L19">        return new BFBackendService(blockfrostUrl, blockfrostApiKey);</span>
+<span class="fc" id="L22">        return new BFBackendService(blockfrostUrl, blockfrostApiKey);</span>
+    }
+
+    @Bean
+    public Network network(CardanoNetwork cardanoNetwork) {
+<span class="pc bpc" id="L27" title="4 of 5 branches missed.">        return switch(cardanoNetwork) {</span>
+<span class="nc" id="L28">            case MAIN -&gt; Networks.mainnet();</span>
+<span class="fc" id="L29">            case PREPROD -&gt; Networks.preprod();</span>
+<span class="nc" id="L30">            case PREVIEW -&gt; Networks.preview();</span>
+<span class="nc" id="L31">            case DEV -&gt; Networks.testnet();</span>
+        };
     }
 
     @Bean
     @Qualifier(&quot;yaci_blockfrost&quot;)
     public BackendService yaciBackendService() {
-<span class="fc" id="L25">        return new BFBackendService(&quot;http://localhost:9090/yaci-api/&quot;, &quot;&quot;);</span>
+<span class="fc" id="L38">        return new BFBackendService(&quot;http://localhost:9090/yaci-api/&quot;, &quot;&quot;);</span>
     }
 
 }

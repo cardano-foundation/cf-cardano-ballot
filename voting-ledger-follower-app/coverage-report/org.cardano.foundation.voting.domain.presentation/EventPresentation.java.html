@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Getter
 <span class="pc" id="L14">@Setter</span>
-<span class="pc bpc" id="L15" title="22 of 44 branches missed.">@Builder</span>
+<span class="pc bpc" id="L15" title="23 of 46 branches missed.">@Builder</span>
 public class EventPresentation {
 
 <span class="fc" id="L18">    private String id;</span>
@@ -86,6 +86,9 @@ public class EventPresentation {
 
     @Builder.Default
 <span class="fc" id="L88">    private List&lt;CategoryPresentation&gt; categories = new ArrayList&lt;&gt;();</span>
+
+    @Builder.Default
+<span class="fc" id="L91">    private List&lt;TallyPresentation&gt; tallies = new ArrayList&lt;&gt;();</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

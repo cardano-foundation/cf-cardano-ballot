@@ -12,21 +12,20 @@ import java.util.Optional;
 <span class="pc" id="L12">@Builder</span>
 @Entity
 @Table(name = &quot;proposal&quot;)
-@Immutable
 public class Proposal extends AbstractTimestampEntity {
 
-<span class="fc" id="L18">    @Getter</span>
+<span class="fc" id="L17">    @Getter</span>
     @Id
     @Column
-<span class="nc" id="L21">    @Setter</span>
+<span class="nc" id="L20">    @Setter</span>
     private String id;
 
     @Column(name = &quot;name&quot;)
     @Nullable
     private String name;
 
-<span class="nc" id="L28">    @Getter</span>
-<span class="fc" id="L29">    @Setter</span>
+<span class="nc" id="L27">    @Getter</span>
+<span class="fc" id="L28">    @Setter</span>
     @ManyToOne(
             fetch = FetchType.EAGER,
             cascade = CascadeType.ALL
@@ -34,22 +33,22 @@ public class Proposal extends AbstractTimestampEntity {
     @JoinColumn(name = &quot;category_id&quot;)
     private Category category;
 
-<span class="nc" id="L37">    @Getter</span>
-<span class="nc" id="L38">    @Setter</span>
+<span class="nc" id="L36">    @Getter</span>
+<span class="nc" id="L37">    @Setter</span>
     @Column(name = &quot;absolute_slot&quot;)
     private long absoluteSlot;
 
     public Optional&lt;String&gt; getName() {
-<span class="fc" id="L43">        return Optional.ofNullable(name);</span>
+<span class="fc" id="L42">        return Optional.ofNullable(name);</span>
     }
 
     public void setName(@Nullable String name) {
-<span class="nc" id="L47">        this.name = name;</span>
-<span class="nc" id="L48">    }</span>
+<span class="nc" id="L46">        this.name = name;</span>
+<span class="nc" id="L47">    }</span>
 
     @Override
     public String toString() {
-<span class="nc" id="L52">        return &quot;Proposal{&quot; +</span>
+<span class="nc" id="L51">        return &quot;Proposal{&quot; +</span>
                 &quot;id='&quot; + id + '\'' +
                 &quot;, name='&quot; + name + '\'' +
                 '}';

@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>VotingTallyService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-ledger-follower-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.service.results</a> &gt; <span class="el_source">VotingTallyService.java</span></div><h1>VotingTallyService.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.service.results;
+
+import com.bloxbean.cardano.client.common.model.Network;
+import io.micrometer.core.annotation.Timed;
+import io.vavr.control.Either;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+import org.cardano.foundation.voting.domain.CategoryResultsDatumConverter;
+import org.cardano.foundation.voting.domain.TallyResults;
+import org.cardano.foundation.voting.service.plutus.PlutusScriptLoader;
+import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
+import org.cardano.foundation.voting.service.utxo.EventResultsUtxoDataService;
+import org.springframework.stereotype.Service;
+import org.zalando.problem.Problem;
+
+import java.util.Map;
+import java.util.Optional;
+
+import static org.cardano.foundation.voting.domain.entity.Tally.TallyType.HYDRA;
+import static org.zalando.problem.Status.BAD_REQUEST;
+
+@Service
+<span class="fc" id="L24">@AllArgsConstructor</span>
+<span class="fc" id="L25">@Slf4j</span>
+public class VotingTallyService {
+
+    private final ReferenceDataService referenceDataService;
+
+    private final CategoryResultsDatumConverter categoryResultsDatumConverter;
+
+    private final EventResultsUtxoDataService eventResultsUtxoDataService;
+
+    private final PlutusScriptLoader plutusScriptLoader;
+
+    private final Network network;
+
+    @Timed(value = &quot;service.vote_results.getVoteResults&quot;, histogram = true)
+    public Either&lt;Problem, Optional&lt;TallyResults&gt;&gt; getVoteResults(String eventId,
+                                                                  String categoryId,
+                                                                  String tallyName) {
+<span class="nc" id="L42">        val eventAdditionalInfoM = referenceDataService</span>
+<span class="nc" id="L43">                .findValidEventByName(eventId);</span>
+
+<span class="nc bnc" id="L45" title="All 2 branches missed.">        if (eventAdditionalInfoM.isEmpty()) {</span>
+<span class="nc" id="L46">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L47">                    .withTitle(&quot;UNRECOGNISED_EVENT&quot;)</span>
+<span class="nc" id="L48">                    .withDetail(&quot;Unrecognised event, event:&quot; + eventId)</span>
+<span class="nc" id="L49">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L50">                    .build()</span>
+            );
+        }
+
+<span class="nc" id="L54">        var eventDetails = eventAdditionalInfoM.orElseThrow();</span>
+
+<span class="nc" id="L56">        var isValidCategory = eventDetails.getCategories()</span>
+<span class="nc" id="L57">                .stream()</span>
+<span class="nc" id="L58">                .anyMatch(category -&gt; category.getId().equals(categoryId));</span>
+
+<span class="nc bnc" id="L60" title="All 2 branches missed.">        if (!isValidCategory) {</span>
+<span class="nc" id="L61">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L62">                    .withTitle(&quot;UNRECOGNISED_CATEGORY&quot;)</span>
+<span class="nc" id="L63">                    .withDetail(&quot;Unrecognised category, category:&quot; + categoryId)</span>
+<span class="nc" id="L64">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L65">                    .build()</span>
+            );
+        }
+
+<span class="nc" id="L69">        var tallyM = eventDetails.getTallies()</span>
+<span class="nc" id="L70">                .stream()</span>
+<span class="nc" id="L71">                .filter(tally -&gt; tally.getName().equals(tallyName))</span>
+<span class="nc" id="L72">                .findFirst();</span>
+
+<span class="nc bnc" id="L74" title="All 2 branches missed.">        if (tallyM.isEmpty()) {</span>
+<span class="nc" id="L75">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L76">                    .withTitle(&quot;UNRECOGNISED_TALLY&quot;)</span>
+<span class="nc" id="L77">                    .withDetail(&quot;Unrecognised tally, tally:&quot; + tallyName)</span>
+<span class="nc" id="L78">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L79">                    .build()</span>
+            );
+        }
+
+<span class="nc" id="L83">        var tally = tallyM.orElseThrow();</span>
+
+<span class="nc bnc" id="L85" title="All 2 branches missed.">        if (tally.getType() != HYDRA) {</span>
+<span class="nc" id="L86">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L87">                    .withTitle(&quot;TALLY_TYPE_NOT_SUPPORTED&quot;)</span>
+<span class="nc" id="L88">                    .withDetail(&quot;Tally type not supported, tally:&quot; + tally)</span>
+<span class="nc" id="L89">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L90">                    .build()</span>
+            );
+        }
+
+<span class="nc" id="L94">        var hydraTally = tally.getHydraTallyConfig();</span>
+<span class="nc" id="L95">        var plutusScriptM = plutusScriptLoader.compileScriptBy(eventDetails, categoryId, tallyName);</span>
+
+<span class="nc bnc" id="L97" title="All 2 branches missed.">        if (plutusScriptM.isEmpty()) {</span>
+<span class="nc" id="L98">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L99">                    .withTitle(&quot;UNRECOGNISED_TALLY&quot;)</span>
+<span class="nc" id="L100">                    .withDetail(&quot;Unrecognised tally, tally:&quot; + tallyName)</span>
+<span class="nc" id="L101">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L102">                    .build()</span>
+            );
+        }
+
+<span class="nc" id="L106">        var plutusScript = plutusScriptM.orElseThrow();</span>
+
+<span class="nc" id="L108">        var contractAddress = plutusScriptLoader.getContractAddress(plutusScript, network);</span>
+
+<span class="nc" id="L110">        var eventResultsUtxoDataServiceAllResults = eventResultsUtxoDataService.findAllResults(contractAddress);</span>
+
+<span class="nc bnc" id="L112" title="All 2 branches missed.">        if (eventResultsUtxoDataServiceAllResults.isEmpty()) {</span>
+<span class="nc" id="L113">            return Either.right(Optional.empty());</span>
+        }
+
+<span class="nc" id="L116">        var eventValidVerificationKeyHashes = tally.getHydraTallyConfig().getVerificationKeysHashesAsList();</span>
+
+<span class="nc" id="L118">        var foundValidEventResultsUtxoM = eventResultsUtxoDataServiceAllResults.stream()</span>
+<span class="nc" id="L119">                .filter(resultsUtxo -&gt; resultsUtxo.getWitnessesHashes().stream().anyMatch(eventValidVerificationKeyHashes::contains))</span>
+<span class="nc" id="L120">                .findFirst();</span>
+
+<span class="nc bnc" id="L122" title="All 2 branches missed.">        if (foundValidEventResultsUtxoM.isEmpty()) {</span>
+<span class="nc" id="L123">            return Either.right(Optional.empty());</span>
+        }
+
+<span class="nc" id="L126">        var resultsUtxo = foundValidEventResultsUtxoM.orElseThrow();</span>
+
+<span class="nc" id="L128">        var categoryResultsDatum = categoryResultsDatumConverter.deserialize(resultsUtxo.getInlineDatum());</span>
+
+<span class="nc" id="L130">        var tallyResults = TallyResults.builder()</span>
+<span class="nc" id="L131">                .tallyName(tallyName)</span>
+<span class="nc" id="L132">                .tallyDescription(tally.getDescription())</span>
+<span class="nc" id="L133">                .tallyType(tally.getType())</span>
+<span class="nc" id="L134">                .eventId(categoryResultsDatum.getEventId())</span>
+<span class="nc" id="L135">                .categoryId(categoryResultsDatum.getCategoryId())</span>
+<span class="nc" id="L136">                .results(categoryResultsDatum.getResults())</span>
+<span class="nc" id="L137">                .metadata(Map.of(</span>
+                        &quot;contractAddress&quot;, contractAddress,
+<span class="nc" id="L139">                        &quot;contractName&quot;, hydraTally.getContractName(),</span>
+<span class="nc" id="L140">                        &quot;contractVersion&quot;, hydraTally.getContractVersion(),</span>
+<span class="nc" id="L141">                        &quot;contractHash&quot;, hydraTally.getCompiledScriptHash(),</span>
+<span class="nc" id="L142">                        &quot;compilerName&quot;, hydraTally.getCompilerName(),</span>
+<span class="nc" id="L143">                        &quot;compilerVersion&quot;, hydraTally.getCompilerVersion(),</span>
+<span class="nc" id="L144">                        &quot;plutusVersion&quot;, hydraTally.getPlutusVersion())</span>
+                )
+<span class="nc" id="L146">                .build();</span>
+
+<span class="nc" id="L148">        return Either.right(Optional.of(tallyResults));</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

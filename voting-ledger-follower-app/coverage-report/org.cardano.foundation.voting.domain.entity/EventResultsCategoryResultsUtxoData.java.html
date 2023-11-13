@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EventResultsCategoryResultsUtxoData.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-ledger-follower-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.domain.entity</a> &gt; <span class="el_source">EventResultsCategoryResultsUtxoData.java</span></div><h1>EventResultsCategoryResultsUtxoData.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.domain.entity;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.*;
+
+import java.util.Arrays;
+import java.util.List;
+
+<span class="nc" id="L12">@NoArgsConstructor</span>
+<span class="nc" id="L13">@AllArgsConstructor</span>
+<span class="nc" id="L14">@Builder</span>
+@Entity
+@Table(name = &quot;event_category_result_utxo_data&quot;)
+@Getter
+<span class="nc" id="L18">@Setter</span>
+public class EventResultsCategoryResultsUtxoData {
+
+    @Id
+    @Column(name = &quot;id&quot;, nullable = false)
+<span class="nc" id="L23">    private String id;</span>
+
+    @Column(name = &quot;address&quot;, nullable = false)
+<span class="nc" id="L26">    private String address;</span>
+
+    @Column(name = &quot;tx_hash&quot;, nullable = false)
+<span class="nc" id="L29">    private String txHash;</span>
+
+    @Column(name = &quot;index&quot;, nullable = false)
+<span class="nc" id="L32">    private int index;</span>
+
+    @Column(name = &quot;inline_datum&quot;, nullable = false, columnDefinition = &quot;text&quot;, length = 2048)
+<span class="nc" id="L35">    private String inlineDatum;</span>
+
+    @Column(name = &quot;absolute_slot&quot;, nullable = false)
+<span class="nc" id="L38">    private long absoluteSlot;</span>
+
+    // blake2b 224 hashes of the verification keys of the witnesses
+    @Column(name = &quot;witnesses_hashes&quot;, nullable = false, columnDefinition = &quot;text&quot;, length = 2048)
+    private String witnessesHashes;
+
+    public List&lt;String&gt; getWitnessesHashes() {
+<span class="nc" id="L45">        return Arrays.asList(witnessesHashes.split(&quot;:&quot;));</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

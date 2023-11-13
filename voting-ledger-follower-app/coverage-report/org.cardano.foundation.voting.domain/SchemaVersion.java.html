@@ -5,22 +5,31 @@ import java.util.Optional;
 
 <span class="fc" id="L6">public enum SchemaVersion {</span>
 
-<span class="fc" id="L8">    V1(&quot;1.0.0&quot;);</span>
+<span class="fc" id="L8">    V1(&quot;1.0.0&quot;),</span>
+<span class="fc" id="L9">    V11(&quot;1.1.0&quot;);</span>
 
     private final String version;
 
-<span class="fc" id="L12">    SchemaVersion(String version) {</span>
-<span class="fc" id="L13">        this.version = version;</span>
-<span class="fc" id="L14">    }</span>
+<span class="fc" id="L13">    SchemaVersion(String version) {</span>
+<span class="fc" id="L14">        this.version = version;</span>
+<span class="fc" id="L15">    }</span>
 
     public String getSemVer() {
-<span class="nc" id="L17">        return version;</span>
+<span class="nc" id="L18">        return version;</span>
     }
 
     public static Optional&lt;SchemaVersion&gt; fromText(String text) {
-<span class="nc" id="L21">        return Arrays.asList(values()).stream()</span>
-<span class="nc" id="L22">                    .filter(schemaVersion -&gt; schemaVersion.getSemVer().equals(text))</span>
-<span class="nc" id="L23">                    .findFirst();</span>
+<span class="nc" id="L22">        return Arrays.asList(values()).stream()</span>
+<span class="nc" id="L23">                    .filter(schemaVersion -&gt; schemaVersion.getSemVer().equals(text))</span>
+<span class="nc" id="L24">                    .findFirst();</span>
+    }
+
+    public boolean isGreaterThanEqual(SchemaVersion schemaVersion) {
+<span class="nc bnc" id="L28" title="All 2 branches missed.">        return this.ordinal() &gt;= schemaVersion.ordinal();</span>
+    }
+
+    public boolean isLowerThanEqual(SchemaVersion schemaVersion) {
+<span class="nc bnc" id="L32" title="All 2 branches missed.">        return this.ordinal() &lt;= schemaVersion.ordinal();</span>
     }
 
 }

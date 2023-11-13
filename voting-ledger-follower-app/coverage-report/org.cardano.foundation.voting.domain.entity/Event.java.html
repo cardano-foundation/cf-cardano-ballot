@@ -5,6 +5,7 @@ import lombok.*;
 import org.cardano.foundation.voting.domain.SchemaVersion;
 import org.cardano.foundation.voting.domain.VotingEventType;
 import org.cardano.foundation.voting.domain.VotingPowerAsset;
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Immutable;
 
 import javax.annotation.Nullable;
@@ -12,59 +13,60 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static jakarta.persistence.EnumType.STRING;
+import static jakarta.persistence.FetchType.EAGER;
 import static org.cardano.foundation.voting.domain.VotingEventType.BALANCE_BASED;
 import static org.cardano.foundation.voting.domain.VotingEventType.STAKE_BASED;
 
 @Entity
 @Table(name = &quot;event&quot;)
-<span class="pc bpc" id="L20" title="5 of 10 branches missed.">@Builder</span>
-<span class="fc" id="L21">@RequiredArgsConstructor</span>
-<span class="fc" id="L22">@AllArgsConstructor</span>
-@Immutable
+<span class="pc bpc" id="L23" title="6 of 12 branches missed.">@Builder</span>
+<span class="fc" id="L24">@RequiredArgsConstructor</span>
+<span class="fc" id="L25">@AllArgsConstructor</span>
 public class Event extends AbstractTimestampEntity {
 
-<span class="fc" id="L26">    @Getter</span>
-<span class="nc" id="L27">    @Setter</span>
+<span class="fc" id="L28">    @Getter</span>
+<span class="nc" id="L29">    @Setter</span>
     @Column(nullable = false)
     @Id
     private String id;
 
     @Column(nullable = false)
-<span class="fc" id="L33">    @Getter</span>
-<span class="nc" id="L34">    @Setter</span>
-    private String organisers; // e.g. CF
+<span class="fc" id="L35">    @Getter</span>
+<span class="nc" id="L36">    @Setter</span>
+    private String organisers;
 
     @Column(name = &quot;event_type&quot;, nullable = false)
-<span class="fc" id="L38">    @Getter</span>
-<span class="nc" id="L39">    @Setter</span>
-    @Enumerated(EnumType.STRING)
+<span class="fc" id="L40">    @Getter</span>
+<span class="nc" id="L41">    @Setter</span>
+    @Enumerated(STRING)
     private VotingEventType votingEventType;
 
     @Column(name = &quot;voting_power_asset&quot;)
     // voting power asset is only needed for stake based voting events
     @Nullable
-    @Enumerated(EnumType.STRING)
+    @Enumerated(STRING)
     private VotingPowerAsset votingPowerAsset;
 
     @Column(name = &quot;allow_vote_changing&quot;)
     @Nullable
     @Builder.Default
-<span class="fc" id="L52">    private Boolean allowVoteChanging = false;</span>
+<span class="fc" id="L54">    private Boolean allowVoteChanging = false;</span>
 
     @Column(name = &quot;high_level_event_results_while_voting&quot;)
     @Nullable
     @Builder.Default
-<span class="fc" id="L57">    private Boolean highLevelEventResultsWhileVoting = false;</span>
+<span class="fc" id="L59">    private Boolean highLevelEventResultsWhileVoting = false;</span>
 
     @Column(name = &quot;high_level_category_results_while_voting&quot;)
     @Nullable
     @Builder.Default
-<span class="fc" id="L62">    private Boolean highLevelCategoryResultsWhileVoting = false;</span>
+<span class="fc" id="L64">    private Boolean highLevelCategoryResultsWhileVoting = false;</span>
 
     @Column(name = &quot;category_results_while_voting&quot;)
     @Nullable
     @Builder.Default
-<span class="fc" id="L67">    private Boolean categoryResultsWhileVoting = false;</span>
+<span class="fc" id="L69">    private Boolean categoryResultsWhileVoting = false;</span>
 
     @Column(name = &quot;start_epoch&quot;)
     // startEpoch is only needed for stake based voting events
@@ -102,148 +104,161 @@ public class Event extends AbstractTimestampEntity {
     private Long proposalsRevealSlot;
 
     @Column(name = &quot;schema_version&quot;)
-<span class="nc" id="L105">    @Getter</span>
-<span class="nc" id="L106">    @Setter</span>
-    @Enumerated(EnumType.STRING)
+<span class="nc" id="L107">    @Getter</span>
+<span class="nc" id="L108">    @Setter</span>
+    @Enumerated(STRING)
     private SchemaVersion version;
 
     @OneToMany(
             mappedBy = &quot;event&quot;,
             cascade = CascadeType.ALL,
-            fetch = FetchType.EAGER,
+            fetch = EAGER,
             orphanRemoval = true
     )
     @Builder.Default
-<span class="fc" id="L117">    @Getter</span>
-<span class="nc" id="L118">    @Setter</span>
+<span class="fc" id="L119">    @Getter</span>
+<span class="nc" id="L120">    @Setter</span>
     private List&lt;Category&gt; categories = new ArrayList&lt;&gt;();
 
     @Column(name = &quot;absolute_slot&quot;)
-<span class="nc" id="L122">    @Getter</span>
-<span class="nc" id="L123">    @Setter</span>
+<span class="nc" id="L124">    @Getter</span>
+<span class="nc" id="L125">    @Setter</span>
     private long absoluteSlot;
 
+<span class="nc" id="L128">    @Setter</span>
+<span class="fc" id="L129">    @Getter</span>
+    @ElementCollection(fetch = EAGER)
+    @CollectionTable(
+        name = &quot;event_tally&quot;,
+        joinColumns = @JoinColumn(name = &quot;event_id&quot;)
+    )
+    @Builder.Default
+    private List&lt;Tally&gt; tallies = new ArrayList&lt;&gt;();
+
     public Optional&lt;Category&gt; findCategoryByName(String categoryName) {
-<span class="nc" id="L127">        return categories.stream().filter(category -&gt; category.getId().equals(categoryName)).findFirst();</span>
+<span class="nc" id="L139">        return categories</span>
+<span class="nc" id="L140">                .stream()</span>
+<span class="nc" id="L141">                .filter(category -&gt; category.getId().equals(categoryName))</span>
+<span class="nc" id="L142">                .findFirst();</span>
     }
 
     public Optional&lt;VotingPowerAsset&gt; getVotingPowerAsset() {
-<span class="fc" id="L131">        return Optional.ofNullable(votingPowerAsset);</span>
+<span class="fc" id="L146">        return Optional.ofNullable(votingPowerAsset);</span>
     }
 
     public void setVotingPowerAsset(Optional&lt;VotingPowerAsset&gt; votingPowerAsset) {
-<span class="nc" id="L135">        this.votingPowerAsset = votingPowerAsset.orElse(null);</span>
-<span class="nc" id="L136">    }</span>
+<span class="nc" id="L150">        this.votingPowerAsset = votingPowerAsset.orElse(null);</span>
+<span class="nc" id="L151">    }</span>
 
     public boolean isAllowVoteChanging() {
-<span class="fc" id="L139">        return Optional.ofNullable(allowVoteChanging).orElse(false);</span>
+<span class="fc" id="L154">        return Optional.ofNullable(allowVoteChanging).orElse(false);</span>
     }
 
     public void setAllowVoteChanging(boolean allowVoteChanging) {
-<span class="nc" id="L143">        this.allowVoteChanging = allowVoteChanging;</span>
-<span class="nc" id="L144">    }</span>
+<span class="nc" id="L158">        this.allowVoteChanging = allowVoteChanging;</span>
+<span class="nc" id="L159">    }</span>
 
     public Optional&lt;Integer&gt; getStartEpoch() {
-<span class="fc" id="L147">        return Optional.ofNullable(startEpoch);</span>
+<span class="fc" id="L162">        return Optional.ofNullable(startEpoch);</span>
     }
 
     public void setStartEpoch(Optional&lt;Integer&gt; startEpoch) {
-<span class="nc" id="L151">        this.startEpoch = startEpoch.orElse(null);</span>
-<span class="nc" id="L152">    }</span>
+<span class="nc" id="L166">        this.startEpoch = startEpoch.orElse(null);</span>
+<span class="nc" id="L167">    }</span>
 
     public Optional&lt;Integer&gt; getEndEpoch() {
-<span class="fc" id="L155">        return Optional.ofNullable(endEpoch);</span>
+<span class="fc" id="L170">        return Optional.ofNullable(endEpoch);</span>
     }
 
     public void setEndEpoch(Optional&lt;Integer&gt; endEpoch) {
-<span class="nc" id="L159">        this.endEpoch = endEpoch.orElse(null);</span>
-<span class="nc" id="L160">    }</span>
+<span class="nc" id="L174">        this.endEpoch = endEpoch.orElse(null);</span>
+<span class="nc" id="L175">    }</span>
 
     public Optional&lt;Long&gt; getStartSlot() {
-<span class="fc" id="L163">        return Optional.ofNullable(startSlot);</span>
+<span class="fc" id="L178">        return Optional.ofNullable(startSlot);</span>
     }
 
     public void setStartSlot(Optional&lt;Long&gt; startSlot) {
-<span class="nc" id="L167">        this.startSlot = startSlot.orElse(null);</span>
-<span class="nc" id="L168">    }</span>
+<span class="nc" id="L182">        this.startSlot = startSlot.orElse(null);</span>
+<span class="nc" id="L183">    }</span>
 
     public Optional&lt;Long&gt; getEndSlot() {
-<span class="fc" id="L171">        return Optional.ofNullable(endSlot);</span>
+<span class="fc" id="L186">        return Optional.ofNullable(endSlot);</span>
     }
 
     public void setEndSlot(Optional&lt;Long&gt; endSlot) {
-<span class="nc" id="L175">        this.endSlot = endSlot.orElse(null);</span>
-<span class="nc" id="L176">    }</span>
+<span class="nc" id="L190">        this.endSlot = endSlot.orElse(null);</span>
+<span class="nc" id="L191">    }</span>
 
     public Optional&lt;Integer&gt; getSnapshotEpoch() {
-<span class="fc" id="L179">        return Optional.ofNullable(snapshotEpoch);</span>
+<span class="fc" id="L194">        return Optional.ofNullable(snapshotEpoch);</span>
     }
 
     public void setSnapshotEpoch(Optional&lt;Integer&gt; snapshotEpoch) {
-<span class="nc" id="L183">        this.snapshotEpoch = snapshotEpoch.orElse(null);</span>
-<span class="nc" id="L184">    }</span>
+<span class="nc" id="L198">        this.snapshotEpoch = snapshotEpoch.orElse(null);</span>
+<span class="nc" id="L199">    }</span>
 
     public boolean getHighLevelEventResultsWhileVoting() {
-<span class="fc" id="L187">        return Optional.ofNullable(highLevelEventResultsWhileVoting).orElse(false);</span>
+<span class="fc" id="L202">        return Optional.ofNullable(highLevelEventResultsWhileVoting).orElse(false);</span>
     }
 
     public void setHighLevelEventResultsWhileVoting(Optional&lt;Boolean&gt; highLevelEventResultsWhileVoting) {
-<span class="nc" id="L191">        this.highLevelEventResultsWhileVoting = highLevelEventResultsWhileVoting.orElse(null);</span>
-<span class="nc" id="L192">    }</span>
+<span class="nc" id="L206">        this.highLevelEventResultsWhileVoting = highLevelEventResultsWhileVoting.orElse(null);</span>
+<span class="nc" id="L207">    }</span>
 
     public boolean getHighLevelCategoryResultsWhileVoting() {
-<span class="nc" id="L195">        return Optional.ofNullable(highLevelCategoryResultsWhileVoting).orElse(false);</span>
+<span class="nc" id="L210">        return Optional.ofNullable(highLevelCategoryResultsWhileVoting).orElse(false);</span>
     }
 
     public void setHighLevelCategoryResultsWhileVoting(Optional&lt;Boolean&gt; highLevelCategoryResultsWhileVoting) {
-<span class="nc" id="L199">        this.highLevelCategoryResultsWhileVoting = highLevelCategoryResultsWhileVoting.orElse(null);</span>
-<span class="nc" id="L200">    }</span>
+<span class="nc" id="L214">        this.highLevelCategoryResultsWhileVoting = highLevelCategoryResultsWhileVoting.orElse(null);</span>
+<span class="nc" id="L215">    }</span>
 
     public boolean getCategoryResultsWhileVoting() {
-<span class="fc" id="L203">        return Optional.ofNullable(categoryResultsWhileVoting).orElse(false);</span>
+<span class="fc" id="L218">        return Optional.ofNullable(categoryResultsWhileVoting).orElse(false);</span>
     }
 
     public void setCategoryResultsWhileVoting(Optional&lt;Boolean&gt; categoryResultsWhileVoting) {
-<span class="nc" id="L207">        this.categoryResultsWhileVoting = categoryResultsWhileVoting.orElse(null);</span>
-<span class="nc" id="L208">    }</span>
+<span class="nc" id="L222">        this.categoryResultsWhileVoting = categoryResultsWhileVoting.orElse(null);</span>
+<span class="nc" id="L223">    }</span>
 
     public Optional&lt;Integer&gt; getProposalsRevealEpoch() {
-<span class="fc" id="L211">        return Optional.ofNullable(proposalsRevealEpoch);</span>
+<span class="fc" id="L226">        return Optional.ofNullable(proposalsRevealEpoch);</span>
     }
 
     public void setProposalsRevealEpoch(Optional&lt;Integer&gt; proposalsRevealEpoch) {
-<span class="nc" id="L215">        this.proposalsRevealEpoch = proposalsRevealEpoch.orElse(null);</span>
-<span class="nc" id="L216">    }</span>
+<span class="nc" id="L230">        this.proposalsRevealEpoch = proposalsRevealEpoch.orElse(null);</span>
+<span class="nc" id="L231">    }</span>
 
     public Optional&lt;Long&gt; getProposalsRevealSlot() {
-<span class="nc" id="L219">        return Optional.ofNullable(proposalsRevealSlot);</span>
+<span class="nc" id="L234">        return Optional.ofNullable(proposalsRevealSlot);</span>
     }
 
     public void setProposalsRevealSlot(Optional&lt;Long&gt; proposalsRevealSlot) {
-<span class="nc" id="L223">        this.proposalsRevealSlot = proposalsRevealSlot.orElse(null);</span>
-<span class="nc" id="L224">    }</span>
+<span class="nc" id="L238">        this.proposalsRevealSlot = proposalsRevealSlot.orElse(null);</span>
+<span class="nc" id="L239">    }</span>
 
     public boolean isValid() {
-<span class="pc bpc" id="L227" title="1 of 2 branches missed.">        if (List.of(STAKE_BASED, BALANCE_BASED).contains(votingEventType)) {</span>
-<span class="pc bpc" id="L228" title="5 of 10 branches missed.">            if (getStartEpoch().isEmpty() || getEndEpoch().isEmpty() || getSnapshotEpoch().isEmpty() || getVotingPowerAsset().isEmpty() || getProposalsRevealEpoch().isEmpty()) {</span>
-<span class="nc" id="L229">                return false;</span>
+<span class="pc bpc" id="L242" title="1 of 2 branches missed.">        if (List.of(STAKE_BASED, BALANCE_BASED).contains(votingEventType)) {</span>
+<span class="pc bpc" id="L243" title="5 of 10 branches missed.">            if (getStartEpoch().isEmpty() || getEndEpoch().isEmpty() || getSnapshotEpoch().isEmpty() || getVotingPowerAsset().isEmpty() || getProposalsRevealEpoch().isEmpty()) {</span>
+<span class="nc" id="L244">                return false;</span>
             }
         }
-<span class="pc bpc" id="L232" title="1 of 2 branches missed.">        if (votingEventType == VotingEventType.USER_BASED) {</span>
-<span class="nc bnc" id="L233" title="All 6 branches missed.">            if (getStartSlot().isEmpty() || getEndSlot().isEmpty() || getProposalsRevealSlot().isEmpty()) {</span>
-<span class="nc" id="L234">                return false;</span>
+<span class="pc bpc" id="L247" title="1 of 2 branches missed.">        if (votingEventType == VotingEventType.USER_BASED) {</span>
+<span class="nc bnc" id="L248" title="All 6 branches missed.">            if (getStartSlot().isEmpty() || getEndSlot().isEmpty() || getProposalsRevealSlot().isEmpty()) {</span>
+<span class="nc" id="L249">                return false;</span>
             }
         }
-<span class="pc bpc" id="L237" title="1 of 2 branches missed.">        if (categories.isEmpty()) {</span>
-<span class="nc" id="L238">            return false;</span>
+<span class="pc bpc" id="L252" title="1 of 2 branches missed.">        if (categories.isEmpty()) {</span>
+<span class="nc" id="L253">            return false;</span>
         }
-<span class="pc bpc" id="L240" title="1 of 2 branches missed.">        var anyCategoryInvalid = categories.stream().anyMatch(category -&gt; !category.isValid());</span>
+<span class="pc bpc" id="L255" title="1 of 2 branches missed.">        var anyCategoryInvalid = categories.stream().anyMatch(category -&gt; !category.isValid());</span>
 
-<span class="pc bpc" id="L242" title="1 of 2 branches missed.">        if (anyCategoryInvalid) {</span>
-<span class="nc" id="L243">            return false;</span>
+<span class="pc bpc" id="L257" title="1 of 2 branches missed.">        if (anyCategoryInvalid) {</span>
+<span class="nc" id="L258">            return false;</span>
         }
 
-<span class="fc" id="L246">        return true;</span>
+<span class="fc" id="L261">        return true;</span>
     }
 
 }

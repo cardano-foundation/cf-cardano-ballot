@@ -55,14 +55,13 @@ public class BlockchainDataResource {
 <span class="fc" id="L55">                .fold(problem -&gt; {</span>
 <span class="nc" id="L56">                            return ResponseEntity</span>
 <span class="nc" id="L57">                                    .status(problem.getStatus().getStatusCode())</span>
-<span class="nc" id="L58">                                    .cacheControl(cacheControl)</span>
-<span class="nc" id="L59">                                    .body(problem);</span>
+<span class="nc" id="L58">                                    .body(problem);</span>
                         },
                         chainTip -&gt; {
-<span class="fc" id="L62">                            return ResponseEntity</span>
-<span class="fc" id="L63">                                    .ok()</span>
-<span class="fc" id="L64">                                    .cacheControl(cacheControl)</span>
-<span class="fc" id="L65">                                    .body(chainTip);</span>
+<span class="fc" id="L61">                            return ResponseEntity</span>
+<span class="fc" id="L62">                                    .ok()</span>
+<span class="fc" id="L63">                                    .cacheControl(cacheControl)</span>
+<span class="fc" id="L64">                                    .body(chainTip);</span>
                         });
     }
 
@@ -78,36 +77,36 @@ public class BlockchainDataResource {
                     @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error&quot;)
             }
     )
-    public ResponseEntity&lt;?&gt; txDetails( @Parameter(description = &quot;Transaction hash for which details are to be retrieved&quot;, required = true)
-                                            @PathVariable(&quot;txHash&quot;) String txHash) {
-<span class="fc" id="L83">        var cacheControl = CacheControl.noCache()</span>
-<span class="fc" id="L84">                .noTransform()</span>
-<span class="fc" id="L85">                .mustRevalidate();</span>
+    public ResponseEntity&lt;?&gt; txDetails(@Parameter(description = &quot;Transaction hash for which details are to be retrieved&quot;, required = true)
+                                       @PathVariable(&quot;txHash&quot;) String txHash) {
+<span class="fc" id="L82">        var cacheControl = CacheControl.noCache()</span>
+<span class="fc" id="L83">                .noTransform()</span>
+<span class="fc" id="L84">                .mustRevalidate();</span>
 
-<span class="fc" id="L87">        return blockchainDataTransactionDetailsService.getTransactionDetails(txHash)</span>
-<span class="fc" id="L88">                .fold(problem -&gt; {</span>
-<span class="nc" id="L89">                            return ResponseEntity</span>
-<span class="nc" id="L90">                                    .status(problem.getStatus().getStatusCode())</span>
-<span class="nc" id="L91">                                    .cacheControl(cacheControl)</span>
-<span class="nc" id="L92">                                    .body(problem);</span>
+<span class="fc" id="L86">        return blockchainDataTransactionDetailsService.getTransactionDetails(txHash)</span>
+<span class="fc" id="L87">                .fold(problem -&gt; {</span>
+<span class="nc" id="L88">                            return ResponseEntity</span>
+<span class="nc" id="L89">                                    .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L90">                                    .cacheControl(cacheControl)</span>
+<span class="nc" id="L91">                                    .body(problem);</span>
                         },
                         maybeTxDetails -&gt; {
-<span class="fc bfc" id="L95" title="All 2 branches covered.">                            if (maybeTxDetails.isEmpty()) {</span>
-<span class="fc" id="L96">                                var problem = Problem.builder()</span>
-<span class="fc" id="L97">                                        .withTitle(&quot;TX_NOT_FOUND&quot;)</span>
-<span class="fc" id="L98">                                        .withDetail(&quot;Transaction with hash: &quot; + txHash + &quot; not found!&quot;)</span>
-<span class="fc" id="L99">                                        .withStatus(NOT_FOUND)</span>
-<span class="fc" id="L100">                                        .build();</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">                            if (maybeTxDetails.isEmpty()) {</span>
+<span class="fc" id="L95">                                var problem = Problem.builder()</span>
+<span class="fc" id="L96">                                        .withTitle(&quot;TX_NOT_FOUND&quot;)</span>
+<span class="fc" id="L97">                                        .withDetail(&quot;Transaction with hash: &quot; + txHash + &quot; not found!&quot;)</span>
+<span class="fc" id="L98">                                        .withStatus(NOT_FOUND)</span>
+<span class="fc" id="L99">                                        .build();</span>
 
-<span class="fc" id="L102">                                return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);</span>
+<span class="fc" id="L101">                                return ResponseEntity.status(problem.getStatus().getStatusCode()).body(problem);</span>
                             }
 
-<span class="fc" id="L105">                            var txDetails = maybeTxDetails.orElseThrow();</span>
+<span class="fc" id="L104">                            var txDetails = maybeTxDetails.orElseThrow();</span>
 
-<span class="fc" id="L107">                            return ResponseEntity</span>
-<span class="fc" id="L108">                                    .ok()</span>
-<span class="fc" id="L109">                                    .cacheControl(cacheControl)</span>
-<span class="fc" id="L110">                                    .body(txDetails);</span>
+<span class="fc" id="L106">                            return ResponseEntity</span>
+<span class="fc" id="L107">                                    .ok()</span>
+<span class="fc" id="L108">                                    .cacheControl(cacheControl)</span>
+<span class="fc" id="L109">                                    .body(txDetails);</span>
                         });
     }
 

@@ -40,8 +40,8 @@ public class EventResultsUtxoDataService {
 
     @Transactional
     @Timed(value = "service.results.rollbackAfterSlot", histogram = true)
-    public int rollbackAfterSlot(long slot) {
-        log.info("Rollbacking UtxoData after slot:{}", slot);
+    public long rollbackAfterSlot(long slot) {
+        log.info("Rollbacking EventResultsCategoryResultsUtxoData after slot:{}", slot);
 
         return utxoCategoryResultsDataRepository.deleteAllAfterSlot(slot);
     }

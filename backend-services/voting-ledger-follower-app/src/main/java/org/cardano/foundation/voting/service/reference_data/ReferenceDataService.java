@@ -105,15 +105,24 @@ public class ReferenceDataService {
 
     @Timed(value = "service.reference.rollback", histogram = true)
     @Transactional
-    public void rollbackReferenceDataAfterSlot(long slot) {
-        proposalRepository.deleteAllAfterSlot(slot);
+    public ReferenceRollbackStats rollbackReferenceDataAfterSlot(long slot) {
+
+        var proposalsRollbackCount = proposalRepository.deleteAllAfterSlot(slot);
         proposalRepository.flush();
 
-        categoryRepository.deleteAllAfterSlot(slot);
+        var categoryRollbackCount = categoryRepository.deleteAllAfterSlot(slot);
         categoryRepository.flush();
 
-        eventRepository.deleteAllAfterSlot(slot);
+        var eventRollbackCount = eventRepository.deleteAllAfterSlot(slot);
         eventRepository.flush();
+
+        return new ReferenceRollbackStats(eventRollbackCount, categoryRollbackCount, proposalsRollbackCount);
+    }
+
+    record ReferenceRollbackStats(
+            long eventRollbackCount,
+            long categoryRollbackCount,
+            long proposalRollbackCount) {
     }
 
 }

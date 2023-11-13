@@ -28,9 +28,17 @@ public class RollbackHandler {
 
         long rollbackToSlot = rollbackEvent.getRollbackTo().getSlot();
 
-        eventResultsUtxoDataService.rollbackAfterSlot(rollbackToSlot);
-        merkleRootHashService.rollbackAfterSlot(rollbackToSlot);
-        referenceDataService.rollbackReferenceDataAfterSlot(rollbackToSlot);
+        var eventResultsRolledBackCount = eventResultsUtxoDataService.rollbackAfterSlot(rollbackToSlot);
+
+        var merkleRootHahesRollbackCount = merkleRootHashService.rollbackAfterSlot(rollbackToSlot);
+
+        var referenceRollbackStats = referenceDataService.rollbackReferenceDataAfterSlot(rollbackToSlot);
+
+        log.info("Rollbacked:" +
+                " {} event results," +
+                " {} merkle root hashes," +
+                " {} reference data items.",
+                eventResultsRolledBackCount, merkleRootHahesRollbackCount, referenceRollbackStats);
 
         log.info("Rollbacked handled.");
     }

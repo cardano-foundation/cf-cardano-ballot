@@ -57,7 +57,7 @@ public class MerkleRootHashService {
 
     @Timed(value = "service.merkle_root.rollbackAfterSlot", histogram = true)
     @Transactional
-    public int rollbackAfterSlot(@Param("slot") long slot) {
+    public long rollbackAfterSlot(@Param("slot") long slot) {
         log.info("Deleting all after slot:{}", slot);
 
         return merkleRootHashRepository.deleteAllAfterSlot(slot);

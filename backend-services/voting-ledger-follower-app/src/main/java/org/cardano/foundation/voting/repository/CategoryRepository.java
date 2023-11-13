@@ -12,6 +12,6 @@ public interface CategoryRepository extends JpaRepository<Category, String> {
 
     @Query("DELETE FROM Category c WHERE c.absoluteSlot > :slot")
     @Modifying
-    void deleteAllAfterSlot(@Param("slot") long slot);
+    long deleteAllAfterSlot(@Param("slot") long slot);
 
 }

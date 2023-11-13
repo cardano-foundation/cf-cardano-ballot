@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.TallyResults;
@@ -25,6 +26,7 @@ import static org.zalando.problem.Status.NOT_FOUND;
 @RequestMapping("/api/tally/voting-results")
 @Slf4j
 @RequiredArgsConstructor
+@Tag(name = "VotingTallyResource", description = "Tallying operations API")
 public class VotingTallyResource {
 
     private final VotingTallyService votingTallyService;

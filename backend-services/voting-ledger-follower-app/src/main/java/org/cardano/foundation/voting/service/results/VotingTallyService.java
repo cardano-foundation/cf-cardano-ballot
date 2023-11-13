@@ -7,6 +7,7 @@ import io.vavr.control.Either;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.cardano.foundation.voting.domain.CategoryResultsDatum;
 import org.cardano.foundation.voting.domain.CategoryResultsDatumConverter;
 import org.cardano.foundation.voting.domain.TallyResults;
 import org.cardano.foundation.voting.domain.entity.Event;
@@ -14,6 +15,7 @@ import org.cardano.foundation.voting.service.plutus.PlutusScriptLoader;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
 import org.cardano.foundation.voting.service.utxo.EventResultsUtxoDataService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
 import java.util.List;
@@ -41,6 +43,7 @@ public class VotingTallyService {
     private final Network network;
 
     @Timed(value = "service.vote_results.getVoteResultsForAllCategories", histogram = true)
+    @Transactional(readOnly = true)
     public Either<Problem, List<TallyResults>> getVoteResultsForAllCategories(String eventId,
                                                                               String tallyName) {
         val eventDetailsM = referenceDataService
@@ -80,6 +83,7 @@ public class VotingTallyService {
 
     }
     @Timed(value = "service.vote_results.getVoteResultsForACategory", histogram = true)
+    @Transactional(readOnly = true)
     public Either<Problem, Optional<TallyResults>> getVoteResultsPerCategory(String eventId,
                                                                                   String categoryId,
                                                                                   String tallyName) {
@@ -100,6 +104,7 @@ public class VotingTallyService {
         return getVoteResultsPerCategory(event, categoryId, tallyName);
     }
 
+    @Transactional(readOnly = true)
     public Either<Problem, Optional<TallyResults>> getVoteResultsPerCategory(Event eventDetails,
                                                                              String categoryId,
                                                                              String tallyName) {
@@ -175,7 +180,13 @@ public class VotingTallyService {
 
         var resultsUtxo = foundValidEventResultsUtxoM.orElseThrow();
 
-        var categoryResultsDatum = categoryResultsDatumConverter.deserialize(resultsUtxo.getInlineDatum());
+        var categoryResultsDatumM = parseCategoryResultsDatum(resultsUtxo.getInlineDatum());
+
+        if (categoryResultsDatumM.isEmpty()) {
+            return Either.right(Optional.empty());
+        }
+
+        var categoryResultsDatum = categoryResultsDatumM.orElseThrow();
 
         var tallyResults = TallyResults.builder()
                 .tallyName(tallyName)
@@ -186,6 +197,7 @@ public class VotingTallyService {
                 .results(categoryResultsDatum.getResults())
                 .metadata(Map.of(
                         "contractAddress", contractAddress,
+                        "categoryResultsDatum", resultsUtxo.getInlineDatum(),
                         "contractName", hydraTally.getContractName(),
                         "contractVersion", hydraTally.getContractVersion(),
                         "contractHash", hydraTally.getCompiledScriptHash(),
@@ -196,6 +208,14 @@ public class VotingTallyService {
                 .build();
 
         return Either.right(Optional.of(tallyResults));
+    }
+
+    private Optional<CategoryResultsDatum> parseCategoryResultsDatum(String inlineDatum) {
+        try {
+            return Optional.of(categoryResultsDatumConverter.deserialize(inlineDatum));
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
 }

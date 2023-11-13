@@ -23,7 +23,7 @@ public class EventResultsUtxoDataService {
         utxoCategoryResultsDataRepository.saveAndFlush(eventResultsCategoryResultsUtxoData);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Timed(value = "service.results.findAllResults", histogram = true)
     public List<EventResultsCategoryResultsUtxoData> findAllResults(String contractAddress) {
         return utxoCategoryResultsDataRepository.findByAddress(contractAddress)

@@ -74,10 +74,6 @@ public class EventResultsUtxoHandler {
                                                                                   String address,
                                                                                   List<String> witnesses,
                                                                                   EventMetadata txMetadata) {
-        var joiner = new StringJoiner(":");
-        witnesses.forEach(joiner::add);
-
-        log.info("Preparing utxo category results data for utxo:{}", utxo);
         var utxoCategoryResultsData = new EventResultsCategoryResultsUtxoData();
         utxoCategoryResultsData.setId(utxo.getTxHash() + "#" + utxo.getIndex());
         utxoCategoryResultsData.setAddress(address);
@@ -85,6 +81,9 @@ public class EventResultsUtxoHandler {
         utxoCategoryResultsData.setIndex(utxo.getIndex());
         utxoCategoryResultsData.setInlineDatum(utxo.getInlineDatum());
         utxoCategoryResultsData.setAbsoluteSlot(txMetadata.getSlot());
+
+        var joiner = new StringJoiner(":");
+        witnesses.forEach(joiner::add);
         utxoCategoryResultsData.setWitnessesHashes(joiner.toString());
 
         return utxoCategoryResultsData;

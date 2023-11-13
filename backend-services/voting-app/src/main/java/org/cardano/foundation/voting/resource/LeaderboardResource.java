@@ -37,7 +37,7 @@ public class LeaderboardResource {
     @Value("${leaderboard.force.results:false}")
     private boolean forceLeaderboardResultsAvailability;
 
-    @RequestMapping(value = "/event/{eventId}/", method = HEAD, produces = "application/json")
+    @RequestMapping(value = "/event/{eventId}", method = HEAD, produces = "application/json")
     @Timed(value = "resource.leaderboard.high.level.event.available", histogram = true)
     public ResponseEntity<?> isHighLevelEventLeaderBoardAvailable(@PathVariable("eventId") String eventId,
                                                                   @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = "false") boolean forceLeaderboardResults) {
@@ -189,9 +189,10 @@ public class LeaderboardResource {
         );
     }
 
+    @Deprecated
     @RequestMapping(value = "/{eventId}/{categoryId}", method = GET, produces = "application/json")
     @Timed(value = "resource.leaderboard.category", histogram = true)
-    public ResponseEntity<?> getCategoryLeaderBoard(@PathVariable("eventId") String eventId,
+    public ResponseEntity<?> getCategoryLeaderBoardPerCategory(@PathVariable("eventId") String eventId,
                                                     @PathVariable("categoryId") String categoryId,
                                                     @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = "false") boolean forceLeaderboardResults,
                                                     @Valid @RequestParam(name = "source") Optional<WinnerLeaderboardSource> winnerLeaderboardSourceM) {
@@ -230,6 +231,83 @@ public class LeaderboardResource {
                                     .ok()
                                     .cacheControl(cacheControl)
                                     .body(proposalsInCategoryStatsM.orElseThrow());
+                        }
+                );
+    }
+
+    @RequestMapping(value = "/{eventId}/{categoryId}/results", method = GET, produces = "application/json")
+    @Timed(value = "resource.leaderboard.category", histogram = true)
+    public ResponseEntity<?> getCategoryLeaderBoardPerCategoryResults(@PathVariable("eventId") String eventId,
+                                                               @PathVariable("categoryId") String categoryId,
+                                                               @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = "false") boolean forceLeaderboardResults,
+                                                               @Valid @RequestParam(name = "source") Optional<WinnerLeaderboardSource> winnerLeaderboardSourceM) {
+        var winnerLeaderboardSource = winnerLeaderboardSourceM.orElse(db);
+
+        var cacheControl = CacheControl.maxAge(5, MINUTES)
+                .noTransform()
+                .mustRevalidate();
+
+        var forceLeaderboard = forceLeaderboardResults && forceLeaderboardResultsAvailability;
+
+        var categoryLeaderboardE = leaderboardWinnersProvider
+                .getWinnerLeaderboardSource(winnerLeaderboardSource)
+                .getCategoryLeaderboard(eventId, categoryId, forceLeaderboard);
+
+        return categoryLeaderboardE
+                .fold(problem -> {
+                            return ResponseEntity
+                                    .status(problem.getStatus().getStatusCode())
+                                    .body(problem);
+                        },
+                        proposalsInCategoryStatsM -> {
+                            if (proposalsInCategoryStatsM.isEmpty()) {
+                                var problem = Problem.builder()
+                                        .withTitle("VOTING_RESULTS_NOT_YET_AVAILABLE")
+                                        .withDetail("Leaderboard not yet available for event: " + eventId)
+                                        .withStatus(NOT_FOUND)
+                                        .build();
+
+                                return ResponseEntity
+                                        .status(problem.getStatus().getStatusCode())
+                                        .body(problem);
+                            }
+
+                            return ResponseEntity
+                                    .ok()
+                                    .cacheControl(cacheControl)
+                                    .body(proposalsInCategoryStatsM.orElseThrow());
+                        }
+                );
+    }
+
+    @RequestMapping(value = "/{eventId}/results", method = GET, produces = "application/json")
+    @Timed(value = "resource.leaderboard.category.all", histogram = true)
+    public ResponseEntity<?> getCategoryLeaderBoardForAllCategoriesResults(@PathVariable("eventId") String eventId,
+                                                                    @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = "false") boolean forceLeaderboardResults,
+                                                                    @Valid @RequestParam(name = "source") Optional<WinnerLeaderboardSource> winnerLeaderboardSourceM) {
+        var winnerLeaderboardSource = winnerLeaderboardSourceM.orElse(db);
+
+        var cacheControl = CacheControl.maxAge(5, MINUTES)
+                .noTransform()
+                .mustRevalidate();
+
+        var forceLeaderboard = forceLeaderboardResults && forceLeaderboardResultsAvailability;
+
+        var categoryLeaderboardE = leaderboardWinnersProvider
+                .getWinnerLeaderboardSource(winnerLeaderboardSource)
+                .getAllCategoriesLeaderboard(eventId, forceLeaderboard);
+
+        return categoryLeaderboardE
+                .fold(problem -> {
+                            return ResponseEntity
+                                    .status(problem.getStatus().getStatusCode())
+                                    .body(problem);
+                        },
+                        allCategoryResults -> {
+                            return ResponseEntity
+                                    .ok()
+                                    .cacheControl(cacheControl)
+                                    .body(allCategoryResults);
                         }
                 );
     }

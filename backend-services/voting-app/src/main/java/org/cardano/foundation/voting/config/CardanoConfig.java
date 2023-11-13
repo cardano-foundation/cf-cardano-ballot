@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 public class CardanoConfig {
 
     @Bean
-    public CardanoNetwork network(@Value("${cardano.network:main}") CardanoNetwork network) {
+    public CardanoNetwork cardanoNetwork(@Value("${cardano.network:main}") CardanoNetwork network) {
         log.info("Configured backend network:{}", network);
 
         return network;

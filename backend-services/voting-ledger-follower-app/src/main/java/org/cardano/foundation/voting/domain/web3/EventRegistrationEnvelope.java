@@ -3,9 +3,12 @@ package org.cardano.foundation.voting.domain.web3;
 import lombok.Builder;
 import lombok.Getter;
 import org.cardano.foundation.voting.domain.OnChainEventType;
+import org.cardano.foundation.voting.domain.SchemaVersion;
 import org.cardano.foundation.voting.domain.VotingEventType;
 import org.cardano.foundation.voting.domain.VotingPowerAsset;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Getter
@@ -15,7 +18,7 @@ public class EventRegistrationEnvelope {
     private OnChainEventType type;
     private String name;
     private String organisers;
-    private String schemaVersion;
+    private SchemaVersion schemaVersion;
     private long creationSlot;
 
     private boolean allowVoteChanging;
@@ -49,5 +52,8 @@ public class EventRegistrationEnvelope {
 
     @Builder.Default
     private Optional<Integer> proposalsRevealEpoch = Optional.empty();
+
+    @Builder.Default
+    private List<TallyRegistrationEnvelope> tallies = new ArrayList<>();
 
 }

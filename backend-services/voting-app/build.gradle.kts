@@ -70,12 +70,12 @@ dependencies {
 	implementation("com.nimbusds:nimbus-jose-jwt:9.35")
 	implementation("com.google.crypto.tink:tink:1.11.0")
 
-	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0-beta3")
-    implementation("com.bloxbean.cardano:cardano-client-address:0.5.0-beta3")
-    implementation("com.bloxbean.cardano:cardano-client-metadata:0.5.0-beta3")
-	implementation("com.bloxbean.cardano:cardano-client-quicktx:0.5.0-beta3")
-	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.0-beta3")
-	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0-beta3")
+	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0")
+    implementation("com.bloxbean.cardano:cardano-client-address:0.5.0")
+    implementation("com.bloxbean.cardano:cardano-client-metadata:0.5.0")
+	implementation("com.bloxbean.cardano:cardano-client-quicktx:0.5.0")
+	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.0")
+	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0")
 
 	implementation("io.blockfrost:blockfrost-java:0.1.3")
 
@@ -86,7 +86,8 @@ dependencies {
 	implementation("org.cardanofoundation:merkle-tree-java:0.0.7")
 	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.11")
 
-    // spring-boot overridden dependencies:
+
+	// spring-boot overridden dependencies:
     runtimeOnly("com.h2database:h2:2.2.224") // GraalVM compatibility
 }
 

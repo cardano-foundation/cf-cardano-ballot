@@ -8,8 +8,10 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.event.ApplicationEventMulticaster;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.shell.command.annotation.EnableCommand;
 
 @SpringBootApplication
+@EnableCommand
 @ComponentScan(basePackages = { "org.cardano.foundation.voting.service", "org.cardano.foundation.voting.config", "org.cardano.foundation.voting.shell" })
 @Slf4j
 public class VotingAdminApp {

@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.cardano.foundation.voting.domain.VotingPowerAsset.ADA;
@@ -57,6 +58,9 @@ public class CreateEventCommand {
     private Optional<Integer> proposalsRevealEpoch = Optional.empty();
 
     @Builder.Default
-    private SchemaVersion schemaVersion = SchemaVersion.V1;
+    private List<TallyCommand> tallies = List.of();
+
+    @Builder.Default
+    private SchemaVersion schemaVersion = SchemaVersion.V11;
 
 }

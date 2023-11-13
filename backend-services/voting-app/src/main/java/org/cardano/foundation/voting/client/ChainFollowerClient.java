@@ -1,8 +1,10 @@
 package org.cardano.foundation.voting.client;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
+import org.cardano.foundation.voting.domain.TallyType;
 import org.cardano.foundation.voting.domain.VotingEventType;
 import org.cardano.foundation.voting.domain.VotingPowerAsset;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.zalando.problem.spring.common.HttpStatusAdapter;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -28,6 +31,23 @@ public class ChainFollowerClient {
 
     @Value("${ledger.follower.app.base.url}")
     private String ledgerFollowerBaseUrl;
+
+    public Either<Problem, L1CategoryResults> getVotingResults(String eventId,
+                                                               String categoryId,
+                                                               String tallyName
+                                                               ) {
+        var url = String.format("%s/api/tally/voting-results/{eventId}/{categoryId}/{tallyName}", ledgerFollowerBaseUrl);
+
+        try {
+            return Either.right(restTemplate.getForObject(url, L1CategoryResults.class, eventId, categoryId, tallyName));
+        } catch (HttpClientErrorException e) {
+            return Either.left(Problem.builder()
+                    .withTitle("CATEGORY_RESULTS_ERROR")
+                    .withDetail("Unable to get category results from chain-tip follower service, reason:" + e.getMessage())
+                    .withStatus(new HttpStatusAdapter(e.getStatusCode()))
+                    .build());
+        }
+    }
 
     public Either<Problem, ChainTipResponse> getChainTip() {
         var url = String.format("%s/api/blockchain/tip", ledgerFollowerBaseUrl);
@@ -151,7 +171,9 @@ public class ChainFollowerClient {
 
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public record EventDetailsResponse(String id,
+                                       String organisers,
                                        boolean finished,
                                        boolean notStarted,
                                        boolean isStarted,
@@ -163,7 +185,8 @@ public class ChainFollowerClient {
                                        boolean highLevelCategoryResultsWhileVoting,
                                        boolean categoryResultsWhileVoting,
                                        VotingEventType votingEventType,
-                                       List<CategoryDetailsResponse> categories) {
+                                       List<CategoryDetailsResponse> categories,
+                                       List<Tally> tallies) {
 
         public boolean isEventInactive() {
             return !active;
@@ -219,5 +242,18 @@ public class ChainFollowerClient {
                            int epochNo,
                            String votingPower,
                            VotingPowerAsset votingPowerAsset) { }
+
+    public record L1CategoryResults(String tallyName,
+                                    String tallyDescription,
+                                    TallyType tallyType,
+                                    String eventId,
+                                    String categoryId,
+                                    Map<String, Long> results,
+                                    Map<String, Object> metadata) {
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public record Tally(String name, TallyType type) {
+    }
 
 }

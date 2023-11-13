@@ -4,10 +4,9 @@ import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.EventAdditionalInfo;
+import org.cardano.foundation.voting.domain.HydraTally;
 import org.cardano.foundation.voting.domain.entity.Event;
-import org.cardano.foundation.voting.domain.presentation.CategoryPresentation;
-import org.cardano.foundation.voting.domain.presentation.EventPresentation;
-import org.cardano.foundation.voting.domain.presentation.ProposalPresentation;
+import org.cardano.foundation.voting.domain.presentation.*;
 import org.cardano.foundation.voting.service.epoch.CustomEpochService;
 import org.cardano.foundation.voting.service.expire.EventAdditionalInfoService;
 import org.springframework.stereotype.Service;
@@ -62,6 +61,36 @@ public class ReferencePresentationService {
         }
         var eventAdditionalInfo = eventAdditionalInfoE.get();
 
+        var tallyPresentations = event.getTallies().stream().map(
+                tally -> {
+                    var hydraTallyPresentationConfigM = switch (tally.getType()) {
+                        case HYDRA: {
+                            var hydraTally = (HydraTally) tally.getHydraTallyConfig();
+
+                            yield Optional.of(HydraTallyConfigPresentation.builder()
+                                    .contractName(hydraTally.getContractName())
+                                    .compiledScript(hydraTally.getCompiledScript())
+                                    .compiledScriptHash(hydraTally.getCompiledScriptHash())
+                                    .contractVersion(hydraTally.getContractVersion())
+                                    .verificationKeys(hydraTally.getVerificationKeysHashesAsList())
+                                    .compilerName(hydraTally.getCompilerName())
+                                    .plutusVersion(hydraTally.getPlutusVersion())
+                                    .compilerVersion(hydraTally.getCompilerVersion())
+                                    .build());
+                        }
+                    };
+
+                    var tallyPresentationBuilder = TallyPresentation.builder()
+                            .name(tally.getName())
+                            .type(tally.getType())
+                            .description(tally.getDescription());
+
+                    tallyPresentationBuilder.config(hydraTallyPresentationConfigM);
+
+                    return tallyPresentationBuilder.build();
+                }
+        ).toList();
+
         var eventBuilder = EventPresentation.builder()
                 .id(event.getId())
                 .organisers(event.getOrganisers())
@@ -82,6 +111,7 @@ public class ReferencePresentationService {
                 .isHighLevelEventResultsWhileVoting(event.getHighLevelEventResultsWhileVoting())
                 .isHighLevelCategoryResultsWhileVoting(event.getHighLevelEventResultsWhileVoting())
                 .isCategoryResultsWhileVoting(event.getCategoryResultsWhileVoting())
+                .tallies(tallyPresentations)
                 ;
 
         switch (event.getVotingEventType()) {

@@ -38,16 +38,13 @@ spec:
             receivers:
             - name: slack
               slack_configs:
-                - api_url_file: /etc/secrets/slack-api-url
+                - api_url_file: /etc/alertmanager/configmaps/slack-api-url
                   send_resolved: true
                   channel: '#cf-voting-infra-alerts'
             - name: 'null'
-          extraSecretMounts:
-            - name: secret-files
-              mountPath: /etc/secrets
-              subPath: ""
-              secretName: prometheus-alertmanager-secrets
-              readOnly: true
+          alertmanagerSpec:
+            secrets:
+              - prometheus-alertmanager-secrets
   syncPolicy:
     automated:
       prune: true

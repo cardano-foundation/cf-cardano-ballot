@@ -18,7 +18,7 @@ cf-cardano-ballot-ui:
     votingVerificationAppServerUrl: "https://verification-api.{{ .Values.domain }}"
     eventId: "CIP-1694_Pre_Ratification_7AC8"
     categoryId: "CIP-1694_Pre_Ratification_7AC8"
-    googleGormUrl: "https://docs.google.com/forms/u/0/d/e/1FAIpQLSe-dSU0-bi8bjk0wiOaRXj02nxYLvgnpKBgc-eYGRpPYO-y5Q"
+    googleGormUrl: "https://docs.google.com/forms/d/1a-_6T5WCRlWrMkbvwT69pB7PScGeK2kfvwGiAd8clWw/edit"
     googleFormVoteContextInputName: "entry.75173622"
 
 cf-cardano-ballot-voting-api:

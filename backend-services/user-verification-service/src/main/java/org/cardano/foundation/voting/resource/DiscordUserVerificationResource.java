@@ -58,7 +58,7 @@ public class DiscordUserVerificationResource {
                                             schema = @Schema(implementation = Problem.class))
                             }
                     ),
-                    @ApiResponse(responseCode = "500", description = "Server error")
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
             }
     )
     public ResponseEntity<?> isDiscordUserVerified(@PathVariable("discordIdHash") String discordIdHash) {
@@ -99,7 +99,7 @@ public class DiscordUserVerificationResource {
                                             schema = @Schema(implementation = Problem.class))
                             }
                     ),
-                    @ApiResponse(responseCode = "500", description = "Server error")
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
             }
     )
     public ResponseEntity<?> startVerification(@RequestBody @Valid DiscordStartVerificationRequest startVerificationRequest) {
@@ -136,7 +136,7 @@ public class DiscordUserVerificationResource {
                                             schema = @Schema(implementation = Problem.class))
                             }
                     ),
-                    @ApiResponse(responseCode = "500", description = "Server error")
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
             }
     )
     public ResponseEntity<?> checkVerification(@RequestBody @Valid DiscordCheckVerificationRequest checkVerificationRequest) {

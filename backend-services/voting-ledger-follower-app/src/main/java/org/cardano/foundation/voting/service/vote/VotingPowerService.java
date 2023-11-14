@@ -1,10 +1,12 @@
 package org.cardano.foundation.voting.service.vote;
 
+import io.micrometer.core.annotation.Timed;
 import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataStakePoolService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
 import static org.zalando.problem.Status.BAD_REQUEST;
@@ -16,7 +18,9 @@ public class VotingPowerService {
 
     private final BlockchainDataStakePoolService blockchainDataStakePoolService;
 
-    public Either<Problem, Long> getVotingPower(Event event, String stakeAddress) {
+    @Timed(value = "service.voting_power.getVotingPower", histogram = true)
+    public Either<Problem, Long> getVotingPower(Event event,
+                                                String stakeAddress) {
         return switch (event.getVotingEventType()) {
             case USER_BASED -> {
                 yield Either.left(Problem.builder()

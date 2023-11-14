@@ -1,7 +1,7 @@
 .eslintrc.js
 *.d.ts
 *.cy.tsx
-*jest.config.js
+*jest.config.ts
 public/*
 src/types/*.ts
 **/*.js

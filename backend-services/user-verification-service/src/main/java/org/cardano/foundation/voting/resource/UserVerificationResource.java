@@ -50,7 +50,7 @@ public class UserVerificationResource {
                                             schema = @Schema(implementation = Problem.class))
                             }
                     ),
-                    @ApiResponse(responseCode = "500", description = "Server error")
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
             }
     )
     public ResponseEntity<?> isVerified(@PathVariable("eventId") String eventId,

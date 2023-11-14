@@ -11,6 +11,7 @@ plugins {
 	id("cz.habarta.typescript-generator") version "3.2.1263"
     id("com.github.ben-manes.versions") version "0.48.0"
     id("com.gorylenko.gradle-git-properties") version "2.4.1"
+	jacoco
 }
 
 springBoot {
@@ -29,14 +30,16 @@ configurations {
 
 repositories {
 	mavenCentral()
-    mavenLocal()
 	maven { url = uri("https://repo.spring.io/milestone") }
 }
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-	implementation("org.springframework.boot:spring-boot-starter-data-rest")
+
+	testImplementation("io.rest-assured:rest-assured:5.3.2")
+	testImplementation("org.wiremock:wiremock:3.2.0")
+
 	testCompileOnly("org.springframework.boot:spring-boot-starter-test")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -61,8 +64,10 @@ dependencies {
 	implementation("com.querydsl:querydsl-jpa")
     annotationProcessor("com.querydsl:querydsl-apt")
 
-	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0-beta3")
-	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.0-beta3")
+	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0")
+	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.0")
+	implementation("com.bloxbean.cardano:aiken-java-binding:0.0.8")
+	annotationProcessor("com.bloxbean.cardano:cardano-client-annotation-processor:0.5.0")
 
 	implementation("com.bloxbean.cardano:yaci-store-spring-boot-starter:0.0.12")
 	implementation("com.bloxbean.cardano:yaci-store-blocks-spring-boot-starter:0.0.12")
@@ -85,6 +90,16 @@ dependencies {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+tasks.test {
+	finalizedBy(tasks.jacocoTestReport)
+}
+tasks.jacocoTestReport {
+	dependsOn(tasks.test)
+	reports {
+		csv.required.set(true)
+	}
 }
 
 tasks {

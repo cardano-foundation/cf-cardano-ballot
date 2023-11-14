@@ -40,6 +40,11 @@ cf-voting-verification-ui:
   # Whether Resources should be deployed.
   enabled: true
 
+# Vote Commitment
+cf-vote-commitment:
+  # Whether Resources should be deployed.
+  enabled: true
+
 grafana-dashboards:
   enabled: true
 

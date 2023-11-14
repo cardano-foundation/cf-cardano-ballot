@@ -29,14 +29,12 @@ configurations {
 
 repositories {
 	mavenCentral()
-    mavenLocal()
 	maven { url = uri("https://repo.spring.io/milestone") }
 }
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-aop")
-	implementation("org.springframework.boot:spring-boot-starter-data-rest")
 	testCompileOnly("org.springframework.boot:spring-boot-starter-test")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -59,8 +57,8 @@ dependencies {
 	implementation("com.querydsl:querydsl-jpa")
     annotationProcessor("com.querydsl:querydsl-apt")
 
-    implementation("com.bloxbean.cardano:cardano-client-address:0.5.0-beta3")
-	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0-beta3")
+    implementation("com.bloxbean.cardano:cardano-client-address:0.5.0")
+	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0")
 
 	implementation("io.vavr:vavr:0.10.4")
 

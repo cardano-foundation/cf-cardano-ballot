@@ -16,6 +16,8 @@ service:
 
 ingress:
   enabled: true
+  additionalDomains: []
+#    - beta.explorer.cardano.org
 
 resources: {}
   # limits:

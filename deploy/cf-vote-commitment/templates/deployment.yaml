@@ -1,0 +1,127 @@
+{{- range $instance := $.Values.instances }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "cf-vote-commitment.fullname" $ }}-{{ $instance.name }}
+  labels:
+    {{- include "cf-vote-commitment.labels" $ | nindent 4 }}
+spec:
+  {{- if eq $instance.active "true" }}
+  replicas: 1
+  {{- else }}
+  replicas: {{ $instance.replicas | default 1 }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "cf-vote-commitment.selectorLabels" $ | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "cf-vote-commitment.selectorLabels" $ | nindent 8 }}
+    spec:
+      {{- with $.Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ $.Chart.Name }}
+          image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag | default $.Chart.AppVersion }}"
+          {{- if $.Values.diagnosticMode.enabled }}
+          command: ["bash", "-c", "sleep infinity"]
+          {{- end }}
+          imagePullPolicy: {{ $.Values.image.pullPolicy }}
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: {{ $.Values.springProfiles }}
+
+            - name: CARDANO_NETWORK
+              value: {{ $.Values.network | default "preprod" | upper}}
+
+            - name: VOTING_METADATA_LABEL
+              value: {{ $.Values.votingMetadataLabel | default "11113" | quote }}
+
+            - name: BLOCKFROST_URL
+              valueFrom:
+                secretKeyRef:
+                  name: blockfrost-secrets
+                  key: BLOCKFROST_URL
+            - name: BLOCKFROST_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: blockfrost-secrets
+                  key: BLOCKFROST_PASSWORD
+            - name: TX_SUBMIT_URL
+              valueFrom:
+                secretKeyRef:
+                  name: submit-api-secrets
+                  key: TX_SUBMIT_URL
+
+            - name: ORGANISER_MNEMONIC_PHRASE
+              valueFrom:
+                secretKeyRef:
+                  name: wallet-secrets
+                  key: WALLET_MNEMONIC
+
+            - name: USER_VERIFICATION_APP_URL
+              value: "http://cf-user-verification-service:9093"
+
+            ## Postgres
+            - name: DB_DRIVER
+              value: "org.postgresql.Driver"
+            - name: DB_DIALECT
+              value: "org.hibernate.dialect.PostgreSQLDialect"
+            - name: POSTGRES_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: POSTGRES_HOST
+            - name: POSTGRES_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: POSTGRES_PORT
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: POSTGRES_DB
+            - name: DB_SCHEMA
+              value: {{ $.Values.dbSchema | default "public" }}
+            - name: DB_URL
+              value: jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)?currentSchema=$(DB_SCHEMA)
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: POSTGRES_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secrets
+                  key: POSTGRES_PASSWORD
+
+            - name: VOTE_COMMITMENT_ENABLED
+              value: {{ $instance.active | default "false" | quote }}
+
+            - name: VOTE_COMMITMENT_CRON_EXPRESSION
+              value: {{ $instance.voteCommitmentCronExpression | quote }}
+
+            - name: LEDGER_FOLLOWER_APP_URL
+              value: {{ $.Values.ledgerFollowerAppUrl }}
+
+          ports:
+            - name: http
+              containerPort: {{ $.Values.service.port }}
+              protocol: TCP
+#          livenessProbe:
+#            httpGet:
+#              path: /
+#              port: http
+#          readinessProbe:
+#            httpGet:
+#              path: /
+#              port: http
+          resources:
+            {{- toYaml $.Values.resources | nindent 12 }}
+{{ end }}

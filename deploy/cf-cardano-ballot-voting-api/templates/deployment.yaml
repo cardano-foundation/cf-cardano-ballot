@@ -1,48 +1,65 @@
-{{- range $instance := $.Values.instances }}
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "voting-app.fullname" $ }}-{{ $instance.name }}
+  name: {{ include "voting-app.fullname" . }}
   labels:
-    {{- include "voting-app.labels" $ | nindent 4 }}
+    {{- include "voting-app.labels" . | nindent 4 }}
 spec:
-  {{- if eq $instance.active "true" }}
-  replicas: 1
-  {{- else }}
-  replicas: {{ $instance.replicas | default 1 }}
-  {{- end }}
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "voting-app.selectorLabels" $ | nindent 6 }}
+      {{- include "voting-app.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- include "voting-app.selectorLabels" $ | nindent 8 }}
+        {{- include "voting-app.selectorLabels" . | nindent 8 }}
     spec:
-      {{- with $.Values.imagePullSecrets }}
+      {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
-        - name: {{ $.Chart.Name }}
-          image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag | default $.Chart.AppVersion }}"
-          {{- if $.Values.diagnosticMode.enabled }}
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          {{- if .Values.diagnosticMode.enabled }}
           command: ["bash", "-c", "sleep infinity"]
           {{- end }}
-          imagePullPolicy: {{ $.Values.image.pullPolicy }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: SPRING_PROFILES_ACTIVE
-              value: {{ $.Values.springProfiles }}
+              value: {{ .Values.springProfiles }}
 
             - name: CARDANO_NETWORK
-              value: {{ $.Values.network | default "preprod" | upper}}
+              value: {{ .Values.network | default "preprod" | upper}}
+
+            - name: CARDANO_NODE_IP
+              value: {{ .Values.yaci.cardanoNodeHost | default "preprod-node.world.dev.cardano.org" }}
+            - name: CARDANO_NODE_PORT
+              value: {{ .Values.yaci.cardanoNodePort | default 30000 | quote }}
+            - name: CARDANO_NODE_PROTOCOL_MAGIC
+              value: {{ .Values.yaci.cardanoNodeProtocolMagic | default 1 | quote }}
+            - name: YACI_STORE_CARDANO_SYNC_START_BLOCK_HASH
+              value: {{ .Values.yaci.startBlockHash }}
+            - name: YACI_STORE_CARDANO_SYNC_START_SLOT
+              value: {{ .Values.yaci.startSlotNumber | quote }}
+
+            - name: CARDANO_NODE_HOST
+              value: {{ $.Values.yaci.cardanoNodeHost | default "preprod-node.world.dev.cardano.org" }}
+            - name: CARDANO_NODE_PORT
+              value: {{ $.Values.yaci.cardanoNodePort | default 30000 | quote }}
+            - name: CARDANO_NODE_PROTOCOL_MAGIC
+              value: {{ $.Values.yaci.cardanoNodeProtocolMagic | default 1 | quote }}
+            - name: YACI_STORE_CARDANO_SYNC_START_BLOCK_HASH
+              value: {{ $.Values.yaci.startBlockHash }}
+            - name: YACI_STORE_CARDANO_SYNC_START_SLOT
+              value: {{ $.Values.yaci.startSlotNumber | quote }}
 
             - name: CORS_ALLOWED_ORIGINS
-              value: {{ tpl $.Values.corsAllowedOrigins $ }}
+              value: {{ tpl .Values.corsAllowedOrigins . }}
 
             - name: VOTING_METADATA_LABEL
-              value: {{ $.Values.votingMetadataLabel | default "11113" | quote }}
+              value: {{ .Values.votingMetadataLabel | default "11113" | quote }}
 
             - name: BLOCKFROST_URL
               valueFrom:
@@ -90,7 +107,7 @@ spec:
                   name: postgres-secrets
                   key: POSTGRES_DB
             - name: DB_SCHEMA
-              value: {{ $.Values.dbSchema | default "public" }}
+              value: {{ .Values.dbSchema | default "public" }}
             - name: DB_URL
               value: jdbc:postgresql://$(POSTGRES_HOST):$(POSTGRES_PORT)/$(POSTGRES_DB)?currentSchema=$(DB_SCHEMA)
             - name: DB_USERNAME
@@ -103,19 +120,13 @@ spec:
                 secretKeyRef:
                   name: postgres-secrets
                   key: POSTGRES_PASSWORD
-
-            - name: VOTE_COMMITMENT_ENABLED
-              value: {{ $instance.active | default "false" | quote }}
-
-            {{- if eq $instance.active "true" }}
-            - name: VOTE_COMMITMENT_CRON_EXPRESSION
-              value: {{ $instance.voteCommitmentCronExpression | quote }}
-            {{- end }}
+            - name: H2_CONSOLE_ENABLED
+              value: "false"
 
             - name: LEDGER_FOLLOWER_APP_URL
-              value: {{ $.Values.ledgerFollowerAppUrl }}
+              value: {{ .Values.ledgerFollowerAppUrl }}
 
-            {{- if $.Values.useJwt | default false }}
+            {{- if .Values.useJwt | default false }}
             - name: CARDANO_JWT_SECRET
               valueFrom:
                 secretKeyRef:
@@ -124,11 +135,11 @@ spec:
             {{- end }}
 
             - name: LEADERBOARD_FORCE_RESULTS
-              value: {{ $.Values.leaderboardForceResults | quote }}
+              value: {{ .Values.leaderboardForceResults | quote }}
 
           ports:
             - name: http
-              containerPort: {{ $.Values.service.port }}
+              containerPort: {{ .Values.service.port }}
               protocol: TCP
 #          livenessProbe:
 #            httpGet:
@@ -139,5 +150,4 @@ spec:
 #              path: /
 #              port: http
           resources:
-            {{- toYaml $.Values.resources | nindent 12 }}
-{{ end }}
+            {{- toYaml .Values.resources | nindent 12 }}

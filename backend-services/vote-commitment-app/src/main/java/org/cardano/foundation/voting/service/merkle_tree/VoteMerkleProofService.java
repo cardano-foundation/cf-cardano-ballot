@@ -8,6 +8,8 @@ import org.cardano.foundation.voting.repository.VoteMerkleProofRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -23,28 +25,18 @@ public class VoteMerkleProofService {
 
     @Transactional
     @Timed(value = "service.merkle.softDeleteAllProofsAfterSlot", histogram = true)
-    public void softDeleteAllProofsAfterSlot(long slot) {
-        log.info("Soft deleting all proofs after slot:{}", slot);
+    public int softDeleteAllProofsAfterSlot(String eventId, long slot) {
+        log.info("Soft deleting all proofs for eventId: {}, after slot:{}", eventId, slot);
 
-        voteMerkleProofRepository.invalidateMerkleProofsAfterSlot(slot);
+        return voteMerkleProofRepository.invalidateMerkleProofsAfterSlot(eventId, slot);
+    }
+
+    @Transactional
+    @Timed(value = "service.merkle.findTop1InvalidatedByEvent", histogram = true)
+    public List<VoteMerkleProof> findTop1InvalidatedByEventId(String eventId) {
+        log.info("Finding top 1 invalidated proof for eventId:{}", eventId);
+
+        return voteMerkleProofRepository.findTop1ByEventIdAndInvalidatedOrderByCreatedAtDesc(eventId, true);
     }
 
 }
-
-// Batching Advantages:
-// - overlapping easy to control (singleton)
-// - lower resources (on demand)
-// - no using of spring scheduled / quartz, etc
-// - easier monitoring via jobs
-
-// Batching Disadvantages:
-// -
-
-// 01:00
-// 00:30
-
-// 12:00
-// 15:00
-
-
-// FRP

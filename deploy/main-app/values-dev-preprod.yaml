@@ -11,23 +11,20 @@ cf-cardano-ballot-ui:
   enabled: true
   values:
     image:
-      tag: 0.2.56-preprod
+      tag: 0.2.69-preprod
+    votingAppServerUrl: "https://api.{{ .Values.domain }}"
+    votingLedgerFollowerAppServerUrl: "https://follower-api.{{ .Values.domain }}"
+    votingVerificationAppServerUrl: "https://verification-api.{{ .Values.domain }}"
+    eventId: "FRUITS_CF62"
+    categoryId: "FRUITS_CF62"
+    googleGormUrl: "https://docs.google.com/forms/u/0/d/e/1FAIpQLSe-dSU0-bi8bjk0wiOaRXj02nxYLvgnpKBgc-eYGRpPYO-y5Q"
+    googleFormVoteContextInputName: "entry.75173622"
 
 cf-cardano-ballot-voting-api:
   enabled: true
   values:
-    instances:
-#      - name: passive
-#        active: "false"
-#        replicas: 2
-      - name: active-hour
-        active: "true"
-        voteCommitmentCronExpression: "0 0 * * * *"
-#      - name: active-half-hour
-#        active: "true"
-#        voteCommitmentCronExpression: "0 30 * * * *"
     image:
-      tag: 0.2.56
+      tag: v0.2.67-3-g0bc4fd6f
     monitoring:
       alerting:
         enabled: false
@@ -37,13 +34,13 @@ cf-cardano-ballot-verification-api:
   enabled: true
   values:
     image:
-      tag: 0.2.56
+      tag: 0.2.65
 
 cf-cardano-ballot-ledger-follower-api:
   enabled: true
   values:
     image:
-      tag: 0.2.56
+      tag: v0.2.67-4-g7de3db22
     bindOnEventIds: CIP-1694_Pre_Ratification_3316,FRUITS_CF62
     yaci:
       startBlockHash: 3337e297121fda1262372c28de3d917bd2a60bb1e3c6326e3b7e832eb8017615
@@ -60,5 +57,15 @@ cf-cardano-ballot-ledger-follower-api:
 cf-voting-verification-ui:
   values:
     image:
-      tag: 0.2.57
+      tag: 0.2.65
 
+cf-vote-commitment:
+  values:
+    image:
+      tag: 0.2.66
+    instances:
+      - name: active-hour
+        voteCommitmentCronExpression: "0 0 * * * *"
+      - name: active-half-hour
+        voteCommitmentCronExpression: "0 30 * * * *"
+    ledgerFollowerAppUrl: http://cf-cardano-ballot-ledger-follower-api-voting-ledger-follower-ap:9090

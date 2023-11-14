@@ -75,7 +75,7 @@
             "spanNulls": false,
             "stacking": {
               "group": "A",
-              "mode": "none"
+              "mode": "normal"
             },
             "thresholdsStyle": {
               "mode": "off"
@@ -385,6 +385,6 @@
   "timezone": "",
   "title": "Voting Dashboard",
   "uid": "j-MK-_kIz",
-  "version": 6,
+  "version": 1,
   "weekStart": ""
 }

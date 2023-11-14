@@ -29,8 +29,4 @@ public class CommitmentsEnvelope {
                 .flatMap(eId -> Optional.ofNullable(eId.get("hash")));
     }
 
-    public boolean removeCommitment(String eventId) {
-        return commitments.remove(eventId) != null;
-    }
-
 }

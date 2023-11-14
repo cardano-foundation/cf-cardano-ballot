@@ -1,0 +1,49 @@
+name: Run Tests
+
+on:
+  push:
+  pull_request:
+    types: [ opened, synchronize ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: self-hosted
+    strategy:
+      matrix:
+        service: ['user-verification-service', 'voting-app', 'voting-ledger-follower-app']        
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup JDK 18
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Run tests
+        working-directory: ./backend-services/${{ matrix.service }}
+        run: ./gradlew test
+          
+      - name: Generate JaCoCo Badge
+        uses: cicirello/jacoco-badge-generator@v2
+        with:
+          generate-branches-badge: true
+          badges-directory: ./backend-services/${{ matrix.service }}/build/reports/jacoco/test/html/badges
+          jacoco-csv-file: ./backend-services/${{ matrix.service }}/build/reports/jacoco/test/jacocoTestReport.csv
+
+      - name: Log coverage percentage
+        run: |
+          echo "coverage = ${{ steps.jacoco.outputs.coverage }}"
+          echo "branch coverage = ${{ steps.jacoco.outputs.branches }}"
+
+      - name: Publish coverage report to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        if: github.ref == 'refs/heads/main'
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          folder: ./backend-services/${{ matrix.service }}/build/reports/jacoco/test/html
+          target-folder: ${{ matrix.service }}/coverage-report/

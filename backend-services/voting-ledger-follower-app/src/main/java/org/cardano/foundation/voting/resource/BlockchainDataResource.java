@@ -55,7 +55,6 @@ public class BlockchainDataResource {
                 .fold(problem -> {
                             return ResponseEntity
                                     .status(problem.getStatus().getStatusCode())
-                                    .cacheControl(cacheControl)
                                     .body(problem);
                         },
                         chainTip -> {
@@ -78,8 +77,8 @@ public class BlockchainDataResource {
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             }
     )
-    public ResponseEntity<?> txDetails( @Parameter(description = "Transaction hash for which details are to be retrieved", required = true)
-                                            @PathVariable("txHash") String txHash) {
+    public ResponseEntity<?> txDetails(@Parameter(description = "Transaction hash for which details are to be retrieved", required = true)
+                                       @PathVariable("txHash") String txHash) {
         var cacheControl = CacheControl.noCache()
                 .noTransform()
                 .mustRevalidate();

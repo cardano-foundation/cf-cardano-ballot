@@ -37,9 +37,11 @@ public class BackendServiceBlockchainDataStakePoolService implements BlockchainD
                         return maybeStakeAmount;
                     }
                     page++;
+                } else {
+                    log.warn("Failed to get stake amount for epoch {} and stake address {}, page {}", epochNo, stakeAddress, page);
+                    return Optional.empty();
                 }
 
-                log.warn("Failed to get stake amount for epoch {} and stake address {}, page {}", epochNo, stakeAddress, page);
             } while (true);
         } catch (ApiException e) {
             // TODO: handle 404 vs 5xx

@@ -39,5 +39,22 @@
       background: #bbbbbb;
       color: #39486c !important;
     }
+
+    .buttonContent {
+      position: relative;
+
+      .loader {
+        position: absolute;
+        right: -30px;
+      }
+    }
   }
+}
+
+.categoryPagination {
+  color: #39486c !important;
+  flex-shrink: 0 !important;
+  font-weight: 400 !important;
+  letter-spacing: 0em !important;
+  padding-left: 20px !important;
 }

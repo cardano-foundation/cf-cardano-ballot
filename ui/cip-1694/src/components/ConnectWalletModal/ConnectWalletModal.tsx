@@ -19,7 +19,7 @@ type ConnectWalletModalProps = {
   title: string;
   description: string;
   onConnectWallet: () => void;
-  onConnectWalletError: () => void;
+  onConnectWalletError: (walletName: string, error: Error) => void;
   onCloseFn: () => void;
 };
 
@@ -33,6 +33,7 @@ export const ConnectWalletModal = (props: ConnectWalletModalProps) => {
       open={!!openStatus}
       aria-labelledby={name}
       PaperProps={{ sx: { width: '400px', borderRadius: '16px' } }}
+      onClose={onCloseFn}
     >
       <DialogTitle
         sx={{ padding: { xs: '20px', md: '30px 30px 20px 30px' } }}
@@ -81,6 +82,7 @@ export const ConnectWalletModal = (props: ConnectWalletModalProps) => {
             >
               <Box width="100%">
                 <ConnectWalletList
+                  showUnavailableWallets={0}
                   supportedWallets={supportedWallets}
                   onConnect={onConnectWallet}
                   onConnectError={onConnectWalletError}

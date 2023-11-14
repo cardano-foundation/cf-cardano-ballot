@@ -30,7 +30,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.springframework.boot:spring-boot-starter-aop")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-	implementation("org.springframework.boot:spring-boot-starter-data-rest")
 	testCompileOnly("org.springframework.boot:spring-boot-starter-test")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -57,12 +56,12 @@ dependencies {
 	implementation("com.querydsl:querydsl-jpa")
     annotationProcessor("com.querydsl:querydsl-apt")
 
-	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0-beta3")
-    implementation("com.bloxbean.cardano:cardano-client-address:0.5.0-beta3")
-    implementation("com.bloxbean.cardano:cardano-client-metadata:0.5.0-beta3")
-	implementation("com.bloxbean.cardano:cardano-client-quicktx:0.5.0-beta3")
-	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.0-beta3")
-	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0-beta3")
+	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0")
+    implementation("com.bloxbean.cardano:cardano-client-address:0.5.0")
+    implementation("com.bloxbean.cardano:cardano-client-metadata:0.5.0")
+	implementation("com.bloxbean.cardano:cardano-client-quicktx:0.5.0")
+	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.0")
+	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0")
 
 	implementation("io.blockfrost:blockfrost-java:0.1.3")
 

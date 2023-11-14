@@ -20,7 +20,7 @@ describe('ChoseExplorerSection:', () => {
     const explorerSection = screen.queryByTestId('chose-explorer-section');
     expect(explorerSection).toBeInTheDocument();
 
-    const options = await within(explorerSection).queryAllByTestId('chose-explorer-option-card');
+    const options = within(explorerSection).queryAllByTestId('chose-explorer-option-card');
     expect(options.length).toEqual(EXPLORERS.length);
     for (const option in options) {
       expect(options[option].textContent).toEqual(EXPLORERS[option].label);

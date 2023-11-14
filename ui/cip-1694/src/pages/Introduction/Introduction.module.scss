@@ -1,0 +1,48 @@
+.sliderWrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.swiperContainer {
+  width: 100%;
+  display: flex;
+}
+
+.title {
+  color: #061d3c !important;
+  font-weight: 600 !important;
+  letter-spacing: normal !important;
+  margin-bottom: 12px !important;
+}
+
+.description {
+  color: #39486c !important;
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  line-height: 22px !important;
+  text-align: left !important;
+}
+
+.button {
+  background: #1d439b !important;
+  border-radius: 8px !important;
+  color: #f5f9ff !important;
+  font-size: 16px !important;
+  font-style: normal !important;
+  font-weight: 600 !important;
+  height: 49px !important;
+  line-height: normal !important;
+  text-transform: unset !important;
+  white-space: nowrap !important;
+  padding: 0px 25px;
+}
+
+.heroStyleImg {
+  border-radius: 16px;
+  display: block;
+  height: auto;
+  object-fit: contain;
+  width: 100%;
+}

@@ -17,6 +17,7 @@ import org.springframework.util.StopWatch;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static com.bloxbean.cardano.client.util.HexUtil.encodeHexString;
 import static org.cardano.foundation.voting.domain.VoteSerialisations.VOTE_SERIALISER;
@@ -67,19 +68,46 @@ public class VoteCommitmentService {
     }
 
     private List<L1MerkleCommitment> getValidL1MerkleCommitments() {
-        var eventSummariesE = chainFollowerClient.findAllCommitmentWindowOpenEvents();
-        if (eventSummariesE.isEmpty()) {
-            var issue = eventSummariesE.swap().get();
+        var allCommitmentWindowOpenEventsE = chainFollowerClient.findAllCommitmentWindowOpenEvents();
 
-            log.error("Failed to get eventSummaries issue:{}, will try again in some time...", issue.toString());
+
+        if (allCommitmentWindowOpenEventsE.isEmpty()) {
+            var issue = allCommitmentWindowOpenEventsE.swap().get();
+
+            log.error("Failed to get open window eventSummaries issue:{}, will try again in some time...", issue.toString());
 
             return List.of();
         }
-        var eventSummaries = eventSummariesE.get();
 
-        log.info("Found events with active commitments window: {}", eventSummaries.stream().map(ChainFollowerClient.EventSummary::id).toList());
+        var eventsToProcess1 = allCommitmentWindowOpenEventsE.get();
 
-        return eventSummaries.stream()
+        log.info("Found events with active commitments window: {}", eventsToProcess1.stream()
+                .map(ChainFollowerClient.EventSummary::id)
+                .toList());
+
+        var allFinishedEventsWithClosedCommitmentWindowE = chainFollowerClient.findAllEndedEventsWithoutOpenCommitmentWindow();
+
+        if (allFinishedEventsWithClosedCommitmentWindowE.isEmpty()) {
+            var issue = allFinishedEventsWithClosedCommitmentWindowE.swap().get();
+
+            log.error("Failed to get finished and with close window eventSummaries issue :{}, will try again in some time...", issue.toString());
+
+            return List.of();
+        }
+
+        var allFinishedEventsWithClosedCommitmentWindow = allFinishedEventsWithClosedCommitmentWindowE.get();
+
+        List<ChainFollowerClient.EventSummary> eventsToProcess2 = allFinishedEventsWithClosedCommitmentWindow.stream()
+                // if we find at least one vote merkle proof which is not validated
+                .filter(eventSummary -> !voteMerkleProofService.findTop1InvalidatedByEventId(eventSummary.id()).isEmpty())
+                .toList();
+
+        var allEventsToProcess = Stream.concat(
+                eventsToProcess1.stream(),
+                eventsToProcess2.stream())
+                .toList();
+
+        return allEventsToProcess.stream()
                 .map(event -> {
                     // TODO caching or paging or both or neither? Maybe we use Redis???
                     log.info("Loading signedVotes from db for event:{}", event.id());

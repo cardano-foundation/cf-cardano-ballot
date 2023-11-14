@@ -15,7 +15,7 @@ import { createMemoryHistory } from 'history';
 import capitalize from 'lodash/capitalize';
 import { ROUTES } from 'common/routes';
 import { UserState } from 'common/store/types';
-import { Toast } from 'components/common/Toast/Toast';
+import { Toast } from 'components/Toast/Toast';
 import { renderWithProviders } from 'test/mockProviders';
 import { useCardanoMock, eventMock_finished, voteStats, eventMock_active } from 'test/mocks';
 import { CustomRouter } from 'test/CustomRouter';
@@ -27,22 +27,13 @@ jest.mock('react-minimal-pie-chart', () => ({
   PieChart: mockPieChart,
 }));
 
-jest.mock('swiper/react', () => ({
-  Swiper: ({ children }: { children: React.ReactElement }) => <div data-testid="Swiper-testId">{children}</div>,
-  SwiperSlide: ({ children }: { children: React.ReactElement }) => (
-    <div data-testid="SwiperSlide-testId">{children}</div>
-  ),
-}));
-
-jest.mock('swiper', () => ({
-  Pagination: () => null,
-  Navigation: () => null,
-  Autoplay: () => null,
-}));
-
 jest.mock('@cardano-foundation/cardano-connect-with-wallet', () => {
   return {
     useCardano: mockUseCardano,
+    NetworkType: {
+      MAINNET: 'mainnet',
+      TESTNET: 'testnet',
+    },
     getWalletIcon: () => <span data-testid="getWalletIcon" />,
     ConnectWalletList: () => {
       return <span data-testid="ConnectWalletList" />;
@@ -61,6 +52,7 @@ jest.mock('../../../env', () => {
       ...original.env,
       CATEGORY_ID: 'CHANGE_GOV_STRUCTURE',
       EVENT_ID: 'CIP-1694_Pre_Ratification_3316',
+      TARGET_NETWORK: 'Preprod',
     },
   };
 });
@@ -102,66 +94,67 @@ describe('For the event that has already finished', () => {
     const statsItems =
       eventMock_finished?.categories
         ?.find(({ id }) => id === 'CHANGE_GOV_STRUCTURE')
-        ?.proposals?.map(({ name }) => ({
+        ?.proposals?.map(({ name, id }) => ({
+          id,
           name,
           label: capitalize(name.toLowerCase()),
         })) || [];
 
     await waitFor(async () => {
-      const leaderboardPage = await screen.queryByTestId('leaderboard-page');
+      const leaderboardPage = screen.queryByTestId('leaderboard-page');
       expect(leaderboardPage).not.toBeNull();
 
-      const leaderboardTitle = await within(leaderboardPage).queryByTestId('leaderboard-title');
+      const leaderboardTitle = within(leaderboardPage).queryByTestId('leaderboard-title');
       expect(leaderboardTitle).not.toBeNull();
       expect(leaderboardTitle.textContent).toEqual('Leaderboard');
 
-      const pollStatsTile = await within(leaderboardPage).queryByTestId('poll-stats-tile');
+      const pollStatsTile = within(leaderboardPage).queryByTestId('poll-stats-tile');
       expect(pollStatsTile).not.toBeNull();
 
-      const pollStatsTileTitle = await within(pollStatsTile).queryByTestId('tile-title');
+      const pollStatsTileTitle = within(pollStatsTile).queryByTestId('tile-title');
       expect(pollStatsTileTitle).not.toBeNull();
       expect(pollStatsTileTitle.textContent).toEqual('Poll stats');
 
-      const pollStatsTileSummary = await within(pollStatsTile).queryByTestId('tile-summary');
+      const pollStatsTileSummary = within(pollStatsTile).queryByTestId('tile-summary');
       expect(pollStatsTileSummary).not.toBeNull();
       expect(pollStatsTileSummary.textContent).toEqual(`${statsSum}`);
 
-      const pollStatsItems = await within(pollStatsTile).queryAllByTestId('poll-stats-item');
-      for (const item in pollStatsItems) {
+      const pollStatsItems = within(pollStatsTile).queryAllByTestId('poll-stats-item');
+      for (const item in statsItems) {
         expect(pollStatsItems[item].textContent).toEqual(
-          `${capitalize(stats[item][0].toLowerCase())}${stats[item][1].votes}`
+          `${capitalize(statsItems[item].name.toLowerCase())}${stats[item][1].votes}`
         );
       }
 
-      const currentlyVotingTile = await within(leaderboardPage).queryByTestId('currently-voting-tile');
+      const currentlyVotingTile = within(leaderboardPage).queryByTestId('currently-voting-tile');
       expect(currentlyVotingTile).not.toBeNull();
 
-      const currentlyVotingTileTitle = await within(currentlyVotingTile).queryByTestId('tile-title');
+      const currentlyVotingTileTitle = within(currentlyVotingTile).queryByTestId('tile-title');
       expect(currentlyVotingTileTitle).not.toBeNull();
       expect(currentlyVotingTileTitle.textContent).toEqual('Current voting stats');
 
-      const currentlyVotingTileSummary = await within(currentlyVotingTile).queryByTestId('tile-summary');
+      const currentlyVotingTileSummary = within(currentlyVotingTile).queryByTestId('tile-summary');
       expect(currentlyVotingTileSummary).not.toBeNull();
       expect(currentlyVotingTileSummary.textContent).toEqual(`${statsSum}`);
 
-      const currentlyVotingItems = await within(currentlyVotingTile).queryAllByTestId('currently-voting-item');
-      for (const item in pollStatsItems) {
+      const currentlyVotingItems = within(currentlyVotingTile).queryAllByTestId('currently-voting-item');
+      for (const item in statsItems) {
         expect(currentlyVotingItems[item].textContent).toEqual(
-          `${capitalize(stats[item][0].toLowerCase())} - ${getPercentage(
-            voteStats.proposals[stats[item][0]]?.votes,
+          `${capitalize(statsItems[item].name.toLowerCase())} - ${getPercentage(
+            voteStats.proposals[statsItems[item].id]?.votes,
             statsSum
           ).toFixed(2)}%`
         );
       }
 
-      const currentlyVotingChart = await within(currentlyVotingTile).queryByTestId('pie-chart');
+      const currentlyVotingChart = within(currentlyVotingTile).queryByTestId('pie-chart');
       expect(currentlyVotingChart).toBeInTheDocument();
       expect(mockPieChart.mock.lastCall[0]).toEqual({
         style: { height: '200px', width: '200px' },
         lineWidth: 32,
-        data: statsItems.map(({ label, name }) => ({
+        data: statsItems.map(({ label, name, id }) => ({
           title: label,
-          value: (voteStats.proposals?.[name as any] as unknown as ByProposalsInCategoryStats['proposals'])?.votes,
+          value: (voteStats.proposals?.[id as any] as unknown as ByProposalsInCategoryStats['proposals'])?.votes,
           color: proposalColorsMap[name],
         })),
       });
@@ -185,7 +178,7 @@ describe('For the event that has already finished', () => {
     await waitFor(async () => {
       expect(mockToast).toBeCalledWith(
         <Toast
-          message={`Failed to fecth stats: ${error}`}
+          message={`Failed to fetch stats: ${error}`}
           error
           icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
         />
@@ -215,51 +208,61 @@ describe("For the event that hasn't finished yet", () => {
 
     const statsSum = '--';
     const placeholder = '--';
-    const stats = Object.entries(voteStats.proposals);
+
+    const statsItems =
+      eventMock_finished?.categories
+        ?.find(({ id }) => id === 'CHANGE_GOV_STRUCTURE')
+        ?.proposals?.map(({ name, id }) => ({
+          id,
+          name,
+          label: capitalize(name.toLowerCase()),
+        })) || [];
 
     await waitFor(async () => {
       expect(mockGetStats).not.toBeCalled();
 
-      const leaderboardPage = await screen.queryByTestId('leaderboard-page');
+      const leaderboardPage = screen.queryByTestId('leaderboard-page');
       expect(leaderboardPage).not.toBeNull();
 
-      const leaderboardTitle = await within(leaderboardPage).queryByTestId('leaderboard-title');
+      const leaderboardTitle = within(leaderboardPage).queryByTestId('leaderboard-title');
       expect(leaderboardTitle).not.toBeNull();
       expect(leaderboardTitle.textContent).toEqual('Leaderboard');
 
-      const pollStatsTile = await within(leaderboardPage).queryByTestId('poll-stats-tile');
+      const pollStatsTile = within(leaderboardPage).queryByTestId('poll-stats-tile');
       expect(pollStatsTile).not.toBeNull();
 
-      const pollStatsTileTitle = await within(pollStatsTile).queryByTestId('tile-title');
+      const pollStatsTileTitle = within(pollStatsTile).queryByTestId('tile-title');
       expect(pollStatsTileTitle).not.toBeNull();
       expect(pollStatsTileTitle.textContent).toEqual('Poll stats');
 
-      const pollStatsTileSummary = await within(pollStatsTile).queryByTestId('tile-summary');
+      const pollStatsTileSummary = within(pollStatsTile).queryByTestId('tile-summary');
       expect(pollStatsTileSummary).not.toBeNull();
       expect(pollStatsTileSummary.textContent).toEqual(`${statsSum}`);
 
-      const pollStatsItems = await within(pollStatsTile).queryAllByTestId('poll-stats-item');
-      for (const item in pollStatsItems) {
-        expect(pollStatsItems[item].textContent).toEqual(`${capitalize(stats[item][0].toLowerCase())}${placeholder}`);
+      const pollStatsItems = within(pollStatsTile).queryAllByTestId('poll-stats-item');
+      for (const item in statsItems) {
+        expect(pollStatsItems[item].textContent).toEqual(
+          `${capitalize(statsItems[item].name.toLowerCase())}${placeholder}`
+        );
       }
 
-      const currentlyVotingTile = await within(leaderboardPage).queryByTestId('currently-voting-tile');
+      const currentlyVotingTile = within(leaderboardPage).queryByTestId('currently-voting-tile');
       expect(currentlyVotingTile).not.toBeNull();
 
-      const currentlyVotingTileTitle = await within(currentlyVotingTile).queryByTestId('tile-title');
+      const currentlyVotingTileTitle = within(currentlyVotingTile).queryByTestId('tile-title');
       expect(currentlyVotingTileTitle).not.toBeNull();
       expect(currentlyVotingTileTitle.textContent).toEqual('Current voting stats');
 
-      const currentlyVotingTileSummary = await within(currentlyVotingTile).queryByTestId('tile-summary');
+      const currentlyVotingTileSummary = within(currentlyVotingTile).queryByTestId('tile-summary');
       expect(currentlyVotingTileSummary).not.toBeNull();
       expect(currentlyVotingTileSummary.textContent).toEqual(`${statsSum}`);
 
-      const currentlyVotingItems = await within(currentlyVotingTile).queryAllByTestId('currently-voting-item');
-      for (const item in pollStatsItems) {
-        expect(currentlyVotingItems[item].textContent).toEqual(`${capitalize(stats[item][0].toLowerCase())}`);
+      const currentlyVotingItems = within(currentlyVotingTile).queryAllByTestId('currently-voting-item');
+      for (const item in statsItems) {
+        expect(currentlyVotingItems[item].textContent).toEqual(`${capitalize(statsItems[item].name.toLowerCase())}`);
       }
 
-      const currentlyVotingChart = await within(currentlyVotingTile).queryByTestId('pie-chart');
+      const currentlyVotingChart = within(currentlyVotingTile).queryByTestId('pie-chart');
       expect(currentlyVotingChart).toBeInTheDocument();
       expect(mockPieChart.mock.lastCall[0]).toEqual({
         style: { height: '200px', width: '200px' },

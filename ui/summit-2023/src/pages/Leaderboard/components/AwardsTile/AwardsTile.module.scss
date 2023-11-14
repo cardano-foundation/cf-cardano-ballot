@@ -1,0 +1,70 @@
+.awardCard {
+  border-radius: 16px !important;
+  border: 1px solid transparent !important;
+  box-shadow: 2px 2px 5px 0px #061d3c40 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  margin: 16px !important;
+  background-color: white;
+  @media only screen and (max-width: 600px) {
+    margin: 0 0 16px 0 !important;
+  }
+  .rankCard {
+    border: 1px solid transparent !important;
+    border-radius: 8px;
+    background: #fff;
+    text-align: center;
+    font-size: 12px;
+    margin: 10px !important;
+    padding: 10px;
+    display: 'flex';
+    text-align: left;
+    vertical-align: middle;
+    flex-shrink: 0;
+    width: 96% !important;
+    word-wrap: break-word;
+    box-shadow: 1px 2px 7px 0px rgba(67, 70, 86, 0.1);
+    .trophy {
+      display: flex;
+      margin: auto 6px;
+    }
+    .title {
+      max-width: 250px;
+      font-size: 20px !important;
+      color: var(---color-primary) !important;
+      font-weight: 600 !important;
+    }
+  }
+
+  .awardTitle {
+    color: var(---color-primary) !important;
+    text-align: center;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    line-height: 22px !important;
+    letter-spacing: 0em !important;
+    justify-content: center;
+    display: flex;
+    background-color: transparent;
+    margin: 0 auto;
+    align-items: center;
+  }
+
+  .listTitle {
+    color: var(---color-primary) !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    line-height: 22px !important;
+    letter-spacing: 0em !important;
+  }
+
+  .statTitle {
+    font-size: 16px !important;
+    color: var(---color-primary) !important;
+    font-weight: 400 !important;
+  }
+  .divider {
+    height: 0.5px;
+    background: #f0f0f0;
+  }
+}

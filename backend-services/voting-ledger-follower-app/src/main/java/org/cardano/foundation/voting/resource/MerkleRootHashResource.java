@@ -23,7 +23,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 @RequiredArgsConstructor
 @RequestMapping("/api/merkle-root-hash")
 @Slf4j
-@Tag(name = "MerkleRootHashResource", description = "Markle root hash operations API")
+@Tag(name = "MerkleRootHashResource", description = "Merkle root hash operations API")
 public class MerkleRootHashResource {
 
     private final MerkleRootHashService merkleRootHashService;

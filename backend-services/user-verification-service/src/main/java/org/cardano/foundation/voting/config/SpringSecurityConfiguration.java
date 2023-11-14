@@ -89,6 +89,9 @@ public class SpringSecurityConfiguration {
                     .requestMatchers(new AntPathRequestMatcher("/actuator/**", GET.name())).permitAll()
                     .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
 
+                    .requestMatchers(new AntPathRequestMatcher("/v3/api-docs/**")).permitAll()
+                    .requestMatchers(new AntPathRequestMatcher("/swagger-ui/**")).permitAll()
+
                     .anyRequest().denyAll()
          )
          .rememberMe(AbstractHttpConfigurer::disable)

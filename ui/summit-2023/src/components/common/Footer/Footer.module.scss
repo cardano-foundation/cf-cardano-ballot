@@ -11,12 +11,12 @@
   line-height: 18.75px !important;
   @media only screen and (max-width: 900px) {
     text-align: center;
-    margin-top: 20px;
+    margin-top: 20px !important;
   }
 }
 
 .link {
-  color: var(--color-medium-grey) !important;
+  color: var(--color-primary) !important;
   cursor: pointer !important;
-  display: flex !important;
+  margin-left: 5px;
 }

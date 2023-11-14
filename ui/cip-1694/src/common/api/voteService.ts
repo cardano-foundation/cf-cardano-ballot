@@ -1,12 +1,19 @@
+import queryString, { StringifiableRecord } from 'query-string';
 import { EventPresentation, ChainTip, Account } from 'types/voting-ledger-follower-types';
 import { Problem, SignedWeb3Request, Vote, VoteReceipt } from 'types/voting-app-types';
-import { DEFAULT_CONTENT_TYPE_HEADERS, doRequest, HttpMethods } from '../handlers/httpHandler';
+import { DEFAULT_CONTENT_TYPE_HEADERS, doRequest, HttpMethods, Headers, MediaTypes } from '../handlers/httpHandler';
 import { env } from '../../env';
 
 export const CAST_VOTE_URL = `${env.VOTING_APP_SERVER_URL}/api/vote/cast`;
 export const VOTE_RECEIPT_URL = `${env.VOTING_APP_SERVER_URL}/api/vote/receipt`;
 export const BLOCKCHAIN_TIP_URL = `${env.VOTING_LEDGER_FOLLOWER_APP_SERVER_URL}/api/blockchain/tip`;
 export const VOTING_POWER_URL = `${env.VOTING_LEDGER_FOLLOWER_APP_SERVER_URL}/api/account`;
+export const GOOGLE_FORM_URL = env.GOOGLE_FORM_URL;
+
+export const ERRORS = {
+  STAKE_AMOUNT_NOT_AVAILABLE: 'STAKE_AMOUNT_NOT_AVAILABLE',
+  VOTE_CANNOT_BE_CHANGED: 'VOTE_CANNOT_BE_CHANGED',
+};
 
 export const castAVoteWithDigitalSignature = async (jsonRequest: SignedWeb3Request) =>
   await doRequest<Problem | Vote>(
@@ -40,3 +47,17 @@ export const getVotingPower = async (eventId: EventPresentation['id'], stakeAddr
     DEFAULT_CONTENT_TYPE_HEADERS
   );
 };
+
+export const submitVoteContextForm = async (data: StringifiableRecord) =>
+  await doRequest<Problem | void>(
+    HttpMethods.POST,
+    queryString.stringifyUrl({
+      url: `${GOOGLE_FORM_URL}/formResponse`,
+      query: {
+        ...data,
+      },
+    }),
+    {
+      [Headers.CONTENT_TYPE]: MediaTypes.APPLICATION_JSON_UTF8_FORM_URLENCODED,
+    }
+  );

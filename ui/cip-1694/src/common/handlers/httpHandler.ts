@@ -140,11 +140,7 @@ export function responseHandlerDelegate<T>() {
   };
 }
 
-type RequestInit = {
-  method: HttpMethods;
-  headers: Partial<contentTypeHeaders>;
-  body?: string;
-};
+type RequestParams = Parameters<typeof fetch>[1];
 
 async function executeRequest<T>(
   requestUri: string,
@@ -152,7 +148,7 @@ async function executeRequest<T>(
   headers: Partial<contentTypeHeaders>,
   body?: string
 ) {
-  const request: RequestInit = {
+  const request: RequestParams = {
     method: method || HttpMethods.GET,
     headers: headers || {},
     ...DEFAULT_REQUEST_PARAMETERS,
@@ -200,7 +196,7 @@ export const doRequest = async <T>(
   token?: string,
   bodyInHeader?: boolean
 ) => {
-  const allHeaders = { ...headers, ...DEFAULT_CONTENT_TYPE_HEADERS };
+  const allHeaders = { ...DEFAULT_CONTENT_TYPE_HEADERS, ...headers };
 
   if (body && bodyInHeader) {
     allHeaders['X-CIP93-Signature'] = JSON.parse(body).coseSignature;

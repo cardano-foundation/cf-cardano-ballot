@@ -13,15 +13,6 @@ import java.util.Map;
 @Builder
 public class Leaderboard {
 
-    @Builder
-    @Getter
-    public static class WinnerStats {
-
-        private String categoryId;
-        private String proposalId;
-
-    }
-
     // per category
     @Builder
     @Getter
@@ -54,6 +45,7 @@ public class Leaderboard {
 
     @Getter
     @Builder
+    @AllArgsConstructor
     public static class Votes {
         private long votes;
         private String votingPower;

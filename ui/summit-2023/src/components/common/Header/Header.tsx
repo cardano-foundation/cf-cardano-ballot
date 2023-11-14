@@ -13,6 +13,7 @@ import {
   Typography,
   Button,
   Box,
+  Tooltip,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
@@ -31,8 +32,14 @@ import { useToggle } from 'common/hooks/useToggle';
 import { CustomButton } from '../Button/CustomButton';
 import { getSlotNumber, getUserVotes } from 'common/api/voteService';
 import { buildCanonicalLoginJson, submitLogin } from 'common/api/loginService';
-import { clearUserInSessionStorage, saveUserInSession } from '../../../utils/session';
-import { setConnectedPeerWallet, setUserVotes, setWalletIsLoggedIn } from '../../../store/userSlice';
+import { clearUserInSessionStorage, getUserInSession, saveUserInSession, tokenIsExpired } from '../../../utils/session';
+import {
+  setConnectedPeerWallet,
+  setUserVotes,
+  setVoteReceipt,
+  setWalletIsLoggedIn,
+  setWalletIsVerified,
+} from '../../../store/userSlice';
 import { copyToClipboard, getSignedMessagePromise, resolveCardanoNetwork } from '../../../utils/utils';
 import { Toast } from '../Toast/Toast';
 import { ToastType } from '../Toast/Toast.types';
@@ -41,6 +48,7 @@ import { parseError } from 'common/constants/errors';
 import { IWalletInfo } from 'components/ConnectWalletList/ConnectWalletList.types';
 import { removeFromLocalStorage } from 'utils/storage';
 import QRCode from 'react-qr-code';
+import { VoteReceipt } from '../../../types/voting-app-types';
 
 const Header: React.FC = () => {
   const dispatch = useDispatch();
@@ -57,7 +65,7 @@ const Header: React.FC = () => {
     });
 
   const [openAuthDialog, setOpenAuthDialog] = useState<boolean>(false);
-  const [loginModal, toggleLoginModal] = useToggle(false);
+  const [loginModal, setLoginModal] = useState(false);
   const [loginModalMessage, setLoginModalMessage] = useState<string>('');
   const [verifyModalIsOpen, setVerifyModalIsOpen] = useState<boolean>(false);
   const [verifyDiscordModalIsReady, toggleVerifyDiscordModalIsOpen] = useToggle(false);
@@ -65,6 +73,9 @@ const Header: React.FC = () => {
   const [toastType, setToastType] = useState<ToastType>('common');
   const [toastOpen, setToastOpen] = useState(false);
   const eventCache = useSelector((state: RootState) => state.user.event);
+
+  const session = getUserInSession();
+  const isExpired = tokenIsExpired(session?.expiresAt);
 
   const [cip45ModalIsOpen, setCip45ModalIsOpen] = useState<boolean>(false);
   const [startPeerConnect, setStartPeerConnect] = useState(false);
@@ -104,9 +115,10 @@ const Header: React.FC = () => {
 
   useEffect(() => {
     const openLoginModal = (message?: string) => {
+      if (session || !isExpired) return;
       if (message && message.length) setLoginModalMessage(message);
       else setLoginModalMessage('');
-      toggleLoginModal();
+      setLoginModal(false);
     };
     eventBus.subscribe('openLoginModal', openLoginModal);
 
@@ -166,6 +178,12 @@ const Header: React.FC = () => {
     setPeerConnectWalletInfo(undefined);
     removeFromLocalStorage('cardano-peer-autoconnect-id');
     removeFromLocalStorage('cardano-wallet-discovery-address');
+
+    // TODO: clean redux
+    dispatch(setConnectedPeerWallet({ peerWallet: false }));
+    dispatch(setWalletIsVerified({ isVerified: false }));
+    dispatch(setUserVotes({ userVotes: [] }));
+    dispatch(setVoteReceipt({ categoryId: '', receipt: {} as VoteReceipt }));
   };
 
   useEffect(() => {
@@ -281,16 +299,16 @@ const Header: React.FC = () => {
       const requestVoteObject = await signMessagePromisified(canonicalVoteInput);
       submitLogin(requestVoteObject)
         .then((response) => {
-          const session = {
+          const newSession = {
             accessToken: response.accessToken,
             expiresAt: response.expiresAt,
           };
-          saveUserInSession(session);
+          saveUserInSession(newSession);
           dispatch(setWalletIsLoggedIn({ isLoggedIn: true }));
-          eventBus.publish('showToast', 'Login successfully');
-          toggleLoginModal();
+          eventBus.publish('showToast', 'Login successful');
+          setLoginModal(false);
 
-          getUserVotes(session?.accessToken)
+          getUserVotes(newSession?.accessToken)
             .then((userVotes) => {
               if (userVotes) {
                 dispatch(setUserVotes({ userVotes }));
@@ -318,6 +336,7 @@ const Header: React.FC = () => {
           onOpenConnectWalletModal={handleConnectWallet}
           onOpenVerifyWalletModal={handleOpenVerify}
           onLogin={handleLogin}
+          onDisconnectWallet={onDisconnectWallet}
         />
         <IconButton
           className="close-button"
@@ -360,7 +379,7 @@ const Header: React.FC = () => {
         position={'static'}
         style={{ background: 'transparent', boxShadow: 'none', color: 'black' }}
       >
-        <Toolbar sx={{ pl: 0, pt: 1 }}>
+        <Toolbar sx={{ pl: 0, pt: 2 }}>
           {isTablet ? (
             <>
               <NavLink to="/">
@@ -374,7 +393,7 @@ const Header: React.FC = () => {
               <IconButton
                 edge="end"
                 color="inherit"
-                className="menuButton"
+                className="menu-button"
                 onClick={() => setDrawerOpen(true)}
               >
                 <MenuIcon className="close-icon" />
@@ -420,6 +439,7 @@ const Header: React.FC = () => {
                   onOpenConnectWalletModal={handleConnectWallet}
                   onOpenVerifyWalletModal={handleOpenVerify}
                   onLogin={handleLogin}
+                  onDisconnectWallet={onDisconnectWallet}
                 />
               </Grid>
             </Grid>
@@ -457,7 +477,7 @@ const Header: React.FC = () => {
         id="verify-wallet-modal"
         isOpen={verifyModalIsOpen}
         name="verify-wallet-modal"
-        title="Verify your wallet"
+        title="Verify your Wallet"
         onClose={handleCloseVerify}
         disableBackdropClick={true}
         width={isMobile ? '100%' : '400px'}
@@ -473,7 +493,7 @@ const Header: React.FC = () => {
         isOpen={isConnected && loginModal}
         name="login-modal"
         title="Login with your Wallet"
-        onClose={toggleLoginModal}
+        onClose={() => setLoginModal(false)}
         disableBackdropClick={true}
         width={isMobile ? 'auto' : '500px'}
       >
@@ -575,6 +595,26 @@ const Header: React.FC = () => {
                 Copy Peer ID
               </Typography>
             </div>
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                marginTop: '8px',
+              }}
+            >
+              <Tooltip title="Currently, only the beta version of the Eternl wallet v1.11.15 is fully supporting CIP-45. Mobile support will be available soon.">
+                <span style={{ fontSize: '14px', fontStyle: 'italic', cursor: 'pointer' }}>
+                  {' '}
+                  <a
+                    href="https://beta.eternl.io/"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Using Eternl Wallet
+                  </a>
+                </span>
+              </Tooltip>
+            </Box>
             <Button
               onClick={() => {
                 setStartPeerConnect(false);

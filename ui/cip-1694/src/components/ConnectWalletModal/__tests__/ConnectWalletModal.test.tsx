@@ -17,12 +17,17 @@ jest.mock('../../../env', () => {
       CATEGORY_ID: 'CHANGE_GOV_STRUCTURE',
       EVENT_ID: 'CIP-1694_Pre_Ratification_3316',
       SUPPORTED_WALLETS: mockSupportedWallets,
+      TARGET_NETWORK: 'Preprod',
     },
   };
 });
 
 jest.mock('@cardano-foundation/cardano-connect-with-wallet', () => ({
   useCardano: jest.fn(),
+  NetworkType: {
+    MAINNET: 'mainnet',
+    TESTNET: 'testnet',
+  },
   getWalletIcon: () => <span data-testid="getWalletIcon" />,
   ConnectWalletList: mockConnectWalletList,
   ConnectWalletButton: () => {
@@ -71,6 +76,7 @@ describe('ConnectWalletModal', () => {
 
     expect(within(modal).queryByTestId('connect-wallet-list')).not.toBeNull();
     expect(mockConnectWalletList.mock.lastCall[0]).toEqual({
+      showUnavailableWallets: 0,
       supportedWallets: mockSupportedWallets,
       onConnect: props.onConnectWallet,
       onConnectError: props.onConnectWalletError,

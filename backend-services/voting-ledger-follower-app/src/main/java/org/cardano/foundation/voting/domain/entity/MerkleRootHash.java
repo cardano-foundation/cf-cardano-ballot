@@ -17,7 +17,6 @@ import org.hibernate.annotations.Immutable;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Getter
-@Immutable
 public class MerkleRootHash extends AbstractTimestampEntity {
 
     @Id

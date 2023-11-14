@@ -11,7 +11,7 @@ import { ByProposalsInCategoryStats } from 'types/voting-app-types';
 import { ProposalPresentation } from 'types/voting-ledger-follower-types';
 import { RootState } from 'common/store';
 import * as leaderboardService from 'common/api/leaderboardService';
-import { Toast } from 'components/common/Toast/Toast';
+import { Toast } from 'components/Toast/Toast';
 import { getPercentage, proposalColorsMap } from './utils';
 import { StatsTile } from './components/StatsTile';
 import styles from './Leaderboard.module.scss';
@@ -27,7 +27,7 @@ export const Leaderboard = () => {
     try {
       setStats((await leaderboardService.getStats(event?.categories?.[0]?.id))?.proposals);
     } catch (error) {
-      const message = `Failed to fecth stats: ${error?.message || error?.toString()}`;
+      const message = `Failed to fetch stats: ${error?.message || error?.toString()}`;
       toast(
         <Toast
           error
@@ -47,7 +47,8 @@ export const Leaderboard = () => {
   }, [init, canViewResults]);
 
   const statsItems: StatItem<ProposalPresentation['name']>[] =
-    event?.categories?.[0]?.proposals?.map(({ name }) => ({
+    event?.categories?.[0]?.proposals?.map(({ name, id }) => ({
+      id,
       name,
       label: capitalize(name.toLowerCase()),
     })) || [];
@@ -55,9 +56,9 @@ export const Leaderboard = () => {
   const placeholder = '--';
   const statsSum = useMemo(() => stats && Object.values(stats)?.reduce((acc, { votes }) => (acc += votes), 0), [stats]);
 
-  const chartData = statsItems.map(({ label, name }) => ({
+  const chartData = statsItems.map(({ label, name, id }) => ({
     title: label,
-    value: stats?.[name]?.votes,
+    value: stats?.[id]?.votes,
     color: proposalColorsMap[name],
   }));
 
@@ -128,7 +129,7 @@ export const Leaderboard = () => {
                   Number of votes
                 </Typography>
               </Grid>
-              {statsItems.map(({ label, name }) => (
+              {statsItems.map(({ label, name, id }) => (
                 <React.Fragment key={name}>
                   <div className={styles.divider} />
                   <Grid
@@ -146,7 +147,7 @@ export const Leaderboard = () => {
                       variant="h5"
                       className={cn(styles.optionTitle, styles.statTitle)}
                     >
-                      {stats?.[name]?.votes || placeholder}
+                      {stats?.[id]?.votes || placeholder}
                     </Typography>
                   </Grid>
                 </React.Fragment>
@@ -172,7 +173,7 @@ export const Leaderboard = () => {
                 direction="column"
                 gap="15px"
               >
-                {statsItems.map(({ label, name }) => (
+                {statsItems.map(({ label, name, id }) => (
                   <Grid
                     container
                     key={name}
@@ -193,7 +194,7 @@ export const Leaderboard = () => {
                           <span style={{ color: '#BBBBBB' }}>{' - '}</span>
 
                           <span style={{ color: '#39486C' }}>
-                            {getPercentage(stats?.[name]?.votes, statsSum).toFixed(2)}%
+                            {getPercentage(stats?.[id]?.votes, statsSum).toFixed(2)}%
                           </span>
                         </>
                       )}

@@ -58,7 +58,7 @@ import static org.zalando.problem.Status.BAD_REQUEST;
                                             schema = @Schema(implementation = Problem.class))
                             }
                     ),
-                    @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Server error&quot;)
+                    @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error&quot;)
             }
     )
     public ResponseEntity&lt;?&gt; isDiscordUserVerified(@PathVariable(&quot;discordIdHash&quot;) String discordIdHash) {
@@ -99,7 +99,7 @@ import static org.zalando.problem.Status.BAD_REQUEST;
                                             schema = @Schema(implementation = Problem.class))
                             }
                     ),
-                    @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Server error&quot;)
+                    @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error&quot;)
             }
     )
     public ResponseEntity&lt;?&gt; startVerification(@RequestBody @Valid DiscordStartVerificationRequest startVerificationRequest) {
@@ -136,7 +136,7 @@ import static org.zalando.problem.Status.BAD_REQUEST;
                                             schema = @Schema(implementation = Problem.class))
                             }
                     ),
-                    @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Server error&quot;)
+                    @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error&quot;)
             }
     )
     public ResponseEntity&lt;?&gt; checkVerification(@RequestBody @Valid DiscordCheckVerificationRequest checkVerificationRequest) {

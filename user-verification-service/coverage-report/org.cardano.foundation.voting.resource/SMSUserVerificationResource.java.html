@@ -54,7 +54,7 @@ public class SMSUserVerificationResource {
                                             schema = @Schema(implementation = Problem.class))
                             }
                     ),
-                    @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Server error&quot;)
+                    @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error&quot;)
             }
     )
     public ResponseEntity&lt;?&gt; startVerification(@RequestBody @Valid SMSStartVerificationRequest startVerificationRequest) {
@@ -90,13 +90,13 @@ public class SMSUserVerificationResource {
                     ),
                     @ApiResponse(
                             responseCode = &quot;400&quot;,
-                            description = &quot;Bad request, possibly due to an invalid checkVerificationRequest.&quot;,
+                            description = &quot;Bad request, possibly due to an invalid SMS code in the check verification request.&quot;,
                             content = {
                                     @Content(mediaType = &quot;application/json&quot;,
                                             schema = @Schema(implementation = Problem.class))
                             }
                     ),
-                    @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Server error&quot;)
+                    @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error&quot;)
             }
     )
     public ResponseEntity&lt;?&gt; checkVerification(@RequestBody @Valid SMSCheckVerificationRequest checkVerificationRequest) {

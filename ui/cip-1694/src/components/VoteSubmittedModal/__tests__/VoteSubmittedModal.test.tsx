@@ -2,6 +2,8 @@
 var mockDissmiss = jest.fn();
 import React from 'react';
 import { render, waitFor, screen, within, fireEvent } from '@testing-library/react';
+import { createMemoryHistory } from 'history';
+import { CustomRouter } from 'test/CustomRouter';
 import { VoteSubmittedModal } from '../VoteSubmittedModal';
 
 jest.mock('react-hot-toast', () => ({ dismiss: mockDissmiss }));
@@ -16,7 +18,13 @@ describe('VoteSubmittedModal:', () => {
     onCloseFn: jest.fn(),
   };
   test('should render proper state', async () => {
-    render(<VoteSubmittedModal {...props} />);
+    const history = createMemoryHistory({ initialEntries: ['/'] });
+
+    render(
+      <CustomRouter history={history}>
+        <VoteSubmittedModal {...props} />
+      </CustomRouter>
+    );
 
     await waitFor(async () => {
       const modal = screen.queryByTestId('vote-submitted-modal');
@@ -38,11 +46,15 @@ describe('VoteSubmittedModal:', () => {
     });
   });
   test('should not render modal', async () => {
+    const history = createMemoryHistory({ initialEntries: ['/'] });
+
     render(
-      <VoteSubmittedModal
-        {...props}
-        openStatus={false}
-      />
+      <CustomRouter history={history}>
+        <VoteSubmittedModal
+          {...props}
+          openStatus={false}
+        />
+      </CustomRouter>
     );
 
     await waitFor(async () => {

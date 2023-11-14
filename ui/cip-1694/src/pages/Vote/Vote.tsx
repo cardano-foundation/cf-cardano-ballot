@@ -66,7 +66,6 @@ const iconsMap: Record<ProposalPresentation['name'], React.ReactElement | null> 
 export const VotePage = () => {
   const { stakeAddress, isConnected, signMessage } = useCardano();
   const [receipt, setReceipt] = useState<VoteReceiptType | null>(null);
-  const [voteContext, setVoteContext] = useState('');
   const event = useSelector((state: RootState) => state.user.event);
   const tip = useSelector((state: RootState) => state.user.tip);
   const [isReceiptFetched, setIsReceiptFetched] = useState(false);
@@ -85,8 +84,6 @@ export const VotePage = () => {
   const numOfCategories = categories?.length;
   const activeCategoryIndex = findIndex(categories, ['id', activeCategoryId]);
   const [isToggledReceipt, toggleReceipt] = useToggle(false);
-  const couldAddContext =
-    activeCategoryIndex === 0 && isReceiptFetched && !receipt && event?.finished !== true && event?.notStarted !== true;
   const dispatch = useDispatch();
 
   const fetchChainTip = useCallback(async () => {
@@ -238,18 +235,6 @@ export const VotePage = () => {
     setActiveCategoryId(categories[categoryIndex]?.id);
   };
 
-  const submitVoteContextForm = useCallback(async () => {
-    try {
-      await voteService.submitVoteContextForm({
-        [env.GOOGLE_FORM_VOTE_CONTEXT_INPUT_NAME]: voteContext,
-      });
-    } catch (error) {
-      console.log(error?.message || error);
-    } finally {
-      setVoteContext('');
-    }
-  }, [voteContext]);
-
   const handleSubmit = async () => {
     let votingPower: Account['votingPower'];
     try {
@@ -282,9 +267,6 @@ export const VotePage = () => {
       const requestVoteObject = await signMessagePromisified(canonicalVoteInput);
       await voteService.castAVoteWithDigitalSignature(requestVoteObject);
       dispatch(setIsVoteSubmittedModalVisible({ isVisible: true }));
-      if (couldAddContext && voteContext) {
-        await submitVoteContextForm();
-      }
       setVoteSubmitted(true);
       if (numOfCategories === 1 || activeCategoryIndex === numOfCategories - 1) {
         await fetchReceipt({});

@@ -8,7 +8,6 @@ var mockBuildCanonicalVoteInputJson = jest.fn();
 var mockGetSignedMessagePromise = jest.fn();
 var mockGetChainTip = jest.fn();
 var mockGetVoteReceipt = jest.fn();
-var mockSubmitVoteContextForm = jest.fn();
 var mockToast = jest.fn();
 var mockGetUserInSession = jest.fn();
 var mockSaveUserInSession = jest.fn();
@@ -90,7 +89,6 @@ jest.mock('common/api/voteService', () => ({
   getVotingPower: mockGetVotingPower,
   getChainTip: mockGetChainTip,
   getVoteReceipt: mockGetVoteReceipt,
-  submitVoteContextForm: mockSubmitVoteContextForm,
 }));
 
 jest.mock('common/api/loginService', () => ({
@@ -134,7 +132,6 @@ describe('For ongoing event:', () => {
     mockGetUserInSession.mockReturnValue({ accessToken: true });
     mockTokenIsExpired.mockReturnValue(false);
     mockGetVoteReceipt.mockReturnValue({});
-    mockSubmitVoteContextForm.mockImplementation(async () => await Promise.resolve());
   });
   afterEach(() => {
     jest.clearAllMocks();
@@ -352,18 +349,6 @@ describe('For ongoing event:', () => {
 
     fireEvent.click(options[0]);
 
-    const voteContext = 'voteContext';
-
-    await act(async () => {
-      fireEvent.change(screen.queryByTestId('vote-context-input').querySelector('textarea'), {
-        target: { value: voteContext },
-      });
-    });
-
-    await act(async () => {
-      fireEvent.click(within(votePage).queryByTestId('submit-agreement-checkbox'));
-    });
-
     const cta = within(votePage).queryByTestId('proposal-submit-button');
     await act(async () => {
       fireEvent.click(cta);
@@ -418,46 +403,8 @@ describe('For ongoing event:', () => {
       fireEvent.click(options[0]);
     });
 
-    const submitAgreement = within(votePage).queryByTestId('submit-agreement');
-    expect(submitAgreement).toHaveTextContent(
-      'I have read and agree to the Cardano BallotTerms & ConditionsandPrivacy Policy.'
-    );
-
-    const privacy = within(submitAgreement).queryByTestId('privacy');
-    expect(privacy).not.toBeNull();
-    expect(privacy.textContent).toEqual('Privacy Policy.');
-    expect(privacy.attributes.getNamedItem('href').value).toEqual('pdf');
-    expect(privacy.attributes.getNamedItem('type').value).toEqual('application/pdf');
-
-    const tAc = within(submitAgreement).queryByTestId('t-and-c');
-    expect(tAc).not.toBeNull();
-    expect(tAc.textContent).toEqual('Terms & Conditions');
-    expect(tAc.attributes.getNamedItem('href').value).toEqual('pdf');
-    expect(tAc.attributes.getNamedItem('type').value).toEqual('application/pdf');
-
-    const checkbox = within(votePage).queryByTestId('submit-agreement-checkbox');
-    expect(checkbox).not.toBeChecked();
-
     const cta = within(votePage).queryByTestId('proposal-submit-button');
     expect(cta).not.toBeNull();
-
-    expect(within(votePage).queryByTestId('vote-context-label').textContent).toEqual(
-      'Do you have any additional comments or details about your ballot decision?'
-    );
-
-    const voteContext = 'voteContext';
-
-    await act(async () => {
-      fireEvent.change(screen.queryByTestId('vote-context-input').querySelector('textarea'), {
-        target: { value: voteContext },
-      });
-    });
-
-    expect(cta.closest('button')).toBeDisabled();
-
-    await act(async () => {
-      fireEvent.click(checkbox);
-    });
 
     expect(cta.closest('button')).not.toBeDisabled();
 
@@ -469,9 +416,6 @@ describe('For ongoing event:', () => {
     });
 
     expect(mockCastAVoteWithDigitalSignature).toHaveBeenCalledWith(canonicalVoteInputJsonMock);
-    expect(mockSubmitVoteContextForm).toHaveBeenCalledWith({
-      GOOGLE_FORM_VOTE_CONTEXT_INPUT_NAME: voteContext,
-    });
     expect(store.getState().user.isVoteSubmittedModalVisible).toBeTruthy;
 
     await act(async () => {
@@ -481,7 +425,6 @@ describe('For ongoing event:', () => {
     expect(store.getState().user.isVoteSubmittedModalVisible).toBeFalsy;
     expect(mockGetVoteReceipt).toBeCalledTimes(2);
     expect(mockGetVoteReceipt.mock.calls[1]).toEqual([eventMock_active.categories[1].id, accessToken]);
-    expect(screen.queryByTestId('vote-context-input')).not.toBeInTheDocument();
     expect(screen.queryAllByRole('button', { pressed: true }).length).toEqual(0);
     expect(within(votePage).queryByTestId('next-question-button')).toBeNull();
   });
@@ -532,10 +475,6 @@ describe('For ongoing event:', () => {
       fireEvent.click(options[0]);
     });
 
-    await act(async () => {
-      fireEvent.click(within(votePage).queryByTestId('submit-agreement-checkbox'));
-    });
-
     const cta = within(votePage).queryByTestId('proposal-submit-button');
     expect(cta).not.toBeDisabled();
 
@@ -543,7 +482,6 @@ describe('For ongoing event:', () => {
       fireEvent.click(cta);
     });
 
-    expect(mockSubmitVoteContextForm).not.toBeCalled();
     expect(mockGetVoteReceipt).toBeCalledTimes(2);
   });
 
@@ -602,10 +540,6 @@ describe('For ongoing event:', () => {
     });
 
     await act(async () => {
-      fireEvent.click(within(votePage).queryByTestId('submit-agreement-checkbox'));
-    });
-
-    await act(async () => {
       fireEvent.click(within(votePage).queryByTestId('proposal-submit-button'));
     });
 
@@ -650,18 +584,6 @@ describe('For ongoing event:', () => {
 
     await act(async () => {
       fireEvent.click(options[0]);
-    });
-
-    const voteContext = 'voteContext';
-
-    await act(async () => {
-      fireEvent.change(screen.queryByTestId('vote-context-input').querySelector('textarea'), {
-        target: { value: voteContext },
-      });
-    });
-
-    await act(async () => {
-      fireEvent.click(within(votePage).queryByTestId('submit-agreement-checkbox'));
     });
 
     const cta = within(votePage).queryByTestId('proposal-submit-button');
@@ -716,18 +638,6 @@ describe('For ongoing event:', () => {
       fireEvent.click(options[0]);
     });
 
-    const voteContext = 'voteContext';
-
-    await act(async () => {
-      fireEvent.change(screen.queryByTestId('vote-context-input').querySelector('textarea'), {
-        target: { value: voteContext },
-      });
-    });
-
-    await act(async () => {
-      fireEvent.click(within(votePage).queryByTestId('submit-agreement-checkbox'));
-    });
-
     const cta = within(votePage).queryByTestId('proposal-submit-button');
 
     await act(async () => {
@@ -778,10 +688,6 @@ describe('For ongoing event:', () => {
 
     await act(async () => {
       fireEvent.click(options[0]);
-    });
-
-    await act(async () => {
-      fireEvent.click(within(votePage).queryByTestId('submit-agreement-checkbox'));
     });
 
     const cta = within(votePage).queryByTestId('proposal-submit-button');
@@ -849,10 +755,6 @@ describe('For ongoing event:', () => {
 
     await act(async () => {
       fireEvent.click(options[0]);
-    });
-
-    await act(async () => {
-      fireEvent.click(within(votePage).queryByTestId('submit-agreement-checkbox'));
     });
 
     const cta = within(votePage).queryByTestId('proposal-submit-button');
@@ -1133,18 +1035,6 @@ describe('For ongoing event:', () => {
 
     const options = screen.queryAllByTestId('option-card');
     fireEvent.click(options[0]);
-
-    const voteContext = 'voteContext';
-
-    await act(async () => {
-      fireEvent.change(screen.queryByTestId('vote-context-input').querySelector('textarea'), {
-        target: { value: voteContext },
-      });
-    });
-
-    await act(async () => {
-      fireEvent.click(screen.queryByTestId('submit-agreement-checkbox'));
-    });
 
     expect(screen.queryByTestId('proposal-submit-button').closest('button')).not.toBeDisabled();
   });

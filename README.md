@@ -19,20 +19,48 @@
 
 # Overview
 
-A set of backend services and UI applications to facilitate CIP-1694 voting as well as Cardano Summit 2023 voting.
+Cardano Ballot is a user-friendly, hybrid on- and off-chain voting system developed by the Cardano Foundation.  Cardano Ballot leverages a set of backend services combined with frontend applications to facilitate voting within the Cardano Ecosystem.  
+
+Most recently, stake-based voting was introduced into Cardano Ballot inorder to support IOG with CIP-1694 Pre-ratififcation polling events.  Currently, Cardano Ballot supports user-based (1 x user, 1 x vote) and stake-based (weighted) voting events.  The modularised backend services make the process of organising, deploying, and auditing a Cardano Ballot event more decentralized and user-friendly.  
+
+In 2023, Hydra and Aiken Smart Contracts were also introduced into Cardano Ballot.  The first implementation of this was a final Hydra tally of all votes submitted for the Cardano Summit Awards 2023.
+
 
 # Features
+#### Event Types
+- User-based 
+- Stake-based 
 
-TODO: Include project features
+#### Modularised Backend Service
+  - Voting Admininsitration
+  - Voting App
+  - Ledger Follwer
+  - Vote Commitment
+  - Vote Verification
+  - User Verification
+  - Hydra Tally
+
+  #### CIP-45 | Decentralized WebRTC d'App Wallet Communication
+  #### CIP-93 | Authenticated Web3 HTTP Requests 
+  #### YACI-Store
+  #### YACI-Dev-Kit 
+  #### Aiken Smart Contracts
+
+# Getting Started
 
 ## Requirements
-
 - Node.js 18.x LTS
 - Java 17 LTS
 - Postgres DB 14.x or H2 file db (local development / community running).
+- more...
 
-# Running (Development)
 
+## Repository Structure
+- backend-services - contains various backend services
+- ui - contains React.JS frontend code apps to cast votes / display voting results
+
+## Running the Backend Services
+### Ledger Follower
 By default all backend apps are working with Cardano Pre-Production network.
 
 ```shell
@@ -41,6 +69,7 @@ cd cf-ballot-app/backend-services/voting-ledger-follower-app
 ```
 this will launch main voting-ledger-follower-app on port: 9090 by default.
 
+### Voting App
 ```shell
 cd cf-ballot-app/backend-services/voting-app
 ./gradlew bootRun
@@ -48,6 +77,7 @@ cd cf-ballot-app/backend-services/voting-app
 
 this will launch main voting-app on port: 9091 by default.
 
+### Voting Verification
 ```shell
 cd cf-ballot-app/backend-services/voting-verification-app
 ./gradlew bootRun
@@ -55,7 +85,7 @@ cd cf-ballot-app/backend-services/voting-verification-app
 
 this will launch voting-verification-app on port: 9092 by default.
 
-### User verification app on port
+### User Verification App
 ```bash
 export AWS_SNS_ACCESS_KEY_ID=...
 export AWS_SNS_SECRET_ACCESS_KEY=...
@@ -63,20 +93,25 @@ cd cf-ballot-app/backend-services/user-verification-service
 ./gradlew bootRun
 ```
 
-this will launch user-verification-app on port: 9093 by default. Note that
-user-verification-service is only needed for Cardano Summit 2023 voting.
+this will launch user-verification-app on port: 9093 by default.
 
-Note that binding PORT can be changed via SERVER_PORT env variable.
+**Note: user-verification-service is only needed for Cardano Summit 2023.**
+
+**Note: binding PORT can be changed via SERVER_PORT env variable.**
 
 e.g.
 ```
 SERVER_PORT=8888 ./gradlew bootRun
 ```
 
-use `setupProxy.js` to proxy services urls
+use `setupProxy.js` to proxy services urls. 
 
-### Run the frontend
-Create `.env` file on the same level as `.env.development`. Then run:
+**?** more..
+
+## Running the Frontend (User Interface)
+Create `.env` file on the same level as `.env.development`. 
+
+Then run:
 
 ```shell
 cd cf-ballot-app/ui/summit-2023
@@ -84,8 +119,10 @@ npm i
 npm run start
 ```
 
-# Building native image with GraalVM
+## Building native image with GraalVM
 Some applications should be GraalVM compatible (https://www.graalvm.org/)
+
+**?** more...
 
 ```shell
 export GRAALVM_HOME=/Users/mati/.sdkman/candidates/java/20.0.2-graalce
@@ -99,7 +136,7 @@ cd cf-ballot-app/backend-services/user-verification-service
 
 ```
 
-# Developing locally with Yaci DevKit
+## Developing locally with Yaci DevKit
 If you want to develop using Yaci-DevKit (https://github.com/bloxbean/yaci-devkit) you have to start the backend applications in the special YACI_DEV_KIT DEV mode.
 
 ```shell
@@ -116,11 +153,7 @@ but values / properties in `application-dev-yaci-dev-kit.properties` will overri
 
 On start up of the app, you can verify if the right profile has been used, there should be a message related to that at the beginning.
 
-## Repository Structure
-- backend-services - contains various backend services
-- ui - contains React.JS frontend code apps to cast votes / display voting results
-
-# Backend -> Frontend Types Generation
+## Backend -> Frontend Types Generation
 All backend apps will generate TypeScript types for the frontend by using the following command:
 
 As an example:
@@ -128,7 +161,7 @@ As an example:
 cd voting-app
 ./gradlew buildAndCopyTypescriptTypes -Pui_project_name=summit-2023
 ```
-will generate TypeScript types in the ui/summit-2023/build/typescript-generator/voting-app-types.ts
+This will generate TypeScript types in the ui/summit-2023/build/typescript-generator/voting-app-types.ts
 
 # Contributing
 

@@ -10,18 +10,25 @@ spec:
   groups:
     - name: {{ include "voting-app.fullname" . }}.rules
       rules:
-        - alert: NoVotes5m
+        - alert: NoVotes30m
           expr: sum(rate(resource_vote_cast_seconds_count[1m])) == 0
-          for: 45m
+          for: 30m
           labels:
             severity: warning
           annotations:
             message: No votes have been cast for the past 5 minutes
-        - alert: NoVotes15m
+        - alert: NoVotes1h
           expr: sum(rate(resource_vote_cast_seconds_count[1m])) == 0
           for: 60m
           labels:
             severity: critical
           annotations:
             message: No votes have been cast for the past 15 minutes
+        - alert: AbsentVoteCountMetric
+          expr: absent(resource_vote_cast_seconds_count)
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            message: Metric `resource_vote_cast_seconds_count` is missing
 {{ end }}

@@ -6,7 +6,8 @@ import capitalize from 'lodash/capitalize';
 import findIndex from 'lodash/findIndex';
 import toast from 'react-hot-toast';
 import cn from 'classnames';
-import { Grid, Typography, Button, CircularProgress, FormControlLabel, Checkbox } from '@mui/material';
+// import { Grid, Typography, Button, CircularProgress, FormControlLabel, Checkbox } from '@mui/material';
+import { Grid, Typography, Button, CircularProgress } from '@mui/material';
 import DoneIcon from '@mui/icons-material/Done';
 import CloseIcon from '@mui/icons-material/Close';
 import DoDisturbIcon from '@mui/icons-material/DoDisturb';
@@ -39,9 +40,9 @@ import { HttpError } from 'common/handlers/httpHandler';
 import { getDateAndMonth } from 'common/utils/dateUtils';
 import { getUserInSession, saveUserInSession, tokenIsExpired } from 'common/utils/session';
 import { ConfirmWithWalletSignatureModal } from './components/ConfirmWithWalletSignatureModal/ConfirmWithWalletSignatureModal';
-import { VoteContextInput } from './components/VoteContextInput/VoteContextInput';
-import TAndC from './resources/CF_T&C.pdf';
-import PrivacyPolicy from './resources/CF_Privacy_Policy.pdf';
+// import { VoteContextInput } from './components/VoteContextInput/VoteContextInput';
+// import TAndC from './resources/CF_T&C.pdf';
+// import PrivacyPolicy from './resources/CF_Privacy_Policy.pdf';
 import { env } from '../../env';
 import styles from './Vote.module.scss';
 
@@ -70,7 +71,7 @@ export const VotePage = () => {
   const { stakeAddress, isConnected, signMessage } = useCardano();
   const [receipt, setReceipt] = useState<VoteReceiptType | null>(null);
   const [voteContext, setVoteContext] = useState('');
-  const [isTAndCAndPPChecked, setIsTAndCAndPPChecked] = useState(false);
+  // const [isTAndCAndPPChecked, setIsTAndCAndPPChecked] = useState(false);
   const event = useSelector((state: RootState) => state.user.event);
   const tip = useSelector((state: RootState) => state.user.tip);
   const [isReceiptFetched, setIsReceiptFetched] = useState(false);
@@ -407,7 +408,7 @@ export const VotePage = () => {
               onChangeOption={onChangeOption}
             />
           </Grid>
-          {couldAddContext && (
+          {/* {couldAddContext && (
             <Grid
               marginBottom={{ xs: '12px' }}
               item
@@ -418,7 +419,7 @@ export const VotePage = () => {
                 voteContext={voteContext}
               />
             </Grid>
-          )}
+          )} */}
           <Grid item>
             <Grid
               container
@@ -481,7 +482,7 @@ export const VotePage = () => {
                 )}
                 {showSubmitButton && (
                   <>
-                    <FormControlLabel
+                    {/* <FormControlLabel
                       sx={{ alignContent: 'baseline' }}
                       label={
                         <div
@@ -523,15 +524,17 @@ export const VotePage = () => {
                           onChange={({ target: { checked } }) => setIsTAndCAndPPChecked(!!checked)}
                         />
                       }
-                    />
+                    /> */}
                     <Button
                       className={cn(styles.button, {
-                        [styles.disabled]: !optionId || !isReceiptFetched || !isTAndCAndPPChecked,
+                        // [styles.disabled]: !optionId || !isReceiptFetched || !isTAndCAndPPChecked,
+                        [styles.disabled]: !optionId || !isReceiptFetched,
                       })}
                       size="large"
                       variant="contained"
                       disabled={
-                        !optionId || !isReceiptFetched || isCastingAVote || !tip?.absoluteSlot || !isTAndCAndPPChecked
+                        // !optionId || !isReceiptFetched || isCastingAVote || !tip?.absoluteSlot || !isTAndCAndPPChecked
+                        !optionId || !isReceiptFetched || isCastingAVote || !tip?.absoluteSlot
                       }
                       onClick={() => handleSubmit()}
                       data-testid="proposal-submit-button"

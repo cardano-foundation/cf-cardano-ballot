@@ -82,7 +82,7 @@ public class RollbackHandler {
 
             @Override
             public void onRollback(Point point) {
-                Either<Problem, List<ChainFollowerClient.EventSummary>> allCommitmentWindowOpenEventsE = chainFollowerClient.findAllCommitmentWindowOpenEvents();
+                var allCommitmentWindowOpenEventsE = chainFollowerClient.findAllCommitmentWindowOpenEvents();
 
                 if (allCommitmentWindowOpenEventsE.isEmpty()) {
                     var issue = allCommitmentWindowOpenEventsE.swap().get();
@@ -91,7 +91,7 @@ public class RollbackHandler {
                     return;
                 }
 
-                List<ChainFollowerClient.EventSummary> allCommitmentWindowOpenEvents = allCommitmentWindowOpenEventsE.get();
+                var allCommitmentWindowOpenEvents = allCommitmentWindowOpenEventsE.get();
 
                 if (allCommitmentWindowOpenEvents.isEmpty()) {
                     log.info("No commitment window open events found. Skipping rollback handler...");
@@ -99,9 +99,9 @@ public class RollbackHandler {
                     return;
                 }
 
-                long absoluteSlot = point.getSlot();
+                var absoluteSlot = point.getSlot();
 
-                for (ChainFollowerClient.EventSummary eventSummary : allCommitmentWindowOpenEvents) {
+                for (var eventSummary : allCommitmentWindowOpenEvents) {
                     String eventId = eventSummary.id();
 
                     log.info("Processing rollback for eventId: {}, absoluteSlot: {}", eventId, absoluteSlot);

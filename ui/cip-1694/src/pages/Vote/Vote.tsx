@@ -24,6 +24,8 @@ import {
 } from 'common/store/userSlice';
 import { ProposalPresentation, Account, ChainTip } from 'types/voting-ledger-follower-types';
 import { VoteReceipt as VoteReceiptType } from 'types/voting-app-types';
+import TAndC from 'resources/CF_T&C.pdf';
+import PrivacyPolicy from 'resources/CF_Privacy_Policy.pdf';
 import { RootState } from 'common/store';
 import { VoteReceipt } from 'pages/Vote/components/VoteReceipt/VoteReceipt';
 import { Toast } from 'components/Toast/Toast';
@@ -40,8 +42,6 @@ import { getDateAndMonth } from 'common/utils/dateUtils';
 import { getUserInSession, saveUserInSession, tokenIsExpired } from 'common/utils/session';
 import { ConfirmWithWalletSignatureModal } from './components/ConfirmWithWalletSignatureModal/ConfirmWithWalletSignatureModal';
 import { VoteContextInput } from './components/VoteContextInput/VoteContextInput';
-import TAndC from './resources/CF_T&C.pdf';
-import PrivacyPolicy from './resources/CF_Privacy_Policy.pdf';
 import { env } from '../../env';
 import styles from './Vote.module.scss';
 

@@ -8,8 +8,10 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
+
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("test")
@@ -17,6 +19,7 @@ public class BaseTest {
 
     @LocalServerPort
     private int serverPort;
+
     private WireMockServer wireMockServer;
 
     @BeforeAll
@@ -30,9 +33,11 @@ public class BaseTest {
                         .willReturn(aResponse()
                                 .withStatus(200)
                                 .withHeader("Content-Type", "application/json")
-                                .withBody(responseBody)));
+                                .withBody(responseBody))
+        );
 
         RestAssured.port = serverPort;
         RestAssured.baseURI = "http://localhost";
     }
+
 }

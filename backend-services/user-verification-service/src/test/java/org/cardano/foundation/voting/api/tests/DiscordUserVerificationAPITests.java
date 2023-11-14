@@ -285,4 +285,5 @@ public class DiscordUserVerificationAPITests extends BaseTest {
                 .then()
                 .statusCode(400);
     }
+
 }

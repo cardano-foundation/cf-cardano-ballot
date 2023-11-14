@@ -57,13 +57,13 @@ public class VoteResource {
                                             schema = @Schema(implementation = Problem.class)) // Using the Problem class you provided earlier
                             }
                     ),
-                    @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Server error&quot;)
+                    @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error&quot;)
             }
     )
     public ResponseEntity&lt;?&gt; getVotes(
             @Parameter(name = &quot;eventId&quot;, required = false, description = &quot;ID of the event for which votes are being fetched.&quot;)
-            @PathVariable(value = &quot;eventId&quot;, required = false) Optional&lt;String&gt; maybeEventId,
-                                      Authentication authentication) {
+            @PathVariable(value = &quot;eventId&quot;, required = false) Optional&lt;String&gt; eventIdM,
+            Authentication authentication) {
 <span class="pc bpc" id="L67" title="1 of 2 branches missed.">        if (!(authentication instanceof JwtAuthenticationToken jwtAuth)) {</span>
 <span class="nc" id="L68">            var problem = Problem.builder()</span>
 <span class="nc" id="L69">                    .withTitle(&quot;JWT_REQUIRED&quot;)</span>
@@ -76,7 +76,7 @@ public class VoteResource {
 <span class="nc" id="L76">                    .body(problem);</span>
         }
 
-<span class="pc bpc" id="L79" title="2 of 4 branches missed.">        if (maybeEventId.isPresent() &amp;&amp; !maybeEventId.orElseThrow().equals(jwtAuth.eventDetails().id())) {</span>
+<span class="pc bpc" id="L79" title="2 of 4 branches missed.">        if (eventIdM.isPresent() &amp;&amp; !eventIdM.orElseThrow().equals(jwtAuth.eventDetails().id())) {</span>
 <span class="nc" id="L80">            var problem = Problem.builder()</span>
 <span class="nc" id="L81">                    .withTitle(&quot;EVENT_ID_MISMATCH&quot;)</span>
 <span class="nc" id="L82">                    .withDetail(&quot;Event id in path and in JWT token do not match!&quot;)</span>
@@ -119,7 +119,7 @@ public class VoteResource {
                                         schema = @Schema(implementation = Problem.class))
                         }
                 ),
-                @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Server error&quot;)
+                @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error&quot;)
         }
     )
     public ResponseEntity&lt;?&gt; castVote(Authentication authentication) {
@@ -170,7 +170,7 @@ public class VoteResource {
                                             schema = @Schema(implementation = Problem.class))
                             }
                     ),
-                    @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Server error&quot;)
+                    @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error&quot;)
             }
     )
     public ResponseEntity&lt;?&gt; getVoteReceipt(Authentication authentication) {
@@ -225,7 +225,7 @@ public class VoteResource {
                                             schema = @Schema(implementation = Problem.class))
                             }
                     ),
-                    @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Server error&quot;)
+                    @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error&quot;)
             }
     )
     public ResponseEntity&lt;?&gt; getVoteReceipt(@PathVariable(value = &quot;eventId&quot;, required = false) Optional&lt;String&gt; maybeEventId,
@@ -293,7 +293,7 @@ public class VoteResource {
                                             schema = @Schema(implementation = Problem.class))
                             }
                     ),
-                    @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Server error&quot;)
+                    @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error&quot;)
             }
     )
 

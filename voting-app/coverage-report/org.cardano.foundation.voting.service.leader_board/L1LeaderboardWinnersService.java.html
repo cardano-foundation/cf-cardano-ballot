@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>L1LeaderboardWinnersService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.service.leader_board</a> &gt; <span class="el_source">L1LeaderboardWinnersService.java</span></div><h1>L1LeaderboardWinnersService.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.service.leader_board;
+
+import io.vavr.control.Either;
+import org.cardano.foundation.voting.client.ChainFollowerClient;
+import org.cardano.foundation.voting.domain.Leaderboard;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+import org.zalando.problem.Problem;
+
+import java.util.Map;
+import java.util.Optional;
+
+import static java.util.stream.Collectors.toMap;
+import static org.cardano.foundation.voting.domain.TallyType.HYDRA;
+import static org.zalando.problem.Status.*;
+
+@Service
+@Qualifier(&quot;l1_leaderboard_winners_service&quot;)
+<span class="fc" id="L19">public class L1LeaderboardWinnersService extends AbstractWinnersService implements LeaderboardWinnersService {</span>
+
+    @Override
+    public Either&lt;Problem, Optional&lt;Leaderboard.ByProposalsInCategoryStats&gt;&gt; getCategoryLeaderboard(String event,
+                                                                                                    String category,
+                                                                                                    boolean forceLeaderboard) {
+<span class="nc" id="L25">        var eventDetailsE = chainFollowerClient.getEventDetails(event);</span>
+<span class="nc bnc" id="L26" title="All 2 branches missed.">        if (eventDetailsE.isEmpty()) {</span>
+<span class="nc" id="L27">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L28">                    .withTitle(&quot;ERROR_GETTING_EVENT_DETAILS&quot;)</span>
+<span class="nc" id="L29">                    .withDetail(&quot;Unable to get event details from chain-tip follower service, event:&quot; + event)</span>
+<span class="nc" id="L30">                    .withStatus(INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L31">                    .build()</span>
+            );
+        }
+<span class="nc" id="L34">        var eventDetailsResponseM = eventDetailsE.get();</span>
+<span class="nc bnc" id="L35" title="All 2 branches missed.">        if (eventDetailsResponseM.isEmpty()) {</span>
+<span class="nc" id="L36">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L37">                    .withTitle(&quot;UNRECOGNISED_EVENT&quot;)</span>
+<span class="nc" id="L38">                    .withDetail(&quot;Unrecognised event, event:&quot; + event)</span>
+<span class="nc" id="L39">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L40">                    .build()</span>
+            );
+        }
+<span class="nc" id="L43">        var eventDetails = eventDetailsResponseM.orElseThrow();</span>
+
+<span class="nc" id="L45">        var categoryM = eventDetails.categoryDetailsById(category);</span>
+<span class="nc bnc" id="L46" title="All 2 branches missed.">        if (categoryM.isEmpty()) {</span>
+<span class="nc" id="L47">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L48">                    .withTitle(&quot;UNRECOGNISED_CATEGORY&quot;)</span>
+<span class="nc" id="L49">                    .withDetail(&quot;Unrecognised category, category:&quot; + category)</span>
+<span class="nc" id="L50">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L51">                    .build()</span>
+            );
+        }
+<span class="nc" id="L54">        var categoryDetails = categoryM.orElseThrow();</span>
+
+<span class="nc" id="L56">        var categoryLeaderboardAvailableE = isCategoryLeaderboardAvailable(eventDetails, forceLeaderboard);</span>
+<span class="nc bnc" id="L57" title="All 2 branches missed.">        if (categoryLeaderboardAvailableE.isEmpty()) {</span>
+<span class="nc" id="L58">            return Either.left(categoryLeaderboardAvailableE.getLeft());</span>
+        }
+
+<span class="nc" id="L61">        var isCategoryLeaderBoardAvailable = categoryLeaderboardAvailableE.get();</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">        if (!isCategoryLeaderBoardAvailable) {</span>
+<span class="nc" id="L63">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L64">                    .withTitle(&quot;VOTING_RESULTS_NOT_AVAILABLE&quot;)</span>
+<span class="nc" id="L65">                    .withDetail(&quot;Category level voting results not available until results can be revealed!&quot;)</span>
+<span class="nc" id="L66">                    .withStatus(FORBIDDEN)</span>
+<span class="nc" id="L67">                    .build()</span>
+            );
+        }
+
+<span class="nc" id="L71">        var hydraTallyNameM = findFirstHydraTallyName(eventDetails);</span>
+
+<span class="nc bnc" id="L73" title="All 2 branches missed.">        if (hydraTallyNameM.isEmpty()) {</span>
+<span class="nc" id="L74">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L75">                    .withTitle(&quot;UNRECOGNISED_TALLY&quot;)</span>
+<span class="nc" id="L76">                    .withDetail(&quot;Unrecognised tally, tally:&quot; + &quot;Hydra Tally Experiment&quot;)</span>
+<span class="nc" id="L77">                    .withStatus(NO_CONTENT)</span>
+<span class="nc" id="L78">                    .build()</span>
+            );
+        }
+
+<span class="nc" id="L82">        ChainFollowerClient.Tally tally = hydraTallyNameM.orElseThrow();</span>
+
+<span class="nc" id="L84">        var votingResultsE = chainFollowerClient.getVotingResults(</span>
+<span class="nc" id="L85">                eventDetails.id(),</span>
+<span class="nc" id="L86">                categoryDetails.id(),</span>
+<span class="nc" id="L87">                tally.name()</span>
+        );
+
+<span class="nc bnc" id="L90" title="All 2 branches missed.">        if (votingResultsE.isEmpty()) {</span>
+<span class="nc" id="L91">            var issue = votingResultsE.swap().get();</span>
+
+<span class="nc bnc" id="L93" title="All 2 branches missed.">            if (issue.getStatus().getStatusCode() == 404) {</span>
+<span class="nc" id="L94">                return Either.right(Optional.empty());</span>
+            }
+
+<span class="nc" id="L97">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L98">                    .withTitle(&quot;ERROR_GETTING_VOTING_RESULTS&quot;)</span>
+<span class="nc" id="L99">                    .withDetail(&quot;Unable to get voting results from chain-tip follower service, event:&quot; + event + &quot;, category:&quot; + category)</span>
+<span class="nc" id="L100">                    .withStatus(INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L101">                    .build()</span>
+            );
+        }
+
+<span class="nc" id="L105">        var votingResults = votingResultsE.get();</span>
+
+<span class="nc bnc" id="L107" title="All 3 branches missed.">        var byProposalsInCategoryStatsM = switch (eventDetails.votingEventType()) {</span>
+            case STAKE_BASED, BALANCE_BASED -&gt; {
+<span class="nc" id="L109">                var proposalResults = votingResults.results().entrySet().stream().collect(toMap(Map.Entry::getKey, e -&gt; {</span>
+<span class="nc" id="L110">                    var score = e.getValue();</span>
+
+<span class="nc" id="L112">                    var b = Leaderboard.Votes.builder();</span>
+<span class="nc" id="L113">                    b.votingPower(String.valueOf(score));</span>
+<span class="nc" id="L114">                    b.votes(0); // TODO support for vote count from L1 data</span>
+
+<span class="nc" id="L116">                    return b.build();</span>
+                }));
+
+<span class="nc" id="L119">                yield Optional.of(Leaderboard.ByProposalsInCategoryStats.builder()</span>
+<span class="nc" id="L120">                        .category(category)</span>
+<span class="nc" id="L121">                        .proposals(reInitialiseResultsToEmptyIfMissing(categoryDetails, proposalResults, eventDetails))</span>
+<span class="nc" id="L122">                        .build()</span>
+                );
+            }
+            case USER_BASED -&gt; {
+<span class="nc" id="L126">                var proposalResults = votingResults.results().entrySet().stream().collect(toMap(Map.Entry::getKey, e -&gt; {</span>
+<span class="nc" id="L127">                    var score = e.getValue();</span>
+
+<span class="nc" id="L129">                    var b = Leaderboard.Votes.builder();</span>
+<span class="nc" id="L130">                    b.votes(score);</span>
+
+<span class="nc" id="L132">                    return b.build();</span>
+                }));
+
+<span class="nc" id="L135">                yield Optional.of(Leaderboard.ByProposalsInCategoryStats.builder()</span>
+<span class="nc" id="L136">                        .category(category)</span>
+<span class="nc" id="L137">                        .proposals(reInitialiseResultsToEmptyIfMissing(categoryDetails, proposalResults, eventDetails))</span>
+<span class="nc" id="L138">                        .build()</span>
+                );
+            }
+        };
+
+<span class="nc" id="L143">        return Either.right(byProposalsInCategoryStatsM);</span>
+    }
+
+    private Optional&lt;ChainFollowerClient.Tally&gt; findFirstHydraTallyName(ChainFollowerClient.EventDetailsResponse eventDetailsResponse) {
+<span class="nc" id="L147">        return eventDetailsResponse.tallies().stream()</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">                .filter(tally -&gt; tally.type() == HYDRA)</span>
+<span class="nc" id="L149">                .findFirst();</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

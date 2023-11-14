@@ -33,8 +33,8 @@ public class LoginResource {
     @RequestMapping(value = &quot;/login&quot;, method = GET, produces = &quot;application/json&quot;)
     @Timed(value = &quot;resource.auth.login&quot;, histogram = true)
     @Operation(
-            summary = &quot;Log in using Web3 authentication&quot;,
-            description = &quot;Authenticate user using CIP-93 auth headers tokens&quot;,
+            summary = &quot;Log in using Web3 authentication token&quot;,
+            description = &quot;Authenticate user using CIP-93 auth headers tokens. This endpoint allows you to obtain a JWT auth token based on Web3 authentication.&quot;,
             responses = {
                     @ApiResponse(
                             responseCode = &quot;200&quot;,

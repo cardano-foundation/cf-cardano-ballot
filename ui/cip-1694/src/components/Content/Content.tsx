@@ -29,8 +29,7 @@ export const Content = () => {
     debouncedToast(<Toast message="Wallet Connected!" />);
   }, [dispatch, debouncedToast]);
 
-  const onConnectWalletError = useCallback((walletName: string, error: Error) => {
-    console.log(walletName, error);
+  const onConnectWalletError = useCallback(() => {
     toast(
       <Toast
         error

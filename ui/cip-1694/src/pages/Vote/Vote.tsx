@@ -25,8 +25,8 @@ import {
 } from 'common/store/userSlice';
 import { ProposalPresentation, Account, ChainTip } from 'types/voting-ledger-follower-types';
 import { VoteReceipt as VoteReceiptType } from 'types/voting-app-types';
-import TAndC from 'resources/CF_T&C.pdf';
-import PrivacyPolicy from 'resources/CF_Privacy_Policy.pdf';
+// import TAndC from 'resources/CF_T&C.pdf';
+// import PrivacyPolicy from 'resources/CF_Privacy_Policy.pdf';
 import { RootState } from 'common/store';
 import { VoteReceipt } from 'pages/Vote/components/VoteReceipt/VoteReceipt';
 import { Toast } from 'components/Toast/Toast';

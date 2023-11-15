@@ -68,7 +68,7 @@ val metadataLabel = 11113
 val amountAda: Int = 1000
 
 val eventName = "CIP-1694_Pre_Ratification_YACI"
-val orgMnemonic = "ocean sad mixture disease faith once celery mind clay hidden brush brown you sponsor dawn good claim gloom market world online twist laptop thrive"
+val orgMnemonic = "ENTER WALLET MNEMONIC HERE"
 
 val organiserAccount = new Account(Networks.testnet(), orgMnemonic)
 val mapper = new ObjectMapper()

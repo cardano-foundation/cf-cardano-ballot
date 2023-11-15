@@ -78,6 +78,8 @@ dependencies {
 
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
 
+    implementation("me.paulschwarz:spring-dotenv:4.0.0")
+
     // spring-boot overridden dependencies:
     runtimeOnly("com.h2database:h2:2.2.224") // GraalVM compatibility
 }

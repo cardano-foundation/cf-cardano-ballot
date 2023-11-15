@@ -13,6 +13,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ImportRuntimeHints;
@@ -38,6 +39,7 @@ import static org.springframework.aot.hint.ExecutableMode.INVOKE;
 @EnableScheduling
 @Slf4j
 @EnableAsync
+@EnableCaching
 @ImportRuntimeHints(VotingLedgerFollowerApp.Hints.class)
 public class VotingLedgerFollowerApp {
 

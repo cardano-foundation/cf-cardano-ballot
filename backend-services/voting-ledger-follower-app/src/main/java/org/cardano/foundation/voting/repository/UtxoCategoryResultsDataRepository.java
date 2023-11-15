@@ -16,6 +16,6 @@ public interface UtxoCategoryResultsDataRepository extends JpaRepository<EventRe
 
     @Query("DELETE FROM EventResultsCategoryResultsUtxoData u WHERE u.absoluteSlot > :slot")
     @Modifying
-    long deleteAllAfterSlot(@Param("slot") long slot);
+    int deleteAllAfterSlot(@Param("slot") long slot);
 
 }

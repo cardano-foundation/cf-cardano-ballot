@@ -120,9 +120,9 @@ public class ReferenceDataService {
     }
 
     record ReferenceRollbackStats(
-            long eventRollbackCount,
-            long categoryRollbackCount,
-            long proposalRollbackCount) {
+            int eventRollbackCount,
+            int categoryRollbackCount,
+            int proposalRollbackCount) {
     }
 
 }

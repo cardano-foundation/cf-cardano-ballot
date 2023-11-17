@@ -39,3 +39,4 @@ jpb-settings.xml
 application-prod.properties
 bin
 *.csv
+.env

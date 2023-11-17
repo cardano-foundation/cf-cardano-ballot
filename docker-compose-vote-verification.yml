@@ -23,11 +23,12 @@ services:
     ports:
       - '9092:9092'
   verification-ui:
-    build:
-      context: ui/verification-app
-      args:
-        REACT_APP_VOTING_VERIFICATION_APP_SERVER_URL: http://verification-app:9092
-        REACT_APP_TARGET_NETWORK: mainnet
+    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/voting-verification-app-ui:0.2.75
+#    build:
+#      context: ui/verification-app
+#      args:
+#        REACT_APP_VOTING_VERIFICATION_APP_SERVER_URL: http://verification-app:9092
+#        REACT_APP_TARGET_NETWORK: mainnet
     restart: always
     ports:
       - '8080:8080'

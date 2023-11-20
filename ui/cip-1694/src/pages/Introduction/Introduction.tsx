@@ -91,8 +91,9 @@ export const IntroductionPage = () => {
                   cultivation, the Cardano blockchain has reached the age of Voltaire. Guided by a principles-first
                   approach and led by the community, this new age of Cardano advances inclusive accountability for all
                   participants in the ecosystem. Now is the time for the community to help guide our journey toward a
-                  shared future by participating in the Cardano Ballot on the deployment of on-chain governance, as
-                  described in CIP-1694.
+                  shared future by participating in a non-binding poll on the deployment of on-chain governance, as
+                  described in CIP-1694. The feedback gathered will help inform 2024 plans and priorities in governance
+                  activities and development.
                 </Typography>
                 {event?.notStarted ? (
                   <Button

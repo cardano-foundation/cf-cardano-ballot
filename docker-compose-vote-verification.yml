@@ -20,15 +20,14 @@ services:
     restart: always
     environment:
       - LEDGER_FOLLOWER_APP_URL=http://follower-api:9090
+      - CORS_ALLOWED_ORIGINS=http://localhost:8080
     ports:
       - '9092:9092'
   verification-ui:
-    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/voting-verification-app-ui:0.2.75
-#    build:
-#      context: ui/verification-app
-#      args:
-#        REACT_APP_VOTING_VERIFICATION_APP_SERVER_URL: http://verification-app:9092
-#        REACT_APP_TARGET_NETWORK: mainnet
+    build:
+      context: ui/verification-app
+    environment:
+      - REACT_APP_VOTING_VERIFICATION_APP_SERVER_URL=http://localhost:9092
     restart: always
     ports:
       - '8080:8080'

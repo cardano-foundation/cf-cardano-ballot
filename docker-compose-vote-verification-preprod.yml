@@ -6,14 +6,11 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       - CORS_ALLOWED_ORIGINS=http://localhost:8080
-      - CARDANO_NETWORK=MAIN
-      - ORGANISER_STAKE_ADDRESS=stake1u84rc0rq5jt5jcx7s9fweknxv6jxvgjyqyfpwlgn0x43gpqe3tet3
-      - BIND_ON_EVENT_IDS=CIP-1694_Pre_Ratification
-      - CARDANO_NODE_HOST=relays-new.cardano-mainnet.iohk.io
-      - CARDANO_NODE_PORT=3001
-      - CARDANO_NODE_PROTOCOL_MAGIC=764824073
-      - YACI_STORE_CARDANO_SYNC_START_BLOCK_HASH=285f58fd09cbb95ac5ffd6f644f7907dfb3faff63155b8a86a9c7b0e99503397
-      - YACI_STORE_CARDANO_SYNC_START_SLOT=103737886
+      - CARDANO_NETWORK=PREPROD
+      - ORGANISER_STAKE_ADDRESS=stake_test1uqwcz0754wwpuhm6xhdpda6u9enyahaj5ynlc9ay5l4mlms4pyqyg
+      - BIND_ON_EVENT_IDS=CIP-1694_Pre_Ratification_7AC8
+      - YACI_STORE_CARDANO_SYNC_START_BLOCK_HASH=1705a8d8b69cb1315de2b7d5569953f0bb4eddb685cead76c98a6082e835f888
+      - YACI_STORE_CARDANO_SYNC_START_SLOT=44150423
       - '9090:9090'
   verification-app:
     image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/voting-verification-app:0.2.75

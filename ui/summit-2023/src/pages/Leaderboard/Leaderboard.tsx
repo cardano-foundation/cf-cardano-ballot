@@ -5,8 +5,8 @@ import cn from 'classnames';
 import { i18n } from 'i18n';
 import { makeStyles } from 'tss-react/mui';
 import { PieChart } from 'react-minimal-pie-chart';
-import { ByCategoryStats } from 'types/voting-app-types';
-import { EventPresentation } from 'types/voting-ledger-follower-types';
+import { ByCategoryStats, ByProposalsInCategoryStats } from 'types/voting-app-types';
+import { EventPresentation, TallyResults } from 'types/voting-ledger-follower-types';
 import * as leaderboardService from '../../common/api/leaderboardService';
 import { categoryColorsMap, getPercentage } from './utils';
 import { StatItem } from './types';
@@ -83,6 +83,8 @@ const Leaderboard = () => {
   const classes = useStyles();
   const summitEvent = useSelector((state: RootState) => state.user.event);
   const [stats, setStats] = useState<ByCategoryStats[]>();
+  const [votingResults, setVotingResults] = useState<ByProposalsInCategoryStats>();
+  const [hydraTallyStats, setHydraTallyStats] = useState<TallyResults>();
   const [value, setValue] = useState('2');
   const [winnersAvailable, setWinnersAvailable] = useState(Boolean);
   const [hydraTallyAvailable, setHydraTallyAvailable] = useState(Boolean);
@@ -95,11 +97,35 @@ const Leaderboard = () => {
         setStats(response.categories);
       });
     } catch (error) {
-      const message = `Failed to fecth stats: ${error?.message || error?.toString()}`;
+      const message = `Failed to fetch stats: ${error?.message || error?.toString()}`;
       if (process.env.NODE_ENV === 'development') {
         console.log(message);
       }
-      eventBus.publish('showToast', i18n.t('toast.failedToFecthStats'), 'error');
+      eventBus.publish('showToast', i18n.t('toast.failedToFetchStats'), 'error');
+    }
+
+    try {
+      await leaderboardService.getVotingResults().then((response) => {
+        setVotingResults(response);
+      });
+    } catch (error) {
+      const message = `Failed to fetch results stats: ${error?.message || error?.toString()}`;
+      if (process.env.NODE_ENV === 'development') {
+        console.log(message);
+      }
+      eventBus.publish('showToast', i18n.t('toast.failedToFetchStats'), 'error');
+    }
+
+    try {
+      await leaderboardService.getHydraTallyStats().then((response) => {
+        setHydraTallyStats(response);
+      });
+    } catch (error) {
+      const message = `Failed to fetch Hydra Tally stats: ${error?.message || error?.toString()}`;
+      if (process.env.NODE_ENV === 'development') {
+        console.log(message);
+      }
+      eventBus.publish('showToast', i18n.t('toast.failedToFetchStats'), 'error');
     }
   }, []);
 
@@ -263,6 +289,7 @@ const Leaderboard = () => {
                     title={item.label}
                     counter={index}
                     categoryId={item.id}
+                    resultStats={votingResults}
                   />
                 ))}
               </Masonry>
@@ -475,6 +502,7 @@ const Leaderboard = () => {
                     title={item.label}
                     counter={index}
                     categoryId={item.id}
+                    hydraTallyStats={hydraTallyStats}
                   />
                 ))}
               </Masonry>

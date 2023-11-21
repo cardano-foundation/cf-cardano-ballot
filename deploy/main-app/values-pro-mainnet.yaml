@@ -91,6 +91,9 @@ cf-cardano-ballot-ledger-follower-api:
       - name: follower-2
         enabled: true
         schemaName: follower_2
+      - name: follower-3
+        enabled: true
+        schemaName: follower_3
     corsAllowedOrigins: https://{{ .Values.domain }},https://1694ballot.cardano.org,http://localhost:3000
     cardanoSnapshotBoundsCheckEnabled: "true"
     startupProbe:

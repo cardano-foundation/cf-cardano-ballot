@@ -289,7 +289,7 @@ const Leaderboard = () => {
                     title={item.label}
                     counter={index}
                     categoryId={item.id}
-                    resultStats={votingResults}
+                    votingResults={votingResults}
                   />
                 ))}
               </Masonry>

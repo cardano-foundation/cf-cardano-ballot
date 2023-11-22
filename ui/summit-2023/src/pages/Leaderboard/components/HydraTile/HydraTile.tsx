@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Avatar, Box, Button, CardActions, Chip, CircularProgress, Grid, Typography } from '@mui/material';
+import { Avatar, Box, Button, ButtonGroup, CardActions, Chip, CircularProgress, Grid, Tooltip, Typography } from '@mui/material';
 import { Link } from 'react-router-dom';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -12,6 +12,8 @@ import cn from 'classnames';
 import { i18n } from 'i18n';
 import CATEGORY_IMAGES from '../../../../common/resources/data/categoryImages.json';
 import { CustomButton } from 'components/common/Button/CustomButton';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import { copyToClipboard } from 'utils/utils';
 
 const HydraTile = ({ counter, title, categoryId, hydraTallyStats }) => {
   const summit2023Category: CategoryContent = SUMMIT2023CONTENT.categories.find(
@@ -21,6 +23,7 @@ const HydraTile = ({ counter, title, categoryId, hydraTallyStats }) => {
   const [awards, setAwards] = useState([]);
   const [loaded, setLoaded] = useState(false);
   const [categoryResultsDatum, setCategoryResultsDatum] = useState('');
+  const [contractAddress, setContractAddress] = useState('');
 
   const init = useCallback(async () => {
     try {
@@ -44,6 +47,7 @@ const HydraTile = ({ counter, title, categoryId, hydraTallyStats }) => {
       setAwards(updatedAwards);
 
       setCategoryResultsDatum(categoryStats.metadata.categoryResultsDatum);
+      setContractAddress(categoryStats.metadata.contractAddress);
 
       setLoaded(true);
     } catch (error) {
@@ -58,6 +62,12 @@ const HydraTile = ({ counter, title, categoryId, hydraTallyStats }) => {
   useEffect(() => {
     init();
   }, [init]);
+
+  const handleCopyToClipboard = (text: string) => {
+    copyToClipboard(text)
+      .then(() => eventBus.publish('showToast', i18n.t('toast.copy')))
+      .catch(() => eventBus.publish('showToast', i18n.t('toast.copyError'), 'error'));
+  };
 
   return (
     <div data-testid="hydra-tally-tile">
@@ -132,17 +142,40 @@ const HydraTile = ({ counter, title, categoryId, hydraTallyStats }) => {
               ))}
             </Grid>
             <CardActions>
-              <CustomButton
-                styles={{
-                  background: 'transparent !important',
-                  color: '#03021F',
-                  border: '1px solid #daeefb',
-                  width: '100%',
-                }}
-                label={i18n.t('leaderboard.tabs.tab3.tile.datumInspectorButton')}
-                onClick={() => window.location.href = `https://cardanoscan.io/datumInspector?datum=${categoryResultsDatum}`}
+              <ButtonGroup
                 fullWidth={true}
-              />
+              >
+                <CustomButton
+                  styles={{
+                    background: 'transparent !important',
+                    color: '#03021F',
+                    border: '1px solid #daeefb',
+                    width: '100%',
+                  }}
+                  label={i18n.t('leaderboard.tabs.tab3.tile.datumInspectorButton')}
+                  onClick={() => window.location.href = `https://cardanoscan.io/datumInspector?datum=${categoryResultsDatum}`}
+                />
+                <Tooltip
+                  title={i18n.t('leaderboard.tabs.tab3.tile.copyAddressButtonTooltip')} 
+                  placement="top"
+                  sx={{
+                    backgroundColor: '#03021f',
+                    color: '#F5F9FF',
+                  }}
+                >
+                  <Button
+                    onClick={() => handleCopyToClipboard(contractAddress)}
+                    fullWidth={false}
+                    sx={{
+                      background: 'transparent !important',
+                      color: '#03021F',
+                      border: '1px solid #daeefb'
+                    }}
+                  >
+                    <ContentCopyIcon />
+                  </Button>
+                </Tooltip>
+              </ButtonGroup>
             </CardActions>
             <CardActions>
               <Button

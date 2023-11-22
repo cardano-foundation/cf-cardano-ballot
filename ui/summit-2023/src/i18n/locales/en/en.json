@@ -184,7 +184,8 @@
             "column1": "Winner",
             "column2": "Votes"
           },
-          "datumInspectorButton": "Inspect Smart Contract"
+          "datumInspectorButton": "View Hydra Tally",
+          "copyAddressButtonTooltip": "Copy Smart Contract Address"
         }
       }
     }

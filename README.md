@@ -1,5 +1,6 @@
 <div align="center">
-  <img src="https://cryptologos.cc/logos/cardano-ada-logo.svg?v=026" alt="Cardano Foundation | Cardano Ballot" height="150" />
+  <img src="https://github.com/cardano-foundation/cf-cardano-ballot/blob/main/ui/summit-2023/public/static/Cardano_Ballot_black.png?raw=true#gh-light-mode-only" alt="Cardano Foundation | Cardano Ballot" height="150" />
+  <img src="https://github.com/cardano-foundation/cf-cardano-ballot/blob/main/ui/summit-2023/public/static/Cardano_Ballot_white.png?raw=true#gh-light-mode-only#gh-light-mode-only" alt="Cardano Foundation | Cardano Ballot" height="150" />
   <hr />
     <h1 align="center" style="border-bottom: none">Cardano Foundation | Cardano Ballot</h1>
 
@@ -17,14 +18,16 @@
   <hr/>
 </div>
 
+
 # Overview
 
-Cardano Ballot is a user-friendly, hybrid on- and off-chain voting system developed by the Cardano Foundation.  Cardano Ballot leverages a set of backend services combined with frontend applications to facilitate voting within the Cardano Ecosystem.  
+<div style="text-align: justify">
+  Cardano Ballot is a user-friendly, hybrid on- and off-chain voting system developed by the Cardano Foundation.  Cardano Ballot leverages a set of backend services combined with frontend applications to facilitate voting within the Cardano Ecosystem.
 
-Most recently, stake-based voting was introduced into Cardano Ballot inorder to support IOG with CIP-1694 Pre-ratififcation polling events.  Currently, Cardano Ballot supports user-based (1 x user, 1 x vote) and stake-based (weighted) voting events.  The modularised backend services make the process of organising, deploying, and auditing a Cardano Ballot event more decentralized and user-friendly.  
+  Most recently, stake-based voting was introduced into Cardano Ballot inorder to support IOG with CIP-1694 Pre-ratififcation polling events.  Currently, Cardano Ballot supports user-based (1 x user, 1 x vote) and stake-based (weighted) voting events.  The modularised backend services make the process of organising, deploying, and auditing a Cardano Ballot event more decentralized and user-friendly.
 
-In 2023, Hydra and Aiken Smart Contracts were also introduced into Cardano Ballot.  The first implementation of this was a final Hydra tally of all votes submitted for the Cardano Summit Awards 2023.
-
+  In 2023, Hydra and Aiken Smart Contracts were also introduced into Cardano Ballot.  The first implementation of this was a final Hydra tally of all votes submitted for the Cardano Summit Awards 2023.
+</div>
 
 # Features
 #### Event Types
@@ -52,12 +55,21 @@ In 2023, Hydra and Aiken Smart Contracts were also introduced into Cardano Ballo
 - Node.js 18.x LTS
 - Java 17 LTS
 - Postgres DB 14.x or H2 file db (local development / community running).
-- more...
 
 
 ## Repository Structure
-- backend-services - contains various backend services
-- ui - contains React.JS frontend code apps to cast votes / display voting results
+- [backend-services](backend-services) - contains various backend services:
+  - [hydra-tally-app](backend-services/user-verification-service) - A CLI application which contains logic to connect to Hydra network. Application demonstrates usage of smart contracts (Aiken) to perform counting (tally) of the votes and providing result.
+  - [user-verification-service](backend-services/user-verification-service) - A Spring Boot application that verifies user wallets using their phone number (via SMS OTP one time password) or Discord account
+  - [vote-commitment-app](backend-services/vote-commitment-app) - TODO
+  - [voting-admin-app](backend-services/voting-admin-app) - Application to be used by the organisers to create events and proposals.
+  - [voting-app](backend-services/voting-app) - Voting Application that allows users to submit votes, receive vote receipts, and access leaderboard data.
+  - [voting-ledger-follower-app](backend-services/voting-ledger-follower-app) - Ledger Follower Application that is listening to the Cardano blockchain to fetch information about event data and user stake amounts in case of stake-based voting.
+  - [voting-verification-app](backend-services/voting-verification-app) - Application to be used by the community / voters to independently verify and check vote proofs.
+
+- [ui](ui) - contains React.JS frontend code apps to cast votes / display voting results:
+  - [cip-1694](ui/cip-1694) - front-end application for the CIP-1694 voting event.
+  - [summit-2023](ui/summit-2023) - front-end application for the Cardano Summit 2023 Awards voting.
 
 ## Running the Backend Services
 ### Ledger Follower
@@ -106,10 +118,8 @@ SERVER_PORT=8888 ./gradlew bootRun
 
 use `setupProxy.js` to proxy services urls. 
 
-**?** more..
-
 ## Running the Frontend (User Interface)
-Create `.env` file on the same level as `.env.development`. 
+Copy the [`.env.example`](ui/summit-2023/.env.example) file and rename it as `.env`. 
 
 Then run:
 
@@ -118,40 +128,6 @@ cd cf-ballot-app/ui/summit-2023
 npm i
 npm run start
 ```
-
-## Building native image with GraalVM
-Some applications should be GraalVM compatible (https://www.graalvm.org/)
-
-**?** more...
-
-```shell
-export GRAALVM_HOME=/Users/mati/.sdkman/candidates/java/20.0.2-graalce
-
-cd cf-ballot-app/backend-services/voting-verification-app
-./gradlew nativeCompile
-cd cf-ballot-app/backend-services/voting-app
-./gradlew nativeCompile
-cd cf-ballot-app/backend-services/user-verification-service
-./gradlew nativeCompile
-
-```
-
-## Developing locally with Yaci DevKit
-If you want to develop using Yaci-DevKit (https://github.com/bloxbean/yaci-devkit) you have to start the backend applications in the special YACI_DEV_KIT DEV mode.
-
-```shell
-cd cf-voting-app/backend-services/voting-ledger-follower-app
-
-export SPRING_CONFIG_LOCATION=classpath:/application.properties,classpath:/application-dev--yaci-dev-kit.properties
-export SPRING_PROFILES_ACTIVE=dev--yaci-dev-kit
-
-./gradlew bootRun
-```
-
-This will effectively load `application.properties` and `application-dev-yaci-dev-kit.properties` file from the classpath 
-but values / properties in `application-dev-yaci-dev-kit.properties` will override the ones in `application.properties`.
-
-On start up of the app, you can verify if the right profile has been used, there should be a message related to that at the beginning.
 
 ## Backend -> Frontend Types Generation
 All backend apps will generate TypeScript types for the frontend by using the following command:

@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.cardano.foundation.voting.domain.VotingEventType;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -34,16 +34,16 @@ public class EventPresentation {
     private Optional<Integer> startEpoch = Optional.empty();
 
     @Builder.Default
-    private Optional<ZonedDateTime> eventStartDate = Optional.empty();
+    private Optional<LocalDateTime> eventStartDate = Optional.empty();
 
     @Builder.Default
-    private Optional<ZonedDateTime> eventEndDate = Optional.empty();
+    private Optional<LocalDateTime> eventEndDate = Optional.empty();
 
     @Builder.Default
-    private Optional<ZonedDateTime> proposalsRevealDate = Optional.empty();
+    private Optional<LocalDateTime> proposalsRevealDate = Optional.empty();
 
     @Builder.Default
-    private Optional<ZonedDateTime> snapshotTime = Optional.empty();
+    private Optional<LocalDateTime> snapshotTime = Optional.empty();
 
     @Builder.Default
     private Optional<Integer> endEpoch = Optional.empty();

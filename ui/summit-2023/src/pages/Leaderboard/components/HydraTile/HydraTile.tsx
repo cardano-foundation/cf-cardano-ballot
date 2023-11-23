@@ -25,6 +25,8 @@ const HydraTile = ({ counter, title, categoryId, hydraTallyStats }) => {
   const [categoryResultsDatum, setCategoryResultsDatum] = useState('');
   const [contractAddress, setContractAddress] = useState('');
 
+  const datumInspectorURL = 'https://cardanoscan.io/datumInspector?datum=';
+
   const init = useCallback(async () => {
     try {
       const categoryStats = hydraTallyStats?.find((category) => category.categoryId === categoryId)
@@ -153,7 +155,7 @@ const HydraTile = ({ counter, title, categoryId, hydraTallyStats }) => {
                     width: '100%',
                   }}
                   label={i18n.t('leaderboard.tabs.tab3.tile.datumInspectorButton')}
-                  onClick={() => window.location.href = `https://cardanoscan.io/datumInspector?datum=${categoryResultsDatum}`}
+                  onClick={() => window.location.href = `${datumInspectorURL}${categoryResultsDatum}`}
                 />
                 <Tooltip
                   title={i18n.t('leaderboard.tabs.tab3.tile.copyAddressButtonTooltip')} 

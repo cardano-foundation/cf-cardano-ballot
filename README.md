@@ -97,6 +97,8 @@ cd cf-ballot-app/backend-services/voting-verification-app
 
 this will launch voting-verification-app on port: 9092 by default.
 
+Instructions on how to run the `Vote Verification` app are located [here](./VOTE_VERIFICATION.md)
+
 ### User Verification App
 ```bash
 export AWS_SNS_ACCESS_KEY_ID=...

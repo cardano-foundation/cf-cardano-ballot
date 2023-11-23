@@ -98,6 +98,7 @@ public class VoteCommitmentService {
         var allFinishedEventsWithClosedCommitmentWindow = allFinishedEventsWithClosedCommitmentWindowE.get();
 
         List<ChainFollowerClient.EventSummary> eventsToProcess2 = allFinishedEventsWithClosedCommitmentWindow.stream()
+                // if we find at least one vote merkle proof which is not validated
                 .filter(eventSummary -> !voteMerkleProofService.findTop1InvalidatedByEventId(eventSummary.id()).isEmpty())
                 .toList();
 

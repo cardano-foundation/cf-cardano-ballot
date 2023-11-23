@@ -58,7 +58,7 @@ export const IntroductionPage = () => {
                     md: '65px',
                   }}
                 >
-                  A Vote on Minimum-Viable Governance
+                 A Vote on Minimum-Viable on chain Governance
                 </Typography>
                 <Typography
                   component={'span'}

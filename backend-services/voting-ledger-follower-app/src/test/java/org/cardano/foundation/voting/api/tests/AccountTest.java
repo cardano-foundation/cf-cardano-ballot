@@ -16,6 +16,7 @@ public class AccountTest extends BaseTest {
     public void testFindAccount() {
         String stakeAddress = "stake_test1uzpq2pktpnj54e64kfgjkm8nrptdwfj7s7fvhp40e98qsusd9z7ek";
         String eventId = "CF_TEST_EVENT_01";
+
         given()
                 .when()
                 .get(ACCOUNT_ENDPOINT + "/" + eventId + "/" + stakeAddress)
@@ -52,4 +53,5 @@ public class AccountTest extends BaseTest {
                 .then()
                 .statusCode(404);
     }
+
 }

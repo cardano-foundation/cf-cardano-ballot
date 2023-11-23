@@ -30,7 +30,6 @@ configurations {
 
 repositories {
     mavenCentral()
-    mavenLocal()
     maven { url = uri("https://repo.spring.io/milestone") }
 }
 
@@ -70,7 +69,7 @@ dependencies {
     implementation("com.nimbusds:nimbus-jose-jwt:9.35")
     implementation("com.google.crypto.tink:tink:1.11.0")
 
-    implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0")
+	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0")
 
     implementation("io.blockfrost:blockfrost-java:0.1.3")
 
@@ -82,6 +81,8 @@ dependencies {
     implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.11")
 
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
+
+    implementation("me.paulschwarz:spring-dotenv:4.0.0")
 
     // spring-boot overridden dependencies:
     runtimeOnly("com.h2database:h2:2.2.224") // GraalVM compatibility

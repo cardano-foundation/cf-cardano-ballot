@@ -1,7 +1,8 @@
 import React from 'react';
-import { Typography, Grid } from '@mui/material';
+import { Typography, Grid, IconButton, Tooltip } from '@mui/material';
 import styles from './Footer.module.scss';
 import discordLogo from '../../../common/resources/images/discord-icon.svg';
+import SupportIcon from '@mui/icons-material/SupportAgent';
 import { env } from 'common/constants/env';
 import { NavLink } from 'react-router-dom';
 import { i18n } from 'i18n';
@@ -11,8 +12,9 @@ const Footer: React.FC = () => {
   return (
     <Grid
       container
+      spacing={1}
       direction={{ sm: 'column', md: 'row' }}
-      justifyContent="center"
+      justifyContent="space-between"
       alignItems="center"
       className={styles.footer}
     >
@@ -36,19 +38,20 @@ const Footer: React.FC = () => {
       <Grid
         item
         xs={12}
-        sm={6}
+        sm={'auto'}
       >
         <Grid
           container
+          spacing={2}
           direction={{ sm: 'column', md: 'row' }}
-          sx={{ textAlignLast: { xs: 'center', sm: 'right' } }}
+          sx={{ textAlignLast: { xs: 'center', sm: 'center', md: 'right' } }}
         >
           <Grid
             item
             xs={12}
-            sm={3}
+            sm={'auto'}
           >
-            <NavLink to="/termsandconditions">
+            <NavLink to="/terms-and-conditions">
               <Typography
                 variant="body2"
                 justifyContent="center"
@@ -62,9 +65,9 @@ const Footer: React.FC = () => {
           <Grid
             item
             xs={12}
-            sm={3}
+            sm={'auto'}
           >
-            <NavLink to="/privacypolicy">
+            <NavLink to="/privacy-policy">
               <Typography
                 variant="body2"
                 justifyContent="center"
@@ -78,29 +81,55 @@ const Footer: React.FC = () => {
           <Grid
             item
             xs={12}
-            sm={4}
+            sm={'auto'}
           >
-            <Typography
-              variant="body2"
+            <Grid
+              container
+              spacing={1}
+              direction="row"
               justifyContent="center"
+              alignItems="center"
             >
-              Version {env.APP_VERSION} (Status)
-            </Typography>
-          </Grid>
-
-          <Grid
-            item
-            xs={12}
-            sm={2}
-          >
-            <Typography variant="body2">
-              <img
-                onClick={() => openNewTab(env.DISCORD_CHANNEL_URL)}
-                src={discordLogo}
-                alt="Discord"
-                style={{ height: '25px', cursor: 'pointer' }}
-              />
-            </Typography>
+              <Grid
+                item
+                xs={6}
+                sm={'auto'}
+                sx={{ pt: '0 !important', textAlign: { xs: 'end' } }}
+              >
+                <Tooltip
+                  title="Get support"
+                  placement="top"
+                >
+                  <IconButton
+                    onClick={() => openNewTab(env.DISCORD_SUPPORT_CHANNEL_URL)}
+                    size="large"
+                    sx={{ p: 0, color: '#434656' }}
+                  >
+                    <SupportIcon />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+              <Grid
+                item
+                xs={6}
+                sm={'auto'}
+                sx={{ textAlign: { xs: 'start' } }}
+              >
+                <Tooltip
+                  title="Join our Discord"
+                  placement="top"
+                >
+                  <Typography variant="body2">
+                    <img
+                      onClick={() => openNewTab(env.DISCORD_CHANNEL_URL)}
+                      src={discordLogo}
+                      alt="Discord"
+                      style={{ height: '25px', cursor: 'pointer' }}
+                    />
+                  </Typography>
+                </Tooltip>
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
       </Grid>

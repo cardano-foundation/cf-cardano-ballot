@@ -29,7 +29,7 @@
   gap: 8px;
   border-radius: 8px;
   .MuiSnackbarContent-root {
-    background-color: var(--color-ultra-dark-blue);
+    background-color: var(--color-primary);
   }
 }
 .header-toast-error {
@@ -68,7 +68,6 @@
   display: none;
 
   .disconnect-button {
-    margin-top: 4px;
     width: 100%;
     text-transform: none;
   }
@@ -79,7 +78,7 @@
   align-items: flex-start;
   gap: 8px;
   border-radius: 8px;
-  background-color: var(--color-ultra-dark-blue) !important;
+  background-color: var(--color-primary) !important;
   transition: transform 0.3s ease;
   color: var(--color-light);
   font-size: 16px;
@@ -94,7 +93,6 @@
 }
 .verify-button.MuiButton-root {
   width: 100%;
-  margin-top: 4px;
   display: inline-flex;
   padding: 16px 24px 16px 16px;
   align-items: flex-start;
@@ -115,7 +113,15 @@
 }
 
 .connect-button.MuiButton-root:hover {
-  transform: scale(1.02);
+  transition:
+    background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
+    box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
+    border-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
+    color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  box-shadow:
+    0px 2px 4px -1px rgba(0, 0, 0, 0.2),
+    0px 4px 5px 0px rgba(0, 0, 0, 0.14),
+    0px 1px 10px 0px rgba(0, 0, 0, 0.12);
 }
 
 .connected-button.MuiButton-root {
@@ -142,20 +148,22 @@
   background: var(--color-light-blue);
 }
 
+.menu-button.MuiButtonBase-root,
 .close-button.MuiButtonBase-root {
   width: 51px;
   height: 51px;
   flex-shrink: 0;
   border-radius: 8px;
-  border: 1px solid var(--color-ultra-dark-blue);
-  background: var(--color-ultra-light-blue);
+  border: 2px solid var(--color-primary);
+  background: transparent;
 }
 
+.menu-button.MuiSvgIcon-root,
 .close-icon.MuiSvgIcon-root {
   width: 29px;
   height: 29px;
   flex-shrink: 0;
-  color: var(--color-ultra-dark-blue);
+  color: var(--color-primary);
 }
 
 .list-item.MuiListItem-root {

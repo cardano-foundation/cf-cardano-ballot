@@ -30,7 +30,6 @@ configurations {
 
 repositories {
     mavenCentral()
-    mavenLocal()
     maven { url = uri("https://repo.spring.io/milestone") }
 }
 
@@ -78,6 +77,8 @@ dependencies {
     implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.11")
 
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
+
+    implementation("me.paulschwarz:spring-dotenv:4.0.0")
 
     // spring-boot overridden dependencies:
     runtimeOnly("com.h2database:h2:2.2.224") // GraalVM compatibility

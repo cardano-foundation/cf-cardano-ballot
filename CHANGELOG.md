@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.2.75](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.74...v0.2.75) (2023-10-27)
+
+
+### Features
+
+* **cip-1694-ui:** change faq text ([4eda4ee](https://github.com/cardano-foundation/cf-cardano-ballot/commit/4eda4eeff72d837a9e5c3ef428dec0b09e56637d))
+* **cip-1694-ui:** change main title ([4408194](https://github.com/cardano-foundation/cf-cardano-ballot/commit/44081945823c0ee424f763a9f234a4758cc7e85f))
+* **cip-1694-ui:** change vote to ballot ([f69493f](https://github.com/cardano-foundation/cf-cardano-ballot/commit/f69493fac3989a350a674b197402a1e9c5fba5b1))
+* **cip-1694-ui:** provide status page url via env var ([#490](https://github.com/cardano-foundation/cf-cardano-ballot/issues/490)) ([9b0b2ea](https://github.com/cardano-foundation/cf-cardano-ballot/commit/9b0b2eaac719e93097124d120729d2dd4c50a175))
+* **cip-1694-ui:** remove view the leaderboard anyways option ([52d6842](https://github.com/cardano-foundation/cf-cardano-ballot/commit/52d684231ca8930ae4a07c5d36296e2986bea2f8))
+
 ## [0.2.74](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.73...v0.2.74) (2023-10-24)
 
 

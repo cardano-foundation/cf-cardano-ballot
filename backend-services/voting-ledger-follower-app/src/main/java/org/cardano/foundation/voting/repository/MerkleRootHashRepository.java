@@ -17,6 +17,6 @@ public interface MerkleRootHashRepository extends JpaRepository<MerkleRootHash, 
 
     @Query("DELETE FROM MerkleRootHash mrh WHERE mrh.absoluteSlot > :slot")
     @Modifying
-    void deleteAllAfterSlot(@Param("slot") long slot);
+    int deleteAllAfterSlot(@Param("slot") long slot);
 
 }

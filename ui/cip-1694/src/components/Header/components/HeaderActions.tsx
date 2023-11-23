@@ -101,7 +101,7 @@ export const HeaderActions = ({ isMobileMenu = false, onClick, showNavigationIte
                 startIcon={<CheckBoxOutlinedIcon />}
                 disabled={!event}
               >
-                Your vote
+                Your Ballot
               </Button>
             </Grid>
             <Grid

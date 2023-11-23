@@ -29,7 +29,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.util.List;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ComponentScan
@@ -62,16 +62,16 @@ public class BaseTest {
         wireMockServer = new WireMockServer(9090);
         wireMockServer.start();
 
-        String accountResponse = "{" +
-                "    \"active\": true,\n" +
-                "    \"controlled_amount\": \"12695385\",\n" +
-                "    \"pool_id\": \"pool1pu5jlj4q9w9jlxeu370a3c9myx47md5j5m2str0naunn2q3lkdy\",\n" +
-                "    \"rewards_sum\": \"95385\",\n" +
-                "    \"reserves_sum\": \"0\",\n" +
-                "    \"withdrawable_amount\": \"12695385\",\n" +
-                "    \"withdrawals_sum\": \"0\",\n" +
-                "    \"treasury_sum\": \"0\"\n" +
-                "  }";
+        String accountResponse = """
+                {    "active": true,
+                    "controlled_amount": "12695385",
+                    "pool_id": "pool1pu5jlj4q9w9jlxeu370a3c9myx47md5j5m2str0naunn2q3lkdy",
+                    "rewards_sum": "95385",
+                    "reserves_sum": "0",
+                    "withdrawable_amount": "12695385",
+                    "withdrawals_sum": "0",
+                    "treasury_sum": "0"
+                  }""";
 
         RestAssured.port = serverPort;
         RestAssured.baseURI = "http://localhost";
@@ -81,7 +81,8 @@ public class BaseTest {
                 .willReturn(com.github.tomakehurst.wiremock.client.WireMock.aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
-                        .withBody(accountResponse)));
+                        .withBody(accountResponse))
+        );
 
         wireMockServer.stubFor(
                 WireMock.get(urlEqualTo("/accounts/stake_test1uq0zsej7gjyft8sy9dj7sn9rmqdgw32r8c0lpmr6xu3tu9szp6qre"))

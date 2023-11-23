@@ -15,7 +15,7 @@ import { eventMock_active, useCardanoMock, eventMock_notStarted, eventMock_finis
 import { CustomRouter } from 'test/CustomRouter';
 import { formatUTCDate } from 'common/utils/dateUtils';
 
-const title = 'A Vote on Minimum-Viable Governance';
+const title = 'A Vote on Minimum-Viable on chain Governance';
 const description =
   'Cardano has reached an incredible milestone. After six years of initial development and feature cultivation, the Cardano blockchain has reached the age of Voltaire. Guided by a principles-first approach and led by the community, this new age of Cardano advances inclusive accountability for all participants in the ecosystem. The time has come for a vote by the community on the way forward.';
 const imageSrc = '/static/cip-1694.jpg';
@@ -71,7 +71,7 @@ describe('For ongoing event:', () => {
 
       const eventTime = within(introductionPage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
-      expect(eventTime.textContent).toEqual('Voting closes: ');
+      expect(eventTime.textContent).toEqual('Ballot closes: ');
 
       const preloader = within(introductionPage).queryByTestId('event-time-loader');
       expect(preloader).not.toBeNull();
@@ -99,7 +99,7 @@ describe('For ongoing event:', () => {
       const eventTime = within(introductionPage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
       expect(eventTime.textContent).toEqual(
-        `Voting closes: ${formatUTCDate(eventMock_active.eventEndDate.toString())}`
+        `Ballot closes: ${formatUTCDate(eventMock_active.eventEndDate.toString())}`
       );
 
       const eventDescription = within(introductionPage).queryByTestId('event-description');

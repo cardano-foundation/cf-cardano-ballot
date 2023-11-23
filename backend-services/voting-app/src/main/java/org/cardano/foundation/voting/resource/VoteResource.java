@@ -57,13 +57,13 @@ public class VoteResource {
                                             schema = @Schema(implementation = Problem.class)) // Using the Problem class you provided earlier
                             }
                     ),
-                    @ApiResponse(responseCode = "500", description = "Server error")
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
             }
     )
     public ResponseEntity<?> getVotes(
             @Parameter(name = "eventId", required = false, description = "ID of the event for which votes are being fetched.")
-            @PathVariable(value = "eventId", required = false) Optional<String> maybeEventId,
-                                      Authentication authentication) {
+            @PathVariable(value = "eventId", required = false) Optional<String> eventIdM,
+            Authentication authentication) {
         if (!(authentication instanceof JwtAuthenticationToken jwtAuth)) {
             var problem = Problem.builder()
                     .withTitle("JWT_REQUIRED")
@@ -76,7 +76,7 @@ public class VoteResource {
                     .body(problem);
         }
 
-        if (maybeEventId.isPresent() && !maybeEventId.orElseThrow().equals(jwtAuth.eventDetails().id())) {
+        if (eventIdM.isPresent() && !eventIdM.orElseThrow().equals(jwtAuth.eventDetails().id())) {
             var problem = Problem.builder()
                     .withTitle("EVENT_ID_MISMATCH")
                     .withDetail("Event id in path and in JWT token do not match!")
@@ -119,7 +119,7 @@ public class VoteResource {
                                         schema = @Schema(implementation = Problem.class))
                         }
                 ),
-                @ApiResponse(responseCode = "500", description = "Server error")
+                @ApiResponse(responseCode = "500", description = "Internal server error")
         }
     )
     public ResponseEntity<?> castVote(Authentication authentication) {
@@ -170,7 +170,7 @@ public class VoteResource {
                                             schema = @Schema(implementation = Problem.class))
                             }
                     ),
-                    @ApiResponse(responseCode = "500", description = "Server error")
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
             }
     )
     public ResponseEntity<?> getVoteReceipt(Authentication authentication) {
@@ -225,7 +225,7 @@ public class VoteResource {
                                             schema = @Schema(implementation = Problem.class))
                             }
                     ),
-                    @ApiResponse(responseCode = "500", description = "Server error")
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
             }
     )
     public ResponseEntity<?> getVoteReceipt(@PathVariable(value = "eventId", required = false) Optional<String> maybeEventId,
@@ -293,7 +293,7 @@ public class VoteResource {
                                             schema = @Schema(implementation = Problem.class))
                             }
                     ),
-                    @ApiResponse(responseCode = "500", description = "Server error")
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
             }
     )
 

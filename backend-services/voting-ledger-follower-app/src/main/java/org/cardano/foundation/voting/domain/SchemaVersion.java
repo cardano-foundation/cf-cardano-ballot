@@ -5,7 +5,8 @@ import java.util.Optional;
 
 public enum SchemaVersion {
 
-    V1("1.0.0");
+    V1("1.0.0"),
+    V11("1.1.0");
 
     private final String version;
 
@@ -21,6 +22,14 @@ public enum SchemaVersion {
         return Arrays.asList(values()).stream()
                     .filter(schemaVersion -> schemaVersion.getSemVer().equals(text))
                     .findFirst();
+    }
+
+    public boolean isGreaterThanEqual(SchemaVersion schemaVersion) {
+        return this.ordinal() >= schemaVersion.ordinal();
+    }
+
+    public boolean isLowerThanEqual(SchemaVersion schemaVersion) {
+        return this.ordinal() <= schemaVersion.ordinal();
     }
 
 }

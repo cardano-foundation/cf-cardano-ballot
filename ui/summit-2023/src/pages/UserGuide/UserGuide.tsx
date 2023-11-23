@@ -1,8 +1,8 @@
 import { Grid, Typography, useMediaQuery, useTheme } from '@mui/material';
 import React, { useEffect, useState } from 'react';
+import { i18n } from 'i18n';
 import { GuideTile } from './components/GuideTile';
 import styles from './UserGuide.module.scss';
-import { i18n } from 'i18n';
 import SvgIcon from '@mui/material/SvgIcon';
 import { ReactComponent as StepOneIcon } from '../../common/resources/images/step1.svg';
 import { ReactComponent as StepTwoIcon } from '../../common/resources/images/step2.svg';
@@ -15,18 +15,19 @@ import Modal from '../../components/common/Modal/Modal';
 import SupportedWalletsList from '../../components/SupportedWalletsList/SupportedWalletsList';
 
 const UserGuide = () => {
-  const [openSupportedWalletsModal, setOpenSupportedWalletsModal] = useState<boolean>(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
+  const [openSupportedWalletsModal, setOpenSupportedWalletsModal] = useState<boolean>(false);
+
   useEffect(() => {
-    const openConnectWalletModal = () => {
+    const openSupportedWalletModal = () => {
       setOpenSupportedWalletsModal(true);
     };
-    eventBus.subscribe('openSupportedWalletModal', openConnectWalletModal);
+    eventBus.subscribe('openSupportedWalletModal', openSupportedWalletModal);
 
     return () => {
-      eventBus.unsubscribe('openSupportedWalletModal', openConnectWalletModal);
+      eventBus.unsubscribe('openSupportedWalletModal', openSupportedWalletModal);
     };
   }, []);
 

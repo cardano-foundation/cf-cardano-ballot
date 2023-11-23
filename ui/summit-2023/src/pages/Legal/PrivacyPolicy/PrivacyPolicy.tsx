@@ -10,8 +10,21 @@ const PrivacyPolicy = () => {
     <Container>
       {/* Privacy Policy */}
       <Typography
-        variant="h3"
-        sx={{ mb: 4, mt: 4 }}
+        variant="h2"
+        fontSize={{
+          xs: '28px',
+          md: '32px',
+          lg: '48px',
+        }}
+        lineHeight={{
+          xs: '28px',
+          md: '32px',
+        }}
+        sx={{
+          color: '#24262E',
+          fontStyle: 'normal',
+          fontWeight: '600',
+        }}
       >
         {privacyData.title}
       </Typography>

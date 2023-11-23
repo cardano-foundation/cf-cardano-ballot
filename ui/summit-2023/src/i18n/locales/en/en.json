@@ -16,8 +16,12 @@
   },
   "landing": {
     "title": "Vote for the Cardano Summit Awards",
+    "eventFinishedTitle": "Cardano Summit Awards",
+    "eventFinishedDescription": "10 categories, 10 winners awarded for their work and exceptional contributions within the Cardano ecosystem. Watch the <strong>winners announced live at the Cardano Summit 2023 Gala Awards Dinner on 4 November.</strong>",
     "description": "10 categories, 10 winners awarded for their work and exceptional contributions within the Cardano ecosystem. Vote for the shortlisted nominees and watch the winners announced live at the Cardano Summit 2023 Gala Awards Dinner.",
     "getStartedButton": "Start Voting",
+    "votingLeaderboardButton": "View Leaderboard",
+    "howToVoteButton": "How to Vote",
     "hexagon": {
       "title": "CARDANO SUMMIT 2023"
     }
@@ -27,8 +31,8 @@
     "requirements": {
       "title": "To submit votes using Cardano Ballot, you'll need",
       "sms": {
-        "title": "The ability to receive an SMS verification message.",
-        "hint": "Securely verify your account with a one-time SMS code for Cardano Ballot. Safety and simplicity combined."
+        "title": "The ability to receive a verification message.",
+        "hint": "Securely verify your Cardano Ballot account with a one-time SMS code or interact with our Discord bot. Safety and simplicity combined."
       },
       "wallets": {
         "title": "A supported Cardano wallet and/or browser extension.",
@@ -54,14 +58,139 @@
       "steps": {
         "1": "Navigate to Cardano Ballot's category section.",
         "2": "Scroll through the proposed voting categories.",
-        "3": "To vote in a category, click on 'View nominees'.",
-        "4": "Review the nominees and click on 'Vote for nominee'.",
-        "5": "To finalize your vote, select 'Sign with wallet'.",
-        "6": "Click on 'Submit your vote' to complete the process."
+        "3": "To vote in a category, click on 'View Nominees'.",
+        "4": "Review the nominees and click on 'Vote for Nominee'.",
+        "5": "To finalize your vote, select 'Sign with Wallet'.",
+        "6": "Click on 'Submit your Vote' to complete the process."
       }
     }
   },
+  "nominees": {
+    "receipt": {
+      "status": {
+        "FULL": {
+          "VERY_HIGH": {
+            "description": "Your vote is currently being verified. While in VERY HIGH, the chance of a rollback is very unlikely. Check back later to see if verification has completed."
+          },
+          "HIGH": {
+            "description": "Your vote is currently being verified. While in HIGH, the chance of a rollback is very unlikely. Check back later to see if verification has completed."
+          },
+          "MEDIUM": {
+            "description": "Your vote is currently being verified. While in MEDIUM, the chance of rollback is still possible. Check back later to see if verification has completed."
+          },
+          "LOW": {
+            "description": "Your vote is currently being verified. While in LOW, there is the highest chance of a rollback. Check back later to see if verification has completed."
+          },
+          "DEFAULT": {
+            "description": "'Your vote has been successfully submitted. You might have to wait up to 30 minutes for this to be visible on chain. Please check back later to verify your vote."
+          }
+        },
+        "PARTIAL": {
+          "description": "Your transaction has been sent and is awaiting confirmation from the Cardano network (this could be 5-10 minutes). Once this has been confirmed you’ll be able to verify your vote."
+        },
+        "ROLLBACK": {
+          "description": "Don’t worry there’s nothing for you to do. We will automatically resubmit your vote. Please check back later (up to 30 minutes) to see your vote status."
+        },
+        "BASIC": {
+          "description": "Your vote has been successfully submitted. You might have to wait up to 30 minutes for this to be visible on chain. Please check back later to verify your vote."
+        },
+        "FINAL": {
+          "description": "Your vote has been successfully submitted."
+        }
+      },
+      "voteReceipt": "Vote Receipt",
+      "verified": "Verified",
+      "nominee": "Nominee [Proposal]",
+      "stakingAddress": "Voter’s Staking Address",
+      "statusTitle": "Status",
+      "showAdvancedInfo": "Show Advanced Information",
+      "votedAtSlot": "Voted at Slot",
+      "voteProof": "Vote Proof",
+      "event": "Event"
+    },
+    "alreadyVoted": "Already Voted",
+    "winner": "Winner",
+    "readMore": "Read More",
+    "successfullyVoteCast": "You have successfully cast a vote in the",
+    "successfullyVerified": "Your vote has been successfully verified. Click the link or scan the QR code to view the transaction.",
+    "confirmVoteFor": "Your vote has been successfully verified. Click the link or scan the QR code to view the transaction.",
+    "confirmVote": "Confirm Vote",
+    "cancel": "Cancel",
+    "done": "Done",
+    "signIn": "To see you vote receipt, please sign in with your wallet",
+    "reviewVote": "Review Vote",
+    "viewReceipt": "View Vote Receipt",
+    "voteVerified": "Vote verified",
+    "loginWithWallet": "Login with Wallet",
+    "verifyVoteProof": "Verify Vote Proof",
+    "notAvailable": "Not available yet",
+    "verifiedOnChainTooltip": "The submitted vote has been successfully verified on-chain.",
+    "assuranceTooltip": "Assurance levels will update according to the finality of the transaction on-chain.",
+    "nomineeSelectedTooltip": "Identifies the nominee selected for this category.",
+    "stakeAddressTooltip": "The stake address associated with the Cardano wallet casting the vote.",
+    "currentStatusTooltip": "The current status of your vote receipt based on the current assurance level.",
+    "uniqueIDTooltip": "This is a unique identifier associated with the vote submitted.",
+    "slotTooltip": "The time of the vote submission represented in Cardano blockchain epoch slots.",
+    "voteProofTooltip": "This is required to verify a vote was included on-chain."
+  },
+  "categories": {
+    "alreadyVoted": "Already Voted",
+    "winner": "Winner"
+  },
   "toast": {
-
+    "copy": "Copied to clipboard",
+    "copyError": "Copied to clipboard failed",
+    "voteVerified": "Vote proof verified",
+    "voteNotVerified": "Vote proof not verified",
+    "failedToFecthStats": "Failed to fecth stats",
+    "failedToFecthNomineeStats": "Failed to fecth Nominee stats"
+  },
+  "leaderboard": {
+    "title": "Leaderboard",
+    "tabs": {
+      "tab1": {
+        "label": "Winners",
+        "tooltipText": "Winners will be revealed following the Cardano Summit 2023 Gala Awards Dinner on 4 November.",
+        "tile": {
+          "votesLabel": "votes",
+          "tableHeadings": {
+            "column1": "Rank",
+            "column2": "Nominee",
+            "column3": "Votes"
+          }
+        }
+      },
+      "tab2": {
+        "label": "Total Votes",
+        "tooltipText": "",
+        "tiles": {
+          "totalVotes": {
+            "title": "Total Votes",
+            "tableHeadings": {
+              "column1": "Category",
+              "column2": "Number of votes"
+            }
+          },
+          "votesPerCategory": {
+            "title": "Votes Per Category"
+          }
+        }
+      },
+      "tab3": {
+        "label": "Hydra Tally",
+        "tooltipText": "Hydra Tally results will be available on-chain after the Cardano Summit 2023 event.",
+        "tile": {
+          "tableHeadings": {
+            "column1": "Winner",
+            "column2": "Votes"
+          }
+        }
+      }
+    }
+  },
+  "button": {
+    "viewNominees": "View Nominees",
+    "viewAllNominees": "View All Nominees"
   }
+
 }

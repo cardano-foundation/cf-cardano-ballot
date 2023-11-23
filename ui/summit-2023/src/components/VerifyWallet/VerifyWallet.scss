@@ -58,6 +58,12 @@
   span {
     font-weight: 600 !important;
   }
+  a {
+    font-weight: 400;
+    cursor: pointer;
+    color: blue !important;
+    text-decoration: underline;
+  }
 }
 .secret-key-input {
   width: 100%;

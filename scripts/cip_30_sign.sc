@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 
 val mapper = new ObjectMapper()
 
-val orgMnemonic = "ocean sad mixture disease faith once celery mind clay hidden brush brown you sponsor dawn good claim gloom market world online twist laptop thrive"
+val orgMnemonic = "ENTER WALLET MNEMO HERE"
 
 val organiserAccount = new Account(Networks.mainnet(), orgMnemonic)
 

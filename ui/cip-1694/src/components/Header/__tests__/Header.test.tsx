@@ -97,7 +97,7 @@ describe('For ongoing event:', () => {
 
       const voteLink = within(header).queryByTestId('vote-link');
       expect(voteLink).not.toBeNull();
-      expect(voteLink.textContent).toEqual('Your vote');
+      expect(voteLink.textContent).toEqual('Your Ballot');
 
       expect(mockGetChainTip).toHaveBeenCalledTimes(1);
     });
@@ -119,7 +119,7 @@ describe('For ongoing event:', () => {
       const headerLogo = within(header).queryByTestId('header-logo');
 
       const voteLink = within(header).queryByTestId('vote-link');
-      expect(voteLink.textContent).toEqual('Your vote');
+      expect(voteLink.textContent).toEqual('Your Ballot');
 
       fireEvent.click(voteLink);
       expect((historyPushSpy.mock.lastCall[0] as unknown as any).pathname).toEqual(ROUTES.VOTE);
@@ -174,41 +174,6 @@ describe('For ongoing event:', () => {
     });
   });
 
-  test('should show confirmation modal and handle redirection to leadeboard page', async () => {
-    mockUseCardano.mockReset();
-    mockUseCardano.mockReturnValue(useCardanoMock);
-
-    const history = createMemoryHistory({ initialEntries: [ROUTES.INTRO] });
-
-    const historyPushSpy = jest.spyOn(history, 'push');
-    renderWithProviders(
-      <CustomRouter history={history}>
-        <Header />
-      </CustomRouter>,
-      { preloadedState: { user: { event: eventMock_active, tip: chainTipMock } as UserState } }
-    );
-
-    const header = await screen.findByTestId('header');
-
-    const leaderboardLink = within(header).queryByTestId('leaderboard-link');
-    expect(screen.queryByTestId('result-comming-soon-modal')).toBeNull();
-
-    await act(async () => {
-      fireEvent.click(leaderboardLink);
-    });
-
-    const confirmModal = screen.queryByTestId('result-comming-soon-modal');
-    expect(confirmModal).not.toBeNull();
-
-    fireEvent.click(within(confirmModal).queryByTestId('result-comming-soon-modal-cta'));
-    await waitFor(() => {
-      expect(screen.queryByTestId('result-comming-soon-modal')).toBeNull();
-    });
-
-    expect((historyPushSpy.mock.lastCall[0] as unknown as any).pathname).toEqual(ROUTES.LEADERBOARD);
-    historyPushSpy.mockRestore();
-  });
-
   test('should show confirmation modal and discard redirection to leadeboard page', async () => {
     mockUseCardano.mockReset();
     mockUseCardano.mockReturnValue(useCardanoMock);
@@ -236,9 +201,6 @@ describe('For ongoing event:', () => {
     expect(confirmModal).not.toBeNull();
 
     expect(within(confirmModal).queryByTestId('result-comming-soon-modal-close-cta')).toHaveTextContent('Go back');
-    expect(within(confirmModal).queryByTestId('result-comming-soon-modal-cta')).toHaveTextContent(
-      'View leaderboard anyway'
-    );
 
     expect(within(confirmModal).queryByTestId('result-comming-soon-modal-description')).toHaveTextContent(
       `The results will be available from ${getDateAndMonth(

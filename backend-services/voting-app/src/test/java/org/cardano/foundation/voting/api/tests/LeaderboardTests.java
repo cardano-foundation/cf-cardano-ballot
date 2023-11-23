@@ -11,14 +11,13 @@ import static io.restassured.RestAssured.given;
 
 public class LeaderboardTests extends BaseTest {
 
-    // TODO: should return a 200 but a wrong path has been matched
     @Test
     public void testIsHighLevelEventLeaderBoardAvailable() {
         given()
                 .when()
                 .head(VotingAppEndpoints.LEADERBOARD_ENDPOINT + "/event/CF_TEST_EVENT_01")
                 .then()
-                .statusCode(400);
+                .statusCode(200);
     }
 
     @Test

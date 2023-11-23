@@ -66,11 +66,22 @@ export const Footer = ({ isMobileMenu = false }) => (
           </a>
         </span>
       ))}
-      <span
-        data-testid="status"
-        className={styles.link}
-      >
-        Version 1.01&nbsp;<span className={styles.underline}>(Status)</span>
+      <span className={styles.link}>
+        <span style={{ cursor: 'default' }}>Version 1.01</span>
+        {env.STATUS_PAGE_URL && (
+          <>
+            &nbsp;
+            <a
+              data-testid="status"
+              target="_blank"
+              rel="noreferrer"
+              href={env.STATUS_PAGE_URL}
+              className={styles.underline}
+            >
+              (Status)
+            </a>
+          </>
+        )}
       </span>
       {env.DISCORD_URL && (
         <Box

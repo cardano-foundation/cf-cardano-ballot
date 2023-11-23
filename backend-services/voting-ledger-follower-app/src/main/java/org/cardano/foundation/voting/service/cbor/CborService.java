@@ -6,12 +6,11 @@ import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.OnChainEventType;
+import org.cardano.foundation.voting.domain.SchemaVersion;
 import org.cardano.foundation.voting.domain.VotingEventType;
 import org.cardano.foundation.voting.domain.VotingPowerAsset;
-import org.cardano.foundation.voting.domain.web3.CategoryRegistrationEnvelope;
-import org.cardano.foundation.voting.domain.web3.CommitmentsEnvelope;
-import org.cardano.foundation.voting.domain.web3.EventRegistrationEnvelope;
-import org.cardano.foundation.voting.domain.web3.ProposalEnvelope;
+import org.cardano.foundation.voting.domain.entity.Tally.TallyType;
+import org.cardano.foundation.voting.domain.web3.*;
 import org.cardano.foundation.voting.utils.Enums;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -24,7 +23,10 @@ import java.util.Optional;
 
 import static org.cardano.foundation.voting.domain.OnChainEventType.COMMITMENTS;
 import static org.cardano.foundation.voting.domain.OnChainEventType.EVENT_REGISTRATION;
+import static org.cardano.foundation.voting.domain.SchemaVersion.V11;
 import static org.cardano.foundation.voting.domain.VotingEventType.*;
+import static org.cardano.foundation.voting.domain.entity.Tally.TallyType.HYDRA;
+import static org.cardano.foundation.voting.utils.ChunkedMetadataParser.deChunk;
 import static org.cardano.foundation.voting.utils.MoreBoolean.fromBigInteger;
 import static org.zalando.problem.Status.BAD_REQUEST;
 import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
@@ -163,6 +165,18 @@ public class CborService {
             }
 
             boolean isGdprProtection = fromBigInteger((BigInteger) options.get("gdprProtection")).orElse(false);
+
+            var schemaVersion = SchemaVersion.fromText((String) payload.get("schemaVersion"));
+
+            if (schemaVersion.isEmpty()) {
+                return Either.left(
+                        Problem.builder()
+                                .withTitle("INVALID_CATEGORY_REGISTRATION")
+                                .withDetail("Invalid category registration event, missing or unrecognised schemaVersion field.")
+                                .withStatus(BAD_REQUEST)
+                                .build());
+            }
+
             var categoryRegistration = CategoryRegistrationEnvelope.builder()
                     .type(maybeOnchainEventType.orElseThrow())
                     .id(maybeName.orElseThrow())
@@ -170,7 +184,7 @@ public class CborService {
                     .creationSlot(maybeCreationSlot.orElseThrow())
                     .gdprProtection(isGdprProtection)
                     .proposals(readProposalsEnvelope(maybeProposals.orElseThrow(), isGdprProtection))
-                    .schemaVersion((String) payload.get("schemaVersion"))
+                    .schemaVersion(schemaVersion.orElseThrow())
                     .build();
 
             return Either.right(categoryRegistration);
@@ -403,7 +417,47 @@ public class CborService {
             eventRegistrationEnvelopeBuilder.highLevelCategoryResultsWhileVoting(fromBigInteger(((BigInteger)options.get("highLevelCategoryResultsWhileVoting"))).orElse(false));
             eventRegistrationEnvelopeBuilder.categoryResultsWhileVoting(fromBigInteger(((BigInteger)options.get("categoryResultsWhileVoting"))).orElse(false));
 
-            eventRegistrationEnvelopeBuilder.schemaVersion((String)payload.get("schemaVersion"));
+            var schemaVersionM = SchemaVersion.fromText((String) payload.get("schemaVersion"));
+            if (schemaVersionM.isEmpty()) {
+                return Either.left(
+                        Problem.builder()
+                                .withTitle("INVALID_EVENT_REGISTRATION")
+                                .withDetail("Invalid event registration event, missing or unsupported schemaVersion field.")
+                                .withStatus(BAD_REQUEST)
+                                .build());
+            }
+
+            var schemaVersion = schemaVersionM.orElseThrow();
+
+            eventRegistrationEnvelopeBuilder.schemaVersion(schemaVersion);
+
+            if (schemaVersion.isGreaterThanEqual(V11)) {
+                var talliesM = Optional.ofNullable((CBORMetadataList) payload.get("tallies"));
+
+                if (talliesM.isPresent()) {
+                    var tallies = talliesM.orElseThrow();
+
+                    var tallyEnvelopeList = new ArrayList<TallyRegistrationEnvelope>();
+                    for (int i = 0; i < tallies.size(); i++) {
+                        var tallyMap = (CBORMetadataMap) tallies.getValueAt(i);
+
+                        var tallyType = Enums.getIfPresent(TallyType.class, (String) tallyMap.get("type")).orElseThrow();
+
+                        var tallyEnvelopeBuilder = TallyRegistrationEnvelope.builder()
+                                .name((String) tallyMap.get("name"))
+                                .description((String) tallyMap.get("description"))
+                                .type(tallyType);
+
+                        if (tallyType == HYDRA) {
+                            tallyEnvelopeBuilder.config(readHydraTallyEnvelope((CBORMetadataMap) tallyMap.get("config")));
+                        }
+
+                        eventRegistrationEnvelopeBuilder.tallies(tallyEnvelopeList);
+
+                        tallyEnvelopeList.add(tallyEnvelopeBuilder.build());
+                    }
+                }
+            }
 
             return Either.right(eventRegistrationEnvelopeBuilder.build());
         } catch (Exception e) {
@@ -436,6 +490,44 @@ public class CborService {
         }
 
         return proposals;
+    }
+
+    private static HydraTallyRegistrationEnvelope readHydraTallyEnvelope(CBORMetadataMap hydraConfigNode) {
+        var compiledScriptM = deChunk(hydraConfigNode.get("compiledScript"));
+
+        if (compiledScriptM.isEmpty()) {
+            throw new RuntimeException("Invalid hydra tally config. Missing compiledScript field");
+        }
+
+        var compiledScript = compiledScriptM.orElseThrow();
+
+        var hydraTallyRegistrationEnvelopeBuilder = HydraTallyRegistrationEnvelope.builder()
+                .contractName(deChunk(hydraConfigNode.get("contractName")).orElseThrow())
+                .contractDesc(deChunk((hydraConfigNode.get("contractDesc"))).orElseThrow())
+                .contractVersion((String) hydraConfigNode.get("contractVersion"))
+                .plutusVersion((String) hydraConfigNode.get("plutusVersion"))
+                .compiledScript(compiledScript)
+                .compiledScriptHash((String) hydraConfigNode.get("compiledScriptHash"))
+                .compilerName((String) hydraConfigNode.get("compilerName"))
+                .compilerVersion((String) hydraConfigNode.get("compilerVersion"))
+                ;
+
+        var verificationKeys = (CBORMetadataList) hydraConfigNode.get("verificationKeys");
+
+        hydraTallyRegistrationEnvelopeBuilder.verificationKeys(readVerificationKeys(verificationKeys));
+
+        return hydraTallyRegistrationEnvelopeBuilder.build();
+    }
+
+    private static List<String> readVerificationKeys(CBORMetadataList cborMetadataList) {
+        var verificationKeys = new ArrayList<String>();
+
+        for (int i = 0; i < cborMetadataList.size(); i++) {
+            var verificationKey = deChunk(cborMetadataList.getValueAt(i)).orElseThrow();
+            verificationKeys.add(verificationKey);
+        }
+
+        return verificationKeys;
     }
 
 }

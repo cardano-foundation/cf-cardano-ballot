@@ -15,18 +15,18 @@ import java.util.Optional;
 public class VoteVerificationRequest {
 
     @NotBlank
-    @Schema(description = "Root hash of the markle tree", required = true)
+    @Schema(description = "Root hash of the merkle tree", required = true)
     private String rootHash;
 
     @NotBlank
     @Schema(description = "COSE signature of the vote", required = true)
     protected String voteCoseSignature;
 
-    @Schema(description = "Public key for the vote", required = false)
+    @Schema(description = "Public key for the vote")
     protected Optional<@NotBlank String> voteCosePublicKey;
 
     @Builder.Default
-    @Schema(description = "Merkle proof", required = false)
+    @Schema(description = "Merkle proof")
     private Optional<List<MerkleProofItem>> steps = Optional.empty();
 
     @Data

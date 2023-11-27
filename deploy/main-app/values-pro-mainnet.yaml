@@ -43,7 +43,7 @@ cf-cardano-ballot-voting-api:
         cpu: 1
         memory: 3Gi
     image:
-      tag: 0.2.75
+      tag: 0.2.75-14-dae3a
     yaci:
       startBlockHash: 285f58fd09cbb95ac5ffd6f644f7907dfb3faff63155b8a86a9c7b0e99503397
       startSlotNumber: "103737886"
@@ -63,7 +63,7 @@ cf-cardano-ballot-verification-api:
   enabled: true
   values:
     image:
-      tag: 0.2.75
+      tag: 0.2.75-14-dae3a
     springProfiles: prod
     corsAllowedOrigins: https://{{ .Values.domain }},https://1694ballot.cardano.org,http://localhost:3000
     ingress:
@@ -74,7 +74,7 @@ cf-cardano-ballot-ledger-follower-api:
   enabled: true
   values:
     image:
-      tag: 0.2.75
+      tag: 0.2.75-14-dae3a
     springProfiles: prod
     bindOnEventIds: CIP-1694_Pre_Ratification
     yaci:
@@ -107,12 +107,12 @@ cf-cardano-ballot-ledger-follower-api:
 cf-voting-verification-ui:
   values:
     image:
-      tag: 0.2.75
+      tag: 0.2.75-14-dae3a
 
 cf-vote-commitment:
   values:
     image:
-      tag: 0.2.75
+      tag: 0.2.75-14-dae3a
     springProfiles: prod
     instances:
       - name: active-even-hour

@@ -82,6 +82,7 @@ dependencies {
 	runtimeOnly("org.postgresql:postgresql")
 
 	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.11")
+	implementation("org.cardanofoundation:cf-cardano-conversions-java:1.0.0")
 
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
 

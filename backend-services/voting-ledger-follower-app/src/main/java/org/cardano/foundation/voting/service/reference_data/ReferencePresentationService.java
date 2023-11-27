@@ -7,14 +7,16 @@ import org.cardano.foundation.voting.domain.EventAdditionalInfo;
 import org.cardano.foundation.voting.domain.HydraTally;
 import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.domain.presentation.*;
-import org.cardano.foundation.voting.service.epoch.CustomEpochService;
 import org.cardano.foundation.voting.service.expire.EventAdditionalInfoService;
+import org.cardanofoundation.conversions.CardanoConverters;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
 
 import java.util.List;
 import java.util.Optional;
 
+import static org.cardanofoundation.conversions.domain.EpochOffset.END;
+import static org.cardanofoundation.conversions.domain.EpochOffset.START;
 import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 
 @Service
@@ -26,7 +28,7 @@ public class ReferencePresentationService {
 
     private final EventAdditionalInfoService eventAdditionalInfoService;
 
-    private final CustomEpochService customEpochService;
+    private final CardanoConverters cardanoConverters;
 
     public Either<Problem, Optional<EventPresentation>> findEventReference(String name) {
         var maybeValidEventByName = referenceDataService.findValidEventByName(name);
@@ -116,16 +118,18 @@ public class ReferencePresentationService {
 
         switch (event.getVotingEventType()) {
             case STAKE_BASED, BALANCE_BASED -> {
-                eventBuilder.eventStartDate(customEpochService.getEpochStartTime(event.getStartEpoch().orElseThrow()));
-                eventBuilder.eventEndDate(customEpochService.getEpochEndTime(event.getEndEpoch().orElseThrow()));
-                eventBuilder.snapshotTime(customEpochService.getEpochEndTime(event.getSnapshotEpoch().orElseThrow()));
-                eventBuilder.proposalsRevealDate(customEpochService.getEpochStartTime(event.getProposalsRevealEpoch().orElseThrow()));
+                eventBuilder.eventStartDate(Optional.of(cardanoConverters.epoch().epochToUTCTime(event.getStartEpoch().orElseThrow(), START)));
+                eventBuilder.eventEndDate(Optional.of(cardanoConverters.epoch().epochToUTCTime(event.getEndEpoch().orElseThrow(), END)));
+                eventBuilder.snapshotTime(Optional.of(cardanoConverters.epoch().epochToUTCTime(event.getSnapshotEpoch().orElseThrow(), END)));
+                eventBuilder.proposalsRevealDate(Optional.of(cardanoConverters.epoch().epochToUTCTime(event.getProposalsRevealEpoch().orElseThrow(), START)));
+
                 eventBuilder.proposalsRevealEpoch(event.getProposalsRevealEpoch());
             }
             case USER_BASED -> {
-                eventBuilder.eventStartDate(customEpochService.getTimeBasedOnAbsoluteSlot(event.getStartSlot().orElseThrow()));
-                eventBuilder.eventEndDate(customEpochService.getTimeBasedOnAbsoluteSlot(event.getEndSlot().orElseThrow()));
-                eventBuilder.proposalsRevealDate(customEpochService.getTimeBasedOnAbsoluteSlot(event.getProposalsRevealSlot().orElseThrow()));
+                eventBuilder.eventStartDate(Optional.of(cardanoConverters.slot().slotToTime(event.getStartSlot().orElseThrow())));
+                eventBuilder.eventEndDate(Optional.of(cardanoConverters.slot().slotToTime(event.getEndSlot().orElseThrow())));
+                eventBuilder.proposalsRevealDate(Optional.of(cardanoConverters.slot().slotToTime(event.getProposalsRevealSlot().orElseThrow())));
+
                 eventBuilder.proposalsRevealSlot(event.getProposalsRevealSlot());
             }
         }

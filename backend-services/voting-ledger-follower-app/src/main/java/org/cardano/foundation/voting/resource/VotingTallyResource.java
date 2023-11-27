@@ -84,6 +84,7 @@ public class VotingTallyResource {
                     @ApiResponse(responseCode = "200", description = "Successfully deliver L1 tally results for all categories",
                             content = { @Content(mediaType = "application/json",
                                     schema = @Schema(implementation = TallyResults[].class)) }),
+                    @ApiResponse(responseCode = "404", description = "Tally results not yet available."),
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             }
     )

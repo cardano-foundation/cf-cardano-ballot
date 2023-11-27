@@ -28,28 +28,20 @@
 
 
 # Features
-#### Event Types
-- User-based 
-- Stake-based 
 
-#### Modularised Backend Service
-  - Admin
-  - Voting App
-  - Ledger Follower
-  - Vote Commitment
-  - Vote Verification
-  - User Verification
-  - Hydra Tally
+| **Event Types**    | |   **Backend Service Modules**  | | **Cardano Standards, Libraries and Components** |           
+|----------------|---------------|---------------|---------------|---------------|
+|  User-based | |  Admin | | [CIP-45](https://github.com/cardano-foundation/CIPs/pull/395) - Decentralized WebRTC d'App Wallet Communication  | 
+|  Stake-based | | Voting App |  | [CIP-93](https://cips.cardano.org/cips/cip93/) - Authenticated Web3 HTTP Requests  | 
+| | | Ledger Follower | | [CIP-30](https://cips.cardano.org/cips/cip30/) - Cardano dApp-Wallet Web Bridge | 
+| | | Vote Commitment | | [CIP-08](https://cips.cardano.org/cips/cip8/) - Message Signing |
+| | | Vote Verification | |  Cardano Foundation - [cardano-connect-with-wallet](https://github.com/cardano-foundation/cardano-connect-with-wallet) |  
+| | | User Verification | |  [Bloxbean Projects] - (https://github.com/bloxbean)  | 
+| | | Hydra Tally | |  [Aiken](https://aiken-lang.org/) - A Modern Smart Contract Platform for Cardano  | 
+| | | | | [Hydra](https://hydra.family/head-protocol/) - Head Protocol|
 
-  #### [CIP-45](https://github.com/cardano-foundation/CIPs/pull/395) | Decentralized WebRTC d'App Wallet Communication 
-  #### [CIP-93](https://cips.cardano.org/cips/cip93/) | Authenticated Web3 HTTP Requests 
-  #### [CIP-30](https://cips.cardano.org/cips/cip30/) | Cardano dApp-Wallet Web Bridge
-  #### [CIP-08](https://cips.cardano.org/cips/cip8/) | Message Signing 
-  #### Cardano Foundation | [cardano-connect-with-wallet](https://github.com/cardano-foundation/cardano-connect-with-wallet)
-  
-  #### [Bloxbean Projects](https://github.com/bloxbean) | [YACI-Store](https://github.com/bloxbean/yaci-store) | [YACI-Dev-Kit ](https://github.com/bloxbean/yaci-devkit)
-  #### [Aiken](https://aiken-lang.org/) | A Modern Smart Contract Platform for Cardano
-  #### [Hydra](https://hydra.family/head-protocol/) | Head Protocol
+
+
 
 # Getting Started
 
@@ -70,9 +62,9 @@
   - [voting-ledger-follower-app](backend-services/voting-ledger-follower-app) - Ledger Follower Application that is listening to the Cardano blockchain to fetch information about event data and user stake amounts in case of stake-based voting.
   - [voting-verification-app](backend-services/voting-verification-app) - Application to be used by the community / voters to independently verify and check vote proofs.
 
-- [ui](ui) - Contains React.JS frontend code apps to cast votes / display voting results:
-  - [cip-1694](ui/cip-1694) - Front-end application for the CIP-1694 voting event.
-  - [summit-2023](ui/summit-2023) - Front-end application for the Cardano Summit 2023 Awards voting.
+- [ui](ui) - Contains React applications for Cardano Ballopt event user interfaces:
+  - [cip-1694](ui/cip-1694) - Frontend application for the CIP-1694 pre-ratification polling event.
+  - [summit-2023](ui/summit-2023) - Frontend application for the Cardano Summit 2023 Awards voting.
 
 ## Creating a Cardano Ballot Event
 ### Voting Admin App
@@ -158,7 +150,7 @@ For your own project you will need to replace summit-2023 with your respective p
 
 # Contributing
 
-All contributions are welcome. Feel free to open a new thread on the issue tracker or submit a new pull request. Please read [CONTRIBUTING.md](CONTRIBUTING.md) first. Thank you in advance for contributing.
+All contributions are welcome. Feel free to open a new thread on the issue tracker or submit a new pull request. Please read [CONTRIBUTING.md](CONTRIBUTING.md) first. Thank you for contributing.
 
 ## Additional Docs
 - [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)

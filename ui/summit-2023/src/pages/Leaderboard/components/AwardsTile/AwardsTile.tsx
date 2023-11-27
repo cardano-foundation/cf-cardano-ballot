@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import Card from '@mui/material/Card';
 import { i18n } from 'i18n';
 import CardContent from '@mui/material/CardContent';
-import * as leaderboardService from '../../../../common/api/leaderboardService';
 import { eventBus } from 'utils/EventBus';
 import SUMMIT2023CONTENT from '../../../../common/resources/data/summit2023Content.json';
 import { ProposalContent } from 'pages/Nominees/Nominees.type';
@@ -12,8 +11,7 @@ import { CategoryContent } from 'pages/Categories/Category.types';
 import styles from './AwardsTile.module.scss';
 import cn from 'classnames';
 import CATEGORY_IMAGES from '../../../../common/resources/data/categoryImages.json';
-
-const AwardsTile = ({ counter, title, categoryId }) => {
+const AwardsTile = ({ counter, title, categoryId, votingResults }) => {
   const summit2023Category: CategoryContent = SUMMIT2023CONTENT.categories.find(
     (category) => category.id === categoryId
   );
@@ -23,32 +21,32 @@ const AwardsTile = ({ counter, title, categoryId }) => {
   
   const init = useCallback(async () => {
     try {
-      await leaderboardService.getCategoryLevelStats(categoryId).then((response) => {
-        const updatedAwards = summit2023Proposals.map((proposal) => {
-          const id = proposal.id;
-          const votes = response?.proposals[id] ? response?.proposals[id].votes : 0;
-          const rank = 0;
-          return { ...proposal, votes, rank };
-        });
-
-        updatedAwards.sort((a, b) => b.votes - a.votes);
-
-        updatedAwards.forEach((item, index, array) => {
-          if (index > 0 && item.votes === array[index - 1].votes) {
-            item.rank = array[index - 1].rank;
-          } else {
-            item.rank = index + 1;
-          }
-        });
-        setAwards(updatedAwards);
+      const categoryResults = votingResults?.find((category) => category.category === categoryId);
+      
+      const updatedAwards = summit2023Proposals.map((proposal) => {
+        const id = proposal.id;
+        const votes = categoryResults?.proposals[id] ? categoryResults?.proposals[id].votes : 0;
+        const rank = 0;
+        return { ...proposal, votes, rank };
       });
+
+      updatedAwards.sort((a, b) => b.votes - a.votes);
+
+      updatedAwards.forEach((item, index, array) => {
+        if (index > 0 && item.votes === array[index - 1].votes) {
+          item.rank = array[index - 1].rank;
+        } else {
+          item.rank = index + 1;
+        }
+      });
+      setAwards(updatedAwards);
       setLoaded(true);
     } catch (error) {
-      const message = `Failed to fecth Nominee stats: ${error?.message || error?.toString()}`;
+      const message = `Failed to fetch Nominee stats: ${error?.message || error?.toString()}`;
       if (process.env.NODE_ENV === 'development') {
         console.log(message);
       }
-      eventBus.publish('showToast', i18n.t('toast.failedToFecthNomineeStats'), 'error');
+      eventBus.publish('showToast', i18n.t('toast.failedToFetchNomineeStats'), 'error');
     }
   }, []);
 

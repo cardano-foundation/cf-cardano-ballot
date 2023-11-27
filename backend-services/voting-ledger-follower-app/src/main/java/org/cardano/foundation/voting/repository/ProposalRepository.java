@@ -15,6 +15,6 @@ public interface ProposalRepository extends JpaRepository<Proposal, String> {
 
     @Query("DELETE FROM Proposal p WHERE p.absoluteSlot > :slot")
     @Modifying
-    void deleteAllAfterSlot(@Param("slot") long slot);
+    int deleteAllAfterSlot(@Param("slot") long slot);
 
 }

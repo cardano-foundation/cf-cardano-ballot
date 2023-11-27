@@ -142,8 +142,8 @@
     "copyError": "Copied to clipboard failed",
     "voteVerified": "Vote proof verified",
     "voteNotVerified": "Vote proof not verified",
-    "failedToFecthStats": "Failed to fecth stats",
-    "failedToFecthNomineeStats": "Failed to fecth Nominee stats"
+    "failedToFetchStats": "Failed to fetch stats",
+    "failedToFetchNomineeStats": "Failed to fetch Nominee stats"
   },
   "leaderboard": {
     "title": "Leaderboard",
@@ -183,7 +183,9 @@
           "tableHeadings": {
             "column1": "Winner",
             "column2": "Votes"
-          }
+          },
+          "datumInspectorButton": "View Hydra Tally",
+          "copyAddressButtonTooltip": "Copy Smart Contract Address"
         }
       }
     }

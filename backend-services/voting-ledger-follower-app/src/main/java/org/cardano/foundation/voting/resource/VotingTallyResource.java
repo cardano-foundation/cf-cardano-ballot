@@ -32,7 +32,6 @@ public class VotingTallyResource {
     private final VotingTallyService votingTallyService;
 
     @RequestMapping(value = "/{eventId}/{categoryId}/{tallyName}", method = GET, produces = "application/json")
-    @Timed(value = "resource.tally.results", histogram = true)
     @Operation(summary = "Get L1 tally results by a given eventId, categoryId and tallyName",
             description = "Gets tally results.",
             responses = {
@@ -43,9 +42,8 @@ public class VotingTallyResource {
                     @ApiResponse(responseCode = "500", description = "Internal server error")
             }
     )
-    public ResponseEntity<?> getVoteResults(@Parameter(description = "Event ID for which details are to be retrieved", required = true)
-                                            @PathVariable("eventId") String eventId,
-                                            @Parameter(description = "Category ID for which details are to be retrieved", required = true)
+    @Timed(value = "resource.tally.results.per.category", histogram = true)
+    public ResponseEntity<?> getVoteResultsPerCategory(@PathVariable("eventId") String eventId,
                                             @PathVariable("categoryId") String categoryId,
                                             @Parameter(description = "tallyName as registered on chain", required = true)
                                             @PathVariable("tallyName") String tallyName) {
@@ -53,7 +51,7 @@ public class VotingTallyResource {
                 .noTransform()
                 .mustRevalidate();
 
-        return votingTallyService.getVoteResults(eventId, categoryId, tallyName)
+        return votingTallyService.getVoteResultsPerCategory(eventId, categoryId, tallyName)
                 .fold(problem -> {
                         return ResponseEntity
                                 .status(problem.getStatus().getStatusCode())
@@ -76,6 +74,49 @@ public class VotingTallyResource {
                                     .ok()
                                     .cacheControl(cacheControl)
                                     .body(tallyResultsM.orElseThrow());
+                        });
+    }
+
+    @RequestMapping(value = "/{eventId}/{tallyName}", method = GET, produces = "application/json")
+    @Operation(summary = "Get L1 tally results by a given eventId tallyName",
+            description = "Gets tally results for all categories.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Successfully deliver L1 tally results for all categories",
+                            content = { @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = TallyResults[].class)) }),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            }
+    )
+    @Timed(value = "resource.tally.results.per.all.categories", histogram = true)
+    public ResponseEntity<?> getVoteResultsForAllCategories(@PathVariable("eventId") String eventId,
+                                            @PathVariable("tallyName") String tallyName) {
+        var cacheControl = CacheControl.maxAge(15, MINUTES)
+                .noTransform()
+                .mustRevalidate();
+
+        return votingTallyService.getVoteResultsForAllCategories(eventId, tallyName)
+                .fold(problem -> {
+                            return ResponseEntity
+                                    .status(problem.getStatus().getStatusCode())
+                                    .body(problem);
+                        },
+                        tallyResults -> {
+                            if (tallyResults.isEmpty()) {
+                                var problem = Problem.builder()
+                                        .withTitle("NO_RESULTS_FOUND")
+                                        .withDetail("No results found for event: " + eventId)
+                                        .withStatus(NOT_FOUND)
+                                        .build();
+
+                                return ResponseEntity
+                                        .status(problem.getStatus().getStatusCode())
+                                        .body(problem);
+                            }
+
+                            return ResponseEntity
+                                    .ok()
+                                    .cacheControl(cacheControl)
+                                    .body(tallyResults);
                         });
     }
 

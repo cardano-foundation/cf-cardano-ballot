@@ -40,6 +40,7 @@ dependencies {
 	testImplementation("io.rest-assured:rest-assured:5.3.2")
 	testImplementation("org.wiremock:wiremock:3.2.0")
 
+	implementation("org.springframework.boot:spring-boot-starter-cache")
 	testCompileOnly("org.springframework.boot:spring-boot-starter-test")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-validation")

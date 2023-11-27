@@ -22,7 +22,7 @@ import SUMMIT2023CONTENT from 'common/resources/data/summit2023Content.json';
 import { resolveCardanoNetwork } from './utils/utils';
 import { parseError } from 'common/constants/errors';
 import { getUserVotes } from 'common/api/voteService';
-import { getCategoryLevelStats } from 'common/api/leaderboardService';
+import { getVotingResults } from 'common/api/leaderboardService';
 import { ProposalContent } from 'pages/Nominees/Nominees.type';
 import { setWinners } from 'store/userSlice';
 import './App.scss';
@@ -44,47 +44,48 @@ function App() {
 
   const { isConnected, stakeAddress } = useCardano({ limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK) });
 
-  async function loadWinners(filteredCategory)  {
+  async function loadWinners(votingResults, filteredCategory)  {
     const filteredCategoryProposals: ProposalContent[] = filteredCategory?.proposals;
     try {
-      await getCategoryLevelStats(filteredCategory?.id).then((response) => {
-        const updatedAwards = filteredCategoryProposals.map((proposal) => {
-          const id = proposal.id;
-          const votes = response?.proposals[id] ? response?.proposals[id].votes : 0;
-          const rank = 0;
-          return { ...proposal, votes, rank };
-        });
+      const categoryResults = votingResults?.find((category) => category.category === filteredCategory.id);
 
-        updatedAwards.sort((a, b) => b.votes - a.votes);
-
-        updatedAwards.forEach((item, index, array) => {
-          if (index > 0 && item.votes === array[index - 1].votes) {
-            item.rank = array[index - 1].rank;
-          } else {
-            item.rank = index + 1;
-          }
-        });
-
-        const categoryWinners = updatedAwards
-          .filter((winner) => (winner.rank === 1 && winner.votes > 0))
-          .map((winner) => {
-            return { categoryId: filteredCategory.id, proposalId: winner.id };
-          });
-
-        dispatch(setWinners({ winners: categoryWinners }));
+      const updatedAwards = filteredCategoryProposals.map((proposal) => {
+        const id = proposal.id;
+        const votes = categoryResults?.proposals[id] ? categoryResults?.proposals[id].votes : 0;
+        const rank = 0;
+        return { ...proposal, votes, rank };
       });
+
+      updatedAwards.sort((a, b) => b.votes - a.votes);
+
+      updatedAwards.forEach((item, index, array) => {
+        if (index > 0 && item.votes === array[index - 1].votes) {
+          item.rank = array[index - 1].rank;
+        } else {
+          item.rank = index + 1;
+        }
+      });
+
+      const categoryWinners = updatedAwards
+        .filter((winner) => (winner.rank === 1 && winner.votes > 0))
+        .map((winner) => {
+          return { categoryId: filteredCategory.id, proposalId: winner.id };
+        });
+
+      dispatch(setWinners({ winners: categoryWinners }));
     } catch (error) {
-      const message = `Failed to fecth Nominee stats: ${error?.message || error?.toString()}`;
+      const message = `Failed to fetch Nominee stats: ${error?.message || error?.toString()}`;
       if (process.env.NODE_ENV === 'development') {
         console.log(message);
       }
-      eventBus.publish('showToast', i18n.t('toast.failedToFecthNomineeStats'), 'error');
+      eventBus.publish('showToast', i18n.t('toast.failedToFetchNomineeStats'), 'error');
     }
   }
 
   const fetchEvent = useCallback(async () => {
     try {
       const event = await getEvent(env.EVENT_ID);
+      const votingResults = await getVotingResults();
 
       const staticCategories: CategoryContent[] = SUMMIT2023CONTENT.categories;
 
@@ -93,7 +94,7 @@ function App() {
           const joinedCategory = staticCategories.find((staticCategory) => staticCategory.id === category.id);
           if (joinedCategory) {
             if ('proposalsReveal' in event && event.proposalsReveal) {
-              loadWinners(joinedCategory);
+              loadWinners(votingResults, joinedCategory);
             }
             return { ...category, ...joinedCategory };
           }

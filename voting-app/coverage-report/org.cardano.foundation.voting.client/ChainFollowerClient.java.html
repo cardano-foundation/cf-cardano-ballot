@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import org.zalando.problem.Problem;
 import org.zalando.problem.spring.common.HttpStatusAdapter;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -22,8 +23,8 @@ import java.util.Optional;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Component
-<span class="fc" id="L25">@Slf4j</span>
-<span class="fc" id="L26">public class ChainFollowerClient {</span>
+<span class="fc" id="L26">@Slf4j</span>
+<span class="fc" id="L27">public class ChainFollowerClient {</span>
 
     @Autowired
     private RestTemplate restTemplate;
@@ -31,111 +32,127 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
     @Value(&quot;${ledger.follower.app.base.url}&quot;)
     private String ledgerFollowerBaseUrl;
 
-    public Either&lt;Problem, L1CategoryResults&gt; getVotingResults(String eventId,
-                                                               String categoryId,
-                                                               String tallyName
+    public Either&lt;Problem, L1CategoryResults&gt; getVotingResultsPerCategory(String eventId,
+                                                                          String categoryId,
+                                                                          String tallyName
                                                                ) {
-<span class="nc" id="L38">        var url = String.format(&quot;%s/api/tally/voting-results/{eventId}/{categoryId}/{tallyName}&quot;, ledgerFollowerBaseUrl);</span>
+<span class="nc" id="L39">        var url = String.format(&quot;%s/api/tally/voting-results/{eventId}/{categoryId}/{tallyName}&quot;, ledgerFollowerBaseUrl);</span>
 
         try {
-<span class="nc" id="L41">            return Either.right(restTemplate.getForObject(url, L1CategoryResults.class, eventId, categoryId, tallyName));</span>
-<span class="nc" id="L42">        } catch (HttpClientErrorException e) {</span>
-<span class="nc" id="L43">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L44">                    .withTitle(&quot;CATEGORY_RESULTS_ERROR&quot;)</span>
-<span class="nc" id="L45">                    .withDetail(&quot;Unable to get category results from chain-tip follower service, reason:&quot; + e.getMessage())</span>
-<span class="nc" id="L46">                    .withStatus(new HttpStatusAdapter(e.getStatusCode()))</span>
-<span class="nc" id="L47">                    .build());</span>
+<span class="nc" id="L42">            return Either.right(restTemplate.getForObject(url, L1CategoryResults.class, eventId, categoryId, tallyName));</span>
+<span class="nc" id="L43">        } catch (HttpClientErrorException e) {</span>
+<span class="nc" id="L44">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L45">                    .withTitle(&quot;CATEGORY_RESULTS_ERROR&quot;)</span>
+<span class="nc" id="L46">                    .withDetail(&quot;Unable to get category results from chain-tip follower service, reason:&quot; + e.getMessage())</span>
+<span class="nc" id="L47">                    .withStatus(new HttpStatusAdapter(e.getStatusCode()))</span>
+<span class="nc" id="L48">                    .build());</span>
+        }
+    }
+
+    public Either&lt;Problem, List&lt;L1CategoryResults&gt;&gt; getVotingResultsForAllCategories(String eventId,
+                                                                                     String tallyName
+    ) {
+<span class="nc" id="L55">        var url = String.format(&quot;%s/api/tally/voting-results/{eventId}/{tallyName}&quot;, ledgerFollowerBaseUrl);</span>
+
+        try {
+<span class="nc" id="L58">            return Either.right(Arrays.asList(restTemplate.getForObject(url, L1CategoryResults[].class, eventId, tallyName)));</span>
+<span class="nc" id="L59">        } catch (HttpClientErrorException e) {</span>
+<span class="nc" id="L60">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L61">                    .withTitle(&quot;CATEGORY_RESULTS_ERROR&quot;)</span>
+<span class="nc" id="L62">                    .withDetail(&quot;Unable to get category results from chain-tip follower service, reason:&quot; + e.getMessage())</span>
+<span class="nc" id="L63">                    .withStatus(new HttpStatusAdapter(e.getStatusCode()))</span>
+<span class="nc" id="L64">                    .build());</span>
         }
     }
 
     public Either&lt;Problem, ChainTipResponse&gt; getChainTip() {
-<span class="fc" id="L52">        var url = String.format(&quot;%s/api/blockchain/tip&quot;, ledgerFollowerBaseUrl);</span>
+<span class="fc" id="L69">        var url = String.format(&quot;%s/api/blockchain/tip&quot;, ledgerFollowerBaseUrl);</span>
 
         try {
-<span class="fc" id="L55">            return Either.right(restTemplate.getForObject(url, ChainTipResponse.class));</span>
-<span class="nc" id="L56">        } catch (HttpClientErrorException e) {</span>
+<span class="fc" id="L72">            return Either.right(restTemplate.getForObject(url, ChainTipResponse.class));</span>
+<span class="nc" id="L73">        } catch (HttpClientErrorException e) {</span>
             // TODO pass on the exact error serialised by chain-tip follower service (title, detail)?
-<span class="nc" id="L58">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L59">                    .withTitle(&quot;CHAIN_TIP_ERROR&quot;)</span>
-<span class="nc" id="L60">                    .withDetail(&quot;Unable to get chain tip from chain-tip follower service, reason:&quot; + e.getMessage())</span>
-<span class="nc" id="L61">                    .withStatus(new HttpStatusAdapter(e.getStatusCode()))</span>
-<span class="nc" id="L62">                    .build());</span>
+<span class="nc" id="L75">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L76">                    .withTitle(&quot;CHAIN_TIP_ERROR&quot;)</span>
+<span class="nc" id="L77">                    .withDetail(&quot;Unable to get chain tip from chain-tip follower service, reason:&quot; + e.getMessage())</span>
+<span class="nc" id="L78">                    .withStatus(new HttpStatusAdapter(e.getStatusCode()))</span>
+<span class="nc" id="L79">                    .build());</span>
         }
     }
 
     public Either&lt;Problem, Optional&lt;AccountResponse&gt;&gt; findAccount(String eventName, String stakeAddress) {
-<span class="fc" id="L67">        var url = String.format(&quot;%s/api/account/{event}/{stakeAddress}&quot;, ledgerFollowerBaseUrl);</span>
+<span class="fc" id="L84">        var url = String.format(&quot;%s/api/account/{event}/{stakeAddress}&quot;, ledgerFollowerBaseUrl);</span>
 
         try {
-<span class="fc" id="L70">            return Either.right(Optional.ofNullable(restTemplate.getForObject(url, AccountResponse.class, eventName, stakeAddress)));</span>
-<span class="nc" id="L71">        } catch (HttpClientErrorException e) {</span>
-<span class="nc bnc" id="L72" title="All 2 branches missed.">            if (e.getStatusCode() == NOT_FOUND) {</span>
-<span class="nc" id="L73">                return Either.right(Optional.empty());</span>
+<span class="fc" id="L87">            return Either.right(Optional.ofNullable(restTemplate.getForObject(url, AccountResponse.class, eventName, stakeAddress)));</span>
+<span class="nc" id="L88">        } catch (HttpClientErrorException e) {</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">            if (e.getStatusCode() == NOT_FOUND) {</span>
+<span class="nc" id="L90">                return Either.right(Optional.empty());</span>
             }
 
-<span class="nc" id="L76">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L77">                    .withTitle(&quot;ACCOUNT_ERROR&quot;)</span>
-<span class="nc" id="L78">                    .withDetail(&quot;Unable to get account details from chain-tip follower service, reason:&quot; + e.getMessage())</span>
-<span class="nc" id="L79">                    .withStatus(new HttpStatusAdapter(e.getStatusCode()))</span>
-<span class="nc" id="L80">                    .build());</span>
+<span class="nc" id="L93">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L94">                    .withTitle(&quot;ACCOUNT_ERROR&quot;)</span>
+<span class="nc" id="L95">                    .withDetail(&quot;Unable to get account details from chain-tip follower service, reason:&quot; + e.getMessage())</span>
+<span class="nc" id="L96">                    .withStatus(new HttpStatusAdapter(e.getStatusCode()))</span>
+<span class="nc" id="L97">                    .build());</span>
         }
     }
 
     public Either&lt;Problem, Optional&lt;TransactionDetailsResponse&gt;&gt; getTransactionDetails(String txHash) {
-<span class="nc" id="L85">        var url = String.format(&quot;%s/api/blockchain/tx-details/{txHash}&quot;, ledgerFollowerBaseUrl);</span>
+<span class="nc" id="L102">        var url = String.format(&quot;%s/api/blockchain/tx-details/{txHash}&quot;, ledgerFollowerBaseUrl);</span>
 
         try {
-<span class="nc" id="L88">            var txResponse = restTemplate.getForObject(url, TransactionDetailsResponse.class, txHash);</span>
+<span class="nc" id="L105">            var txResponse = restTemplate.getForObject(url, TransactionDetailsResponse.class, txHash);</span>
 
-<span class="nc" id="L90">            return Either.right(Optional.of(txResponse));</span>
-<span class="nc" id="L91">        } catch (HttpClientErrorException e) {</span>
-<span class="nc bnc" id="L92" title="All 2 branches missed.">            if (e.getStatusCode() == NOT_FOUND) {</span>
-<span class="nc" id="L93">                return Either.right(Optional.empty());</span>
+<span class="nc" id="L107">            return Either.right(Optional.of(txResponse));</span>
+<span class="nc" id="L108">        } catch (HttpClientErrorException e) {</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">            if (e.getStatusCode() == NOT_FOUND) {</span>
+<span class="nc" id="L110">                return Either.right(Optional.empty());</span>
             }
 
-<span class="nc" id="L96">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L97">                    .withTitle(&quot;TRANSACTION_DETAILS_ERROR&quot;)</span>
-<span class="nc" id="L98">                    .withDetail(&quot;Unable to get account details from chain-tip follower service, reason:&quot; + e.getMessage())</span>
-<span class="nc" id="L99">                    .withStatus(new HttpStatusAdapter(e.getStatusCode()))</span>
-<span class="nc" id="L100">                    .build());</span>
+<span class="nc" id="L113">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L114">                    .withTitle(&quot;TRANSACTION_DETAILS_ERROR&quot;)</span>
+<span class="nc" id="L115">                    .withDetail(&quot;Unable to get account details from chain-tip follower service, reason:&quot; + e.getMessage())</span>
+<span class="nc" id="L116">                    .withStatus(new HttpStatusAdapter(e.getStatusCode()))</span>
+<span class="nc" id="L117">                    .build());</span>
         }
     }
 
     public Either&lt;Problem, Optional&lt;EventDetailsResponse&gt;&gt; getEventDetails(String eventId) {
-<span class="fc" id="L105">        var url = String.format(&quot;%s/api/reference/event/{id}&quot;, ledgerFollowerBaseUrl);</span>
+<span class="fc" id="L122">        var url = String.format(&quot;%s/api/reference/event/{id}&quot;, ledgerFollowerBaseUrl);</span>
 
         try {
-<span class="fc" id="L108">            return Either.right(Optional.ofNullable(restTemplate.getForObject(url, EventDetailsResponse.class, eventId)));</span>
-<span class="fc" id="L109">        } catch (HttpClientErrorException e) {</span>
-<span class="pc bpc" id="L110" title="1 of 2 branches missed.">            if (e.getStatusCode() == NOT_FOUND) {</span>
-<span class="fc" id="L111">                return Either.right(Optional.empty());</span>
+<span class="fc" id="L125">            return Either.right(Optional.ofNullable(restTemplate.getForObject(url, EventDetailsResponse.class, eventId)));</span>
+<span class="fc" id="L126">        } catch (HttpClientErrorException e) {</span>
+<span class="pc bpc" id="L127" title="1 of 2 branches missed.">            if (e.getStatusCode() == NOT_FOUND) {</span>
+<span class="fc" id="L128">                return Either.right(Optional.empty());</span>
             }
 
-<span class="nc" id="L114">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L115">                    .withTitle(&quot;REFERENCE_ERROR&quot;)</span>
-<span class="nc" id="L116">                    .withDetail(&quot;Unable to get event details from chain-tip follower service, reason:&quot; + e.getMessage())</span>
-<span class="nc" id="L117">                    .withStatus(new HttpStatusAdapter(e.getStatusCode()))</span>
-<span class="nc" id="L118">                    .build());</span>
+<span class="nc" id="L131">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L132">                    .withTitle(&quot;REFERENCE_ERROR&quot;)</span>
+<span class="nc" id="L133">                    .withDetail(&quot;Unable to get event details from chain-tip follower service, reason:&quot; + e.getMessage())</span>
+<span class="nc" id="L134">                    .withStatus(new HttpStatusAdapter(e.getStatusCode()))</span>
+<span class="nc" id="L135">                    .build());</span>
         }
     }
 
-<span class="fc" id="L122">    public record ProposalDetailsResponse(String id, String name) {}</span>
+<span class="fc" id="L139">    public record ProposalDetailsResponse(String id, String name) {}</span>
 
-<span class="fc" id="L124">    public record CategoryDetailsResponse(String id,</span>
+<span class="fc" id="L141">    public record CategoryDetailsResponse(String id,</span>
                                           boolean gdprProtection,
                                           List&lt;ProposalDetailsResponse&gt; proposals) {
 
         public Optional&lt;ProposalDetailsResponse&gt; findProposalById(String proposalId) {
-<span class="fc" id="L129">            return proposals.stream().filter(proposal -&gt; proposal.id().equals(proposalId)).findFirst();</span>
+<span class="fc" id="L146">            return proposals.stream().filter(proposal -&gt; proposal.id().equals(proposalId)).findFirst();</span>
         }
 
         public Optional&lt;ProposalDetailsResponse&gt; findProposalByName(String name) {
-<span class="fc" id="L133">            return proposals.stream().filter(proposal -&gt; proposal.name().equals(name)).findFirst();</span>
+<span class="fc" id="L150">            return proposals.stream().filter(proposal -&gt; proposal.name().equals(name)).findFirst();</span>
         }
 
     }
 
-<span class="nc" id="L138">    public record EventSummary(String id,</span>
+<span class="nc" id="L155">    public record EventSummary(String id,</span>
                                boolean finished,
                                boolean notStarted,
                                boolean started,
@@ -146,7 +163,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-<span class="fc" id="L149">    public record EventDetailsResponse(String id,</span>
+<span class="fc" id="L166">    public record EventDetailsResponse(String id,</span>
                                        String organisers,
                                        boolean finished,
                                        boolean notStarted,
@@ -163,61 +180,61 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
                                        List&lt;Tally&gt; tallies) {
 
         public boolean isEventInactive() {
-<span class="pc bpc" id="L166" title="1 of 2 branches missed.">            return !active;</span>
+<span class="pc bpc" id="L183" title="1 of 2 branches missed.">            return !active;</span>
         }
 
         public Optional&lt;CategoryDetailsResponse&gt; categoryDetailsById(String categoryId) {
-<span class="fc" id="L170">            return categories.stream().filter(category -&gt; category.id().equals(categoryId)).findFirst();</span>
+<span class="fc" id="L187">            return categories.stream().filter(category -&gt; category.id().equals(categoryId)).findFirst();</span>
         }
 
     }
 
-<span class="fc" id="L175">    public enum FinalityScore {</span>
+<span class="fc" id="L192">    public enum FinalityScore {</span>
 
-<span class="fc" id="L177">        LOW(0),</span>
-<span class="fc" id="L178">        MEDIUM(1),</span>
-<span class="fc" id="L179">        HIGH(2),</span>
-<span class="fc" id="L180">        VERY_HIGH(3),</span>
-<span class="fc" id="L181">        FINAL(4); // TRANSACTION IS FINAL(!) - NO ROLLBACK POSSIBLE</span>
+<span class="fc" id="L194">        LOW(0),</span>
+<span class="fc" id="L195">        MEDIUM(1),</span>
+<span class="fc" id="L196">        HIGH(2),</span>
+<span class="fc" id="L197">        VERY_HIGH(3),</span>
+<span class="fc" id="L198">        FINAL(4); // TRANSACTION IS FINAL(!) - NO ROLLBACK POSSIBLE</span>
 
         private final int score;
 
-<span class="fc" id="L185">        FinalityScore(int score) {</span>
-<span class="fc" id="L186">            this.score = score;</span>
-<span class="fc" id="L187">        }</span>
+<span class="fc" id="L202">        FinalityScore(int score) {</span>
+<span class="fc" id="L203">            this.score = score;</span>
+<span class="fc" id="L204">        }</span>
 
         public int getScore() {
-<span class="nc" id="L190">            return score;</span>
+<span class="nc" id="L207">            return score;</span>
         }
 
     }
 
-<span class="nc" id="L195">    public record TransactionDetailsResponse(String transactionHash,</span>
+<span class="nc" id="L212">    public record TransactionDetailsResponse(String transactionHash,</span>
                                       long absoluteSlot,
                                       String blockHash,
                                       long transactionsConfirmations,
                                       FinalityScore finalityScore,
                                       CardanoNetwork network) {}
 
-<span class="fc" id="L202">    public record ChainTipResponse(String hash,</span>
+<span class="fc" id="L219">    public record ChainTipResponse(String hash,</span>
                                    int epochNo,
                                    int absoluteSlot,
                                    boolean synced,
                                    CardanoNetwork network) {
 
         public boolean isNotSynced() {
-<span class="pc bpc" id="L209" title="1 of 2 branches missed.">            return !synced;</span>
+<span class="pc bpc" id="L226" title="1 of 2 branches missed.">            return !synced;</span>
         }
 
     }
 
-<span class="fc" id="L214">    public record AccountResponse(</span>
+<span class="fc" id="L231">    public record AccountResponse(</span>
                            String stakeAddress,
                            int epochNo,
                            String votingPower,
                            VotingPowerAsset votingPowerAsset) { }
 
-<span class="nc" id="L220">    public record L1CategoryResults(String tallyName,</span>
+<span class="nc" id="L237">    public record L1CategoryResults(String tallyName,</span>
                                     String tallyDescription,
                                     TallyType tallyType,
                                     String eventId,
@@ -227,7 +244,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-<span class="nc" id="L230">    public record Tally(String name, TallyType type) {</span>
+<span class="nc" id="L247">    public record Tally(String name, TallyType type) {</span>
     }
 
 }

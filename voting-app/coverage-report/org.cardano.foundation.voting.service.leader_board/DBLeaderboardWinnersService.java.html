@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DBLeaderboardWinnersService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.service.leader_board</a> &gt; <span class="el_source">DBLeaderboardWinnersService.java</span></div><h1>DBLeaderboardWinnersService.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.service.leader_board;
 
 import io.vavr.control.Either;
+import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.domain.Leaderboard;
 import org.cardano.foundation.voting.repository.VoteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
+import java.util.List;
 import java.util.Optional;
 
 import static java.util.stream.Collectors.toMap;
@@ -16,83 +18,164 @@ import static org.zalando.problem.Status.*;
 
 @Service
 @Qualifier(&quot;db_leaderboard_winners_service&quot;)
-<span class="fc" id="L19">public class DBLeaderboardWinnersService extends AbstractWinnersService implements LeaderboardWinnersService {</span>
+<span class="fc" id="L21">public class DBLeaderboardWinnersService extends AbstractWinnersService implements LeaderboardWinnersService {</span>
 
     @Autowired
     private VoteRepository voteRepository;
 
     @Override
     @Transactional(readOnly = true)
-    public Either&lt;Problem, Optional&lt;Leaderboard.ByProposalsInCategoryStats&gt;&gt; getCategoryLeaderboard(String event, String category, boolean forceLeaderboard) {
-<span class="fc" id="L27">        var eventDetailsE = chainFollowerClient.getEventDetails(event);</span>
-<span class="pc bpc" id="L28" title="1 of 2 branches missed.">        if (eventDetailsE.isEmpty()) {</span>
-<span class="nc" id="L29">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L30">                    .withTitle(&quot;ERROR_GETTING_EVENT_DETAILS&quot;)</span>
-<span class="nc" id="L31">                    .withDetail(&quot;Unable to get event details from chain-tip follower service, event:&quot; + event)</span>
-<span class="nc" id="L32">                    .withStatus(INTERNAL_SERVER_ERROR)</span>
-<span class="nc" id="L33">                    .build()</span>
+    public Either&lt;Problem, Optional&lt;Leaderboard.ByProposalsInCategoryStats&gt;&gt; getCategoryLeaderboard(String event,
+                                                                                                    String category,
+                                                                                                    boolean forceLeaderboard) {
+<span class="fc" id="L31">        var eventDetailsE = chainFollowerClient.getEventDetails(event);</span>
+<span class="pc bpc" id="L32" title="1 of 2 branches missed.">        if (eventDetailsE.isEmpty()) {</span>
+<span class="nc" id="L33">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L34">                    .withTitle(&quot;ERROR_GETTING_EVENT_DETAILS&quot;)</span>
+<span class="nc" id="L35">                    .withDetail(&quot;Unable to get event details from chain-tip follower service, event:&quot; + event)</span>
+<span class="nc" id="L36">                    .withStatus(INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L37">                    .build()</span>
             );
         }
-<span class="fc" id="L36">        var maybeEventDetails = eventDetailsE.get();</span>
-<span class="fc bfc" id="L37" title="All 2 branches covered.">        if (maybeEventDetails.isEmpty()) {</span>
-<span class="fc" id="L38">            return Either.left(Problem.builder()</span>
-<span class="fc" id="L39">                    .withTitle(&quot;UNRECOGNISED_EVENT&quot;)</span>
-<span class="fc" id="L40">                    .withDetail(&quot;Unrecognised event, event:&quot; + event)</span>
-<span class="fc" id="L41">                    .withStatus(BAD_REQUEST)</span>
-<span class="fc" id="L42">                    .build()</span>
+<span class="fc" id="L40">        var maybeEventDetails = eventDetailsE.get();</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">        if (maybeEventDetails.isEmpty()) {</span>
+<span class="fc" id="L42">            return Either.left(Problem.builder()</span>
+<span class="fc" id="L43">                    .withTitle(&quot;UNRECOGNISED_EVENT&quot;)</span>
+<span class="fc" id="L44">                    .withDetail(&quot;Unrecognised event, event:&quot; + event)</span>
+<span class="fc" id="L45">                    .withStatus(BAD_REQUEST)</span>
+<span class="fc" id="L46">                    .build()</span>
             );
         }
-<span class="fc" id="L45">        var eventDetails = maybeEventDetails.orElseThrow();</span>
+<span class="fc" id="L49">        var eventDetails = maybeEventDetails.orElseThrow();</span>
 
-<span class="fc" id="L47">        var maybeCategory = eventDetails.categoryDetailsById(category);</span>
+<span class="fc" id="L51">        var maybeCategory = eventDetails.categoryDetailsById(category);</span>
 
-<span class="fc bfc" id="L49" title="All 2 branches covered.">        if (maybeCategory.isEmpty()) {</span>
-<span class="fc" id="L50">            return Either.left(Problem.builder()</span>
-<span class="fc" id="L51">                    .withTitle(&quot;UNRECOGNISED_CATEGORY&quot;)</span>
-<span class="fc" id="L52">                    .withDetail(&quot;Unrecognised category, category:&quot; + category)</span>
-<span class="fc" id="L53">                    .withStatus(BAD_REQUEST)</span>
-<span class="fc" id="L54">                    .build()</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">        if (maybeCategory.isEmpty()) {</span>
+<span class="fc" id="L54">            return Either.left(Problem.builder()</span>
+<span class="fc" id="L55">                    .withTitle(&quot;UNRECOGNISED_CATEGORY&quot;)</span>
+<span class="fc" id="L56">                    .withDetail(&quot;Unrecognised category, category:&quot; + category)</span>
+<span class="fc" id="L57">                    .withStatus(BAD_REQUEST)</span>
+<span class="fc" id="L58">                    .build()</span>
             );
         }
-<span class="fc" id="L57">        var categoryDetails = maybeCategory.orElseThrow();</span>
+<span class="fc" id="L61">        var categoryDetails = maybeCategory.orElseThrow();</span>
 
-<span class="fc" id="L59">        var categoryLeaderboardAvailableE = isCategoryLeaderboardAvailable(eventDetails, forceLeaderboard);</span>
-<span class="pc bpc" id="L60" title="1 of 2 branches missed.">        if (categoryLeaderboardAvailableE.isEmpty()) {</span>
-<span class="nc" id="L61">            return Either.left(categoryLeaderboardAvailableE.getLeft());</span>
+<span class="fc" id="L63">        return getCategoryLeaderboard(eventDetails, categoryDetails, forceLeaderboard);</span>
+    }
+
+    @Override
+    public Either&lt;Problem, List&lt;Leaderboard.ByProposalsInCategoryStats&gt;&gt; getAllCategoriesLeaderboard(String event,
+                                                                                                     boolean forceLeaderboard) {
+<span class="nc" id="L69">        var eventDetailsE = chainFollowerClient.getEventDetails(event);</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">        if (eventDetailsE.isEmpty()) {</span>
+<span class="nc" id="L71">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L72">                    .withTitle(&quot;ERROR_GETTING_EVENT_DETAILS&quot;)</span>
+<span class="nc" id="L73">                    .withDetail(&quot;Unable to get event details from chain-tip follower service, event:&quot; + event)</span>
+<span class="nc" id="L74">                    .withStatus(INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L75">                    .build()</span>
+            );
+        }
+<span class="nc" id="L78">        var maybeEventDetails = eventDetailsE.get();</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">        if (maybeEventDetails.isEmpty()) {</span>
+<span class="nc" id="L80">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L81">                    .withTitle(&quot;UNRECOGNISED_EVENT&quot;)</span>
+<span class="nc" id="L82">                    .withDetail(&quot;Unrecognised event, event:&quot; + event)</span>
+<span class="nc" id="L83">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L84">                    .build()</span>
+            );
+        }
+<span class="nc" id="L87">        var eventDetails = maybeEventDetails.orElseThrow();</span>
+
+<span class="nc" id="L89">        return getCategoryLeaderboardForAllCategories(eventDetails, forceLeaderboard);</span>
+    }
+
+    @Override
+    public Either&lt;Problem, Optional&lt;Leaderboard.ByProposalsInCategoryStats&gt;&gt; getCategoryLeaderboard(ChainFollowerClient.EventDetailsResponse eventDetails,
+                                                                                                    ChainFollowerClient.CategoryDetailsResponse categoryDetails,
+                                                                                                    boolean forceLeaderboard) {
+<span class="fc" id="L96">        var categoryLeaderboardAvailableE = isCategoryLeaderboardAvailable(eventDetails, forceLeaderboard);</span>
+<span class="pc bpc" id="L97" title="1 of 2 branches missed.">        if (categoryLeaderboardAvailableE.isEmpty()) {</span>
+<span class="nc" id="L98">            return Either.left(categoryLeaderboardAvailableE.getLeft());</span>
         }
 
-<span class="fc" id="L64">        var isCategoryLeaderBoardAvailable = categoryLeaderboardAvailableE.get();</span>
-<span class="pc bpc" id="L65" title="1 of 2 branches missed.">        if (!isCategoryLeaderBoardAvailable) {</span>
-<span class="nc" id="L66">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L67">                    .withTitle(&quot;VOTING_RESULTS_NOT_AVAILABLE&quot;)</span>
-<span class="nc" id="L68">                    .withDetail(&quot;Category level voting results not available until results can be revealed!&quot;)</span>
-<span class="nc" id="L69">                    .withStatus(FORBIDDEN)</span>
-<span class="nc" id="L70">                    .build()</span>
+<span class="fc" id="L101">        var isCategoryLeaderBoardAvailable = categoryLeaderboardAvailableE.get();</span>
+<span class="pc bpc" id="L102" title="1 of 2 branches missed.">        if (!isCategoryLeaderBoardAvailable) {</span>
+<span class="nc" id="L103">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L104">                    .withTitle(&quot;VOTING_RESULTS_NOT_AVAILABLE&quot;)</span>
+<span class="nc" id="L105">                    .withDetail(&quot;Category level voting results not available until results can be revealed!&quot;)</span>
+<span class="nc" id="L106">                    .withStatus(FORBIDDEN)</span>
+<span class="nc" id="L107">                    .build()</span>
             );
         }
 
-<span class="fc" id="L74">        var votes = voteRepository.getCategoryLevelStats(event, categoryDetails.id());</span>
+<span class="fc" id="L111">        var votes = voteRepository.getCategoryLevelStats(eventDetails.id(), categoryDetails.id());</span>
 
-<span class="fc" id="L76">        var proposalResultsMap = votes.stream()</span>
-<span class="fc" id="L77">                .collect(toMap(VoteRepository.CategoryLevelStats::getProposalId, v -&gt; {</span>
-<span class="nc" id="L78">                    var totalVotesCount = Optional.ofNullable(v.getTotalVoteCount()).orElse(0L);</span>
-<span class="nc" id="L79">                    var totalVotingPower = Optional.ofNullable(v.getTotalVotingPower()).map(String::valueOf).orElse(&quot;0&quot;);</span>
+<span class="fc" id="L113">        var proposalResultsMap = votes.stream()</span>
+<span class="fc" id="L114">                .collect(toMap(VoteRepository.CategoryLevelStats::getProposalId, v -&gt; {</span>
+<span class="nc" id="L115">                    var totalVotesCount = Optional.ofNullable(v.getTotalVoteCount()).orElse(0L);</span>
+<span class="nc" id="L116">                    var totalVotingPower = Optional.ofNullable(v.getTotalVotingPower()).map(String::valueOf).orElse(&quot;0&quot;);</span>
 
-<span class="nc" id="L81">                    var b = Leaderboard.Votes.builder();</span>
-<span class="nc" id="L82">                    b.votes(totalVotesCount);</span>
+<span class="nc" id="L118">                    var b = Leaderboard.Votes.builder();</span>
+<span class="nc" id="L119">                    b.votes(totalVotesCount);</span>
 
-<span class="nc bnc" id="L84" title="All 2 branches missed.">                    switch (eventDetails.votingEventType()) {</span>
-<span class="nc" id="L85">                        case BALANCE_BASED, STAKE_BASED -&gt; b.votingPower(totalVotingPower);</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">                    switch (eventDetails.votingEventType()) {</span>
+<span class="nc" id="L122">                        case BALANCE_BASED, STAKE_BASED -&gt; b.votingPower(totalVotingPower);</span>
                     }
 
-<span class="nc" id="L88">                    return b.build();</span>
+<span class="nc" id="L125">                    return b.build();</span>
                 }));
 
-<span class="fc" id="L91">        return Either.right(Optional.of(Leaderboard.ByProposalsInCategoryStats.builder()</span>
-<span class="fc" id="L92">                .category(categoryDetails.id())</span>
-<span class="fc" id="L93">                .proposals(reInitialiseResultsToEmptyIfMissing(categoryDetails, proposalResultsMap, eventDetails))</span>
-<span class="fc" id="L94">                .build())</span>
-        );
+<span class="fc" id="L128">        return Either.right(Optional.of(Leaderboard.ByProposalsInCategoryStats.builder()</span>
+<span class="fc" id="L129">                .category(categoryDetails.id())</span>
+<span class="fc" id="L130">                .proposals(reInitialiseResultsToEmptyIfMissing(categoryDetails, proposalResultsMap, eventDetails))</span>
+<span class="fc" id="L131">                .build()));</span>
+    }
+
+    public Either&lt;Problem, List&lt;Leaderboard.ByProposalsInCategoryStats&gt;&gt; getCategoryLeaderboardForAllCategories(ChainFollowerClient.EventDetailsResponse eventDetails,
+                                                                                                                boolean forceLeaderboard) {
+<span class="nc" id="L136">        var categoryLeaderboardAvailableE = isCategoryLeaderboardAvailable(eventDetails, forceLeaderboard);</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">        if (categoryLeaderboardAvailableE.isEmpty()) {</span>
+<span class="nc" id="L138">            return Either.left(categoryLeaderboardAvailableE.getLeft());</span>
+        }
+
+<span class="nc" id="L141">        var isCategoryLeaderBoardAvailable = categoryLeaderboardAvailableE.get();</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">        if (!isCategoryLeaderBoardAvailable) {</span>
+<span class="nc" id="L143">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L144">                    .withTitle(&quot;VOTING_RESULTS_NOT_AVAILABLE&quot;)</span>
+<span class="nc" id="L145">                    .withDetail(&quot;Category level voting results not available until results can be revealed!&quot;)</span>
+<span class="nc" id="L146">                    .withStatus(FORBIDDEN)</span>
+<span class="nc" id="L147">                    .build()</span>
+            );
+        }
+
+<span class="nc" id="L151">        var allResultsForAllCategories = eventDetails.categories()</span>
+<span class="nc" id="L152">                .stream()</span>
+<span class="nc" id="L153">                .map(categoryDetails -&gt; {</span>
+<span class="nc" id="L154">                    var categoryStats = voteRepository.getCategoryLevelStats(eventDetails.id(), categoryDetails.id());</span>
+
+<span class="nc" id="L156">                    var results = categoryStats.stream()</span>
+<span class="nc" id="L157">                            .collect(toMap(VoteRepository.CategoryLevelStats::getProposalId, v -&gt; {</span>
+<span class="nc" id="L158">                                var totalVotesCount = Optional.ofNullable(v.getTotalVoteCount()).orElse(0L);</span>
+<span class="nc" id="L159">                                var totalVotingPower = Optional.ofNullable(v.getTotalVotingPower()).map(String::valueOf).orElse(&quot;0&quot;);</span>
+
+<span class="nc" id="L161">                                var b = Leaderboard.Votes.builder();</span>
+<span class="nc" id="L162">                                b.votes(totalVotesCount);</span>
+
+<span class="nc bnc" id="L164" title="All 2 branches missed.">                                switch (eventDetails.votingEventType()) {</span>
+<span class="nc" id="L165">                                    case BALANCE_BASED, STAKE_BASED -&gt; b.votingPower(totalVotingPower);</span>
+                                }
+
+<span class="nc" id="L168">                                return b.build();</span>
+                            }));
+
+<span class="nc" id="L171">                    return Leaderboard.ByProposalsInCategoryStats.builder()</span>
+<span class="nc" id="L172">                            .category(categoryDetails.id())</span>
+<span class="nc" id="L173">                            .proposals(reInitialiseResultsToEmptyIfMissing(categoryDetails, results, eventDetails))</span>
+<span class="nc" id="L174">                            .build();</span>
+                })
+<span class="nc" id="L176">                .toList();</span>
+
+<span class="nc" id="L178">        return Either.right(allResultsForAllCategories);</span>
     }
 
 }

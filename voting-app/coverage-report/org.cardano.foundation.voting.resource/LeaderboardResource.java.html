@@ -242,6 +242,7 @@ import static org.zalando.problem.Status.NOT_FOUND;
         );
     }
 
+    @Deprecated
     @RequestMapping(value = &quot;/{eventId}/{categoryId}&quot;, method = GET, produces = &quot;application/json&quot;)
     @Timed(value = &quot;resource.leaderboard.category&quot;, histogram = true)
     @Operation(
@@ -261,41 +262,118 @@ import static org.zalando.problem.Status.NOT_FOUND;
                                                     @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = &quot;false&quot;) boolean forceLeaderboardResults,
                                                     @Parameter(name = &quot;source&quot;, description = &quot;source of results, db or l1&quot;)
                                                     @Valid @RequestParam(name = &quot;source&quot;) Optional&lt;WinnerLeaderboardSource&gt; winnerLeaderboardSourceM) {
-<span class="fc" id="L264">        var winnerLeaderboardSource = winnerLeaderboardSourceM.orElse(db);</span>
+<span class="fc" id="L265">        var winnerLeaderboardSource = winnerLeaderboardSourceM.orElse(db);</span>
 
-<span class="fc" id="L266">        var cacheControl = CacheControl.maxAge(5, MINUTES)</span>
-<span class="fc" id="L267">                .noTransform()</span>
-<span class="fc" id="L268">                .mustRevalidate();</span>
+<span class="fc" id="L267">        var cacheControl = CacheControl.maxAge(5, MINUTES)</span>
+<span class="fc" id="L268">                .noTransform()</span>
+<span class="fc" id="L269">                .mustRevalidate();</span>
 
-<span class="pc bpc" id="L270" title="3 of 4 branches missed.">        var forceLeaderboard = forceLeaderboardResults &amp;&amp; forceLeaderboardResultsAvailability;</span>
+<span class="pc bpc" id="L271" title="3 of 4 branches missed.">        var forceLeaderboard = forceLeaderboardResults &amp;&amp; forceLeaderboardResultsAvailability;</span>
 
-<span class="fc" id="L272">        var categoryLeaderboardE = leaderboardWinnersProvider</span>
-<span class="fc" id="L273">                .getWinnerLeaderboardSource(winnerLeaderboardSource)</span>
-<span class="fc" id="L274">                .getCategoryLeaderboard(eventId, categoryId, forceLeaderboard);</span>
+<span class="fc" id="L273">        var categoryLeaderboardE = leaderboardWinnersProvider</span>
+<span class="fc" id="L274">                .getWinnerLeaderboardSource(winnerLeaderboardSource)</span>
+<span class="fc" id="L275">                .getCategoryLeaderboard(eventId, categoryId, forceLeaderboard);</span>
 
-<span class="fc" id="L276">        return categoryLeaderboardE</span>
-<span class="fc" id="L277">                .fold(problem -&gt; {</span>
-<span class="fc" id="L278">                            return ResponseEntity</span>
-<span class="fc" id="L279">                                    .status(problem.getStatus().getStatusCode())</span>
-<span class="fc" id="L280">                                    .body(problem);</span>
+<span class="fc" id="L277">        return categoryLeaderboardE</span>
+<span class="fc" id="L278">                .fold(problem -&gt; {</span>
+<span class="fc" id="L279">                            return ResponseEntity</span>
+<span class="fc" id="L280">                                    .status(problem.getStatus().getStatusCode())</span>
+<span class="fc" id="L281">                                    .body(problem);</span>
                         },
                         proposalsInCategoryStatsM -&gt; {
-<span class="pc bpc" id="L283" title="1 of 2 branches missed.">                            if (proposalsInCategoryStatsM.isEmpty()) {</span>
-<span class="nc" id="L284">                                var problem = Problem.builder()</span>
-<span class="nc" id="L285">                                        .withTitle(&quot;VOTING_RESULTS_NOT_YET_AVAILABLE&quot;)</span>
-<span class="nc" id="L286">                                        .withDetail(&quot;Leaderboard not yet available for event: &quot; + eventId)</span>
-<span class="nc" id="L287">                                        .withStatus(NOT_FOUND)</span>
-<span class="nc" id="L288">                                        .build();</span>
+<span class="pc bpc" id="L284" title="1 of 2 branches missed.">                            if (proposalsInCategoryStatsM.isEmpty()) {</span>
+<span class="nc" id="L285">                                var problem = Problem.builder()</span>
+<span class="nc" id="L286">                                        .withTitle(&quot;VOTING_RESULTS_NOT_YET_AVAILABLE&quot;)</span>
+<span class="nc" id="L287">                                        .withDetail(&quot;Leaderboard not yet available for event: &quot; + eventId)</span>
+<span class="nc" id="L288">                                        .withStatus(NOT_FOUND)</span>
+<span class="nc" id="L289">                                        .build();</span>
 
-<span class="nc" id="L290">                                return ResponseEntity</span>
-<span class="nc" id="L291">                                        .status(problem.getStatus().getStatusCode())</span>
-<span class="nc" id="L292">                                        .body(problem);</span>
+<span class="nc" id="L291">                                return ResponseEntity</span>
+<span class="nc" id="L292">                                        .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L293">                                        .body(problem);</span>
                             }
 
-<span class="fc" id="L295">                            return ResponseEntity</span>
-<span class="fc" id="L296">                                    .ok()</span>
-<span class="fc" id="L297">                                    .cacheControl(cacheControl)</span>
-<span class="fc" id="L298">                                    .body(proposalsInCategoryStatsM.orElseThrow());</span>
+<span class="fc" id="L296">                            return ResponseEntity</span>
+<span class="fc" id="L297">                                    .ok()</span>
+<span class="fc" id="L298">                                    .cacheControl(cacheControl)</span>
+<span class="fc" id="L299">                                    .body(proposalsInCategoryStatsM.orElseThrow());</span>
+                        }
+                );
+    }
+
+    @RequestMapping(value = &quot;/{eventId}/{categoryId}/results&quot;, method = GET, produces = &quot;application/json&quot;)
+    @Timed(value = &quot;resource.leaderboard.category&quot;, histogram = true)
+    public ResponseEntity&lt;?&gt; getCategoryLeaderBoardPerCategoryResults(@PathVariable(&quot;eventId&quot;) String eventId,
+                                                               @PathVariable(&quot;categoryId&quot;) String categoryId,
+                                                               @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = &quot;false&quot;) boolean forceLeaderboardResults,
+                                                               @Valid @RequestParam(name = &quot;source&quot;) Optional&lt;WinnerLeaderboardSource&gt; winnerLeaderboardSourceM) {
+<span class="nc" id="L310">        var winnerLeaderboardSource = winnerLeaderboardSourceM.orElse(db);</span>
+
+<span class="nc" id="L312">        var cacheControl = CacheControl.maxAge(5, MINUTES)</span>
+<span class="nc" id="L313">                .noTransform()</span>
+<span class="nc" id="L314">                .mustRevalidate();</span>
+
+<span class="nc bnc" id="L316" title="All 4 branches missed.">        var forceLeaderboard = forceLeaderboardResults &amp;&amp; forceLeaderboardResultsAvailability;</span>
+
+<span class="nc" id="L318">        var categoryLeaderboardE = leaderboardWinnersProvider</span>
+<span class="nc" id="L319">                .getWinnerLeaderboardSource(winnerLeaderboardSource)</span>
+<span class="nc" id="L320">                .getCategoryLeaderboard(eventId, categoryId, forceLeaderboard);</span>
+
+<span class="nc" id="L322">        return categoryLeaderboardE</span>
+<span class="nc" id="L323">                .fold(problem -&gt; {</span>
+<span class="nc" id="L324">                            return ResponseEntity</span>
+<span class="nc" id="L325">                                    .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L326">                                    .body(problem);</span>
+                        },
+                        proposalsInCategoryStatsM -&gt; {
+<span class="nc bnc" id="L329" title="All 2 branches missed.">                            if (proposalsInCategoryStatsM.isEmpty()) {</span>
+<span class="nc" id="L330">                                var problem = Problem.builder()</span>
+<span class="nc" id="L331">                                        .withTitle(&quot;VOTING_RESULTS_NOT_YET_AVAILABLE&quot;)</span>
+<span class="nc" id="L332">                                        .withDetail(&quot;Leaderboard not yet available for event: &quot; + eventId)</span>
+<span class="nc" id="L333">                                        .withStatus(NOT_FOUND)</span>
+<span class="nc" id="L334">                                        .build();</span>
+
+<span class="nc" id="L336">                                return ResponseEntity</span>
+<span class="nc" id="L337">                                        .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L338">                                        .body(problem);</span>
+                            }
+
+<span class="nc" id="L341">                            return ResponseEntity</span>
+<span class="nc" id="L342">                                    .ok()</span>
+<span class="nc" id="L343">                                    .cacheControl(cacheControl)</span>
+<span class="nc" id="L344">                                    .body(proposalsInCategoryStatsM.orElseThrow());</span>
+                        }
+                );
+    }
+
+    @RequestMapping(value = &quot;/{eventId}/results&quot;, method = GET, produces = &quot;application/json&quot;)
+    @Timed(value = &quot;resource.leaderboard.category.all&quot;, histogram = true)
+    public ResponseEntity&lt;?&gt; getCategoryLeaderBoardForAllCategoriesResults(@PathVariable(&quot;eventId&quot;) String eventId,
+                                                                    @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = &quot;false&quot;) boolean forceLeaderboardResults,
+                                                                    @Valid @RequestParam(name = &quot;source&quot;) Optional&lt;WinnerLeaderboardSource&gt; winnerLeaderboardSourceM) {
+<span class="nc" id="L354">        var winnerLeaderboardSource = winnerLeaderboardSourceM.orElse(db);</span>
+
+<span class="nc" id="L356">        var cacheControl = CacheControl.maxAge(5, MINUTES)</span>
+<span class="nc" id="L357">                .noTransform()</span>
+<span class="nc" id="L358">                .mustRevalidate();</span>
+
+<span class="nc bnc" id="L360" title="All 4 branches missed.">        var forceLeaderboard = forceLeaderboardResults &amp;&amp; forceLeaderboardResultsAvailability;</span>
+
+<span class="nc" id="L362">        var categoryLeaderboardE = leaderboardWinnersProvider</span>
+<span class="nc" id="L363">                .getWinnerLeaderboardSource(winnerLeaderboardSource)</span>
+<span class="nc" id="L364">                .getAllCategoriesLeaderboard(eventId, forceLeaderboard);</span>
+
+<span class="nc" id="L366">        return categoryLeaderboardE</span>
+<span class="nc" id="L367">                .fold(problem -&gt; {</span>
+<span class="nc" id="L368">                            return ResponseEntity</span>
+<span class="nc" id="L369">                                    .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L370">                                    .body(problem);</span>
+                        },
+                        allCategoryResults -&gt; {
+<span class="nc" id="L373">                            return ResponseEntity</span>
+<span class="nc" id="L374">                                    .ok()</span>
+<span class="nc" id="L375">                                    .cacheControl(cacheControl)</span>
+<span class="nc" id="L376">                                    .body(allCategoryResults);</span>
                         }
                 );
     }

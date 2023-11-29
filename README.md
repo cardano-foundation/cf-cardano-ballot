@@ -84,6 +84,8 @@ cd cf-ballot-app/backend-services/voting-ledger-follower-app
 ./gradlew bootRun
 ```
 This will launch main voting-ledger-follower-app on port: 9090 by default.
+For a detailed description and interactive interface of the API, visit the Swagger UI documentation here:
+[http://localhost:9090/swagger-ui/index.html](http://localhost:9090/swagger-ui/index.html)
 
 ### Voting App
 ```shell
@@ -92,6 +94,8 @@ cd cf-ballot-app/backend-services/voting-app
 ```
 
 This will launch main voting-app on port: 9091 by default.
+For a detailed description and interactive interface of the API, visit the Swagger UI documentation here:
+[http://localhost:9091/swagger-ui/index.html](http://localhost:9091/swagger-ui/index.html)
 
 ### Voting Verification
 ```shell
@@ -100,6 +104,8 @@ cd cf-ballot-app/backend-services/voting-verification-app
 ```
 
 This will launch voting-verification-app on port: 9092 by default.
+For a detailed description and interactive interface of the API, visit the Swagger UI documentation here:
+[http://localhost:9092/swagger-ui/index.html](http://localhost:9092/swagger-ui/index.html)
 
 Instructions on how to run the `Vote Verification` app are located [here](./VOTE_VERIFICATION.md)
 
@@ -112,6 +118,7 @@ cd cf-ballot-app/backend-services/user-verification-service
 ```
 
 This will launch user-verification-app on port: 9093 by default.
+[http://localhost:9093/swagger-ui/index.html](http://localhost:9093/swagger-ui/index.html)
 
 **Note: user-verification-service is only needed for Cardano Summit 2023.**
 

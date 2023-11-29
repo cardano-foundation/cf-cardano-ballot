@@ -170,9 +170,11 @@ For your own project you will need to replace summit-2023 with your respective p
 
 # Contributing
 
-All contributions are welcome. Feel free to open a new thread on the issue tracker or submit a new pull request. Please read [CONTRIBUTING.md](CONTRIBUTING.md) first. Thank you for contributing.
+All contributions are welcome! Please feel free to open a new thread on the issue tracker or submit a new pull request.
+
+Please read [Contributing](CONTRIBUTING.md) first. Thank you for contributing.
 
 ## Additional Docs
-- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
-- [SECURITY.md](SECURITY.md)
-- [CHANGELOG.md](CHANGELOG.md)
+- [Code of Conduct](CODE_OF_CONDUCT.md)
+- [Security](SECURITY.md)
+- [Changelog](CHANGELOG.md)

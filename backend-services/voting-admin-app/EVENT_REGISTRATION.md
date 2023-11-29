@@ -5,7 +5,7 @@ with the categories on chain. We need one transaction for an event itself and on
 For now CF Cardano Ballot application supports two voting event types: STAKING_BASED and USER_BASED and when creating
 an event you have to decide which type you want to use.
 
-In order to create an event, you can create a new class as part of org.cardano.foundation.voting.shell.shell package, e.g.
+In order to create an event, you can create a new class as part of org.cardano.foundation.voting.shell package, e.g.
 MyEventCommands.java.
 
 Create a following looking class:
@@ -221,7 +221,6 @@ It will create an event with the following properties:
 - Category results while voting: false
 
 with one 1 category:
-
 - Category name: CATEGORY_TEST1
 - Category GDPR protection: true
 - Category schema version: V11
@@ -234,4 +233,3 @@ Similarly, in order to submit the event you have to start the application for yo
 This should register the event and category on chain and let other components within CF Cardano Ballot platform to "see it".
 
 If you want to submit main-net event you have start the application with mainnet network and appropriate property files.
-

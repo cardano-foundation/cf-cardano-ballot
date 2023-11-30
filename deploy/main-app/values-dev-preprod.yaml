@@ -29,7 +29,7 @@ cf-cardano-ballot-voting-api:
     monitoring:
       alerting:
         enabled: false
-    leaderboardForceResults: "true"
+    leaderboardForceResults: "false"
 
 cf-cardano-ballot-verification-api:
   enabled: true

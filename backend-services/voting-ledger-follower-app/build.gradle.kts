@@ -40,6 +40,7 @@ dependencies {
 	testImplementation("io.rest-assured:rest-assured:5.3.2")
 	testImplementation("org.wiremock:wiremock:3.2.0")
 
+	implementation("org.springframework.boot:spring-boot-starter-cache")
 	testCompileOnly("org.springframework.boot:spring-boot-starter-test")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -81,6 +82,7 @@ dependencies {
 	runtimeOnly("org.postgresql:postgresql")
 
 	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.11")
+	implementation("org.cardanofoundation:cf-cardano-conversions-java:1.0.0")
 
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
 

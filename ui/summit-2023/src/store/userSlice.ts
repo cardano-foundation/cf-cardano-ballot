@@ -40,6 +40,7 @@ const initialState: UserState = {
     highLevelCategoryResultsWhileVoting: false,
     commitmentsWindowOpen: false,
     started: false,
+    tallies: []
   },
 };
 

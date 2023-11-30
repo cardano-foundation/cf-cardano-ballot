@@ -12,6 +12,6 @@ public interface EventRepository extends JpaRepository<Event, String> {
 
     @Query("DELETE FROM Event e WHERE e.absoluteSlot > :slot")
     @Modifying
-    void deleteAllAfterSlot(@Param("slot") long slot);
+    int deleteAllAfterSlot(@Param("slot") long slot);
 
 }

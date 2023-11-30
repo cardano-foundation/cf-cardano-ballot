@@ -114,6 +114,8 @@ with one 1 category:
 - Category proposals: [Option 1, Option 2, Option 3]
 ```
 
+Note that Proposal IDs are UUIDs and they have to be unique. You can generate them using https://www.uuidgenerator.net/
+
 In order to submit the event you have to start the application for your network (mainnet or pre-prod) and run the commands:
 >> create_my_voting_event_pre_prod
 >> create_my_voting_category1-pre-prod MY_EVENT01

@@ -35,8 +35,7 @@ at different time intervals).
 
 ### Development
 ```bash
-git clone https://github.com/cardano-foundation/vote-commitment-service.git
-cd vote-commitment-service
+cd cf-cardano-ballot/backend-services/vote-commitment-app
 cp .env.template .env
 # Update .env with required values (e.g. organiser's mnemonic)
 # Run the service locally via:

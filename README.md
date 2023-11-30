@@ -75,7 +75,7 @@ from database constructs merkle tree and at periodic, configurable intervals sen
 By default all backend apps are working with Cardano Pre-Production network.
 
 ```shell
-cd cf-ballot-app/backend-services/voting-admin-app
+cd cf-cardano-ballot/backend-services/voting-admin-app
 ./gradlew bootRun
 ```
 
@@ -86,7 +86,7 @@ Instructions on how to create a new voting event can be found [here](./backend-s
 By default all backend apps are working with Cardano Pre-Production network.
 
 ```shell
-cd cf-ballot-app/backend-services/voting-ledger-follower-app
+cd cf-cardano-ballot/backend-services/voting-ledger-follower-app
 ./gradlew bootRun
 ```
 This will launch main voting-ledger-follower-app on port: 9090 by default.
@@ -95,7 +95,7 @@ For a detailed description and interactive interface of the API, visit the Swagg
 
 ### Voting App
 ```shell
-cd cf-ballot-app/backend-services/voting-app
+cd cf-cardano-ballot/backend-services/voting-app
 ./gradlew bootRun
 ```
 
@@ -105,7 +105,7 @@ For a detailed description and interactive interface of the API, visit the Swagg
 
 ### Voting Verification
 ```shell
-cd cf-ballot-app/backend-services/voting-verification-app
+cd cf-cardano-ballot/backend-services/voting-verification-app
 ./gradlew bootRun
 ```
 
@@ -117,8 +117,7 @@ Instructions on how to run the `Vote Verification` app can be found [here](./bac
 
 ### Voting Commitment App
 ```bash
-git clone https://github.com/cardano-foundation/vote-commitment-service.git
-cd vote-commitment-service
+cd cf-cardano-ballot/backend-services/vote-commitment-app
 cp .env.template .env
 # Update .env with required values (e.g. organiser's mnemonic)
 # Run the service locally via:
@@ -129,7 +128,7 @@ cp .env.template .env
 ```bash
 export AWS_SNS_ACCESS_KEY_ID=...
 export AWS_SNS_SECRET_ACCESS_KEY=...
-cd cf-ballot-app/backend-services/user-verification-service
+cd cf-cardano-ballot/backend-services/user-verification-service
 ./gradlew bootRun
 ```
 
@@ -153,7 +152,8 @@ Copy the [`.env.example`](ui/summit-2023/.env.example) file and rename it as `.e
 Then run:
 
 ```shell
-cd cf-ballot-app/ui/summit-2023
+cd cf-cardano-ballot/ui/summit-2023
+cp .env.example .env
 npm i
 npm run start
 ```
@@ -163,7 +163,7 @@ All backend apps will generate TypeScript types for the frontend by using the fo
 
 As an example:
 ```shell
-cd voting-app
+cd cf-cardano-ballot/backend-services/voting-app
 ./gradlew buildAndCopyTypescriptTypes -Pui_project_name=summit-2023
 ```
 This will generate TypeScript types in the ui/summit-2023/build/typescript-generator/voting-app-types.ts

@@ -47,6 +47,7 @@ cf-cardano-ballot-ledger-follower-api:
       startBlockHash: 2a230ba0fe52bdc17dcc2a236b3aef44baafb559f8dc54c7e93c5c1b1ab5afed
       startSlotNumber: "45446429"
     corsAllowedOrigins: https://{{ .Values.domain }},http://localhost:3000
+    cardanoSnapshotBoundsCheckEnabled: true
     instances:
       - name: follower-1
         enabled: true

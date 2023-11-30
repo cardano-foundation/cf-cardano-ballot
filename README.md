@@ -9,7 +9,7 @@
 ![GitHub release (with filter)](https://img.shields.io/github/v/release/cardano-foundation/cf-cardano-ballot)
 ![Discord](https://img.shields.io/discord/1022471509173882950)
 
-[![Voting-App-Build](https://github.com/cardano-foundation/cf-cardano-ballot/actions/workflows/voting-app-build.yml/badge.svg)](https://github.com/cardano-foundation/cf-cardano-ballot/actions/workflows/voting-app-build.yml)
+[![Build and Publish Docker images](https://github.com/cardano-foundation/cf-cardano-ballot/actions/workflows/publish.yaml/badge.svg)](https://github.com/cardano-foundation/cf-cardano-ballot/actions/workflows/publish.yaml)
 [![Voting-Verification-App-Build](https://github.com/cardano-foundation/cf-cardano-ballot/actions/workflows/voting-verification-app-build.yml/badge.svg)](https://github.com/cardano-foundation/cf-cardano-ballot/actions/workflows/voting-verification-app-build.yml)
 [![User-Verification-App-Build](https://github.com/cardano-foundation/cf-cardano-ballot/actions/workflows/user-verification-app-build.yml/badge.svg)](https://github.com/cardano-foundation/cf-cardano-ballot/actions/workflows/user-verification-app-build.yml)
 [![Voting-Admin-App-Build](https://github.com/cardano-foundation/cf-cardano-ballot/actions/workflows/voting-admin-app-build.yml/badge.svg)](https://github.com/cardano-foundation/cf-cardano-ballot/actions/workflows/voting-admin-app-build.yml)
@@ -22,7 +22,7 @@
 # Overview
   Cardano Ballot is a user-friendly, hybrid on- and off-chain voting system developed by the Cardano Foundation.  Cardano Ballot leverages a set of backend services combined with frontend applications to facilitate voting within the Cardano Ecosystem.
   
-  Most recently, stake-based voting was introduced into Cardano Ballot inorder to support IOG with CIP-1694 Pre-ratififcation polling events.  Currently, Cardano Ballot supports user-based (1 x user, 1 x vote) and stake-based (weighted) voting events.  The modularised backend services make the process of organising, deploying, and auditing a Cardano Ballot event more decentralized and user-friendly.
+  Most recently, stake-based voting was introduced into Cardano Ballot inorder to support IOG with CIP-1694 Pre-ratification polling events.  Currently, Cardano Ballot supports user-based (1 x user, 1 x vote) and stake-based (weighted) voting events.  The modularised backend services make the process of organising, deploying, and auditing a Cardano Ballot event more decentralized and user-friendly.
 
   In 2023, Hydra and Aiken Smart Contracts were also introduced into Cardano Ballot.  The first implementation of this was a final Hydra tally of all votes submitted for the Cardano Summit Awards 2023.
 
@@ -36,7 +36,7 @@
 | | | Ledger Follower | | [CIP-30](https://cips.cardano.org/cips/cip30/) - Cardano dApp-Wallet Web Bridge | 
 | | | Vote Commitment | | [CIP-08](https://cips.cardano.org/cips/cip8/) - Message Signing |
 | | | Vote Verification | |  Cardano Foundation - [cardano-connect-with-wallet](https://github.com/cardano-foundation/cardano-connect-with-wallet) |  
-| | | User Verification | |  [Bloxbean Projects] - (https://github.com/bloxbean)  | 
+| | | User Verification | |  [Bloxbean Projects](https://github.com/bloxbean)  | 
 | | | Hydra Tally | |  [Aiken](https://aiken-lang.org/) - A Modern Smart Contract Platform for Cardano  | 
 | | | | | [Hydra](https://hydra.family/head-protocol/) - Head Protocol|
 
@@ -54,8 +54,8 @@
 
 ## Repository Structure
 - [backend-services](backend-services) - Contains various backend services:
-  - [hydra-tally-app](backend-services/user-verification-service) - A CLI application which contains logic to connect to Hydra network. Application demonstrates usage of smart contracts (Aiken) to perform counting (tally) of the votes and providing result.
-  - [user-verification-service](backend-services/user-verification-service) - A Spring Boot application that verifies user wallets using their phone number (via SMS OTP one time password) or Discord account
+  - [hydra-tally-app](backend-services/user-verification-service) - A CLI application which contains logic to connect to the Hydra network. Application demonstrates usage of smart contracts (Aiken) to perform counting (tally) of the votes and providing results.
+  - [user-verification-service](backend-services/user-verification-service) - A Spring Boot application that verifies user wallets using their phone number (via SMS OTP one time password) or Discord account.
   - [vote-commitment-app](backend-services/vote-commitment-app) - Service that reads active events from ledger-follower-service and individual votes 
 from database constructs merkle tree and at periodic, configurable intervals sends it to the Cardano blockchain.
   - [voting-admin-app](backend-services/voting-admin-app) - Application to be used by the organisers to create events and proposals.
@@ -66,6 +66,7 @@ from database constructs merkle tree and at periodic, configurable intervals sen
 - [ui](ui) - Contains React applications for Cardano Ballopt event user interfaces:
   - [cip-1694](ui/cip-1694) - Frontend application for the CIP-1694 pre-ratification polling event.
   - [summit-2023](ui/summit-2023) - Frontend application for the Cardano Summit 2023 Awards voting.
+  - [verification-app](ui/verification-app) - Frontend application for the verification of the vote proof on anyc casted vote on a Cardano Ballot Event.
 
 ## Creating a Cardano Ballot Event
 ### Voting Admin App

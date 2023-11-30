@@ -6,7 +6,9 @@
 
 # Overview
 
-Summit 2023 UI application has been developed using [ReactJS](https://react.dev/), [MUI](https://mui.com/), [Redux](https://redux.js.org/) and [i18n](https://www.i18next.com/). This frontend application features mainly Category, Nominee and Leaderboard pages by interfacing with our backend services, through a Rest API. The application also integrates Web3 component [Cardano Connect with Wallet](https://github.com/cardano-foundation/cardano-connect-with-wallet) for user registration.   
+Summit 2023 UI application has been developed using [ReactJS](https://react.dev/), [MUI](https://mui.com/), [Redux](https://redux.js.org/) and [i18n](https://www.i18next.com/). This frontend application features mainly Category, Nominee and Leaderboard pages by interfacing with our backend services, through a Rest API. The application also integrates Web3 component [Cardano Connect with Wallet](https://github.com/cardano-foundation/cardano-connect-with-wallet) for user registration.
+
+You can visit now the website that hosts this app using [this link](https://voting.summit.cardano.org/).
 
 ![Overview Image](src/common/resources/images/summit-2023-overview.jpg)
 

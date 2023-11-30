@@ -11,7 +11,7 @@ A set of backend services and UI applications to facilitate CIP-1694 voting as w
 
 [![User-Verification-App-Build](https://github.com/cardano-foundation/cf-cardano-ballot/actions/workflows/user-verification-app-build.yml/badge.svg)](https://github.com/cardano-foundation/cf-cardano-ballot/actions/workflows/user-verification-app-build.yml)
 
-[![Voting-Admin-App-Build](https://github.com/cardano-foundation/cf-cardano-ballot/actions/workflows/voting-admin-app-build.yml/badge.svg)](https://github.com/cardano-foundation/cf-cardano-ballot/actions/workflows/voting-admin-app-build.yml)
+[![Build and Publish Docker images](https://github.com/cardano-foundation/cf-cardano-ballot/actions/workflows/publish.yaml/badge.svg)](https://github.com/cardano-foundation/cf-cardano-ballot/actions/workflows/publish.yaml)
 
 [![UI-App-Build](https://github.com/cardano-foundation/cf-cardano-ballot/actions/workflows/ui-cypress-tests.yaml/badge.svg)](https://github.com/cardano-foundation/cf-cardano-ballot/actions/workflows/ui-cypress-tests.yaml)
 

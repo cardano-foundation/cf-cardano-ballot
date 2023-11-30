@@ -56,7 +56,8 @@
 - [backend-services](backend-services) - Contains various backend services:
   - [hydra-tally-app](backend-services/user-verification-service) - A CLI application which contains logic to connect to Hydra network. Application demonstrates usage of smart contracts (Aiken) to perform counting (tally) of the votes and providing result.
   - [user-verification-service](backend-services/user-verification-service) - A Spring Boot application that verifies user wallets using their phone number (via SMS OTP one time password) or Discord account
-  - [vote-commitment-app](backend-services/vote-commitment-app) - TODO
+  - [vote-commitment-app](backend-services/vote-commitment-app) - Service that reads active events from ledger-follower-service and individual votes 
+from database constructs merkle tree and at periodic, configurable intervals sends it to the Cardano blockchain.
   - [voting-admin-app](backend-services/voting-admin-app) - Application to be used by the organisers to create events and proposals.
   - [voting-app](backend-services/voting-app) - Voting Application that allows users to submit votes, receive vote receipts, and access leaderboard data.
   - [voting-ledger-follower-app](backend-services/voting-ledger-follower-app) - Ledger Follower Application that is listening to the Cardano blockchain to fetch information about event data and user stake amounts in case of stake-based voting.
@@ -74,6 +75,8 @@ By default all backend apps are working with Cardano Pre-Production network.
 cd cf-ballot-app/backend-services/voting-admin-app
 ./gradlew bootRun
 ```
+
+Instructions on how to create a new voting event can be found [here](./backend-services/voting-admin-app/EVENT_REGISTRATION.md).
 
 ## Running the Backend Services
 ### Ledger Follower
@@ -107,7 +110,17 @@ This will launch voting-verification-app on port: 9092 by default.
 For a detailed description and interactive interface of the API, visit the Swagger UI documentation here:
 [http://localhost:9092/swagger-ui/index.html](http://localhost:9092/swagger-ui/index.html)
 
-Instructions on how to run the `Vote Verification` app are located [here](./VOTE_VERIFICATION.md)
+Instructions on how to run the `Vote Verification` app can be found [here](./backend-services/voting-verification-app/README.md).
+
+### Voting Commitment App
+```bash
+git clone https://github.com/cardano-foundation/vote-commitment-service.git
+cd vote-commitment-service
+cp .env.template .env
+# Update .env with required values (e.g. organiser's mnemonic)
+# Run the service locally via:
+./gradlew bootRun
+```
 
 ### User Verification App
 ```bash
@@ -157,9 +170,11 @@ For your own project you will need to replace summit-2023 with your respective p
 
 # Contributing
 
-All contributions are welcome. Feel free to open a new thread on the issue tracker or submit a new pull request. Please read [CONTRIBUTING.md](CONTRIBUTING.md) first. Thank you for contributing.
+All contributions are welcome! Please feel free to open a new thread on the issue tracker or submit a new pull request.
+
+Please read [Contributing](CONTRIBUTING.md) first. Thank you for contributing.
 
 ## Additional Docs
-- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
-- [SECURITY.md](SECURITY.md)
-- [CHANGELOG.md](CHANGELOG.md)
+- [Code of Conduct](CODE_OF_CONDUCT.md)
+- [Security](SECURITY.md)
+- [Changelog](CHANGELOG.md)

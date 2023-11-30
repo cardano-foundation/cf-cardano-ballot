@@ -16,8 +16,8 @@ cf-cardano-ballot-ui:
     votingAppServerUrl: "https://api.{{ .Values.domain }}"
     votingLedgerFollowerAppServerUrl: "https://follower-api.{{ .Values.domain }}"
     votingVerificationAppServerUrl: "https://verification-api.{{ .Values.domain }}"
-    eventId: "CIP-1694_Pre_Ratification_7AC8"
-    categoryId: "CIP-1694_Pre_Ratification_7AC8"
+    eventId: "CIP-1694_Pre_Ratification_706B"
+    categoryId: "CIP-1694_Pre_Ratification_706B"
     googleGormUrl: "https://forms.gle/CjsRLxXiFT98hWgA7"
     googleFormVoteContextInputName: "entry.75173622"
 
@@ -42,10 +42,10 @@ cf-cardano-ballot-ledger-follower-api:
   values:
     image:
       tag: 0.2.75-14-dae3a
-    bindOnEventIds: CIP-1694_Pre_Ratification_7AC8
+    bindOnEventIds: CIP-1694_Pre_Ratification_706B
     yaci:
-      startBlockHash: 1705a8d8b69cb1315de2b7d5569953f0bb4eddb685cead76c98a6082e835f888
-      startSlotNumber: "44150423"
+      startBlockHash: 2a230ba0fe52bdc17dcc2a236b3aef44baafb559f8dc54c7e93c5c1b1ab5afed
+      startSlotNumber: "45446429"
     corsAllowedOrigins: https://{{ .Values.domain }},http://localhost:3000
     instances:
       - name: follower-1

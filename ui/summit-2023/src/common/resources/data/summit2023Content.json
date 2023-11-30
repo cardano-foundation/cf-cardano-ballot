@@ -418,8 +418,5 @@
         }
       ]
     }
-  ],
-  "leaderboard": {
-    "desc": "At the moment the leaderboard only shows the number of votes per category. To see the winners for each category please check back when the votes closes."
-  }
+  ]
 }

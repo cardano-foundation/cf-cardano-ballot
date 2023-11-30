@@ -24,11 +24,11 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: REACT_APP_VOTING_APP_SERVER_URL
-              value: https://api.dev.cf-cip1694-preprod.eu-west-1.metadata.dev.cf-deployments.org/
+              value: https://api.dev.cf-cip1694-preprod.eu-west-1.metadata.dev.cf-deployments.org
             - name: REACT_APP_VOTING_LEDGER_FOLLOWER_APP_SERVER_URL
-              value: https://follower-api.dev.cf-cip1694-preprod.eu-west-1.metadata.dev.cf-deployments.org/
+              value: https://follower-api.dev.cf-cip1694-preprod.eu-west-1.metadata.dev.cf-deployments.org
             - name: REACT_APP_VOTING_VERIFICATION_APP_SERVER_URL
-              value: https://verification-api.dev.cf-cip1694-preprod.eu-west-1.metadata.dev.cf-deployments.org/
+              value: https://verification-api.dev.cf-cip1694-preprod.eu-west-1.metadata.dev.cf-deployments.org
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}

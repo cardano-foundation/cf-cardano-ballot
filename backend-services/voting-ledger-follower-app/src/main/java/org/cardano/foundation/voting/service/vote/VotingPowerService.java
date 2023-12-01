@@ -26,7 +26,10 @@ public class VotingPowerService {
                         .build());
             }
             case STAKE_BASED -> {
-                var maybeAmount = blockchainDataStakePoolService.getStakeAmount(event.getSnapshotEpoch().orElseThrow(), stakeAddress)
+                var snapshotEpoch = event.getSnapshotEpoch().orElseThrow();
+                var blockfrostSnapshotEpoch = snapshotEpoch + 2; // blockfrost definition for active epoch is different than ours, so we have to add 2 more epochs from our snapshot epoch
+
+                var maybeAmount = blockchainDataStakePoolService.getStakeAmount(blockfrostSnapshotEpoch, stakeAddress)
                         .filter(amount -> amount > 0);
 
                 if (maybeAmount.isEmpty()) {

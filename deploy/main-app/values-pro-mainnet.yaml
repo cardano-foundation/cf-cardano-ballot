@@ -21,7 +21,7 @@ cf-cardano-ballot-ui:
     votingVerificationAppServerUrl: "https://verification-api.1694ballot.cardano.org"
     eventId: "CIP-1694_Pre_Ratification"
     categoryId: "CIP-1694_Pre_Ratification"
-    googleGormUrl: "https://docs.google.com/forms/u/0/d/e/1FAIpQLSe-dSU0-bi8bjk0wiOaRXj02nxYLvgnpKBgc-eYGRpPYO-y5Q"
+    googleGormUrl: "https://forms.gle/g8KRYK4eQqKJ4sFb6"
     googleFormVoteContextInputName: "entry.75173622"
     eventUri: "https://1694ballot.cardano.org"
     ingress:

@@ -32,7 +32,6 @@ public class VotingTallyResource {
     private final VotingTallyService votingTallyService;
 
     @RequestMapping(value = &quot;/{eventId}/{categoryId}/{tallyName}&quot;, method = GET, produces = &quot;application/json&quot;)
-    @Timed(value = &quot;resource.tally.results&quot;, histogram = true)
     @Operation(summary = &quot;Get L1 tally results by a given eventId, categoryId and tallyName&quot;,
             description = &quot;Gets tally results.&quot;,
             responses = {
@@ -43,39 +42,82 @@ public class VotingTallyResource {
                     @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error&quot;)
             }
     )
-    public ResponseEntity&lt;?&gt; getVoteResults(@Parameter(description = &quot;Event ID for which details are to be retrieved&quot;, required = true)
-                                            @PathVariable(&quot;eventId&quot;) String eventId,
-                                            @Parameter(description = &quot;Category ID for which details are to be retrieved&quot;, required = true)
+    @Timed(value = &quot;resource.tally.results.per.category&quot;, histogram = true)
+    public ResponseEntity&lt;?&gt; getVoteResultsPerCategory(@PathVariable(&quot;eventId&quot;) String eventId,
                                             @PathVariable(&quot;categoryId&quot;) String categoryId,
                                             @Parameter(description = &quot;tallyName as registered on chain&quot;, required = true)
                                             @PathVariable(&quot;tallyName&quot;) String tallyName) {
-<span class="nc" id="L52">        var cacheControl = CacheControl.maxAge(15, MINUTES)</span>
-<span class="nc" id="L53">                .noTransform()</span>
-<span class="nc" id="L54">                .mustRevalidate();</span>
+<span class="nc" id="L50">        var cacheControl = CacheControl.maxAge(15, MINUTES)</span>
+<span class="nc" id="L51">                .noTransform()</span>
+<span class="nc" id="L52">                .mustRevalidate();</span>
 
-<span class="nc" id="L56">        return votingTallyService.getVoteResults(eventId, categoryId, tallyName)</span>
-<span class="nc" id="L57">                .fold(problem -&gt; {</span>
-<span class="nc" id="L58">                        return ResponseEntity</span>
-<span class="nc" id="L59">                                .status(problem.getStatus().getStatusCode())</span>
-<span class="nc" id="L60">                                .body(problem);</span>
+<span class="nc" id="L54">        return votingTallyService.getVoteResultsPerCategory(eventId, categoryId, tallyName)</span>
+<span class="nc" id="L55">                .fold(problem -&gt; {</span>
+<span class="nc" id="L56">                        return ResponseEntity</span>
+<span class="nc" id="L57">                                .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L58">                                .body(problem);</span>
                         },
                         tallyResultsM -&gt; {
-<span class="nc bnc" id="L63" title="All 2 branches missed.">                            if (tallyResultsM.isEmpty()) {</span>
-<span class="nc" id="L64">                                var problem = Problem.builder()</span>
-<span class="nc" id="L65">                                        .withTitle(&quot;NO_RESULTS_FOUND&quot;)</span>
-<span class="nc" id="L66">                                        .withDetail(&quot;No results found for event: &quot; + eventId + &quot; and category: &quot; + categoryId)</span>
-<span class="nc" id="L67">                                        .withStatus(NOT_FOUND)</span>
-<span class="nc" id="L68">                                        .build();</span>
+<span class="nc bnc" id="L61" title="All 2 branches missed.">                            if (tallyResultsM.isEmpty()) {</span>
+<span class="nc" id="L62">                                var problem = Problem.builder()</span>
+<span class="nc" id="L63">                                        .withTitle(&quot;NO_RESULTS_FOUND&quot;)</span>
+<span class="nc" id="L64">                                        .withDetail(&quot;No results found for event: &quot; + eventId + &quot; and category: &quot; + categoryId)</span>
+<span class="nc" id="L65">                                        .withStatus(NOT_FOUND)</span>
+<span class="nc" id="L66">                                        .build();</span>
 
-<span class="nc" id="L70">                                return ResponseEntity</span>
-<span class="nc" id="L71">                                        .status(problem.getStatus().getStatusCode())</span>
-<span class="nc" id="L72">                                        .body(problem);</span>
+<span class="nc" id="L68">                                return ResponseEntity</span>
+<span class="nc" id="L69">                                        .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L70">                                        .body(problem);</span>
                             }
 
-<span class="nc" id="L75">                            return ResponseEntity</span>
-<span class="nc" id="L76">                                    .ok()</span>
-<span class="nc" id="L77">                                    .cacheControl(cacheControl)</span>
-<span class="nc" id="L78">                                    .body(tallyResultsM.orElseThrow());</span>
+<span class="nc" id="L73">                            return ResponseEntity</span>
+<span class="nc" id="L74">                                    .ok()</span>
+<span class="nc" id="L75">                                    .cacheControl(cacheControl)</span>
+<span class="nc" id="L76">                                    .body(tallyResultsM.orElseThrow());</span>
+                        });
+    }
+
+    @RequestMapping(value = &quot;/{eventId}/{tallyName}&quot;, method = GET, produces = &quot;application/json&quot;)
+    @Operation(summary = &quot;Get L1 tally results by a given eventId tallyName&quot;,
+            description = &quot;Gets tally results for all categories.&quot;,
+            responses = {
+                    @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Successfully deliver L1 tally results for all categories&quot;,
+                            content = { @Content(mediaType = &quot;application/json&quot;,
+                                    schema = @Schema(implementation = TallyResults[].class)) }),
+                    @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Tally results not yet available.&quot;),
+                    @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error&quot;)
+            }
+    )
+    @Timed(value = &quot;resource.tally.results.per.all.categories&quot;, histogram = true)
+    public ResponseEntity&lt;?&gt; getVoteResultsForAllCategories(@PathVariable(&quot;eventId&quot;) String eventId,
+                                            @PathVariable(&quot;tallyName&quot;) String tallyName) {
+<span class="nc" id="L94">        var cacheControl = CacheControl.maxAge(15, MINUTES)</span>
+<span class="nc" id="L95">                .noTransform()</span>
+<span class="nc" id="L96">                .mustRevalidate();</span>
+
+<span class="nc" id="L98">        return votingTallyService.getVoteResultsForAllCategories(eventId, tallyName)</span>
+<span class="nc" id="L99">                .fold(problem -&gt; {</span>
+<span class="nc" id="L100">                            return ResponseEntity</span>
+<span class="nc" id="L101">                                    .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L102">                                    .body(problem);</span>
+                        },
+                        tallyResults -&gt; {
+<span class="nc bnc" id="L105" title="All 2 branches missed.">                            if (tallyResults.isEmpty()) {</span>
+<span class="nc" id="L106">                                var problem = Problem.builder()</span>
+<span class="nc" id="L107">                                        .withTitle(&quot;NO_RESULTS_FOUND&quot;)</span>
+<span class="nc" id="L108">                                        .withDetail(&quot;No results found for event: &quot; + eventId)</span>
+<span class="nc" id="L109">                                        .withStatus(NOT_FOUND)</span>
+<span class="nc" id="L110">                                        .build();</span>
+
+<span class="nc" id="L112">                                return ResponseEntity</span>
+<span class="nc" id="L113">                                        .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L114">                                        .body(problem);</span>
+                            }
+
+<span class="nc" id="L117">                            return ResponseEntity</span>
+<span class="nc" id="L118">                                    .ok()</span>
+<span class="nc" id="L119">                                    .cacheControl(cacheControl)</span>
+<span class="nc" id="L120">                                    .body(tallyResults);</span>
                         });
     }
 

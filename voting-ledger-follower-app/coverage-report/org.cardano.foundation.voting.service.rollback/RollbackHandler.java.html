@@ -6,11 +6,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
 import org.cardano.foundation.voting.service.utxo.EventResultsUtxoDataService;
 import org.cardano.foundation.voting.service.vote.MerkleRootHashService;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-<span class="nc" id="L12">@Slf4j</span>
-<span class="nc" id="L13">@RequiredArgsConstructor</span>
+<span class="fc" id="L14">@Slf4j</span>
+<span class="fc" id="L15">@RequiredArgsConstructor</span>
+@Service
+@ConditionalOnProperty(prefix = &quot;rollback.handling&quot;, value = &quot;enabled&quot;, havingValue = &quot;true&quot;)
 public class RollbackHandler {
 
     private final EventResultsUtxoDataService eventResultsUtxoDataService;
@@ -20,16 +24,24 @@ public class RollbackHandler {
     @EventListener
     @Transactional
     public void handleRollbackEvent(RollbackEvent rollbackEvent) {
-<span class="nc" id="L23">        log.info(&quot;Rollback, event:{}&quot;, rollbackEvent);</span>
+<span class="nc" id="L27">        log.info(&quot;Rollback, event:{}&quot;, rollbackEvent);</span>
 
-<span class="nc" id="L25">        long rollbackToSlot = rollbackEvent.getRollbackTo().getSlot();</span>
+<span class="nc" id="L29">        long rollbackToSlot = rollbackEvent.getRollbackTo().getSlot();</span>
 
-<span class="nc" id="L27">        eventResultsUtxoDataService.rollbackAfterSlot(rollbackToSlot);</span>
-<span class="nc" id="L28">        merkleRootHashService.rollbackAfterSlot(rollbackToSlot);</span>
-<span class="nc" id="L29">        referenceDataService.rollbackReferenceDataAfterSlot(rollbackToSlot);</span>
+<span class="nc" id="L31">        var eventResultsRolledBackCount = eventResultsUtxoDataService.rollbackAfterSlot(rollbackToSlot);</span>
 
-<span class="nc" id="L31">        log.info(&quot;Rollbacked handled.&quot;);</span>
-<span class="nc" id="L32">    }</span>
+<span class="nc" id="L33">        var merkleRootHahesRollbackCount = merkleRootHashService.rollbackAfterSlot(rollbackToSlot);</span>
+
+<span class="nc" id="L35">        var referenceRollbackStats = referenceDataService.rollbackReferenceDataAfterSlot(rollbackToSlot);</span>
+
+<span class="nc" id="L37">        log.info(&quot;Rollbacked:&quot; +</span>
+                &quot; {} event results,&quot; +
+                &quot; {} merkle root hashes,&quot; +
+                &quot; {} reference data items.&quot;,
+<span class="nc" id="L41">                eventResultsRolledBackCount, merkleRootHahesRollbackCount, referenceRollbackStats);</span>
+
+<span class="nc" id="L43">        log.info(&quot;Rollbacked handled.&quot;);</span>
+<span class="nc" id="L44">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

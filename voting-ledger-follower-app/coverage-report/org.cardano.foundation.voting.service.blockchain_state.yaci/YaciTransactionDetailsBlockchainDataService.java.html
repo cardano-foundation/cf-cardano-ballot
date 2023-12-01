@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>YaciTransactionDetailsBlockchainDataService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-ledger-follower-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.service.blockchain_state.yaci</a> &gt; <span class="el_source">YaciTransactionDetailsBlockchainDataService.java</span></div><h1>YaciTransactionDetailsBlockchainDataService.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.service.blockchain_state.yaci;
+
+import com.bloxbean.cardano.yaci.store.blocks.domain.Block;
+import com.bloxbean.cardano.yaci.store.blocks.service.BlockService;
+import com.bloxbean.cardano.yaci.store.transaction.service.TransactionService;
+import io.vavr.control.Either;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.domain.CardanoNetwork;
+import org.cardano.foundation.voting.domain.TransactionDetails;
+import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataTransactionDetailsService;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.zalando.problem.Problem;
+
+import java.util.Optional;
+
+<span class="fc" id="L21">@Slf4j</span>
+@Service
+<span class="fc" id="L23">@RequiredArgsConstructor</span>
+public class YaciTransactionDetailsBlockchainDataService implements BlockchainDataTransactionDetailsService {
+
+    private final BlockService blockService;
+
+    private final TransactionService transactionService;
+
+    private final CardanoNetwork cardanoNetwork;
+
+    private final CacheManager cacheManager;
+
+    @Override
+    @Transactional(readOnly = true)
+    @Cacheable(&quot;trxDetailsCache&quot;)
+    public Either&lt;Problem, Optional&lt;TransactionDetails&gt;&gt; getTransactionDetails(String transactionHash) {
+<span class="fc" id="L38">        return Either.right(transactionService.getTransaction(transactionHash)</span>
+<span class="fc" id="L39">                .flatMap(txn -&gt; {</span>
+<span class="fc" id="L40">                    return blockService.getBlockByNumber(txn.getBlockHeight()).map(block -&gt; {</span>
+<span class="fc" id="L41">                        var blockchainTipSlot = blockService.getLatestBlock()</span>
+<span class="fc" id="L42">                                .map(Block::getSlot)</span>
+<span class="fc" id="L43">                                .orElse(block.getSlot()); // we fallback to block's hash slot if we can't find the blockchain tip</span>
+
+<span class="fc" id="L45">                        var blockConfirmations = blockchainTipSlot - block.getSlot();</span>
+
+<span class="fc" id="L47">                        return TransactionDetails.builder()</span>
+<span class="fc" id="L48">                                .transactionsConfirmations(blockConfirmations)</span>
+<span class="fc" id="L49">                                .transactionHash(txn.getHash())</span>
+<span class="fc" id="L50">                                .finalityScore(TransactionDetails.FinalityScore.fromConfirmations(blockConfirmations))</span>
+<span class="fc" id="L51">                                .blockHash(block.getHash())</span>
+<span class="fc" id="L52">                                .absoluteSlot(txn.getSlot())</span>
+<span class="fc" id="L53">                                .network(cardanoNetwork)</span>
+<span class="fc" id="L54">                                .build();</span>
+                    });
+                }));
+    }
+
+    @Scheduled(fixedRateString = &quot;PT15S&quot;)
+    public void evictTxDetailsCache() {
+<span class="fc" id="L61">        cacheManager.getCache(&quot;trxDetailsCache&quot;)</span>
+<span class="fc" id="L62">                .clear();</span>
+<span class="fc" id="L63">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

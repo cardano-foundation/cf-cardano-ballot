@@ -13,6 +13,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ImportRuntimeHints;
@@ -36,29 +37,30 @@ import static org.springframework.aot.hint.ExecutableMode.INVOKE;
 })
 @EnableTransactionManagement
 @EnableScheduling
-<span class="fc" id="L39">@Slf4j</span>
+<span class="fc" id="L40">@Slf4j</span>
 @EnableAsync
+@EnableCaching
 @ImportRuntimeHints(VotingLedgerFollowerApp.Hints.class)
-<span class="fc" id="L42">public class VotingLedgerFollowerApp {</span>
+<span class="fc" id="L44">public class VotingLedgerFollowerApp {</span>
 
 	public static void main(String[] args) {
-<span class="nc" id="L45">		SpringApplication.run(VotingLedgerFollowerApp.class, args);</span>
-<span class="nc" id="L46">	}</span>
+<span class="nc" id="L47">		SpringApplication.run(VotingLedgerFollowerApp.class, args);</span>
+<span class="nc" id="L48">	}</span>
 
 	@Bean
 	public CommandLineRunner onStart() {
-<span class="fc" id="L50">		return (args) -&gt; {</span>
-<span class="fc" id="L51">			log.info(&quot;Voting Ledger follower App started.&quot;);</span>
-<span class="fc" id="L52">		};</span>
+<span class="fc" id="L52">		return (args) -&gt; {</span>
+<span class="fc" id="L53">			log.info(&quot;Voting Ledger follower App started.&quot;);</span>
+<span class="fc" id="L54">		};</span>
 	}
 
-<span class="nc" id="L55">    static class Hints implements RuntimeHintsRegistrar {</span>
+<span class="nc" id="L57">    static class Hints implements RuntimeHintsRegistrar {</span>
 
         @Override
-<span class="nc" id="L58">        @SneakyThrows</span>
+<span class="nc" id="L60">        @SneakyThrows</span>
         public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-<span class="nc" id="L60">            hints.reflection().registerMethod(TimedAspect.class.getMethod(&quot;timedMethod&quot;, ProceedingJoinPoint.class), INVOKE);</span>
-<span class="nc" id="L61">        }</span>
+<span class="nc" id="L62">            hints.reflection().registerMethod(TimedAspect.class.getMethod(&quot;timedMethod&quot;, ProceedingJoinPoint.class), INVOKE);</span>
+<span class="nc" id="L63">        }</span>
     }
 
 }

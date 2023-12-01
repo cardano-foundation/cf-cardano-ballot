@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>YaciChainTipService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-ledger-follower-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.service.blockchain_state.yaci</a> &gt; <span class="el_source">YaciChainTipService.java</span></div><h1>YaciChainTipService.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.service.blockchain_state.yaci;
+
+import com.bloxbean.cardano.yaci.store.blocks.service.BlockService;
+import io.vavr.control.Either;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.domain.CardanoNetwork;
+import org.cardano.foundation.voting.domain.ChainTip;
+import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataChainTipService;
+import org.cardano.foundation.voting.service.chain_sync.ChainSyncService;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.zalando.problem.Problem;
+
+import java.util.Optional;
+
+import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
+
+@Service
+<span class="fc" id="L23">@Slf4j</span>
+<span class="fc" id="L24">@RequiredArgsConstructor</span>
+public class YaciChainTipService implements BlockchainDataChainTipService {
+
+    private final BlockService blockService;
+
+    private final ChainSyncService chainSyncService;
+
+    private final CardanoNetwork cardanoNetwork;
+
+    private final CacheManager cacheManager;
+
+    @Override
+    @Transactional(readOnly = true)
+    @Cacheable(&quot;chainTipCache&quot;)
+    public Either&lt;Problem, ChainTip&gt; getChainTip() {
+<span class="fc" id="L39">        var latestBlockM = blockService.getLatestBlock();</span>
+
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">        if (latestBlockM.isEmpty()) {</span>
+<span class="nc" id="L42">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L43">                    .withTitle(&quot;CHAIN_TIP_NOT_FOUND&quot;)</span>
+<span class="nc" id="L44">                    .withDetail(&quot;Unable to get chain tip from backend service.&quot;)</span>
+<span class="nc" id="L45">                    .withStatus(INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L46">                    .build()</span>
+            );
+        }
+<span class="fc" id="L49">        var latestBlock = latestBlockM.orElseThrow();</span>
+
+<span class="fc" id="L51">        var chainSync = chainSyncService.getSyncStatus(true);</span>
+
+<span class="fc" id="L53">        return Either.right(ChainTip.builder()</span>
+<span class="fc" id="L54">                .hash(latestBlock.getHash())</span>
+<span class="fc" id="L55">                .epochNo(Optional.ofNullable(latestBlock.getEpochNumber()).orElse(-1))</span>
+<span class="fc" id="L56">                .absoluteSlot(latestBlock.getSlot())</span>
+<span class="fc" id="L57">                .network(cardanoNetwork)</span>
+<span class="fc" id="L58">                .isSynced(chainSync.isSynced())</span>
+<span class="fc" id="L59">                .build());</span>
+    }
+
+    @Scheduled(fixedRateString = &quot;PT15S&quot;)
+    public void evictChainTipCache() {
+<span class="fc" id="L64">        cacheManager.getCache(&quot;chainTipCache&quot;)</span>
+<span class="fc" id="L65">                .clear();</span>
+<span class="fc" id="L66">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

@@ -2,27 +2,34 @@
 
 import com.bloxbean.cardano.client.common.model.Network;
 import io.micrometer.core.annotation.Timed;
+import io.vavr.Value;
 import io.vavr.control.Either;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.cardano.foundation.voting.domain.CategoryResultsDatum;
 import org.cardano.foundation.voting.domain.CategoryResultsDatumConverter;
 import org.cardano.foundation.voting.domain.TallyResults;
+import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.service.plutus.PlutusScriptLoader;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
 import org.cardano.foundation.voting.service.utxo.EventResultsUtxoDataService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.cardano.foundation.voting.domain.entity.Tally.TallyType.HYDRA;
+import static org.cardano.foundation.voting.utils.MoreEither.findFirstError;
 import static org.zalando.problem.Status.BAD_REQUEST;
 
 @Service
-<span class="fc" id="L24">@AllArgsConstructor</span>
-<span class="fc" id="L25">@Slf4j</span>
+<span class="fc" id="L31">@AllArgsConstructor</span>
+<span class="fc" id="L32">@Slf4j</span>
 public class VotingTallyService {
 
     private final ReferenceDataService referenceDataService;
@@ -35,117 +42,180 @@ public class VotingTallyService {
 
     private final Network network;
 
-    @Timed(value = &quot;service.vote_results.getVoteResults&quot;, histogram = true)
-    public Either&lt;Problem, Optional&lt;TallyResults&gt;&gt; getVoteResults(String eventId,
-                                                                  String categoryId,
-                                                                  String tallyName) {
-<span class="nc" id="L42">        val eventAdditionalInfoM = referenceDataService</span>
-<span class="nc" id="L43">                .findValidEventByName(eventId);</span>
+    @Timed(value = &quot;service.vote_results.getVoteResultsForAllCategories&quot;, histogram = true)
+    @Transactional(readOnly = true)
+    public Either&lt;Problem, List&lt;TallyResults&gt;&gt; getVoteResultsForAllCategories(String eventId,
+                                                                              String tallyName) {
+<span class="nc" id="L49">        val eventDetailsM = referenceDataService</span>
+<span class="nc" id="L50">                .findValidEventByName(eventId);</span>
 
-<span class="nc bnc" id="L45" title="All 2 branches missed.">        if (eventAdditionalInfoM.isEmpty()) {</span>
-<span class="nc" id="L46">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L47">                    .withTitle(&quot;UNRECOGNISED_EVENT&quot;)</span>
-<span class="nc" id="L48">                    .withDetail(&quot;Unrecognised event, event:&quot; + eventId)</span>
-<span class="nc" id="L49">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L50">                    .build()</span>
+<span class="nc bnc" id="L52" title="All 2 branches missed.">        if (eventDetailsM.isEmpty()) {</span>
+<span class="nc" id="L53">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L54">                    .withTitle(&quot;UNRECOGNISED_EVENT&quot;)</span>
+<span class="nc" id="L55">                    .withDetail(&quot;Unrecognised event, event:&quot; + eventId)</span>
+<span class="nc" id="L56">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L57">                    .build()</span>
             );
         }
 
-<span class="nc" id="L54">        var eventDetails = eventAdditionalInfoM.orElseThrow();</span>
+<span class="nc" id="L61">        var eventDetails = eventDetailsM.orElseThrow();</span>
 
-<span class="nc" id="L56">        var isValidCategory = eventDetails.getCategories()</span>
-<span class="nc" id="L57">                .stream()</span>
-<span class="nc" id="L58">                .anyMatch(category -&gt; category.getId().equals(categoryId));</span>
+<span class="nc" id="L63">        var allResultsList = eventDetails.getCategories()</span>
+<span class="nc" id="L64">                .stream()</span>
+<span class="nc" id="L65">                .map(cat -&gt; getVoteResultsPerCategory(eventDetails, cat.getId(), tallyName))</span>
+<span class="nc" id="L66">                .toList();</span>
 
-<span class="nc bnc" id="L60" title="All 2 branches missed.">        if (!isValidCategory) {</span>
-<span class="nc" id="L61">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L62">                    .withTitle(&quot;UNRECOGNISED_CATEGORY&quot;)</span>
-<span class="nc" id="L63">                    .withDetail(&quot;Unrecognised category, category:&quot; + categoryId)</span>
-<span class="nc" id="L64">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L65">                    .build()</span>
+<span class="nc" id="L68">        var errorM = findFirstError(allResultsList);</span>
+
+<span class="nc bnc" id="L70" title="All 2 branches missed.">        if (errorM.isPresent()) {</span>
+<span class="nc" id="L71">            return Either.left(errorM.get().getLeft());</span>
+        }
+
+<span class="nc" id="L74">        var allResults = allResultsList.stream()</span>
+<span class="nc" id="L75">                .filter(Either::isRight)</span>
+<span class="nc" id="L76">                .map(Value::getOrNull)</span>
+<span class="nc" id="L77">                .filter(Objects::nonNull)</span>
+<span class="nc" id="L78">                .filter(Optional::isPresent)</span>
+<span class="nc" id="L79">                .map(Optional::get)</span>
+<span class="nc" id="L80">                .toList();</span>
+
+<span class="nc" id="L82">        return Either.right(allResults);</span>
+
+    }
+    @Timed(value = &quot;service.vote_results.getVoteResultsForACategory&quot;, histogram = true)
+    @Transactional(readOnly = true)
+    public Either&lt;Problem, Optional&lt;TallyResults&gt;&gt; getVoteResultsPerCategory(String eventId,
+                                                                                  String categoryId,
+                                                                                  String tallyName) {
+<span class="nc" id="L90">        val eventDetailsM = referenceDataService</span>
+<span class="nc" id="L91">                .findValidEventByName(eventId);</span>
+
+<span class="nc bnc" id="L93" title="All 2 branches missed.">        if (eventDetailsM.isEmpty()) {</span>
+<span class="nc" id="L94">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L95">                    .withTitle(&quot;UNRECOGNISED_EVENT&quot;)</span>
+<span class="nc" id="L96">                    .withDetail(&quot;Unrecognised event, event:&quot; + eventId)</span>
+<span class="nc" id="L97">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L98">                    .build()</span>
             );
         }
 
-<span class="nc" id="L69">        var tallyM = eventDetails.getTallies()</span>
-<span class="nc" id="L70">                .stream()</span>
-<span class="nc" id="L71">                .filter(tally -&gt; tally.getName().equals(tallyName))</span>
-<span class="nc" id="L72">                .findFirst();</span>
+<span class="nc" id="L102">        var event = eventDetailsM.orElseThrow();</span>
 
-<span class="nc bnc" id="L74" title="All 2 branches missed.">        if (tallyM.isEmpty()) {</span>
-<span class="nc" id="L75">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L76">                    .withTitle(&quot;UNRECOGNISED_TALLY&quot;)</span>
-<span class="nc" id="L77">                    .withDetail(&quot;Unrecognised tally, tally:&quot; + tallyName)</span>
-<span class="nc" id="L78">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L79">                    .build()</span>
+<span class="nc" id="L104">        return getVoteResultsPerCategory(event, categoryId, tallyName);</span>
+    }
+
+    @Transactional(readOnly = true)
+    public Either&lt;Problem, Optional&lt;TallyResults&gt;&gt; getVoteResultsPerCategory(Event eventDetails,
+                                                                             String categoryId,
+                                                                             String tallyName) {
+<span class="nc" id="L111">        var isValidCategory = eventDetails.getCategories()</span>
+<span class="nc" id="L112">                .stream()</span>
+<span class="nc" id="L113">                .anyMatch(category -&gt; category.getId().equals(categoryId));</span>
+
+<span class="nc bnc" id="L115" title="All 2 branches missed.">        if (!isValidCategory) {</span>
+<span class="nc" id="L116">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L117">                    .withTitle(&quot;UNRECOGNISED_CATEGORY&quot;)</span>
+<span class="nc" id="L118">                    .withDetail(&quot;Unrecognised category, category:&quot; + categoryId)</span>
+<span class="nc" id="L119">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L120">                    .build()</span>
             );
         }
 
-<span class="nc" id="L83">        var tally = tallyM.orElseThrow();</span>
+<span class="nc" id="L124">        var tallyM = eventDetails.getTallies()</span>
+<span class="nc" id="L125">                .stream()</span>
+<span class="nc" id="L126">                .filter(tally -&gt; tally.getName().equals(tallyName))</span>
+<span class="nc" id="L127">                .findFirst();</span>
 
-<span class="nc bnc" id="L85" title="All 2 branches missed.">        if (tally.getType() != HYDRA) {</span>
-<span class="nc" id="L86">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L87">                    .withTitle(&quot;TALLY_TYPE_NOT_SUPPORTED&quot;)</span>
-<span class="nc" id="L88">                    .withDetail(&quot;Tally type not supported, tally:&quot; + tally)</span>
-<span class="nc" id="L89">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L90">                    .build()</span>
+<span class="nc bnc" id="L129" title="All 2 branches missed.">        if (tallyM.isEmpty()) {</span>
+<span class="nc" id="L130">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L131">                    .withTitle(&quot;UNRECOGNISED_TALLY&quot;)</span>
+<span class="nc" id="L132">                    .withDetail(&quot;Unrecognised tally, tally:&quot; + tallyName)</span>
+<span class="nc" id="L133">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L134">                    .build()</span>
             );
         }
 
-<span class="nc" id="L94">        var hydraTally = tally.getHydraTallyConfig();</span>
-<span class="nc" id="L95">        var plutusScriptM = plutusScriptLoader.compileScriptBy(eventDetails, categoryId, tallyName);</span>
+<span class="nc" id="L138">        var tally = tallyM.orElseThrow();</span>
 
-<span class="nc bnc" id="L97" title="All 2 branches missed.">        if (plutusScriptM.isEmpty()) {</span>
-<span class="nc" id="L98">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L99">                    .withTitle(&quot;UNRECOGNISED_TALLY&quot;)</span>
-<span class="nc" id="L100">                    .withDetail(&quot;Unrecognised tally, tally:&quot; + tallyName)</span>
-<span class="nc" id="L101">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L102">                    .build()</span>
+<span class="nc bnc" id="L140" title="All 2 branches missed.">        if (tally.getType() != HYDRA) {</span>
+<span class="nc" id="L141">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L142">                    .withTitle(&quot;TALLY_TYPE_NOT_SUPPORTED&quot;)</span>
+<span class="nc" id="L143">                    .withDetail(&quot;Tally type not supported, tally:&quot; + tally)</span>
+<span class="nc" id="L144">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L145">                    .build()</span>
             );
         }
 
-<span class="nc" id="L106">        var plutusScript = plutusScriptM.orElseThrow();</span>
+<span class="nc" id="L149">        var hydraTally = tally.getHydraTallyConfig();</span>
+<span class="nc" id="L150">        var plutusScriptM = plutusScriptLoader.compileScriptBy(eventDetails, categoryId, tallyName);</span>
 
-<span class="nc" id="L108">        var contractAddress = plutusScriptLoader.getContractAddress(plutusScript, network);</span>
-
-<span class="nc" id="L110">        var eventResultsUtxoDataServiceAllResults = eventResultsUtxoDataService.findAllResults(contractAddress);</span>
-
-<span class="nc bnc" id="L112" title="All 2 branches missed.">        if (eventResultsUtxoDataServiceAllResults.isEmpty()) {</span>
-<span class="nc" id="L113">            return Either.right(Optional.empty());</span>
+<span class="nc bnc" id="L152" title="All 2 branches missed.">        if (plutusScriptM.isEmpty()) {</span>
+<span class="nc" id="L153">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L154">                    .withTitle(&quot;UNRECOGNISED_TALLY&quot;)</span>
+<span class="nc" id="L155">                    .withDetail(&quot;Unrecognised tally, tally:&quot; + tallyName)</span>
+<span class="nc" id="L156">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L157">                    .build()</span>
+            );
         }
 
-<span class="nc" id="L116">        var eventValidVerificationKeyHashes = tally.getHydraTallyConfig().getVerificationKeysHashesAsList();</span>
+<span class="nc" id="L161">        var plutusScript = plutusScriptM.orElseThrow();</span>
 
-<span class="nc" id="L118">        var foundValidEventResultsUtxoM = eventResultsUtxoDataServiceAllResults.stream()</span>
-<span class="nc" id="L119">                .filter(resultsUtxo -&gt; resultsUtxo.getWitnessesHashes().stream().anyMatch(eventValidVerificationKeyHashes::contains))</span>
-<span class="nc" id="L120">                .findFirst();</span>
+<span class="nc" id="L163">        var contractAddress = plutusScriptLoader.getContractAddress(plutusScript, network);</span>
 
-<span class="nc bnc" id="L122" title="All 2 branches missed.">        if (foundValidEventResultsUtxoM.isEmpty()) {</span>
-<span class="nc" id="L123">            return Either.right(Optional.empty());</span>
+<span class="nc" id="L165">        var eventResultsUtxoDataServiceAllResults = eventResultsUtxoDataService.findAllResults(contractAddress);</span>
+
+<span class="nc bnc" id="L167" title="All 2 branches missed.">        if (eventResultsUtxoDataServiceAllResults.isEmpty()) {</span>
+<span class="nc" id="L168">            return Either.right(Optional.empty());</span>
         }
 
-<span class="nc" id="L126">        var resultsUtxo = foundValidEventResultsUtxoM.orElseThrow();</span>
+<span class="nc" id="L171">        var eventValidVerificationKeyHashes = tally.getHydraTallyConfig().getVerificationKeysHashesAsList();</span>
 
-<span class="nc" id="L128">        var categoryResultsDatum = categoryResultsDatumConverter.deserialize(resultsUtxo.getInlineDatum());</span>
+<span class="nc" id="L173">        var foundValidEventResultsUtxoM = eventResultsUtxoDataServiceAllResults.stream()</span>
+<span class="nc" id="L174">                .filter(resultsUtxo -&gt; resultsUtxo.getWitnessesHashes().stream().anyMatch(eventValidVerificationKeyHashes::contains))</span>
+<span class="nc" id="L175">                .findFirst();</span>
 
-<span class="nc" id="L130">        var tallyResults = TallyResults.builder()</span>
-<span class="nc" id="L131">                .tallyName(tallyName)</span>
-<span class="nc" id="L132">                .tallyDescription(tally.getDescription())</span>
-<span class="nc" id="L133">                .tallyType(tally.getType())</span>
-<span class="nc" id="L134">                .eventId(categoryResultsDatum.getEventId())</span>
-<span class="nc" id="L135">                .categoryId(categoryResultsDatum.getCategoryId())</span>
-<span class="nc" id="L136">                .results(categoryResultsDatum.getResults())</span>
-<span class="nc" id="L137">                .metadata(Map.of(</span>
+<span class="nc bnc" id="L177" title="All 2 branches missed.">        if (foundValidEventResultsUtxoM.isEmpty()) {</span>
+<span class="nc" id="L178">            return Either.right(Optional.empty());</span>
+        }
+
+<span class="nc" id="L181">        var resultsUtxo = foundValidEventResultsUtxoM.orElseThrow();</span>
+
+<span class="nc" id="L183">        var categoryResultsDatumM = parseCategoryResultsDatum(resultsUtxo.getInlineDatum());</span>
+
+<span class="nc bnc" id="L185" title="All 2 branches missed.">        if (categoryResultsDatumM.isEmpty()) {</span>
+<span class="nc" id="L186">            return Either.right(Optional.empty());</span>
+        }
+
+<span class="nc" id="L189">        var categoryResultsDatum = categoryResultsDatumM.orElseThrow();</span>
+
+<span class="nc" id="L191">        var tallyResults = TallyResults.builder()</span>
+<span class="nc" id="L192">                .tallyName(tallyName)</span>
+<span class="nc" id="L193">                .tallyDescription(tally.getDescription())</span>
+<span class="nc" id="L194">                .tallyType(tally.getType())</span>
+<span class="nc" id="L195">                .eventId(categoryResultsDatum.getEventId())</span>
+<span class="nc" id="L196">                .categoryId(categoryResultsDatum.getCategoryId())</span>
+<span class="nc" id="L197">                .results(categoryResultsDatum.getResults())</span>
+<span class="nc" id="L198">                .metadata(Map.of(</span>
                         &quot;contractAddress&quot;, contractAddress,
-<span class="nc" id="L139">                        &quot;contractName&quot;, hydraTally.getContractName(),</span>
-<span class="nc" id="L140">                        &quot;contractVersion&quot;, hydraTally.getContractVersion(),</span>
-<span class="nc" id="L141">                        &quot;contractHash&quot;, hydraTally.getCompiledScriptHash(),</span>
-<span class="nc" id="L142">                        &quot;compilerName&quot;, hydraTally.getCompilerName(),</span>
-<span class="nc" id="L143">                        &quot;compilerVersion&quot;, hydraTally.getCompilerVersion(),</span>
-<span class="nc" id="L144">                        &quot;plutusVersion&quot;, hydraTally.getPlutusVersion())</span>
+<span class="nc" id="L200">                        &quot;categoryResultsDatum&quot;, resultsUtxo.getInlineDatum(),</span>
+<span class="nc" id="L201">                        &quot;contractName&quot;, hydraTally.getContractName(),</span>
+<span class="nc" id="L202">                        &quot;contractVersion&quot;, hydraTally.getContractVersion(),</span>
+<span class="nc" id="L203">                        &quot;contractHash&quot;, hydraTally.getCompiledScriptHash(),</span>
+<span class="nc" id="L204">                        &quot;compilerName&quot;, hydraTally.getCompilerName(),</span>
+<span class="nc" id="L205">                        &quot;compilerVersion&quot;, hydraTally.getCompilerVersion(),</span>
+<span class="nc" id="L206">                        &quot;plutusVersion&quot;, hydraTally.getPlutusVersion())</span>
                 )
-<span class="nc" id="L146">                .build();</span>
+<span class="nc" id="L208">                .build();</span>
 
-<span class="nc" id="L148">        return Either.right(Optional.of(tallyResults));</span>
+<span class="nc" id="L210">        return Either.right(Optional.of(tallyResults));</span>
+    }
+
+    private Optional&lt;CategoryResultsDatum&gt; parseCategoryResultsDatum(String inlineDatum) {
+        try {
+<span class="nc" id="L215">            return Optional.of(categoryResultsDatumConverter.deserialize(inlineDatum));</span>
+<span class="nc" id="L216">        } catch (Exception e) {</span>
+<span class="nc" id="L217">            return Optional.empty();</span>
+        }
     }
 
 }

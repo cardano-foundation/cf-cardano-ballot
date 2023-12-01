@@ -105,16 +105,25 @@ public class ReferenceDataService {
 
     @Timed(value = &quot;service.reference.rollback&quot;, histogram = true)
     @Transactional
-    public void rollbackReferenceDataAfterSlot(long slot) {
-<span class="nc" id="L109">        proposalRepository.deleteAllAfterSlot(slot);</span>
-<span class="nc" id="L110">        proposalRepository.flush();</span>
+    public ReferenceRollbackStats rollbackReferenceDataAfterSlot(long slot) {
 
-<span class="nc" id="L112">        categoryRepository.deleteAllAfterSlot(slot);</span>
-<span class="nc" id="L113">        categoryRepository.flush();</span>
+<span class="nc" id="L110">        var proposalsRollbackCount = proposalRepository.deleteAllAfterSlot(slot);</span>
+<span class="nc" id="L111">        proposalRepository.flush();</span>
 
-<span class="nc" id="L115">        eventRepository.deleteAllAfterSlot(slot);</span>
-<span class="nc" id="L116">        eventRepository.flush();</span>
-<span class="nc" id="L117">    }</span>
+<span class="nc" id="L113">        var categoryRollbackCount = categoryRepository.deleteAllAfterSlot(slot);</span>
+<span class="nc" id="L114">        categoryRepository.flush();</span>
+
+<span class="nc" id="L116">        var eventRollbackCount = eventRepository.deleteAllAfterSlot(slot);</span>
+<span class="nc" id="L117">        eventRepository.flush();</span>
+
+<span class="nc" id="L119">        return new ReferenceRollbackStats(eventRollbackCount, categoryRollbackCount, proposalsRollbackCount);</span>
+    }
+
+<span class="nc" id="L122">    record ReferenceRollbackStats(</span>
+            int eventRollbackCount,
+            int categoryRollbackCount,
+            int proposalRollbackCount) {
+    }
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

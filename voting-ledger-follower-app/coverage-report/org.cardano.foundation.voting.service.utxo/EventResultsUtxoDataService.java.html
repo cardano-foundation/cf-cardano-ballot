@@ -23,7 +23,7 @@ public class EventResultsUtxoDataService {
 <span class="nc" id="L23">        utxoCategoryResultsDataRepository.saveAndFlush(eventResultsCategoryResultsUtxoData);</span>
 <span class="nc" id="L24">    }</span>
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Timed(value = &quot;service.results.findAllResults&quot;, histogram = true)
     public List&lt;EventResultsCategoryResultsUtxoData&gt; findAllResults(String contractAddress) {
 <span class="nc" id="L29">        return utxoCategoryResultsDataRepository.findByAddress(contractAddress)</span>
@@ -40,8 +40,8 @@ public class EventResultsUtxoDataService {
 
     @Transactional
     @Timed(value = &quot;service.results.rollbackAfterSlot&quot;, histogram = true)
-    public int rollbackAfterSlot(long slot) {
-<span class="nc" id="L44">        log.info(&quot;Rollbacking UtxoData after slot:{}&quot;, slot);</span>
+    public long rollbackAfterSlot(long slot) {
+<span class="nc" id="L44">        log.info(&quot;Rollbacking EventResultsCategoryResultsUtxoData after slot:{}&quot;, slot);</span>
 
 <span class="nc" id="L46">        return utxoCategoryResultsDataRepository.deleteAllAfterSlot(slot);</span>
     }

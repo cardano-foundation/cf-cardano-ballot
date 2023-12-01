@@ -34,9 +34,9 @@ public class DefaultChainSyncService implements ChainSyncService {
 <span class="fc" id="L34">        log.info(&quot;Updated chain sync status: {}&quot;, status);</span>
 
 <span class="pc bpc" id="L36" title="1 of 2 branches missed.">        if (status.isSynced()) {</span>
-<span class="fc" id="L37">            log.info(&quot;Yaci is synced with the original chain. Diff: {} (slots)&quot;, status.diff().orElse(-1L));</span>
+<span class="nc" id="L37">            log.info(&quot;Yaci is synced with the original chain. Diff: {} (slots)&quot;, status.diff().orElse(-1L));</span>
         } else {
-<span class="nc" id="L39">            log.warn(&quot;Yaci is not synced with the original chain. Diff: {} (slots)&quot;, status.diff().orElse(-1L));</span>
+<span class="fc" id="L39">            log.warn(&quot;Yaci is not synced with the original chain. Diff: {} (slots)&quot;, status.diff().orElse(-1L));</span>
         }
 <span class="fc" id="L41">    }</span>
 
@@ -54,15 +54,15 @@ public class DefaultChainSyncService implements ChainSyncService {
 <span class="fc" id="L54">            var orgLastBlockResult = orgBackendService.getBlockService().getLatestBlock();</span>
 <span class="fc" id="L55">            var yaciLastBlockResult = yaciBackendService.getBlockService().getLatestBlock();</span>
 
-<span class="pc bpc" id="L57" title="2 of 4 branches missed.">            if (orgLastBlockResult.isSuccessful() &amp;&amp; yaciLastBlockResult.isSuccessful()) {</span>
-<span class="fc" id="L58">                var diff = orgLastBlockResult.getValue().getSlot() - yaciLastBlockResult.getValue().getSlot();</span>
+<span class="pc bpc" id="L57" title="3 of 4 branches missed.">            if (orgLastBlockResult.isSuccessful() &amp;&amp; yaciLastBlockResult.isSuccessful()) {</span>
+<span class="nc" id="L58">                var diff = orgLastBlockResult.getValue().getSlot() - yaciLastBlockResult.getValue().getSlot();</span>
 
-<span class="fc" id="L60">                log.info(&quot;Current diff: {} (slots) between blockfrost and yaci.&quot;, diff);</span>
+<span class="nc" id="L60">                log.info(&quot;Current diff: {} (slots) between blockfrost and yaci.&quot;, diff);</span>
 
-<span class="pc bpc" id="L62" title="1 of 2 branches missed.">                boolean isSynced = diff &lt;= chainSyncBuffer;</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">                boolean isSynced = diff &lt;= chainSyncBuffer;</span>
 
-<span class="pc bpc" id="L64" title="1 of 2 branches missed.">                if (isSynced) {</span>
-<span class="fc" id="L65">                    return SyncStatus.ok(diff);</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">                if (isSynced) {</span>
+<span class="nc" id="L65">                    return SyncStatus.ok(diff);</span>
                 }
 
 <span class="nc" id="L68">                log.warn(&quot;Yaci is not synced with the blockfrost chain. Diff: {} (slots)&quot;, diff);</span>
@@ -70,7 +70,7 @@ public class DefaultChainSyncService implements ChainSyncService {
 <span class="nc" id="L70">                return SyncStatus.notYet(diff);</span>
             }
 
-<span class="nc" id="L73">            return SyncStatus.unknownError();</span>
+<span class="fc" id="L73">            return SyncStatus.unknownError();</span>
 <span class="nc" id="L74">        } catch (Exception e) {</span>
 <span class="nc" id="L75">            log.error(&quot;Backend service is not available: {}&quot;, e.getMessage());</span>
 

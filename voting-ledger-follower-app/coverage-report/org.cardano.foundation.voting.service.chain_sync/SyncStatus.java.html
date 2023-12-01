@@ -5,7 +5,7 @@ import java.util.Optional;
 <span class="fc" id="L5">public record SyncStatus(boolean isSynced, Optional&lt;Long&gt; diff, Optional&lt;Exception&gt; ex) {</span>
 
     static SyncStatus ok(long diff) {
-<span class="fc" id="L8">        return new SyncStatus(true, Optional.of(diff), Optional.empty());</span>
+<span class="nc" id="L8">        return new SyncStatus(true, Optional.of(diff), Optional.empty());</span>
     }
 
     static SyncStatus notYet(long diff) {
@@ -21,7 +21,7 @@ import java.util.Optional;
     }
 
     static SyncStatus unknownError() {
-<span class="nc" id="L24">        return new SyncStatus(false, Optional.empty(), Optional.empty());</span>
+<span class="fc" id="L24">        return new SyncStatus(false, Optional.empty(), Optional.empty());</span>
     }
 
 }

@@ -1,5 +1,9 @@
 package org.cardano.foundation.voting.api;
 
+import com.bloxbean.cardano.yaci.store.blocks.domain.Block;
+import com.bloxbean.cardano.yaci.store.blocks.service.BlockService;
+import com.bloxbean.cardano.yaci.store.transaction.domain.TransactionDetails;
+import com.bloxbean.cardano.yaci.store.transaction.service.TransactionService;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import io.restassured.RestAssured;
@@ -28,8 +32,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.util.List;
+import java.util.Optional;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ComponentScan
@@ -37,7 +44,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 @EntityScan
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles({"test", "dev--preprod"})
-@SpringJUnitConfig(classes = VotingLedgerFollowerApp.class)
+@SpringJUnitConfig(classes = { VotingLedgerFollowerApp.class, VotingLedgerFollowerAppTest.class } )
 public class BaseTest {
 
     @LocalServerPort
@@ -55,6 +62,12 @@ public class BaseTest {
     @Autowired
     private MerkleRootHashRepository merkleRootHashRepository;
 
+    @Autowired
+    private BlockService blockService;
+
+    @Autowired
+    private TransactionService transactionService;
+
     private WireMockServer wireMockServer;
 
     @BeforeAll
@@ -63,7 +76,7 @@ public class BaseTest {
         wireMockServer.start();
 
         String accountResponse = """
-                {    "active": true,
+                {   "active": true,
                     "controlled_amount": "12695385",
                     "pool_id": "pool1pu5jlj4q9w9jlxeu370a3c9myx47md5j5m2str0naunn2q3lkdy",
                     "rewards_sum": "95385",
@@ -86,86 +99,6 @@ public class BaseTest {
 
         wireMockServer.stubFor(
                 WireMock.get(urlEqualTo("/accounts/stake_test1uq0zsej7gjyft8sy9dj7sn9rmqdgw32r8c0lpmr6xu3tu9szp6qre"))
-                        .willReturn(com.github.tomakehurst.wiremock.client.WireMock.aResponse()
-                                .withStatus(404)));
-
-        String latestBlockResponse = "{" +
-                "\"time\": 1641338934," +
-                "\"height\": 15243593," +
-                "\"hash\": \"4ea1ba291e8eef538635a53e59fddba7810d1679631cc3aed7c8e6c4091a516a\"," +
-                "\"slot\": 412162133," +
-                "\"epoch\": 425," +
-                "\"epoch_slot\": 12," +
-                "\"slot_leader\": \"pool1pu5jlj4q9w9jlxeu370a3c9myx47md5j5m2str0naunn2qnikdy\"," +
-                "\"size\": 3," +
-                "\"tx_count\": 1," +
-                "\"output\": \"128314491794\"," +
-                "\"fees\": \"592661\"," +
-                "\"block_vrf\": \"vrf_vk1wf2k6lhujezqcfe00l6zetxpnmh9n6mwhpmhm0dvfh3fxgmdnrfqkms8ty\"," +
-                "\"op_cert\": \"da905277534faf75dae41732650568af545134ee08a3c0392dbefc8096ae177c\"," +
-                "\"op_cert_counter\": \"18\"," +
-                "\"previous_block\": \"43ebccb3ac72c7cebd0d9b755a4b08412c9f5dcb81b8a0ad1e3c197d29d47b05\"," +
-                "\"next_block\": \"8367f026cf4b03e116ff8ee5daf149b55ba5a6ec6dec04803b8dc317721d15fa\"," +
-                "\"confirmations\": 4698" +
-                "}";
-
-        wireMockServer.stubFor(
-                WireMock.get(urlEqualTo("/blocks/latest"))
-                        .willReturn(com.github.tomakehurst.wiremock.client.WireMock.aResponse()
-                                .withStatus(200)
-                                .withHeader("Content-Type", "application/json")
-                                .withBody(latestBlockResponse)));
-
-        wireMockServer.stubFor(
-                WireMock.get(urlEqualTo("/yaci-api/blocks/latest"))
-                        .willReturn(com.github.tomakehurst.wiremock.client.WireMock.aResponse()
-                                .withStatus(200)
-                                .withHeader("Content-Type", "application/json")
-                                .withBody(latestBlockResponse)));
-
-        String transactionResponse = "{" +
-                "\"hash\": \"1e043f100dce12d107f679685acd2fc0610e10f72a92d412794c9773d11d8477\"," +
-                "\"block\": \"356b7d7dbb696ccd12775c016941057a9dc70898d87a63fc752271bb46856940\"," +
-                "\"block_height\": 123456," +
-                "\"block_time\": 1635505891," +
-                "\"slot\": 42000000," +
-                "\"index\": 1," +
-                "\"output_amount\": [" +
-                "{" +
-                "\"unit\": \"lovelace\"," +
-                "\"quantity\": \"42000000\"" +
-                "}," +
-                "{" +
-                "\"unit\": \"b0d07d45fe9514f80213f4020e5a61241458be626841cde717cb38a76e7574636f696e\"," +
-                "\"quantity\": \"12\"" +
-                "}" +
-                "]," +
-                "\"fees\": \"182485\"," +
-                "\"deposit\": \"0\"," +
-                "\"size\": 433," +
-                "\"invalid_before\": null," +
-                "\"invalid_hereafter\": \"13885913\"," +
-                "\"utxo_count\": 4," +
-                "\"withdrawal_count\": 0," +
-                "\"mir_cert_count\": 0," +
-                "\"delegation_count\": 0," +
-                "\"stake_cert_count\": 0," +
-                "\"pool_update_count\": 0," +
-                "\"pool_retire_count\": 0," +
-                "\"asset_mint_or_burn_count\": 0," +
-                "\"redeemer_count\": 0," +
-                "\"valid_contract\": true" +
-                "}";
-
-        wireMockServer.stubFor(
-                WireMock.get(urlEqualTo("/yaci-api/txs/1e043f100dce12d107f679685acd2fc0610e10f72a92d412794c9773d11d8477"))
-                        .willReturn(com.github.tomakehurst.wiremock.client.WireMock.aResponse()
-                                .withStatus(200)
-                                .withHeader("Content-Type", "application/json")
-                                .withBody(transactionResponse)));
-
-        wireMockServer.stubFor(
-                WireMock.get(urlEqualTo("/yaci-api/txs/23ab9463463eb149054d22249433f1bfd5acbbf8af38cc64f3840b0491230880"))
                         .willReturn(com.github.tomakehurst.wiremock.client.WireMock.aResponse()
                                 .withStatus(404)));
 
@@ -224,6 +157,29 @@ public class BaseTest {
                 .build();
 
         merkleRootHashRepository.save(merkleRootHash);
+
+        when(blockService.getLatestBlock()).thenReturn(Optional.empty());
+
+        Block block1 = Block.builder()
+                .hash("356b7d7dbb696ccd12775c016941057a9dc70898d87a63fc752271bb46856940")
+                .epochNumber(412)
+                .slot(412162133L)
+                .blockBodyHash("1e043f100dce12d107f679685acd2fc0610e10f72a92d412794c9773d11d8477")
+                .build();
+
+        when(blockService.getLatestBlock()).thenReturn(Optional.of(block1));
+
+        when(blockService.getBlockByNumber(412162133L)).thenReturn(Optional.of(block1));
+
+        when(transactionService.getTransaction(anyString())).thenReturn(Optional.empty());
+
+        var tx1 = TransactionDetails.builder()
+                .hash("1e043f100dce12d107f679685acd2fc0610e10f72a92d412794c9773d11d8477")
+                .blockHeight(412162133L)
+                .slot(412162133L)
+                .build();
+
+        when(transactionService.getTransaction("1e043f100dce12d107f679685acd2fc0610e10f72a92d412794c9773d11d8477")).thenReturn(Optional.of(tx1));
     }
 
     @AfterAll
@@ -234,4 +190,5 @@ public class BaseTest {
         eventRepository.deleteAll();
         merkleRootHashRepository.deleteAll();
     }
+
 }

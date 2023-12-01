@@ -46,6 +46,7 @@ public class YaciTransactionDetailsBlockchainDataService implements BlockchainDa
 
                         return TransactionDetails.builder()
                                 .transactionsConfirmations(blockConfirmations)
+                                .transactionHash(txn.getHash())
                                 .finalityScore(TransactionDetails.FinalityScore.fromConfirmations(blockConfirmations))
                                 .blockHash(block.getHash())
                                 .absoluteSlot(txn.getSlot())

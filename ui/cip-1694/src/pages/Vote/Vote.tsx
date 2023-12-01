@@ -569,7 +569,7 @@ export const VotePage = () => {
           <>
             <div style={{ marginBottom: '10px' }}>Thank you, your vote has been submitted.</div>
             Make sure to check back on{' '}
-            <b>{event?.eventStartDate && getDateAndMonth(event?.eventEndDate?.toString())}</b> to see the results!
+            <b>{event?.proposalsRevealDate && getDateAndMonth(event?.proposalsRevealDate?.toString())}</b> to see the results!
           </>
         }
       />

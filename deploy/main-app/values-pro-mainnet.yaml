@@ -88,7 +88,7 @@ cf-cardano-ballot-ledger-follower-api:
       - name: follower-1
         enabled: true
         schemaName: follower_1
-        imageTag: 0.2.75-16-015ef
+        imageTag: 0.2.75-17-f3c58
       - name: follower-2
         enabled: true
         schemaName: follower_2

@@ -8,7 +8,6 @@
 
   .description {
     color: #061d3c !important;
-    font-weight: 600 !important;
     letter-spacing: 0em !important;
   }
 
@@ -57,4 +56,29 @@
   font-weight: 400 !important;
   letter-spacing: 0em !important;
   padding-left: 20px !important;
+}
+
+.submitLabel {
+  align-self: center;
+  color: #061d3c;
+  display: flex;
+  font-size: 14px;
+  font-weight: 400;
+  flex-wrap: wrap;
+  gap: 5px;
+  line-height: 14px;
+}
+
+.link {
+  align-items: center !important;
+  color: #39486c !important;
+  cursor: pointer !important;
+  display: flex !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  line-height: 14px !important;
+  .underline {
+    text-decoration: underline !important;
+    color: #39486c !important;
+  }
 }

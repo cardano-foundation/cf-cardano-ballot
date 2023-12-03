@@ -55,8 +55,9 @@ jobs:
       - name: 🎳 Build verification-app
         run: |
           cd ui/verification-app
-          npm run react-inject-env && npm run build
-# temporarily disable upload 
+          npm run build
+
+# temporarily disable upload
 #      - name: Upload build
 #        uses: actions/upload-artifact@v3
 #        with:

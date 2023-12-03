@@ -13,7 +13,6 @@ type EnvType = {
   VOTING_LEDGER_FOLLOWER_APP_SERVER_URL: string;
   VOTING_VERIFICATION_APP_SERVER_URL: string;
   GOOGLE_FORM_URL: string;
-  GOOGLE_FORM_VOTE_CONTEXT_INPUT_NAME: string;
   TARGET_NETWORK: string;
   EVENT_ID: string;
   CATEGORY_ID: string;
@@ -23,6 +22,7 @@ type EnvType = {
   DISCORD_URL: string;
   STATUS_PAGE_URL: string;
   FAQ_URL: string;
+  ENV_URI: string;
 };
 
 export const env: EnvType = {
@@ -36,9 +36,6 @@ export const env: EnvType = {
     process.env.REACT_APP_VOTING_VERIFICATION_APP_SERVER_URL ||
     get(window, 'env.REACT_APP_VOTING_VERIFICATION_APP_SERVER_URL'),
   GOOGLE_FORM_URL: process.env.REACT_APP_GOOGLE_FORM_URL || get(window, 'env.REACT_APP_GOOGLE_FORM_URL'),
-  GOOGLE_FORM_VOTE_CONTEXT_INPUT_NAME:
-    process.env.REACT_APP_GOOGLE_FORM_VOTE_CONTEXT_INPUT_NAME ||
-    get(window, 'env.REACT_APP_GOOGLE_FORM_VOTE_CONTEXT_INPUT_NAME'),
   // config vars
   TARGET_NETWORK: process.env.REACT_APP_TARGET_NETWORK || get(window, 'env.REACT_APP_TARGET_NETWORK'),
   EVENT_ID: process.env.REACT_APP_EVENT_ID || get(window, 'env.REACT_APP_EVENT_ID'),
@@ -53,4 +50,5 @@ export const env: EnvType = {
   DISCORD_URL: process.env.REACT_APP_DISCORD_URL || get(window, 'env.REACT_APP_DISCORD_URL'),
   STATUS_PAGE_URL: process.env.REACT_APP_STATUS_PAGE_URL || get(window, 'env.REACT_APP_STATUS_PAGE_URL'),
   FAQ_URL: process.env.REACT_APP_FAQ_URL || get(window, 'env.REACT_APP_FAQ_URL'),
+  ENV_URI: process.env.REACT_APP_ENV_URI || get(window, 'env.REACT_APP_ENV_URI'),
 };

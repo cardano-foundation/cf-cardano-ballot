@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
 import { Grid, Button } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import { RootState } from 'common/store';
 import { ROUTES } from 'common/routes';
 import { HeaderActions } from './components/HeaderActions';
 import { MobileModal } from '../MobileModal/MobileModal';
@@ -12,7 +10,6 @@ import lofo from '../../common/resources/images/cardano-ballot-logo.png';
 import styles from './Header.module.scss';
 
 export const Header = () => {
-  const event = useSelector((state: RootState) => state.user.event);
   const [isMobileMenuVisible, setIsMobileMenuVisible] = useState(false);
 
   return (
@@ -48,7 +45,7 @@ export const Header = () => {
           </Link>
         </Grid>
         <Grid display={{ xs: 'none', md: 'flex' }}>
-          <HeaderActions showNavigationItems={event?.notStarted === false} />
+          <HeaderActions />
         </Grid>
         <Grid
           display={{ xs: 'block', md: 'none' }}
@@ -83,7 +80,6 @@ export const Header = () => {
           justifyContent="space-between"
         >
           <HeaderActions
-            showNavigationItems={event?.notStarted === false}
             onClick={() => setIsMobileMenuVisible(false)}
             isMobileMenu
           />

@@ -82,10 +82,7 @@ describe('HeaderActions', () => {
     const history = createMemoryHistory({ initialEntries: [ROUTES.INTRO] });
     renderWithProviders(
       <CustomRouter history={history}>
-        <HeaderActions
-          showNavigationItems
-          onClick={onClick}
-        />
+        <HeaderActions onClick={onClick} />
       </CustomRouter>,
       { preloadedState: { user: { event: eventMock_active } as UserState } }
     );

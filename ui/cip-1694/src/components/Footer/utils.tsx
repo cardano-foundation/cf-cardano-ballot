@@ -1,5 +1,5 @@
-import TAndC from './resources/T&C.pdf';
-import Privacy from './resources/Privacy.pdf';
+import TAndC from './resources/CF_T&C.pdf';
+import Privacy from './resources/CF_Privacy_Policy.pdf';
 import { env } from '../../env';
 
 export const getFooterLinks = () =>

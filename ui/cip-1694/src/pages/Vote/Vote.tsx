@@ -39,7 +39,6 @@ import { HttpError } from 'common/handlers/httpHandler';
 import { getDateAndMonth } from 'common/utils/dateUtils';
 import { getUserInSession, saveUserInSession, tokenIsExpired } from 'common/utils/session';
 import { ConfirmWithWalletSignatureModal } from './components/ConfirmWithWalletSignatureModal/ConfirmWithWalletSignatureModal';
-import { VoteContextInput } from './components/VoteContextInput/VoteContextInput';
 import { env } from '../../env';
 import styles from './Vote.module.scss';
 
@@ -52,7 +51,7 @@ export const errorsMap = {
   ),
   [voteService.ERRORS.VOTE_CANNOT_BE_CHANGED]: (stakeAddress: string) => (
     <div>
-      <div>Vote cannot be changed for the stake address:</div>
+      <div>Ballot cannot be changed for the stake address:</div>
       <div style={{ fontSize: '14px' }}>${stakeAddress}</div>
     </div>
   ),
@@ -67,7 +66,6 @@ const iconsMap: Record<ProposalPresentation['name'], React.ReactElement | null> 
 export const VotePage = () => {
   const { stakeAddress, isConnected, signMessage } = useCardano();
   const [receipt, setReceipt] = useState<VoteReceiptType | null>(null);
-  const [voteContext, setVoteContext] = useState('');
   const event = useSelector((state: RootState) => state.user.event);
   const tip = useSelector((state: RootState) => state.user.tip);
   const [isReceiptFetched, setIsReceiptFetched] = useState(false);
@@ -86,8 +84,6 @@ export const VotePage = () => {
   const numOfCategories = categories?.length;
   const activeCategoryIndex = findIndex(categories, ['id', activeCategoryId]);
   const [isToggledReceipt, toggleReceipt] = useToggle(false);
-  const couldAddContext =
-    activeCategoryIndex === 0 && isReceiptFetched && !receipt && event?.finished !== true && event?.notStarted !== true;
   const dispatch = useDispatch();
 
   const fetchChainTip = useCallback(async () => {
@@ -163,8 +159,8 @@ export const VotePage = () => {
   const fetchReceipt = useCallback(
     async ({ cb, refetch = false }: { cb?: () => void; refetch?: boolean }) => {
       const errorPrefix = refetch
-        ? 'Unable to refresh your vote receipt. Please try again'
-        : 'Unable to fetch your vote receipt. Please try again';
+        ? 'Unable to refresh your ballot receipt. Please try again'
+        : 'Unable to fetch your ballot receipt. Please try again';
       try {
         const session = getUserInSession();
         let token = session?.accessToken;
@@ -239,18 +235,6 @@ export const VotePage = () => {
     setActiveCategoryId(categories[categoryIndex]?.id);
   };
 
-  const submitVoteContextForm = useCallback(async () => {
-    try {
-      await voteService.submitVoteContextForm({
-        [env.GOOGLE_FORM_VOTE_CONTEXT_INPUT_NAME]: voteContext,
-      });
-    } catch (error) {
-      console.log(error?.message || error);
-    } finally {
-      setVoteContext('');
-    }
-  }, [voteContext]);
-
   const handleSubmit = async () => {
     let votingPower: Account['votingPower'];
     try {
@@ -259,7 +243,7 @@ export const VotePage = () => {
       toast(
         <Toast
           error
-          message={errorsMap[error?.message]?.(stakeAddress) || 'Unable to submit your vote. Please try again'}
+          message={errorsMap[error?.message]?.(stakeAddress) || 'Unable to submit your ballot. Please try again'}
           icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
         />
       );
@@ -277,14 +261,12 @@ export const VotePage = () => {
         slotNumber: chainTip.absoluteSlot.toString(),
         votingPower,
         category: activeCategoryId,
+        uri: env.ENV_URI,
       });
       setIsCastingAVote(true);
       const requestVoteObject = await signMessagePromisified(canonicalVoteInput);
       await voteService.castAVoteWithDigitalSignature(requestVoteObject);
       dispatch(setIsVoteSubmittedModalVisible({ isVisible: true }));
-      if (couldAddContext && voteContext) {
-        await submitVoteContextForm();
-      }
       setVoteSubmitted(true);
       if (numOfCategories === 1 || activeCategoryIndex === numOfCategories - 1) {
         await fetchReceipt({});
@@ -295,7 +277,7 @@ export const VotePage = () => {
       toast(
         <Toast
           error
-          message={errorsMap[error?.message]?.(stakeAddress) || 'Unable to submit your vote. Please try again'}
+          message={errorsMap[error?.message]?.(stakeAddress) || 'Unable to submit your ballot. Please try again'}
           icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
         />
       );
@@ -376,8 +358,8 @@ export const VotePage = () => {
             <Typography
               variant="h5"
               className={styles.description}
-              lineHeight={{ xs: '19px', md: '36px' }}
-              fontSize={{ xs: '16px', md: '28px' }}
+              lineHeight={{ xs: '19px', md: '24px' }}
+              fontSize={{ xs: '16px', md: '24px' }}
               data-testid="event-description"
             >
               {env.QUESTIONS[activeCategoryIndex]}
@@ -403,21 +385,12 @@ export const VotePage = () => {
               onChangeOption={onChangeOption}
             />
           </Grid>
-          {couldAddContext && (
-            <Grid item>
-              <VoteContextInput
-                disabled={!optionId}
-                onChange={setVoteContext}
-                voteContext={voteContext}
-              />
-            </Grid>
-          )}
           <Grid item>
             <Grid
               container
               direction={{ xs: 'column', md: 'row' }}
               justifyContent={'center'}
-              gap={{ xs: '0px', md: '51px' }}
+              gap={{ xs: '0px', md: '24px' }}
               wrap="nowrap"
             >
               <Grid
@@ -451,7 +424,7 @@ export const VotePage = () => {
                     disabled={isReceiptDrawerInitializing || !tip?.absoluteSlot}
                   >
                     <span className={styles.buttonContent}>
-                      Vote receipt
+                      Ballot receipt
                       {isReceiptDrawerInitializing && (
                         <CircularProgress
                           className={styles.loader}
@@ -469,22 +442,26 @@ export const VotePage = () => {
                     onClick={() => dispatch(setIsConnectWalletModalVisible({ isVisible: true }))}
                     data-testid="proposal-connect-button"
                   >
-                    {event?.finished ? 'Connect wallet to see your vote' : 'Connect wallet to vote'}
+                    {event?.finished ? 'Connect wallet to see your ballot' : 'Connect wallet to participate'}
                   </Button>
                 )}
                 {showSubmitButton && (
                   <Button
                     className={cn(styles.button, {
+                      // [styles.disabled]: !optionId || !isReceiptFetched || !isTAndCAndPPChecked,
                       [styles.disabled]: !optionId || !isReceiptFetched,
                     })}
                     size="large"
                     variant="contained"
-                    disabled={!optionId || !isReceiptFetched || isCastingAVote || !tip?.absoluteSlot}
+                    disabled={
+                      // !optionId || !isReceiptFetched || isCastingAVote || !tip?.absoluteSlot || !isTAndCAndPPChecked
+                      !optionId || !isReceiptFetched || isCastingAVote || !tip?.absoluteSlot
+                    }
                     onClick={() => handleSubmit()}
                     data-testid="proposal-submit-button"
                   >
                     <span className={styles.buttonContent}>
-                      Submit your vote
+                      Submit your ballot
                       {isCastingAVote && (
                         <CircularProgress
                           size={20}
@@ -502,7 +479,8 @@ export const VotePage = () => {
                     disabled
                     data-testid="event-hasnt-started-submit-button"
                   >
-                    Submit your vote from {event?.eventStartDate && getDateAndMonth(event?.eventStartDate?.toString())}
+                    Submit your ballot from{' '}
+                    {event?.eventStartDate && getDateAndMonth(event?.eventStartDate?.toString())}
                   </Button>
                 )}
                 {isConnected && event?.finished && (
@@ -545,6 +523,7 @@ export const VotePage = () => {
             </Grid>
           </Grid>
         </Grid>
+
         <SidePage
           anchor="right"
           open={isToggledReceipt}
@@ -567,7 +546,7 @@ export const VotePage = () => {
         title="Vote submitted"
         description={
           <>
-            <div style={{ marginBottom: '10px' }}>Thank you, your vote has been submitted.</div>
+            <div style={{ marginBottom: '10px' }}>Thank you, your ballot has been submitted.</div>
             Make sure to check back on{' '}
             <b>{event?.eventStartDate && getDateAndMonth(event?.eventEndDate?.toString())}</b> to see the results!
           </>
@@ -587,7 +566,7 @@ export const VotePage = () => {
         isConfirming={isConfirmingWithSignature}
         description={
           <>
-            We need to check if you’ve already voted.
+            We need to check if you’ve already submitted your ballot.
             <br />
             You will see a pop-up message from your wallet.
             <br />

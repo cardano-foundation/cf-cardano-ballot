@@ -34,7 +34,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import java.util.List;
 import java.util.Optional;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -48,27 +48,27 @@ import static org.mockito.Mockito.when;
 public class BaseTest {
 
     @LocalServerPort
-    private int serverPort;
+    protected int serverPort;
 
     @Autowired
-    private EventRepository eventRepository;
+    protected EventRepository eventRepository;
 
     @Autowired
-    private CategoryRepository categoryRepository;
+    protected CategoryRepository categoryRepository;
 
     @Autowired
-    private ProposalRepository proposalRepository;
+    protected ProposalRepository proposalRepository;
 
     @Autowired
-    private MerkleRootHashRepository merkleRootHashRepository;
+    protected MerkleRootHashRepository merkleRootHashRepository;
 
     @Autowired
-    private BlockService blockService;
+    protected BlockService blockService;
 
     @Autowired
-    private TransactionService transactionService;
+    protected TransactionService transactionService;
 
-    private WireMockServer wireMockServer;
+    protected WireMockServer wireMockServer;
 
     @BeforeAll
     public void setUp() {
@@ -76,21 +76,19 @@ public class BaseTest {
         wireMockServer.start();
 
         String accountResponse = """
-                {   "active": true,
-                    "controlled_amount": "12695385",
-                    "pool_id": "pool1pu5jlj4q9w9jlxeu370a3c9myx47md5j5m2str0naunn2q3lkdy",
-                    "rewards_sum": "95385",
-                    "reserves_sum": "0",
-                    "withdrawable_amount": "12695385",
-                    "withdrawals_sum": "0",
-                    "treasury_sum": "0"
-                  }""";
+            [
+            {"active_epoch":96,"amount":"1","pool_id":"pool1pu5jlj4q9w9jlxeu370a3c9myx47md5j5m2str0naunn2q3lkdy"},
+            {"active_epoch":97,"amount":"2","pool_id":"pool1pu5jlj4q9w9jlxeu370a3c9myx47md5j5m2str0naunn2q3lkdy"},
+            {"active_epoch":98,"amount":"3","pool_id":"pool1pu5jlj4q9w9jlxeu370a3c9myx47md5j5m2str0naunn2q3lkdy"},
+            {"active_epoch":99,"amount":"12695385","pool_id":"pool1pu5jlj4q9w9jlxeu370a3c9myx47md5j5m2str0naunn2q3lkdy"}
+            ]
+        """;
 
         RestAssured.port = serverPort;
         RestAssured.baseURI = "http://localhost";
 
         wireMockServer.stubFor(
-                WireMock.get(urlEqualTo("/accounts/stake_test1uzpq2pktpnj54e64kfgjkm8nrptdwfj7s7fvhp40e98qsusd9z7ek"))
+                WireMock.get(urlPathEqualTo("/accounts/stake_test1uzpq2pktpnj54e64kfgjkm8nrptdwfj7s7fvhp40e98qsusd9z7ek/history"))
                 .willReturn(com.github.tomakehurst.wiremock.client.WireMock.aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
@@ -98,7 +96,7 @@ public class BaseTest {
         );
 
         wireMockServer.stubFor(
-                WireMock.get(urlEqualTo("/accounts/stake_test1uq0zsej7gjyft8sy9dj7sn9rmqdgw32r8c0lpmr6xu3tu9szp6qre"))
+                WireMock.get(urlPathEqualTo("/accounts/stake_test1uq0zsej7gjyft8sy9dj7sn9rmqdgw32r8c0lpmr6xu3tu9szp6qre/history"))
                         .willReturn(com.github.tomakehurst.wiremock.client.WireMock.aResponse()
                                 .withStatus(404)));
 

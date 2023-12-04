@@ -9,36 +9,36 @@ import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataStak
 
 import java.util.Optional;
 
-<span class="fc" id="L12">@RequiredArgsConstructor</span>
-<span class="fc" id="L13">@Slf4j</span>
+<span class="nc" id="L12">@RequiredArgsConstructor</span>
+<span class="nc" id="L13">@Slf4j</span>
 public class BackendServiceBlockchainDataCurrentStakePoolService implements BlockchainDataStakePoolService {
 
     private final BackendService backendService;
 
     @PostConstruct
     public void init() {
-<span class="fc" id="L20">        log.info(&quot;Initialising using BackendServiceBlockchainDataCurrentStakePoolService.&quot;);</span>
-<span class="fc" id="L21">    }</span>
+<span class="nc" id="L20">        log.info(&quot;Initialising using BackendServiceBlockchainDataCurrentStakePoolService.&quot;);</span>
+<span class="nc" id="L21">    }</span>
 
     @Override
     public Optional&lt;Long&gt; getStakeAmount(int epochNo, String stakeAddress) {
-<span class="fc" id="L25">        var accountService = backendService.getAccountService();</span>
+<span class="nc" id="L25">        var accountService = backendService.getAccountService();</span>
 
         try {
-<span class="fc" id="L28">            var accountInfoResult = accountService.getAccountInformation(stakeAddress);</span>
-<span class="fc bfc" id="L29" title="All 2 branches covered.">            if (accountInfoResult.isSuccessful()) {</span>
-<span class="fc" id="L30">                var accountInfo = accountInfoResult.getValue();</span>
+<span class="nc" id="L28">            var accountInfoResult = accountService.getAccountInformation(stakeAddress);</span>
+<span class="nc bnc" id="L29" title="All 2 branches missed.">            if (accountInfoResult.isSuccessful()) {</span>
+<span class="nc" id="L30">                var accountInfo = accountInfoResult.getValue();</span>
 
-<span class="pc bpc" id="L32" title="1 of 2 branches missed.">                if (!accountInfo.getActive()) {</span>
+<span class="nc bnc" id="L32" title="All 2 branches missed.">                if (!accountInfo.getActive()) {</span>
 <span class="nc" id="L33">                    return Optional.empty();</span>
                 }
 
-<span class="fc" id="L36">                return Optional.of(Long.parseLong(accountInfo.getControlledAmount()));</span>
+<span class="nc" id="L36">                return Optional.of(Long.parseLong(accountInfo.getControlledAmount()));</span>
             }
 
-<span class="fc" id="L39">            log.warn(&quot;Failed to get stake amount for epoch {} and stake address {}.&quot;, epochNo, stakeAddress);</span>
+<span class="nc" id="L39">            log.warn(&quot;Failed to get stake amount for epoch {} and stake address {}.&quot;, epochNo, stakeAddress);</span>
 
-<span class="fc" id="L41">            return Optional.empty();</span>
+<span class="nc" id="L41">            return Optional.empty();</span>
 <span class="nc" id="L42">        } catch (ApiException e) {</span>
             // TODO: handle 404 vs 5xx
 

@@ -37,14 +37,14 @@ import org.springframework.context.annotation.Profile;
     @Profile( value = { &quot;prod&quot;, &quot;dev--preprod&quot;} )
     @ConditionalOnProperty(prefix = &quot;cardano.snapshot.bounds.check&quot;, value = &quot;enabled&quot;, havingValue = &quot;true&quot;)
     public BlockchainDataStakePoolService blockchainDataStakePoolService(@Qualifier(&quot;original_blockfrost&quot;) BackendService backendService) {
-<span class="nc" id="L40">        return new BackendServiceBlockchainDataStakePoolService(backendService);</span>
+<span class="fc" id="L40">        return new BackendServiceBlockchainDataStakePoolService(backendService);</span>
     }
 
     @Bean
     @Profile( value = { &quot;prod&quot;, &quot;dev--preprod&quot;} )
     @ConditionalOnProperty(prefix = &quot;cardano.snapshot.bounds.check&quot;, value = &quot;enabled&quot;, havingValue = &quot;false&quot;)
     public BlockchainDataStakePoolService blockchainDataCurrentStakePoolService(@Qualifier(&quot;original_blockfrost&quot;) BackendService backendService) {
-<span class="fc" id="L47">        return new BackendServiceBlockchainDataCurrentStakePoolService(backendService);</span>
+<span class="nc" id="L47">        return new BackendServiceBlockchainDataCurrentStakePoolService(backendService);</span>
     }
 
     @Bean

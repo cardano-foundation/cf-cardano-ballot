@@ -416,6 +416,12 @@ describe('For ongoing event:', () => {
 
     expect(mockCastAVoteWithDigitalSignature).toHaveBeenCalledWith(canonicalVoteInputJsonMock);
     expect(store.getState().user.isVoteSubmittedModalVisible).toBeTruthy;
+    expect(screen.queryByTestId('vote-submitted-title')).toHaveTextContent('Vote submitted');
+    expect(screen.queryByTestId('vote-submitted-description')).toHaveTextContent(
+      `Thank you, your ballot has been submitted.Make sure to check back on ${getDateAndMonth(
+        eventMock_active?.proposalsRevealDate?.toString()
+      )} to see the results!`
+    );
 
     await act(async () => {
       fireEvent.click(screen.queryByTestId('vote-submitted-close'));

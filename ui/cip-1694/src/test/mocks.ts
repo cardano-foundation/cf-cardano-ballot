@@ -205,7 +205,7 @@ export const userInSessionMock = {
 export const voteStats: ByProposalsInCategoryStats = {
   category: 'CHANGE_GOV_STRUCTURE',
   proposals: {
-    [eventMock_finished.categories[0].proposals[0].id]: { votes: 2134, votingPower: '123' },
-    [eventMock_finished.categories[0].proposals[1].id]: { votes: 700, votingPower: '123' },
+    [eventMock_finished.categories[0].proposals[0].id]: { votes: 2134123, votingPower: '91000000000000' },
+    [eventMock_finished.categories[0].proposals[1].id]: { votes: 70011, votingPower: '1000000000000000' },
   },
 };

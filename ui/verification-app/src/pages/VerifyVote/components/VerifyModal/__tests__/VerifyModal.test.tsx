@@ -11,7 +11,7 @@ import { Toast } from 'common/components/Toast/Toast';
 import { voteProofMock } from 'test/mocks';
 import { VerifyModal } from '../VerifyModal';
 import { ERRORS, SECTIONS } from '../types';
-import { titles, descriptions, ctas } from '../utils';
+import { titles, ctas } from '../utils';
 import { EXPLORERS } from '../components/ChoseExplorerSection/utils';
 
 jest.mock('../components/VerifyVoteSection/VerifyVoteSection', () => ({
@@ -67,7 +67,9 @@ describe('VerifyModal', () => {
 
     const description = screen.queryByTestId('verify-modal-description');
     expect(description).toBeInTheDocument();
-    expect(description.textContent).toEqual(descriptions[SECTIONS.VERIFY]);
+    expect(description.textContent).toEqual(
+      'To authenticate your ballot, please paste your Ballot Proof into the text field below (the Ballot Proof can be found on your ballot receipt, on the top of the Cardano Ballot site under Your Ballot). After this, click on the "Verify" button to complete the verification process'
+    );
 
     const verifyVoteSection = screen.queryByTestId('verify-vote-section');
     expect(verifyVoteSection).toBeInTheDocument();
@@ -198,7 +200,7 @@ describe('VerifyModal', () => {
         <Toast
           error={true}
           icon={<BlockIcon style={{ color: '#F5F9FF', fontSize: '19px' }} />}
-          message="Unable to verify vote"
+          message="Unable to verify ballot"
         />
       );
       expect(screen.queryByTestId('verify-modal-cta').closest('button')).not.toBeDisabled();

@@ -14,7 +14,7 @@ export const VerifyVoteSection = ({ voteProof, setVoteProof }: VerifyProps) => (
     value={voteProof}
     onChange={(e) => setVoteProof(e.target.value)}
     InputLabelProps={{ shrink: false }}
-    placeholder="Paste your vote proof here"
+    placeholder="Paste your Ballot proof here"
     multiline
     maxRows={8}
     fullWidth

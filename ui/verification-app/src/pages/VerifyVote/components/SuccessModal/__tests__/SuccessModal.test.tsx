@@ -25,9 +25,9 @@ describe('SuccessModal:', () => {
 
     await waitFor(async () => {
       const modal = screen.queryByTestId('success-modal');
-      expect(within(modal).queryByTestId('success-modal-title').textContent).toEqual('Vote verified');
+      expect(within(modal).queryByTestId('success-modal-title').textContent).toEqual('Ballot verified');
       expect(within(modal).queryByTestId('success-modal-description').textContent).toEqual(
-        'Your vote has been successfully verified. Click the link or scan the QR code to view the transaction.'
+        'Your ballot has been successfully verified. Click the link or scan the QR code to view the transaction.'
       );
       const link = within(modal).queryByTestId('success-modal-link');
       expect(link.textContent).toEqual('View transaction details');

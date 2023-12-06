@@ -115,7 +115,7 @@ export const SuccessModal = ({ opened, explorerLink }: SuccessModalProps) => {
                 lineHeight: '28px',
               }}
             >
-              Vote verified
+              Ballot verified
             </DialogTitle>
 
             <DialogContent
@@ -140,7 +140,7 @@ export const SuccessModal = ({ opened, explorerLink }: SuccessModalProps) => {
                   wordWrap: 'break-word',
                 }}
               >
-                Your vote has been successfully verified. Click the link or scan the QR code to view the transaction.
+                Your ballot has been successfully verified. Click the link or scan the QR code to view the transaction.
               </DialogContentText>
               <Grid sx={{ pb: '16px' }}>
                 <QRCode data={explorerLink} />

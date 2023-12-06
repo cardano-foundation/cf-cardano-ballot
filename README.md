@@ -65,7 +65,7 @@ from database constructs merkle tree and at periodic, configurable intervals sen
 - [ui](ui) - Contains React applications for Cardano Ballopt event user interfaces:
   - [cip-1694](ui/cip-1694) - Frontend application for the CIP-1694 pre-ratification polling event.
   - [summit-2023](ui/summit-2023) - Frontend application for the Cardano Summit 2023 Awards voting.
-  - [verification-app](ui/verification-app) - Frontend application for the verification of the vote proof on anyc casted vote on a Cardano Ballot Event.
+  - [verification-app](ui/verification-app) - A generic frontend application for the verification / validation of the vote proof within a certain Cardano Ballot Event.
 
 ## Creating a Cardano Ballot Event
 ### Voting Admin App

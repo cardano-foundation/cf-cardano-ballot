@@ -3,8 +3,8 @@ import { Grid, Typography } from '@mui/material';
 import styles from './StatsTile.module.scss';
 
 type StatsTilePorps = {
-  title: string | React.ReactElement;
-  summary: string | React.ReactElement;
+  title: React.ReactNode;
+  summary: React.ReactNode;
   children: React.ReactNode;
   dataTestId: string;
 };
@@ -14,7 +14,6 @@ export const StatsTile = ({ title, summary, children, dataTestId }: StatsTilePor
     <Grid
       data-testid={dataTestId}
       xs={12}
-      md={6}
       item
       className={styles.optionCard}
       padding={{ md: '30px', xs: '20px' }}

@@ -8,6 +8,7 @@ var mockToast = jest.fn();
 /* eslint-disable import/imports-first */
 import 'whatwg-fetch';
 import '@testing-library/jest-dom';
+import BigNumber from 'bignumber.js';
 import { expect } from '@jest/globals';
 import { screen, within, waitFor, cleanup } from '@testing-library/react';
 import BlockIcon from '@mui/icons-material/Block';
@@ -21,7 +22,7 @@ import { renderWithProviders } from 'test/mockProviders';
 import { useCardanoMock, eventMock_finished, voteStats, eventMock_active, chainTipMock } from 'test/mocks';
 import { CustomRouter } from 'test/CustomRouter';
 import { Leaderboard } from '../Leaderboard';
-import { proposalColorsMap, getPercentage, formatNumber } from '../utils';
+import { proposalColorsMap, getPercentage, formatNumber, lovelacesToAdaString } from '../utils';
 
 jest.mock('react-minimal-pie-chart', () => ({
   PieChart: mockPieChart,
@@ -119,7 +120,7 @@ describe('For the event that has already finished', () => {
 
       const pollStatsTileTitle = within(pollStatsTile).queryByTestId('tile-title');
       expect(pollStatsTileTitle).not.toBeNull();
-      expect(pollStatsTileTitle.textContent).toEqual('Ballot stats');
+      expect(pollStatsTileTitle.textContent).toEqual('Total number of ballot submissions ');
 
       const pollStatsTileSummary = within(pollStatsTile).queryByTestId('tile-summary');
       expect(pollStatsTileSummary).not.toBeNull();
@@ -180,8 +181,8 @@ describe('For the event that has already finished', () => {
 
     const stats = Object.entries(voteStats.proposals);
     const statsSum = Object.values(voteStats.proposals)?.reduce(
-      (acc, { votingPower }) => (acc += BigInt(votingPower)),
-      BigInt(0)
+      (acc, { votingPower }) => (acc = acc.add(votingPower)),
+      new BigNumber(0)
     );
     const statsItems =
       eventMock_finished?.categories
@@ -205,16 +206,16 @@ describe('For the event that has already finished', () => {
 
       const pollStatsTileTitle = within(pollStatsTile).queryByTestId('tile-title');
       expect(pollStatsTileTitle).not.toBeNull();
-      expect(pollStatsTileTitle.textContent).toEqual('Ballot stats');
+      expect(pollStatsTileTitle.textContent).toEqual('Total ballot power ');
 
       const pollStatsTileSummary = within(pollStatsTile).queryByTestId('tile-summary');
       expect(pollStatsTileSummary).not.toBeNull();
-      expect(pollStatsTileSummary.textContent).toEqual(formatNumber(statsSum));
+      expect(pollStatsTileSummary.textContent).toEqual(lovelacesToAdaString(statsSum));
 
       const pollStatsItems = within(pollStatsTile).queryAllByTestId('poll-stats-item-votingPower');
       for (const item in statsItems) {
         expect(pollStatsItems[item].textContent).toEqual(
-          `${capitalize(statsItems[item].name.toLowerCase())}${formatNumber(BigInt(stats[item][1].votingPower))}`
+          `${capitalize(statsItems[item].name.toLowerCase())}${lovelacesToAdaString(stats[item][1].votingPower)}`
         );
       }
 
@@ -227,7 +228,7 @@ describe('For the event that has already finished', () => {
 
       const currentlyVotingTileSummary = within(currentlyVotingTile).queryByTestId('tile-summary');
       expect(currentlyVotingTileSummary).not.toBeNull();
-      expect(currentlyVotingTileSummary.textContent).toEqual(formatNumber(statsSum));
+      expect(currentlyVotingTileSummary.textContent).toEqual(lovelacesToAdaString(statsSum));
 
       const currentlyVotingItems = within(currentlyVotingTile).queryAllByTestId('currently-voting-item-votingPower');
       for (const item in statsItems) {
@@ -318,7 +319,7 @@ describe('For the event that has already finished', () => {
 
       const pollStatsTileTitle = within(pollStatsTile).queryByTestId('tile-title');
       expect(pollStatsTileTitle).not.toBeNull();
-      expect(pollStatsTileTitle.textContent).toEqual('Ballot stats');
+      expect(pollStatsTileTitle.textContent).toEqual('Total number of ballot submissions ');
 
       const pollStatsTileSummary = within(pollStatsTile).queryByTestId('tile-summary');
       expect(pollStatsTileSummary).not.toBeNull();
@@ -395,7 +396,7 @@ describe('For the event that has already finished', () => {
 
       const pollStatsTileTitle = within(pollStatsTile).queryByTestId('tile-title');
       expect(pollStatsTileTitle).not.toBeNull();
-      expect(pollStatsTileTitle.textContent).toEqual('Ballot stats');
+      expect(pollStatsTileTitle.textContent).toEqual('Total ballot power ');
 
       const pollStatsTileSummary = within(pollStatsTile).queryByTestId('tile-summary');
       expect(pollStatsTileSummary).not.toBeNull();
@@ -506,7 +507,7 @@ describe("For the event that hasn't finished yet", () => {
 
       const pollStatsTileTitle = within(pollStatsTile).queryByTestId('tile-title');
       expect(pollStatsTileTitle).not.toBeNull();
-      expect(pollStatsTileTitle.textContent).toEqual('Ballot stats');
+      expect(pollStatsTileTitle.textContent).toEqual('Total number of ballot submissions ');
 
       const pollStatsTileSummary = within(pollStatsTile).queryByTestId('tile-summary');
       expect(pollStatsTileSummary).not.toBeNull();
@@ -582,7 +583,7 @@ describe("For the event that hasn't finished yet", () => {
 
       const pollStatsTileTitle = within(pollStatsTile).queryByTestId('tile-title');
       expect(pollStatsTileTitle).not.toBeNull();
-      expect(pollStatsTileTitle.textContent).toEqual('Ballot stats');
+      expect(pollStatsTileTitle.textContent).toEqual('Total ballot power ');
 
       const pollStatsTileSummary = within(pollStatsTile).queryByTestId('tile-summary');
       expect(pollStatsTileSummary).not.toBeNull();

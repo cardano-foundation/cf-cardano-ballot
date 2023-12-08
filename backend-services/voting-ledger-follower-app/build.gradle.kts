@@ -4,7 +4,7 @@ import cz.habarta.typescript.generator.TypeScriptOutputKind
 
 plugins {
 	java
-	id("org.springframework.boot") version "3.2.0-M3"
+	id("org.springframework.boot") version "3.2.0"
 	id("io.spring.dependency-management") version "1.1.3"
 	id("org.graalvm.buildtools.native") version "0.9.26"
     id("org.flywaydb.flyway") version "9.22.1"
@@ -38,7 +38,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
 	testImplementation("io.rest-assured:rest-assured:5.3.2")
-	testImplementation("org.wiremock:wiremock:3.2.0")
+	testImplementation("org.wiremock:wiremock-standalone:3.3.1")
 
 	implementation("org.springframework.boot:spring-boot-starter-cache")
 	testCompileOnly("org.springframework.boot:spring-boot-starter-test")

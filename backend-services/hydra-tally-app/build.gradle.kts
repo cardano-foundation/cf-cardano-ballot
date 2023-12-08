@@ -59,7 +59,7 @@ dependencies {
     implementation("org.zalando:problem-spring-web-starter:0.29.1")
 
 	implementation("com.bloxbean.cardano:aiken-java-binding:0.0.8")
-`
+
 	implementation("me.paulschwarz:spring-dotenv:4.0.0")
 }
 

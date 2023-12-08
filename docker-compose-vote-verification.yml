@@ -1,31 +1,33 @@
 version: '3.8'
 services:
   follower-api:
-    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/voting-ledger-follower-app:v0.2.74-1-g33bffc1b
+    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/voting-ledger-follower-app:0.2.75
     restart: always
     environment:
       - SPRING_PROFILES_ACTIVE=prod
-      - CORS_ALLOWED_ORIGINS:http://localhost:8080
-      - CARDANO_NETWORK=PREPROD
-      - ORGANISER_STAKE_ADDRESS=stake_test1uqwcz0754wwpuhm6xhdpda6u9enyahaj5ynlc9ay5l4mlms4pyqyg
-      - BIND_ON_EVENT_IDS=CF_SUMMIT_2023_025E,CIP-1694_Pre_Ratification_3316,FRUITS_CF62
-      - CARDANO_NODE_PROTOCOL_MAGIC=1
-      - YACI_STORE_CARDANO_SYNC_START_BLOCK_HASH=3337e297121fda1262372c28de3d917bd2a60bb1e3c6326e3b7e832eb8017615
-      - YACI_STORE_CARDANO_SYNC_START_SLOT=38748711
+      - CORS_ALLOWED_ORIGINS=http://localhost:8080
+      - CARDANO_NETWORK=MAIN
+      - ORGANISER_STAKE_ADDRESS=stake1u84rc0rq5jt5jcx7s9fweknxv6jxvgjyqyfpwlgn0x43gpqe3tet3
+      - BIND_ON_EVENT_IDS=CIP-1694_Pre_Ratification
+      - CARDANO_NODE_HOST=relays-new.cardano-mainnet.iohk.io
+      - CARDANO_NODE_PORT=3001
+      - CARDANO_NODE_PROTOCOL_MAGIC=764824073
+      - YACI_STORE_CARDANO_SYNC_START_BLOCK_HASH=285f58fd09cbb95ac5ffd6f644f7907dfb3faff63155b8a86a9c7b0e99503397
+      - YACI_STORE_CARDANO_SYNC_START_SLOT=103737886
       - '9090:9090'
   verification-app:
-    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/voting-verification-app:v0.2.74-1-g33bffc1b
+    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/voting-verification-app:0.2.75
     restart: always
     environment:
       - LEDGER_FOLLOWER_APP_URL=http://follower-api:9090
+      - CORS_ALLOWED_ORIGINS=http://localhost:8080
     ports:
       - '9092:9092'
   verification-ui:
     build:
       context: ui/verification-app
-      args:
-        REACT_APP_VOTING_VERIFICATION_APP_SERVER_URL: http://verification-app:9092
-        REACT_APP_TARGET_NETWORK: preprod
+    environment:
+      - REACT_APP_VOTING_VERIFICATION_APP_SERVER_URL=http://localhost:9092
     restart: always
     ports:
       - '8080:8080'

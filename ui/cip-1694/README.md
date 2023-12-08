@@ -5,6 +5,10 @@
 <a href="https://conventionalcommits.org"><img alt="conventionalcommits" src="https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits" /></a>
 </p>
 
+## Overview
+
+Frontend application for the CIP-1694 pre-ratification polling event.
+
 ## Getting started
 
 ## Available Scripts

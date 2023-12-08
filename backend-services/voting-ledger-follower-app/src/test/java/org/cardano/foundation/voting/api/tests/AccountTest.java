@@ -5,21 +5,29 @@ import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
 import org.apache.http.params.CoreConnectionPNames;
 import org.cardano.foundation.voting.api.BaseTest;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
 import static org.cardano.foundation.voting.api.endpoints.VotingLedgerFollowerAppEndpoints.ACCOUNT_ENDPOINT;
+import static org.hamcrest.Matchers.equalTo;
 
 public class AccountTest extends BaseTest {
 
     @Test
-    public void testFindAccount() {
+    public void testFindAccountAndAssertSnapshotBalance() {
         String stakeAddress = "stake_test1uzpq2pktpnj54e64kfgjkm8nrptdwfj7s7fvhp40e98qsusd9z7ek";
         String eventId = "CF_TEST_EVENT_01";
+
         given()
                 .when()
                 .get(ACCOUNT_ENDPOINT + "/" + eventId + "/" + stakeAddress)
                 .then()
+                .body("stakeAddress", equalTo(stakeAddress))
+                .body("votingPower", equalTo("12695385"))
+                .body("epochNo", equalTo(97))
+                .body("votingPowerAsset", equalTo("ADA"))
+                .body("network", equalTo("PREPROD"))
                 .statusCode(200);
     }
 
@@ -52,4 +60,5 @@ public class AccountTest extends BaseTest {
                 .then()
                 .statusCode(404);
     }
+
 }

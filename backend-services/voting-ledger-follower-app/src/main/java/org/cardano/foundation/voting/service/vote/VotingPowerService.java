@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataStakePoolService;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
 import static org.zalando.problem.Status.BAD_REQUEST;
@@ -30,7 +29,13 @@ public class VotingPowerService {
                         .build());
             }
             case STAKE_BASED -> {
-                var maybeAmount = blockchainDataStakePoolService.getStakeAmount(event.getSnapshotEpoch().orElseThrow(), stakeAddress)
+                var snapshotEpoch = event.getSnapshotEpoch().orElseThrow();
+                // blockfrost uses active epoch to denote that certain balance from the snapshot was active in it,
+                // it is different than our definition since we use term snapshot,
+                // so we have to add 2 more epochs (this is  how it works on Cardano) from our snapshot epoch to get the blockfrost's active epoch
+                var blockfrostActiveEpoch = snapshotEpoch + 2;
+
+                var maybeAmount = blockchainDataStakePoolService.getStakeAmount(blockfrostActiveEpoch, stakeAddress)
                         .filter(amount -> amount > 0);
 
                 if (maybeAmount.isEmpty()) {

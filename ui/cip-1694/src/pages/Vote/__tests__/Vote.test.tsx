@@ -8,7 +8,6 @@ var mockBuildCanonicalVoteInputJson = jest.fn();
 var mockGetSignedMessagePromise = jest.fn();
 var mockGetChainTip = jest.fn();
 var mockGetVoteReceipt = jest.fn();
-var mockSubmitVoteContextForm = jest.fn();
 var mockToast = jest.fn();
 var mockGetUserInSession = jest.fn();
 var mockSaveUserInSession = jest.fn();
@@ -78,7 +77,6 @@ jest.mock('../../../env', () => {
       QUESTIONS: ['Do you like pineapple pizza?', 'Do you like apples?'],
       CATEGORY_ID: 'CHANGE_GOV_STRUCTURE',
       EVENT_ID: 'CIP-1694_Pre_Ratification_3316',
-      GOOGLE_FORM_VOTE_CONTEXT_INPUT_NAME: 'GOOGLE_FORM_VOTE_CONTEXT_INPUT_NAME',
       TARGET_NETWORK: 'Preprod',
     },
   };
@@ -90,7 +88,6 @@ jest.mock('common/api/voteService', () => ({
   getVotingPower: mockGetVotingPower,
   getChainTip: mockGetChainTip,
   getVoteReceipt: mockGetVoteReceipt,
-  submitVoteContextForm: mockSubmitVoteContextForm,
 }));
 
 jest.mock('common/api/loginService', () => ({
@@ -134,7 +131,6 @@ describe('For ongoing event:', () => {
     mockGetUserInSession.mockReturnValue({ accessToken: true });
     mockTokenIsExpired.mockReturnValue(false);
     mockGetVoteReceipt.mockReturnValue({});
-    mockSubmitVoteContextForm.mockImplementation(async () => await Promise.resolve());
   });
   afterEach(() => {
     jest.clearAllMocks();
@@ -199,7 +195,7 @@ describe('For ongoing event:', () => {
 
       const cta = within(votePage).queryByTestId('proposal-connect-button');
       expect(cta).not.toBeNull();
-      expect(cta.textContent).toEqual('Connect wallet to vote');
+      expect(cta.textContent).toEqual('Connect wallet to participate');
     });
   });
 
@@ -288,7 +284,7 @@ describe('For ongoing event:', () => {
 
       const cta = within(votePage).queryByTestId('proposal-submit-button');
       expect(cta).not.toBeNull();
-      expect(cta.textContent).toEqual('Submit your vote');
+      expect(cta.textContent).toEqual('Submit your ballot');
     });
   });
 
@@ -352,14 +348,6 @@ describe('For ongoing event:', () => {
 
     fireEvent.click(options[0]);
 
-    const voteContext = 'voteContext';
-
-    await act(async () => {
-      fireEvent.change(screen.queryByTestId('vote-context-input').querySelector('textarea'), {
-        target: { value: voteContext },
-      });
-    });
-
     const cta = within(votePage).queryByTestId('proposal-submit-button');
     await act(async () => {
       fireEvent.click(cta);
@@ -367,7 +355,7 @@ describe('For ongoing event:', () => {
 
     expect(mockToast).toBeCalledWith(
       <Toast
-        message={'Unable to submit your vote. Please try again'}
+        message={'Unable to submit your ballot. Please try again'}
         error
         icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
       />
@@ -417,19 +405,8 @@ describe('For ongoing event:', () => {
     const cta = within(votePage).queryByTestId('proposal-submit-button');
     expect(cta).not.toBeNull();
 
-    expect(within(votePage).queryByTestId('vote-context-label').textContent).toEqual(
-      'Do you have any additional comments or details about your voting decision?'
-    );
-
-    const voteContext = 'voteContext';
-
-    await act(async () => {
-      fireEvent.change(screen.queryByTestId('vote-context-input').querySelector('textarea'), {
-        target: { value: voteContext },
-      });
-    });
-
     expect(cta.closest('button')).not.toBeDisabled();
+
     expect(mockGetVoteReceipt.mock.calls[0]).toEqual([eventMock_active.categories[0].id, accessToken]);
 
     expect(store.getState().user.isVoteSubmittedModalVisible).toBeFalsy();
@@ -438,9 +415,6 @@ describe('For ongoing event:', () => {
     });
 
     expect(mockCastAVoteWithDigitalSignature).toHaveBeenCalledWith(canonicalVoteInputJsonMock);
-    expect(mockSubmitVoteContextForm).toHaveBeenCalledWith({
-      GOOGLE_FORM_VOTE_CONTEXT_INPUT_NAME: voteContext,
-    });
     expect(store.getState().user.isVoteSubmittedModalVisible).toBeTruthy;
 
     await act(async () => {
@@ -450,7 +424,6 @@ describe('For ongoing event:', () => {
     expect(store.getState().user.isVoteSubmittedModalVisible).toBeFalsy;
     expect(mockGetVoteReceipt).toBeCalledTimes(2);
     expect(mockGetVoteReceipt.mock.calls[1]).toEqual([eventMock_active.categories[1].id, accessToken]);
-    expect(screen.queryByTestId('vote-context-input')).not.toBeInTheDocument();
     expect(screen.queryAllByRole('button', { pressed: true }).length).toEqual(0);
     expect(within(votePage).queryByTestId('next-question-button')).toBeNull();
   });
@@ -502,11 +475,12 @@ describe('For ongoing event:', () => {
     });
 
     const cta = within(votePage).queryByTestId('proposal-submit-button');
+    expect(cta).not.toBeDisabled();
+
     await act(async () => {
       fireEvent.click(cta);
     });
 
-    expect(mockSubmitVoteContextForm).not.toBeCalled();
     expect(mockGetVoteReceipt).toBeCalledTimes(2);
   });
 
@@ -611,14 +585,6 @@ describe('For ongoing event:', () => {
       fireEvent.click(options[0]);
     });
 
-    const voteContext = 'voteContext';
-
-    await act(async () => {
-      fireEvent.change(screen.queryByTestId('vote-context-input').querySelector('textarea'), {
-        target: { value: voteContext },
-      });
-    });
-
     const cta = within(votePage).queryByTestId('proposal-submit-button');
 
     await act(async () => {
@@ -671,14 +637,6 @@ describe('For ongoing event:', () => {
       fireEvent.click(options[0]);
     });
 
-    const voteContext = 'voteContext';
-
-    await act(async () => {
-      fireEvent.change(screen.queryByTestId('vote-context-input').querySelector('textarea'), {
-        target: { value: voteContext },
-      });
-    });
-
     const cta = within(votePage).queryByTestId('proposal-submit-button');
 
     await act(async () => {
@@ -686,7 +644,7 @@ describe('For ongoing event:', () => {
     });
     expect(mockToast).toBeCalledWith(
       <Toast
-        message={'Unable to submit your vote. Please try again'}
+        message={'Unable to submit your ballot. Please try again'}
         error
         icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
       />
@@ -943,7 +901,7 @@ describe('For ongoing event:', () => {
       'Wallet signature'
     );
     expect(await within(confirmationModal).findByTestId('confirm-with-signature-description')).toHaveTextContent(
-      'We need to check if you’ve already voted.You will see a pop-up message from your wallet.Please confirm with your wallet signature.'
+      'We need to check if you’ve already submitted your ballot.You will see a pop-up message from your wallet.Please confirm with your wallet signature.'
     );
     const confirmCta = await within(confirmationModal).findByTestId('confirm-with-signature-cta');
     expect(confirmCta).toHaveTextContent('Confirm');
@@ -961,7 +919,7 @@ describe('For ongoing event:', () => {
 
       const cta = within(votePage).queryByTestId('show-receipt-button');
       expect(cta).not.toBeNull();
-      expect(cta.textContent).toEqual('Vote receipt');
+      expect(cta.textContent).toEqual('Ballot receipt');
 
       expect(screen.queryByTestId('confirm-with-signature-modal')).toBeNull();
       expect(submitLoginMock).toBeCalledWith(canonicalVoteInput);
@@ -1010,7 +968,7 @@ describe('For ongoing event:', () => {
       'Wallet signature'
     );
     expect(await within(confirmationModal).findByTestId('confirm-with-signature-description')).toHaveTextContent(
-      'We need to check if you’ve already voted.You will see a pop-up message from your wallet.Please confirm with your wallet signature.'
+      'We need to check if you’ve already submitted your ballot.You will see a pop-up message from your wallet.Please confirm with your wallet signature.'
     );
     const confirmCta = await within(confirmationModal).findByTestId('confirm-with-signature-cta');
     expect(confirmCta).toHaveTextContent('Confirm');
@@ -1028,7 +986,7 @@ describe('For ongoing event:', () => {
 
       const cta = within(votePage).queryByTestId('show-receipt-button');
       expect(cta).not.toBeNull();
-      expect(cta.textContent).toEqual('Vote receipt');
+      expect(cta.textContent).toEqual('Ballot receipt');
 
       expect(screen.queryByTestId('confirm-with-signature-modal')).toBeNull();
     });
@@ -1076,14 +1034,6 @@ describe('For ongoing event:', () => {
 
     const options = screen.queryAllByTestId('option-card');
     fireEvent.click(options[0]);
-
-    const voteContext = 'voteContext';
-
-    await act(async () => {
-      fireEvent.change(screen.queryByTestId('vote-context-input').querySelector('textarea'), {
-        target: { value: voteContext },
-      });
-    });
 
     expect(screen.queryByTestId('proposal-submit-button').closest('button')).not.toBeDisabled();
   });
@@ -1310,7 +1260,7 @@ describe('For ongoing event:', () => {
     await act(async () => fireEvent.click(within(receipt).queryByTestId('refetch-receipt-button')));
     expect(mockToast).toBeCalledWith(
       <Toast
-        message="Unable to refresh your vote receipt. Please try again"
+        message="Unable to refresh your ballot receipt. Please try again"
         error
         icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
       />
@@ -1404,9 +1354,9 @@ describe("For the event that hasn't started yet", () => {
       const eventTime = within(votePage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
       expect(eventTime.textContent).toEqual(
-        `Vote from: ${formatUTCDate(eventMock_notStarted.eventStartDate.toString())} - ${formatUTCDate(
-          eventMock_notStarted.eventEndDate.toString()
-        )}`
+        `The ballot will be opened from: ${formatUTCDate(
+          eventMock_notStarted.eventStartDate.toString()
+        )} - ${formatUTCDate(eventMock_notStarted.eventEndDate.toString())}`
       );
 
       const eventDescription = within(votePage).queryByTestId('event-description');
@@ -1425,7 +1375,7 @@ describe("For the event that hasn't started yet", () => {
       const cta = within(votePage).queryByTestId('event-hasnt-started-submit-button');
       expect(cta).not.toBeNull();
       expect(cta.textContent).toEqual(
-        `Submit your vote from ${getDateAndMonth(eventMock_notStarted.eventStartDate?.toString())}`
+        `Submit your ballot from ${getDateAndMonth(eventMock_notStarted.eventStartDate?.toString())}`
       );
     });
   });
@@ -1468,7 +1418,7 @@ describe('For the event that has already finished', () => {
       const eventTime = within(votePage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
       expect(eventTime.textContent).toEqual(
-        `The vote closed on ${formatUTCDate(eventMock_finished.eventEndDate.toString())}`
+        `The ballot closed on ${formatUTCDate(eventMock_finished.eventEndDate.toString())}`
       );
 
       const eventDescription = within(votePage).queryByTestId('event-description');
@@ -1485,7 +1435,7 @@ describe('For the event that has already finished', () => {
 
       const cta = within(votePage).queryByTestId('proposal-connect-button');
       expect(cta).not.toBeNull();
-      expect(cta.textContent).toEqual('Connect wallet to see your vote');
+      expect(cta.textContent).toEqual('Connect wallet to see your ballot');
     });
   });
 

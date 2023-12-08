@@ -15,6 +15,7 @@ import org.springframework.web.client.RestTemplate;
 import org.zalando.problem.Problem;
 import org.zalando.problem.spring.common.HttpStatusAdapter;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -31,14 +32,30 @@ public class ChainFollowerClient {
     @Value("${ledger.follower.app.base.url}")
     private String ledgerFollowerBaseUrl;
 
-    public Either<Problem, L1CategoryResults> getVotingResults(String eventId,
-                                                               String categoryId,
-                                                               String tallyName
+    public Either<Problem, L1CategoryResults> getVotingResultsPerCategory(String eventId,
+                                                                          String categoryId,
+                                                                          String tallyName
                                                                ) {
         var url = String.format("%s/api/tally/voting-results/{eventId}/{categoryId}/{tallyName}", ledgerFollowerBaseUrl);
 
         try {
             return Either.right(restTemplate.getForObject(url, L1CategoryResults.class, eventId, categoryId, tallyName));
+        } catch (HttpClientErrorException e) {
+            return Either.left(Problem.builder()
+                    .withTitle("CATEGORY_RESULTS_ERROR")
+                    .withDetail("Unable to get category results from chain-tip follower service, reason:" + e.getMessage())
+                    .withStatus(new HttpStatusAdapter(e.getStatusCode()))
+                    .build());
+        }
+    }
+
+    public Either<Problem, List<L1CategoryResults>> getVotingResultsForAllCategories(String eventId,
+                                                                                     String tallyName
+    ) {
+        var url = String.format("%s/api/tally/voting-results/{eventId}/{tallyName}", ledgerFollowerBaseUrl);
+
+        try {
+            return Either.right(Arrays.asList(restTemplate.getForObject(url, L1CategoryResults[].class, eventId, tallyName)));
         } catch (HttpClientErrorException e) {
             return Either.left(Problem.builder()
                     .withTitle("CATEGORY_RESULTS_ERROR")

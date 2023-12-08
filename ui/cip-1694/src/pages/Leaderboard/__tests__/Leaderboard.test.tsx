@@ -161,8 +161,6 @@ describe('For the event that has already finished', () => {
     });
   });
 
-<<<<<<< HEAD
-=======
   test('should display proper error if getChainTip throws', async () => {
     const error = 'error';
     mockGetChainTip.mockReset();
@@ -267,7 +265,6 @@ describe('For the event that has already finished', () => {
     });
   });
 
->>>>>>> cip1694-prod-support
   test('should display proper error if getStats throws', async () => {
     const error = 'error';
     mockGetStats.mockReset();

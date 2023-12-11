@@ -62,7 +62,7 @@ export const HeaderActions = ({ isMobileMenu = false, onClick }: HeaderActionsPr
 
   const onGoToLeaderboard = useCallback(async () => {
     const chainTip = await fetchChainTip();
-    if (event.proposalsRevealEpoch > chainTip.epochNo) {
+    if (event.proposalsRevealEpoch > chainTip?.epochNo) {
       setIsCommingSoonModalVisible(true);
     } else {
       navigate(ROUTES.LEADERBOARD);

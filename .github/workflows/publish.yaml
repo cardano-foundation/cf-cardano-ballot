@@ -51,8 +51,8 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: 'corretto'
+          java-version: '21'
           cache: 'gradle'
       - name: Execute Gradle build
         working-directory: backend-services/${{ env.APP_NAME }}
@@ -96,8 +96,8 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: 'corretto'
+          java-version: '21'
           cache: 'gradle'
       - name: Execute Gradle build
         working-directory: backend-services/${{ env.APP_NAME }}
@@ -141,8 +141,8 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: 'corretto'
+          java-version: '21'
           cache: 'gradle'
       - name: Execute Gradle build
         working-directory: backend-services/${{ env.APP_NAME }}
@@ -186,8 +186,8 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: 'corretto'
+          java-version: '21'
           cache: 'gradle'
       - name: Execute Gradle build
         working-directory: backend-services/${{ env.APP_NAME }}
@@ -231,8 +231,8 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: 'corretto'
+          java-version: '21'
           cache: 'gradle'
       - name: Execute Gradle build
         working-directory: backend-services/${{ env.APP_NAME }}

@@ -17,7 +17,6 @@
   <hr/>
 </div>
 
-
 # Overview
   Cardano Ballot is a user-friendly, hybrid on- and off-chain voting system developed by the Cardano Foundation.  Cardano Ballot leverages a set of backend services combined with frontend applications to facilitate voting within the Cardano Ecosystem.
   

@@ -4,28 +4,51 @@ import cn from 'classnames';
 import { capitalize } from 'lodash';
 import toast from 'react-hot-toast';
 import { PieChart } from 'react-minimal-pie-chart';
-import { Grid, Typography } from '@mui/material';
+import BigNumber from 'bignumber.js';
+import { Grid, Typography, IconButton } from '@mui/material';
 import BlockIcon from '@mui/icons-material/Block';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { ByProposalsInCategoryStats, Votes } from 'types/voting-app-types';
 import { ChainTip, ProposalPresentation } from 'types/voting-ledger-follower-types';
 import * as voteService from 'common/api/voteService';
 import * as leaderboardService from 'common/api/leaderboardService';
 import { RootState } from 'common/store';
 import { Toast } from 'components/Toast/Toast';
-import { getPercentage, proposalColorsMap, formatNumber } from './utils';
+import { Tooltip } from 'components/Tooltip/Tooltip';
+import { getPercentage, proposalColorsMap, formatNumber, lovelacesToAdaString } from './utils';
 import { StatsTile } from './components/StatsTile';
 import styles from './Leaderboard.module.scss';
 import { StatItem } from './types';
 
-type Stats = { title: string; subTitle?: string; value: keyof Votes };
-const statsConfig: Array<{ pollStats: Stats; votingStats: Stats }> = [
+type Stats = { title: React.ReactNode; subTitle?: React.ReactNode; value: keyof Votes };
+const statsConfig: Array<Stats> = [
   {
-    pollStats: { title: 'Ballot stats', subTitle: 'Number of votes', value: 'votes' },
-    votingStats: { title: 'Current ballot stats', value: 'votes' },
+    title: (
+      <>
+        Total number of ballot submissions{' '}
+        <Tooltip title="Total number of ballots cast">
+          <IconButton sx={{ margin: '-8px' }}>
+            <InfoOutlinedIcon style={{ color: '#39486CA6', fontSize: '19px' }} />
+          </IconButton>
+        </Tooltip>
+      </>
+    ),
+    subTitle: 'Number of votes',
+    value: 'votes',
   },
   {
-    pollStats: { title: 'Ballot stats', subTitle: 'Voting power', value: 'votingPower' },
-    votingStats: { title: 'Voting power', value: 'votingPower' },
+    title: (
+      <>
+        Total ballot power{' '}
+        <Tooltip title="Total power of wallets determined by the amount of ada staked at the time of the Snapshot (November 21st, before 21:44 UTC).">
+          <IconButton sx={{ margin: '-8px' }}>
+            <InfoOutlinedIcon style={{ color: '#39486CA6', fontSize: '19px' }} />
+          </IconButton>
+        </Tooltip>
+      </>
+    ),
+    subTitle: 'Voting power',
+    value: 'votingPower',
   },
 ];
 
@@ -90,13 +113,13 @@ export const Leaderboard = () => {
       Object.values(stats)?.reduce(
         (acc, { votes, votingPower }) => {
           return {
-            votes: (acc.votes += votes),
-            votingPower: (acc.votingPower += BigInt(votingPower)),
+            votes: acc.votes + votes,
+            votingPower: acc.votingPower.add(votingPower),
           };
         },
         {
           votes: 0,
-          votingPower: BigInt(0),
+          votingPower: new BigNumber(0),
         }
       ),
     [stats]
@@ -117,7 +140,6 @@ export const Leaderboard = () => {
       <Grid
         paddingTop={{ xs: '20px', md: '30px' }}
         container
-        direction="column"
         justifyContent="left"
         alignItems="left"
         spacing={0}
@@ -141,151 +163,132 @@ export const Leaderboard = () => {
           </Typography>
         </Grid>
         <Grid
+          item
           container
           spacing={0}
-          gridRow={{ xs: 12 }}
-          gap={{ xs: '25px' }}
+          gap="25px"
+          sx={{ flexWrap: { md: 'nowrap', xs: 'wrap' } }}
         >
-          {statsConfig.map(({ pollStats, votingStats }) => (
-            <Grid
-              key={pollStats.value}
-              container
-              spacing={0}
-              gridRow={{ md: 6, xs: 12 }}
-              gap={{ md: '46px', xs: '25px' }}
-              sx={{ flexWrap: { md: 'nowrap', xs: 'wrap' } }}
+          {statsConfig.map(({ title, subTitle, value }) => (
+            <StatsTile
+              key={value}
+              title={title}
+              dataTestId={`poll-stats-tile-${value}`}
+              summary={
+                <span style={{ color: '#061d3c' }}>
+                  {!shouldShowPlaceholder
+                    ? value === 'votes'
+                      ? formatNumber(statsSum?.[value] || 0)
+                      : lovelacesToAdaString(statsSum?.[value] || 0)
+                    : placeholder}
+                </span>
+              }
             >
-              <StatsTile
-                title={pollStats.title}
-                dataTestId={`poll-stats-tile-${votingStats.value}`}
-                summary={
-                  <span style={{ color: '#061d3c' }}>
-                    {!shouldShowPlaceholder ? formatNumber(statsSum?.[pollStats.value] || 0)?.toString() : placeholder}
-                  </span>
-                }
+              <Grid
+                container
+                spacing={0}
+                direction="column"
+                gap="15px"
+                marginTop="25px"
               >
                 <Grid
                   container
-                  spacing={0}
-                  direction="column"
-                  gap="15px"
-                  sx={{ marginTop: '25px' }}
+                  justifyContent="space-between"
                 >
-                  <Grid
-                    container
-                    justifyContent="space-between"
+                  <Typography
+                    variant="h5"
+                    className={styles.optionTitle}
                   >
-                    <Typography
-                      variant="h5"
-                      className={styles.optionTitle}
+                    Answer
+                  </Typography>
+                  <Typography
+                    variant="h5"
+                    className={styles.optionTitle}
+                  >
+                    {subTitle}
+                  </Typography>
+                </Grid>
+                {statsItems.map(({ label, name, id }) => (
+                  <React.Fragment key={name}>
+                    <div className={styles.divider} />
+                    <Grid
+                      container
+                      justifyContent="space-between"
+                      data-testid={`poll-stats-item-${value}`}
                     >
-                      Answer
-                    </Typography>
-                    <Typography
-                      variant="h5"
-                      className={styles.optionTitle}
-                    >
-                      {pollStats.subTitle}
-                    </Typography>
-                  </Grid>
-                  {statsItems.map(({ label, name, id }) => (
-                    <React.Fragment key={name}>
-                      <div className={styles.divider} />
-                      <Grid
-                        container
-                        justifyContent="space-between"
-                        data-testid={`poll-stats-item-${votingStats.value}`}
+                      <Typography
+                        variant="h5"
+                        className={cn(styles.optionTitle, styles.statTitle)}
                       >
-                        <Typography
-                          variant="h5"
-                          className={cn(styles.optionTitle, styles.statTitle)}
-                        >
-                          {label}
-                        </Typography>
-                        <Typography
-                          variant="h5"
-                          className={cn(styles.optionTitle, styles.statTitle)}
-                        >
-                          {!shouldShowPlaceholder
-                            ? formatNumber(BigInt(stats?.[id]?.[pollStats.value] || 0))
-                            : placeholder}
-                        </Typography>
-                      </Grid>
-                    </React.Fragment>
+                        {label}
+                      </Typography>
+                      <Typography
+                        variant="h5"
+                        className={cn(styles.optionTitle, styles.statTitle)}
+                      >
+                        {!shouldShowPlaceholder
+                          ? value === 'votes'
+                            ? formatNumber(stats?.[id]?.[value] || 0)
+                            : lovelacesToAdaString(stats?.[id]?.[value] || 0)
+                          : placeholder}
+                      </Typography>
+                    </Grid>
+                  </React.Fragment>
+                ))}
+              </Grid>
+              <Grid
+                container
+                marginTop="25px"
+                flexWrap="nowrap"
+              >
+                <Grid
+                  container
+                  item
+                  flexDirection="column"
+                  justifyContent="center"
+                  gap="15px"
+                >
+                  {statsItems.map(({ label, name, id }) => (
+                    <Grid
+                      container
+                      key={name}
+                      gap="15px"
+                      data-testid={`currently-voting-item-${value}`}
+                    >
+                      <div
+                        className={styles.proposalRect}
+                        data-proposal={name}
+                      />
+                      <Typography
+                        variant="h5"
+                        className={cn(styles.optionTitle, styles.statTitle)}
+                      >
+                        {label}
+                        {stats && (
+                          <>
+                            <span style={{ color: '#BBBBBB' }}>{' - '}</span>
+                            <span style={{ color: '#39486C' }}>
+                              {getPercentage(stats?.[id]?.[value], statsSum?.[value]?.toString())}%
+                            </span>
+                          </>
+                        )}
+                      </Typography>
+                    </Grid>
                   ))}
                 </Grid>
-              </StatsTile>
-              <StatsTile
-                title={votingStats.title}
-                summary={
-                  <span style={{ color: '#061d3c' }}>
-                    {!shouldShowPlaceholder
-                      ? formatNumber(BigInt(statsSum?.[votingStats.value] || 0))?.toString()
-                      : placeholder}
-                  </span>
-                }
-                dataTestId={`currently-voting-tile-${votingStats.value}`}
-              >
                 <Grid
+                  item
                   container
-                  direction={{ md: 'row', xs: 'column-reverse' }}
-                  gridRow={{ md: 6, xs: 12 }}
-                  sx={{ flexWrap: { md: 'nowrap', xs: 'wrap' }, marginTop: { md: '8px', xs: '25px' } }}
-                  gap={{ xs: '25px', md: 'none' }}
+                  justifyContent="flex-end"
                 >
-                  <Grid
-                    container
-                    item
-                    justifyContent="center"
-                    direction="column"
-                    gap="15px"
-                  >
-                    {statsItems.map(({ label, name, id }) => (
-                      <Grid
-                        container
-                        key={name}
-                        gap="15px"
-                        data-testid={`currently-voting-item-${votingStats.value}`}
-                      >
-                        <div
-                          className={styles.proposalRect}
-                          data-proposal={name}
-                        />
-                        <Typography
-                          variant="h5"
-                          className={cn(styles.optionTitle, styles.statTitle)}
-                        >
-                          {label}
-                          {stats && (
-                            <>
-                              <span style={{ color: '#BBBBBB' }}>{' - '}</span>
-                              <span style={{ color: '#39486C' }}>
-                                {getPercentage(
-                                  stats?.[id]?.[votingStats.value],
-                                  statsSum?.[votingStats.value]?.toString()
-                                )}
-                                %
-                              </span>
-                            </>
-                          )}
-                        </Typography>
-                      </Grid>
-                    ))}
-                  </Grid>
-                  <Grid
-                    item
-                    container
-                    justifyContent={{ md: 'space-between', xs: 'center' }}
-                  >
-                    <PieChart
-                      style={{ height: '200px', width: '200px' }}
-                      lineWidth={32}
-                      data={stats ? getStatsItems(votingStats.value) : [{ title: '', value: 1, color: '#BBBBBB' }]}
-                    />
-                  </Grid>
+                  <PieChart
+                    style={{ height: '200px', width: '200px' }}
+                    lineWidth={32}
+                    data={stats ? getStatsItems(value) : [{ title: '', value: 1, color: '#BBBBBB' }]}
+                  />
                 </Grid>
-              </StatsTile>
-            </Grid>
+              </Grid>
+            </StatsTile>
           ))}
         </Grid>
       </Grid>

@@ -1,10 +1,10 @@
 import React from 'react';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import cn from 'classnames';
 import Grid from '@mui/material/Grid';
-import { IconButton, Tooltip, Typography } from '@mui/material';
+import { IconButton, Typography } from '@mui/material';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded';
+import { Tooltip } from 'components/Tooltip/Tooltip';
 import {
   AdvancedFullFieldsToDisplayArrayKeys,
   FieldsToDisplayArrayKeys,
@@ -41,24 +41,7 @@ export const ReceiptItem = ({
           alignItems="center"
         >
           <span data-testid={`${dataTestId}-title`}>{labelTransformerMap[name]}</span>
-          <Tooltip
-            classes={{ tooltip: styles.tooltip }}
-            title={
-              <Grid
-                container
-                direction="column"
-                alignItems="left"
-                gap={'8px'}
-              >
-                <Typography
-                  className={styles.tooltipDescription}
-                  variant="h4"
-                >
-                  {description}
-                </Typography>
-              </Grid>
-            }
-          >
+          <Tooltip title={description}>
             <IconButton
               data-id={name}
               data-testid={`${dataTestId}-info-icon`}
@@ -84,15 +67,8 @@ export const ReceiptItem = ({
       >
         {name === 'id' || name === 'voterStakingAddress' ? (
           <Tooltip
-            classes={{ tooltip: cn(styles.tooltip, styles.tooltipFullWidth) }}
-            title={
-              <Typography
-                className={styles.tooltipDescription}
-                variant="h4"
-              >
-                {value}
-              </Typography>
-            }
+            fullWidth
+            title={value}
           >
             <span>{valueTransformerMap[name]?.(value) || value}</span>
           </Tooltip>

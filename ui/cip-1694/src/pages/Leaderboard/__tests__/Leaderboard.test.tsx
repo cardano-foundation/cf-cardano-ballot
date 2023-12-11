@@ -133,18 +133,7 @@ describe('For the event that has already finished', () => {
         );
       }
 
-      const currentlyVotingTile = within(leaderboardPage).queryByTestId('currently-voting-tile-votes');
-      expect(currentlyVotingTile).not.toBeNull();
-
-      const currentlyVotingTileTitle = within(currentlyVotingTile).queryByTestId('tile-title');
-      expect(currentlyVotingTileTitle).not.toBeNull();
-      expect(currentlyVotingTileTitle.textContent).toEqual('Current ballot stats');
-
-      const currentlyVotingTileSummary = within(currentlyVotingTile).queryByTestId('tile-summary');
-      expect(currentlyVotingTileSummary).not.toBeNull();
-      expect(currentlyVotingTileSummary.textContent).toEqual(formatNumber(statsSum));
-
-      const currentlyVotingItems = within(currentlyVotingTile).queryAllByTestId('currently-voting-item-votes');
+      const currentlyVotingItems = within(pollStatsTile).queryAllByTestId('currently-voting-item-votes');
       for (const item in statsItems) {
         expect(currentlyVotingItems[item].textContent).toEqual(
           `${capitalize(statsItems[item].name.toLowerCase())} - ${getPercentage(
@@ -154,7 +143,7 @@ describe('For the event that has already finished', () => {
         );
       }
 
-      const currentlyVotingChart = within(currentlyVotingTile).queryByTestId('pie-chart');
+      const currentlyVotingChart = within(pollStatsTile).queryByTestId('pie-chart');
       expect(currentlyVotingChart).toBeInTheDocument();
       expect(mockPieChart.mock.calls[mockPieChart.mock.calls.length - 2][0]).toEqual({
         style: { height: '200px', width: '200px' },
@@ -219,18 +208,7 @@ describe('For the event that has already finished', () => {
         );
       }
 
-      const currentlyVotingTile = within(leaderboardPage).queryByTestId('currently-voting-tile-votingPower');
-      expect(currentlyVotingTile).not.toBeNull();
-
-      const currentlyVotingTileTitle = within(currentlyVotingTile).queryByTestId('tile-title');
-      expect(currentlyVotingTileTitle).not.toBeNull();
-      expect(currentlyVotingTileTitle.textContent).toEqual('Voting power');
-
-      const currentlyVotingTileSummary = within(currentlyVotingTile).queryByTestId('tile-summary');
-      expect(currentlyVotingTileSummary).not.toBeNull();
-      expect(currentlyVotingTileSummary.textContent).toEqual(lovelacesToAdaString(statsSum));
-
-      const currentlyVotingItems = within(currentlyVotingTile).queryAllByTestId('currently-voting-item-votingPower');
+      const currentlyVotingItems = within(pollStatsTile).queryAllByTestId('currently-voting-item-votingPower');
       for (const item in statsItems) {
         expect(currentlyVotingItems[item].textContent).toEqual(
           `${capitalize(statsItems[item].name.toLowerCase())} - ${getPercentage(
@@ -240,7 +218,7 @@ describe('For the event that has already finished', () => {
         );
       }
 
-      const currentlyVotingChart = within(currentlyVotingTile).queryByTestId('pie-chart');
+      const currentlyVotingChart = within(pollStatsTile).queryByTestId('pie-chart');
       expect(currentlyVotingChart).toBeInTheDocument();
       expect(mockPieChart.mock.calls[mockPieChart.mock.calls.length - 1][0]).toEqual({
         style: { height: '200px', width: '200px' },
@@ -332,23 +310,12 @@ describe('For the event that has already finished', () => {
         );
       }
 
-      const currentlyVotingTile = within(leaderboardPage).queryByTestId('currently-voting-tile-votes');
-      expect(currentlyVotingTile).not.toBeNull();
-
-      const currentlyVotingTileTitle = within(currentlyVotingTile).queryByTestId('tile-title');
-      expect(currentlyVotingTileTitle).not.toBeNull();
-      expect(currentlyVotingTileTitle.textContent).toEqual('Current ballot stats');
-
-      const currentlyVotingTileSummary = within(currentlyVotingTile).queryByTestId('tile-summary');
-      expect(currentlyVotingTileSummary).not.toBeNull();
-      expect(currentlyVotingTileSummary.textContent).toEqual(placeholder);
-
-      const currentlyVotingItems = within(currentlyVotingTile).queryAllByTestId('currently-voting-item-votes');
+      const currentlyVotingItems = within(pollStatsTile).queryAllByTestId('currently-voting-item-votes');
       for (const item in statsItems) {
         expect(currentlyVotingItems[item].textContent).toEqual(`${capitalize(statsItems[item].name.toLowerCase())}`);
       }
 
-      const currentlyVotingChart = within(currentlyVotingTile).queryByTestId('pie-chart');
+      const currentlyVotingChart = within(pollStatsTile).queryByTestId('pie-chart');
       expect(currentlyVotingChart).toBeInTheDocument();
       expect(mockPieChart.mock.calls[mockPieChart.mock.calls.length - 2][0]).toEqual({
         style: { height: '200px', width: '200px' },
@@ -409,23 +376,12 @@ describe('For the event that has already finished', () => {
         );
       }
 
-      const currentlyVotingTile = within(leaderboardPage).queryByTestId('currently-voting-tile-votingPower');
-      expect(currentlyVotingTile).not.toBeNull();
-
-      const currentlyVotingTileTitle = within(currentlyVotingTile).queryByTestId('tile-title');
-      expect(currentlyVotingTileTitle).not.toBeNull();
-      expect(currentlyVotingTileTitle.textContent).toEqual('Voting power');
-
-      const currentlyVotingTileSummary = within(currentlyVotingTile).queryByTestId('tile-summary');
-      expect(currentlyVotingTileSummary).not.toBeNull();
-      expect(currentlyVotingTileSummary.textContent).toEqual(placeholder);
-
-      const currentlyVotingItems = within(currentlyVotingTile).queryAllByTestId('currently-voting-item-votingPower');
+      const currentlyVotingItems = within(pollStatsTile).queryAllByTestId('currently-voting-item-votingPower');
       for (const item in statsItems) {
         expect(currentlyVotingItems[item].textContent).toEqual(`${capitalize(statsItems[item].name.toLowerCase())}`);
       }
 
-      const currentlyVotingChart = within(currentlyVotingTile).queryByTestId('pie-chart');
+      const currentlyVotingChart = within(pollStatsTile).queryByTestId('pie-chart');
       expect(currentlyVotingChart).toBeInTheDocument();
       expect(mockPieChart.mock.calls[mockPieChart.mock.calls.length - 1][0]).toEqual({
         style: { height: '200px', width: '200px' },
@@ -520,23 +476,12 @@ describe("For the event that hasn't finished yet", () => {
         );
       }
 
-      const currentlyVotingTile = within(leaderboardPage).queryByTestId('currently-voting-tile-votes');
-      expect(currentlyVotingTile).not.toBeNull();
-
-      const currentlyVotingTileTitle = within(currentlyVotingTile).queryByTestId('tile-title');
-      expect(currentlyVotingTileTitle).not.toBeNull();
-      expect(currentlyVotingTileTitle.textContent).toEqual('Current ballot stats');
-
-      const currentlyVotingTileSummary = within(currentlyVotingTile).queryByTestId('tile-summary');
-      expect(currentlyVotingTileSummary).not.toBeNull();
-      expect(currentlyVotingTileSummary.textContent).toEqual(placeholder);
-
-      const currentlyVotingItems = within(currentlyVotingTile).queryAllByTestId('currently-voting-item-votes');
+      const currentlyVotingItems = within(pollStatsTile).queryAllByTestId('currently-voting-item-votes');
       for (const item in statsItems) {
         expect(currentlyVotingItems[item].textContent).toEqual(`${capitalize(statsItems[item].name.toLowerCase())}`);
       }
 
-      const currentlyVotingChart = within(currentlyVotingTile).queryByTestId('pie-chart');
+      const currentlyVotingChart = within(pollStatsTile).queryByTestId('pie-chart');
       expect(currentlyVotingChart).toBeInTheDocument();
       expect(mockPieChart.mock.lastCall[0]).toEqual({
         style: { height: '200px', width: '200px' },
@@ -596,23 +541,12 @@ describe("For the event that hasn't finished yet", () => {
         );
       }
 
-      const currentlyVotingTile = within(leaderboardPage).queryByTestId('currently-voting-tile-votingPower');
-      expect(currentlyVotingTile).not.toBeNull();
-
-      const currentlyVotingTileTitle = within(currentlyVotingTile).queryByTestId('tile-title');
-      expect(currentlyVotingTileTitle).not.toBeNull();
-      expect(currentlyVotingTileTitle.textContent).toEqual('Voting power');
-
-      const currentlyVotingTileSummary = within(currentlyVotingTile).queryByTestId('tile-summary');
-      expect(currentlyVotingTileSummary).not.toBeNull();
-      expect(currentlyVotingTileSummary.textContent).toEqual(placeholder);
-
-      const currentlyVotingItems = within(currentlyVotingTile).queryAllByTestId('currently-voting-item-votingPower');
+      const currentlyVotingItems = within(pollStatsTile).queryAllByTestId('currently-voting-item-votingPower');
       for (const item in statsItems) {
         expect(currentlyVotingItems[item].textContent).toEqual(`${capitalize(statsItems[item].name.toLowerCase())}`);
       }
 
-      const currentlyVotingChart = within(currentlyVotingTile).queryByTestId('pie-chart');
+      const currentlyVotingChart = within(pollStatsTile).queryByTestId('pie-chart');
       expect(currentlyVotingChart).toBeInTheDocument();
       expect(mockPieChart.mock.lastCall[0]).toEqual({
         style: { height: '200px', width: '200px' },

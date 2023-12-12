@@ -8,6 +8,7 @@ import org.cardano.foundation.voting.domain.ChainTip;
 import org.cardano.foundation.voting.domain.EventAdditionalInfo;
 import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataChainTipService;
+import org.cardanofoundation.conversions.CardanoConverters;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
@@ -23,19 +24,15 @@ public class EventAdditionalInfoService {
 
     private final BlockchainDataChainTipService blockchainDataChainTipService;
 
-    @Value("${voting.event.additional.commitments.delay.slots:3600}")
-    private long additionalCommitmentsDelaySlots;
+    private final CardanoConverters cardanoConverters;
 
-    @Value("${voting.event.additional.commitments.delay.epochs:1}")
-    private long additionalCommitmentsDelayEpochs;
+    @Value("${voting.event.additional.commitments.delay.slots:10800}")
+    private long additionalCommitmentsDelaySlots = 10800;
 
     @PostConstruct
     public void init() {
         log.info("EventAdditionalInfoService initialised with" +
-                        " additionalCommitmentsDelaySlots:{}," +
-                        " additionalCommitmentsDelayEpochs:{}",
-
-                additionalCommitmentsDelaySlots, additionalCommitmentsDelayEpochs);
+                        " additionalCommitmentsDelaySlots:{}", additionalCommitmentsDelaySlots);
     }
 
     private boolean isEventActive(Event event, ChainTip chainTip) {
@@ -84,16 +81,18 @@ public class EventAdditionalInfoService {
 
     private boolean isCommitmentsWindowOpen(Event event, ChainTip chainTip) {
         var currentAbsoluteSlot = chainTip.getAbsoluteSlot();
-        var currentEpochNo = chainTip.getEpochNo();
 
         var isEventStarted = isEventStarted(event, chainTip);
 
         return switch (event.getVotingEventType()) {
             case STAKE_BASED, BALANCE_BASED -> {
                 var endEpoch = event.getEndEpoch().orElseThrow();
-                var endEpochWithDelay = endEpoch + additionalCommitmentsDelayEpochs;
 
-                yield isEventStarted && (currentEpochNo <= endEpochWithDelay);
+                var endEpochInSlots = cardanoConverters.epoch().endingOfEpochToAbsoluteSlot(endEpoch);
+
+                var endEpochInSlotsWithDelay = endEpochInSlots + additionalCommitmentsDelaySlots;
+
+                yield isEventStarted && (currentAbsoluteSlot <= endEpochInSlotsWithDelay);
             }
             case USER_BASED -> {
                 var endSlot = event.getEndSlot().orElseThrow();

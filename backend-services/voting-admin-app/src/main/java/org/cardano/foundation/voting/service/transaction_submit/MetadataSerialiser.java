@@ -150,4 +150,72 @@ public class MetadataSerialiser {
         return optionsMap;
     }
 
+    // Create Tally Results
+    // Create Domain Class TallyResults
+    // CreateTallyResultCommand
+    // event (id) > [category] (id) > [proposal] (only proposal_id)
+
+// categories: [
+//    proposals": [
+//    {
+//        "id": "1f082124-ee46-4deb-9140-84a4529f98be",
+//            "name": "YES"
+//    "voteCount": 123, // Confirm w/ Valeria
+//    "votingPower": "lovelaces" // use as a string.
+//    },
+//    {
+
+//    {
+//    "id": "CIP-1694_Pre_Ratification",
+//    "organisers": "IOG with CF Technical Support",
+//    "votingEventType": "STAKE_BASED",
+//    "startSlot": null,
+//    "endSlot": null,
+//    "proposalsRevealSlot": null,
+//    "startEpoch": 452,
+//    "eventStartDate": "2023-12-01T21:44:51Z",
+//    "eventEndDate": "2023-12-11T21:44:50Z",
+//    "proposalsRevealDate": "2023-12-16T21:44:51Z",
+//    "snapshotTime": "2023-11-21T21:44:50Z",
+//    "endEpoch": 453,
+//    "snapshotEpoch": 449,
+//    "proposalsRevealEpoch": 455,
+//    "categories": [
+//        {
+//            "id": "CIP1694_APPROVAL",
+//            "gdprProtection": false,
+//            "proposals": [
+//                {
+//                    "id": "1f082124-ee46-4deb-9140-84a4529f98be",
+//                    "name": "YES"
+//                },
+//                {
+//                    "id": "ed9f03e8-8ee9-4de5-93a3-30779216f150",
+//                    "name": "NO"
+//                },
+//                {
+//                    "id": "fd9f03e8-8ee9-4de5-93a3-40779216f151",
+//                    "name": "ABSTAIN"
+//                }
+//            ]
+//        }
+//    ],
+//    "active": false,
+//    "started": true,
+//    "highLevelEventResultsWhileVoting": false,
+//    "highLevelCategoryResultsWhileVoting": false,
+//    "categoryResultsWhileVoting": false,
+//    "notStarted": false,
+//    "finished": true,
+//    "proposalsReveal": false,
+//    "commitmentsWindowOpen": true,
+//    "allowVoteChanging": false
+//}
+
+
+
+
+
+
+
 }

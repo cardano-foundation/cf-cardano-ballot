@@ -70,6 +70,19 @@ public class L1TransactionCreator {
         return serialiseTransaction(metadata);
     }
 
+//
+//    submitCentralisedTally
+//
+//
+//    public byte[] submitCategory(CreateCategoryCommand category) {
+//        var chainTip = blockchainDataChainTipService.getChainTip();
+//
+//        MetadataMap eventMetadataMap = metadataSerialiser.serialise(category, chainTip.getAbsoluteSlot());
+//        Metadata metadata = serialiseMetadata(eventMetadataMap, CATEGORY_REGISTRATION);
+//
+//        return serialiseTransaction(metadata);
+//    }
+
     @SneakyThrows
     protected Metadata serialiseMetadata(MetadataMap childMetadata, OnChainEventType metadataType) {
         var stakeAddress = organiserAccount.stakeAddress();

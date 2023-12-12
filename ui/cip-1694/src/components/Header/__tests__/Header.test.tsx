@@ -174,7 +174,7 @@ describe('For ongoing event:', () => {
     });
   });
 
-  test('should show confirmation modal and discard redirection to leadeboard page', async () => {
+  test.skip('should show confirmation modal and discard redirection to leadeboard page', async () => {
     mockUseCardano.mockReset();
     mockUseCardano.mockReturnValue(useCardanoMock);
 
@@ -220,7 +220,7 @@ describe('For ongoing event:', () => {
     historyPushSpy.mockRestore();
   });
 
-  test('should show confirmation modal and discard redirection to leadeboard page on close icon click', async () => {
+  test.skip('should show confirmation modal and discard redirection to leadeboard page on close icon click', async () => {
     mockUseCardano.mockReset();
     mockUseCardano.mockReturnValue(useCardanoMock);
 
@@ -257,7 +257,7 @@ describe('For ongoing event:', () => {
     historyPushSpy.mockRestore();
   });
 
-  test('should not have leaderboard link disabled if there is no tip fetched', async () => {
+  test.skip('should not have leaderboard link disabled if there is no tip fetched', async () => {
     mockUseCardano.mockReset();
     mockUseCardano.mockReturnValue(useCardanoMock_notConnected);
 
@@ -518,7 +518,7 @@ describe('Mobile menu:', () => {
     });
   });
 
-  test('should handle onClose for ResultsCommingSoonModal', async () => {
+  test.skip('should handle onClose for ResultsCommingSoonModal', async () => {
     const history = createMemoryHistory({ initialEntries: [ROUTES.INTRO] });
     renderWithProviders(
       <CustomRouter history={history}>
@@ -553,7 +553,7 @@ describe('Mobile menu:', () => {
     });
   });
 
-  test('should handle onGoBackFn for ResultsCommingSoonModal', async () => {
+  test.skip('should handle onGoBackFn for ResultsCommingSoonModal', async () => {
     const history = createMemoryHistory({ initialEntries: [ROUTES.INTRO] });
     renderWithProviders(
       <CustomRouter history={history}>

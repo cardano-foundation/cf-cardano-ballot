@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { Grid, Button } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
+import { setIsMobileMenuVisible as setIsMobileMenuVisibleAction } from 'common/store/userSlice';
+import { RootState } from 'common/store';
 import { ROUTES } from 'common/routes';
 import { HeaderActions } from './components/HeaderActions';
 import { MobileModal } from '../MobileModal/MobileModal';
@@ -10,7 +13,14 @@ import lofo from '../../common/resources/images/cardano-ballot-logo.png';
 import styles from './Header.module.scss';
 
 export const Header = () => {
-  const [isMobileMenuVisible, setIsMobileMenuVisible] = useState(false);
+  const dispatch = useDispatch();
+  const isMobileMenuVisible = useSelector((state: RootState) => state.user.isMobileMenuVisible);
+  const setIsMobileMenuVisible = useCallback(
+    (isVisible: boolean) => {
+      dispatch(setIsMobileMenuVisibleAction({ isVisible }));
+    },
+    [dispatch]
+  );
 
   return (
     <>
@@ -79,10 +89,7 @@ export const Header = () => {
           direction="column"
           justifyContent="space-between"
         >
-          <HeaderActions
-            onClick={() => setIsMobileMenuVisible(false)}
-            isMobileMenu
-          />
+          <HeaderActions isMobileMenu />
           <Footer isMobileMenu />
         </Grid>
       </MobileModal>

@@ -6,6 +6,8 @@ import { UserState } from './types';
 const initialState: UserState = {
   isConnectWalletModalVisible: false,
   isVoteSubmittedModalVisible: false,
+  isCommingSoonModalVisible: false,
+  isMobileMenuVisible: false,
   connectedWallet: '',
   event: null,
   tip: null,
@@ -20,6 +22,12 @@ export const userSlice = createSlice({
     },
     setIsVoteSubmittedModalVisible: (state, action: PayloadAction<{ isVisible: boolean }>) => {
       state.isVoteSubmittedModalVisible = action.payload.isVisible;
+    },
+    setIsCommingSoonModalVisible: (state, action: PayloadAction<{ isVisible: boolean }>) => {
+      state.isCommingSoonModalVisible = action.payload.isVisible;
+    },
+    setIsMobileMenuVisible: (state, action: PayloadAction<{ isVisible: boolean }>) => {
+      state.isMobileMenuVisible = action.payload.isVisible;
     },
     setConnectedWallet: (state, action: PayloadAction<{ wallet: string }>) => {
       state.connectedWallet = action.payload.wallet;
@@ -36,6 +44,8 @@ export const userSlice = createSlice({
 export const {
   setIsConnectWalletModalVisible,
   setIsVoteSubmittedModalVisible,
+  setIsCommingSoonModalVisible,
+  setIsMobileMenuVisible,
   setConnectedWallet,
   setEventData,
   setChainTipData,

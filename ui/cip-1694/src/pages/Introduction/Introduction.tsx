@@ -1,19 +1,59 @@
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import BlockIcon from '@mui/icons-material/Block';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Grid, Container, Typography, Button, Box } from '@mui/material';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
+import { ChainTip } from 'types/voting-ledger-follower-types';
+import * as voteService from 'common/api/voteService';
 import { RootState } from 'common/store';
-import { setIsConnectWalletModalVisible } from 'common/store/userSlice';
+import { setIsConnectWalletModalVisible, setChainTipData, setIsCommingSoonModalVisible } from 'common/store/userSlice';
 import { ROUTES } from 'common/routes';
 import { EventTime } from 'components/EventTime/EventTime';
+import { Toast } from 'components/Toast/Toast';
 import styles from './Introduction.module.scss';
 
 export const IntroductionPage = () => {
+  const navigate = useNavigate();
   const { isConnected } = useCardano();
   const event = useSelector((state: RootState) => state.user.event);
   const dispatch = useDispatch();
+
+  const fetchChainTip = useCallback(async () => {
+    let chainTip: ChainTip = null;
+    try {
+      chainTip = await voteService.getChainTip();
+      dispatch(setChainTipData({ tip: chainTip }));
+    } catch (error) {
+      toast(
+        <Toast
+          message="Failed to fetch chain tip"
+          error
+          icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
+        />
+      );
+    }
+    return chainTip
+  }, [dispatch]);
+
+  useEffect(() => {
+    fetchChainTip();
+  }, [fetchChainTip]);
+
+  const onClick = useCallback(async () => {
+    if (event?.finished) {
+      const chainTip = await fetchChainTip();
+      if (event?.proposalsRevealEpoch > chainTip?.epochNo) {
+        dispatch(setIsCommingSoonModalVisible({ isVisible: true }));
+      } else {
+        navigate(ROUTES.LEADERBOARD);
+      }
+    } else {
+      navigate(ROUTES.VOTE);
+    }
+  }, [dispatch, event?.finished, event?.proposalsRevealEpoch, fetchChainTip, navigate]);
 
   return (
     <Box
@@ -112,11 +152,10 @@ export const IntroductionPage = () => {
                 ) : (
                   <Button
                     size="large"
-                    component={Link}
                     variant="contained"
                     className={styles.button}
                     data-testid="event-cta"
-                    to={{ pathname: ROUTES[event?.finished ? 'LEADERBOARD' : 'VOTE'] }}
+                    onClick={onClick}
                   >
                     {event?.finished ? 'See the results' : 'Get started'}
                   </Button>

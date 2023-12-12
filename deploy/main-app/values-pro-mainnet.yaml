@@ -74,7 +74,7 @@ cf-cardano-ballot-ledger-follower-api:
   enabled: true
   values:
     image:
-      tag: 0.2.75-17-f3c58
+      tag: 0.2.75-23-7c124
     springProfiles: prod
     bindOnEventIds: CIP-1694_Pre_Ratification
     yaci:

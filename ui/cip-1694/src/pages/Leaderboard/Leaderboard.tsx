@@ -257,7 +257,7 @@ export const Leaderboard = () => {
                     >
                       <div
                         className={styles.proposalRect}
-                        data-proposal={name}
+                        data-proposal={stats ? name : 'INACTIVE'}
                       />
                       <Typography
                         variant="h5"

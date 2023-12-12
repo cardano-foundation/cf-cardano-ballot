@@ -6,7 +6,7 @@ var mockGetChainTip = jest.fn();
 var mockResultsCommingSoonModal = jest.fn();
 /* eslint-disable no-var */
 import '@testing-library/jest-dom';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { expect } from '@jest/globals';
 import BlockIcon from '@mui/icons-material/Block';
 import { waitFor, cleanup } from '@testing-library/react';
@@ -67,29 +67,6 @@ describe('HeaderActions', () => {
   afterEach(() => {
     jest.clearAllMocks();
     cleanup();
-  });
-
-  test('should call onClick handler if provided', async () => {
-    mockResultsCommingSoonModal.mockReset();
-    mockResultsCommingSoonModal.mockImplementation(({ onConfirmFn }: { onConfirmFn: () => void }) => {
-      useEffect(() => {
-        onConfirmFn();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, []);
-      return <span></span>;
-    });
-    const onClick = jest.fn();
-    const history = createMemoryHistory({ initialEntries: [ROUTES.INTRO] });
-    renderWithProviders(
-      <CustomRouter history={history}>
-        <HeaderActions onClick={onClick} />
-      </CustomRouter>,
-      { preloadedState: { user: { event: eventMock_active } as UserState } }
-    );
-
-    await waitFor(async () => {
-      expect(onClick).toBeCalled();
-    });
   });
 
   test('should display toast if fetch chain tip request failed', async () => {

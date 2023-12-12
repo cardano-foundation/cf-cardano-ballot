@@ -17,7 +17,6 @@ type ResultsCommingSoonModalProps = {
   description: string | React.ReactNode;
   onCloseFn: () => void;
   onGoBackFn: () => void;
-  onConfirmFn?: () => void;
 };
 
 export const ResultsCommingSoonModal = (props: ResultsCommingSoonModalProps) => {

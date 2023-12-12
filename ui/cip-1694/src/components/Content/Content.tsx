@@ -5,19 +5,34 @@ import { Box, debounce } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import BlockIcon from '@mui/icons-material/Block';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
-import { ConnectWalletModal } from 'components/ConnectWalletModal/ConnectWalletModal';
 import { PageRoutes } from 'common/routes';
 import { RootState } from 'common/store';
-import { setIsConnectWalletModalVisible } from 'common/store/userSlice';
+import {
+  setIsConnectWalletModalVisible,
+  setIsCommingSoonModalVisible,
+  setIsMobileMenuVisible as setIsMobileMenuVisibleAction,
+} from 'common/store/userSlice';
 import { clearUserInSessionStorage } from 'common/utils/session';
-import styles from './Content.module.scss';
-import { Toast } from '../Toast/Toast';
+import { getDateAndMonth } from 'common/utils/dateUtils';
+import { ConnectWalletModal } from 'components/ConnectWalletModal/ConnectWalletModal';
+import { formatUTCDate } from 'pages/Leaderboard/utils';
+import { ResultsCommingSoonModal } from 'pages/Leaderboard/components/ResultsCommingSoonModal/ResultsCommingSoonModal';
+import { Toast } from 'components/Toast/Toast';
 import { env } from '../../env';
+import styles from './Content.module.scss';
 
 export const Content = () => {
   const { installedExtensions } = useCardano();
+  const event = useSelector((state: RootState) => state.user.event);
   const isConnectWalletModalVisible = useSelector((state: RootState) => state.user.isConnectWalletModalVisible);
+  const isCommingSoonModalVisible = useSelector((state: RootState) => state.user.isCommingSoonModalVisible);
   const dispatch = useDispatch();
+  const setIsMobileMenuVisible = useCallback(
+    (isVisible: boolean) => {
+      dispatch(setIsMobileMenuVisibleAction({ isVisible }));
+    },
+    [dispatch]
+  );
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedToast = useCallback(debounce(toast), []);
@@ -67,6 +82,31 @@ export const Content = () => {
           }
           onConnectWallet={onConnectWallet}
           onConnectWalletError={onConnectWalletError}
+        />
+      )}
+      {isCommingSoonModalVisible && (
+        <ResultsCommingSoonModal
+          openStatus={isCommingSoonModalVisible}
+          onCloseFn={() => {
+            dispatch(setIsCommingSoonModalVisible({ isVisible: false }));
+            setIsMobileMenuVisible(false);
+          }}
+          onGoBackFn={() => {
+            dispatch(setIsCommingSoonModalVisible({ isVisible: false }));
+            setIsMobileMenuVisible(false);
+          }}
+          name="vote-submitted-modal"
+          id="vote-submitted-modal"
+          title="Coming soon"
+          description={
+            <>
+              The results will be available from{' '}
+              <b>
+                {event?.proposalsRevealDate && getDateAndMonth(event?.proposalsRevealDate?.toString())}{' '}
+                {formatUTCDate(event?.proposalsRevealDate?.toString())}
+              </b>
+            </>
+          }
         />
       )}
     </Box>

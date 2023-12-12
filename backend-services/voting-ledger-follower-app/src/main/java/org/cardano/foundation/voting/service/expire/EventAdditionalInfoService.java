@@ -93,13 +93,13 @@ public class EventAdditionalInfoService {
                 var endEpoch = event.getEndEpoch().orElseThrow();
                 var endEpochWithDelay = endEpoch + additionalCommitmentsDelayEpochs;
 
-                yield isEventStarted && (currentEpochNo < endEpochWithDelay);
+                yield isEventStarted && (currentEpochNo <= endEpochWithDelay);
             }
             case USER_BASED -> {
                 var endSlot = event.getEndSlot().orElseThrow();
                 var endSlotWithDelay = endSlot + additionalCommitmentsDelaySlots;
 
-                yield isEventStarted && (currentAbsoluteSlot < endSlotWithDelay);
+                yield isEventStarted && (currentAbsoluteSlot <= endSlotWithDelay);
             }
         };
     }

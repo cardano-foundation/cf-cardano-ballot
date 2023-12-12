@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static org.cardano.foundation.voting.domain.VotingEventType.STAKE_BASED;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -100,11 +101,11 @@ public class BaseTest {
                         .willReturn(com.github.tomakehurst.wiremock.client.WireMock.aResponse()
                                 .withStatus(404)));
 
-        Event event = Event.builder()
+        Event event1 = Event.builder()
                 .id("CF_TEST_EVENT_01")
                 .organisers("Cardano Foundation")
                 .version(SchemaVersion.V1)
-                .votingEventType(VotingEventType.STAKE_BASED)
+                .votingEventType(STAKE_BASED)
                 .allowVoteChanging(true)
                 .highLevelEventResultsWhileVoting(true)
                 .highLevelCategoryResultsWhileVoting(true)
@@ -120,7 +121,7 @@ public class BaseTest {
                 .absoluteSlot(412439L)
                 .build();
 
-        eventRepository.save(event);
+        eventRepository.save(event1);
 
         Proposal proposalYes = Proposal.builder()
                 .id("YES")
@@ -134,7 +135,7 @@ public class BaseTest {
 
         Category category = Category.builder()
                 .id("CHANGE_SOMETHING")
-                .event(event)
+                .event(event1)
                 .version(SchemaVersion.V1)
                 .absoluteSlot(412439L)
                 .gdprProtection(false)
@@ -160,7 +161,7 @@ public class BaseTest {
 
         Block block1 = Block.builder()
                 .hash("356b7d7dbb696ccd12775c016941057a9dc70898d87a63fc752271bb46856940")
-                .epochNumber(412)
+                .epochNumber(101)
                 .slot(412162133L)
                 .blockBodyHash("1e043f100dce12d107f679685acd2fc0610e10f72a92d412794c9773d11d8477")
                 .build();

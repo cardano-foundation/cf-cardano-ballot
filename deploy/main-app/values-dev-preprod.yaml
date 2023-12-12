@@ -11,7 +11,7 @@ cf-cardano-ballot-ui:
   enabled: true
   values:
     image:
-      tag: 0.2.75-21-7991d
+      tag: 0.2.75-24-64c2d
     eventUri: "https://{{ .Values.domain }}"
     votingAppServerUrl: "https://api.{{ .Values.domain }}"
     votingLedgerFollowerAppServerUrl: "https://follower-api.{{ .Values.domain }}"

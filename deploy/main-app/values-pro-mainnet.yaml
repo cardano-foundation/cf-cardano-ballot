@@ -111,6 +111,7 @@ cf-voting-verification-ui:
       tag: 0.2.75-14-dae3a
 
 cf-vote-commitment:
+  enabled: false
   values:
     image:
       tag: 0.2.75-14-dae3a

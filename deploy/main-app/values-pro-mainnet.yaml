@@ -88,7 +88,7 @@ cf-cardano-ballot-ledger-follower-api:
       - name: follower-1
         enabled: true
         schemaName: follower_1
-        imageTag: 0.2.75-17-f3c58
+        imageTag: 0.2.75-23-7c124
       - name: follower-2
         enabled: true
         schemaName: follower_2
@@ -117,9 +117,7 @@ cf-vote-commitment:
     springProfiles: prod
     instances:
       - name: active-even-hour
-        voteCommitmentCronExpression: "0 0 */2 * * *"
-      - name: active-odd-hour
-        voteCommitmentCronExpression: "0 0 1-23/2 * * *"
+        voteCommitmentCronExpression: "0 */20 * * * *"
     yaci:
       startBlockHash: 285f58fd09cbb95ac5ffd6f644f7907dfb3faff63155b8a86a9c7b0e99503397
       startSlotNumber: "103737886"

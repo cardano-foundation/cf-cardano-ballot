@@ -93,13 +93,13 @@ public class EventAdditionalInfoService {
 <span class="fc" id="L93">                var endEpoch = event.getEndEpoch().orElseThrow();</span>
 <span class="fc" id="L94">                var endEpochWithDelay = endEpoch + additionalCommitmentsDelayEpochs;</span>
 
-<span class="pc bpc" id="L96" title="2 of 4 branches missed.">                yield isEventStarted &amp;&amp; (currentEpochNo &lt; endEpochWithDelay);</span>
+<span class="pc bpc" id="L96" title="2 of 4 branches missed.">                yield isEventStarted &amp;&amp; (currentEpochNo &lt;= endEpochWithDelay);</span>
             }
             case USER_BASED -&gt; {
 <span class="nc" id="L99">                var endSlot = event.getEndSlot().orElseThrow();</span>
 <span class="nc" id="L100">                var endSlotWithDelay = endSlot + additionalCommitmentsDelaySlots;</span>
 
-<span class="nc bnc" id="L102" title="All 4 branches missed.">                yield isEventStarted &amp;&amp; (currentAbsoluteSlot &lt; endSlotWithDelay);</span>
+<span class="nc bnc" id="L102" title="All 4 branches missed.">                yield isEventStarted &amp;&amp; (currentAbsoluteSlot &lt;= endSlotWithDelay);</span>
             }
         };
     }

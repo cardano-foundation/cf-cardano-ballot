@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import capitalize from 'lodash/capitalize';
 import findIndex from 'lodash/findIndex';
@@ -21,6 +21,7 @@ import {
   setIsConnectWalletModalVisible,
   setIsVoteSubmittedModalVisible,
   setChainTipData,
+  setIsCommingSoonModalVisible,
 } from 'common/store/userSlice';
 import { ProposalPresentation, Account, ChainTip } from 'types/voting-ledger-follower-types';
 import { VoteReceipt as VoteReceiptType } from 'types/voting-app-types';
@@ -64,6 +65,7 @@ const iconsMap: Record<ProposalPresentation['name'], React.ReactElement | null> 
 };
 
 export const VotePage = () => {
+  const navigate = useNavigate();
   const { stakeAddress, isConnected, signMessage } = useCardano();
   const [receipt, setReceipt] = useState<VoteReceiptType | null>(null);
   const event = useSelector((state: RootState) => state.user.event);
@@ -297,6 +299,15 @@ export const VotePage = () => {
     toast(<Toast message="Receipt has been successfully refreshed" />);
   }, []);
 
+  const onGoToLeaderboard = useCallback(async () => {
+    const chainTip = await fetchChainTip();
+    if (event?.proposalsRevealEpoch > chainTip?.epochNo) {
+      dispatch(setIsCommingSoonModalVisible({ isVisible: true }));
+    } else {
+      navigate(ROUTES.LEADERBOARD);
+    }
+  }, [dispatch, event?.proposalsRevealEpoch, fetchChainTip, navigate]);
+
   const cantSelectOptions =
     !!receipt || voteSubmitted || (isConnected && !isReceiptFetched) || event?.notStarted || event?.finished;
   const showViewReceiptButton = receipt?.id || voteSubmitted;
@@ -448,15 +459,11 @@ export const VotePage = () => {
                 {showSubmitButton && (
                   <Button
                     className={cn(styles.button, {
-                      // [styles.disabled]: !optionId || !isReceiptFetched || !isTAndCAndPPChecked,
                       [styles.disabled]: !optionId || !isReceiptFetched,
                     })}
                     size="large"
                     variant="contained"
-                    disabled={
-                      // !optionId || !isReceiptFetched || isCastingAVote || !tip?.absoluteSlot || !isTAndCAndPPChecked
-                      !optionId || !isReceiptFetched || isCastingAVote || !tip?.absoluteSlot
-                    }
+                    disabled={!optionId || !isReceiptFetched || isCastingAVote || !tip?.absoluteSlot}
                     onClick={() => handleSubmit()}
                     data-testid="proposal-submit-button"
                   >
@@ -488,9 +495,8 @@ export const VotePage = () => {
                     className={styles.button}
                     size="large"
                     variant="contained"
-                    component={Link}
-                    to={ROUTES.LEADERBOARD}
                     data-testid="view-results-button"
+                    onClick={() => onGoToLeaderboard()}
                   >
                     View the results
                   </Button>
@@ -548,7 +554,8 @@ export const VotePage = () => {
           <>
             <div style={{ marginBottom: '10px' }}>Thank you, your ballot has been submitted.</div>
             Make sure to check back on{' '}
-            <b>{event?.proposalsRevealDate && getDateAndMonth(event?.proposalsRevealDate?.toString())}</b> to see the results!
+            <b>{event?.proposalsRevealDate && getDateAndMonth(event?.proposalsRevealDate?.toString())}</b> to see the
+            results!
           </>
         }
       />

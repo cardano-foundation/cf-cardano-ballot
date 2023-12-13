@@ -150,6 +150,34 @@ public class MetadataSerialiser {
         return optionsMap;
     }
 
+    private static MetadataMap createTallyResults(CreateTallyResultCommand createTallyResultCommand) {
+        var tallyResultsMap = MetadataBuilder.createMap();
+        tallyResultsMap.put("id", createTallyResultCommand.getId());
+
+
+        for (CategoryResult category : createTallyResultCommand.getCategoryResults()) {
+            var proposalResults = MetadataBuilder.createList();
+            var categoryResults = MetadataBuilder.createMap();
+            
+            categoryResults.put("id", category.getId());
+
+            for (ProposalResult proposal: category.getProposalResults()) {
+                var proposalResultsMap = MetadataBuilder.createMap();
+                proposalResultsMap.put("id", proposal.getId());
+                proposalResultsMap.put("name", proposal.getName());
+                proposalResultsMap.put("voteCount", proposal.getVoteCount());
+                proposalResultsMap.put("votingPower", proposal.getVotingPower());
+                proposalResults.add(proposalResultsMap);
+            }
+
+        }
+
+        // list categories
+        // proposals outcome
+
+
+    }
+
     // Create Tally Results
     // Create Domain Class TallyResults
     // CreateTallyResultCommand
@@ -211,11 +239,6 @@ public class MetadataSerialiser {
 //    "commitmentsWindowOpen": true,
 //    "allowVoteChanging": false
 //}
-
-
-
-
-
 
 
 }

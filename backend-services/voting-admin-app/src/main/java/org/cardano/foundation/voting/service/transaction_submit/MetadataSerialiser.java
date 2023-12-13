@@ -150,32 +150,40 @@ public class MetadataSerialiser {
         return optionsMap;
     }
 
-    private static MetadataMap createTallyResults(CreateTallyResultCommand createTallyResultCommand) {
+    public MetadataMap serialise(CreateTallyResultCommand createTallyResultCommand) {
+        var categoryResults = MetadataBuilder.createList();
         var tallyResultsMap = MetadataBuilder.createMap();
         tallyResultsMap.put("id", createTallyResultCommand.getId());
-
+        tallyResultsMap.put("categories", categoryResults);
 
         for (CategoryResult category : createTallyResultCommand.getCategoryResults()) {
             var proposalResults = MetadataBuilder.createList();
-            var categoryResults = MetadataBuilder.createMap();
-            
-            categoryResults.put("id", category.getId());
+            var categoryResult = MetadataBuilder.createMap();
+            categoryResults.add(categoryResult);
+            categoryResult.put("id", category.getId());
+            categoryResult.put("proposals", proposalResults);
 
-            for (ProposalResult proposal: category.getProposalResults()) {
-                var proposalResultsMap = MetadataBuilder.createMap();
-                proposalResultsMap.put("id", proposal.getId());
-                proposalResultsMap.put("name", proposal.getName());
-                proposalResultsMap.put("voteCount", proposal.getVoteCount());
-                proposalResultsMap.put("votingPower", proposal.getVotingPower());
+            for (ProposalResult proposal : category.getProposalResults()) {
+                var proposalResultsMap = getProposalResultsMap(createTallyResultCommand, proposal);
                 proposalResults.add(proposalResultsMap);
             }
 
         }
 
-        // list categories
-        // proposals outcome
+        return tallyResultsMap;
+    }
 
-
+    private static MetadataMap getProposalResultsMap(CreateTallyResultCommand createTallyResultCommand, ProposalResult proposal) {
+        var proposalResultsMap = MetadataBuilder.createMap();
+        proposalResultsMap.put("id", proposal.getId());
+        if (!createTallyResultCommand.isGdprProtection()) {
+            proposalResultsMap.put("name", proposal.getName());
+        }
+        if (createTallyResultCommand.isShowVoteCount()) {
+            proposalResultsMap.put("voteCount", proposal.getVoteCount());
+        }
+        proposalResultsMap.put("votingPower", proposal.getVotingPower());
+        return proposalResultsMap;
     }
 
     // Create Tally Results

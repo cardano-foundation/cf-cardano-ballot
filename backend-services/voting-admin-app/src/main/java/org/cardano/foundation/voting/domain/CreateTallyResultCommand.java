@@ -13,6 +13,12 @@ public class CreateTallyResultCommand {
 
     private String id;
 
+    @Builder.Default
+    private boolean gdprProtection = false;
+
+    @Builder.Default
+    private boolean showVoteCount = false;
+
     private List<CategoryResult> categoryResults;
 
 }

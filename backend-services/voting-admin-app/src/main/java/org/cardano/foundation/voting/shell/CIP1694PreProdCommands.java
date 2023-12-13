@@ -2,10 +2,7 @@ package org.cardano.foundation.voting.shell;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.domain.CardanoNetwork;
-import org.cardano.foundation.voting.domain.CreateCategoryCommand;
-import org.cardano.foundation.voting.domain.CreateEventCommand;
-import org.cardano.foundation.voting.domain.Proposal;
+import org.cardano.foundation.voting.domain.*;
 import org.cardano.foundation.voting.service.transaction_submit.L1SubmissionService;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
@@ -94,6 +91,50 @@ public class CIP1694PreProdCommands {
         l1SubmissionService.submitCategory(createCategoryCommand);
 
         return "Created CIP-1694 category: " + createCategoryCommand;
+    }
+
+    @ShellMethod(key = "03_submit-cip-1694-tally-results-pre-prod", value = "Submit CIP1694_APPROVAL tally results on the PRE-PROD network.")
+    public String submitCIP1694TallyResultsOnPreProd() {
+        if (network != PREPROD) {
+            return "This command can only be run on a PRE-PROD network!";
+        }
+
+        log.info("Creating CIP-1694 CIP1694_APPROVAL Structure category...");
+
+        ProposalResult yesProposal = ProposalResult.builder()
+                .id("1f082124-ee46-4deb-9140-84a4529f98be")
+                .name("YES")
+                .voteCount("120")
+                .votingPower("123000000000")
+                .build();
+
+        ProposalResult noProposal = ProposalResult.builder()
+                .id("ed9f03e8-8ee9-4de5-93a3-30779216f150")
+                .name("NO")
+                .voteCount("20")
+                .votingPower("4560000")
+                .build();
+
+        ProposalResult abstainProposal = ProposalResult.builder()
+                .id("fd9f03e8-8ee9-4de5-93a3-40779216f151")
+                .name("ABSTAIN")
+                .voteCount("10")
+                .votingPower("789009")
+                .build();
+
+        CreateTallyResultCommand createTallyResultCommand = CreateTallyResultCommand.builder()
+                .id("CIP1694_APPROVAL")
+                .gdprProtection(false)
+                .showVoteCount(true)
+                .categoryResults(List.of(CategoryResult.builder()
+                        .id("CIP1694_APPROVAL")
+                        .proposalResults(List.of(yesProposal, noProposal, abstainProposal))
+                        .build()))
+                .build();
+
+        l1SubmissionService.submitTallyResults(createTallyResultCommand);
+
+        return "Created CIP-1694 category: " + createTallyResultCommand;
     }
 
 }

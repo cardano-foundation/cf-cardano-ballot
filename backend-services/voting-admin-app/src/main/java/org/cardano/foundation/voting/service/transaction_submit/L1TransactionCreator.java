@@ -18,6 +18,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CreateCategoryCommand;
 import org.cardano.foundation.voting.domain.CreateEventCommand;
+import org.cardano.foundation.voting.domain.CreateTallyResultCommand;
 import org.cardano.foundation.voting.domain.OnChainEventType;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataChainTipService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +27,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import static com.bloxbean.cardano.client.crypto.Blake2bUtil.blake2bHash224;
-import static org.cardano.foundation.voting.domain.OnChainEventType.CATEGORY_REGISTRATION;
-import static org.cardano.foundation.voting.domain.OnChainEventType.EVENT_REGISTRATION;
+import static org.cardano.foundation.voting.domain.OnChainEventType.*;
 
 @Service
 @Slf4j
@@ -70,18 +70,13 @@ public class L1TransactionCreator {
         return serialiseTransaction(metadata);
     }
 
-//
-//    submitCentralisedTally
-//
-//
-//    public byte[] submitCategory(CreateCategoryCommand category) {
-//        var chainTip = blockchainDataChainTipService.getChainTip();
-//
-//        MetadataMap eventMetadataMap = metadataSerialiser.serialise(category, chainTip.getAbsoluteSlot());
-//        Metadata metadata = serialiseMetadata(eventMetadataMap, CATEGORY_REGISTRATION);
-//
-//        return serialiseTransaction(metadata);
-//    }
+    public byte[] submitCentralisedTally(CreateTallyResultCommand createTallyResultCommand) {
+
+        MetadataMap eventMetadataMap = metadataSerialiser.serialise(createTallyResultCommand);
+        Metadata metadata = serialiseMetadata(eventMetadataMap, VOTE_TALLY);
+
+        return serialiseTransaction(metadata);
+    }
 
     @SneakyThrows
     protected Metadata serialiseMetadata(MetadataMap childMetadata, OnChainEventType metadataType) {

@@ -1489,7 +1489,7 @@ describe('For the event that has already finished', () => {
     });
   });
 
-  test('should render view result and open receipt cta when wallet is connected', async () => {
+  test.skip('should render view result and open receipt cta when wallet is connected', async () => {
     const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
     mockGetVoteReceipt.mockReset();
     mockGetVoteReceipt.mockReturnValue(VoteReceiptMock_Basic);

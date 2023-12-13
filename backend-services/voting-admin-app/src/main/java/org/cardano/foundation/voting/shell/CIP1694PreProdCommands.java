@@ -134,7 +134,7 @@ public class CIP1694PreProdCommands {
 
         l1SubmissionService.submitTallyResults(createTallyResultCommand);
 
-        return "Created CIP-1694 category: " + createTallyResultCommand;
+        return "Submitted CIP-1694 tally results: " + createTallyResultCommand;
     }
 
 }

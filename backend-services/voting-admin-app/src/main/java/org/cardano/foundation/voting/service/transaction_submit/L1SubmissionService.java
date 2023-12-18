@@ -3,6 +3,7 @@ package org.cardano.foundation.voting.service.transaction_submit;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CreateCategoryCommand;
 import org.cardano.foundation.voting.domain.CreateEventCommand;
+import org.cardano.foundation.voting.domain.CreateTallyResultCommand;
 import org.cardano.foundation.voting.domain.HydraTallyConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -92,6 +93,12 @@ public class L1SubmissionService {
 
     public String submitCategory(CreateCategoryCommand category) {
         byte[] txData = l1TransactionCreator.submitCategory(category);
+
+        return transactionSubmissionService.submitTransaction(txData);
+    }
+
+    public String submitTallyResults(CreateTallyResultCommand createTallyResultCommand) {
+        byte[] txData = l1TransactionCreator.submitCentralisedTally(createTallyResultCommand);
 
         return transactionSubmissionService.submitTransaction(txData);
     }

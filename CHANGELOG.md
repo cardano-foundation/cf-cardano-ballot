@@ -1,5 +1,40 @@
 # Changelog
 
+## [0.2.76](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.75...v0.2.76) (2024-02-01)
+
+
+### Features
+
+* added batching for leaderboard. ([#514](https://github.com/cardano-foundation/cf-cardano-ballot/issues/514)) ([28d9e37](https://github.com/cardano-foundation/cf-cardano-ballot/commit/28d9e370129ae2b06be9ce4023c5c4051b42d091))
+* added logging to know which stake service is used. ([#526](https://github.com/cardano-foundation/cf-cardano-ballot/issues/526)) ([015efa0](https://github.com/cardano-foundation/cf-cardano-ballot/commit/015efa0de3187644db26dcd893109458e317ffc7))
+* **cip-1694-ui:** change typhon wallet name, fix typo ([24fbdd2](https://github.com/cardano-foundation/cf-cardano-ballot/commit/24fbdd20502a3929852367dd8e313aade7b1d067))
+* **cip-1694-ui:** change voting closes and connect button colors ([feb0050](https://github.com/cardano-foundation/cf-cardano-ballot/commit/feb00502e730f23a0d1f17b1601ecb1c2cbbc68a))
+* **cip-1694-ui:** more fixes ([170f829](https://github.com/cardano-foundation/cf-cardano-ballot/commit/170f829c5fd78f689f511e10f53d35bdec5bab80))
+* hydra-tally ([#488](https://github.com/cardano-foundation/cf-cardano-ballot/issues/488)) ([f4fb51d](https://github.com/cardano-foundation/cf-cardano-ballot/commit/f4fb51dabb9700c0a643c179c7d6dca25e7fdef1))
+* move to JDK 21. ([#378](https://github.com/cardano-foundation/cf-cardano-ballot/issues/378)) ([d59f6c5](https://github.com/cardano-foundation/cf-cardano-ballot/commit/d59f6c58f860db9ccfd4aee5de106dfee3b153f4))
+* new winner badge placed on winner card ([b779303](https://github.com/cardano-foundation/cf-cardano-ballot/commit/b779303a20acf0b1a95659097bb18922793d5c5a))
+* using cf-cardano-conversions library. ([#525](https://github.com/cardano-foundation/cf-cardano-ballot/issues/525)) ([7c4520c](https://github.com/cardano-foundation/cf-cardano-ballot/commit/7c4520cac361a1752fef8e4c21cc8dd28eb55374))
+* using spring env to replace all sensitive hard-coded property values. ([#520](https://github.com/cardano-foundation/cf-cardano-ballot/issues/520)) ([43a756b](https://github.com/cardano-foundation/cf-cardano-ballot/commit/43a756bf3df5d3aa78e0b987a80be0d1f8314244))
+
+
+### Bug Fixes
+
+* added .env to gitignore ([9ea3d1d](https://github.com/cardano-foundation/cf-cardano-ballot/commit/9ea3d1d172692dedf38a26cc3be27e55c5af1076))
+* adding new design for winner icon ([d5c4db3](https://github.com/cardano-foundation/cf-cardano-ballot/commit/d5c4db32799730b089898e858ace137611fc7049))
+* blockfrost has snapshot 2 epochs ahead when it is active, where as we have as it is in the past. ([#528](https://github.com/cardano-foundation/cf-cardano-ballot/issues/528)) ([f3c5806](https://github.com/cardano-foundation/cf-cardano-ballot/commit/f3c5806d6da68febe63a0a9dc18d9ee9dbdba224))
+* bug fix with missing import ([6973477](https://github.com/cardano-foundation/cf-cardano-ballot/commit/69734779b0e307a7a2c2cda8b318abd273f608d3))
+* build fix ([4cc611e](https://github.com/cardano-foundation/cf-cardano-ballot/commit/4cc611eb961c156da61fd4cdab25917b6bf07017))
+* **cip-1694-ui:** allow vote and leaderboard links for not active events ([#510](https://github.com/cardano-foundation/cf-cardano-ballot/issues/510)) ([f85b4e6](https://github.com/cardano-foundation/cf-cardano-ballot/commit/f85b4e6bc538836d1230f0e75c409987936d3ecc))
+* **cip-1694-ui:** fix leaderboard visibility ([c8f4a24](https://github.com/cardano-foundation/cf-cardano-ballot/commit/c8f4a246175737c2817a9c73ec492dd5b8cae03d))
+* color contrast fix and image change ([45850e6](https://github.com/cardano-foundation/cf-cardano-ballot/commit/45850e68ec8f1f921fd13af6725fdb63171faf2a))
+* contract test fix ([6c10c26](https://github.com/cardano-foundation/cf-cardano-ballot/commit/6c10c26287268ea86c8e49ee1a2c38701c3f8daa))
+* display rank number one only if there is votes ([4fa61fd](https://github.com/cardano-foundation/cf-cardano-ballot/commit/4fa61fd51399bd6234934434892daef3be2f9464))
+* fixes for unit tests after moving to falling yaci not via REST but internal method invocation changes. ([5e77d53](https://github.com/cardano-foundation/cf-cardano-ballot/commit/5e77d537ea63eec1b031858f262ca6a6b6491348))
+* forgot one swagger http return code. ([57aadb6](https://github.com/cardano-foundation/cf-cardano-ballot/commit/57aadb641aa8e0a6e4074789b16eec7b97a7cb99))
+* leaderboard tabs mobile width and winners on nominees page only there are votes ([994d3b5](https://github.com/cardano-foundation/cf-cardano-ballot/commit/994d3b56073c244c330c73c19d87ff92262609b4))
+* open commitment window should be on the last epoch / slot + configurable buffer of running event including that epoch or slot. ([aa00a79](https://github.com/cardano-foundation/cf-cardano-ballot/commit/aa00a791702a47ec071d3c74e66c74a24b835bf9))
+* remove org.springframework.boot:spring-boot-starter-data-rest ([f5e09e8](https://github.com/cardano-foundation/cf-cardano-ballot/commit/f5e09e8d83624de84c0c1edfbdf3da1f286321ac))
+
 ## [0.2.75](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.74...v0.2.75) (2023-10-27)
 
 

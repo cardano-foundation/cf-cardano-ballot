@@ -13,7 +13,6 @@ import com.bloxbean.cardano.client.metadata.MetadataBuilder;
 import com.bloxbean.cardano.client.metadata.MetadataMap;
 import com.bloxbean.cardano.client.quicktx.QuickTxBuilder;
 import com.bloxbean.cardano.client.quicktx.Tx;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.CreateCategoryCommand;
@@ -45,9 +44,6 @@ public class L1TransactionCreator {
     @Autowired
     @Qualifier("organiser_account")
     private Account organiserAccount;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Value("${l1.transaction.metadata.label:12345}")
     private int metadataLabel;

@@ -40,14 +40,15 @@ dependencies {
 
 	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.11")
 
-	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0")
-	implementation("com.bloxbean.cardano:cardano-client-address:0.5.0")
-	implementation("com.bloxbean.cardano:cardano-client-metadata:0.5.0")
-	implementation("com.bloxbean.cardano:cardano-client-quicktx:0.5.0")
-	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.0")
-	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0")
-	implementation("com.bloxbean.cardano:cardano-client-core:0.5.0")
-	annotationProcessor("com.bloxbean.cardano:cardano-client-annotation-processor:0.5.0")
+	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.1-preview1")
+	implementation("com.bloxbean.cardano:cardano-client-address:0.5.1-preview1")
+	implementation("com.bloxbean.cardano:cardano-client-metadata:0.5.1-preview1")
+	implementation("com.bloxbean.cardano:cardano-client-quicktx:0.5.1-preview1")
+	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.1-preview1")
+	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.1-preview1")
+	implementation("com.bloxbean.cardano:cardano-client-core:0.5.1-preview1")
+
+	annotationProcessor("com.bloxbean.cardano:cardano-client-annotation-processor:0.5.1-preview1")
 
 	implementation("org.cardanofoundation:hydra-java-client:0.0.10")
 	implementation("org.cardanofoundation:hydra-java-cardano-client-lib-adapter:0.0.10")

@@ -21,6 +21,7 @@ import FileCopyIcon from '@mui/icons-material/FileCopy';
 import './Header.scss';
 import { i18n } from '../../../i18n';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
+import {  } from '@cardano-foundation/cardano-connect-with-wallet';
 import Modal from '../Modal/Modal';
 import ConnectWalletList from '../../ConnectWalletList/ConnectWalletList';
 import { VerifyWallet } from '../../VerifyWallet';

@@ -1,0 +1,75 @@
+.hexagon-wrapper {
+  position: relative;
+  width: 100%;
+  transition: transform 0.5s ease;
+  padding-bottom: 113%; /* 1:1 Aspect Ratio */
+
+  &:hover {
+    transform: scale(1.03);
+  }
+
+  &:hover .third-hexagon {
+    transform: translateX(-35px);
+  }
+
+  &:hover .fourth-hexagon {
+    transform: translateY(-8px) translateX(-20px);
+  }
+  &:hover .fifth-hexagon {
+    transform: translateY(15px) translateX(-7px);
+  }
+  &:hover .play-icon {
+    transform: scale(1.2);
+  }
+}
+
+.hexagon-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 101%;
+  height: 102%;
+  background: url('./hexFront.png') center/cover no-repeat;
+  z-index: 4;
+}
+
+.second-hexagon {
+  position: absolute;
+  bottom: 0;
+  right: -4%;
+  width: 103%;
+  height: 101%;
+  background: url('./hexGreen.svg') center/cover no-repeat;
+  z-index: 3;
+}
+
+.third-hexagon {
+  position: absolute;
+  bottom: 0;
+  width: 103%;
+  height: 101%;
+  background: url('./hexOrange.svg') center/cover no-repeat;
+  z-index: 1;
+  transition: transform 0.5s ease;
+}
+.fourth-hexagon {
+  position: absolute;
+  bottom: 0;
+  width: 102%;
+  height: 100%;
+  background: url('./hexBlue.svg') center/cover no-repeat;
+  z-index: 2;
+  transition: transform 0.5s ease;
+}
+
+.fifth-hexagon {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 101%;
+  background: url('./hexBlack.svg') center/cover no-repeat;
+  z-index: 4;
+  transition: transform 0.5s ease;
+}

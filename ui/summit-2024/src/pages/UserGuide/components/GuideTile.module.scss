@@ -1,0 +1,30 @@
+.guideCard {
+  border-radius: 16px !important;
+  box-shadow: 2px 2px 5px 0px #061d3c40 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  margin: 0px 10px 10px 0px !important;
+  max-width: 630px;
+  background-color: white;
+
+  .guideTitle {
+    color: var(--color-dark-grey);
+    font-size: 24px !important;
+    font-weight: 400 !important;
+    line-height: 28px !important;
+    letter-spacing: 0em !important;
+    margin-bottom: 20px;
+  }
+
+  .guideSummary {
+    color: var(--color-dark-grey);
+    font-size: 16px !important;
+    letter-spacing: 0em !important;
+    text-align: left !important;
+  }
+
+  .link {
+    color: var(--color-medium-grey) !important;
+    cursor: pointer !important;
+  }
+}

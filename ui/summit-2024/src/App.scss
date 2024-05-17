@@ -1,0 +1,68 @@
+body,
+html,
+#root {
+  margin: 0;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #121212 !important;
+  color: #D2D2D9;
+  background-image: url('./common/resources/images/home-graphic-bg-bottom.svg');
+  background-repeat: no-repeat;
+  background-position: bottom -24px right;
+  background-size: 100vh;
+  @media only screen and (max-width: 1080px) {
+    background-image: none;
+  }
+}
+
+a,
+a:visited {
+  color: var(--color-primary) !important;
+}
+
+.content {
+  margin: 2%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 69vh;
+}
+
+.container {
+  @media (min-width: 1921px) {
+    max-width: 2800px !important;
+  }
+}
+
+.home-graphic-bg-top {
+  position: absolute;
+  left: -12.37px;
+  top: -22%;
+  border-radius: 100px;
+  transform: rotate(1.27deg);
+  opacity: 0.6;
+  z-index: -1;
+  height: 80%;
+  @media (max-width: 420px) {
+    display: none;
+  }
+}
+
+.toast {
+  padding: 0 !important;
+  border-radius: 8px !important;
+  color: #fff;
+  min-width: auto !important;
+  width: auto !important;
+  max-width: 450px !important;
+  & > div {
+    margin: 0px !important;
+  }
+}
+
+.app-spinner.MuiCircularProgress-root {
+  color: var(--color-ultra-dark-blue);
+  stroke-width: 50;
+}

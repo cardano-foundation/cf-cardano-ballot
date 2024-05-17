@@ -1,0 +1,76 @@
+@import './src/common/styles/colors';
+
+.description {
+  color: var(--color-medium-grey);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 22px;
+}
+
+.optionItem {
+  border-radius: 8px;
+  border: 1px solid var(--color-light-blue);
+  background: var(--color-ultra-light-grey);
+  margin-top: 12px;
+  padding: 16px !important;
+  cursor: pointer;
+}
+
+.optionLabel {
+  color: var(--color-medium-grey);
+  font-size: 16px !important;
+  font-style: normal;
+  font-weight: 600 !important;
+  line-height: 22px;
+}
+
+.MuiListItemAvatar-root {
+  min-width: 24px !important;
+  margin-right: 13px;
+}
+
+.option-icon {
+  color: var(--color-ultra-dark-blue) !important;
+}
+
+.phone-number-input.MuiTelInput-TextField {
+  width: 100% !important;
+}
+
+.didnt-receive-label {
+  color: var(--color-dark-blue);
+  text-align: center;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600 !important;
+  line-height: 22px;
+  text-decoration-line: underline;
+  margin-top: 28px;
+}
+
+.verify-wallet-modal-description {
+  color: var(--color-medium-grey);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 22px;
+  span {
+    font-weight: 600 !important;
+  }
+  a {
+    font-weight: 400;
+    cursor: pointer;
+    color: blue !important;
+    text-decoration: underline;
+  }
+}
+.secret-key-input {
+  width: 100%;
+  margin-top: 35px !important;
+}
+.secret-key-input > .MuiInputBase-root {
+  border-radius: 8px;
+  border: 1px solid var(--color-light-blue);
+  background: var(--color-ultra-light-grey);
+}

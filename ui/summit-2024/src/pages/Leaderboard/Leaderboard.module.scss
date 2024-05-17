@@ -1,0 +1,86 @@
+.leaderboard {
+  width: 100%;
+  .description {
+    max-height: 110px;
+    margin-bottom: 40px !important;
+    color: var(--color-medium-grey);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 22px;
+    word-break: break-word;
+  }
+
+  .optionTitle {
+    color: #39486c !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    line-height: 22px !important;
+    letter-spacing: 0em !important;
+  }
+
+  .statTitle {
+    font-size: 16px !important;
+    color: #39486c !important;
+    font-weight: 400 !important;
+  }
+  .divider {
+    height: 1px;
+    background: #dfdfdf;
+  }
+
+  .proposalRect {
+    width: 7px;
+    height: 60px;
+    border-radius: 4px;
+    &[data-proposal='AMBASSADOR'] {
+      background: #106593;
+    }
+    &[data-proposal='BLOCKCHAIN_FOR_GOOD'] {
+      background: #ffbc5c;
+    }
+    &[data-proposal='CIPS'] {
+      background: #75fa9f;
+    }
+    &[data-proposal='BEST_DEFI_DEX'] {
+      background: #652701;
+    }
+    &[data-proposal='BEST_DEVELOPER_OR_DEVELOPER_TOOLS'] {
+      background: #fd873c;
+    }
+    &[data-proposal='EDUCATIONAL_INFLUENCER'] {
+      background: #1894d6;
+    }
+    &[data-proposal='MARKETPLACE'] {
+      background: #c20024;
+    }
+    &[data-proposal='MOST_IMPACTFUL_SSPO'] {
+      background: #056122;
+    }
+    &[data-proposal='NFT_PROJECT'] {
+      background: #ad0ec5;
+    }
+    &[data-proposal='SSI'] {
+      background: #daeefb;
+    }
+  }
+
+  .masonryGrid {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    width: auto;
+  }
+  .masonryGridColumn {
+    padding-left: 16px;
+    background-clip: padding-box;
+    @media only screen and (max-width: 600px) {
+      padding-left: 0px;
+    }
+  }
+  
+  .masonryGridColumn > .MuiCard:root {
+    background: grey;
+    margin-bottom: 30px;
+  }
+}

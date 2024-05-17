@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "outDir": "./public/",
+    "rootDir": "./",
+    "baseUrl": "src",
+    "resolveJsonModule": true,
+    "noEmitOnError": false,
+    "composite": true,
+    "module": "es2020",
+    "target": "es2016",
+    "jsx": "react",
+    "allowJs": false,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "declaration": true,
+    "declarationMap": true,
+    "noImplicitAny": false,
+    "noUnusedParameters": false,
+    "noUnusedLocals": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "sourceMap": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "paths": {
+      "common/*": ["./common/*"],
+      "src/*": ["./src/*"]
+    },
+    "typeRoots": ["node_modules/@types"],
+    "types": ["jest"]
+  },
+  "include": ["src/**/*", "src/**/*.json", "src/common/*"]
+}

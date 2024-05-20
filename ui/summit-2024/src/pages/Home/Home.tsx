@@ -1,9 +1,6 @@
 import React from "react";
-import { Box, Typography, Grid, useMediaQuery } from "@mui/material";
-import AwardImg from "../../assets/award.svg";
+import { Box, Typography, Grid, useMediaQuery, Button } from "@mui/material";
 import Shapes from "../../assets/shapes.svg";
-import AwardGif from "../../assets/award.gif";
-import AwardGlb from "../../assets/award.glb";
 import theme from "../../common/styles/theme";
 import GLBViewer from "../../components/GLBViewer/GLBViewer";
 
@@ -19,7 +16,7 @@ const Home: React.FC = () => {
               color: "text.neutralLight",
               fontSize: isMobile ? "12px" : "16px",
               fontStyle: "normal",
-              marginLeft: "20px",
+              marginLeft: isMobile ? "" : "20px",
               whiteSpace: "nowrap",
               fontWeight: "500",
               lineHeight: "24px",
@@ -39,7 +36,7 @@ const Home: React.FC = () => {
               fontStyle: "normal",
               fontWeight: "700",
               lineHeight: isMobile ? "42px" : "88px",
-              marginLeft: "20px",
+              marginLeft: isMobile ? "" : "20px",
               whiteSpace: "nowrap",
               textAlign: isMobile ? "center" : "",
             }}
@@ -79,11 +76,11 @@ const Home: React.FC = () => {
                 display: "inline",
                 whiteSpace: "nowrap",
                 lineHeight: isMobile ? "42px" : "88px",
-                marginLeft: isMobile ? "12px" : "96px",
+                marginLeft: isMobile ? "" : "96px",
               }}
             >
               Cardano Summit
-            </Typography>{" "}
+            </Typography>
           </Box>
           <Typography
             variant="h4"
@@ -95,13 +92,80 @@ const Home: React.FC = () => {
               fontStyle: "normal",
               fontWeight: "700",
               lineHeight: isMobile ? "52px" : "88px",
-              marginLeft: "20px",
+              marginLeft: isMobile ? "" : "20px",
               whiteSpace: "nowrap",
               textAlign: isMobile ? "center" : "",
             }}
           >
             2024 Awards
           </Typography>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: isMobile ? "center" : "flex-start",
+              marginLeft: isMobile ? "" : "20px",
+              marginTop: "20px",
+            }}
+          >
+            {isMobile ? (
+              <Box
+                sx={{
+                  width: "80px",
+                  height: "16px",
+                  flexShrink: 0,
+                  borderRadius: "8px",
+                  background:
+                    "linear-gradient(258deg, #EE9766 0%, #40407D 87.58%, #0C7BC5 249.97%)",
+                }}
+              />
+            ) : null}
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: isMobile ? "center" : "flex-start",
+              marginLeft: isMobile ? "" : "20px",
+              marginTop: "20px",
+            }}
+          >
+            <Button
+              variant="contained"
+              sx={{
+                textTransform: "none",
+                width: "134px",
+                height: "56px",
+                color: "background.neutralDarkest",
+                fontSize: "16px",
+                fontStyle: "normal",
+                fontWeight: 500,
+                lineHeight: "24px",
+                marginRight: "12px",
+                borderRadius: " 12px",
+                background:
+                  "linear-gradient(70deg, #0C7BC5 -105.24%, #40407D -53.72%, #EE9766 -0.86%, #EE9766 103.82%)",
+              }}
+            >
+              Start Voting
+            </Button>
+            <Button
+              onClick={() => {}}
+              className="vote-nominee-button"
+              style={{
+                textTransform: "none",
+                width: "134px",
+                height: "56px",
+                color: "#EE9766",
+                fontSize: "16px",
+                fontStyle: "normal",
+                fontWeight: 500,
+                lineHeight: "24px",
+                border: "1px solid var(--orange, #EE9766)",
+                borderRadius: " 12px",
+              }}
+            >
+              How to Vote
+            </Button>
+          </Box>
         </Grid>
         <Grid item xs={12} md={6}>
           <Box
@@ -114,26 +178,11 @@ const Home: React.FC = () => {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              marginTop: "12px",
-              marginLeft: isMobile ? "44px" : "90px",
+              marginTop: isMobile ? "" : "12px",
+              marginLeft: isMobile ? "24px" : "90px",
             }}
           >
             <GLBViewer glbUrl="/award.glb" />
-            {/*
-                  <Box
-                  component="img"
-                  src={AwardGif}
-                  alt="Future of Blockchain"
-                  sx={{
-                    height: isMobile ? "500px" : "auto", // TODO: refactor isMobile using xs md ..
-                    width: "auto",
-                    marginRight: isMobile ? "70px" : "96px",
-                    marginBottom: isMobile ? "" : "",
-                    marginTop: isMobile ? "600px" : "60px",
-                    position: isMobile ? "absolute" : ""
-                  }}
-                />
-              */}
           </Box>
         </Grid>
       </Grid>

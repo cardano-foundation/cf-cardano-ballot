@@ -1,4 +1,3 @@
-import { useState } from "react";
 import "./App.scss";
 import { Box, CircularProgress, Container, Grid } from "@mui/material";
 import { BrowserRouter } from "react-router-dom";
@@ -9,8 +8,6 @@ const eventCache = {
   id: "1",
 };
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
     <>
       <BrowserRouter>

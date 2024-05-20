@@ -1,0 +1,422 @@
+{
+  "categories": [
+    {
+      "id": "AMBASSADOR",
+      "presentationName": "Ambassador",
+      "desc": "Special commitment and work of a Cardano Ambassador.",
+      "proposals": [
+        {
+          "id": "63123e7f-dfc3-481e-bb9d-fed1d9f6e9b9",
+          "presentationName": "Brian Dill",
+          "urls": ["https://twitter.com/HEROsPool"],
+          "desc": "As a Cardano Ambassador, Brian creates premium content that educates but provides comprehensive perspectives on emerging industry developments."
+        },
+        {
+          "id": "0299d93e-93f2-4bc8-9b40-6dd09343c443",
+          "presentationName": "Guillermo Moratorio",
+          "urls": ["https://twitter.com/WoodlandPools"],
+          "desc": "Guillermo - Woodland Pools is a Cardano Ambassador and Stake Pool Operator from Colorado. In addition to working as a full-stack developer for @book_io, Guillermo hosts a YouTube channel called Woodland Pools, where he covers the latest Cardano news, tutorials, and blockchain education."
+        },
+        {
+          "id": "fd477fac-ad16-4d2a-91a4-0a4288d3d7aa",
+          "presentationName": "Thiago Nunes",
+          "urls": ["https://www.linkedin.com/in/thiago-nunes-72b95327/?originalSubdomain=br"],
+          "desc": "Thiago is a Cardano Ambassador based in Brazil. In addition to serving as a pioneering Cardano Stakepool Operator at OUROS, he's a founding member of Intersect and Director at Cardano Warriors LATAM."
+        },
+        {
+          "id": "0b755eaf-a588-441f-a9dd-50c4aa478a90",
+          "presentationName": "Tien Nguyen Anh",
+          "urls": ["https://www.linkedin.com/in/tienna/?originalSubdomain=vn"],
+          "desc": "Tien is a dedicated Solution Architect and Enterprise Technical Specialist from Vietnam. As an active Cardano Ambassador, he's at the forefront of blockchain education in Vietnam and holds a key position in the Vietnam Blockchain Association."
+        },
+        {
+          "id": "2c94cd2e-2ad9-4425-af01-27210afca1e3",
+          "presentationName": "Martin Lang",
+          "urls": ["https://forum.cardano.org/u/atada"],
+          "desc": "Martin is a Cardano Ambassador and Stake Pool Operator (SPO) advocate from Austria. He offers ongoing assistance by sharing scripts, guides, and support to aid fellow SPOs in establishing and managing their Stake Pools."
+        },
+        {
+          "id": "e7d4df4a-8305-4ed8-9e42-6f67442d796e",
+          "presentationName": "Yuta Oishi",
+          "urls": ["https://forum.cardano.org/u/yuta_oishi/summary"],
+          "desc": "Yuta is a Cardano Ambassador and Stake Pool Operator (SPO) from Japan. In addition to working as a crypto-based CPA and tax accountant, Yuta is a Catalyst Proposer and ZZZ Co. (Ltd.) Community Lead."
+        }
+      ]
+    },
+    {
+      "id": "BLOCKCHAIN_FOR_GOOD",
+      "presentationName": "Blockchain for Good",
+      "desc": "Project or stake pool operator (SPO) doing exceptional environmental or humanitarian work.",
+      "proposals": [
+        {
+          "id": "633199b6-ab4c-49bc-afd8-e8c675d145d0",
+          "presentationName": "Cardano Impact Report 2023 - Sustainable ADA",
+          "urls": ["https://sustainableada.com/cardano-impact-report/"],
+          "desc": "The Cardano Impact Report 2023 explores how blockchain is reshaping perspectives on value, identity, and positive social or environmental changes. It envisions a future where Cardano's decentralized mechanisms can replace environmentally damaging practices, promoting cooperation and consensus for a sustainable world."
+        },
+        {
+          "id": "d4d33796-7372-410a-b640-7dde093f20e5",
+          "presentationName": "Climate Neutral Cardano",
+          "urls": ["https://climateneutralcardano.org/"],
+          "desc": "Climate Neutral Cardano is an alliance of stake pools dedicated to achieving carbon-neutrality for the Cardano blockchain. It aims to mitigate the environmental impact of blockchain technology, striving to reduce carbon emissions to zero and promote sustainability within the Cardano ecosystem."
+        },
+        {
+          "id": "2e24b92f-1a34-4799-9eb4-a489be2b63c6",
+          "presentationName": "DirectEd Development Foundation",
+          "urls": ["https://directed.dev/"],
+          "desc": "DirectEd Development Foundation (DirectEd) is a non-profit organization dedicated to providing evidence-based, scalable, and affordable training in coding, soft skills, and entrepreneurship. They focus on empowering under-resourced, high-potential students in Kenya and Ethiopia between high school and university."
+        },
+        {
+          "id": "4cbeb976-20ba-4c20-bdc1-f21bf28c17fd",
+          "presentationName": "Kind Stake Pool [KIND]",
+          "urls": ["https://kindstakepool.com/"],
+          "desc": "The Kind Stake Pool [KIND] is motivated by a mission to transform Cardano into a platform for charitable contributions. By participating in [KIND], you not only earn attractive staking rewards, but also actively support charitable endeavors."
+        },
+        {
+          "id": "71f4f082-4512-4e7f-adc6-6092d1b3aa14",
+          "presentationName": "Stake Pool for Refugees [WRFGS]",
+          "urls": ["https://unrefugees.ch/en/blockchain-refugees"],
+          "desc": "Switzerland for UNHCR employs the Cardano blockchain to aid displaced populations, offering a novel fundraising method that bridges the blockchain and humanitarian sectors to provide meaningful assistance. By embracing Cardano, they pioneer innovative fundraising through staking to support refugees and displaced individuals."
+        },
+        {
+          "id": "07d4a8b3-dbfc-412c-9931-a5252db9082d",
+          "presentationName": "World Mobile",
+          "urls": ["https://worldmobile.io/"],
+          "desc": "World Mobile is the world's first community-driven mobile network, harnessing blockchain technology to achieve global connectivity by 2030 even in remote areas normally deemed expensive and challenging to serve. Their core values prioritize social, economic, and environmental sustainability, highlighted by their use of off-the-shelf equipment and renewable solar energy."
+        }
+      ]
+    },
+    {
+      "id": "CIPS",
+      "presentationName": "CIPs",
+      "desc": "Original author or contributor to a Cardano Improvement Proposal (CIP) that seeks to significantly enhance the Cardano protocol.",
+      "proposals": [
+        {
+          "id": "4cf1ea70-87dd-45ee-85a0-2d29720725f7",
+          "presentationName": "Adam Dean",
+          "urls": ["https://github.com/cardano-foundation/CIPs/tree/master/CIP-0027"],
+          "desc": "Adam Dean wrote CIP-0027 and contributed to CPS-0007 as well as CIP-0083. He is also a CIP editor."
+        },
+        {
+          "id": "d5116b52-1e82-4c7f-95e5-2a74a9f75492",
+          "presentationName": "Andrew Westberg",
+          "urls": ["https://github.com/cardano-foundation/CIPs/tree/master/CIP-0060"],
+          "desc": "Andrew Westberg wrote CIP-0060 as well as CIP-0020, CIP-0022 and CIP-0083. He has also contributed to CIP-1694."
+        },
+        {
+          "id": "69ee264f-9d02-48ef-98f1-541ffb28756f",
+          "presentationName": "Dr. Michael Liesenfelt",
+          "urls": ["https://github.com/cardano-foundation/CIPs/tree/master/CIP-0050"],
+          "desc": "Dr. Liesenfelt wrote CIP-0050 and contributed to many discussions regarding rewards and incentives."
+        },
+        {
+          "id": "70a88fb6-a87f-4ebd-8719-31c461118f3d",
+          "presentationName": "Mike Hornan",
+          "urls": ["https://github.com/cardano-foundation/CIPs/tree/master"],
+          "desc": "Mike Hornan actively collaborated on CIP-1694, translated the proposal into French, and led efforts to educate the community about it."
+        },
+        {
+          "id": "eaafc7a1-8944-4faf-91dd-5ceefa51e8db",
+          "presentationName": "Robert Phair",
+          "urls": ["https://github.com/cardano-foundation/CIPs/tree/master"],
+          "desc": "Robert Phair has been a CIP editor for more than 2 years."
+        },
+        {
+          "id": "9cdbde0e-ffd4-4d22-ae3c-17cb63dc89fd",
+          "presentationName": "Ryan Williams",
+          "urls": ["https://github.com/cardano-foundation/CIPs/pull/509", "https://github.com/cardano-foundation/CIPs/pull/462/"],
+          "desc": "Ryan Williams is a CIP editor and also author of CIP-0090 and CIP-0095."
+        }
+      ]
+    },
+    {
+      "id": "BEST_DEFI_DEX",
+      "presentationName": "DeFi / DEX",
+      "desc": "Decentralized finance (DeFi) or decentralized exchange (DEX) platform offering superlative solutions.",
+      "proposals": [
+        {
+          "id": "f71c438d-8247-4064-a5aa-4d21b54c2a5d",
+          "presentationName": "Indigo",
+          "urls": ["https://indigoprotocol.io/"],
+          "desc": "Indigo, a Cardano-based protocol, offers autonomous synthetics (iAssets) linking the real world to blockchain. iAssets mimic real asset price movements, enabling everyone to access financial opportunities without owning the actual assets."
+        },
+        {
+          "id": "a5f92606-6e15-4f91-8443-7030eb02a274",
+          "presentationName": "Lenfi",
+          "urls": ["https://lenfi.io/"],
+          "desc": "Lenfi enables decentralized lending and borrowing on the Cardano blockchain. Users engage as depositors or borrowers in peer-to-peer or peer-to-pool transactions, unlocking financial potential."
+        },
+        {
+          "id": "e9d72191-bda4-437e-af4b-2f979bad5c7f",
+          "presentationName": "Minswap",
+          "urls": ["https://minswap.org/"],
+          "desc": "Minswap is a community-focused DEX, distributing $MIN tokens equitably without private or VC backing. The project introduced innovative concepts like the FISO model and Protocol Owned Liquidity to the Cardano ecosystem, delivering a multi-pool decentralized exchange."
+        },
+        {
+          "id": "8cf20a27-8bc8-49f3-8133-ef76e899e1c1",
+          "presentationName": "Optim",
+          "urls": ["https://www.optim.finance/"],
+          "desc": "Optim Finance is a Cardano-based DeFi protocol that empowers users with innovative yield products like ada staking optimizing capital allocation and facilitating participation."
+        },
+        {
+          "id": "91871e20-f9aa-422f-9213-3722ac47c1c6",
+          "presentationName": "Spectrum Finance",
+          "urls": ["https://spectrum.fi/"],
+          "desc": "Spectrum Finance is a multi-chain DEX that launched on Cardano in July 2023. In addition to multi-chain capability and security, it offers fast, trustless cross-chain swaps, liquidity provision, and mining on an open-source platform."
+        },
+        {
+          "id": "c7c7ca58-af7e-4f27-a170-070d76707580",
+          "presentationName": "Wingriders",
+          "urls": ["https://www.wingriders.com/"],
+          "desc": "WingRiders, a Cardano-based DEX utilizing the eUTxO model, provides DeFi services encompassing ada swaps, staking, and yield farming within its Automated Market Maker (AMM) ecosystem."
+        }
+      ]
+    },
+    {
+      "id": "BEST_DEVELOPER_OR_DEVELOPER_TOOLS",
+      "presentationName": "Developer or Developer Tools",
+      "desc": "Individual or team providing technical solutions to the Cardano ecosystem.",
+      "proposals": [
+        {
+          "id": "f4d6055f-964e-43b4-bc23-83141ca04f9f",
+          "presentationName": "Andrew Westberg",
+          "urls": ["https://twitter.com/amw7?lang=en-GB"],
+          "desc": "Andrew is a Stake Pool Operator (SPO) for Blue Cheese St\u20b3ke House. As an active member of the Cardano community, he also runs an educational YouTube Channel called NerdOut, where he delves into technical Cardano topics."
+        },
+        {
+          "id": "a00e6d3e-1b06-48f0-b2a0-4f3784e6226c",
+          "presentationName": "Helios",
+          "urls": ["http://github.com/hyperion-bt/helios"],
+          "desc": "Helios is a Domain Specific Language (DSL) that compiles to Plutus-Core (i.e., Cardano on-chain validator scripts). Helios is a non-Haskell alternative to Plutus and is purely functional, strongly typed, and has a simple curlsy braces syntax."
+        },
+        {
+          "id": "58bb4e29-5124-473b-80e1-c5c8ffa57dbb",
+          "presentationName": "OpShin",
+          "urls": ["https://opshin.dev/"],
+          "desc": "OpShin is a programming language and toolchain designed for Cardano smart contract development. Opshin is a strict subset of Python, meaning developers with Python experience can get up to speed quickly, eliminating barriers to entry."
+        },
+        {
+          "id": "a30267e1-314c-4801-aa95-b03dd4d6856e",
+          "presentationName": "Pi Lanningham",
+          "urls": ["https://www.314pool.com/"],
+          "desc": "Pi (\u03c0) is a mathematician turned software engineer, best known as the CTO of SundaeSwap Labs. With a passion for education, \u03c0 operates 314pool and contributes regularly to the Cardano ecosystem via thought leadership."
+        },
+        {
+          "id": "ec34567c-2012-4e3b-94ee-8778a6e33a04",
+          "presentationName": "Strica",
+          "urls": ["https://strica.io/"],
+          "desc": "Strica develops open-source developer tools for Cardano, including Cardanoscan, Typhon Wallet, and Flac Finance. They've also introduced Warp Transactions, which aim to transform ada token transfers on the Cardano network."
+        },
+        {
+          "id": "204a8d71-adb1-4fff-b59d-5fb391d0078d",
+          "presentationName": "TxPipe",
+          "urls": ["https://txpipe.io/"],
+          "desc": "TxPipe is an open-source software project dedicated to enhancing the developer experience in the Cardano blockchain ecosystem. The project focuses on developing blockchain tools that support the open-source community, accelerating blockchain adoption."
+        }
+      ]
+    },
+    {
+      "id": "EDUCATIONAL_INFLUENCER",
+      "presentationName": "Educational Influencer",
+      "desc": "Individual or account vastly contributing to blockchain education.",
+      "proposals": [
+        {
+          "id": "88af463f-0d9c-4738-baef-bdb80f2c374e",
+          "presentationName": "Army of Spies",
+          "urls": ["https://www.youtube.com/@ArmyofSpies/videos"],
+          "desc": "Army of Spies is a YouTube channel that provides an (almost) daily rundown of all the news and rumors circulating in the Cardano ecosystem."
+        },
+        {
+          "id": "65cf347e-129a-459b-b192-55ae37e03160",
+          "presentationName": "Cardano over Coffee",
+          "urls": ["https://linktr.ee/CardanoOverCoffee"],
+          "desc": "Cardano over Coffee is a laid-back, deep-dive conversational program (show) that delves into everything Cardano. The platform also serves as a launchpad for new project and company announcements. Active ecosystem members are also regularly interview as guests."
+        },
+        {
+          "id": "1e609753-a83e-4ff6-9cf8-dd90803f0368",
+          "presentationName": "Cardano With Paul",
+          "urls": ["https://www.youtube.com/@CardanoWithPaul/about"],
+          "desc": "Paul, a crypto enthusiast based in Ireland, has actively participated in the ecosystem since 2016. He manages the \"Cardano with Paul\" YouTube channel and blog, exclusively focusing on Cardano updates, insights, tutorials, occasional price analysis, and any valuable content he deems beneficial."
+        },
+        {
+          "id": "9b91f3ed-42be-4650-8e43-6d7a416f9591",
+          "presentationName": "Farid - Dapp Central",
+          "urls": ["https://twitter.com/dapp_central?lang=en"],
+          "desc": "Farid is the founder of DappCentral, a Stake Pool Operator [DAPP] and educational YouTube channel that aims to on-board new crypto enthusiasts into the blockchain and crypto space."
+        },
+        {
+          "id": "702efda6-ceec-413e-8f33-aa206962850c",
+          "presentationName": "Peter Bui",
+          "urls": ["https://learncardano.io/"],
+          "desc": "Peter is a Cardano Ambassador, Stake Pool Operator, and \"Learn Cardano\" podcast host where anyone, from beginners to experts, can learn more about Cardano and blockchain technology."
+        },
+        {
+          "id": "e0b5f280-95f4-42aa-8ecb-00b95c2896a4",
+          "presentationName": "The Cardano Times",
+          "urls": ["https://linktr.ee/thecardanotimes"],
+          "desc": "The Cardano Times offers free education and news on Cardano, crypto, and Web3. The YouTube channel covers a wide range of Cardano-related topics, including NFTs, smart contracts, decentralized apps, exchanges, staking, and more."
+        }
+      ]
+    },
+    {
+      "id": "MARKETPLACE",
+      "presentationName": "Marketplace",
+      "desc": "Marketplace with proven maturity and excellence.",
+      "proposals": [
+        {
+          "id": "33038f64-fff9-44cc-a8e5-d4f5896c8ff6",
+          "presentationName": "Artano",
+          "urls": ["https://artano.io/home/"],
+          "desc": "Artano's mission is to create a community-driven marketplace for artists, emphasizing diversity and high-quality art. Their Council of Curators, representing global talent, hails from 16 countries with diverse backgrounds. The $ARTA governance token empowers users to shape Artano's future direction through voting."
+        },
+        {
+          "id": "953c7970-6f9d-41a0-8556-b83ff7b481fe",
+          "presentationName": "Dropspot",
+          "urls": ["https://dropspot.io/"],
+          "desc": "Dropspot is a curated NFT experience on Cardano that empowers creators to regain artistic sovereignty, allowing them to take complete control of their work and connecting them with new markets, global buyers, and collaborators."
+        },
+        {
+          "id": "107fc947-85f0-442e-b56f-9c10e8b5631a",
+          "presentationName": "JamOnBread",
+          "urls": ["https://jamonbread.io/"],
+          "desc": "JamOnBread is a decentralized NFT marketplace on Cardano, featuring a groundbreaking smart contract for equitable profit sharing among users, projects, and marketplaces. Its transparent approach includes on-chain affiliate rewards, NFT rarity scoring, and user profiles, aiming to attract newcomers to Cardano's NFT ecosystem."
+        },
+        {
+          "id": "0752dc99-19fa-4f4c-96c4-25ca3a66a12f",
+          "presentationName": "JPG Store",
+          "urls": ["https://www.jpg.store/"],
+          "desc": "JPG Store is the largest NFT marketplace on Cardano and supports various file formats, including JPGs, PNGs, and SVGs. The JPG Store mission aligns with Cardano's goal of delivering financial infrastructure for the unbanked."
+        },
+        {
+          "id": "5b2145cd-8740-4254-942f-889eb3671640",
+          "presentationName": "Kreate Platform",
+          "urls": ["https://kreate.art/"],
+          "desc": "Kreate is a comprehensive art platform on Cardano, fostering a vibrant arts culture. It empowers artists with portfolio management, social features, and innovative marketplace tools like edition support, royalties, auctions, and provenance exploration. With years of Cardano experience, Kreate delivers user-friendly, decentralized solutions, including non-custodial on-demand minting."
+        },
+        {
+          "id": "01991af2-3bc9-4818-a745-db7683c8fe37",
+          "presentationName": "Mutant Labs",
+          "urls": ["https://labs.mutant-nft.com/"],
+          "desc": "Mutant Labs provides diverse NFT project utilities on Cardano, including raffles, staking, and whitelist management. Their core mission is to inject enjoyment into the cNFT ecosystem."
+        }
+      ]
+    },
+    {
+      "id": "MOST_IMPACTFUL_SSPO",
+      "presentationName": "Most Impactful SSPO",
+      "desc": "Remarkable single stake pool operator (SSPO).",
+      "proposals": [
+        {
+          "id": "6e16cdae-7696-4c41-a5f2-de373a17f488",
+          "presentationName": "ADA4Good [A4G]",
+          "urls": ["https://www.ada4good.com/"],
+          "desc": "Run by Vahid, ADA4Good [A4G] rewards its delegators with World Mobile Tokens (WMT) and ada, while also donating 50% of margin fees to Save The Children. As a Mission Drive Stake Pool, [A4G] is part of a collective that donates a portion of block rewards to charitable causes using ada where accepted, or fiat currency."
+        },
+        {
+          "id": "46ea36b8-15b6-4d31-8c29-946342595756",
+          "presentationName": "Blade [BLADE]",
+          "urls": ["https://bladepool.com"],
+          "desc": "The Blade Pool [BLADE] is operated by Conrad, an InfoSec and IT infrastructure engineer from New York City. In addition to his 20 years of corporate experience, Conrad is a $adahandle co-founder and a well-respected, active community member on various social networks where he engages in discussions about Cardano and blockchain-related topics."
+        },
+        {
+          "id": "e3a130e7-45c9-47c5-a121-fbdebc6c3e9f",
+          "presentationName": "Clay Nation [CLAY]",
+          "urls": ["https://claynation.gitbook.io/claypaper/tokenonomy/cardano-staking"],
+          "desc": "The independent, community-driven Clay Nation [CLAY] Pool has been operating for over 18 months, with over 1,000 blocks minted. CLAY offers staking benefits to encourage ada staking and long-term holding. Clay Nation stands out for its high-impact collaborations that blend technology, art, and entertainment. Through the forging of creative partnerships, the team is dedicated to accelerating adoption and amplifying the impact of Cardano projects across various markets."
+        },
+        {
+          "id": "cfe477d2-e7eb-46a7-a8ee-f721da2de399",
+          "presentationName": "GimbalPool [GMBL]",
+          "urls": ["https://gimbalabs.com/"],
+          "desc": "[GMBL] Stake Pool represents the community behind Gimbalabs. Dedicated to empowering the Cardano ecosystem, Gimbalabs creates community spaces, establishes robust technical infrastructure, offers educational programs, and contributes open-source code all with the ambition of ensuring Cardano's transformative impact on the world. Their emphasis on education and collaboration shines through in their Plutus Project-Based Learning program, which onboards developers into the ecosystem."
+        },
+        {
+          "id": "6ee41116-b60c-41d2-974c-c3de31b71a83",
+          "presentationName": "LEAD Stake Pool [LEAD]",
+          "urls": ["https://leadstakepool.com/"],
+          "desc": "The LEAD Stake Pool [LEAD] is run by a wealth manager in Sydney, Australia, with a decade of experience in financial services, specializing in tax engine programming. LEAD is dedicated to fostering communication with delegators, prioritizing long-term commitment and minimizing the need for constant delegation oversight. As a strong supporter of decentralization, LEAD participates in the Cardano Bare Metal and Single Pool Alliances."
+        },
+        {
+          "id": "e4895e4b-b25a-43d5-9bd0-1dcd23954faa",
+          "presentationName": "SM\u20b3UG [SMAUG]",
+          "urls": ["https://smaug.pool.pm/"],
+          "desc": "SMAUG is the creator of pool.pm, one of the most popular and widely used block explorers in the Cardano ecosystem. With the development of this block explorer, SMAUG has not only demonstrated technical excellence but also the ability to provide a solution that helps visualize transaction movements and wallet content."
+        }
+      ]
+    },
+    {
+      "id": "NFT_PROJECT",
+      "presentationName": "NFT Project",
+      "desc": "Most impactful art, music, metaverse, gaming, or collectible NFT project in the Cardano community.",
+      "proposals": [
+        {
+          "id": "623405b4-a845-4130-b406-b4cf4a1a985d",
+          "presentationName": "aeoniumsky",
+          "urls": ["https://www.aeoniumsky.io/"],
+          "desc": "aeoniumsky crafts surreal animated artworks that blur reality and imagination, offering viewers a sensory journey through fantastical alternate realms."
+        },
+        {
+          "id": "9074cf60-d413-4c20-a344-a3f894d2e6c0",
+          "presentationName": "Book.io",
+          "urls": ["https://book.io/"],
+          "desc": "Book.io brings digital reading to Web3 technology, allowing readers to own eBooks and Audiobooks as Decentralized Encrypted Assets (DEAs). Unlike other licenses, these DEAs are full books living on-chain and enabling resale on secondary markets. Authors and publishers receive perpetual royalties, rewarding their creative efforts"
+        },
+        {
+          "id": "1bae816a-b943-4148-ac58-c4081ef8cac5",
+          "presentationName": "Clay Nation",
+          "urls": ["https://www.clayspace.io/"],
+          "desc": "A collection of 10,000 characters created from hand-crafted, randomly-assembled clay traits. Each is a one-of-a-kind digital collectible, stored on the Cardano blockchain."
+        },
+        {
+          "id": "c0f06200-b04c-4e08-b00b-e050cdcc205c",
+          "presentationName": "HOSKY",
+          "urls": ["https://hosky.io/"],
+          "desc": "HOSKY is Cardano's inaugural meme token. Without intrinsic value, it provides a speculative thrill for crypto enthusiasts riding the dog-themed mascot trend."
+        },
+        {
+          "id": "02bd8150-91cd-499d-b94c-c0e7b5fd5dc4",
+          "presentationName": "OREMOB",
+          "urls": ["https://oremob.io/"],
+          "desc": "OREMOB, by Berlin artist ORE ORE ORE, is an expansion of his 2021 Web3 anime project. It's a community-driven space blending captivating narratives, unique visual identities, and pop-culture references into an artful experience."
+        },
+        {
+          "id": "50d31468-a915-4284-9e3f-e0c6f5c1c90c",
+          "presentationName": "The Ape Society",
+          "urls": ["https://www.theapesociety.io/"],
+          "desc": "The Ape Society is a Cardano project and community featuring 7,000 unique NFTs. Anyone can join this exclusive community by minting an ape or purchasing one on secondary markets."
+        }
+      ]
+    },
+    {
+      "id": "SSI",
+      "presentationName": "Self Sovereign Identity (SSI)",
+      "desc": "SSI solution providing phenomenal management and governance of credentials, identity, tokens, or others.",
+      "proposals": [
+        {
+          "id": "a910a8af-f63b-4190-90fb-1409fd110526",
+          "presentationName": "Atala PRISM",
+          "urls": ["https://atalaprism.io/"],
+          "desc": "Atala PRISM is a self-sovereign identity (SSI) platform and service suite for verifiable data and digital identity. Built on Cardano, it offers core infrastructure for issuing DIDs (Decentralized identifiers) and verifiable credentials, alongside other tools and frameworks."
+        },
+        {
+          "id": "0a70b72d-1394-4bdd-bf93-e79ceb0c40a6",
+          "presentationName": "Blocktrust",
+          "urls": ["https://blocktrust.dev/"],
+          "desc": "Blocktrust is building on Atala PRISM, an SSI ecosystem platform for DID creation, credential issuance, identity verification, and more. With Atala PRISM, IOG has created a technical platform in the SSI ecosystem on which Blocktrust can create DIDs and issue credentials."
+        },
+        {
+          "id": "f37bf063-15fc-4959-a6a4-0349a7613ede",
+          "presentationName": "IAMX",
+          "urls": ["https://iamx.id/"],
+          "desc": "IAMX's self-sovereign identity (SSI) solutions blend consumer incentives and top-tier security. Their platform shapes identity management in the decentralized, consumer-driven landscape of Web3."
+        },
+        {
+          "id": "57f93799-5123-4ad0-a13f-a7c70387a756",
+          "presentationName": "ProofSpace",
+          "urls": ["https://www.proofspace.id/"],
+          "desc": "ProofSpace is an interoperable, decentralized identity network with no-code capabilities. Their platform facilitates the issuance and verification of reusable identity credentials, empowering ecosystems."
+        }
+      ]
+    }
+  ]
+}

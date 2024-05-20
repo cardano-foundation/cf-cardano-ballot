@@ -1,0 +1,18 @@
+@import "./src/common/styles/colors";
+
+.modalTitle {
+  color: var(--color-ultra-dark-blue);
+  font-size: 22px !important;
+  font-style: normal;
+  font-weight: 600 !important;
+  line-height: 32px;
+  float: right;
+}
+
+.modalDescription {
+  color: var(--color-medium-grey);
+  font-size: 16px !important;
+  font-style: normal;
+  font-weight: 400 !important;
+  line-height: 22px;
+}

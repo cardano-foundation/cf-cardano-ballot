@@ -13,19 +13,9 @@ import {
 import { useDispatch } from "react-redux";
 import { ToastType } from "../common/Toast/Toast.types";
 import {
-  setConnectedPeerWallet,
-  setUserVotes,
-  setVoteReceipt,
-  setWalletIsVerified,
-} from "../../store/userSlice";
-import { clearUserInSessionStorage } from "../../utils/session";
-import { removeFromLocalStorage } from "../../utils/storage";
-import { VoteReceipt } from "../../types/voting-app-types";
-import {
   ConnectWalletContextType,
   ConnectWalletProps,
-} from "./ConnectWallet.type";
-import { eventBus } from "../../utils/EventBus";
+} from "./ConnectWalletModal.type";
 
 const ConnectWalletContext = createContext<ConnectWalletContextType | null>(
   null,
@@ -38,7 +28,7 @@ const useConnectWalletContext = () => {
   return context;
 };
 
-const ConnectWallet = (props: ConnectWalletProps) => {
+const ConnectWalletModal = (props: ConnectWalletProps) => {
   const [connectCurrentPaths, setConnectCurrentPaths] = useState<
     ConnectWalletFlow[]
   >([ConnectWalletFlow.SELECT_WALLET]);
@@ -149,4 +139,4 @@ const ConnectWallet = (props: ConnectWalletProps) => {
   );
 };
 
-export { ConnectWallet, useConnectWalletContext };
+export { ConnectWalletModal, useConnectWalletContext };

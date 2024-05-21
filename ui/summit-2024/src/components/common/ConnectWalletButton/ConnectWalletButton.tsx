@@ -22,6 +22,7 @@ import { getUserInSession, tokenIsExpired } from "../../../utils/session";
 import { env } from "../../../common/constants/env";
 import { i18n } from "../../../i18n";
 import theme from "../../../common/styles/theme";
+import { useIsPortrait } from "../../../common/hooks/useIsPortrait";
 
 type ConnectWalletButtonProps = {
   disableBackdropClick?: boolean;
@@ -43,7 +44,9 @@ const ConnectWalletButton = ({
   }));
   const session = getUserInSession();
   const isExpired = tokenIsExpired(session?.expiresAt);
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  let isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isPortrait = useIsPortrait();
+  isMobile = isMobile || isPortrait;
 
   const { stakeAddress, isConnected, enabledWallet } = useCardano({
     limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),

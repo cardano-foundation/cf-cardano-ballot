@@ -1,11 +1,11 @@
 import Shapes from "../../../assets/shapes.svg";
 import GLBViewer from "../../../components/GLBViewer/GLBViewer";
 import React from "react";
-import theme from "../../../common/styles/theme";
-import { Box, Button, Grid, Typography, useMediaQuery } from "@mui/material";
+import { Box, Button, Grid, Typography } from "@mui/material";
+import { useIsPortrait } from "../../../common/hooks/useIsPortrait";
 
 const Hero = () => {
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobile = useIsPortrait();
   return (
     <>
       <Grid container>

@@ -1,19 +1,18 @@
 import React from "react";
-import { useMediaQuery } from "@mui/material";
 import Ellipses from "../../assets/ellipse.svg";
-import theme from "../../common/styles/theme";
 import { useIsPortrait } from "../../common/hooks/useIsPortrait";
 import { ExploreSection } from "./components/ExploreSection";
 import { Hero } from "./components/Hero";
+import { TicketsSection } from "./components/TicketsSection";
 
 const Home: React.FC = () => {
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const isPortrait = useIsPortrait();
+  const isMobile = useIsPortrait();
 
   return (
     <>
       <Hero />
       {!isMobile ? <ExploreSection /> : null}
+      {!isMobile ? <TicketsSection /> : null}
       <img
         src={Ellipses}
         style={{

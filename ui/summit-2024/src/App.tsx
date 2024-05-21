@@ -3,6 +3,7 @@ import { Box, CircularProgress, Container, Grid } from "@mui/material";
 import { BrowserRouter } from "react-router-dom";
 import Header from "./components/common/Header/Header";
 import { PageRouter } from "./routes";
+import { Footer } from "./components/common/Footer/Footer";
 
 const eventCache = {
   id: "1",
@@ -40,7 +41,9 @@ function App() {
                 )}
               </Box>
             </Grid>
-            <Grid item xs></Grid>
+            <Grid item xs>
+              <Footer />
+            </Grid>
           </Grid>
         </Container>
       </BrowserRouter>

@@ -18,10 +18,10 @@ const Home: React.FC = () => {
         style={{
           position: "fixed",
           right: "0",
-          top: isMobile ? "70%" : "50%",
+          top: "70%",
           transform: "translateY(-50%)",
           zIndex: "-1",
-          width: isMobile ? "70%" : "100%",
+          width: "70%",
           height: isMobile ? "auto" : "auto",
         }}
       />

@@ -83,13 +83,13 @@ const TicketsSection = () => {
           justifyContent: "center",
           padding: 2,
           zIndex: 2,
-            paddingRight: "50px",
+          paddingRight: "50px",
         }}
       >
         <Button
           variant="contained"
           sx={{
-              marginTop: "30px",
+            marginTop: "30px",
             display: "inline-flex",
             padding: "16px 24px",
             justifyContent: "center",
@@ -125,10 +125,10 @@ const TicketsSection = () => {
         <Typography
           variant="h6"
           sx={{
-              color: "text.neutralLightest",
-              textAlign: "right",
-              fontSize: "32px",
-              lineHeight: "line-height: 40px",
+            color: "text.neutralLightest",
+            textAlign: "right",
+            fontSize: "32px",
+            lineHeight: "line-height: 40px",
           }}
         >
           23-24 October 2024

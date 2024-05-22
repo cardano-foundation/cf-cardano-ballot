@@ -135,7 +135,7 @@ const Hero = () => {
               variant="contained"
               sx={{
                 textTransform: "none",
-                width: isMobile ? "100%" : "134px",
+                width: isMobile ? "auto" : "134px",
                 height: "56px",
                 color: "background.neutralDarkest",
                 fontSize: "16px",
@@ -153,11 +153,10 @@ const Hero = () => {
               Start Voting
             </Button>
             <Button
-              onClick={() => {}}
-              className="vote-nominee-button"
-              style={{
+              variant="contained"
+              sx={{
                 textTransform: "none",
-                width: isMobile ? "100%" : "134px",
+                width: isMobile ? "auto" : "134px",
                 height: "56px",
                 color: "#EE9766",
                 fontSize: "16px",
@@ -165,9 +164,11 @@ const Hero = () => {
                 fontWeight: 500,
                 lineHeight: "24px",
                 border: "1px solid var(--orange, #EE9766)",
-                borderRadius: "12px",
-                marginBottom: isMobile ? "12px" : "0",
+                marginRight: isMobile ? "20px" : "12px",
                 paddingLeft: isMobile ? "20px" : "",
+                marginBottom: isMobile ? "12px" : "0",
+                borderRadius: "12px",
+                background: "transparent",
               }}
             >
               How to Vote
@@ -189,7 +190,7 @@ const Hero = () => {
               marginLeft: isMobile ? "24px" : "90px",
             }}
           >
-            <GLBViewer glbUrl="/award.glb" />
+            <GLBViewer glbUrl="/compressed.glb" />
           </Box>
         </Grid>
       </Grid>

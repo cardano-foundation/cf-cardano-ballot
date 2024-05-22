@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useCallback } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import theme from "../../common/styles/theme";
@@ -10,7 +10,7 @@ type GLBViewerProps = {
 
 type ModelProps = {
   glbUrl: string;
-  isInteracting: boolean;
+  isInteracting: boolean; // Indica si el modelo está parado o no
   setIsInteracting: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
@@ -27,6 +27,10 @@ const Model = ({ glbUrl, isInteracting, setIsInteracting }: ModelProps) => {
     gl.domElement.style.cursor = "auto";
   };
 
+  const handleDoubleClick = useCallback(() => {
+    setIsInteracting(!isInteracting);
+  }, [isInteracting, setIsInteracting]);
+
   useFrame(() => {
     if (!isInteracting) {
       ref.current.rotation.y += 0.007;
@@ -34,18 +38,17 @@ const Model = ({ glbUrl, isInteracting, setIsInteracting }: ModelProps) => {
   });
 
   return (
-    <group
-      ref={ref}
-      scale={[12, 12, 12]}
-      position={[0, -1.6, 0]}
-      rotation={[0, Math.PI / 2, 0]} // Rotate the model 180 degrees around the Y-axis
-    >
-      <primitive
-        object={scene}
-        onPointerOver={onPointerOver}
-        onPointerOut={onPointerOut}
-      />
-    </group>
+      <group
+          ref={ref}
+          scale={[12, 12, 12]}
+          position={[0, -1.6, 0]}
+          rotation={[0, Math.PI / 2, 0]}
+          onDoubleClick={handleDoubleClick}
+          onPointerOver={onPointerOver}
+          onPointerOut={onPointerOut}
+      >
+        <primitive object={scene} />
+      </group>
   );
 };
 
@@ -54,31 +57,30 @@ const GLBViewer: React.FC<GLBViewerProps> = ({ glbUrl }) => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
-    <div style={{ height: "600px", width: "100%" }}>
-      <Canvas
-        gl={{ alpha: true }}
-        camera={{
-          position: [3.5, 0.87, -1.95],
-          fov: 50,
-          near: 0.1,
-          far: 1000,
-        }}
-      >
-        <ambientLight intensity={0.5} />
-        <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
-        <pointLight position={[-10, -10, -10]} />
-        <Model
-          glbUrl={glbUrl}
-          isInteracting={isInteracting}
-          setIsInteracting={setIsInteracting}
-        />
-        <OrbitControls
-          enableZoom={false}
-          onStart={() => setIsInteracting(true)}
-          onEnd={() => setIsInteracting(false)}
-        />
-      </Canvas>
-    </div>
+      <div style={{ height: "600px", width: "100%" }}>
+        <Canvas
+            gl={{ alpha: true }}
+            camera={{
+              position: [3.5, 0.87, -1.95],
+              fov: 50,
+              near: 0.1,
+              far: 1000,
+            }}
+        >
+          <ambientLight intensity={0.5} />
+          <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
+          <pointLight position={[-10, -10, -10]} />
+          <Model
+              glbUrl={glbUrl}
+              isInteracting={isInteracting}
+              setIsInteracting={setIsInteracting}
+          />
+          <OrbitControls
+              enableZoom={false}
+              enabled={true}
+          />
+        </Canvas>
+      </div>
   );
 };
 

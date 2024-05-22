@@ -16,7 +16,7 @@ import {
   ConnectWalletProps,
 } from "./ConnectWalletModal.type";
 import { eventBus } from "../../utils/EventBus";
-import {useIsPortrait} from "../../common/hooks/useIsPortrait";
+import { useIsPortrait } from "../../common/hooks/useIsPortrait";
 
 const ConnectWalletContext = createContext<ConnectWalletContextType | null>(
   null,
@@ -47,12 +47,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
     /*TODO */
   });
 
-  const {
-    connect,
-    dAppConnect,
-    meerkatAddress,
-    initDappConnect,
-  } = useCardano({
+  const { connect, dAppConnect, meerkatAddress, initDappConnect } = useCardano({
     limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
   });
 
@@ -61,7 +56,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
   const contextValue = {
     isMobile,
     meerkatAddress,
-    peerConnectWalletInfo
+    peerConnectWalletInfo,
   };
 
   const onConnectWalletError = (error: Error) => {};
@@ -90,15 +85,6 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
       "error",
     );
   };
-
-  useEffect(() => {
-    console.log("lets publish showToast")
-    eventBus.publish(
-        "showToast",
-        "Unable to connect wallet. Please try again",
-        "error",
-    );
-  }, []);
 
   useEffect(() => {
     if (dAppConnect.current === null) {

@@ -27,7 +27,7 @@ import QRCode from "react-qr-code";
 import { clearUserInSessionStorage } from "../../utils/session";
 import { removeFromLocalStorage } from "../../utils/storage";
 import { disconnect } from "process";
-import {useConnectWalletContext} from "../ConnectWalletModal/ConnectWalletModal";
+import { useConnectWalletContext } from "../ConnectWalletModal/ConnectWalletModal";
 
 type ConnectWalletListProps = {
   description?: string;
@@ -54,9 +54,9 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
   const [peerConnectOption, setPeerConnectOption] =
     useState<ConnectWalletFlow>(currentPath);
 
-    const {meerkatAddress, peerConnectWalletInfo} = useConnectWalletContext();
+  const { meerkatAddress, peerConnectWalletInfo } = useConnectWalletContext();
 
-    const { installedExtensions } = useCardano({
+  const { installedExtensions } = useCardano({
     limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
   });
 

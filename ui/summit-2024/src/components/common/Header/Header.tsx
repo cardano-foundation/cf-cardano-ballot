@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  AppBar,
-  Box,
-  Toolbar,
-  Typography,
-  IconButton
-} from "@mui/material";
+import { AppBar, Box, Toolbar, Typography, IconButton } from "@mui/material";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import Logo from "../../../assets/logo.svg";
 import { ConnectWalletButton } from "../ConnectWalletButton/ConnectWalletButton";

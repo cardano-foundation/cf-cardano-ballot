@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import Header from "./components/common/Header/Header";
 import { PageRouter } from "./routes";
 import { Footer } from "./components/common/Footer/Footer";
+import { TermsAndConditionsModal } from "./components/LegalOptInModal/TermsAndConditionsModal";
 
 const eventCache = {
   id: "1",
@@ -45,6 +46,7 @@ function App() {
               <Footer />
             </Grid>
           </Grid>
+          <TermsAndConditionsModal />
         </Container>
       </BrowserRouter>
     </>

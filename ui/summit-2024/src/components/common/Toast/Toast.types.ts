@@ -1,9 +1,9 @@
 import { ReactElement } from "react";
 
 enum ToastType {
-  Verified = 'verified',
-  Error = 'error',
-  Common = 'common'
+  Verified = "verified",
+  Error = "error",
+  Common = "common",
 }
 type ToastProps = {
   message: string;

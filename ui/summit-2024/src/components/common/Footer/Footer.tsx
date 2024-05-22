@@ -91,7 +91,7 @@ const Footer = () => {
           <Typography variant="body2" sx={{ color: "text.primary" }}>
             Version {env.APP_VERSION}(
             <Link
-              href="https://summit.cardano.org/"
+              href="https://status.voting.summit.cardano.org/"
               target="_blank"
               rel="noopener"
               sx={{

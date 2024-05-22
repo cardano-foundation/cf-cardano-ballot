@@ -1,7 +1,6 @@
-import { IWalletInfo } from "../ConnectWalletList/ConnectWalletList.types";
 
 interface ConnectWalletContextType {
-  peerConnectWalletInfo: IWalletInfo | undefined;
+  isMobile: boolean
 }
 
 type ConnectWalletProps = {

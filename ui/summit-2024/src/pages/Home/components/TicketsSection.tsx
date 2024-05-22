@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid, Box, Typography, Button } from "@mui/material";
+import { Grid, Box, Typography, Button, Link } from "@mui/material";
 import Logo from "../../../assets/logo.svg";
 import dubaiBg from "../../../assets/dubai-bg.svg";
 
@@ -108,7 +108,16 @@ const TicketsSection = () => {
             },
           }}
         >
-          Get Tickets
+            <Link
+                href="https://summit.cardano.org/"
+                target="_blank"
+                rel="noopener"
+                sx={{
+                    textDecoration: "none",
+                }}
+            >
+                Get Tickets
+            </Link>
         </Button>
         <Typography
           variant="h6"

@@ -32,34 +32,10 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
   const [connectCurrentPaths, setConnectCurrentPaths] = useState<
     ConnectWalletFlow[]
   >([ConnectWalletFlow.SELECT_WALLET]);
-  const [startPeerConnect, setStartPeerConnect] = useState(false);
 
-  const [peerConnectWalletInfo, setPeerConnectWalletInfo] = useState<
-    IWalletInfo | undefined
-  >(undefined);
-
-  const [toastMessage, setToastMessage] = useState("");
-  const [toastType, setToastType] = useState<ToastType>("common");
-  const [toastOpen, setToastOpen] = useState(false);
-
-  const dispatch = useDispatch();
-  const {
-    stakeAddress,
-    isConnected,
-    disconnect,
-    connect,
-    dAppConnect,
-    meerkatAddress,
-    initDappConnect,
-    signMessage,
-  } = useCardano({
-    limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
-  });
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const contextValue = {
-    peerConnectWalletInfo,
-    meerkatAddress,
     isMobile,
   };
 

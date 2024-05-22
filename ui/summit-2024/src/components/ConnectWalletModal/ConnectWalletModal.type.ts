@@ -1,6 +1,6 @@
-
 interface ConnectWalletContextType {
-  isMobile: boolean
+  isMobile: boolean;
+  meerkatAddress: string | undefined;
 }
 
 type ConnectWalletProps = {

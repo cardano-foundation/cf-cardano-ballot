@@ -1,90 +1,70 @@
-import React from "react";
-import { IconButton, Snackbar } from "@mui/material";
-import DoNotDisturbAltIcon from "@mui/icons-material/DoNotDisturbAlt";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
-import CloseIcon from "@mui/icons-material/Close";
-import WarningIcon from "@mui/icons-material/Warning";
-import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
-import { ToastProps, ToastStylesProps } from "./Toast.types";
+import React from 'react';
+import { IconButton, Snackbar, useTheme, Box, Typography, Stack } from '@mui/material';
+import DoNotDisturbAltIcon from '@mui/icons-material/DoNotDisturbAlt';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import CloseIcon from '@mui/icons-material/Close';
+import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
+import { ToastProps, ToastType } from './Toast.types';
 
-const Toast = (props: ToastProps) => {
-  const { message, isOpen, type, onClose } = props;
+const Toast = ({ message, isOpen, type, onClose }: ToastProps) => {
+  const theme = useTheme();
 
-  const getStyles = (): ToastStylesProps => {
+  const getStyles = () => {
     switch (type) {
-      case "verified":
+      case ToastType.Verified:
         return {
-          backgroundColor: "#03021f",
-          color: "#F5F9FF",
-          icon: <VerifiedUserIcon />,
+          backgroundColor: theme.palette.background.default,
+          color: theme.palette.text.primary,
+          Icon: VerifiedUserIcon,
         };
-      case "error":
+      case ToastType.Error:
         return {
-          backgroundColor: "#c20024",
-          color: "#F5F9FF",
-          icon: <DoNotDisturbAltIcon />,
+          backgroundColor: theme.palette.primary.dark,
+          color: theme.palette.error.text,
+          Icon: DoNotDisturbAltIcon,
         };
-      case "warn":
+      case ToastType.Common:
         return {
-          backgroundColor: "#FD873C",
-          color: "#652701",
-          icon: <WarningIcon />,
-        };
-      case "common":
-        return {
-          backgroundColor: "#03021f",
-          color: "#F5F9FF",
-          icon: <CheckCircleOutlineIcon />,
+          backgroundColor: theme.palette.background.default,
+          color: theme.palette.text.primary,
+          Icon: CheckCircleOutlineIcon,
         };
       default:
         return {};
     }
   };
 
-  const toastStyles = getStyles();
+  const { backgroundColor, color, Icon } = getStyles();
 
   return (
-    <>
       <Snackbar
-        ContentProps={{
-          sx: {
-            background: toastStyles.backgroundColor,
-            color: toastStyles.color,
-            fontWeight: "400",
-            fontSize: "16px",
-          },
-        }}
-        open={isOpen}
-        onClose={onClose}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        autoHideDuration={3000}
-        message={
-          <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            {toastStyles.icon} {message}
-          </span>
-        }
-        action={
-          <>
-            <div
-              style={{
-                background: "lightgray",
-                width: "1px",
-                height: "24px",
-                marginRight: "8px",
-              }}
-            ></div>
-            <IconButton
-              size="small"
-              aria-label="close"
-              color="inherit"
-              onClick={onClose}
-            >
-              <CloseIcon fontSize="small" />
-            </IconButton>
-          </>
-        }
+          open={isOpen}
+          onClose={onClose}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+          autoHideDuration={3000}
+          ContentProps={{
+            sx: {
+              bgcolor: backgroundColor,
+              color: color,
+              fontWeight: '400',
+              fontSize: '16px',
+            },
+          }}
+          message={
+            <Stack direction="row" spacing={1} alignItems="center">
+              <Icon />
+              <Typography variant="body2">{message}</Typography>
+            </Stack>
+          }
+          action={
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Box sx={{ backgroundColor: color, width: "1px", height: 24, borderRadius: "10px" }} />
+              <IconButton size="small" onClick={onClose} color="inherit">
+                <CloseIcon fontSize="small" sx={{ width: "20px"}}/>
+              </IconButton>
+            </Box>
+          }
       />
-    </>
   );
 };
 

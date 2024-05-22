@@ -1,7 +1,10 @@
 import { ReactElement } from "react";
 
-type ToastType = "common" | "verified" | "warn" | "error";
-
+enum ToastType {
+  Verified = 'verified',
+  Error = 'error',
+  Common = 'common'
+}
 type ToastProps = {
   message: string;
   isOpen: boolean;

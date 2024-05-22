@@ -26,60 +26,37 @@ import { ConnectWalletFlow, IWalletInfo } from "./ConnectWalletList.types";
 import QRCode from "react-qr-code";
 import { clearUserInSessionStorage } from "../../utils/session";
 import { removeFromLocalStorage } from "../../utils/storage";
-import {
-  setConnectedPeerWallet,
-  setUserVotes,
-  setVoteReceipt,
-  setWalletIsVerified,
-} from "../../store/userSlice";
-import { VoteReceipt } from "../../types/voting-app-types";
 import { disconnect } from "process";
-import { eventBus } from "../../utils/EventBus";
-import { ToastType } from "../common/Toast/Toast.types";
+import {useConnectWalletContext} from "../ConnectWalletModal/ConnectWalletModal";
 
-type ConnectWalletModalProps = {
+type ConnectWalletListProps = {
   description?: string;
   currentPath: ConnectWalletFlow;
   setCurrentPath: (currentPath: ConnectWalletFlow) => void;
   onConnectWallet: () => void;
   onConnectError: (code: Error) => void;
   onOpenPeerConnect: () => void;
+  handleOnPeerConnectAccept: () => void;
+  connectExtensionWallet: (walletName: string) => void;
 };
 
 const SUPPORTED_WALLETS = env.SUPPORTED_WALLETS;
 
-const ConnectWalletList = (props: ConnectWalletModalProps) => {
+const ConnectWalletList = (props: ConnectWalletListProps) => {
   const {
     description,
-    onConnectWallet,
-    onConnectError,
     currentPath,
     setCurrentPath,
+    handleOnPeerConnectAccept,
+    connectExtensionWallet,
   } = props;
-  const [peerConnectWalletInfo, setPeerConnectWalletInfo] = useState<
-    IWalletInfo | undefined
-  >(undefined);
 
   const [peerConnectOption, setPeerConnectOption] =
     useState<ConnectWalletFlow>(currentPath);
 
-  const [toastMessage, setToastMessage] = useState("");
-  const [toastType, setToastType] = useState<ToastType>("common");
-  const [toastOpen, setToastOpen] = useState(false);
-  const [onPeerConnectAccept, setOnPeerConnectAccept] = useState(() => () => {
-    /*TODO */
-  });
-  const [onPeerConnectReject, setOnPeerConnectReject] = useState(() => () => {
-    /*TODO */
-  });
+    const {meerkatAddress, peerConnectWalletInfo} = useConnectWalletContext();
 
-  const {
-    installedExtensions,
-    connect,
-    dAppConnect,
-    meerkatAddress,
-    initDappConnect,
-  } = useCardano({
+    const { installedExtensions } = useCardano({
     limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
   });
 
@@ -88,75 +65,9 @@ const ConnectWalletList = (props: ConnectWalletModalProps) => {
   );
 
   useEffect(() => {
-    if (dAppConnect.current === null) {
-      const verifyConnection = (
-        walletInfo: IWalletInfo,
-        callback: (granted: boolean, autoconnect: boolean) => void,
-      ) => {
-        setPeerConnectWalletInfo(walletInfo);
-        setCurrentPath(ConnectWalletFlow.ACCEPT_CONNECTION);
-
-        if (walletInfo.requestAutoconnect) {
-          //setModalMessage(`Do you want to automatically connect to wallet ${walletInfo.name} (${walletInfo.address})?`);
-          setOnPeerConnectAccept(() => () => callback(true, true));
-          setOnPeerConnectReject(() => () => callback(false, false));
-        } else {
-          // setModalMessage(`Do you want to connect to wallet ${walletInfo.name} (${walletInfo.address})?`);
-          setOnPeerConnectAccept(() => () => callback(true, false));
-          setOnPeerConnectReject(() => () => callback(false, false));
-        }
-      };
-
-      const onApiInject = (name: string, address: string): void => {
-        connect(
-          name,
-          () => {
-            eventBus.publish("closeConnectWalletModal");
-            eventBus.publish("showToast", "Wallet connected successfully");
-          },
-          () => {
-            eventBus.publish(
-              "showToast",
-              "Unable to connect wallet. Please try again",
-              "error",
-            );
-          },
-        ).catch((e) => console.error(e));
-      };
-
-      const onApiEject = (name: string, address: string): void => {
-        setPeerConnectWalletInfo(undefined);
-        eventBus.publish("showToast", "Wallet disconnected successfully");
-      };
-
-      const onP2PConnect = (
-        address: string,
-        walletInfo?: IWalletInfo,
-      ): void => {
-        // TODO
-      };
-
-      initDappConnect(
-        "Cardano Summit 2023",
-        env.FRONTEND_URL,
-        verifyConnection,
-        onApiInject,
-        onApiEject,
-        [],
-        onP2PConnect,
-      );
-    }
-  }, []);
-
-  useEffect(() => {
     setPeerConnectOption(currentPath);
   }, [currentPath]);
 
-  const showToast = (message: string, type?: ToastType) => {
-    setToastType(type || "common");
-    setToastMessage(message);
-    setToastOpen(true);
-  };
   const handleShowConnectIdentityWallet = () => {
     setPeerConnectOption(ConnectWalletFlow.CONNECT_IDENTITY_WALLET);
     setCurrentPath(ConnectWalletFlow.CONNECT_IDENTITY_WALLET);
@@ -170,18 +81,16 @@ const ConnectWalletList = (props: ConnectWalletModalProps) => {
   const onDisconnectWallet = () => {
     disconnect();
     clearUserInSessionStorage();
-    setPeerConnectWalletInfo(undefined);
     removeFromLocalStorage("cardano-peer-autoconnect-id");
     removeFromLocalStorage("cardano-wallet-discovery-address");
   };
 
   const handleAccept = () => {
-    if (peerConnectWalletInfo) {
-      onPeerConnectAccept();
-    }
+    handleOnPeerConnectAccept();
   };
 
   const handleCopyToClipboard = async () => {
+    if (!meerkatAddress) return;
     await copyToClipboard(meerkatAddress);
     setCurrentPath(ConnectWalletFlow.ACCEPT_CONNECTION);
   };
@@ -241,7 +150,7 @@ const ConnectWalletList = (props: ConnectWalletModalProps) => {
             <QRCode
               size={256}
               style={{ height: "auto", width: "200px" }}
-              value={meerkatAddress}
+              value={meerkatAddress || ""}
               viewBox={"0 0 256 256"}
             />
           </Box>
@@ -280,7 +189,7 @@ const ConnectWalletList = (props: ConnectWalletModalProps) => {
         >
           {peerConnectWalletInfo?.icon ? (
             <img
-              src={peerConnectWalletInfo?.icon}
+              src={peerConnectWalletInfo?.icon || ""}
               alt="Wallet"
               style={{ width: "64px", marginTop: "44px" }}
             />
@@ -434,9 +343,7 @@ const ConnectWalletList = (props: ConnectWalletModalProps) => {
                     opacity: 0.8,
                   },
                 }}
-                onClick={() =>
-                  connect(walletName, onConnectWallet, onConnectError)
-                }
+                onClick={() => connectExtensionWallet(walletName)}
               >
                 <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                   <ListItemAvatar>

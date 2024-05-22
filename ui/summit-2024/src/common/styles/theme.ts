@@ -37,6 +37,7 @@ const theme = createTheme({
     },
     error: {
       main: "#f44336",
+      text: "#FF878C",
     },
     background: {
       default: "#121212",

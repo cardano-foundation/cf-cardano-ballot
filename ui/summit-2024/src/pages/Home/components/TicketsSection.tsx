@@ -108,16 +108,16 @@ const TicketsSection = () => {
             },
           }}
         >
-            <Link
-                href="https://summit.cardano.org/"
-                target="_blank"
-                rel="noopener"
-                sx={{
-                    textDecoration: "none",
-                }}
-            >
-                Get Tickets
-            </Link>
+          <Link
+            href="https://summit.cardano.org/"
+            target="_blank"
+            rel="noopener"
+            sx={{
+              textDecoration: "none",
+            }}
+          >
+            Get Tickets
+          </Link>
         </Button>
         <Typography
           variant="h6"

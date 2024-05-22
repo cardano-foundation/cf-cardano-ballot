@@ -4,13 +4,11 @@ import {
   Box,
   Toolbar,
   Typography,
-  IconButton,
-  useMediaQuery,
+  IconButton
 } from "@mui/material";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import Logo from "../../../assets/logo.svg";
 import { ConnectWalletButton } from "../ConnectWalletButton/ConnectWalletButton";
-import theme from "../../../common/styles/theme";
 import { useIsPortrait } from "../../../common/hooks/useIsPortrait";
 import { eventBus } from "../../../utils/EventBus";
 import { ToastType } from "../Toast/Toast.types";
@@ -21,7 +19,7 @@ const Header = () => {
   const [showConnectWalletModal, setShowConnectWalletModal] =
     useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState("");
-  const [toastType, setToastType] = useState<ToastType>("common");
+  const [toastType, setToastType] = useState<ToastType>(ToastType.Common);
   const [toastOpen, setToastOpen] = useState(false);
 
   const isPortrait = useIsPortrait();
@@ -38,7 +36,7 @@ const Header = () => {
 
   useEffect(() => {
     const showToastListener = (message: string, type?: ToastType) => {
-      showToast(message, type || "common");
+      showToast(message, type || ToastType.Common);
     };
     eventBus.subscribe("showToast", showToastListener);
 
@@ -64,8 +62,9 @@ const Header = () => {
   }, []);
 
   const showToast = (message: string, type?: ToastType) => {
-    setToastType(type || "common");
+    console.log(`Toast will show: ${message}, Type: ${type}`);
     setToastMessage(message);
+    setToastType(type || ToastType.Common);
     setToastOpen(true);
   };
   const handleToastClose = (

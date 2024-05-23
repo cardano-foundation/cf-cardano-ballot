@@ -167,12 +167,16 @@ const TermsAndConditionsModal = () => {
                             {paragraph}
                         </Typography>
                     ))}
+
                     {privacyData.sections.map((section, index) => (
+
                         <Box key={index} sx={{ mt: 2 }}>
                             <Typography sx={{ color: 'var(--neutralLightest, #FAF9F6)', fontFamily: 'Dosis', fontSize: '24px', fontStyle: 'normal', fontWeight: 700, lineHeight: '28px' }}>
                                 {section.title}
                             </Typography>
+
                             {section.subsections.map((subsection, subIndex) => (
+                                // TODO: contact subsection styles
                                 <Box key={subIndex} sx={{ mt: 1 }}>
                                     <Typography sx={{ color: 'var(--neutralLightest, #FAF9F6)', fontFamily: 'Dosis', fontSize: '24px', fontStyle: 'normal', fontWeight: 700, lineHeight: '28px' }}>
                                         {subsection.title}

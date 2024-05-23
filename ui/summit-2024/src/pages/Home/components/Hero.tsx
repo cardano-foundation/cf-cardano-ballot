@@ -8,8 +8,8 @@ const Hero = () => {
   const isMobile = useIsPortrait();
   return (
     <>
-      <Grid container>
-        <Grid item xs={12} md={6}>
+      <Grid container spacing={{ xs: 2, sm: 3, md: 4, lg: 5 }}>
+        <Grid item xs={12} sm={8} md={6} lg={4}>
           <Typography
             variant="h4"
             sx={{
@@ -175,19 +175,20 @@ const Hero = () => {
             </Button>
           </Box>
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} sm={4} md={6} lg={8}>
           <Box
             sx={{
               height: "100%",
               backgroundImage: !isMobile ? `url(${Shapes})` : "",
-              backgroundSize: "contain",
+                backgroundSize: { xs: 'cover', sm: 'cover', md: 'contain', lg: 'contain' },
               backgroundRepeat: "no-repeat",
-              backgroundPosition: "center",
+                backgroundPosition: { xs: 'left', sm: 'center', md: 'center', lg: 'right' },
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
               marginTop: isMobile ? "" : "12px",
               marginLeft: isMobile ? "24px" : "90px",
+                paddingLeft: { xs: 2, sm: 3, md: 4, lg: 30 }
             }}
           >
             <GLBViewer glbUrl="/compressed.glb" />

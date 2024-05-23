@@ -18,7 +18,6 @@ const CustomButton: React.FC<CustomButtonProps> = ({ colorVariant, startIcon, sx
         lineHeight: '24px',
         borderRadius: '12px',
         padding: { xs: "8px 16px", sm: "16px 24px" },
-        alignSelf: { xs: "center", sm: "flex-start" },
         ...(colorVariant === 'primary' ? {
             background: 'linear-gradient(70deg, #0C7BC5 -105.24%, #40407D -53.72%, #EE9766 -0.86%, #EE9766 103.82%)',
             color: theme.palette.background.default,

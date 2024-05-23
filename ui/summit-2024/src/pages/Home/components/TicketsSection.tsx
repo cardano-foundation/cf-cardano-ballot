@@ -2,6 +2,7 @@ import React from "react";
 import { Grid, Box, Typography, Button, Link } from "@mui/material";
 import Logo from "../../../assets/logo.svg";
 import dubaiBg from "../../../assets/dubai-bg.svg";
+import {CustomButton} from "../../../components/common/CustomButton/CustomButton";
 
 const TicketsSection = () => {
   return (
@@ -85,42 +86,15 @@ const TicketsSection = () => {
           justifyContent: "center",
           padding: 2,
           zIndex: 2,
-          paddingRight: "50px",
+          paddingRight: { xs: "0px", md: "30px"}
         }}
       >
-        <Button
-          variant="contained"
-          sx={{
-            marginTop: "30px",
-            display: "inline-flex",
-            padding: "16px 24px",
-            justifyContent: "center",
-            alignItems: "center",
-            gap: "8px",
-            borderRadius: " 12px",
-            color: "background.neutralDarkest",
-            fontSize: "16px",
-            fontStyle: "normal",
-            fontWeight: 500,
-            lineHeight: "24px",
-            textTransform: "none",
-            bgcolor: "secondary.main",
-            "&:hover": {
-              bgcolor: "secondary.dark",
-            },
-          }}
-        >
-          <Link
-            href="https://summit.cardano.org/"
-            target="_blank"
-            rel="noopener"
-            sx={{
-              textDecoration: "none",
-            }}
-          >
-            Get Tickets
-          </Link>
-        </Button>
+
+          <CustomButton colorVariant="primary" sx={{
+              marginTop: { xs: "30px", md: "0px"},
+          }}>
+              Get Tickets
+          </CustomButton>
         <Typography
           variant="h6"
           sx={{

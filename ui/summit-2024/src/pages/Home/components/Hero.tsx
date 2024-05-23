@@ -132,10 +132,10 @@ const Hero = () => {
               marginTop: "20px",
             }}
           >
-              <CustomButton colorVariant="primary" sx={{margin: { xs: '12px 0', sm: '0 12px' },}}>
+              <CustomButton colorVariant="primary" sx={{margin: { xs: '12px 0', sm: '10px 12px' },}}>
                   Start Voting
               </CustomButton>
-              <CustomButton colorVariant="secondary" sx={{margin: { xs: '12px 0', sm: '0 12px' },}}>
+              <CustomButton colorVariant="secondary" sx={{margin: { xs: '12px 0', sm: '10px 12px' },}}>
                   How to Vote
               </CustomButton>
           </Box>

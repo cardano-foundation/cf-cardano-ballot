@@ -34,12 +34,11 @@ const ExploreSection = () => {
             color: "text.neutralLightest",
             fontFamily: "Dosis",
             fontSize: { md: "40px", lg: "52px" },
-            lineHeight: { md: "40px", lg: "52px" },
+            lineHeight: { md: "30px", lg: "42px" },
             fontStyle: "normal",
             fontWeight: "700",
             textAlign: isMobile ? "center" : "left",
-
-            whiteSpace: "nowrap",
+            whiteSpace: { sm: "nowrap", md: "normal" },
             mb: 2,
           }}
         >
@@ -51,11 +50,11 @@ const ExploreSection = () => {
             color: "text.neutralLightest",
             fontFamily: "Dosis",
             fontSize: { md: "40px", lg: "52px" },
-            lineHeight: { md: "40px", lg: "52px" },
+            lineHeight: { md: "30px", lg: "42px" },
             fontStyle: "normal",
             fontWeight: "700",
             textAlign: isMobile ? "center" : "left",
-            whiteSpace: "nowrap",
+              whiteSpace: { sm: "nowrap", md: "normal" },
             mb: 2,
           }}
         >
@@ -67,11 +66,11 @@ const ExploreSection = () => {
             color: "text.neutralLightest",
             fontFamily: "Dosis",
             fontSize: { md: "40px", lg: "52px" },
-            lineHeight: { md: "40px", lg: "52px" },
+            lineHeight: { md: "30px", lg: "42px" },
             fontStyle: "normal",
             fontWeight: "700",
             textAlign: isMobile ? "center" : "left",
-            whiteSpace: "nowrap",
+              whiteSpace: { sm: "nowrap", md: "normal" },
           }}
         >
           Summit!
@@ -104,11 +103,11 @@ const ExploreSection = () => {
               height: "272px",
               overflow: "hidden",
               borderRadius: "24px",
-              maxWidth: "404px",
               mx: { xs: "auto", sm: "inherit" },
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
+              width: { xs: 'calc(100% - 32px)', sm: 'auto' }
           }}
         >
           <CardContent sx={{ position: "relative", zIndex: 2 }}>
@@ -168,11 +167,11 @@ const ExploreSection = () => {
               height: "272px",
               overflow: "hidden",
               borderRadius: "24px",
-              maxWidth: "404px",
               mx: { xs: "auto", sm: "inherit" },
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
+              width: { xs: 'calc(100% - 32px)', sm: 'auto' }
           }}
         >
           <CardContent sx={{ position: "relative", zIndex: 2 }}>

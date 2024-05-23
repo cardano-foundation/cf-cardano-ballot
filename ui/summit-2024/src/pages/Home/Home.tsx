@@ -12,7 +12,7 @@ const Home: React.FC = () => {
     <>
       <Hero />
         <ExploreSection />
-      {!isMobile ? <TicketsSection /> : null}
+        <TicketsSection />
       <img
         src={Ellipses}
         style={{

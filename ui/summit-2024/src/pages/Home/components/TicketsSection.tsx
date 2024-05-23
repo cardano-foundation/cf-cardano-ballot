@@ -17,7 +17,10 @@ const TicketsSection = () => {
         height: 340,
         overflow: "hidden",
         borderRadius: "24px",
-        paddingLeft: "50px",
+          paddingLeft: { xs: "16px", sm: "50px" },
+          paddingRight: { xs: "16px", sm: "50px" },
+          mx: { xs: "auto", sm: 0 },
+          width: { xs: 'calc(100% - 32px)', sm: 'auto' }
       }}
     >
       <Box
@@ -36,11 +39,12 @@ const TicketsSection = () => {
         item
         xs={6}
         sx={{
-          display: "flex",
+          display: {xs: "", sm: "flex"},
           flexDirection: "column",
           alignItems: "flex-start",
           justifyContent: "center",
           padding: 2,
+          marginTop: {xs: "30px", sm: "-30px", md: "0px"},
           zIndex: 2,
         }}
       >
@@ -52,10 +56,8 @@ const TicketsSection = () => {
         <Typography
           variant="h4"
           sx={{
-            color: "white",
-            fontWeight: "bold",
-            fontFamily: "Dosis",
-            fontSize: "52px",
+              fontSize: { xs: "32px", sm: "40px", md: "52px" },
+              lineHeight: { xs: "38px", sm: "48px", md: "56px" },
           }}
         >
           A Global Blockchain
@@ -64,9 +66,9 @@ const TicketsSection = () => {
           variant="h4"
           sx={{
             color: "white",
-            fontWeight: "bold",
             fontFamily: "Dosis",
-            fontSize: "52px",
+              fontSize: { xs: "32px", sm: "40px", md: "52px" },
+              lineHeight: { xs: "38px", sm: "48px", md: "56px" },
           }}
         >
           Event

@@ -32,10 +32,10 @@ const Hero = () => {
             sx={{
               color: "text.neutralLightest",
               fontFamily: "Dosis",
-                fontSize: { xs: "34px", sm: "62px", md: "60px", lg: "88px" },
+                fontSize: { xs: "34px", sm: "62px", md: "70px", lg: "88px" },
               fontStyle: "normal",
               fontWeight: "700",
-                lineHeight: { xs: "34px", sm: "62px", md: "60px", lg: "88px" },
+                lineHeight: { xs: "34px", sm: "62px", md: "70px", lg: "88px" },
               marginLeft: isMobile ? "" : "20px",
               whiteSpace: "nowrap",
               textAlign: isMobile ? "center" : "",
@@ -70,12 +70,12 @@ const Hero = () => {
               sx={{
                 color: "text.neutralLightest",
                 fontFamily: "Dosis",
-                  fontSize: { xs: "34px", sm: "62px", md: "60px", lg: "88px" },
+                  fontSize: { xs: "34px", sm: "62px", md: "70px", lg: "88px" },
                 fontStyle: "normal",
                 fontWeight: "700",
                 display: "inline",
                 whiteSpace: "nowrap",
-                  lineHeight: { xs: "34px", sm: "62px", md: "60px", lg: "88px" },
+                  lineHeight: { xs: "34px", sm: "62px", md: "70px", lg: "88px" },
                 marginLeft: isMobile ? "" : "96px",
               }}
             >
@@ -86,14 +86,15 @@ const Hero = () => {
             variant="h4"
             gutterBottom
             sx={{
-              color: "text.neutralLightest",
-              fontFamily: "Dosis",
-                fontSize: { xs: "34px", sm: "62px", md: "60px", lg: "88px" },
-              fontStyle: "normal",
-              fontWeight: "700",
-              lineHeight: { xs: "34px", sm: "62px", md: "60px", lg: "88px" },
-              whiteSpace: "nowrap",
-                textAlign: { xs: "center", md: "left"}
+                color: "text.neutralLightest",
+                fontFamily: "Dosis",
+                fontSize: { xs: "34px", sm: "62px", md: "70px", lg: "88px" },
+                fontStyle: "normal",
+                fontWeight: "700",
+                lineHeight: { xs: "34px", sm: "62px", md: "70px", lg: "88px" },
+                marginLeft: isMobile ? "" : "20px",
+                whiteSpace: "nowrap",
+                textAlign: isMobile ? "center" : "",
             }}
           >
             2024 Awards

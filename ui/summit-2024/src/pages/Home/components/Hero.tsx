@@ -3,6 +3,7 @@ import GLBViewer from "../../../components/GLBViewer/GLBViewer";
 import React from "react";
 import { Box, Button, Grid, Typography } from "@mui/material";
 import { useIsPortrait } from "../../../common/hooks/useIsPortrait";
+import {CustomButton} from "../../../components/common/CustomButton/CustomButton";
 
 const Hero = () => {
   const isMobile = useIsPortrait();
@@ -131,48 +132,12 @@ const Hero = () => {
               marginTop: "20px",
             }}
           >
-            <Button
-              variant="contained"
-              sx={{
-                textTransform: "none",
-                width: isMobile ? "auto" : "134px",
-                height: "56px",
-                color: "background.neutralDarkest",
-                fontSize: "16px",
-                fontStyle: "normal",
-                fontWeight: 500,
-                lineHeight: "24px",
-                marginRight: isMobile ? "20px" : "12px",
-                paddingLeft: isMobile ? "20px" : "",
-                marginBottom: isMobile ? "12px" : "0",
-                borderRadius: "12px",
-                background:
-                  "linear-gradient(70deg, #0C7BC5 -105.24%, #40407D -53.72%, #EE9766 -0.86%, #EE9766 103.82%)",
-              }}
-            >
-              Start Voting
-            </Button>
-            <Button
-              variant="contained"
-              sx={{
-                textTransform: "none",
-                width: isMobile ? "auto" : "134px",
-                height: "56px",
-                color: "#EE9766",
-                fontSize: "16px",
-                fontStyle: "normal",
-                fontWeight: 500,
-                lineHeight: "24px",
-                border: "1px solid var(--orange, #EE9766)",
-                marginRight: isMobile ? "20px" : "12px",
-                paddingLeft: isMobile ? "20px" : "",
-                marginBottom: isMobile ? "12px" : "0",
-                borderRadius: "12px",
-                background: "transparent",
-              }}
-            >
-              How to Vote
-            </Button>
+              <CustomButton colorVariant="primary" sx={{margin: { xs: '12px 0', sm: '0 12px' },}}>
+                  Start Voting
+              </CustomButton>
+              <CustomButton colorVariant="secondary" sx={{margin: { xs: '12px 0', sm: '0 12px' },}}>
+                  How to Vote
+              </CustomButton>
           </Box>
         </Grid>
         <Grid item xs={12} sm={4} md={6} lg={8}>

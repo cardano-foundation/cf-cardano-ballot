@@ -11,6 +11,7 @@ import HowToVoteOutlinedIcon from "@mui/icons-material/HowToVoteOutlined";
 import folderIcon from "../../../assets/folder.svg";
 import trophyIcon from "../../../assets/trophy.svg";
 import { useIsPortrait } from "../../../common/hooks/useIsPortrait";
+import {CustomButton} from "../../../components/common/CustomButton/CustomButton";
 
 const ExploreSection = () => {
   const isMobile = useIsPortrait();
@@ -75,26 +76,9 @@ const ExploreSection = () => {
         >
           Summit!
         </Typography>
-        <Button
-          onClick={() => {}}
-          sx={{
-            textTransform: "none",
-            width: "auto",
-            height: "56px",
-            color: "#EE9766",
-            fontSize: "16px",
-            fontWeight: 500,
-            lineHeight: "24px",
-            border: "1px solid var(--orange, #EE9766)",
-            borderRadius: "12px",
-            mt: 4,
-            padding: "16px 24px",
-            alignSelf: isMobile ? "center" : "flex-start",
-          }}
-          startIcon={<HowToVoteOutlinedIcon />}
-        >
-          User Guide
-        </Button>
+          <CustomButton style={{marginTop: "48px"}} colorVariant="secondary" startIcon={<HowToVoteOutlinedIcon />}>
+              User Guide
+          </CustomButton>
       </Grid>
       <Grid item xs={12} sm={6} md={4}>
         <Card

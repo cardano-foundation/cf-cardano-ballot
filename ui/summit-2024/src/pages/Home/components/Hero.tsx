@@ -3,7 +3,7 @@ import GLBViewer from "../../../components/GLBViewer/GLBViewer";
 import React from "react";
 import { Box, Button, Grid, Typography } from "@mui/material";
 import { useIsPortrait } from "../../../common/hooks/useIsPortrait";
-import {CustomButton} from "../../../components/common/CustomButton/CustomButton";
+import { CustomButton } from "../../../components/common/CustomButton/CustomButton";
 
 const Hero = () => {
   const isMobile = useIsPortrait();
@@ -132,12 +132,18 @@ const Hero = () => {
               marginTop: "20px",
             }}
           >
-              <CustomButton colorVariant="primary" sx={{margin: { xs: '12px 0', sm: '10px 12px' },}}>
-                  Start Voting
-              </CustomButton>
-              <CustomButton colorVariant="secondary" sx={{margin: { xs: '12px 0', sm: '10px 12px' },}}>
-                  How to Vote
-              </CustomButton>
+            <CustomButton
+              colorVariant="primary"
+              sx={{ margin: { xs: "12px 0", sm: "10px 12px" } }}
+            >
+              Start Voting
+            </CustomButton>
+            <CustomButton
+              colorVariant="secondary"
+              sx={{ margin: { xs: "12px 0", sm: "10px 12px" } }}
+            >
+              How to Vote
+            </CustomButton>
           </Box>
         </Grid>
         <Grid item xs={12} sm={4} md={6} lg={8}>

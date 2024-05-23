@@ -11,8 +11,8 @@ const Home: React.FC = () => {
   return (
     <>
       <Hero />
-        <ExploreSection />
-        <TicketsSection />
+      <ExploreSection />
+      <TicketsSection />
       <img
         src={Ellipses}
         style={{

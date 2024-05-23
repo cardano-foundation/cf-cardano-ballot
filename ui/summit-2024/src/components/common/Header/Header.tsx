@@ -8,6 +8,7 @@ import { eventBus } from "../../../utils/EventBus";
 import { ToastType } from "../Toast/Toast.types";
 import { ConnectWalletModal } from "../../ConnectWalletModal/ConnectWalletModal";
 import { Toast } from "../Toast/Toast";
+import { VerifyWalletModal } from "../../VerifyWalletModal";
 
 const Header = () => {
   const [showConnectWalletModal, setShowConnectWalletModal] =
@@ -166,6 +167,7 @@ const Header = () => {
           setShowConnectWalletModal(open ? open : false)
         }
       />
+      <VerifyWalletModal />
       <Toast
         isOpen={toastOpen}
         type={toastType}

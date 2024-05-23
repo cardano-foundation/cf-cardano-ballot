@@ -11,7 +11,7 @@ import HowToVoteOutlinedIcon from "@mui/icons-material/HowToVoteOutlined";
 import folderIcon from "../../../assets/folder.svg";
 import trophyIcon from "../../../assets/trophy.svg";
 import { useIsPortrait } from "../../../common/hooks/useIsPortrait";
-import {CustomButton} from "../../../components/common/CustomButton/CustomButton";
+import { CustomButton } from "../../../components/common/CustomButton/CustomButton";
 
 const ExploreSection = () => {
   const isMobile = useIsPortrait();
@@ -55,7 +55,7 @@ const ExploreSection = () => {
             fontStyle: "normal",
             fontWeight: "700",
             textAlign: isMobile ? "center" : "left",
-              whiteSpace: { sm: "nowrap", md: "normal" },
+            whiteSpace: { sm: "nowrap", md: "normal" },
             mb: 2,
           }}
         >
@@ -71,27 +71,31 @@ const ExploreSection = () => {
             fontStyle: "normal",
             fontWeight: "700",
             textAlign: isMobile ? "center" : "left",
-              whiteSpace: { sm: "nowrap", md: "normal" },
+            whiteSpace: { sm: "nowrap", md: "normal" },
           }}
         >
           Summit!
         </Typography>
-          <CustomButton style={{marginTop: "48px"}} colorVariant="secondary" startIcon={<HowToVoteOutlinedIcon />}>
-              User Guide
-          </CustomButton>
+        <CustomButton
+          sx={{ marginTop: "48px" }}
+          colorVariant="secondary"
+          startIcon={<HowToVoteOutlinedIcon />}
+        >
+          User Guide
+        </CustomButton>
       </Grid>
       <Grid item xs={12} sm={6} md={4}>
         <Card
           sx={{
-              position: "relative",
-              height: "272px",
-              overflow: "hidden",
-              borderRadius: "24px",
-              mx: { xs: "auto", sm: "inherit" },
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              width: { xs: 'calc(100% - 32px)', sm: 'auto' }
+            position: "relative",
+            height: "272px",
+            overflow: "hidden",
+            borderRadius: "24px",
+            mx: { xs: "auto", sm: "inherit" },
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            width: { xs: "calc(100% - 32px)", sm: "auto" },
           }}
         >
           <CardContent sx={{ position: "relative", zIndex: 2 }}>
@@ -147,15 +151,15 @@ const ExploreSection = () => {
       <Grid item xs={12} sm={6} md={4}>
         <Card
           sx={{
-              position: "relative",
-              height: "272px",
-              overflow: "hidden",
-              borderRadius: "24px",
-              mx: { xs: "auto", sm: "inherit" },
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              width: { xs: 'calc(100% - 32px)', sm: 'auto' }
+            position: "relative",
+            height: "272px",
+            overflow: "hidden",
+            borderRadius: "24px",
+            mx: { xs: "auto", sm: "inherit" },
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            width: { xs: "calc(100% - 32px)", sm: "auto" },
           }}
         >
           <CardContent sx={{ position: "relative", zIndex: 2 }}>

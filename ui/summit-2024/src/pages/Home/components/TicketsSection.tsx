@@ -2,7 +2,7 @@ import React from "react";
 import { Grid, Box, Typography, Button, Link } from "@mui/material";
 import Logo from "../../../assets/logo.svg";
 import dubaiBg from "../../../assets/dubai-bg.svg";
-import {CustomButton} from "../../../components/common/CustomButton/CustomButton";
+import { CustomButton } from "../../../components/common/CustomButton/CustomButton";
 
 const TicketsSection = () => {
   return (
@@ -18,10 +18,10 @@ const TicketsSection = () => {
         height: 340,
         overflow: "hidden",
         borderRadius: "24px",
-          paddingLeft: { xs: "16px", sm: "50px" },
-          paddingRight: { xs: "16px", sm: "50px" },
-          mx: { xs: "auto", sm: 0 },
-          width: { xs: 'calc(100% - 32px)', sm: 'auto' }
+        paddingLeft: { xs: "16px", sm: "50px" },
+        paddingRight: { xs: "16px", sm: "50px" },
+        mx: { xs: "auto", sm: 0 },
+        width: { xs: "calc(100% - 32px)", sm: "auto" },
       }}
     >
       <Box
@@ -40,12 +40,12 @@ const TicketsSection = () => {
         item
         xs={6}
         sx={{
-          display: {xs: "", sm: "flex"},
+          display: { xs: "", sm: "flex" },
           flexDirection: "column",
           alignItems: "flex-start",
           justifyContent: "center",
           padding: 2,
-          marginTop: {xs: "30px", sm: "-30px", md: "0px"},
+          marginTop: { xs: "30px", sm: "-30px", md: "0px" },
           zIndex: 2,
         }}
       >
@@ -57,8 +57,8 @@ const TicketsSection = () => {
         <Typography
           variant="h4"
           sx={{
-              fontSize: { xs: "32px", sm: "40px", md: "52px" },
-              lineHeight: { xs: "38px", sm: "48px", md: "56px" },
+            fontSize: { xs: "32px", sm: "40px", md: "52px" },
+            lineHeight: { xs: "38px", sm: "48px", md: "56px" },
           }}
         >
           A Global Blockchain
@@ -68,8 +68,8 @@ const TicketsSection = () => {
           sx={{
             color: "white",
             fontFamily: "Dosis",
-              fontSize: { xs: "32px", sm: "40px", md: "52px" },
-              lineHeight: { xs: "38px", sm: "48px", md: "56px" },
+            fontSize: { xs: "32px", sm: "40px", md: "52px" },
+            lineHeight: { xs: "38px", sm: "48px", md: "56px" },
           }}
         >
           Event
@@ -86,15 +86,17 @@ const TicketsSection = () => {
           justifyContent: "center",
           padding: 2,
           zIndex: 2,
-          paddingRight: { xs: "0px", md: "30px"}
+          paddingRight: { xs: "0px", md: "30px" },
         }}
       >
-
-          <CustomButton colorVariant="primary" sx={{
-              marginTop: { xs: "30px", md: "0px"},
-          }}>
-              Get Tickets
-          </CustomButton>
+        <CustomButton
+          colorVariant="primary"
+          sx={{
+            marginTop: { xs: "30px", md: "0px" },
+          }}
+        >
+          Get Tickets
+        </CustomButton>
         <Typography
           variant="h6"
           sx={{

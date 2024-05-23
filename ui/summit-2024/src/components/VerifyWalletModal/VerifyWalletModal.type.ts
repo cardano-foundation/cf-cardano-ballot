@@ -1,0 +1,11 @@
+enum VerifyWalletFlow {
+  INTRO = "INTRO",
+  SELECT_METHOD = "SELECT_METHOD",
+  VERIFY_SMS = "VERIFY_SMS",
+  VERIFY_DISCORD = "VERIFY_DISCORD",
+  CONFIRM_CODE = "CONFIRM_CODE",
+}
+
+export {
+  VerifyWalletFlow
+}

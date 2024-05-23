@@ -38,7 +38,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
   >([ConnectWalletFlow.SELECT_WALLET]);
 
   const [toastMessage, setToastMessage] = useState("");
-  const [toastType, setToastType] = useState<ToastType>("common");
+  const [toastType, setToastType] = useState<ToastType>(ToastType.Common);
   const [toastOpen, setToastOpen] = useState(false);
   const [onPeerConnectAccept, setOnPeerConnectAccept] = useState(() => () => {
     /*TODO */

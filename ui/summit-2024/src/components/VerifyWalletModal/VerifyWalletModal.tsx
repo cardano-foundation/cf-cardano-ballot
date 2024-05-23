@@ -18,14 +18,7 @@ import {
   matchIsValidTel,
   MuiTelInputCountry,
 } from "mui-tel-input";
-import "./VerifyWallet.scss";
 import discordLogo from "../../common/resources/images/discord-icon.svg";
-import {
-  confirmPhoneNumberCode,
-  startVerification,
-  verifyDiscord,
-} from "common/api/verificationService";
-import { env } from "common/constants/env";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -38,15 +31,23 @@ import {
 } from "../../store/types";
 import { RootState } from "../../store";
 import { useLocation } from "react-router-dom";
-import { CustomButton } from "../common/Button/CustomButton";
 import {
   getSignedMessagePromise,
   openNewTab,
   resolveCardanoNetwork,
 } from "../../utils/utils";
 import { SignedWeb3Request } from "../../types/voting-app-types";
-import { parseError } from "common/constants/errors";
+import { parseError } from "../../common/constants/errors";
 import { ErrorMessage } from "../common/ErrorMessage/ErrorMessage";
+import { CustomButton } from "../common/CustomButton/CustomButton";
+import Modal from "../common/Modal/Modal";
+import {
+  confirmPhoneNumberCode,
+  startVerification,
+  verifyDiscord,
+} from "../../common/api/verificationService";
+import {VerifyWalletFlow} from "./VerifyWalletModal.type";
+import {env} from "../../common/constants/env";
 
 // TODO: env.
 const excludedCountries: MuiTelInputCountry[] | undefined = [];
@@ -56,10 +57,15 @@ type VerifyWalletProps = {
   onVerify: () => void;
   onError: (error?: string) => void;
 };
-const VerifyWallet = (props: VerifyWalletProps) => {
+const VerifyWalletModal = (props: VerifyWalletProps) => {
   const { onVerify, onError, method } = props;
   const theme = useTheme();
+  const [verifyCurrentPaths, setVerifyCurrentPaths] = useState<
+    VerifyWalletFlow[]
+  >([VerifyWalletFlow.INTRO]);
+
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const [isOpen, setIsOpen] = useState<boolean>(true);
   const [verifyOption, setVerifyOption] = useState<string | undefined>(
     method || undefined,
   );
@@ -204,41 +210,128 @@ const VerifyWallet = (props: VerifyWalletProps) => {
     }
   };
 
+  const renderStartVerification = () => {
+      return (
+          <>
+              <Box sx={{
+                  mx: 'auto',
+                  textAlign: 'center',
+                  color: theme.palette.text.neutralLightest,
+                  borderRadius: '12px'
+              }}>
+                  <Typography variant="body1" sx={{
+                      mb: 2,
+                      color: theme.palette.text.neutralLightest,
+                      textAlign: "center",
+                      fontSize: "16px",
+                      fontStyle: "normal",
+                      fontWeight: "500",
+                      lineHeight: "24px",
+                      marginTop: "16px",
+                      cursor: "pointer"
+                  }}>
+                      To vote you will need to verify your wallet. If you would prefer, you can do this later. Just select your wallet and click the ‘Verify Wallet’ option.                  </Typography>
+                  <CustomButton
+                      onClick={() => handleSet(VerifyWalletFlow.SELECT_METHOD)}
+                      sx={{ mb: 1 }} fullWidth colorVariant="primary">
+                      Verify
+                  </CustomButton>
+                  <Typography
+                      onClick={() => handleCloseModal()}
+                      sx={{
+                      color: theme.palette.text.neutralLightest,
+                      textAlign: "center",
+                      fontSize: "16px",
+                      fontStyle: "normal",
+                      fontWeight: "500",
+                      lineHeight: "24px",
+                      textDecorationLine: "underline",
+                      mt: "16px",
+                      cursor: "pointer"
+                  }}>
+                      Skip
+                  </Typography>
+              </Box>
+          </>
+      );
+  }
+
   const renderSelectOption = () => {
     return (
       <>
         <Typography
-          className="connect-wallet-modal-description"
-          gutterBottom
-          style={{ wordWrap: "break-word" }}
+          style={{
+              wordWrap: "break-word",
+              color: theme.palette.text.neutralLightest,
+              textAlign: "center",
+              fontSize: "16px",
+              fontStyle: "normal",
+              fontWeight: 500,
+              lineHeight: "24px",
+              marginTop: "16px"
+        }}
         >
           To verify your address please proceed with one of the options.
         </Typography>
         <List>
           <ListItem
-            className="optionItem"
             onClick={() => handleSelectOption("discord")}
+            sx={{
+                borderRadius: "12px",
+                border: "1px solid var(--neutral, #737380)",
+                background: theme.palette.background.default,
+                my: 2,
+                py: 1,
+                cursor: "pointer",
+                display: 'flex',
+                '&:hover': {
+                    backgroundColor: "action.hover",
+                }
+            }}
           >
             <ListItemAvatar>
               <img
-                className="option-icon"
                 src={discordLogo}
-                style={{ width: "24px", height: "24px" }}
+                style={{ width: "24px", height: "24px", paddingTop: "2px", filter: "brightness(0) invert(1)" }}
               />
             </ListItemAvatar>
-            <Typography className="optionLabel">Verify with Discord</Typography>
+            <Typography sx={{
+                color: theme.palette.text.neutralLightest,
+                textAlign: "center",
+                fontSize: "16px",
+                fontStyle: "normal",
+                fontWeight: 500,
+                lineHeight: "24px",
+            }}>Verify with Discord</Typography>
           </ListItem>
           <ListItem
-            className="optionItem"
             onClick={() => handleSelectOption("sms")}
+            sx={{
+                borderRadius: "12px",
+                border: "1px solid var(--neutral, #737380)",
+                background: theme.palette.background.default,
+                my: 2,
+                py: 1,
+                cursor: "pointer",
+                display: 'flex',
+                '&:hover': {
+                    backgroundColor: "action.hover",
+                }
+            }}
           >
             <ListItemAvatar>
               <CallIcon
-                className="option-icon"
-                style={{ width: "24px", height: "24px" }}
+                style={{ width: "24px", height: "24px", color: "white" }}
               />
             </ListItemAvatar>
-            <Typography className="optionLabel">Verify with SMS</Typography>
+            <Typography sx={{
+                color: theme.palette.text.neutralLightest,
+                textAlign: "center",
+                fontSize: "16px",
+                fontStyle: "normal",
+                fontWeight: 500,
+                lineHeight: "24px",
+            }}>Verify with SMS</Typography>
           </ListItem>
         </List>
       </>
@@ -348,6 +441,7 @@ const VerifyWallet = (props: VerifyWalletProps) => {
               label="Back"
               onClick={() => handleCancelConfirmChode()}
               fullWidth={true}
+              colorVariant="primary"
             />
           </Grid>
           <Grid item xs={6}>
@@ -532,23 +626,62 @@ const VerifyWallet = (props: VerifyWalletProps) => {
     );
   };
 
+  const handleCloseModal = () => {
+    setIsOpen(false);
+    setVerifyCurrentPaths([VerifyWalletFlow.INTRO]);
+  };
+
+  const handleSet = (option: VerifyWalletFlow) => {
+    const fileteredVerifyCurrentPaths = verifyCurrentPaths.filter(p => p !== option);
+    setVerifyCurrentPaths([option, ...fileteredVerifyCurrentPaths]);
+  };
+
+  const handleBack = () => {
+      if (verifyCurrentPaths.length >= 2) {
+          return setVerifyCurrentPaths(prev => prev.slice(1))
+      }
+  };
+
   const renderVerify = () => {
-    if (verifyOption !== undefined) {
-      if (verifyOption === "sms") {
+    switch (verifyCurrentPaths[0]) {
+      case VerifyWalletFlow.INTRO:
+        return renderStartVerification();
+
+      case VerifyWalletFlow.SELECT_METHOD:
+          return renderSelectOption();
+
+      case VerifyWalletFlow.VERIFY_SMS:
         if (phoneCodeIsSent) {
           return renderConfirmCode();
         } else {
           return renderVerifyPhoneNumber();
         }
-      } else {
+
+      case VerifyWalletFlow.VERIFY_DISCORD:
         return renderVerifyDiscord();
-      }
-    } else {
-      return renderSelectOption();
+
+      case VerifyWalletFlow.CONFIRM_CODE:
+        return renderConfirmCode();
     }
   };
 
-  return renderVerify();
+  return (
+    <>
+      <Modal
+        id="verify-wallet-modal"
+        isOpen={isOpen}
+        name="verify-wallet-modal"
+        title="Verify your Wallet"
+        onClose={() => setIsOpen(false)}
+        disableBackdropClick={true}
+        width={isMobile ? "auto" : "400px"}
+        onBack={() => handleBack()}
+        backButton={verifyCurrentPaths.length > 1}
+      >
+        {renderVerify()}
+      </Modal>
+    </>
+  );
 };
 
-export { VerifyWallet };
+export { VerifyWalletModal };

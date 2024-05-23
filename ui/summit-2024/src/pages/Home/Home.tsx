@@ -11,7 +11,7 @@ const Home: React.FC = () => {
   return (
     <>
       <Hero />
-      {!isMobile ? <ExploreSection /> : null}
+        <ExploreSection />
       {!isMobile ? <TicketsSection /> : null}
       <img
         src={Ellipses}

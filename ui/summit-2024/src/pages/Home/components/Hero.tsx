@@ -14,14 +14,14 @@ const Hero = () => {
             variant="h4"
             sx={{
               color: "text.neutralLight",
-                fontSize: { xs: "12px", sm: "14px", md: "16px", lg: "18px" },
+              fontSize: { xs: "12px", sm: "14px", md: "16px", lg: "18px" },
               fontStyle: "normal",
               marginLeft: isMobile ? "" : "20px",
               whiteSpace: "nowrap",
               fontWeight: "500",
-                lineHeight: { xs: "18px", sm: "20px", md: "24px", lg: "28px" },
+              lineHeight: { xs: "18px", sm: "20px", md: "24px", lg: "28px" },
               marginBottom: "20px",
-                marginTop: { xs: "20px", sm: "44px", md: "64px", lg: "96px" },
+              marginTop: { xs: "20px", sm: "44px", md: "64px", lg: "96px" },
               textAlign: isMobile ? "center" : "",
             }}
           >
@@ -32,10 +32,10 @@ const Hero = () => {
             sx={{
               color: "text.neutralLightest",
               fontFamily: "Dosis",
-                fontSize: { xs: "52px", sm: "62px", md: "70px", lg: "88px" },
+              fontSize: { xs: "52px", sm: "62px", md: "70px", lg: "88px" },
               fontStyle: "normal",
               fontWeight: "700",
-                lineHeight: { xs: "52px", sm: "62px", md: "70px", lg: "88px" },
+              lineHeight: { xs: "52px", sm: "62px", md: "70px", lg: "88px" },
               marginLeft: isMobile ? "" : "20px",
               whiteSpace: "nowrap",
               textAlign: isMobile ? "center" : "",
@@ -70,12 +70,12 @@ const Hero = () => {
               sx={{
                 color: "text.neutralLightest",
                 fontFamily: "Dosis",
-                  fontSize: { xs: "52px", sm: "62px", md: "70px", lg: "88px" },
+                fontSize: { xs: "52px", sm: "62px", md: "70px", lg: "88px" },
                 fontStyle: "normal",
                 fontWeight: "700",
                 display: "inline",
                 whiteSpace: "nowrap",
-                  lineHeight: { xs: "52px", sm: "62px", md: "70px", lg: "88px" },
+                lineHeight: { xs: "52px", sm: "62px", md: "70px", lg: "88px" },
                 marginLeft: isMobile ? "" : "96px",
               }}
             >
@@ -86,15 +86,15 @@ const Hero = () => {
             variant="h4"
             gutterBottom
             sx={{
-                color: "text.neutralLightest",
-                fontFamily: "Dosis",
-                fontSize: { xs: "52px", sm: "62px", md: "70px", lg: "88px" },
-                fontStyle: "normal",
-                fontWeight: "700",
-                lineHeight: { xs: "52px", sm: "62px", md: "70px", lg: "88px" },
-                marginLeft: isMobile ? "" : "20px",
-                whiteSpace: "nowrap",
-                textAlign: isMobile ? "center" : "",
+              color: "text.neutralLightest",
+              fontFamily: "Dosis",
+              fontSize: { xs: "52px", sm: "62px", md: "70px", lg: "88px" },
+              fontStyle: "normal",
+              fontWeight: "700",
+              lineHeight: { xs: "52px", sm: "62px", md: "70px", lg: "88px" },
+              marginLeft: isMobile ? "" : "20px",
+              whiteSpace: "nowrap",
+              textAlign: isMobile ? "center" : "",
             }}
           >
             2024 Awards
@@ -180,15 +180,25 @@ const Hero = () => {
             sx={{
               height: "100%",
               backgroundImage: !isMobile ? `url(${Shapes})` : "",
-                backgroundSize: { xs: 'cover', sm: 'cover', md: 'contain', lg: 'contain' },
+              backgroundSize: {
+                xs: "cover",
+                sm: "cover",
+                md: "contain",
+                lg: "contain",
+              },
               backgroundRepeat: "no-repeat",
-                backgroundPosition: { xs: 'left', sm: 'center', md: 'center', lg: 'right' },
+              backgroundPosition: {
+                xs: "left",
+                sm: "center",
+                md: "center",
+                lg: "right",
+              },
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
               marginTop: isMobile ? "" : "12px",
               marginLeft: isMobile ? "24px" : "90px",
-                paddingLeft: { xs: 2, sm: 3, md: 4, lg: 30 }
+              paddingLeft: { xs: 2, sm: 3, md: 4, lg: 30 },
             }}
           >
             <GLBViewer glbUrl="/compressed.glb" />

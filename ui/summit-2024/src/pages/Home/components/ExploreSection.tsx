@@ -5,7 +5,7 @@ import {
   Button,
   Card,
   CardContent,
-  Box
+  Box,
 } from "@mui/material";
 import HowToVoteOutlinedIcon from "@mui/icons-material/HowToVoteOutlined";
 import folderIcon from "../../../assets/folder.svg";
@@ -33,11 +33,12 @@ const ExploreSection = () => {
           sx={{
             color: "text.neutralLightest",
             fontFamily: "Dosis",
-            fontSize: isMobile ? "40px" : "52px",
+            fontSize: { md: "40px", lg: "52px" },
+            lineHeight: { md: "40px", lg: "52px" },
             fontStyle: "normal",
             fontWeight: "700",
             textAlign: isMobile ? "center" : "left",
-            lineHeight: isMobile ? "22px" : "56px",
+
             whiteSpace: "nowrap",
             mb: 2,
           }}
@@ -49,11 +50,11 @@ const ExploreSection = () => {
           sx={{
             color: "text.neutralLightest",
             fontFamily: "Dosis",
-            fontSize: isMobile ? "40px" : "52px",
+            fontSize: { md: "40px", lg: "52px" },
+            lineHeight: { md: "40px", lg: "52px" },
             fontStyle: "normal",
             fontWeight: "700",
             textAlign: isMobile ? "center" : "left",
-            lineHeight: isMobile ? "22px" : "56px",
             whiteSpace: "nowrap",
             mb: 2,
           }}
@@ -65,11 +66,11 @@ const ExploreSection = () => {
           sx={{
             color: "text.neutralLightest",
             fontFamily: "Dosis",
-            fontSize: isMobile ? "40px" : "52px",
+            fontSize: { md: "40px", lg: "52px" },
+            lineHeight: { md: "40px", lg: "52px" },
             fontStyle: "normal",
             fontWeight: "700",
             textAlign: isMobile ? "center" : "left",
-            lineHeight: isMobile ? "22px" : "56px",
             whiteSpace: "nowrap",
           }}
         >
@@ -99,11 +100,15 @@ const ExploreSection = () => {
       <Grid item xs={12} sm={6} md={4}>
         <Card
           sx={{
-            position: "relative",
-            height: "272px",
-            overflow: "hidden",
-            borderRadius: "24px",
-            maxWidth: "404px",
+              position: "relative",
+              height: "272px",
+              overflow: "hidden",
+              borderRadius: "24px",
+              maxWidth: "404px",
+              mx: { xs: "auto", sm: "inherit" },
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
           }}
         >
           <CardContent sx={{ position: "relative", zIndex: 2 }}>
@@ -159,11 +164,15 @@ const ExploreSection = () => {
       <Grid item xs={12} sm={6} md={4}>
         <Card
           sx={{
-            position: "relative",
-            height: "272px",
-            overflow: "hidden",
-            borderRadius: "24px",
-            maxWidth: "404px",
+              position: "relative",
+              height: "272px",
+              overflow: "hidden",
+              borderRadius: "24px",
+              maxWidth: "404px",
+              mx: { xs: "auto", sm: "inherit" },
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
           }}
         >
           <CardContent sx={{ position: "relative", zIndex: 2 }}>

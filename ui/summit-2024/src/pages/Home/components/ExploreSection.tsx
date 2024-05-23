@@ -5,12 +5,9 @@ import {
   Button,
   Card,
   CardContent,
-  Box,
-  useTheme,
-  useMediaQuery,
+  Box
 } from "@mui/material";
 import HowToVoteOutlinedIcon from "@mui/icons-material/HowToVoteOutlined";
-import Ellipses2 from "../../../assets/ellipses2.svg";
 import folderIcon from "../../../assets/folder.svg";
 import trophyIcon from "../../../assets/trophy.svg";
 import { useIsPortrait } from "../../../common/hooks/useIsPortrait";

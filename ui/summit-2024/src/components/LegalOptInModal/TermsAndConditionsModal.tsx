@@ -15,29 +15,7 @@ import {TabsSegment} from "../common/TabPanel/TabsSegment";
 import termsData from "../../common/resources/data/termsAndConditions.json";
 import privacyData from "../../common/resources/data/privacyPolicy.json";
 import theme from "../../common/styles/theme";
-import {List} from "./TermsAndConditionsModal.type";
-
-interface ExtraDetails {
-    [key: string]: string;
-}
-
-interface Subsection {
-    title: string;
-    content: string[];
-    extras?: ExtraDetails;
-}
-
-interface Section {
-    title: string;
-    subsections: Subsection[];
-}
-
-interface PrivacyPolicyData {
-    title: string;
-    date: string;
-    description: string[];
-    sections: Section[];
-}
+import {ExtraDetails, List} from "./TermsAndConditionsModal.type";
 
 const TermsAndConditionsModal = () => {
     const isMobile = useIsPortrait();
@@ -152,18 +130,18 @@ const TermsAndConditionsModal = () => {
             case 1: {
                 const renderExtras = (extras: ExtraDetails) => {
                     return Object.entries(extras).map(([key, value], index) => (
-                        <Typography key={index} sx={{ color: 'var(--neutralLight, #D2D2D9)', fontFamily: 'Roboto', fontSize: '16px', fontStyle: 'normal', fontWeight: 500, lineHeight: '24px', mt: 1 }} dangerouslySetInnerHTML={{ __html: value }} />
+                        <Typography key={index} sx={{ color: 'var(--neutralLight, #D2D2D9)', fontSize: '16px', fontStyle: 'normal', fontWeight: 500, lineHeight: '24px', mt: 1 }} dangerouslySetInnerHTML={{ __html: value }} />
                     ));
                 };
                 return <>
                     <Typography sx={{ color: 'var(--neutralLightest, #FAF9F6)', fontFamily: 'Dosis', fontSize: '32px', fontStyle: 'normal', fontWeight: 700, lineHeight: '36px' }}>
                         {privacyData.title}
                     </Typography>
-                    <Typography sx={{ color: 'var(--neutralLight, #D2D2D9)', fontFamily: 'Roboto', fontSize: '16px', fontStyle: 'normal', fontWeight: 500, lineHeight: '24px' }}>
+                    <Typography sx={{ color: 'var(--neutralLight, #D2D2D9)', fontSize: '16px', fontStyle: 'normal', fontWeight: 500, lineHeight: '24px' }}>
                         {privacyData.date}
                     </Typography>
                     {privacyData.description.map((paragraph, index) => (
-                        <Typography key={index} sx={{ color: 'var(--neutralLight, #D2D2D9)', fontFamily: 'Roboto', fontSize: '16px', fontStyle: 'normal', fontWeight: 500, lineHeight: '24px' }}>
+                        <Typography key={index} sx={{ color: 'var(--neutralLight, #D2D2D9)', fontSize: '16px', fontStyle: 'normal', fontWeight: 500, lineHeight: '24px' }}>
                             {paragraph}
                         </Typography>
                     ))}
@@ -182,7 +160,7 @@ const TermsAndConditionsModal = () => {
                                         {subsection.title}
                                     </Typography>
                                     {subsection.content.map((content, contentIndex) => (
-                                        <Typography key={contentIndex} sx={{ color: 'var(--neutralLight, #D2D2D9)', fontFamily: 'Roboto', fontSize: '16px', fontStyle: 'normal', fontWeight: 500, lineHeight: '24px', mt: 1 }}>
+                                        <Typography key={contentIndex} sx={{ color: 'var(--neutralLight, #D2D2D9)', fontSize: '16px', fontStyle: 'normal', fontWeight: 500, lineHeight: '24px', mt: 1 }}>
                                             {content}
                                         </Typography>
                                     ))}
@@ -227,7 +205,8 @@ const TermsAndConditionsModal = () => {
         <Dialog
             open={!termsAndConditionsChecked}
             keepMounted
-            onClose={() => setTermsAndConditionsChecked(true)}
+            disableBackdropClick
+            onClose={() => setTermsAndConditionsChecked(false)}
             scroll={'paper'}
             maxWidth={isMobile ? 'sm' : 'md'}
             sx={{
@@ -236,6 +215,7 @@ const TermsAndConditionsModal = () => {
             }}
             aria-labelledby='terms-modal-title'
             aria-describedby='terms-modal-description'
+
         >
             <DialogTitle  sx={{backgroundColor: theme.palette.background.default}} >
                 <TabsSegment tabs={tabs} currentTab={currentTab} setCurrentTab={(tab) => setCurrentTab(tab)}/>

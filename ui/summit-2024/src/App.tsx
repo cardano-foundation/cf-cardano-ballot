@@ -5,6 +5,7 @@ import Header from "./components/common/Header/Header";
 import { PageRouter } from "./routes";
 import { Footer } from "./components/common/Footer/Footer";
 import { TermsAndConditionsModal } from "./components/LegalOptInModal/TermsAndConditionsModal";
+import {Cookies} from "./components/LegalOptInModal/Cookies";
 
 const eventCache = {
   id: "1",
@@ -46,6 +47,7 @@ function App() {
               <Footer />
             </Grid>
           </Grid>
+          <Cookies />
           <TermsAndConditionsModal />
         </Container>
       </BrowserRouter>

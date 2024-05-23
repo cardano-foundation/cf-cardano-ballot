@@ -1,4 +1,9 @@
+
 interface Definition {
+    [key: string]: string;
+}
+
+interface ExtraDetails {
     [key: string]: string;
 }
 
@@ -49,6 +54,7 @@ interface TermsData {
 
 export {
     Definition,
+    ExtraDetails,
     Subsection,
     Section,
     List,

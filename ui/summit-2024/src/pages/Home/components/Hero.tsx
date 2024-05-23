@@ -14,14 +14,14 @@ const Hero = () => {
             variant="h4"
             sx={{
               color: "text.neutralLight",
-              fontSize: isMobile ? "12px" : "16px",
+                fontSize: { xs: "12px", sm: "14px", md: "16px", lg: "18px" },
               fontStyle: "normal",
               marginLeft: isMobile ? "" : "20px",
               whiteSpace: "nowrap",
               fontWeight: "500",
-              lineHeight: "24px",
+                lineHeight: { xs: "18px", sm: "20px", md: "24px", lg: "28px" },
               marginBottom: "20px",
-              marginTop: isMobile ? "44px" : "96px",
+                marginTop: { xs: "20px", sm: "44px", md: "64px", lg: "96px" },
               textAlign: isMobile ? "center" : "",
             }}
           >
@@ -32,10 +32,10 @@ const Hero = () => {
             sx={{
               color: "text.neutralLightest",
               fontFamily: "Dosis",
-              fontSize: isMobile ? "40px" : "88px",
+                fontSize: { xs: "34px", sm: "62px", md: "60px", lg: "88px" },
               fontStyle: "normal",
               fontWeight: "700",
-              lineHeight: isMobile ? "42px" : "88px",
+                lineHeight: { xs: "34px", sm: "62px", md: "60px", lg: "88px" },
               marginLeft: isMobile ? "" : "20px",
               whiteSpace: "nowrap",
               textAlign: isMobile ? "center" : "",
@@ -70,12 +70,12 @@ const Hero = () => {
               sx={{
                 color: "text.neutralLightest",
                 fontFamily: "Dosis",
-                fontSize: isMobile ? "40px" : "88px",
+                  fontSize: { xs: "34px", sm: "62px", md: "60px", lg: "88px" },
                 fontStyle: "normal",
                 fontWeight: "700",
                 display: "inline",
                 whiteSpace: "nowrap",
-                lineHeight: isMobile ? "42px" : "88px",
+                  lineHeight: { xs: "34px", sm: "62px", md: "60px", lg: "88px" },
                 marginLeft: isMobile ? "" : "96px",
               }}
             >
@@ -88,13 +88,12 @@ const Hero = () => {
             sx={{
               color: "text.neutralLightest",
               fontFamily: "Dosis",
-              fontSize: isMobile ? "40px" : "88px",
+                fontSize: { xs: "34px", sm: "62px", md: "60px", lg: "88px" },
               fontStyle: "normal",
               fontWeight: "700",
-              lineHeight: isMobile ? "52px" : "88px",
-              marginLeft: isMobile ? "" : "20px",
+              lineHeight: { xs: "34px", sm: "62px", md: "60px", lg: "88px" },
               whiteSpace: "nowrap",
-              textAlign: isMobile ? "center" : "",
+                textAlign: { xs: "center", md: "left"}
             }}
           >
             2024 Awards

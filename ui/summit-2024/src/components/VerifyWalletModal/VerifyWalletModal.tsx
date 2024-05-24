@@ -1,14 +1,15 @@
 import React, { useMemo, useRef, useState } from "react";
 
 import {
-    Box,
-    Grid, Link,
-    List,
-    ListItem,
-    ListItemAvatar,
-    Typography,
-    useMediaQuery,
-    useTheme,
+  Box,
+  Grid,
+  Link,
+  List,
+  ListItem,
+  ListItemAvatar,
+  Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import CallIcon from "@mui/icons-material/Call";
 import RefreshOutlinedIcon from "@mui/icons-material/RefreshOutlined";
@@ -66,7 +67,7 @@ const VerifyWalletModal = (props: VerifyWalletProps) => {
   >([VerifyWalletFlow.INTRO]);
 
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const [isOpen, setIsOpen] = useState<boolean>(true);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [defaultCountryCode] = useState<MuiTelInputCountry | undefined>("ES");
   const [phone, setPhone] = useState<string>("");
   const [codes, setCodes] = useState(Array(6).fill(""));
@@ -105,7 +106,7 @@ const VerifyWalletModal = (props: VerifyWalletProps) => {
 
   const reset = (timout?: boolean) => {
     function clear() {
-        setCheckImNotARobot(false);
+      setCheckImNotARobot(false);
       setPhoneCodeIsSent(false);
       setPhoneCodeShowError(false);
       setPhone("");
@@ -692,39 +693,42 @@ const VerifyWalletModal = (props: VerifyWalletProps) => {
       <>
         <Typography
           style={{
-              color: theme.palette.text.neutralLightest,
-              textAlign: "center",
-              fontSize: "16px",
-              fontStyle: "normal",
-              fontWeight: 500,
-              lineHeight: "24px",
-              wordWrap: "break-word",
-              marginTop: "16px"
-        }}
+            color: theme.palette.text.neutralLightest,
+            textAlign: "center",
+            fontSize: "16px",
+            fontStyle: "normal",
+            fontWeight: 500,
+            lineHeight: "24px",
+            wordWrap: "break-word",
+            marginTop: "16px",
+          }}
         >
           To verify your address you need to sign a secret message. You will get
           the secret from our friendly Discord bot.
         </Typography>
         <Typography
           style={{
-              fontSize: "16px",
-              fontStyle: "normal",
-              fontWeight: 500,
-              lineHeight: "24px",
-              wordWrap: "break-word",
-              marginTop: "24px"
-        }}
+            fontSize: "16px",
+            fontStyle: "normal",
+            fontWeight: 500,
+            lineHeight: "24px",
+            wordWrap: "break-word",
+            marginTop: "24px",
+          }}
         >
           1. Join our{" "}
-          <Link sx={{
+          <Link
+            sx={{
               color: "var(--orange, #EE9766)",
               fontSize: "16px",
               fontStyle: "normal",
               fontWeight: 500,
               lineHeight: "24px",
               textDecorationLine: "underline",
-              cursor: "pointer"
-          }} onClick={() => openNewTab(env.DISCORD_CHANNEL_URL)}>
+              cursor: "pointer",
+            }}
+            onClick={() => openNewTab(env.DISCORD_CHANNEL_URL)}
+          >
             Discord Server
           </Link>{" "}
           and accept our terms and conditions by reacting with a 🚀 to the
@@ -732,25 +736,27 @@ const VerifyWalletModal = (props: VerifyWalletProps) => {
         </Typography>
         <Typography
           style={{
-              fontSize: "16px",
-              fontStyle: "normal",
-              fontWeight: 500,
-              lineHeight: "24px",
-              wordWrap: "break-word",
-              marginTop: "16px"
-        }}
+            fontSize: "16px",
+            fontStyle: "normal",
+            fontWeight: 500,
+            lineHeight: "24px",
+            wordWrap: "break-word",
+            marginTop: "16px",
+          }}
         >
           2. Open the{" "}
-          <Link sx={{
+          <Link
+            sx={{
               color: "var(--orange, #EE9766)",
               fontSize: "16px",
               fontStyle: "normal",
               fontWeight: 500,
               lineHeight: "24px",
               textDecorationLine: "underline",
-              cursor: "pointer"
+              cursor: "pointer",
             }}
-            onClick={() => openNewTab(env.DISCORD_BOT_URL)}>
+            onClick={() => openNewTab(env.DISCORD_BOT_URL)}
+          >
             Wallet Verification channel
           </Link>{" "}
           and follow the instructions in Discord.
@@ -764,15 +770,15 @@ const VerifyWalletModal = (props: VerifyWalletProps) => {
           within a new window, to complete the sign and verification process.
         </Typography>
         <CustomButton
-            colorVariant="primary"
+          colorVariant="primary"
           onClick={() => handleVerifyDiscord()}
           disabled={!discordSecret}
-            sx={{
-                width: "100%",
-                marginTop: "24px"
-            }}
+          sx={{
+            width: "100%",
+            marginTop: "24px",
+          }}
         >
-            Sign and Verify
+          Sign and Verify
         </CustomButton>
       </>
     );
@@ -798,7 +804,7 @@ const VerifyWalletModal = (props: VerifyWalletProps) => {
 
   const handleClose = () => {
     reset();
-    setIsOpen(false)
+    setIsOpen(false);
   };
 
   const renderVerify = () => {

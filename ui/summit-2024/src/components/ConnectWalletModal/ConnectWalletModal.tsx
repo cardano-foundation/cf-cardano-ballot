@@ -95,6 +95,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
         setPeerConnectWalletInfo(walletInfo);
         setCurrentPath(ConnectWalletFlow.ACCEPT_CONNECTION);
 
+        console.log("verifyConnection");
         if (walletInfo.requestAutoconnect) {
           //setModalMessage(`Do you want to automatically connect to wallet ${walletInfo.name} (${walletInfo.address})?`);
           setOnPeerConnectAccept(() => () => callback(true, true));
@@ -110,6 +111,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
         connect(
           name,
           () => {
+            console.log("onApiInject");
             props.handleCloseConnectWalletModal();
             eventBus.publish("showToast", "Wallet connected successfully");
           },
@@ -133,10 +135,11 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
         walletInfo?: IWalletInfo,
       ): void => {
         // TODO
+        console.log("onP2PConnect");
       };
 
       initDappConnect(
-        "Cardano Summit 2023",
+        "Cardano Summit 2024",
         env.FRONTEND_URL,
         verifyConnection,
         onApiInject,

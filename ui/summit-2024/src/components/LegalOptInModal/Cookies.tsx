@@ -11,8 +11,8 @@ export enum CookiesStatus {
 const Cookies = () => {
   const [cookies, setCookies] = useLocalStorage(CB_COOKIES, undefined);
 
-  const handleAccept = (status?: string) => {
-    setCookies(status || CookiesStatus.ACCEPT);
+  const handleAccept = () => {
+    setCookies(CookiesStatus.ACCEPT);
   };
 
   const handleReject = () => {
@@ -97,7 +97,7 @@ const Cookies = () => {
               Reject
             </Button>
             <Button
-              onClick={handleAccept}
+              onClick={() => handleAccept()}
               sx={{
                 display: "flex",
                 width: "180px",

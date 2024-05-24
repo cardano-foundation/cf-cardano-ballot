@@ -16,36 +16,30 @@ function App() {
       <BrowserRouter>
         <Container md={{ maxWidth: "1440px" }}>
           <Grid container spacing={1} direction="column">
-            <Grid item xs>
-              <Header />
-            </Grid>
-            <Grid item xs={6}>
-              <Box className="content">
-                {eventCache !== undefined && eventCache?.id.length ? (
-                  <PageRouter />
-                ) : (
-                  <Box
-                    sx={{
-                      display: "flex",
-                      height: "60vh",
-                      alignItems: "center",
-                      justifyContent: "center",
+            <Header />
+            <Box>
+              {eventCache !== undefined && eventCache?.id.length ? (
+                <PageRouter />
+              ) : (
+                <Box
+                  sx={{
+                    display: "flex",
+                    height: "60vh",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <CircularProgress
+                    className="app-spinner"
+                    style={{
+                      color: "#03021f",
+                      strokeWidth: "10",
                     }}
-                  >
-                    <CircularProgress
-                      className="app-spinner"
-                      style={{
-                        color: "#03021f",
-                        strokeWidth: "10",
-                      }}
-                    />
-                  </Box>
-                )}
-              </Box>
-            </Grid>
-            <Grid item xs>
-              <Footer />
-            </Grid>
+                  />
+                </Box>
+              )}
+            </Box>
+            <Footer />
           </Grid>
           <Cookies />
           <TermsAndConditionsModal />

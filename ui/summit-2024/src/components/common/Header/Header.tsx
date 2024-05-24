@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { AppBar, Box, Toolbar, Typography, IconButton } from "@mui/material";
+import ExitToAppOutlinedIcon from "@mui/icons-material/ExitToAppOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import Logo from "../../../assets/logo.svg";
 import { ConnectWalletButton } from "../ConnectWalletButton/ConnectWalletButton";
@@ -57,7 +58,6 @@ const Header = () => {
   }, []);
 
   const showToast = (message: string, type?: ToastType) => {
-    console.log(`Toast will show: ${message}, Type: ${type}`);
     setToastMessage(message);
     setToastType(type || ToastType.Common);
     setToastOpen(true);
@@ -72,7 +72,6 @@ const Header = () => {
     setToastOpen(false);
   };
 
-  const handleOpenMenu = () => {};
   const handleConnectWalletModal = () => {
     setShowConnectWalletModal(true);
   };
@@ -82,6 +81,15 @@ const Header = () => {
   const handleLogin = () => {};
 
   const onDisconnectWallet = () => {};
+
+  const dropdownOptions = [
+    { label: "Verify Wallet", action: handleOpenVerify },
+    {
+      label: "Logout",
+      action: onDisconnectWallet,
+      endIcon: <ExitToAppOutlinedIcon sx={{  width: "20px"     }}/>,
+    },
+  ];
 
   return (
     <>
@@ -142,6 +150,7 @@ const Header = () => {
               onOpenVerifyWalletModal={handleOpenVerify}
               onLogin={handleLogin}
               onDisconnectWallet={onDisconnectWallet}
+              dropdownOptions={dropdownOptions}
             />
             {isPortrait ? (
               <IconButton

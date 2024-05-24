@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../store";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
@@ -7,8 +7,11 @@ import {
   Button,
   Typography,
   Box,
-  useMediaQuery,
   IconButton,
+  Menu,
+  MenuItem,
+  useMediaQuery,
+  Fade,
 } from "@mui/material";
 import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalanceWalletOutlined";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
@@ -30,6 +33,7 @@ type ConnectWalletButtonProps = {
   onOpenVerifyWalletModal: () => void;
   onDisconnectWallet: () => void;
   onLogin: () => void;
+  dropdownOptions?: { label: string; action: () => void, endIcon: any }[];
 };
 
 const ConnectWalletButton = ({
@@ -37,6 +41,7 @@ const ConnectWalletButton = ({
   onOpenVerifyWalletModal,
   onLogin,
   onDisconnectWallet,
+  dropdownOptions,
 }: ConnectWalletButtonProps) => {
   const { eventCache, walletIsVerified } = useSelector((state: RootState) => ({
     eventCache: state.user.event,
@@ -48,6 +53,33 @@ const ConnectWalletButton = ({
   const isPortrait = useIsPortrait();
   isMobile = isMobile || isPortrait;
 
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const buttonRef = useRef<HTMLElement | null>(null);
+  const menuRef = useRef<HTMLElement | null>(null);
+
+  const handleMouseEnter = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(buttonRef.current);
+  };
+
+  const handleMouseLeave = () => {
+    setTimeout(() => {
+      const button = buttonRef.current;
+      const menu = menuRef.current;
+      if (button && menu) {
+        if (
+          !button.contains(document.activeElement) &&
+          !menu.contains(document.activeElement)
+        ) {
+          setAnchorEl(null);
+        }
+      }
+    }, 100);
+  };
+
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+  };
+
   const { stakeAddress, isConnected, enabledWallet } = useCardano({
     limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
   });
@@ -55,7 +87,9 @@ const ConnectWalletButton = ({
   return (
     <Box sx={{ position: "relative" }}>
       <IconButton
+        ref={buttonRef}
         sx={{
+          cursor: "pointer",
           width: isMobile ? 44 : 181,
           height: isMobile ? 44 : "58px",
           display: "flex",
@@ -69,11 +103,16 @@ const ConnectWalletButton = ({
           "&:hover": {
             borderColor: "text.primary",
             color: "text.primary",
+
           },
+            "& .MuiButtonBase-root": {
+                cursor: "pointer",
+            },
           color: "secondary.main",
           textTransform: "none",
         }}
-        onClick={handleConnectWallet}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       >
         {isConnected && enabledWallet ? (
           <Avatar
@@ -97,6 +136,69 @@ const ConnectWalletButton = ({
           ) : null}
         </Typography>
       </IconButton>
+
+      {dropdownOptions && (
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleCloseMenu}
+          MenuListProps={{
+            onMouseEnter: handleMouseEnter,
+            onMouseLeave: handleMouseLeave,
+          }}
+          ref={menuRef}
+          TransitionComponent={Fade}
+          sx={{
+            "& .MuiPaper-root": {
+              background: theme.palette.background.default,
+              color: "navy",
+              padding: "10px",
+              width: "180px",
+              boxShadow: "4px 4px 24px 0px rgba(115, 115, 128, 0.20)",
+              borderRadius: "12px",
+              marginTop: "4px",
+            },
+            "& .MuiBackdrop-invisible": {
+              zIndex: -1,
+                position: ""
+            },
+            "& .MuiPopover-root": {
+              zIndex: -1,
+                position: ""
+            },
+          }}
+
+        >
+          {dropdownOptions.map((option, index) => (
+              <MenuItem
+                  key={index}
+                  sx={{
+                      color: theme.palette.text.neutralLightest,
+                      fontSize: "12px",
+                      fontStyle: "normal",
+                      fontWeight: 500,
+                      lineHeight: "20px",
+                      background: "transparent !important",
+                      "& .MuiTouchRipple-root span": {
+                          backgroundColor: "transparent !important",
+                          background: "transparent !important"
+                      },
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center'
+                  }}
+                  onClick={() => {
+                      option.action();
+                      handleCloseMenu();
+                  }}
+              >
+                  <span>{option.label}</span>
+                  {option.endIcon && option.endIcon}
+              </MenuItem>
+          ))}
+        </Menu>
+      )}
+
       {isConnected && (
         <Box
           sx={{
@@ -138,12 +240,6 @@ const ConnectWalletButton = ({
       )}
     </Box>
   );
-
-  function handleConnectWallet() {
-    if (!isConnected) {
-      onOpenConnectWalletModal();
-    }
-  }
 };
 
 export { ConnectWalletButton };

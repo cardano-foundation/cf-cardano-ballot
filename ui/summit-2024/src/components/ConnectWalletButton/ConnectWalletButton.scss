@@ -3,13 +3,13 @@
 
   .main-button {
     border-radius: 12px;
-    border: 1px solid var(--orange, #EE9766);
+    border: 1px solid var(--orange, #ee9766);
     display: inline-flex;
     padding: 16px 20px;
     justify-content: center;
     align-items: center;
     gap: 8px;
-    color: var(--orange, #EE9766);
+    color: var(--orange, #ee9766);
     font-size: 16px;
     font-style: normal;
     font-weight: 500;
@@ -51,7 +51,7 @@
   }
 }
 
-.menu-button,  {
+.menu-button {
   width: 100%;
   text-transform: none;
   cursor: pointer;
@@ -62,14 +62,14 @@
   align-self: stretch;
   border-radius: 8px;
   background: #121212;
-  color: var(--neutralLightest, #FAF9F6);
+  color: var(--neutralLightest, #faf9f6);
   font-size: 12px;
   font-style: normal;
   font-weight: 500;
   line-height: 20px;
   height: 44px;
 
-  .MuiTypography-root{
+  .MuiTypography-root {
     font-size: 12px;
   }
 }

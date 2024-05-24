@@ -9,10 +9,10 @@ import { ToastType } from "../Toast/Toast.types";
 import { ConnectWalletModal } from "../../ConnectWalletModal/ConnectWalletModal";
 import { Toast } from "../Toast/Toast";
 import { VerifyWalletModal } from "../../VerifyWalletModal";
-import {resolveCardanoNetwork} from "../../../utils/utils";
-import {env} from "../../../common/constants/env";
-import {useCardano} from "@cardano-foundation/cardano-connect-with-wallet";
-import {ConnectWalletButton} from "../../ConnectWalletButton/ConnectWalletButton";
+import { resolveCardanoNetwork } from "../../../utils/utils";
+import { env } from "../../../common/constants/env";
+import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
+import { ConnectWalletButton } from "../../ConnectWalletButton/ConnectWalletButton";
 
 const Header = () => {
   const [showConnectWalletModal, setShowConnectWalletModal] =
@@ -98,20 +98,22 @@ const Header = () => {
     {
       label: "Logout",
       action: onDisconnectWallet,
-      endIcon: <ExitToAppOutlinedIcon sx={{  width: "20px"     }}/>,
+      endIcon: <ExitToAppOutlinedIcon sx={{ width: "20px" }} />,
     },
   ];
 
   return (
     <>
-      <Box sx={{
-        height: "130px"
-      }}/>
       <AppBar
-        position="absolute"
-        color="transparent"
-        elevation={0}
-        sx={{ width: "100%" }}
+        position="static"
+        sx={{
+          width: "100%",
+          maxWidth: 1440,
+          my: "15px",
+          mx: "auto",
+          background: "transparent",
+          boxShadow: "none",
+        }}
       >
         <Toolbar
           sx={{
@@ -160,10 +162,10 @@ const Header = () => {
 
           <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
             <ConnectWalletButton
-                onOpenConnectWalletModal={handleConnectWalletModal}
-                onOpenVerifyWalletModal={handleOpenVerify}
-                onLogin={handleLogin}
-                onDisconnectWallet={onDisconnectWallet}
+              onOpenConnectWalletModal={handleConnectWalletModal}
+              onOpenVerifyWalletModal={handleOpenVerify}
+              onLogin={handleLogin}
+              onDisconnectWallet={onDisconnectWallet}
             />
 
             {isPortrait ? (

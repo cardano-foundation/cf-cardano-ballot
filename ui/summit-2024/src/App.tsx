@@ -14,9 +14,18 @@ function App() {
   return (
     <>
       <BrowserRouter>
-        <Container md={{ maxWidth: "1440px" }}>
+        <Container md={{ maxWidth: "1440px" }} >
           <Grid container spacing={1} direction="column">
-            <Header />
+            <Grid container justifyContent="center">
+              <Grid
+                item
+                xs={12}
+                sx={{ maxWidth: 1440, width: "100%", mx: "auto" }}
+              >
+                <Header />
+              </Grid>
+            </Grid>
+
             <Box>
               {eventCache !== undefined && eventCache?.id.length ? (
                 <PageRouter />

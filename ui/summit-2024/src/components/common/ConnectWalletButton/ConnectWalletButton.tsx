@@ -33,7 +33,7 @@ type ConnectWalletButtonProps = {
   onOpenVerifyWalletModal: () => void;
   onDisconnectWallet: () => void;
   onLogin: () => void;
-  dropdownOptions?: { label: string; action: () => void, endIcon: any }[];
+  dropdownOptions?: { label: string; action: () => void; endIcon: any }[];
 };
 
 const ConnectWalletButton = ({
@@ -56,9 +56,9 @@ const ConnectWalletButton = ({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const buttonRef = useRef<HTMLElement | null>(null);
   const menuRef = useRef<HTMLElement | null>(null);
-    const { stakeAddress, isConnected, enabledWalle } = useCardano({
-        limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
-    });
+  const { stakeAddress, isConnected, enabledWalle } = useCardano({
+    limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
+  });
 
   const handleMouseEnter = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(buttonRef.current);
@@ -102,11 +102,10 @@ const ConnectWalletButton = ({
           "&:hover": {
             borderColor: "text.primary",
             color: "text.primary",
-
           },
-            "& .MuiButtonBase-root": {
-                cursor: "pointer",
-            },
+          "& .MuiButtonBase-root": {
+            cursor: "pointer",
+          },
           color: "secondary.main",
           textTransform: "none",
         }}
@@ -160,41 +159,40 @@ const ConnectWalletButton = ({
             },
             "& .MuiBackdrop-invisible": {
               zIndex: -1,
-                position: ""
+              position: "",
             },
             "& .MuiPopover-root": {
               zIndex: -1,
-                position: ""
+              position: "",
             },
           }}
-
         >
           {dropdownOptions.map((option, index) => (
-              <MenuItem
-                  key={index}
-                  sx={{
-                      color: theme.palette.text.neutralLightest,
-                      fontSize: "12px",
-                      fontStyle: "normal",
-                      fontWeight: 500,
-                      lineHeight: "20px",
-                      background: "transparent !important",
-                      "& .MuiTouchRipple-root span": {
-                          backgroundColor: "transparent !important",
-                          background: "transparent !important"
-                      },
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center'
-                  }}
-                  onClick={() => {
-                      option.action();
-                      handleCloseMenu();
-                  }}
-              >
-                  <span>{option.label}</span>
-                  {option.endIcon && option.endIcon}
-              </MenuItem>
+            <MenuItem
+              key={index}
+              sx={{
+                color: theme.palette.text.neutralLightest,
+                fontSize: "12px",
+                fontStyle: "normal",
+                fontWeight: 500,
+                lineHeight: "20px",
+                background: "transparent !important",
+                "& .MuiTouchRipple-root span": {
+                  backgroundColor: "transparent !important",
+                  background: "transparent !important",
+                },
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+              onClick={() => {
+                option.action();
+                handleCloseMenu();
+              }}
+            >
+              <span>{option.label}</span>
+              {option.endIcon && option.endIcon}
+            </MenuItem>
           ))}
         </Menu>
       )}

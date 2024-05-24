@@ -1,10 +1,10 @@
 import { useSelector } from 'react-redux';
 
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
-import { Avatar, Button } from '@mui/material';
+import {Avatar, Button, List, ListItem, ListItemIcon, ListItemText} from '@mui/material';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import React from 'react';
 import './ConnectWalletButton.scss';
@@ -42,7 +42,7 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
         <div className="button-container">
             <Button
                 sx={{ zIndex: '99' }}
-                className={isConnected ? 'connected-button' : 'connect-button'}
+                className={`main-button ${isConnected ? 'connected-button' : 'connect-button'}`}
                 color="inherit"
                 onClick={() => handleConnectWallet()}
             >
@@ -66,42 +66,53 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
                     </>
                 ) : (
                     <>
-                        <span> connectWalletButton</span>
+                        <span> Connect Wallet</span>
                     </>
                 )}
             </Button>
             {true && (
                 <div className="disconnect-wrapper">
-                    {!walletIsVerified && !eventCache?.finished ? (
-                        <Button
-                            sx={{ zIndex: '99', cursor: walletIsVerified ? 'default' : 'pointer', margin: '4px 0px' }}
-                            className="connect-button verify-button"
+                    <List>
+                        {!walletIsVerified && !eventCache?.finished ? (
+                            <ListItem sx={{ zIndex: '99', cursor: walletIsVerified ? 'default' : 'pointer' }}
+                                      className="menu-button"
+                                      color="inherit"
+                                      onClick={() => onOpenVerifyWalletModal()}
+                                      disabled={eventCache?.finished}>
+                                Verify Wallet
+                            </ListItem>
+                        ) : null}
+                        {((!session || isExpired) && walletIsVerified) || (isExpired && !walletIsVerified && eventCache.finished) ? (
+                            <ListItem sx={{ zIndex: '99'}}
+                                      className="menu-button"
+                                      color="inherit"
+                                      onClick={() => onLogin()}
+                                      disabled={session && !isExpired}>
+                                Login
+                            </ListItem>
+                        ) : null}
+                        <ListItem
+                            sx={{
+                                zIndex: '99',
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                width: '100%'
+                            }}
+                            className="menu-button last-button"
                             color="inherit"
-                            onClick={() => onOpenVerifyWalletModal()}
-                            disabled={eventCache?.finished}
+                            onClick={onDisconnectWallet}
                         >
-                            Verify
-                        </Button>
-                    ) : null}
-                    {((!session || isExpired) && walletIsVerified) || (isExpired && !walletIsVerified && eventCache.finished) ? (
-                        <Button
-                            sx={{ zIndex: '99', cursor: 'pointer', margin: '4px 0px' }}
-                            className="connect-button verify-button"
-                            color="inherit"
-                            onClick={() => onLogin()}
-                            disabled={session && !isExpired}
-                        >
-                            Login
-                        </Button>
-                    ) : null}
-                    <Button
-                        sx={{ zIndex: '99', margin: '4px 0px' }}
-                        className="connect-button disconnect-button"
-                        color="inherit"
-                        onClick={onDisconnectWallet}
-                    >
-                        Disconnect Wallet
-                    </Button>
+                            <ListItemText primary="Logout" />
+                            <ListItemIcon sx={{ minWidth: 'auto' }}>
+                                <ExitToAppIcon />
+                            </ListItemIcon>
+                        </ListItem>
+
+                    </List>
+
+
+
+
                 </div>
             )}
         </div>

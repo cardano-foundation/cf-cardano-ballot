@@ -111,7 +111,7 @@ const Header = () => {
         position="absolute"
         color="transparent"
         elevation={0}
-        sx={{ width: "100%", position: "fixed" }}
+        sx={{ width: "100%" }}
       >
         <Toolbar
           sx={{

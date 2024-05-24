@@ -17,18 +17,6 @@ function App() {
         <Container md={{ maxWidth: "1440px" }}>
           <Grid container spacing={1} direction="column">
             <Header />
-            {
-              /*
-              *
-              *
-              *
-              *
-              *
-              *
-              *
-              *
-              * */
-            }
             <Box>
               {eventCache !== undefined && eventCache?.id.length ? (
                 <PageRouter />

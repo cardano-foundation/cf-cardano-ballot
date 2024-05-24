@@ -1,7 +1,21 @@
 .button-container {
   position: relative;
-  padding-top: 16px;
 
+  .main-button {
+    border-radius: 12px;
+    border: 1px solid var(--orange, #EE9766);
+    display: inline-flex;
+    padding: 16px 20px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    color: var(--orange, #EE9766);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 24px;
+    text-transform: none;
+  }
   &:hover .disconnect-wrapper {
     display: block;
   }
@@ -27,28 +41,36 @@
   left: 0;
   width: 100%;
   display: none;
+  background-color: #121212;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
 
   .disconnect-button {
     width: 100%;
     text-transform: none;
   }
 }
-.connect-button.MuiButton-root {
-  display: inline-flex;
-  padding: 16px 24px 16px 16px;
-  align-items: flex-start;
-  gap: 8px;
-  border-radius: 8px;
-  background-color: var(--color-ultra-dark-blue) !important;
-  color: var(--color-light);
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: normal;
-  text-transform: none;
 
-  span {
-    padding-top: 3px;
+.menu-button,  {
+  width: 100%;
+  text-transform: none;
+  cursor: pointer;
+  display: flex;
+  padding: 12px 20px;
+  align-items: center;
+  gap: 8px;
+  align-self: stretch;
+  border-radius: 8px;
+  background: #121212;
+  color: var(--neutralLightest, #FAF9F6);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px;
+  height: 44px;
+
+  .MuiTypography-root{
+    font-size: 12px;
   }
 }
 .verify-button.MuiButton-root {

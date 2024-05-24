@@ -1,21 +1,20 @@
 import React, { useMemo, useRef, useState } from "react";
 
 import {
-  Checkbox,
-  FormControlLabel,
-  Grid,
-  List,
-  ListItem,
-  ListItemAvatar,
-  Typography,
-  useMediaQuery,
-  useTheme,
-  Box,
+    Box,
+    Grid, Link,
+    List,
+    ListItem,
+    ListItemAvatar,
+    Typography,
+    useMediaQuery,
+    useTheme,
 } from "@mui/material";
 import CallIcon from "@mui/icons-material/Call";
+import RefreshOutlinedIcon from "@mui/icons-material/RefreshOutlined";
 import {
-  MuiTelInput,
   matchIsValidTel,
+  MuiTelInput,
   MuiTelInputCountry,
 } from "mui-tel-input";
 import discordLogo from "../../common/resources/images/discord-icon.svg";
@@ -46,8 +45,10 @@ import {
   startVerification,
   verifyDiscord,
 } from "../../common/api/verificationService";
-import {VerifyWalletFlow} from "./VerifyWalletModal.type";
-import {env} from "../../common/constants/env";
+import { VerifyWalletFlow } from "./VerifyWalletModal.type";
+import { env } from "../../common/constants/env";
+import { CustomCheckBox } from "../common/CustomCheckBox/CustomCheckBox";
+import { validatePhoneNumberLength } from "libphonenumber-js";
 
 // TODO: env.
 const excludedCountries: MuiTelInputCountry[] | undefined = [];
@@ -66,9 +67,6 @@ const VerifyWalletModal = (props: VerifyWalletProps) => {
 
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [isOpen, setIsOpen] = useState<boolean>(true);
-  const [verifyOption, setVerifyOption] = useState<string | undefined>(
-    method || undefined,
-  );
   const [defaultCountryCode] = useState<MuiTelInputCountry | undefined>("ES");
   const [phone, setPhone] = useState<string>("");
   const [codes, setCodes] = useState(Array(6).fill(""));
@@ -107,7 +105,7 @@ const VerifyWalletModal = (props: VerifyWalletProps) => {
 
   const reset = (timout?: boolean) => {
     function clear() {
-      setVerifyOption(undefined);
+        setCheckImNotARobot(false);
       setPhoneCodeIsSent(false);
       setPhoneCodeShowError(false);
       setPhone("");
@@ -122,15 +120,13 @@ const VerifyWalletModal = (props: VerifyWalletProps) => {
     }
   };
 
-  const handleSelectOption = (option: string) => {
-    setVerifyOption(option);
-  };
-
   const handleChangePhone = (phoneNumber: string) => {
     setPhone(phoneNumber);
   };
 
   const handleSendCode = async () => {
+    handleSetCurrentPath(VerifyWalletFlow.CONFIRM_CODE);
+    return;
     if (matchIsValidTel(phone) && checkImNotARobot) {
       setPhoneCodeIsBeenSending(true);
       startVerification(
@@ -158,6 +154,8 @@ const VerifyWalletModal = (props: VerifyWalletProps) => {
 
   const handleVerifyPhoneCode = () => {
     setPhoneCodeIsBeenConfirming(true);
+    handleSetCurrentPath(VerifyWalletFlow.DID_NOT_RECEIVE_CODE);
+
     confirmPhoneNumberCode(
       env.EVENT_ID,
       stakeAddress,
@@ -211,112 +209,137 @@ const VerifyWalletModal = (props: VerifyWalletProps) => {
   };
 
   const renderStartVerification = () => {
-      return (
-          <>
-              <Box sx={{
-                  mx: 'auto',
-                  textAlign: 'center',
-                  color: theme.palette.text.neutralLightest,
-                  borderRadius: '12px'
-              }}>
-                  <Typography variant="body1" sx={{
-                      mb: 2,
-                      color: theme.palette.text.neutralLightest,
-                      textAlign: "center",
-                      fontSize: "16px",
-                      fontStyle: "normal",
-                      fontWeight: "500",
-                      lineHeight: "24px",
-                      marginTop: "16px",
-                      cursor: "pointer"
-                  }}>
-                      To vote you will need to verify your wallet. If you would prefer, you can do this later. Just select your wallet and click the ‘Verify Wallet’ option.                  </Typography>
-                  <CustomButton
-                      onClick={() => handleSet(VerifyWalletFlow.SELECT_METHOD)}
-                      sx={{ mb: 1 }} fullWidth colorVariant="primary">
-                      Verify
-                  </CustomButton>
-                  <Typography
-                      onClick={() => handleCloseModal()}
-                      sx={{
-                      color: theme.palette.text.neutralLightest,
-                      textAlign: "center",
-                      fontSize: "16px",
-                      fontStyle: "normal",
-                      fontWeight: "500",
-                      lineHeight: "24px",
-                      textDecorationLine: "underline",
-                      mt: "16px",
-                      cursor: "pointer"
-                  }}>
-                      Skip
-                  </Typography>
-              </Box>
-          </>
-      );
-  }
+    return (
+      <>
+        <Box
+          sx={{
+            mx: "auto",
+            textAlign: "center",
+            color: theme.palette.text.neutralLightest,
+            borderRadius: "12px",
+          }}
+        >
+          <Typography
+            variant="body1"
+            sx={{
+              mb: 2,
+              color: theme.palette.text.neutralLightest,
+              textAlign: "center",
+              fontSize: "16px",
+              fontStyle: "normal",
+              fontWeight: "500",
+              lineHeight: "24px",
+              marginTop: "16px",
+              cursor: "pointer",
+            }}
+          >
+            To vote you will need to verify your wallet. If you would prefer,
+            you can do this later. Just select your wallet and click the ‘Verify
+            Wallet’ option.{" "}
+          </Typography>
+          <CustomButton
+            onClick={() => handleSetCurrentPath(VerifyWalletFlow.SELECT_METHOD)}
+            sx={{ mb: 1 }}
+            fullWidth
+            colorVariant="primary"
+          >
+            Verify
+          </CustomButton>
+          <Typography
+            onClick={() => handleCloseModal()}
+            sx={{
+              color: theme.palette.text.neutralLightest,
+              textAlign: "center",
+              fontSize: "16px",
+              fontStyle: "normal",
+              fontWeight: "500",
+              lineHeight: "24px",
+              textDecorationLine: "underline",
+              mt: "16px",
+              cursor: "pointer",
+            }}
+          >
+            Skip
+          </Typography>
+        </Box>
+      </>
+    );
+  };
 
   const renderSelectOption = () => {
     return (
       <>
         <Typography
           style={{
-              wordWrap: "break-word",
-              color: theme.palette.text.neutralLightest,
-              textAlign: "center",
-              fontSize: "16px",
-              fontStyle: "normal",
-              fontWeight: 500,
-              lineHeight: "24px",
-              marginTop: "16px"
-        }}
+            wordWrap: "break-word",
+            color: theme.palette.text.neutralLightest,
+            textAlign: "center",
+            fontSize: "16px",
+            fontStyle: "normal",
+            fontWeight: 500,
+            lineHeight: "24px",
+            marginTop: "16px",
+          }}
         >
           To verify your address please proceed with one of the options.
         </Typography>
         <List>
           <ListItem
-            onClick={() => handleSelectOption("discord")}
+            onClick={() =>
+              handleSetCurrentPath(VerifyWalletFlow.VERIFY_DISCORD)
+            }
             sx={{
-                borderRadius: "12px",
-                border: "1px solid var(--neutral, #737380)",
-                background: theme.palette.background.default,
-                my: 2,
-                py: 1,
-                cursor: "pointer",
-                display: 'flex',
-                '&:hover': {
-                    backgroundColor: "action.hover",
-                }
+              borderRadius: "12px",
+              border: "1px solid var(--neutral, #737380)",
+              background: theme.palette.background.default,
+              mt: "12px",
+              py: "8px",
+              height: "56px",
+              cursor: "pointer",
+              display: "flex",
+              "&:hover": {
+                backgroundColor: "action.hover",
+              },
             }}
           >
             <ListItemAvatar>
               <img
                 src={discordLogo}
-                style={{ width: "24px", height: "24px", paddingTop: "2px", filter: "brightness(0) invert(1)" }}
+                style={{
+                  width: "24px",
+                  height: "24px",
+                  paddingTop: "2px",
+                  filter: "brightness(0) invert(1)",
+                }}
               />
             </ListItemAvatar>
-            <Typography sx={{
+            <Typography
+              sx={{
                 color: theme.palette.text.neutralLightest,
                 textAlign: "center",
                 fontSize: "16px",
                 fontStyle: "normal",
                 fontWeight: 500,
                 lineHeight: "24px",
-            }}>Verify with Discord</Typography>
+              }}
+            >
+              Verify with Discord
+            </Typography>
           </ListItem>
           <ListItem
-            onClick={() => handleSelectOption("sms")}
+            onClick={() => handleSetCurrentPath(VerifyWalletFlow.VERIFY_SMS)}
             sx={{
-                borderRadius: "12px",
-                border: "1px solid var(--neutral, #737380)",
-                background: theme.palette.background.default,
-                my: 2,
-                py: 1,
-                cursor: "pointer",
-                display: 'flex',
-                '&:hover': {
-                    backgroundColor: "action.hover",
-                }
+              borderRadius: "12px",
+              border: "1px solid var(--neutral, #737380)",
+              background: theme.palette.background.default,
+              mt: "12px",
+              py: "8px",
+              height: "56px",
+              cursor: "pointer",
+              display: "flex",
+              "&:hover": {
+                backgroundColor: "action.hover",
+              },
             }}
           >
             <ListItemAvatar>
@@ -324,16 +347,135 @@ const VerifyWalletModal = (props: VerifyWalletProps) => {
                 style={{ width: "24px", height: "24px", color: "white" }}
               />
             </ListItemAvatar>
-            <Typography sx={{
+            <Typography
+              sx={{
                 color: theme.palette.text.neutralLightest,
                 textAlign: "center",
                 fontSize: "16px",
                 fontStyle: "normal",
                 fontWeight: 500,
                 lineHeight: "24px",
-            }}>Verify with SMS</Typography>
+              }}
+            >
+              Verify with SMS
+            </Typography>
           </ListItem>
         </List>
+      </>
+    );
+  };
+
+  const renderVerifyPhoneNumber = () => {
+    const isValidPhoneNumber = matchIsValidTel(phone);
+    const isValidNumberLength = validatePhoneNumberLength(phone);
+    const isPossibleValidPhoneNumber = isValidNumberLength === "TOO_SHORT";
+
+    return (
+      <>
+        <Typography
+          style={{
+            wordWrap: "break-word",
+            color: theme.palette.text.neutralLightest,
+            fontSize: "16px",
+            fontStyle: "normal",
+            fontWeight: "500",
+            lineHeight: "24px",
+            marginTop: "16px",
+          }}
+        >
+          To verify your address, please confirm your phone number.
+        </Typography>
+        <Typography
+          style={{
+            wordWrap: "break-word",
+            color: theme.palette.text.neutralLightest,
+            fontSize: "12px",
+            fontStyle: "normal",
+            fontWeight: 500,
+            lineHeight: "20px",
+            marginTop: "24px",
+            marginLeft: "4px",
+          }}
+        >
+          Mobile number
+        </Typography>
+        <Box
+          sx={{
+            width: "100%",
+            marginTop: "4px",
+          }}
+        >
+          <MuiTelInput
+            defaultCountry={defaultCountryCode}
+            excludedCountries={excludedCountries}
+            value={phone}
+            onChange={handleChangePhone}
+            disabled={isPhoneInputDisabled}
+            style={{
+              background: "var(--neutralDark, #272727)",
+              width: "100%",
+            }}
+          />
+
+          <Box
+            sx={{
+              height: "10px",
+            }}
+          >
+            {!phone?.length || isPossibleValidPhoneNumber ? null : (
+              <>
+                {isValidPhoneNumber ? null : (
+                  <Typography
+                    sx={{
+                      color: "var(--error, #FF878C)",
+                      fontSize: "12px",
+                      fontStyle: "normal",
+                      fontWeight: 500,
+                      lineHeight: "20px",
+                      marginLeft: "3px",
+                    }}
+                  >
+                    Please enter a valid mobile number
+                  </Typography>
+                )}
+              </>
+            )}
+          </Box>
+        </Box>
+
+        <Box sx={{ display: "flex", alignItems: "center", marginTop: "4px" }}>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <CustomCheckBox
+              isChecked={checkImNotARobot}
+              setIsChecked={setCheckImNotARobot}
+            />
+          </Box>
+          <Typography>I am not a robot</Typography>
+        </Box>
+        <Grid container style={{ marginTop: "4px" }}>
+          <Grid item xs={12}>
+            <Box
+              sx={{
+                width: "100%",
+              }}
+            >
+              <CustomButton
+                disabled={
+                  !matchIsValidTel(phone) ||
+                  !checkImNotARobot ||
+                  phoneCodeIsBeenSending
+                }
+                onClick={() => handleSendCode()}
+                colorVariant="primary"
+                sx={{
+                  width: "100%",
+                }}
+              >
+                Send Code
+              </CustomButton>
+            </Box>
+          </Grid>
+        </Grid>
       </>
     );
   };
@@ -360,18 +502,9 @@ const VerifyWalletModal = (props: VerifyWalletProps) => {
       setPhoneCodeShowError(false);
     };
 
-    const handleCancelConfirmChode = () => {
-      setPhoneCodeIsSent(false);
-      setCodes(Array(6).fill(""));
-    };
-
     return (
       <>
-        <Typography
-          className="verify-wallet-modal-description"
-          gutterBottom
-          style={{ wordWrap: "break-word" }}
-        >
+        <Typography gutterBottom style={{ wordWrap: "break-word" }}>
           Confirm the verification code that’s been sent to <span>{phone}</span>
         </Typography>
         <div
@@ -431,7 +564,7 @@ const VerifyWalletModal = (props: VerifyWalletProps) => {
           />
         </Box>
         <Grid container spacing={2} style={{ marginTop: "8px" }}>
-          <Grid item xs={6}>
+          <Grid item xs={12}>
             <CustomButton
               styles={{
                 background: "transparent !important",
@@ -439,113 +572,117 @@ const VerifyWalletModal = (props: VerifyWalletProps) => {
                 border: "1px solid #daeefb",
               }}
               label="Back"
-              onClick={() => handleCancelConfirmChode()}
-              fullWidth={true}
-              colorVariant="primary"
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <CustomButton
-              styles={
-                codes.filter((code) => code !== "").length === 6 &&
-                !phoneCodeIsBeenConfirming
-                  ? {
-                      background: "#ACFCC5",
-                      color: "#03021F",
-                    }
-                  : {
-                      background: "#6C6F89",
-                      color: "#F6F9FF !important",
-                    }
-              }
-              disabled={codes.length < 6 || phoneCodeIsBeenConfirming}
-              label="Verify"
               onClick={() => handleVerifyPhoneCode()}
               fullWidth={true}
-            />
+              colorVariant="primary"
+              disabled={codes.includes("")}
+            >
+              Confirm
+            </CustomButton>
           </Grid>
         </Grid>
       </>
     );
   };
 
-  const renderVerifyPhoneNumber = () => {
+  const renderDidNotReceiveCode = () => {
+    const handleEnterNewNumber = () => {
+      setPhone("");
+      handleSetCurrentPath(VerifyWalletFlow.VERIFY_SMS);
+    };
+    const handleSendCodeAgain = async () => {
+      handleSetCurrentPath(VerifyWalletFlow.CONFIRM_CODE);
+      setPhoneCodeShowError(false);
+      setCodes(Array(6).fill(""));
+      await handleSendCode();
+    };
     return (
       <>
         <Typography
-          className="connect-wallet-modal-description"
-          gutterBottom
-          style={{ wordWrap: "break-word" }}
+          style={{
+            wordWrap: "break-word",
+            color: theme.palette.text.neutralLightest,
+            textAlign: "center",
+            fontSize: "16px",
+            fontStyle: "normal",
+            fontWeight: 500,
+            lineHeight: "24px",
+            marginTop: "16px",
+          }}
         >
-          To verify your address please confirm your phone number.
+          Send the code again, please ensure the number you’ve entered is
+          correct {phone}
         </Typography>
-        <MuiTelInput
-          className="phone-number-input"
-          defaultCountry={defaultCountryCode}
-          excludedCountries={excludedCountries}
-          value={phone}
-          onChange={handleChangePhone}
-          disabled={isPhoneInputDisabled}
-        />
-        <FormControlLabel
-          style={{ marginTop: "4px" }}
-          control={
-            <Checkbox
-              value={checkImNotARobot}
-              onChange={(event, checked) => setCheckImNotARobot(checked)}
-              name="notRobot"
-              color="primary"
+        <List>
+          <ListItem
+            onClick={() => handleSendCodeAgain()}
+            sx={{
+              borderRadius: "12px",
+              border: "1px solid var(--neutral, #737380)",
+              background: theme.palette.background.default,
+              mt: "12px",
+              py: "8px",
+              height: "56px",
+              cursor: "pointer",
+              display: "flex",
+              "&:hover": {
+                backgroundColor: "action.hover",
+              },
+            }}
+          >
+            <ListItemAvatar>
+              <RefreshOutlinedIcon
+                sx={{ width: "24px", height: "24px", color: "white" }}
+              />
+            </ListItemAvatar>
+            <Typography
               sx={{
-                color: checkImNotARobot ? "#056122" : "",
-                "&.Mui-checked": {
-                  color: "#000",
-                },
+                color: theme.palette.text.neutralLightest,
+                textAlign: "center",
+                fontSize: "16px",
+                fontStyle: "normal",
+                fontWeight: 500,
+                lineHeight: "24px",
               }}
-            />
-          }
-          label="I am not a robot"
-        />
-        <Grid container spacing={2} style={{ marginTop: "4px" }}>
-          <Grid item xs={6}>
-            <CustomButton
-              styles={{
-                background: "transparent !important",
-                color: "#03021F",
-                border: "1px solid #daeefb",
-                marginRight: "20px",
+            >
+              Send the Code Again
+            </Typography>
+          </ListItem>
+          <ListItem
+            onClick={() => handleEnterNewNumber()}
+            sx={{
+              borderRadius: "12px",
+              border: "1px solid var(--neutral, #737380)",
+              background: theme.palette.background.default,
+              mt: "12px",
+              py: "8px",
+              height: "56px",
+              cursor: "pointer",
+              display: "flex",
+              "&:hover": {
+                backgroundColor: "action.hover",
+              },
+            }}
+          >
+            <ListItemAvatar>
+              <CallIcon
+                sx={{ width: "24px", height: "24px", color: "white" }}
+              />
+            </ListItemAvatar>
+            <Typography
+              sx={{
+                color: theme.palette.text.neutralLightest,
+                textAlign: "center",
+                fontSize: "16px",
+                fontStyle: "normal",
+                fontWeight: 500,
+                lineHeight: "24px",
               }}
-              label="Cancel"
-              onClick={() => reset()}
-              fullWidth={true}
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <CustomButton
-              styles={
-                matchIsValidTel(phone) &&
-                checkImNotARobot &&
-                !phoneCodeIsBeenSending
-                  ? {
-                      background: "#ACFCC5",
-                      color: "#03021F",
-                      paddingLeft: "20px",
-                    }
-                  : {
-                      background: "#6C6F89",
-                      color: "#F6F9FF !important",
-                    }
-              }
-              label="Send Code"
-              disabled={
-                !matchIsValidTel(phone) ||
-                !checkImNotARobot ||
-                phoneCodeIsBeenSending
-              }
-              onClick={() => handleSendCode()}
-              fullWidth={true}
-            />
-          </Grid>
-        </Grid>
+            >
+              Enter a New Number
+            </Typography>
+          </ListItem>
+        </List>
       </>
     );
   };
@@ -554,34 +691,68 @@ const VerifyWalletModal = (props: VerifyWalletProps) => {
     return (
       <>
         <Typography
-          className="verify-wallet-modal-description"
-          gutterBottom
-          style={{ wordWrap: "break-word" }}
+          style={{
+              color: theme.palette.text.neutralLightest,
+              textAlign: "center",
+              fontSize: "16px",
+              fontStyle: "normal",
+              fontWeight: 500,
+              lineHeight: "24px",
+              wordWrap: "break-word",
+              marginTop: "16px"
+        }}
         >
           To verify your address you need to sign a secret message. You will get
           the secret from our friendly Discord bot.
         </Typography>
         <Typography
-          className="verify-wallet-modal-description"
-          gutterBottom
-          style={{ wordWrap: "break-word", marginTop: "16px" }}
+          style={{
+              fontSize: "16px",
+              fontStyle: "normal",
+              fontWeight: 500,
+              lineHeight: "24px",
+              wordWrap: "break-word",
+              marginTop: "24px"
+        }}
         >
           1. Join our{" "}
-          <a onClick={() => openNewTab(env.DISCORD_CHANNEL_URL)}>
+          <Link sx={{
+              color: "var(--orange, #EE9766)",
+              fontSize: "16px",
+              fontStyle: "normal",
+              fontWeight: 500,
+              lineHeight: "24px",
+              textDecorationLine: "underline",
+              cursor: "pointer"
+          }} onClick={() => openNewTab(env.DISCORD_CHANNEL_URL)}>
             Discord Server
-          </a>{" "}
+          </Link>{" "}
           and accept our terms and conditions by reacting with a 🚀 to the
           message in the verification channel.
         </Typography>
         <Typography
-          className="verify-wallet-modal-description"
-          gutterBottom
-          style={{ wordWrap: "break-word", marginTop: "16px" }}
+          style={{
+              fontSize: "16px",
+              fontStyle: "normal",
+              fontWeight: 500,
+              lineHeight: "24px",
+              wordWrap: "break-word",
+              marginTop: "16px"
+        }}
         >
           2. Open the{" "}
-          <a onClick={() => openNewTab(env.DISCORD_BOT_URL)}>
+          <Link sx={{
+              color: "var(--orange, #EE9766)",
+              fontSize: "16px",
+              fontStyle: "normal",
+              fontWeight: 500,
+              lineHeight: "24px",
+              textDecorationLine: "underline",
+              cursor: "pointer"
+            }}
+            onClick={() => openNewTab(env.DISCORD_BOT_URL)}>
             Wallet Verification channel
-          </a>{" "}
+          </Link>{" "}
           and follow the instructions in Discord.
         </Typography>
         <Typography
@@ -593,35 +764,16 @@ const VerifyWalletModal = (props: VerifyWalletProps) => {
           within a new window, to complete the sign and verification process.
         </Typography>
         <CustomButton
-          styles={
-            discordSecret
-              ? {
-                  background: "#ACFCC5",
-                  color: "#03021F",
-                  margin: "12px 0px",
-                }
-              : {
-                  background: "#6C6F89",
-                  color: "#F6F9FF !important",
-                  margin: "12px 0px",
-                }
-          }
-          label="Sign and Verify"
+            colorVariant="primary"
           onClick={() => handleVerifyDiscord()}
           disabled={!discordSecret}
-          fullWidth={true}
-        />
-        <CustomButton
-          styles={{
-            background: "transparent !important",
-            color: "#03021F",
-            border: "1px solid #daeefb",
-            margin: "12px 0px",
-          }}
-          label="Cancel"
-          onClick={() => reset()}
-          fullWidth={true}
-        />
+            sx={{
+                width: "100%",
+                marginTop: "24px"
+            }}
+        >
+            Sign and Verify
+        </CustomButton>
       </>
     );
   };
@@ -631,54 +783,81 @@ const VerifyWalletModal = (props: VerifyWalletProps) => {
     setVerifyCurrentPaths([VerifyWalletFlow.INTRO]);
   };
 
-  const handleSet = (option: VerifyWalletFlow) => {
-    const fileteredVerifyCurrentPaths = verifyCurrentPaths.filter(p => p !== option);
+  const handleSetCurrentPath = (option: VerifyWalletFlow) => {
+    const fileteredVerifyCurrentPaths = verifyCurrentPaths.filter(
+      (p) => p !== option,
+    );
     setVerifyCurrentPaths([option, ...fileteredVerifyCurrentPaths]);
   };
 
   const handleBack = () => {
-      if (verifyCurrentPaths.length >= 2) {
-          return setVerifyCurrentPaths(prev => prev.slice(1))
-      }
+    if (verifyCurrentPaths.length >= 2) {
+      return setVerifyCurrentPaths((prev) => prev.slice(1));
+    }
+  };
+
+  const handleClose = () => {
+    reset();
+    setIsOpen(false)
   };
 
   const renderVerify = () => {
     switch (verifyCurrentPaths[0]) {
       case VerifyWalletFlow.INTRO:
-        return renderStartVerification();
-
+        return {
+          title: "Verify Your Wallet",
+          render: renderStartVerification(),
+        };
       case VerifyWalletFlow.SELECT_METHOD:
-          return renderSelectOption();
-
+        return {
+          title: "Verify Your Wallet",
+          render: renderSelectOption(),
+        };
       case VerifyWalletFlow.VERIFY_SMS:
         if (phoneCodeIsSent) {
-          return renderConfirmCode();
+          return {
+            title: "Verify with SMS",
+            render: renderConfirmCode(),
+          };
         } else {
-          return renderVerifyPhoneNumber();
+          return {
+            title: "Verify with SMS",
+            render: renderVerifyPhoneNumber(),
+          };
         }
-
       case VerifyWalletFlow.VERIFY_DISCORD:
-        return renderVerifyDiscord();
-
+        return {
+          title: "Verify with Discord",
+          render: renderVerifyDiscord(),
+        };
       case VerifyWalletFlow.CONFIRM_CODE:
-        return renderConfirmCode();
+        return {
+          title: "Confirm Your Code",
+          render: renderConfirmCode(),
+        };
+      case VerifyWalletFlow.DID_NOT_RECEIVE_CODE:
+        return {
+          title: "Didn’t Receive a Code",
+          render: renderDidNotReceiveCode(),
+        };
     }
   };
 
+  const content = renderVerify();
   return (
     <>
       <Modal
         id="verify-wallet-modal"
         isOpen={isOpen}
         name="verify-wallet-modal"
-        title="Verify your Wallet"
-        onClose={() => setIsOpen(false)}
+        title={content.title}
+        onClose={() => handleClose()}
         disableBackdropClick={true}
-        width={isMobile ? "auto" : "400px"}
+        width={isMobile ? "auto" : "450px"}
         onBack={() => handleBack()}
         backButton={verifyCurrentPaths.length > 1}
       >
-        {renderVerify()}
+        {content.render}
       </Modal>
     </>
   );

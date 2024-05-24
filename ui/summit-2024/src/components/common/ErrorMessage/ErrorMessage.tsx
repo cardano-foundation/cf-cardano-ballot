@@ -26,7 +26,16 @@ const ErrorMessage = (props: ErrorMessageProps) => {
   return (
     <>
       {showError && (
-        <Typography color="error" variant="body1">
+        <Typography
+          sx={{
+            color: "var(--error, #FF878C)",
+            fontSize: "12px",
+            fontStyle: "normal",
+            fontWeight: 500,
+            lineHeight: "20px",
+          }}
+        >
+          {" "}
           {message}
         </Typography>
       )}

@@ -4,8 +4,7 @@ enum VerifyWalletFlow {
   VERIFY_SMS = "VERIFY_SMS",
   VERIFY_DISCORD = "VERIFY_DISCORD",
   CONFIRM_CODE = "CONFIRM_CODE",
+  DID_NOT_RECEIVE_CODE = "DID_NOT_RECEIVE_CODE",
 }
 
-export {
-  VerifyWalletFlow
-}
+export { VerifyWalletFlow };

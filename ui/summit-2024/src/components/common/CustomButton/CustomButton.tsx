@@ -1,27 +1,29 @@
 import React from "react";
 import { Button, ButtonProps, useTheme, SxProps, Theme } from "@mui/material";
-import { SvgIconProps } from "@mui/material/SvgIcon";
 
 interface CustomButtonProps extends ButtonProps {
   colorVariant: "primary" | "secondary";
-  startIcon?: React.ReactNode;  // Changed from React.ReactElement<SvgIconProps>
+  startIcon?: React.ReactNode;
 }
 
 const CustomButton: React.FC<CustomButtonProps> = ({
-                                                     colorVariant,
-                                                     startIcon,
-                                                     sx,
-                                                     children,
-                                                     ...props
-                                                   }) => {
+  colorVariant,
+  startIcon,
+  sx,
+  disabled,
+  children,
+  ...props
+}) => {
   const theme = useTheme();
 
   const getPrimaryStyles = (): SxProps<Theme> => ({
-    background: "linear-gradient(258deg, #EE9766 0%, #40407D 187.58%, #0C7BC5 249.97%)",
+    background:
+      "linear-gradient(258deg, #EE9766 0%, #40407D 187.58%, #0C7BC5 249.97%)",
     color: theme.palette.background.default,
     "&:hover": {
       color: theme.palette.text.neutralLightest,
-      background: "linear-gradient(258deg, #EE9766 0%, #40407D 87.58%, #0C7BC5 249.97%)",
+      background:
+        "linear-gradient(258deg, #EE9766 0%, #40407D 87.58%, #0C7BC5 249.97%)",
       borderColor: theme.palette.text.neutralLightest,
     },
   });
@@ -36,6 +38,15 @@ const CustomButton: React.FC<CustomButtonProps> = ({
     },
   });
 
+  const disabledStyles: SxProps<Theme> = {
+    background: theme.palette.background.disabled,
+    color: theme.palette.action.disabled,
+    border: `1px solid ${theme.palette.action.disabledBackground}`,
+    "&:hover": {
+      background: theme.palette.action.disabledBackground,
+    },
+  };
+
   const defaultStyles: SxProps<Theme> = {
     textTransform: "none",
     height: "56px",
@@ -44,13 +55,22 @@ const CustomButton: React.FC<CustomButtonProps> = ({
     lineHeight: "24px",
     borderRadius: "12px",
     padding: { xs: "8px 16px", sm: "16px 24px" },
-    ...(colorVariant === "primary" ? getPrimaryStyles() : getSecondaryStyles()),
+    ...(disabled
+      ? disabledStyles
+      : colorVariant === "primary"
+      ? getPrimaryStyles()
+      : getSecondaryStyles()),
   };
 
   return (
-      <Button sx={[defaultStyles, sx]} startIcon={startIcon} {...props}>
-        {children}
-      </Button>
+    <Button
+      sx={[defaultStyles, sx]}
+      startIcon={startIcon}
+      disabled={disabled}
+      {...props}
+    >
+      {children}
+    </Button>
   );
 };
 

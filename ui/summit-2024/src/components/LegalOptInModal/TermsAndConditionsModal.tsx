@@ -398,7 +398,7 @@ const TermsAndConditionsModal = () => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "var(--orange, #EE9766)", // Background color for checked state
+        backgroundColor: "var(--orange, #EE9766)",
         borderRadius: "4px",
       }}
     >
@@ -417,15 +417,14 @@ const TermsAndConditionsModal = () => {
     </Box>
   );
 
-  // Plain icon for the unchecked state
   const icon = (
     <Box
       sx={{
         width: 20,
         height: 20,
-        backgroundColor: "transparent", // Make unchecked state transparent
+        backgroundColor: "transparent",
         borderRadius: "4px",
-        border: "2px solid white", // White border for unchecked state
+        border: "2px solid white",
       }}
     />
   );

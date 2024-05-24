@@ -10,6 +10,9 @@ import { ToastType } from "../Toast/Toast.types";
 import { ConnectWalletModal } from "../../ConnectWalletModal/ConnectWalletModal";
 import { Toast } from "../Toast/Toast";
 import { VerifyWalletModal } from "../../VerifyWalletModal";
+import {resolveCardanoNetwork} from "../../../utils/utils";
+import {env} from "../../../common/constants/env";
+import {useCardano} from "@cardano-foundation/cardano-connect-with-wallet";
 
 const Header = () => {
   const [showConnectWalletModal, setShowConnectWalletModal] =
@@ -19,6 +22,11 @@ const Header = () => {
   const [toastOpen, setToastOpen] = useState(false);
 
   const isPortrait = useIsPortrait();
+
+  const { disconnect } = useCardano({
+    limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
+  });
+
   useEffect(() => {
     const openConnectWalletModal = () => {
       setShowConnectWalletModal(true);
@@ -80,7 +88,10 @@ const Header = () => {
 
   const handleLogin = () => {};
 
-  const onDisconnectWallet = () => {};
+  const onDisconnectWallet = () => {
+    console.log("onDisconnectWallet");
+    disconnect();
+  };
 
   const dropdownOptions = [
     { label: "Verify Wallet", action: handleOpenVerify },

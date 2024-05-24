@@ -56,6 +56,9 @@ const ConnectWalletButton = ({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const buttonRef = useRef<HTMLElement | null>(null);
   const menuRef = useRef<HTMLElement | null>(null);
+    const { stakeAddress, isConnected, enabledWalle } = useCardano({
+        limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
+    });
 
   const handleMouseEnter = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(buttonRef.current);
@@ -79,10 +82,6 @@ const ConnectWalletButton = ({
   const handleCloseMenu = () => {
     setAnchorEl(null);
   };
-
-  const { stakeAddress, isConnected, enabledWallet } = useCardano({
-    limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
-  });
 
   return (
     <Box sx={{ position: "relative" }}>
@@ -111,6 +110,7 @@ const ConnectWalletButton = ({
           color: "secondary.main",
           textTransform: "none",
         }}
+        onClick={() => onOpenConnectWalletModal()}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >

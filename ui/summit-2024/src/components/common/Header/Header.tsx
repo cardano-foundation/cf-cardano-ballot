@@ -3,7 +3,6 @@ import { AppBar, Box, Toolbar, Typography, IconButton } from "@mui/material";
 import ExitToAppOutlinedIcon from "@mui/icons-material/ExitToAppOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import Logo from "../../../assets/logo.svg";
-import { ConnectWalletButton } from "../ConnectWalletButton/ConnectWalletButton";
 import { useIsPortrait } from "../../../common/hooks/useIsPortrait";
 import { eventBus } from "../../../utils/EventBus";
 import { ToastType } from "../Toast/Toast.types";
@@ -13,6 +12,7 @@ import { VerifyWalletModal } from "../../VerifyWalletModal";
 import {resolveCardanoNetwork} from "../../../utils/utils";
 import {env} from "../../../common/constants/env";
 import {useCardano} from "@cardano-foundation/cardano-connect-with-wallet";
+import {ConnectWalletButton} from "../../ConnectWalletButton/ConnectWalletButton";
 
 const Header = () => {
   const [showConnectWalletModal, setShowConnectWalletModal] =
@@ -104,11 +104,14 @@ const Header = () => {
 
   return (
     <>
+      <Box sx={{
+        height: "130px"
+      }}/>
       <AppBar
-        position="static"
+        position="absolute"
         color="transparent"
         elevation={0}
-        sx={{ width: "100%", overflow: "hidden" }}
+        sx={{ width: "100%", position: "fixed" }}
       >
         <Toolbar
           sx={{
@@ -157,12 +160,12 @@ const Header = () => {
 
           <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
             <ConnectWalletButton
-              onOpenConnectWalletModal={handleConnectWalletModal}
-              onOpenVerifyWalletModal={handleOpenVerify}
-              onLogin={handleLogin}
-              onDisconnectWallet={onDisconnectWallet}
-              dropdownOptions={dropdownOptions}
+                onOpenConnectWalletModal={handleConnectWalletModal}
+                onOpenVerifyWalletModal={handleOpenVerify}
+                onLogin={handleLogin}
+                onDisconnectWallet={onDisconnectWallet}
             />
+
             {isPortrait ? (
               <IconButton
                 color="inherit"

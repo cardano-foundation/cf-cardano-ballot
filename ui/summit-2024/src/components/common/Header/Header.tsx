@@ -39,6 +39,17 @@ const Header = () => {
   }, []);
 
   useEffect(() => {
+    const openConnectWalletModal = () => {
+      setShowConnectWalletModal(true);
+    };
+    eventBus.subscribe("openConnectWalletModal", openConnectWalletModal);
+
+    return () => {
+      eventBus.unsubscribe("openConnectWalletModal", openConnectWalletModal);
+    };
+  }, []);
+
+  useEffect(() => {
     const showToastListener = (message: string, type?: ToastType) => {
       showToast(message, type || ToastType.Common);
     };

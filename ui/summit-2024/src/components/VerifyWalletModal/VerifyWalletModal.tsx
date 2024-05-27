@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, {useEffect, useMemo, useRef, useState} from "react";
 
 import {
   Box,
@@ -50,6 +50,8 @@ import { VerifyWalletFlow } from "./VerifyWalletModal.type";
 import { env } from "../../common/constants/env";
 import { CustomCheckBox } from "../common/CustomCheckBox/CustomCheckBox";
 import { validatePhoneNumberLength } from "libphonenumber-js";
+import {eventBus} from "../../utils/EventBus";
+import {b} from "vite/dist/node/types.d-aGj9QkWt";
 
 // TODO: env.
 const excludedCountries: MuiTelInputCountry[] | undefined = [];
@@ -99,7 +101,19 @@ const VerifyWalletModal = (props: VerifyWalletProps) => {
 
   inputRefs.current = [];
 
-  const signMessagePromisified = useMemo(
+    useEffect(() => {
+        const openVerifyWalletModal = (open: boolean = true) => {
+            setIsOpen(open);
+        };
+        eventBus.subscribe("openVerifyWalletModal", openVerifyWalletModal);
+
+        return () => {
+            eventBus.unsubscribe("openVerifyWalletModal", openVerifyWalletModal);
+        };
+    }, []);
+
+
+    const signMessagePromisified = useMemo(
     () => getSignedMessagePromise(signMessage),
     [signMessage],
   );

@@ -19,10 +19,10 @@ import { RootState } from "../../store";
 import { getUserInSession, tokenIsExpired } from "../../utils/session";
 import {
   addressSlice,
-  resolveCardanoNetwork,
-  walletIcon,
+  resolveCardanoNetwork
 } from "../../utils/utils";
 import { env } from "../../common/constants/env";
+import {eventBus} from "../../utils/EventBus";
 
 type ConnectWalletButtonProps = {
   disableBackdropClick?: boolean;
@@ -35,7 +35,6 @@ type ConnectWalletButtonProps = {
 const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
   const {
     onOpenConnectWalletModal,
-    onOpenVerifyWalletModal,
     onLogin,
     onDisconnectWallet,
   } = props;
@@ -54,6 +53,10 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
     if (!isConnected) {
       onOpenConnectWalletModal();
     }
+  };
+
+  const handleVerifyWallet = () => {
+    eventBus.publish("openVerifyWalletModal");
   };
 
   return (
@@ -93,7 +96,7 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
           </>
         )}
       </Button>
-      {true && (
+      {isConnected && (
         <div className="disconnect-wrapper">
           <List>
             {!walletIsVerified && !eventCache?.finished ? (
@@ -104,7 +107,7 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
                 }}
                 className="menu-button"
                 color="inherit"
-                onClick={() => onOpenVerifyWalletModal()}
+                onClick={() => handleVerifyWallet()}
                 disabled={eventCache?.finished}
               >
                 Verify Wallet

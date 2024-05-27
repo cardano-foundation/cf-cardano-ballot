@@ -16,6 +16,10 @@
     line-height: 24px;
     text-transform: none;
   }
+  .main-button:hover {
+    border-color: var(--neutralLightest, #faf9f6);
+    color: var(--neutralLightest, #faf9f6);
+  }
   &:hover .disconnect-wrapper {
     display: block;
   }

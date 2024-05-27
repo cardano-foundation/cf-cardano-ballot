@@ -300,7 +300,7 @@ const nomineesData: NomineeArrayFixture[] = [
       },
       // Add more nominees as needed
     ],
-  }
+  },
 ];
 
 export { CategoriesNames, nomineesData };

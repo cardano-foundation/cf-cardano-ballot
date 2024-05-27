@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Grid,
@@ -10,6 +10,7 @@ import {
   ListItem,
   ListItemText,
   useTheme,
+  Fade,
 } from "@mui/material";
 import theme from "../../common/styles/theme";
 import {
@@ -31,6 +32,24 @@ const Categories: React.FC = () => {
   const [learMoreCategory, setLearMoreCategory] = useState("");
   const [openLearMoreCategory, setOpenLearMoreCategory] = useState(false);
 
+  const [fadeChecked, setFadeChecked] = useState(true);
+
+  useEffect(() => {
+    if (fadeChecked) {
+      setSelectedCategory(selectedCategory);
+    }
+  }, [fadeChecked, selectedCategory]);
+
+  const handleClickMenuItem = (category) => {
+    if (category !== selectedCategory) {
+      setFadeChecked(false);
+      setTimeout(() => {
+        setSelectedCategory(category);
+        setFadeChecked(true);
+      }, 200);
+    }
+  };
+
   const handleSelectNominee = (id: number) => {
     if (selectedNominee === id) {
       setSelectedNominee(undefined);
@@ -45,15 +64,11 @@ const Categories: React.FC = () => {
     setOpenLearMoreCategory(true);
   };
 
-  const handleClickMenuItem = (item) => {
-    setSelectedCategory(item);
-  };
-
   let categoryToRender = categoriesData.find(
     (c) => c.category === selectedCategory,
   );
   if (!categoryToRender) {
-    categoryToRender = categoriesData[0]
+    categoryToRender = categoriesData[0];
   }
 
   return (
@@ -96,56 +111,59 @@ const Categories: React.FC = () => {
                 onClick={() => handleClickMenuItem(category.category)}
                 key={index}
               >
-                  {
-                      category.category === selectedCategory ? <>
-                          <Box sx={{
-                              display: "flex",
-                              padding: "8px 12px",
-                              alignItems: "center",
-                              gap: "10px",
-                              alignSelf: "stretch",
-                              borderRadius: "12px",
-                              background: theme.palette.secondary.main,
-                              color: theme.palette.background.default,
-                              fontSize: "16px",
-                              fontStyle: "normal",
-                              fontWeight: 500,
-                              lineHeight: "24px",
-                              cursor: "pointer",
-                              width: "100%"
-                          }}>
-                              <Typography
-                                  sx={{
-                                      gap: "10px",
-                                      alignSelf: "stretch",
-                                      borderRadius: "12px",
-                                      fontSize: "16px",
-                                      fontStyle: "normal",
-                                      fontWeight: 500,
-                                      lineHeight: "24px",
-                                      cursor: "pointer",
-                                      width: "100%"
-                                  }}
-                              >
-                                  {category.category}
-                              </Typography>
-                          </Box>
-
-                      </> : <>
-                          <Typography
-                              sx={{
-                                  color: theme.palette.text.neutralLightest,
-                                  fontSize: "16px",
-                                  fontStyle: "normal",
-                                  fontWeight: 500,
-                                  lineHeight: "24px",
-                                  cursor: "pointer",
-                              }}
-                          >
-                              {category.category}
-                          </Typography>
-                      </>
-                  }
+                {category.category === selectedCategory ? (
+                  <>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        padding: "8px 12px",
+                        alignItems: "center",
+                        gap: "10px",
+                        alignSelf: "stretch",
+                        borderRadius: "12px",
+                        background: theme.palette.secondary.main,
+                        color: theme.palette.background.default,
+                        fontSize: "16px",
+                        fontStyle: "normal",
+                        fontWeight: 500,
+                        lineHeight: "24px",
+                        cursor: "pointer",
+                        width: "100%",
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          gap: "10px",
+                          alignSelf: "stretch",
+                          borderRadius: "12px",
+                          fontSize: "16px",
+                          fontStyle: "normal",
+                          fontWeight: 500,
+                          lineHeight: "24px",
+                          cursor: "pointer",
+                          width: "100%",
+                        }}
+                      >
+                        {category.category}
+                      </Typography>
+                    </Box>
+                  </>
+                ) : (
+                  <>
+                    <Typography
+                      sx={{
+                        color: theme.palette.text.neutralLightest,
+                        fontSize: "16px",
+                        fontStyle: "normal",
+                        fontWeight: 500,
+                        lineHeight: "24px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      {category.category}
+                    </Typography>
+                  </>
+                )}
               </ListItem>
             ))}
           </List>
@@ -175,9 +193,8 @@ const Categories: React.FC = () => {
               variant="h5"
               sx={{ fontWeight: "bold", fontFamily: "Dosis" }}
             >
-                {
-                    categoryToRender.category
-                } {' '}Nominees ({categoryToRender.nominees?.length})
+              {categoryToRender.category} Nominees (
+              {categoryToRender.nominees?.length})
             </Typography>
             <Typography
               sx={{
@@ -197,89 +214,95 @@ const Categories: React.FC = () => {
             </CustomButton>
           </Box>
 
-          <Grid
-            container
-            spacing={2}
-            justifyContent="center"
-            alignItems="flex-start"
-          >
-            {categoryToRender.nominees.map((nominee: NomineeFixture, index) => (
-              <Grid item xs={12} sm={6} md={4} key={index}>
-                <Paper
-                  onClick={() => handleSelectNominee(nominee.id)}
-                  elevation={3}
-                  sx={{
-                    width: "100%",
-                    height: "240px",
-                    flexShrink: 0,
-                    borderRadius: "24px",
-                    border: `1px solid ${
-                      selectedNominee === nominee.id
-                        ? theme.palette.secondary.main
-                        : theme.palette.background.default
-                    }`,
-                    backdropFilter: "blur(5px)",
-                    p: { xs: 1, sm: 2 },
-                    position: "relative",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "space-between",
-                    cursor: "pointer",
-                  }}
-                >
-                  <Box sx={{ position: "absolute", right: 8, top: 8 }}>
-                    <HoverCircle selected={selectedNominee === nominee.id} />
-                  </Box>
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      color: "var(--neutralLightest, #FAF9F6)",
-                      textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
-                      fontFamily: "Dosis",
-                      fontSize: "28px",
-                      fontStyle: "normal",
-                      fontWeight: 700,
-                      lineHeight: "32px",
-                      mt: 3,
-                      ml: 1,
-                    }}
-                  >
-                    {nominee.name}
-                  </Typography>
-                  <Button
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      handleLearnMoreClick(event, nominee.name);
-                    }}
-                    sx={{
-                      display: "flex",
-                      width: "90%",
-                      padding: "16px 24px",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      gap: 1,
-                      borderRadius: "12px",
-                      border: "1px solid var(--neutralLightest, #FAF9F6)",
-                      color: "var(--neutralLightest, #FAF9F6)",
-                      fontSize: "16px",
-                      fontStyle: "normal",
-                      fontWeight: 500,
-                      lineHeight: "24px",
-                      mt: "auto",
-                      mx: "auto",
-                      textTransform: "none",
-                      "&:hover": {
-                        border: "1px solid var(--neutralLightest, #FAF9F6)",
-                        color: "var(--neutralLightest, #FAF9F6)",
-                      },
-                    }}
-                  >
-                    Learn More
-                  </Button>
-                </Paper>
-              </Grid>
-            ))}
-          </Grid>
+          <Fade in={fadeChecked} timeout={200}>
+            <Grid
+              container
+              spacing={2}
+              justifyContent="center"
+              alignItems="flex-start"
+            >
+              {categoryToRender.nominees.map(
+                (nominee: NomineeFixture, index) => (
+                  <Grid item xs={12} sm={6} md={4} key={index}>
+                    <Paper
+                      onClick={() => handleSelectNominee(nominee.id)}
+                      elevation={3}
+                      sx={{
+                        width: "100%",
+                        height: "240px",
+                        flexShrink: 0,
+                        borderRadius: "24px",
+                        border: `1px solid ${
+                          selectedNominee === nominee.id
+                            ? theme.palette.secondary.main
+                            : theme.palette.background.default
+                        }`,
+                        backdropFilter: "blur(5px)",
+                        p: { xs: 1, sm: 2 },
+                        position: "relative",
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "space-between",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <Box sx={{ position: "absolute", right: 8, top: 8 }}>
+                        <HoverCircle
+                          selected={selectedNominee === nominee.id}
+                        />
+                      </Box>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          color: "var(--neutralLightest, #FAF9F6)",
+                          textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
+                          fontFamily: "Dosis",
+                          fontSize: "28px",
+                          fontStyle: "normal",
+                          fontWeight: 700,
+                          lineHeight: "32px",
+                          mt: 3,
+                          ml: 1,
+                        }}
+                      >
+                        {nominee.name}
+                      </Typography>
+                      <Button
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          handleLearnMoreClick(event, nominee.name);
+                        }}
+                        sx={{
+                          display: "flex",
+                          width: "90%",
+                          padding: "16px 24px",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          gap: 1,
+                          borderRadius: "12px",
+                          border: "1px solid var(--neutralLightest, #FAF9F6)",
+                          color: "var(--neutralLightest, #FAF9F6)",
+                          fontSize: "16px",
+                          fontStyle: "normal",
+                          fontWeight: 500,
+                          lineHeight: "24px",
+                          mt: "auto",
+                          mx: "auto",
+                          textTransform: "none",
+                          "&:hover": {
+                            border: "1px solid var(--neutralLightest, #FAF9F6)",
+                            color: "var(--neutralLightest, #FAF9F6)",
+                          },
+                        }}
+                      >
+                        Learn More
+                      </Button>
+                    </Paper>
+                  </Grid>
+                ),
+              )}
+            </Grid>
+          </Fade>
         </Grid>
       </Grid>
       <img

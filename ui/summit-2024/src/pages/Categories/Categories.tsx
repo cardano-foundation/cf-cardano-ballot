@@ -13,20 +13,28 @@ import {
 } from "@mui/material";
 import theme from "../../common/styles/theme";
 import { CategoriesNames } from "../../__fixtures__/categories";
-import ellipse from "../../assets/ellipses2.svg";
-import DoneIcon from '@mui/icons-material/Done';
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import HoverCircle from "../../components/common/HoverCircle/HoverCircle";
+import Ellipses from "../../assets/ellipse.svg";
+import { CustomButton } from "../../components/common/CustomButton/CustomButton";
+import { BioModal } from "./components/BioModal";
 
 const Categories: React.FC = () => {
   const categoriesData = CategoriesNames;
   const [selectedNominee, setSelectedNominee] = useState("");
+  const [learMoreCategory, setLearMoreCategory] = useState("");
+  const [openLearMoreCategory, setOpenLearMoreCategory] = useState(false);
 
   const handleSelectNominee = (nominee: string) => {
-      console.log("nominee");
-      console.log(nominee);
-    setSelectedNominee(nominee);
+    if (selectedNominee === nominee) {
+      setSelectedNominee("");
+    } else {
+      setSelectedNominee(nominee);
+    }
+  };
+  const handleLearnMoreClick = (event, category) => {
+    event.stopPropagation();
+    setLearMoreCategory(category);
+    setOpenLearMoreCategory(true);
   };
   return (
     <Box sx={{ width: "100%" }}>
@@ -40,9 +48,8 @@ const Categories: React.FC = () => {
           sx={{
             position: "sticky",
             top: 0,
-            maxHeight: "100vh",
-            overflow: "auto",
-            borderRight: "1px solid #737380",
+            height: "100%",
+            overflow: "auto"
           }}
         >
           <Typography
@@ -53,11 +60,14 @@ const Categories: React.FC = () => {
               fontStyle: "normal",
               fontWeight: 700,
               lineHeight: "36px",
+                marginTop: "20px"
             }}
           >
             Categories ({categoriesData.length})
           </Typography>
-          <List>
+          <List sx={{
+              borderRight: "1px solid #737380",
+          }}>
             {categoriesData.map((category, index) => (
               <ListItem key={index}>
                 <Typography
@@ -66,7 +76,7 @@ const Categories: React.FC = () => {
                     fontSize: "16px",
                     fontStyle: "normal",
                     fontWeight: 500,
-                    lineHeight: "24px",
+                    lineHeight: "24px"
                   }}
                 >
                   {category}
@@ -83,88 +93,137 @@ const Categories: React.FC = () => {
           lg={10}
           sx={{
             p: theme.spacing(2),
-            bgcolor: theme.palette.background.default,
+            background: "transparent",
             paddingLeft: "40px",
           }}
         >
-          <Grid container spacing={2}>
-            {categoriesData.map((category, index) => (
-              <Grid
-                item
-                xs={12}
-                sm={6}
-                md={4}
-                key={index}
-                onClick={() => handleSelectNominee(category)}
-              >
-                <Paper
-                  elevation={3}
-                  sx={{
-                    width: 309,
-                    height: 240,
-                    flexShrink: 0,
-                    borderRadius: "24px",
-                    border: "2px solid rgba(18, 18, 18, 0.01)",
-                    backdropFilter: "blur(5px)",
-                    p: theme.spacing(2),
-                    position: "relative",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "space-between",
-                  }}
-                >
-                    <Box sx={{ position: 'absolute', right: 8, top: 8 }}>
-                        <HoverCircle selected={selectedNominee === category}/>
-                    </Box>
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      color: "var(--neutralLightest, #FAF9F6)",
-                      textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
-                      fontFamily: "Dosis",
-                      fontSize: "28px",
-                      fontStyle: "normal",
-                      fontWeight: 700,
-                      lineHeight: "32px",
-                      width: "229px",
-                      mt: 3,
-                      ml: 1
-                    }}
-                  >
-                    {category}
-                  </Typography>
-                  <Button
-                    sx={{
-                      display: "flex",
-                      width: 229,
-                      padding: "16px 24px",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      gap: 1,
-                      borderRadius: "12px",
-                      border: "1px solid var(--neutralLightest, #FAF9F6)",
-                      color: "var(--neutralLightest, #FAF9F6)",
-                      fontSize: "16px",
-                      fontStyle: "normal",
-                      fontWeight: 500,
-                      lineHeight: "24px",
-                      mt: "auto",
-                      mx: "auto",
-                      textTransform: "none",
-                      "&:hover": {
-                        border: "1px solid var(--neutralLightest, #FAF9F6)",
-                        color: "var(--neutralLightest, #FAF9F6)",
-                      },
-                    }}
-                  >
-                    Learn More
-                  </Button>
-                </Paper>
-              </Grid>
-            ))}
-          </Grid>
+          <Box
+            sx={{
+              width: "100%",
+              marginBottom: "32px",
+            }}
+          >
+            <Typography
+              variant="h5"
+              sx={{ fontWeight: "bold", fontFamily: "Dosis" }}
+            >
+              Ambassador Nominees (9)
+            </Typography>
+            <Typography sx={{ color: "text.secondary" }}>
+              To commemorate the special commitment and work of a Cardano
+              Ambassador.
+            </Typography>
+            <CustomButton
+              sx={{ float: "right", mt: -6 }}
+              colorVariant="primary"
+              disabled={!selectedNominee.length}
+            >
+              Vote Now
+            </CustomButton>
+          </Box>
+
+            <Grid
+                container
+                spacing={2}
+                justifyContent="center"
+                alignItems="flex-start"
+            >
+                {categoriesData.map((category, index) => (
+                    <Grid item xs={12} sm={6} md={4} key={index}>
+                        <Paper
+                            onClick={() => handleSelectNominee(category)}
+                            elevation={3}
+                            sx={{
+                                width: '100%',
+                                height: '240px',
+                                flexShrink: 0,
+                                borderRadius: "24px",
+                                border: `1px solid ${
+                                    selectedNominee === category
+                                        ? theme.palette.secondary.main
+                                        : theme.palette.background.default
+                                }`,
+                                backdropFilter: "blur(5px)",
+                                p: { xs: 1, sm: 2 },
+                                position: "relative",
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "space-between",
+                                cursor: "pointer",
+                            }}
+                        >
+                            <Box sx={{ position: "absolute", right: 8, top: 8 }}>
+                                <HoverCircle selected={selectedNominee === category} />
+                            </Box>
+                            <Typography
+                                variant="h6"
+                                sx={{
+                                    color: "var(--neutralLightest, #FAF9F6)",
+                                    textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
+                                    fontFamily: "Dosis",
+                                    fontSize: "28px",
+                                    fontStyle: "normal",
+                                    fontWeight: 700,
+                                    lineHeight: "32px",
+                                    mt: 3,
+                                    ml: 1,
+                                }}
+                            >
+                                {category}
+                            </Typography>
+                            <Button
+                                onClick={(event) => {
+                                    event.stopPropagation();
+                                    handleLearnMoreClick(event, category);
+                                }}
+                                sx={{
+                                    display: "flex",
+                                    width: '90%',
+                                    padding: "16px 24px",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    gap: 1,
+                                    borderRadius: "12px",
+                                    border: "1px solid var(--neutralLightest, #FAF9F6)",
+                                    color: "var(--neutralLightest, #FAF9F6)",
+                                    fontSize: "16px",
+                                    fontStyle: "normal",
+                                    fontWeight: 500,
+                                    lineHeight: "24px",
+                                    mt: "auto",
+                                    mx: "auto",
+                                    textTransform: "none",
+                                    "&:hover": {
+                                        border: "1px solid var(--neutralLightest, #FAF9F6)",
+                                        color: "var(--neutralLightest, #FAF9F6)",
+                                    },
+                                }}
+                            >
+                                Learn More
+                            </Button>
+                        </Paper>
+                    </Grid>
+                ))}
+            </Grid>
+
         </Grid>
       </Grid>
+      <img
+        src={Ellipses}
+        style={{
+          position: "fixed",
+          right: "0",
+          top: "70%",
+          transform: "translateY(-40%)",
+          zIndex: "-1",
+          width: "70%",
+        }}
+      />
+      <BioModal
+        isOpen={openLearMoreCategory}
+        title={learMoreCategory}
+        onClose={() => setOpenLearMoreCategory(false)}
+      />
     </Box>
   );
 };

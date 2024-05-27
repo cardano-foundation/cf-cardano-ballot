@@ -17,6 +17,7 @@ type ModalProps = {
   isOpen: boolean;
   backButton?: boolean;
   title: string;
+  leftTitle?: boolean;
   width?: string;
   disableBackdropClick?: boolean;
   onClose?: () => void;
@@ -85,7 +86,7 @@ const Modal = (props: ModalProps) => {
           component="div"
           sx={{
             flex: 1,
-            textAlign: "center",
+            textAlign: props.leftTitle ? "left" :"center",
             fontFamily: "Dosis",
             weight: 700,
             fontSize: "28px",

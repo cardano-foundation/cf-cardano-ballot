@@ -96,18 +96,56 @@ const Categories: React.FC = () => {
                 onClick={() => handleClickMenuItem(category.category)}
                 key={index}
               >
-                <Typography
-                  sx={{
-                    color: theme.palette.text.neutralLightest,
-                    fontSize: "16px",
-                    fontStyle: "normal",
-                    fontWeight: 500,
-                    lineHeight: "24px",
-                      cursor: "pointer",
-                  }}
-                >
-                  {category.category}
-                </Typography>
+                  {
+                      category.category === selectedCategory ? <>
+                          <Box sx={{
+                              display: "flex",
+                              padding: "8px 12px",
+                              alignItems: "center",
+                              gap: "10px",
+                              alignSelf: "stretch",
+                              borderRadius: "12px",
+                              background: theme.palette.secondary.main,
+                              color: theme.palette.background.default,
+                              fontSize: "16px",
+                              fontStyle: "normal",
+                              fontWeight: 500,
+                              lineHeight: "24px",
+                              cursor: "pointer",
+                              width: "100%"
+                          }}>
+                              <Typography
+                                  sx={{
+                                      gap: "10px",
+                                      alignSelf: "stretch",
+                                      borderRadius: "12px",
+                                      fontSize: "16px",
+                                      fontStyle: "normal",
+                                      fontWeight: 500,
+                                      lineHeight: "24px",
+                                      cursor: "pointer",
+                                      width: "100%"
+                                  }}
+                              >
+                                  {category.category}
+                              </Typography>
+                          </Box>
+
+                      </> : <>
+                          <Typography
+                              sx={{
+                                  color: theme.palette.text.neutralLightest,
+                                  fontSize: "16px",
+                                  fontStyle: "normal",
+                                  fontWeight: 500,
+                                  lineHeight: "24px",
+                                  cursor: "pointer",
+                              }}
+                          >
+                              {category.category}
+                          </Typography>
+                      </>
+                  }
               </ListItem>
             ))}
           </List>
@@ -211,7 +249,7 @@ const Categories: React.FC = () => {
                   <Button
                     onClick={(event) => {
                       event.stopPropagation();
-                      handleLearnMoreClick(event, nominee.id);
+                      handleLearnMoreClick(event, nominee.name);
                     }}
                     sx={{
                       display: "flex",

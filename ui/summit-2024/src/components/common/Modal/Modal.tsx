@@ -86,7 +86,7 @@ const Modal = (props: ModalProps) => {
           component="div"
           sx={{
             flex: 1,
-            textAlign: props.leftTitle ? "left" :"center",
+            textAlign: props.leftTitle ? "left" : "center",
             fontFamily: "Dosis",
             weight: 700,
             fontSize: "28px",

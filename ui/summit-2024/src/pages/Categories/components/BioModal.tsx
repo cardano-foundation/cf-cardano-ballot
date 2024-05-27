@@ -1,4 +1,4 @@
-import React  from "react";
+import React from "react";
 import { useIsPortrait } from "../../../common/hooks/useIsPortrait";
 import Modal from "../../../components/common/Modal/Modal";
 import { Box, Typography } from "@mui/material";
@@ -59,7 +59,7 @@ const BioModal: React.FC = ({ isOpen, title, onClose }) => {
           </Box>
         </Box>
 
-        <Typography variant="body2" sx={{ my: 2 }} >
+        <Typography variant="body2" sx={{ my: 2 }}>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
           eiusmod tempor incididunt ut labore et dolore magna aliqua. Habitant
           morbi tristique senectus et netus. In massa tempor nec feugiat nisl

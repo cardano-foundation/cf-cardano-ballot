@@ -28,7 +28,7 @@ import { clearUserInSessionStorage } from "../../utils/session";
 import { removeFromLocalStorage } from "../../utils/storage";
 import { disconnect } from "process";
 import { useConnectWalletContext } from "../ConnectWalletModal/ConnectWalletModal";
-import {eventBus} from "../../utils/EventBus";
+import { eventBus } from "../../utils/EventBus";
 
 type ConnectWalletListProps = {
   description?: string;
@@ -93,7 +93,7 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
   const handleCopyToClipboard = async () => {
     if (!meerkatAddress) return;
     await copyToClipboard(meerkatAddress);
-    eventBus.publish("showToast", "Copied to clipboard")
+    eventBus.publish("showToast", "Copied to clipboard");
   };
 
   const renderContent = () => {
@@ -274,7 +274,12 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
   const renderSelectWallet = () => {
     return (
       <>
-        <List>
+        <List
+          sx={{
+            maxHeight: "80vh",
+            overflowY: "auto",
+          }}
+        >
           <ListItem
             sx={{
               display: "flex",

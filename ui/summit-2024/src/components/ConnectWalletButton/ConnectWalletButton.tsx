@@ -17,12 +17,9 @@ import React from "react";
 import "./ConnectWalletButton.scss";
 import { RootState } from "../../store";
 import { getUserInSession, tokenIsExpired } from "../../utils/session";
-import {
-  addressSlice,
-  resolveCardanoNetwork
-} from "../../utils/utils";
+import { addressSlice, resolveCardanoNetwork } from "../../utils/utils";
 import { env } from "../../common/constants/env";
-import {eventBus} from "../../utils/EventBus";
+import { eventBus } from "../../utils/EventBus";
 
 type ConnectWalletButtonProps = {
   disableBackdropClick?: boolean;
@@ -33,11 +30,7 @@ type ConnectWalletButtonProps = {
 };
 
 const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
-  const {
-    onOpenConnectWalletModal,
-    onLogin,
-    onDisconnectWallet,
-  } = props;
+  const { onOpenConnectWalletModal, onLogin, onDisconnectWallet } = props;
   const eventCache = useSelector((state: RootState) => state.user.event);
   const walletIsVerified = useSelector(
     (state: RootState) => state.user.walletIsVerified,

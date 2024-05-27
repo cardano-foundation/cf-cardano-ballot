@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { AppBar, Box, Toolbar, Typography, IconButton } from "@mui/material";
 import ExitToAppOutlinedIcon from "@mui/icons-material/ExitToAppOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
@@ -13,8 +14,11 @@ import { resolveCardanoNetwork } from "../../../utils/utils";
 import { env } from "../../../common/constants/env";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 import { ConnectWalletButton } from "../../ConnectWalletButton/ConnectWalletButton";
+import { ROUTES } from "../../../routes";
 
 const Header = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [showConnectWalletModal, setShowConnectWalletModal] =
     useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -104,6 +108,10 @@ const Header = () => {
     disconnect();
   };
 
+  const handleClickMenu = (option: string) => {
+    if (option !== location.pathname) navigate(option);
+  };
+
   const dropdownOptions = [
     { label: "Verify Wallet", action: handleOpenVerify },
     {
@@ -146,9 +154,15 @@ const Header = () => {
             >
               <Typography
                 variant="body1"
-                component="a"
+                component="span"
                 href="#categories"
-                sx={{ color: "inherit", mx: 2, textDecoration: "none" }}
+                sx={{
+                  color: "inherit",
+                  mx: 2,
+                  textDecoration: "none",
+                  cursor: "pointer",
+                }}
+                onClick={() => handleClickMenu(ROUTES.CATEGORIES)}
               >
                 Categories
               </Typography>

@@ -1,6 +1,7 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 import { Home } from "../pages/Home";
+import { Categories } from "../pages/Categories/Categories";
 
 export const PAGE_PATH = "/";
 
@@ -21,6 +22,7 @@ const PageRouter = () => {
     <>
       <Routes>
         <Route path={ROUTES.LANDING} element={<Home />} />
+        <Route path={ROUTES.CATEGORIES} element={<Categories />} />
       </Routes>
     </>
   );

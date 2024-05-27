@@ -14,7 +14,7 @@ function App() {
   return (
     <>
       <BrowserRouter>
-        <Container md={{ maxWidth: "1440px" }} >
+        <Container md={{ maxWidth: "1440px" }}>
           <Grid container spacing={1} direction="column">
             <Grid container justifyContent="center">
               <Grid

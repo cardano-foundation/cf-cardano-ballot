@@ -1,7 +1,7 @@
 import Shapes from "../../../assets/shapes.svg";
 import GLBViewer from "../../../components/GLBViewer/GLBViewer";
 import React from "react";
-import { Box, Button, Grid, Typography } from "@mui/material";
+import {Box, Button, Fade, Grid, Typography} from "@mui/material";
 import { useIsPortrait } from "../../../common/hooks/useIsPortrait";
 import { CustomButton } from "../../../components/common/CustomButton/CustomButton";
 
@@ -147,33 +147,40 @@ const Hero = () => {
           </Box>
         </Grid>
         <Grid item xs={12} sm={4} md={6} lg={8}>
-          <Box
-            sx={{
-              height: "100%",
-              backgroundImage: !isMobile ? `url(${Shapes})` : "",
-              backgroundSize: {
-                xs: "cover",
-                sm: "cover",
-                md: "contain",
-                lg: "contain",
-              },
-              backgroundRepeat: "no-repeat",
-              backgroundPosition: {
-                xs: "left",
-                sm: "center",
-                md: "center",
-                lg: "right",
-              },
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              marginTop: isMobile ? "" : "12px",
-              marginLeft: isMobile ? "24px" : "90px",
-              paddingLeft: { xs: 2, sm: 3, md: 4, lg: 30 },
-            }}
-          >
-            <GLBViewer glbUrl="/compressed.glb" />
-          </Box>
+
+                <Box
+                    sx={{
+                        height: "100%",
+                        backgroundImage: !isMobile ? `url(${Shapes})` : "",
+                        backgroundSize: {
+                            xs: "cover",
+                            sm: "cover",
+                            md: "contain",
+                            lg: "contain",
+                        },
+                        backgroundRepeat: "no-repeat",
+                        backgroundPosition: {
+                            xs: "left",
+                            sm: "center",
+                            md: "center",
+                            lg: "right",
+                        },
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        marginTop: isMobile ? "" : "12px",
+                        marginLeft: isMobile ? "24px" : "90px",
+                        paddingLeft: { xs: 2, sm: 3, md: 4, lg: 30 },
+                    }}
+                >
+                    <Fade in={true} timeout={5000}>
+                        <Box>
+                            <GLBViewer glbUrl="/compressed.glb" />
+                        </Box>
+                    </Fade>
+                </Box>
+
+
         </Grid>
       </Grid>
     </>

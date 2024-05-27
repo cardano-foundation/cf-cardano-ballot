@@ -140,13 +140,13 @@ const Header = () => {
             padding: "20px 16px",
           }}
         >
-          <IconButton edge="start" color="inherit" sx={{ p: 0, mr: 2 }}>
+          <Box sx={{ p: 0, cursor: "pointer" }} onClick={() => navigate(ROUTES.LANDING)}>
             <img
               src={Logo}
               alt="Logo"
               style={{ height: "50px", width: "auto" }}
             />
-          </IconButton>
+          </Box>
 
           {!isPortrait && (
             <Box

@@ -22,15 +22,17 @@ import HoverCircle from "../../components/common/HoverCircle/HoverCircle";
 import Ellipses from "../../assets/ellipse.svg";
 import { CustomButton } from "../../components/common/CustomButton/CustomButton";
 import { BioModal } from "./components/BioModal";
+import {VoteNowModal} from "./components/VoteNowModal";
 
 const Categories: React.FC = () => {
   const categoriesData = nomineesData;
   const [selectedCategory, setSelectedCategory] = useState(
     categoriesData[0].category,
   );
-  const [selectedNominee, setSelectedNominee] = useState<number | undefined>(1);
+  const [selectedNominee, setSelectedNominee] = useState<number | undefined>( categoriesData[0].nominees[0].id);
   const [learMoreCategory, setLearMoreCategory] = useState("");
   const [openLearMoreCategory, setOpenLearMoreCategory] = useState(false);
+  const [openVotingModal, setOpenVotingModal] = useState(false);
 
   const [fadeChecked, setFadeChecked] = useState(true);
 
@@ -51,10 +53,8 @@ const Categories: React.FC = () => {
   };
 
   const handleSelectNominee = (id: number) => {
-    if (selectedNominee === id) {
-      setSelectedNominee(undefined);
-    } else {
-      setSelectedNominee(id);
+    if (selectedNominee !== id) {
+        setSelectedNominee(id);
     }
   };
 
@@ -70,6 +70,8 @@ const Categories: React.FC = () => {
   if (!categoryToRender) {
     categoryToRender = categoriesData[0];
   }
+
+  const nomineeToVote = categoryToRender.nominees.find((n) => n.id === selectedNominee);
 
   return (
     <Box sx={{ width: "100%" }}>
@@ -206,6 +208,7 @@ const Categories: React.FC = () => {
               Ambassador.
             </Typography>
             <CustomButton
+                onClick={() => setOpenVotingModal(true)}
               sx={{ mt: -6, alignSelf: "flex-end" }}
               colorVariant="primary"
               disabled={!selectedNominee}
@@ -321,6 +324,7 @@ const Categories: React.FC = () => {
         title={learMoreCategory}
         onClose={() => setOpenLearMoreCategory(false)}
       />
+        <VoteNowModal isOpen={openVotingModal} onClose={() => setOpenVotingModal(false)} selectedNominee={nomineeToVote}/>
     </Box>
   );
 };

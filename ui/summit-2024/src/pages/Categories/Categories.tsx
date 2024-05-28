@@ -23,6 +23,8 @@ import Ellipses from "../../assets/ellipse.svg";
 import { CustomButton } from "../../components/common/CustomButton/CustomButton";
 import { BioModal } from "./components/BioModal";
 import {VoteNowModal} from "./components/VoteNowModal";
+import {useIsPortrait} from "../../common/hooks/useIsPortrait";
+import {is} from "@react-three/fiber/dist/declarations/src/core/utils";
 
 const Categories: React.FC = () => {
   const categoriesData = nomineesData;
@@ -36,7 +38,10 @@ const Categories: React.FC = () => {
 
   const [fadeChecked, setFadeChecked] = useState(true);
 
-  useEffect(() => {
+    const isMobile = useIsPortrait();
+
+
+    useEffect(() => {
     if (fadeChecked) {
       setSelectedCategory(selectedCategory);
     }
@@ -79,107 +84,159 @@ const Categories: React.FC = () => {
         <Grid
           item
           xs={12}
-          sm={3}
           md={2.4}
           lg={2}
           sx={{
-            position: "sticky",
+            position: isMobile ? "" : "sticky",
             top: 0,
-            height: "100%",
+            height: isMobile ? "" : "100%",
             overflow: "auto",
           }}
         >
-          <Typography
-            sx={{
-              color: theme.palette.text.neutralLightest,
-              fontFamily: "Dosis",
-              fontSize: "32px",
-              fontStyle: "normal",
-              fontWeight: 700,
-              lineHeight: "36px",
-              marginTop: "20px",
-              borderRight: "1px solid #737380",
-            }}
-          >
-            Categories ({categoriesData.length})
-          </Typography>
-          <List
-            sx={{
-              borderRight: "1px solid #737380",
-            }}
-          >
-            {categoriesData.map((category: NomineeArrayFixture, index) => (
-              <ListItem
-                onClick={() => handleClickMenuItem(category.category)}
-                key={index}
-              >
-                {category.category === selectedCategory ? (
-                  <>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        padding: "8px 12px",
-                        alignItems: "center",
-                        gap: "10px",
-                        alignSelf: "stretch",
-                        borderRadius: "12px",
-                        background: theme.palette.secondary.main,
-                        color: theme.palette.background.default,
-                        fontSize: "16px",
-                        fontStyle: "normal",
-                        fontWeight: 500,
-                        lineHeight: "24px",
-                        cursor: "pointer",
+            <Typography
+                sx={{
+                    color: theme.palette.text.neutralLightest,
+                    fontFamily: "Dosis",
+                    fontSize: "32px",
+                    fontStyle: "normal",
+                    fontWeight: 700,
+                    lineHeight: "36px",
+                    marginTop: "20px",
+                    borderRight: "1px solid #737380",
+                    paddingLeft: "16px"
+                }}
+            >
+                Categories ({categoriesData.length})
+            </Typography>
+            {
+                isMobile ? <>
+                    <Box sx={{
+                        overflowX: "auto",
                         width: "100%",
-                      }}
-                    >
-                      <Typography
-                        sx={{
-                          gap: "10px",
-                          alignSelf: "stretch",
-                          borderRadius: "12px",
-                          fontSize: "16px",
-                          fontStyle: "normal",
-                          fontWeight: 500,
-                          lineHeight: "24px",
-                          cursor: "pointer",
-                          width: "100%",
-                        }}
-                      >
-                        {category.category}
-                      </Typography>
+                        maxWidth: "100vw",
+                        '&::-webkit-scrollbar': {
+                            display: 'none'
+                        },
+                        scrollbarWidth: 'none',
+                        msOverflowStyle: 'none',
+                        marginTop: "14px"
+                    }}>
+                        <List
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                padding: 0,
+                                margin: 0
+                            }}
+                        >
+                            {categoriesData.map((category, index) => (
+                                <ListItem
+                                    onClick={() => handleClickMenuItem(category.category)}
+                                    key={index}
+                                    sx={{
+                                        display: 'flex', // Mantiene los items en línea
+                                        marginRight: '8px', // Espacio entre items
+                                        whiteSpace: 'nowrap' // Evita que el texto de los items se divida en varias líneas
+                                    }}
+                                >
+                                    <Typography
+                                        sx={{
+                                            color: category.category === selectedCategory ? theme.palette.background.default : theme.palette.text.neutralLightest,
+                                            background: category.category === selectedCategory ? theme.palette.secondary.main : 'none',
+                                            padding: "8px 12px",
+                                            borderRadius: "12px",
+                                            fontSize: "16px",
+                                            fontWeight: 500,
+                                            lineHeight: "24px",
+                                            cursor: "pointer",
+                                        }}
+                                    >
+                                        {category.category}
+                                    </Typography>
+                                </ListItem>
+                            ))}
+                        </List>
                     </Box>
-                  </>
-                ) : (
-                  <>
-                    <Typography
-                      sx={{
-                        color: theme.palette.text.neutralLightest,
-                        fontSize: "16px",
-                        fontStyle: "normal",
-                        fontWeight: 500,
-                        lineHeight: "24px",
-                        cursor: "pointer",
-                      }}
+                </>: <>
+
+                    <List
+                        sx={{
+                            borderRight: "1px solid #737380",
+                        }}
                     >
-                      {category.category}
-                    </Typography>
-                  </>
-                )}
-              </ListItem>
-            ))}
-          </List>
+                        {categoriesData.map((category: NomineeArrayFixture, index) => (
+                            <ListItem
+                                onClick={() => handleClickMenuItem(category.category)}
+                                key={index}
+                            >
+                                {category.category === selectedCategory ? (
+                                    <>
+                                        <Box
+                                            sx={{
+                                                display: "flex",
+                                                padding: "8px 12px",
+                                                alignItems: "center",
+                                                gap: "10px",
+                                                alignSelf: "stretch",
+                                                borderRadius: "12px",
+                                                background: theme.palette.secondary.main,
+                                                color: theme.palette.background.default,
+                                                fontSize: "16px",
+                                                fontStyle: "normal",
+                                                fontWeight: 500,
+                                                lineHeight: "24px",
+                                                cursor: "pointer",
+                                                width: "100%",
+                                            }}
+                                        >
+                                            <Typography
+                                                sx={{
+                                                    gap: "10px",
+                                                    alignSelf: "stretch",
+                                                    borderRadius: "12px",
+                                                    fontSize: "16px",
+                                                    fontStyle: "normal",
+                                                    fontWeight: 500,
+                                                    lineHeight: "24px",
+                                                    cursor: "pointer",
+                                                    width: "100%",
+                                                }}
+                                            >
+                                                {category.category}
+                                            </Typography>
+                                        </Box>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Typography
+                                            sx={{
+                                                color: theme.palette.text.neutralLightest,
+                                                fontSize: "16px",
+                                                fontStyle: "normal",
+                                                fontWeight: 500,
+                                                lineHeight: "24px",
+                                                cursor: "pointer",
+                                            }}
+                                        >
+                                            {category.category}
+                                        </Typography>
+                                    </>
+                                )}
+                            </ListItem>
+                        ))}
+                    </List>
+                </>
+            }
         </Grid>
         <Grid
           item
           xs={12}
-          sm={9}
           md={9.6}
           lg={10}
           sx={{
             p: theme.spacing(2),
             background: "transparent",
-            paddingLeft: "40px",
+            paddingLeft: isMobile ? "" : "40px",
           }}
         >
           <Box
@@ -226,7 +283,9 @@ const Categories: React.FC = () => {
             >
               {categoryToRender.nominees.map(
                 (nominee: NomineeFixture, index) => (
-                  <Grid item xs={12} sm={6} md={4} key={index}>
+                  <Grid item xs={12} sm={6} md={4} key={index} sx={{
+                      width: "100px !important"
+                  }}>
                     <Paper
                       onClick={() => handleSelectNominee(nominee.id)}
                       elevation={3}
@@ -291,6 +350,7 @@ const Categories: React.FC = () => {
                           lineHeight: "24px",
                           mt: "auto",
                           mx: "auto",
+                            marginBottom: "40px",
                           textTransform: "none",
                           "&:hover": {
                             border: "1px solid var(--neutralLightest, #FAF9F6)",

@@ -2,13 +2,14 @@ import Modal from "../common/Modal/Modal";
 import { useLocalStorage } from "../../common/hooks/useLocalStorage";
 import { CB_COOKIES } from "../../common/constants/local";
 import { Box, Button, Typography } from "@mui/material";
+import theme from "../../common/styles/theme";
 
 export enum CookiesStatus {
   ACCEPT = "ACCEPT",
   REJECT = "REJECT",
 }
 
-const Cookies = () => {
+const Cookies = ({ position }) => {
   const [cookies, setCookies] = useLocalStorage(CB_COOKIES, undefined);
 
   const handleAccept = () => {
@@ -20,7 +21,7 @@ const Cookies = () => {
   };
 
   const handlePrivacyPolicy = () => {
-    // TODO: open privacy and policy page
+    // TODO: Open privacy and policy page
   };
 
   return (
@@ -30,10 +31,21 @@ const Cookies = () => {
         isOpen={!cookies}
         name="connect-wallet-modal"
         title="Cookie Policy"
-        width={"620px"}
+        width="auto"
         onClose={() => setCookies(CookiesStatus.REJECT)}
         onBack={() => setCookies(CookiesStatus.REJECT)}
         disableBackdropClick
+        position={position}
+        sx={{
+          width: {
+            tablet: "95vw",
+          },
+          maxWidth: "620px",
+          position: "absolute",
+          bottom: 0,
+          left: "50%",
+          transform: "translateX(-50%)",
+        }}
       >
         <Box
           sx={{
@@ -47,17 +59,17 @@ const Cookies = () => {
         >
           <Typography
             sx={{
-              color: "var(--neutralLight, #D2D2D9)",
+              color: theme.palette.text.neutralLight,
               fontSize: "16px",
               fontWeight: 500,
               lineHeight: "24px",
-              textAlign: "center",
+              textAlign: "left",
             }}
           >
             We use cookies on this website to help improve your overall
             experience. By clicking accept you agree to our privacy policy.
           </Typography>
-          <Box sx={{ display: "flex", gap: 1 }}>
+          <Box sx={{ display: "flex" }}>
             <Button
               onClick={handlePrivacyPolicy}
               sx={{
@@ -73,6 +85,7 @@ const Cookies = () => {
                 fontWeight: 500,
                 lineHeight: "24px",
                 textTransform: "none",
+                marginRight: "12px",
               }}
             >
               Privacy Policy
@@ -92,6 +105,7 @@ const Cookies = () => {
                 fontWeight: 500,
                 lineHeight: "24px",
                 textTransform: "none",
+                marginRight: "12px",
               }}
             >
               Reject

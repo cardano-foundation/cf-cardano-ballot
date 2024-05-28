@@ -5,11 +5,6 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { IconButton, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
-import Paper from "@mui/material/Paper";
-
-const StyledPaper = (props: any) => {
-  return <Paper {...props} style={{ borderRadius: "16px" }} />;
-};
 
 type ModalProps = {
   name?: string;
@@ -18,7 +13,9 @@ type ModalProps = {
   backButton?: boolean;
   title: string;
   leftTitle?: boolean;
+  position?: "normal" | "bottom";
   width?: string;
+  backdrop?: boolean;
   disableBackdropClick?: boolean;
   onClose?: () => void;
   onBack?: () => void | undefined;
@@ -32,6 +29,8 @@ const Modal = (props: ModalProps) => {
     isOpen,
     title,
     width,
+    position,
+    backdrop,
     disableBackdropClick,
     onClose,
     onBack,
@@ -46,9 +45,16 @@ const Modal = (props: ModalProps) => {
           onClose();
         }
       }}
+      back
       aria-labelledby={name}
       maxWidth="sm"
-      PaperComponent={StyledPaper}
+      sx={{
+        "& .MuiPaper-root": {
+          borderRadius: "16px",
+          position: position === "bottom" ? "absolute" : "",
+          bottom: position === "bottom" ? "24px" : "",
+        },
+      }}
     >
       <DialogTitle
         id={id}

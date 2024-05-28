@@ -3,11 +3,13 @@ import { Button, ButtonProps, useTheme, SxProps, Theme } from "@mui/material";
 
 interface CustomButtonProps extends ButtonProps {
   colorVariant: "primary" | "secondary";
+  gradient: boolean;
   startIcon?: React.ReactNode;
 }
 
 const CustomButton: React.FC<CustomButtonProps> = ({
   colorVariant,
+  gradient,
   startIcon,
   sx,
   disabled,
@@ -17,8 +19,9 @@ const CustomButton: React.FC<CustomButtonProps> = ({
   const theme = useTheme();
 
   const getPrimaryStyles = (): SxProps<Theme> => ({
-    background:
-      "linear-gradient(258deg, #EE9766 0%, #40407D 187.58%, #0C7BC5 249.97%)",
+    background: gradient
+      ? "linear-gradient(258deg, #EE9766 0%, #40407D 187.58%, #0C7BC5 249.97%)"
+      : theme.palette.secondary.main,
     color: theme.palette.background.default,
     "&:hover": {
       color: theme.palette.text.neutralLightest,

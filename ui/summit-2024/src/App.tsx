@@ -50,7 +50,7 @@ function App() {
             </Box>
             <Footer />
           </Grid>
-          <Cookies />
+          <Cookies position="bottom" />
           <TermsAndConditionsModal />
         </Container>
       </BrowserRouter>

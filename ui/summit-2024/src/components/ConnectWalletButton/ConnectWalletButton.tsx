@@ -1,7 +1,8 @@
 import { useSelector } from "react-redux";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 import {
-  Avatar, Box,
+  Avatar,
+  Box,
   Button,
   List,
   ListItem,
@@ -16,10 +17,14 @@ import React from "react";
 import "./ConnectWalletButton.scss";
 import { RootState } from "../../store";
 import { getUserInSession, tokenIsExpired } from "../../utils/session";
-import {addressSlice, resolveCardanoNetwork, walletIcon} from "../../utils/utils";
+import {
+  addressSlice,
+  resolveCardanoNetwork,
+  walletIcon,
+} from "../../utils/utils";
 import { env } from "../../common/constants/env";
 import { eventBus } from "../../utils/EventBus";
-import {useIsPortrait} from "../../common/hooks/useIsPortrait";
+import { useIsPortrait } from "../../common/hooks/useIsPortrait";
 
 type ConnectWalletButtonProps = {
   label: string;
@@ -65,15 +70,20 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
         onClick={() => handleConnectWallet()}
       >
         {isConnected ? (
-          <Avatar src={enabledWallet ? walletIcon(enabledWallet) : ""} style={{ width: "24px", height: "24px" }} />
+          <Avatar
+            src={enabledWallet ? walletIcon(enabledWallet) : ""}
+            style={{ width: "24px", height: "24px" }}
+          />
         ) : (
           <AccountBalanceWalletIcon />
         )}
         {isConnected ? (
           <>
-            {
-              isMobile ? null : stakeAddress ? addressSlice(stakeAddress, 5) : null
-            }
+            {isMobile
+              ? null
+              : stakeAddress
+              ? addressSlice(stakeAddress, 5)
+              : null}
             {walletIsVerified ? (
               <VerifiedIcon
                 style={{
@@ -88,17 +98,16 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
             </div>
           </>
         ) : (
-          <>
-            {
-              props.label?.length  ? <span>{props.label}</span> : null
-            }
-          </>
+          <>{props.label?.length ? <span>{props.label}</span> : null}</>
         )}
       </Button>
       {isConnected && (
-        <Box className="disconnect-wrapper" sx={{
-          width: isMobile ? "180px" : "100%"
-        }}>
+        <Box
+          className="disconnect-wrapper"
+          sx={{
+            width: isMobile ? "180px" : "100%",
+          }}
+        >
           <List>
             {!walletIsVerified && !eventCache?.finished ? (
               <ListItem

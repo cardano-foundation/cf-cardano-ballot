@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import {AppBar, Box, Toolbar, Typography, IconButton, Drawer} from "@mui/material";
+import {
+  AppBar,
+  Box,
+  Toolbar,
+  Typography,
+  IconButton,
+  Drawer,
+} from "@mui/material";
 import ExitToAppOutlinedIcon from "@mui/icons-material/ExitToAppOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import Logo from "../../../assets/logo.svg";
@@ -15,7 +22,7 @@ import { env } from "../../../common/constants/env";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 import { ConnectWalletButton } from "../../ConnectWalletButton/ConnectWalletButton";
 import { ROUTES } from "../../../routes";
-import {RightMenu} from "./RightMenu/RightMenu";
+import { RightMenu } from "./RightMenu/RightMenu";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -142,7 +149,10 @@ const Header = () => {
             padding: "20px 16px",
           }}
         >
-          <Box sx={{ p: 0, cursor: "pointer" }} onClick={() => navigate(ROUTES.LANDING)}>
+          <Box
+            sx={{ p: 0, cursor: "pointer" }}
+            onClick={() => navigate(ROUTES.LANDING)}
+          >
             <img
               src={Logo}
               alt="Logo"
@@ -189,7 +199,7 @@ const Header = () => {
 
           <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
             <ConnectWalletButton
-                label={isPortrait ? "" : "Connect Wallet"}
+              label={isPortrait ? "" : "Connect Wallet"}
               onOpenConnectWalletModal={handleConnectWalletModal}
               onOpenVerifyWalletModal={handleOpenVerify}
               onLogin={handleLogin}
@@ -214,7 +224,10 @@ const Header = () => {
           </Box>
         </Toolbar>
       </AppBar>
-      <RightMenu menuIsOpen={menuIsOpen} setMenuIsOpen={(isOpen:boolean) => setMenuIsOpen(isOpen)} />
+      <RightMenu
+        menuIsOpen={menuIsOpen}
+        setMenuIsOpen={(isOpen: boolean) => setMenuIsOpen(isOpen)}
+      />
       <ConnectWalletModal
         showPeerConnect={showConnectWalletModal}
         handleCloseConnectWalletModal={(open) =>

@@ -47,9 +47,10 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
     /*TODO */
   });
 
-  const { connect, dAppConnect, meerkatAddress, initDappConnect, disconnect } = useCardano({
-    limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
-  });
+  const { connect, dAppConnect, meerkatAddress, initDappConnect, disconnect } =
+    useCardano({
+      limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
+    });
 
   const isMobile = useIsPortrait();
 
@@ -102,7 +103,6 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
 
         setOnPeerConnectAccept(() => () => callback(true, true));
         setOnPeerConnectReject(() => () => callback(false, false));
-
       };
 
       const onApiInject = (name: string, address: string): void => {

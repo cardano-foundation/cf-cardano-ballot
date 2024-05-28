@@ -81,11 +81,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
   };
 
   const onConnectError = (e) => {
-    eventBus.publish(
-      "showToast",
-        e.message,
-      "error",
-    );
+    eventBus.publish("showToast", e.message, "error");
   };
 
   useEffect(() => {

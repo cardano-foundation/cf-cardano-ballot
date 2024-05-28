@@ -30,110 +30,111 @@ const ExploreSection = () => {
           justifyContent: "center",
         }}
       >
-          <Box sx={{
-              display: {
-                  xs: "block",
-                    sm: "none"
-              }
+        <Box
+          sx={{
+            display: {
+              xs: "block",
+              sm: "none",
+            },
           }}
+        >
+          <Typography
+            variant="h4"
+            sx={{
+              color: theme.palette.text.neutralLightest,
+              fontFamily: "Dosis",
+              fontSize: { md: "40px", lg: "52px" },
+              lineHeight: { md: "30px", lg: "56px" },
+              fontStyle: "normal",
+              fontWeight: "700",
+              textAlign: isMobile ? "center" : "left",
+              whiteSpace: { sm: "nowrap", md: "normal" },
+              mb: 2,
+            }}
           >
-              <Typography
-                  variant="h4"
-                  sx={{
-                      color: theme.palette.text.neutralLightest,
-                      fontFamily: "Dosis",
-                      fontSize: { md: "40px", lg: "52px" },
-                      lineHeight: { md: "30px", lg: "56px" },
-                      fontStyle: "normal",
-                      fontWeight: "700",
-                      textAlign: isMobile ? "center" : "left",
-                      whiteSpace: { sm: "nowrap", md: "normal" },
-                      mb: 2,
-                  }}
-              >
-                  Cast Your Vote for This
-              </Typography>
-              <Typography
-                  variant="h4"
-                  sx={{
-                      color: theme.palette.text.neutralLightest,
-                      fontFamily: "Dosis",
-                      fontSize: { md: "40px", lg: "52px" },
-                      lineHeight: { md: "30px", lg: "56px" },
-                      fontStyle: "normal",
-                      fontWeight: "700",
-                      textAlign: isMobile ? "center" : "left",
-                      whiteSpace: { sm: "nowrap", md: "normal" },
-                      mb: 2,
-                  }}
-              >
-                  Year’s Award Summit!2
-              </Typography>
-          </Box>
-          <Box sx={{
-              display: {
-                  xs: "none",
-                  sm: "block"
-              },
-              width: "100%",
+            Cast Your Vote for This
+          </Typography>
+          <Typography
+            variant="h4"
+            sx={{
+              color: theme.palette.text.neutralLightest,
+              fontFamily: "Dosis",
+              fontSize: { md: "40px", lg: "52px" },
+              lineHeight: { md: "30px", lg: "56px" },
+              fontStyle: "normal",
+              fontWeight: "700",
+              textAlign: isMobile ? "center" : "left",
+              whiteSpace: { sm: "nowrap", md: "normal" },
+              mb: 2,
+            }}
+          >
+            Year’s Award Summit!2
+          </Typography>
+        </Box>
+        <Box
+          sx={{
+            display: {
+              xs: "none",
+              sm: "block",
+            },
+            width: "100%",
           }}
-          >
-              <Typography
-                  variant="h4"
-                  sx={{
-                      color: theme.palette.text.neutralLightest,
-                      fontFamily: "Dosis",
-                      fontSize: { md: "52px" },
-                      lineHeight: { md: "56px" },
-                      fontStyle: "normal",
-                      fontWeight: "700",
-                      textAlign: {
-                          xs:  "center",
-                          md: "left"
-                      },
-                      whiteSpace: { sm: "nowrap", md: "normal" },
-                  }}
-              >
-                  Cast Your Vote for This Year’s
-              </Typography>
-              <Typography
-                  variant="h4"
-                  sx={{
-                      color: theme.palette.text.neutralLightest,
-                      fontFamily: "Dosis",
-                      fontSize: { md: "52px" },
-                      lineHeight: { md: "56px" },
-                      fontStyle: "normal",
-                      fontWeight: "700",
-                      textAlign: {
-                          xs:  "center",
-                          md: "left"
-                      },
-                      whiteSpace: { sm: "nowrap", md: "normal" },
-                      mb: 2,
-                  }}
-              >
-                  Award Summit!
-              </Typography>
-          </Box>
-          <Box sx={{
-              width: "100%",
+        >
+          <Typography
+            variant="h4"
+            sx={{
+              color: theme.palette.text.neutralLightest,
+              fontFamily: "Dosis",
+              fontSize: { md: "52px" },
+              lineHeight: { md: "56px" },
+              fontStyle: "normal",
+              fontWeight: "700",
               textAlign: {
-                  xs: "center",
-                  md: "left"
-              }
-          }}
+                xs: "center",
+                md: "left",
+              },
+              whiteSpace: { sm: "nowrap", md: "normal" },
+            }}
           >
-              <CustomButton
-                  sx={{ marginTop: "28px",  marginBottom: "32px" }}
-                  colorVariant="secondary"
-                  startIcon={<HowToVoteOutlinedIcon />}
-              >
-                  User Guide
-              </CustomButton>
-          </Box>
-
-
+            Cast Your Vote for This Year’s
+          </Typography>
+          <Typography
+            variant="h4"
+            sx={{
+              color: theme.palette.text.neutralLightest,
+              fontFamily: "Dosis",
+              fontSize: { md: "52px" },
+              lineHeight: { md: "56px" },
+              fontStyle: "normal",
+              fontWeight: "700",
+              textAlign: {
+                xs: "center",
+                md: "left",
+              },
+              whiteSpace: { sm: "nowrap", md: "normal" },
+              mb: 2,
+            }}
+          >
+            Award Summit!
+          </Typography>
+        </Box>
+        <Box
+          sx={{
+            width: "100%",
+            textAlign: {
+              xs: "center",
+              md: "left",
+            },
+          }}
+        >
+          <CustomButton
+            sx={{ marginTop: "28px", marginBottom: "32px" }}
+            colorVariant="secondary"
+            startIcon={<HowToVoteOutlinedIcon />}
+          >
+            User Guide
+          </CustomButton>
+        </Box>
       </Grid>
       <Grid item xs={12} sm={6} md={4}>
         <Card
@@ -185,19 +186,19 @@ const ExploreSection = () => {
               sx={{
                 color: theme.palette.text.neutralLightest,
                 fontSize: {
-                    xs: "40px",
-                    md: "68px",
+                  xs: "40px",
+                  md: "68px",
                 },
                 fontStyle: "normal",
                 fontWeight: 500,
                 lineHeight: "76px",
                 marginTop: "46px",
                 marginLeft: isMobile ? "" : "40px",
-                  whiteSpace: "nowrap",
-                  maxWidth: "335px"
+                whiteSpace: "nowrap",
+                maxWidth: "335px",
               }}
             >
-                Ambassador, Blockchain for Good, DeFi ..
+              Ambassador, Blockchain for Good, DeFi ..
             </Typography>
           </CardContent>
         </Card>
@@ -268,10 +269,10 @@ const ExploreSection = () => {
               component="div"
               sx={{
                 color: theme.palette.text.neutralLightest,
-                  fontSize: {
-                      xs: "40px",
-                      md: "68px",
-                  },
+                fontSize: {
+                  xs: "40px",
+                  md: "68px",
+                },
                 fontStyle: "normal",
                 fontWeight: 500,
                 lineHeight: "76px",

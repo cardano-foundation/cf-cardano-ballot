@@ -1,12 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import {
-  AppBar,
-  Box,
-  Toolbar,
-  Typography,
-  IconButton
-} from "@mui/material";
+import { AppBar, Box, Toolbar, Typography, IconButton } from "@mui/material";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import Logo from "../../../assets/logo.svg";
 import { useIsPortrait } from "../../../common/hooks/useIsPortrait";

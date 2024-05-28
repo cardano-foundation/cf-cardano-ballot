@@ -60,7 +60,7 @@ const Categories: React.FC = () => {
     if (selectedNominee !== id) {
       setSelectedNominee(id);
     } else {
-        setSelectedNominee(-1) ;
+      setSelectedNominee(-1);
     }
   };
 

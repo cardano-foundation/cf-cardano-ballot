@@ -6,8 +6,8 @@ import { useMediaQuery } from "@mui/material";
 
 type GLBViewerProps = {
   glbUrl: string;
-  height: string
-  width: string
+  height: string;
+  width: string;
 };
 
 type ModelProps = {
@@ -76,7 +76,12 @@ const GLBViewer: React.FC<GLBViewerProps> = ({ glbUrl, height, width }) => {
           isInteracting={isInteracting}
           setIsInteracting={setIsInteracting}
         />
-        <OrbitControls enableZoom={true} maxDistance={4} minDistance={3} enabled={true} />
+        <OrbitControls
+          enableZoom={true}
+          maxDistance={4}
+          minDistance={3}
+          enabled={true}
+        />
       </Canvas>
     </div>
   );

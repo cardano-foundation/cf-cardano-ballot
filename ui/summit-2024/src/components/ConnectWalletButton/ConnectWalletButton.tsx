@@ -82,7 +82,7 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
             {isMobile
               ? null
               : stakeAddress
-              ? addressSlice(stakeAddress, 5)
+              ? addressSlice(stakeAddress, 8)
               : null}
             {walletIsVerified ? (
               <VerifiedIcon

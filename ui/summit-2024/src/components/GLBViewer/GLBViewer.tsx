@@ -6,6 +6,8 @@ import { useMediaQuery } from "@mui/material";
 
 type GLBViewerProps = {
   glbUrl: string;
+  height: string
+  width: string
 };
 
 type ModelProps = {
@@ -52,12 +54,12 @@ const Model = ({ glbUrl, isInteracting, setIsInteracting }: ModelProps) => {
   );
 };
 
-const GLBViewer: React.FC<GLBViewerProps> = ({ glbUrl }) => {
+const GLBViewer: React.FC<GLBViewerProps> = ({ glbUrl, height, width }) => {
   const [isInteracting, setIsInteracting] = useState(false);
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
-    <div style={{ height: "600px", width: "100%" }}>
+    <div style={{ height: height, width: width }}>
       <Canvas
         gl={{ alpha: true }}
         camera={{

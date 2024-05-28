@@ -3,7 +3,7 @@ import { Button, ButtonProps, useTheme, SxProps, Theme } from "@mui/material";
 
 interface CustomButtonProps extends ButtonProps {
   colorVariant: "primary" | "secondary";
-  gradient: boolean;
+  gradient?: boolean;
   startIcon?: React.ReactNode;
 }
 

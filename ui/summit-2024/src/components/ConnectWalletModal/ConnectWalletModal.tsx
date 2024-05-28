@@ -81,11 +81,9 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
   };
 
   const onConnectError = (e) => {
-    console.log("e");
-    console.log(e);
     eventBus.publish(
       "showToast",
-      "Unable to connect wallet. Please try again",
+        e.message,
       "error",
     );
   };

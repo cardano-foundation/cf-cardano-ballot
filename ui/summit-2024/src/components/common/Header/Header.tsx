@@ -5,10 +5,8 @@ import {
   Box,
   Toolbar,
   Typography,
-  IconButton,
-  Drawer,
+  IconButton
 } from "@mui/material";
-import ExitToAppOutlinedIcon from "@mui/icons-material/ExitToAppOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import Logo from "../../../assets/logo.svg";
 import { useIsPortrait } from "../../../common/hooks/useIsPortrait";
@@ -120,15 +118,6 @@ const Header = () => {
   const handleClickMenu = (option: string) => {
     if (option !== location.pathname) navigate(option);
   };
-
-  const dropdownOptions = [
-    { label: "Verify Wallet", action: handleOpenVerify },
-    {
-      label: "Logout",
-      action: onDisconnectWallet,
-      endIcon: <ExitToAppOutlinedIcon sx={{ width: "20px" }} />,
-    },
-  ];
 
   return (
     <>

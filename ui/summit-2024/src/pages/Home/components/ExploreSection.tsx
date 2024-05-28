@@ -140,7 +140,7 @@ const ExploreSection = () => {
                 fontWeight: 500,
                 lineHeight: "76px",
                 marginTop: "46px",
-                marginLeft: "40px",
+                marginLeft: isMobile ? "" : "40px",
               }}
             >
               Ambassador

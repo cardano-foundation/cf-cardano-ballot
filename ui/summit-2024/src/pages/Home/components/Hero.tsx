@@ -8,13 +8,38 @@ import theme from "../../../common/styles/theme";
 
 const Hero = () => {
     const isMobile = useMediaQuery(theme.breakpoints.down('xs'));
-    const isTablet = useMediaQuery(theme.breakpoints.up('tablet'));
+    const isTablet = useMediaQuery(theme.breakpoints.down('md'));
     const isDesktop = useMediaQuery(theme.breakpoints.up('tablet'));
   const isPortrait = useIsPortrait();
+
+
+  const getAwardHeight = (): string => {
+      const isMobilePlus = useMediaQuery(theme.breakpoints.down('sm'));
+      let height = "600px";
+      if (isMobile) {
+          console.log("isMobile")
+          height = "350px"
+      } else if (isMobilePlus){
+          console.log("isMobilePlus")
+          height = "350px"
+      } else if (isTablet){
+          console.log("isTablet")
+          height = "350px"
+      } else if (isDesktop) {
+          console.log("isDesktop")
+          height = "550px"
+      }
+
+      console.log("height")
+      console.log(height)
+      return height;
+  }
   return (
     <>
-      <Grid container spacing={{ xs: 2, sm: 3, md: 4, lg: 5 }}>
-        <Grid item xs={12} sm={8} tablet={4} md={6} lg={4}>
+      <Grid container sx={{
+          px: "20px"
+      }}>
+        <Grid item xs={12} sm={5} tablet={5} md={6} lg={4}>
           <Typography
             variant="h4"
             sx={{
@@ -43,12 +68,12 @@ const Hero = () => {
                 fontSize: { xs: "40px", md: "70px", lg: "88px" },
               fontStyle: "normal",
               fontWeight: "700",
-              lineHeight: { xs: "32px", md: "70px", lg: "88px" },
-              marginLeft: isPortrait ? "" : "20px",
+              lineHeight: { xs: "42px", md: "88px" },
               whiteSpace: "nowrap",
                 textAlign: {
                     xs: "center",
-                    sm: "left"
+                    sm: "left",
+                    tablet: "left",
                 }
             }}
           >
@@ -87,8 +112,7 @@ const Hero = () => {
                           "linear-gradient(258deg, #EE9766 0%, #40407D 87.58%, #0C7BC5 249.97%)",
                       display: {
                           xs: "none",
-                          tablet: "inline-block"
-
+                          md: "inline-block"
                       }
                   }}
               />
@@ -102,10 +126,10 @@ const Hero = () => {
                 fontWeight: "700",
                 display: "inline",
                 whiteSpace: "nowrap",
-                  lineHeight: { xs: "32px", md: "70px", lg: "88px" },
+                  lineHeight: { xs: "42px", md: "88px" },
                 marginLeft: {
                     xs: "0px",
-                    tablet: "96px"
+                    md: "96px"
                 },
                   textAlign: {
                       xs: "center",
@@ -129,7 +153,7 @@ const Hero = () => {
                 fontSize: {xs: "40px", md: "70px", lg: "88px" },
               fontStyle: "normal",
               fontWeight: "700",
-                lineHeight: { xs: "32px", md: "70px", lg: "88px" },
+                lineHeight: { xs: "42px", md: "88px" },
               marginLeft: {
                   xs: "0",
                   tablet: "0"
@@ -212,7 +236,7 @@ const Hero = () => {
             </Box>
 
         </Grid>
-        <Grid item xs={12} sm={4} tablet={8} md={6} lg={8}>
+        <Grid item xs={12} sm={7} tablet={7} md={6} lg={8}>
           <Box
             sx={{
               height: "100%",
@@ -221,15 +245,13 @@ const Hero = () => {
                   sm: `url(${Shapes})`
               },
               backgroundSize: {
-                xs: "cover",
-                sm: "contain",
-                md: "contain",
-                lg: "contain",
+                xs: "contain"
               },
               backgroundRepeat: "no-repeat",
               backgroundPosition: {
                 xs: "left",
                 sm: "center",
+                tablet: "center",
                 md: "center",
                 lg: "right",
               },
@@ -243,9 +265,7 @@ const Hero = () => {
           >
             <Fade in={true} timeout={3000}>
               <Box>
-                <GLBViewer glbUrl="/compressed.glb" height={
-                    isTablet ? "600px" : "350px"
-                } width="auto" />
+                <GLBViewer glbUrl="/compressed.glb" height={getAwardHeight()} width="auto" />
               </Box>
             </Fade>
           </Box>

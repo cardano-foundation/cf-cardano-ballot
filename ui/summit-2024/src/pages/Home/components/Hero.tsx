@@ -17,16 +17,12 @@ const Hero = () => {
       const isMobilePlus = useMediaQuery(theme.breakpoints.down('sm'));
       let height = "600px";
       if (isMobile) {
-          console.log("isMobile")
           height = "350px"
       } else if (isMobilePlus){
-          console.log("isMobilePlus")
           height = "350px"
       } else if (isTablet){
-          console.log("isTablet")
-          height = "350px"
+          height = "400px"
       } else if (isDesktop) {
-          console.log("isDesktop")
           height = "550px"
       }
 
@@ -168,28 +164,32 @@ const Hero = () => {
             2024 Awards
           </Typography>
 
-          {isMobile ? (
             <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                marginTop: "20px",
-              }}
-            >
-              <Box
                 sx={{
-                  marginRight: "8px",
-                  marginBottom: "32px",
-                  width: "80px",
-                  height: "16px",
-                  flexShrink: 0,
-                  borderRadius: "8px",
-                  background:
-                    "linear-gradient(258deg, #EE9766 0%, #40407D 87.58%, #0C7BC5 249.97%)",
+                    display: "flex",
+                    justifyContent: {
+                        xs: "center",
+                        sm: "left"
+                    },
+                    marginTop: "20px",
                 }}
-              />
+            >
+                <Box
+                    sx={{
+                        marginBottom: "28px",
+                        width: "80px",
+                        height: "16px",
+                        flexShrink: 0,
+                        borderRadius: "8px",
+                        background:
+                            "linear-gradient(258deg, #EE9766 0%, #40407D 87.58%, #0C7BC5 249.97%)",
+                        display: {
+                            sx: "inline-block",
+                            md: "none"
+                        }
+                    }}
+                />
             </Box>
-          ) : null}
             <Box
                 sx={{
                     display: "flex",
@@ -202,8 +202,7 @@ const Hero = () => {
                         xs: "center",
                         sm: "flex-start"
                     },
-                    alignItems: "center",
-                    marginTop: "20px",
+                    alignItems: "center"
                 }}
             >
                 <CustomButton
@@ -260,7 +259,7 @@ const Hero = () => {
               alignItems: "center",
               marginTop: isPortrait ? "" : "12px",
               marginLeft: isPortrait ? "24px" : "90px",
-              paddingLeft: { xs: 2, sm: 3, md: 4, lg: 30 },
+              paddingLeft: { lg: 30 },
             }}
           >
             <Fade in={true} timeout={3000}>

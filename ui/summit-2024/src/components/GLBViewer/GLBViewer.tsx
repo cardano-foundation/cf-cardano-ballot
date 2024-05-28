@@ -56,7 +56,6 @@ const Model = ({ glbUrl, isInteracting, setIsInteracting }: ModelProps) => {
 
 const GLBViewer: React.FC<GLBViewerProps> = ({ glbUrl, height, width }) => {
   const [isInteracting, setIsInteracting] = useState(false);
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
     <div style={{ height: height, width: width }}>

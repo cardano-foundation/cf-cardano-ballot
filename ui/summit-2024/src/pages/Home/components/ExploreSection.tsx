@@ -12,6 +12,7 @@ import folderIcon from "../../../assets/folder.svg";
 import trophyIcon from "../../../assets/trophy.svg";
 import { useIsPortrait } from "../../../common/hooks/useIsPortrait";
 import { CustomButton } from "../../../components/common/CustomButton/CustomButton";
+import theme from "../../../common/styles/theme";
 
 const ExploreSection = () => {
   const isMobile = useIsPortrait();
@@ -29,60 +30,111 @@ const ExploreSection = () => {
           justifyContent: "center",
         }}
       >
-        <Typography
-          variant="h4"
-          sx={{
-            color: "text.neutralLightest",
-            fontFamily: "Dosis",
-            fontSize: { md: "40px", lg: "52px" },
-            lineHeight: { md: "30px", lg: "42px" },
-            fontStyle: "normal",
-            fontWeight: "700",
-            textAlign: isMobile ? "center" : "left",
-            whiteSpace: { sm: "nowrap", md: "normal" },
-            mb: 2,
+          <Box sx={{
+              display: {
+                  xs: "block",
+                    sm: "none"
+              }
           }}
-        >
-          Cast Your Vote for
-        </Typography>
-        <Typography
-          variant="h4"
-          sx={{
-            color: "text.neutralLightest",
-            fontFamily: "Dosis",
-            fontSize: { md: "40px", lg: "52px" },
-            lineHeight: { md: "30px", lg: "42px" },
-            fontStyle: "normal",
-            fontWeight: "700",
-            textAlign: isMobile ? "center" : "left",
-            whiteSpace: { sm: "nowrap", md: "normal" },
-            mb: 2,
+          >
+              <Typography
+                  variant="h4"
+                  sx={{
+                      color: theme.palette.text.neutralLightest,
+                      fontFamily: "Dosis",
+                      fontSize: { md: "40px", lg: "52px" },
+                      lineHeight: { md: "30px", lg: "42px" },
+                      fontStyle: "normal",
+                      fontWeight: "700",
+                      textAlign: isMobile ? "center" : "left",
+                      whiteSpace: { sm: "nowrap", md: "normal" },
+                      mb: 2,
+                  }}
+              >
+                  Cast Your Vote for This
+              </Typography>
+              <Typography
+                  variant="h4"
+                  sx={{
+                      color: theme.palette.text.neutralLightest,
+                      fontFamily: "Dosis",
+                      fontSize: { md: "40px", lg: "52px" },
+                      lineHeight: { md: "30px", lg: "42px" },
+                      fontStyle: "normal",
+                      fontWeight: "700",
+                      textAlign: isMobile ? "center" : "left",
+                      whiteSpace: { sm: "nowrap", md: "normal" },
+                      mb: 2,
+                  }}
+              >
+                  Year’s Award Summit!
+              </Typography>
+          </Box>
+          <Box sx={{
+              display: {
+                  xs: "none",
+                  sm: "block"
+              },
+              width: "100%",
           }}
-        >
-          This Year’s Award
-        </Typography>
-        <Typography
-          variant="h4"
-          sx={{
-            color: "text.neutralLightest",
-            fontFamily: "Dosis",
-            fontSize: { md: "40px", lg: "52px" },
-            lineHeight: { md: "30px", lg: "42px" },
-            fontStyle: "normal",
-            fontWeight: "700",
-            textAlign: isMobile ? "center" : "left",
-            whiteSpace: { sm: "nowrap", md: "normal" },
+          >
+              <Typography
+                  variant="h4"
+                  sx={{
+                      color: theme.palette.text.neutralLightest,
+                      fontFamily: "Dosis",
+                      fontSize: { md: "40px", lg: "52px" },
+                      lineHeight: { md: "30px", lg: "42px" },
+                      fontStyle: "normal",
+                      fontWeight: "700",
+                      textAlign: {
+                          xs:  "center",
+                          md: "left"
+                      },
+                      whiteSpace: { sm: "nowrap", md: "normal" },
+                      mb: 2,
+                  }}
+              >
+                  Cast Your Vote for This Year’s
+              </Typography>
+              <Typography
+                  variant="h4"
+                  sx={{
+                      color: theme.palette.text.neutralLightest,
+                      fontFamily: "Dosis",
+                      fontSize: { md: "40px", lg: "52px" },
+                      lineHeight: { md: "30px", lg: "42px" },
+                      fontStyle: "normal",
+                      fontWeight: "700",
+                      textAlign: {
+                          xs:  "center",
+                          md: "left"
+                      },
+                      whiteSpace: { sm: "nowrap", md: "normal" },
+                      mb: 2,
+                  }}
+              >
+                  Award Summit!
+              </Typography>
+          </Box>
+          <Box sx={{
+              width: "100%",
+              textAlign: {
+                  xs: "center",
+                  md: "left"
+              }
           }}
-        >
-          Summit!
-        </Typography>
-        <CustomButton
-          sx={{ marginTop: "48px" }}
-          colorVariant="secondary"
-          startIcon={<HowToVoteOutlinedIcon />}
-        >
-          User Guide
-        </CustomButton>
+          >
+              <CustomButton
+                  sx={{ marginTop: "28px",  marginBottom: "32px" }}
+                  colorVariant="secondary"
+                  startIcon={<HowToVoteOutlinedIcon />}
+              >
+                  User Guide
+              </CustomButton>
+          </Box>
+
+
       </Grid>
       <Grid item xs={12} sm={6} md={4}>
         <Card

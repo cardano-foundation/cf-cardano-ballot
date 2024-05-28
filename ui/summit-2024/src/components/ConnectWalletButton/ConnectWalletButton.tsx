@@ -1,8 +1,7 @@
 import { useSelector } from "react-redux";
-
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 import {
-  Avatar,
+  Avatar, Box,
   Button,
   List,
   ListItem,
@@ -17,9 +16,10 @@ import React from "react";
 import "./ConnectWalletButton.scss";
 import { RootState } from "../../store";
 import { getUserInSession, tokenIsExpired } from "../../utils/session";
-import { addressSlice, resolveCardanoNetwork } from "../../utils/utils";
+import {addressSlice, resolveCardanoNetwork, walletIcon} from "../../utils/utils";
 import { env } from "../../common/constants/env";
 import { eventBus } from "../../utils/EventBus";
+import {useIsPortrait} from "../../common/hooks/useIsPortrait";
 
 type ConnectWalletButtonProps = {
   label: string;
@@ -32,6 +32,7 @@ type ConnectWalletButtonProps = {
 
 const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
   const { onOpenConnectWalletModal, onLogin, onDisconnectWallet } = props;
+  const isMobile = useIsPortrait();
   const eventCache = useSelector((state: RootState) => state.user.event);
   const walletIsVerified = useSelector(
     (state: RootState) => state.user.walletIsVerified,
@@ -39,7 +40,7 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
   const session = getUserInSession();
   const isExpired = tokenIsExpired(session?.expiresAt);
 
-  const { stakeAddress, isConnected } = useCardano({
+  const { stakeAddress, isConnected, enabledWallet } = useCardano({
     limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
   });
 
@@ -54,9 +55,9 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
   };
 
   return (
-    <div className="button-container">
+    <Box className="button-container">
       <Button
-        sx={{ zIndex: "99" }}
+        sx={{ zIndex: "99", padding: isMobile ? "10px 10px" : "16px 20px" }}
         className={`main-button ${
           isConnected ? "connected-button" : "connect-button"
         }`}
@@ -64,13 +65,15 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
         onClick={() => handleConnectWallet()}
       >
         {isConnected ? (
-          <Avatar src={""} style={{ width: "24px", height: "24px" }} />
+          <Avatar src={enabledWallet ? walletIcon(enabledWallet) : ""} style={{ width: "24px", height: "24px" }} />
         ) : (
           <AccountBalanceWalletIcon />
         )}
         {isConnected ? (
           <>
-            {stakeAddress ? addressSlice(stakeAddress, 5) : null}
+            {
+              isMobile ? null : stakeAddress ? addressSlice(stakeAddress, 5) : null
+            }
             {walletIsVerified ? (
               <VerifiedIcon
                 style={{
@@ -93,7 +96,9 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
         )}
       </Button>
       {isConnected && (
-        <div className="disconnect-wrapper">
+        <Box className="disconnect-wrapper" sx={{
+          width: isMobile ? "180px" : "100%"
+        }}>
           <List>
             {!walletIsVerified && !eventCache?.finished ? (
               <ListItem
@@ -138,9 +143,9 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
               </ListItemIcon>
             </ListItem>
           </List>
-        </div>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 };
 

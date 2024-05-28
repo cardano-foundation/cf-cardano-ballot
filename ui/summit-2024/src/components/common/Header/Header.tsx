@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { AppBar, Box, Toolbar, Typography, IconButton } from "@mui/material";
+import {AppBar, Box, Toolbar, Typography, IconButton, Drawer} from "@mui/material";
 import ExitToAppOutlinedIcon from "@mui/icons-material/ExitToAppOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import Logo from "../../../assets/logo.svg";
@@ -15,6 +15,7 @@ import { env } from "../../../common/constants/env";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 import { ConnectWalletButton } from "../../ConnectWalletButton/ConnectWalletButton";
 import { ROUTES } from "../../../routes";
+import {RightMenu} from "./RightMenu/RightMenu";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ const Header = () => {
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState<ToastType>(ToastType.Common);
   const [toastOpen, setToastOpen] = useState(false);
+  const [menuIsOpen, setMenuIsOpen] = useState(false);
 
   const isPortrait = useIsPortrait();
 
@@ -197,7 +199,7 @@ const Header = () => {
             {isPortrait ? (
               <IconButton
                 color="inherit"
-                onClick={() => {}}
+                onClick={() => setMenuIsOpen(true)}
                 sx={{
                   marginLeft: "auto",
                   padding: "10px",
@@ -212,6 +214,7 @@ const Header = () => {
           </Box>
         </Toolbar>
       </AppBar>
+      <RightMenu menuIsOpen={menuIsOpen} setMenuIsOpen={(isOpen:boolean) => setMenuIsOpen(isOpen)} />
       <ConnectWalletModal
         showPeerConnect={showConnectWalletModal}
         handleCloseConnectWalletModal={(open) =>

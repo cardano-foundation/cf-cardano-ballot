@@ -187,6 +187,7 @@ const Header = () => {
 
           <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
             <ConnectWalletButton
+                label={isPortrait ? "" : "Connect Wallet"}
               onOpenConnectWalletModal={handleConnectWalletModal}
               onOpenVerifyWalletModal={handleOpenVerify}
               onLogin={handleLogin}

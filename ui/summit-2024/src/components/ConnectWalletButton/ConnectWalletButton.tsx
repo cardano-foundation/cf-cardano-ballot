@@ -22,6 +22,7 @@ import { env } from "../../common/constants/env";
 import { eventBus } from "../../utils/EventBus";
 
 type ConnectWalletButtonProps = {
+  label: string;
   disableBackdropClick?: boolean;
   onOpenConnectWalletModal: () => void;
   onOpenVerifyWalletModal: () => void;
@@ -85,7 +86,9 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
           </>
         ) : (
           <>
-            <span> Connect Wallet</span>
+            {
+              props.label?.length  ? <span>{props.label}</span> : null
+            }
           </>
         )}
       </Button>

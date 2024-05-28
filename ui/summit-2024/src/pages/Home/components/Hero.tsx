@@ -173,7 +173,7 @@ const Hero = () => {
                         paddingLeft: { xs: 2, sm: 3, md: 4, lg: 30 },
                     }}
                 >
-                    <Fade in={true} timeout={5000}>
+                    <Fade in={true} timeout={3000}>
                         <Box>
                             <GLBViewer glbUrl="/compressed.glb" />
                         </Box>

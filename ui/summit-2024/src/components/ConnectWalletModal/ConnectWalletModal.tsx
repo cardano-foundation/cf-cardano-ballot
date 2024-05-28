@@ -47,7 +47,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
     /*TODO */
   });
 
-  const { connect, dAppConnect, meerkatAddress, initDappConnect } = useCardano({
+  const { connect, dAppConnect, meerkatAddress, initDappConnect, disconnect } = useCardano({
     limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
   });
 
@@ -78,7 +78,10 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
     eventBus.publish("closeConnectWalletModal");
     eventBus.publish("showToast", "Wallet connected successfully");
   };
-  const onConnectError = () => {
+
+  const onConnectError = (e) => {
+    console.log("e");
+    console.log(e);
     eventBus.publish(
       "showToast",
       "Unable to connect wallet. Please try again",
@@ -92,19 +95,14 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
         walletInfo: IWalletInfo,
         callback: (granted: boolean, autoconnect: boolean) => void,
       ) => {
+        console.log("verifyConnection");
+        console.log(walletInfo);
         setPeerConnectWalletInfo(walletInfo);
         setCurrentPath(ConnectWalletFlow.ACCEPT_CONNECTION);
 
-        console.log("verifyConnection");
-        if (walletInfo.requestAutoconnect) {
-          //setModalMessage(`Do you want to automatically connect to wallet ${walletInfo.name} (${walletInfo.address})?`);
-          setOnPeerConnectAccept(() => () => callback(true, true));
-          setOnPeerConnectReject(() => () => callback(false, false));
-        } else {
-          // setModalMessage(`Do you want to connect to wallet ${walletInfo.name} (${walletInfo.address})?`);
-          setOnPeerConnectAccept(() => () => callback(true, false));
-          setOnPeerConnectReject(() => () => callback(false, false));
-        }
+        setOnPeerConnectAccept(() => () => callback(true, true));
+        setOnPeerConnectReject(() => () => callback(false, false));
+
       };
 
       const onApiInject = (name: string, address: string): void => {
@@ -115,7 +113,9 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
             props.handleCloseConnectWalletModal();
             eventBus.publish("showToast", "Wallet connected successfully");
           },
-          () => {
+          (e) => {
+            console.log("e");
+            console.log(e);
             eventBus.publish(
               "showToast",
               "Unable to connect wallet. Please try again",
@@ -128,6 +128,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
       const onApiEject = (name: string, address: string): void => {
         setPeerConnectWalletInfo(undefined);
         eventBus.publish("showToast", "Wallet disconnected successfully");
+        disconnect();
       };
 
       const onP2PConnect = (

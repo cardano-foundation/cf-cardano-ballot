@@ -29,7 +29,7 @@ const Categories: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState(
     categoriesData[0].category,
   );
-  const [selectedNominee, setSelectedNominee] = useState<number | undefined>( categoriesData[0].nominees[0].id);
+  const [selectedNominee, setSelectedNominee] = useState<number | undefined>(0);
   const [learMoreCategory, setLearMoreCategory] = useState("");
   const [openLearMoreCategory, setOpenLearMoreCategory] = useState(false);
   const [openVotingModal, setOpenVotingModal] = useState(false);

@@ -18,18 +18,23 @@ const VoteNowModal: React.FC = ({ isOpen, onClose, selectedNominee }) => {
         name="vote-now-modal"
         title="Voting now"
         onClose={onClose}
-        width={isMobile ? "auto" : "450px"}
+        width={isMobile ? "100%" : "450px"}
       >
-        <CustomButton
-          colorVariant="primary"
-          sx={{
-            width: "100%",
-              mt: "50px",
-              mb: "20px"
-          }}
-        >
-          Vote for {selectedNominee.name}
-        </CustomButton>
+          <Box sx={{
+              width: isMobile ? "100%" : "400px"
+          }}>
+              <CustomButton
+                  colorVariant="primary"
+                  sx={{
+                      minWidth: "256px",
+                      mt: "50px",
+                      mb: "20px"
+                  }}
+              >
+                  Vote for {selectedNominee?.name}
+              </CustomButton>
+          </Box>
+
       </Modal>
     </>
   );

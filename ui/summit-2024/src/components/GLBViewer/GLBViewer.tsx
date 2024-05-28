@@ -69,15 +69,15 @@ const GLBViewer: React.FC<GLBViewerProps> = ({ glbUrl, height, width }) => {
           far: 1000,
         }}
       >
-        <ambientLight intensity={0.5} />
+        <ambientLight intensity={1} />
         <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
-        <pointLight position={[-10, -10, -10]} />
+        <pointLight position={[0, 0, 10]} intensity={1.5} />
         <Model
           glbUrl={glbUrl}
           isInteracting={isInteracting}
           setIsInteracting={setIsInteracting}
         />
-        <OrbitControls enableZoom={false} enabled={true} />
+        <OrbitControls enableZoom={true} maxDistance={4} minDistance={3} enabled={true} />
       </Canvas>
     </div>
   );

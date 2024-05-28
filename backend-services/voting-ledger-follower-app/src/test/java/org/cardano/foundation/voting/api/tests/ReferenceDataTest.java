@@ -10,7 +10,6 @@ import org.cardano.foundation.voting.VotingLedgerFollowerApp;
 import org.cardano.foundation.voting.api.VotingLedgerFollowerAppTest;
 import org.cardano.foundation.voting.domain.EventAdditionalInfo;
 import org.cardano.foundation.voting.domain.SchemaVersion;
-import org.cardano.foundation.voting.domain.VotingPowerAsset;
 import org.cardano.foundation.voting.domain.entity.Category;
 import org.cardano.foundation.voting.domain.entity.Event;
 import org.cardano.foundation.voting.domain.entity.Proposal;
@@ -18,6 +17,7 @@ import org.cardano.foundation.voting.domain.presentation.EventPresentation;
 import org.cardano.foundation.voting.repository.CategoryRepository;
 import org.cardano.foundation.voting.repository.EventRepository;
 import org.cardano.foundation.voting.repository.ProposalRepository;
+import org.cardanofoundation.conversions.CardanoConverters;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -65,6 +65,9 @@ public class ReferenceDataTest {
     @Autowired
     protected TransactionService transactionService;
 
+    @Autowired
+    protected CardanoConverters cardanoConverters;
+
     protected WireMockServer wireMockServer;
 
     @BeforeEach
@@ -85,6 +88,9 @@ public class ReferenceDataTest {
     }
 
     private void useDefaults() {
+        int startEpoch = 97;
+        int endEpoch = 100;
+
         Event event = Event.builder()
                 .id("CF_TEST_EVENT")
                 .organisers("Cardano Foundation")
@@ -94,11 +100,11 @@ public class ReferenceDataTest {
                 .highLevelEventResultsWhileVoting(true)
                 .highLevelCategoryResultsWhileVoting(true)
                 .categoryResultsWhileVoting(true)
-                .votingPowerAsset(VotingPowerAsset.ADA)
-                .startEpoch(97)
-                .endEpoch(100)
+                .votingPowerAsset(ADA)
+                .startEpoch(startEpoch)
+                .endEpoch(endEpoch)
                 .proposalsRevealEpoch(100)
-                .snapshotEpoch(97)
+                .snapshotEpoch(startEpoch)
                 .startSlot(412439L)
                 .endSlot(416439L)
                 .proposalsRevealSlot(412439L)
@@ -135,20 +141,23 @@ public class ReferenceDataTest {
 
         when(blockService.getLatestBlock()).thenReturn(Optional.empty());
 
-        Block block1 = Block.builder()
+        Block block = Block.builder()
                 .hash("356b7d7dbb696ccd12775c016941057a9dc70898d87a63fc752271bb46856940")
                 .epochNumber(101)
-                .slot(412162133L)
+                .slot(cardanoConverters.epoch().beginningOfEpochToAbsoluteSlot(startEpoch))
                 .blockBodyHash("1e043f100dce12d107f679685acd2fc0610e10f72a92d412794c9773d11d8477")
                 .build();
 
-        when(blockService.getLatestBlock()).thenReturn(Optional.of(block1));
+        when(blockService.getLatestBlock()).thenReturn(Optional.of(block));
 
-        when(blockService.getBlockByNumber(412162133L)).thenReturn(Optional.of(block1));
+        when(blockService.getBlockByNumber(412162133L)).thenReturn(Optional.of(block));
     }
 
     @Test
     public void testGetEventByNameCommitmentWindowOpen() {
+        int startEpoch = 97;
+        int endEpoch = 100;
+
         Event event = Event.builder()
                 .id("CF_TEST_EVENT_02")
                 .organisers("Cardano Foundation")
@@ -158,11 +167,11 @@ public class ReferenceDataTest {
                 .highLevelEventResultsWhileVoting(true)
                 .highLevelCategoryResultsWhileVoting(true)
                 .categoryResultsWhileVoting(true)
-                .votingPowerAsset(VotingPowerAsset.ADA)
-                .startEpoch(97)
-                .endEpoch(100)
-                .proposalsRevealEpoch(100)
-                .snapshotEpoch(97)
+                .votingPowerAsset(ADA)
+                .startEpoch(startEpoch)
+                .endEpoch(endEpoch)
+                .proposalsRevealEpoch(endEpoch)
+                .snapshotEpoch(startEpoch - 2)
                 .absoluteSlot(412439L)
                 .build();
 
@@ -196,16 +205,19 @@ public class ReferenceDataTest {
 
         when(blockService.getLatestBlock()).thenReturn(Optional.empty());
 
+        var blockSlot = cardanoConverters.epoch().endingOfEpochToAbsoluteSlot(endEpoch) + 60;
+
         Block block = Block.builder()
                 .hash("356b7d7dbb696ccd12775c016941057a9dc70898d87a63fc752271bb46856940")
                 .epochNumber(101)
-                .slot(412162133L)
+                // current slot within commitment window
+                .slot(blockSlot)
                 .blockBodyHash("1e043f100dce12d107f679685acd2fc0610e10f72a92d412794c9773d11d8477")
                 .build();
 
         when(blockService.getLatestBlock()).thenReturn(Optional.of(block));
 
-        when(blockService.getBlockByNumber(412162133L)).thenReturn(Optional.of(block));
+        when(blockService.getBlockByNumber(blockSlot)).thenReturn(Optional.of(block));
 
         Response response = given()
                 .when()
@@ -221,14 +233,21 @@ public class ReferenceDataTest {
 
     @Test
     public void testGetEventByNameCommitmentWindowClosed() {
+        int startEpoch = 97;
+        int endEpoch = 100;
+
+        var blockSlot = cardanoConverters.epoch().endingOfEpochToAbsoluteSlot(endEpoch) + 10_801;
         Block block = Block.builder()
                 .hash("356b7d7dbb696ccd12775c016941057a9dc70898d87a63fc752271bb46856940")
                 .epochNumber(102)
-                .slot(412162133L)
+                // current slot outside of commitment window
+                .slot(blockSlot) // default = 10_800
                 .blockBodyHash("1e043f100dce12d107f679685acd2fc0610e10f72a92d412794c9773d11d8477")
                 .build();
 
         when(blockService.getLatestBlock()).thenReturn(Optional.of(block));
+
+        when(blockService.getBlockByNumber(blockSlot)).thenReturn(Optional.of(block));
 
         Event event2 = Event.builder()
                 .id("CF_TEST_EVENT_02")
@@ -240,10 +259,10 @@ public class ReferenceDataTest {
                 .highLevelCategoryResultsWhileVoting(true)
                 .categoryResultsWhileVoting(true)
                 .votingPowerAsset(ADA)
-                .startEpoch(97)
-                .endEpoch(100)
+                .startEpoch(startEpoch)
+                .endEpoch(endEpoch)
                 .proposalsRevealEpoch(101)
-                .snapshotEpoch(97)
+                .snapshotEpoch(startEpoch - 2)
                 .absoluteSlot(412439L)
                 .build();
 
@@ -284,7 +303,7 @@ public class ReferenceDataTest {
         EventPresentation eventPresentation = response.as(EventPresentation.class);
         Assertions.assertEquals("CF_TEST_EVENT_02", eventPresentation.getId());
         Assertions.assertEquals("Cardano Foundation", eventPresentation.getOrganisers());
-        Assertions.assertTrue(eventPresentation.isCommitmentsWindowOpen());
+        Assertions.assertFalse(eventPresentation.isCommitmentsWindowOpen());
     }
 
     @Test

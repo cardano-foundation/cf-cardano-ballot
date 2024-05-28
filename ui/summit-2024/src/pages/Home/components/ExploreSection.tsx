@@ -43,7 +43,7 @@ const ExploreSection = () => {
                       color: theme.palette.text.neutralLightest,
                       fontFamily: "Dosis",
                       fontSize: { md: "40px", lg: "52px" },
-                      lineHeight: { md: "30px", lg: "42px" },
+                      lineHeight: { md: "30px", lg: "56px" },
                       fontStyle: "normal",
                       fontWeight: "700",
                       textAlign: isMobile ? "center" : "left",
@@ -59,7 +59,7 @@ const ExploreSection = () => {
                       color: theme.palette.text.neutralLightest,
                       fontFamily: "Dosis",
                       fontSize: { md: "40px", lg: "52px" },
-                      lineHeight: { md: "30px", lg: "42px" },
+                      lineHeight: { md: "30px", lg: "56px" },
                       fontStyle: "normal",
                       fontWeight: "700",
                       textAlign: isMobile ? "center" : "left",
@@ -67,7 +67,7 @@ const ExploreSection = () => {
                       mb: 2,
                   }}
               >
-                  Year’s Award Summit!
+                  Year’s Award Summit!2
               </Typography>
           </Box>
           <Box sx={{
@@ -83,8 +83,8 @@ const ExploreSection = () => {
                   sx={{
                       color: theme.palette.text.neutralLightest,
                       fontFamily: "Dosis",
-                      fontSize: { md: "40px", lg: "52px" },
-                      lineHeight: { md: "30px", lg: "42px" },
+                      fontSize: { md: "52px" },
+                      lineHeight: { md: "56px" },
                       fontStyle: "normal",
                       fontWeight: "700",
                       textAlign: {
@@ -92,7 +92,6 @@ const ExploreSection = () => {
                           md: "left"
                       },
                       whiteSpace: { sm: "nowrap", md: "normal" },
-                      mb: 2,
                   }}
               >
                   Cast Your Vote for This Year’s
@@ -102,8 +101,8 @@ const ExploreSection = () => {
                   sx={{
                       color: theme.palette.text.neutralLightest,
                       fontFamily: "Dosis",
-                      fontSize: { md: "40px", lg: "52px" },
-                      lineHeight: { md: "30px", lg: "42px" },
+                      fontSize: { md: "52px" },
+                      lineHeight: { md: "56px" },
                       fontStyle: "normal",
                       fontWeight: "700",
                       textAlign: {
@@ -176,26 +175,29 @@ const ExploreSection = () => {
                   fontStyle: "normal",
                   fontWeight: 700,
                   lineHeight: "28px",
-                  color: "text.neutralLightest",
+                  color: theme.palette.text.neutralLightest,
                 }}
               >
                 Categories
               </Typography>
             </Box>
             <Typography
-              variant="h2"
-              component="div"
               sx={{
-                color: "text.neutralLightest",
-                fontSize: "68px",
+                color: theme.palette.text.neutralLightest,
+                fontSize: {
+                    xs: "40px",
+                    md: "68px",
+                },
                 fontStyle: "normal",
                 fontWeight: 500,
                 lineHeight: "76px",
                 marginTop: "46px",
                 marginLeft: isMobile ? "" : "40px",
+                  whiteSpace: "nowrap",
+                  maxWidth: "335px"
               }}
             >
-              Ambassador
+                Ambassador, Blockchain for Good, DeFi ..
             </Typography>
           </CardContent>
         </Card>
@@ -240,7 +242,7 @@ const ExploreSection = () => {
                   fontStyle: "normal",
                   fontWeight: 700,
                   lineHeight: "28px",
-                  color: "text.neutralLightest",
+                  color: theme.palette.text.neutralLightest,
                 }}
               >
                 Leaderboard
@@ -250,7 +252,7 @@ const ExploreSection = () => {
               variant="h2"
               component="div"
               sx={{
-                color: "text.neutralLightest",
+                color: theme.palette.text.neutralLightest,
                 fontSize: "16px",
                 fontStyle: "normal",
                 fontWeight: 500,
@@ -265,8 +267,11 @@ const ExploreSection = () => {
               variant="h2"
               component="div"
               sx={{
-                color: "text.neutralLightest",
-                fontSize: "68px",
+                color: theme.palette.text.neutralLightest,
+                  fontSize: {
+                      xs: "40px",
+                      md: "68px",
+                  },
                 fontStyle: "normal",
                 fontWeight: 500,
                 lineHeight: "76px",

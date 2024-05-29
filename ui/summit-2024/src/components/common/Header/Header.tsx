@@ -139,7 +139,7 @@ const Header = () => {
             <img
               src={Logo}
               alt="Logo"
-              style={{ height: "50px", width: "auto" }}
+              style={{ height: "50px", width: "188x" }}
             />
           </Box>
 
@@ -174,6 +174,7 @@ const Header = () => {
                 component="a"
                 href="#user-guide"
                 sx={{ color: "inherit", textDecoration: "none" }}
+                onClick={() => handleClickMenu(ROUTES.USER_GUIDE)}
               >
                 User Guide
               </Typography>

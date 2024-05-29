@@ -9,8 +9,20 @@ interface NomineeFixture {
 
 interface NomineeArrayFixture {
   category: string;
-  nominees: NomineeFixture[];
+  nominees?: NomineeFixture[];
 }
+
+const userGuideData: NomineeArrayFixture[] = [
+  {
+    category: "What You’ll Need",
+  },
+  {
+    category: "Creating an Account",
+  },
+  {
+    category: "How to Vote",
+  },
+];
 
 const nomineesData: NomineeArrayFixture[] = [
   {
@@ -303,5 +315,5 @@ const nomineesData: NomineeArrayFixture[] = [
   },
 ];
 
-export { CategoriesNames, nomineesData };
+export { nomineesData, userGuideData };
 export type { NomineeFixture, NomineeArrayFixture };

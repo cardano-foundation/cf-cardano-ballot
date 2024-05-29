@@ -293,7 +293,7 @@ const Categories: React.FC = () => {
               justifyContent="center"
               alignItems="flex-start"
             >
-              {categoryToRender.nominees.map(
+              {categoryToRender.nominees?.map(
                 (nominee: NomineeFixture, index) => (
                   <Grid
                     item
@@ -310,6 +310,7 @@ const Categories: React.FC = () => {
                       elevation={3}
                       sx={{
                         width: "100%",
+                          maxWidth: "340px",
                         height: "240px",
                         flexShrink: 0,
                         borderRadius: "24px",

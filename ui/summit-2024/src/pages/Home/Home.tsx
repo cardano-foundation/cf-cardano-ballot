@@ -11,9 +11,8 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <Box id="heeeey">
+      <Box>
         <Hero />
-
         <ExploreSection />
         <TicketsSection />
         <img
@@ -22,7 +21,7 @@ const Home: React.FC = () => {
             position: "fixed",
             right: "0",
             top: "70%",
-            transform: "translateY(-50%)",
+            transform: "translateY(-30%)",
             zIndex: "-1",
             width: "70%",
             height: isMobile ? "auto" : "auto",

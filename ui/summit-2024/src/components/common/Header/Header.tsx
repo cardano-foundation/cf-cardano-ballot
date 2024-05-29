@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { AppBar, Box, Toolbar, Typography, IconButton } from "@mui/material";
+import {
+  AppBar,
+  Box,
+  Toolbar,
+  Typography,
+  IconButton,
+  Grid,
+  Button,
+} from "@mui/material";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import Logo from "../../../assets/logo.svg";
 import { useIsPortrait } from "../../../common/hooks/useIsPortrait";
@@ -15,6 +23,7 @@ import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 import { ConnectWalletButton } from "../../ConnectWalletButton/ConnectWalletButton";
 import { ROUTES } from "../../../routes";
 import { RightMenu } from "./RightMenu/RightMenu";
+import theme from "../../../common/styles/theme";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -115,100 +124,124 @@ const Header = () => {
 
   return (
     <>
+
       <AppBar
-        position="static"
+        position="fixed"
         sx={{
-          width: "100%",
-          maxWidth: 1440,
-          my: "15px",
-          mx: "auto",
-          background: "transparent",
-          boxShadow: "none",
+            height: "96px",
+            background: "transparent",
+            boxShadow: "none"
         }}
       >
-        <Toolbar
-          sx={{
-            justifyContent: "space-between",
-            padding: "20px 16px",
-          }}
-        >
+        <Toolbar >
           <Box
-            sx={{ p: 0, cursor: "pointer" }}
-            onClick={() => navigate(ROUTES.LANDING)}
+            sx={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              xs: "auto",
+            }}
           >
-            <img
-              src={Logo}
-              alt="Logo"
-              style={{ height: "50px", width: "188x" }}
-            />
-          </Box>
-
-          {!isPortrait && (
             <Box
-              sx={{ flexGrow: 1, display: "flex", justifyContent: "center" }}
+              sx={{
+                  background: theme.palette.background.default,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                flexDirection: "row",
+                width: "100%",
+                maxWidth: "1440px",
+                margin: "0 auto",
+                  padding: "10px 80px"
+              }}
             >
-              <Typography
-                variant="body1"
-                component="span"
-                href="#categories"
-                sx={{
-                  color: "inherit",
-                  mx: 2,
-                  textDecoration: "none",
-                  cursor: "pointer",
-                }}
-                onClick={() => handleClickMenu(ROUTES.CATEGORIES)}
+              <Box
+                sx={{ p: 0, cursor: "pointer" }}
+                onClick={() => navigate(ROUTES.LANDING)}
               >
-                Categories
-              </Typography>
-              <Typography
-                variant="body1"
-                component="a"
-                href="#leaderboard"
-                sx={{ color: "inherit", mx: 2, textDecoration: "none" }}
-                onClick={() => handleClickMenu(ROUTES.LEADERBOARD)}
-              >
-                Leaderboard
-              </Typography>
-              <Typography
-                variant="body1"
-                component="a"
-                href="#user-guide"
-                sx={{ color: "inherit", textDecoration: "none" }}
-                onClick={() => handleClickMenu(ROUTES.USER_GUIDE)}
-              >
-                User Guide
-              </Typography>
+                <img
+                  src={Logo}
+                  alt="Logo"
+                  style={{ height: "50px", width: "188x" }}
+                />
+              </Box>
+
+              {!isPortrait && (
+                <Box
+                  sx={{
+                    flexGrow: 1,
+                    display: "flex",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Typography
+                    variant="body1"
+                    component="span"
+                    href="#categories"
+                    sx={{
+                      color: "inherit",
+                      mx: 2,
+                      textDecoration: "none",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => handleClickMenu(ROUTES.CATEGORIES)}
+                  >
+                    Categories
+                  </Typography>
+                  <Typography
+                    variant="body1"
+                    component="a"
+                    href="#leaderboard"
+                    sx={{ color: "inherit", mx: 2, textDecoration: "none" }}
+                    onClick={() => handleClickMenu(ROUTES.LEADERBOARD)}
+                  >
+                    Leaderboard
+                  </Typography>
+                  <Typography
+                    variant="body1"
+                    component="a"
+                    href="#user-guide"
+                    sx={{ color: "inherit", textDecoration: "none" }}
+                    onClick={() => handleClickMenu(ROUTES.USER_GUIDE)}
+                  >
+                    User Guide
+                  </Typography>
+                </Box>
+              )}
+
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                <ConnectWalletButton
+                  label={isPortrait ? "" : "Connect Wallet"}
+                  onOpenConnectWalletModal={handleConnectWalletModal}
+                  onOpenVerifyWalletModal={handleOpenVerify}
+                  onLogin={handleLogin}
+                  onDisconnectWallet={onDisconnectWallet}
+                />
+
+                {isPortrait ? (
+                  <IconButton
+                    color="inherit"
+                    onClick={() => setMenuIsOpen(true)}
+                    sx={{
+                      marginLeft: "auto",
+                      padding: "10px",
+                      borderRadius: "12px",
+                      background:
+                        "linear-gradient(258deg, #EE9766 0%, #40407D 187.58%, #0C7BC5 249.97%)",
+                    }}
+                  >
+                    <MenuOutlinedIcon />
+                  </IconButton>
+                ) : null}
+              </Box>
             </Box>
-          )}
-
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-            <ConnectWalletButton
-              label={isPortrait ? "" : "Connect Wallet"}
-              onOpenConnectWalletModal={handleConnectWalletModal}
-              onOpenVerifyWalletModal={handleOpenVerify}
-              onLogin={handleLogin}
-              onDisconnectWallet={onDisconnectWallet}
-            />
-
-            {isPortrait ? (
-              <IconButton
-                color="inherit"
-                onClick={() => setMenuIsOpen(true)}
-                sx={{
-                  marginLeft: "auto",
-                  padding: "10px",
-                  borderRadius: "12px",
-                  background:
-                    "linear-gradient(258deg, #EE9766 0%, #40407D 187.58%, #0C7BC5 249.97%)",
-                }}
-              >
-                <MenuOutlinedIcon />
-              </IconButton>
-            ) : null}
           </Box>
         </Toolbar>
       </AppBar>
+        <Box sx={{
+            height: "96px"
+        }}/>
       <RightMenu
         menuIsOpen={menuIsOpen}
         setMenuIsOpen={(isOpen: boolean) => setMenuIsOpen(isOpen)}

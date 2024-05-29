@@ -17,11 +17,7 @@ function App() {
         <Container md={{ maxWidth: "1440px" }}>
           <Grid container spacing={1} direction="column">
             <Grid container justifyContent="center">
-              <Grid
-                item
-                xs={12}
-                sx={{ maxWidth: 1440, width: "100%", mx: "auto" }}
-              >
+              <Grid item xs={12}>
                 <Header />
               </Grid>
             </Grid>

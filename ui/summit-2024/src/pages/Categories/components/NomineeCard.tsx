@@ -22,13 +22,26 @@ const NomineeCard: React.FC<NomineeCardProps> = ({
   handleLearnMoreClick,
 }) => {
   return (
-    <Grid item xs={12} sm={6} md={4} sx={{ width: "100px !important" }}>
+    <Grid
+      item
+      xs={12}
+      sm={6}
+      md={4}
+      sx={{
+        width: "100px !important",
+        display: "flex",
+        justifyContent: "center",
+      }}
+    >
       <Paper
         onClick={() => handleSelectNominee(nominee.id)}
         elevation={3}
         sx={{
           width: "100%",
-          maxWidth: "340px",
+          maxWidth: {
+            xs: "100%",
+            sm: "340px",
+          },
           height: "202px",
           flexShrink: 0,
           borderRadius: "24px",
@@ -44,8 +57,8 @@ const NomineeCard: React.FC<NomineeCardProps> = ({
           justifyContent: "space-between",
           cursor: "pointer",
           backgroundImage: `url(${nomineeBg})`,
-            backgroundSize: "150% 150%",
-            backgroundPosition: 'center',
+          backgroundSize: "160% 160%",
+          backgroundPosition: "center",
         }}
       >
         <Box

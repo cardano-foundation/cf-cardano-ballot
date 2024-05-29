@@ -54,7 +54,7 @@ const nomineesData: NomineeArrayFixture[] = [
       },
       {
         id: 5,
-        name: "John See WorldWorldWorld SeeSee SeeSee See",
+        name: "John See WorldWorldWorld SeeSee See",
         description:
           "John has been instrumental in advocating for blockchain technology across global platforms.",
         twitterLink: "https://twitter.com/johndoe",
@@ -300,6 +300,10 @@ const nomineesData: NomineeArrayFixture[] = [
       },
       // Add more nominees as needed
     ],
+  },
+  {
+    category: "Empty",
+    nominees: [],
   },
 ];
 

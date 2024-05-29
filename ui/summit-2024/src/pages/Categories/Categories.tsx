@@ -11,6 +11,7 @@ import {
   ListItemText,
   useTheme,
   Fade,
+  useMediaQuery,
 } from "@mui/material";
 import theme from "../../common/styles/theme";
 import {
@@ -24,10 +25,10 @@ import { CustomButton } from "../../components/common/CustomButton/CustomButton"
 import { BioModal } from "./components/BioModal";
 import { VoteNowModal } from "./components/VoteNowModal";
 import { useIsPortrait } from "../../common/hooks/useIsPortrait";
-import { is } from "@react-three/fiber/dist/declarations/src/core/utils";
 import { NomineeCard } from "./components/NomineeCard";
 
 const Categories: React.FC = () => {
+  const isTablet = useMediaQuery(theme.breakpoints.down("md"));
   const categoriesData = nomineesData;
   const [selectedCategory, setSelectedCategory] = useState(
     categoriesData[0].category,
@@ -279,7 +280,11 @@ const Categories: React.FC = () => {
             </Typography>
             <CustomButton
               onClick={() => setOpenVotingModal(true)}
-              sx={{ mt: -6, alignSelf: "flex-end" }}
+              sx={{
+                mt: -6,
+                alignSelf: "flex-end",
+                display: isTablet ? "none" : "inline-block",
+              }}
               colorVariant="primary"
               disabled={!selectedNominee}
             >
@@ -318,6 +323,33 @@ const Categories: React.FC = () => {
           width: "70%",
         }}
       />
+      {isTablet && (
+        <Box
+          sx={{
+            zIndex: 1,
+            position: "fixed",
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: "100%",
+            backgroundColor: theme.palette.background.default,
+            px: "20px",
+            marginBottom: "20x",
+            display: "flex",
+            justifyContent: "center",
+              overflow: "none"
+          }}
+        >
+          <CustomButton
+            onClick={() => setOpenVotingModal(true)}
+            sx={{ width: "100%", height: "48px", my: "24px" }}
+            colorVariant="primary"
+            disabled={!selectedNominee}
+          >
+            Vote Now
+          </CustomButton>
+        </Box>
+      )}
       <BioModal
         isOpen={openLearMoreCategory}
         title={learMoreCategory}

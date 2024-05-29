@@ -127,7 +127,10 @@ const Modal = (props: ModalProps) => {
         </IconButton>
       </DialogTitle>
       <DialogContent
-        sx={{ width: width || "400px", backgroundColor: theme.palette.background.default }}
+        sx={{
+          width: width || "400px",
+          backgroundColor: theme.palette.background.default,
+        }}
       >
         {props.children}
       </DialogContent>

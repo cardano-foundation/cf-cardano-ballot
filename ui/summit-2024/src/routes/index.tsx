@@ -1,5 +1,5 @@
-import React from "react";
-import { Route, Routes } from "react-router-dom";
+import React, {useEffect} from "react";
+import { Route, Routes, useLocation } from "react-router-dom";
 import { Home } from "../pages/Home";
 import { Categories } from "../pages/Categories/Categories";
 import { UserGuide } from "../pages/UserGuide/UserGuide";
@@ -20,6 +20,13 @@ export const ROUTES = {
 };
 
 const PageRouter = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    // TODO: tmp fix
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
   return (
     <>
       <Routes>

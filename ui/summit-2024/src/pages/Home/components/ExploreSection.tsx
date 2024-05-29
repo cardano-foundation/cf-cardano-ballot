@@ -1,22 +1,21 @@
 import React from "react";
-import {
-  Grid,
-  Typography,
-  Button,
-  Card,
-  CardContent,
-  Box,
-} from "@mui/material";
+import { Grid, Typography, Card, CardContent, Box } from "@mui/material";
 import HowToVoteOutlinedIcon from "@mui/icons-material/HowToVoteOutlined";
 import folderIcon from "../../../assets/folder.svg";
 import trophyIcon from "../../../assets/trophy.svg";
 import { useIsPortrait } from "../../../common/hooks/useIsPortrait";
 import { CustomButton } from "../../../components/common/CustomButton/CustomButton";
 import theme from "../../../common/styles/theme";
+import guideBg from "../../../assets/bg/guideCard.svg";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "../../../routes";
 
 const ExploreSection = () => {
   const isMobile = useIsPortrait();
-
+  const navigate = useNavigate();
+  const handleClickMenu = (option: string) => {
+    navigate(option);
+  };
   return (
     <Grid container spacing={2} sx={{ marginTop: 8, justifyContent: "center" }}>
       <Grid
@@ -128,6 +127,7 @@ const ExploreSection = () => {
           }}
         >
           <CustomButton
+            onClick={() => handleClickMenu(ROUTES.USER_GUIDE)}
             sx={{ marginTop: "28px", marginBottom: "32px" }}
             colorVariant="secondary"
             startIcon={<HowToVoteOutlinedIcon />}
@@ -148,6 +148,9 @@ const ExploreSection = () => {
             flexDirection: "column",
             justifyContent: "center",
             width: { xs: "calc(100% - 32px)", sm: "auto" },
+            backgroundImage: `url(${guideBg})`,
+            backgroundSize: "180% 160%",
+            backgroundPosition: "center",
           }}
         >
           <CardContent sx={{ position: "relative", zIndex: 2 }}>
@@ -215,6 +218,9 @@ const ExploreSection = () => {
             flexDirection: "column",
             justifyContent: "center",
             width: { xs: "calc(100% - 32px)", sm: "auto" },
+            backgroundImage: `url(${guideBg})`,
+            backgroundSize: "180% 160%",
+            backgroundPosition: "center",
           }}
         >
           <CardContent sx={{ position: "relative", zIndex: 2 }}>

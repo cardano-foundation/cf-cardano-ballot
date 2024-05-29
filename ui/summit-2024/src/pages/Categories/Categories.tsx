@@ -2,24 +2,17 @@ import React, { useEffect, useState } from "react";
 import {
   Box,
   Grid,
-  Paper,
   Typography,
-  Checkbox,
-  Button,
   List,
   ListItem,
-  ListItemText,
-  useTheme,
   Fade,
   useMediaQuery,
 } from "@mui/material";
 import theme from "../../common/styles/theme";
 import {
   NomineeArrayFixture,
-  NomineeFixture,
   nomineesData,
 } from "../../__fixtures__/categories";
-import HoverCircle from "../../components/common/HoverCircle/HoverCircle";
 import Ellipses from "../../assets/ellipse.svg";
 import { CustomButton } from "../../components/common/CustomButton/CustomButton";
 import { BioModal } from "./components/BioModal";
@@ -79,7 +72,7 @@ const Categories: React.FC = () => {
     categoryToRender = categoriesData[0];
   }
 
-  const nomineeToVote = categoryToRender.nominees.find(
+  const nomineeToVote = categoryToRender.nominees?.find(
     (n) => n.id === selectedNominee,
   );
 
@@ -337,7 +330,7 @@ const Categories: React.FC = () => {
             marginBottom: "20x",
             display: "flex",
             justifyContent: "center",
-              overflow: "none"
+            overflow: "none",
           }}
         >
           <CustomButton

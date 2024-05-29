@@ -1,6 +1,7 @@
 import React from "react";
 import { Paper, Typography, Box, Link } from "@mui/material";
 import theme from "../../../common/styles/theme";
+import guideBg from "../../../assets/bg/guideCard.svg";
 import { CustomCardProps } from "./UserGuideCard.type";
 
 const UserGuideCard = ({
@@ -24,6 +25,9 @@ const UserGuideCard = ({
         display: "flex",
         flexDirection: "column",
         padding: "28px",
+        backgroundImage: `url(${guideBg})`,
+        backgroundSize: "180% 160%",
+        backgroundPosition: "center",
       }}
     >
       <Box

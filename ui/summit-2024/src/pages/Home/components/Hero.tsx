@@ -1,23 +1,22 @@
 import Shapes from "../../../assets/shapes.svg";
 import GLBViewer from "../../../components/GLBViewer/GLBViewer";
 import React from "react";
-import {
-  Box,
-  Button,
-  Fade,
-  Grid,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
+import { Box, Fade, Grid, Typography, useMediaQuery } from "@mui/material";
 import { useIsPortrait } from "../../../common/hooks/useIsPortrait";
 import { CustomButton } from "../../../components/common/CustomButton/CustomButton";
 import theme from "../../../common/styles/theme";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "../../../routes";
 
 const Hero = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("xs"));
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
   const isDesktop = useMediaQuery(theme.breakpoints.up("tablet"));
   const isPortrait = useIsPortrait();
+  const navigate = useNavigate();
+  const handleClickMenu = (option: string) => {
+    navigate(option);
+  };
 
   const getAwardHeight = (): string => {
     const isMobilePlus = useMediaQuery(theme.breakpoints.down("sm"));
@@ -215,6 +214,7 @@ const Hero = () => {
             }}
           >
             <CustomButton
+              onClick={() => handleClickMenu(ROUTES.CATEGORIES)}
               sx={{
                 width: {
                   xs: "90%",
@@ -230,6 +230,7 @@ const Hero = () => {
               Start Voting
             </CustomButton>
             <CustomButton
+              onClick={() => handleClickMenu(ROUTES.USER_GUIDE)}
               colorVariant="secondary"
               sx={{
                 width: {

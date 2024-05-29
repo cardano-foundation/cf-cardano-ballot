@@ -166,6 +166,7 @@ const Header = () => {
                 component="a"
                 href="#leaderboard"
                 sx={{ color: "inherit", mx: 2, textDecoration: "none" }}
+                onClick={() => handleClickMenu(ROUTES.LEADERBOARD)}
               >
                 Leaderboard
               </Typography>

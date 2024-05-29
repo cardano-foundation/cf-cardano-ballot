@@ -36,7 +36,7 @@ const nomineesData: NomineeArrayFixture[] = [
       },
       {
         id: 3,
-        name: "John Loo",
+        name: "John Loo Luu Long Lee",
         description:
           "John has been instrumental in advocating for blockchain technology across global platforms.",
         twitterLink: "https://twitter.com/johndoe",
@@ -54,7 +54,7 @@ const nomineesData: NomineeArrayFixture[] = [
       },
       {
         id: 5,
-        name: "John See",
+        name: "John See WorldWorldWorld SeeSee SeeSee See",
         description:
           "John has been instrumental in advocating for blockchain technology across global platforms.",
         twitterLink: "https://twitter.com/johndoe",

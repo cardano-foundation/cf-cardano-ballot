@@ -60,7 +60,7 @@ const Modal = (props: ModalProps) => {
         id={id}
         sx={{
           display: "flex",
-          justifyContent: "center",
+          justifyContent: props.leftTitle ? "left" : "center",
           alignItems: "center",
           backgroundColor: "background.default",
           position: "relative",
@@ -92,6 +92,7 @@ const Modal = (props: ModalProps) => {
           component="div"
           sx={{
             flex: 1,
+            maxWidth: "320px",
             textAlign: props.leftTitle ? "left" : "center",
             fontFamily: "Dosis",
             weight: 700,

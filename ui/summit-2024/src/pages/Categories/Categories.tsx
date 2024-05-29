@@ -25,6 +25,7 @@ import { BioModal } from "./components/BioModal";
 import { VoteNowModal } from "./components/VoteNowModal";
 import { useIsPortrait } from "../../common/hooks/useIsPortrait";
 import { is } from "@react-three/fiber/dist/declarations/src/core/utils";
+import { NomineeCard } from "./components/NomineeCard";
 
 const Categories: React.FC = () => {
   const categoriesData = nomineesData;
@@ -293,97 +294,15 @@ const Categories: React.FC = () => {
               justifyContent="center"
               alignItems="flex-start"
             >
-              {categoryToRender.nominees?.map(
-                (nominee: NomineeFixture, index) => (
-                  <Grid
-                    item
-                    xs={12}
-                    sm={6}
-                    md={4}
-                    key={index}
-                    sx={{
-                      width: "100px !important",
-                    }}
-                  >
-                    <Paper
-                      onClick={() => handleSelectNominee(nominee.id)}
-                      elevation={3}
-                      sx={{
-                        width: "100%",
-                        maxWidth: "340px",
-                        height: "240px",
-                        flexShrink: 0,
-                        borderRadius: "24px",
-                        border: `1px solid ${
-                          selectedNominee === nominee.id
-                            ? theme.palette.secondary.main
-                            : theme.palette.background.default
-                        }`,
-                        backdropFilter: "blur(5px)",
-                        p: { xs: 1, sm: 2 },
-                        position: "relative",
-                        display: "flex",
-                        flexDirection: "column",
-                        justifyContent: "space-between",
-                        cursor: "pointer",
-                      }}
-                    >
-                      <Box sx={{ position: "absolute", right: 8, top: 8 }}>
-                        <HoverCircle
-                          selected={selectedNominee === nominee.id}
-                        />
-                      </Box>
-                      <Typography
-                        variant="h6"
-                        sx={{
-                          color: "var(--neutralLightest, #FAF9F6)",
-                          textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
-                          fontFamily: "Dosis",
-                          fontSize: "28px",
-                          fontStyle: "normal",
-                          fontWeight: 700,
-                          lineHeight: "32px",
-                          mt: 3,
-                          ml: 1,
-                        }}
-                      >
-                        {nominee.name}
-                      </Typography>
-                      <Button
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          handleLearnMoreClick(event, nominee.name);
-                        }}
-                        sx={{
-                          display: "flex",
-                          width: "90%",
-                          padding: "16px 24px",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          gap: 1,
-                          borderRadius: "12px",
-                          border: "1px solid var(--neutralLightest, #FAF9F6)",
-                          color: "var(--neutralLightest, #FAF9F6)",
-                          fontSize: "16px",
-                          fontStyle: "normal",
-                          fontWeight: 500,
-                          lineHeight: "24px",
-                          mt: "auto",
-                          mx: "auto",
-                          marginBottom: "40px",
-                          textTransform: "none",
-                          "&:hover": {
-                            border: "1px solid var(--neutralLightest, #FAF9F6)",
-                            color: "var(--neutralLightest, #FAF9F6)",
-                          },
-                        }}
-                      >
-                        Learn More
-                      </Button>
-                    </Paper>
-                  </Grid>
-                ),
-              )}
+              {categoryToRender.nominees?.map((nominee, index) => (
+                <NomineeCard
+                  key={index}
+                  nominee={nominee}
+                  selectedNominee={selectedNominee}
+                  handleSelectNominee={handleSelectNominee}
+                  handleLearnMoreClick={handleLearnMoreClick}
+                />
+              ))}
             </Grid>
           </Fade>
         </Grid>

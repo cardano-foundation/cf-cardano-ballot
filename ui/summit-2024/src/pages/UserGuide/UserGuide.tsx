@@ -5,8 +5,13 @@ import Ellipses from "../../assets/ellipse.svg";
 import { useIsPortrait } from "../../common/hooks/useIsPortrait";
 import { UserGuideCard } from "./components/UserGuideCard";
 import { userGuideMenu } from "../../__fixtures__/userGuide";
+import {CustomButton} from "../../components/common/CustomButton/CustomButton";
+import {ROUTES} from "../../routes";
+import { useNavigate } from "react-router-dom";
+
 
 const UserGuide: React.FC = () => {
+    const navigate = useNavigate();
   const userGuideMenuOptions = userGuideMenu;
   const [selectedCategory, setSelectedCategory] = useState(
     userGuideMenuOptions[0].label,
@@ -17,6 +22,10 @@ const UserGuide: React.FC = () => {
   const createAccountsRef = useRef<HTMLElement>(null);
   const submitVotesRef = useRef<HTMLElement>(null);
   const howVoteRef = useRef<HTMLElement>(null);
+
+    const handleNavigate = (pathname: string) => {
+        navigate(pathname);
+    };
 
   const handleClickMenuItem = (option: string) => {
     setSelectedCategory(option);
@@ -296,6 +305,29 @@ const UserGuide: React.FC = () => {
               );
             })}
           </Grid>
+            <Grid container spacing={2} justifyContent="center" sx={{
+                marginTop: "24px"
+            }}>
+                <Grid item sx={{
+                    width: {
+                        xs: "100%",
+                        md: "auto"
+                    }
+                }}>
+                    <CustomButton
+                        onClick={() => handleNavigate(ROUTES.CATEGORIES)}
+                        colorVariant="primary"
+                        sx={{
+                            width: {
+                                xs: "100%",
+                                md: "auto"
+                            }
+                        }}
+                    >
+                        Vote Now
+                    </CustomButton>
+                </Grid>
+            </Grid>
         </Grid>
       </Grid>
       <img

@@ -310,7 +310,7 @@ const Categories: React.FC = () => {
                       elevation={3}
                       sx={{
                         width: "100%",
-                          maxWidth: "340px",
+                        maxWidth: "340px",
                         height: "240px",
                         flexShrink: 0,
                         borderRadius: "24px",

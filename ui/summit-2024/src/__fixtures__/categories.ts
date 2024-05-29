@@ -12,18 +12,6 @@ interface NomineeArrayFixture {
   nominees?: NomineeFixture[];
 }
 
-const userGuideData: NomineeArrayFixture[] = [
-  {
-    category: "What You’ll Need",
-  },
-  {
-    category: "Creating an Account",
-  },
-  {
-    category: "How to Vote",
-  },
-];
-
 const nomineesData: NomineeArrayFixture[] = [
   {
     category: "Ambassador",
@@ -315,5 +303,5 @@ const nomineesData: NomineeArrayFixture[] = [
   },
 ];
 
-export { nomineesData, userGuideData };
+export { nomineesData };
 export type { NomineeFixture, NomineeArrayFixture };

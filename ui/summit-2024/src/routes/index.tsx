@@ -2,7 +2,7 @@ import React from "react";
 import { Route, Routes } from "react-router-dom";
 import { Home } from "../pages/Home";
 import { Categories } from "../pages/Categories/Categories";
-import {UserGuide} from "../pages/UserGuide/UserGuide";
+import { UserGuide } from "../pages/UserGuide/UserGuide";
 
 export const PAGE_PATH = "/";
 

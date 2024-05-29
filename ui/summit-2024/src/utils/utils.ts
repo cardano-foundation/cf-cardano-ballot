@@ -2,11 +2,17 @@ import { SignedWeb3Request } from "../types/voting-app-types";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 import { NetworkType } from "@cardano-foundation/cardano-connect-with-wallet-core";
 
-const addressSlice = (address: string, sliceLength = 10) => {
-  if (address) {
-    return `${address.slice(0, sliceLength)}...${address.slice(-sliceLength)}`;
+const addressSlice = (address: string, sliceLength = 10, dotsPosition: 'middle' | 'end' = 'middle') => {
+  if (!address) return address;
+  if (address.length <= 2 * sliceLength) return address;
+
+  switch (dotsPosition) {
+    case 'end':
+      return `${address.slice(0, sliceLength)}...`;
+    case 'middle':
+    default:
+      return `${address.slice(0, sliceLength)}...${address.slice(-sliceLength)}`;
   }
-  return address;
 };
 
 const walletIcon = (walletName: string) => {

@@ -5,6 +5,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { IconButton, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
+import theme from "../../../common/styles/theme";
 
 type ModalProps = {
   name?: string;
@@ -62,7 +63,7 @@ const Modal = (props: ModalProps) => {
           display: "flex",
           justifyContent: props.leftTitle ? "left" : "center",
           alignItems: "center",
-          backgroundColor: "background.default",
+          backgroundColor: theme.palette.background.default,
           position: "relative",
         }}
       >
@@ -75,11 +76,11 @@ const Modal = (props: ModalProps) => {
               padding: "12px",
               alignItems: "flex-start",
               borderRadius: "12px",
-              backgroundColor: "background.neutralDark",
+              backgroundColor: theme.palette.background.neutralDark,
               cursor: "pointer",
               "&:hover": {
-                backgroundColor: "text.neutralLightest",
-                color: "background.neutralDark",
+                backgroundColor: theme.palette.text.neutralLightest,
+                color: theme.palette.background.neutralDark,
               },
             }}
             onClick={onBack}
@@ -111,11 +112,11 @@ const Modal = (props: ModalProps) => {
             padding: "12px",
             alignItems: "flex-start",
             borderRadius: "12px",
-            backgroundColor: "background.neutralDark",
+            backgroundColor: theme.palette.background.neutralDark,
             cursor: "pointer",
             "&:hover": {
-              backgroundColor: "text.neutralLightest",
-              color: "background.neutralDark",
+              backgroundColor: theme.palette.text.neutralLightest,
+              color: theme.palette.background.neutralDark,
             },
           }}
           edge="end"
@@ -126,7 +127,7 @@ const Modal = (props: ModalProps) => {
         </IconButton>
       </DialogTitle>
       <DialogContent
-        sx={{ width: width || "400px", backgroundColor: "background.default" }}
+        sx={{ width: width || "400px", backgroundColor: theme.palette.background.default }}
       >
         {props.children}
       </DialogContent>

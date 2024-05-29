@@ -21,7 +21,7 @@ const UserGuide: React.FC = () => {
   const handleClickMenuItem = (option: string) => {
     setSelectedCategory(option);
     if (option === userGuideMenu[0].label) {
-        submitVotesRef.current?.scrollIntoView({
+      submitVotesRef.current?.scrollIntoView({
         behavior: "smooth",
         block: "start",
       });
@@ -191,7 +191,7 @@ const UserGuide: React.FC = () => {
             background: "transparent",
             padding: {
               xs: "0px 20px",
-              sm: "40px",
+              sm: "20px 0pxs",
             },
           }}
         >
@@ -224,24 +224,18 @@ const UserGuide: React.FC = () => {
             To Submit Votes, You’ll Need:
           </Typography>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <UserGuideCard
-                number={1}
-                title="The ability to receive an SMS verification message."
-                description="Securely verify your account with a one-time SMS code for Cardano Ballot. Safety and simplicity combined."
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <UserGuideCard
-                number={2}
-                title="A supported Cardano wallet and/or browser extension"
-                description="You don't need to have any funds in your wallet to use Cardano Ballot."
-                link={{
-                  label: "View a list of supported wallets",
-                  url: "",
-                }}
-              />
-            </Grid>
+            {userGuideMenuOptions[0].sections.map((section) => {
+              return (
+                <Grid item xs={12} sm={6}>
+                  <UserGuideCard
+                    number={section.number}
+                    title={section.title}
+                    description={section.description}
+                    link={section.link}
+                  />
+                </Grid>
+              );
+            })}
           </Grid>
           <Typography
             ref={createAccountsRef}
@@ -259,22 +253,18 @@ const UserGuide: React.FC = () => {
             Create and Verify Your Account:
           </Typography>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <UserGuideCard
-                number={1}
-                title="Click on 'Connect Wallet' and choose a supported wallet from the list."
-                description="By default, only Flint (Desktop/Mobile) and installed supported wallets will be shown."
-              />
-            </Grid>
-
-            <Grid item xs={12} sm={6}>
-              <UserGuideCard
-                number={2}
-                title="Verify your wallet using CIP8 message signing through SMS or Discord."
-                description="Once you connect your wallet you will be prompted for verification, if you choose to skip this step until later you can access this again by clicking your wallet in the top right corner, or by trying to vote via the categories page.
-Protect your Cardano Ballot account with seamless verification using CIP8 message signing via SMS or Discord."
-              />
-            </Grid>
+            {userGuideMenuOptions[1].sections.map((section) => {
+              return (
+                <Grid item xs={12} sm={6}>
+                  <UserGuideCard
+                    number={section.number}
+                    title={section.title}
+                    description={section.description}
+                    link={section.link}
+                  />
+                </Grid>
+              );
+            })}
           </Grid>
 
           <Typography
@@ -293,49 +283,18 @@ Protect your Cardano Ballot account with seamless verification using CIP8 messag
             How to Submit a Vote:
           </Typography>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6} md={4}>
-              <UserGuideCard
-                number={1}
-                title="Navigate to the “Categories” section."
-                description="You can do this by either clicking on the link in at the top of the page labelled “Categories” or by clicking on the “Start Voting” button on the home page and directly below this section!"
-              />
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <UserGuideCard
-                number={2}
-                title="Scroll through the voting categories."
-                description="On the left-hand side, you will see the proposed voting categories. Simply click on the category you wish to vote on to see the corresponding list of nominees."
-              />
-            </Grid>
-
-            <Grid item xs={12} sm={4} md={4}>
-              <UserGuideCard
-                number={3}
-                title="Browse and choose your nominee"
-                description="To see additional information about a nominee click on the “Learn More” button. To select the nominee you want to vote for, simply click on their listing to make the selection."
-              />
-            </Grid>
-            <Grid item xs={12} sm={4} md={4}>
-              <UserGuideCard
-                number={4}
-                title="Click “Vote Now” to cast your vote."
-                description="Once you have made your selection you will be able to click on the “Vote Now” button in the top right above the nominees listings."
-              />
-            </Grid>
-            <Grid item xs={12} sm={4} md={4}>
-              <UserGuideCard
-                number={5}
-                title="Connect and/ or verify your wallet"
-                description="If you haven’t yet connected or verified your wallet you will be prompted to do so at this point. Follow the instructions from your chosen wallet."
-              />
-            </Grid>
-            <Grid item xs={12} sm={4} md={4}>
-              <UserGuideCard
-                number={6}
-                title="Your vote is now submitted!"
-                description="Once you follow the signing process from your wallet your vote will be submitted. To see the progress status of your vote click the “Vote Receipt” button in the top right above the nominees listings."
-              />
-            </Grid>
+            {userGuideMenuOptions[2].sections.map((section) => {
+              return (
+                <Grid item xs={12} sm={6} md={4}>
+                  <UserGuideCard
+                    number={section.number}
+                    title={section.title}
+                    description={section.description}
+                    link={section.link}
+                  />
+                </Grid>
+              );
+            })}
           </Grid>
         </Grid>
       </Grid>

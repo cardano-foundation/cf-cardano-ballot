@@ -3,6 +3,7 @@ import { useLocalStorage } from "../../common/hooks/useLocalStorage";
 import { CB_COOKIES } from "../../common/constants/local";
 import { Box, Button, Typography } from "@mui/material";
 import theme from "../../common/styles/theme";
+import { CustomButton } from "../common/CustomButton/CustomButton";
 
 export enum CookiesStatus {
   ACCEPT = "ACCEPT",
@@ -32,6 +33,7 @@ const Cookies = ({ position }) => {
         name="connect-wallet-modal"
         title="Cookie Policy"
         width="auto"
+        closeIcon={false}
         onClose={() => setCookies(CookiesStatus.REJECT)}
         onBack={() => setCookies(CookiesStatus.REJECT)}
         disableBackdropClick
@@ -63,73 +65,46 @@ const Cookies = ({ position }) => {
               fontSize: "16px",
               fontWeight: 500,
               lineHeight: "24px",
-              textAlign: "left",
+              textAlign: {
+                xs: "left",
+                sm: "center",
+              },
             }}
           >
             We use cookies on this website to help improve your overall
             experience. By clicking accept you agree to our privacy policy.
           </Typography>
-          <Box sx={{ display: "flex" }}>
-            <Button
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
+              width: "100%",
+              alignItems: "center",
+              gap: 2,
+              marginTop: "24px",
+            }}
+          >
+            <CustomButton
               onClick={handlePrivacyPolicy}
-              sx={{
-                display: "flex",
-                width: "180px",
-                padding: "16px 24px",
-                justifyContent: "center",
-                alignItems: "center",
-                borderRadius: "12px",
-                border: "1px solid var(--orange, #EE9766)",
-                color: "var(--orange, #EE9766)",
-                fontSize: "16px",
-                fontWeight: 500,
-                lineHeight: "24px",
-                textTransform: "none",
-                marginRight: "12px",
-              }}
+              fullWidth={true}
+              colorVariant="secondary"
             >
               Privacy Policy
-            </Button>
-            <Button
+            </CustomButton>
+            <CustomButton
               onClick={handleReject}
-              sx={{
-                display: "flex",
-                width: "180px",
-                padding: "16px 24px",
-                justifyContent: "center",
-                alignItems: "center",
-                borderRadius: "12px",
-                border: "1px solid var(--orange, #EE9766)",
-                color: "var(--orange, #EE9766)",
-                fontSize: "16px",
-                fontWeight: 500,
-                lineHeight: "24px",
-                textTransform: "none",
-                marginRight: "12px",
-              }}
+              fullWidth={true}
+              colorVariant="secondary"
             >
               Reject
-            </Button>
-            <Button
+            </CustomButton>
+            <CustomButton
               onClick={() => handleAccept()}
-              sx={{
-                display: "flex",
-                width: "180px",
-                padding: "16px 24px",
-                justifyContent: "center",
-                alignItems: "center",
-                borderRadius: "12px",
-                background:
-                  "linear-gradient(70deg, #0C7BC5 -105.24%, #40407D -53.72%, #EE9766 -0.86%, #EE9766 103.82%)",
-                color: "var(--neutralDarkest, #121212)",
-                fontSize: "16px",
-                fontWeight: 500,
-                lineHeight: "24px",
-                textTransform: "none",
-              }}
+              fullWidth={true}
+              colorVariant="primary"
             >
               Accept
-            </Button>
+            </CustomButton>
           </Box>
         </Box>
       </Modal>

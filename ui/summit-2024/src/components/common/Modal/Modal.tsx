@@ -14,6 +14,7 @@ type ModalProps = {
   backButton?: boolean;
   title: string;
   leftTitle?: boolean;
+  closeIcon?: boolean;
   position?: "normal" | "bottom";
   width?: string;
   backdrop?: boolean;
@@ -31,7 +32,7 @@ const Modal = (props: ModalProps) => {
     title,
     width,
     position,
-    backdrop,
+    closeIcon,
     disableBackdropClick,
     onClose,
     onBack,
@@ -104,27 +105,31 @@ const Modal = (props: ModalProps) => {
           {title}
         </Typography>
 
-        <IconButton
-          sx={{
-            position: "absolute",
-            right: 20,
-            display: "inline-flex",
-            padding: "12px",
-            alignItems: "flex-start",
-            borderRadius: "12px",
-            backgroundColor: theme.palette.background.neutralDark,
-            cursor: "pointer",
-            "&:hover": {
-              backgroundColor: theme.palette.text.neutralLightest,
-              color: theme.palette.background.neutralDark,
-            },
-          }}
-          edge="end"
-          color="inherit"
-          onClick={onClose}
-        >
-          <CloseIcon />
-        </IconButton>
+        {closeIcon === false ? null : (
+          <>
+            <IconButton
+              sx={{
+                position: "absolute",
+                right: 20,
+                display: "inline-flex",
+                padding: "12px",
+                alignItems: "flex-start",
+                borderRadius: "12px",
+                backgroundColor: theme.palette.background.neutralDark,
+                cursor: "pointer",
+                "&:hover": {
+                  backgroundColor: theme.palette.text.neutralLightest,
+                  color: theme.palette.background.neutralDark,
+                },
+              }}
+              edge="end"
+              color="inherit"
+              onClick={onClose}
+            >
+              <CloseIcon />
+            </IconButton>
+          </>
+        )}
       </DialogTitle>
       <DialogContent
         sx={{

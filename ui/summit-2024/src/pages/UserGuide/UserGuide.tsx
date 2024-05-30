@@ -55,18 +55,7 @@ const UserGuide: React.FC = () => {
       />
       <Box sx={{ width: "100%" }}>
         <Grid container>
-          <Grid
-            item
-            xs={12}
-            md={2.4}
-            lg={2}
-            sx={{
-              position: isMobile ? "" : "sticky",
-              top: 0,
-              height: isMobile ? "" : "100%",
-              overflow: "auto",
-            }}
-          >
+          <Grid item xs={12} md={2.4} lg={2}>
             {isMobile ? (
               <>
                 <Box
@@ -129,6 +118,11 @@ const UserGuide: React.FC = () => {
               <>
                 <List
                   sx={{
+                    position: "sticky",
+                    top: 74,
+                    zIndex: 1100,
+                    overflowY: "auto",
+                    maxHeight: "calc(100vh - 74px)",
                     borderRight: "1px solid #737380",
                   }}
                 >

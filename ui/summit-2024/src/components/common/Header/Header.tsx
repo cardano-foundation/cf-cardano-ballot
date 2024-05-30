@@ -139,7 +139,6 @@ const Header = () => {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              xs: "auto",
             }}
           >
             <Box
@@ -151,8 +150,9 @@ const Header = () => {
                 flexDirection: "row",
                 width: "100%",
                 maxWidth: "1440px",
-                margin: "0 auto",
-                padding: "10px 80px",
+
+                paddingTop: "10px",
+                paddingBottom: "10px",
               }}
             >
               <Box
@@ -180,7 +180,7 @@ const Header = () => {
                     href="#categories"
                     sx={{
                       color: "inherit",
-                      mx: 2,
+                      px: "24px",
                       textDecoration: "none",
                       cursor: "pointer",
                     }}
@@ -192,7 +192,11 @@ const Header = () => {
                     variant="body1"
                     component="a"
                     href="#leaderboard"
-                    sx={{ color: "inherit", mx: 2, textDecoration: "none" }}
+                    sx={{
+                      color: "inherit",
+                      textDecoration: "none",
+                      px: "24px",
+                    }}
                     onClick={() => handleClickMenu(ROUTES.LEADERBOARD)}
                   >
                     Leaderboard
@@ -201,7 +205,11 @@ const Header = () => {
                     variant="body1"
                     component="a"
                     href="#user-guide"
-                    sx={{ color: "inherit", textDecoration: "none" }}
+                    sx={{
+                      color: "inherit",
+                      textDecoration: "none",
+                      px: "24px",
+                    }}
                     onClick={() => handleClickMenu(ROUTES.USER_GUIDE)}
                   >
                     User Guide

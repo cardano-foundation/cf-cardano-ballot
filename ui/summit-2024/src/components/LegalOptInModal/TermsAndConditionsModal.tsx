@@ -9,9 +9,9 @@ import {
   DialogContentText,
   DialogTitle,
   Typography,
+  useMediaQuery,
 } from "@mui/material";
 import { useState } from "react";
-import { useIsPortrait } from "../../common/hooks/useIsPortrait";
 import { useLocalStorage } from "../../common/hooks/useLocalStorage";
 import { CB_TERMS_AND_PRIVACY } from "../../common/constants/local";
 import { TabsSegment } from "../common/TabPanel/TabsSegment";
@@ -21,13 +21,17 @@ import theme from "../../common/styles/theme";
 import { ExtraDetails, List } from "./TermsAndConditionsModal.type";
 
 const TermsAndConditionsModal = () => {
-  const isMobile = useIsPortrait();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   const [currentTab, setCurrentTab] = useState(0);
   const [isChecked, setIsChecked] = useState(false);
   const [termsAndConditionsChecked, setTermsAndConditionsChecked] =
     useLocalStorage(CB_TERMS_AND_PRIVACY, false);
 
-  const tabs = ["Terms & Conditions", "Privacy Policy"];
+  const tabs = [
+    isMobile ? "T&Cs" : "Terms & Conditions",
+    isMobile ? "Privacy" : "Privacy Policy",
+  ];
 
   const handleCheckboxChange = (event) => {
     setIsChecked(event.target.checked);
@@ -417,18 +421,6 @@ const TermsAndConditionsModal = () => {
     </Box>
   );
 
-  const icon = (
-    <Box
-      sx={{
-        width: 20,
-        height: 20,
-        backgroundColor: "transparent",
-        borderRadius: "4px",
-        border: "2px solid white",
-      }}
-    />
-  );
-
   return (
     <Dialog
       open={!termsAndConditionsChecked}
@@ -461,51 +453,46 @@ const TermsAndConditionsModal = () => {
       </DialogContent>
       <DialogActions
         sx={{
-          justifyContent: "space-between",
+          justifyContent: { xs: "center", sm: "space-between" },
           alignItems: "center",
           padding: theme.spacing(2),
           backgroundColor: theme.palette.background.default,
+          flexDirection: { xs: "column", sm: "row" },
         }}
       >
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <Checkbox
-            icon={icon}
-            checkedIcon={checkedIcon}
-            checked={isChecked}
-            onChange={handleCheckboxChange}
-          />
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            width: "100%",
+            mb: { xs: 2, sm: 0 },
+          }}
+        >
+          <Checkbox checked={isChecked} onChange={handleCheckboxChange} />
           <Typography
             sx={{
               color: theme.palette.text.neutralLightest,
               marginLeft: theme.spacing(1),
+              flexGrow: 1,
             }}
           >
             I agree to the Terms of Service
           </Typography>
         </Box>
 
-        <Box sx={{ display: "flex", gap: theme.spacing(2) }}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
+            gap: theme.spacing(2),
+            width: "100%",
+          }}
+        >
           <Button
-            variant="outlined"
-            sx={{
-              display: "flex",
-              padding: "16px 24px",
-              justifyContent: "center",
-              alignItems: "center",
-              borderRadius: "12px",
-              borderColor: "var(--orange, #EE9766)",
-              color: "var(--orange, #EE9766)",
-              textTransform: "none",
-            }}
-          >
-            Decline
-          </Button>
-          <Button
-            onClick={() => handleAccept()}
+            onClick={handleAccept}
             variant="contained"
             disabled={!isChecked}
             sx={{
-              display: "flex",
               padding: "16px 24px",
               justifyContent: "center",
               alignItems: "center",
@@ -515,9 +502,25 @@ const TermsAndConditionsModal = () => {
                 : "var(--neutral, #737380)",
               color: "white",
               textTransform: "none",
+              width: "100%",
             }}
           >
             Accept
+          </Button>
+          <Button
+            variant="outlined"
+            sx={{
+              padding: "16px 24px",
+              justifyContent: "center",
+              alignItems: "center",
+              borderRadius: "12px",
+              borderColor: "var(--orange, #EE9766)",
+              color: "var(--orange, #EE9766)",
+              textTransform: "none",
+              width: "100%",
+            }}
+          >
+            Decline
           </Button>
         </Box>
       </DialogActions>

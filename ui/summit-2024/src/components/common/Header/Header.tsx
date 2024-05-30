@@ -124,16 +124,15 @@ const Header = () => {
 
   return (
     <>
-
       <AppBar
         position="fixed"
         sx={{
-            height: "96px",
-            background: "transparent",
-            boxShadow: "none"
+          height: "96px",
+          background: "transparent",
+          boxShadow: "none",
         }}
       >
-        <Toolbar >
+        <Toolbar>
           <Box
             sx={{
               width: "100%",
@@ -145,7 +144,7 @@ const Header = () => {
           >
             <Box
               sx={{
-                  background: theme.palette.background.default,
+                background: theme.palette.background.default,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
@@ -153,7 +152,7 @@ const Header = () => {
                 width: "100%",
                 maxWidth: "1440px",
                 margin: "0 auto",
-                  padding: "10px 80px"
+                padding: "10px 80px",
               }}
             >
               <Box
@@ -239,9 +238,11 @@ const Header = () => {
           </Box>
         </Toolbar>
       </AppBar>
-        <Box sx={{
-            height: "96px"
-        }}/>
+      <Box
+        sx={{
+          height: "96px",
+        }}
+      />
       <RightMenu
         menuIsOpen={menuIsOpen}
         setMenuIsOpen={(isOpen: boolean) => setMenuIsOpen(isOpen)}

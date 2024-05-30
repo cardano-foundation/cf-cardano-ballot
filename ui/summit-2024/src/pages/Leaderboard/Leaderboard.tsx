@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import {
-  Box,
-  Typography,
-  Grid,
-  Container,
-  TableContainer,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
+    Box,
+    Typography,
+    Grid,
+    Container,
+    TableContainer,
+    Table,
+    TableHead,
+    TableRow,
+    TableCell,
+    TableBody, Fade,
 } from "@mui/material";
 import theme from "../../common/styles/theme";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -37,303 +37,307 @@ const Leaderboard: React.FC = () => {
   const dataForChart = categoriesData.map((item, index) => ({
     title: item.category,
     value: item.votes,
-    color: colors[index % colors.length], // Ensure each category gets a predefined color
+    color: colors[index % colors.length]
   }));
 
-  return (
-    <Container maxWidth="lg">
-      <Box sx={{ my: 4 }}>
-        <Typography
-          sx={{
-            color: theme.palette.text.neutralLightest,
-            fontFamily: "Dosis",
-            fontSize: "32px",
-            fontStyle: "normal",
-            fontWeight: 700,
-            lineHeight: "36px",
-            marginBottom: "32px",
-          }}
-        >
-          Leaderboard
-        </Typography>
-        <Grid container spacing={2}>
-          <Grid item xs={12} md={6}>
-            <Box
-              sx={{
-                p: "28px",
-                backgroundImage: `url(${leaderboard1Bg})`,
-                backgroundSize: "200% 200%",
-                backgroundPosition: "center",
-                borderRadius: "24px",
-                backdropFilter: "blur(5px)",
-              }}
-            >
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <Typography
-                  sx={{
-                    fontFamily: "Dosis",
-                    color: theme.palette.text.neutralLightest,
-                    textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
-                    fontSize: "28px",
-                    fontStyle: "normal",
-                    fontWeight: 700,
-                    lineHeight: "32px",
-                  }}
-                >
-                  Total Votes
-                </Typography>
-                <MoreVertIcon
-                  sx={{
-                    cursor: "pointer",
-                  }}
-                />
-              </Box>
-              <Typography
-                sx={{
-                  my: 2,
-                  fontFamily: "Dosis",
-                  color: theme.palette.text.neutralLightest,
-                  textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
-                  fontSize: "36px",
-                  fontStyle: "normal",
-                  fontWeight: 700,
-                  lineHeight: "40px",
-                }}
-              >
-                1,000
-              </Typography>
-              <TableContainer>
-                <Table size="small">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell
-                        sx={{
-                          fontWeight: "bold",
-                          width: "50%",
-                          padding: "12px 0px",
-                        }}
-                      >
-                        Category
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          fontWeight: "bold",
-                          width: "25%",
-                          padding: "12px 0px",
-                        }}
-                        align="left"
-                      >
-                        Votes
-                      </TableCell>
-                      <TableCell
-                        sx={{
-                          fontWeight: "bold",
-                          width: "25%",
-                          padding: "12px 0px",
-                        }}
-                        align="left"
-                      >
-                        Percentage
-                      </TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {Array.from({ length: 10 }).map((_, index) => (
-                      <TableRow key={index}>
-                        <TableCell
-                          component="th"
-                          scope="row"
-                          sx={{
-                            color: theme.palette.text.neutralLightest,
-                            textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
-                            fontSize: "12px",
-                            fontStyle: "normal",
-                            fontWeight: 700,
-                            lineHeight: "20px",
-                            padding: "12px 0px",
-                          }}
-                        >
-                          Category {index + 1}
-                        </TableCell>
-                        <TableCell align="left">{100 + index}</TableCell>
-                        <TableCell align="left">{10 + index}%</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Box>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Box
-              sx={{
-                height: "100%",
-                paddingTop: "28px",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                p: "28px",
-                backgroundImage: `url(${leaderboard1Bg})`,
-                backgroundSize: "200% 200%",
-                backgroundPosition: "center",
-                borderRadius: "24px",
-                backdropFilter: "blur(5px)",
-              }}
-            >
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  width: "100%",
-                }}
-              >
-                <Typography
-                  sx={{
-                    color: theme.palette.text.neutralLightest,
-                    textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
-                    fontFamily: "Dosis",
-                    fontSize: "28px",
-                    fontStyle: "normal",
-                    fontWeight: 700,
-                    lineHeight: "32px",
-                  }}
-                >
-                  Votes per category
-                </Typography>
-                <MoreVertIcon
-                  sx={{
-                    cursor: "pointer",
-                  }}
-                />
-              </Box>
-              <Box
-                sx={{
-                  marginTop: "48px",
-                }}
-              >
-                <Box
-                  sx={{
-                    position: "relative",
-                    maxWidth: 380,
-                    height: 380,
-                    margin: "auto",
-                  }}
-                >
-                  <PieChart
-                    data={dataForChart.map((entry, index) => ({
-                      ...entry,
-                      color: hovered === index ? entry.color : entry.color,
-                    }))}
-                    style={{ height: "100%" }}
-                    lineWidth={30}
-                    radius={pieChartDefaultProps.radius - 6}
-                    segmentsStyle={{
-                      transition: "stroke .3s",
-                      cursor: "pointer",
-                    }}
-                    segmentsShift={(index) => (index === selected ? 6 : 1)}
-                    onClick={(_, index) => {
-                      setSelected(index === selected ? undefined : index);
-                    }}
-                    onMouseOver={(_, index) => {
-                      setHovered(index);
-                      setSelected(index);
-                    }}
-                    onMouseOut={() => {
-                      setHovered(undefined);
-                    }}
-                  />
-                  {/* Centered Box */}
-                  <Box
-                    sx={{
-                      position: "absolute",
-                      top: "50%",
-                      left: "50%",
-                      transform: "translate(-50%, -50%)",
-                      textAlign: "center",
-                    }}
-                  >
-                    <Typography
+  return (<>
+      <Box sx={{
+          height: "28px"
+      }} />
+          <Container maxWidth="lg">
+              <Box sx={{ my: 4 }}>
+                  <Typography
                       sx={{
-                        color: theme.palette.text.neutralLightest,
-                        fontSize: "16px",
-                        fontStyle: "normal",
-                        fontWeight: 500,
-                        lineHeight: "24px",
-                      }}
-                    >
-                      Votes
-                    </Typography>
-                    <Typography
-                      variant="h6"
-                      component="div"
-                      sx={{
-                        color: theme.palette.text.neutralLightest,
-                        fontFamily: "Dosis",
-                        fontSize: "28px",
-                        fontStyle: "normal",
-                        fontWeight: 700,
-                        lineHeight: "32px",
-                      }}
-                    >
-                      {selected !== undefined
-                        ? `${dataForChart[selected].value} Votes`
-                        : "1,000"}
-                    </Typography>
-                  </Box>
-                </Box>
-
-                <Box
-                  sx={{
-                    display: "flex",
-                    mt: 2,
-                    maxWidth: "100%",
-                    flexWrap: "wrap",
-                  }}
-                >
-                  {dataForChart.map((entry, index) => (
-                    <Box
-                      key={index}
-                      sx={{ display: "flex", alignItems: "center", px: "12px" }}
-                    >
-                      <Box
-                        sx={{
-                          width: "12px",
-                          height: "12px",
-                          borderRadius: "4px",
-                          backgroundColor: entry.color,
-                          mr: 1,
-                        }}
-                      />
-                      <Typography
-                        sx={{
-                          overflow: "hidden",
                           color: theme.palette.text.neutralLightest,
-                          textOverflow: "ellipsis",
+                          fontFamily: "Dosis",
+                          fontSize: "32px",
                           fontStyle: "normal",
-                          fontWeight: 400,
-                          lineHeight: "16px",
-                          fontSize: "12px",
-                          marginTop: "8px",
-                        }}
-                      >
-                        {addressSlice(entry.title, 12, "end")}
-                      </Typography>
-                    </Box>
-                  ))}
-                </Box>
+                          fontWeight: 700,
+                          lineHeight: "36px",
+                          marginBottom: "32px",
+                      }}
+                  >
+                      Leaderboard
+                  </Typography>
+                  <Grid container spacing={2}>
+                      <Grid item xs={12} md={6}>
+                          <Box
+                              sx={{
+                                  p: "28px",
+                                  backgroundImage: `url(${leaderboard1Bg})`,
+                                  backgroundSize: "200% 200%",
+                                  backgroundPosition: "center",
+                                  borderRadius: "24px",
+                                  backdropFilter: "blur(5px)",
+                              }}
+                          >
+                              <Box
+                                  sx={{
+                                      display: "flex",
+                                      justifyContent: "space-between",
+                                      alignItems: "center",
+                                  }}
+                              >
+                                  <Typography
+                                      sx={{
+                                          fontFamily: "Dosis",
+                                          color: theme.palette.text.neutralLightest,
+                                          textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
+                                          fontSize: "28px",
+                                          fontStyle: "normal",
+                                          fontWeight: 700,
+                                          lineHeight: "32px",
+                                      }}
+                                  >
+                                      Total Votes
+                                  </Typography>
+                                  <MoreVertIcon
+                                      sx={{
+                                          cursor: "pointer",
+                                      }}
+                                  />
+                              </Box>
+                              <Typography
+                                  sx={{
+                                      my: 2,
+                                      fontFamily: "Dosis",
+                                      color: theme.palette.text.neutralLightest,
+                                      textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
+                                      fontSize: "36px",
+                                      fontStyle: "normal",
+                                      fontWeight: 700,
+                                      lineHeight: "40px",
+                                  }}
+                              >
+                                  1,000
+                              </Typography>
+                              <TableContainer>
+                                  <Table size="small">
+                                      <TableHead>
+                                          <TableRow>
+                                              <TableCell
+                                                  sx={{
+                                                      fontWeight: "bold",
+                                                      width: "50%",
+                                                      padding: "12px 0px",
+                                                  }}
+                                              >
+                                                  Category
+                                              </TableCell>
+                                              <TableCell
+                                                  sx={{
+                                                      fontWeight: "bold",
+                                                      width: "25%",
+                                                      padding: "12px 0px",
+                                                  }}
+                                                  align="left"
+                                              >
+                                                  Votes
+                                              </TableCell>
+                                              <TableCell
+                                                  sx={{
+                                                      fontWeight: "bold",
+                                                      width: "25%",
+                                                      padding: "12px 0px",
+                                                  }}
+                                                  align="left"
+                                              >
+                                                  Percentage
+                                              </TableCell>
+                                          </TableRow>
+                                      </TableHead>
+                                      <TableBody>
+                                          {Array.from({ length: 10 }).map((_, index) => (
+                                              <TableRow key={index}>
+                                                  <TableCell
+                                                      component="th"
+                                                      scope="row"
+                                                      sx={{
+                                                          color: theme.palette.text.neutralLightest,
+                                                          textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
+                                                          fontSize: "12px",
+                                                          fontStyle: "normal",
+                                                          fontWeight: 700,
+                                                          lineHeight: "20px",
+                                                          padding: "12px 0px",
+                                                      }}
+                                                  >
+                                                      Category {index + 1}
+                                                  </TableCell>
+                                                  <TableCell align="left">{100 + index}</TableCell>
+                                                  <TableCell align="left">{10 + index}%</TableCell>
+                                              </TableRow>
+                                          ))}
+                                      </TableBody>
+                                  </Table>
+                              </TableContainer>
+                          </Box>
+                      </Grid>
+                      <Grid item xs={12} md={6}>
+                          <Box
+                              sx={{
+                                  height: "100%",
+                                  paddingTop: "28px",
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  alignItems: "center",
+                                  p: "28px",
+                                  backgroundImage: `url(${leaderboard1Bg})`,
+                                  backgroundSize: "200% 200%",
+                                  backgroundPosition: "center",
+                                  borderRadius: "24px",
+                                  backdropFilter: "blur(5px)",
+                              }}
+                          >
+                              <Box
+                                  sx={{
+                                      display: "flex",
+                                      justifyContent: "space-between",
+                                      width: "100%",
+                                  }}
+                              >
+                                  <Typography
+                                      sx={{
+                                          color: theme.palette.text.neutralLightest,
+                                          textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
+                                          fontFamily: "Dosis",
+                                          fontSize: "28px",
+                                          fontStyle: "normal",
+                                          fontWeight: 700,
+                                          lineHeight: "32px",
+                                      }}
+                                  >
+                                      Votes per category
+                                  </Typography>
+                                  <MoreVertIcon
+                                      sx={{
+                                          cursor: "pointer",
+                                      }}
+                                  />
+                              </Box>
+                              <Box
+                                  sx={{
+                                      marginTop: "48px",
+                                  }}
+                              >
+                                  <Box
+                                      sx={{
+                                          position: "relative",
+                                          maxWidth: 380,
+                                          height: 380,
+                                          margin: "auto",
+                                      }}
+                                  >
+                                      <PieChart
+                                          data={dataForChart.map((entry, index) => ({
+                                              ...entry,
+                                              color: hovered === index ? entry.color : entry.color,
+                                          }))}
+                                          style={{ height: "100%" }}
+                                          lineWidth={30}
+                                          radius={pieChartDefaultProps.radius - 6}
+                                          segmentsStyle={{
+                                              transition: "stroke .3s",
+                                              cursor: "pointer",
+                                          }}
+                                          segmentsShift={(index) => (index === selected ? 6 : 1)}
+                                          onClick={(_, index) => {
+                                              setSelected(index === selected ? undefined : index);
+                                          }}
+                                          onMouseOver={(_, index) => {
+                                              setHovered(index);
+                                              setSelected(index);
+                                          }}
+                                          onMouseOut={() => {
+                                              setHovered(undefined);
+                                          }}
+                                      />
+                                      <Box
+                                          sx={{
+                                              position: "absolute",
+                                              top: "50%",
+                                              left: "50%",
+                                              transform: "translate(-50%, -50%)",
+                                              textAlign: "center",
+                                          }}
+                                      >
+                                          <Typography
+                                              sx={{
+                                                  color: theme.palette.text.neutralLightest,
+                                                  fontSize: "16px",
+                                                  fontStyle: "normal",
+                                                  fontWeight: 500,
+                                                  lineHeight: "24px",
+                                              }}
+                                          >
+                                              Votes
+                                          </Typography>
+                                          <Typography
+                                              variant="h6"
+                                              component="div"
+                                              sx={{
+                                                  color: theme.palette.text.neutralLightest,
+                                                  fontFamily: "Dosis",
+                                                  fontSize: "28px",
+                                                  fontStyle: "normal",
+                                                  fontWeight: 700,
+                                                  lineHeight: "32px",
+                                              }}
+                                          >
+                                              {selected !== undefined
+                                                  ? `${dataForChart[selected].value} Votes`
+                                                  : "1,000"}
+                                          </Typography>
+                                      </Box>
+                                  </Box>
+
+                                  <Box
+                                      sx={{
+                                          display: "flex",
+                                          mt: 2,
+                                          maxWidth: "100%",
+                                          flexWrap: "wrap",
+                                      }}
+                                  >
+                                      {dataForChart.map((entry, index) => (
+                                          <Box
+                                              key={index}
+                                              sx={{ display: "flex", alignItems: "center", px: "12px" }}
+                                          >
+                                              <Box
+                                                  sx={{
+                                                      width: "12px",
+                                                      height: "12px",
+                                                      borderRadius: "4px",
+                                                      backgroundColor: entry.color,
+                                                      mr: 1,
+                                                  }}
+                                              />
+                                              <Typography
+                                                  sx={{
+                                                      overflow: "hidden",
+                                                      color: theme.palette.text.neutralLightest,
+                                                      textOverflow: "ellipsis",
+                                                      fontStyle: "normal",
+                                                      fontWeight: 400,
+                                                      lineHeight: "16px",
+                                                      fontSize: "12px",
+                                                      marginTop: "8px",
+                                                  }}
+                                              >
+                                                  {addressSlice(entry.title, 12, "end")}
+                                              </Typography>
+                                          </Box>
+                                      ))}
+                                  </Box>
+                              </Box>
+                          </Box>
+                      </Grid>
+                  </Grid>
               </Box>
-            </Box>
-          </Grid>
-        </Grid>
-      </Box>
-    </Container>
+          </Container>
+  </>
+
   );
 };
 

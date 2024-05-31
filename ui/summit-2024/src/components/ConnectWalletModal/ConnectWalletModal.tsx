@@ -1,22 +1,20 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { useMediaQuery } from "@mui/material";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 import { resolveCardanoNetwork } from "../../utils/utils";
 import { env } from "../../common/constants/env";
 import ConnectWalletList from "../ConnectWalletList/ConnectWalletList";
 import Modal from "../common/Modal/Modal";
-import theme from "../../common/styles/theme";
 import {
   ConnectWalletFlow,
   IWalletInfo,
 } from "../ConnectWalletList/ConnectWalletList.types";
-import { ToastType } from "../common/Toast/Toast.types";
 import {
   ConnectWalletContextType,
   ConnectWalletProps,
 } from "./ConnectWalletModal.type";
 import { eventBus } from "../../utils/EventBus";
 import { useIsPortrait } from "../../common/hooks/useIsPortrait";
+import { NetworkType } from "@cardano-foundation/cardano-connect-with-wallet-core";
 
 const ConnectWalletContext = createContext<ConnectWalletContextType | null>(
   null,
@@ -37,9 +35,8 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
     ConnectWalletFlow[]
   >([ConnectWalletFlow.SELECT_WALLET]);
 
-  const [toastMessage, setToastMessage] = useState("");
-  const [toastType, setToastType] = useState<ToastType>(ToastType.Common);
-  const [toastOpen, setToastOpen] = useState(false);
+  const network = resolveCardanoNetwork(env.TARGET_NETWORK);
+
   const [onPeerConnectAccept, setOnPeerConnectAccept] = useState(() => () => {
     /*TODO */
   });
@@ -90,8 +87,6 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
         walletInfo: IWalletInfo,
         callback: (granted: boolean, autoconnect: boolean) => void,
       ) => {
-        console.log("verifyConnection");
-        console.log(walletInfo);
         setPeerConnectWalletInfo(walletInfo);
         setCurrentPath(ConnectWalletFlow.ACCEPT_CONNECTION);
 
@@ -177,6 +172,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
   };
 
   const modalProps = getModalProps();
+
   return (
     <>
       <ConnectWalletContext.Provider value={contextValue}>
@@ -187,7 +183,9 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
           title={
             connectCurrentPaths[0] === ConnectWalletFlow.CONNECT_IDENTITY_WALLET
               ? "Connect Identity Wallet"
-              : "Connect Wallet"
+              : `Connect ${
+                  network === NetworkType.TESTNET ? "Tesnet " : ""
+                }Wallet`
           }
           onClose={() => props.handleCloseConnectWalletModal()}
           width={isMobile ? "auto" : "450px"}

@@ -6,10 +6,11 @@ import XIcon from "../../../assets/x.svg";
 import LinkedinIcon from "../../../assets/linkedin.svg";
 import theme from "../../../common/styles/theme";
 import { CustomButton } from "../../../components/common/CustomButton/CustomButton";
+import { resolveCardanoNetwork } from "../../../utils/utils";
+import { env } from "../../../common/constants/env";
 
 const VoteNowModal: React.FC = ({ isOpen, onClose, selectedNominee }) => {
   const isMobile = useIsPortrait();
-
   return (
     <>
       <Modal
@@ -23,6 +24,10 @@ const VoteNowModal: React.FC = ({ isOpen, onClose, selectedNominee }) => {
         <Box
           sx={{
             width: isMobile ? "100%" : "400px",
+            display: "flex",
+            justifyContent: "center",
+            flexDirection: "column",
+            alignItems: "center",
           }}
         >
           <CustomButton

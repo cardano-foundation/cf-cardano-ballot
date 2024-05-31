@@ -1,142 +1,149 @@
 import React from "react";
-import { Grid, Typography, IconButton, Tooltip, Link } from "@mui/material";
+import {
+  Grid,
+  Typography,
+  Box,
+  Link,
+  Tooltip,
+  IconButton,
+} from "@mui/material";
 import SupportIcon from "@mui/icons-material/SupportAgent";
-import discordLogo from "../../../common/resources/images/discord-icon.svg";
-import { i18n } from "../../../i18n";
 import { env } from "../../../common/constants/env";
-import { useIsPortrait } from "../../../common/hooks/useIsPortrait";
+import discordLogo from "../../../assets/discord.svg";
+import {i18n} from "../../../i18n";
 
 const Footer = () => {
-  const isMobile = useIsPortrait();
-
   return (
-    <Grid
-      container
-      spacing={2}
-      sx={{
-        background: "transparent",
-        boxShadow: "none",
-        minHeight: "44px",
-        textAlign: "center",
-        fontSize: "16px",
-        fontWeight: 500,
-        lineHeight: "24px",
-        marginTop: "80px",
-        marginBottom: "80px",
-      }}
-      justifyContent="space-between"
-      alignItems="center"
-    >
-      <Grid
-        item
-        xs={12}
-        md={4}
-        sx={{ textAlign: !isMobile ? "left" : "", paddingLeft: "0 !important" }}
+    <>
+      <Box
+        sx={{
+          width: "100%",
+          mt: 4,
+          padding: 2,
+          textAlign: "center",
+        }}
       >
-        <Typography variant="body2" sx={{ color: "text.primary" }}>
-          © {new Date().getFullYear()}{" "}
-          <Link
-            href="https://summit.cardano.org/"
-            target="_blank"
-            rel="noopener"
-            sx={{
-              color: "text.primary",
-              textDecoration: "underline",
-            }}
-          >
-            Cardano Summit
-          </Link>
-          . All rights reserved.
-        </Typography>
-      </Grid>
-      <Grid
-        item
-        xs={12}
-        md={8}
-        container
-        spacing={2}
-        direction={{ xs: "column", md: "row" }}
-        justifyContent="flex-end"
-        alignItems="center"
-      >
-        <Grid item>
-          <Typography variant="body2" sx={{ color: "text.primary" }}>
-            <Link
-              href="/terms-and-conditions"
-              sx={{
-                color: "text.primary",
-                textDecoration: "underline",
-              }}
-            >
-              {i18n.t("footer.menu.termsAndConditions")}
-            </Link>
-          </Typography>
-        </Grid>
-
-        <Grid item>
-          <Typography variant="body2" sx={{ color: "text.primary" }}>
-            <Link
-              href="/privacy-policy"
-              sx={{
-                color: "text.primary",
-                textDecoration: "underline",
-              }}
-            >
-              {i18n.t("footer.menu.privacyPolicy")}
-            </Link>
-          </Typography>
-        </Grid>
-
-        <Grid item>
-          <Typography variant="body2" sx={{ color: "text.primary" }}>
-            Version {env.APP_VERSION}(
-            <Link
-              href="https://status.voting.summit.cardano.org/"
-              target="_blank"
-              rel="noopener"
-              sx={{
-                color: "text.primary",
-                textDecoration: "underline",
-              }}
-            >
-              Status
-            </Link>
-            )
-          </Typography>
-        </Grid>
-
-        <Grid item>
-          <Tooltip title="Get support" placement="top">
-            <IconButton
-              onClick={() =>
-                window.open(env.DISCORD_SUPPORT_CHANNEL_URL, "_blank")
-              }
-              sx={{ p: 0, color: "secondary.main" }}
-            >
-              <SupportIcon sx={{ color: "text.primary" }} />
-            </IconButton>
-          </Tooltip>
-        </Grid>
-        <Grid item>
-          <Tooltip title="Join our Discord" placement="top">
-            <IconButton
-              onClick={() => window.open(env.DISCORD_CHANNEL_URL, "_blank")}
-            >
-              <img
-                src={discordLogo}
-                alt="Discord"
-                style={{
-                  height: "25px",
-                  cursor: "pointer",
-                  filter:
-                    "invert(100%) sepia(100%) saturate(0%) hue-rotate(100deg)",
+        <Grid
+          container
+          spacing={2}
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <Grid item xs={12} md={4}>
+            <Typography>
+              {" "}
+              © {new Date().getFullYear()}{" "}
+              <Link
+                href="https://summit.cardano.org/"
+                target="_blank"
+                rel="noopener"
+                sx={{
+                  color: "text.primary",
+                  textDecoration: "underline",
                 }}
-              />
-            </IconButton>
-          </Tooltip>
+              >
+                Cardano Summit
+              </Link>
+              . All rights reserved.
+            </Typography>
+          </Grid>
+          <Grid item xs={12} md={8}>
+            <Grid
+              container
+              spacing={2}
+              justifyContent={{ xs: "center", md: "flex-end" }}
+              alignItems="center"
+            >
+              <Grid
+                item
+                xs={12}
+                md={6}
+                sx={{
+                  justifyContent: {
+                    xs: "center",
+                    md: "flex-end",
+                  },
+                  display: "flex",
+                }}
+              >
+                <Typography>
+                    <Link
+                        href="/terms-and-conditions"
+                        sx={{
+                            color: "text.primary",
+                            textDecoration: "underline",
+                            marginRight: 1,
+                        }}
+                    >
+                        {i18n.t("footer.menu.termsAndConditions")}
+                    </Link>
+                    <Link
+                        href="/privacy-policy"
+                        sx={{
+                            color: "text.primary",
+                            textDecoration: "underline",
+                            marginRight: 1,
+                        }}
+                    >
+                        {i18n.t("footer.menu.privacyPolicy")}
+                    </Link>
+                    <span>
+                        Version {env.APP_VERSION}(
+                        <Link
+                            href="https://status.voting.summit.cardano.org/"
+                            target="_blank"
+                            rel="noopener"
+                            sx={{
+                                color: "text.primary",
+                                textDecoration: "underline",
+                            }}
+                        >
+                        Status
+                    </Link>)
+                    </span>
+
+                </Typography>
+              </Grid>
+                <Grid item xs="auto" md="auto" sx={{
+                    display: 'flex',
+                    justifyContent: { xs: 'center', sm: 'flex-end' },
+                    alignItems: 'center',
+                    maxWidth: { xs: "100%", md: "auto" },
+                    marginLeft: {
+                        xs: "0px",
+                        md: "80px"
+                    }
+                }}>
+                    <Tooltip title="Get support" placement="top">
+                        <IconButton
+                            onClick={() => window.open(env.DISCORD_SUPPORT_CHANNEL_URL, "_blank")}
+                            sx={{ p: 0, color: "secondary.main", marginRight: "40px" }}
+                        >
+                            <SupportIcon sx={{ color: "text.primary" }} />
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Join our Discord" placement="top">
+                        <IconButton
+                            onClick={() => window.open(env.DISCORD_SUPPORT_CHANNEL_URL, "_blank")}
+                            sx={{ p: 0, color: "secondary.main" }}
+                        >
+                            <img src={discordLogo} alt="Discord" style={{ cursor: "pointer" }} />
+                        </IconButton>
+                    </Tooltip>
+                </Grid>
+            </Grid>
+          </Grid>
         </Grid>
-      </Grid>
-    </Grid>
+      </Box>
+      <Box
+        sx={{
+          height: {
+            xs: "100px",
+            md: "40px",
+          },
+        }}
+      />
+    </>
   );
 };
 

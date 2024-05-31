@@ -22,21 +22,22 @@ import {
 } from "../../utils/utils";
 import IDWLogo from "../../assets/idw.png";
 import { env } from "../../common/constants/env";
-import { ConnectWalletFlow, IWalletInfo } from "./ConnectWalletList.types";
+import { ConnectWalletFlow, NetworkType } from "./ConnectWalletList.types";
 import QRCode from "react-qr-code";
 import { clearUserInSessionStorage } from "../../utils/session";
 import { removeFromLocalStorage } from "../../utils/storage";
 import { disconnect } from "process";
 import { useConnectWalletContext } from "../ConnectWalletModal/ConnectWalletModal";
 import { eventBus } from "../../utils/EventBus";
+import theme from "../../common/styles/theme";
 
 type ConnectWalletListProps = {
   description?: string;
   currentPath: ConnectWalletFlow;
   setCurrentPath: (currentPath: ConnectWalletFlow) => void;
   onConnectWallet: () => void;
+  closeModal: () => void;
   onConnectError: (code: Error) => void;
-  onOpenPeerConnect: () => void;
   handleOnPeerConnectAccept: () => void;
   connectExtensionWallet: (walletName: string) => void;
 };
@@ -49,11 +50,15 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
     currentPath,
     setCurrentPath,
     handleOnPeerConnectAccept,
+    closeModal,
+
     connectExtensionWallet,
   } = props;
 
   const [peerConnectOption, setPeerConnectOption] =
     useState<ConnectWalletFlow>(currentPath);
+
+  const network = resolveCardanoNetwork(env.TARGET_NETWORK);
 
   const { meerkatAddress, peerConnectWalletInfo } = useConnectWalletContext();
 
@@ -202,7 +207,7 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
             align="left"
             sx={{
               textAlign: "center",
-              color: "text.neutralLightest",
+              color: theme.palette.text.neutralLightest,
               fontSize: "18px",
               fontStyle: "normal",
               fontWeight: "500",
@@ -270,7 +275,6 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
       </>
     );
   };
-
   const renderSelectWallet = () => {
     return (
       <>
@@ -327,9 +331,46 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
               />
             </IconButton>
           </ListItem>
-          <Divider sx={{ my: 2, color: "text.neutralLight" }} component="li">
-            <Typography sx={{ color: "text.neutralLight" }}>or</Typography>
+          <Divider
+            sx={{ my: "12px", color: theme.palette.text.neutralLight }}
+            component="li"
+          >
+            <Typography sx={{ color: theme.palette.text.neutralLight }}>
+              or
+            </Typography>
           </Divider>
+
+          {network !== NetworkType.MAINNET ? (
+            <>
+              <Box
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  width: "100%",
+                }}
+              >
+                <Typography
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    padding: "0 8px",
+                    gap: "10px",
+                    borderRadius: "4px",
+                    background: "var(--Darker, #343434)",
+                    color: "var(--green, #6EBE78)",
+                    fontSize: "12px",
+                    fontStyle: "normal",
+                    fontWeight: 500,
+                    lineHeight: "24px",
+                    width: "68px",
+                  }}
+                >
+                  TESTNET
+                </Typography>
+              </Box>
+            </>
+          ) : null}
           {availableWallets.length ? (
             availableWallets.map((walletName, index) => (
               <ListItem
@@ -379,7 +420,7 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
                       width: "20px",
                       height: "20px",
                       flexShrink: 0,
-                      color: "text.neutralLight",
+                      color: theme.palette.text.neutralLight,
                       ml: "auto",
                     }}
                   />
@@ -443,6 +484,34 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
             </IconButton>
           </ListItem>
         </List>
+        <Box
+          style={{
+            marginTop: "24px",
+            display: "flex",
+            justifyContent: "center",
+            width: "100%",
+          }}
+        >
+          <Typography
+            onClick={() => closeModal()}
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              padding: "0 8px",
+              gap: "10px",
+              color: theme.palette.text.neutralLight,
+              fontSize: "16px",
+              fontStyle: "normal",
+              fontWeight: 500,
+              lineHeight: "24px",
+              textDecorationLine: "underline",
+              cursor: "pointer",
+            }}
+          >
+            Continue browsing and connect later
+          </Typography>
+        </Box>
       </>
     );
   };
@@ -453,7 +522,7 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
         <Typography
           gutterBottom
           sx={{
-            color: "text.neutralLightest",
+            color: theme.palette.text.neutralLightest,
             fontSize: "16px",
             fontWeight: 500,
             lineHeight: "24px",

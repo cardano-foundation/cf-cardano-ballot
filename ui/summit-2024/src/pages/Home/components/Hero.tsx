@@ -47,7 +47,7 @@ const Hero = () => {
           <Typography
             variant="h4"
             sx={{
-              color: "text.neutralLight",
+              color: theme.palette.text.neutralLightest,
               fontSize: { xs: "12px", sm: "14px", md: "16px", lg: "18px" },
               fontStyle: "normal",
               marginLeft: isPortrait ? "" : "20px",
@@ -67,7 +67,7 @@ const Hero = () => {
           <Typography
             variant="h4"
             sx={{
-              color: "text.neutralLightest",
+              color: theme.palette.text.neutralLightest,
               fontFamily: "Dosis",
               fontSize: { xs: "40px", md: "70px", lg: "88px" },
               fontStyle: "normal",

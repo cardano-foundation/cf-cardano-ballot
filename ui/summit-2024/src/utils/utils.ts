@@ -1,6 +1,6 @@
 import { SignedWeb3Request } from "../types/voting-app-types";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
-import { NetworkType } from "@cardano-foundation/cardano-connect-with-wallet-core";
+import { NetworkType } from "../components/ConnectWalletList/ConnectWalletList.types";
 
 const addressSlice = (
   address: string,

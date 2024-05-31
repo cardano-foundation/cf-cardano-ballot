@@ -13,4 +13,9 @@ enum ConnectWalletFlow {
   CONNECT_CIP45_WALLET = "CONNECT_CIP45_WALLET",
 }
 
-export { IWalletInfo, ConnectWalletFlow };
+enum NetworkType {
+  MAINNET = "MAINNET",
+  TESTNET = "TESTNET",
+}
+
+export { IWalletInfo, ConnectWalletFlow, NetworkType };

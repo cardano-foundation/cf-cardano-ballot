@@ -45,7 +45,7 @@ const TermsAndConditionsModal = () => {
         <Box key={index} sx={{ mt: 1 }}>
           <Typography
             sx={{
-              color: "var(--neutralLight, #D2D2D9)",
+              color: theme.palette.text.neutralLight,
               fontSize: "16px",
               fontWeight: 500,
               lineHeight: "24px",
@@ -63,7 +63,7 @@ const TermsAndConditionsModal = () => {
           <>
             <Typography
               sx={{
-                color: "var(--neutralLightest, #FAF9F6)",
+                color: theme.palette.text.neutralLightest,
                 fontFamily: "Dosis",
                 fontSize: "32px",
                 fontWeight: 700,
@@ -74,7 +74,7 @@ const TermsAndConditionsModal = () => {
             </Typography>
             <Typography
               sx={{
-                color: "var(--neutralLight, #D2D2D9)",
+                color: theme.palette.text.neutralLight,
                 fontSize: "16px",
                 fontWeight: 500,
                 lineHeight: "24px",
@@ -87,7 +87,7 @@ const TermsAndConditionsModal = () => {
               <Box key={index} sx={{ mt: 4 }}>
                 <Typography
                   sx={{
-                    color: "var(--neutralLightest, #FAF9F6)",
+                    color: theme.palette.text.neutralLightest,
                     fontFamily: "Dosis",
                     fontSize: "24px",
                     fontWeight: 700,
@@ -100,7 +100,7 @@ const TermsAndConditionsModal = () => {
                   <Typography
                     key={pIndex}
                     sx={{
-                      color: "var(--neutralLight, #D2D2D9)",
+                      color: theme.palette.text.neutralLight,
                       fontSize: "16px",
                       fontWeight: 500,
                       lineHeight: "24px",
@@ -113,7 +113,7 @@ const TermsAndConditionsModal = () => {
                   <Box key={sIndex} sx={{ mt: 2 }}>
                     <Typography
                       sx={{
-                        color: "var(--neutralLightest, #FAF9F6)",
+                        color: theme.palette.text.neutralLightest,
                         fontFamily: "Dosis",
                         fontSize: "24px",
                         fontWeight: 700,
@@ -159,7 +159,7 @@ const TermsAndConditionsModal = () => {
               <Box key={index} sx={{ mt: 4 }}>
                 <Typography
                   sx={{
-                    color: "var(--neutralLightest, #FAF9F6)",
+                    color: theme.palette.text.neutralLightest,
                     fontFamily: "Dosis",
                     fontSize: "24px",
                     fontWeight: 700,
@@ -177,7 +177,7 @@ const TermsAndConditionsModal = () => {
               <Box sx={{ mt: 4 }}>
                 <Typography
                   sx={{
-                    color: "var(--neutralLightest, #FAF9F6)",
+                    color: theme.palette.text.neutralLightest,
                     fontFamily: "Dosis",
                     fontSize: "24px",
                     fontWeight: 700,
@@ -190,7 +190,7 @@ const TermsAndConditionsModal = () => {
                   <Typography
                     key={index}
                     sx={{
-                      color: "var(--neutralLight, #D2D2D9)",
+                      color: theme.palette.text.neutralLight,
                       fontSize: "16px",
                       fontWeight: 500,
                       lineHeight: "24px",
@@ -207,7 +207,7 @@ const TermsAndConditionsModal = () => {
               <Box sx={{ mt: 4 }}>
                 <Typography
                   sx={{
-                    color: "var(--neutralLightest, #FAF9F6)",
+                    color: theme.palette.text.neutralLightest,
                     fontFamily: "Dosis",
                     fontSize: "24px",
                     fontWeight: 700,
@@ -220,7 +220,7 @@ const TermsAndConditionsModal = () => {
                   <Typography
                     key={index}
                     sx={{
-                      color: "var(--neutralLight, #D2D2D9)",
+                      color: theme.palette.text.neutralLight,
                       fontSize: "16px",
                       fontWeight: 500,
                       lineHeight: "24px",
@@ -237,7 +237,7 @@ const TermsAndConditionsModal = () => {
               <Box sx={{ mt: 4 }}>
                 <Typography
                   sx={{
-                    color: "var(--neutralLightest, #FAF9F6)",
+                    color: theme.palette.text.neutralLightest,
                     fontFamily: "Dosis",
                     fontSize: "24px",
                     fontWeight: 700,
@@ -255,7 +255,7 @@ const TermsAndConditionsModal = () => {
               <Box sx={{ mt: 4 }}>
                 <Typography
                   sx={{
-                    color: "var(--neutralLightest, #FAF9F6)",
+                    color: theme.palette.text.neutralLightest,
                     fontFamily: "Dosis",
                     fontSize: "24px",
                     fontWeight: 700,
@@ -266,7 +266,7 @@ const TermsAndConditionsModal = () => {
                 </Typography>
                 <Typography
                   sx={{
-                    color: "var(--neutralLight, #D2D2D9)",
+                    color: theme.palette.text.neutralLight,
                     fontSize: "16px",
                     fontWeight: 500,
                     lineHeight: "24px",
@@ -287,7 +287,7 @@ const TermsAndConditionsModal = () => {
             <Typography
               key={index}
               sx={{
-                color: "var(--neutralLight, #D2D2D9)",
+                color: theme.palette.text.neutralLight,
                 fontSize: "16px",
                 fontStyle: "normal",
                 fontWeight: 500,
@@ -302,7 +302,7 @@ const TermsAndConditionsModal = () => {
           <>
             <Typography
               sx={{
-                color: "var(--neutralLightest, #FAF9F6)",
+                color: theme.palette.text.neutralLightest,
                 fontFamily: "Dosis",
                 fontSize: "32px",
                 fontStyle: "normal",
@@ -314,7 +314,7 @@ const TermsAndConditionsModal = () => {
             </Typography>
             <Typography
               sx={{
-                color: "var(--neutralLight, #D2D2D9)",
+                color: theme.palette.text.neutralLight,
                 fontSize: "16px",
                 fontStyle: "normal",
                 fontWeight: 500,
@@ -327,7 +327,7 @@ const TermsAndConditionsModal = () => {
               <Typography
                 key={index}
                 sx={{
-                  color: "var(--neutralLight, #D2D2D9)",
+                  color: theme.palette.text.neutralLight,
                   fontSize: "16px",
                   fontStyle: "normal",
                   fontWeight: 500,
@@ -342,7 +342,7 @@ const TermsAndConditionsModal = () => {
               <Box key={index} sx={{ mt: 2 }}>
                 <Typography
                   sx={{
-                    color: "var(--neutralLightest, #FAF9F6)",
+                    color: theme.palette.text.neutralLightest,
                     fontFamily: "Dosis",
                     fontSize: "24px",
                     fontStyle: "normal",
@@ -358,7 +358,7 @@ const TermsAndConditionsModal = () => {
                   <Box key={subIndex} sx={{ mt: 1 }}>
                     <Typography
                       sx={{
-                        color: "var(--neutralLightest, #FAF9F6)",
+                        color: theme.palette.text.neutralLightest,
                         fontFamily: "Dosis",
                         fontSize: "24px",
                         fontStyle: "normal",
@@ -372,7 +372,7 @@ const TermsAndConditionsModal = () => {
                       <Typography
                         key={contentIndex}
                         sx={{
-                          color: "var(--neutralLight, #D2D2D9)",
+                          color: theme.palette.text.neutralLight,
                           fontSize: "16px",
                           fontStyle: "normal",
                           fontWeight: 500,

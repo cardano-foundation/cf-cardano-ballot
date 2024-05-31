@@ -7,6 +7,7 @@ import Modal from "../common/Modal/Modal";
 import {
   ConnectWalletFlow,
   IWalletInfo,
+  NetworkType,
 } from "../ConnectWalletList/ConnectWalletList.types";
 import {
   ConnectWalletContextType,
@@ -14,7 +15,6 @@ import {
 } from "./ConnectWalletModal.type";
 import { eventBus } from "../../utils/EventBus";
 import { useIsPortrait } from "../../common/hooks/useIsPortrait";
-import { NetworkType } from "@cardano-foundation/cardano-connect-with-wallet-core";
 
 const ConnectWalletContext = createContext<ConnectWalletContextType | null>(
   null,
@@ -98,13 +98,10 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
         connect(
           name,
           () => {
-            console.log("onApiInject");
             props.handleCloseConnectWalletModal();
             eventBus.publish("showToast", "Wallet connected successfully");
           },
           (e) => {
-            console.log("e");
-            console.log(e);
             eventBus.publish(
               "showToast",
               "Unable to connect wallet. Please try again",
@@ -123,10 +120,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
       const onP2PConnect = (
         address: string,
         walletInfo?: IWalletInfo,
-      ): void => {
-        // TODO
-        console.log("onP2PConnect");
-      };
+      ): void => {};
 
       initDappConnect(
         "Cardano Summit 2024",
@@ -183,9 +177,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
           title={
             connectCurrentPaths[0] === ConnectWalletFlow.CONNECT_IDENTITY_WALLET
               ? "Connect Identity Wallet"
-              : `Connect ${
-                  network === NetworkType.TESTNET ? "Tesnet " : ""
-                }Wallet`
+              : "Connect Wallet"
           }
           onClose={() => props.handleCloseConnectWalletModal()}
           width={isMobile ? "auto" : "450px"}

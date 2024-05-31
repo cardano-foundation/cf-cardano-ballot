@@ -10,7 +10,7 @@ import {
 import SupportIcon from "@mui/icons-material/SupportAgent";
 import { env } from "../../../common/constants/env";
 import discordLogo from "../../../assets/discord.svg";
-import {i18n} from "../../../i18n";
+import { i18n } from "../../../i18n";
 
 const Footer = () => {
   return (
@@ -67,70 +67,83 @@ const Footer = () => {
                 }}
               >
                 <Typography>
+                  <Link
+                    href="/terms-and-conditions"
+                    sx={{
+                      color: "text.primary",
+                      textDecoration: "underline",
+                      marginRight: 1,
+                    }}
+                  >
+                    {i18n.t("footer.menu.termsAndConditions")}
+                  </Link>
+                  <Link
+                    href="/privacy-policy"
+                    sx={{
+                      color: "text.primary",
+                      textDecoration: "underline",
+                      marginRight: 1,
+                    }}
+                  >
+                    {i18n.t("footer.menu.privacyPolicy")}
+                  </Link>
+                  <span>
+                    Version {env.APP_VERSION}(
                     <Link
-                        href="/terms-and-conditions"
-                        sx={{
-                            color: "text.primary",
-                            textDecoration: "underline",
-                            marginRight: 1,
-                        }}
+                      href="https://status.voting.summit.cardano.org/"
+                      target="_blank"
+                      rel="noopener"
+                      sx={{
+                        color: "text.primary",
+                        textDecoration: "underline",
+                      }}
                     >
-                        {i18n.t("footer.menu.termsAndConditions")}
+                      Status
                     </Link>
-                    <Link
-                        href="/privacy-policy"
-                        sx={{
-                            color: "text.primary",
-                            textDecoration: "underline",
-                            marginRight: 1,
-                        }}
-                    >
-                        {i18n.t("footer.menu.privacyPolicy")}
-                    </Link>
-                    <span>
-                        Version {env.APP_VERSION}(
-                        <Link
-                            href="https://status.voting.summit.cardano.org/"
-                            target="_blank"
-                            rel="noopener"
-                            sx={{
-                                color: "text.primary",
-                                textDecoration: "underline",
-                            }}
-                        >
-                        Status
-                    </Link>)
-                    </span>
-
+                    )
+                  </span>
                 </Typography>
               </Grid>
-                <Grid item xs="auto" md="auto" sx={{
-                    display: 'flex',
-                    justifyContent: { xs: 'center', sm: 'flex-end' },
-                    alignItems: 'center',
-                    maxWidth: { xs: "100%", md: "auto" },
-                    marginLeft: {
-                        xs: "0px",
-                        md: "80px"
+              <Grid
+                item
+                xs="auto"
+                md="auto"
+                sx={{
+                  display: "flex",
+                  justifyContent: { xs: "center", sm: "flex-end" },
+                  alignItems: "center",
+                  maxWidth: { xs: "100%", md: "auto" },
+                  marginLeft: {
+                    xs: "0px",
+                    md: "80px",
+                  },
+                }}
+              >
+                <Tooltip title="Get support" placement="top">
+                  <IconButton
+                    onClick={() =>
+                      window.open(env.DISCORD_SUPPORT_CHANNEL_URL, "_blank")
                     }
-                }}>
-                    <Tooltip title="Get support" placement="top">
-                        <IconButton
-                            onClick={() => window.open(env.DISCORD_SUPPORT_CHANNEL_URL, "_blank")}
-                            sx={{ p: 0, color: "secondary.main", marginRight: "40px" }}
-                        >
-                            <SupportIcon sx={{ color: "text.primary" }} />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Join our Discord" placement="top">
-                        <IconButton
-                            onClick={() => window.open(env.DISCORD_SUPPORT_CHANNEL_URL, "_blank")}
-                            sx={{ p: 0, color: "secondary.main" }}
-                        >
-                            <img src={discordLogo} alt="Discord" style={{ cursor: "pointer" }} />
-                        </IconButton>
-                    </Tooltip>
-                </Grid>
+                    sx={{ p: 0, color: "secondary.main", marginRight: "40px" }}
+                  >
+                    <SupportIcon sx={{ color: "text.primary" }} />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Join our Discord" placement="top">
+                  <IconButton
+                    onClick={() =>
+                      window.open(env.DISCORD_SUPPORT_CHANNEL_URL, "_blank")
+                    }
+                    sx={{ p: 0, color: "secondary.main" }}
+                  >
+                    <img
+                      src={discordLogo}
+                      alt="Discord"
+                      style={{ cursor: "pointer" }}
+                    />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
             </Grid>
           </Grid>
         </Grid>

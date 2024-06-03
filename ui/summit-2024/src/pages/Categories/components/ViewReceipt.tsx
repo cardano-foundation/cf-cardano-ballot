@@ -1,21 +1,14 @@
 import React from "react";
-import {
-  Box,
-  IconButton,
-  List,
-  ListItem,
-  Paper,
-  Tooltip,
-  Typography,
-} from "@mui/material";
+import { Box, List, ListItem, Paper, Tooltip, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import theme from "../../../common/styles/theme";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import InfoIcon from "@mui/icons-material/Info";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import { STATE, ViewReceiptProps } from "./ViewReceipt.type";
+import { CustomAccordion } from "../../../components/common/CustomAccordion/CustomAccordion";
 
-const ViewReceipt: React.FC<ViewReceiptProps> = ({ state }) => {
+const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
   const getContent = () => {
     switch (state) {
       case STATE.BASIC: {
@@ -81,6 +74,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state }) => {
     }
   };
   const content = getContent();
+
   return (
     <>
       <div
@@ -99,7 +93,6 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state }) => {
           }}
         >
           <Typography
-            variant="h6"
             sx={{
               flexGrow: 1,
               color: theme.palette.background.neutralLightest,
@@ -108,20 +101,27 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state }) => {
               fontSize: "28px",
               fontWeight: 700,
               lineHeight: "32px",
+              marginTop: "28px",
             }}
           >
             Vote Receipt
           </Typography>
-          <IconButton
+          <Box
+            onClick={() => close()}
             sx={{
               display: "inline-flex",
               padding: "12px",
               borderRadius: "12px",
               background: theme.palette.background.neutralDark,
+              cursor: "pointer",
+              "&:hover": {
+                backgroundColor: theme.palette.text.neutralLightest,
+                color: theme.palette.background.neutralDark,
+              },
             }}
           >
-            <CloseIcon sx={{ color: "#fff" }} />
-          </IconButton>
+            <CloseIcon />
+          </Box>
         </Box>
         <Box
           sx={{
@@ -234,7 +234,6 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state }) => {
                     padding: "12px 16px",
                     flexDirection: "column",
                     alignItems: "flex-start",
-                    gap: "10px",
                     borderRadius: "12px",
                     border: `1px solid ${theme.palette.background.darker}`,
                     background: theme.palette.background.neutralDarkest,
@@ -284,6 +283,142 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state }) => {
               );
             })}
           </List>
+        </Box>
+        <Box
+          sx={{
+            backgroundColor: theme.palette.background.default,
+          }}
+        >
+          <Box
+            sx={{
+              mx: "28px",
+              backgroundColor: theme.palette.background.default,
+            }}
+          >
+            <CustomAccordion
+              titleOpen="Hide Advanced Information"
+              titleClose="Show Advanced Information"
+              description="descccc"
+              sx={{
+                marginTop: "20px",
+              }}
+            >
+              <List>
+                <ListItem
+                  sx={{
+                    display: "flex",
+                    width: "394px",
+                    padding: "12px 16px",
+                    flexDirection: "column",
+                    alignItems: "flex-start",
+                    borderRadius: "12px",
+                    border: `1px solid ${theme.palette.background.darker}`,
+                    background: theme.palette.background.neutralDarkest,
+                    marginTop: "8px",
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      width: "100%",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        color: theme.palette.text.neutralLightest,
+                        fontSize: "16px",
+                        fontWeight: 500,
+                        lineHeight: "24px",
+                        fontStyle: "normal",
+                      }}
+                    >
+                      Voted at Slot
+                    </Typography>
+                    <Tooltip title="info" placement="top">
+                      <InfoIcon
+                        sx={{
+                          cursor: "pointer",
+                        }}
+                      />
+                    </Tooltip>
+                  </Box>
+                  <Typography
+                    sx={{
+                      width: "100%",
+                      color: theme.palette.text.neutralLight,
+                      fontSize: "12px",
+                      fontWeight: 500,
+                      lineHeight: "20px",
+                      fontStyle: "normal",
+                    }}
+                  >
+                    453241
+                  </Typography>
+                </ListItem>
+                <ListItem
+                  sx={{
+                    display: "flex",
+                    width: "394px",
+                    padding: "12px 16px",
+                    flexDirection: "column",
+                    alignItems: "flex-start",
+                    borderRadius: "12px",
+                    border: `1px solid ${theme.palette.background.darker}`,
+                    background: theme.palette.background.neutralDarkest,
+                    marginTop: "8px",
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      width: "100%",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        color: theme.palette.text.neutralLightest,
+                        fontSize: "16px",
+                        fontWeight: 500,
+                        lineHeight: "24px",
+                        fontStyle: "normal",
+                      }}
+                    >
+                      ID
+                    </Typography>
+                    <Tooltip title="info" placement="top">
+                      <InfoIcon
+                        sx={{
+                          cursor: "pointer",
+                        }}
+                      />
+                    </Tooltip>
+                  </Box>
+                  <Typography
+                    sx={{
+                      width: "100%",
+                      color: theme.palette.text.neutralLight,
+                      fontSize: "12px",
+                      fontWeight: 500,
+                      lineHeight: "20px",
+                      fontStyle: "normal",
+                    }}
+                  >
+                    e51fdf09...4c836052b4f0
+                  </Typography>
+                </ListItem>
+              </List>
+            </CustomAccordion>
+            <Box
+              sx={{
+                backgroundColor: theme.palette.background.default,
+                height: "28px",
+              }}
+            />
+          </Box>
         </Box>
       </div>
     </>

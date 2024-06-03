@@ -95,7 +95,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
           <Typography
             sx={{
               flexGrow: 1,
-              color: theme.palette.background.neutralLightest,
+              color: theme.palette.text.neutralLightest,
               textAlign: "center",
               fontFamily: "Dosis",
               fontSize: "28px",
@@ -175,7 +175,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
               >
                 <Typography
                   sx={{
-                    color: theme.palette.background.neutralLightest,
+                    color: theme.palette.text.neutralLightest,
                     fontSize: "16px",
                     fontStyle: "normal",
                     fontWeight: 500,
@@ -186,7 +186,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
                 </Typography>
                 <Typography
                   sx={{
-                    color: theme.palette.background.neutralLight,
+                    color: theme.palette.text.neutralLight,
                     fontSize: "12px",
                     fontStyle: "normal",
                     fontWeight: 500,
@@ -211,7 +211,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
               <Typography
                 sx={{
                   marginLeft: 1,
-                  color: theme.palette.background.neutralLight,
+                  color: theme.palette.text.neutralLight,
                   fontSize: "12px",
                   fontStyle: "normal",
                   fontWeight: 500,
@@ -236,7 +236,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
                     alignItems: "flex-start",
                     borderRadius: "12px",
                     border: `1px solid ${theme.palette.background.darker}`,
-                    background: theme.palette.background.neutralDarkest,
+                    background: theme.palette.background.default,
                     marginTop: "8px",
                   }}
                 >
@@ -313,7 +313,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
                     alignItems: "flex-start",
                     borderRadius: "12px",
                     border: `1px solid ${theme.palette.background.darker}`,
-                    background: theme.palette.background.neutralDarkest,
+                    background: theme.palette.background.default,
                     marginTop: "8px",
                   }}
                 >
@@ -366,7 +366,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
                     alignItems: "flex-start",
                     borderRadius: "12px",
                     border: `1px solid ${theme.palette.background.darker}`,
-                    background: theme.palette.background.neutralDarkest,
+                    background: theme.palette.background.default,
                     marginTop: "8px",
                   }}
                 >

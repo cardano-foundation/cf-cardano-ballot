@@ -7,7 +7,13 @@ import LinkedinIcon from "../../../assets/linkedin.svg";
 import theme from "../../../common/styles/theme";
 import { CustomButton } from "../../../components/common/CustomButton/CustomButton";
 
-const BioModal: React.FC = ({ isOpen, title, onClose }) => {
+interface BioModalProps {
+  isOpen: boolean;
+  title: string;
+  onClose: () => void;
+}
+
+const BioModal: React.FC<BioModalProps> = ({ isOpen, title, onClose }) => {
   const isMobile = useIsPortrait();
 
   return (

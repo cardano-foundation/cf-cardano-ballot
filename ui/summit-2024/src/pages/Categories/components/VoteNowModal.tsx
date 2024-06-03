@@ -1,15 +1,20 @@
 import React from "react";
 import { useIsPortrait } from "../../../common/hooks/useIsPortrait";
 import Modal from "../../../components/common/Modal/Modal";
-import { Box, Typography } from "@mui/material";
-import XIcon from "../../../assets/x.svg";
-import LinkedinIcon from "../../../assets/linkedin.svg";
-import theme from "../../../common/styles/theme";
+import { Box } from "@mui/material";
 import { CustomButton } from "../../../components/common/CustomButton/CustomButton";
-import { resolveCardanoNetwork } from "../../../utils/utils";
-import { env } from "../../../common/constants/env";
+import { NomineeFixture } from "../../../__fixtures__/categories";
 
-const VoteNowModal: React.FC = ({ isOpen, onClose, selectedNominee }) => {
+interface VoteModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  selectedNominee: NomineeFixture;
+}
+const VoteNowModal: React.FC<VoteModalProps> = ({
+  isOpen,
+  onClose,
+  selectedNominee,
+}) => {
   const isMobile = useIsPortrait();
   return (
     <>

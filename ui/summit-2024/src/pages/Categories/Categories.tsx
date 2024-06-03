@@ -7,6 +7,7 @@ import {
   ListItem,
   Fade,
   useMediaQuery,
+  Drawer,
 } from "@mui/material";
 import theme from "../../common/styles/theme";
 import {
@@ -19,6 +20,7 @@ import { BioModal } from "./components/BioModal";
 import { VoteNowModal } from "./components/VoteNowModal";
 import { useIsPortrait } from "../../common/hooks/useIsPortrait";
 import { NomineeCard } from "./components/NomineeCard";
+import { ViewReceipt } from "./components/ViewReceipt";
 
 const Categories: React.FC = () => {
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
@@ -30,6 +32,7 @@ const Categories: React.FC = () => {
   const [learMoreCategory, setLearMoreCategory] = useState("");
   const [openLearMoreCategory, setOpenLearMoreCategory] = useState(false);
   const [openVotingModal, setOpenVotingModal] = useState(false);
+  const [openViewReceipt, setOpenViewReceipt] = useState(true);
 
   const [fadeChecked, setFadeChecked] = useState(true);
 
@@ -58,6 +61,10 @@ const Categories: React.FC = () => {
       setSelectedNominee(-1);
     }
   };
+
+  const handleClickActionButton = () => {};
+
+  const handleViewReceipt = () => {};
 
   const handleLearnMoreClick = (event, category) => {
     event.stopPropagation();
@@ -356,6 +363,13 @@ const Categories: React.FC = () => {
           selectedNominee={nomineeToVote}
         />
       </Box>
+      <Drawer
+        open={openViewReceipt}
+        anchor="right"
+        onClose={() => setOpenViewReceipt(false)}
+      >
+        <ViewReceipt />
+      </Drawer>
     </>
   );
 };

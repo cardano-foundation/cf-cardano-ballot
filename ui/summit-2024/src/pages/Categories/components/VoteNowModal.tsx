@@ -8,7 +8,7 @@ import { NomineeFixture } from "../../../__fixtures__/categories";
 interface VoteModalProps {
   isOpen: boolean;
   onClose: () => void;
-  selectedNominee: NomineeFixture;
+  selectedNominee?: NomineeFixture;
 }
 const VoteNowModal: React.FC<VoteModalProps> = ({
   isOpen,

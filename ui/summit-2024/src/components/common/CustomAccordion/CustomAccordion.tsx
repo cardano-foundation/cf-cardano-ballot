@@ -46,7 +46,7 @@ const CustomAccordion: React.FC<CustomAccordionProps> = ({
       >
         <Typography
           sx={{
-            color: theme.palette.background.neutralLightest,
+            color: theme.palette.text.neutralLightest,
             fontSize: "12px",
             fontStyle: "normal",
             fontWeight: 500,

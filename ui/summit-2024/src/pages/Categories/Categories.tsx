@@ -21,6 +21,7 @@ import { VoteNowModal } from "./components/VoteNowModal";
 import { useIsPortrait } from "../../common/hooks/useIsPortrait";
 import { NomineeCard } from "./components/NomineeCard";
 import { ViewReceipt } from "./components/ViewReceipt";
+import { STATE } from "./components/ViewReceipt.type";
 
 const Categories: React.FC = () => {
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
@@ -368,7 +369,7 @@ const Categories: React.FC = () => {
         anchor="right"
         onClose={() => setOpenViewReceipt(false)}
       >
-        <ViewReceipt />
+        <ViewReceipt state={STATE.NOT_READY} />
       </Drawer>
     </>
   );

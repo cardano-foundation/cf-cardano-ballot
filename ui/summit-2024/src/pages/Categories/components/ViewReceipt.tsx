@@ -1,17 +1,33 @@
 import React from "react";
-import { Box, IconButton, Paper, Typography } from "@mui/material";
+import {
+  Box,
+  IconButton,
+  List,
+  ListItem,
+  Paper,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import theme from "../../../common/styles/theme";
-import InfoIcon from "@mui/icons-material/Info";
 import RefreshIcon from "@mui/icons-material/Refresh";
+import InfoIcon from "@mui/icons-material/Info";
+import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import { STATE, ViewReceiptProps } from "./ViewReceipt.type";
 
 const ViewReceipt: React.FC<ViewReceiptProps> = ({ state }) => {
   const getContent = () => {
     switch (state) {
-      case STATE.NOT_READY: {
+      case STATE.BASIC: {
         return {
-          leftIcon: <InfoIcon />,
+          leftIcon: (
+            <NotificationsNoneIcon
+              sx={{
+                width: "24px",
+                height: "24px",
+              }}
+            />
+          ),
           title: "Vote Not Ready for Verification",
           description:
             "Although your vote has been successfully submitted, you may have to wait up to 30 minutes for this to be visible on chain. Please check back later.",
@@ -19,10 +35,45 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state }) => {
             <RefreshIcon
               sx={{
                 cursor: "pointer",
+                width: "16px",
+                height: "16px",
               }}
             />
           ),
           labelBottom: "Refresh Status",
+          infoList: [
+            {
+              title: "Event",
+              value: "Ambassador - Cardano Summit 2024",
+              tooltip: "info",
+            },
+            {
+              title: "Proposal",
+              value: "Plutus Bear Pop-Tart",
+              tooltip: "info",
+            },
+            {
+              title: "Voting Power",
+              value: "9,997k ADA",
+              tooltip: "info",
+            },
+            {
+              title: "Voter Staking Address",
+              value: "stake123...456spyqyg890",
+              tooltip: "info",
+            },
+            {
+              title: "Status",
+              value: "Ambassador - Cardano Summit 2024",
+              tooltip: "info",
+            },
+            {
+              title: "Event",
+              value: state,
+              tooltip: "info",
+            },
+          ],
+          advancedInfo: [],
         };
       }
       default:
@@ -172,6 +223,67 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state }) => {
               </Typography>
             </Box>
           </Paper>
+
+          <List>
+            {content?.infoList.map((item) => {
+              return (
+                <ListItem
+                  sx={{
+                    display: "flex",
+                    width: "394px",
+                    padding: "12px 16px",
+                    flexDirection: "column",
+                    alignItems: "flex-start",
+                    gap: "10px",
+                    borderRadius: "12px",
+                    border: `1px solid ${theme.palette.background.darker}`,
+                    background: theme.palette.background.neutralDarkest,
+                    marginTop: "8px",
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      width: "100%",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        color: theme.palette.text.neutralLightest,
+                        fontSize: "16px",
+                        fontWeight: 500,
+                        lineHeight: "24px",
+                        fontStyle: "normal",
+                      }}
+                    >
+                      {item.title}
+                    </Typography>
+                    <Tooltip title={item.tooltip} placement="top">
+                      <InfoIcon
+                        sx={{
+                          cursor: "pointer",
+                        }}
+                      />
+                    </Tooltip>
+                  </Box>
+                  <Typography
+                    sx={{
+                      width: "100%",
+                      color: theme.palette.text.neutralLight,
+                      fontSize: "12px",
+                      fontWeight: 500,
+                      lineHeight: "20px",
+                      fontStyle: "normal",
+                    }}
+                  >
+                    {item.value}
+                  </Typography>
+                </ListItem>
+              );
+            })}
+          </List>
         </Box>
       </div>
     </>

@@ -2,7 +2,7 @@ interface ViewReceiptProps {
   state: STATE;
 }
 enum STATE {
-  NOT_READY = "NOT_READY",
+  BASIC = "BASIC",
 }
 
 export type { ViewReceiptProps };

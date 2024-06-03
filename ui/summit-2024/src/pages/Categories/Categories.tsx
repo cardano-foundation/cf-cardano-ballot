@@ -369,7 +369,7 @@ const Categories: React.FC = () => {
         anchor="right"
         onClose={() => setOpenViewReceipt(false)}
       >
-        <ViewReceipt state={STATE.NOT_READY} />
+        <ViewReceipt state={STATE.BASIC} />
       </Drawer>
     </>
   );

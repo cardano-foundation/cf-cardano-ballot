@@ -33,8 +33,12 @@ const BioModal: React.FC<BioModalProps> = ({ isOpen, title, onClose }) => {
         >
           Cardano Foundation
         </Typography>
-        <Box sx={{ display: "flex", alignItems: "center", my: "24px" }}>
+        <Box
+          component="div"
+          sx={{ display: "flex", alignItems: "center", my: "24px" }}
+        >
           <Box
+            component="div"
             sx={{
               mr: "12px",
               padding: "16px",
@@ -50,6 +54,7 @@ const BioModal: React.FC<BioModalProps> = ({ isOpen, title, onClose }) => {
             <img src={XIcon} alt="X Icon" />
           </Box>
           <Box
+            component="div"
             sx={{
               padding: "16px",
               border: `1px solid ${theme.palette.text.neutralLightest}`,

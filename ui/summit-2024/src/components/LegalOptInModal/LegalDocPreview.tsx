@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Accordion,
   AccordionDetails,
@@ -26,11 +26,6 @@ const LegalDocPreview = () => {
         console.error("Error loading the terms and conditions data:", error),
       );
   }, []);
-
-  console.log("termsData");
-  console.log(termsData);
-  console.log("privacyData");
-  console.log(privacyData);
 
   if (!termsData || !privacyData) return <span>Loading...</span>;
 

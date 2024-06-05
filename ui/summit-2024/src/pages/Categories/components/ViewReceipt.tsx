@@ -5,9 +5,17 @@ import theme from "../../../common/styles/theme";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import InfoIcon from "@mui/icons-material/Info";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+import WarningAmberIcon from "@mui/icons-material/WarningAmber";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import { STATE, ViewReceiptProps } from "./ViewReceipt.type";
 import { CustomAccordion } from "../../../components/common/CustomAccordion/CustomAccordion";
+import { JsonView } from "../../../components/common/JsonView/JsonView";
 
+const jsonExample = {
+  example: "example",
+  example2: "example2",
+};
 const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
   const getContent = () => {
     switch (state) {
@@ -66,7 +74,180 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
               tooltip: "info",
             },
           ],
-          advancedInfo: [],
+        };
+      }
+      case STATE.PARTIAL: {
+        return {
+          leftIcon: (
+            <WarningAmberIcon
+              sx={{
+                width: "24px",
+                height: "24px",
+                color: "#EE9766",
+              }}
+            />
+          ),
+          title: "In Progress",
+          description:
+            "Your transaction has been sent and is awaiting confirmation from the Cardano network (this could be 5-10 minutes). Once this has been confirmed you’ll be able to verify your vote.",
+          iconBottom: (
+            <RefreshIcon
+              sx={{
+                cursor: "pointer",
+                width: "16px",
+                height: "16px",
+              }}
+            />
+          ),
+          labelBottom: "Refresh Status",
+          infoList: [
+            {
+              title: "Event",
+              value: "Ambassador - Cardano Summit 2024",
+              tooltip: "info",
+            },
+            {
+              title: "Proposal",
+              value: "Plutus Bear Pop-Tart",
+              tooltip: "info",
+            },
+            {
+              title: "Voting Power",
+              value: "9,997k ADA",
+              tooltip: "info",
+            },
+            {
+              title: "Voter Staking Address",
+              value: "stake123...456spyqyg890",
+              tooltip: "info",
+            },
+            {
+              title: "Status",
+              value: "Ambassador - Cardano Summit 2024",
+              tooltip: "info",
+            },
+            {
+              title: "Event",
+              value: state,
+              tooltip: "info",
+            },
+          ],
+        };
+      }
+      case STATE.ROLLBACK: {
+        return {
+          leftIcon: (
+            <ErrorOutlineIcon
+              sx={{
+                width: "24px",
+                height: "24px",
+                color: theme.palette.error.text,
+              }}
+            />
+          ),
+          title: "In Progress",
+          description:
+            "Your transaction has been sent and is awaiting confirmation from the Cardano network (this could be 5-10 minutes). Once this has been confirmed you’ll be able to verify your vote.",
+          iconBottom: (
+            <RefreshIcon
+              sx={{
+                cursor: "pointer",
+                width: "16px",
+                height: "16px",
+              }}
+            />
+          ),
+          labelBottom: "Refresh Status",
+          infoList: [
+            {
+              title: "Event",
+              value: "Ambassador - Cardano Summit 2024",
+              tooltip: "info",
+            },
+            {
+              title: "Proposal",
+              value: "Plutus Bear Pop-Tart",
+              tooltip: "info",
+            },
+            {
+              title: "Voting Power",
+              value: "9,997k ADA",
+              tooltip: "info",
+            },
+            {
+              title: "Voter Staking Address",
+              value: "stake123...456spyqyg890",
+              tooltip: "info",
+            },
+            {
+              title: "Status",
+              value: "Ambassador - Cardano Summit 2024",
+              tooltip: "info",
+            },
+            {
+              title: "Event",
+              value: state,
+              tooltip: "info",
+            },
+          ],
+        };
+      }
+      case STATE.FULL: {
+        return {
+          leftIcon: (
+            <ArrowDownwardIcon
+              sx={{
+                width: "24px",
+                height: "24px",
+                color: theme.palette.error.text,
+              }}
+            />
+          ),
+          title: "Assurance",
+          description:
+            "Your vote is currently being verified. While in LOW, there is the highest chance of a rollback. Check back later to see if verification has completed.",
+          iconBottom: (
+            <RefreshIcon
+              sx={{
+                cursor: "pointer",
+                width: "16px",
+                height: "16px",
+              }}
+            />
+          ),
+          labelBottom: "Refresh Status",
+          infoList: [
+            {
+              title: "Event",
+              value: "Ambassador - Cardano Summit 2024",
+              tooltip: "info",
+            },
+            {
+              title: "Proposal",
+              value: "Plutus Bear Pop-Tart",
+              tooltip: "info",
+            },
+            {
+              title: "Voting Power",
+              value: "9,997k ADA",
+              tooltip: "info",
+            },
+            {
+              title: "Voter Staking Address",
+              value: "stake123...456spyqyg890",
+              tooltip: "info",
+            },
+            {
+              title: "Status",
+              value: "Ambassador - Cardano Summit 2024",
+              tooltip: "info",
+            },
+            {
+              title: "Event",
+              value: state,
+              tooltip: "info",
+            },
+          ],
         };
       }
       default:
@@ -84,6 +265,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
         }}
       >
         <Box
+          component="div"
           sx={{
             display: "flex",
             justifyContent: "center",
@@ -107,6 +289,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
             Vote Receipt
           </Typography>
           <Box
+            component="div"
             onClick={() => close()}
             sx={{
               display: "inline-flex",
@@ -124,8 +307,9 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
           </Box>
         </Box>
         <Box
+          component="div"
           sx={{
-            margin: "28px",
+            mx: "28px",
           }}
         >
           <Paper
@@ -144,6 +328,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
             }}
           >
             <Box
+              component="div"
               sx={{
                 display: "flex",
                 flexDirection: "row",
@@ -153,6 +338,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
               }}
             >
               <Box
+                component="div"
                 sx={{
                   display: "flex",
                   justifyContent: "center",
@@ -165,6 +351,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
               </Box>
 
               <Box
+                component="div"
                 sx={{
                   width: "305px",
                   display: "flex",
@@ -200,6 +387,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
               </Box>
             </Box>
             <Box
+              component="div"
               sx={{
                 display: "flex",
                 alignItems: "center",
@@ -225,7 +413,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
           </Paper>
 
           <List>
-            {content?.infoList.map((item) => {
+            {content?.infoList?.map((item) => {
               return (
                 <ListItem
                   sx={{
@@ -241,6 +429,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
                   }}
                 >
                   <Box
+                    component="div"
                     sx={{
                       display: "flex",
                       width: "100%",
@@ -285,11 +474,14 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
           </List>
         </Box>
         <Box
+          component="div"
           sx={{
             backgroundColor: theme.palette.background.default,
+              marginTop: "10px"
           }}
         >
           <Box
+            component="div"
             sx={{
               mx: "28px",
               backgroundColor: theme.palette.background.default,
@@ -298,10 +490,6 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
             <CustomAccordion
               titleOpen="Hide Advanced Information"
               titleClose="Show Advanced Information"
-              description="descccc"
-              sx={{
-                marginTop: "20px",
-              }}
             >
               <List>
                 <ListItem
@@ -318,6 +506,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
                   }}
                 >
                   <Box
+                    component="div"
                     sx={{
                       display: "flex",
                       width: "100%",
@@ -371,6 +560,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
                   }}
                 >
                   <Box
+                    component="div"
                     sx={{
                       display: "flex",
                       width: "100%",
@@ -410,14 +600,56 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
                     e51fdf09...4c836052b4f0
                   </Typography>
                 </ListItem>
+                <ListItem
+                  sx={{
+                    display: "flex",
+                    width: "394px",
+                    padding: "12px 16px",
+                    flexDirection: "column",
+                    alignItems: "flex-start",
+                    borderRadius: "12px",
+                    border: `1px solid ${theme.palette.background.darker}`,
+                    background: theme.palette.background.default,
+                    marginTop: "8px",
+                  }}
+                >
+                  <Box
+                    component="div"
+                    sx={{
+                      display: "flex",
+                      width: "100%",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        color: theme.palette.text.neutralLightest,
+                        fontSize: "16px",
+                        fontWeight: 500,
+                        lineHeight: "24px",
+                        fontStyle: "normal",
+                      }}
+                    >
+                      Vote Proof
+                    </Typography>
+                    <Tooltip title="info" placement="top">
+                      <InfoIcon
+                        sx={{
+                          cursor: "pointer",
+                        }}
+                      />
+                    </Tooltip>
+                  </Box>
+                  <JsonView
+                    data={JSON.stringify(jsonExample, null, 2)}
+                    sx={{
+                      marginTop: "10px",
+                    }}
+                  />
+                </ListItem>
               </List>
             </CustomAccordion>
-            <Box
-              sx={{
-                backgroundColor: theme.palette.background.default,
-                height: "28px",
-              }}
-            />
           </Box>
         </Box>
       </div>

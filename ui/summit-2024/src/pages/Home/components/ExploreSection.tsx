@@ -1,4 +1,3 @@
-import React from "react";
 import { Grid, Typography, Card, CardContent, Box } from "@mui/material";
 import HowToVoteOutlinedIcon from "@mui/icons-material/HowToVoteOutlined";
 import folderIcon from "../../../assets/folder.svg";
@@ -30,6 +29,7 @@ const ExploreSection = () => {
         }}
       >
         <Box
+          component="div"
           sx={{
             display: {
               xs: "block",
@@ -71,6 +71,7 @@ const ExploreSection = () => {
           </Typography>
         </Box>
         <Box
+          component="div"
           sx={{
             display: {
               xs: "none",
@@ -118,6 +119,7 @@ const ExploreSection = () => {
           </Typography>
         </Box>
         <Box
+          component="div"
           sx={{
             width: "100%",
             textAlign: {
@@ -155,6 +157,7 @@ const ExploreSection = () => {
         >
           <CardContent sx={{ position: "relative", zIndex: 2 }}>
             <Box
+              component="div"
               sx={{
                 display: "flex",
                 alignItems: "center",
@@ -225,6 +228,7 @@ const ExploreSection = () => {
         >
           <CardContent sx={{ position: "relative", zIndex: 2 }}>
             <Box
+              component="div"
               sx={{
                 display: "flex",
                 alignItems: "center",

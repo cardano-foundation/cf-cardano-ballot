@@ -1,7 +1,7 @@
 import Modal from "../common/Modal/Modal";
 import { useLocalStorage } from "../../common/hooks/useLocalStorage";
 import { CB_COOKIES } from "../../common/constants/local";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import theme from "../../common/styles/theme";
 import { CustomButton } from "../common/CustomButton/CustomButton";
 
@@ -50,6 +50,7 @@ const Cookies = ({ position }) => {
         }}
       >
         <Box
+          component="div"
           sx={{
             padding: 2,
             borderRadius: 1,
@@ -75,6 +76,7 @@ const Cookies = ({ position }) => {
             experience. By clicking accept you agree to our privacy policy.
           </Typography>
           <Box
+            component="div"
             sx={{
               display: "flex",
               flexDirection: { xs: "column", sm: "row" },

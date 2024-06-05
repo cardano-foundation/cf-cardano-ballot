@@ -1,8 +1,6 @@
 import React, { useRef, useState, useCallback } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
-import theme from "../../common/styles/theme";
-import { useMediaQuery } from "@mui/material";
 
 type GLBViewerProps = {
   glbUrl: string;
@@ -35,12 +33,15 @@ const Model = ({ glbUrl, isInteracting, setIsInteracting }: ModelProps) => {
 
   useFrame(() => {
     if (!isInteracting) {
+      // @ts-ignore
       ref.current.rotation.y += 0.007;
     }
   });
 
+
   return (
     <group
+      // @ts-ignore
       ref={ref}
       scale={[12, 12, 12]}
       position={[0, -1.6, 0]}

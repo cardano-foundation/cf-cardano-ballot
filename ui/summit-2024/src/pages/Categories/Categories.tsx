@@ -87,11 +87,12 @@ const Categories: React.FC = () => {
   return (
     <>
       <Box
+        component="div"
         sx={{
           height: "28px",
         }}
       />
-      <Box sx={{ width: "100%" }}>
+      <Box component="div" sx={{ width: "100%" }}>
         <Grid container>
           <Grid item xs={12} md={2.4} lg={2}>
             <Typography
@@ -112,6 +113,7 @@ const Categories: React.FC = () => {
             {isMobile ? (
               <>
                 <Box
+                  component="div"
                   sx={{
                     overflowX: "auto",
                     width: "100%",
@@ -188,6 +190,7 @@ const Categories: React.FC = () => {
                         {category.category === selectedCategory ? (
                           <>
                             <Box
+                              component="div"
                               sx={{
                                 display: "flex",
                                 padding: "8px 12px",
@@ -257,6 +260,7 @@ const Categories: React.FC = () => {
             }}
           >
             <Box
+              component="div"
               sx={{
                 width: "100%",
                 marginBottom: "32px",
@@ -328,6 +332,7 @@ const Categories: React.FC = () => {
         />
         {isTablet && (
           <Box
+            component="div"
             sx={{
               zIndex: 1,
               position: "fixed",
@@ -370,7 +375,7 @@ const Categories: React.FC = () => {
         onClose={() => setOpenViewReceipt(false)}
       >
         <ViewReceipt
-          state={STATE.BASIC}
+          state={STATE.ROLLBACK}
           close={() => setOpenViewReceipt(false)}
         />
       </Drawer>

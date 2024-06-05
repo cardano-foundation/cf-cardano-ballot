@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Avatar,
   Box,
@@ -118,6 +118,7 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
     return (
       <>
         <Box
+          component="div"
           display="flex"
           flexDirection="column"
           alignItems="center"
@@ -144,6 +145,7 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
             </span>
           </Typography>
           <Box
+            component="div"
             sx={{
               backgroundColor: "white",
               display: "flex",
@@ -161,6 +163,7 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
             />
           </Box>
           <Box
+            component="div"
             sx={{
               display: "flex",
               alignItems: "center",
@@ -188,6 +191,7 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
     return (
       <>
         <Box
+          component="div"
           display="flex"
           flexDirection="column"
           alignItems="center"
@@ -304,7 +308,10 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
             }}
             onClick={() => handleShowConnectIdentityWallet()}
           >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <Box
+              component="div"
+              sx={{ display: "flex", alignItems: "center", gap: 2 }}
+            >
               <ListItemAvatar>
                 <Avatar src={IDWLogo} sx={{ width: 24, height: 24 }} />
               </ListItemAvatar>
@@ -343,6 +350,7 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
           {network !== NetworkType.MAINNET ? (
             <>
               <Box
+                component="div"
                 style={{
                   display: "flex",
                   justifyContent: "center",
@@ -392,7 +400,10 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
                 }}
                 onClick={() => connectExtensionWallet(walletName)}
               >
-                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                <Box
+                  component="div"
+                  sx={{ display: "flex", alignItems: "center", gap: 2 }}
+                >
                   <ListItemAvatar>
                     <Avatar
                       src={walletIcon(walletName)}
@@ -485,6 +496,7 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
           </ListItem>
         </List>
         <Box
+          component="div"
           style={{
             marginTop: "24px",
             display: "flex",

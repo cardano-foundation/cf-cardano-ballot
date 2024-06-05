@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../store";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
@@ -84,7 +84,7 @@ const ConnectWalletButton = ({
   };
 
   return (
-    <Box sx={{ position: "relative" }}>
+    <Box component="div" sx={{ position: "relative" }}>
       <IconButton
         ref={buttonRef}
         sx={{
@@ -199,6 +199,7 @@ const ConnectWalletButton = ({
 
       {isConnected && (
         <Box
+          component="div"
           sx={{
             position: "absolute",
             top: "100%",

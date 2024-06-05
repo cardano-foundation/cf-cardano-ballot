@@ -2,7 +2,7 @@ import React from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import { IconButton, Typography } from "@mui/material";
+import { IconButton, SxProps, Theme, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ArrowBackIosNewOutlinedIcon from "@mui/icons-material/ArrowBackIosNewOutlined";
 import theme from "../../../common/styles/theme";
@@ -22,6 +22,7 @@ type ModalProps = {
   onClose?: () => void;
   onBack?: () => void | undefined;
   children: React.ReactNode;
+  sx?: SxProps<Theme>;
 };
 
 const Modal = (props: ModalProps) => {
@@ -36,6 +37,7 @@ const Modal = (props: ModalProps) => {
     disableBackdropClick,
     onClose,
     onBack,
+    sx,
   } = props;
 
   return (
@@ -56,6 +58,7 @@ const Modal = (props: ModalProps) => {
           position: position === "bottom" ? "absolute" : "",
           bottom: position === "bottom" ? "24px" : "",
         },
+        ...(sx && sx),
       }}
     >
       <DialogTitle

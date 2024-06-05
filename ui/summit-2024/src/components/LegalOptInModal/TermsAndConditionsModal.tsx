@@ -1,4 +1,3 @@
-import * as React from "react";
 import {
   Box,
   Button,
@@ -84,7 +83,7 @@ const TermsAndConditionsModal = () => {
               {termsData.date}
             </Typography>
             {termsData.sections.map((section, index) => (
-              <Box key={index} sx={{ mt: 4 }}>
+              <Box component="div" key={index} sx={{ mt: 4 }}>
                 <Typography
                   sx={{
                     color: theme.palette.text.neutralLightest,
@@ -396,6 +395,7 @@ const TermsAndConditionsModal = () => {
 
   const checkedIcon = (
     <Box
+      component="div"
       sx={{
         width: 20,
         height: 20,

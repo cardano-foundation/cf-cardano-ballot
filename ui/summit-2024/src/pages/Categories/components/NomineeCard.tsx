@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid, Paper, Typography, Button, Box } from "@mui/material";
+import { Grid, Paper, Typography, Box } from "@mui/material";
 import { NomineeFixture } from "../../../__fixtures__/categories";
 import HoverCircle from "../../../components/common/HoverCircle/HoverCircle";
 import theme from "../../../common/styles/theme";
@@ -62,11 +62,12 @@ const NomineeCard: React.FC<NomineeCardProps> = ({
         }}
       >
         <Box
+          component="div"
           sx={{
             p: { xs: 1, sm: 2 },
           }}
         >
-          <Box sx={{ position: "absolute", right: 8, top: 8 }}>
+          <Box component="div" sx={{ position: "absolute", right: 8, top: 8 }}>
             <HoverCircle selected={selectedNominee === nominee.id} />
           </Box>
           <Typography
@@ -88,6 +89,7 @@ const NomineeCard: React.FC<NomineeCardProps> = ({
         </Box>
 
         <Box
+          component="div"
           sx={{
             width: "100%",
             borderTop: `1px solid ${theme.palette.background.disabled}`,

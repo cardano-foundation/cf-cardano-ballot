@@ -11,7 +11,7 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <Box>
+      <Box component="div">
         <Hero />
         <ExploreSection />
         <TicketsSection />

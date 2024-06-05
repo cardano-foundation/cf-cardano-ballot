@@ -1,13 +1,14 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Box } from "@mui/material";
 import CheckIcon from "@mui/icons-material/Check";
 import theme from "../../../common/styles/theme";
 
-const HoverCircle = ({ selected }) => {
+const HoverCircle = ({ selected }: { selected: boolean }) => {
   const [hover, setHover] = useState(false);
 
   return (
     <Box
+      component="div"
       sx={{
         position: "relative",
         width: 48,
@@ -21,6 +22,7 @@ const HoverCircle = ({ selected }) => {
       {!selected ? (
         <>
           <Box
+            component="div"
             sx={{
               position: "absolute",
               width: 48,
@@ -32,6 +34,7 @@ const HoverCircle = ({ selected }) => {
             }}
           />
           <Box
+            component="div"
             onMouseEnter={() => setHover(true)}
             onMouseLeave={() => setHover(false)}
             sx={{
@@ -49,6 +52,7 @@ const HoverCircle = ({ selected }) => {
       ) : (
         <>
           <Box
+            component="div"
             sx={{
               position: "absolute",
               width: 48,
@@ -61,6 +65,7 @@ const HoverCircle = ({ selected }) => {
           />
 
           <Box
+            component="div"
             sx={{
               position: "absolute",
               width: 48,
@@ -72,6 +77,7 @@ const HoverCircle = ({ selected }) => {
             }}
           />
           <Box
+            component="div"
             onMouseEnter={() => setHover(true)}
             onMouseLeave={() => setHover(false)}
             sx={{

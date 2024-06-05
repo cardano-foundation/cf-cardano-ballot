@@ -1,4 +1,3 @@
-import React from "react";
 import { Paper, Typography, Box, Link } from "@mui/material";
 import theme from "../../../common/styles/theme";
 import guideBg from "../../../assets/bg/guideCard.svg";
@@ -31,12 +30,17 @@ const UserGuideCard = ({
       }}
     >
       <Box
+        component="div"
         sx={{
           maxWidth: "419px",
         }}
       >
-        <Box sx={{ display: "flex", alignItems: "center", paddingLeft: 1 }}>
+        <Box
+          component="div"
+          sx={{ display: "flex", alignItems: "center", paddingLeft: 1 }}
+        >
           <Box
+            component="div"
             sx={{
               width: "40px",
               height: "40px",

@@ -1,6 +1,5 @@
 import Shapes from "../../../assets/shapes.svg";
 import GLBViewer from "../../../components/GLBViewer/GLBViewer";
-import React from "react";
 import { Box, Fade, Grid, Typography, useMediaQuery } from "@mui/material";
 import { useIsPortrait } from "../../../common/hooks/useIsPortrait";
 import { CustomButton } from "../../../components/common/CustomButton/CustomButton";
@@ -30,9 +29,6 @@ const Hero = () => {
     } else if (isDesktop) {
       height = "550px";
     }
-
-    console.log("height");
-    console.log(height);
     return height;
   };
   return (
@@ -84,6 +80,7 @@ const Hero = () => {
             Vote for the
           </Typography>
           <Box
+            component="div"
             sx={{
               display: "flex",
               marginLeft: {
@@ -97,6 +94,7 @@ const Hero = () => {
             }}
           >
             <Box
+              component="div"
               sx={{
                 marginTop: {
                   xs: "4%",
@@ -173,6 +171,7 @@ const Hero = () => {
           </Typography>
 
           <Box
+            component="div"
             sx={{
               display: "flex",
               justifyContent: {
@@ -183,6 +182,7 @@ const Hero = () => {
             }}
           >
             <Box
+              component="div"
               sx={{
                 marginBottom: "28px",
                 width: "80px",
@@ -199,6 +199,7 @@ const Hero = () => {
             />
           </Box>
           <Box
+            component="div"
             sx={{
               display: "flex",
               flexDirection: {
@@ -246,6 +247,7 @@ const Hero = () => {
         </Grid>
         <Grid item xs={12} sm={7} tablet={7} md={6} lg={8}>
           <Box
+            component="div"
             sx={{
               height: "100%",
               backgroundImage: {
@@ -272,7 +274,7 @@ const Hero = () => {
             }}
           >
             <Fade in={true} timeout={3000}>
-              <Box>
+              <Box component="div">
                 <GLBViewer
                   glbUrl="/compressed.glb"
                   height={getAwardHeight()}

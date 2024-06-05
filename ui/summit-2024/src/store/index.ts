@@ -1,22 +1,17 @@
-import {
-  configureStore,
-  PreloadedState,
-  combineReducers,
-} from "@reduxjs/toolkit";
-import userSessionReducer from "./userSlice";
+import { configureStore } from "@reduxjs/toolkit";
+import {eventCacheSlice} from "./reducers/eventCache";
+import {userCacheSlice} from "./reducers/userCache";
 
-const rootReducer = combineReducers({
-  user: userSessionReducer,
+const store = configureStore({
+    reducer: {
+        eventCache: eventCacheSlice.reducer,
+        userCache: userCacheSlice.reducer,
+    },
 });
 
-export const setupStore = (preloadedState?: PreloadedState<RootState>) => {
-  return configureStore({
-    reducer: rootReducer,
-    preloadedState,
-    devTools: process.env.NODE_ENV !== "production",
-  });
-};
+type RootState = ReturnType<typeof store.getState>;
+type AppDispatch = typeof store.dispatch;
 
-export type RootState = ReturnType<typeof rootReducer>;
-export type AppStore = ReturnType<typeof setupStore>;
-export type AppDispatch = AppStore["dispatch"];
+export type { RootState, AppDispatch };
+
+export { store };

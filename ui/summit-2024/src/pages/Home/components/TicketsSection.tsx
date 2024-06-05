@@ -1,12 +1,4 @@
-import React from "react";
-import {
-  Grid,
-  Box,
-  Typography,
-  Button,
-  Link,
-  useMediaQuery,
-} from "@mui/material";
+import { Grid, Box, Typography, useMediaQuery } from "@mui/material";
 import Logo from "../../../assets/logo.svg";
 import dubaiBg from "../../../assets/dubai-bg.svg";
 import { CustomButton } from "../../../components/common/CustomButton/CustomButton";
@@ -34,6 +26,7 @@ const TicketsSection = () => {
         }}
       >
         <Box
+          component="div"
           sx={{
             position: "absolute",
             top: 0,

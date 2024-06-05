@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 import { resolveCardanoNetwork } from "../../utils/utils";
 import { env } from "../../common/constants/env";
@@ -7,7 +7,6 @@ import Modal from "../common/Modal/Modal";
 import {
   ConnectWalletFlow,
   IWalletInfo,
-  NetworkType,
 } from "../ConnectWalletList/ConnectWalletList.types";
 import {
   ConnectWalletContextType,
@@ -34,8 +33,6 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
   const [connectCurrentPaths, setConnectCurrentPaths] = useState<
     ConnectWalletFlow[]
   >([ConnectWalletFlow.SELECT_WALLET]);
-
-  const network = resolveCardanoNetwork(env.TARGET_NETWORK);
 
   const [onPeerConnectAccept, setOnPeerConnectAccept] = useState(() => () => {
     /*TODO */

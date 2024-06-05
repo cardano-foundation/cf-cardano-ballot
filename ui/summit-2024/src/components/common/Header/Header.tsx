@@ -1,14 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import {
-  AppBar,
-  Box,
-  Toolbar,
-  Typography,
-  IconButton,
-  Grid,
-  Button,
-} from "@mui/material";
+import { AppBar, Box, Toolbar, Typography, IconButton } from "@mui/material";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import Logo from "../../../assets/logo.svg";
 import { useIsPortrait } from "../../../common/hooks/useIsPortrait";
@@ -134,6 +126,7 @@ const Header = () => {
       >
         <Toolbar>
           <Box
+            component="div"
             sx={{
               width: "100%",
               display: "flex",
@@ -142,6 +135,7 @@ const Header = () => {
             }}
           >
             <Box
+              component="div"
               sx={{
                 background: theme.palette.background.default,
                 display: "flex",
@@ -156,6 +150,7 @@ const Header = () => {
               }}
             >
               <Box
+                component="div"
                 sx={{ p: 0, cursor: "pointer" }}
                 onClick={() => navigate(ROUTES.LANDING)}
               >
@@ -168,6 +163,7 @@ const Header = () => {
 
               {!isPortrait && (
                 <Box
+                  component="div"
                   sx={{
                     flexGrow: 1,
                     display: "flex",
@@ -175,8 +171,7 @@ const Header = () => {
                   }}
                 >
                   <Typography
-                    variant="body1"
-                    component="span"
+                    component="a"
                     href="#categories"
                     sx={{
                       color: "inherit",
@@ -217,7 +212,10 @@ const Header = () => {
                 </Box>
               )}
 
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+              <Box
+                component="div"
+                sx={{ display: "flex", alignItems: "center", gap: 1.5 }}
+              >
                 <ConnectWalletButton
                   label={isPortrait ? "" : "Connect Wallet"}
                   onOpenConnectWalletModal={handleConnectWalletModal}
@@ -247,6 +245,7 @@ const Header = () => {
         </Toolbar>
       </AppBar>
       <Box
+        component="div"
         sx={{
           height: "96px",
         }}

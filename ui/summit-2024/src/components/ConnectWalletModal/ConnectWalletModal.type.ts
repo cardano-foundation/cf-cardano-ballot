@@ -1,6 +1,7 @@
 interface ConnectWalletContextType {
   isMobile: boolean;
   meerkatAddress: string | undefined;
+  peerConnectWalletInfo: string | undefined;
 }
 
 type ConnectWalletProps = {
@@ -8,4 +9,4 @@ type ConnectWalletProps = {
   handleCloseConnectWalletModal: (open?: boolean) => void;
 };
 
-export { ConnectWalletContextType, ConnectWalletProps };
+export type { ConnectWalletContextType, ConnectWalletProps };

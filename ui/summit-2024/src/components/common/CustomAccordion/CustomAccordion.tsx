@@ -7,7 +7,6 @@ import theme from "../../../common/styles/theme";
 interface CustomAccordionProps {
   titleClose: string;
   titleOpen?: string;
-  description: string;
   sx?: SxProps<Theme>;
   children: React.ReactNode;
 }
@@ -31,8 +30,9 @@ const CustomAccordion: React.FC<CustomAccordionProps> = ({
   };
 
   return (
-    <Box sx={sx}>
+    <Box component="div" sx={sx}>
       <Box
+        component="div"
         sx={{
           display: "flex",
           justifyContent: "space-between",
@@ -58,6 +58,7 @@ const CustomAccordion: React.FC<CustomAccordionProps> = ({
         {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
       </Box>
       <Box
+        component="div"
         ref={contentRef}
         sx={{
           marginTop: "20px",

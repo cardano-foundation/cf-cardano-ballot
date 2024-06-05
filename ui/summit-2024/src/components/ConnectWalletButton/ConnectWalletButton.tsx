@@ -25,6 +25,9 @@ import {
 import { env } from "../../common/constants/env";
 import { eventBus } from "../../utils/EventBus";
 import { useIsPortrait } from "../../common/hooks/useIsPortrait";
+import {useAppSelector} from "../../store/hooks";
+import {getEventCache} from "../../store/reducers/eventCache";
+import {getWalletIsVerified} from "../../store/reducers/userCache";
 
 type ConnectWalletButtonProps = {
   label: string;
@@ -38,10 +41,8 @@ type ConnectWalletButtonProps = {
 const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
   const { onOpenConnectWalletModal, onLogin, onDisconnectWallet } = props;
   const isMobile = useIsPortrait();
-  const eventCache = useSelector((state: RootState) => state.user.event);
-  const walletIsVerified = useSelector(
-    (state: RootState) => state.user.walletIsVerified,
-  );
+  const eventCache = useAppSelector(getEventCache);
+  const walletIsVerified = useAppSelector(getWalletIsVerified);
   const session = getUserInSession();
   const isExpired = tokenIsExpired(session?.expiresAt);
 

@@ -10,7 +10,6 @@ import {
   TableRow,
   TableCell,
   TableBody,
-  Fade,
 } from "@mui/material";
 import theme from "../../common/styles/theme";
 import MoreVertIcon from "@mui/icons-material/MoreVert";

@@ -22,13 +22,9 @@ import discordLogo from "../../common/resources/images/discord-icon.svg";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  setUserStartsVerification,
-  setWalletIsVerified,
-} from "../../store/userSlice";
-import {
   PhoneNumberCodeConfirmation,
   VerificationStarts,
-} from "../../store/types";
+} from "../../store2/types";
 import { RootState } from "../../store";
 import { useLocation } from "react-router-dom";
 import {
@@ -37,7 +33,6 @@ import {
   resolveCardanoNetwork,
 } from "../../utils/utils";
 import { SignedWeb3Request } from "../../types/voting-app-types";
-import { parseError } from "../../common/constants/errors";
 import { ErrorMessage } from "../common/ErrorMessage/ErrorMessage";
 import { CustomButton } from "../common/CustomButton/CustomButton";
 import Modal from "../common/Modal/Modal";
@@ -51,17 +46,14 @@ import { env } from "../../common/constants/env";
 import { CustomCheckBox } from "../common/CustomCheckBox/CustomCheckBox";
 import { validatePhoneNumberLength } from "libphonenumber-js";
 import { eventBus } from "../../utils/EventBus";
+import {getVerificationStarted, setVerificationStarted, setWalletIsVerified} from "../../store/reducers/userCache";
+import {useAppSelector} from "../../store/hooks";
 
 // TODO: env.
 const excludedCountries: MuiTelInputCountry[] | undefined = [];
 
-type VerifyWalletProps = {
-  method?: string;
-  onVerify: () => void;
-  onError: (error?: string) => void;
-};
+type VerifyWalletProps = {};
 const VerifyWalletModal = (props: VerifyWalletProps) => {
-  const { onVerify, onError, method } = props;
   const theme = useTheme();
   const [verifyCurrentPaths, setVerifyCurrentPaths] = useState<
     VerifyWalletFlow[]
@@ -84,12 +76,11 @@ const VerifyWalletModal = (props: VerifyWalletProps) => {
   const { stakeAddress, signMessage } = useCardano({
     limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
   });
-  const userVerification = useSelector(
-    (state: RootState) => state.user.userVerification,
-  );
+  const userVerificationStarted =  useAppSelector(getVerificationStarted);
+
   const userStartsVerificationByStakeAddress =
-    Object.keys(userVerification).length !== 0 &&
-    userVerification[stakeAddress];
+    Object.keys(userVerificationStarted).length !== 0 &&
+      userVerificationStarted[stakeAddress];
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const location = useLocation();
@@ -149,7 +140,7 @@ const VerifyWalletModal = (props: VerifyWalletProps) => {
       )
         .then((response: VerificationStarts) => {
           dispatch(
-            setUserStartsVerification({
+              setVerificationStarted({
               stakeAddress,
               verificationStarts: response,
             }),
@@ -159,7 +150,6 @@ const VerifyWalletModal = (props: VerifyWalletProps) => {
           setPhoneCodeIsBeenSending(false);
         })
         .catch((error) => {
-          onError(parseError(error.message));
           setPhoneCodeIsBeenSending(false);
         });
     }
@@ -177,9 +167,8 @@ const VerifyWalletModal = (props: VerifyWalletProps) => {
       codes.join(""),
     )
       .then((response: PhoneNumberCodeConfirmation) => {
-        dispatch(setWalletIsVerified({ isVerified: response.verified }));
+        dispatch(setWalletIsVerified(response.verified));
         if (response.verified) {
-          onVerify();
           reset();
           setPhoneCodeIsBeenConfirming(false);
         } else {
@@ -209,15 +198,13 @@ const VerifyWalletModal = (props: VerifyWalletProps) => {
             .then((response: { verified: boolean }) => {
               dispatch(setWalletIsVerified({ isVerified: response.verified }));
               if (response.verified) {
-                onVerify();
                 reset();
               } else {
-                onError("Discord verification failed");
               }
             })
-            .catch((e) => onError(parseError(e.message)));
+            .catch((e) => console.error(e));
         })
-        .catch((e) => onError(parseError(e.message)));
+        .catch((e) => console.error(e));
     }
   };
 
@@ -225,6 +212,7 @@ const VerifyWalletModal = (props: VerifyWalletProps) => {
     return (
       <>
         <Box
+          component="div"
           sx={{
             mx: "auto",
             textAlign: "center",
@@ -413,6 +401,7 @@ const VerifyWalletModal = (props: VerifyWalletProps) => {
           Mobile number
         </Typography>
         <Box
+          component="div"
           sx={{
             width: "100%",
             marginTop: "4px",
@@ -431,6 +420,7 @@ const VerifyWalletModal = (props: VerifyWalletProps) => {
           />
 
           <Box
+            component="div"
             sx={{
               height: "10px",
             }}
@@ -456,8 +446,11 @@ const VerifyWalletModal = (props: VerifyWalletProps) => {
           </Box>
         </Box>
 
-        <Box sx={{ display: "flex", alignItems: "center", marginTop: "4px" }}>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
+        <Box
+          component="div"
+          sx={{ display: "flex", alignItems: "center", marginTop: "4px" }}
+        >
+          <Box component="div" sx={{ display: "flex", alignItems: "center" }}>
             <CustomCheckBox
               isChecked={checkImNotARobot}
               setIsChecked={setCheckImNotARobot}
@@ -468,6 +461,7 @@ const VerifyWalletModal = (props: VerifyWalletProps) => {
         <Grid container style={{ marginTop: "4px" }}>
           <Grid item xs={12}>
             <Box
+              component="div"
               sx={{
                 width: "100%",
               }}
@@ -563,6 +557,7 @@ const VerifyWalletModal = (props: VerifyWalletProps) => {
           ))}
         </div>
         <Box
+          component="div"
           className="container"
           sx={{
             display: "flex",
@@ -579,12 +574,11 @@ const VerifyWalletModal = (props: VerifyWalletProps) => {
         <Grid container spacing={2} style={{ marginTop: "8px" }}>
           <Grid item xs={12}>
             <CustomButton
-              styles={{
+              sx={{
                 background: "transparent !important",
                 color: "#03021F",
                 border: "1px solid #daeefb",
               }}
-              label="Back"
               onClick={() => handleVerifyPhoneCode()}
               fullWidth={true}
               colorVariant="primary"

@@ -2,12 +2,9 @@ import { createTheme } from "@mui/material/styles";
 import componentsOverride from "./overrides";
 import { createBreakpoints } from "@mui/system";
 
-import '@mui/material/styles';
+import "@mui/material/styles";
 
-// En tu archivo de declaración, por ejemplo `theme-overrides.d.ts`
-import '@mui/material/styles';
-
-declare module '@mui/material/styles' {
+declare module "@mui/material/styles" {
   interface PaletteColorOptions {
     main?: string;
     light?: string;
@@ -47,7 +44,6 @@ declare module '@mui/material/styles' {
     xxl: true;
   }
 }
-
 
 const breakpoints = createBreakpoints({
   values: {

@@ -11,7 +11,7 @@ import { env } from "../constants/env";
 import {
   PhoneNumberCodeConfirmation,
   VerificationStarts,
-} from "../../store/types";
+} from "../../store2/types";
 import {
   MerkleProofItem,
   SignedWeb3Request,
@@ -45,19 +45,26 @@ export const getIsVerified = async (eventId: string, stakeAddress: string) =>
     },
   );
 
-export const startVerification = async (
+export const sendSmsCode = async (
   eventId: string,
   stakeAddress: string,
   phoneNumber: string,
-) =>
-  await doRequest<VerificationStarts>(
-    HttpMethods.POST,
-    `${START_VERIFICATION_URL}`,
-    {
-      ...DEFAULT_CONTENT_TYPE_HEADERS,
-    },
-    JSON.stringify({ eventId, stakeAddress, phoneNumber }),
-  );
+) => {
+
+    console.log("startVerification");
+    console.log(eventId);
+    console.log(stakeAddress);
+    console.log(phoneNumber);
+
+    return await doRequest<VerificationStarts>(
+        HttpMethods.POST,
+        `${START_VERIFICATION_URL}`,
+        {
+            ...DEFAULT_CONTENT_TYPE_HEADERS,
+        },
+        JSON.stringify({eventId, stakeAddress, phoneNumber: "+34628000027"}),
+    );
+}
 
 export const confirmPhoneNumberCode = async (
   eventId: string,

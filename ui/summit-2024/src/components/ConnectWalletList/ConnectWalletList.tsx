@@ -33,12 +33,14 @@ import theme from "../../common/styles/theme";
 
 type ConnectWalletListProps = {
   description?: string;
+  meerkatAddress: string;
   currentPath: ConnectWalletFlow;
   setCurrentPath: (currentPath: ConnectWalletFlow) => void;
   onConnectWallet: () => void;
   closeModal: () => void;
   onConnectError: (code: Error) => void;
   handleOnPeerConnectAccept: () => void;
+  onOpenPeerConnect: () => void;
   connectExtensionWallet: (walletName: string) => void;
 };
 

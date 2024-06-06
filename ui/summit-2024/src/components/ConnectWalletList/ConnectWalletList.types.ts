@@ -14,8 +14,9 @@ enum ConnectWalletFlow {
 }
 
 enum NetworkType {
-  MAINNET = "MAINNET",
-  TESTNET = "TESTNET",
+  MAINNET = "mainnet",
+  TESTNET = "testnet",
 }
 
-export { IWalletInfo, ConnectWalletFlow, NetworkType };
+export { ConnectWalletFlow, NetworkType };
+export type { IWalletInfo };

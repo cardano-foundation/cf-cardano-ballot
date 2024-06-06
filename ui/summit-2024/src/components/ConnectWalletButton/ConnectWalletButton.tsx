@@ -1,4 +1,3 @@
-import { useSelector } from "react-redux";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 import {
   Avatar,
@@ -13,9 +12,7 @@ import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import VerifiedIcon from "@mui/icons-material/Verified";
-import React from "react";
 import "./ConnectWalletButton.scss";
-import { RootState } from "../../store";
 import { getUserInSession, tokenIsExpired } from "../../utils/session";
 import {
   addressSlice,
@@ -25,9 +22,9 @@ import {
 import { env } from "../../common/constants/env";
 import { eventBus } from "../../utils/EventBus";
 import { useIsPortrait } from "../../common/hooks/useIsPortrait";
-import {useAppSelector} from "../../store/hooks";
-import {getEventCache} from "../../store/reducers/eventCache";
-import {getWalletIsVerified} from "../../store/reducers/userCache";
+import { useAppSelector } from "../../store/hooks";
+import { getEventCache } from "../../store/reducers/eventCache";
+import { getWalletIsVerified } from "../../store/reducers/userCache";
 
 type ConnectWalletButtonProps = {
   label: string;
@@ -43,6 +40,7 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
   const isMobile = useIsPortrait();
   const eventCache = useAppSelector(getEventCache);
   const walletIsVerified = useAppSelector(getWalletIsVerified);
+
   const session = getUserInSession();
   const isExpired = tokenIsExpired(session?.expiresAt);
 
@@ -61,7 +59,7 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
   };
 
   return (
-    <Box className="button-container">
+    <Box component="div" className="button-container">
       <Button
         sx={{ zIndex: "99", padding: isMobile ? "10px 10px" : "16px 20px" }}
         className={`main-button ${
@@ -104,6 +102,7 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
       </Button>
       {isConnected && (
         <Box
+          component="div"
           className="disconnect-wrapper"
           sx={{
             width: isMobile ? "180px" : "100%",

@@ -3,7 +3,7 @@ import { Box, SxProps, Theme, Tooltip, Typography } from "@mui/material";
 import { copyToClipboard } from "../../../utils/utils";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import LaunchIcon from '@mui/icons-material/Launch';
+import LaunchIcon from "@mui/icons-material/Launch";
 import theme from "../../../common/styles/theme";
 import { eventBus } from "../../../utils/EventBus";
 
@@ -59,47 +59,56 @@ const JsonView: React.FC<JsonRendererProps> = ({ data, sx }) => {
             }}
           >
             {copied ? (
-              <CheckCircleOutlineIcon sx={{
+              <CheckCircleOutlineIcon
+                sx={{
                   width: "20px",
                   height: "20px",
-              }}/>
+                }}
+              />
             ) : (
-              <ContentCopyIcon onClick={handleCopy} sx={{
+              <ContentCopyIcon
+                onClick={handleCopy}
+                sx={{
                   width: "20px",
                   height: "20px",
-              }}/>
+                }}
+              />
             )}
           </Box>
         </Tooltip>
       </Box>
-        <Box
-            component="div"
-            sx={{
-                borderTop: `1px solid ${theme.palette.background.disabled}`,
-                width: "100%",
-                background: theme.palette.background.neutralDark,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                padding: "10px 24px",
-                cursor: "pointer"
-            }}
+      <Box
+        component="div"
+        sx={{
+          borderTop: `1px solid ${theme.palette.background.disabled}`,
+          width: "100%",
+          background: theme.palette.background.neutralDark,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "10px 24px",
+          cursor: "pointer",
+        }}
+      >
+        <Typography
+          sx={{
+            color: theme.palette.text.neutralLightest,
+            fontSize: "12px",
+            fontWeight: 500,
+            lineHeight: "20px",
+            fontStyle: "normal",
+          }}
         >
-            <Typography sx={{
-                color: theme.palette.text.neutralLightest,
-                fontSize: "12px",
-                fontWeight: 500,
-                lineHeight: "20px",
-                fontStyle: "normal"
-            }}>
-               Verify
-            </Typography>
-            <LaunchIcon sx={{
-                width: "16px",
-                height: "16px",
-                marginLeft: "8px"
-            }}/>
-        </Box>
+          Verify
+        </Typography>
+        <LaunchIcon
+          sx={{
+            width: "16px",
+            height: "16px",
+            marginLeft: "8px",
+          }}
+        />
+      </Box>
     </>
   );
 };

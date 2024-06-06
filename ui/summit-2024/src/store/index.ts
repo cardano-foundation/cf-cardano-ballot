@@ -1,12 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
-import {eventCacheSlice} from "./reducers/eventCache";
-import {userCacheSlice} from "./reducers/userCache";
+import { eventCacheSlice } from "./reducers/eventCache";
+import { userCacheSlice } from "./reducers/userCache";
 
 const store = configureStore({
-    reducer: {
-        eventCache: eventCacheSlice.reducer,
-        userCache: userCacheSlice.reducer,
-    },
+  reducer: {
+    eventCache: eventCacheSlice.reducer,
+    userCache: userCacheSlice.reducer,
+  },
 });
 
 type RootState = ReturnType<typeof store.getState>;

@@ -38,7 +38,7 @@ import { CustomButton } from "../common/CustomButton/CustomButton";
 import Modal from "../common/Modal/Modal";
 import {
   confirmPhoneNumberCode,
-  startVerification,
+  sendSmsCode,
   verifyDiscord,
 } from "../../common/api/verificationService";
 import { VerifyWalletFlow } from "./VerifyWalletModal.type";
@@ -46,8 +46,12 @@ import { env } from "../../common/constants/env";
 import { CustomCheckBox } from "../common/CustomCheckBox/CustomCheckBox";
 import { validatePhoneNumberLength } from "libphonenumber-js";
 import { eventBus } from "../../utils/EventBus";
-import {getVerificationStarted, setVerificationStarted, setWalletIsVerified} from "../../store/reducers/userCache";
-import {useAppSelector} from "../../store/hooks";
+import {
+  getVerificationStarted,
+  setVerificationStarted,
+  setWalletIsVerified,
+} from "../../store/reducers/userCache";
+import { useAppSelector } from "../../store/hooks";
 
 // TODO: env.
 const excludedCountries: MuiTelInputCountry[] | undefined = [];
@@ -76,11 +80,11 @@ const VerifyWalletModal = (props: VerifyWalletProps) => {
   const { stakeAddress, signMessage } = useCardano({
     limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
   });
-  const userVerificationStarted =  useAppSelector(getVerificationStarted);
+  const userVerificationStarted = useAppSelector(getVerificationStarted);
 
   const userStartsVerificationByStakeAddress =
     Object.keys(userVerificationStarted).length !== 0 &&
-      userVerificationStarted[stakeAddress];
+    userVerificationStarted[stakeAddress];
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const location = useLocation();
@@ -129,18 +133,24 @@ const VerifyWalletModal = (props: VerifyWalletProps) => {
   };
 
   const handleSendCode = async () => {
+    console.log("handleSendCode");
     handleSetCurrentPath(VerifyWalletFlow.CONFIRM_CODE);
-    return;
     if (matchIsValidTel(phone) && checkImNotARobot) {
+      console.log("setPhoneCodeIsBeenSending");
+      const phoneNumber = phone.trim().replace(" ", "");
+      console.log("phoneNumber");
+      console.log(phone);
+      console.log(phoneNumber);
+      console.log(phone.trim().replace(" ", ""));
       setPhoneCodeIsBeenSending(true);
-      startVerification(
+      sendSmsCode(
         env.EVENT_ID,
         stakeAddress,
         phone.trim().replace(" ", ""),
       )
         .then((response: VerificationStarts) => {
           dispatch(
-              setVerificationStarted({
+            setVerificationStarted({
               stakeAddress,
               verificationStarts: response,
             }),
@@ -150,6 +160,8 @@ const VerifyWalletModal = (props: VerifyWalletProps) => {
           setPhoneCodeIsBeenSending(false);
         })
         .catch((error) => {
+            console.log("error");
+            console.log(error);
           setPhoneCodeIsBeenSending(false);
         });
     }

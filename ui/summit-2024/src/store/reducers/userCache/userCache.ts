@@ -1,9 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../index";
 import {
-  UserCacheProps, UserVotes, VerificationStarted
+  UserCacheProps,
+  UserVotes,
+  VerificationStarted,
 } from "./userCache.types";
-import {initialStateData} from "./initialState";
+import { initialStateData } from "./initialState";
 
 const initialState: UserCacheProps = initialStateData;
 
@@ -20,23 +22,23 @@ const userCacheSlice = createSlice({
     setUserVotes: (state, action: PayloadAction<UserVotes[]>) => {
       state.userVotes = action.payload;
     },
-    setVerificationStarted: (state, action: PayloadAction<VerificationStarted>) => {
+    setVerificationStarted: (
+      state,
+      action: PayloadAction<VerificationStarted>,
+    ) => {
       state.verificationStarted = action.payload;
     },
-  }
+  },
 });
 
-const {
-  setUser,
-  setWalletIsVerified,
-  setUserVotes,
-  setVerificationStarted
-} = userCacheSlice.actions;
+const { setUser, setWalletIsVerified, setUserVotes, setVerificationStarted } =
+  userCacheSlice.actions;
 
 const getUser = (state: RootState) => state.userCache;
 const getWalletIsVerified = (state: RootState) => state.userCache.isVerified;
 const getUserVotes = (state: RootState) => state.userCache.userVotes;
-const getVerificationStarted = (state: RootState) => state.userCache.verificationStarted;
+const getVerificationStarted = (state: RootState) =>
+  state.userCache.verificationStarted;
 
 export {
   userCacheSlice,
@@ -48,5 +50,5 @@ export {
   getUser,
   getWalletIsVerified,
   getUserVotes,
-  getVerificationStarted
+  getVerificationStarted,
 };

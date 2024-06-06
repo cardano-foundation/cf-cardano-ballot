@@ -1,4 +1,3 @@
-
 interface Proposal {
   id: string;
   name: string | null;
@@ -8,10 +7,6 @@ interface Category {
   id: string;
   gdprProtection: boolean;
   proposals: Proposal[];
-  version: number;
-  event: string;
-  absoluteSlot: number;
-  valid: boolean;
 }
 
 interface EventCacheProps {
@@ -43,8 +38,4 @@ interface EventCacheProps {
   categoryResultsWhileVoting: boolean;
 }
 
-export type {
-  EventCacheProps,
-  Proposal,
-  Category
-};
+export type { EventCacheProps, Proposal, Category };

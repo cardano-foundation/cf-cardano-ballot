@@ -6,7 +6,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import theme from "./common/styles/theme";
 import { AppWrapper } from "./components/AppWrapper/AppWrapper";
 import App from "./App";
-import {store} from "./store";
+import { store } from "./store";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

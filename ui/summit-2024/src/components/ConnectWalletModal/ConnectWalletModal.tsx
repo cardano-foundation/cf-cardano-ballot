@@ -64,7 +64,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
     }
   };
 
-  const setCurrentPath = (currentPath) => {
+  const setCurrentPath = (currentPath: ConnectWalletFlow) => {
     const filteredPaths = connectCurrentPaths.filter((p) => p !== currentPath);
     return setConnectCurrentPaths([currentPath, ...filteredPaths]);
   };
@@ -131,6 +131,10 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
     }
   }, []);
 
+  const handleConnectWallet = (walletName: string) => {
+    connect(walletName, onConnectWallet, onConnectError);
+  };
+
   const handleAccept = () => {
     if (peerConnectWalletInfo) {
       onPeerConnectAccept();
@@ -195,7 +199,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
             }
             closeModal={() => props.handleCloseConnectWalletModal()}
             connectExtensionWallet={(walletName: string) =>
-              connect(walletName, onConnectWallet, onConnectError)
+              handleConnectWallet(walletName)
             }
             handleOnPeerConnectAccept={() => handleAccept()}
           />

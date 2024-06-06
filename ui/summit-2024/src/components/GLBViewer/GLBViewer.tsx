@@ -38,7 +38,6 @@ const Model = ({ glbUrl, isInteracting, setIsInteracting }: ModelProps) => {
     }
   });
 
-
   return (
     <group
       // @ts-ignore

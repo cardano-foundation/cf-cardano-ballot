@@ -477,7 +477,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
           component="div"
           sx={{
             backgroundColor: theme.palette.background.default,
-              marginTop: "10px"
+            marginTop: "10px",
           }}
         >
           <Box

@@ -18,8 +18,4 @@ interface UserCacheProps {
   isVerified: boolean;
 }
 
-export type {
-  VerificationStarted,
-  UserVotes,
-  UserCacheProps
-}
+export type { VerificationStarted, UserVotes, UserCacheProps };

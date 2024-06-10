@@ -11,7 +11,7 @@
     "prettier": "npx prettier --write 'src/**/*.{ts,tsx,scss}'"
   },
   "dependencies": {
-    "@cardano-foundation/cardano-connect-with-wallet": "^0.2.6",
+    "@cardano-foundation/cardano-connect-with-wallet": "^0.2.9",
     "@commitlint/cli": "^17.6.6",
     "@commitlint/config-conventional": "^17.6.6",
     "@emotion/react": "^11.11.0",

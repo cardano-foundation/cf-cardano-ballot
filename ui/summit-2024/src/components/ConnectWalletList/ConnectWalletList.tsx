@@ -24,19 +24,15 @@ import IDWLogo from "../../assets/idw.png";
 import { env } from "../../common/constants/env";
 import { ConnectWalletFlow, NetworkType } from "./ConnectWalletList.types";
 import QRCode from "react-qr-code";
-import { clearUserInSessionStorage } from "../../utils/session";
-import { removeFromLocalStorage } from "../../utils/storage";
-import { disconnect } from "process";
-import { useConnectWalletContext } from "../ConnectWalletModal/ConnectWalletModal";
 import { eventBus } from "../../utils/EventBus";
 import theme from "../../common/styles/theme";
 
 type ConnectWalletListProps = {
   description?: string;
   meerkatAddress: string;
+    peerConnectWalletInfo: any;
   currentPath: ConnectWalletFlow;
   setCurrentPath: (currentPath: ConnectWalletFlow) => void;
-  onConnectWallet: () => void;
   closeModal: () => void;
   onConnectError: (code: Error) => void;
   handleOnPeerConnectAccept: () => void;
@@ -62,8 +58,6 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
 
   const network = resolveCardanoNetwork(env.TARGET_NETWORK);
 
-  const { meerkatAddress, peerConnectWalletInfo } = useConnectWalletContext();
-
   const { installedExtensions } = useCardano({
     limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
   });
@@ -86,20 +80,13 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
     setCurrentPath(ConnectWalletFlow.CONNECT_CIP45_WALLET);
   };
 
-  const onDisconnectWallet = () => {
-    disconnect();
-    clearUserInSessionStorage();
-    removeFromLocalStorage("cardano-peer-autoconnect-id");
-    removeFromLocalStorage("cardano-wallet-discovery-address");
-  };
-
   const handleAccept = () => {
     handleOnPeerConnectAccept();
   };
 
   const handleCopyToClipboard = async () => {
-    if (!meerkatAddress) return;
-    await copyToClipboard(meerkatAddress);
+    if (!props.meerkatAddress) return;
+    await copyToClipboard(props.meerkatAddress);
     eventBus.publish("showToast", "Copied to clipboard");
   };
 
@@ -160,7 +147,7 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
             <QRCode
               size={256}
               style={{ height: "auto", width: "200px" }}
-              value={meerkatAddress || ""}
+              value={props.meerkatAddress || ""}
               viewBox={"0 0 256 256"}
             />
           </Box>
@@ -199,9 +186,9 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
           alignItems="center"
           justifyContent="center"
         >
-          {peerConnectWalletInfo?.icon ? (
+          {props.peerConnectWalletInfo?.icon ? (
             <img
-              src={peerConnectWalletInfo?.icon || ""}
+              src={props.peerConnectWalletInfo?.icon || ""}
               alt="Wallet"
               style={{ width: "64px", marginTop: "44px" }}
             />
@@ -232,7 +219,7 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
                 lineHeight: "24px",
               }}
             >
-              {peerConnectWalletInfo?.name}{" "}
+              {props.peerConnectWalletInfo?.name}{" "}
             </span>
             wallet is trying to connect
           </Typography>
@@ -471,7 +458,7 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
             }}
             onClick={() => handleShowConnectP2PWallet()}
           >
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <Box component="div" sx={{ display: "flex", alignItems: "center", gap: 2 }}>
               <ListItemAvatar>
                 <PhonelinkOutlinedIcon sx={{ width: 24, height: 24 }} />
               </ListItemAvatar>

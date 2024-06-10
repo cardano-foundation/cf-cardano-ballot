@@ -15,7 +15,7 @@ const initialVerificationStarted: VerificationStarted = {
 const initialUserVotes: UserVotes[] = [];
 
 const initialStateData: UserCacheProps = {
-  stakeAddress: "",
+  walletIdentifier: "",
   verificationStarted: initialVerificationStarted,
   userVotes: initialUserVotes,
   isVerified: false,

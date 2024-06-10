@@ -24,7 +24,7 @@ import { eventBus } from "../../utils/EventBus";
 import { useIsPortrait } from "../../common/hooks/useIsPortrait";
 import { useAppSelector } from "../../store/hooks";
 import { getEventCache } from "../../store/reducers/eventCache";
-import { getWalletIsVerified } from "../../store/reducers/userCache";
+import {getWalletIdentifier, getWalletIsVerified} from "../../store/reducers/userCache";
 
 type ConnectWalletButtonProps = {
   label: string;
@@ -40,13 +40,22 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
   const isMobile = useIsPortrait();
   const eventCache = useAppSelector(getEventCache);
   const walletIsVerified = useAppSelector(getWalletIsVerified);
+  const walletIdentifier = useAppSelector(getWalletIdentifier);
 
   const session = getUserInSession();
   const isExpired = tokenIsExpired(session?.expiresAt);
 
-  const { stakeAddress, isConnected, enabledWallet } = useCardano({
+  const { isConnected, enabledWallet } = useCardano({
     limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
   });
+
+  console.log("walletIdentifier");
+  console.log(walletIdentifier);
+
+  console.log("isConnected");
+  console.log(isConnected);
+  console.log("enabledWallet");
+  console.log(enabledWallet);
 
   const handleConnectWallet = () => {
     if (!isConnected) {
@@ -80,8 +89,8 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
           <>
             {isMobile
               ? null
-              : stakeAddress
-              ? addressSlice(stakeAddress, 8)
+              : walletIdentifier
+              ? addressSlice(walletIdentifier, 8)
               : null}
             {walletIsVerified ? (
               <VerifiedIcon

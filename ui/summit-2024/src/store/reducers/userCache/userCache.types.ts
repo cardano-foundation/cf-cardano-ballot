@@ -12,7 +12,7 @@ interface UserVotes {
 }
 
 interface UserCacheProps {
-  stakeAddress: string;
+  walletIdentifier: string;
   verificationStarted: VerificationStarted;
   userVotes: UserVotes[];
   isVerified: boolean;

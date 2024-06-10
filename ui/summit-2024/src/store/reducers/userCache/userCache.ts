@@ -16,6 +16,9 @@ const userCacheSlice = createSlice({
     setUser: (state, action: PayloadAction<UserCacheProps>) => {
       return { ...state, ...action.payload };
     },
+    setIdentifier: (state, action: PayloadAction<string>) => {
+      state.walletIdentifier = action.payload;
+    },
     setWalletIsVerified: (state, action: PayloadAction<boolean>) => {
       state.isVerified = action.payload;
     },
@@ -31,12 +34,13 @@ const userCacheSlice = createSlice({
   },
 });
 
-const { setUser, setWalletIsVerified, setUserVotes, setVerificationStarted } =
+const { setUser, setWalletIsVerified, setUserVotes, setIdentifier, setVerificationStarted } =
   userCacheSlice.actions;
 
 const getUser = (state: RootState) => state.userCache;
 const getWalletIsVerified = (state: RootState) => state.userCache.isVerified;
 const getUserVotes = (state: RootState) => state.userCache.userVotes;
+const getWalletIdentifier = (state: RootState) => state.userCache.walletIdentifier;
 const getVerificationStarted = (state: RootState) =>
   state.userCache.verificationStarted;
 
@@ -46,9 +50,11 @@ export {
   setUser,
   setWalletIsVerified,
   setUserVotes,
+  setIdentifier,
   setVerificationStarted,
   getUser,
   getWalletIsVerified,
   getUserVotes,
+  getWalletIdentifier,
   getVerificationStarted,
 };

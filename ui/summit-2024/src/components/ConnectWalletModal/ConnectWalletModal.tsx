@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
-import { resolveCardanoNetwork } from "../../utils/utils";
+import {resolveCardanoNetwork} from "../../utils/utils";
 import { env } from "../../common/constants/env";
 import ConnectWalletList from "../ConnectWalletList/ConnectWalletList";
 import Modal from "../common/Modal/Modal";
@@ -141,21 +141,45 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
     }
   }, []);
 
-  const handleConnectWallet = (walletName: string) => {
-    console.log("handleConnectWallet");
-    console.log(walletName);
+  const handleConnectExtensionWallet = (walletName: string) => {
     connect(walletName, onConnectWallet, onConnectError);
   };
 
-  const handleAccept = () => {
+  const handleAcceptP2PWallet = () => {
     if (peerConnectWalletInfo) {
       onPeerConnectAccept();
-      connect(peerConnectWalletInfo.name).then(() => {
-        props.handleCloseConnectWalletModal();
+      connect(peerConnectWalletInfo.name).then(async () => {
+        console.log("handleAccept peerConnectWalletInfo:");
+        console.log(peerConnectWalletInfo);
 
+        if (peerConnectWalletInfo.name === "idw_p2p") {
+          // @ts-ignore
+          const start = Date.now();
+          const interval = 100;
+          const timeout = 5000;
+
+          const checkApi = setInterval(async () => {
+            // @ts-ignore
+            const api = window.cardano && window.cardano[peerConnectWalletInfo.name];
+            if (api || (Date.now() - start > timeout)) {
+              clearInterval(checkApi);
+              if (api) {
+                const enabledApi = await api.enable();
+                const connectingAid = await enabledApi.experimental.getConnectingAid();
+                dispatch(setIdentifier(connectingAid));
+              } else {
+                console.log('API no disponible después de 5 segundos.');
+              }
+              props.handleCloseConnectWalletModal();
+            }
+          }, interval);
+        } else {
+          props.handleCloseConnectWalletModal();
+        }
       });
     }
   };
+
 
   const getModalProps = () => {
     switch (connectCurrentPaths[0]) {
@@ -211,9 +235,9 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
             }
             closeModal={() => props.handleCloseConnectWalletModal()}
             connectExtensionWallet={(walletName: string) =>
-                handleConnectWallet(walletName)
+                handleConnectExtensionWallet(walletName)
             }
-            handleOnPeerConnectAccept={() => handleAccept()}
+            handleOnPeerConnectAccept={() => handleAcceptP2PWallet()}
         />
       </Modal>
     </>

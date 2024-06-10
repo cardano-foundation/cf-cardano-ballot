@@ -23,6 +23,7 @@ const addressSlice = (
 
 const walletIcon = (walletName: string) => {
   if (!walletName?.length) return;
+  // @ts-ignore
   return window.cardano && window.cardano[walletName]?.icon;
 };
 
@@ -70,6 +71,10 @@ const shortenString = (inputStr: string, x: number): string => {
   return inputStr.slice(0, x) + "...";
 };
 
+const delay = (time: number) => {
+  return new Promise(resolve => setTimeout(resolve, time));
+}
+
 export {
   addressSlice,
   walletIcon,
@@ -79,4 +84,5 @@ export {
   resolveCardanoNetwork,
   openNewTab,
   shortenString,
+  delay
 };

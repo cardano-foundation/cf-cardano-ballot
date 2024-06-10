@@ -45,20 +45,12 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
   const session = getUserInSession();
   const isExpired = tokenIsExpired(session?.expiresAt);
 
-  const { isConnected, enabledWallet } = useCardano({
+  const { enabledWallet } = useCardano({
     limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
   });
 
-  console.log("walletIdentifier");
-  console.log(walletIdentifier);
-
-  console.log("isConnected");
-  console.log(isConnected);
-  console.log("enabledWallet");
-  console.log(enabledWallet);
-
   const handleConnectWallet = () => {
-    if (!isConnected) {
+    if (!walletIdentifier || !walletIdentifier.length) {
       onOpenConnectWalletModal();
     }
   };
@@ -72,12 +64,12 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
       <Button
         sx={{ zIndex: "99", padding: isMobile ? "10px 10px" : "16px 20px" }}
         className={`main-button ${
-          isConnected ? "connected-button" : "connect-button"
+            walletIdentifier?.length ? "connected-button" : "connect-button"
         }`}
         color="inherit"
         onClick={() => handleConnectWallet()}
       >
-        {isConnected ? (
+        {walletIdentifier?.length ? (
           <Avatar
             src={enabledWallet ? walletIcon(enabledWallet) : ""}
             style={{ width: "24px", height: "24px" }}
@@ -85,7 +77,7 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
         ) : (
           <AccountBalanceWalletIcon />
         )}
-        {isConnected ? (
+        {walletIdentifier?.length ? (
           <>
             {isMobile
               ? null
@@ -109,7 +101,7 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
           <>{props.label?.length ? <span>{props.label}</span> : null}</>
         )}
       </Button>
-      {isConnected && (
+      {walletIdentifier?.length ? (
         <Box
           component="div"
           className="disconnect-wrapper"
@@ -162,7 +154,7 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
             </ListItem>
           </List>
         </Box>
-      )}
+      ) : null}
     </Box>
   );
 };

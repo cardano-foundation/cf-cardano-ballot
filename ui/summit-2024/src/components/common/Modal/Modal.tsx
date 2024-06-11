@@ -43,13 +43,12 @@ const Modal = (props: ModalProps) => {
   return (
     <Dialog
       open={isOpen}
-      onClose={(event, reason) => {
+      onClose={(_event, reason) => {
         if (disableBackdropClick && reason === "backdropClick") return;
         if (onClose) {
           onClose();
         }
       }}
-      back
       aria-labelledby={name}
       maxWidth="sm"
       sx={{

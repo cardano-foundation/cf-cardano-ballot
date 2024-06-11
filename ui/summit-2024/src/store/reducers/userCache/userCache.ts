@@ -6,6 +6,7 @@ import {
   VerificationStarted,
 } from "./userCache.types";
 import { initialStateData } from "./initialState";
+import {IWalletInfo} from "../../../components/ConnectWalletList/ConnectWalletList.types";
 
 const initialState: UserCacheProps = initialStateData;
 
@@ -18,6 +19,9 @@ const userCacheSlice = createSlice({
     },
     setIdentifier: (state, action: PayloadAction<string>) => {
       state.walletIdentifier = action.payload;
+    },
+    setConnectedWallet: (state, action: PayloadAction<IWalletInfo>) => {
+      state.connectedWallet = action.payload;
     },
     setWalletIsVerified: (state, action: PayloadAction<boolean>) => {
       state.isVerified = action.payload;
@@ -34,13 +38,14 @@ const userCacheSlice = createSlice({
   },
 });
 
-const { setUser, setWalletIsVerified, setUserVotes, setIdentifier, setVerificationStarted } =
+const { setUser, setWalletIsVerified, setUserVotes, setIdentifier, setConnectedWallet, setVerificationStarted } =
   userCacheSlice.actions;
 
 const getUser = (state: RootState) => state.userCache;
 const getWalletIsVerified = (state: RootState) => state.userCache.isVerified;
 const getUserVotes = (state: RootState) => state.userCache.userVotes;
 const getWalletIdentifier = (state: RootState) => state.userCache.walletIdentifier;
+const getConnectedWallet = (state: RootState) => state.userCache.connectedWallet;
 const getVerificationStarted = (state: RootState) =>
   state.userCache.verificationStarted;
 
@@ -52,9 +57,11 @@ export {
   setUserVotes,
   setIdentifier,
   setVerificationStarted,
+  setConnectedWallet,
   getUser,
   getWalletIsVerified,
   getUserVotes,
   getWalletIdentifier,
+  getConnectedWallet,
   getVerificationStarted,
 };

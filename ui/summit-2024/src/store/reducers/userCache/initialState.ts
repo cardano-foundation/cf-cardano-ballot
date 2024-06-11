@@ -1,4 +1,5 @@
 import {
+  ConnectedWallet,
   UserCacheProps,
   UserVotes,
   VerificationStarted,
@@ -12,10 +13,19 @@ const initialVerificationStarted: VerificationStarted = {
   expiresAt: "",
 };
 
+const initialConnectedWallet: ConnectedWallet = {
+  address: "",
+  name: "",
+  icon: "",
+  requestAutoconnect: false,
+  version: "",
+};
+
 const initialUserVotes: UserVotes[] = [];
 
 const initialStateData: UserCacheProps = {
   walletIdentifier: "",
+  connectedWallet: initialConnectedWallet,
   verificationStarted: initialVerificationStarted,
   userVotes: initialUserVotes,
   isVerified: false,

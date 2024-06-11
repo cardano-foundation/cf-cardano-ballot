@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 import {resolveCardanoNetwork} from "../../utils/utils";
 import { env } from "../../common/constants/env";
@@ -9,24 +9,12 @@ import {
   IWalletInfo,
 } from "../ConnectWalletList/ConnectWalletList.types";
 import {
-  ConnectWalletContextType,
   ConnectWalletProps,
 } from "./ConnectWalletModal.type";
 import { eventBus } from "../../utils/EventBus";
 import { useIsPortrait } from "../../common/hooks/useIsPortrait";
 import {useAppDispatch} from "../../store/hooks";
-import {setIdentifier} from "../../store/reducers/userCache";
-
-const ConnectWalletContext = createContext<ConnectWalletContextType | null>(
-  null,
-);
-
-const useConnectWalletContext = () => {
-  const context = useContext(ConnectWalletContext);
-  if (context === null)
-    throw new Error("ConnectWalletContext was not provided");
-  return context;
-};
+import {setConnectedWallet, setIdentifier} from "../../store/reducers/userCache";
 
 const ConnectWalletModal = (props: ConnectWalletProps) => {
   const dispatch = useAppDispatch();
@@ -79,8 +67,6 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
 
   useEffect(() => {
     if (stakeAddress){
-      console.log("stakeAddress");
-      console.log(stakeAddress);
       dispatch(setIdentifier(stakeAddress));
     }
   }, [stakeAddress]);
@@ -153,7 +139,6 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
         console.log(peerConnectWalletInfo);
 
         if (peerConnectWalletInfo.name === "idw_p2p") {
-          // @ts-ignore
           const start = Date.now();
           const interval = 100;
           const timeout = 5000;
@@ -167,8 +152,13 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
                 const enabledApi = await api.enable();
                 const connectingAid = await enabledApi.experimental.getConnectingAid();
                 dispatch(setIdentifier(connectingAid));
+                dispatch(setConnectedWallet(peerConnectWalletInfo));
               } else {
-                console.log('API no disponible después de 5 segundos.');
+                eventBus.publish(
+                    "showToast",
+                    `Timeout while connecting P2P ${peerConnectWalletInfo.name} wallet`,
+                    "error",
+                );
               }
               props.handleCloseConnectWalletModal();
             }
@@ -179,7 +169,6 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
       });
     }
   };
-
 
   const getModalProps = () => {
     switch (connectCurrentPaths[0]) {
@@ -244,4 +233,4 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
   );
 };
 
-export { ConnectWalletModal, useConnectWalletContext };
+export { ConnectWalletModal };

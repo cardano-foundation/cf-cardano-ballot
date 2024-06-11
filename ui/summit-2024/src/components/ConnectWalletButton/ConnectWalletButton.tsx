@@ -24,7 +24,7 @@ import { eventBus } from "../../utils/EventBus";
 import { useIsPortrait } from "../../common/hooks/useIsPortrait";
 import { useAppSelector } from "../../store/hooks";
 import { getEventCache } from "../../store/reducers/eventCache";
-import {getWalletIdentifier, getWalletIsVerified} from "../../store/reducers/userCache";
+import {getConnectedWallet, getWalletIdentifier, getWalletIsVerified} from "../../store/reducers/userCache";
 
 type ConnectWalletButtonProps = {
   label: string;
@@ -41,13 +41,16 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
   const eventCache = useAppSelector(getEventCache);
   const walletIsVerified = useAppSelector(getWalletIsVerified);
   const walletIdentifier = useAppSelector(getWalletIdentifier);
+  const connectedWallet = useAppSelector(getConnectedWallet);
 
   const session = getUserInSession();
   const isExpired = tokenIsExpired(session?.expiresAt);
 
-  const { enabledWallet } = useCardano({
+  const { enabledWallet, stakeAddress } = useCardano({
     limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
   });
+
+  const walletName = stakeAddress ? enabledWallet : connectedWallet.name;
 
   const handleConnectWallet = () => {
     if (!walletIdentifier || !walletIdentifier.length) {
@@ -71,7 +74,7 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
       >
         {walletIdentifier?.length ? (
           <Avatar
-            src={enabledWallet ? walletIcon(enabledWallet) : ""}
+            src={walletIcon(walletName)}
             style={{ width: "24px", height: "24px" }}
           />
         ) : (

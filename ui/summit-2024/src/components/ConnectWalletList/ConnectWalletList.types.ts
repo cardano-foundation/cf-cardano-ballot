@@ -1,9 +1,9 @@
 interface IWalletInfo {
-  address?: string;
+  address: string;
   name: string;
   version: string;
   icon: string;
-  requestAutoconnect?: boolean;
+  requestAutoconnect: boolean;
 }
 
 enum ConnectWalletFlow {

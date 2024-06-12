@@ -25,7 +25,6 @@ import org.cardano.foundation.voting.domain.Proposal;
 import org.cardano.foundation.voting.domain.CreateEventCommand;
 import org.cardano.foundation.voting.domain.CreateCategoryCommand;
 import com.bloxbean.cardano.client.api.exception.ApiException;
-import com.bloxbean.cardano.client.backend.api.BackendService;
 
 @ShellComponent
 @Slf4j
@@ -34,13 +33,11 @@ public class CardanoSummit2024PreProdCommands {
 
     private final static String EVENT_NAME = "CF_SUMMIT_2024";
 
-    private final BackendService backendService;
-
     private final L1SubmissionService l1SubmissionService;
 
     private final CardanoNetwork network;
 
-    @ShellMethod(key = "01_create-cf-summit03-event-pre-prod", value = "Create a CF-Summit 2024 voting event on a PRE-PROD network.")
+    @ShellMethod(key = "01_create-cf-summit04-event-pre-prod", value = "Create a CF-Summit 2024 voting event on a PRE-PROD network.")
     @Order(1)
     public String createCFSummit2024Event() {
         if (network != PREPROD) {
@@ -49,18 +46,7 @@ public class CardanoSummit2024PreProdCommands {
 
         log.info("Creating CF-Summit 2024 on a PRE-PROD network...");
 
-        long startSlot = 0;
-        try {
-            var latestBlock = backendService.getBlockService().getLatestBlock();
-            if (latestBlock.isSuccessful()) {
-                var block = latestBlock.getValue();
-                startSlot = block.getSlot();
-            }
-        } catch (ApiException e) {
-            log.error("Error fetching the latest block: " + e.getMessage());
-            // Manejo adicional o retorno si es crítico
-            return "Failed to fetch latest block data: " + e.getMessage();
-        }
+        long startSlot = 62521969;
         long endSlot = startSlot + 604800; // One week later
 
         var createEventCommand = CreateEventCommand.builder()

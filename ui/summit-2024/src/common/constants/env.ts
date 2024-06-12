@@ -12,14 +12,14 @@ const DISCORD_BOT_URL = import.meta.env.VITE_DISCORD_BOT_URL;
 const DISCORD_SUPPORT_CHANNEL_URL = import.meta.env
   .VITE_DISCORD_SUPPORT_CHANNEL_URL;
 const TARGET_NETWORK = import.meta.env.VITE_TARGET_NETWORK;
-const USING_FIXTURES = import.meta.env.VITE_USING_FIXTURES;
+const USING_FIXTURES = import.meta.env.VITE_USING_FIXTURES === "true";
 const EVENT_ID = import.meta.env.VITE_EVENT_ID;
 const APP_VERSION = import.meta.env.VITE_VERSION;
 const SUPPORTED_WALLETS = import.meta.env.VITE_SUPPORTED_WALLETS?.split(
   ",",
 ).filter(Boolean);
-const SHOW_WINNERS = import.meta.env.VITE_SHOW_WINNERS;
-const SHOW_HYDRA_TALLY = import.meta.env.VITE_SHOW_HYDRA_TALLY;
+const SHOW_WINNERS = import.meta.env.VITE_SHOW_WINNERS === "true";
+const SHOW_HYDRA_TALLY = import.meta.env.VITE_SHOW_HYDRA_TALLY === "true";
 
 export const env = {
   VOTING_APP_SERVER_URL,

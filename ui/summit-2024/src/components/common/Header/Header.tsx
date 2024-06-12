@@ -91,7 +91,7 @@ const Header = () => {
     setToastOpen(true);
   };
   const handleToastClose = (
-    event?: Event | React.SyntheticEvent<any, Event>,
+    _event?: Event | React.SyntheticEvent<any, Event>,
     reason?: string,
   ) => {
     if (reason === "clickaway") {

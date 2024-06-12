@@ -21,7 +21,7 @@ const addressSlice = (
   }
 };
 
-const walletIcon = (walletName: string) => {
+const walletIcon = (walletName: string | null) => {
   if (!walletName?.length) return;
   // @ts-ignore
   return window.cardano && window.cardano[walletName]?.icon;

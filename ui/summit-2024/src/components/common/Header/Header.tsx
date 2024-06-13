@@ -121,8 +121,6 @@ const Header = () => {
   const handleLogin = () => {};
 
   const onDisconnectWallet = () => {
-    console.log("onDisconnectWallet");
-    dispatch(setWalletIdentifier(""));
     dispatch(resetUser());
     disconnect();
   };

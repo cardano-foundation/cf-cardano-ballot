@@ -50,18 +50,13 @@ export const sendSmsCode = async (
   stakeAddress: string,
   phoneNumber: string,
 ) => {
-  console.log("startVerification");
-  console.log(eventId);
-  console.log(stakeAddress);
-  console.log(phoneNumber);
-
   return await doRequest<VerificationStarts>(
     HttpMethods.POST,
     `${START_VERIFICATION_URL}`,
     {
       ...DEFAULT_CONTENT_TYPE_HEADERS,
     },
-    JSON.stringify({ eventId, stakeAddress, phoneNumber: "+34628000027" }),
+    JSON.stringify({ eventId, stakeAddress, phoneNumber }),
   );
 };
 

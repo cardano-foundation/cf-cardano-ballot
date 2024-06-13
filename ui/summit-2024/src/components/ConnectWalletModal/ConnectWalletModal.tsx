@@ -9,14 +9,14 @@ import {
   IWalletInfo,
 } from "../ConnectWalletList/ConnectWalletList.types";
 import { ConnectWalletProps } from "./ConnectWalletModal.type";
-import {eventBus, EventName} from "../../utils/EventBus";
+import { eventBus, EventName } from "../../utils/EventBus";
 import { useIsPortrait } from "../../common/hooks/useIsPortrait";
 import { useAppDispatch } from "../../store/hooks";
 import {
   setConnectedWallet,
   setIdentifier,
 } from "../../store/reducers/userCache";
-import {ToastType} from "../common/Toast/Toast.types";
+import { ToastType } from "../common/Toast/Toast.types";
 
 const ConnectWalletModal = (props: ConnectWalletProps) => {
   const dispatch = useAppDispatch();
@@ -101,7 +101,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
           () => {
             props.handleCloseConnectWalletModal();
             eventBus.publish(
-                EventName.ShowToast,
+              EventName.ShowToast,
               `${name} Wallet connected successfully`,
             );
           },
@@ -114,7 +114,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
       const onApiEject = (name: string): void => {
         setPeerConnectWalletInfo(undefined);
         eventBus.publish(
-            EventName.ShowToast,
+          EventName.ShowToast,
           `${name} Wallet disconnected successfully`,
         );
         disconnect();
@@ -155,9 +155,8 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
           const timeout = 5000;
 
           const checkApi = setInterval(async () => {
-
             const api =
-                // @ts-ignore
+              // @ts-ignore
               window.cardano && window.cardano[peerConnectWalletInfo.name];
             if (api || Date.now() - start > timeout) {
               clearInterval(checkApi);
@@ -169,9 +168,9 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
                 dispatch(setConnectedWallet(peerConnectWalletInfo));
               } else {
                 eventBus.publish(
-                    EventName.ShowToast,
+                  EventName.ShowToast,
                   `Timeout while connecting P2P ${peerConnectWalletInfo.name} wallet`,
-                    ToastType.Error
+                  ToastType.Error,
                 );
               }
               props.handleCloseConnectWalletModal();

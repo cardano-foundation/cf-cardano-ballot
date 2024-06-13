@@ -40,7 +40,7 @@ import { VerifyWalletFlow } from "./VerifyWalletModal.type";
 import { env } from "../../common/constants/env";
 import { CustomCheckBox } from "../common/CustomCheckBox/CustomCheckBox";
 import { validatePhoneNumberLength } from "libphonenumber-js";
-import {eventBus, EventName} from "../../utils/EventBus";
+import { eventBus, EventName } from "../../utils/EventBus";
 import {
   getVerificationStarted,
   getWalletIdentifier,
@@ -49,7 +49,7 @@ import {
 } from "../../store/reducers/userCache";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { VerificationStarted } from "../../store/reducers/userCache/userCache.types";
-import {ToastType} from "../common/Toast/Toast.types";
+import { ToastType } from "../common/Toast/Toast.types";
 
 // TODO: env.
 const excludedCountries: MuiTelInputCountry[] | undefined = [];
@@ -132,7 +132,7 @@ const VerifyWalletModal = () => {
       setPhoneCodeIsBeenSending(true);
       sendSmsCode(env.EVENT_ID, walletIdentifier, phone.trim().replace(" ", ""))
         .then((response: VerificationStarted) => {
-            handleSetCurrentPath(VerifyWalletFlow.CONFIRM_CODE);
+          handleSetCurrentPath(VerifyWalletFlow.CONFIRM_CODE);
           dispatch(
             setVerificationStarted({
               walletIdentifier,
@@ -142,7 +142,6 @@ const VerifyWalletModal = () => {
           setPhoneCodeIsSent(true);
           setCheckImNotARobot(false);
           setPhoneCodeIsBeenSending(false);
-
         })
         .catch(() => {
           setPhoneCodeIsBeenSending(false);
@@ -165,15 +164,18 @@ const VerifyWalletModal = () => {
         if (response.verified) {
           reset();
           setPhoneCodeIsBeenConfirming(false);
-          eventBus.publish(EventName.ShowToast, "Phone number verified successfully");
+          eventBus.publish(
+            EventName.ShowToast,
+            "Phone number verified successfully",
+          );
           setIsOpen(false);
         } else {
           setPhoneCodeShowError(true);
           setPhoneCodeIsBeenConfirming(false);
           eventBus.publish(
-              EventName.ShowToast,
+            EventName.ShowToast,
             "Phone number verified successfully",
-              ToastType.Error
+            ToastType.Error,
           );
           handleSetCurrentPath(VerifyWalletFlow.DID_NOT_RECEIVE_CODE);
         }

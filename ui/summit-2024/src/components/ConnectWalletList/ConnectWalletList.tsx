@@ -24,7 +24,7 @@ import IDWLogo from "../../assets/idw.png";
 import { env } from "../../common/constants/env";
 import { ConnectWalletFlow, NetworkType } from "./ConnectWalletList.types";
 import QRCode from "react-qr-code";
-import {eventBus, EventName} from "../../utils/EventBus";
+import { eventBus, EventName } from "../../utils/EventBus";
 import theme from "../../common/styles/theme";
 
 type ConnectWalletListProps = {

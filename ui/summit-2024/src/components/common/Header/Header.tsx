@@ -4,7 +4,7 @@ import { AppBar, Box, Toolbar, Typography, IconButton } from "@mui/material";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import Logo from "../../../assets/logo.svg";
 import { useIsPortrait } from "../../../common/hooks/useIsPortrait";
-import {eventBus, EventName} from "../../../utils/EventBus";
+import { eventBus, EventName } from "../../../utils/EventBus";
 import { ToastType } from "../Toast/Toast.types";
 import { ConnectWalletModal } from "../../ConnectWalletModal/ConnectWalletModal";
 import { Toast } from "../Toast/Toast";
@@ -76,12 +76,24 @@ const Header = () => {
     const closeConnectWalletModal = () => {
       setShowConnectWalletModal(false);
     };
-    eventBus.subscribe(EventName.OpenConnectWalletModal, openConnectWalletModal);
-    eventBus.subscribe(EventName.CloseConnectWalletModal, closeConnectWalletModal);
+    eventBus.subscribe(
+      EventName.OpenConnectWalletModal,
+      openConnectWalletModal,
+    );
+    eventBus.subscribe(
+      EventName.CloseConnectWalletModal,
+      closeConnectWalletModal,
+    );
 
     return () => {
-      eventBus.unsubscribe(EventName.OpenConnectWalletModal, openConnectWalletModal);
-      eventBus.unsubscribe(EventName.CloseConnectWalletModal, closeConnectWalletModal);
+      eventBus.unsubscribe(
+        EventName.OpenConnectWalletModal,
+        openConnectWalletModal,
+      );
+      eventBus.unsubscribe(
+        EventName.CloseConnectWalletModal,
+        closeConnectWalletModal,
+      );
     };
   }, []);
 

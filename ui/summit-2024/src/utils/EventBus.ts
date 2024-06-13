@@ -28,6 +28,4 @@ class EventBus {
 
 export const eventBus = new EventBus();
 
-export {
-  EventName
-}
+export { EventName };

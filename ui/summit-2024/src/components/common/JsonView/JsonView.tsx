@@ -5,7 +5,7 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import LaunchIcon from "@mui/icons-material/Launch";
 import theme from "../../../common/styles/theme";
-import {eventBus, EventName} from "../../../utils/EventBus";
+import { eventBus, EventName } from "../../../utils/EventBus";
 
 interface JsonRendererProps {
   data: string;

@@ -36,7 +36,7 @@ interface PhoneNumberCodeConfirmation {
   verified: boolean;
 }
 
-export {
+export type {
   PhoneNumberCodeConfirmation,
   VerificationStarts,
   ProposalPresentationExtended,

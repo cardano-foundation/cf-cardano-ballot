@@ -24,13 +24,13 @@ import IDWLogo from "../../assets/idw.png";
 import { env } from "../../common/constants/env";
 import { ConnectWalletFlow, NetworkType } from "./ConnectWalletList.types";
 import QRCode from "react-qr-code";
-import { eventBus } from "../../utils/EventBus";
+import {eventBus, EventName} from "../../utils/EventBus";
 import theme from "../../common/styles/theme";
 
 type ConnectWalletListProps = {
   description?: string;
   meerkatAddress: string;
-    peerConnectWalletInfo: any;
+  peerConnectWalletInfo: any;
   currentPath: ConnectWalletFlow;
   setCurrentPath: (currentPath: ConnectWalletFlow) => void;
   closeModal: () => void;
@@ -87,7 +87,7 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
   const handleCopyToClipboard = async () => {
     if (!props.meerkatAddress) return;
     await copyToClipboard(props.meerkatAddress);
-    eventBus.publish("showToast", "Copied to clipboard");
+    eventBus.publish(EventName.ShowToast, "Copied to clipboard");
   };
 
   const renderContent = () => {
@@ -458,7 +458,10 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
             }}
             onClick={() => handleShowConnectP2PWallet()}
           >
-            <Box component="div" sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <Box
+              component="div"
+              sx={{ display: "flex", alignItems: "center", gap: 2 }}
+            >
               <ListItemAvatar>
                 <PhonelinkOutlinedIcon sx={{ width: 24, height: 24 }} />
               </ListItemAvatar>

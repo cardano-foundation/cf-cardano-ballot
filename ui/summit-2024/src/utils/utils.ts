@@ -72,8 +72,8 @@ const shortenString = (inputStr: string, x: number): string => {
 };
 
 const delay = (time: number) => {
-  return new Promise(resolve => setTimeout(resolve, time));
-}
+  return new Promise((resolve) => setTimeout(resolve, time));
+};
 
 export {
   addressSlice,
@@ -84,5 +84,5 @@ export {
   resolveCardanoNetwork,
   openNewTab,
   shortenString,
-  delay
+  delay,
 };

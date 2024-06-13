@@ -1,4 +1,4 @@
-import {IWalletInfo} from "../../../components/ConnectWalletList/ConnectWalletList.types";
+import { IWalletInfo } from "../../../components/ConnectWalletList/ConnectWalletList.types";
 
 interface VerificationStarted {
   eventId: string;
@@ -6,6 +6,9 @@ interface VerificationStarted {
   requestId: string;
   createdAt: string;
   expiresAt: string;
+}
+interface VerificationStartedExtended extends VerificationStarted {
+  walletIdentifier: string;
 }
 
 interface UserVotes {
@@ -21,4 +24,9 @@ interface UserCacheProps {
   isVerified: boolean;
 }
 
-export type { VerificationStarted, UserVotes, UserCacheProps };
+export type {
+  VerificationStarted,
+  VerificationStartedExtended,
+  UserVotes,
+  UserCacheProps,
+};

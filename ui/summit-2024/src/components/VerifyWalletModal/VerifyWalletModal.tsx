@@ -20,12 +20,7 @@ import {
 } from "mui-tel-input";
 import discordLogo from "../../common/resources/images/discord-icon.svg";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  PhoneNumberCodeConfirmation,
-  VerificationStarts,
-} from "../../store2/types";
-import { RootState } from "../../store";
+import { PhoneNumberCodeConfirmation } from "../../store2/types";
 import { useLocation } from "react-router-dom";
 import {
   getSignedMessagePromise,
@@ -45,23 +40,27 @@ import { VerifyWalletFlow } from "./VerifyWalletModal.type";
 import { env } from "../../common/constants/env";
 import { CustomCheckBox } from "../common/CustomCheckBox/CustomCheckBox";
 import { validatePhoneNumberLength } from "libphonenumber-js";
-import { eventBus } from "../../utils/EventBus";
+import {eventBus, EventName} from "../../utils/EventBus";
 import {
   getVerificationStarted,
+  getWalletIdentifier,
   setVerificationStarted,
   setWalletIsVerified,
 } from "../../store/reducers/userCache";
-import { useAppSelector } from "../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { VerificationStarted } from "../../store/reducers/userCache/userCache.types";
+import {ToastType} from "../common/Toast/Toast.types";
 
 // TODO: env.
 const excludedCountries: MuiTelInputCountry[] | undefined = [];
 
-type VerifyWalletProps = {};
-const VerifyWalletModal = (props: VerifyWalletProps) => {
+const VerifyWalletModal = () => {
   const theme = useTheme();
   const [verifyCurrentPaths, setVerifyCurrentPaths] = useState<
     VerifyWalletFlow[]
   >([VerifyWalletFlow.INTRO]);
+  const walletIdentifier = useAppSelector(getWalletIdentifier);
+  const dispatch = useAppDispatch();
 
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -76,15 +75,11 @@ const VerifyWalletModal = (props: VerifyWalletProps) => {
   const [phoneCodeShowError, setPhoneCodeShowError] = useState<boolean>(false);
   const [checkImNotARobot, setCheckImNotARobot] = useState<boolean>(false);
   const [isPhoneInputDisabled] = useState<boolean>(false);
-  const dispatch = useDispatch();
-  const { stakeAddress, signMessage } = useCardano({
+  const { signMessage } = useCardano({
     limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
   });
   const userVerificationStarted = useAppSelector(getVerificationStarted);
 
-  const userStartsVerificationByStakeAddress =
-    Object.keys(userVerificationStarted).length !== 0 &&
-    userVerificationStarted[stakeAddress];
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const location = useLocation();
@@ -133,35 +128,23 @@ const VerifyWalletModal = (props: VerifyWalletProps) => {
   };
 
   const handleSendCode = async () => {
-    console.log("handleSendCode");
-    handleSetCurrentPath(VerifyWalletFlow.CONFIRM_CODE);
     if (matchIsValidTel(phone) && checkImNotARobot) {
-      console.log("setPhoneCodeIsBeenSending");
-      const phoneNumber = phone.trim().replace(" ", "");
-      console.log("phoneNumber");
-      console.log(phone);
-      console.log(phoneNumber);
-      console.log(phone.trim().replace(" ", ""));
       setPhoneCodeIsBeenSending(true);
-      sendSmsCode(
-        env.EVENT_ID,
-        stakeAddress,
-        phone.trim().replace(" ", ""),
-      )
-        .then((response: VerificationStarts) => {
+      sendSmsCode(env.EVENT_ID, walletIdentifier, phone.trim().replace(" ", ""))
+        .then((response: VerificationStarted) => {
+            handleSetCurrentPath(VerifyWalletFlow.CONFIRM_CODE);
           dispatch(
             setVerificationStarted({
-              stakeAddress,
-              verificationStarts: response,
+              walletIdentifier,
+              ...response,
             }),
           );
           setPhoneCodeIsSent(true);
           setCheckImNotARobot(false);
           setPhoneCodeIsBeenSending(false);
+
         })
-        .catch((error) => {
-            console.log("error");
-            console.log(error);
+        .catch(() => {
           setPhoneCodeIsBeenSending(false);
         });
     }
@@ -169,13 +152,12 @@ const VerifyWalletModal = (props: VerifyWalletProps) => {
 
   const handleVerifyPhoneCode = () => {
     setPhoneCodeIsBeenConfirming(true);
-    handleSetCurrentPath(VerifyWalletFlow.DID_NOT_RECEIVE_CODE);
 
     confirmPhoneNumberCode(
       env.EVENT_ID,
-      stakeAddress,
+      walletIdentifier,
       phone.trim().replace(" ", ""),
-      userStartsVerificationByStakeAddress.requestId,
+      userVerificationStarted.requestId,
       codes.join(""),
     )
       .then((response: PhoneNumberCodeConfirmation) => {
@@ -183,10 +165,17 @@ const VerifyWalletModal = (props: VerifyWalletProps) => {
         if (response.verified) {
           reset();
           setPhoneCodeIsBeenConfirming(false);
+          eventBus.publish(EventName.ShowToast, "Phone number verified successfully");
+          setIsOpen(false);
         } else {
-          // onError('SMS code not valid');
           setPhoneCodeShowError(true);
           setPhoneCodeIsBeenConfirming(false);
+          eventBus.publish(
+              EventName.ShowToast,
+            "Phone number verified successfully",
+              ToastType.Error
+          );
+          handleSetCurrentPath(VerifyWalletFlow.DID_NOT_RECEIVE_CODE);
         }
       })
       .catch(() => {
@@ -197,18 +186,18 @@ const VerifyWalletModal = (props: VerifyWalletProps) => {
   };
 
   const handleVerifyDiscord = async () => {
-    if (action === "verification" && discordSecret.includes("|")) {
+    if (action === "verification" && discordSecret?.includes("|")) {
       signMessagePromisified(discordSecret.trim())
         .then((signedMessaged: SignedWeb3Request) => {
           const parsedSecret = discordSecret.split("|")[1];
           verifyDiscord(
             env.EVENT_ID,
-            stakeAddress,
+            walletIdentifier,
             parsedSecret,
             signedMessaged,
           )
             .then((response: { verified: boolean }) => {
-              dispatch(setWalletIsVerified({ isVerified: response.verified }));
+              dispatch(setWalletIsVerified(response.verified));
               if (response.verified) {
                 reset();
               } else {

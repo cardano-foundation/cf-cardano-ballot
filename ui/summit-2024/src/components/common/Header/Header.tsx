@@ -4,7 +4,7 @@ import { AppBar, Box, Toolbar, Typography, IconButton } from "@mui/material";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import Logo from "../../../assets/logo.svg";
 import { useIsPortrait } from "../../../common/hooks/useIsPortrait";
-import { eventBus } from "../../../utils/EventBus";
+import {eventBus, EventName} from "../../../utils/EventBus";
 import { ToastType } from "../Toast/Toast.types";
 import { ConnectWalletModal } from "../../ConnectWalletModal/ConnectWalletModal";
 import { Toast } from "../Toast/Toast";
@@ -16,11 +16,11 @@ import { ConnectWalletButton } from "../../ConnectWalletButton/ConnectWalletButt
 import { ROUTES } from "../../../routes";
 import { RightMenu } from "./RightMenu/RightMenu";
 import theme from "../../../common/styles/theme";
-import {useAppDispatch} from "../../../store/hooks";
-import {setIdentifier} from "../../../store/reducers/userCache";
+import { useAppDispatch } from "../../../store/hooks";
+import { setIdentifier } from "../../../store/reducers/userCache";
 
 const Header = () => {
-    const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const [showConnectWalletModal, setShowConnectWalletModal] =
@@ -62,10 +62,10 @@ const Header = () => {
     const showToastListener = (message: string, type?: ToastType) => {
       showToast(message, type || ToastType.Common);
     };
-    eventBus.subscribe("showToast", showToastListener);
+    eventBus.subscribe(EventName.ShowToast, showToastListener);
 
     return () => {
-      eventBus.unsubscribe("showToast", showToastListener);
+      eventBus.unsubscribe(EventName.ShowToast, showToastListener);
     };
   }, []);
 
@@ -76,12 +76,12 @@ const Header = () => {
     const closeConnectWalletModal = () => {
       setShowConnectWalletModal(false);
     };
-    eventBus.subscribe("openConnectWalletModal", openConnectWalletModal);
-    eventBus.subscribe("closeConnectWalletModal", closeConnectWalletModal);
+    eventBus.subscribe(EventName.OpenConnectWalletModal, openConnectWalletModal);
+    eventBus.subscribe(EventName.CloseConnectWalletModal, closeConnectWalletModal);
 
     return () => {
-      eventBus.unsubscribe("openConnectWalletModal", openConnectWalletModal);
-      eventBus.unsubscribe("closeConnectWalletModal", closeConnectWalletModal);
+      eventBus.unsubscribe(EventName.OpenConnectWalletModal, openConnectWalletModal);
+      eventBus.unsubscribe(EventName.CloseConnectWalletModal, closeConnectWalletModal);
     };
   }, []);
 

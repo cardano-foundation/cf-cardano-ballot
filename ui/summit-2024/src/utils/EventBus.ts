@@ -1,5 +1,11 @@
 import { EventEmitter } from "events";
 
+enum EventName {
+  ShowToast = "showToast",
+  OpenConnectWalletModal = "openConnectWalletModal",
+  CloseConnectWalletModal = "closeConnectWalletModal",
+}
+
 class EventBus {
   eventEmitter: EventEmitter;
 
@@ -21,3 +27,7 @@ class EventBus {
 }
 
 export const eventBus = new EventBus();
+
+export {
+  EventName
+}

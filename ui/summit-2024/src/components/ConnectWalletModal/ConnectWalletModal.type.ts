@@ -1,4 +1,3 @@
-
 type ConnectWalletProps = {
   showPeerConnect: boolean;
   handleCloseConnectWalletModal: (open?: boolean) => void;

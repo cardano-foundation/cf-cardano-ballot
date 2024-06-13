@@ -5,6 +5,7 @@ enum ToastType {
   Error = "error",
   Common = "common",
 }
+
 type ToastProps = {
   message: string;
   isOpen: boolean;
@@ -20,4 +21,5 @@ type ToastStylesProps = {
   icon?: ReactElement;
 };
 
-export { ToastType, ToastProps, ToastStylesProps };
+export type { ToastProps, ToastStylesProps };
+export { ToastType };

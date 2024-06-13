@@ -5,7 +5,7 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import LaunchIcon from "@mui/icons-material/Launch";
 import theme from "../../../common/styles/theme";
-import { eventBus } from "../../../utils/EventBus";
+import {eventBus, EventName} from "../../../utils/EventBus";
 
 interface JsonRendererProps {
   data: string;
@@ -18,7 +18,7 @@ const JsonView: React.FC<JsonRendererProps> = ({ data, sx }) => {
   const handleCopy = async () => {
     await copyToClipboard(data);
     setCopied(true);
-    eventBus.publish("showToast", "Copied to clipboard successfully");
+    eventBus.publish(EventName.ShowToast, "Copied to clipboard successfully");
     setTimeout(() => setCopied(false), 1000);
   };
 

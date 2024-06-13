@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
-import {resolveCardanoNetwork} from "../../utils/utils";
+import { resolveCardanoNetwork } from "../../utils/utils";
 import { env } from "../../common/constants/env";
 import ConnectWalletList from "../ConnectWalletList/ConnectWalletList";
 import Modal from "../common/Modal/Modal";
@@ -8,13 +8,15 @@ import {
   ConnectWalletFlow,
   IWalletInfo,
 } from "../ConnectWalletList/ConnectWalletList.types";
-import {
-  ConnectWalletProps,
-} from "./ConnectWalletModal.type";
-import { eventBus } from "../../utils/EventBus";
+import { ConnectWalletProps } from "./ConnectWalletModal.type";
+import {eventBus, EventName} from "../../utils/EventBus";
 import { useIsPortrait } from "../../common/hooks/useIsPortrait";
-import {useAppDispatch} from "../../store/hooks";
-import {setConnectedWallet, setIdentifier} from "../../store/reducers/userCache";
+import { useAppDispatch } from "../../store/hooks";
+import {
+  setConnectedWallet,
+  setIdentifier,
+} from "../../store/reducers/userCache";
+import {ToastType} from "../common/Toast/Toast.types";
 
 const ConnectWalletModal = (props: ConnectWalletProps) => {
   const dispatch = useAppDispatch();
@@ -28,19 +30,26 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
   const [onPeerConnectAccept, setOnPeerConnectAccept] = useState(() => () => {
     /*TODO */
   });
+  // @ts-ignore
   const [onPeerConnectReject, setOnPeerConnectReject] = useState(() => () => {
     /*TODO */
   });
 
-  const { connect, dAppConnect, meerkatAddress, initDappConnect, disconnect, stakeAddress } =
-    useCardano({
-      limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
-    });
+  const {
+    connect,
+    dAppConnect,
+    meerkatAddress,
+    initDappConnect,
+    disconnect,
+    stakeAddress,
+  } = useCardano({
+    limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
+  });
 
   const isMobile = useIsPortrait();
 
   const onConnectWalletError = (e: Error) => {
-    eventBus.publish("showToast", e.message, "error");
+    eventBus.publish(EventName.ShowToast, e.message, ToastType.Error);
   };
 
   const handleOpenPeerConnect = () => {};
@@ -57,16 +66,16 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
   };
 
   const onConnectWallet = () => {
-    eventBus.publish("closeConnectWalletModal");
-    eventBus.publish("showToast", "Wallet connected successfully");
+    eventBus.publish(EventName.CloseConnectWalletModal);
+    eventBus.publish(EventName.ShowToast, "Wallet connected successfully");
   };
 
   const onConnectError = (e: Error) => {
-    eventBus.publish("showToast", e.message, "error");
+    eventBus.publish(EventName.ShowToast, e.message, ToastType.Error);
   };
 
   useEffect(() => {
-    if (stakeAddress){
+    if (stakeAddress) {
       dispatch(setIdentifier(stakeAddress));
     }
   }, [stakeAddress]);
@@ -91,27 +100,29 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
           name,
           () => {
             props.handleCloseConnectWalletModal();
-            eventBus.publish("showToast",`${name} Wallet connected successfully`);
-          },
-          (e:Error) => {
             eventBus.publish(
-              "showToast",
-              e.message,
-              "error",
+                EventName.ShowToast,
+              `${name} Wallet connected successfully`,
             );
+          },
+          (e: Error) => {
+            eventBus.publish(EventName.ShowToast, e.message, ToastType.Error);
           },
         ).catch((e) => console.error(e));
       };
 
       const onApiEject = (name: string): void => {
         setPeerConnectWalletInfo(undefined);
-        eventBus.publish("showToast", `${name} Wallet disconnected successfully`);
+        eventBus.publish(
+            EventName.ShowToast,
+          `${name} Wallet disconnected successfully`,
+        );
         disconnect();
       };
 
       const onP2PConnect = (): void => {
-        if (peerConnectWalletInfo?.address){
-          dispatch(setIdentifier(peerConnectWalletInfo.address))
+        if (peerConnectWalletInfo?.address) {
+          dispatch(setIdentifier(peerConnectWalletInfo.address));
         }
       };
 
@@ -144,20 +155,23 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
           const timeout = 5000;
 
           const checkApi = setInterval(async () => {
-            // @ts-ignore
-            const api = window.cardano && window.cardano[peerConnectWalletInfo.name];
-            if (api || (Date.now() - start > timeout)) {
+
+            const api =
+                // @ts-ignore
+              window.cardano && window.cardano[peerConnectWalletInfo.name];
+            if (api || Date.now() - start > timeout) {
               clearInterval(checkApi);
               if (api) {
                 const enabledApi = await api.enable();
-                const connectingAid = await enabledApi.experimental.getConnectingAid();
+                const connectingAid =
+                  await enabledApi.experimental.getConnectingAid();
                 dispatch(setIdentifier(connectingAid));
                 dispatch(setConnectedWallet(peerConnectWalletInfo));
               } else {
                 eventBus.publish(
-                    "showToast",
-                    `Timeout while connecting P2P ${peerConnectWalletInfo.name} wallet`,
-                    "error",
+                    EventName.ShowToast,
+                  `Timeout while connecting P2P ${peerConnectWalletInfo.name} wallet`,
+                    ToastType.Error
                 );
               }
               props.handleCloseConnectWalletModal();
@@ -197,36 +211,34 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
   return (
     <>
       <Modal
-          id="connect-wallet-modal"
-          isOpen={props.showPeerConnect}
-          name="connect-wallet-modal"
-          title={
-            connectCurrentPaths[0] === ConnectWalletFlow.CONNECT_IDENTITY_WALLET
-                ? "Connect Identity Wallet"
-                : "Connect Wallet"
-          }
-          onClose={() => props.handleCloseConnectWalletModal()}
-          width={isMobile ? "auto" : "450px"}
-          backButton={
-              connectCurrentPaths[0] !== ConnectWalletFlow.SELECT_WALLET
-          }
-          onBack={() => handleBack()}
+        id="connect-wallet-modal"
+        isOpen={props.showPeerConnect}
+        name="connect-wallet-modal"
+        title={
+          connectCurrentPaths[0] === ConnectWalletFlow.CONNECT_IDENTITY_WALLET
+            ? "Connect Identity Wallet"
+            : "Connect Wallet"
+        }
+        onClose={() => props.handleCloseConnectWalletModal()}
+        width={isMobile ? "auto" : "450px"}
+        backButton={connectCurrentPaths[0] !== ConnectWalletFlow.SELECT_WALLET}
+        onBack={() => handleBack()}
       >
         <ConnectWalletList
-            description={modalProps.title}
-            meerkatAddress={meerkatAddress}
-            peerConnectWalletInfo={peerConnectWalletInfo}
-            onConnectError={(error: Error) => onConnectWalletError(error)}
-            onOpenPeerConnect={() => handleOpenPeerConnect()}
-            currentPath={connectCurrentPaths[0]}
-            setCurrentPath={(currentPath: ConnectWalletFlow) =>
-                setCurrentPath(currentPath)
-            }
-            closeModal={() => props.handleCloseConnectWalletModal()}
-            connectExtensionWallet={(walletName: string) =>
-                handleConnectExtensionWallet(walletName)
-            }
-            handleOnPeerConnectAccept={() => handleAcceptP2PWallet()}
+          description={modalProps.title}
+          meerkatAddress={meerkatAddress}
+          peerConnectWalletInfo={peerConnectWalletInfo}
+          onConnectError={(error: Error) => onConnectWalletError(error)}
+          onOpenPeerConnect={() => handleOpenPeerConnect()}
+          currentPath={connectCurrentPaths[0]}
+          setCurrentPath={(currentPath: ConnectWalletFlow) =>
+            setCurrentPath(currentPath)
+          }
+          closeModal={() => props.handleCloseConnectWalletModal()}
+          connectExtensionWallet={(walletName: string) =>
+            handleConnectExtensionWallet(walletName)
+          }
+          handleOnPeerConnectAccept={() => handleAcceptP2PWallet()}
         />
       </Modal>
     </>

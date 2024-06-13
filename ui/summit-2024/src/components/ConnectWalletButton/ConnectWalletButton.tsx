@@ -24,7 +24,11 @@ import { eventBus } from "../../utils/EventBus";
 import { useIsPortrait } from "../../common/hooks/useIsPortrait";
 import { useAppSelector } from "../../store/hooks";
 import { getEventCache } from "../../store/reducers/eventCache";
-import {getConnectedWallet, getWalletIdentifier, getWalletIsVerified} from "../../store/reducers/userCache";
+import {
+  getConnectedWallet,
+  getWalletIdentifier,
+  getWalletIsVerified,
+} from "../../store/reducers/userCache";
 
 type ConnectWalletButtonProps = {
   label: string;
@@ -67,7 +71,7 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
       <Button
         sx={{ zIndex: "99", padding: isMobile ? "10px 10px" : "16px 20px" }}
         className={`main-button ${
-            walletIdentifier?.length ? "connected-button" : "connect-button"
+          walletIdentifier?.length ? "connected-button" : "connect-button"
         }`}
         color="inherit"
         onClick={() => handleConnectWallet()}

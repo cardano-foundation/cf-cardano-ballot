@@ -75,12 +75,6 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
   };
 
   useEffect(() => {
-    if (stakeAddress) {
-      dispatch(setWalletIdentifier(stakeAddress));
-    }
-  }, [stakeAddress]);
-
-  useEffect(() => {
     if (dAppConnect.current === null) {
       const verifyConnection = (
         walletInfo: IWalletInfo,

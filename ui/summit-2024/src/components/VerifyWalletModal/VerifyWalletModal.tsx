@@ -130,7 +130,7 @@ const VerifyWalletModal = () => {
   const handleSendCode = async () => {
     if (matchIsValidTel(phone) && checkImNotARobot) {
       setPhoneCodeIsBeenSending(true);
-      sendSmsCode(env.EVENT_ID, walletIdentifier, phone.trim().replace(" ", ""))
+      sendSmsCode(walletIdentifier, phone.trim().replace(" ", ""))
         .then((response: VerificationStarted) => {
           handleSetCurrentPath(VerifyWalletFlow.CONFIRM_CODE);
           dispatch(
@@ -153,7 +153,6 @@ const VerifyWalletModal = () => {
     setPhoneCodeIsBeenConfirming(true);
 
     confirmPhoneNumberCode(
-      env.EVENT_ID,
       walletIdentifier,
       phone.trim().replace(" ", ""),
       userVerificationStarted.requestId,
@@ -193,7 +192,6 @@ const VerifyWalletModal = () => {
         .then((signedMessaged: SignedWeb3Request) => {
           const parsedSecret = discordSecret.split("|")[1];
           verifyDiscord(
-            env.EVENT_ID,
             walletIdentifier,
             parsedSecret,
             signedMessaged,

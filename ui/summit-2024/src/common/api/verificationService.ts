@@ -36,17 +36,16 @@ export const verifyVote = async (payload: {
     JSON.stringify(payload),
   );
 
-export const getIsVerified = async (eventId: string, stakeAddress: string) =>
+export const getIsVerified = async (walletIdentifier: string) =>
   await doRequest<{ verified: boolean }>(
     HttpMethods.GET,
-    `${USER_VERIFICATION_URL}/${eventId}/${stakeAddress}`,
+    `${USER_VERIFICATION_URL}/${env.EVENT_ID}/${walletIdentifier}`,
     {
       ...DEFAULT_CONTENT_TYPE_HEADERS,
     },
   );
 
 export const sendSmsCode = async (
-  eventId: string,
   stakeAddress: string,
   phoneNumber: string,
 ) => {
@@ -56,12 +55,11 @@ export const sendSmsCode = async (
     {
       ...DEFAULT_CONTENT_TYPE_HEADERS,
     },
-    JSON.stringify({ eventId, stakeAddress, phoneNumber }),
+    JSON.stringify({ eventId: env.EVENT_ID, stakeAddress, phoneNumber }),
   );
 };
 
 export const confirmPhoneNumberCode = async (
-  eventId: string,
   stakeAddress: string,
   phoneNumber: string,
   requestId: string,
@@ -74,7 +72,7 @@ export const confirmPhoneNumberCode = async (
       ...DEFAULT_CONTENT_TYPE_HEADERS,
     },
     JSON.stringify({
-      eventId,
+        eventId: env.EVENT_ID,
       stakeAddress,
       phoneNumber,
       requestId,
@@ -83,7 +81,6 @@ export const confirmPhoneNumberCode = async (
   );
 
 export const verifyDiscord = async (
-  eventId: string,
   stakeAddress: string,
   secret: string,
   signedMessaged: SignedWeb3Request,
@@ -94,6 +91,6 @@ export const verifyDiscord = async (
     {
       ...DEFAULT_CONTENT_TYPE_HEADERS,
     },
-    JSON.stringify({ eventId, stakeAddress, secret, ...signedMessaged }),
+    JSON.stringify({ eventId: env.EVENT_ID, stakeAddress, secret, ...signedMessaged }),
   );
 };

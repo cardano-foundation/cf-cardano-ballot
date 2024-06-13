@@ -1,5 +1,13 @@
 import { IWalletInfo } from "../../../components/ConnectWalletList/ConnectWalletList.types";
 
+interface ConnectedWallet {
+  address: string;
+  name: string;
+  icon: string;
+  requestAutoconnect: boolean;
+  version: string;
+}
+
 interface VerificationStarted {
   eventId: string;
   stakeAddress: string;
@@ -29,4 +37,5 @@ export type {
   VerificationStartedExtended,
   UserVotes,
   UserCacheProps,
+  ConnectedWallet
 };

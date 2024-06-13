@@ -17,7 +17,7 @@ import { ROUTES } from "../../../routes";
 import { RightMenu } from "./RightMenu/RightMenu";
 import theme from "../../../common/styles/theme";
 import { useAppDispatch } from "../../../store/hooks";
-import { setIdentifier } from "../../../store/reducers/userCache";
+import {resetUser, setWalletIdentifier} from "../../../store/reducers/userCache";
 
 const Header = () => {
   const dispatch = useAppDispatch();
@@ -122,7 +122,8 @@ const Header = () => {
 
   const onDisconnectWallet = () => {
     console.log("onDisconnectWallet");
-    dispatch(setIdentifier(""));
+    dispatch(setWalletIdentifier(""));
+    dispatch(resetUser());
     disconnect();
   };
 

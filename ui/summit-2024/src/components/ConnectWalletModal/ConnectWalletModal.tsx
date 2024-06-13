@@ -14,7 +14,7 @@ import { useIsPortrait } from "../../common/hooks/useIsPortrait";
 import { useAppDispatch } from "../../store/hooks";
 import {
   setConnectedWallet,
-  setIdentifier,
+  setWalletIdentifier,
 } from "../../store/reducers/userCache";
 import { ToastType } from "../common/Toast/Toast.types";
 
@@ -76,7 +76,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
 
   useEffect(() => {
     if (stakeAddress) {
-      dispatch(setIdentifier(stakeAddress));
+      dispatch(setWalletIdentifier(stakeAddress));
     }
   }, [stakeAddress]);
 
@@ -122,7 +122,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
 
       const onP2PConnect = (): void => {
         if (peerConnectWalletInfo?.address) {
-          dispatch(setIdentifier(peerConnectWalletInfo.address));
+          dispatch(setWalletIdentifier(peerConnectWalletInfo.address));
         }
       };
 
@@ -164,7 +164,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
                 const enabledApi = await api.enable();
                 const connectingAid =
                   await enabledApi.experimental.getConnectingAid();
-                dispatch(setIdentifier(connectingAid));
+                dispatch(setWalletIdentifier(connectingAid));
                 dispatch(setConnectedWallet(peerConnectWalletInfo));
               } else {
                 eventBus.publish(

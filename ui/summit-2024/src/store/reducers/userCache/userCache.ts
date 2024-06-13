@@ -3,7 +3,6 @@ import { RootState } from "../../index";
 import {
   UserCacheProps,
   UserVotes,
-  VerificationStarted,
   VerificationStartedExtended,
 } from "./userCache.types";
 import { initialStateData } from "./initialState";
@@ -18,7 +17,10 @@ const userCacheSlice = createSlice({
     setUser: (state, action: PayloadAction<UserCacheProps>) => {
       return { ...state, ...action.payload };
     },
-    setIdentifier: (state, action: PayloadAction<string>) => {
+    resetUser: (_state) => {
+      return initialState;
+    },
+    setWalletIdentifier: (state, action: PayloadAction<string>) => {
       state.walletIdentifier = action.payload;
     },
     setConnectedWallet: (state, action: PayloadAction<IWalletInfo>) => {
@@ -41,9 +43,10 @@ const userCacheSlice = createSlice({
 
 const {
   setUser,
+  resetUser,
   setWalletIsVerified,
   setUserVotes,
-  setIdentifier,
+  setWalletIdentifier,
   setConnectedWallet,
   setVerificationStarted,
 } = userCacheSlice.actions;
@@ -62,9 +65,10 @@ export {
   userCacheSlice,
   initialState,
   setUser,
+  resetUser,
   setWalletIsVerified,
   setUserVotes,
-  setIdentifier,
+  setWalletIdentifier,
   setVerificationStarted,
   setConnectedWallet,
   getUser,

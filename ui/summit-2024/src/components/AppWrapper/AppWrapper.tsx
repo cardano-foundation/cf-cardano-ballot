@@ -24,9 +24,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
   useEffect(() => {
     initApp();
   }, []);
-  useEffect(() => {
-
-  }, []);
 
   useEffect(() => {
     if (stakeAddress) {

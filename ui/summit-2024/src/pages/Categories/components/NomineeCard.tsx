@@ -1,16 +1,16 @@
 import React from "react";
 import { Grid, Paper, Typography, Box } from "@mui/material";
-import { NomineeFixture } from "../../../__fixtures__/categories";
 import HoverCircle from "../../../components/common/HoverCircle/HoverCircle";
 import theme from "../../../common/styles/theme";
 import nomineeBg from "../../../assets/bg/nomineeCard.svg";
+import {Proposal} from "../../../store/reducers/eventCache/eventCache.types";
 
 interface NomineeCardProps {
-  nominee: NomineeFixture;
-  selectedNominee: number | undefined;
-  handleSelectNominee: (id: number) => void;
+  nominee: Proposal;
+  selectedNominee: string | undefined;
+  handleSelectNominee: (id: string) => void;
   handleLearnMoreClick: (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    event: React.MouseEvent<HTMLElement>,
     name: string,
   ) => void;
 }
@@ -84,7 +84,7 @@ const NomineeCard: React.FC<NomineeCardProps> = ({
               ml: 1,
             }}
           >
-            {nominee.name}
+            {nominee.id}
           </Typography>
         </Box>
 
@@ -102,7 +102,7 @@ const NomineeCard: React.FC<NomineeCardProps> = ({
           <Typography
             onClick={(event) => {
               event.stopPropagation();
-              handleLearnMoreClick(event, nominee.name);
+              handleLearnMoreClick(event, nominee.id);
             }}
             sx={{
               color: theme.palette.text.neutralLight,

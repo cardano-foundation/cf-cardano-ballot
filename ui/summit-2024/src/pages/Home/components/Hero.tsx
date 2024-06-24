@@ -6,11 +6,15 @@ import { CustomButton } from "../../../components/common/CustomButton/CustomButt
 import theme from "../../../common/styles/theme";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../../routes";
+import {formatISODate} from "../../../utils/utils";
+import {useAppSelector} from "../../../store/hooks";
+import {getEventCache} from "../../../store/reducers/eventCache";
 
 const Hero = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("xs"));
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
   const isDesktop = useMediaQuery(theme.breakpoints.up("tablet"));
+  const eventCache = useAppSelector(getEventCache);
   const isPortrait = useIsPortrait();
   const navigate = useNavigate();
   const handleClickMenu = (option: string) => {
@@ -58,7 +62,10 @@ const Hero = () => {
               },
             }}
           >
-            Voting Closes 9 October 2024 23:59 UTC
+            Voting Closes{" "}
+              {
+                  formatISODate(eventCache.eventEndDate)
+              }
           </Typography>
           <Typography
             variant="h4"

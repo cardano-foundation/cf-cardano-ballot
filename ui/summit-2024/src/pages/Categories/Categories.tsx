@@ -10,10 +10,6 @@ import {
   Drawer,
 } from "@mui/material";
 import theme from "../../common/styles/theme";
-import {
-  NomineeArrayFixture,
-  nomineesData,
-} from "../../__fixtures__/categories";
 import Ellipses from "../../assets/ellipse.svg";
 import { CustomButton } from "../../components/common/CustomButton/CustomButton";
 import { BioModal } from "./components/BioModal";
@@ -22,14 +18,19 @@ import { useIsPortrait } from "../../common/hooks/useIsPortrait";
 import { NomineeCard } from "./components/NomineeCard";
 import { ViewReceipt } from "./components/ViewReceipt";
 import { STATE } from "./components/ViewReceipt.type";
+import {useAppSelector} from "../../store/hooks";
+import {getEventCache} from "../../store/reducers/eventCache";
+import {Category, Proposal} from "../../store/reducers/eventCache/eventCache.types";
 
 const Categories: React.FC = () => {
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
-  const categoriesData = nomineesData;
+  const eventCache = useAppSelector(getEventCache);
+
+  const categoriesData = eventCache.categories;
   const [selectedCategory, setSelectedCategory] = useState(
-    categoriesData[0].category,
+    categoriesData[0].id,
   );
-  const [selectedNominee, setSelectedNominee] = useState<number | undefined>(0);
+  const [selectedNominee, setSelectedNominee] = useState<string | undefined>(undefined);
   const [learMoreCategory, setLearMoreCategory] = useState("");
   const [openLearMoreCategory, setOpenLearMoreCategory] = useState(false);
   const [openVotingModal, setOpenVotingModal] = useState(false);
@@ -45,7 +46,7 @@ const Categories: React.FC = () => {
     }
   }, [fadeChecked, selectedCategory]);
 
-  const handleClickMenuItem = (category) => {
+  const handleClickMenuItem = (category: string) => {
     if (category !== selectedCategory) {
       setFadeChecked(false);
       setTimeout(() => {
@@ -55,32 +56,28 @@ const Categories: React.FC = () => {
     }
   };
 
-  const handleSelectNominee = (id: number) => {
+  const handleSelectNominee = (id: string) => {
     if (selectedNominee !== id) {
       setSelectedNominee(id);
     } else {
-      setSelectedNominee(-1);
+      setSelectedNominee(undefined);
     }
   };
 
-  const handleClickActionButton = () => {};
-
-  const handleViewReceipt = () => {};
-
-  const handleLearnMoreClick = (event, category) => {
+  const handleLearnMoreClick = (event, category: string) => {
     event.stopPropagation();
     setLearMoreCategory(category);
     setOpenLearMoreCategory(true);
   };
 
   let categoryToRender = categoriesData.find(
-    (c) => c.category === selectedCategory,
+    (c) => c.id === selectedCategory,
   );
   if (!categoryToRender) {
     categoryToRender = categoriesData[0];
   }
 
-  const nomineeToVote = categoryToRender.nominees?.find(
+  const nomineeToVote = categoryToRender.proposals?.find(
     (n) => n.id === selectedNominee,
   );
 
@@ -136,7 +133,7 @@ const Categories: React.FC = () => {
                   >
                     {categoriesData.map((category, index) => (
                       <ListItem
-                        onClick={() => handleClickMenuItem(category.category)}
+                        onClick={() => handleClickMenuItem(category.id)}
                         key={index}
                         sx={{
                           display: "flex",
@@ -147,11 +144,11 @@ const Categories: React.FC = () => {
                         <Typography
                           sx={{
                             color:
-                              category.category === selectedCategory
+                              category.id === selectedCategory
                                 ? theme.palette.background.default
                                 : theme.palette.text.neutralLightest,
                             background:
-                              category.category === selectedCategory
+                              category.id === selectedCategory
                                 ? theme.palette.secondary.main
                                 : "none",
                             padding: "8px 12px",
@@ -162,7 +159,7 @@ const Categories: React.FC = () => {
                             cursor: "pointer",
                           }}
                         >
-                          {category.category}
+                          {category.id}
                         </Typography>
                       </ListItem>
                     ))}
@@ -182,12 +179,12 @@ const Categories: React.FC = () => {
                   }}
                 >
                   {categoriesData.map(
-                    (category: NomineeArrayFixture, index) => (
+                    (category: Category, index) => (
                       <ListItem
-                        onClick={() => handleClickMenuItem(category.category)}
+                        onClick={() => handleClickMenuItem(category.id)}
                         key={index}
                       >
-                        {category.category === selectedCategory ? (
+                        {category.id === selectedCategory ? (
                           <>
                             <Box
                               component="div"
@@ -221,7 +218,7 @@ const Categories: React.FC = () => {
                                   width: "100%",
                                 }}
                               >
-                                {category.category}
+                                {category.id}
                               </Typography>
                             </Box>
                           </>
@@ -237,7 +234,7 @@ const Categories: React.FC = () => {
                                 cursor: "pointer",
                               }}
                             >
-                              {category.category}
+                              {category.id}
                             </Typography>
                           </>
                         )}
@@ -273,8 +270,8 @@ const Categories: React.FC = () => {
                 variant="h5"
                 sx={{ fontWeight: "bold", fontFamily: "Dosis" }}
               >
-                {categoryToRender.category} Nominees (
-                {categoryToRender.nominees?.length})
+                {categoryToRender.id} Nominees (
+                {categoryToRender.proposals?.length})
               </Typography>
               <Typography
                 sx={{
@@ -306,7 +303,7 @@ const Categories: React.FC = () => {
                 justifyContent="center"
                 alignItems="flex-start"
               >
-                {categoryToRender.nominees?.map((nominee, index) => (
+                {categoryToRender.proposals?.map((nominee: Proposal, index) => (
                   <NomineeCard
                     key={index}
                     nominee={nominee}

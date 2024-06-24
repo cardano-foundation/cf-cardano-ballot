@@ -156,9 +156,9 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
               clearInterval(checkApi);
               if (api) {
                 const enabledApi = await api.enable();
-                const connectingAid =
-                  await enabledApi.experimental.getConnectingAid();
-                dispatch(setWalletIdentifier(connectingAid));
+                const keriIdentifier =
+                  await enabledApi.experimental.getKeriIdentifier();
+                dispatch(setWalletIdentifier(keriIdentifier.id));
                 dispatch(setConnectedWallet(peerConnectWalletInfo));
               } else {
                 eventBus.publish(

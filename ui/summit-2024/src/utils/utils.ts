@@ -64,6 +64,28 @@ const resolveCardanoNetwork = (network: string): NetworkType => {
   }
 };
 
+const formatISODate = (isoDate: string): string | undefined => {
+
+  if (!isoDate?.length) return undefined;
+
+  const date = new Date(isoDate);
+
+  const options: Intl.DateTimeFormatOptions = {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: 'UTC',
+    hourCycle: 'h23',
+    timeZoneName: 'short'
+  };
+
+  const formatter = new Intl.DateTimeFormat('en-US', options);
+
+  return formatter.format(date);
+}
+
 const shortenString = (inputStr: string, x: number): string => {
   if (inputStr.length <= x) {
     return inputStr;
@@ -85,4 +107,5 @@ export {
   openNewTab,
   shortenString,
   delay,
+  formatISODate
 };

@@ -3,12 +3,12 @@ import { useIsPortrait } from "../../../common/hooks/useIsPortrait";
 import Modal from "../../../components/common/Modal/Modal";
 import { Box } from "@mui/material";
 import { CustomButton } from "../../../components/common/CustomButton/CustomButton";
-import { NomineeFixture } from "../../../__fixtures__/categories";
+import {Proposal} from "../../../store/reducers/eventCache/eventCache.types";
 
 interface VoteModalProps {
   isOpen: boolean;
   onClose: () => void;
-  selectedNominee?: NomineeFixture;
+  selectedNominee?: Proposal;
 }
 const VoteNowModal: React.FC<VoteModalProps> = ({
   isOpen,
@@ -27,6 +27,7 @@ const VoteNowModal: React.FC<VoteModalProps> = ({
         width={isMobile ? "100%" : "450px"}
       >
         <Box
+            component="div"
           sx={{
             width: isMobile ? "100%" : "400px",
             display: "flex",
@@ -43,7 +44,7 @@ const VoteNowModal: React.FC<VoteModalProps> = ({
               mb: "20px",
             }}
           >
-            Vote for {selectedNominee?.name}
+            Vote for {selectedNominee?.id}
           </CustomButton>
         </Box>
       </Modal>

@@ -10,13 +10,13 @@ interface ConnectedWallet {
 
 interface VerificationStarted {
   eventId: string;
-  stakeAddress: string;
+  stakeAddress?: string;
   requestId: string;
   createdAt: string;
   expiresAt: string;
 }
 interface VerificationStartedExtended extends VerificationStarted {
-  walletIdentifier: string;
+  walletIdentifier?: string;
 }
 
 interface UserVotes {

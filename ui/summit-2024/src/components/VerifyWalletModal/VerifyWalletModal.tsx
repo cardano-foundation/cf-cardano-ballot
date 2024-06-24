@@ -159,6 +159,8 @@ const VerifyWalletModal = () => {
       codes.join(""),
     )
       .then((response: PhoneNumberCodeConfirmation) => {
+          console.log("response");
+          console.log(response);
         dispatch(setWalletIsVerified(response.verified));
         if (response.verified) {
           reset();

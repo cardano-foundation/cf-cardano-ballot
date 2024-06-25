@@ -225,11 +225,15 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
     @Transactional
     public Either<Problem, IsVerifiedResponse> checkVerification(SMSCheckVerificationRequest checkVerificationRequest) {
         String eventId = checkVerificationRequest.getEventId();
-        String stakeAddress = checkVerificationRequest.getStakeAddress();
 
-        var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, stakeAddress);
-        if (stakeAddressCheckE.isEmpty()) {
-            return Either.left(stakeAddressCheckE.getLeft());
+        String walletId = startVerificationRequest.getWalletId();
+        Optional<String> walletIdType = startVerificationRequest.getWalletIdType();
+
+        if (walletIdType.isPresent() && walletIdType.get().equals("Cardano")) {
+            var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, walletId);
+            if (stakeAddressCheckE.isEmpty()) {
+                return Either.left(stakeAddressCheckE.getLeft());
+            }
         }
 
         var activeEventE = chainFollowerClient.findEventById(eventId);
@@ -263,9 +267,9 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
                     .build());
         }
 
-        var maybeUserVerification = smsUserVerificationRepository.findAllCompletedPerStake(
+        var maybeUserVerification = smsUserVerificationRepository.findAllCompletedPerWalletId(
                 eventId,
-                stakeAddress
+                walletId
         ).stream().findFirst();
 
         if (maybeUserVerification.isPresent()) {
@@ -275,23 +279,23 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
             if (userVerification.getStatus() == VERIFIED) {
                 return Either.left(Problem.builder()
                         .withTitle("USER_ALREADY_VERIFIED")
-                        .withDetail("User already verified, stakeAddress:" + stakeAddress)
+                        .withDetail("User already verified, walletId:" + walletId)
                         .withStatus(BAD_REQUEST)
                         .build()
                 );
             }
         }
 
-        var maybePendingRequest = smsUserVerificationRepository.findPendingVerificationsByEventIdAndStakeAddressAndRequestId(
+        var maybePendingRequest = smsUserVerificationRepository.findPendingVerificationsByEventIdAndWalletIdAndRequestId(
                 eventId,
-                stakeAddress,
+                walletId,
                 checkVerificationRequest.getRequestId()
         );
 
         if (maybePendingRequest.isEmpty()) {
             return Either.left(Problem.builder()
                     .withTitle("PENDING_USER_VERIFICATION_NOT_FOUND")
-                    .withDetail("User verification not found, stakeAddress:" + stakeAddress)
+                    .withDetail("User verification not found, walletId:" + walletId)
                     .withStatus(BAD_REQUEST)
                     .build()
             );
@@ -302,7 +306,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
         if (pendingUserVerification.getStatus() == VERIFIED) {
             return Either.left(Problem.builder()
                     .withTitle("USER_VERIFICATION_ALREADY_VERIFIED")
-                    .withDetail("User verification already verified, stakeAddress:" + stakeAddress)
+                    .withDetail("User verification already verified, walletId:" + walletId)
                     .withStatus(BAD_REQUEST)
                     .build()
             );
@@ -323,7 +327,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
         if (isCodeExpired) {
                 return Either.left(Problem.builder()
                         .withTitle("VERIFICATION_EXPIRED")
-                        .withDetail(String.format("Verification code: %s expired for stakeAddress: %s", checkVerificationRequest.getVerificationCode(), stakeAddress))
+                        .withDetail(String.format("Verification code: %s expired for walletId: %s", checkVerificationRequest.getVerificationCode(), walletId))
                         .withStatus(BAD_REQUEST)
                         .build());
         }

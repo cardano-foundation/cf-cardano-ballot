@@ -152,139 +152,145 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
                     .build());
         }
 
-        var requestStakeAddress = checkVerificationRequest.getStakeAddress();
-        var requestSecret = checkVerificationRequest.getSecret();
+        String walletId = checkVerificationRequest.getWalletId();
+        Optional<String> walletIdType = checkVerificationRequest.getWalletIdType();
+        if (walletIdType.isPresent() && walletIdType.get().equals("Cardano")) {
+            var requestStakeAddress = checkVerificationRequest.getWalletId();
+            var requestSecret = checkVerificationRequest.getSecret();
 
-        var coseSignature = checkVerificationRequest.getCoseSignature();
-        var cosePublicKey = checkVerificationRequest.getCosePublicKey();
+            var coseSignature = checkVerificationRequest.getCoseSignature();
+            var cosePublicKey = checkVerificationRequest.getCosePublicKey();
 
-        var cip30Verifier = new CIP30Verifier(coseSignature, cosePublicKey);
-        var cip30VerificationResult = cip30Verifier.verify();
+            var cip30Verifier = new CIP30Verifier(coseSignature, cosePublicKey);
+            var cip30VerificationResult = cip30Verifier.verify();
 
-        if (!cip30VerificationResult.isValid()) {
-            return Either.left(Problem.builder()
-                    .withTitle("INVALID_CIP-30-SIGNATURE")
-                    .withDetail("Invalid CIP-30 signature")
-                    .withStatus(BAD_REQUEST)
-                    .build()
-            );
+            if (!cip30VerificationResult.isValid()) {
+                return Either.left(Problem.builder()
+                        .withTitle("INVALID_CIP-30-SIGNATURE")
+                        .withDetail("Invalid CIP-30 signature")
+                        .withStatus(BAD_REQUEST)
+                        .build()
+                );
+            }
+
+            var msg = cip30VerificationResult.getMessage(MessageFormat.TEXT);
+            var items = msg.split("\\|");
+
+            if (items.length != 2) {
+                return Either.left(Problem.builder()
+                        .withTitle("INVALID_CIP-30-SIGNATURE")
+                        .withDetail("Invalid CIP-30 signature, invalid signed message.")
+                        .withStatus(BAD_REQUEST)
+                        .build()
+                );
+            }
+            var discordIdHash = items[0];
+            var cip30Secret = items[1];
+
+            if (!requestSecret.equals(cip30Secret)) {
+                return Either.left(Problem.builder()
+                        .withTitle("SECRET_MISMATCH")
+                        .withDetail("Request Secret and CIP-30 secret mismatch.")
+                        .withStatus(BAD_REQUEST)
+                        .build()
+                );
+            }
+
+            var maybeAddress = cip30VerificationResult.getAddress(AddressFormat.TEXT);
+
+            if (maybeAddress.isEmpty()) {
+                return Either.left(Problem.builder()
+                        .withTitle("INVALID_CIP-30-SIGNATURE")
+                        .withDetail("Invalid CIP-30 signature, must have asdress in CIP-30 signature.")
+                        .withStatus(BAD_REQUEST)
+                        .build()
+                );
+            }
+
+            var address = maybeAddress.orElseThrow();
+
+            if (!requestStakeAddress.equals(address)) {
+                return Either.left(Problem.builder()
+                        .withTitle("ADDRESS_MISMATCH")
+                        .withDetail(String.format("Address mismatch, requestStakeAddress: %s, address: %s", requestStakeAddress, address))
+                        .withStatus(BAD_REQUEST)
+                        .build()
+                );
+            }
+
+            var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, requestStakeAddress);
+
+            if (stakeAddressCheckE.isEmpty()) {
+                return Either.left(stakeAddressCheckE.getLeft());
+            }
+
+            var maybeCompletedVerificationBasedOnDiscordUserHash = userVerificationRepository
+                    .findCompletedVerificationBasedOnDiscordUserHash(eventId, discordIdHash);
+
+            if (maybeCompletedVerificationBasedOnDiscordUserHash.isPresent()) {
+                return Either.left(Problem.builder()
+                        .withTitle("USER_ALREADY_VERIFIED")
+                        .withDetail("User already verified.")
+                        .withStatus(BAD_REQUEST)
+                        .with("discordIdHash", discordIdHash)
+                        .build()
+                );
+            }
+
+            var maybePendingVerification = userVerificationRepository.findPendingVerificationBasedOnDiscordUserHash(eventId, discordIdHash);
+
+            if (maybePendingVerification.isEmpty()) {
+                return Either.left(Problem.builder()
+                        .withTitle("NO_PENDING_VERIFICATION")
+                        .withDetail("No pending verification found for discordIdHash:" + discordIdHash)
+                        .withStatus(BAD_REQUEST)
+                        .with("discordIdHash", discordIdHash)
+                        .build()
+                );
+            }
+
+            var pendingVerification = maybePendingVerification.get();
+            boolean isSecretCodeMatch = pendingVerification.getSecretCode().equals(cip30Secret)
+                    && pendingVerification.getSecretCode().equals(requestSecret);
+
+            if (!isSecretCodeMatch) {
+                return Either.left(Problem.builder()
+                        .withTitle("AUTH_FAILED")
+                        .withDetail("Invalid secret and / or discordIdHash.")
+                        .withStatus(BAD_REQUEST)
+                        .build()
+                );
+            }
+
+            var pendingUserVerification = maybePendingVerification.orElseThrow();
+
+            var now = LocalDateTime.now(clock);
+
+            var isCodeExpired = now.isAfter(pendingUserVerification.getExpiresAt());
+            if (isCodeExpired) {
+                return Either.left(Problem.builder()
+                        .withTitle("VERIFICATION_EXPIRED")
+                        .withDetail(String.format("Secret code: %s expired for requestStakeAddress: %s and discordHashId:%s", cip30Secret, requestStakeAddress, discordIdHash))
+                        .withStatus(BAD_REQUEST)
+                        .with("discordIdHash", discordIdHash)
+                        .with("requestStakeAddress", requestStakeAddress)
+                        .build());
+            }
+
+            pendingUserVerification.setWalletId(Optional.of(requestStakeAddress));
+            pendingUserVerification.setUpdatedAt(now);
+            pendingUserVerification.setStatus(VERIFIED);
+        } else {
+            // TODO: Keri Logic
         }
-
-        var msg = cip30VerificationResult.getMessage(MessageFormat.TEXT);
-        var items = msg.split("\\|");
-
-        if (items.length != 2) {
-            return Either.left(Problem.builder()
-                    .withTitle("INVALID_CIP-30-SIGNATURE")
-                    .withDetail("Invalid CIP-30 signature, invalid signed message.")
-                    .withStatus(BAD_REQUEST)
-                    .build()
-            );
-        }
-        var discordIdHash = items[0];
-        var cip30Secret = items[1];
-
-        if (!requestSecret.equals(cip30Secret)) {
-            return Either.left(Problem.builder()
-                    .withTitle("SECRET_MISMATCH")
-                    .withDetail("Request Secret and CIP-30 secret mismatch.")
-                    .withStatus(BAD_REQUEST)
-                    .build()
-            );
-        }
-
-        var maybeAddress = cip30VerificationResult.getAddress(AddressFormat.TEXT);
-
-        if (maybeAddress.isEmpty()) {
-            return Either.left(Problem.builder()
-                    .withTitle("INVALID_CIP-30-SIGNATURE")
-                    .withDetail("Invalid CIP-30 signature, must have asdress in CIP-30 signature.")
-                    .withStatus(BAD_REQUEST)
-                    .build()
-            );
-        }
-
-        var address = maybeAddress.orElseThrow();
-
-        if (!requestStakeAddress.equals(address)) {
-            return Either.left(Problem.builder()
-                    .withTitle("ADDRESS_MISMATCH")
-                    .withDetail(String.format("Address mismatch, requestStakeAddress: %s, address: %s", requestStakeAddress, address))
-                    .withStatus(BAD_REQUEST)
-                    .build()
-            );
-        }
-
-        var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, requestStakeAddress);
-
-        if (stakeAddressCheckE.isEmpty()) {
-            return Either.left(stakeAddressCheckE.getLeft());
-        }
-
-        var maybeCompletedVerificationBasedOnDiscordUserHash = userVerificationRepository
-                .findCompletedVerificationBasedOnDiscordUserHash(eventId, discordIdHash);
-
-        if (maybeCompletedVerificationBasedOnDiscordUserHash.isPresent()) {
-            return Either.left(Problem.builder()
-                    .withTitle("USER_ALREADY_VERIFIED")
-                    .withDetail("User already verified.")
-                    .withStatus(BAD_REQUEST)
-                    .with("discordIdHash", discordIdHash)
-                    .build()
-            );
-        }
-
-        var maybePendingVerification = userVerificationRepository.findPendingVerificationBasedOnDiscordUserHash(eventId, discordIdHash);
-
-        if (maybePendingVerification.isEmpty()) {
-            return Either.left(Problem.builder()
-                    .withTitle("NO_PENDING_VERIFICATION")
-                    .withDetail("No pending verification found for discordIdHash:" + discordIdHash)
-                    .withStatus(BAD_REQUEST)
-                    .with("discordIdHash", discordIdHash)
-                    .build()
-            );
-        }
-
-        var pendingVerification = maybePendingVerification.get();
-        boolean isSecretCodeMatch = pendingVerification.getSecretCode().equals(cip30Secret)
-                && pendingVerification.getSecretCode().equals(requestSecret);
-
-        if (!isSecretCodeMatch) {
-            return Either.left(Problem.builder()
-                    .withTitle("AUTH_FAILED")
-                    .withDetail("Invalid secret and / or discordIdHash.")
-                    .withStatus(BAD_REQUEST)
-                    .build()
-            );
-        }
-
-        var pendingUserVerification = maybePendingVerification.orElseThrow();
-
-        var now = LocalDateTime.now(clock);
-
-        var isCodeExpired = now.isAfter(pendingUserVerification.getExpiresAt());
-        if (isCodeExpired) {
-            return Either.left(Problem.builder()
-                    .withTitle("VERIFICATION_EXPIRED")
-                    .withDetail(String.format("Secret code: %s expired for requestStakeAddress: %s and discordHashId:%s", cip30Secret, requestStakeAddress, discordIdHash))
-                    .withStatus(BAD_REQUEST)
-                    .with("discordIdHash", discordIdHash)
-                    .with("requestStakeAddress", requestStakeAddress)
-                    .build());
-        }
-
-        pendingUserVerification.setStakeAddress(Optional.of(requestStakeAddress));
-        pendingUserVerification.setUpdatedAt(now);
-        pendingUserVerification.setStatus(VERIFIED);
 
         return Either.right(new IsVerifiedResponse(true));
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Either<Problem, IsVerifiedResponse> isVerifiedBasedOnStakeAddress(IsVerifiedRequest isVerifiedRequest) {
-        var isVerified = userVerificationRepository.findCompletedVerifications(isVerifiedRequest.getEventId(), isVerifiedRequest.getStakeAddress())
+    public Either<Problem, IsVerifiedResponse> isVerifiedBasedOnWalletId(IsVerifiedRequest isVerifiedRequest) {
+        var isVerified = userVerificationRepository.findCompletedVerifications(isVerifiedRequest.getEventId(), isVerifiedRequest.getWalletId())
                 .stream().findFirst()
                 .map(uv -> new IsVerifiedResponse(true)).orElse(new IsVerifiedResponse(false));
 

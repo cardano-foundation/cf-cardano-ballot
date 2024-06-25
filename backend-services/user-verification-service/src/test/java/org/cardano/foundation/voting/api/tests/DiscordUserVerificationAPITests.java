@@ -136,7 +136,7 @@ public class DiscordUserVerificationAPITests extends BaseTest {
         DiscordCheckVerificationRequest discordCheckVerificationRequest = DiscordCheckVerificationRequest.builder()
                 .eventId(discordBotEventId)
                 .coseSignature(signature)
-                .stakeAddress(stakeAddress)
+                .walletId(stakeAddress)
                 .cosePublicKey(publicKey.describeConstable())
                 .secret("chj3h3dtjq")
                 .build();
@@ -173,7 +173,7 @@ public class DiscordUserVerificationAPITests extends BaseTest {
         DiscordCheckVerificationRequest discordCheckVerificationTestnetRequest = DiscordCheckVerificationRequest.builder()
                 .eventId(discordBotEventId)
                 .coseSignature(testnetSignature)
-                .stakeAddress(testnetStakeAddress)
+                .walletId(testnetStakeAddress)
                 .cosePublicKey(testnetPublicKey.describeConstable())
                 .secret("chj3h3dtjq")
                 .build();
@@ -233,7 +233,7 @@ public class DiscordUserVerificationAPITests extends BaseTest {
         DiscordCheckVerificationRequest discordCheckVerificationRequest = DiscordCheckVerificationRequest.builder()
                 .eventId(discordBotEventId)
                 .coseSignature(signature)
-                .stakeAddress(stakeAddress)
+                .walletId(stakeAddress)
                 .cosePublicKey(publicKey.describeConstable())
                 .secret("chj3h3dtjq")
                 .build();
@@ -274,7 +274,7 @@ public class DiscordUserVerificationAPITests extends BaseTest {
         DiscordCheckVerificationRequest discordCheckVerificationRequest = DiscordCheckVerificationRequest.builder()
                 .eventId(discordBotEventId)
                 .coseSignature(signature)
-                .stakeAddress(stakeAddress)
+                .walletId(stakeAddress)
                 .cosePublicKey(publicKey.describeConstable())
                 .secret("49ayui27ue")
                 .build();

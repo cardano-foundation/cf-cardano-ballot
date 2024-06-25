@@ -226,8 +226,8 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
     public Either<Problem, IsVerifiedResponse> checkVerification(SMSCheckVerificationRequest checkVerificationRequest) {
         String eventId = checkVerificationRequest.getEventId();
 
-        String walletId = startVerificationRequest.getWalletId();
-        Optional<String> walletIdType = startVerificationRequest.getWalletIdType();
+        String walletId = checkVerificationRequest.getWalletId();
+        Optional<String> walletIdType = checkVerificationRequest.getWalletIdType();
 
         if (walletIdType.isPresent() && walletIdType.get().equals("Cardano")) {
             var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, walletId);

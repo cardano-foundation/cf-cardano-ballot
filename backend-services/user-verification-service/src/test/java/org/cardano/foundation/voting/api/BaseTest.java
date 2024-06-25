@@ -1,9 +1,11 @@
 package org.cardano.foundation.voting.api;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -24,8 +26,10 @@ public class BaseTest {
 
     @BeforeAll
     public void setUp() {
-        wireMockServer = new WireMockServer(9090);
+        wireMockServer = new WireMockServer(WireMockConfiguration.options().dynamicPort());
         wireMockServer.start();
+
+        WireMock.configureFor("localhost", wireMockServer.port());
 
         String responseBody = "[{\"id\": \"TEST_EVENT_1337\", \"finished\": false}, {\"notStarted\": false, \"active\": true}]";
         wireMockServer.stubFor(
@@ -38,6 +42,13 @@ public class BaseTest {
 
         RestAssured.port = serverPort;
         RestAssured.baseURI = "http://localhost";
+    }
+
+    @AfterAll
+    public void tearDown() {
+        if (wireMockServer != null) {
+            wireMockServer.stop();
+        }
     }
 
 }

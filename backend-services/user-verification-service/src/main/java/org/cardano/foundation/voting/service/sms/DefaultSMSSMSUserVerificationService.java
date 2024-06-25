@@ -374,13 +374,13 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
                     .build());
         }
 
-        var maybeUserVerification = smsUserVerificationRepository.findAllCompletedPerStake(
+        var maybeUserVerification = smsUserVerificationRepository.findAllCompletedPerWalletId(
                 isVerifiedRequest.getEventId(),
-                isVerifiedRequest.getStakeAddress()
+                isVerifiedRequest.getWalletId()
         ).stream().findFirst();
 
         if (maybeUserVerification.isEmpty()) {
-            log.info("Completed user verification not found for:{}", isVerifiedRequest.getStakeAddress());
+            log.info("Completed user verification not found for:{}", isVerifiedRequest.getWalletId());
 
             return Either.right(new IsVerifiedResponse(false));
         }

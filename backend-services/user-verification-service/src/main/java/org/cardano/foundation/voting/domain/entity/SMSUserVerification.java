@@ -23,8 +23,11 @@ public class SMSUserVerification extends AbstractTimestampEntity {
     @Column(name = "id", nullable = false)
     private String id;
 
-    @Column(name = "stake_address", nullable = false)
-    private String stakeAddress;
+    @Column(name = "wallet_id", nullable = false)
+    private String walletId;
+
+    @Column(name = "wallet_id_type")
+    private String walletIdType;
 
     @Column(name = "event_id", nullable = false)
     private String eventId;
@@ -50,7 +53,8 @@ public class SMSUserVerification extends AbstractTimestampEntity {
     public String toString() {
         return "SMSUserVerification{" +
                 "id='" + id + '\'' +
-                ", stakeAddress='" + stakeAddress + '\'' +
+                ", walletId='" + walletId + '\'' +
+                ", walletIdType='" + walletIdType + '\'' +
                 ", eventId='" + eventId + '\'' +
                 ", verificationCode='" + verificationCode + '\'' +
                 ", requestId='" + requestId + '\'' +

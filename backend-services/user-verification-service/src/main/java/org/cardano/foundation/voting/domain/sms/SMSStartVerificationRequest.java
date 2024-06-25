@@ -19,12 +19,14 @@ public class SMSStartVerificationRequest {
     private String eventId;
 
     @NotBlank
-    private String stakeAddress;
+    private String walletId;
+
+    @Builder.Default
+    private Optional<String> walletIdType = Optional.empty();
 
     @NotBlank
     private String phoneNumber;
 
     @Builder.Default
     private Optional<Locale> locale = Optional.empty();
-
 }

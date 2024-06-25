@@ -32,9 +32,12 @@ public class DiscordUserVerification extends AbstractTimestampEntity {
     @Setter
     private String eventId;
 
-    @Column(name = "stake_address")
+    @Column(name = "walletId")
     @Nullable
-    private String stakeAddress;
+    private String walletId;
+
+    @Column(name = "wallet_id_type")
+    private String walletIdType;
 
     @Column(name = "secret_code", nullable = false)
     @Getter
@@ -53,19 +56,20 @@ public class DiscordUserVerification extends AbstractTimestampEntity {
     @Setter
     private LocalDateTime expiresAt;
 
-    public Optional<String> getStakeAddress() {
-        return Optional.ofNullable(stakeAddress);
+    public Optional<String> getWalletId() {
+        return Optional.ofNullable(walletId);
     }
 
-    public void setStakeAddress(Optional<String> stakeAddress) {
-        this.stakeAddress = stakeAddress.orElse(null);
+    public void setWalletId(Optional<String> walletId) {
+        this.walletId = walletId.orElse(null);
     }
 
     @Override
     public String toString() {
         return "DiscordUserVerification{" +
                 "discordIdHash='" + discordIdHash + '\'' +
-                ", stakeAddress='" + stakeAddress + '\'' +
+                ", walletId='" + walletId + '\'' +
+                ", walletIdType='" + walletIdType + '\'' +
                 ", eventId='" + eventId + '\'' +
                 ", verificationCode='" + secretCode + '\'' +
                 ", expiresAt=" + expiresAt +

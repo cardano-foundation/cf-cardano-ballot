@@ -1,5 +1,6 @@
 package org.cardano.foundation.voting.service.discord;
-
+import io.vavr.Tuple;
+import io.vavr.Tuple2;
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
@@ -12,15 +13,16 @@ import org.cardano.foundation.voting.domain.discord.DiscordStartVerificationResp
 import org.cardano.foundation.voting.domain.entity.DiscordUserVerification;
 import org.cardano.foundation.voting.repository.DiscordUserVerificationRepository;
 import org.cardano.foundation.voting.utils.StakeAddress;
+import org.cardano.foundation.voting.utils.WalletType;
 import org.cardanofoundation.cip30.AddressFormat;
 import org.cardanofoundation.cip30.CIP30Verifier;
 import org.cardanofoundation.cip30.MessageFormat;
+import org.cardano.foundation.voting.client.ChainFollowerClient.EventSummary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
-
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -119,172 +121,226 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
 
     @Override
     @Transactional
-    public Either<Problem, IsVerifiedResponse> checkVerification(DiscordCheckVerificationRequest checkVerificationRequest) {
-        var eventId = checkVerificationRequest.getEventId();
-        var eventDetails = chainFollowerClient.findEventById(eventId);
+    public Either<Problem, IsVerifiedResponse> checkVerification(DiscordCheckVerificationRequest request) {
+        String eventId = request.getEventId();
 
-        if (eventDetails.isEmpty()) {
-            log.error("event error:{}", eventDetails.getLeft());
-
-            return Either.left(eventDetails.getLeft());
+        Either<Problem, EventSummary> eventValidationResult = validateEvent(eventId);
+        if (eventValidationResult.isLeft()) {
+            return Either.left(eventValidationResult.getLeft());
         }
 
-        var maybeEvent = eventDetails.get();
-        if (maybeEvent.isEmpty()) {
-            log.warn("Event not found:{}", eventId);
+        String walletId = request.getWalletId();
+        Optional<WalletType> walletIdType = request.getWalletIdType();
 
-            return Either.left(Problem.builder()
-                    .withTitle("EVENT_NOT_FOUND")
-                    .withDetail("Event not found, eventId:" + eventId)
-                    .withStatus(BAD_REQUEST)
-                    .build());
-        }
-
-        var event = maybeEvent.orElseThrow();
-
-        if (event.finished()) {
-            log.warn("Event already finished:{}", eventId);
-
-            return Either.left(Problem.builder()
-                    .withTitle("EVENT_ALREADY_FINISHED")
-                    .withDetail("Event already finished, eventId:" + eventId)
-                    .withStatus(BAD_REQUEST)
-                    .build());
-        }
-
-        String walletId = checkVerificationRequest.getWalletId();
-        Optional<String> walletIdType = checkVerificationRequest.getWalletIdType();
-        if (walletIdType.isPresent() && walletIdType.get().equals("Cardano")) {
-            var requestStakeAddress = checkVerificationRequest.getWalletId();
-            var requestSecret = checkVerificationRequest.getSecret();
-
-            var coseSignature = checkVerificationRequest.getCoseSignature();
-            var cosePublicKey = checkVerificationRequest.getCosePublicKey();
-
-            var cip30Verifier = new CIP30Verifier(coseSignature, cosePublicKey);
-            var cip30VerificationResult = cip30Verifier.verify();
-
-            if (!cip30VerificationResult.isValid()) {
-                return Either.left(Problem.builder()
-                        .withTitle("INVALID_CIP-30-SIGNATURE")
-                        .withDetail("Invalid CIP-30 signature")
-                        .withStatus(BAD_REQUEST)
-                        .build()
-                );
+        if (walletIdType.isPresent()) {
+            switch (walletIdType.get()) {
+                case CARDANO:
+                    return handleCardanoVerification(request, eventId, request.getWalletId());
+                case KERI:
+                    return handleKeriVerification(request, eventId, request.getWalletId());
+                default:
+                    return Either.left(Problem.builder()
+                            .withTitle("UNSUPPORTED_WALLET_TYPE")
+                            .withDetail("The specified wallet type is not supported.")
+                            .withStatus(BAD_REQUEST)
+                            .build());
             }
-
-            var msg = cip30VerificationResult.getMessage(MessageFormat.TEXT);
-            var items = msg.split("\\|");
-
-            if (items.length != 2) {
-                return Either.left(Problem.builder()
-                        .withTitle("INVALID_CIP-30-SIGNATURE")
-                        .withDetail("Invalid CIP-30 signature, invalid signed message.")
-                        .withStatus(BAD_REQUEST)
-                        .build()
-                );
-            }
-            var discordIdHash = items[0];
-            var cip30Secret = items[1];
-
-            if (!requestSecret.equals(cip30Secret)) {
-                return Either.left(Problem.builder()
-                        .withTitle("SECRET_MISMATCH")
-                        .withDetail("Request Secret and CIP-30 secret mismatch.")
-                        .withStatus(BAD_REQUEST)
-                        .build()
-                );
-            }
-
-            var maybeAddress = cip30VerificationResult.getAddress(AddressFormat.TEXT);
-
-            if (maybeAddress.isEmpty()) {
-                return Either.left(Problem.builder()
-                        .withTitle("INVALID_CIP-30-SIGNATURE")
-                        .withDetail("Invalid CIP-30 signature, must have asdress in CIP-30 signature.")
-                        .withStatus(BAD_REQUEST)
-                        .build()
-                );
-            }
-
-            var address = maybeAddress.orElseThrow();
-
-            if (!requestStakeAddress.equals(address)) {
-                return Either.left(Problem.builder()
-                        .withTitle("ADDRESS_MISMATCH")
-                        .withDetail(String.format("Address mismatch, requestStakeAddress: %s, address: %s", requestStakeAddress, address))
-                        .withStatus(BAD_REQUEST)
-                        .build()
-                );
-            }
-
-            var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, requestStakeAddress);
-
-            if (stakeAddressCheckE.isEmpty()) {
-                return Either.left(stakeAddressCheckE.getLeft());
-            }
-
-            var maybeCompletedVerificationBasedOnDiscordUserHash = userVerificationRepository
-                    .findCompletedVerificationBasedOnDiscordUserHash(eventId, discordIdHash);
-
-            if (maybeCompletedVerificationBasedOnDiscordUserHash.isPresent()) {
-                return Either.left(Problem.builder()
-                        .withTitle("USER_ALREADY_VERIFIED")
-                        .withDetail("User already verified.")
-                        .withStatus(BAD_REQUEST)
-                        .with("discordIdHash", discordIdHash)
-                        .build()
-                );
-            }
-
-            var maybePendingVerification = userVerificationRepository.findPendingVerificationBasedOnDiscordUserHash(eventId, discordIdHash);
-
-            if (maybePendingVerification.isEmpty()) {
-                return Either.left(Problem.builder()
-                        .withTitle("NO_PENDING_VERIFICATION")
-                        .withDetail("No pending verification found for discordIdHash:" + discordIdHash)
-                        .withStatus(BAD_REQUEST)
-                        .with("discordIdHash", discordIdHash)
-                        .build()
-                );
-            }
-
-            var pendingVerification = maybePendingVerification.get();
-            boolean isSecretCodeMatch = pendingVerification.getSecretCode().equals(cip30Secret)
-                    && pendingVerification.getSecretCode().equals(requestSecret);
-
-            if (!isSecretCodeMatch) {
-                return Either.left(Problem.builder()
-                        .withTitle("AUTH_FAILED")
-                        .withDetail("Invalid secret and / or discordIdHash.")
-                        .withStatus(BAD_REQUEST)
-                        .build()
-                );
-            }
-
-            var pendingUserVerification = maybePendingVerification.orElseThrow();
-
-            var now = LocalDateTime.now(clock);
-
-            var isCodeExpired = now.isAfter(pendingUserVerification.getExpiresAt());
-            if (isCodeExpired) {
-                return Either.left(Problem.builder()
-                        .withTitle("VERIFICATION_EXPIRED")
-                        .withDetail(String.format("Secret code: %s expired for requestStakeAddress: %s and discordHashId:%s", cip30Secret, requestStakeAddress, discordIdHash))
-                        .withStatus(BAD_REQUEST)
-                        .with("discordIdHash", discordIdHash)
-                        .with("requestStakeAddress", requestStakeAddress)
-                        .build());
-            }
-
-            pendingUserVerification.setWalletId(Optional.of(requestStakeAddress));
-            pendingUserVerification.setUpdatedAt(now);
-            pendingUserVerification.setStatus(VERIFIED);
         } else {
-            // TODO: Keri Logic
+            return Either.left(Problem.builder()
+                    .withTitle("MISSING_WALLET_TYPE")
+                    .withDetail("Wallet type must be specified.")
+                    .withStatus(BAD_REQUEST)
+                    .build());
+        }
+    }
+
+    private Either<Problem, EventSummary> validateEvent(String eventId) {
+        Either<Problem, Optional<EventSummary>> eventDetailsResult = chainFollowerClient.findEventById(eventId);
+
+        if (eventDetailsResult.isLeft()) {
+            return Either.left(eventDetailsResult.getLeft());
+        }
+
+        return eventDetailsResult.get()
+                .map(Either::<Problem, EventSummary>right)
+                .orElseGet(() -> Either.left(Problem.builder()
+                        .withTitle("EVENT_NOT_FOUND")
+                        .withDetail("Event not found, eventId: " + eventId)
+                        .withStatus(BAD_REQUEST)
+                        .build()));
+    }
+
+    private Either<Problem, IsVerifiedResponse> handleCardanoVerification(DiscordCheckVerificationRequest request, String eventId, String walletId) {
+
+        String signature = request.getCoseSignature();
+        String publicKey = request.getCosePublicKey().orElse(null);
+
+        if (publicKey == null) {
+            return Either.left(Problem.builder()
+                    .withTitle("MISSING_PUBLIC_KEY")
+                    .withDetail("Missing public key.")
+                    .withStatus(BAD_REQUEST)
+                    .build());
+        }
+
+        // Verify signature specific to Cardano wallets
+        Either<Problem, Tuple2<String, Optional<String>>> verificationResult = verifySignature(
+                signature, publicKey);
+
+        if (verificationResult.isLeft()) {
+            return Either.left(verificationResult.getLeft());
+        }
+
+        Tuple2<String, Optional<String>> verificationData = verificationResult.get();
+        String msg = verificationData._1;
+        var items = msg.split("\\|");
+
+        if (items.length != 2) {
+            return Either.left(Problem.builder()
+                    .withTitle("INVALID_CIP-30-SIGNATURE")
+                    .withDetail("Invalid CIP-30 signature, invalid signed message.")
+                    .withStatus(BAD_REQUEST)
+                    .build()
+            );
+        }
+
+        var discordIdHash = items[0];
+        var cip30Secret = items[1];
+
+        if (!request.getSecret().equals(cip30Secret)) {
+            return Either.left(Problem.builder()
+                    .withTitle("SECRET_MISMATCH")
+                    .withDetail("Request Secret and CIP-30 secret mismatch.")
+                    .withStatus(BAD_REQUEST)
+                    .build()
+            );
+        }
+
+        Optional<String> maybeAddress = verificationData._2;
+
+        if (!maybeAddress.isPresent()) {
+            return Either.left(Problem.builder()
+                    .withTitle("INVALID_CIP-30-SIGNATURE")
+                    .withDetail("Invalid CIP-30 signature, must have asdress in CIP-30 signature.")
+                    .withStatus(BAD_REQUEST)
+                    .build()
+            );
+        }
+
+        String address = maybeAddress.get();
+
+        if (!walletId.equals(address)) {
+            return Either.left(Problem.builder()
+                    .withTitle("ADDRESS_MISMATCH")
+                    .withDetail(String.format("Address mismatch, walletId: %s, address: %s", walletId, address))
+                    .withStatus(BAD_REQUEST)
+                    .build()
+            );
+        }
+
+        var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, walletId);
+
+        if (stakeAddressCheckE.isEmpty()) {
+            return Either.left(stakeAddressCheckE.getLeft());
+        }
+
+        var maybeCompletedVerificationBasedOnDiscordUserHash = userVerificationRepository
+                .findCompletedVerificationBasedOnDiscordUserHash(eventId, discordIdHash);
+
+        if (maybeCompletedVerificationBasedOnDiscordUserHash.isPresent()) {
+            return Either.left(Problem.builder()
+                    .withTitle("USER_ALREADY_VERIFIED")
+                    .withDetail("User already verified.")
+                    .withStatus(BAD_REQUEST)
+                    .with("discordIdHash", discordIdHash)
+                    .build()
+            );
+        }
+
+        var maybePendingVerification = userVerificationRepository.findPendingVerificationBasedOnDiscordUserHash(eventId, discordIdHash);
+
+        if (maybePendingVerification.isEmpty()) {
+            return Either.left(Problem.builder()
+                    .withTitle("NO_PENDING_VERIFICATION")
+                    .withDetail("No pending verification found for discordIdHash:" + discordIdHash)
+                    .withStatus(BAD_REQUEST)
+                    .with("discordIdHash", discordIdHash)
+                    .build()
+            );
+        }
+
+        var pendingVerification = maybePendingVerification.get();
+        boolean isSecretCodeMatch = pendingVerification.getSecretCode().equals(cip30Secret)
+                && pendingVerification.getSecretCode().equals(request.getSecret());
+
+        if (!isSecretCodeMatch) {
+            return Either.left(Problem.builder()
+                    .withTitle("AUTH_FAILED")
+                    .withDetail("Invalid secret and / or discordIdHash.")
+                    .withStatus(BAD_REQUEST)
+                    .build()
+            );
+        }
+
+        var pendingUserVerification = maybePendingVerification.orElseThrow();
+
+        var now = LocalDateTime.now(clock);
+
+        var isCodeExpired = now.isAfter(pendingUserVerification.getExpiresAt());
+        if (isCodeExpired) {
+            return Either.left(Problem.builder()
+                    .withTitle("VERIFICATION_EXPIRED")
+                    .withDetail(String.format("Secret code: %s expired for walletId: %s and discordHashId:%s", cip30Secret, walletId, discordIdHash))
+                    .withStatus(BAD_REQUEST)
+                    .with("discordIdHash", discordIdHash)
+                    .with("walletId", walletId)
+                    .build());
+        }
+
+        pendingVerification.setWalletId(Optional.of(request.getWalletId()));
+        pendingVerification.setUpdatedAt(LocalDateTime.now(clock));
+        pendingVerification.setStatus(VERIFIED);
+        userVerificationRepository.save(pendingVerification);
+
+        return Either.right(new IsVerifiedResponse(true));
+    }
+
+    private Either<Problem, Tuple2<String, Optional<String>>> verifySignature(String signature, String publicKey) {
+        CIP30Verifier verifier = new CIP30Verifier(signature, publicKey);
+        var result = verifier.verify();
+
+        if (!result.isValid()) {
+            return Either.left(Problem.builder()
+                    .withTitle("INVALID_CIP-30-SIGNATURE")
+                    .withDetail("Invalid CIP-30 signature")
+                    .withStatus(BAD_REQUEST)
+                    .build()
+            );
+        }
+
+        String msg = result.getMessage(MessageFormat.TEXT);
+        Optional<String> maybeAddress = result.getAddress(AddressFormat.TEXT);
+
+        return Either.right(new Tuple2<>(msg, maybeAddress));
+    }
+
+    private Either<Problem, IsVerifiedResponse> handleKeriVerification(DiscordCheckVerificationRequest request, String eventId, String walletId) {
+        // Example: Simulate checking a condition specific to Keri
+        boolean conditionMet = checkKeriCondition(request);
+
+        if (!conditionMet) {
+            return Either.left(Problem.builder()
+                    .withTitle("KERI_VERIFICATION_FAILED")
+                    .withDetail("The Keri-specific condition was not met.")
+                    .withStatus(BAD_REQUEST)
+                    .build());
         }
 
         return Either.right(new IsVerifiedResponse(true));
+    }
+
+    private boolean checkKeriCondition(DiscordCheckVerificationRequest request) {
+        return true;
     }
 
     @Override

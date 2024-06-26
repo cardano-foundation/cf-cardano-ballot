@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
-
+import org.cardano.foundation.voting.utils.WalletType;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.HexFormat;
@@ -77,9 +77,9 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
         String eventId = startVerificationRequest.getEventId();
 
         String walletId = startVerificationRequest.getWalletId();
-        Optional<String> walletIdType = startVerificationRequest.getWalletIdType();
+        Optional<WalletType> walletIdType = startVerificationRequest.getWalletIdType();
 
-        if (walletIdType.isPresent() && walletIdType.get().equals("Cardano")) {
+        if (walletIdType.equals(WalletType.CARDANO)) {
             var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, walletId);
             if (stakeAddressCheckE.isEmpty()) {
                 return Either.left(stakeAddressCheckE.getLeft());
@@ -227,9 +227,9 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
         String eventId = checkVerificationRequest.getEventId();
 
         String walletId = checkVerificationRequest.getWalletId();
-        Optional<String> walletIdType = checkVerificationRequest.getWalletIdType();
+        Optional<WalletType> walletIdType = checkVerificationRequest.getWalletIdType();
 
-        if (walletIdType.isPresent() && walletIdType.get().equals("Cardano")) {
+        if (walletIdType.equals(WalletType.CARDANO)) {
             var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, walletId);
             if (stakeAddressCheckE.isEmpty()) {
                 return Either.left(stakeAddressCheckE.getLeft());

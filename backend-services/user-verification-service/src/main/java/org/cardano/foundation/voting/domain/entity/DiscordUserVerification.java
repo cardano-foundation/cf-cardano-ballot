@@ -32,7 +32,7 @@ public class DiscordUserVerification extends AbstractTimestampEntity {
     @Setter
     private String eventId;
 
-    @Column(name = "walletId")
+    @Column(name = "wallet_id")
     @Nullable
     private String walletId;
 

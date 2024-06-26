@@ -46,12 +46,12 @@ public class CardanoSummit2024PreProdCommands {
 
         log.info("Creating CF-Summit 2024 on a PRE-PROD network...");
 
-        long startSlot = 62521969;
-        long endSlot = startSlot + 604800; // One week later
+        long startSlot = 63738073;
+        long endSlot = startSlot + (604800*2); // 2 weeks later
 
         var createEventCommand = CreateEventCommand.builder()
-                //.id(EVENT_NAME + "_" + shortUUID(4))
-                .id(EVENT_NAME + "_" + "5BCC")
+                //CF_SUMMIT_2024_7BCC
+                .id(EVENT_NAME + "_" + "7BCC")
                 .startSlot(Optional.of(startSlot))
                 .endSlot(Optional.of(endSlot))
                 .votingPowerAsset(Optional.empty())

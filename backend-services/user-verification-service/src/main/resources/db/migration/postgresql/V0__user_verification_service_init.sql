@@ -3,6 +3,7 @@ DROP TABLE IF EXISTS sms_user_verification;
 CREATE TABLE sms_user_verification (
    id VARCHAR(255) NOT NULL,
    wallet_id VARCHAR(255) NOT NULL,
+   wallet_id_type VARCHAR(255),
    event_id VARCHAR(255) NOT NULL,
 
    request_id VARCHAR(255) NOT NULL,
@@ -37,6 +38,7 @@ CREATE TABLE discord_user_verification (
    event_id VARCHAR(255) NOT NULL,
 
    wallet_id VARCHAR(255), -- nullable since it is set on check-verification request
+   wallet_id_type VARCHAR(255),
 
    secret_code VARCHAR(255) NOT NULL,
 

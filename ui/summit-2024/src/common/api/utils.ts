@@ -1,21 +1,18 @@
-
 enum WalletIdentifierType {
-    Cardano = "Cardano",
-    Keri = "Keri"
+  CARDANO = "CARDANO",
+  KERI = "KERI",
 }
 
-const resolveWalletIdentifierType = (walletIdentifier: string): WalletIdentifierType => {
+const resolveWalletIdentifierType = (
+  walletIdentifier: string,
+): WalletIdentifierType => {
+  const regex = /^stake_[a-zA-Z0-9]+$/;
 
-    const regex = /^stake_[a-zA-Z0-9]+$/;
+  if (regex.test(walletIdentifier)) {
+    return WalletIdentifierType.CARDANO;
+  } else {
+    return WalletIdentifierType.KERI;
+  }
+};
 
-    if (regex.test(walletIdentifier)){
-        return WalletIdentifierType.Cardano;
-    } else {
-        return WalletIdentifierType.Keri
-    }
-}
-
-export {
-    resolveWalletIdentifierType,
-    WalletIdentifierType
-}
+export { resolveWalletIdentifierType, WalletIdentifierType };

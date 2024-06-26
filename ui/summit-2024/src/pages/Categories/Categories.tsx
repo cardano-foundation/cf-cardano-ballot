@@ -18,9 +18,12 @@ import { useIsPortrait } from "../../common/hooks/useIsPortrait";
 import { NomineeCard } from "./components/NomineeCard";
 import { ViewReceipt } from "./components/ViewReceipt";
 import { STATE } from "./components/ViewReceipt.type";
-import {useAppSelector} from "../../store/hooks";
-import {getEventCache} from "../../store/reducers/eventCache";
-import {Category, Proposal} from "../../store/reducers/eventCache/eventCache.types";
+import { useAppSelector } from "../../store/hooks";
+import { getEventCache } from "../../store/reducers/eventCache";
+import {
+  Category,
+  Proposal,
+} from "../../store/reducers/eventCache/eventCache.types";
 
 const Categories: React.FC = () => {
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
@@ -30,7 +33,9 @@ const Categories: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState(
     categoriesData[0].id,
   );
-  const [selectedNominee, setSelectedNominee] = useState<string | undefined>(undefined);
+  const [selectedNominee, setSelectedNominee] = useState<string | undefined>(
+    undefined,
+  );
   const [learMoreCategory, setLearMoreCategory] = useState("");
   const [openLearMoreCategory, setOpenLearMoreCategory] = useState(false);
   const [openVotingModal, setOpenVotingModal] = useState(false);
@@ -70,9 +75,7 @@ const Categories: React.FC = () => {
     setOpenLearMoreCategory(true);
   };
 
-  let categoryToRender = categoriesData.find(
-    (c) => c.id === selectedCategory,
-  );
+  let categoryToRender = categoriesData.find((c) => c.id === selectedCategory);
   if (!categoryToRender) {
     categoryToRender = categoriesData[0];
   }
@@ -178,25 +181,37 @@ const Categories: React.FC = () => {
                     borderRight: "1px solid #737380",
                   }}
                 >
-                  {categoriesData.map(
-                    (category: Category, index) => (
-                      <ListItem
-                        onClick={() => handleClickMenuItem(category.id)}
-                        key={index}
-                      >
-                        {category.id === selectedCategory ? (
-                          <>
-                            <Box
-                              component="div"
+                  {categoriesData.map((category: Category, index) => (
+                    <ListItem
+                      onClick={() => handleClickMenuItem(category.id)}
+                      key={index}
+                    >
+                      {category.id === selectedCategory ? (
+                        <>
+                          <Box
+                            component="div"
+                            sx={{
+                              display: "flex",
+                              padding: "8px 12px",
+                              alignItems: "center",
+                              gap: "10px",
+                              alignSelf: "stretch",
+                              borderRadius: "12px",
+                              background: theme.palette.secondary.main,
+                              color: theme.palette.background.default,
+                              fontSize: "16px",
+                              fontStyle: "normal",
+                              fontWeight: 500,
+                              lineHeight: "24px",
+                              cursor: "pointer",
+                              width: "100%",
+                            }}
+                          >
+                            <Typography
                               sx={{
-                                display: "flex",
-                                padding: "8px 12px",
-                                alignItems: "center",
                                 gap: "10px",
                                 alignSelf: "stretch",
                                 borderRadius: "12px",
-                                background: theme.palette.secondary.main,
-                                color: theme.palette.background.default,
                                 fontSize: "16px",
                                 fontStyle: "normal",
                                 fontWeight: 500,
@@ -205,42 +220,28 @@ const Categories: React.FC = () => {
                                 width: "100%",
                               }}
                             >
-                              <Typography
-                                sx={{
-                                  gap: "10px",
-                                  alignSelf: "stretch",
-                                  borderRadius: "12px",
-                                  fontSize: "16px",
-                                  fontStyle: "normal",
-                                  fontWeight: 500,
-                                  lineHeight: "24px",
-                                  cursor: "pointer",
-                                  width: "100%",
-                                }}
-                              >
-                                {category.id}
-                              </Typography>
-                            </Box>
-                          </>
-                        ) : (
-                          <>
-                            <Typography
-                              sx={{
-                                color: theme.palette.text.neutralLightest,
-                                fontSize: "16px",
-                                fontStyle: "normal",
-                                fontWeight: 500,
-                                lineHeight: "24px",
-                                cursor: "pointer",
-                              }}
-                            >
                               {category.id}
                             </Typography>
-                          </>
-                        )}
-                      </ListItem>
-                    ),
-                  )}
+                          </Box>
+                        </>
+                      ) : (
+                        <>
+                          <Typography
+                            sx={{
+                              color: theme.palette.text.neutralLightest,
+                              fontSize: "16px",
+                              fontStyle: "normal",
+                              fontWeight: 500,
+                              lineHeight: "24px",
+                              cursor: "pointer",
+                            }}
+                          >
+                            {category.id}
+                          </Typography>
+                        </>
+                      )}
+                    </ListItem>
+                  ))}
                 </List>
               </>
             )}

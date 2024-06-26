@@ -37,5 +37,5 @@ export type {
   VerificationStartedExtended,
   UserVotes,
   UserCacheProps,
-  ConnectedWallet
+  ConnectedWallet,
 };

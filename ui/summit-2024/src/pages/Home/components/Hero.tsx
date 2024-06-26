@@ -6,9 +6,9 @@ import { CustomButton } from "../../../components/common/CustomButton/CustomButt
 import theme from "../../../common/styles/theme";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../../routes";
-import {formatISODate} from "../../../utils/utils";
-import {useAppSelector} from "../../../store/hooks";
-import {getEventCache} from "../../../store/reducers/eventCache";
+import { formatISODate } from "../../../utils/utils";
+import { useAppSelector } from "../../../store/hooks";
+import { getEventCache } from "../../../store/reducers/eventCache";
 
 const Hero = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("xs"));
@@ -62,10 +62,7 @@ const Hero = () => {
               },
             }}
           >
-            Voting Closes{" "}
-              {
-                  formatISODate(eventCache.eventEndDate)
-              }
+            Voting Closes {formatISODate(eventCache.eventEndDate)}
           </Typography>
           <Typography
             variant="h4"

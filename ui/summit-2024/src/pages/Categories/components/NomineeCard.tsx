@@ -3,7 +3,7 @@ import { Grid, Paper, Typography, Box } from "@mui/material";
 import HoverCircle from "../../../components/common/HoverCircle/HoverCircle";
 import theme from "../../../common/styles/theme";
 import nomineeBg from "../../../assets/bg/nomineeCard.svg";
-import {Proposal} from "../../../store/reducers/eventCache/eventCache.types";
+import { Proposal } from "../../../store/reducers/eventCache/eventCache.types";
 
 interface NomineeCardProps {
   nominee: Proposal;

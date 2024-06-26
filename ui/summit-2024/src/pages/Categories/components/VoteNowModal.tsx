@@ -3,7 +3,7 @@ import { useIsPortrait } from "../../../common/hooks/useIsPortrait";
 import Modal from "../../../components/common/Modal/Modal";
 import { Box } from "@mui/material";
 import { CustomButton } from "../../../components/common/CustomButton/CustomButton";
-import {Proposal} from "../../../store/reducers/eventCache/eventCache.types";
+import { Proposal } from "../../../store/reducers/eventCache/eventCache.types";
 
 interface VoteModalProps {
   isOpen: boolean;
@@ -27,7 +27,7 @@ const VoteNowModal: React.FC<VoteModalProps> = ({
         width={isMobile ? "100%" : "450px"}
       >
         <Box
-            component="div"
+          component="div"
           sx={{
             width: isMobile ? "100%" : "400px",
             display: "flex",

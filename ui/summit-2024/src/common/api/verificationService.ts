@@ -4,18 +4,15 @@ import {
   HttpMethods,
 } from "../handlers/httpHandler";
 import { env } from "../constants/env";
-import {
-  PhoneNumberCodeConfirmation
-} from "../../store2/types";
+import { PhoneNumberCodeConfirmation } from "../../store2/types";
 import {
   MerkleProofItem,
   SignedWeb3Request,
 } from "../../types/voting-app-types";
-import {Problem} from "../../types/user-verification-app-types";
-import {VoteVerificationResult} from "../../types/voting-verification-app-types";
-import {resolveWalletIdentifierType, WalletIdentifierType} from "./utils";
-import { v4 as uuidv4 } from 'uuid';
-import {VerificationStartedExtended} from "../../store/reducers/userCache/userCache.types";
+import { Problem } from "../../types/user-verification-app-types";
+import { VoteVerificationResult } from "../../types/voting-verification-app-types";
+import { resolveWalletIdentifierType } from "./utils";
+import { VerificationStartedExtended } from "../../store/reducers/userCache/userCache.types";
 
 export const USER_VERIFICATION_URL = `${env.VOTING_USER_VERIFICATION_SERVER_URL}/api/user-verification/verified`;
 export const VERIFICATION_URL = `${env.VOTING_VERIFICATION_APP_SERVER_URL}/api/verification/verify-vote`;
@@ -37,80 +34,59 @@ export const verifyVote = async (payload: {
   );
 
 export const getIsVerified = async (walletIdentifier: string) => {
-
-    if (resolveWalletIdentifierType(walletIdentifier) === WalletIdentifierType.Keri){
-        // TODO: fake response
-        return {
-            verified: true
-        }
-    } else {
-        return await doRequest<{ verified: boolean }>(
-            HttpMethods.GET,
-            `${USER_VERIFICATION_URL}/${env.EVENT_ID}/${walletIdentifier}`,
-            {
-                ...DEFAULT_CONTENT_TYPE_HEADERS,
-            },
-        );
-    }
-}
+    return await doRequest<{ verified: boolean }>(
+        HttpMethods.GET,
+        `${USER_VERIFICATION_URL}/${env.EVENT_ID}/${walletIdentifier}`,
+        {
+            ...DEFAULT_CONTENT_TYPE_HEADERS,
+        },
+    );
+};
 
 export const sendSmsCode = async (
-    walletIdentifier: string,
+  walletIdentifier: string,
   phoneNumber: string,
 ) => {
-    if (resolveWalletIdentifierType(walletIdentifier) === WalletIdentifierType.Keri){
-        const now = new Date();
-        // TODO: fake response
-        return {
-            eventId: env.EVENT_ID,
-            walletIdentifier: walletIdentifier,
-            requestId: uuidv4(),
-            createdAt: now.toISOString(),
-            expiresAt: (new Date(now.getTime() + 5 * 60 * 1000)).toISOString()
-        }
-    } else {
-        return await doRequest<VerificationStartedExtended>(
-            HttpMethods.POST,
-            `${START_VERIFICATION_URL}`,
-            {
-                ...DEFAULT_CONTENT_TYPE_HEADERS,
-            },
-            JSON.stringify({ eventId: env.EVENT_ID, stakeAddress: walletIdentifier, phoneNumber }),
-        );
-    }
+  return await doRequest<VerificationStartedExtended>(
+    HttpMethods.POST,
+    `${START_VERIFICATION_URL}`,
+    {
+      ...DEFAULT_CONTENT_TYPE_HEADERS,
+    },
+    JSON.stringify({
+      eventId: env.EVENT_ID,
+      walletId: walletIdentifier,
+      walletIdType: resolveWalletIdentifierType(walletIdentifier),
+      phoneNumber,
+    }),
+  );
 };
 
 export const confirmPhoneNumberCode = async (
-    walletIdentifier: string,
+  walletIdentifier: string,
   phoneNumber: string,
   requestId: string,
   verificationCode: string,
 ) => {
-    if (resolveWalletIdentifierType(walletIdentifier) === WalletIdentifierType.Keri){
-        return {
-            verified: true
-        }
-    } else {
-        return await doRequest<PhoneNumberCodeConfirmation>(
-            HttpMethods.POST,
-            `${CONFIRM_PHONE_NUMBER_CODE_URL}`,
-            {
-                ...DEFAULT_CONTENT_TYPE_HEADERS,
-            },
-            JSON.stringify({
-                eventId: env.EVENT_ID,
-                stakeAddress: walletIdentifier,
-                phoneNumber,
-                requestId,
-                verificationCode,
-            }),
-        );
-    }
-
-}
+  return await doRequest<PhoneNumberCodeConfirmation>(
+    HttpMethods.POST,
+    `${CONFIRM_PHONE_NUMBER_CODE_URL}`,
+    {
+      ...DEFAULT_CONTENT_TYPE_HEADERS,
+    },
+    JSON.stringify({
+      eventId: env.EVENT_ID,
+      walletId: walletIdentifier,
+      walletIdType: resolveWalletIdentifierType(walletIdentifier),
+      phoneNumber,
+      requestId,
+      verificationCode,
+    }),
+  );
+};
 
 export const verifyDiscord = async (
-  stakeAddress: string,
+  walletIdentifier: string,
   secret: string,
   signedMessaged: SignedWeb3Request,
 ) => {
@@ -120,6 +96,12 @@ export const verifyDiscord = async (
     {
       ...DEFAULT_CONTENT_TYPE_HEADERS,
     },
-    JSON.stringify({ eventId: env.EVENT_ID, stakeAddress, secret, ...signedMessaged }),
+    JSON.stringify({
+      eventId: env.EVENT_ID,
+      walletId: walletIdentifier,
+      walletIdType: resolveWalletIdentifierType(walletIdentifier),
+      secret,
+      ...signedMessaged,
+    }),
   );
 };

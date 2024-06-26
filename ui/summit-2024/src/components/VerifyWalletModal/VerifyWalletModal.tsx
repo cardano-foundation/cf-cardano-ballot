@@ -159,8 +159,8 @@ const VerifyWalletModal = () => {
       codes.join(""),
     )
       .then((response: PhoneNumberCodeConfirmation) => {
-          console.log("response");
-          console.log(response);
+        console.log("response");
+        console.log(response);
         dispatch(setWalletIsVerified(response.verified));
         if (response.verified) {
           reset();
@@ -193,11 +193,7 @@ const VerifyWalletModal = () => {
       signMessagePromisified(discordSecret.trim())
         .then((signedMessaged: SignedWeb3Request) => {
           const parsedSecret = discordSecret.split("|")[1];
-          verifyDiscord(
-            walletIdentifier,
-            parsedSecret,
-            signedMessaged,
-          )
+          verifyDiscord(walletIdentifier, parsedSecret, signedMessaged)
             .then((response: { verified: boolean }) => {
               dispatch(setWalletIsVerified(response.verified));
               if (response.verified) {

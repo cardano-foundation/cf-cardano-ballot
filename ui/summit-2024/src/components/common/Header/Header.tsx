@@ -17,7 +17,7 @@ import { ROUTES } from "../../../routes";
 import { RightMenu } from "./RightMenu/RightMenu";
 import theme from "../../../common/styles/theme";
 import { useAppDispatch } from "../../../store/hooks";
-import {resetUser} from "../../../store/reducers/userCache";
+import { resetUser } from "../../../store/reducers/userCache";
 
 const Header = () => {
   const dispatch = useAppDispatch();

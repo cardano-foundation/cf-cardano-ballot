@@ -1,23 +1,25 @@
 import { ReactNode, useEffect } from "react";
-import {useAppDispatch, useAppSelector} from "../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { env } from "../../common/constants/env";
 import { setEventCache } from "../../store/reducers/eventCache";
 import { getEventData } from "../../common/api/eventDataService";
 import { eventBus, EventName } from "../../utils/EventBus";
 import { eventDataFixture } from "../../__fixtures__/event";
 import { ToastType } from "../common/Toast/Toast.types";
-import {getIsVerified} from "../../common/api/verificationService";
-import {getWalletIdentifier, setWalletIdentifier, setWalletIsVerified} from "../../store/reducers/userCache";
-import {useCardano} from "@cardano-foundation/cardano-connect-with-wallet";
-import {resolveCardanoNetwork} from "../../utils/utils";
+import { getIsVerified } from "../../common/api/verificationService";
+import {
+  getWalletIdentifier,
+  setWalletIdentifier,
+  setWalletIsVerified,
+} from "../../store/reducers/userCache";
+import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
+import { resolveCardanoNetwork } from "../../utils/utils";
 
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const walletIdentifier = useAppSelector(getWalletIdentifier);
 
-  const {
-    stakeAddress,
-  } = useCardano({
+  const { stakeAddress } = useCardano({
     limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
   });
 
@@ -35,11 +37,11 @@ const AppWrapper = (props: { children: ReactNode }) => {
     const checkWalletVerification = async () => {
       try {
         const isVerifiedResult = await getIsVerified(walletIdentifier);
-        dispatch(setWalletIsVerified(isVerifiedResult.verified))
+        dispatch(setWalletIsVerified(isVerifiedResult.verified));
       } catch (e) {
         eventBus.publish(EventName.ShowToast, e, ToastType.Error);
       }
-    }
+    };
     if (walletIdentifier?.length) {
       checkWalletVerification();
     }

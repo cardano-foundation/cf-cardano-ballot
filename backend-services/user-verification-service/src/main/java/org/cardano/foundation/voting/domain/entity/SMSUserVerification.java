@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.VerificationStatus;
+import org.cardano.foundation.voting.utils.WalletType;
 
 import java.time.LocalDateTime;
 
@@ -26,8 +27,9 @@ public class SMSUserVerification extends AbstractTimestampEntity {
     @Column(name = "wallet_id", nullable = false)
     private String walletId;
 
-    @Column(name = "wallet_id_type")
-    private String walletIdType;
+    @Column(name = "wallet_id_type", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private WalletType walletIdType;
 
     @Column(name = "event_id", nullable = false)
     private String eventId;

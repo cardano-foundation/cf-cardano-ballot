@@ -203,6 +203,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
                 .status(PENDING)
                 .phoneNumberHash(phoneHash)
                 .walletId(walletId)
+                .walletIdType(WalletType.CARDANO)
                 .verificationCode(String.valueOf(randomVerificationCode))
                 .requestId(smsVerificationResponse.requestId())
                 .expiresAt(now.plusMinutes(validationExpirationTimeMinutes))
@@ -213,6 +214,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
         var startVerificationResponse = new SMSStartVerificationResponse(
                 saved.getEventId(),
                 saved.getWalletId(),
+                saved.getWalletIdType(),
                 saved.getRequestId(),
                 saved.getCreatedAt(),
                 saved.getExpiresAt()

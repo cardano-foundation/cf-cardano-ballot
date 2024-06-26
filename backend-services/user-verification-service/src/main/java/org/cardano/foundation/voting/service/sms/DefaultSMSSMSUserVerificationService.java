@@ -79,7 +79,15 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
         String walletId = startVerificationRequest.getWalletId();
         Optional<WalletType> walletIdType = startVerificationRequest.getWalletIdType();
 
-        if (walletIdType.equals(WalletType.CARDANO)) {
+        if (!walletIdType.isPresent()) {
+            return Either.left(Problem.builder()
+                    .withTitle("WALLET_TYPE_NOT_PROVIDED")
+                    .withDetail("Wallet type must be provided.")
+                    .withStatus(BAD_REQUEST)
+                    .build());
+        }
+
+        if (walletIdType.get() == WalletType.CARDANO) {
             var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, walletId);
             if (stakeAddressCheckE.isEmpty()) {
                 return Either.left(stakeAddressCheckE.getLeft());
@@ -203,7 +211,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
                 .status(PENDING)
                 .phoneNumberHash(phoneHash)
                 .walletId(walletId)
-                .walletIdType(WalletType.CARDANO)
+                .walletIdType(walletIdType.get())
                 .verificationCode(String.valueOf(randomVerificationCode))
                 .requestId(smsVerificationResponse.requestId())
                 .expiresAt(now.plusMinutes(validationExpirationTimeMinutes))

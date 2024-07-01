@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.VerificationStatus;
+import org.cardano.foundation.voting.utils.WalletType;
 
 import javax.annotation.Nullable;
 import java.time.LocalDateTime;
@@ -37,7 +38,9 @@ public class DiscordUserVerification extends AbstractTimestampEntity {
     private String walletId;
 
     @Column(name = "wallet_id_type")
-    private String walletIdType;
+    @Nullable
+    @Enumerated(EnumType.STRING)
+    private WalletType walletIdType;
 
     @Column(name = "secret_code", nullable = false)
     @Getter
@@ -60,8 +63,16 @@ public class DiscordUserVerification extends AbstractTimestampEntity {
         return Optional.ofNullable(walletId);
     }
 
+    public Optional<WalletType> getWalletIdType() {
+        return Optional.ofNullable(walletIdType);
+    }
+
     public void setWalletId(Optional<String> walletId) {
         this.walletId = walletId.orElse(null);
+    }
+
+    public void setWalletIdType(Optional<WalletType> walletIdType) {
+        this.walletIdType = walletIdType.orElse(null);
     }
 
     @Override

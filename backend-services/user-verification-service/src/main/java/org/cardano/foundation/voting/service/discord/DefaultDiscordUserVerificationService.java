@@ -298,6 +298,7 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
         }
 
         pendingVerification.setWalletId(Optional.of(request.getWalletId()));
+        pendingVerification.setWalletIdType(request.getWalletIdType());
         pendingVerification.setUpdatedAt(LocalDateTime.now(clock));
         pendingVerification.setStatus(VERIFIED);
         userVerificationRepository.save(pendingVerification);

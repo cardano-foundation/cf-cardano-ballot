@@ -64,8 +64,6 @@ const Header: React.FC = () => {
       limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
     });
 
-  console.log('meerkatAddress');
-  console.log(meerkatAddress);
   const [openAuthDialog, setOpenAuthDialog] = useState<boolean>(false);
   const [loginModal, setLoginModal] = useState(false);
   const [loginModalMessage, setLoginModalMessage] = useState<string>('');

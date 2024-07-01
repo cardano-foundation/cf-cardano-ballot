@@ -34,13 +34,13 @@ export const verifyVote = async (payload: {
   );
 
 export const getIsVerified = async (walletIdentifier: string) => {
-    return await doRequest<{ verified: boolean }>(
-        HttpMethods.GET,
-        `${USER_VERIFICATION_URL}/${env.EVENT_ID}/${walletIdentifier}`,
-        {
-            ...DEFAULT_CONTENT_TYPE_HEADERS,
-        },
-    );
+  return await doRequest<{ verified: boolean }>(
+    HttpMethods.GET,
+    `${USER_VERIFICATION_URL}/${env.EVENT_ID}/${walletIdentifier}`,
+    {
+      ...DEFAULT_CONTENT_TYPE_HEADERS,
+    },
+  );
 };
 
 export const sendSmsCode = async (

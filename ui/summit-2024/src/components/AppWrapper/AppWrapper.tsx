@@ -9,15 +9,18 @@ import { ToastType } from "../common/Toast/Toast.types";
 import { getIsVerified } from "../../common/api/verificationService";
 import {
   getWalletIdentifier,
+  getWalletIsVerified,
   setWalletIdentifier,
   setWalletIsVerified,
 } from "../../store/reducers/userCache";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 import { resolveCardanoNetwork } from "../../utils/utils";
+import { VerifyWalletFlow } from "../VerifyWalletModal/VerifyWalletModal.type";
 
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const walletIdentifier = useAppSelector(getWalletIdentifier);
+  const walletIsVerified = useAppSelector(getWalletIsVerified);
 
   const { stakeAddress } = useCardano({
     limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
@@ -65,6 +68,24 @@ const AppWrapper = (props: { children: ReactNode }) => {
       }
     }
   };
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const action = queryParams.get("action");
+    const secret = queryParams.get("secret");
+
+    if (
+      !walletIsVerified &&
+      action === "verification" &&
+      secret?.includes("|")
+    ) {
+      // TODO: use regex
+      eventBus.publish(
+        EventName.OpenVerifyWalletModal,
+        VerifyWalletFlow.VERIFY_DISCORD,
+      );
+    }
+  }, []);
 
   return <>{props.children}</>;
 };

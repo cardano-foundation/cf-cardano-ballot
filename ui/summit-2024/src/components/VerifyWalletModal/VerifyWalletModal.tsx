@@ -56,20 +56,18 @@ const excludedCountries: MuiTelInputCountry[] | undefined = [];
 
 const VerifyWalletModal = () => {
   const theme = useTheme();
-  const [verifyCurrentPaths, setVerifyCurrentPaths] = useState<
-    VerifyWalletFlow[]
-  >([VerifyWalletFlow.INTRO]);
   const walletIdentifier = useAppSelector(getWalletIdentifier);
   const dispatch = useAppDispatch();
 
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [verifyCurrentPaths, setVerifyCurrentPaths] = useState<
+    VerifyWalletFlow[]
+  >([VerifyWalletFlow.INTRO]);
   const [defaultCountryCode] = useState<MuiTelInputCountry | undefined>("ES");
   const [phone, setPhone] = useState<string>("");
   const [codes, setCodes] = useState(Array(6).fill(""));
   const [phoneCodeIsBeenSending, setPhoneCodeIsBeenSending] =
-    useState<boolean>(false);
-  const [phoneCodeIsBeenConfirming, setPhoneCodeIsBeenConfirming] =
     useState<boolean>(false);
   const [phoneCodeIsSent, setPhoneCodeIsSent] = useState<boolean>(false);
   const [phoneCodeShowError, setPhoneCodeShowError] = useState<boolean>(false);
@@ -91,13 +89,19 @@ const VerifyWalletModal = () => {
   inputRefs.current = [];
 
   useEffect(() => {
-    const openVerifyWalletModal = (open: boolean = true) => {
-      setIsOpen(open);
+    const openVerifyWalletModal = (
+      verificationState: VerifyWalletFlow = VerifyWalletFlow.INTRO,
+    ) => {
+      setIsOpen(true);
+      handleSetCurrentPath(verificationState);
     };
-    eventBus.subscribe("openVerifyWalletModal", openVerifyWalletModal);
+    eventBus.subscribe(EventName.OpenVerifyWalletModal, openVerifyWalletModal);
 
     return () => {
-      eventBus.unsubscribe("openVerifyWalletModal", openVerifyWalletModal);
+      eventBus.unsubscribe(
+        EventName.OpenVerifyWalletModal,
+        openVerifyWalletModal,
+      );
     };
   }, []);
 
@@ -113,6 +117,7 @@ const VerifyWalletModal = () => {
       setPhoneCodeShowError(false);
       setPhone("");
       setCodes(Array(6).fill(""));
+      setVerifyCurrentPaths([VerifyWalletFlow.INTRO]);
     }
     if (timout) {
       setTimeout(() => {
@@ -150,7 +155,7 @@ const VerifyWalletModal = () => {
   };
 
   const handleVerifyPhoneCode = () => {
-    setPhoneCodeIsBeenConfirming(true);
+    //setPhoneCodeIsBeenConfirming(true);
 
     confirmPhoneNumberCode(
       walletIdentifier,
@@ -163,8 +168,8 @@ const VerifyWalletModal = () => {
         console.log(response);
         dispatch(setWalletIsVerified(response.verified));
         if (response.verified) {
-          reset();
-          setPhoneCodeIsBeenConfirming(false);
+          reset(true);
+          //setPhoneCodeIsBeenConfirming(false);
           eventBus.publish(
             EventName.ShowToast,
             "Phone number verified successfully",
@@ -172,7 +177,7 @@ const VerifyWalletModal = () => {
           setIsOpen(false);
         } else {
           setPhoneCodeShowError(true);
-          setPhoneCodeIsBeenConfirming(false);
+          //setPhoneCodeIsBeenConfirming(false);
           eventBus.publish(
             EventName.ShowToast,
             "Phone number verified successfully",
@@ -184,26 +189,38 @@ const VerifyWalletModal = () => {
       .catch(() => {
         // onError('SMS code verification failed');
         setPhoneCodeShowError(true);
-        setPhoneCodeIsBeenConfirming(false);
+        //setPhoneCodeIsBeenConfirming(false);
       });
   };
 
   const handleVerifyDiscord = async () => {
     if (action === "verification" && discordSecret?.includes("|")) {
+      console.log("lets sign");
+      console.log(discordSecret);
       signMessagePromisified(discordSecret.trim())
         .then((signedMessaged: SignedWeb3Request) => {
           const parsedSecret = discordSecret.split("|")[1];
           verifyDiscord(walletIdentifier, parsedSecret, signedMessaged)
             .then((response: { verified: boolean }) => {
+              console.log("response");
+              console.log(response);
               dispatch(setWalletIsVerified(response.verified));
-              if (response.verified) {
-                reset();
-              } else {
-              }
+              eventBus.publish(
+                EventName.ShowToast,
+                "Wallet verified successfully",
+              );
+              const url = new URL(window.location.href);
+              const cleanUrl = `${url.protocol}//${url.host}${url.pathname}`;
+              window.history.replaceState({}, document.title, cleanUrl);
+              handleCloseModal();
             })
-            .catch((e) => console.error(e));
+            .catch((e) =>
+              eventBus.publish("showToast", e.message, ToastType.Error),
+            );
         })
-        .catch((e) => console.error(e));
+        .catch((e) =>
+          eventBus.publish("showToast", e.message, ToastType.Error),
+        );
     }
   };
 
@@ -791,7 +808,7 @@ const VerifyWalletModal = () => {
 
   const handleCloseModal = () => {
     setIsOpen(false);
-    setVerifyCurrentPaths([VerifyWalletFlow.INTRO]);
+    reset(true);
   };
 
   const handleSetCurrentPath = (option: VerifyWalletFlow) => {
@@ -805,11 +822,6 @@ const VerifyWalletModal = () => {
     if (verifyCurrentPaths.length >= 2) {
       return setVerifyCurrentPaths((prev) => prev.slice(1));
     }
-  };
-
-  const handleClose = () => {
-    reset();
-    setIsOpen(false);
   };
 
   const renderVerify = () => {
@@ -861,14 +873,14 @@ const VerifyWalletModal = () => {
         id="verify-wallet-modal"
         isOpen={isOpen}
         name="verify-wallet-modal"
-        title={content.title}
-        onClose={() => handleClose()}
+        title={content?.title}
+        onClose={() => handleCloseModal()}
         disableBackdropClick={true}
         width={isMobile ? "auto" : "450px"}
         onBack={() => handleBack()}
         backButton={verifyCurrentPaths.length > 1}
       >
-        {content.render}
+        {content?.render}
       </Modal>
     </>
   );

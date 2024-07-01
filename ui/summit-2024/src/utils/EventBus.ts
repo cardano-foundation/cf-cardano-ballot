@@ -4,6 +4,7 @@ enum EventName {
   ShowToast = "showToast",
   OpenConnectWalletModal = "openConnectWalletModal",
   CloseConnectWalletModal = "closeConnectWalletModal",
+  OpenVerifyWalletModal = "openVerifyWalletModal",
 }
 
 class EventBus {

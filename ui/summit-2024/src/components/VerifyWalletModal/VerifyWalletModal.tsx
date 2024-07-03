@@ -8,8 +8,7 @@ import {
   ListItem,
   ListItemAvatar,
   Typography,
-  useMediaQuery,
-  useTheme,
+  useMediaQuery
 } from "@mui/material";
 import CallIcon from "@mui/icons-material/Call";
 import RefreshOutlinedIcon from "@mui/icons-material/RefreshOutlined";
@@ -50,12 +49,13 @@ import {
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { VerificationStarted } from "../../store/reducers/userCache/userCache.types";
 import { ToastType } from "../common/Toast/Toast.types";
+import {CustomInput} from "../common/CustomInput/CustomInput";
+import theme from "../../common/styles/theme";
 
 // TODO: env.
 const excludedCountries: MuiTelInputCountry[] | undefined = [];
 
 const VerifyWalletModal = () => {
-  const theme = useTheme();
   const walletIdentifier = useAppSelector(getWalletIdentifier);
   const dispatch = useAppDispatch();
 
@@ -73,6 +73,8 @@ const VerifyWalletModal = () => {
   const [phoneCodeShowError, setPhoneCodeShowError] = useState<boolean>(false);
   const [checkImNotARobot, setCheckImNotARobot] = useState<boolean>(false);
   const [isPhoneInputDisabled] = useState<boolean>(false);
+    const [inputSecret, setInputSecret] = useState('');
+
   const { signMessage } = useCardano({
     limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
   });
@@ -430,7 +432,7 @@ const VerifyWalletModal = () => {
             onChange={handleChangePhone}
             disabled={isPhoneInputDisabled}
             style={{
-              background: "var(--neutralDark, #272727)",
+              background: theme.palette.background.neutralDark,
               width: "100%",
             }}
           />
@@ -710,7 +712,16 @@ const VerifyWalletModal = () => {
     );
   };
 
-  const renderVerifyDiscord = () => {
+    const validateSecret = (value: string) => {
+        const pattern = /^[a-zA-Z0-9]+$/;
+        return pattern.test(value);
+    };
+
+    const handleInputSecretChange = (value: string) => {
+        setInputSecret(value);
+    };
+
+    const renderVerifyDiscord = () => {
     return (
       <>
         <Typography
@@ -791,13 +802,34 @@ const VerifyWalletModal = () => {
           3. You will be redirected back to the Cardano Ballot application
           within a new window, to complete the sign and verification process.
         </Typography>
+          <Typography
+              gutterBottom
+              style={{
+                  marginTop: "24px",
+                  marginLeft: "16px",
+                  marginBottom: "4px",
+                  fontSize: "12px",
+                  fontStyle: "normal",
+                  fontWeight: 500,
+          }}
+          >
+              Secret Key
+          </Typography>
+          <CustomInput
+              value={inputSecret}
+              styles={{
+                  marginBottom: "24px"
+              }}
+              fullWidth={true}
+              validate={validateSecret}
+              onChange={handleInputSecretChange}
+          />
         <CustomButton
           colorVariant="primary"
           onClick={() => handleVerifyDiscord()}
-          disabled={!discordSecret}
+          disabled={inputSecret !== "" && !validateSecret(inputSecret)}
           sx={{
-            width: "100%",
-            marginTop: "24px",
+            width: "100%"
           }}
         >
           Sign and Verify

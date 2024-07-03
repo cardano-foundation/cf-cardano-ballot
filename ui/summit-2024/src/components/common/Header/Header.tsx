@@ -40,21 +40,10 @@ const Header = () => {
     const openConnectWalletModal = () => {
       setShowConnectWalletModal(true);
     };
-    eventBus.subscribe("openConnectWalletModal", openConnectWalletModal);
+    eventBus.subscribe(EventName.OpenConnectWalletModal, openConnectWalletModal);
 
     return () => {
-      eventBus.unsubscribe("openConnectWalletModal", openConnectWalletModal);
-    };
-  }, []);
-
-  useEffect(() => {
-    const openConnectWalletModal = () => {
-      setShowConnectWalletModal(true);
-    };
-    eventBus.subscribe("openConnectWalletModal", openConnectWalletModal);
-
-    return () => {
-      eventBus.unsubscribe("openConnectWalletModal", openConnectWalletModal);
+      eventBus.unsubscribe(EventName.OpenConnectWalletModal, openConnectWalletModal);
     };
   }, []);
 

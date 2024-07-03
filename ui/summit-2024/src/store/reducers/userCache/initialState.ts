@@ -31,4 +31,4 @@ const initialStateData: UserCacheProps = {
   isVerified: false,
 };
 
-export { initialStateData };
+export { initialStateData, initialConnectedWallet };

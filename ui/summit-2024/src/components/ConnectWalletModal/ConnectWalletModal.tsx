@@ -17,6 +17,7 @@ import {
   setWalletIdentifier,
 } from "../../store/reducers/userCache";
 import { ToastType } from "../common/Toast/Toast.types";
+import {initialConnectedWallet} from "../../store/reducers/userCache/initialState";
 
 const ConnectWalletModal = (props: ConnectWalletProps) => {
   const dispatch = useAppDispatch();
@@ -40,8 +41,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
     dAppConnect,
     meerkatAddress,
     initDappConnect,
-    disconnect,
-    stakeAddress,
+    disconnect
   } = useCardano({
     limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
   });
@@ -80,8 +80,6 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
         walletInfo: IWalletInfo,
         callback: (granted: boolean, autoconnect: boolean) => void,
       ) => {
-        console.log("verifyConnection");
-        console.log(walletInfo);
         setPeerConnectWalletInfo(walletInfo);
         setCurrentPath(ConnectWalletFlow.ACCEPT_CONNECTION);
 
@@ -89,23 +87,52 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
         setOnPeerConnectReject(() => () => callback(false, false));
       };
 
-      const onApiInject = (name: string): void => {
-        connect(
-          name,
-          () => {
-            props.handleCloseConnectWalletModal();
+      const onApiInject = async (name: string) => {
+        if (name === "idw_p2p") {
+          const api =
+              window.cardano && window.cardano[name];
+          if (api) {
+            const enabledApi = await api.enable();
+            const keriIdentifier =
+                await enabledApi.experimental.getKeriIdentifier();
+            dispatch(setWalletIdentifier(keriIdentifier.id));
+            dispatch(setConnectedWallet({
+              address: api.identifier,
+              name: api.name,
+              icon: api.icon,
+              requestAutoconnect: true,
+              version: api.version
+            }));
             eventBus.publish(
-              EventName.ShowToast,
-              `${name} Wallet connected successfully`,
+                EventName.ShowToast,
+                `${name} Wallet connected successfully`,
             );
-          },
-          (e: Error) => {
-            eventBus.publish(EventName.ShowToast, e.message, ToastType.Error);
-          },
-        ).catch((e) => console.error(e));
+          } else {
+            eventBus.publish(
+                EventName.ShowToast,
+                `Timeout while connecting P2P ${name} wallet`,
+                ToastType.Error,
+            );
+          }
+        } else {
+          connect(
+              name,
+              () => {
+                eventBus.publish(
+                    EventName.ShowToast,
+                    `${name} Wallet connected successfully`,
+                );
+              },
+              (e: Error) => {
+                eventBus.publish(EventName.ShowToast, e.message, ToastType.Error);
+              },
+          ).catch((e) => console.error(e));
+        }
       };
 
       const onApiEject = (name: string): void => {
+        dispatch(setWalletIdentifier(""));
+        dispatch(setConnectedWallet(initialConnectedWallet));
         setPeerConnectWalletInfo(undefined);
         eventBus.publish(
           EventName.ShowToast,
@@ -140,9 +167,6 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
     if (peerConnectWalletInfo) {
       onPeerConnectAccept();
       connect(peerConnectWalletInfo.name).then(async () => {
-        console.log("handleAccept peerConnectWalletInfo:");
-        console.log(peerConnectWalletInfo);
-
         if (peerConnectWalletInfo.name === "idw_p2p") {
           const start = Date.now();
           const interval = 100;

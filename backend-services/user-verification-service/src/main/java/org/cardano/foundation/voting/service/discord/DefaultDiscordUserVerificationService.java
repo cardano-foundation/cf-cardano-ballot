@@ -172,7 +172,16 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
 
     private Either<Problem, IsVerifiedResponse> handleCardanoVerification(DiscordCheckVerificationRequest request, String eventId, String walletId) {
 
-        String signature = request.getCoseSignature();
+        String signature = request.getCoseSignature().orElse(null);
+
+        if (signature == null) {
+            return Either.left(Problem.builder()
+                    .withTitle("MISSING_SIGNATURE")
+                    .withDetail("Missing signature.")
+                    .withStatus(BAD_REQUEST)
+                    .build());
+        }
+
         String publicKey = request.getCosePublicKey().orElse(null);
 
         if (publicKey == null) {
@@ -326,6 +335,15 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
     }
 
     private Either<Problem, IsVerifiedResponse> handleKeriVerification(DiscordCheckVerificationRequest request, String eventId, String walletId) {
+        String signature = request.getKeriSignedMessage().orElse(null);
+
+        if (signature == null) {
+            return Either.left(Problem.builder()
+                    .withTitle("MISSING_SIGNATURE")
+                    .withDetail("Missing signature.")
+                    .withStatus(BAD_REQUEST)
+                    .build());
+        }
         // Example: Simulate checking a condition specific to Keri
         boolean conditionMet = checkKeriCondition(request);
 

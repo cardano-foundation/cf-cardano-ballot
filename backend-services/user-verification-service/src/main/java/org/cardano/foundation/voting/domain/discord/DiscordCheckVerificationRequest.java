@@ -27,10 +27,13 @@ public class DiscordCheckVerificationRequest {
     @NotBlank
     private String secret;
 
-    @NotBlank
-    protected String coseSignature;
+    @Builder.Default
+    protected Optional<String> coseSignature = Optional.empty();
 
     @Builder.Default
-    protected Optional<@NotBlank String> cosePublicKey = Optional.empty();
+    protected Optional<String> cosePublicKey = Optional.empty();
+
+    @Builder.Default
+    protected Optional<String> keriSignedMessage = Optional.empty();
 
 }

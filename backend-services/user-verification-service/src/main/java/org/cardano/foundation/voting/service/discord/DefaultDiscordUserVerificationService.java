@@ -335,7 +335,14 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
     }
 
     private Either<Problem, IsVerifiedResponse> handleKeriVerification(DiscordCheckVerificationRequest request, String eventId, String walletId) {
+        System.out.println("\nhandleKeriVerification");
         String signature = request.getKeriSignedMessage().orElse(null);
+        System.out.println("keriSignedMessage");
+        System.out.println(signature);
+        System.out.println("request");
+        System.out.println(request);
+        System.out.println("walletId");
+        System.out.println(walletId);
 
         if (signature == null) {
             return Either.left(Problem.builder()

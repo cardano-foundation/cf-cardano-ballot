@@ -36,4 +36,7 @@ public class DiscordCheckVerificationRequest {
     @Builder.Default
     protected Optional<String> keriSignedMessage = Optional.empty();
 
+    @Builder.Default
+    protected Optional<String> keriPayload = Optional.empty();
+
 }

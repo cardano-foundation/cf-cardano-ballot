@@ -23,7 +23,7 @@ const CustomInput = (props: CustomInputProps) => {
         }
     };
 
-    const isValid = value === "" ? true : validate && validate(value);
+    const isValid = value === "" || !validate ? true : validate && validate(value);
     return (
         <TextField
             value={value}

@@ -34,8 +34,16 @@ const getSignedMessagePromise = (
     new Promise((resolve, reject) => {
       signMessage(
         message,
-        (signature, key) =>
-          resolve({ coseSignature: signature, cosePublicKey: key || "" }),
+        (signature, key) => {
+          console.log("getSignedMessagePromise");
+          console.log("message");
+          console.log(message);
+          console.log("signature");
+          console.log(signature);
+          console.log("key");
+          console.log(key);
+          resolve({coseSignature: signature, cosePublicKey: key || ""})
+        },
         (error: Error) => reject(error),
       );
     });

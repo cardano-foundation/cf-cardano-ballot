@@ -81,13 +81,6 @@ const VerifyWalletModal = () => {
   const userVerificationStarted = useAppSelector(getVerificationStarted);
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-
-  const location = useLocation();
-
-  const queryParams = new URLSearchParams(location.search);
-  const action = queryParams.get("action");
-  const discordSecret = queryParams.get("secret");
-
   inputRefs.current = [];
 
   useEffect(() => {
@@ -196,13 +189,12 @@ const VerifyWalletModal = () => {
   };
 
   const handleVerifyDiscord = async () => {
-    if (action === "verification" && discordSecret?.includes("|")) {
       console.log("lets sign");
-      console.log(discordSecret);
-      signMessagePromisified(discordSecret.trim())
+      console.log("inputSecret");
+      console.log(inputSecret);
+      signMessagePromisified(inputSecret.trim())
         .then((signedMessaged: SignedWeb3Request) => {
-          const parsedSecret = discordSecret.split("|")[1];
-          verifyDiscord(walletIdentifier, parsedSecret, signedMessaged)
+          verifyDiscord(walletIdentifier, inputSecret, signedMessaged)
             .then((response: { verified: boolean }) => {
               console.log("response");
               console.log(response);
@@ -211,9 +203,6 @@ const VerifyWalletModal = () => {
                 EventName.ShowToast,
                 "Wallet verified successfully",
               );
-              const url = new URL(window.location.href);
-              const cleanUrl = `${url.protocol}//${url.host}${url.pathname}`;
-              window.history.replaceState({}, document.title, cleanUrl);
               handleCloseModal();
             })
             .catch((e) =>
@@ -223,7 +212,7 @@ const VerifyWalletModal = () => {
         .catch((e) =>
           eventBus.publish("showToast", e.message, ToastType.Error),
         );
-    }
+
   };
 
   const renderStartVerification = () => {

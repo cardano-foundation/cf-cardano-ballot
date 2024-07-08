@@ -31,7 +31,10 @@ class OOBIEnd:
         self.hby = hby
 
     def on_get(self, req, resp):
-        oobi = getRequiredParam(req.get_media(), 'oobi')
+        # This should be a path param but is causing issues, query will do.
+        oobi = req.params.get('url')
+        if oobi is None or oobi == "":
+            raise falcon.HTTPBadRequest(description=f"required field url missing from request")
 
         result = self.hby.db.roobi.get(keys=(oobi,))
         if result:
@@ -47,7 +50,7 @@ class OOBIEnd:
         resp.status = falcon.HTTP_202
 
 
-class KeyStateEnd:
+class KeyStateCreateEnd:
     def __init__(self, hby, hab, queries):
         self.hby = hby
         self.hab = hab
@@ -67,24 +70,27 @@ class KeyStateEnd:
         for (keys, saider) in self.hby.db.knas.getItemIter(keys=(pre,)):
             self.hby.db.knas.rem(keys)
             self.hby.db.ksns.rem((saider.qb64,))
-            self.hby.db.ksns.rem((saider.qb64,))
+            self.hby.db.kdts.rem((saider.qb64,))
 
         self.queries.append(pre)
         resp.status = falcon.HTTP_202
 
-    def on_get(self, req, resp):
-        body = req.get_media()
-        aid = getRequiredParam(body, 'pre')  # TODO this should be a query param
 
+class KeyStateQueryEnd:
+    def __init__(self, hby, hab):
+        self.hby = hby
+        self.hab = hab
+
+    def on_get(self, _, resp, pre):
         try:
-            kever: eventing.Kever = self.hab.kevers[aid]
+            kever: eventing.Kever = self.hab.kevers[pre]
         except KeyError as _:
             resp.status = falcon.HTTP_404
-            resp.text = f"Unknown AID {aid}"
+            resp.text = f"Unknown AID {pre}"
             return
 
         ksn = None
-        for (_, saider) in self.hby.db.knas.getItemIter(keys=(aid,)):
+        for (_, saider) in self.hby.db.knas.getItemIter(keys=(pre,)):
             ksn = self.hby.db.ksns.get(keys=(saider.qb64,))
             break
 
@@ -102,15 +108,15 @@ class VerificationEnd:
 
     def on_post(self, req, resp):
         body = req.get_media()
-        aid = getRequiredParam(body, 'aid')
+        pre = getRequiredParam(body, 'pre')
         signature = getRequiredParam(body, 'signature')
         payload = getRequiredParam(body, 'payload')
 
         try:
-            kever = self.hab.kevers[aid]
+            kever = self.hab.kevers[pre]
         except KeyError as _:
             resp.status = falcon.HTTP_404
-            resp.text = f"Unknown AID {aid}, please ensure corresponding OOBI has been resolved"
+            resp.text = f"Unknown AID {pre}, please ensure corresponding OOBI has been resolved"
             return
         verfers = kever.verfers
 
@@ -132,7 +138,7 @@ class VerificationEnd:
 
 
 class HealthEnd:
-    def on_get(self, req, resp):
+    def on_get(self, _, resp):
         resp.status = falcon.HTTP_OK
         resp.media = {"message": f"Health is okay. Time is {nowIso8601()}"}
 

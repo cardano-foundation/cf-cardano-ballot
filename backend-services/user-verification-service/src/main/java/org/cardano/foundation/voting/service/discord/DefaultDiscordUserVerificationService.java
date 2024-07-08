@@ -4,6 +4,7 @@ import io.vavr.Tuple2;
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
+import org.cardano.foundation.voting.client.KeriVerificationClient;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.IsVerifiedRequest;
 import org.cardano.foundation.voting.domain.IsVerifiedResponse;
@@ -38,6 +39,9 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
 
     @Autowired
     private ChainFollowerClient chainFollowerClient;
+
+    @Autowired
+    private KeriVerificationClient keriVerificationClient;
 
     @Autowired
     private DiscordUserVerificationRepository userVerificationRepository;
@@ -337,10 +341,11 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
     private Either<Problem, IsVerifiedResponse> handleKeriVerification(DiscordCheckVerificationRequest request, String eventId, String walletId) {
         System.out.println("\nhandleKeriVerification");
         String signature = request.getKeriSignedMessage().orElse(null);
+        String payload = request.getKeriPayload().orElse(null);
         System.out.println("keriSignedMessage");
         System.out.println(signature);
-        System.out.println("request");
-        System.out.println(request);
+        System.out.println("payload");
+        System.out.println(payload);
         System.out.println("walletId");
         System.out.println(walletId);
 
@@ -351,22 +356,94 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
                     .withStatus(BAD_REQUEST)
                     .build());
         }
-        // Example: Simulate checking a condition specific to Keri
-        boolean conditionMet = checkKeriCondition(request);
 
-        if (!conditionMet) {
+        Either<Problem, Boolean> verificationResult = keriVerificationClient.verifySignature(walletId, signature, payload);
+
+        if (verificationResult.isLeft()) {
+            return Either.left(verificationResult.getLeft());
+        }
+
+        if (!verificationResult.get()) {
             return Either.left(Problem.builder()
                     .withTitle("KERI_VERIFICATION_FAILED")
-                    .withDetail("The Keri-specific condition was not met.")
+                    .withDetail("The Keri verification failed.")
                     .withStatus(BAD_REQUEST)
                     .build());
         }
 
-        return Either.right(new IsVerifiedResponse(true));
-    }
+        var items = payload.split("\\|");
+        var discordIdHash = items[0];
+        var secret = items[1];
 
-    private boolean checkKeriCondition(DiscordCheckVerificationRequest request) {
-        return true;
+        System.out.println("discordIdHash");
+        System.out.println(discordIdHash);
+        System.out.println("secret");
+        System.out.println(secret);
+
+
+        var maybeCompletedVerificationBasedOnDiscordUserHash = userVerificationRepository
+                .findCompletedVerificationBasedOnDiscordUserHash(eventId, discordIdHash);
+
+        if (maybeCompletedVerificationBasedOnDiscordUserHash.isPresent()) {
+            return Either.left(Problem.builder()
+                    .withTitle("USER_ALREADY_VERIFIED")
+                    .withDetail("User already verified.")
+                    .withStatus(BAD_REQUEST)
+                    .with("discordIdHash", discordIdHash)
+                    .build()
+            );
+        }
+
+        var maybePendingVerification = userVerificationRepository.findPendingVerificationBasedOnDiscordUserHash(eventId, discordIdHash);
+
+        if (maybePendingVerification.isEmpty()) {
+            return Either.left(Problem.builder()
+                    .withTitle("NO_PENDING_VERIFICATION")
+                    .withDetail("No pending verification found for discordIdHash:" + discordIdHash)
+                    .withStatus(BAD_REQUEST)
+                    .with("discordIdHash", discordIdHash)
+                    .build()
+            );
+        }
+
+        System.out.println("\nrequest.getSecret()");
+        System.out.println(request.getSecret());
+
+        var pendingVerification = maybePendingVerification.get();
+        boolean isSecretCodeMatch = pendingVerification.getSecretCode().equals(secret)
+                && pendingVerification.getSecretCode().equals(request.getSecret());
+
+        if (!isSecretCodeMatch) {
+            return Either.left(Problem.builder()
+                    .withTitle("AUTH_FAILED")
+                    .withDetail("Invalid secret and / or discordIdHash.")
+                    .withStatus(BAD_REQUEST)
+                    .build()
+            );
+        }
+
+        var pendingUserVerification = maybePendingVerification.orElseThrow();
+
+        var now = LocalDateTime.now(clock);
+
+        var isCodeExpired = now.isAfter(pendingUserVerification.getExpiresAt());
+        if (isCodeExpired) {
+            return Either.left(Problem.builder()
+                    .withTitle("VERIFICATION_EXPIRED")
+                    .withDetail(String.format("Secret code: %s expired for walletId: %s and discordHashId:%s", secret, walletId, discordIdHash))
+                    .withStatus(BAD_REQUEST)
+                    .with("discordIdHash", discordIdHash)
+                    .with("walletId", walletId)
+                    .build());
+        }
+
+        pendingVerification.setWalletId(Optional.of(request.getWalletId()));
+        pendingVerification.setWalletIdType(request.getWalletIdType());
+        pendingVerification.setUpdatedAt(LocalDateTime.now(clock));
+        pendingVerification.setStatus(VERIFIED);
+        userVerificationRepository.save(pendingVerification);
+
+        return Either.right(new IsVerifiedResponse(true));
     }
 
     @Override

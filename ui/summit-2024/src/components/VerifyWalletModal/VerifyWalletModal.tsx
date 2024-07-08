@@ -194,7 +194,8 @@ const VerifyWalletModal = () => {
       console.log(inputSecret);
       signMessagePromisified(inputSecret.trim())
         .then((signedMessaged: SignedWeb3Request) => {
-          verifyDiscord(walletIdentifier, inputSecret, signedMessaged)
+            const parsedSecret = inputSecret.split('|')[1];
+          verifyDiscord(walletIdentifier, parsedSecret, signedMessaged)
             .then((response: { verified: boolean }) => {
               console.log("response");
               console.log(response);
@@ -702,7 +703,7 @@ const VerifyWalletModal = () => {
   };
 
     const validateSecret = (value: string) => {
-        const pattern = /^[a-zA-Z0-9]+$/;
+        const pattern = /^[a-zA-Z0-9]+\|[a-zA-Z0-9]+$/;
         return pattern.test(value);
     };
 
@@ -816,7 +817,7 @@ const VerifyWalletModal = () => {
         <CustomButton
           colorVariant="primary"
           onClick={() => handleVerifyDiscord()}
-          disabled={inputSecret !== "" && !validateSecret(inputSecret)}
+          disabled={inputSecret === "" && !validateSecret(inputSecret)}
           sx={{
             width: "100%"
           }}

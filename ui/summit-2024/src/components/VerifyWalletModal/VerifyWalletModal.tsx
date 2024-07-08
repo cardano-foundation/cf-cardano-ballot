@@ -20,13 +20,12 @@ import {
 import discordLogo from "../../common/resources/images/discord-icon.svg";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 import { PhoneNumberCodeConfirmation } from "../../store2/types";
-import { useLocation } from "react-router-dom";
 import {
   getSignedMessagePromise,
   openNewTab,
   resolveCardanoNetwork,
 } from "../../utils/utils";
-import { SignedWeb3Request } from "../../types/voting-app-types";
+import {SignedKeriRequest, SignedWeb3Request} from "../../types/voting-app-types";
 import { ErrorMessage } from "../common/ErrorMessage/ErrorMessage";
 import { CustomButton } from "../common/CustomButton/CustomButton";
 import Modal from "../common/Modal/Modal";
@@ -51,6 +50,7 @@ import { VerificationStarted } from "../../store/reducers/userCache/userCache.ty
 import { ToastType } from "../common/Toast/Toast.types";
 import {CustomInput} from "../common/CustomInput/CustomInput";
 import theme from "../../common/styles/theme";
+import {resolveWalletIdentifierType, WalletIdentifierType} from "../../common/api/utils";
 
 // TODO: env.
 const excludedCountries: MuiTelInputCountry[] | undefined = [];
@@ -188,12 +188,32 @@ const VerifyWalletModal = () => {
       });
   };
 
+  const handleSignWithWallet = async (message: string) => {
+      if (resolveWalletIdentifierType(walletIdentifier) === WalletIdentifierType.KERI) {
+          const api =
+              window.cardano && window.cardano["idw_p2p"];
+          const enabledApi = await api?.enable();
+          console.log("enabledApi");
+          console.log(enabledApi);
+          const keriIdentifier = await enabledApi.experimental.getKeriIdentifier();
+          const signedMessage:string = await enabledApi.experimental.signKeri(walletIdentifier, message);
+
+          return {
+              keriPayload: message,
+              keriSignedMessage: signedMessage,
+              oobi: keriIdentifier.oobi
+          };
+      } else {
+          return await signMessagePromisified(message);
+      }
+  }
+
   const handleVerifyDiscord = async () => {
       console.log("lets sign");
       console.log("inputSecret");
       console.log(inputSecret);
-      signMessagePromisified(inputSecret.trim())
-        .then((signedMessaged: SignedWeb3Request) => {
+      handleSignWithWallet(inputSecret.trim())
+        .then((signedMessaged: SignedKeriRequest | SignedWeb3Request ) => {
             const parsedSecret = inputSecret.split('|')[1];
           verifyDiscord(walletIdentifier, parsedSecret, signedMessaged)
             .then((response: { verified: boolean }) => {

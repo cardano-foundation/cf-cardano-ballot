@@ -139,6 +139,11 @@ export interface JwtLoginEnvelope {
   role: string;
 }
 
+export interface SignedKeriRequest {
+  keriSignedMessage: string;
+  keriPayload: string;
+}
+
 export interface SignedWeb3Request {
   coseSignature: string;
   cosePublicKey?: string;

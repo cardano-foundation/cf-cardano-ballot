@@ -6,12 +6,12 @@ import {
 import { env } from "../constants/env";
 import { PhoneNumberCodeConfirmation } from "../../store2/types";
 import {
-  MerkleProofItem,
+  MerkleProofItem, SignedKeriRequest,
   SignedWeb3Request,
 } from "../../types/voting-app-types";
 import { Problem } from "../../types/user-verification-app-types";
 import { VoteVerificationResult } from "../../types/voting-verification-app-types";
-import { resolveWalletIdentifierType } from "./utils";
+import {resolveWalletIdentifierType} from "./utils";
 import { VerificationStartedExtended } from "../../store/reducers/userCache/userCache.types";
 
 export const USER_VERIFICATION_URL = `${env.VOTING_USER_VERIFICATION_SERVER_URL}/api/user-verification/verified`;
@@ -88,7 +88,7 @@ export const confirmPhoneNumberCode = async (
 export const verifyDiscord = async (
   walletIdentifier: string,
   secret: string,
-  signedMessaged: SignedWeb3Request,
+  signedMessaged: SignedKeriRequest | SignedWeb3Request,
 ) => {
   return await doRequest<{ verified: boolean }>(
     HttpMethods.POST,
@@ -101,7 +101,7 @@ export const verifyDiscord = async (
       walletId: walletIdentifier,
       walletIdType: resolveWalletIdentifierType(walletIdentifier),
       secret,
-      ...signedMessaged,
+      ...signedMessaged
     }),
   );
 };

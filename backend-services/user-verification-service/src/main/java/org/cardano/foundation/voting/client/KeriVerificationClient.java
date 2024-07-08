@@ -70,4 +70,82 @@ public class KeriVerificationClient {
                     .build());
         }
     }
+
+    public Either<Problem, Boolean> registerOOBI(String oobi) {
+        String url = String.format("%s/oobi", keriVerifierBaseUrl);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+
+        Map<String, String> requestBody = new HashMap<>();
+        requestBody.put("oobi", oobi);
+
+        HttpEntity<Map<String, String>> entity = new HttpEntity<>(requestBody, headers);
+
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                return Either.right(true);
+            } else {
+                return Either.left(Problem.builder()
+                        .withTitle("OOBI_REGISTRATION_FAILED")
+                        .withDetail("Failed to register OOBI.")
+                        .withStatus(new HttpStatusAdapter(response.getStatusCode()))
+                        .build());
+            }
+        } catch (HttpClientErrorException e) {
+            return Either.left(Problem.builder()
+                    .withTitle("OOBI_REGISTRATION_ERROR")
+                    .withDetail("Unable to register OOBI, reason: " + e.getMessage())
+                    .withStatus(new HttpStatusAdapter(e.getStatusCode()))
+                    .build());
+        }
+    }
+
+    public Either<Problem, String> getOOBI(String oobi, Integer maxAttempts) {
+        String url = String.format("%s/oobi", keriVerifierBaseUrl);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type", "application/json");
+
+        Map<String, String> requestBody = new HashMap<>();
+        requestBody.put("oobi", oobi);
+
+        HttpEntity<Map<String, String>> entity = new HttpEntity<>(requestBody, headers);
+
+        int attempts = (maxAttempts == null) ? 1 : maxAttempts;
+        int attempt = 0;
+
+        while (attempt < attempts) {
+            try {
+                ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+
+                if (response.getStatusCode().is2xxSuccessful()) {
+                    return Either.right(response.getBody());
+                }
+            } catch (HttpClientErrorException e) {
+                if (e.getStatusCode() != BAD_REQUEST) {
+                    return Either.left(Problem.builder()
+                            .withTitle("OOBI_FETCH_ERROR")
+                            .withDetail("Unable to fetch OOBI, reason: " + e.getMessage())
+                            .withStatus(new HttpStatusAdapter(e.getStatusCode()))
+                            .build());
+                }
+            }
+
+            attempt++;
+            if (attempt < attempts) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return Either.left(Problem.builder()
+                            .withTitle("INTERRUPTED_ERROR")
+                            .withDetail("Thread was interrupted while waiting to retry.")
+                            .withStatus(new HttpStatusAdapter(BAD_REQUEST))
+                            .build());
+                }
+            }
+        }
 }

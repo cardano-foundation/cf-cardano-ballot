@@ -342,6 +342,7 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
         System.out.println("\nhandleKeriVerification");
         String signature = request.getKeriSignedMessage().orElse(null);
         String payload = request.getKeriPayload().orElse(null);
+        String oobi = request.getOobi().orElse(null);
         System.out.println("keriSignedMessage");
         System.out.println(signature);
         System.out.println("payload");
@@ -353,6 +354,19 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
             return Either.left(Problem.builder()
                     .withTitle("MISSING_SIGNATURE")
                     .withDetail("Missing signature.")
+                    .withStatus(BAD_REQUEST)
+                    .build());
+        }
+
+        Either<Problem, Boolean> oobiResult = keriVerificationClient.registerOOBI(oobi);
+        if (oobiResult.isLeft()) {
+            return Either.left(oobiResult.getLeft());
+        }
+
+        if (!oobiResult.get()) {
+            return Either.left(Problem.builder()
+                    .withTitle("OOBI_REGISTRATION_FAILED")
+                    .withDetail("The OOBI registration failed.")
                     .withStatus(BAD_REQUEST)
                     .build());
         }

@@ -142,6 +142,7 @@ public class DiscordUserVerificationAPITests extends BaseTest {
                 .secret("chj3h3dtjq")
                 .keriSignedMessage(Optional.empty())
                 .keriPayload(Optional.empty())
+                .oobi(Optional.empty())
                 .build();
 
         int expectedStatusCode = 400;
@@ -181,6 +182,7 @@ public class DiscordUserVerificationAPITests extends BaseTest {
                 .secret("chj3h3dtjq")
                 .keriSignedMessage(Optional.empty())
                 .keriPayload(Optional.empty())
+                .oobi(Optional.empty())
                 .build();
 
         given().contentType(ContentType.JSON)
@@ -243,6 +245,7 @@ public class DiscordUserVerificationAPITests extends BaseTest {
                 .secret("chj3h3dtjq")
                 .keriSignedMessage(Optional.empty())
                 .keriPayload(Optional.empty())
+                .oobi(Optional.empty())
                 .build();
 
         given().contentType(ContentType.JSON)
@@ -286,6 +289,7 @@ public class DiscordUserVerificationAPITests extends BaseTest {
                 .secret("49ayui27ue")
                 .keriSignedMessage(Optional.empty())
                 .keriPayload(Optional.empty())
+                .oobi(Optional.empty())
                 .build();
 
         given().contentType(ContentType.JSON)

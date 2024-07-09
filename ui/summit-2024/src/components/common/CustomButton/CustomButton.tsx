@@ -65,9 +65,11 @@ const CustomButton: React.FC<CustomButtonProps> = ({
       : getSecondaryStyles()),
   };
 
+  const combinedSx = [defaultStyles, ...(Array.isArray(sx) ? sx : [sx])];
+
   return (
     <Button
-      sx={[defaultStyles, sx]}
+      sx={combinedSx}
       startIcon={startIcon}
       disabled={disabled}
       {...props}

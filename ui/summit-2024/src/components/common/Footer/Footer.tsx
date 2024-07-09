@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Grid,
   Typography,
@@ -16,6 +15,7 @@ const Footer = () => {
   return (
     <>
       <Box
+        component="div"
         sx={{
           width: "100%",
           mt: 4,
@@ -149,6 +149,7 @@ const Footer = () => {
         </Grid>
       </Box>
       <Box
+        component="div"
         sx={{
           height: {
             xs: "100px",

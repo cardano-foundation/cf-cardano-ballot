@@ -42,7 +42,7 @@ const getSignedMessagePromise = (
           console.log(signature);
           console.log("key");
           console.log(key);
-          resolve({coseSignature: signature, cosePublicKey: key || ""})
+          resolve({ coseSignature: signature, cosePublicKey: key || "" });
         },
         (error: Error) => reject(error),
       );

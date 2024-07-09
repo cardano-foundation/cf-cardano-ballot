@@ -8,7 +8,7 @@ import {
   ListItem,
   ListItemAvatar,
   Typography,
-  useMediaQuery
+  useMediaQuery,
 } from "@mui/material";
 import CallIcon from "@mui/icons-material/Call";
 import RefreshOutlinedIcon from "@mui/icons-material/RefreshOutlined";
@@ -19,13 +19,15 @@ import {
 } from "mui-tel-input";
 import discordLogo from "../../common/resources/images/discord-icon.svg";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
-import { PhoneNumberCodeConfirmation } from "../../store2/types";
 import {
   getSignedMessagePromise,
   openNewTab,
   resolveCardanoNetwork,
 } from "../../utils/utils";
-import {SignedKeriRequest, SignedWeb3Request} from "../../types/voting-app-types";
+import {
+  SignedKeriRequest,
+  SignedWeb3Request,
+} from "../../types/voting-app-types";
 import { ErrorMessage } from "../common/ErrorMessage/ErrorMessage";
 import { CustomButton } from "../common/CustomButton/CustomButton";
 import Modal from "../common/Modal/Modal";
@@ -48,9 +50,12 @@ import {
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { VerificationStarted } from "../../store/reducers/userCache/userCache.types";
 import { ToastType } from "../common/Toast/Toast.types";
-import {CustomInput} from "../common/CustomInput/CustomInput";
+import { CustomInput } from "../common/CustomInput/CustomInput";
 import theme from "../../common/styles/theme";
-import {resolveWalletIdentifierType, WalletIdentifierType} from "../../common/api/utils";
+import {
+  resolveWalletIdentifierType,
+  WalletIdentifierType,
+} from "../../common/api/utils";
 
 // TODO: env.
 const excludedCountries: MuiTelInputCountry[] | undefined = [];
@@ -73,7 +78,11 @@ const VerifyWalletModal = () => {
   const [phoneCodeShowError, setPhoneCodeShowError] = useState<boolean>(false);
   const [checkImNotARobot, setCheckImNotARobot] = useState<boolean>(false);
   const [isPhoneInputDisabled] = useState<boolean>(false);
-    const [inputSecret, setInputSecret] = useState('');
+  const [discordIsConfirming, setDiscordIsConfirming] =
+    useState<boolean>(false);
+  const [phoneCodeIsBeenConfirming, setPhoneCodeIsBeenConfirming] =
+    useState<boolean>(false);
+  const [inputSecret, setInputSecret] = useState("");
 
   const { signMessage } = useCardano({
     limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
@@ -90,12 +99,24 @@ const VerifyWalletModal = () => {
       setIsOpen(true);
       handleSetCurrentPath(verificationState);
     };
+    const closeVerifyWalletModal = () => {
+      setIsOpen(false);
+      handleSetCurrentPath(VerifyWalletFlow.INTRO);
+    };
     eventBus.subscribe(EventName.OpenVerifyWalletModal, openVerifyWalletModal);
+    eventBus.subscribe(
+      EventName.CloseVerifyWalletModal,
+      closeVerifyWalletModal,
+    );
 
     return () => {
       eventBus.unsubscribe(
         EventName.OpenVerifyWalletModal,
         openVerifyWalletModal,
+      );
+      eventBus.unsubscribe(
+        EventName.CloseVerifyWalletModal,
+        closeVerifyWalletModal,
       );
     };
   }, []);
@@ -150,21 +171,18 @@ const VerifyWalletModal = () => {
   };
 
   const handleVerifyPhoneCode = () => {
-    //setPhoneCodeIsBeenConfirming(true);
-
+    setPhoneCodeIsBeenConfirming(true);
     confirmPhoneNumberCode(
       walletIdentifier,
       phone.trim().replace(" ", ""),
       userVerificationStarted.requestId,
       codes.join(""),
     )
-      .then((response: PhoneNumberCodeConfirmation) => {
-        console.log("response");
-        console.log(response);
+      .then((response: { verified: boolean }) => {
         dispatch(setWalletIsVerified(response.verified));
         if (response.verified) {
           reset(true);
-          //setPhoneCodeIsBeenConfirming(false);
+          setPhoneCodeIsBeenConfirming(false);
           eventBus.publish(
             EventName.ShowToast,
             "Phone number verified successfully",
@@ -172,68 +190,68 @@ const VerifyWalletModal = () => {
           setIsOpen(false);
         } else {
           setPhoneCodeShowError(true);
-          //setPhoneCodeIsBeenConfirming(false);
           eventBus.publish(
             EventName.ShowToast,
-            "Phone number verified successfully",
+            "Phone number verified failed",
             ToastType.Error,
           );
+          setPhoneCodeIsBeenConfirming(false);
           handleSetCurrentPath(VerifyWalletFlow.DID_NOT_RECEIVE_CODE);
         }
       })
       .catch(() => {
-        // onError('SMS code verification failed');
         setPhoneCodeShowError(true);
-        //setPhoneCodeIsBeenConfirming(false);
+        setPhoneCodeIsBeenConfirming(false);
       });
   };
 
   const handleSignWithWallet = async (message: string) => {
-      if (resolveWalletIdentifierType(walletIdentifier) === WalletIdentifierType.KERI) {
-          const api =
-              window.cardano && window.cardano["idw_p2p"];
-          const enabledApi = await api?.enable();
-          console.log("enabledApi");
-          console.log(enabledApi);
-          const keriIdentifier = await enabledApi.experimental.getKeriIdentifier();
-          const signedMessage:string = await enabledApi.experimental.signKeri(walletIdentifier, message);
+    if (
+      resolveWalletIdentifierType(walletIdentifier) ===
+      WalletIdentifierType.KERI
+    ) {
+      const api = window.cardano && window.cardano["idw_p2p"];
+      const enabledApi = await api?.enable();
+      const keriIdentifier = await enabledApi.experimental.getKeriIdentifier();
+      const signedMessage: string = await enabledApi.experimental.signKeri(
+        walletIdentifier,
+        message,
+      );
 
-          return {
-              keriPayload: message,
-              keriSignedMessage: signedMessage,
-              oobi: keriIdentifier.oobi
-          };
-      } else {
-          return await signMessagePromisified(message);
-      }
-  }
+      return {
+        keriPayload: message,
+        keriSignedMessage: signedMessage,
+        oobi: keriIdentifier.oobi,
+      };
+    } else {
+      return await signMessagePromisified(message);
+    }
+  };
 
   const handleVerifyDiscord = async () => {
-      console.log("lets sign");
-      console.log("inputSecret");
-      console.log(inputSecret);
-      handleSignWithWallet(inputSecret.trim())
-        .then((signedMessaged: SignedKeriRequest | SignedWeb3Request ) => {
-            const parsedSecret = inputSecret.split('|')[1];
-          verifyDiscord(walletIdentifier, parsedSecret, signedMessaged)
-            .then((response: { verified: boolean }) => {
-              console.log("response");
-              console.log(response);
-              dispatch(setWalletIsVerified(response.verified));
-              eventBus.publish(
-                EventName.ShowToast,
-                "Wallet verified successfully",
-              );
-              handleCloseModal();
-            })
-            .catch((e) =>
-              eventBus.publish("showToast", e.message, ToastType.Error),
+    setDiscordIsConfirming(true);
+    handleSignWithWallet(inputSecret.trim())
+      .then((signedMessaged: SignedKeriRequest | SignedWeb3Request) => {
+        const parsedSecret = inputSecret.split("|")[1];
+        verifyDiscord(walletIdentifier, parsedSecret, signedMessaged)
+          .then((response: { verified: boolean }) => {
+            dispatch(setWalletIsVerified(response.verified));
+            eventBus.publish(
+              EventName.ShowToast,
+              "Wallet verified successfully",
             );
-        })
-        .catch((e) =>
-          eventBus.publish("showToast", e.message, ToastType.Error),
-        );
-
+            setDiscordIsConfirming(false);
+            handleCloseModal();
+          })
+          .catch((e) => {
+            eventBus.publish("showToast", e.message, ToastType.Error);
+            setDiscordIsConfirming(false);
+          });
+      })
+      .catch((e) => {
+        eventBus.publish("showToast", e.message, ToastType.Error);
+        setDiscordIsConfirming(false);
+      });
   };
 
   const renderStartVerification = () => {
@@ -610,7 +628,7 @@ const VerifyWalletModal = () => {
               onClick={() => handleVerifyPhoneCode()}
               fullWidth={true}
               colorVariant="primary"
-              disabled={codes.includes("")}
+              disabled={phoneCodeIsBeenConfirming && codes.includes("")}
             >
               Confirm
             </CustomButton>
@@ -722,16 +740,16 @@ const VerifyWalletModal = () => {
     );
   };
 
-    const validateSecret = (value: string) => {
-        const pattern = /^[a-zA-Z0-9]+\|[a-zA-Z0-9]+$/;
-        return pattern.test(value);
-    };
+  const validateSecret = (value: string) => {
+    const pattern = /^[a-zA-Z0-9]+\|[a-zA-Z0-9]+$/;
+    return pattern.test(value);
+  };
 
-    const handleInputSecretChange = (value: string) => {
-        setInputSecret(value);
-    };
+  const handleInputSecretChange = (value: string) => {
+    setInputSecret(value);
+  };
 
-    const renderVerifyDiscord = () => {
+  const renderVerifyDiscord = () => {
     return (
       <>
         <Typography
@@ -812,34 +830,38 @@ const VerifyWalletModal = () => {
           3. You will be redirected back to the Cardano Ballot application
           within a new window, to complete the sign and verification process.
         </Typography>
-          <Typography
-              gutterBottom
-              style={{
-                  marginTop: "24px",
-                  marginLeft: "16px",
-                  marginBottom: "4px",
-                  fontSize: "12px",
-                  fontStyle: "normal",
-                  fontWeight: 500,
+        <Typography
+          gutterBottom
+          style={{
+            marginTop: "24px",
+            marginLeft: "16px",
+            marginBottom: "4px",
+            fontSize: "12px",
+            fontStyle: "normal",
+            fontWeight: 500,
           }}
-          >
-              Secret Key
-          </Typography>
-          <CustomInput
-              value={inputSecret}
-              styles={{
-                  marginBottom: "24px"
-              }}
-              fullWidth={true}
-              validate={validateSecret}
-              onChange={handleInputSecretChange}
-          />
+        >
+          Secret Key
+        </Typography>
+        <CustomInput
+          value={inputSecret}
+          styles={{
+            marginBottom: "24px",
+          }}
+          fullWidth={true}
+          validate={validateSecret}
+          onChange={handleInputSecretChange}
+        />
         <CustomButton
           colorVariant="primary"
           onClick={() => handleVerifyDiscord()}
-          disabled={inputSecret === "" && !validateSecret(inputSecret)}
+          disabled={
+            discordIsConfirming &&
+            inputSecret === "" &&
+            !validateSecret(inputSecret)
+          }
           sx={{
-            width: "100%"
+            width: "100%",
           }}
         >
           Sign and Verify

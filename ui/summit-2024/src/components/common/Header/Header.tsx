@@ -40,10 +40,16 @@ const Header = () => {
     const openConnectWalletModal = () => {
       setShowConnectWalletModal(true);
     };
-    eventBus.subscribe(EventName.OpenConnectWalletModal, openConnectWalletModal);
+    eventBus.subscribe(
+      EventName.OpenConnectWalletModal,
+      openConnectWalletModal,
+    );
 
     return () => {
-      eventBus.unsubscribe(EventName.OpenConnectWalletModal, openConnectWalletModal);
+      eventBus.unsubscribe(
+        EventName.OpenConnectWalletModal,
+        openConnectWalletModal,
+      );
     };
   }, []);
 

@@ -69,7 +69,7 @@ const Categories: React.FC = () => {
     }
   };
 
-  const handleLearnMoreClick = (event, category: string) => {
+  const handleLearnMoreClick = (event: React.MouseEvent<HTMLElement>, category: string) => {
     event.stopPropagation();
     setLearMoreCategory(category);
     setOpenLearMoreCategory(true);

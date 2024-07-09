@@ -17,7 +17,7 @@ import {
   setWalletIdentifier,
 } from "../../store/reducers/userCache";
 import { ToastType } from "../common/Toast/Toast.types";
-import {initialConnectedWallet} from "../../store/reducers/userCache/initialState";
+import { initialConnectedWallet } from "../../store/reducers/userCache/initialState";
 
 const ConnectWalletModal = (props: ConnectWalletProps) => {
   const dispatch = useAppDispatch();
@@ -36,15 +36,10 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
     /*TODO */
   });
 
-  const {
-    connect,
-    dAppConnect,
-    meerkatAddress,
-    initDappConnect,
-    disconnect
-  } = useCardano({
-    limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
-  });
+  const { connect, dAppConnect, meerkatAddress, initDappConnect, disconnect } =
+    useCardano({
+      limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
+    });
 
   const isMobile = useIsPortrait();
 
@@ -89,43 +84,46 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
 
       const onApiInject = async (name: string) => {
         if (name === "idw_p2p") {
-          const api =
-              window.cardano && window.cardano[name];
+          const api = window.cardano && window.cardano[name];
           if (api) {
             const enabledApi = await api.enable();
             const keriIdentifier =
-                await enabledApi.experimental.getKeriIdentifier();
+              await enabledApi.experimental.getKeriIdentifier();
             dispatch(setWalletIdentifier(keriIdentifier.id));
-            dispatch(setConnectedWallet({
-              address: api.identifier,
-              name: api.name,
-              icon: api.icon,
-              requestAutoconnect: true,
-              version: api.version
-            }));
-            eventBus.publish(
-                EventName.ShowToast,
-                `${name} Wallet connected successfully`,
+            dispatch(
+              setConnectedWallet({
+                address: api.identifier,
+                name: api.name,
+                icon: api.icon,
+                requestAutoconnect: true,
+                version: api.version,
+              }),
             );
+            eventBus.publish(
+              EventName.ShowToast,
+              `${name} Wallet connected successfully`,
+            );
+            props.handleCloseConnectWalletModal();
           } else {
             eventBus.publish(
-                EventName.ShowToast,
-                `Timeout while connecting P2P ${name} wallet`,
-                ToastType.Error,
+              EventName.ShowToast,
+              `Timeout while connecting P2P ${name} wallet`,
+              ToastType.Error,
             );
           }
         } else {
           connect(
-              name,
-              () => {
-                eventBus.publish(
-                    EventName.ShowToast,
-                    `${name} Wallet connected successfully`,
-                );
-              },
-              (e: Error) => {
-                eventBus.publish(EventName.ShowToast, e.message, ToastType.Error);
-              },
+            name,
+            () => {
+              eventBus.publish(
+                EventName.ShowToast,
+                `${name} Wallet connected successfully`,
+              );
+              props.handleCloseConnectWalletModal();
+            },
+            (e: Error) => {
+              eventBus.publish(EventName.ShowToast, e.message, ToastType.Error);
+            },
           ).catch((e) => console.error(e));
         }
       };

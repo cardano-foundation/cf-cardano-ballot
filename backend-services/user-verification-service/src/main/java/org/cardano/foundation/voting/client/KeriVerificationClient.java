@@ -31,22 +31,17 @@ public class KeriVerificationClient {
 
     public Either<Problem, Boolean> verifySignature(String aid, String signature, String payload) {
         String url = String.format("%s/verify", keriVerifierBaseUrl);
-        System.out.println("KeriVerificationClient");
-        System.out.println("url");
-        System.out.println(url);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
 
         Map<String, String> requestBody = new HashMap<>();
-        requestBody.put("aid", aid);
+        requestBody.put("pre", aid);
         requestBody.put("signature", signature);
         requestBody.put("payload", payload);
 
         HttpEntity<Map<String, String>> entity = new HttpEntity<>(requestBody, headers);
 
-        System.out.println("entity");
-        System.out.println(entity);
         try {
             ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
 
@@ -60,8 +55,6 @@ public class KeriVerificationClient {
                         .build());
             }
         } catch (HttpClientErrorException e) {
-            System.out.println("HttpClientErrorException");
-            System.out.println(e);
 
             return Either.left(Problem.builder()
                     .withTitle("KERI_VERIFICATION_ERROR")
@@ -104,15 +97,12 @@ public class KeriVerificationClient {
     }
 
     public Either<Problem, String> getOOBI(String oobi, Integer maxAttempts) {
-        String url = String.format("%s/oobi", keriVerifierBaseUrl);
+        String url = String.format("%s/oobi?url=%s", keriVerifierBaseUrl, oobi);
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
 
-        Map<String, String> requestBody = new HashMap<>();
-        requestBody.put("oobi", oobi);
-
-        HttpEntity<Map<String, String>> entity = new HttpEntity<>(requestBody, headers);
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
 
         int attempts = (maxAttempts == null) ? 1 : maxAttempts;
         int attempt = 0;
@@ -148,4 +138,11 @@ public class KeriVerificationClient {
                 }
             }
         }
+
+        return Either.left(Problem.builder()
+                .withTitle("OOBI_NOT_FOUND")
+                .withDetail("The OOBI was not found after " + attempts + " attempts.")
+                .withStatus(new HttpStatusAdapter(BAD_REQUEST))
+                .build());
+    }
 }

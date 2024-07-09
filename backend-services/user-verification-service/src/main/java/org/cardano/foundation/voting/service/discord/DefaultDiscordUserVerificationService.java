@@ -339,16 +339,8 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
     }
 
     private Either<Problem, IsVerifiedResponse> handleKeriVerification(DiscordCheckVerificationRequest request, String eventId, String walletId) {
-        System.out.println("\nhandleKeriVerification");
+
         String signature = request.getKeriSignedMessage().orElse(null);
-        String payload = request.getKeriPayload().orElse(null);
-        String oobi = request.getOobi().orElse(null);
-        System.out.println("keriSignedMessage");
-        System.out.println(signature);
-        System.out.println("payload");
-        System.out.println(payload);
-        System.out.println("walletId");
-        System.out.println(walletId);
 
         if (signature == null) {
             return Either.left(Problem.builder()
@@ -358,29 +350,22 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
                     .build());
         }
 
-        Either<Problem, Boolean> oobiResult = keriVerificationClient.registerOOBI(oobi);
-        if (oobiResult.isLeft()) {
-            return Either.left(oobiResult.getLeft());
-        }
+        String payload = request.getKeriPayload().orElse(null);
 
-        if (!oobiResult.get()) {
+        if (payload == null) {
             return Either.left(Problem.builder()
-                    .withTitle("OOBI_REGISTRATION_FAILED")
-                    .withDetail("The OOBI registration failed.")
+                    .withTitle("MISSING_SIGNATURE")
+                    .withDetail("Missing payload.")
                     .withStatus(BAD_REQUEST)
                     .build());
         }
 
-        Either<Problem, Boolean> verificationResult = keriVerificationClient.verifySignature(walletId, signature, payload);
+        String oobi = request.getOobi().orElse(null);
 
-        if (verificationResult.isLeft()) {
-            return Either.left(verificationResult.getLeft());
-        }
-
-        if (!verificationResult.get()) {
+        if (oobi == null) {
             return Either.left(Problem.builder()
-                    .withTitle("KERI_VERIFICATION_FAILED")
-                    .withDetail("The Keri verification failed.")
+                    .withTitle("MISSING_SIGNATURE")
+                    .withDetail("Missing oobi.")
                     .withStatus(BAD_REQUEST)
                     .build());
         }
@@ -388,12 +373,6 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
         var items = payload.split("\\|");
         var discordIdHash = items[0];
         var secret = items[1];
-
-        System.out.println("discordIdHash");
-        System.out.println(discordIdHash);
-        System.out.println("secret");
-        System.out.println(secret);
-
 
         var maybeCompletedVerificationBasedOnDiscordUserHash = userVerificationRepository
                 .findCompletedVerificationBasedOnDiscordUserHash(eventId, discordIdHash);
@@ -419,9 +398,6 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
                     .build()
             );
         }
-
-        System.out.println("\nrequest.getSecret()");
-        System.out.println(request.getSecret());
 
         var pendingVerification = maybePendingVerification.get();
         boolean isSecretCodeMatch = pendingVerification.getSecretCode().equals(secret)
@@ -451,7 +427,68 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
                     .build());
         }
 
-        pendingVerification.setWalletId(Optional.of(request.getWalletId()));
+        // Step 1: Check if OOBI is already registered
+        Either<Problem, String> oobiCheckResult = keriVerificationClient.getOOBI(oobi, 1);
+
+        if (oobiCheckResult.isRight()) {
+            log.info("OOBI already registered: {}", oobiCheckResult);
+            Either<Problem, Boolean> verificationResult = keriVerificationClient.verifySignature(walletId, signature, payload);
+
+            if (verificationResult.isLeft()) {
+                return Either.left(verificationResult.getLeft());
+            }
+
+            if (!verificationResult.get()) {
+                return Either.left(Problem.builder()
+                        .withTitle("KERI_VERIFICATION_FAILED")
+                        .withDetail("The Keri verification failed.")
+                        .withStatus(BAD_REQUEST)
+                        .build());
+            }
+
+            log.info("Keri signature {} verified for walletId {} with payload {}", signature, walletId, payload);
+            pendingVerification.setWalletId(Optional.of(walletId));
+            pendingVerification.setWalletIdType(request.getWalletIdType());
+            pendingVerification.setUpdatedAt(LocalDateTime.now(clock));
+            pendingVerification.setStatus(VERIFIED);
+            userVerificationRepository.save(pendingVerification);
+
+            return Either.right(new IsVerifiedResponse(true));
+        }
+
+        log.info("OOBI not registered yet: {}", oobi);
+        // Step 2: Register OOBI if not already registered
+        Either<Problem, Boolean> oobiRegistrationResult = keriVerificationClient.registerOOBI(oobi);
+
+        if (oobiRegistrationResult.isLeft()) {
+            return Either.left(oobiRegistrationResult.getLeft());
+        }
+
+        log.info("OOBI registered successfully: {}", oobi);
+
+        // Step 3: Attempt to verify OOBI registration up to 10 times
+        Either<Problem, String> oobiFetchResult = keriVerificationClient.getOOBI(oobi, 60);
+        if (oobiFetchResult.isLeft()) {
+            return Either.left(oobiFetchResult.getLeft());
+        }
+
+        // Step 4: Verify signature after OOBI registration
+        Either<Problem, Boolean> verificationResult = keriVerificationClient.verifySignature(walletId, signature, payload);
+
+        if (verificationResult.isLeft()) {
+            return Either.left(verificationResult.getLeft());
+        }
+
+        if (!verificationResult.get()) {
+            return Either.left(Problem.builder()
+                    .withTitle("KERI_VERIFICATION_FAILED")
+                    .withDetail("The Keri verification failed.")
+                    .withStatus(BAD_REQUEST)
+                    .build());
+        }
+
+        log.info("Keri signature {} verified for walletId {} with payload {}", signature, walletId, payload);
+        pendingVerification.setWalletId(Optional.of(walletId));
         pendingVerification.setWalletIdType(request.getWalletIdType());
         pendingVerification.setUpdatedAt(LocalDateTime.now(clock));
         pendingVerification.setStatus(VERIFIED);

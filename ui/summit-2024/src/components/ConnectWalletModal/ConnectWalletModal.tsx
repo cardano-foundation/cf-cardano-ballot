@@ -232,7 +232,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
         title={
           connectCurrentPaths[0] === ConnectWalletFlow.CONNECT_IDENTITY_WALLET
             ? "Connect Identity Wallet"
-            : "Connect Wallet"
+            : "Connect Peer Wallet"
         }
         onClose={() => props.handleCloseConnectWalletModal()}
         width={isMobile ? "auto" : "450px"}

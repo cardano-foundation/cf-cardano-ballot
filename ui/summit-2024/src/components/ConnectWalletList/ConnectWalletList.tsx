@@ -26,6 +26,7 @@ import { ConnectWalletFlow, NetworkType } from "./ConnectWalletList.types";
 import QRCode from "react-qr-code";
 import { eventBus, EventName } from "../../utils/EventBus";
 import theme from "../../common/styles/theme";
+import { CustomButton } from "../common/CustomButton/CustomButton";
 
 type ConnectWalletListProps = {
   description?: string;
@@ -223,47 +224,26 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
             </span>
             wallet is trying to connect
           </Typography>
-          <Button
-            onClick={() => handleAccept()}
-            className="vote-nominee-button"
+          <CustomButton
+            onClick={handleAccept}
+            colorVariant="primary"
+            fullWidth={true}
             sx={{
-              textTransform: "none",
-              background:
-                "linear-gradient(258deg, #EE9766 0%, #40407D 187.58%, #0C7BC5 249.97%)",
-              "&:hover": {
-                background:
-                  "linear-gradient(258deg, #EE9766, #EE9766, #40407D, #0C7BC5)",
-              },
-              width: "394px",
-              height: "auto",
-              color: "background.neutralDarkest",
-              fontSize: "16px",
-              fontStyle: "normal",
-              fontWeight: 500,
-              lineHeight: "24px",
+              marginBottom: "12px",
             }}
-            fullWidth
           >
-            Accept connection
-          </Button>
-          <Button
+            Accept
+          </CustomButton>
+          <CustomButton
             onClick={() => {}}
-            className="vote-nominee-button"
-            style={{
-              marginTop: "12px",
-              textTransform: "none",
-              width: "394px",
-              height: "auto",
-              color: "#EE9766",
-              fontSize: "16px",
-              fontStyle: "normal",
-              fontWeight: 500,
-              lineHeight: "24px",
-              border: "1px solid var(--orange, #EE9766)",
+            colorVariant="secondary"
+            fullWidth={true}
+            sx={{
+              marginBottom: "12px",
             }}
           >
             Deny
-          </Button>
+          </CustomButton>
         </Box>
       </>
     );

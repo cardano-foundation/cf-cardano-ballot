@@ -2,11 +2,14 @@ import * as React from "react";
 import { Box, Checkbox } from "@mui/material";
 
 interface CustomCheckBoxProps {
-    isChecked: boolean;
-    setIsChecked: React.Dispatch<React.SetStateAction<boolean>>;
+  isChecked: boolean;
+  setIsChecked: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const CustomCheckBox: React.FC<CustomCheckBoxProps> = ({ isChecked, setIsChecked }) => {
+const CustomCheckBox: React.FC<CustomCheckBoxProps> = ({
+  isChecked,
+  setIsChecked,
+}) => {
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setIsChecked(event.target.checked);
   };

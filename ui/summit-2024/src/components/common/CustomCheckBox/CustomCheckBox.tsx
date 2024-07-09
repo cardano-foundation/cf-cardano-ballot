@@ -1,13 +1,19 @@
 import * as React from "react";
 import { Box, Checkbox } from "@mui/material";
 
-const CustomCheckBox = ({ isChecked, setIsChecked }) => {
-  const handleCheckboxChange = (event) => {
+interface CustomCheckBoxProps {
+    isChecked: boolean;
+    setIsChecked: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const CustomCheckBox: React.FC<CustomCheckBoxProps> = ({ isChecked, setIsChecked }) => {
+  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setIsChecked(event.target.checked);
   };
 
   const checkedIcon = (
     <Box
+      component="div"
       sx={{
         width: 20,
         height: 20,
@@ -35,6 +41,7 @@ const CustomCheckBox = ({ isChecked, setIsChecked }) => {
 
   const icon = (
     <Box
+      component="div"
       sx={{
         width: 20,
         height: 20,

@@ -409,7 +409,7 @@ const TermsAndConditionsModal = () => {
         <TabsSegment
           tabs={tabs}
           currentTab={currentTab}
-          setCurrentTab={(tab:number) => setCurrentTab(tab)}
+          setCurrentTab={(tab: number) => setCurrentTab(tab)}
         />
       </DialogTitle>
       <DialogContent

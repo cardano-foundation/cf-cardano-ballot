@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
@@ -10,7 +9,7 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useLocalStorage } from "../../common/hooks/useLocalStorage";
 import { CB_TERMS_AND_PRIVACY } from "../../common/constants/local";
 import { TabsSegment } from "../common/TabPanel/TabsSegment";
@@ -18,6 +17,7 @@ import termsData from "../../common/resources/data/termsAndConditions.json";
 import privacyData from "../../common/resources/data/privacyPolicy.json";
 import theme from "../../common/styles/theme";
 import { ExtraDetails, List } from "./TermsAndConditionsModal.type";
+import { CustomCheckBox } from "../common/CustomCheckBox/CustomCheckBox";
 
 const TermsAndConditionsModal = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -32,9 +32,6 @@ const TermsAndConditionsModal = () => {
     isMobile ? "Privacy" : "Privacy Policy",
   ];
 
-  const handleCheckboxChange = (event) => {
-    setIsChecked(event.target.checked);
-  };
   const handleAccept = () => {
     setTermsAndConditionsChecked(true);
   };
@@ -393,34 +390,6 @@ const TermsAndConditionsModal = () => {
     }
   };
 
-  const checkedIcon = (
-    <Box
-      component="div"
-      sx={{
-        width: 20,
-        height: 20,
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "var(--orange, #EE9766)",
-        borderRadius: "4px",
-      }}
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="20"
-        height="20"
-        viewBox="0 0 20 20"
-        fill="none"
-      >
-        <path
-          d="M7.875 15.167L2.917 10.208 4.125 9.021 7.875 12.771 15.854 4.792 17.063 5.979 7.875 15.167Z"
-          fill="#121212"
-        />
-      </svg>
-    </Box>
-  );
-
   return (
     <Dialog
       open={!termsAndConditionsChecked}
@@ -440,7 +409,7 @@ const TermsAndConditionsModal = () => {
         <TabsSegment
           tabs={tabs}
           currentTab={currentTab}
-          setCurrentTab={(tab) => setCurrentTab(tab)}
+          setCurrentTab={(tab:number) => setCurrentTab(tab)}
         />
       </DialogTitle>
       <DialogContent
@@ -468,7 +437,7 @@ const TermsAndConditionsModal = () => {
             mb: { xs: 2, sm: 0 },
           }}
         >
-          <Checkbox checked={isChecked} onChange={handleCheckboxChange} />
+          <CustomCheckBox isChecked={isChecked} setIsChecked={setIsChecked} />
           <Typography
             sx={{
               color: theme.palette.text.neutralLightest,

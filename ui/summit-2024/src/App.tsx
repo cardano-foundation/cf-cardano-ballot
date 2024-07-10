@@ -1,7 +1,7 @@
 import "./App.scss";
 import { Box, CircularProgress, Container, Grid } from "@mui/material";
 import { BrowserRouter } from "react-router-dom";
-import Header from "./components/common/Header/Header";
+import Header from "./components/Header/Header";
 import { PageRouter } from "./routes";
 import { Footer } from "./components/common/Footer/Footer";
 import { TermsAndConditionsModal } from "./components/LegalOptInModal/TermsAndConditionsModal";
@@ -47,7 +47,7 @@ function App() {
             </Box>
             <Footer />
           </Grid>
-          <Cookies position="bottom" />
+          <Cookies/>
           <TermsAndConditionsModal />
         </Container>
       </BrowserRouter>

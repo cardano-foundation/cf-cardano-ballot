@@ -42,7 +42,7 @@ const TicketsSection = () => {
           item
           xs={12}
           sm={6}
-          style={{
+          sx={{
             textAlign: {
               xs: "center",
               sm: "left",

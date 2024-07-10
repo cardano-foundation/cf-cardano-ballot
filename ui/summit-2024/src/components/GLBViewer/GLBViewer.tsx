@@ -34,7 +34,7 @@ const Model = ({ glbUrl, isInteracting, setIsInteracting }: ModelProps) => {
   useFrame(() => {
     if (!isInteracting) {
       // @ts-ignore
-      ref.current.rotation.y += 0.007;
+      ref.current.rotation.y += 0.01;
     }
   });
 
@@ -77,9 +77,8 @@ const GLBViewer: React.FC<GLBViewerProps> = ({ glbUrl, height, width }) => {
           setIsInteracting={setIsInteracting}
         />
         <OrbitControls
-          enableZoom={true}
           maxDistance={4}
-          minDistance={3}
+          minDistance={4}
           enabled={true}
         />
       </Canvas>

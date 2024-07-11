@@ -81,66 +81,71 @@ const TicketsSection = () => {
                                 )}
                             </Grid>
 
-                            <Grid
-                                item
-                                xs={12}
-                                style={{ textAlign: isMobile ? "center" : "left", zIndex: 1 }}
-                            >
-                                <Typography
-                                    variant="h4"
-                                    sx={{
-                                        fontFamily: "Dosis",
-                                        fontWeight: 700,
-                                        fontSize: { xs: "32px", sm: "40px", md: "52px" },
-                                        lineHeight: { xs: "38px", sm: "48px", md: "56px" },
-                                        marginTop: { xs: "32px", sm: "58px" },
-                                    }}
+                            <Grid container>
+                                <Grid
+                                    item
+                                    xs={12}
+                                    sm={6}
+                                    style={{ textAlign: isMobile ? "center" : "left", zIndex: 1 }}
                                 >
-                                    A Global Blockchain
-                                </Typography>
-                                <Typography
-                                    variant="h4"
-                                    sx={{
-                                        color: theme.palette.text.neutralLightest,
-                                        fontWeight: 700,
-                                        fontFamily: "Dosis",
-                                        fontSize: { xs: "32px", sm: "40px", md: "52px" },
-                                        lineHeight: { xs: "38px", sm: "48px", md: "56px" },
-                                    }}
+                                    <Typography
+                                        variant="h4"
+                                        sx={{
+                                            fontFamily: "Dosis",
+                                            fontWeight: 700,
+                                            fontSize: { xs: "32px", sm: "40px", md: "52px" },
+                                            lineHeight: { xs: "38px", sm: "48px", md: "56px" },
+                                            marginTop: { xs: "32px", sm: "58px" },
+                                        }}
+                                    >
+                                        A Global Blockchain
+                                    </Typography>
+                                    <Typography
+                                        variant="h4"
+                                        sx={{
+                                            color: theme.palette.text.neutralLightest,
+                                            fontWeight: 700,
+                                            fontFamily: "Dosis",
+                                            fontSize: { xs: "32px", sm: "40px", md: "52px" },
+                                            lineHeight: { xs: "38px", sm: "48px", md: "56px" },
+                                        }}
+                                    >
+                                        Event
+                                    </Typography>
+                                </Grid>
+                                <Grid
+                                    item
+                                    xs={12}
+                                    sm={6}
+                                    style={{ textAlign: isMobile ? "center" : "right", zIndex: 1}}
                                 >
-                                    Event
-                                </Typography>
-                            </Grid>
-                            <Grid
-                                item
-                                xs={12}
-                                style={{ textAlign: isMobile ? "center" : "right", zIndex: 1 }}
-                            >
-                                <Typography
-                                    variant="h4"
-                                    sx={{
-                                        fontFamily: "Dosis",
-                                        fontWeight: 700,
-                                        fontSize: { xs: "32px", sm: "40px", md: "52px" },
-                                        lineHeight: { xs: "38px", sm: "48px", md: "56px" },
-                                        marginTop: { xs: "16px", sm: "0px" },
-                                    }}
-                                >
-                                    Dubai, UAE
-                                </Typography>
+                                    <Typography
+                                        variant="h4"
+                                        sx={{
+                                            fontFamily: "Dosis",
+                                            fontWeight: 700,
+                                            fontSize: { xs: "32px", sm: "40px", md: "52px" },
+                                            lineHeight: { xs: "38px", sm: "48px", md: "56px" },
+                                            marginTop: { xs: "16px", sm: "84px" },
+                                        }}
+                                    >
+                                        Dubai, UAE
+                                    </Typography>
 
-                                <Typography
-                                    variant="h4"
-                                    sx={{
-                                        fontFamily: "Dosis",
-                                        fontWeight: 700,
-                                        fontSize: { xs: "32px", sm: "40px", md: "52px" },
-                                        lineHeight: { xs: "38px", sm: "48px", md: "56px" },
-                                    }}
-                                >
-                                    23-24 October 2024
-                                </Typography>
+                                    <Typography
+                                        variant="h4"
+                                        sx={{
+                                            fontFamily: "Dosis",
+                                            fontWeight: 700,
+                                            fontSize: { xs: "32px", sm: "40px", md: "52px" },
+                                            lineHeight: { xs: "38px", sm: "48px", md: "56px" },
+                                        }}
+                                    >
+                                        23-24 October 2024
+                                    </Typography>
+                                </Grid>
                             </Grid>
+
                             {isMobile && (
                                 <Grid
                                     item

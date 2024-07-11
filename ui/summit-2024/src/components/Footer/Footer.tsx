@@ -7,9 +7,9 @@ import {
   IconButton,
 } from "@mui/material";
 import SupportIcon from "@mui/icons-material/SupportAgent";
-import { env } from "../../../common/constants/env";
-import discordLogo from "../../../assets/discord.svg";
-import { i18n } from "../../../i18n";
+import { env } from "../../common/constants/env";
+import discordLogo from "../../assets/discord.svg";
+import { i18n } from "../../i18n";
 
 const Footer = () => {
   return (
@@ -28,10 +28,19 @@ const Footer = () => {
           spacing={2}
           justifyContent="space-between"
           alignItems="center"
+          sx={{
+            marginLeft: {
+              xs: "-1%"
+            },
+          }}
         >
-          <Grid item xs={12} md={4}>
+          <Grid
+            item
+            xs={12}
+            md={4}
+            sx={{ textAlign: { xs: "center", md: "left" } }}
+          >
             <Typography>
-              {" "}
               © {new Date().getFullYear()}{" "}
               <Link
                 href="https://summit.cardano.org/"

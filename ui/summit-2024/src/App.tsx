@@ -3,7 +3,7 @@ import { Box, CircularProgress, Container, Grid } from "@mui/material";
 import { BrowserRouter } from "react-router-dom";
 import Header from "./components/Header/Header";
 import { PageRouter } from "./routes";
-import { Footer } from "./components/common/Footer/Footer";
+import { Footer } from "./components/Footer/Footer";
 import { TermsAndConditionsModal } from "./components/LegalOptInModal/TermsAndConditionsModal";
 import { Cookies } from "./components/LegalOptInModal/Cookies";
 

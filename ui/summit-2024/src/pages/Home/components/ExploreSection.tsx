@@ -16,7 +16,17 @@ const ExploreSection = () => {
     navigate(option);
   };
   return (
-    <Grid container spacing={2} sx={{ marginTop: 8, justifyContent: "center" }}>
+    <Grid
+      container
+      spacing={2}
+      sx={{
+        marginTop: 8,
+        justifyContent: "center",
+        marginLeft: {
+          xs: "-1%",
+        },
+      }}
+    >
       <Grid
         item
         xs={12}

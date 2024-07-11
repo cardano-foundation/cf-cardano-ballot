@@ -76,11 +76,7 @@ const GLBViewer: React.FC<GLBViewerProps> = ({ glbUrl, height, width }) => {
           isInteracting={isInteracting}
           setIsInteracting={setIsInteracting}
         />
-        <OrbitControls
-          maxDistance={4}
-          minDistance={4}
-          enabled={true}
-        />
+        <OrbitControls maxDistance={4} minDistance={4} enabled={true} />
       </Canvas>
     </div>
   );

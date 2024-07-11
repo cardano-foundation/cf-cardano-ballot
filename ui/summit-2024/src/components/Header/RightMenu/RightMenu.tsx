@@ -4,8 +4,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { ROUTES } from "../../../routes";
 
 interface RightMenuProps {
-    menuIsOpen: boolean;
-    setMenuIsOpen: (isOpen: boolean) => void;
+  menuIsOpen: boolean;
+  setMenuIsOpen: (isOpen: boolean) => void;
 }
 
 const RightMenu: React.FC<RightMenuProps> = ({ menuIsOpen, setMenuIsOpen }) => {
@@ -41,9 +41,7 @@ const RightMenu: React.FC<RightMenuProps> = ({ menuIsOpen, setMenuIsOpen }) => {
             <ListItem onClick={() => handleClickMenu(ROUTES.CATEGORIES)}>
               <ListItemText primary="Categories" />
             </ListItem>
-            <ListItem
-              onClick={() => handleClickMenu(ROUTES.LEADERBOARD)}
-            >
+            <ListItem onClick={() => handleClickMenu(ROUTES.LEADERBOARD)}>
               <ListItemText primary="Leaderboard" />
             </ListItem>
             <ListItem onClick={() => handleClickMenu(ROUTES.USER_GUIDE)}>

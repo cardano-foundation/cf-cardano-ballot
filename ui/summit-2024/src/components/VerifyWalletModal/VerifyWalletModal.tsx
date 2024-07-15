@@ -132,6 +132,8 @@ const VerifyWalletModal = () => {
       setPhoneCodeIsSent(false);
       setPhoneCodeShowError(false);
       setPhone("");
+      setInputSecret("");
+      setDiscordIsConfirming(false);
       setCodes(Array(6).fill(""));
       setVerifyCurrentPaths([VerifyWalletFlow.INTRO]);
     }
@@ -628,7 +630,7 @@ const VerifyWalletModal = () => {
               onClick={() => handleVerifyPhoneCode()}
               fullWidth={true}
               colorVariant="primary"
-              disabled={phoneCodeIsBeenConfirming && codes.includes("")}
+              disabled={phoneCodeIsBeenConfirming || codes.includes("")}
             >
               Confirm
             </CustomButton>
@@ -856,8 +858,8 @@ const VerifyWalletModal = () => {
           colorVariant="primary"
           onClick={() => handleVerifyDiscord()}
           disabled={
-            discordIsConfirming &&
-            inputSecret === "" &&
+            discordIsConfirming ||
+            inputSecret === "" ||
             !validateSecret(inputSecret)
           }
           sx={{
@@ -883,8 +885,11 @@ const VerifyWalletModal = () => {
   };
 
   const handleBack = () => {
+    console.log("handleBack");
     if (verifyCurrentPaths.length >= 2) {
-      return setVerifyCurrentPaths((prev) => prev.slice(1));
+      setVerifyCurrentPaths((prev) => prev.slice(1));
+    } else {
+      reset();
     }
   };
 

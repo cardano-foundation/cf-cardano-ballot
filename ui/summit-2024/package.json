@@ -14,6 +14,7 @@
     "@cardano-foundation/cardano-connect-with-wallet": "^0.2.9",
     "@commitlint/cli": "^17.6.6",
     "@commitlint/config-conventional": "^17.6.6",
+    "@datapunt/matomo-tracker-react": "^0.5.1",
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.11.16",

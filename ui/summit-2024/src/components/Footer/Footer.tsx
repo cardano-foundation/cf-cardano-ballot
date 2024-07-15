@@ -30,7 +30,7 @@ const Footer = () => {
           alignItems="center"
           sx={{
             marginLeft: {
-              xs: "-1%"
+              xs: "-1%",
             },
           }}
         >

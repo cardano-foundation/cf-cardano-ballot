@@ -249,18 +249,36 @@ export const doRequest = async <T>(
   }
 
   if (token) {
-    allHeaders["Authorization"] = <MediaTypes>`Bearer ${token}`;
+    allHeaders["Authorization"] = `Bearer ${token}`;
   }
 
-  if (method === HttpMethods.POST) {
-    return await post<T>(url, allHeaders, body);
-  } else if (method === HttpMethods.PUT) {
-    return await put<T>(url, allHeaders, body);
-  } else if (method === HttpMethods.DELETE) {
-    return await remove<T>(url, allHeaders);
-  } else if (method === HttpMethods.PATCH) {
-    return await patch<T>(url, allHeaders, body);
-  } else {
-    return await get<T>(url, allHeaders);
+  try {
+    if (method === HttpMethods.POST) {
+      return await post<T>(url, allHeaders, body);
+    } else if (method === HttpMethods.PUT) {
+      return await put<T>(url, allHeaders, body);
+    } else if (method === HttpMethods.DELETE) {
+      return await remove<T>(url, allHeaders);
+    } else if (method === HttpMethods.PATCH) {
+      return await patch<T>(url, allHeaders, body);
+    } else {
+      return await get<T>(url, allHeaders);
+    }
+  } catch (err) {
+    if (err instanceof Error) {
+      console.error(`Error processing request to ${url}: ${err.message}`);
+      return {
+        error: true,
+        message: err.message,
+        status: "code" in err ? (err as { code: number }).code : 500,
+      };
+    } else {
+      console.error(`Unknown error processing request to ${url}`);
+      return {
+        error: true,
+        message: "An unknown error occurred",
+        status: 500,
+      };
+    }
   }
 };

@@ -1,4 +1,4 @@
-import React, {useRef, useState} from "react";
+import React, { useRef, useState } from "react";
 import { Box, Grid, Typography, List, ListItem } from "@mui/material";
 import theme from "../../common/styles/theme";
 import Ellipses from "../../assets/ellipse.svg";

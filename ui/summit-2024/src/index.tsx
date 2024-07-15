@@ -8,7 +8,7 @@ import theme from "./common/styles/theme";
 import { AppWrapper } from "./components/AppWrapper/AppWrapper";
 import App from "./App";
 import { store } from "./store";
-import {env} from "./common/constants/env";
+import { env } from "./common/constants/env";
 
 const instance = createInstance({
   urlBase: env.MATOMO_BASE_URL,
@@ -20,7 +20,7 @@ const instance = createInstance({
     active: true, // optional, default value: true
     seconds: 10, // optional, default value: `15
   },
-  linkTracking: true
+  linkTracking: true,
 });
 
 ReactDOM.createRoot(document.getElementById("root")!).render(

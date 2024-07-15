@@ -115,6 +115,16 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
 
         var event = maybeEvent.orElseThrow();
 
+        if (!event.userBased() && walletIdType.get() == WalletType.KERI) {
+            log.warn("Keri wallet not supported for BALANCE or STAKE type event");
+
+            return Either.left(Problem.builder()
+                    .withTitle("WALLET_NOT_SUPPORTED")
+                    .withDetail("Keri wallet not supported for BALANCE or STAKE type event")
+                    .withStatus(BAD_REQUEST)
+                    .build());
+        }
+
         if (event.finished()) {
             log.warn("Event already finished:{}", eventId);
 

@@ -127,34 +127,45 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
     @Transactional
     public Either<Problem, IsVerifiedResponse> checkVerification(DiscordCheckVerificationRequest request) {
         String eventId = request.getEventId();
+        String walletId = request.getWalletId();
+        Optional<WalletType> walletIdType = request.getWalletIdType();
+
+        if (!walletIdType.isPresent()) {
+            return Either.left(Problem.builder()
+                    .withTitle("MISSING_WALLET_TYPE")
+                    .withDetail("Wallet type must be specified.")
+                    .withStatus(BAD_REQUEST)
+                    .build());
+        }
 
         Either<Problem, EventSummary> eventValidationResult = validateEvent(eventId);
         if (eventValidationResult.isLeft()) {
             return Either.left(eventValidationResult.getLeft());
         }
 
-        String walletId = request.getWalletId();
-        Optional<WalletType> walletIdType = request.getWalletIdType();
+        EventSummary eventSummary = eventValidationResult.get();
 
-        if (walletIdType.isPresent()) {
-            switch (walletIdType.get()) {
-                case CARDANO:
-                    return handleCardanoVerification(request, eventId, request.getWalletId());
-                case KERI:
-                    return handleKeriVerification(request, eventId, request.getWalletId());
-                default:
-                    return Either.left(Problem.builder()
-                            .withTitle("UNSUPPORTED_WALLET_TYPE")
-                            .withDetail("The specified wallet type is not supported.")
-                            .withStatus(BAD_REQUEST)
-                            .build());
-            }
-        } else {
+        if (!eventSummary.userBased() && walletIdType.get() == WalletType.KERI) {
+            log.warn("Keri wallet not supported for BALANCE or STAKE type event");
+
             return Either.left(Problem.builder()
-                    .withTitle("MISSING_WALLET_TYPE")
-                    .withDetail("Wallet type must be specified.")
+                    .withTitle("WALLET_NOT_SUPPORTED")
+                    .withDetail("Keri wallet not supported for BALANCE or STAKE type event")
                     .withStatus(BAD_REQUEST)
                     .build());
+        }
+
+        switch (walletIdType.get()) {
+            case CARDANO:
+                return handleCardanoVerification(request, eventId, request.getWalletId());
+            case KERI:
+                return handleKeriVerification(request, eventId, request.getWalletId());
+            default:
+                return Either.left(Problem.builder()
+                        .withTitle("UNSUPPORTED_WALLET_TYPE")
+                        .withDetail("The specified wallet type is not supported.")
+                        .withStatus(BAD_REQUEST)
+                        .build());
         }
     }
 

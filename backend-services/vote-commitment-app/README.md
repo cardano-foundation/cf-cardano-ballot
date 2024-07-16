@@ -22,21 +22,20 @@ only one job is running, however, technically it should be possible to run multi
 at different time intervals).
 
 ### Tech Stack
-- Spring Boot 3.1.x
-- Java 17
-- Gradle 8.3
+- Spring Boot 3.2.x
+- Java 21
+- Gradle 8.5
 - PostgreSQL / H2
 - Bloxbean's Cardano Client Library 0.5.x
 - Bloxbean's Yaci 0.2.x
 - CF Merkle Tree Java (0.0.7)
 
 ### Dev Requirements
-- JDK 17
+- JDK 21
 
 ### Development
 ```bash
-git clone https://github.com/cardano-foundation/vote-commitment-service.git
-cd vote-commitment-service
+cd cf-cardano-ballot/backend-services/vote-commitment-app
 cp .env.template .env
 # Update .env with required values (e.g. organiser's mnemonic)
 # Run the service locally via:

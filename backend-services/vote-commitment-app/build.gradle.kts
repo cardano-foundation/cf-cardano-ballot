@@ -1,6 +1,6 @@
 plugins {
 	java
-	id("org.springframework.boot") version "3.1.3"
+	id("org.springframework.boot") version "3.2.0-M3"
 	id("io.spring.dependency-management") version "1.1.3"
 	id("org.graalvm.buildtools.native") version "0.9.27"
     id("com.github.ben-manes.versions") version "0.48.0"
@@ -13,7 +13,7 @@ springBoot {
 
 group = "org.cardano.foundation"
 version = "1.0.0-SNAPSHOT"
-java.sourceCompatibility = JavaVersion.VERSION_17
+java.sourceCompatibility = JavaVersion.VERSION_21
 
 configurations {
 	compileOnly {

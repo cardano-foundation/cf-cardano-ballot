@@ -5,6 +5,7 @@ Application to be used by the organisers to create events and proposals.
 
 # Run in docker
 ```
+cd cf-cardano-ballot/backend-services/voting-admin-app
 docker run -it --rm \
   -e SPRING_PROFILES_ACTIVE=prod \
   -e CARDANO_NETWORK=main \

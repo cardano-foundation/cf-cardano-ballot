@@ -56,7 +56,9 @@ public class ChainFollowerClient {
     public record EventSummary(String id,
                                boolean finished,
                                boolean notStarted,
-                               boolean active) {
+                               boolean active,
+                               boolean userBased
+    ) {
 
         public boolean isEventInactive() {
             return !active;

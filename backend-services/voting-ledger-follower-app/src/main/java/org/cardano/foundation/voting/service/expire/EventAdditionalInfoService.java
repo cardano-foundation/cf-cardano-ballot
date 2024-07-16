@@ -93,14 +93,21 @@ public class EventAdditionalInfoService {
                 var endEpoch = event.getEndEpoch().orElseThrow();
                 var endEpochWithDelay = endEpoch + additionalCommitmentsDelayEpochs;
 
-                yield isEventStarted && (currentEpochNo < endEpochWithDelay);
+                yield isEventStarted && (currentEpochNo <= endEpochWithDelay);
             }
             case USER_BASED -> {
                 var endSlot = event.getEndSlot().orElseThrow();
                 var endSlotWithDelay = endSlot + additionalCommitmentsDelaySlots;
 
-                yield isEventStarted && (currentAbsoluteSlot < endSlotWithDelay);
+                yield isEventStarted && (currentAbsoluteSlot <= endSlotWithDelay);
             }
+        };
+    }
+
+    private boolean isUserBased(Event event) {
+        return switch (event.getVotingEventType()) {
+            case STAKE_BASED, BALANCE_BASED ->  false;
+            case USER_BASED -> true;
         };
     }
 
@@ -126,6 +133,7 @@ public class EventAdditionalInfoService {
                     boolean eventFinished = isEventFinished(event, chainTip);
                     boolean proposalsReveal = isProposalsReveal(event, chainTip);
                     boolean commitmentsWindowOpen = isCommitmentsWindowOpen(event, chainTip);
+                    boolean userBased = isUserBased(event);
 
                     return new EventAdditionalInfo(
                             event.getId(),
@@ -134,7 +142,8 @@ public class EventAdditionalInfoService {
                             eventFinished,
                             eventActive,
                             proposalsReveal,
-                            commitmentsWindowOpen
+                            commitmentsWindowOpen,
+                            userBased
                     );
                 })
                 .toList();
@@ -163,6 +172,7 @@ public class EventAdditionalInfoService {
         boolean eventFinished = isEventFinished(event, chainTip);
         boolean proposalsReveal = isProposalsReveal(event, chainTip);
         boolean commitmentsWindowOpen = isCommitmentsWindowOpen(event, chainTip);
+        boolean userBased = isUserBased(event);
 
         return Either.right(new EventAdditionalInfo(
                 event.getId(),
@@ -171,7 +181,8 @@ public class EventAdditionalInfoService {
                 eventFinished,
                 eventActive,
                 proposalsReveal,
-                commitmentsWindowOpen
+                commitmentsWindowOpen,
+                userBased
         ));
     }
 

@@ -93,7 +93,12 @@ describe('ConnectWalletModal', () => {
 
     expect(within(modal).queryByTestId('connected-wallet-modal-title')).toHaveTextContent('Connect wallet');
     expect(within(modal).queryByTestId('connected-wallet-modal-description')).toHaveTextContent(
-      'In order to vote, first you will need to connect your wallet.'
+      `In order to participate, first you will need to connect your wallet. Following wallets are accepted: ${mockSupportedWallets
+        ?.map((w) => {
+          const walletName = w.replace('typhoncip30', 'Typhon');
+          return `${walletName[0].toUpperCase()}${walletName.slice(1)}`;
+        })
+        ?.join(', ')}.`
     );
 
     expect(within(modal).queryByTestId('connect-wallet-list')).not.toBeNull();

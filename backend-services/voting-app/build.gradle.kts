@@ -3,10 +3,10 @@ import cz.habarta.typescript.generator.TypeScriptFileType
 import cz.habarta.typescript.generator.TypeScriptOutputKind
 
 plugins {
-    java
-    id("org.springframework.boot") version "3.1.3"
-    id("io.spring.dependency-management") version "1.1.3"
-    id("org.graalvm.buildtools.native") version "0.9.27"
+	java
+	id("org.springframework.boot") version "3.2.0"
+	id("io.spring.dependency-management") version "1.1.3"
+	id("org.graalvm.buildtools.native") version "0.9.27"
     id("org.flywaydb.flyway") version "9.22.1"
     id("cz.habarta.typescript-generator") version "3.2.1263"
     id("com.github.ben-manes.versions") version "0.48.0"
@@ -20,7 +20,7 @@ springBoot {
 
 group = "org.cardano.foundation"
 version = "1.0.0-SNAPSHOT"
-java.sourceCompatibility = JavaVersion.VERSION_17
+java.sourceCompatibility = JavaVersion.VERSION_21
 
 configurations {
     compileOnly {
@@ -38,7 +38,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     testImplementation("io.rest-assured:rest-assured:5.3.2")
-    testImplementation("org.wiremock:wiremock:3.2.0")
+    testImplementation("org.wiremock:wiremock-standalone:3.3.1")
+
     testCompileOnly("org.springframework.boot:spring-boot-starter-test")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-validation")

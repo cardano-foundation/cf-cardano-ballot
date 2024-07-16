@@ -18,22 +18,22 @@ public interface SMSUserVerificationRepository extends JpaRepository<SMSUserVeri
     @Query("SELECT uv FROM SMSUserVerification uv WHERE uv.status = 'VERIFIED' AND uv.eventId = :eventId AND uv.phoneNumberHash = :phoneNumberHash")
     List<SMSUserVerification> findAllCompletedPerPhone(@Param("eventId") String eventId, @Param("phoneNumberHash") String phoneNumberHash);
 
-    @Query("SELECT uv FROM SMSUserVerification uv WHERE uv.status = 'VERIFIED' AND uv.eventId = :eventId AND uv.stakeAddress = :stakeAddress")
-    List<SMSUserVerification> findAllCompletedPerStake(@Param("eventId") String eventId, @Param("stakeAddress") String stakeAddress);
+    @Query("SELECT uv FROM SMSUserVerification uv WHERE uv.status = 'VERIFIED' AND uv.eventId = :eventId AND uv.walletId = :walletId")
+    List<SMSUserVerification> findAllCompletedPerWalletId(@Param("eventId") String eventId, @Param("walletId") String walletId);
 
     @Query("SELECT uv FROM SMSUserVerification uv WHERE uv.status = 'PENDING' AND uv.eventId = :eventId")
     List<SMSUserVerification> findAllPending(@Param("eventId") String eventId);
 
-    @Query("SELECT COUNT(*) FROM SMSUserVerification uv WHERE uv.status = 'PENDING' AND uv.eventId = :eventId AND uv.stakeAddress = :stakeAddress AND uv.phoneNumberHash = :phoneNumberHash")
-    int findPendingPerStakeAddressPerPhoneCount(@Param("eventId") String eventId, @Param("stakeAddress") String stakeAddress, @Param("phoneNumberHash") String phoneNumberHash);
+    @Query("SELECT COUNT(*) FROM SMSUserVerification uv WHERE uv.status = 'PENDING' AND uv.eventId = :eventId AND uv.walletId = :walletId AND uv.phoneNumberHash = :phoneNumberHash")
+    int findPendingPerWalletIdPerPhoneCount(@Param("eventId") String eventId, @Param("walletId") String walletId, @Param("phoneNumberHash") String phoneNumberHash);
 
     @Query("SELECT uv FROM SMSUserVerification uv WHERE uv.status = 'PENDING'" +
             " AND uv.eventId = :eventId" +
-            " AND uv.stakeAddress = :stakeAddress" +
+            " AND uv.walletId = :walletId" +
             " AND uv.requestId = :requestId")
-    Optional<SMSUserVerification> findPendingVerificationsByEventIdAndStakeAddressAndRequestId(@Param("eventId") String eventId,
-                                                                                               @Param("stakeAddress") String stakeAddress,
-                                                                                               @Param("requestId") String requestId
+    Optional<SMSUserVerification> findPendingVerificationsByEventIdAndWalletIdAndRequestId(@Param("eventId") String eventId,
+                                                                                           @Param("walletId") String walletId,
+                                                                                           @Param("requestId") String requestId
     );
 
 }

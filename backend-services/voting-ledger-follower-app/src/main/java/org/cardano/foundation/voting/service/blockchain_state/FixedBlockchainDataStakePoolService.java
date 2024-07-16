@@ -1,6 +1,7 @@
 package org.cardano.foundation.voting.service.blockchain_state;
 
 import com.bloxbean.cardano.client.common.ADAConversionUtil;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,6 +12,11 @@ import java.util.Optional;
 public class FixedBlockchainDataStakePoolService implements BlockchainDataStakePoolService {
 
     private final int amountAda;
+
+    @PostConstruct
+    public void init() {
+        log.info("Initialising using FixedBlockchainDataStakePoolService.");
+    }
 
     @Override
     public Optional<Long> getStakeAmount(int epochNo, String stakeAddress) {

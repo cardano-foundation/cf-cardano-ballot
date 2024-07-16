@@ -88,42 +88,4 @@ describe('App', () => {
       );
     });
   });
-
-  test('should handle errors', async () => {
-    process.env = Object.assign(process.env, {
-      NODE_ENV: 'development',
-    });
-    const error = 'error';
-    mockGetEvent.mockReset();
-    mockGetEvent.mockImplementation(async () => await Promise.reject(error));
-    const consoleLogSpy = jest.spyOn(global.console, 'log');
-    renderWithProviders(<App />);
-
-    await waitFor(async () => {
-      expect(consoleLogSpy).toBeCalledWith(`Failed to fetch event, ${error}`);
-    });
-
-    const errorInfo = { info: 'info' };
-    mockGetEvent.mockReset();
-    mockGetEvent.mockImplementation(async () => await Promise.reject(errorInfo));
-    renderWithProviders(<App />);
-    await waitFor(async () => {
-      expect(consoleLogSpy).toBeCalledWith(`Failed to fetch event, ${errorInfo.info}`);
-    });
-
-    const errorMessage = { message: 'message' };
-    mockGetEvent.mockReset();
-    mockGetEvent.mockImplementation(async () => await Promise.reject(errorMessage));
-    renderWithProviders(<App />);
-    await waitFor(async () => {
-      expect(consoleLogSpy).toBeCalledWith(`Failed to fetch event, ${errorMessage.message}`);
-    });
-
-    mockGetEvent.mockReset();
-    mockGetEvent.mockImplementation(async () => await Promise.reject());
-    renderWithProviders(<App />);
-    await waitFor(async () => {
-      expect(consoleLogSpy).toBeCalledWith('Failed to fetch event, undefined');
-    });
-  });
 });

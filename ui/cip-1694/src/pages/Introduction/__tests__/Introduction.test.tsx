@@ -15,9 +15,9 @@ import { eventMock_active, useCardanoMock, eventMock_notStarted, eventMock_finis
 import { CustomRouter } from 'test/CustomRouter';
 import { formatUTCDate } from 'common/utils/dateUtils';
 
-const title = 'A Vote on Minimum-Viable on chain Governance';
+const title = 'Cardano Ballot on CIP-1694';
 const description =
-  'Cardano has reached an incredible milestone. After six years of initial development and feature cultivation, the Cardano blockchain has reached the age of Voltaire. Guided by a principles-first approach and led by the community, this new age of Cardano advances inclusive accountability for all participants in the ecosystem. The time has come for a vote by the community on the way forward.';
+  'Cardano has reached an incredible milestone. After six years of initial development and feature cultivation, the Cardano blockchain has reached the age of Voltaire. Guided by a principles-first approach and led by the community, this new age of Cardano advances inclusive accountability for all participants in the ecosystem. Now is the time for the community to help guide our journey toward a shared future by participating in a non-binding poll on the deployment of on-chain governance, as described in CIP-1694. The feedback gathered will help inform 2024 plans and priorities in governance activities and development.';
 const imageSrc = '/static/cip-1694.jpg';
 
 jest.mock('../../../env', () => {
@@ -174,7 +174,7 @@ describe("For the event that hasn't started yet", () => {
       const eventTime = within(introductionPage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
       expect(eventTime.textContent).toEqual(
-        `Vote from: ${formatUTCDate(eventMock_active.eventStartDate.toString())} - ${formatUTCDate(
+        `The ballot will be opened from: ${formatUTCDate(eventMock_active.eventStartDate.toString())} - ${formatUTCDate(
           eventMock_active.eventEndDate.toString()
         )}`
       );
@@ -276,7 +276,7 @@ describe('For the event that has already finished', () => {
       const eventTime = within(introductionPage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
       expect(eventTime.textContent).toEqual(
-        `The vote closed on ${formatUTCDate(eventMock_active.eventEndDate.toString())}`
+        `The ballot closed on ${formatUTCDate(eventMock_active.eventEndDate.toString())}`
       );
 
       const eventDescription = within(introductionPage).queryByTestId('event-description');

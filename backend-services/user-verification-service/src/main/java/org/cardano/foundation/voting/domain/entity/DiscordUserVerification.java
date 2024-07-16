@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.VerificationStatus;
+import org.cardano.foundation.voting.utils.WalletType;
 
 import javax.annotation.Nullable;
 import java.time.LocalDateTime;
@@ -32,9 +33,14 @@ public class DiscordUserVerification extends AbstractTimestampEntity {
     @Setter
     private String eventId;
 
-    @Column(name = "stake_address")
+    @Column(name = "wallet_id")
     @Nullable
-    private String stakeAddress;
+    private String walletId;
+
+    @Column(name = "wallet_type")
+    @Nullable
+    @Enumerated(EnumType.STRING)
+    private WalletType walletType;
 
     @Column(name = "secret_code", nullable = false)
     @Getter
@@ -53,19 +59,28 @@ public class DiscordUserVerification extends AbstractTimestampEntity {
     @Setter
     private LocalDateTime expiresAt;
 
-    public Optional<String> getStakeAddress() {
-        return Optional.ofNullable(stakeAddress);
+    public Optional<String> getWalletId() {
+        return Optional.ofNullable(walletId);
     }
 
-    public void setStakeAddress(Optional<String> stakeAddress) {
-        this.stakeAddress = stakeAddress.orElse(null);
+    public Optional<WalletType> getWalletType() {
+        return Optional.ofNullable(walletType);
+    }
+
+    public void setWalletId(Optional<String> walletId) {
+        this.walletId = walletId.orElse(null);
+    }
+
+    public void setWalletType(Optional<WalletType> walletType) {
+        this.walletType = walletType.orElse(null);
     }
 
     @Override
     public String toString() {
         return "DiscordUserVerification{" +
                 "discordIdHash='" + discordIdHash + '\'' +
-                ", stakeAddress='" + stakeAddress + '\'' +
+                ", walletId='" + walletId + '\'' +
+                ", walletType='" + walletType + '\'' +
                 ", eventId='" + eventId + '\'' +
                 ", verificationCode='" + secretCode + '\'' +
                 ", expiresAt=" + expiresAt +

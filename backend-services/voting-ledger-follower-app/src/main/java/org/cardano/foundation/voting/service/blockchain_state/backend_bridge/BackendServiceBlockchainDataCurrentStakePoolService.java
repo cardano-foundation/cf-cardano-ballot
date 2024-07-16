@@ -2,10 +2,10 @@ package org.cardano.foundation.voting.service.blockchain_state.backend_bridge;
 
 import com.bloxbean.cardano.client.api.exception.ApiException;
 import com.bloxbean.cardano.client.backend.api.BackendService;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataStakePoolService;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 import java.util.Optional;
 
@@ -14,6 +14,11 @@ import java.util.Optional;
 public class BackendServiceBlockchainDataCurrentStakePoolService implements BlockchainDataStakePoolService {
 
     private final BackendService backendService;
+
+    @PostConstruct
+    public void init() {
+        log.info("Initialising using BackendServiceBlockchainDataCurrentStakePoolService.");
+    }
 
     @Override
     public Optional<Long> getStakeAmount(int epochNo, String stakeAddress) {

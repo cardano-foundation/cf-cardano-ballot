@@ -17,11 +17,13 @@ import styles from './ConnectWalletButton.module.scss';
 import { env } from '../../../env';
 
 export const ConnectWalletButton = ({ isMobileMenu = false }) => {
-  const { disconnect, stakeAddress, enabledWallet } = useCardano();
+  const { disconnect, stakeAddress, enabledWallet, installedExtensions } = useCardano();
   const dispatch = useDispatch();
   const connectedWallet = useSelector((state: RootState) => state.user.connectedWallet);
 
-  const supportedWallets = env.SUPPORTED_WALLETS;
+  const supportedWallets = installedExtensions
+    .filter((installedWallet) => env.SUPPORTED_WALLETS.includes(installedWallet))
+    .sort((a, b) => a.localeCompare(b));
 
   useEffect(() => {
     const init = async () => {

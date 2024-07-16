@@ -25,6 +25,14 @@ In the project directory, you can run:
 
 This will install all packages in node_modules folder.
 
+### Create a .env file
+
+Before running the app you need to create a .env file by executing the following command:
+
+```bash
+cp .env.example .env
+```
+
 #### `npm start`
 
 Runs the app in the development mode.\
@@ -46,31 +54,30 @@ Your app is ready to be deployed!
 To run the backend services you will need to open multiple terminals and follow this instructions:
 
 ### Terminal 1 - [Data follower app](/backend-services/vote-commitment-app/) on port: 9090
-Edit ``application.properties``:
-1. Comment CIP-1694 Pre Ratification start block.
-2. Uncomment CF Summit 2023 start block
-```bash
-cd voting-ledger-follower-app
-./gradlew bootRun
 
+```bash
+cd cf-cardano-ballot/backend-services/voting-ledger-follower-app
+./gradlew bootRun
 ```
 ### Terminal 2 - [Voting app](/backend-services/voting-app/) on port: 9091
 ```bash
-cd voting-app
+cd cf-cardano-ballot/backend-services/voting-app
 ./gradlew bootRun
 ```
 
 ### Terminal 3 - [Vote verification app](/backend-services/voting-verification-app/) on port: 9092
 ```bash
-cd voting-verification-app
+cd cf-cardano-ballot/backend-services/voting-verification-app
 ./gradlew bootRun
 ```
 
 ### Terminal 4 - [User verification app](/backend-services/user-verification-service/) on port: 9093
+
+To run this service you need to provide your own AWS credentials to enable the sms verification service.
 ```bash
 export AWS_SNS_ACCESS_KEY_ID=...
 export AWS_SNS_SECRET_ACCESS_KEY=...
-cd user-verification-service
+cd cf-cardano-ballot/backend-services/user-verification-service
 ./gradlew bootRun
 ```
 

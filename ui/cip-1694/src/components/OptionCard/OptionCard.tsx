@@ -52,10 +52,10 @@ export const OptionCard = ({
               xs={12}
               container
               direction={{ xs: 'row', md: 'column' }}
-              gap="15px"
               justifyContent={{ md: 'center', xs: 'flex-start' }}
               alignItems="center"
               height={{ xs: '62px', md: '138px' }}
+              minHeight={{ xs: '62px', md: '138px' }}
             >
               <Skeleton
                 sx={{ borderRadius: '16px' }}
@@ -70,6 +70,7 @@ export const OptionCard = ({
           <ToggleButton
             sx={{
               height: { xs: '62px', md: '138px' },
+              minHeight: { xs: '62px', md: '138px' },
               borderRadius: { xs: '8px !important', md: '16px !important' },
               padding: '16px 16px',
               maxWidth: 'auto',

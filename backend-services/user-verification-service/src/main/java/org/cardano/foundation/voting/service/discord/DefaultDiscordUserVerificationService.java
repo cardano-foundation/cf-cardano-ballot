@@ -188,9 +188,9 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
     @Transactional(propagation = Propagation.SUPPORTS)
     private Either<Problem, IsVerifiedResponse> handleCardanoVerification(DiscordCheckVerificationRequest request, String eventId, String walletId) {
 
-        String signature = request.getCoseSignature().orElse(null);
+        String signatureM = request.getCoseSignature().orElse(null);
 
-        if (signature == null) {
+        if (signatureM == null) {
             return Either.left(Problem.builder()
                     .withTitle("MISSING_SIGNATURE")
                     .withDetail("Missing signature.")
@@ -209,7 +209,7 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
         }
 
         // Verify signature specific to Cardano wallets
-        Either<Problem, VerificationResult> verificationResult = verifySignature(signature, publicKeyM);
+        Either<Problem, VerificationResult> verificationResult = verifySignature(signatureM, publicKeyM);
 
         if (verificationResult.isLeft()) {
             return Either.left(verificationResult.getLeft());

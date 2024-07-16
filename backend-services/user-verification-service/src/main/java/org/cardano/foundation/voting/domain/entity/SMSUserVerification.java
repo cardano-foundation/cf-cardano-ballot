@@ -27,9 +27,9 @@ public class SMSUserVerification extends AbstractTimestampEntity {
     @Column(name = "wallet_id", nullable = false)
     private String walletId;
 
-    @Column(name = "wallet_id_type", nullable = false)
+    @Column(name = "wallet_type", nullable = false)
     @Enumerated(EnumType.STRING)
-    private WalletType walletIdType;
+    private WalletType walletType;
 
     @Column(name = "event_id", nullable = false)
     private String eventId;
@@ -56,7 +56,7 @@ public class SMSUserVerification extends AbstractTimestampEntity {
         return "SMSUserVerification{" +
                 "id='" + id + '\'' +
                 ", walletId='" + walletId + '\'' +
-                ", walletIdType='" + walletIdType + '\'' +
+                ", walletType='" + walletType + '\'' +
                 ", eventId='" + eventId + '\'' +
                 ", verificationCode='" + verificationCode + '\'' +
                 ", requestId='" + requestId + '\'' +

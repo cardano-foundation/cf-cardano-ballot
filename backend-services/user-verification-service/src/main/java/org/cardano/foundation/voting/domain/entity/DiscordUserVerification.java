@@ -37,10 +37,10 @@ public class DiscordUserVerification extends AbstractTimestampEntity {
     @Nullable
     private String walletId;
 
-    @Column(name = "wallet_id_type")
+    @Column(name = "wallet_type")
     @Nullable
     @Enumerated(EnumType.STRING)
-    private WalletType walletIdType;
+    private WalletType walletType;
 
     @Column(name = "secret_code", nullable = false)
     @Getter
@@ -63,16 +63,16 @@ public class DiscordUserVerification extends AbstractTimestampEntity {
         return Optional.ofNullable(walletId);
     }
 
-    public Optional<WalletType> getWalletIdType() {
-        return Optional.ofNullable(walletIdType);
+    public Optional<WalletType> getWalletType() {
+        return Optional.ofNullable(walletType);
     }
 
     public void setWalletId(Optional<String> walletId) {
         this.walletId = walletId.orElse(null);
     }
 
-    public void setWalletIdType(Optional<WalletType> walletIdType) {
-        this.walletIdType = walletIdType.orElse(null);
+    public void setWalletType(Optional<WalletType> walletType) {
+        this.walletType = walletType.orElse(null);
     }
 
     @Override
@@ -80,7 +80,7 @@ public class DiscordUserVerification extends AbstractTimestampEntity {
         return "DiscordUserVerification{" +
                 "discordIdHash='" + discordIdHash + '\'' +
                 ", walletId='" + walletId + '\'' +
-                ", walletIdType='" + walletIdType + '\'' +
+                ", walletType='" + walletType + '\'' +
                 ", eventId='" + eventId + '\'' +
                 ", verificationCode='" + secretCode + '\'' +
                 ", expiresAt=" + expiresAt +

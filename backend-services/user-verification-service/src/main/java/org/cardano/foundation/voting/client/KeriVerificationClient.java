@@ -47,6 +47,12 @@ public class KeriVerificationClient {
 
             if (response.getStatusCode().is2xxSuccessful()) {
                 return Either.right(true);
+            } else {
+                return Either.left(Problem.builder()
+                        .withTitle("KERI_VERIFICATION_FAILED")
+                        .withDetail("The Keri-specific condition was not met.")
+                        .withStatus(new HttpStatusAdapter(response.getStatusCode()))
+                        .build());
             }
         } catch (HttpClientErrorException e) {
 
@@ -74,6 +80,12 @@ public class KeriVerificationClient {
 
             if (response.getStatusCode().is2xxSuccessful()) {
                 return Either.right(true);
+            } else {
+                return Either.left(Problem.builder()
+                        .withTitle("OOBI_REGISTRATION_FAILED")
+                        .withDetail("Failed to register OOBI.")
+                        .withStatus(new HttpStatusAdapter(response.getStatusCode()))
+                        .build());
             }
         } catch (HttpClientErrorException e) {
             return Either.left(Problem.builder()

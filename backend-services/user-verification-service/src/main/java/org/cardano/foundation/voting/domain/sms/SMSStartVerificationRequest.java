@@ -23,7 +23,7 @@ public class SMSStartVerificationRequest {
     private String walletId;
 
     @Builder.Default
-    private Optional<WalletType> walletIdType = Optional.of(WalletType.CARDANO);
+    private Optional<WalletType> walletType = Optional.of(WalletType.CARDANO);
 
     @NotBlank
     private String phoneNumber;

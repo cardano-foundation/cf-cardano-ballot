@@ -128,9 +128,9 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
     public Either<Problem, IsVerifiedResponse> checkVerification(DiscordCheckVerificationRequest request) {
         String eventId = request.getEventId();
         String walletId = request.getWalletId();
-        Optional<WalletType> walletIdType = request.getWalletIdType();
+        Optional<WalletType> walletType = request.getWalletType();
 
-        if (!walletIdType.isPresent()) {
+        if (!walletType.isPresent()) {
             return Either.left(Problem.builder()
                     .withTitle("MISSING_WALLET_TYPE")
                     .withDetail("Wallet type must be specified.")
@@ -145,7 +145,7 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
 
         EventSummary eventSummary = eventValidationResult.get();
 
-        if (!eventSummary.userBased() && walletIdType.get() == WalletType.KERI) {
+        if (!eventSummary.userBased() && walletType.get() == WalletType.KERI) {
             log.warn("Keri wallet not supported for BALANCE or STAKE type event");
 
             return Either.left(Problem.builder()
@@ -155,7 +155,7 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
                     .build());
         }
 
-        switch (walletIdType.get()) {
+        switch (walletType.get()) {
             case CARDANO:
                 return handleCardanoVerification(request, eventId, request.getWalletId());
             case KERI:
@@ -322,7 +322,7 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
         }
 
         pendingVerification.setWalletId(Optional.of(request.getWalletId()));
-        pendingVerification.setWalletIdType(request.getWalletIdType());
+        pendingVerification.setWalletType(request.getWalletType());
         pendingVerification.setUpdatedAt(LocalDateTime.now(clock));
         pendingVerification.setStatus(VERIFIED);
         userVerificationRepository.save(pendingVerification);
@@ -459,7 +459,7 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
 
             log.info("Keri signature {} verified for walletId {} with payload {}", signature, walletId, payload);
             pendingVerification.setWalletId(Optional.of(walletId));
-            pendingVerification.setWalletIdType(request.getWalletIdType());
+            pendingVerification.setWalletType(request.getWalletType());
             pendingVerification.setUpdatedAt(LocalDateTime.now(clock));
             pendingVerification.setStatus(VERIFIED);
             userVerificationRepository.save(pendingVerification);
@@ -500,7 +500,7 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
 
         log.info("Keri signature {} verified for walletId {} with payload {}", signature, walletId, payload);
         pendingVerification.setWalletId(Optional.of(walletId));
-        pendingVerification.setWalletIdType(request.getWalletIdType());
+        pendingVerification.setWalletType(request.getWalletType());
         pendingVerification.setUpdatedAt(LocalDateTime.now(clock));
         pendingVerification.setStatus(VERIFIED);
         userVerificationRepository.save(pendingVerification);

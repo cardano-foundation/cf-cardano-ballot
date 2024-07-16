@@ -6,7 +6,7 @@ const VOTING_VERIFICATION_APP_SERVER_URL = import.meta.env
 const VOTING_USER_VERIFICATION_SERVER_URL = import.meta.env
   .VITE_USER_VERIFICATION_SERVER_URL;
 const FRONTEND_URL = import.meta.env.VITE_WEB_URL;
-const MATOMO_BASE_URL = import.meta.env.VITE_MATOMO_BASE_URL;
+const MATOMO_BASE_URL = import.meta.env.VITE_MATOMO_BASE_URL || "none";
 const DISCORD_CHANNEL_URL = import.meta.env.VITE_DISCORD_CHANNEL_URL;
 const COMMIT_HASH = import.meta.env.VITE_COMMIT_HASH;
 const DISCORD_BOT_URL = import.meta.env.VITE_DISCORD_BOT_URL;

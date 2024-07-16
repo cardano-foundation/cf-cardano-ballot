@@ -185,6 +185,7 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
                         .build()));
     }
 
+    @Transactional(propagation = Propagation.SUPPORTS)
     private Either<Problem, IsVerifiedResponse> handleCardanoVerification(DiscordCheckVerificationRequest request, String eventId, String walletId) {
 
         String signature = request.getCoseSignature().orElse(null);
@@ -349,11 +350,12 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
         return Either.right(new Tuple2<>(msg, maybeAddress));
     }
 
+    @Transactional(propagation = Propagation.SUPPORTS)
     private Either<Problem, IsVerifiedResponse> handleKeriVerification(DiscordCheckVerificationRequest request, String eventId, String walletId) {
 
-        String signature = request.getKeriSignedMessage().orElse(null);
+        String signatureM = request.getKeriSignedMessage().orElse(null);
 
-        if (signature == null) {
+        if (signatureM == null) {
             return Either.left(Problem.builder()
                     .withTitle("MISSING_SIGNATURE")
                     .withDetail("Missing signature.")
@@ -443,7 +445,7 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
 
         if (oobiCheckResult.isRight()) {
             log.info("OOBI already registered: {}", oobiCheckResult);
-            Either<Problem, Boolean> verificationResult = keriVerificationClient.verifySignature(walletId, signature, payload);
+            Either<Problem, Boolean> verificationResult = keriVerificationClient.verifySignature(walletId, signatureM, payload);
 
             if (verificationResult.isLeft()) {
                 return Either.left(verificationResult.getLeft());
@@ -457,7 +459,7 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
                         .build());
             }
 
-            log.info("Keri signature {} verified for walletId {} with payload {}", signature, walletId, payload);
+            log.info("Keri signature {} verified for walletId {} with payload {}", signatureM, walletId, payload);
             pendingVerification.setWalletId(Optional.of(walletId));
             pendingVerification.setWalletType(request.getWalletType());
             pendingVerification.setUpdatedAt(LocalDateTime.now(clock));
@@ -484,7 +486,7 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
         }
 
         // Step 4: Verify signature after OOBI registration
-        Either<Problem, Boolean> verificationResult = keriVerificationClient.verifySignature(walletId, signature, payload);
+        Either<Problem, Boolean> verificationResult = keriVerificationClient.verifySignature(walletId, signatureM, payload);
 
         if (verificationResult.isLeft()) {
             return Either.left(verificationResult.getLeft());
@@ -498,7 +500,7 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
                     .build());
         }
 
-        log.info("Keri signature {} verified for walletId {} with payload {}", signature, walletId, payload);
+        log.info("Keri signature {} verified for walletId {} with payload {}", signatureM, walletId, payload);
         pendingVerification.setWalletId(Optional.of(walletId));
         pendingVerification.setWalletType(request.getWalletType());
         pendingVerification.setUpdatedAt(LocalDateTime.now(clock));

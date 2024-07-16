@@ -130,14 +130,6 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
         String walletId = request.getWalletId();
         Optional<WalletType> walletType = request.getWalletType();
 
-        if (!walletType.isPresent()) {
-            return Either.left(Problem.builder()
-                    .withTitle("MISSING_WALLET_TYPE")
-                    .withDetail("Wallet type must be specified.")
-                    .withStatus(BAD_REQUEST)
-                    .build());
-        }
-
         Either<Problem, EventSummary> eventValidationResult = validateEvent(eventId);
         if (eventValidationResult.isLeft()) {
             return Either.left(eventValidationResult.getLeft());

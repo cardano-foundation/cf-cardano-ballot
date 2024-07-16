@@ -79,14 +79,6 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
         String walletId = startVerificationRequest.getWalletId();
         Optional<WalletType> walletType = startVerificationRequest.getWalletType();
 
-        if (!walletType.isPresent()) {
-            return Either.left(Problem.builder()
-                    .withTitle("WALLET_TYPE_NOT_PROVIDED")
-                    .withDetail("Wallet type must be provided.")
-                    .withStatus(BAD_REQUEST)
-                    .build());
-        }
-
         if (walletType.get() == WalletType.CARDANO) {
             var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, walletId);
             if (stakeAddressCheckE.isEmpty()) {

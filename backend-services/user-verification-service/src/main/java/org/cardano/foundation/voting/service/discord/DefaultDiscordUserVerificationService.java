@@ -1,6 +1,4 @@
 package org.cardano.foundation.voting.service.discord;
-import io.vavr.Tuple;
-import io.vavr.Tuple2;
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
@@ -8,6 +6,7 @@ import org.cardano.foundation.voting.client.KeriVerificationClient;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.IsVerifiedRequest;
 import org.cardano.foundation.voting.domain.IsVerifiedResponse;
+import org.cardano.foundation.voting.service.common.VerificationResult;
 import org.cardano.foundation.voting.domain.discord.DiscordCheckVerificationRequest;
 import org.cardano.foundation.voting.domain.discord.DiscordStartVerificationRequest;
 import org.cardano.foundation.voting.domain.discord.DiscordStartVerificationResponse;
@@ -23,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Propagation;
 import org.zalando.problem.Problem;
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -198,9 +198,9 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
                     .build());
         }
 
-        String publicKey = request.getCosePublicKey().orElse(null);
+        String publicKeyM = request.getCosePublicKey().orElse(null);
 
-        if (publicKey == null) {
+        if (publicKeyM == null) {
             return Either.left(Problem.builder()
                     .withTitle("MISSING_PUBLIC_KEY")
                     .withDetail("Missing public key.")
@@ -209,15 +209,14 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
         }
 
         // Verify signature specific to Cardano wallets
-        Either<Problem, Tuple2<String, Optional<String>>> verificationResult = verifySignature(
-                signature, publicKey);
+        Either<Problem, VerificationResult> verificationResult = verifySignature(signature, publicKeyM);
 
         if (verificationResult.isLeft()) {
             return Either.left(verificationResult.getLeft());
         }
 
-        Tuple2<String, Optional<String>> verificationData = verificationResult.get();
-        String msg = verificationData._1;
+        VerificationResult verificationData = verificationResult.get();
+        String msg = verificationData.getMessage();
         var items = msg.split("\\|");
 
         if (items.length != 2) {
@@ -241,7 +240,7 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
             );
         }
 
-        Optional<String> maybeAddress = verificationData._2;
+        Optional<String> maybeAddress = verificationData.getAddress();
 
         if (!maybeAddress.isPresent()) {
             return Either.left(Problem.builder()
@@ -331,7 +330,7 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
         return Either.right(new IsVerifiedResponse(true));
     }
 
-    private Either<Problem, Tuple2<String, Optional<String>>> verifySignature(String signature, String publicKey) {
+    private Either<Problem, VerificationResult> verifySignature(String signature, String publicKey) {
         CIP30Verifier verifier = new CIP30Verifier(signature, publicKey);
         var result = verifier.verify();
 
@@ -347,7 +346,7 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
         String msg = result.getMessage(MessageFormat.TEXT);
         Optional<String> maybeAddress = result.getAddress(AddressFormat.TEXT);
 
-        return Either.right(new Tuple2<>(msg, maybeAddress));
+        return Either.right(new VerificationResult(msg, maybeAddress));
     }
 
     @Transactional(propagation = Propagation.SUPPORTS)

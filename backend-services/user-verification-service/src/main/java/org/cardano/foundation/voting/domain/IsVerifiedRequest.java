@@ -14,6 +14,6 @@ public class IsVerifiedRequest {
     private String eventId;
 
     @NotBlank
-    private String stakeAddress;
+    private String walletId;
 
 }

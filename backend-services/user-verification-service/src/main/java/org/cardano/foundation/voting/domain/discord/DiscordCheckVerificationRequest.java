@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Optional;
+import org.cardano.foundation.voting.utils.WalletType;
 
 @Getter
 @Builder
@@ -18,15 +19,27 @@ public class DiscordCheckVerificationRequest {
     private String eventId;
 
     @NotBlank
-    private String stakeAddress;
+    private String walletId;
+
+    @Builder.Default
+    private Optional<WalletType> walletType = Optional.of(WalletType.CARDANO);
 
     @NotBlank
     private String secret;
 
-    @NotBlank
-    protected String coseSignature;
+    @Builder.Default
+    protected Optional<String> coseSignature = Optional.empty();
 
     @Builder.Default
-    protected Optional<@NotBlank String> cosePublicKey = Optional.empty();
+    protected Optional<String> cosePublicKey = Optional.empty();
+
+    @Builder.Default
+    protected Optional<String> keriSignedMessage = Optional.empty();
+
+    @Builder.Default
+    protected Optional<String> keriPayload = Optional.empty();
+
+    @Builder.Default
+    protected Optional<String> oobi = Optional.empty();
 
 }

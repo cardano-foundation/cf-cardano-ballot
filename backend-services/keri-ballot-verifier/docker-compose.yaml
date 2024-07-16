@@ -1,0 +1,13 @@
+version: '3.9'
+
+services:
+  ballot-verifier:
+    restart: unless-stopped
+    build:
+      context: .
+      target: ballot-verifier
+    environment:
+      - PYTHONUNBUFFERED=1
+    ports:
+      - 5666:5666
+      - 5667:5667

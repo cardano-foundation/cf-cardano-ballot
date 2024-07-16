@@ -104,6 +104,13 @@ public class EventAdditionalInfoService {
         };
     }
 
+    private boolean isUserBased(Event event) {
+        return switch (event.getVotingEventType()) {
+            case STAKE_BASED, BALANCE_BASED ->  false;
+            case USER_BASED -> true;
+        };
+    }
+
     public Either<Problem, List<EventAdditionalInfo>> getEventAdditionalInfo(List<Event> events) {
         var chainTipE = blockchainDataChainTipService.getChainTip();
 
@@ -126,6 +133,7 @@ public class EventAdditionalInfoService {
                     boolean eventFinished = isEventFinished(event, chainTip);
                     boolean proposalsReveal = isProposalsReveal(event, chainTip);
                     boolean commitmentsWindowOpen = isCommitmentsWindowOpen(event, chainTip);
+                    boolean userBased = isUserBased(event);
 
                     return new EventAdditionalInfo(
                             event.getId(),
@@ -134,7 +142,8 @@ public class EventAdditionalInfoService {
                             eventFinished,
                             eventActive,
                             proposalsReveal,
-                            commitmentsWindowOpen
+                            commitmentsWindowOpen,
+                            userBased
                     );
                 })
                 .toList();
@@ -163,6 +172,7 @@ public class EventAdditionalInfoService {
         boolean eventFinished = isEventFinished(event, chainTip);
         boolean proposalsReveal = isProposalsReveal(event, chainTip);
         boolean commitmentsWindowOpen = isCommitmentsWindowOpen(event, chainTip);
+        boolean userBased = isUserBased(event);
 
         return Either.right(new EventAdditionalInfo(
                 event.getId(),
@@ -171,7 +181,8 @@ public class EventAdditionalInfoService {
                 eventFinished,
                 eventActive,
                 proposalsReveal,
-                commitmentsWindowOpen
+                commitmentsWindowOpen,
+                userBased
         ));
     }
 

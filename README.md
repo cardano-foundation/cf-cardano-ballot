@@ -60,6 +60,7 @@ from database constructs merkle tree and at periodic, configurable intervals sen
   - [voting-app](backend-services/voting-app) - Voting Application that allows users to submit votes, receive vote receipts, and access leaderboard data.
   - [voting-ledger-follower-app](backend-services/voting-ledger-follower-app) - Ledger Follower Application that is listening to the Cardano blockchain to fetch information about event data and user stake amounts in case of stake-based voting.
   - [voting-verification-app](backend-services/voting-verification-app) - Application to be used by the community / voters to independently verify and check vote proofs.
+  - [keri-ballot-verifier](backend-services/keri-ballot-verifier) - A Python microservice to verify the votes from Cardano Ballot signed using KERI identifiers.
 
 - [ui](ui) - Contains React applications for Cardano Ballopt event user interfaces:
   - [cip-1694](ui/cip-1694) - Frontend application for the CIP-1694 pre-ratification polling event.
@@ -140,7 +141,10 @@ e.g.
 SERVER_PORT=8888 ./gradlew bootRun
 ```
 
-Use `setupProxy.js` to proxy services urls. 
+Use `setupProxy.js` to proxy services urls.
+
+### KERI Ballot Verifier
+More instructions on the [README](backend-services/keri-ballot-verifier/README) of the microservice.
 
 ## Running the Frontend (User Interface)
 Copy the [`.env.example`](ui/summit-2023/.env.example) file and rename it as `.env`. 

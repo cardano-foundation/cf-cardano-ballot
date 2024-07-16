@@ -57,7 +57,7 @@ export const sendSmsCode = async (
     JSON.stringify({
       eventId: env.EVENT_ID,
       walletId: walletIdentifier,
-      walletIdType: resolveWalletIdentifierType(walletIdentifier),
+      walletType: resolveWalletIdentifierType(walletIdentifier),
       phoneNumber,
     }),
   );
@@ -78,7 +78,7 @@ export const confirmPhoneNumberCode = async (
     JSON.stringify({
       eventId: env.EVENT_ID,
       walletId: walletIdentifier,
-      walletIdType: resolveWalletIdentifierType(walletIdentifier),
+      walletType: resolveWalletIdentifierType(walletIdentifier),
       phoneNumber,
       requestId,
       verificationCode,
@@ -100,7 +100,7 @@ export const verifyDiscord = async (
     JSON.stringify({
       eventId: env.EVENT_ID,
       walletId: walletIdentifier,
-      walletIdType: resolveWalletIdentifierType(walletIdentifier),
+      walletType: resolveWalletIdentifierType(walletIdentifier),
       secret,
       ...signedMessaged,
     }),

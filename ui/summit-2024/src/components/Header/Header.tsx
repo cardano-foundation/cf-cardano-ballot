@@ -154,9 +154,7 @@ const Header = () => {
                 flexDirection: "row",
                 width: "100%",
                 maxWidth: "1440px",
-
-                paddingTop: "10px",
-                paddingBottom: "10px",
+                paddingY: "24px",
               }}
             >
               <Box

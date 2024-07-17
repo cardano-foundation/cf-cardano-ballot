@@ -5,7 +5,6 @@ import {
   Typography,
   List,
   ListItem,
-  Fade,
   useMediaQuery,
   Drawer,
 } from "@mui/material";
@@ -15,16 +14,14 @@ import { CustomButton } from "../../components/common/CustomButton/CustomButton"
 import { BioModal } from "./components/BioModal";
 import { VoteNowModal } from "./components/VoteNowModal";
 import { useIsPortrait } from "../../common/hooks/useIsPortrait";
-import { NomineeCard } from "./components/NomineeCard";
 import { ViewReceipt } from "./components/ViewReceipt";
 import { STATE } from "./components/ViewReceipt.type";
 import { useAppSelector } from "../../store/hooks";
 import { getEventCache } from "../../store/reducers/eventCache";
-import {
-  Category,
-  Proposal,
-} from "../../store/reducers/eventCache/eventCache.types";
+import { Category } from "../../store/reducers/eventCache/eventCache.types";
 import { PageBase } from "../BasePage";
+import { Nominees } from "./components/Nominees";
+import { Winners } from "./components/Winners";
 
 const Categories: React.FC = () => {
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
@@ -68,15 +65,6 @@ const Categories: React.FC = () => {
     } else {
       setSelectedNominee(undefined);
     }
-  };
-
-  const handleLearnMoreClick = (
-    event: React.MouseEvent<HTMLElement>,
-    category: string,
-  ) => {
-    event.stopPropagation();
-    setLearMoreCategory(category);
-    setOpenLearMoreCategory(true);
   };
 
   let categoryToRender = categoriesData.find((c) => c.id === selectedCategory);
@@ -301,27 +289,19 @@ const Categories: React.FC = () => {
                   Vote Now
                 </CustomButton>
               </Box>
+              <Nominees
+                fadeChecked={fadeChecked}
+                nominees={categoryToRender.proposals}
+                handleSelectedNominee={handleSelectNominee}
+                selectedNominee={selectedNominee}
+              />
 
-              <Fade in={fadeChecked} timeout={200}>
-                <Grid
-                  container
-                  spacing={2}
-                  justifyContent="center"
-                  alignItems="flex-start"
-                >
-                  {categoryToRender.proposals?.map(
-                    (nominee: Proposal, index) => (
-                      <NomineeCard
-                        key={index}
-                        nominee={nominee}
-                        selectedNominee={selectedNominee}
-                        handleSelectNominee={handleSelectNominee}
-                        handleLearnMoreClick={handleLearnMoreClick}
-                      />
-                    ),
-                  )}
-                </Grid>
-              </Fade>
+              <Winners
+                fadeChecked={fadeChecked}
+                nominees={categoryToRender.proposals}
+                handleSelectedNominee={handleSelectNominee}
+                selectedNominee={selectedNominee}
+              />
             </Grid>
           </Grid>
           <img
@@ -363,11 +343,6 @@ const Categories: React.FC = () => {
               </CustomButton>
             </Box>
           )}
-          <BioModal
-            isOpen={openLearMoreCategory}
-            title={learMoreCategory}
-            onClose={() => setOpenLearMoreCategory(false)}
-          />
           <VoteNowModal
             isOpen={openVotingModal}
             onClose={() => setOpenVotingModal(false)}

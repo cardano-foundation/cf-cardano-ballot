@@ -91,8 +91,8 @@ const NomineeCard: React.FC<NomineeCardProps> = ({
         <Box
           component="div"
           onClick={(event) => {
-              event.stopPropagation();
-              handleLearnMoreClick(event, nominee.id);
+            event.stopPropagation();
+            handleLearnMoreClick(event, nominee.id);
           }}
           sx={{
             width: "100%",

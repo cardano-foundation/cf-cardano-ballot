@@ -29,8 +29,6 @@ const Categories: React.FC = () => {
 
   const categoriesData = eventCache.categories;
 
-  console.log("eventCache");
-  console.log(eventCache);
   const [showWinners, setShowWinners] = useState(eventCache.finished);
 
   const [selectedCategory, setSelectedCategory] = useState(
@@ -49,6 +47,24 @@ const Categories: React.FC = () => {
   const [fadeChecked, setFadeChecked] = useState(true);
 
   const isMobile = useIsPortrait();
+
+  useEffect(() => {
+    // Example: http://localhost:3000/categories?category=ambassador&nominee=63123e7f-dfc3-481e-bb9d-fed1d9f6e9b9
+    const params = new URLSearchParams(window.location.search);
+    const categoryParam = params.get("category");
+    const nomineeParam = params.get("nominee");
+
+    const category = categoriesData.find(
+      (c) => c.id.toUpperCase() === categoryParam?.toUpperCase(),
+    );
+
+    if (!category) return;
+    const nominee = category.proposals.find(
+      (p) => p.id.toUpperCase() === nomineeParam?.toUpperCase(),
+    );
+    if (!nominee) return;
+    handleOpenLearnMoreModal(nominee.id);
+  }, [eventCache.categories]);
 
   useEffect(() => {
     if (fadeChecked) {
@@ -303,19 +319,21 @@ const Categories: React.FC = () => {
                   Vote Now
                 </CustomButton>
               </Box>
-                {
-                    showWinners ? <Winners
-                        fadeChecked={fadeChecked}
-                        nominees={categoryToRender.proposals}
-                        handleOpenLearnMore={handleOpenLearnMoreModal}
-                    /> : <Nominees
-                        fadeChecked={fadeChecked}
-                        nominees={categoryToRender.proposals}
-                        handleSelectedNominee={handleSelectNominee}
-                        selectedNominee={selectedNominee}
-                        handleOpenLearnMore={handleOpenLearnMoreModal}
-                    />
-                }
+              {showWinners ? (
+                <Winners
+                  fadeChecked={fadeChecked}
+                  nominees={categoryToRender.proposals}
+                  handleOpenLearnMore={handleOpenLearnMoreModal}
+                />
+              ) : (
+                <Nominees
+                  fadeChecked={fadeChecked}
+                  nominees={categoryToRender.proposals}
+                  handleSelectedNominee={handleSelectNominee}
+                  selectedNominee={selectedNominee}
+                  handleOpenLearnMore={handleOpenLearnMoreModal}
+                />
+              )}
             </Grid>
           </Grid>
           <img

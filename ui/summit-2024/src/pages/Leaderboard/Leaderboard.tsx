@@ -51,7 +51,7 @@ const Leaderboard: React.FC = () => {
               height: "28px",
             }}
           />
-          <Container maxWidth="lg">
+          <Container>
             <Box component="div" sx={{ my: 4 }}>
               <Typography
                 sx={{

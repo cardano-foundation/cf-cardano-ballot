@@ -95,7 +95,7 @@ const Winners: React.FC<WinnersProps> = ({
           <img src={awardImg} alt="Placeholder" />
         </Box>
         <Typography
-            onClick={() => handleLearnMoreClick(nominees[0].id)}
+          onClick={() => handleLearnMoreClick(nominees[0].id)}
           align="center"
           mt={2}
           sx={{
@@ -108,7 +108,7 @@ const Winners: React.FC<WinnersProps> = ({
             fontWeight: 700,
             lineHeight: "32px",
             marginTop: "40px",
-              cursor: "pointer"
+            cursor: "pointer",
           }}
         >
           {nominees[0].id}
@@ -367,7 +367,7 @@ const Winners: React.FC<WinnersProps> = ({
                       fontWeight: 700,
                       lineHeight: "24px",
                       marginLeft: "8px",
-                        cursor: "pointer"
+                      cursor: "pointer",
                     }}
                   >
                     {nominee.id}

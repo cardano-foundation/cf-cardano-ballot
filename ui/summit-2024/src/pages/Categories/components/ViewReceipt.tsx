@@ -393,6 +393,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
                 alignItems: "center",
                 alignSelf: "center",
                 padding: "12px 24px",
+                cursor: "pointer",
               }}
             >
               {content?.iconBottom}

@@ -17,8 +17,8 @@ const instance = createInstance({
   srcUrl: `${env.MATOMO_BASE_URL}/matomo.js`,
   disabled: false,
   heartBeat: {
-    active: true, // optional, default value: true
-    seconds: 10, // optional, default value: `15
+    active: true,
+    seconds: 10,
   },
   linkTracking: true,
 });

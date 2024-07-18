@@ -179,8 +179,6 @@ const Header = () => {
                   }}
                 >
                   <Typography
-                    component="a"
-                    href="#categories"
                     sx={{
                       color: "inherit",
                       px: "24px",
@@ -192,9 +190,6 @@ const Header = () => {
                     Categories
                   </Typography>
                   <Typography
-                    variant="body1"
-                    component="a"
-                    href="#leaderboard"
                     sx={{
                       color: "inherit",
                       textDecoration: "none",
@@ -205,9 +200,6 @@ const Header = () => {
                     Leaderboard
                   </Typography>
                   <Typography
-                    variant="body1"
-                    component="a"
-                    href="#user-guide"
                     sx={{
                       color: "inherit",
                       textDecoration: "none",

@@ -11,7 +11,6 @@ import {
 import theme from "../../common/styles/theme";
 import Ellipses from "../../assets/ellipse.svg";
 import { CustomButton } from "../../components/common/CustomButton/CustomButton";
-import { BioModal } from "./components/BioModal";
 import { VoteNowModal } from "./components/VoteNowModal";
 import { useIsPortrait } from "../../common/hooks/useIsPortrait";
 import { ViewReceipt } from "./components/ViewReceipt";
@@ -22,22 +21,30 @@ import { Category } from "../../store/reducers/eventCache/eventCache.types";
 import { PageBase } from "../BasePage";
 import { Nominees } from "./components/Nominees";
 import { Winners } from "./components/Winners";
+import { BioModal } from "./components/BioModal";
 
 const Categories: React.FC = () => {
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
   const eventCache = useAppSelector(getEventCache);
 
   const categoriesData = eventCache.categories;
+
+  console.log("eventCache");
+  console.log(eventCache);
+  const [showWinners, setShowWinners] = useState(eventCache.finished);
+
   const [selectedCategory, setSelectedCategory] = useState(
     categoriesData[0].id,
   );
   const [selectedNominee, setSelectedNominee] = useState<string | undefined>(
     undefined,
   );
-  const [learMoreCategory, setLearMoreCategory] = useState("");
-  const [openLearMoreCategory, setOpenLearMoreCategory] = useState(false);
+
   const [openVotingModal, setOpenVotingModal] = useState(false);
   const [openViewReceipt, setOpenViewReceipt] = useState(true);
+
+  const [learMoreCategory, setLearMoreCategory] = useState("");
+  const [openLearMoreCategory, setOpenLearMoreCategory] = useState(false);
 
   const [fadeChecked, setFadeChecked] = useState(true);
 
@@ -65,6 +72,11 @@ const Categories: React.FC = () => {
     } else {
       setSelectedNominee(undefined);
     }
+  };
+
+  const handleOpenLearnMoreModal = (nomineeId: string) => {
+    setLearMoreCategory(nomineeId);
+    setOpenLearMoreCategory(true);
   };
 
   let categoryToRender = categoriesData.find((c) => c.id === selectedCategory);
@@ -261,6 +273,8 @@ const Categories: React.FC = () => {
                 }}
               >
                 <Typography
+                  // TODO: remove after demo
+                  onClick={() => setShowWinners(!showWinners)}
                   variant="h5"
                   sx={{ fontWeight: "bold", fontFamily: "Dosis" }}
                 >
@@ -289,19 +303,19 @@ const Categories: React.FC = () => {
                   Vote Now
                 </CustomButton>
               </Box>
-              <Nominees
-                fadeChecked={fadeChecked}
-                nominees={categoryToRender.proposals}
-                handleSelectedNominee={handleSelectNominee}
-                selectedNominee={selectedNominee}
-              />
-
-              <Winners
-                fadeChecked={fadeChecked}
-                nominees={categoryToRender.proposals}
-                handleSelectedNominee={handleSelectNominee}
-                selectedNominee={selectedNominee}
-              />
+                {
+                    showWinners ? <Winners
+                        fadeChecked={fadeChecked}
+                        nominees={categoryToRender.proposals}
+                        handleOpenLearnMore={handleOpenLearnMoreModal}
+                    /> : <Nominees
+                        fadeChecked={fadeChecked}
+                        nominees={categoryToRender.proposals}
+                        handleSelectedNominee={handleSelectNominee}
+                        selectedNominee={selectedNominee}
+                        handleOpenLearnMore={handleOpenLearnMoreModal}
+                    />
+                }
             </Grid>
           </Grid>
           <img
@@ -319,7 +333,7 @@ const Categories: React.FC = () => {
             <Box
               component="div"
               sx={{
-                zIndex: 1,
+                zIndex: 3,
                 position: "fixed",
                 left: 0,
                 right: 0,
@@ -347,6 +361,11 @@ const Categories: React.FC = () => {
             isOpen={openVotingModal}
             onClose={() => setOpenVotingModal(false)}
             selectedNominee={nomineeToVote}
+          />
+          <BioModal
+            isOpen={openLearMoreCategory}
+            title={learMoreCategory}
+            onClose={() => setOpenLearMoreCategory(false)}
           />
         </Box>
         <Drawer

@@ -90,6 +90,10 @@ const NomineeCard: React.FC<NomineeCardProps> = ({
 
         <Box
           component="div"
+          onClick={(event) => {
+              event.stopPropagation();
+              handleLearnMoreClick(event, nominee.id);
+          }}
           sx={{
             width: "100%",
             borderTop: `1px solid ${theme.palette.background.disabled}`,
@@ -100,10 +104,6 @@ const NomineeCard: React.FC<NomineeCardProps> = ({
           }}
         >
           <Typography
-            onClick={(event) => {
-              event.stopPropagation();
-              handleLearnMoreClick(event, nominee.id);
-            }}
             sx={{
               color: theme.palette.text.neutralLight,
               fontSize: "16px",

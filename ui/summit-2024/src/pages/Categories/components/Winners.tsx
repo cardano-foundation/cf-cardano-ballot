@@ -2,8 +2,6 @@ import React from "react";
 import {
   Box,
   Fade,
-  Icon,
-  Paper,
   Table,
   TableBody,
   TableCell,
@@ -15,22 +13,26 @@ import {
 import { Proposal } from "../../../store/reducers/eventCache/eventCache.types";
 import awardImg from "../../../assets/awardWinner.svg";
 import winnerBg from "../../../assets/bg/winnerBg.svg";
+import votesIcon from "../../../assets/votesIcon.svg";
+import positionIcon from "../../../assets/positionIcon.svg";
+import nomineeIcon from "../../../assets/nomineeIcon.svg";
 import theme from "../../../common/styles/theme";
 
 interface WinnersProps {
   fadeChecked: boolean;
   nominees: Proposal[];
-  selectedNominee: string | undefined;
-  handleSelectedNominee: (nomineeId: string) => void;
+  handleOpenLearnMore: (nomineeId: string) => void;
 }
 
 const Winners: React.FC<WinnersProps> = ({
   fadeChecked,
   nominees,
-  selectedNominee,
-  handleSelectedNominee,
+  handleOpenLearnMore,
 }) => {
-  const SectionA = () => (
+  const handleLearnMoreClick = (nomineeId: string) => {
+    handleOpenLearnMore(nomineeId);
+  };
+  const Winner = () => (
     <Box
       component="div"
       sx={{
@@ -93,7 +95,7 @@ const Winners: React.FC<WinnersProps> = ({
           <img src={awardImg} alt="Placeholder" />
         </Box>
         <Typography
-          variant="subtitle1"
+            onClick={() => handleLearnMoreClick(nominees[0].id)}
           align="center"
           mt={2}
           sx={{
@@ -106,6 +108,7 @@ const Winners: React.FC<WinnersProps> = ({
             fontWeight: 700,
             lineHeight: "32px",
             marginTop: "40px",
+              cursor: "pointer"
           }}
         >
           {nominees[0].id}
@@ -114,7 +117,7 @@ const Winners: React.FC<WinnersProps> = ({
           component="div"
           sx={{
             display: "flex",
-            marginTop: "20px",
+            marginTop: "40px",
           }}
         >
           <Box
@@ -123,74 +126,106 @@ const Winners: React.FC<WinnersProps> = ({
               display: "flex",
               alignItems: "flex-start",
               flexDirection: "column",
-              width: "160x",
             }}
           >
-            <Icon />
+            <Box
+              component="div"
+              sx={{
+                display: "flex",
+              }}
+            >
+              <img
+                src={votesIcon}
+                alt="Total Votes Icon"
+                width="24"
+                height="24"
+              />
+              <Typography
+                sx={{
+                  color: theme.palette.text.neutralLightest,
+                  textAlign: "center",
+                  fontFamily: "Dosis",
+                  textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
+                  fontSize: "16px",
+                  fontStyle: "normal",
+                  fontWeight: 500,
+                  lineHeight: "24px",
+                  marginLeft: "8px",
+                }}
+              >
+                Total Votes
+              </Typography>
+            </Box>
+
             <Typography
               sx={{
                 color: theme.palette.text.neutralLightest,
                 textAlign: "center",
                 fontFamily: "Dosis",
                 textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
-                fontSize: "16px",
-                fontStyle: "normal",
-                fontWeight: 500,
-                lineHeight: "24px",
-              }}
-            >
-              Total Votes
-            </Typography>
-            <Typography
-              sx={{
-                color: theme.palette.text.neutralLightest,
-                textAlign: "center",
-                textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
                 fontSize: "24px",
                 fontStyle: "normal",
                 fontWeight: 700,
                 lineHeight: "28px",
-                  marginTop: "4px"
+                marginTop: "4px",
+                marginLeft: "32px",
               }}
             >
               100
             </Typography>
           </Box>
+
           <Box
             component="div"
             sx={{
               display: "flex",
               alignItems: "flex-start",
               flexDirection: "column",
-              marginLeft: "102px",
-              width: "160x",
+              marginLeft: "92px",
             }}
           >
-            <Icon />
+            <Box
+              component="div"
+              sx={{
+                display: "flex",
+              }}
+            >
+              <img
+                src={positionIcon}
+                alt="Total Votes Icon"
+                width="24"
+                height="24"
+              />
+              <Typography
+                sx={{
+                  color: theme.palette.text.neutralLightest,
+                  textAlign: "center",
+                  fontFamily: "Dosis",
+                  textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
+                  fontSize: "16px",
+                  fontStyle: "normal",
+                  fontWeight: 500,
+                  lineHeight: "24px",
+                  marginLeft: "8px",
+                }}
+              >
+                Position
+              </Typography>
+            </Box>
+
             <Typography
               sx={{
                 color: theme.palette.text.neutralLightest,
                 textAlign: "center",
+                fontFamily: "Dosis",
                 textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
-                fontSize: "16px",
+                fontSize: "24px",
                 fontStyle: "normal",
-                fontWeight: 500,
-                lineHeight: "24px",
+                fontWeight: 700,
+                lineHeight: "28px",
+                marginTop: "4px",
+                marginLeft: "32px",
               }}
-            >
-              Position
-            </Typography>
-            <Typography
-                sx={{
-                    color: theme.palette.text.neutralLightest,
-                    textAlign: "center",
-                    textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
-                    fontSize: "24px",
-                    fontStyle: "normal",
-                    fontWeight: 700,
-                    lineHeight: "28px",
-                    marginTop: "4px"
-                }}
             >
               #1
             </Typography>
@@ -200,22 +235,182 @@ const Winners: React.FC<WinnersProps> = ({
     </Box>
   );
 
-  const SectionB = () => (
-    <TableContainer component={Paper}>
-      <Table>
-        <TableHead>
+  const NomineesList = () => (
+    <TableContainer>
+      <Table sx={{ borderCollapse: "separate", borderSpacing: "0 4px" }}>
+        <TableHead sx={{ background: "transparent" }}>
           <TableRow>
-            <TableCell>Position</TableCell>
-            <TableCell>Nominee</TableCell>
-            <TableCell>Votes</TableCell>
+            <TableCell
+              sx={{
+                color: theme.palette.text.neutralLightest,
+                textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
+                textAlign: "center",
+                fontSize: "12px",
+                fontStyle: "normal",
+                fontWeight: 700,
+                lineHeight: "20px",
+                border: "none",
+              }}
+            >
+              Position
+            </TableCell>
+            <TableCell
+              sx={{
+                color: theme.palette.text.neutralLightest,
+                textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
+                fontSize: "12px",
+                fontStyle: "normal",
+                fontWeight: 700,
+                lineHeight: "20px",
+                border: "none",
+              }}
+            >
+              Nominee
+            </TableCell>
+            <TableCell
+              sx={{
+                color: theme.palette.text.neutralLightest,
+                textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
+                fontSize: "12px",
+                fontStyle: "normal",
+                fontWeight: 700,
+                lineHeight: "20px",
+                border: "none",
+              }}
+            >
+              Votes
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {[...Array(10)].map((_, index) => (
-            <TableRow key={index}>
-              <TableCell>{index + 1}</TableCell>
-              <TableCell>Nominee {index + 1}</TableCell>
-              <TableCell>{Math.floor(Math.random() * 100)}</TableCell>
+          {nominees.map((nominee, index) => (
+            <TableRow
+              key={index}
+              sx={{
+                borderRadius: "8px",
+                overflow: "hidden",
+                height: "72px",
+              }}
+            >
+              <TableCell
+                sx={{
+                  background: theme.palette.background.neutralDark,
+                  border: "none",
+                  borderTopLeftRadius: "20px",
+                  borderBottomLeftRadius: "20px",
+                  color: theme.palette.text.neutralLightest,
+                  textAlign: "center",
+                  fontFamily: "Dosis",
+                  fontSize: "20px",
+                  fontStyle: "normal",
+                  fontWeight: 700,
+                  lineHeight: "24px",
+                  padding: "28px 24px",
+                }}
+              >
+                <Box
+                  component="div"
+                  sx={{
+                    display: "flex",
+                  }}
+                >
+                  <img
+                    src={positionIcon}
+                    alt="Total Votes"
+                    width="24"
+                    height="24"
+                  />
+                  <Typography
+                    sx={{
+                      color: theme.palette.text.neutralLightest,
+                      textAlign: "center",
+                      fontFamily: "Dosis",
+                      textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
+                      fontSize: "20px",
+                      fontStyle: "normal",
+                      fontWeight: 700,
+                      lineHeight: "24px",
+                      marginLeft: "8px",
+                    }}
+                  >
+                    #{index + 1}
+                  </Typography>
+                </Box>
+              </TableCell>
+              <TableCell
+                sx={{
+                  background: theme.palette.background.neutralDark,
+                  border: "none",
+                }}
+              >
+                <Box
+                  component="div"
+                  sx={{
+                    display: "flex",
+                  }}
+                >
+                  <img
+                    src={nomineeIcon}
+                    alt="Total Votes"
+                    width="24"
+                    height="24"
+                  />
+                  <Typography
+                    onClick={() => handleLearnMoreClick(nominee.id)}
+                    sx={{
+                      color: theme.palette.text.neutralLightest,
+                      textAlign: "center",
+                      fontFamily: "Dosis",
+                      textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
+                      fontSize: "20px",
+                      fontStyle: "normal",
+                      fontWeight: 700,
+                      lineHeight: "24px",
+                      marginLeft: "8px",
+                        cursor: "pointer"
+                    }}
+                  >
+                    {nominee.id}
+                  </Typography>
+                </Box>
+              </TableCell>
+              <TableCell
+                sx={{
+                  background: theme.palette.background.neutralDark,
+                  border: "none",
+                  borderTopRightRadius: "20px",
+                  borderBottomRightRadius: "20px",
+                }}
+              >
+                <Box
+                  component="div"
+                  sx={{
+                    display: "flex",
+                  }}
+                >
+                  <img
+                    src={votesIcon}
+                    alt="Total Votes"
+                    width="24"
+                    height="24"
+                  />
+                  <Typography
+                    sx={{
+                      color: theme.palette.text.neutralLightest,
+                      textAlign: "center",
+                      fontFamily: "Dosis",
+                      textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
+                      fontSize: "20px",
+                      fontStyle: "normal",
+                      fontWeight: 700,
+                      lineHeight: "24px",
+                      marginLeft: "8px",
+                    }}
+                  >
+                    100
+                  </Typography>
+                </Box>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -241,10 +436,10 @@ const Winners: React.FC<WinnersProps> = ({
               marginBottom: { sm: 0, xs: 2 },
             }}
           >
-            <SectionA />
+            <Winner />
           </Box>
           <Box component="div" sx={{ flex: 2 }}>
-            <SectionB />
+            <NomineesList />
           </Box>
         </Box>
       </Fade>

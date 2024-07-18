@@ -1,14 +1,14 @@
-import React, { useState } from "react";
+import React from "react";
 import { Fade, Grid } from "@mui/material";
 import { Proposal } from "../../../store/reducers/eventCache/eventCache.types";
 import { NomineeCard } from "./NomineeCard";
-import { BioModal } from "./BioModal";
 
 interface NomineesProps {
   fadeChecked: boolean;
   nominees: Proposal[];
   selectedNominee: string | undefined;
   handleSelectedNominee: (nomineeId: string) => void;
+  handleOpenLearnMore: (nomineeId: string) => void;
 }
 
 const Nominees: React.FC<NomineesProps> = ({
@@ -16,21 +16,18 @@ const Nominees: React.FC<NomineesProps> = ({
   nominees,
   selectedNominee,
   handleSelectedNominee,
+  handleOpenLearnMore,
 }) => {
-  const [learMoreCategory, setLearMoreCategory] = useState("");
-  const [openLearMoreCategory, setOpenLearMoreCategory] = useState(false);
-
   const handleSelectNominee = (id: string) => {
     handleSelectedNominee(id);
   };
 
   const handleLearnMoreClick = (
     event: React.MouseEvent<HTMLElement>,
-    category: string,
+    nomineeId: string,
   ) => {
     event.stopPropagation();
-    setLearMoreCategory(category);
-    setOpenLearMoreCategory(true);
+    handleOpenLearnMore(nomineeId);
   };
 
   return (
@@ -54,11 +51,6 @@ const Nominees: React.FC<NomineesProps> = ({
             ))}
         </Grid>
       </Fade>
-      <BioModal
-        isOpen={openLearMoreCategory}
-        title={learMoreCategory}
-        onClose={() => setOpenLearMoreCategory(false)}
-      />
     </>
   );
 };

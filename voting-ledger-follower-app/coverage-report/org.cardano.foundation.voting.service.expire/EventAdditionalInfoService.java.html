@@ -104,74 +104,85 @@ public class EventAdditionalInfoService {
         };
     }
 
+    private boolean isUserBased(Event event) {
+<span class="pc bpc" id="L108" title="2 of 3 branches missed.">        return switch (event.getVotingEventType()) {</span>
+<span class="fc" id="L109">            case STAKE_BASED, BALANCE_BASED -&gt;  false;</span>
+<span class="nc" id="L110">            case USER_BASED -&gt; true;</span>
+        };
+    }
+
     public Either&lt;Problem, List&lt;EventAdditionalInfo&gt;&gt; getEventAdditionalInfo(List&lt;Event&gt; events) {
-<span class="fc" id="L108">        var chainTipE = blockchainDataChainTipService.getChainTip();</span>
+<span class="fc" id="L115">        var chainTipE = blockchainDataChainTipService.getChainTip();</span>
 
-<span class="pc bpc" id="L110" title="1 of 2 branches missed.">        if (chainTipE.isEmpty()) {</span>
-<span class="nc" id="L111">            log.warn(&quot;For the moment, there is no chain tip access, problem:{}&quot;, chainTipE.getLeft());</span>
+<span class="pc bpc" id="L117" title="1 of 2 branches missed.">        if (chainTipE.isEmpty()) {</span>
+<span class="nc" id="L118">            log.warn(&quot;For the moment, there is no chain tip access, problem:{}&quot;, chainTipE.getLeft());</span>
 
-<span class="nc" id="L113">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L114">                    .withTitle(&quot;CHAIN_FOLLOWER_ERROR&quot;)</span>
-<span class="nc" id="L115">                    .withDetail(&quot;Chain-Follower service error.&quot;)</span>
-<span class="nc" id="L116">                    .withStatus(INTERNAL_SERVER_ERROR)</span>
-<span class="nc" id="L117">                    .build());</span>
+<span class="nc" id="L120">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L121">                    .withTitle(&quot;CHAIN_FOLLOWER_ERROR&quot;)</span>
+<span class="nc" id="L122">                    .withDetail(&quot;Chain-Follower service error.&quot;)</span>
+<span class="nc" id="L123">                    .withStatus(INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L124">                    .build());</span>
         }
-<span class="fc" id="L119">        var chainTip = chainTipE.get();</span>
+<span class="fc" id="L126">        var chainTip = chainTipE.get();</span>
 
-<span class="fc" id="L121">        var eventAdditionalInfoList = events.stream().map(event -&gt; {</span>
-<span class="fc" id="L122">                    boolean eventNotStarted = isEventNotStarted(event, chainTip);</span>
-<span class="fc" id="L123">                    boolean eventStarted = isEventStarted(event, chainTip);</span>
+<span class="fc" id="L128">        var eventAdditionalInfoList = events.stream().map(event -&gt; {</span>
+<span class="fc" id="L129">                    boolean eventNotStarted = isEventNotStarted(event, chainTip);</span>
+<span class="fc" id="L130">                    boolean eventStarted = isEventStarted(event, chainTip);</span>
 
-<span class="fc" id="L125">                    boolean eventActive = isEventActive(event, chainTip);</span>
-<span class="fc" id="L126">                    boolean eventFinished = isEventFinished(event, chainTip);</span>
-<span class="fc" id="L127">                    boolean proposalsReveal = isProposalsReveal(event, chainTip);</span>
-<span class="fc" id="L128">                    boolean commitmentsWindowOpen = isCommitmentsWindowOpen(event, chainTip);</span>
+<span class="fc" id="L132">                    boolean eventActive = isEventActive(event, chainTip);</span>
+<span class="fc" id="L133">                    boolean eventFinished = isEventFinished(event, chainTip);</span>
+<span class="fc" id="L134">                    boolean proposalsReveal = isProposalsReveal(event, chainTip);</span>
+<span class="fc" id="L135">                    boolean commitmentsWindowOpen = isCommitmentsWindowOpen(event, chainTip);</span>
+<span class="fc" id="L136">                    boolean userBased = isUserBased(event);</span>
 
-<span class="fc" id="L130">                    return new EventAdditionalInfo(</span>
-<span class="fc" id="L131">                            event.getId(),</span>
+<span class="fc" id="L138">                    return new EventAdditionalInfo(</span>
+<span class="fc" id="L139">                            event.getId(),</span>
                             eventNotStarted,
                             eventStarted,
                             eventFinished,
                             eventActive,
                             proposalsReveal,
-                            commitmentsWindowOpen
+                            commitmentsWindowOpen,
+                            userBased
                     );
                 })
-<span class="fc" id="L140">                .toList();</span>
+<span class="fc" id="L149">                .toList();</span>
 
-<span class="fc" id="L142">        return Either.right(eventAdditionalInfoList);</span>
+<span class="fc" id="L151">        return Either.right(eventAdditionalInfoList);</span>
     }
 
     public Either&lt;Problem, EventAdditionalInfo&gt; getEventAdditionalInfo(Event event) {
-<span class="fc" id="L146">        var chainTipE = blockchainDataChainTipService.getChainTip();</span>
+<span class="fc" id="L155">        var chainTipE = blockchainDataChainTipService.getChainTip();</span>
 
-<span class="pc bpc" id="L148" title="1 of 2 branches missed.">        if (chainTipE.isEmpty()) {</span>
-<span class="nc" id="L149">            log.warn(&quot;For the moment, there is no chain tip access, problem:{}&quot;, chainTipE.getLeft());</span>
+<span class="pc bpc" id="L157" title="1 of 2 branches missed.">        if (chainTipE.isEmpty()) {</span>
+<span class="nc" id="L158">            log.warn(&quot;For the moment, there is no chain tip access, problem:{}&quot;, chainTipE.getLeft());</span>
 
-<span class="nc" id="L151">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L152">                    .withTitle(&quot;CHAIN_FOLLOWER_ERROR&quot;)</span>
-<span class="nc" id="L153">                    .withDetail(&quot;Chain-Follower service error.&quot;)</span>
-<span class="nc" id="L154">                    .withStatus(INTERNAL_SERVER_ERROR)</span>
-<span class="nc" id="L155">                    .build());</span>
+<span class="nc" id="L160">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L161">                    .withTitle(&quot;CHAIN_FOLLOWER_ERROR&quot;)</span>
+<span class="nc" id="L162">                    .withDetail(&quot;Chain-Follower service error.&quot;)</span>
+<span class="nc" id="L163">                    .withStatus(INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L164">                    .build());</span>
         }
-<span class="fc" id="L157">        var chainTip = chainTipE.get();</span>
+<span class="fc" id="L166">        var chainTip = chainTipE.get();</span>
 
-<span class="fc" id="L159">        boolean eventNotStarted = isEventNotStarted(event, chainTip);</span>
-<span class="fc" id="L160">        boolean eventStarted = isEventStarted(event, chainTip);</span>
+<span class="fc" id="L168">        boolean eventNotStarted = isEventNotStarted(event, chainTip);</span>
+<span class="fc" id="L169">        boolean eventStarted = isEventStarted(event, chainTip);</span>
 
-<span class="fc" id="L162">        boolean eventActive = isEventActive(event, chainTip);</span>
-<span class="fc" id="L163">        boolean eventFinished = isEventFinished(event, chainTip);</span>
-<span class="fc" id="L164">        boolean proposalsReveal = isProposalsReveal(event, chainTip);</span>
-<span class="fc" id="L165">        boolean commitmentsWindowOpen = isCommitmentsWindowOpen(event, chainTip);</span>
+<span class="fc" id="L171">        boolean eventActive = isEventActive(event, chainTip);</span>
+<span class="fc" id="L172">        boolean eventFinished = isEventFinished(event, chainTip);</span>
+<span class="fc" id="L173">        boolean proposalsReveal = isProposalsReveal(event, chainTip);</span>
+<span class="fc" id="L174">        boolean commitmentsWindowOpen = isCommitmentsWindowOpen(event, chainTip);</span>
+<span class="fc" id="L175">        boolean userBased = isUserBased(event);</span>
 
-<span class="fc" id="L167">        return Either.right(new EventAdditionalInfo(</span>
-<span class="fc" id="L168">                event.getId(),</span>
+<span class="fc" id="L177">        return Either.right(new EventAdditionalInfo(</span>
+<span class="fc" id="L178">                event.getId(),</span>
                 eventNotStarted,
                 eventStarted,
                 eventFinished,
                 eventActive,
                 proposalsReveal,
-                commitmentsWindowOpen
+                commitmentsWindowOpen,
+                userBased
         ));
     }
 

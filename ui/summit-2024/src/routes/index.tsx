@@ -4,7 +4,7 @@ import { Home } from "../pages/Home";
 import { Categories } from "../pages/Categories/Categories";
 import { UserGuide } from "../pages/UserGuide/UserGuide";
 import { Leaderboard } from "../pages/Leaderboard/Leaderboard";
-import {ReceiptHistory} from "../pages/ReceiptHistory/ReceiptHistory";
+import { ReceiptHistory } from "../pages/ReceiptHistory/ReceiptHistory";
 
 export const PAGE_PATH = "/";
 

@@ -29,6 +29,8 @@ import {
   getWalletIdentifier,
   getWalletIsVerified,
 } from "../../store/reducers/userCache";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "../../routes";
 
 type ConnectWalletButtonProps = {
   label: string;
@@ -41,6 +43,7 @@ type ConnectWalletButtonProps = {
 
 const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
   const { onOpenConnectWalletModal, onLogin, onDisconnectWallet } = props;
+  const navigate = useNavigate();
   const isMobile = useIsPortrait();
   const eventCache = useAppSelector(getEventCache);
   const walletIsVerified = useAppSelector(getWalletIsVerified);
@@ -64,6 +67,10 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
 
   const handleVerifyWallet = () => {
     eventBus.publish("openVerifyWalletModal");
+  };
+
+  const handleOpenVoteReceipts = () => {
+    navigate(ROUTES.RECEIPTS);
   };
 
   return (
@@ -143,6 +150,19 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
                 Login
               </ListItem>
             ) : null}
+            <ListItem
+              sx={{
+                zIndex: "99",
+                display: "flex",
+                justifyContent: "space-between",
+                width: "100%",
+              }}
+              className="menu-button last-button"
+              color="inherit"
+              onClick={handleOpenVoteReceipts}
+            >
+              <ListItemText primary="Votes Receipts" />
+            </ListItem>
             <ListItem
               sx={{
                 zIndex: "99",

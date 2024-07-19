@@ -1,5 +1,69 @@
 # Changelog
 
+## [0.2.76](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.75...v0.2.76) (2024-07-19)
+
+
+### Features
+
+* added batching for leaderboard. ([#514](https://github.com/cardano-foundation/cf-cardano-ballot/issues/514)) ([28d9e37](https://github.com/cardano-foundation/cf-cardano-ballot/commit/28d9e370129ae2b06be9ce4023c5c4051b42d091))
+* added logging to know which stake service is used. ([#526](https://github.com/cardano-foundation/cf-cardano-ballot/issues/526)) ([015efa0](https://github.com/cardano-foundation/cf-cardano-ballot/commit/015efa0de3187644db26dcd893109458e317ffc7))
+* adjust slot ([002c7a7](https://github.com/cardano-foundation/cf-cardano-ballot/commit/002c7a70a0e97faa83b1f6f29275f564ecfa052e))
+* **cip-1694-ui:** change typhon wallet name, fix typo ([24fbdd2](https://github.com/cardano-foundation/cf-cardano-ballot/commit/24fbdd20502a3929852367dd8e313aade7b1d067))
+* **cip-1694-ui:** change voting closes and connect button colors ([feb0050](https://github.com/cardano-foundation/cf-cardano-ballot/commit/feb00502e730f23a0d1f17b1601ecb1c2cbbc68a))
+* **cip-1694-ui:** more fixes ([170f829](https://github.com/cardano-foundation/cf-cardano-ballot/commit/170f829c5fd78f689f511e10f53d35bdec5bab80))
+* cleaner GET interface for KERI verifier service ([#546](https://github.com/cardano-foundation/cf-cardano-ballot/issues/546)) ([df2ba12](https://github.com/cardano-foundation/cf-cardano-ballot/commit/df2ba122372a29dc53ee284538b746e17f827a6f))
+* create new event(2weeks) ([e0a1a1c](https://github.com/cardano-foundation/cf-cardano-ballot/commit/e0a1a1cc0c95bba4181af65f5b7ef868ea5c291a))
+* handle not supported keri wallet for balance/stake event ([25a6eea](https://github.com/cardano-foundation/cf-cardano-ballot/commit/25a6eea0b9d7cc2bf28698d319b68e2d320eabd6))
+* hydra-tally ([#488](https://github.com/cardano-foundation/cf-cardano-ballot/issues/488)) ([f4fb51d](https://github.com/cardano-foundation/cf-cardano-ballot/commit/f4fb51dabb9700c0a643c179c7d6dca25e7fdef1))
+* migrated keri ballot verifier ([c350074](https://github.com/cardano-foundation/cf-cardano-ballot/commit/c350074bf3eaeb6c8238cf35d853d7214bb781e4))
+* move to JDK 21. ([#378](https://github.com/cardano-foundation/cf-cardano-ballot/issues/378)) ([d59f6c5](https://github.com/cardano-foundation/cf-cardano-ballot/commit/d59f6c58f860db9ccfd4aee5de106dfee3b153f4))
+* new event ([120b1d9](https://github.com/cardano-foundation/cf-cardano-ballot/commit/120b1d993d6f9045fe19e07e89f960300808d55f))
+* new winner badge placed on winner card ([b779303](https://github.com/cardano-foundation/cf-cardano-ballot/commit/b779303a20acf0b1a95659097bb18922793d5c5a))
+* set temporary sms message ([88c4cc4](https://github.com/cardano-foundation/cf-cardano-ballot/commit/88c4cc4628b83f4d06d99b7aa0e86e9d86d2065c))
+* update checkVerification using walletId ([185f2dc](https://github.com/cardano-foundation/cf-cardano-ballot/commit/185f2dc5f2049e32b8aa09c551ff4306b467fb44))
+* update friendly.custom.name for sms ([6c06094](https://github.com/cardano-foundation/cf-cardano-ballot/commit/6c06094bffcd78234782d1a6831930b0b3819b7f))
+* update isVerified using walletId ([a3c6200](https://github.com/cardano-foundation/cf-cardano-ballot/commit/a3c620043251202edf7763c00bbc8b90ba5aa460))
+* update startVerification using walletId ([5a9f742](https://github.com/cardano-foundation/cf-cardano-ballot/commit/5a9f7425271348a193686d47f99873bdff61edfa))
+* using cf-cardano-conversions library. ([#525](https://github.com/cardano-foundation/cf-cardano-ballot/issues/525)) ([7c4520c](https://github.com/cardano-foundation/cf-cardano-ballot/commit/7c4520cac361a1752fef8e4c21cc8dd28eb55374))
+* using spring env to replace all sensitive hard-coded property values. ([#520](https://github.com/cardano-foundation/cf-cardano-ballot/issues/520)) ([43a756b](https://github.com/cardano-foundation/cf-cardano-ballot/commit/43a756bf3df5d3aa78e0b987a80be0d1f8314244))
+* verify discord account with keri ([ab8da62](https://github.com/cardano-foundation/cf-cardano-ballot/commit/ab8da629b4c10034fc6f8db30cc3f03510ccbde9))
+* wip create event 2024 preprod ([bbb5366](https://github.com/cardano-foundation/cf-cardano-ballot/commit/bbb536696ea05703110556f19f5cc0c1b215bff7))
+
+
+### Bug Fixes
+
+* added .env to gitignore ([9ea3d1d](https://github.com/cardano-foundation/cf-cardano-ballot/commit/9ea3d1d172692dedf38a26cc3be27e55c5af1076))
+* adding new design for winner icon ([d5c4db3](https://github.com/cardano-foundation/cf-cardano-ballot/commit/d5c4db32799730b089898e858ace137611fc7049))
+* blockfrost has snapshot 2 epochs ahead when it is active, where as we have as it is in the past. ([#528](https://github.com/cardano-foundation/cf-cardano-ballot/issues/528)) ([f3c5806](https://github.com/cardano-foundation/cf-cardano-ballot/commit/f3c5806d6da68febe63a0a9dc18d9ee9dbdba224))
+* bug fix with missing import ([6973477](https://github.com/cardano-foundation/cf-cardano-ballot/commit/69734779b0e307a7a2c2cda8b318abd273f608d3))
+* build fix ([4cc611e](https://github.com/cardano-foundation/cf-cardano-ballot/commit/4cc611eb961c156da61fd4cdab25917b6bf07017))
+* **cip-1694-ui:** allow vote and leaderboard links for not active events ([#510](https://github.com/cardano-foundation/cf-cardano-ballot/issues/510)) ([f85b4e6](https://github.com/cardano-foundation/cf-cardano-ballot/commit/f85b4e6bc538836d1230f0e75c409987936d3ecc))
+* **cip-1694-ui:** fix leaderboard visibility ([c8f4a24](https://github.com/cardano-foundation/cf-cardano-ballot/commit/c8f4a246175737c2817a9c73ec492dd5b8cae03d))
+* color contrast fix and image change ([45850e6](https://github.com/cardano-foundation/cf-cardano-ballot/commit/45850e68ec8f1f921fd13af6725fdb63171faf2a))
+* contract test fix ([6c10c26](https://github.com/cardano-foundation/cf-cardano-ballot/commit/6c10c26287268ea86c8e49ee1a2c38701c3f8daa))
+* DefaultDiscordUserVerificationService checkVerification ([50c1879](https://github.com/cardano-foundation/cf-cardano-ballot/commit/50c1879158e0c7d0673ee83049abb67f556f97f9))
+* DiscordUserVerificationAPITests include keriPayload ([5137247](https://github.com/cardano-foundation/cf-cardano-ballot/commit/5137247605eff9ce92e6adef2ff08a54db32d5fc))
+* DiscordUserVerificationAPITests to support keriSignedMessage new field for DiscordCheckVerificationRequest ([fc7e758](https://github.com/cardano-foundation/cf-cardano-ballot/commit/fc7e75869ec495aea7546603eb0b17d3a983d58b))
+* display rank number one only if there is votes ([4fa61fd](https://github.com/cardano-foundation/cf-cardano-ballot/commit/4fa61fd51399bd6234934434892daef3be2f9464))
+* fixes for unit tests after moving to falling yaci not via REST but internal method invocation changes. ([5e77d53](https://github.com/cardano-foundation/cf-cardano-ballot/commit/5e77d537ea63eec1b031858f262ca6a6b6491348))
+* forgot one swagger http return code. ([57aadb6](https://github.com/cardano-foundation/cf-cardano-ballot/commit/57aadb641aa8e0a6e4074789b16eec7b97a7cb99))
+* leaderboard tabs mobile width and winners on nominees page only there are votes ([994d3b5](https://github.com/cardano-foundation/cf-cardano-ballot/commit/994d3b56073c244c330c73c19d87ff92262609b4))
+* open commitment window should be on the last epoch / slot + configurable buffer of running event including that epoch or slot. ([aa00a79](https://github.com/cardano-foundation/cf-cardano-ballot/commit/aa00a791702a47ec071d3c74e66c74a24b835bf9))
+* remove org.springframework.boot:spring-boot-starter-data-rest ([f5e09e8](https://github.com/cardano-foundation/cf-cardano-ballot/commit/f5e09e8d83624de84c0c1edfbdf3da1f286321ac))
+* remove unnecessary else return in keri registerOOBI ([d45d3bb](https://github.com/cardano-foundation/cf-cardano-ballot/commit/d45d3bb9f248f905a600b0fce965ff1cb9f6397e))
+* remove unnecessary else return in keri verifySignature ([5e8f21f](https://github.com/cardano-foundation/cf-cardano-ballot/commit/5e8f21f1d44fe4448fbe467a5f1105416c5c1a64))
+* remove unnecessary walletType.isPresent() ([09cc242](https://github.com/cardano-foundation/cf-cardano-ballot/commit/09cc242b725d7ff563dd6e8246869e51acb52dcc))
+* rename maybe var ([84cdc1f](https://github.com/cardano-foundation/cf-cardano-ballot/commit/84cdc1f62b6c30f5e79fd148cff3b56c1a824bfb))
+* rename signature to signatureM and add Transactional spring annotation to handleKeriVerification and handleCardanoVerification ([5fa1ff7](https://github.com/cardano-foundation/cf-cardano-ballot/commit/5fa1ff7d6c892aaa561e46ca424ea649d06e1894))
+* rename walletIdType to walletType ([68a637e](https://github.com/cardano-foundation/cf-cardano-ballot/commit/68a637e6e515d1627c294c1c76cc6d454aef826f))
+* replace Tuple with VerificationResult class ([a039a8f](https://github.com/cardano-foundation/cf-cardano-ballot/commit/a039a8f6f3a8db51d37ae9d578854231f3a29ba3))
+* set waletIdType in discordFlow ([9de6343](https://github.com/cardano-foundation/cf-cardano-ballot/commit/9de6343b474d6864ed3e5a3545abdeb52650faed))
+* sms flow walletIdType ([9b0565f](https://github.com/cardano-foundation/cf-cardano-ballot/commit/9b0565fcfdb7624526aa380215c0305c778be039))
+* sms flow with walletId an wallet ([ea4e099](https://github.com/cardano-foundation/cf-cardano-ballot/commit/ea4e09965c5f30a0bbe791104e189b798b0a737d))
+* wip register oobi ([fbd239d](https://github.com/cardano-foundation/cf-cardano-ballot/commit/fbd239db51ef8fff95fd944cd536106a12773b20))
+* wip user verification tests ([891d50d](https://github.com/cardano-foundation/cf-cardano-ballot/commit/891d50d6c0c5582a5cff5125b778ac7b0579336a))
+* wip verify keri ([7d835a8](https://github.com/cardano-foundation/cf-cardano-ballot/commit/7d835a88b7f9e23da658416ef3e8d8ba648c441f))
+
 ## [0.2.75](https://github.com/cardano-foundation/cf-cardano-ballot/compare/v0.2.74...v0.2.75) (2023-10-27)
 
 

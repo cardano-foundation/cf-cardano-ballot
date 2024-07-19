@@ -34,6 +34,7 @@ const Categories: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState(
     categoriesData[0].id,
   );
+
   const [selectedNominee, setSelectedNominee] = useState<string | undefined>(
     undefined,
   );
@@ -93,6 +94,17 @@ const Categories: React.FC = () => {
   const handleOpenLearnMoreModal = (nomineeId: string) => {
     setLearMoreCategory(nomineeId);
     setOpenLearMoreCategory(true);
+  };
+
+  const handleOpenViewReceipt = () => {
+    setOpenViewReceipt(true);
+  };
+  const handleOpenActionButton = () => {
+    if (showWinners) {
+      handleOpenViewReceipt();
+    } else {
+      setOpenVotingModal(true);
+    }
   };
 
   let categoryToRender = categoriesData.find((c) => c.id === selectedCategory);
@@ -307,7 +319,7 @@ const Categories: React.FC = () => {
                   Ambassador.
                 </Typography>
                 <CustomButton
-                  onClick={() => setOpenVotingModal(true)}
+                  onClick={() => handleOpenActionButton()}
                   sx={{
                     mt: -6,
                     alignSelf: "flex-end",
@@ -316,13 +328,15 @@ const Categories: React.FC = () => {
                   colorVariant="primary"
                   disabled={!selectedNominee}
                 >
-                  Vote Now
+                  {!showWinners ? <>Vote Now</> : <>View Receipt</>}
                 </CustomButton>
               </Box>
               {showWinners ? (
                 <Winners
                   fadeChecked={fadeChecked}
                   nominees={categoryToRender.proposals}
+                  handleSelectedNominee={handleSelectNominee}
+                  selectedNominee={selectedNominee}
                   handleOpenLearnMore={handleOpenLearnMoreModal}
                 />
               ) : (
@@ -366,12 +380,12 @@ const Categories: React.FC = () => {
               }}
             >
               <CustomButton
-                onClick={() => setOpenVotingModal(true)}
+                onClick={() => handleOpenActionButton()}
                 sx={{ width: "100%", height: "48px", my: "24px" }}
                 colorVariant="primary"
                 disabled={!selectedNominee}
               >
-                Vote Now
+                {!showWinners ? <>Vote Now</> : <>View Receipt</>}
               </CustomButton>
             </Box>
           )}

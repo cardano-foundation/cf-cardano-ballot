@@ -25,8 +25,8 @@ const ReceiptHistory: React.FC = () => {
   const [openViewReceipt, setOpenViewReceipt] = useState(true);
   const [copied, setCopied] = React.useState(false);
 
-  const handleReceiptClick = (nomineeId: number) => {
-      setOpenViewReceipt(true);
+  const handleReceiptClick = () => {
+    setOpenViewReceipt(true);
   };
 
   const handleCopy = async (transactionId: string) => {
@@ -96,7 +96,7 @@ const ReceiptHistory: React.FC = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {[1, 2, 4, 5, 6, 7, 8, 9, 10].map((nominee, index) => (
+          {[1, 2, 4, 5, 6, 7, 8, 9, 10].map((_: number, index) => (
             <TableRow
               key={index}
               sx={{
@@ -236,6 +236,7 @@ const ReceiptHistory: React.FC = () => {
                       sx={{
                         width: "20px",
                         height: "20px",
+                        cursor: "pointer"
                       }}
                     />
                   )}
@@ -254,21 +255,24 @@ const ReceiptHistory: React.FC = () => {
                   >
                     c56ec4b8b251...1ba5f097eb71
                   </Typography>
-                    <Box component="div" sx={{
-                        marginLeft: "auto",
-                        marginRight: "28px"
-                    }}>
-                        <img
-                            onClick={() => handleReceiptClick(0)}
-                            src={rightArrowIcon}
-                            alt="Total Votes"
-                            width="24"
-                            height="24"
-                            style={{
-                                cursor: "pointer"
-                            }}
-                        />
-                    </Box>
+                  <Box
+                    component="div"
+                    sx={{
+                      marginLeft: "auto",
+                      marginRight: "28px",
+                    }}
+                  >
+                    <img
+                      onClick={() => handleReceiptClick()}
+                      src={rightArrowIcon}
+                      alt="Total Votes"
+                      width="24"
+                      height="24"
+                      style={{
+                        cursor: "pointer",
+                      }}
+                    />
+                  </Box>
                 </Box>
               </TableCell>
             </TableRow>
@@ -287,7 +291,20 @@ const ReceiptHistory: React.FC = () => {
             height: "28px",
           }}
         />
-
+        <Typography
+          sx={{
+            color: theme.palette.text.neutralLightest,
+            fontSize: "32px",
+            fontStyle: "normal",
+            fontWeight: 700,
+            fontFamily: "Dosis",
+            lineHeight: "36px",
+            marginTop: "60px",
+            marginBottom: "32px",
+          }}
+        >
+          Vote Receipt History
+        </Typography>
         <ReceiptsList />
         <Drawer
           open={openViewReceipt}

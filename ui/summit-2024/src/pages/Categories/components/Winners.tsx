@@ -16,22 +16,63 @@ import winnerBg from "../../../assets/bg/winnerBg.svg";
 import votesIcon from "../../../assets/votesIcon.svg";
 import positionIcon from "../../../assets/positionIcon.svg";
 import nomineeIcon from "../../../assets/nomineeIcon.svg";
+import tickIcon from "../../../assets/tickIcon.svg";
 import theme from "../../../common/styles/theme";
 
 interface WinnersProps {
   fadeChecked: boolean;
   nominees: Proposal[];
+  selectedNominee: string | undefined;
+  handleSelectedNominee: (nomineeId: string) => void;
   handleOpenLearnMore: (nomineeId: string) => void;
 }
 
 const Winners: React.FC<WinnersProps> = ({
   fadeChecked,
   nominees,
+  selectedNominee,
+  handleSelectedNominee,
   handleOpenLearnMore,
 }) => {
-  const handleLearnMoreClick = (nomineeId: string) => {
+  const handleLearnMoreClick = (
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    nomineeId: string,
+  ) => {
+    event.stopPropagation();
     handleOpenLearnMore(nomineeId);
   };
+
+  const TickIcon = ({
+    circleSize,
+    tickSize,
+  }: {
+    circleSize: number;
+    tickSize: number;
+  }) => {
+    return (
+      <Box
+        component="div"
+        sx={{
+          width: circleSize ? circleSize : "24px",
+          height: circleSize ? circleSize : "24px",
+          backgroundColor: theme.palette.secondary.main,
+          borderRadius: "50%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <img
+          src={tickIcon}
+          style={{
+            width: tickSize ? tickSize : "16px",
+            height: tickSize ? tickSize : "16px",
+          }}
+        />
+      </Box>
+    );
+  };
+
   const Winner = () => (
     <Box
       component="div"
@@ -74,6 +115,18 @@ const Winners: React.FC<WinnersProps> = ({
           padding: "44px 28px",
         }}
       >
+        <Box
+          component="span"
+          sx={{
+            position: "absolute",
+            top: "14px",
+            right: "14px",
+            zIndex: 3,
+          }}
+        >
+          <TickIcon circleSize={28} tickSize={20} />
+        </Box>
+
         <Typography
           variant="h4"
           align="center"
@@ -95,7 +148,9 @@ const Winners: React.FC<WinnersProps> = ({
           <img src={awardImg} alt="Placeholder" />
         </Box>
         <Typography
-          onClick={() => handleLearnMoreClick(nominees[0].id)}
+          onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) =>
+            handleLearnMoreClick(event, nominees[0].id)
+          }
           align="center"
           mt={2}
           sx={{
@@ -280,22 +335,48 @@ const Winners: React.FC<WinnersProps> = ({
             >
               Votes
             </TableCell>
+            <TableCell
+              sx={{
+                color: theme.palette.text.neutralLightest,
+                textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
+                fontSize: "12px",
+                fontStyle: "normal",
+                fontWeight: 700,
+                lineHeight: "20px",
+                border: "none",
+              }}
+            ></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {nominees.map((nominee, index) => (
             <TableRow
+              onClick={() => handleSelectedNominee(nominee.id)}
               key={index}
               sx={{
                 borderRadius: "8px",
                 overflow: "hidden",
                 height: "72px",
+                border: " 1px solid var(--orange, EE9766)",
+                cursor: "pointer",
               }}
             >
               <TableCell
                 sx={{
                   background: theme.palette.background.neutralDark,
-                  border: "none",
+                  borderLeft:
+                    selectedNominee === nominee.id
+                      ? `1px solid ${theme.palette.secondary.main}`
+                      : `1px solid transparent`,
+                  borderTop:
+                    selectedNominee === nominee.id
+                      ? `1px solid ${theme.palette.secondary.main}`
+                      : `1px solid transparent`,
+                  borderBottom:
+                    selectedNominee === nominee.id
+                      ? `1px solid ${theme.palette.secondary.main}`
+                      : `1px solid transparent`,
+                  borderRight: "none",
                   borderTopLeftRadius: "20px",
                   borderBottomLeftRadius: "20px",
                   color: theme.palette.text.neutralLightest,
@@ -340,7 +421,15 @@ const Winners: React.FC<WinnersProps> = ({
               <TableCell
                 sx={{
                   background: theme.palette.background.neutralDark,
-                  border: "none",
+                  borderTop:
+                    selectedNominee === nominee.id
+                      ? `1px solid ${theme.palette.secondary.main}`
+                      : `1px solid transparent`,
+                  borderBottom:
+                    selectedNominee === nominee.id
+                      ? `1px solid ${theme.palette.secondary.main}`
+                      : `1px solid transparent`,
+                  borderRight: "none",
                 }}
               >
                 <Box
@@ -356,7 +445,9 @@ const Winners: React.FC<WinnersProps> = ({
                     height="24"
                   />
                   <Typography
-                    onClick={() => handleLearnMoreClick(nominee.id)}
+                    onClick={(
+                      event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+                    ) => handleLearnMoreClick(event, nominee.id)}
                     sx={{
                       color: theme.palette.text.neutralLightest,
                       textAlign: "center",
@@ -377,9 +468,15 @@ const Winners: React.FC<WinnersProps> = ({
               <TableCell
                 sx={{
                   background: theme.palette.background.neutralDark,
-                  border: "none",
-                  borderTopRightRadius: "20px",
-                  borderBottomRightRadius: "20px",
+                  borderTop:
+                    selectedNominee === nominee.id
+                      ? `1px solid ${theme.palette.secondary.main}`
+                      : `1px solid transparent`,
+                  borderBottom:
+                    selectedNominee === nominee.id
+                      ? `1px solid ${theme.palette.secondary.main}`
+                      : `1px solid transparent`,
+                  borderLeft: "none",
                 }}
               >
                 <Box
@@ -409,6 +506,38 @@ const Winners: React.FC<WinnersProps> = ({
                   >
                     100
                   </Typography>
+                </Box>
+              </TableCell>
+              <TableCell
+                sx={{
+                  background: theme.palette.background.neutralDark,
+                  borderTopRightRadius: "20px",
+                  borderBottomRightRadius: "20px",
+                  borderTop:
+                    selectedNominee === nominee.id
+                      ? `1px solid ${theme.palette.secondary.main}`
+                      : `1px solid transparent`,
+                  borderBottom:
+                    selectedNominee === nominee.id
+                      ? `1px solid ${theme.palette.secondary.main}`
+                      : `1px solid transparent`,
+                  borderRight:
+                    selectedNominee === nominee.id
+                      ? `1px solid ${theme.palette.secondary.main}`
+                      : `1px solid transparent`,
+                  borderLeft: "none",
+                }}
+              >
+                <Box
+                  component="div"
+                  sx={{
+                    display: "flex",
+                    width: "24px",
+                  }}
+                >
+                  {selectedNominee === nominee.id ? (
+                    <TickIcon circleSize={24} tickSize={16} />
+                  ) : null}
                 </Box>
               </TableCell>
             </TableRow>

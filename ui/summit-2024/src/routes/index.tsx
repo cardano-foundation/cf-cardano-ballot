@@ -1,10 +1,11 @@
 import { useEffect } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import { Home } from "../pages/Home";
-import { Categories } from "../pages/Categories/Categories";
+import { Categories } from "../pages/Categories";
 import { UserGuide } from "../pages/UserGuide/UserGuide";
 import { Leaderboard } from "../pages/Leaderboard/Leaderboard";
 import { ReceiptHistory } from "../pages/ReceiptHistory/ReceiptHistory";
+import { NotFound } from "../pages/NotFound/NotFound";
 
 export const PAGE_PATH = "/";
 
@@ -17,7 +18,6 @@ export const ROUTES = {
   TERMS_AND_CONDITIONS: `${PAGE_PATH}terms-and-conditions`,
   PRIVACY_POLICY: `${PAGE_PATH}privacy-policy`,
   NOMINEES_BY_ID: `${PAGE_PATH}nominees/:categoryId`,
-  PAGE_NOT_FOUND: `${PAGE_PATH}404`,
 };
 
 const PageRouter = () => {
@@ -36,6 +36,7 @@ const PageRouter = () => {
         <Route path={ROUTES.RECEIPTS} element={<ReceiptHistory />} />
         <Route path={ROUTES.LEADERBOARD} element={<Leaderboard />} />
         <Route path={ROUTES.USER_GUIDE} element={<UserGuide />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   );

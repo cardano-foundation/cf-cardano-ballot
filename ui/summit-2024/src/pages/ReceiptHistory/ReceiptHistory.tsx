@@ -236,7 +236,7 @@ const ReceiptHistory: React.FC = () => {
                       sx={{
                         width: "20px",
                         height: "20px",
-                        cursor: "pointer"
+                        cursor: "pointer",
                       }}
                     />
                   )}

@@ -86,10 +86,10 @@ const Winners: React.FC<WinnersProps> = ({
         padding: "4px",
         background:
           "linear-gradient(45deg, #0C7BC5 0%, #40407D 50%, #EE9766 100%)",
-          position: "sticky",
-          top: 144,
-          overflowY: "auto",
-          maxHeight: "calc(100vh - 144px)",
+        position: "sticky",
+        top: 144,
+        overflowY: "auto",
+        maxHeight: "calc(100vh - 144px)",
       }}
     >
       <Box
@@ -115,7 +115,7 @@ const Winners: React.FC<WinnersProps> = ({
           color: "white",
           zIndex: 2,
           backgroundColor: "rgba(0, 0, 0, 0.5)",
-          padding: "44px 28px",
+          padding: "28px",
         }}
       >
         <Box

@@ -1,17 +1,18 @@
 import React from "react";
-import ArchBg from "../../assets/bg/archBg.png";
-import { Box, Typography, useMediaQuery } from "@mui/material";
+import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { PageBase } from "../BasePage";
 import { CustomButton } from "../../components/common/CustomButton/CustomButton";
 import theme from "../../common/styles/theme";
 import notFoundBg from "../../assets/bg/notFoundBg.svg";
+import ArchBg from "../../assets/bg/archBg.png";
 
 const NotFound: React.FC = () => {
-    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
+    const currentTheme = useTheme();
+    const isMobile = useMediaQuery(currentTheme.breakpoints.down("sm"));
+    const isTablet = useMediaQuery(currentTheme.breakpoints.between('sm', 'md'));
 
     return (
-        <PageBase title="Categories">
+        <PageBase title="NotFound">
             <Box
                 component="div"
                 sx={{
@@ -20,15 +21,16 @@ const NotFound: React.FC = () => {
                     alignItems: "center",
                     marginBottom: "180px",
                     position: "relative",
+                    paddingX: "20px"
                 }}
             >
                 <img
                     src={ArchBg}
                     alt="Background"
                     style={{
-                        maxWidth: '604px', // No excede de 604px
+                        maxWidth: isMobile ? '100%' : '604px',
                         objectFit: 'contain',
-                        marginTop: "120px"
+                        marginTop: isMobile ? "60px" : "120px"
                     }}
                 />
                 <Box
@@ -39,7 +41,7 @@ const NotFound: React.FC = () => {
                         flexDirection: "column",
                         justifyContent: "center",
                         alignItems: "center",
-                        marginTop: 65,
+                        marginTop: isMobile ? 55 : 65,
                     }}
                 >
                     <Typography
@@ -48,10 +50,10 @@ const NotFound: React.FC = () => {
                             textAlign: "center",
                             textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
                             fontFamily: "Dosis",
-                            fontSize: "88px",
+                            fontSize: isMobile ? "44px" : "88px",
                             fontStyle: "normal",
                             fontWeight: 700,
-                            lineHeight: "88px",
+                            lineHeight: isMobile ? "44px" : "88px",
                         }}
                     >
                         404
@@ -62,10 +64,10 @@ const NotFound: React.FC = () => {
                             textAlign: "center",
                             textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
                             fontFamily: "Dosis",
-                            fontSize: "88px",
+                            fontSize: isMobile ? "44px" : "88px",
                             fontStyle: "normal",
                             fontWeight: 700,
-                            lineHeight: "88px",
+                            lineHeight: isMobile ? "44px" : "88px",
                         }}
                     >
                         Page Not Found
@@ -83,27 +85,26 @@ const NotFound: React.FC = () => {
                     >
                         <CustomButton colorVariant="primary">Start Voting</CustomButton>
                         <CustomButton colorVariant="secondary" sx={{
-                            marginLeft: "12px"
+                            marginLeft: isMobile ? "0px" : "12px"
                         }}>Back to Home</CustomButton>
                     </Box>
                 </Box>
-
             </Box>
             <Box
                 component="div"
                 sx={{
-                height: "96px"
-            }}/>
+                    height: "96px"
+                }}/>
             <img
                 src={notFoundBg}
                 style={{
                     position: "fixed",
                     right: "0",
-                    top: "60%",
+                    top: isMobile ? "90%": "70%",
                     transform: "translateY(-40%)",
                     zIndex: "-1",
-                    width: "70%",
-                    height: isMobile ? "auto" : "auto",
+                    width: isTablet ? "50%" : "70%",
+                    height: "auto",
                 }}
             />
         </PageBase>

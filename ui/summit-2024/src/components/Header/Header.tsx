@@ -194,6 +194,7 @@ const Header = () => {
                       color: "inherit",
                       textDecoration: "none",
                       px: "24px",
+                        cursor: "pointer",
                     }}
                     onClick={() => handleClickMenu(ROUTES.LEADERBOARD)}
                   >
@@ -204,6 +205,7 @@ const Header = () => {
                       color: "inherit",
                       textDecoration: "none",
                       px: "24px",
+                        cursor: "pointer",
                     }}
                     onClick={() => handleClickMenu(ROUTES.USER_GUIDE)}
                   >

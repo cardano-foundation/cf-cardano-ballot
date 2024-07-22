@@ -22,7 +22,7 @@ import { copyToClipboard } from "../../utils/utils";
 import { eventBus, EventName } from "../../utils/EventBus";
 
 const ReceiptHistory: React.FC = () => {
-  const [openViewReceipt, setOpenViewReceipt] = useState(true);
+  const [openViewReceipt, setOpenViewReceipt] = useState(false);
   const [copied, setCopied] = React.useState(false);
 
   const handleReceiptClick = () => {

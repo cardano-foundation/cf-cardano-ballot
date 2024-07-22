@@ -40,7 +40,7 @@ const Categories: React.FC = () => {
   );
 
   const [openVotingModal, setOpenVotingModal] = useState(false);
-  const [openViewReceipt, setOpenViewReceipt] = useState(true);
+  const [openViewReceipt, setOpenViewReceipt] = useState(false);
 
   const [learMoreCategory, setLearMoreCategory] = useState("");
   const [openLearMoreCategory, setOpenLearMoreCategory] = useState(false);

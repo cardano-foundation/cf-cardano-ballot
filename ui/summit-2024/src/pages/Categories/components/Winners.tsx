@@ -81,12 +81,15 @@ const Winners: React.FC<WinnersProps> = ({
           xs: "auto",
           sm: "400px",
         },
-        position: "relative",
         borderRadius: "24px",
         overflow: "hidden",
         padding: "4px",
         background:
           "linear-gradient(45deg, #0C7BC5 0%, #40407D 50%, #EE9766 100%)",
+          position: "sticky",
+          top: 144,
+          overflowY: "auto",
+          maxHeight: "calc(100vh - 144px)",
       }}
     >
       <Box
@@ -145,7 +148,7 @@ const Winners: React.FC<WinnersProps> = ({
           Winner!
         </Typography>
         <Box component="div" display="flex" justifyContent="center" mt={2}>
-          <img src={awardImg} alt="Placeholder" />
+          <img src={awardImg} alt="Placeholder" height={148} />
         </Box>
         <Typography
           onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) =>
@@ -349,7 +352,7 @@ const Winners: React.FC<WinnersProps> = ({
           </TableRow>
         </TableHead>
         <TableBody>
-          {nominees.map((nominee, index) => (
+          {[...nominees, ...nominees, ...nominees].map((nominee, index) => (
             <TableRow
               onClick={() => handleSelectedNominee(nominee.id)}
               key={index}

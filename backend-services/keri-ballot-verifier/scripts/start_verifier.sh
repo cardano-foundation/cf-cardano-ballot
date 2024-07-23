@@ -2,7 +2,7 @@
 
 CONFIG_DIR="${VERIFIER_CONFIG_DIR:-$(pwd)}"
 STORE_DIR="${VERIFIER_STORE_DIR:-$(pwd)/store}"
-URL="${VERIFIER_URL:-http://localhost}"
+URL="${VERIFIER_URL:-http://localhost:5666}"
 PORT="${VERIFIER_PORT:-5666}"
 ADMIN_PORT="${VERIFIER_ADMIN_PORT:-5667}"
 
@@ -11,7 +11,7 @@ cat > $CONFIG_DIR/keri/cf/verifier.json <<EOF
 {
   "verifier": {
     "dt": "$(date -u +"%Y-%m-%dT%H:%M:%S.000000+00:00")",
-    "curls": ["${URL}:${PORT}"]
+    "curls": ["${URL}"]
   },
   "dt": "$(date -u +"%Y-%m-%dT%H:%M:%S.000000+00:00")",
   "iurls": [

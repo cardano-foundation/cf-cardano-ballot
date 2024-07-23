@@ -6,6 +6,7 @@ import { UserGuide } from "../pages/UserGuide/UserGuide";
 import { Leaderboard } from "../pages/Leaderboard/Leaderboard";
 import { ReceiptHistory } from "../pages/ReceiptHistory/ReceiptHistory";
 import { NotFound } from "../pages/NotFound/NotFound";
+import { TermsAndConditions } from "../pages/TermsAndPolicy/TermsAndConditions";
 
 export const PAGE_PATH = "/";
 
@@ -36,6 +37,10 @@ const PageRouter = () => {
         <Route path={ROUTES.RECEIPTS} element={<ReceiptHistory />} />
         <Route path={ROUTES.LEADERBOARD} element={<Leaderboard />} />
         <Route path={ROUTES.USER_GUIDE} element={<UserGuide />} />
+        <Route
+          path={ROUTES.TERMS_AND_CONDITIONS}
+          element={<TermsAndConditions />}
+        />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>

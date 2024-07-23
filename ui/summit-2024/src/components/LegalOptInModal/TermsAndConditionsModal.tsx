@@ -9,7 +9,7 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useLocalStorage } from "../../common/hooks/useLocalStorage";
 import { CB_TERMS_AND_PRIVACY } from "../../common/constants/local";
 import { TabsSegment } from "../common/TabPanel/TabsSegment";

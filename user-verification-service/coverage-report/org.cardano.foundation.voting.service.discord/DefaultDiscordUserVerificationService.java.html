@@ -1,26 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DefaultDiscordUserVerificationService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">user-verification-service</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.service.discord</a> &gt; <span class="el_source">DefaultDiscordUserVerificationService.java</span></div><h1>DefaultDiscordUserVerificationService.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.service.discord;
-
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
+import org.cardano.foundation.voting.client.KeriVerificationClient;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.IsVerifiedRequest;
 import org.cardano.foundation.voting.domain.IsVerifiedResponse;
+import org.cardano.foundation.voting.service.common.VerificationResult;
 import org.cardano.foundation.voting.domain.discord.DiscordCheckVerificationRequest;
 import org.cardano.foundation.voting.domain.discord.DiscordStartVerificationRequest;
 import org.cardano.foundation.voting.domain.discord.DiscordStartVerificationResponse;
 import org.cardano.foundation.voting.domain.entity.DiscordUserVerification;
 import org.cardano.foundation.voting.repository.DiscordUserVerificationRepository;
 import org.cardano.foundation.voting.utils.StakeAddress;
+import org.cardano.foundation.voting.utils.WalletType;
 import org.cardanofoundation.cip30.AddressFormat;
 import org.cardanofoundation.cip30.CIP30Verifier;
 import org.cardanofoundation.cip30.MessageFormat;
+import org.cardano.foundation.voting.client.ChainFollowerClient.EventSummary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Propagation;
 import org.zalando.problem.Problem;
-
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,11 +34,14 @@ import static org.cardano.foundation.voting.domain.VerificationStatus.VERIFIED;
 import static org.zalando.problem.Status.BAD_REQUEST;
 
 @Service
-<span class="fc" id="L34">@Slf4j</span>
-<span class="fc" id="L35">public class DefaultDiscordUserVerificationService implements DiscordUserVerificationService {</span>
+<span class="fc" id="L37">@Slf4j</span>
+<span class="fc" id="L38">public class DefaultDiscordUserVerificationService implements DiscordUserVerificationService {</span>
 
     @Autowired
     private ChainFollowerClient chainFollowerClient;
+
+    @Autowired
+    private KeriVerificationClient keriVerificationClient;
 
     @Autowired
     private DiscordUserVerificationRepository userVerificationRepository;
@@ -52,270 +58,484 @@ import static org.zalando.problem.Status.BAD_REQUEST;
     @Override
     @Transactional
     public Either&lt;Problem, DiscordStartVerificationResponse&gt; startVerification(String eventId, DiscordStartVerificationRequest startVerificationRequest) {
-<span class="fc" id="L55">        var discordIdHash = startVerificationRequest.getDiscordIdHash();</span>
+<span class="fc" id="L61">        var discordIdHash = startVerificationRequest.getDiscordIdHash();</span>
 
-<span class="fc" id="L57">        var maybeCompletedVerificationBasedOnDiscordUserHash = userVerificationRepository</span>
-<span class="fc" id="L58">                .findCompletedVerificationBasedOnDiscordUserHash(eventId, discordIdHash);</span>
+<span class="fc" id="L63">        var maybeCompletedVerificationBasedOnDiscordUserHash = userVerificationRepository</span>
+<span class="fc" id="L64">                .findCompletedVerificationBasedOnDiscordUserHash(eventId, discordIdHash);</span>
 
-<span class="pc bpc" id="L60" title="1 of 2 branches missed.">        if (maybeCompletedVerificationBasedOnDiscordUserHash.isPresent()) {</span>
-<span class="nc" id="L61">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L62">                    .withTitle(&quot;USER_ALREADY_VERIFIED&quot;)</span>
-<span class="nc" id="L63">                    .withDetail(&quot;User already verified.&quot;)</span>
-<span class="nc" id="L64">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L65">                    .build());</span>
+<span class="pc bpc" id="L66" title="1 of 2 branches missed.">        if (maybeCompletedVerificationBasedOnDiscordUserHash.isPresent()) {</span>
+<span class="nc" id="L67">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L68">                    .withTitle(&quot;USER_ALREADY_VERIFIED&quot;)</span>
+<span class="nc" id="L69">                    .withDetail(&quot;User already verified.&quot;)</span>
+<span class="nc" id="L70">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L71">                    .build());</span>
         }
 
-<span class="fc" id="L68">        var eventDetails = chainFollowerClient.findEventById(eventId);</span>
+<span class="fc" id="L74">        var eventDetails = chainFollowerClient.findEventById(eventId);</span>
 
-<span class="pc bpc" id="L70" title="1 of 2 branches missed.">        if (eventDetails.isEmpty()) {</span>
-<span class="nc" id="L71">            log.error(&quot;event error:{}&quot;, eventDetails.getLeft());</span>
+<span class="pc bpc" id="L76" title="1 of 2 branches missed.">        if (eventDetails.isEmpty()) {</span>
+<span class="nc" id="L77">            log.error(&quot;event error:{}&quot;, eventDetails.getLeft());</span>
 
-<span class="nc" id="L73">            return Either.left(eventDetails.getLeft());</span>
+<span class="nc" id="L79">            return Either.left(eventDetails.getLeft());</span>
         }
 
-<span class="fc" id="L76">        var maybeEvent = eventDetails.get();</span>
-<span class="pc bpc" id="L77" title="1 of 2 branches missed.">        if (maybeEvent.isEmpty()) {</span>
-<span class="nc" id="L78">            log.warn(&quot;Event not found:{}&quot;, eventId);</span>
+<span class="fc" id="L82">        var maybeEvent = eventDetails.get();</span>
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">        if (maybeEvent.isEmpty()) {</span>
+<span class="nc" id="L84">            log.warn(&quot;Event not found:{}&quot;, eventId);</span>
 
-<span class="nc" id="L80">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L81">                    .withTitle(&quot;EVENT_NOT_FOUND&quot;)</span>
-<span class="nc" id="L82">                    .withDetail(&quot;Event not found, eventId:&quot; + eventId)</span>
-<span class="nc" id="L83">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L84">                    .build());</span>
+<span class="nc" id="L86">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L87">                    .withTitle(&quot;EVENT_NOT_FOUND&quot;)</span>
+<span class="nc" id="L88">                    .withDetail(&quot;Event not found, eventId:&quot; + eventId)</span>
+<span class="nc" id="L89">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L90">                    .build());</span>
         }
 
-<span class="fc" id="L87">        var event = maybeEvent.orElseThrow();</span>
-<span class="fc" id="L88">        var createdAt = LocalDateTime.now(clock);</span>
-<span class="fc" id="L89">        var expiresAt = createdAt.plusMinutes(validationExpirationTimeMinutes);</span>
+<span class="fc" id="L93">        var event = maybeEvent.orElseThrow();</span>
+<span class="fc" id="L94">        var createdAt = LocalDateTime.now(clock);</span>
+<span class="fc" id="L95">        var expiresAt = createdAt.plusMinutes(validationExpirationTimeMinutes);</span>
 
-<span class="fc" id="L91">        var discordUserVerification = DiscordUserVerification.builder()</span>
-<span class="fc" id="L92">                .discordIdHash(discordIdHash)</span>
-<span class="fc" id="L93">                .eventId(eventId)</span>
-<span class="fc" id="L94">                .secretCode(startVerificationRequest.getSecret())</span>
-<span class="fc" id="L95">                .createdAt(createdAt)</span>
-<span class="fc" id="L96">                .expiresAt(expiresAt)</span>
-<span class="fc" id="L97">                .status(PENDING)</span>
-<span class="fc" id="L98">                .build();</span>
+<span class="fc" id="L97">        var discordUserVerification = DiscordUserVerification.builder()</span>
+<span class="fc" id="L98">                .discordIdHash(discordIdHash)</span>
+<span class="fc" id="L99">                .eventId(eventId)</span>
+<span class="fc" id="L100">                .secretCode(startVerificationRequest.getSecret())</span>
+<span class="fc" id="L101">                .createdAt(createdAt)</span>
+<span class="fc" id="L102">                .expiresAt(expiresAt)</span>
+<span class="fc" id="L103">                .status(PENDING)</span>
+<span class="fc" id="L104">                .build();</span>
 
-<span class="pc bpc" id="L100" title="1 of 2 branches missed.">        if (event.finished()) {</span>
-<span class="nc" id="L101">            log.warn(&quot;Event already finished:{}&quot;, eventId);</span>
+<span class="pc bpc" id="L106" title="1 of 2 branches missed.">        if (event.finished()) {</span>
+<span class="nc" id="L107">            log.warn(&quot;Event already finished:{}&quot;, eventId);</span>
 
-<span class="nc" id="L103">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L104">                    .withTitle(&quot;EVENT_ALREADY_FINISHED&quot;)</span>
-<span class="nc" id="L105">                    .withDetail(&quot;Event already finished, eventId:&quot; + eventId)</span>
-<span class="nc" id="L106">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L107">                    .build());</span>
+<span class="nc" id="L109">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L110">                    .withTitle(&quot;EVENT_ALREADY_FINISHED&quot;)</span>
+<span class="nc" id="L111">                    .withDetail(&quot;Event already finished, eventId:&quot; + eventId)</span>
+<span class="nc" id="L112">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L113">                    .build());</span>
         }
 
-<span class="fc" id="L110">        var saved = userVerificationRepository.saveAndFlush(discordUserVerification);</span>
+<span class="fc" id="L116">        var saved = userVerificationRepository.saveAndFlush(discordUserVerification);</span>
 
-<span class="fc" id="L112">        return Either.right(DiscordStartVerificationResponse.builder()</span>
-<span class="fc" id="L113">                .eventId(eventId)</span>
-<span class="fc" id="L114">                .discordIdHash(saved.getDiscordIdHash())</span>
-<span class="fc" id="L115">                .status(saved.getStatus())</span>
-<span class="fc" id="L116">                .build()</span>
+<span class="fc" id="L118">        return Either.right(DiscordStartVerificationResponse.builder()</span>
+<span class="fc" id="L119">                .eventId(eventId)</span>
+<span class="fc" id="L120">                .discordIdHash(saved.getDiscordIdHash())</span>
+<span class="fc" id="L121">                .status(saved.getStatus())</span>
+<span class="fc" id="L122">                .build()</span>
         );
     }
 
     @Override
     @Transactional
-    public Either&lt;Problem, IsVerifiedResponse&gt; checkVerification(DiscordCheckVerificationRequest checkVerificationRequest) {
-<span class="fc" id="L123">        var eventId = checkVerificationRequest.getEventId();</span>
-<span class="fc" id="L124">        var eventDetails = chainFollowerClient.findEventById(eventId);</span>
+    public Either&lt;Problem, IsVerifiedResponse&gt; checkVerification(DiscordCheckVerificationRequest request) {
+<span class="fc" id="L129">        String eventId = request.getEventId();</span>
+<span class="fc" id="L130">        String walletId = request.getWalletId();</span>
+<span class="fc" id="L131">        Optional&lt;WalletType&gt; walletType = request.getWalletType();</span>
 
-<span class="pc bpc" id="L126" title="1 of 2 branches missed.">        if (eventDetails.isEmpty()) {</span>
-<span class="nc" id="L127">            log.error(&quot;event error:{}&quot;, eventDetails.getLeft());</span>
-
-<span class="nc" id="L129">            return Either.left(eventDetails.getLeft());</span>
+<span class="fc" id="L133">        Either&lt;Problem, EventSummary&gt; eventValidationResult = validateEvent(eventId);</span>
+<span class="pc bpc" id="L134" title="1 of 2 branches missed.">        if (eventValidationResult.isLeft()) {</span>
+<span class="nc" id="L135">            return Either.left(eventValidationResult.getLeft());</span>
         }
 
-<span class="fc" id="L132">        var maybeEvent = eventDetails.get();</span>
-<span class="pc bpc" id="L133" title="1 of 2 branches missed.">        if (maybeEvent.isEmpty()) {</span>
-<span class="nc" id="L134">            log.warn(&quot;Event not found:{}&quot;, eventId);</span>
+<span class="fc" id="L138">        EventSummary eventSummary = eventValidationResult.get();</span>
 
-<span class="nc" id="L136">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L137">                    .withTitle(&quot;EVENT_NOT_FOUND&quot;)</span>
-<span class="nc" id="L138">                    .withDetail(&quot;Event not found, eventId:&quot; + eventId)</span>
-<span class="nc" id="L139">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L140">                    .build());</span>
+<span class="pc bpc" id="L140" title="2 of 4 branches missed.">        if (!eventSummary.userBased() &amp;&amp; walletType.get() == WalletType.KERI) {</span>
+<span class="nc" id="L141">            log.warn(&quot;Keri wallet not supported for BALANCE or STAKE type event&quot;);</span>
+
+<span class="nc" id="L143">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L144">                    .withTitle(&quot;WALLET_NOT_SUPPORTED&quot;)</span>
+<span class="nc" id="L145">                    .withDetail(&quot;Keri wallet not supported for BALANCE or STAKE type event&quot;)</span>
+<span class="nc" id="L146">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L147">                    .build());</span>
         }
 
-<span class="fc" id="L143">        var event = maybeEvent.orElseThrow();</span>
+<span class="pc bpc" id="L150" title="2 of 3 branches missed.">        switch (walletType.get()) {</span>
+            case CARDANO:
+<span class="fc" id="L152">                return handleCardanoVerification(request, eventId, request.getWalletId());</span>
+            case KERI:
+<span class="nc" id="L154">                return handleKeriVerification(request, eventId, request.getWalletId());</span>
+            default:
+<span class="nc" id="L156">                return Either.left(Problem.builder()</span>
+<span class="nc" id="L157">                        .withTitle(&quot;UNSUPPORTED_WALLET_TYPE&quot;)</span>
+<span class="nc" id="L158">                        .withDetail(&quot;The specified wallet type is not supported.&quot;)</span>
+<span class="nc" id="L159">                        .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L160">                        .build());</span>
+        }
+    }
 
-<span class="pc bpc" id="L145" title="1 of 2 branches missed.">        if (event.finished()) {</span>
-<span class="nc" id="L146">            log.warn(&quot;Event already finished:{}&quot;, eventId);</span>
+    private Either&lt;Problem, EventSummary&gt; validateEvent(String eventId) {
+<span class="fc" id="L165">        Either&lt;Problem, Optional&lt;EventSummary&gt;&gt; eventDetailsResult = chainFollowerClient.findEventById(eventId);</span>
 
-<span class="nc" id="L148">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L149">                    .withTitle(&quot;EVENT_ALREADY_FINISHED&quot;)</span>
-<span class="nc" id="L150">                    .withDetail(&quot;Event already finished, eventId:&quot; + eventId)</span>
-<span class="nc" id="L151">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L152">                    .build());</span>
+<span class="pc bpc" id="L167" title="1 of 2 branches missed.">        if (eventDetailsResult.isLeft()) {</span>
+<span class="nc" id="L168">            return Either.left(eventDetailsResult.getLeft());</span>
         }
 
-<span class="fc" id="L155">        var requestStakeAddress = checkVerificationRequest.getStakeAddress();</span>
-<span class="fc" id="L156">        var requestSecret = checkVerificationRequest.getSecret();</span>
+<span class="fc" id="L171">        return eventDetailsResult.get()</span>
+<span class="fc" id="L172">                .map(Either::&lt;Problem, EventSummary&gt;right)</span>
+<span class="pc" id="L173">                .orElseGet(() -&gt; Either.left(Problem.builder()</span>
+<span class="nc" id="L174">                        .withTitle(&quot;EVENT_NOT_FOUND&quot;)</span>
+<span class="nc" id="L175">                        .withDetail(&quot;Event not found, eventId: &quot; + eventId)</span>
+<span class="nc" id="L176">                        .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L177">                        .build()));</span>
+    }
 
-<span class="fc" id="L158">        var coseSignature = checkVerificationRequest.getCoseSignature();</span>
-<span class="fc" id="L159">        var cosePublicKey = checkVerificationRequest.getCosePublicKey();</span>
+    @Transactional(propagation = Propagation.SUPPORTS)
+    private Either&lt;Problem, IsVerifiedResponse&gt; handleCardanoVerification(DiscordCheckVerificationRequest request, String eventId, String walletId) {
 
-<span class="fc" id="L161">        var cip30Verifier = new CIP30Verifier(coseSignature, cosePublicKey);</span>
-<span class="fc" id="L162">        var cip30VerificationResult = cip30Verifier.verify();</span>
+<span class="fc" id="L183">        String signatureM = request.getCoseSignature().orElse(null);</span>
 
-<span class="pc bpc" id="L164" title="1 of 2 branches missed.">        if (!cip30VerificationResult.isValid()) {</span>
-<span class="nc" id="L165">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L166">                    .withTitle(&quot;INVALID_CIP-30-SIGNATURE&quot;)</span>
-<span class="nc" id="L167">                    .withDetail(&quot;Invalid CIP-30 signature&quot;)</span>
-<span class="nc" id="L168">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L169">                    .build()</span>
+<span class="pc bpc" id="L185" title="1 of 2 branches missed.">        if (signatureM == null) {</span>
+<span class="nc" id="L186">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L187">                    .withTitle(&quot;MISSING_SIGNATURE&quot;)</span>
+<span class="nc" id="L188">                    .withDetail(&quot;Missing signature.&quot;)</span>
+<span class="nc" id="L189">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L190">                    .build());</span>
+        }
+
+<span class="fc" id="L193">        String publicKeyM = request.getCosePublicKey().orElse(null);</span>
+
+<span class="pc bpc" id="L195" title="1 of 2 branches missed.">        if (publicKeyM == null) {</span>
+<span class="nc" id="L196">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L197">                    .withTitle(&quot;MISSING_PUBLIC_KEY&quot;)</span>
+<span class="nc" id="L198">                    .withDetail(&quot;Missing public key.&quot;)</span>
+<span class="nc" id="L199">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L200">                    .build());</span>
+        }
+
+        // Verify signature specific to Cardano wallets
+<span class="fc" id="L204">        Either&lt;Problem, VerificationResult&gt; verificationResult = verifySignature(signatureM, publicKeyM);</span>
+
+<span class="pc bpc" id="L206" title="1 of 2 branches missed.">        if (verificationResult.isLeft()) {</span>
+<span class="nc" id="L207">            return Either.left(verificationResult.getLeft());</span>
+        }
+
+<span class="fc" id="L210">        VerificationResult verificationData = verificationResult.get();</span>
+<span class="fc" id="L211">        String msg = verificationData.getMessage();</span>
+<span class="fc" id="L212">        var items = msg.split(&quot;\\|&quot;);</span>
+
+<span class="pc bpc" id="L214" title="1 of 2 branches missed.">        if (items.length != 2) {</span>
+<span class="nc" id="L215">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L216">                    .withTitle(&quot;INVALID_CIP-30-SIGNATURE&quot;)</span>
+<span class="nc" id="L217">                    .withDetail(&quot;Invalid CIP-30 signature, invalid signed message.&quot;)</span>
+<span class="nc" id="L218">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L219">                    .build()</span>
             );
         }
 
-<span class="fc" id="L173">        var msg = cip30VerificationResult.getMessage(MessageFormat.TEXT);</span>
-<span class="fc" id="L174">        var items = msg.split(&quot;\\|&quot;);</span>
+<span class="fc" id="L223">        var discordIdHash = items[0];</span>
+<span class="fc" id="L224">        var cip30Secret = items[1];</span>
 
-<span class="pc bpc" id="L176" title="1 of 2 branches missed.">        if (items.length != 2) {</span>
-<span class="nc" id="L177">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L178">                    .withTitle(&quot;INVALID_CIP-30-SIGNATURE&quot;)</span>
-<span class="nc" id="L179">                    .withDetail(&quot;Invalid CIP-30 signature, invalid signed message.&quot;)</span>
-<span class="nc" id="L180">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L181">                    .build()</span>
-            );
-        }
-<span class="fc" id="L184">        var discordIdHash = items[0];</span>
-<span class="fc" id="L185">        var cip30Secret = items[1];</span>
-
-<span class="fc bfc" id="L187" title="All 2 branches covered.">        if (!requestSecret.equals(cip30Secret)) {</span>
-<span class="fc" id="L188">            return Either.left(Problem.builder()</span>
-<span class="fc" id="L189">                    .withTitle(&quot;SECRET_MISMATCH&quot;)</span>
-<span class="fc" id="L190">                    .withDetail(&quot;Request Secret and CIP-30 secret mismatch.&quot;)</span>
-<span class="fc" id="L191">                    .withStatus(BAD_REQUEST)</span>
-<span class="fc" id="L192">                    .build()</span>
+<span class="fc bfc" id="L226" title="All 2 branches covered.">        if (!request.getSecret().equals(cip30Secret)) {</span>
+<span class="fc" id="L227">            return Either.left(Problem.builder()</span>
+<span class="fc" id="L228">                    .withTitle(&quot;SECRET_MISMATCH&quot;)</span>
+<span class="fc" id="L229">                    .withDetail(&quot;Request Secret and CIP-30 secret mismatch.&quot;)</span>
+<span class="fc" id="L230">                    .withStatus(BAD_REQUEST)</span>
+<span class="fc" id="L231">                    .build()</span>
             );
         }
 
-<span class="fc" id="L196">        var maybeAddress = cip30VerificationResult.getAddress(AddressFormat.TEXT);</span>
+<span class="fc" id="L235">        Optional&lt;String&gt; maybeAddress = verificationData.getAddress();</span>
 
-<span class="pc bpc" id="L198" title="1 of 2 branches missed.">        if (maybeAddress.isEmpty()) {</span>
-<span class="nc" id="L199">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L200">                    .withTitle(&quot;INVALID_CIP-30-SIGNATURE&quot;)</span>
-<span class="nc" id="L201">                    .withDetail(&quot;Invalid CIP-30 signature, must have asdress in CIP-30 signature.&quot;)</span>
-<span class="nc" id="L202">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L203">                    .build()</span>
+<span class="pc bpc" id="L237" title="1 of 2 branches missed.">        if (!maybeAddress.isPresent()) {</span>
+<span class="nc" id="L238">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L239">                    .withTitle(&quot;INVALID_CIP-30-SIGNATURE&quot;)</span>
+<span class="nc" id="L240">                    .withDetail(&quot;Invalid CIP-30 signature, must have asdress in CIP-30 signature.&quot;)</span>
+<span class="nc" id="L241">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L242">                    .build()</span>
             );
         }
 
-<span class="fc" id="L207">        var address = maybeAddress.orElseThrow();</span>
+<span class="fc" id="L246">        String address = maybeAddress.get();</span>
 
-<span class="fc bfc" id="L209" title="All 2 branches covered.">        if (!requestStakeAddress.equals(address)) {</span>
-<span class="fc" id="L210">            return Either.left(Problem.builder()</span>
-<span class="fc" id="L211">                    .withTitle(&quot;ADDRESS_MISMATCH&quot;)</span>
-<span class="fc" id="L212">                    .withDetail(String.format(&quot;Address mismatch, requestStakeAddress: %s, address: %s&quot;, requestStakeAddress, address))</span>
-<span class="fc" id="L213">                    .withStatus(BAD_REQUEST)</span>
-<span class="fc" id="L214">                    .build()</span>
+<span class="fc bfc" id="L248" title="All 2 branches covered.">        if (!walletId.equals(address)) {</span>
+<span class="fc" id="L249">            return Either.left(Problem.builder()</span>
+<span class="fc" id="L250">                    .withTitle(&quot;ADDRESS_MISMATCH&quot;)</span>
+<span class="fc" id="L251">                    .withDetail(String.format(&quot;Address mismatch, walletId: %s, address: %s&quot;, walletId, address))</span>
+<span class="fc" id="L252">                    .withStatus(BAD_REQUEST)</span>
+<span class="fc" id="L253">                    .build()</span>
             );
         }
 
-<span class="fc" id="L218">        var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, requestStakeAddress);</span>
+<span class="fc" id="L257">        var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, walletId);</span>
 
-<span class="fc bfc" id="L220" title="All 2 branches covered.">        if (stakeAddressCheckE.isEmpty()) {</span>
-<span class="fc" id="L221">            return Either.left(stakeAddressCheckE.getLeft());</span>
+<span class="fc bfc" id="L259" title="All 2 branches covered.">        if (stakeAddressCheckE.isEmpty()) {</span>
+<span class="fc" id="L260">            return Either.left(stakeAddressCheckE.getLeft());</span>
         }
 
-<span class="fc" id="L224">        var maybeCompletedVerificationBasedOnDiscordUserHash = userVerificationRepository</span>
-<span class="fc" id="L225">                .findCompletedVerificationBasedOnDiscordUserHash(eventId, discordIdHash);</span>
+<span class="fc" id="L263">        var maybeCompletedVerificationBasedOnDiscordUserHash = userVerificationRepository</span>
+<span class="fc" id="L264">                .findCompletedVerificationBasedOnDiscordUserHash(eventId, discordIdHash);</span>
 
-<span class="pc bpc" id="L227" title="1 of 2 branches missed.">        if (maybeCompletedVerificationBasedOnDiscordUserHash.isPresent()) {</span>
-<span class="nc" id="L228">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L229">                    .withTitle(&quot;USER_ALREADY_VERIFIED&quot;)</span>
-<span class="nc" id="L230">                    .withDetail(&quot;User already verified.&quot;)</span>
-<span class="nc" id="L231">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L232">                    .with(&quot;discordIdHash&quot;, discordIdHash)</span>
-<span class="nc" id="L233">                    .build()</span>
+<span class="pc bpc" id="L266" title="1 of 2 branches missed.">        if (maybeCompletedVerificationBasedOnDiscordUserHash.isPresent()) {</span>
+<span class="nc" id="L267">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L268">                    .withTitle(&quot;USER_ALREADY_VERIFIED&quot;)</span>
+<span class="nc" id="L269">                    .withDetail(&quot;User already verified.&quot;)</span>
+<span class="nc" id="L270">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L271">                    .with(&quot;discordIdHash&quot;, discordIdHash)</span>
+<span class="nc" id="L272">                    .build()</span>
             );
         }
 
-<span class="fc" id="L237">        var maybePendingVerification = userVerificationRepository.findPendingVerificationBasedOnDiscordUserHash(eventId, discordIdHash);</span>
+<span class="fc" id="L276">        var maybePendingVerification = userVerificationRepository.findPendingVerificationBasedOnDiscordUserHash(eventId, discordIdHash);</span>
 
-<span class="fc bfc" id="L239" title="All 2 branches covered.">        if (maybePendingVerification.isEmpty()) {</span>
-<span class="fc" id="L240">            return Either.left(Problem.builder()</span>
-<span class="fc" id="L241">                    .withTitle(&quot;NO_PENDING_VERIFICATION&quot;)</span>
-<span class="fc" id="L242">                    .withDetail(&quot;No pending verification found for discordIdHash:&quot; + discordIdHash)</span>
-<span class="fc" id="L243">                    .withStatus(BAD_REQUEST)</span>
-<span class="fc" id="L244">                    .with(&quot;discordIdHash&quot;, discordIdHash)</span>
-<span class="fc" id="L245">                    .build()</span>
+<span class="fc bfc" id="L278" title="All 2 branches covered.">        if (maybePendingVerification.isEmpty()) {</span>
+<span class="fc" id="L279">            return Either.left(Problem.builder()</span>
+<span class="fc" id="L280">                    .withTitle(&quot;NO_PENDING_VERIFICATION&quot;)</span>
+<span class="fc" id="L281">                    .withDetail(&quot;No pending verification found for discordIdHash:&quot; + discordIdHash)</span>
+<span class="fc" id="L282">                    .withStatus(BAD_REQUEST)</span>
+<span class="fc" id="L283">                    .with(&quot;discordIdHash&quot;, discordIdHash)</span>
+<span class="fc" id="L284">                    .build()</span>
             );
         }
 
-<span class="fc" id="L249">        var pendingVerification = maybePendingVerification.get();</span>
-<span class="pc bpc" id="L250" title="1 of 2 branches missed.">        boolean isSecretCodeMatch = pendingVerification.getSecretCode().equals(cip30Secret)</span>
-<span class="pc bpc" id="L251" title="1 of 2 branches missed.">                &amp;&amp; pendingVerification.getSecretCode().equals(requestSecret);</span>
+<span class="fc" id="L288">        var pendingVerification = maybePendingVerification.get();</span>
+<span class="pc bpc" id="L289" title="1 of 2 branches missed.">        boolean isSecretCodeMatch = pendingVerification.getSecretCode().equals(cip30Secret)</span>
+<span class="pc bpc" id="L290" title="1 of 2 branches missed.">                &amp;&amp; pendingVerification.getSecretCode().equals(request.getSecret());</span>
 
-<span class="pc bpc" id="L253" title="1 of 2 branches missed.">        if (!isSecretCodeMatch) {</span>
-<span class="nc" id="L254">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L255">                    .withTitle(&quot;AUTH_FAILED&quot;)</span>
-<span class="nc" id="L256">                    .withDetail(&quot;Invalid secret and / or discordIdHash.&quot;)</span>
-<span class="nc" id="L257">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L258">                    .build()</span>
+<span class="pc bpc" id="L292" title="1 of 2 branches missed.">        if (!isSecretCodeMatch) {</span>
+<span class="nc" id="L293">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L294">                    .withTitle(&quot;AUTH_FAILED&quot;)</span>
+<span class="nc" id="L295">                    .withDetail(&quot;Invalid secret and / or discordIdHash.&quot;)</span>
+<span class="nc" id="L296">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L297">                    .build()</span>
             );
         }
 
-<span class="fc" id="L262">        var pendingUserVerification = maybePendingVerification.orElseThrow();</span>
+<span class="fc" id="L301">        var pendingUserVerification = maybePendingVerification.orElseThrow();</span>
 
-<span class="fc" id="L264">        var now = LocalDateTime.now(clock);</span>
+<span class="fc" id="L303">        var now = LocalDateTime.now(clock);</span>
 
-<span class="fc" id="L266">        var isCodeExpired = now.isAfter(pendingUserVerification.getExpiresAt());</span>
-<span class="pc bpc" id="L267" title="1 of 2 branches missed.">        if (isCodeExpired) {</span>
-<span class="nc" id="L268">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L269">                    .withTitle(&quot;VERIFICATION_EXPIRED&quot;)</span>
-<span class="nc" id="L270">                    .withDetail(String.format(&quot;Secret code: %s expired for requestStakeAddress: %s and discordHashId:%s&quot;, cip30Secret, requestStakeAddress, discordIdHash))</span>
-<span class="nc" id="L271">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L272">                    .with(&quot;discordIdHash&quot;, discordIdHash)</span>
-<span class="nc" id="L273">                    .with(&quot;requestStakeAddress&quot;, requestStakeAddress)</span>
-<span class="nc" id="L274">                    .build());</span>
+<span class="fc" id="L305">        var isCodeExpired = now.isAfter(pendingUserVerification.getExpiresAt());</span>
+<span class="pc bpc" id="L306" title="1 of 2 branches missed.">        if (isCodeExpired) {</span>
+<span class="nc" id="L307">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L308">                    .withTitle(&quot;VERIFICATION_EXPIRED&quot;)</span>
+<span class="nc" id="L309">                    .withDetail(String.format(&quot;Secret code: %s expired for walletId: %s and discordHashId:%s&quot;, cip30Secret, walletId, discordIdHash))</span>
+<span class="nc" id="L310">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L311">                    .with(&quot;discordIdHash&quot;, discordIdHash)</span>
+<span class="nc" id="L312">                    .with(&quot;walletId&quot;, walletId)</span>
+<span class="nc" id="L313">                    .build());</span>
         }
 
-<span class="fc" id="L277">        pendingUserVerification.setStakeAddress(Optional.of(requestStakeAddress));</span>
-<span class="fc" id="L278">        pendingUserVerification.setUpdatedAt(now);</span>
-<span class="fc" id="L279">        pendingUserVerification.setStatus(VERIFIED);</span>
+<span class="fc" id="L316">        pendingVerification.setWalletId(Optional.of(request.getWalletId()));</span>
+<span class="fc" id="L317">        pendingVerification.setWalletType(request.getWalletType());</span>
+<span class="fc" id="L318">        pendingVerification.setUpdatedAt(LocalDateTime.now(clock));</span>
+<span class="fc" id="L319">        pendingVerification.setStatus(VERIFIED);</span>
+<span class="fc" id="L320">        userVerificationRepository.save(pendingVerification);</span>
 
-<span class="fc" id="L281">        return Either.right(new IsVerifiedResponse(true));</span>
+<span class="fc" id="L322">        return Either.right(new IsVerifiedResponse(true));</span>
+    }
+
+    private Either&lt;Problem, VerificationResult&gt; verifySignature(String signature, String publicKey) {
+<span class="fc" id="L326">        CIP30Verifier verifier = new CIP30Verifier(signature, publicKey);</span>
+<span class="fc" id="L327">        var result = verifier.verify();</span>
+
+<span class="pc bpc" id="L329" title="1 of 2 branches missed.">        if (!result.isValid()) {</span>
+<span class="nc" id="L330">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L331">                    .withTitle(&quot;INVALID_CIP-30-SIGNATURE&quot;)</span>
+<span class="nc" id="L332">                    .withDetail(&quot;Invalid CIP-30 signature&quot;)</span>
+<span class="nc" id="L333">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L334">                    .build()</span>
+            );
+        }
+
+<span class="fc" id="L338">        String msg = result.getMessage(MessageFormat.TEXT);</span>
+<span class="fc" id="L339">        Optional&lt;String&gt; maybeAddress = result.getAddress(AddressFormat.TEXT);</span>
+
+<span class="fc" id="L341">        return Either.right(new VerificationResult(msg, maybeAddress));</span>
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    private Either&lt;Problem, IsVerifiedResponse&gt; handleKeriVerification(DiscordCheckVerificationRequest request, String eventId, String walletId) {
+
+<span class="nc" id="L347">        String signatureM = request.getKeriSignedMessage().orElse(null);</span>
+
+<span class="nc bnc" id="L349" title="All 2 branches missed.">        if (signatureM == null) {</span>
+<span class="nc" id="L350">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L351">                    .withTitle(&quot;MISSING_SIGNATURE&quot;)</span>
+<span class="nc" id="L352">                    .withDetail(&quot;Missing signature.&quot;)</span>
+<span class="nc" id="L353">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L354">                    .build());</span>
+        }
+
+<span class="nc" id="L357">        String payload = request.getKeriPayload().orElse(null);</span>
+
+<span class="nc bnc" id="L359" title="All 2 branches missed.">        if (payload == null) {</span>
+<span class="nc" id="L360">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L361">                    .withTitle(&quot;MISSING_SIGNATURE&quot;)</span>
+<span class="nc" id="L362">                    .withDetail(&quot;Missing payload.&quot;)</span>
+<span class="nc" id="L363">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L364">                    .build());</span>
+        }
+
+<span class="nc" id="L367">        String oobi = request.getOobi().orElse(null);</span>
+
+<span class="nc bnc" id="L369" title="All 2 branches missed.">        if (oobi == null) {</span>
+<span class="nc" id="L370">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L371">                    .withTitle(&quot;MISSING_SIGNATURE&quot;)</span>
+<span class="nc" id="L372">                    .withDetail(&quot;Missing oobi.&quot;)</span>
+<span class="nc" id="L373">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L374">                    .build());</span>
+        }
+
+<span class="nc" id="L377">        var items = payload.split(&quot;\\|&quot;);</span>
+<span class="nc" id="L378">        var discordIdHash = items[0];</span>
+<span class="nc" id="L379">        var secret = items[1];</span>
+
+<span class="nc" id="L381">        var maybeCompletedVerificationBasedOnDiscordUserHash = userVerificationRepository</span>
+<span class="nc" id="L382">                .findCompletedVerificationBasedOnDiscordUserHash(eventId, discordIdHash);</span>
+
+<span class="nc bnc" id="L384" title="All 2 branches missed.">        if (maybeCompletedVerificationBasedOnDiscordUserHash.isPresent()) {</span>
+<span class="nc" id="L385">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L386">                    .withTitle(&quot;USER_ALREADY_VERIFIED&quot;)</span>
+<span class="nc" id="L387">                    .withDetail(&quot;User already verified.&quot;)</span>
+<span class="nc" id="L388">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L389">                    .with(&quot;discordIdHash&quot;, discordIdHash)</span>
+<span class="nc" id="L390">                    .build()</span>
+            );
+        }
+
+<span class="nc" id="L394">        var maybePendingVerification = userVerificationRepository.findPendingVerificationBasedOnDiscordUserHash(eventId, discordIdHash);</span>
+
+<span class="nc bnc" id="L396" title="All 2 branches missed.">        if (maybePendingVerification.isEmpty()) {</span>
+<span class="nc" id="L397">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L398">                    .withTitle(&quot;NO_PENDING_VERIFICATION&quot;)</span>
+<span class="nc" id="L399">                    .withDetail(&quot;No pending verification found for discordIdHash:&quot; + discordIdHash)</span>
+<span class="nc" id="L400">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L401">                    .with(&quot;discordIdHash&quot;, discordIdHash)</span>
+<span class="nc" id="L402">                    .build()</span>
+            );
+        }
+
+<span class="nc" id="L406">        var pendingVerification = maybePendingVerification.get();</span>
+<span class="nc bnc" id="L407" title="All 2 branches missed.">        boolean isSecretCodeMatch = pendingVerification.getSecretCode().equals(secret)</span>
+<span class="nc bnc" id="L408" title="All 2 branches missed.">                &amp;&amp; pendingVerification.getSecretCode().equals(request.getSecret());</span>
+
+<span class="nc bnc" id="L410" title="All 2 branches missed.">        if (!isSecretCodeMatch) {</span>
+<span class="nc" id="L411">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L412">                    .withTitle(&quot;AUTH_FAILED&quot;)</span>
+<span class="nc" id="L413">                    .withDetail(&quot;Invalid secret and / or discordIdHash.&quot;)</span>
+<span class="nc" id="L414">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L415">                    .build()</span>
+            );
+        }
+
+<span class="nc" id="L419">        var pendingUserVerification = maybePendingVerification.orElseThrow();</span>
+
+<span class="nc" id="L421">        var now = LocalDateTime.now(clock);</span>
+
+<span class="nc" id="L423">        var isCodeExpired = now.isAfter(pendingUserVerification.getExpiresAt());</span>
+<span class="nc bnc" id="L424" title="All 2 branches missed.">        if (isCodeExpired) {</span>
+<span class="nc" id="L425">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L426">                    .withTitle(&quot;VERIFICATION_EXPIRED&quot;)</span>
+<span class="nc" id="L427">                    .withDetail(String.format(&quot;Secret code: %s expired for walletId: %s and discordHashId:%s&quot;, secret, walletId, discordIdHash))</span>
+<span class="nc" id="L428">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L429">                    .with(&quot;discordIdHash&quot;, discordIdHash)</span>
+<span class="nc" id="L430">                    .with(&quot;walletId&quot;, walletId)</span>
+<span class="nc" id="L431">                    .build());</span>
+        }
+
+        // Step 1: Check if OOBI is already registered
+<span class="nc" id="L435">        Either&lt;Problem, String&gt; oobiCheckResult = keriVerificationClient.getOOBI(oobi, 1);</span>
+
+<span class="nc bnc" id="L437" title="All 2 branches missed.">        if (oobiCheckResult.isRight()) {</span>
+<span class="nc" id="L438">            log.info(&quot;OOBI already registered: {}&quot;, oobiCheckResult);</span>
+<span class="nc" id="L439">            Either&lt;Problem, Boolean&gt; verificationResult = keriVerificationClient.verifySignature(walletId, signatureM, payload);</span>
+
+<span class="nc bnc" id="L441" title="All 2 branches missed.">            if (verificationResult.isLeft()) {</span>
+<span class="nc" id="L442">                return Either.left(verificationResult.getLeft());</span>
+            }
+
+<span class="nc bnc" id="L445" title="All 2 branches missed.">            if (!verificationResult.get()) {</span>
+<span class="nc" id="L446">                return Either.left(Problem.builder()</span>
+<span class="nc" id="L447">                        .withTitle(&quot;KERI_VERIFICATION_FAILED&quot;)</span>
+<span class="nc" id="L448">                        .withDetail(&quot;The Keri verification failed.&quot;)</span>
+<span class="nc" id="L449">                        .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L450">                        .build());</span>
+            }
+
+<span class="nc" id="L453">            log.info(&quot;Keri signature {} verified for walletId {} with payload {}&quot;, signatureM, walletId, payload);</span>
+<span class="nc" id="L454">            pendingVerification.setWalletId(Optional.of(walletId));</span>
+<span class="nc" id="L455">            pendingVerification.setWalletType(request.getWalletType());</span>
+<span class="nc" id="L456">            pendingVerification.setUpdatedAt(LocalDateTime.now(clock));</span>
+<span class="nc" id="L457">            pendingVerification.setStatus(VERIFIED);</span>
+<span class="nc" id="L458">            userVerificationRepository.save(pendingVerification);</span>
+
+<span class="nc" id="L460">            return Either.right(new IsVerifiedResponse(true));</span>
+        }
+
+<span class="nc" id="L463">        log.info(&quot;OOBI not registered yet: {}&quot;, oobi);</span>
+        // Step 2: Register OOBI if not already registered
+<span class="nc" id="L465">        Either&lt;Problem, Boolean&gt; oobiRegistrationResult = keriVerificationClient.registerOOBI(oobi);</span>
+
+<span class="nc bnc" id="L467" title="All 2 branches missed.">        if (oobiRegistrationResult.isLeft()) {</span>
+<span class="nc" id="L468">            return Either.left(oobiRegistrationResult.getLeft());</span>
+        }
+
+<span class="nc" id="L471">        log.info(&quot;OOBI registered successfully: {}&quot;, oobi);</span>
+
+        // Step 3: Attempt to verify OOBI registration up to 10 times
+<span class="nc" id="L474">        Either&lt;Problem, String&gt; oobiFetchResult = keriVerificationClient.getOOBI(oobi, 60);</span>
+<span class="nc bnc" id="L475" title="All 2 branches missed.">        if (oobiFetchResult.isLeft()) {</span>
+<span class="nc" id="L476">            return Either.left(oobiFetchResult.getLeft());</span>
+        }
+
+        // Step 4: Verify signature after OOBI registration
+<span class="nc" id="L480">        Either&lt;Problem, Boolean&gt; verificationResult = keriVerificationClient.verifySignature(walletId, signatureM, payload);</span>
+
+<span class="nc bnc" id="L482" title="All 2 branches missed.">        if (verificationResult.isLeft()) {</span>
+<span class="nc" id="L483">            return Either.left(verificationResult.getLeft());</span>
+        }
+
+<span class="nc bnc" id="L486" title="All 2 branches missed.">        if (!verificationResult.get()) {</span>
+<span class="nc" id="L487">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L488">                    .withTitle(&quot;KERI_VERIFICATION_FAILED&quot;)</span>
+<span class="nc" id="L489">                    .withDetail(&quot;The Keri verification failed.&quot;)</span>
+<span class="nc" id="L490">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L491">                    .build());</span>
+        }
+
+<span class="nc" id="L494">        log.info(&quot;Keri signature {} verified for walletId {} with payload {}&quot;, signatureM, walletId, payload);</span>
+<span class="nc" id="L495">        pendingVerification.setWalletId(Optional.of(walletId));</span>
+<span class="nc" id="L496">        pendingVerification.setWalletType(request.getWalletType());</span>
+<span class="nc" id="L497">        pendingVerification.setUpdatedAt(LocalDateTime.now(clock));</span>
+<span class="nc" id="L498">        pendingVerification.setStatus(VERIFIED);</span>
+<span class="nc" id="L499">        userVerificationRepository.save(pendingVerification);</span>
+
+<span class="nc" id="L501">        return Either.right(new IsVerifiedResponse(true));</span>
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Either&lt;Problem, IsVerifiedResponse&gt; isVerifiedBasedOnStakeAddress(IsVerifiedRequest isVerifiedRequest) {
-<span class="nc" id="L287">        var isVerified = userVerificationRepository.findCompletedVerifications(isVerifiedRequest.getEventId(), isVerifiedRequest.getStakeAddress())</span>
-<span class="nc" id="L288">                .stream().findFirst()</span>
-<span class="nc" id="L289">                .map(uv -&gt; new IsVerifiedResponse(true)).orElse(new IsVerifiedResponse(false));</span>
+    public Either&lt;Problem, IsVerifiedResponse&gt; isVerifiedBasedOnWalletId(IsVerifiedRequest isVerifiedRequest) {
+<span class="nc" id="L507">        var isVerified = userVerificationRepository.findCompletedVerifications(isVerifiedRequest.getEventId(), isVerifiedRequest.getWalletId())</span>
+<span class="nc" id="L508">                .stream().findFirst()</span>
+<span class="nc" id="L509">                .map(uv -&gt; new IsVerifiedResponse(true)).orElse(new IsVerifiedResponse(false));</span>
 
-<span class="nc" id="L291">        return Either.right(isVerified);</span>
+<span class="nc" id="L511">        return Either.right(isVerified);</span>
     }
 
     @Override
     @Transactional(readOnly = true)
     public Either&lt;Problem, IsVerifiedResponse&gt; isVerifiedBasedOnDiscordIdHash(String eventId, String discordIdHash) {
-<span class="fc" id="L297">        var isVerified = userVerificationRepository.findCompletedVerificationBasedOnDiscordUserHash(eventId, discordIdHash)</span>
-<span class="pc" id="L298">                .map(uv -&gt; new IsVerifiedResponse(true)).orElse(new IsVerifiedResponse(false));</span>
+<span class="fc" id="L517">        var isVerified = userVerificationRepository.findCompletedVerificationBasedOnDiscordUserHash(eventId, discordIdHash)</span>
+<span class="pc" id="L518">                .map(uv -&gt; new IsVerifiedResponse(true)).orElse(new IsVerifiedResponse(false));</span>
 
-<span class="fc" id="L300">        return Either.right(isVerified);</span>
+<span class="fc" id="L520">        return Either.right(isVerified);</span>
     }
 
     @Override
     @Transactional
     public void removeUserVerification(DiscordUserVerification userVerification) {
-<span class="nc" id="L306">        userVerificationRepository.delete(userVerification);</span>
-<span class="nc" id="L307">    }</span>
+<span class="nc" id="L526">        userVerificationRepository.delete(userVerification);</span>
+<span class="nc" id="L527">    }</span>
 
     @Override
     @Transactional(readOnly = true)
     public List&lt;DiscordUserVerification&gt; findAllForEvent(String eventId) {
-<span class="nc" id="L312">        return userVerificationRepository.findAllForEvent(eventId);</span>
+<span class="nc" id="L532">        return userVerificationRepository.findAllForEvent(eventId);</span>
     }
 
     @Override
     @Transactional(readOnly = true)
     public List&lt;DiscordUserVerification&gt; findAllPending(String eventId) {
-<span class="nc" id="L318">        return userVerificationRepository.findAllPending(eventId);</span>
+<span class="nc" id="L538">        return userVerificationRepository.findAllPending(eventId);</span>
     }
 
 }

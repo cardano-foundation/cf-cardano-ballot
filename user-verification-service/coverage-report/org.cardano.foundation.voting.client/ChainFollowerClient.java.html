@@ -56,10 +56,12 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 <span class="fc" id="L56">    public record EventSummary(String id,</span>
                                boolean finished,
                                boolean notStarted,
-                               boolean active) {
+                               boolean active,
+                               boolean userBased
+    ) {
 
         public boolean isEventInactive() {
-<span class="nc bnc" id="L62" title="All 2 branches missed.">            return !active;</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">            return !active;</span>
         }
 
     }

@@ -36,7 +36,7 @@ public class DefaultUserVerificationService implements UserVerificationService {
         });
 
 <span class="nc" id="L38">        CompletableFuture&lt;Either&lt;Problem, IsVerifiedResponse&gt;&gt; discordVerificationFuture = CompletableFuture.supplyAsync(() -&gt; {</span>
-<span class="nc" id="L39">            return discordUserVerificationService.isVerifiedBasedOnStakeAddress(isVerifiedRequest);</span>
+<span class="nc" id="L39">            return discordUserVerificationService.isVerifiedBasedOnWalletId(isVerifiedRequest);</span>
         });
 
 <span class="nc" id="L42">        var allFutures = CompletableFutures.anyResultsOf(List.of(smsVerificationFuture, discordVerificationFuture));</span>

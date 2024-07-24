@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.VerificationStatus;
+import org.cardano.foundation.voting.utils.WalletType;
 
 import javax.annotation.Nullable;
 import java.time.LocalDateTime;
@@ -15,57 +16,71 @@ import java.util.Optional;
 
 @Entity
 @Table(name = &quot;discord_user_verification&quot;)
-<span class="fc" id="L18">@Slf4j</span>
-<span class="fc" id="L19">@NoArgsConstructor</span>
-<span class="pc" id="L20">@SuperBuilder</span>
-<span class="nc" id="L21">@AllArgsConstructor</span>
+<span class="fc" id="L19">@Slf4j</span>
+<span class="fc" id="L20">@NoArgsConstructor</span>
+<span class="pc" id="L21">@SuperBuilder</span>
+<span class="nc" id="L22">@AllArgsConstructor</span>
 public class DiscordUserVerification extends AbstractTimestampEntity {
 
     @Id
     @Column(name = &quot;id&quot;, nullable = false)
-<span class="fc" id="L26">    @Getter</span>
-<span class="nc" id="L27">    @Setter</span>
+<span class="fc" id="L27">    @Getter</span>
+<span class="nc" id="L28">    @Setter</span>
     private String discordIdHash;
 
     @Column(name = &quot;event_id&quot;, nullable = false)
-<span class="nc" id="L31">    @Getter</span>
-<span class="nc" id="L32">    @Setter</span>
+<span class="nc" id="L32">    @Getter</span>
+<span class="nc" id="L33">    @Setter</span>
     private String eventId;
 
-    @Column(name = &quot;stake_address&quot;)
+    @Column(name = &quot;wallet_id&quot;)
     @Nullable
-    private String stakeAddress;
+    private String walletId;
+
+    @Column(name = &quot;wallet_type&quot;)
+    @Nullable
+    @Enumerated(EnumType.STRING)
+    private WalletType walletType;
 
     @Column(name = &quot;secret_code&quot;, nullable = false)
-<span class="fc" id="L40">    @Getter</span>
-<span class="nc" id="L41">    @Setter</span>
+<span class="fc" id="L46">    @Getter</span>
+<span class="nc" id="L47">    @Setter</span>
     private String secretCode;
 
     @Column(name = &quot;status&quot;, nullable = false)
     @Enumerated(EnumType.STRING)
-<span class="fc" id="L46">    @Getter</span>
-<span class="fc" id="L47">    @Setter</span>
+<span class="fc" id="L52">    @Getter</span>
+<span class="fc" id="L53">    @Setter</span>
     private VerificationStatus status;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = &quot;expires_at&quot;, nullable = false)
-<span class="fc" id="L52">    @Getter</span>
-<span class="nc" id="L53">    @Setter</span>
+<span class="fc" id="L58">    @Getter</span>
+<span class="nc" id="L59">    @Setter</span>
     private LocalDateTime expiresAt;
 
-    public Optional&lt;String&gt; getStakeAddress() {
-<span class="nc" id="L57">        return Optional.ofNullable(stakeAddress);</span>
+    public Optional&lt;String&gt; getWalletId() {
+<span class="nc" id="L63">        return Optional.ofNullable(walletId);</span>
     }
 
-    public void setStakeAddress(Optional&lt;String&gt; stakeAddress) {
-<span class="fc" id="L61">        this.stakeAddress = stakeAddress.orElse(null);</span>
-<span class="fc" id="L62">    }</span>
+    public Optional&lt;WalletType&gt; getWalletType() {
+<span class="nc" id="L67">        return Optional.ofNullable(walletType);</span>
+    }
+
+    public void setWalletId(Optional&lt;String&gt; walletId) {
+<span class="fc" id="L71">        this.walletId = walletId.orElse(null);</span>
+<span class="fc" id="L72">    }</span>
+
+    public void setWalletType(Optional&lt;WalletType&gt; walletType) {
+<span class="fc" id="L75">        this.walletType = walletType.orElse(null);</span>
+<span class="fc" id="L76">    }</span>
 
     @Override
     public String toString() {
-<span class="nc" id="L66">        return &quot;DiscordUserVerification{&quot; +</span>
+<span class="nc" id="L80">        return &quot;DiscordUserVerification{&quot; +</span>
                 &quot;discordIdHash='&quot; + discordIdHash + '\'' +
-                &quot;, stakeAddress='&quot; + stakeAddress + '\'' +
+                &quot;, walletId='&quot; + walletId + '\'' +
+                &quot;, walletType='&quot; + walletType + '\'' +
                 &quot;, eventId='&quot; + eventId + '\'' +
                 &quot;, verificationCode='&quot; + secretCode + '\'' +
                 &quot;, expiresAt=&quot; + expiresAt +

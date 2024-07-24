@@ -5,30 +5,34 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-
 import java.util.Locale;
+
 import java.util.Optional;
+import org.cardano.foundation.voting.utils.WalletType;
 
 @Getter
-<span class="nc bnc" id="L13" title="All 2 branches missed.">@Builder</span>
-<span class="nc" id="L14">@Setter</span>
-<span class="nc" id="L15">@ToString</span>
+<span class="nc bnc" id="L14" title="All 4 branches missed.">@Builder</span>
+<span class="nc" id="L15">@Setter</span>
+<span class="nc" id="L16">@ToString</span>
 public class SMSCheckVerificationRequest {
 
     @NotBlank
-<span class="nc" id="L19">    private String eventId;</span>
+<span class="nc" id="L20">    private String eventId;</span>
 
     @NotBlank
-<span class="nc" id="L22">    private String requestId;</span>
+<span class="nc" id="L23">    private String requestId;</span>
 
     @NotBlank
-<span class="nc" id="L25">    private String stakeAddress;</span>
-
-    @NotBlank
-<span class="nc" id="L28">    private String verificationCode;</span>
+<span class="nc" id="L26">    private String walletId;</span>
 
     @Builder.Default
-<span class="nc" id="L31">    private Optional&lt;Locale&gt; locale = Optional.empty();</span>
+<span class="nc" id="L29">    private Optional&lt;WalletType&gt; walletType = Optional.of(WalletType.CARDANO);</span>
+
+    @NotBlank
+<span class="nc" id="L32">    private String verificationCode;</span>
+
+    @Builder.Default
+<span class="nc" id="L35">    private Optional&lt;Locale&gt; locale = Optional.empty();</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

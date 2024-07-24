@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
-
+import org.cardano.foundation.voting.utils.WalletType;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.HexFormat;
@@ -75,355 +75,375 @@ import static org.zalando.problem.Status.BAD_REQUEST;
     @Transactional
     public Either&lt;Problem, SMSStartVerificationResponse&gt; startVerification(SMSStartVerificationRequest startVerificationRequest) {
 <span class="nc" id="L77">        String eventId = startVerificationRequest.getEventId();</span>
-<span class="nc" id="L78">        String stakeAddress = startVerificationRequest.getStakeAddress();</span>
 
-<span class="nc" id="L80">        var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, stakeAddress);</span>
-<span class="nc bnc" id="L81" title="All 2 branches missed.">        if (stakeAddressCheckE.isEmpty()) {</span>
-<span class="nc" id="L82">            return Either.left(stakeAddressCheckE.getLeft());</span>
+<span class="nc" id="L79">        String walletId = startVerificationRequest.getWalletId();</span>
+<span class="nc" id="L80">        Optional&lt;WalletType&gt; walletType = startVerificationRequest.getWalletType();</span>
+
+<span class="nc bnc" id="L82" title="All 2 branches missed.">        if (walletType.get() == WalletType.CARDANO) {</span>
+<span class="nc" id="L83">            var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, walletId);</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">            if (stakeAddressCheckE.isEmpty()) {</span>
+<span class="nc" id="L85">                return Either.left(stakeAddressCheckE.getLeft());</span>
+            }
         }
 
-<span class="nc" id="L85">        var eventDetails = chainFollowerClient.findEventById(eventId);</span>
+<span class="nc" id="L89">        var eventDetails = chainFollowerClient.findEventById(eventId);</span>
 
-<span class="nc bnc" id="L87" title="All 2 branches missed.">        if (eventDetails.isEmpty()) {</span>
-<span class="nc" id="L88">            log.error(&quot;event error:{}&quot;, eventDetails.getLeft());</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">        if (eventDetails.isEmpty()) {</span>
+<span class="nc" id="L92">            log.error(&quot;event error:{}&quot;, eventDetails.getLeft());</span>
 
-<span class="nc" id="L90">            return Either.left(eventDetails.getLeft());</span>
+<span class="nc" id="L94">            return Either.left(eventDetails.getLeft());</span>
         }
 
-<span class="nc" id="L93">        var maybeEvent = eventDetails.get();</span>
-<span class="nc bnc" id="L94" title="All 2 branches missed.">        if (maybeEvent.isEmpty()) {</span>
-<span class="nc" id="L95">            log.warn(&quot;Event not found:{}&quot;, eventId);</span>
+<span class="nc" id="L97">        var maybeEvent = eventDetails.get();</span>
+<span class="nc bnc" id="L98" title="All 2 branches missed.">        if (maybeEvent.isEmpty()) {</span>
+<span class="nc" id="L99">            log.warn(&quot;Event not found:{}&quot;, eventId);</span>
 
-<span class="nc" id="L97">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L98">                    .withTitle(&quot;EVENT_NOT_FOUND&quot;)</span>
-<span class="nc" id="L99">                    .withDetail(&quot;Event not found, eventId:&quot; + eventId)</span>
-<span class="nc" id="L100">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L101">                    .build());</span>
+<span class="nc" id="L101">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L102">                    .withTitle(&quot;EVENT_NOT_FOUND&quot;)</span>
+<span class="nc" id="L103">                    .withDetail(&quot;Event not found, eventId:&quot; + eventId)</span>
+<span class="nc" id="L104">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L105">                    .build());</span>
         }
 
-<span class="nc" id="L104">        var event = maybeEvent.orElseThrow();</span>
+<span class="nc" id="L108">        var event = maybeEvent.orElseThrow();</span>
 
-<span class="nc bnc" id="L106" title="All 2 branches missed.">        if (event.finished()) {</span>
-<span class="nc" id="L107">            log.warn(&quot;Event already finished:{}&quot;, eventId);</span>
+<span class="nc bnc" id="L110" title="All 4 branches missed.">        if (!event.userBased() &amp;&amp; walletType.get() == WalletType.KERI) {</span>
+<span class="nc" id="L111">            log.warn(&quot;Keri wallet not supported for BALANCE or STAKE type event&quot;);</span>
 
-<span class="nc" id="L109">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L110">                    .withTitle(&quot;EVENT_ALREADY_FINISHED&quot;)</span>
-<span class="nc" id="L111">                    .withDetail(&quot;Event already finished, eventId:&quot; + eventId)</span>
-<span class="nc" id="L112">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L113">                    .build());</span>
+<span class="nc" id="L113">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L114">                    .withTitle(&quot;WALLET_NOT_SUPPORTED&quot;)</span>
+<span class="nc" id="L115">                    .withDetail(&quot;Keri wallet not supported for BALANCE or STAKE type event&quot;)</span>
+<span class="nc" id="L116">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L117">                    .build());</span>
         }
 
-<span class="nc" id="L116">        var maybeUserVerificationStakeAddress = smsUserVerificationRepository.findAllCompletedPerStake(</span>
+<span class="nc bnc" id="L120" title="All 2 branches missed.">        if (event.finished()) {</span>
+<span class="nc" id="L121">            log.warn(&quot;Event already finished:{}&quot;, eventId);</span>
+
+<span class="nc" id="L123">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L124">                    .withTitle(&quot;EVENT_ALREADY_FINISHED&quot;)</span>
+<span class="nc" id="L125">                    .withDetail(&quot;Event already finished, eventId:&quot; + eventId)</span>
+<span class="nc" id="L126">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L127">                    .build());</span>
+        }
+
+<span class="nc" id="L130">        var maybeUserVerificationWalletId = smsUserVerificationRepository.findAllCompletedPerWalletId(</span>
                 eventId,
-                stakeAddress
-<span class="nc" id="L119">        ).stream().findFirst();</span>
+                walletId
+<span class="nc" id="L133">        ).stream().findFirst();</span>
 
-<span class="nc bnc" id="L121" title="All 2 branches missed.">        if (maybeUserVerificationStakeAddress.isPresent()) {</span>
-<span class="nc" id="L122">            log.info(&quot;User verification already completed (stake):{}&quot;, maybeUserVerificationStakeAddress.orElseThrow());</span>
+<span class="nc bnc" id="L135" title="All 2 branches missed.">        if (maybeUserVerificationWalletId.isPresent()) {</span>
+<span class="nc" id="L136">            log.info(&quot;User verification already completed (walletId):{}&quot;, maybeUserVerificationWalletId.orElseThrow());</span>
 
-<span class="nc" id="L124">            var userVerification = maybeUserVerificationStakeAddress.get();</span>
-<span class="nc bnc" id="L125" title="All 2 branches missed.">            if (userVerification.getStatus() == VERIFIED) {</span>
-<span class="nc" id="L126">                return Either.left(Problem.builder()</span>
-<span class="nc" id="L127">                        .withTitle(&quot;USER_ALREADY_VERIFIED&quot;)</span>
-<span class="nc" id="L128">                        .withDetail(&quot;User already verified, stakeAddress:&quot; + stakeAddress)</span>
-<span class="nc" id="L129">                        .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L130">                        .build()</span>
+<span class="nc" id="L138">            var userVerification = maybeUserVerificationWalletId.get();</span>
+<span class="nc bnc" id="L139" title="All 2 branches missed.">            if (userVerification.getStatus() == VERIFIED) {</span>
+<span class="nc" id="L140">                return Either.left(Problem.builder()</span>
+<span class="nc" id="L141">                        .withTitle(&quot;USER_ALREADY_VERIFIED&quot;)</span>
+<span class="nc" id="L142">                        .withDetail(&quot;User already verified, walletId:&quot; + walletId)</span>
+<span class="nc" id="L143">                        .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L144">                        .build()</span>
                 );
             }
         }
 
-<span class="nc" id="L135">        var maybePhoneNum = isValidNumber(startVerificationRequest.getPhoneNumber());</span>
-<span class="nc bnc" id="L136" title="All 2 branches missed.">        if (maybePhoneNum.isEmpty()) {</span>
-<span class="nc" id="L137">            log.error(&quot;Invalid phone number, phone hash:{}&quot;, saltedPhoneHash(startVerificationRequest.getPhoneNumber()));</span>
+<span class="nc" id="L149">        var maybePhoneNum = isValidNumber(startVerificationRequest.getPhoneNumber());</span>
+<span class="nc bnc" id="L150" title="All 2 branches missed.">        if (maybePhoneNum.isEmpty()) {</span>
+<span class="nc" id="L151">            log.error(&quot;Invalid phone number, phone hash:{}&quot;, saltedPhoneHash(startVerificationRequest.getPhoneNumber()));</span>
 
-<span class="nc" id="L139">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L140">                    .withTitle(&quot;INVALID_PHONE_NUMBER&quot;)</span>
-<span class="nc" id="L141">                    .withDetail(&quot;Invalid phone number format, correct format is: e.g. +48 881 35 00 67 (with or without spaces)&quot;)</span>
-<span class="nc" id="L142">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L143">                    .build());</span>
+<span class="nc" id="L153">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L154">                    .withTitle(&quot;INVALID_PHONE_NUMBER&quot;)</span>
+<span class="nc" id="L155">                    .withDetail(&quot;Invalid phone number format, correct format is: e.g. +48 881 35 00 67 (with or without spaces)&quot;)</span>
+<span class="nc" id="L156">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L157">                    .build());</span>
         }
 
-<span class="nc" id="L146">        var phoneNum = maybePhoneNum.orElseThrow();</span>
-<span class="nc" id="L147">        var formattedPhoneStr = PhoneNumberUtil.getInstance().format(phoneNum, INTERNATIONAL);</span>
-<span class="nc" id="L148">        var phoneHash = saltedPhoneHash(formattedPhoneStr);</span>
+<span class="nc" id="L160">        var phoneNum = maybePhoneNum.orElseThrow();</span>
+<span class="nc" id="L161">        var formattedPhoneStr = PhoneNumberUtil.getInstance().format(phoneNum, INTERNATIONAL);</span>
+<span class="nc" id="L162">        var phoneHash = saltedPhoneHash(formattedPhoneStr);</span>
 
-<span class="nc" id="L150">        var maybeUserVerificationPhoneHash = smsUserVerificationRepository.findAllCompletedPerPhone(</span>
+<span class="nc" id="L164">        var maybeUserVerificationPhoneHash = smsUserVerificationRepository.findAllCompletedPerPhone(</span>
                 eventId,
                 phoneHash
-<span class="nc" id="L153">        ).stream().findFirst();</span>
+<span class="nc" id="L167">        ).stream().findFirst();</span>
 
-<span class="nc bnc" id="L155" title="All 2 branches missed.">        if (maybeUserVerificationPhoneHash.isPresent()) {</span>
-<span class="nc" id="L156">            log.info(&quot;User verification already completed (phone used):{}&quot;, maybeUserVerificationPhoneHash.orElseThrow());</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">        if (maybeUserVerificationPhoneHash.isPresent()) {</span>
+<span class="nc" id="L170">            log.info(&quot;User verification already completed (phone used):{}&quot;, maybeUserVerificationPhoneHash.orElseThrow());</span>
 
-<span class="nc" id="L158">            var userVerification = maybeUserVerificationPhoneHash.get();</span>
-<span class="nc bnc" id="L159" title="All 2 branches missed.">            if (userVerification.getStatus() == VERIFIED) {</span>
-<span class="nc" id="L160">                log.info(&quot;Phone already used, phoneHash:{}&quot;, userVerification.getPhoneNumberHash());</span>
+<span class="nc" id="L172">            var userVerification = maybeUserVerificationPhoneHash.get();</span>
+<span class="nc bnc" id="L173" title="All 2 branches missed.">            if (userVerification.getStatus() == VERIFIED) {</span>
+<span class="nc" id="L174">                log.info(&quot;Phone already used, phoneHash:{}&quot;, userVerification.getPhoneNumberHash());</span>
 
-<span class="nc" id="L162">                return Either.left(Problem.builder()</span>
-<span class="nc" id="L163">                        .withTitle(&quot;PHONE_ALREADY_USED&quot;)</span>
-<span class="nc" id="L164">                        .withDetail(&quot;Phone already used.&quot;)</span>
-<span class="nc" id="L165">                        .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L166">                        .build()</span>
+<span class="nc" id="L176">                return Either.left(Problem.builder()</span>
+<span class="nc" id="L177">                        .withTitle(&quot;PHONE_ALREADY_USED&quot;)</span>
+<span class="nc" id="L178">                        .withDetail(&quot;Phone already used.&quot;)</span>
+<span class="nc" id="L179">                        .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L180">                        .build()</span>
                 );
             }
         }
 
-<span class="nc" id="L171">        int pendingPerStakeAddressCount = smsUserVerificationRepository.findPendingPerStakeAddressPerPhoneCount(eventId, stakeAddress, phoneHash);</span>
-<span class="nc bnc" id="L172" title="All 2 branches missed.">        if (pendingPerStakeAddressCount &gt;= maxPendingVerificationAttempts) {</span>
-<span class="nc" id="L173">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L174">                    .withTitle(&quot;MAX_VERIFICATION_ATTEMPTS_REACHED&quot;)</span>
-<span class="nc" id="L175">                    .withDetail(String.format(&quot;Max verification attempts reached for eventId:%s, stakeAddress:%s. Try again in 24 hours.&quot;, eventId, stakeAddress))</span>
-<span class="nc" id="L176">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L177">                    .build());</span>
+<span class="nc" id="L185">        int pendingPerWalletIdCount = smsUserVerificationRepository.findPendingPerWalletIdPerPhoneCount(eventId, walletId, phoneHash);</span>
+<span class="nc bnc" id="L186" title="All 2 branches missed.">        if (pendingPerWalletIdCount &gt;= maxPendingVerificationAttempts) {</span>
+<span class="nc" id="L187">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L188">                    .withTitle(&quot;MAX_VERIFICATION_ATTEMPTS_REACHED&quot;)</span>
+<span class="nc" id="L189">                    .withDetail(String.format(&quot;Max verification attempts reached for eventId:%s, walletId:%s. Try again in 24 hours.&quot;, eventId, walletId))</span>
+<span class="nc" id="L190">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L191">                    .build());</span>
         }
 
-<span class="nc" id="L180">        var randomVerificationCode = codeGenService.generateRandomCode();</span>
+<span class="nc" id="L194">        var randomVerificationCode = codeGenService.generateRandomCode();</span>
         // TODO transaction service based on phone number prefix?
-<span class="nc" id="L182">        var textMsg = String.format(&quot;Auth Code: %s. %s&quot;, randomVerificationCode, friendlyCustomName).trim();</span>
+<span class="nc" id="L196">        var textMsg = String.format(&quot;Auth Code: %s. %s&quot;, randomVerificationCode, friendlyCustomName).trim();</span>
 
-<span class="nc" id="L184">        var smsVerificationResponseE = smsService.publishTextMessage(textMsg, phoneNum);</span>
+<span class="nc" id="L198">        var smsVerificationResponseE = smsService.publishTextMessage(textMsg, phoneNum);</span>
 
-<span class="nc bnc" id="L186" title="All 2 branches missed.">        if (smsVerificationResponseE.isLeft()) {</span>
-<span class="nc" id="L187">            return Either.left(smsVerificationResponseE.getLeft());</span>
+<span class="nc bnc" id="L200" title="All 2 branches missed.">        if (smsVerificationResponseE.isLeft()) {</span>
+<span class="nc" id="L201">            return Either.left(smsVerificationResponseE.getLeft());</span>
         }
 
-<span class="nc" id="L190">        var smsVerificationResponse = smsVerificationResponseE.get();</span>
+<span class="nc" id="L204">        var smsVerificationResponse = smsVerificationResponseE.get();</span>
 
-<span class="nc" id="L192">        log.info(&quot;SMS sent to:{} (blake2b 256 hash), SNS msgId:{}, code:{}&quot;, phoneHash, smsVerificationResponse.requestId(), randomVerificationCode);</span>
+<span class="nc" id="L206">        log.info(&quot;SMS sent to:{} (blake2b 256 hash), SNS msgId:{}, code:{}&quot;, phoneHash, smsVerificationResponse.requestId(), randomVerificationCode);</span>
 
-<span class="nc" id="L194">        var now = LocalDateTime.now(clock);</span>
+<span class="nc" id="L208">        var now = LocalDateTime.now(clock);</span>
 
-<span class="nc" id="L196">        var newUserVerification = SMSUserVerification.builder()</span>
-<span class="nc" id="L197">                .id(UUID.randomUUID().toString())</span>
-<span class="nc" id="L198">                .eventId(eventId)</span>
-<span class="nc" id="L199">                .status(PENDING)</span>
-<span class="nc" id="L200">                .phoneNumberHash(phoneHash)</span>
-<span class="nc" id="L201">                .stakeAddress(stakeAddress)</span>
-<span class="nc" id="L202">                .verificationCode(String.valueOf(randomVerificationCode))</span>
-<span class="nc" id="L203">                .requestId(smsVerificationResponse.requestId())</span>
-<span class="nc" id="L204">                .expiresAt(now.plusMinutes(validationExpirationTimeMinutes))</span>
-<span class="nc" id="L205">                .build();</span>
+<span class="nc" id="L210">        var newUserVerification = SMSUserVerification.builder()</span>
+<span class="nc" id="L211">                .id(UUID.randomUUID().toString())</span>
+<span class="nc" id="L212">                .eventId(eventId)</span>
+<span class="nc" id="L213">                .status(PENDING)</span>
+<span class="nc" id="L214">                .phoneNumberHash(phoneHash)</span>
+<span class="nc" id="L215">                .walletId(walletId)</span>
+<span class="nc" id="L216">                .walletType(walletType.get())</span>
+<span class="nc" id="L217">                .verificationCode(String.valueOf(randomVerificationCode))</span>
+<span class="nc" id="L218">                .requestId(smsVerificationResponse.requestId())</span>
+<span class="nc" id="L219">                .expiresAt(now.plusMinutes(validationExpirationTimeMinutes))</span>
+<span class="nc" id="L220">                .build();</span>
 
-<span class="nc" id="L207">        var saved = smsUserVerificationRepository.saveAndFlush(newUserVerification);</span>
+<span class="nc" id="L222">        var saved = smsUserVerificationRepository.saveAndFlush(newUserVerification);</span>
 
-<span class="nc" id="L209">        var startVerificationResponse = new SMSStartVerificationResponse(</span>
-<span class="nc" id="L210">                saved.getEventId(),</span>
-<span class="nc" id="L211">                saved.getStakeAddress(),</span>
-<span class="nc" id="L212">                saved.getRequestId(),</span>
-<span class="nc" id="L213">                saved.getCreatedAt(),</span>
-<span class="nc" id="L214">                saved.getExpiresAt()</span>
+<span class="nc" id="L224">        var startVerificationResponse = new SMSStartVerificationResponse(</span>
+<span class="nc" id="L225">                saved.getEventId(),</span>
+<span class="nc" id="L226">                saved.getWalletId(),</span>
+<span class="nc" id="L227">                saved.getWalletType(),</span>
+<span class="nc" id="L228">                saved.getRequestId(),</span>
+<span class="nc" id="L229">                saved.getCreatedAt(),</span>
+<span class="nc" id="L230">                saved.getExpiresAt()</span>
         );
 
-<span class="nc" id="L217">        return Either.right(startVerificationResponse);</span>
+<span class="nc" id="L233">        return Either.right(startVerificationResponse);</span>
     }
 
     @Override
     @Transactional
     public Either&lt;Problem, IsVerifiedResponse&gt; checkVerification(SMSCheckVerificationRequest checkVerificationRequest) {
-<span class="nc" id="L223">        String eventId = checkVerificationRequest.getEventId();</span>
-<span class="nc" id="L224">        String stakeAddress = checkVerificationRequest.getStakeAddress();</span>
+<span class="nc" id="L239">        String eventId = checkVerificationRequest.getEventId();</span>
 
-<span class="nc" id="L226">        var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, stakeAddress);</span>
-<span class="nc bnc" id="L227" title="All 2 branches missed.">        if (stakeAddressCheckE.isEmpty()) {</span>
-<span class="nc" id="L228">            return Either.left(stakeAddressCheckE.getLeft());</span>
+<span class="nc" id="L241">        String walletId = checkVerificationRequest.getWalletId();</span>
+<span class="nc" id="L242">        Optional&lt;WalletType&gt; walletType = checkVerificationRequest.getWalletType();</span>
+
+<span class="nc bnc" id="L244" title="All 2 branches missed.">        if (walletType.equals(WalletType.CARDANO)) {</span>
+<span class="nc" id="L245">            var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, walletId);</span>
+<span class="nc bnc" id="L246" title="All 2 branches missed.">            if (stakeAddressCheckE.isEmpty()) {</span>
+<span class="nc" id="L247">                return Either.left(stakeAddressCheckE.getLeft());</span>
+            }
         }
 
-<span class="nc" id="L231">        var activeEventE = chainFollowerClient.findEventById(eventId);</span>
+<span class="nc" id="L251">        var activeEventE = chainFollowerClient.findEventById(eventId);</span>
 
-<span class="nc bnc" id="L233" title="All 2 branches missed.">        if (activeEventE.isEmpty()) {</span>
-<span class="nc" id="L234">            log.error(&quot;Active event error:{}&quot;, activeEventE.getLeft());</span>
+<span class="nc bnc" id="L253" title="All 2 branches missed.">        if (activeEventE.isEmpty()) {</span>
+<span class="nc" id="L254">            log.error(&quot;Active event error:{}&quot;, activeEventE.getLeft());</span>
 
-<span class="nc" id="L236">            return Either.left(activeEventE.getLeft());</span>
+<span class="nc" id="L256">            return Either.left(activeEventE.getLeft());</span>
         }
 
-<span class="nc" id="L239">        var maybeEvent = activeEventE.get();</span>
-<span class="nc bnc" id="L240" title="All 2 branches missed.">        if (maybeEvent.isEmpty()) {</span>
-<span class="nc" id="L241">            log.error(&quot;Event not found:{}&quot;, eventId);</span>
+<span class="nc" id="L259">        var maybeEvent = activeEventE.get();</span>
+<span class="nc bnc" id="L260" title="All 2 branches missed.">        if (maybeEvent.isEmpty()) {</span>
+<span class="nc" id="L261">            log.error(&quot;Event not found:{}&quot;, eventId);</span>
 
-<span class="nc" id="L243">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L244">                    .withTitle(&quot;EVENT_NOT_FOUND&quot;)</span>
-<span class="nc" id="L245">                    .withDetail(&quot;Event not found, eventId:&quot; + eventId)</span>
-<span class="nc" id="L246">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L247">                    .build());</span>
+<span class="nc" id="L263">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L264">                    .withTitle(&quot;EVENT_NOT_FOUND&quot;)</span>
+<span class="nc" id="L265">                    .withDetail(&quot;Event not found, eventId:&quot; + eventId)</span>
+<span class="nc" id="L266">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L267">                    .build());</span>
         }
 
-<span class="nc" id="L250">        var event = maybeEvent.orElseThrow();</span>
+<span class="nc" id="L270">        var event = maybeEvent.orElseThrow();</span>
 
-<span class="nc bnc" id="L252" title="All 2 branches missed.">        if (event.finished()) {</span>
-<span class="nc" id="L253">            log.error(&quot;Event already finished:{}&quot;, eventId);</span>
+<span class="nc bnc" id="L272" title="All 2 branches missed.">        if (event.finished()) {</span>
+<span class="nc" id="L273">            log.error(&quot;Event already finished:{}&quot;, eventId);</span>
 
-<span class="nc" id="L255">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L256">                    .withTitle(&quot;EVENT_ALREADY_FINISHED&quot;)</span>
-<span class="nc" id="L257">                    .withDetail(&quot;Event already finished, eventId:&quot; + eventId)</span>
-<span class="nc" id="L258">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L259">                    .build());</span>
+<span class="nc" id="L275">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L276">                    .withTitle(&quot;EVENT_ALREADY_FINISHED&quot;)</span>
+<span class="nc" id="L277">                    .withDetail(&quot;Event already finished, eventId:&quot; + eventId)</span>
+<span class="nc" id="L278">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L279">                    .build());</span>
         }
 
-<span class="nc" id="L262">        var maybeUserVerification = smsUserVerificationRepository.findAllCompletedPerStake(</span>
+<span class="nc" id="L282">        var maybeUserVerification = smsUserVerificationRepository.findAllCompletedPerWalletId(</span>
                 eventId,
-                stakeAddress
-<span class="nc" id="L265">        ).stream().findFirst();</span>
+                walletId
+<span class="nc" id="L285">        ).stream().findFirst();</span>
 
-<span class="nc bnc" id="L267" title="All 2 branches missed.">        if (maybeUserVerification.isPresent()) {</span>
-<span class="nc" id="L268">            log.info(&quot;User verification already completed:{}&quot;, maybeUserVerification.orElseThrow());</span>
+<span class="nc bnc" id="L287" title="All 2 branches missed.">        if (maybeUserVerification.isPresent()) {</span>
+<span class="nc" id="L288">            log.info(&quot;User verification already completed:{}&quot;, maybeUserVerification.orElseThrow());</span>
 
-<span class="nc" id="L270">            var userVerification = maybeUserVerification.get();</span>
-<span class="nc bnc" id="L271" title="All 2 branches missed.">            if (userVerification.getStatus() == VERIFIED) {</span>
-<span class="nc" id="L272">                return Either.left(Problem.builder()</span>
-<span class="nc" id="L273">                        .withTitle(&quot;USER_ALREADY_VERIFIED&quot;)</span>
-<span class="nc" id="L274">                        .withDetail(&quot;User already verified, stakeAddress:&quot; + stakeAddress)</span>
-<span class="nc" id="L275">                        .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L276">                        .build()</span>
+<span class="nc" id="L290">            var userVerification = maybeUserVerification.get();</span>
+<span class="nc bnc" id="L291" title="All 2 branches missed.">            if (userVerification.getStatus() == VERIFIED) {</span>
+<span class="nc" id="L292">                return Either.left(Problem.builder()</span>
+<span class="nc" id="L293">                        .withTitle(&quot;USER_ALREADY_VERIFIED&quot;)</span>
+<span class="nc" id="L294">                        .withDetail(&quot;User already verified, walletId:&quot; + walletId)</span>
+<span class="nc" id="L295">                        .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L296">                        .build()</span>
                 );
             }
         }
 
-<span class="nc" id="L281">        var maybePendingRequest = smsUserVerificationRepository.findPendingVerificationsByEventIdAndStakeAddressAndRequestId(</span>
+<span class="nc" id="L301">        var maybePendingRequest = smsUserVerificationRepository.findPendingVerificationsByEventIdAndWalletIdAndRequestId(</span>
                 eventId,
-                stakeAddress,
-<span class="nc" id="L284">                checkVerificationRequest.getRequestId()</span>
+                walletId,
+<span class="nc" id="L304">                checkVerificationRequest.getRequestId()</span>
         );
 
-<span class="nc bnc" id="L287" title="All 2 branches missed.">        if (maybePendingRequest.isEmpty()) {</span>
-<span class="nc" id="L288">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L289">                    .withTitle(&quot;PENDING_USER_VERIFICATION_NOT_FOUND&quot;)</span>
-<span class="nc" id="L290">                    .withDetail(&quot;User verification not found, stakeAddress:&quot; + stakeAddress)</span>
-<span class="nc" id="L291">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L292">                    .build()</span>
+<span class="nc bnc" id="L307" title="All 2 branches missed.">        if (maybePendingRequest.isEmpty()) {</span>
+<span class="nc" id="L308">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L309">                    .withTitle(&quot;PENDING_USER_VERIFICATION_NOT_FOUND&quot;)</span>
+<span class="nc" id="L310">                    .withDetail(&quot;User verification not found, walletId:&quot; + walletId)</span>
+<span class="nc" id="L311">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L312">                    .build()</span>
             );
         }
 
-<span class="nc" id="L296">        var pendingUserVerification = maybePendingRequest.orElseThrow();</span>
+<span class="nc" id="L316">        var pendingUserVerification = maybePendingRequest.orElseThrow();</span>
 
-<span class="nc bnc" id="L298" title="All 2 branches missed.">        if (pendingUserVerification.getStatus() == VERIFIED) {</span>
-<span class="nc" id="L299">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L300">                    .withTitle(&quot;USER_VERIFICATION_ALREADY_VERIFIED&quot;)</span>
-<span class="nc" id="L301">                    .withDetail(&quot;User verification already verified, stakeAddress:&quot; + stakeAddress)</span>
-<span class="nc" id="L302">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L303">                    .build()</span>
+<span class="nc bnc" id="L318" title="All 2 branches missed.">        if (pendingUserVerification.getStatus() == VERIFIED) {</span>
+<span class="nc" id="L319">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L320">                    .withTitle(&quot;USER_VERIFICATION_ALREADY_VERIFIED&quot;)</span>
+<span class="nc" id="L321">                    .withDetail(&quot;User verification already verified, walletId:&quot; + walletId)</span>
+<span class="nc" id="L322">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L323">                    .build()</span>
             );
         }
 
-<span class="nc" id="L307">        var now = LocalDateTime.now(clock);</span>
+<span class="nc" id="L327">        var now = LocalDateTime.now(clock);</span>
 
-<span class="nc" id="L309">        var isValidVerificationCode = pendingUserVerification.getVerificationCode().trim().equals(checkVerificationRequest.getVerificationCode().trim());</span>
-<span class="nc bnc" id="L310" title="All 2 branches missed.">        if (!isValidVerificationCode) {</span>
-<span class="nc" id="L311">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L312">                    .withTitle(&quot;INVALID_VERIFICATION_CODE&quot;)</span>
-<span class="nc" id="L313">                    .withDetail(&quot;Invalid verification code, verificationCode:&quot; + checkVerificationRequest.getVerificationCode())</span>
-<span class="nc" id="L314">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L315">                    .build());</span>
+<span class="nc" id="L329">        var isValidVerificationCode = pendingUserVerification.getVerificationCode().trim().equals(checkVerificationRequest.getVerificationCode().trim());</span>
+<span class="nc bnc" id="L330" title="All 2 branches missed.">        if (!isValidVerificationCode) {</span>
+<span class="nc" id="L331">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L332">                    .withTitle(&quot;INVALID_VERIFICATION_CODE&quot;)</span>
+<span class="nc" id="L333">                    .withDetail(&quot;Invalid verification code, verificationCode:&quot; + checkVerificationRequest.getVerificationCode())</span>
+<span class="nc" id="L334">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L335">                    .build());</span>
         }
 
-<span class="nc" id="L318">        var isCodeExpired = now.isAfter(pendingUserVerification.getExpiresAt());</span>
-<span class="nc bnc" id="L319" title="All 2 branches missed.">        if (isCodeExpired) {</span>
-<span class="nc" id="L320">                return Either.left(Problem.builder()</span>
-<span class="nc" id="L321">                        .withTitle(&quot;VERIFICATION_EXPIRED&quot;)</span>
-<span class="nc" id="L322">                        .withDetail(String.format(&quot;Verification code: %s expired for stakeAddress: %s&quot;, checkVerificationRequest.getVerificationCode(), stakeAddress))</span>
-<span class="nc" id="L323">                        .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L324">                        .build());</span>
+<span class="nc" id="L338">        var isCodeExpired = now.isAfter(pendingUserVerification.getExpiresAt());</span>
+<span class="nc bnc" id="L339" title="All 2 branches missed.">        if (isCodeExpired) {</span>
+<span class="nc" id="L340">                return Either.left(Problem.builder()</span>
+<span class="nc" id="L341">                        .withTitle(&quot;VERIFICATION_EXPIRED&quot;)</span>
+<span class="nc" id="L342">                        .withDetail(String.format(&quot;Verification code: %s expired for walletId: %s&quot;, checkVerificationRequest.getVerificationCode(), walletId))</span>
+<span class="nc" id="L343">                        .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L344">                        .build());</span>
         }
 
-<span class="nc" id="L327">        pendingUserVerification.setStatus(VERIFIED);</span>
-<span class="nc" id="L328">        pendingUserVerification.setUpdatedAt(now);</span>
+<span class="nc" id="L347">        pendingUserVerification.setStatus(VERIFIED);</span>
+<span class="nc" id="L348">        pendingUserVerification.setUpdatedAt(now);</span>
 
-<span class="nc" id="L330">        var saved = smsUserVerificationRepository.saveAndFlush(pendingUserVerification);</span>
+<span class="nc" id="L350">        var saved = smsUserVerificationRepository.saveAndFlush(pendingUserVerification);</span>
 
-<span class="nc bnc" id="L332" title="All 2 branches missed.">        return Either.right(new IsVerifiedResponse(saved.getStatus() == VERIFIED));</span>
+<span class="nc bnc" id="L352" title="All 2 branches missed.">        return Either.right(new IsVerifiedResponse(saved.getStatus() == VERIFIED));</span>
     }
 
     @Override
     @Transactional(readOnly = true)
     public Either&lt;Problem, IsVerifiedResponse&gt; isVerified(IsVerifiedRequest isVerifiedRequest) {
-<span class="nc" id="L338">        var activeEventE = chainFollowerClient.findEventById(isVerifiedRequest.getEventId());</span>
+<span class="nc" id="L358">        var activeEventE = chainFollowerClient.findEventById(isVerifiedRequest.getEventId());</span>
 
-<span class="nc bnc" id="L340" title="All 2 branches missed.">        if (activeEventE.isEmpty()) {</span>
-<span class="nc" id="L341">            log.error(&quot;Active event error:{}&quot;, activeEventE.getLeft());</span>
+<span class="nc bnc" id="L360" title="All 2 branches missed.">        if (activeEventE.isEmpty()) {</span>
+<span class="nc" id="L361">            log.error(&quot;Active event error:{}&quot;, activeEventE.getLeft());</span>
 
-<span class="nc" id="L343">            return Either.left(activeEventE.getLeft());</span>
+<span class="nc" id="L363">            return Either.left(activeEventE.getLeft());</span>
         }
 
-<span class="nc" id="L346">        var maybeEvent = activeEventE.get();</span>
-<span class="nc bnc" id="L347" title="All 2 branches missed.">        if (maybeEvent.isEmpty()) {</span>
-<span class="nc" id="L348">            log.error(&quot;Event not found:{}&quot;, isVerifiedRequest.getEventId());</span>
+<span class="nc" id="L366">        var maybeEvent = activeEventE.get();</span>
+<span class="nc bnc" id="L367" title="All 2 branches missed.">        if (maybeEvent.isEmpty()) {</span>
+<span class="nc" id="L368">            log.error(&quot;Event not found:{}&quot;, isVerifiedRequest.getEventId());</span>
 
-<span class="nc" id="L350">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L351">                    .withTitle(&quot;EVENT_NOT_FOUND&quot;)</span>
-<span class="nc" id="L352">                    .withDetail(&quot;Event not found, eventId:&quot; + isVerifiedRequest.getEventId())</span>
-<span class="nc" id="L353">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L354">                    .build());</span>
+<span class="nc" id="L370">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L371">                    .withTitle(&quot;EVENT_NOT_FOUND&quot;)</span>
+<span class="nc" id="L372">                    .withDetail(&quot;Event not found, eventId:&quot; + isVerifiedRequest.getEventId())</span>
+<span class="nc" id="L373">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L374">                    .build());</span>
         }
 
-<span class="nc" id="L357">        var event = maybeEvent.orElseThrow();</span>
+<span class="nc" id="L377">        var event = maybeEvent.orElseThrow();</span>
 
-<span class="nc bnc" id="L359" title="All 2 branches missed.">        if (event.finished()) {</span>
-<span class="nc" id="L360">            log.error(&quot;Event already finished:{}&quot;, isVerifiedRequest.getEventId());</span>
+<span class="nc bnc" id="L379" title="All 2 branches missed.">        if (event.finished()) {</span>
+<span class="nc" id="L380">            log.error(&quot;Event already finished:{}&quot;, isVerifiedRequest.getEventId());</span>
 
-<span class="nc" id="L362">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L363">                    .withTitle(&quot;EVENT_ALREADY_FINISHED&quot;)</span>
-<span class="nc" id="L364">                    .withDetail(&quot;Event already finished, eventId:&quot; + isVerifiedRequest.getEventId())</span>
-<span class="nc" id="L365">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L366">                    .build());</span>
+<span class="nc" id="L382">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L383">                    .withTitle(&quot;EVENT_ALREADY_FINISHED&quot;)</span>
+<span class="nc" id="L384">                    .withDetail(&quot;Event already finished, eventId:&quot; + isVerifiedRequest.getEventId())</span>
+<span class="nc" id="L385">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L386">                    .build());</span>
         }
 
-<span class="nc" id="L369">        var maybeUserVerification = smsUserVerificationRepository.findAllCompletedPerStake(</span>
-<span class="nc" id="L370">                isVerifiedRequest.getEventId(),</span>
-<span class="nc" id="L371">                isVerifiedRequest.getStakeAddress()</span>
-<span class="nc" id="L372">        ).stream().findFirst();</span>
+<span class="nc" id="L389">        var maybeUserVerification = smsUserVerificationRepository.findAllCompletedPerWalletId(</span>
+<span class="nc" id="L390">                isVerifiedRequest.getEventId(),</span>
+<span class="nc" id="L391">                isVerifiedRequest.getWalletId()</span>
+<span class="nc" id="L392">        ).stream().findFirst();</span>
 
-<span class="nc bnc" id="L374" title="All 2 branches missed.">        if (maybeUserVerification.isEmpty()) {</span>
-<span class="nc" id="L375">            log.info(&quot;Completed user verification not found for:{}&quot;, isVerifiedRequest.getStakeAddress());</span>
+<span class="nc bnc" id="L394" title="All 2 branches missed.">        if (maybeUserVerification.isEmpty()) {</span>
+<span class="nc" id="L395">            log.info(&quot;Completed user verification not found for:{}&quot;, isVerifiedRequest.getWalletId());</span>
 
-<span class="nc" id="L377">            return Either.right(new IsVerifiedResponse(false));</span>
+<span class="nc" id="L397">            return Either.right(new IsVerifiedResponse(false));</span>
         }
 
-<span class="nc" id="L380">        var userVerification = maybeUserVerification.orElseThrow();</span>
-<span class="nc" id="L381">        log.info(&quot;Using verification:{}&quot;, userVerification);</span>
+<span class="nc" id="L400">        var userVerification = maybeUserVerification.orElseThrow();</span>
+<span class="nc" id="L401">        log.info(&quot;Using verification:{}&quot;, userVerification);</span>
 
-<span class="nc" id="L383">        var status = userVerification.getStatus();</span>
+<span class="nc" id="L403">        var status = userVerification.getStatus();</span>
 
-<span class="nc bnc" id="L385" title="All 2 branches missed.">        return Either.right(new IsVerifiedResponse(status == VERIFIED));</span>
+<span class="nc bnc" id="L405" title="All 2 branches missed.">        return Either.right(new IsVerifiedResponse(status == VERIFIED));</span>
     }
 
     @Override
     @Transactional
     public void removeUserVerification(SMSUserVerification SMSUserVerification) {
-<span class="nc" id="L391">        smsUserVerificationRepository.delete(SMSUserVerification);</span>
-<span class="nc" id="L392">    }</span>
+<span class="nc" id="L411">        smsUserVerificationRepository.delete(SMSUserVerification);</span>
+<span class="nc" id="L412">    }</span>
 
     @Override
     @Transactional(readOnly = true)
     public List&lt;SMSUserVerification&gt; findAllForEvent(String eventId) {
-<span class="nc" id="L397">        return smsUserVerificationRepository.findAllByEventId(eventId);</span>
+<span class="nc" id="L417">        return smsUserVerificationRepository.findAllByEventId(eventId);</span>
     }
 
     @Override
     @Transactional(readOnly = true)
     public List&lt;SMSUserVerification&gt; findAllPending(String eventId) {
-<span class="nc" id="L403">        return smsUserVerificationRepository.findAllPending(eventId);</span>
+<span class="nc" id="L423">        return smsUserVerificationRepository.findAllPending(eventId);</span>
     }
 
     private static Optional&lt;Phonenumber.PhoneNumber&gt; isValidNumber(String userEnteredPhoneNumber) {
         try {
-<span class="nc" id="L408">            var phoneNumber = PhoneNumberUtil.getInstance().parse(userEnteredPhoneNumber, null);</span>
+<span class="nc" id="L428">            var phoneNumber = PhoneNumberUtil.getInstance().parse(userEnteredPhoneNumber, null);</span>
 
-<span class="nc bnc" id="L410" title="All 2 branches missed.">            if (PhoneNumberUtil.getInstance().isValidNumber(phoneNumber)) {</span>
-<span class="nc" id="L411">                return Optional.of(phoneNumber);</span>
+<span class="nc bnc" id="L430" title="All 2 branches missed.">            if (PhoneNumberUtil.getInstance().isValidNumber(phoneNumber)) {</span>
+<span class="nc" id="L431">                return Optional.of(phoneNumber);</span>
             }
 
-<span class="nc" id="L414">            return Optional.empty();</span>
-<span class="nc" id="L415">        } catch (NumberParseException e) {</span>
-<span class="nc" id="L416">            log.warn(&quot;Invalid phone number.&quot;);</span>
-<span class="nc" id="L417">            return Optional.empty();</span>
+<span class="nc" id="L434">            return Optional.empty();</span>
+<span class="nc" id="L435">        } catch (NumberParseException e) {</span>
+<span class="nc" id="L436">            log.warn(&quot;Invalid phone number.&quot;);</span>
+<span class="nc" id="L437">            return Optional.empty();</span>
         }
     }
 
     private String saltedPhoneHash(String phoneNumber) {
-<span class="nc" id="L422">        var value = saltHolder.salt() + phoneNumber;</span>
+<span class="nc" id="L442">        var value = saltHolder.salt() + phoneNumber;</span>
 
-<span class="nc" id="L424">        byte[] bytes = value.getBytes(UTF_8);</span>
+<span class="nc" id="L444">        byte[] bytes = value.getBytes(UTF_8);</span>
 
-<span class="nc" id="L426">        return HexFormat.of().formatHex(blake2bHash256(bytes));</span>
+<span class="nc" id="L446">        return HexFormat.of().formatHex(blake2bHash256(bytes));</span>
     }
 
 }

@@ -28,7 +28,7 @@ public class UserVerificationResource {
 
     private final UserVerificationService userVerificationService;
 
-    @RequestMapping(value = &quot;/verified/{eventId}/{stakeAddress}&quot;, method = GET, produces = &quot;application/json&quot;)
+    @RequestMapping(value = &quot;/verified/{eventId}/{walletId}&quot;, method = GET, produces = &quot;application/json&quot;)
     @Timed(value = &quot;resource.isVerified&quot;, histogram = true)
     @Operation(
             summary = &quot;Check the verification status for a user based on event ID and stake address&quot;,
@@ -44,7 +44,7 @@ public class UserVerificationResource {
                     ),
                     @ApiResponse(
                             responseCode = &quot;400&quot;,
-                            description = &quot;Bad request, possibly due to an invalid eventId or stakeAddress.&quot;,
+                            description = &quot;Bad request, possibly due to an invalid eventId or walletId.&quot;,
                             content = {
                                     @Content(mediaType = &quot;application/json&quot;,
                                             schema = @Schema(implementation = Problem.class))
@@ -54,8 +54,8 @@ public class UserVerificationResource {
             }
     )
     public ResponseEntity&lt;?&gt; isVerified(@PathVariable(&quot;eventId&quot;) String eventId,
-                                        @PathVariable(&quot;stakeAddress&quot;) String stakeAddress) {
-<span class="nc" id="L58">        var isVerifiedRequest = new IsVerifiedRequest(eventId, stakeAddress);</span>
+                                        @PathVariable(&quot;walletId&quot;) String walletId) {
+<span class="nc" id="L58">        var isVerifiedRequest = new IsVerifiedRequest(eventId, walletId);</span>
 
 <span class="nc" id="L60">        return userVerificationService.isVerified(isVerifiedRequest)</span>
 <span class="nc" id="L61">                .fold(problem -&gt; {</span>

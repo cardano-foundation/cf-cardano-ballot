@@ -7,50 +7,56 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.VerificationStatus;
+import org.cardano.foundation.voting.utils.WalletType;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = &quot;sms_user_verification&quot;)
-<span class="fc" id="L15">@Slf4j</span>
-<span class="nc" id="L16">@NoArgsConstructor</span>
+<span class="fc" id="L16">@Slf4j</span>
+<span class="nc" id="L17">@NoArgsConstructor</span>
 @Getter
-<span class="nc" id="L18">@Setter</span>
-<span class="nc" id="L19">@SuperBuilder</span>
+<span class="nc" id="L19">@Setter</span>
+<span class="nc" id="L20">@SuperBuilder</span>
 public class SMSUserVerification extends AbstractTimestampEntity {
 
     @Id
     @Column(name = &quot;id&quot;, nullable = false)
-<span class="nc" id="L24">    private String id;</span>
+<span class="nc" id="L25">    private String id;</span>
 
-    @Column(name = &quot;stake_address&quot;, nullable = false)
-<span class="nc" id="L27">    private String stakeAddress;</span>
+    @Column(name = &quot;wallet_id&quot;, nullable = false)
+<span class="nc" id="L28">    private String walletId;</span>
+
+    @Column(name = &quot;wallet_type&quot;, nullable = false)
+    @Enumerated(EnumType.STRING)
+<span class="nc" id="L32">    private WalletType walletType;</span>
 
     @Column(name = &quot;event_id&quot;, nullable = false)
-<span class="nc" id="L30">    private String eventId;</span>
+<span class="nc" id="L35">    private String eventId;</span>
 
     @Column(name = &quot;verification_code&quot;, nullable = false)
-<span class="nc" id="L33">    private String verificationCode;</span>
+<span class="nc" id="L38">    private String verificationCode;</span>
 
     @Column(name = &quot;request_id&quot;, nullable = false)
-<span class="nc" id="L36">    private String requestId;</span>
+<span class="nc" id="L41">    private String requestId;</span>
 
     @Column(name = &quot;phone_number_hash&quot;, nullable = false)
-<span class="nc" id="L39">    private String phoneNumberHash;</span>
+<span class="nc" id="L44">    private String phoneNumberHash;</span>
 
     @Column(name = &quot;status&quot;, nullable = false)
     @Enumerated(EnumType.STRING)
-<span class="nc" id="L43">    private VerificationStatus status;</span>
+<span class="nc" id="L48">    private VerificationStatus status;</span>
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = &quot;expires_at&quot;, nullable = false)
-<span class="nc" id="L47">    private LocalDateTime expiresAt;</span>
+<span class="nc" id="L52">    private LocalDateTime expiresAt;</span>
 
     @Override
     public String toString() {
-<span class="nc" id="L51">        return &quot;SMSUserVerification{&quot; +</span>
+<span class="nc" id="L56">        return &quot;SMSUserVerification{&quot; +</span>
                 &quot;id='&quot; + id + '\'' +
-                &quot;, stakeAddress='&quot; + stakeAddress + '\'' +
+                &quot;, walletId='&quot; + walletId + '\'' +
+                &quot;, walletType='&quot; + walletType + '\'' +
                 &quot;, eventId='&quot; + eventId + '\'' +
                 &quot;, verificationCode='&quot; + verificationCode + '\'' +
                 &quot;, requestId='&quot; + requestId + '\'' +

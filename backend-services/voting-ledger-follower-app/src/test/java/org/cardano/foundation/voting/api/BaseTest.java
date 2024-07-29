@@ -1,15 +1,14 @@
 package org.cardano.foundation.voting.api;
 
+import com.bloxbean.cardano.yaci.store.api.blocks.service.BlockService;
+import com.bloxbean.cardano.yaci.store.api.transaction.service.TransactionService;
 import com.bloxbean.cardano.yaci.store.blocks.domain.Block;
-import com.bloxbean.cardano.yaci.store.blocks.service.BlockService;
 import com.bloxbean.cardano.yaci.store.transaction.domain.TransactionDetails;
-import com.bloxbean.cardano.yaci.store.transaction.service.TransactionService;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import io.restassured.RestAssured;
 import org.cardano.foundation.voting.VotingLedgerFollowerApp;
 import org.cardano.foundation.voting.domain.SchemaVersion;
-import org.cardano.foundation.voting.domain.VotingEventType;
 import org.cardano.foundation.voting.domain.VotingPowerAsset;
 import org.cardano.foundation.voting.domain.entity.Category;
 import org.cardano.foundation.voting.domain.entity.Event;

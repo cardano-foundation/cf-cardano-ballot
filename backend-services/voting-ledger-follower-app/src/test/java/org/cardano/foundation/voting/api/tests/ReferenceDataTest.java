@@ -1,8 +1,7 @@
 package org.cardano.foundation.voting.api.tests;
 
+import com.bloxbean.cardano.yaci.store.api.blocks.service.BlockService;
 import com.bloxbean.cardano.yaci.store.blocks.domain.Block;
-import com.bloxbean.cardano.yaci.store.blocks.service.BlockService;
-import com.bloxbean.cardano.yaci.store.transaction.service.TransactionService;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
@@ -61,9 +60,6 @@ public class ReferenceDataTest {
 
     @Autowired
     protected BlockService blockService;
-
-    @Autowired
-    protected TransactionService transactionService;
 
     protected WireMockServer wireMockServer;
 

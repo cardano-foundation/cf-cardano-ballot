@@ -103,7 +103,6 @@ jobs:
     runs-on: ${{ fromJson(vars.RUNS_ON) }}
     env:
       APP_NAME: voting-verification-app
-    needs: build-version
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -131,7 +130,6 @@ jobs:
     runs-on: ${{ fromJson(vars.RUNS_ON) }}
     env:
       APP_NAME: user-verification-service
-    needs: build-version
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -159,7 +157,6 @@ jobs:
     runs-on: ${{ fromJson(vars.RUNS_ON) }}
     env:
       APP_NAME: ui-summit-2024
-    needs: build-version
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -187,7 +184,6 @@ jobs:
     runs-on: ${{ fromJson(vars.RUNS_ON) }}
     env:
       APP_NAME: voting-admin-app
-    needs: build-version
     steps:
       - name: Checkout
         uses: actions/checkout@v4

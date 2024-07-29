@@ -26,7 +26,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: ⛮ cf-gha-baseline
-        uses: cardanofoundation/cf-gha-workflows/./actions/cf-gha-baseline@main
+        uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-baseline@main
         with:
           working-directory: ./backend-services/${{ env.APP_NAME }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -53,7 +53,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: ⛮ cf-gha-baseline
-        uses: cardanofoundation/cf-gha-workflows/./actions/cf-gha-baseline@main
+        uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-baseline@main
         with:
           working-directory: ./backend-services/${{ env.APP_NAME }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -81,7 +81,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: ⛮ cf-gha-baseline
-        uses: cardanofoundation/cf-gha-workflows/./actions/cf-gha-baseline@main
+        uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-baseline@main
         with:
           working-directory: ./backend-services/${{ env.APP_NAME }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -108,7 +108,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: ⛮ cf-gha-baseline
-        uses: cardanofoundation/cf-gha-workflows/./actions/cf-gha-baseline@main
+        uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-baseline@main
         with:
           working-directory: ./backend-services/${{ env.APP_NAME }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -135,7 +135,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: ⛮ cf-gha-baseline
-        uses: cardanofoundation/cf-gha-workflows/./actions/cf-gha-baseline@main
+        uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-baseline@main
         with:
           working-directory: ./backend-services/${{ env.APP_NAME }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -162,7 +162,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: ⛮ cf-gha-baseline
-        uses: cardanofoundation/cf-gha-workflows/./actions/cf-gha-baseline@main
+        uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-baseline@main
         with:
           working-directory: ./backend-services/${{ env.APP_NAME }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -189,7 +189,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: ⛮ cf-gha-baseline
-        uses: cardanofoundation/cf-gha-workflows/./actions/cf-gha-baseline@main
+        uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-baseline@main
         with:
           working-directory: ./backend-services/${{ env.APP_NAME }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

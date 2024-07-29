@@ -63,6 +63,15 @@ const Categories: React.FC = () => {
     }
   }, [fadeChecked, selectedCategory]);
 
+  const handleClickMenuItem = (category: string) => {
+    if (category !== selectedCategory) {
+      setFadeChecked(false);
+      setTimeout(() => {
+        setFadeChecked(true);
+      }, 200);
+    }
+  };
+
   const handleSelectNominee = (id: string) => {
     if (selectedNominee !== id) {
       setSelectedNominee(id);
@@ -204,7 +213,7 @@ const Categories: React.FC = () => {
             height: "28px",
           }}
         />
-        <Layout menuOptions={optionsForMenu} bottom={bottom} mode="change" defaultOption={0} />
+        <Layout menuOptions={optionsForMenu} bottom={bottom} mode="change" defaultOption={0} onSelectMenuOption={(option) => handleClickMenuItem(option)} />
           <img
               src={Ellipses}
               style={{

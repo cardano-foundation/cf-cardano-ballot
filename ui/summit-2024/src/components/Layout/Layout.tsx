@@ -14,6 +14,7 @@ type LayoutProps = {
   bottom?: ReactNode;
   mode?: "scroll" | "change";
   defaultOption?: number;
+  onSelectMenuOption?: (option: string) => void
 };
 
 const Layout: React.FC<LayoutProps> = ({
@@ -22,6 +23,7 @@ const Layout: React.FC<LayoutProps> = ({
   bottom,
   mode = "scroll",
   defaultOption = 0,
+                                         onSelectMenuOption
 }) => {
   const isMobile = useIsPortrait();
   const [selectedOption, setSelectedOption] = useState("");
@@ -57,6 +59,7 @@ const Layout: React.FC<LayoutProps> = ({
 
   const handleClickMenuItem = (label: string) => {
     setSelectedOption(label);
+    if (onSelectMenuOption) onSelectMenuOption(label);
   };
 
   return (

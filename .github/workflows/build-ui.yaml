@@ -1,12 +1,13 @@
 name: Run Voting App UI Tests
+
 on:
   push:
-    branches-ignore:
-      - "main"
-      - "develop"
+    branches: [ main, develop ]
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+*'
   pull_request:
-    branches-ignore:
-      - "main"
+    types: [ opened, synchronize ]
+  workflow_dispatch:
 
 jobs:
   test:

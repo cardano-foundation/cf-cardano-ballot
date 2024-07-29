@@ -167,4 +167,4 @@ const UserGuide = () => {
     );
 };
 
-export default UserGuide;
+export {UserGuide};

@@ -10,7 +10,7 @@ type MenuItem = {
 
 type LayoutProps = {
   menuOptions: MenuItem[];
-  title: string;
+  title?: string;
   bottom?: ReactNode;
   mode?: "scroll" | "change";
   defaultOption?: number;
@@ -204,19 +204,21 @@ const Layout: React.FC<LayoutProps> = ({
           },
             marginTop: "10px"
         }}>
-          <Typography
-              sx={{
-                color: theme.palette.text.neutralLightest,
-                fontFamily: "Dosis",
-                fontSize: "32px",
-                fontStyle: "normal",
-                fontWeight: 700,
-                lineHeight: "36px",
-                marginBottom: "32px",
-              }}
-          >
-            {title}
-          </Typography>
+            {
+                title ? <Typography
+                    sx={{
+                        color: theme.palette.text.neutralLightest,
+                        fontFamily: "Dosis",
+                        fontSize: "32px",
+                        fontStyle: "normal",
+                        fontWeight: 700,
+                        lineHeight: "36px",
+                        marginBottom: "32px",
+                    }}
+                >
+                    {title}
+                </Typography> : null
+            }
           {mode === "change"
             ? menuOptions.find((option) => option.label === selectedOption)
                 ?.content

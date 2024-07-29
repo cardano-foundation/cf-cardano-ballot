@@ -134,7 +134,11 @@ const Header = () => {
           boxShadow: "none",
         }}
       >
-        <Toolbar>
+        <Toolbar
+          sx={{
+            padding: "0px !important",
+          }}
+        >
           <Box
             component="div"
             sx={{
@@ -155,6 +159,7 @@ const Header = () => {
                 width: "100%",
                 maxWidth: "1440px",
                 paddingY: "24px",
+                paddingX: "16px",
               }}
             >
               <Box

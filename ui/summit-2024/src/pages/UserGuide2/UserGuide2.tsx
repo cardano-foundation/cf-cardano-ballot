@@ -10,7 +10,7 @@ import { ROUTES } from "../../routes";
 import { useNavigate } from "react-router-dom";
 import { PageBase } from "../BasePage";
 
-const UserGuide: React.FC = () => {
+const UserGuide2: React.FC = () => {
   const navigate = useNavigate();
   const userGuideMenuOptions = userGuideMenu;
   const [selectedCategory, setSelectedCategory] = useState(
@@ -361,4 +361,4 @@ const UserGuide: React.FC = () => {
   );
 };
 
-export { UserGuide };
+export { UserGuide2 };

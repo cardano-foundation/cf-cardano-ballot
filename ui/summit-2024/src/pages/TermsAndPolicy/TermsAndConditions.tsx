@@ -7,68 +7,65 @@ import { PageBase } from "../BasePage";
 import termsData from "../../common/resources/data/termsAndConditions.json";
 
 const TermsAndConditions: React.FC = () => {
-  const [selectedSection, setSelectedSection] = useState(
-      termsData.title
-  );
+  const [selectedSection, setSelectedSection] = useState(termsData.title);
   const isMobile = useIsPortrait();
 
-    const termsDataTitleRef = useRef<HTMLElement>(null);
-    const termsDataTermsRef = useRef<HTMLElement>(null);
-    const termsDataDisclaimerTitleRef = useRef<HTMLElement>(null);
-    const contactUsRef = useRef<HTMLElement>(null);
+  const termsDataTitleRef = useRef<HTMLElement>(null);
+  const termsDataTermsRef = useRef<HTMLElement>(null);
+  const termsDataDisclaimerTitleRef = useRef<HTMLElement>(null);
+  const contactUsRef = useRef<HTMLElement>(null);
 
-
-  const handleClickMenuItem = (option:string) => {
+  const handleClickMenuItem = (option: string) => {
     setSelectedSection(option);
     switch (option) {
-        case termsData.title: {
-            termsDataTitleRef.current?.scrollIntoView({
-                behavior: "smooth",
-                block: "start",
-            });
-            break;
-        }
-        case "terms": {
-            termsDataTermsRef.current?.scrollIntoView({
-                behavior: "smooth",
-                block: "start",
-            });
-            break;
-        }
-        case termsData.disclaimer.title: {
-            termsDataDisclaimerTitleRef.current?.scrollIntoView({
-                behavior: "smooth",
-                block: "start",
-            });
-            break;
-        }
-        case "contactUs": {
-            contactUsRef.current?.scrollIntoView({
-                behavior: "smooth",
-                block: "start",
-            });
-            break;
-        }
+      case termsData.title: {
+        termsDataTitleRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+        break;
+      }
+      case "terms": {
+        termsDataTermsRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+        break;
+      }
+      case termsData.disclaimer.title: {
+        termsDataDisclaimerTitleRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+        break;
+      }
+      case "contactUs": {
+        contactUsRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+        break;
+      }
     }
   };
 
   const renderListItems = (list) => {
-       return list.map((item, index) => (
-          <Box component="div" key={index} sx={{mt: 1}}>
-              <Typography
-                  sx={{
-                      color: theme.palette.text.neutralLight,
-                      fontSize: "16px",
-                      fontWeight: 500,
-                      lineHeight: "24px",
-                  }}
-                  dangerouslySetInnerHTML={{
-                      __html: `${item.number} ${item.content.join(" ")}`,
-                  }}
-              />
-          </Box>
-      ));
-  }
+    return list.map((item, index) => (
+      <Box component="div" key={index} sx={{ mt: 1 }}>
+        <Typography
+          sx={{
+            color: theme.palette.text.neutralLight,
+            fontSize: "16px",
+            fontWeight: 500,
+            lineHeight: "24px",
+          }}
+          dangerouslySetInnerHTML={{
+            __html: `${item.number} ${item.content.join(" ")}`,
+          }}
+        />
+      </Box>
+    ));
+  };
 
   return (
     <PageBase title="Terms and Conditions">
@@ -97,210 +94,252 @@ const TermsAndConditions: React.FC = () => {
                     margin: 0,
                   }}
                 >
-                    <ListItem
-                        onClick={() => handleClickMenuItem(termsData.title)}
-                        key={termsData.title}
-                        sx={{
-                            display: "flex",
-                            marginRight: "8px",
-                            whiteSpace: "nowrap",
-                            background:
-                                termsData.title === selectedSection
-                                    ? theme.palette.secondary.main
-                                    : "none",
-                            color:
-                                termsData.title === selectedSection
-                                    ? theme.palette.background.default
-                                    : theme.palette.text.neutralLightest,
-                            padding: "8px 12px",
-                            borderRadius: "12px",
-                            fontSize: "16px",
-                            fontWeight: 500,
-                            lineHeight: "24px",
-                            cursor: "pointer",
-                        }}
-                    >
-                        {termsData.title}
-                    </ListItem>
-                    <ListItem
-                        onClick={() => handleClickMenuItem("terms")}
-                        key={termsData.title}
-                        sx={{
-                            display: "flex",
-                            marginRight: "8px",
-                            whiteSpace: "nowrap",
-                            background:
-                                "terms" === selectedSection
-                                    ? theme.palette.secondary.main
-                                    : "none",
-                            color:
-                                "terms" === selectedSection
-                                    ? theme.palette.background.default
-                                    : theme.palette.text.neutralLightest,
-                            padding: "8px 12px",
-                            borderRadius: "12px",
-                            fontSize: "16px",
-                            fontWeight: 500,
-                            lineHeight: "24px",
-                            cursor: "pointer",
-                        }}
-                    >
-                        Terms
-                    </ListItem>
-                    <ListItem
-                        onClick={() => handleClickMenuItem(termsData.disclaimer.title)}
-                        key={termsData.title}
-                        sx={{
-                            display: "flex",
-                            marginRight: "8px",
-                            whiteSpace: "nowrap",
-                            background:
-                                termsData.disclaimer.title === selectedSection
-                                    ? theme.palette.secondary.main
-                                    : "none",
-                            color:
-                                termsData.disclaimer.title === selectedSection
-                                    ? theme.palette.background.default
-                                    : theme.palette.text.neutralLightest,
-                            padding: "8px 12px",
-                            borderRadius: "12px",
-                            fontSize: "16px",
-                            fontWeight: 500,
-                            lineHeight: "24px",
-                            cursor: "pointer",
-                        }}
-                    >
-                        Disclaimer
-                    </ListItem>
-                    <ListItem
-                        onClick={() => handleClickMenuItem("contactUs")}
-                        key={"contactUs"}
-                        sx={{
-                            display: "flex",
-                            marginRight: "8px",
-                            whiteSpace: "nowrap",
-                            background:
-                                "contactUs" === selectedSection
-                                    ? theme.palette.secondary.main
-                                    : "none",
-                            color:
-                                "contactUs" === selectedSection
-                                    ? theme.palette.background.default
-                                    : theme.palette.text.neutralLightest,
-                            padding: "8px 12px",
-                            borderRadius: "12px",
-                            fontSize: "16px",
-                            fontWeight: 500,
-                            lineHeight: "24px",
-                            cursor: "pointer",
-                        }}
-                    >
-                        Contact Us
-                    </ListItem>
+                  <ListItem
+                    onClick={() => handleClickMenuItem(termsData.title)}
+                    key={termsData.title}
+                    sx={{
+                      display: "flex",
+                      marginRight: "8px",
+                      whiteSpace: "nowrap",
+                      background:
+                        termsData.title === selectedSection
+                          ? theme.palette.secondary.main
+                          : "none",
+                      color:
+                        termsData.title === selectedSection
+                          ? theme.palette.background.default
+                          : theme.palette.text.neutralLightest,
+                      padding: "8px 12px",
+                      borderRadius: "12px",
+                      fontSize: "16px",
+                      fontWeight: 500,
+                      lineHeight: "24px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    {termsData.title}
+                  </ListItem>
+                  <ListItem
+                    onClick={() => handleClickMenuItem("terms")}
+                    key={termsData.title}
+                    sx={{
+                      display: "flex",
+                      marginRight: "8px",
+                      whiteSpace: "nowrap",
+                      background:
+                        "terms" === selectedSection
+                          ? theme.palette.secondary.main
+                          : "none",
+                      color:
+                        "terms" === selectedSection
+                          ? theme.palette.background.default
+                          : theme.palette.text.neutralLightest,
+                      padding: "8px 12px",
+                      borderRadius: "12px",
+                      fontSize: "16px",
+                      fontWeight: 500,
+                      lineHeight: "24px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Terms
+                  </ListItem>
+                  <ListItem
+                    onClick={() =>
+                      handleClickMenuItem(termsData.disclaimer.title)
+                    }
+                    key={termsData.title}
+                    sx={{
+                      display: "flex",
+                      marginRight: "8px",
+                      whiteSpace: "nowrap",
+                      background:
+                        termsData.disclaimer.title === selectedSection
+                          ? theme.palette.secondary.main
+                          : "none",
+                      color:
+                        termsData.disclaimer.title === selectedSection
+                          ? theme.palette.background.default
+                          : theme.palette.text.neutralLightest,
+                      padding: "8px 12px",
+                      borderRadius: "12px",
+                      fontSize: "16px",
+                      fontWeight: 500,
+                      lineHeight: "24px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Disclaimer
+                  </ListItem>
+                  <ListItem
+                    onClick={() => handleClickMenuItem("contactUs")}
+                    key={"contactUs"}
+                    sx={{
+                      display: "flex",
+                      marginRight: "8px",
+                      whiteSpace: "nowrap",
+                      background:
+                        "contactUs" === selectedSection
+                          ? theme.palette.secondary.main
+                          : "none",
+                      color:
+                        "contactUs" === selectedSection
+                          ? theme.palette.background.default
+                          : theme.palette.text.neutralLightest,
+                      padding: "8px 12px",
+                      borderRadius: "12px",
+                      fontSize: "16px",
+                      fontWeight: 500,
+                      lineHeight: "24px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Contact Us
+                  </ListItem>
                 </List>
               </Box>
             ) : (
               <List
                 sx={{
                   position: "sticky",
-                  top: 74,
+                  top: 102,
                   zIndex: 1100,
                   overflowY: "auto",
-                  maxHeight: "calc(100vh - 74px)",
+                  maxHeight: "calc(100vh - 102px)",
                   borderRight: "1px solid #737380",
                 }}
               >
-                  <ListItem
-                      onClick={() => handleClickMenuItem(termsData.title)}
-                      key={termsData.title}
-                      sx={{
-                          background:
-                              termsData.title === selectedSection
-                                  ? theme.palette.secondary.main
-                                  : "none",
-                          color:
-                              termsData.title === selectedSection
-                                  ? theme.palette.background.default
-                                  : theme.palette.text.neutralLightest,
+                <ListItem
+                  onClick={() => handleClickMenuItem(termsData.title)}
+                  key={termsData.title}
+                >
+                  {termsData.title === selectedSection ? (
+                    <>
+                      <Box
+                        component="div"
+                        sx={{
+                          display: "flex",
                           padding: "8px 12px",
+                          alignItems: "center",
+                          gap: "10px",
+                          alignSelf: "stretch",
+                          borderRadius: "12px",
+                          background: theme.palette.secondary.main,
+                          color: theme.palette.background.default,
                           fontSize: "16px",
+                          fontStyle: "normal",
                           fontWeight: 500,
                           lineHeight: "24px",
                           cursor: "pointer",
-                      }}
-                  >
-                      {termsData.title}
-                  </ListItem>
-                  <ListItem
-                      onClick={() => handleClickMenuItem("terms")}
-                      key={termsData.title}
-                      sx={{
-                          background:
-                              "terms" === selectedSection
-                                  ? theme.palette.secondary.main
-                                  : "none",
-                          color:
-                              "terms" === selectedSection
-                                  ? theme.palette.background.default
-                                  : theme.palette.text.neutralLightest,
-                          padding: "8px 12px",
+                          width: "100%",
+                        }}
+                      >
+                        <Typography
+                          sx={{
+                            gap: "10px",
+                            alignSelf: "stretch",
+                            borderRadius: "12px",
+                            fontSize: "16px",
+                            fontStyle: "normal",
+                            fontWeight: 500,
+                            lineHeight: "24px",
+                            cursor: "pointer",
+                            width: "100%",
+                          }}
+                        >
+                          {termsData.title}
+                        </Typography>
+                      </Box>
+                    </>
+                  ) : (
+                    <>
+                      <Typography
+                        sx={{
+                          color: theme.palette.text.neutralLightest,
                           fontSize: "16px",
+                          fontStyle: "normal",
                           fontWeight: 500,
                           lineHeight: "24px",
                           cursor: "pointer",
-                      }}
-                  >
-                      Terms
-                  </ListItem>
-                  <ListItem
-                      onClick={() => handleClickMenuItem(termsData.disclaimer.title)}
-                      key={termsData.title}
-                      sx={{
-                          background:
-                              termsData.disclaimer.title === selectedSection
-                                  ? theme.palette.secondary.main
-                                  : "none",
-                          color:
-                              termsData.disclaimer.title === selectedSection
-                                  ? theme.palette.background.default
-                                  : theme.palette.text.neutralLightest,
-                          padding: "8px 12px",
-                          fontSize: "16px",
-                          fontWeight: 500,
-                          lineHeight: "24px",
-                          cursor: "pointer",
-                      }}
-                  >
-                      Disclaimer
-                  </ListItem>
-                  <ListItem
-                      onClick={() => handleClickMenuItem("contactUs")}
-                      key={"contactUs"}
-                      sx={{
-                          background:
-                              "contactUs" === selectedSection
-                                  ? theme.palette.secondary.main
-                                  : "none",
-                          color:
-                              "contactUs" === selectedSection
-                                  ? theme.palette.background.default
-                                  : theme.palette.text.neutralLightest,
-                          padding: "8px 12px",
-                          fontSize: "16px",
-                          fontWeight: 500,
-                          lineHeight: "24px",
-                          cursor: "pointer",
-                      }}
-                  >
-                      Contact Us
-                  </ListItem>
+                        }}
+                      >
+                        {termsData.title}
+                      </Typography>
+                    </>
+                  )}
+                </ListItem>
+                <ListItem
+                  onClick={() => handleClickMenuItem("terms")}
+                  key={termsData.title}
+                  sx={{
+                    background:
+                      "terms" === selectedSection
+                        ? theme.palette.secondary.main
+                        : "none",
+                    color:
+                      "terms" === selectedSection
+                        ? theme.palette.background.default
+                        : theme.palette.text.neutralLightest,
+                    padding: "8px 12px",
+                    fontSize: "16px",
+                    fontWeight: 500,
+                    lineHeight: "24px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Terms
+                </ListItem>
+                <ListItem
+                  onClick={() =>
+                    handleClickMenuItem(termsData.disclaimer.title)
+                  }
+                  key={termsData.title}
+                  sx={{
+                    background:
+                      termsData.disclaimer.title === selectedSection
+                        ? theme.palette.secondary.main
+                        : "none",
+                    color:
+                      termsData.disclaimer.title === selectedSection
+                        ? theme.palette.background.default
+                        : theme.palette.text.neutralLightest,
+                    padding: "8px 12px",
+                    fontSize: "16px",
+                    fontWeight: 500,
+                    lineHeight: "24px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Disclaimer
+                </ListItem>
+                <ListItem
+                  onClick={() => handleClickMenuItem("contactUs")}
+                  key={"contactUs"}
+                  sx={{
+                    background:
+                      "contactUs" === selectedSection
+                        ? theme.palette.secondary.main
+                        : "none",
+                    color:
+                      "contactUs" === selectedSection
+                        ? theme.palette.background.default
+                        : theme.palette.text.neutralLightest,
+                    padding: "8px 12px",
+                    fontSize: "16px",
+                    fontWeight: 500,
+                    lineHeight: "24px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Contact Us
+                </ListItem>
               </List>
             )}
           </Grid>
-          <Grid item xs={12} md={9.6} lg={10} sx={{ padding: "0px 20px" }}>
+          <Grid item xs={12} md={9.6} lg={10} sx={{ padding: "10px 20px" }}>
             <>
               <Typography
-                  ref={termsDataTitleRef}
+                ref={termsDataTitleRef}
                 sx={{
                   color: theme.palette.text.neutralLightest,
                   fontFamily: "Dosis",
@@ -394,31 +433,30 @@ const TermsAndConditions: React.FC = () => {
                   ))}
                 </Box>
               ))}
-                <Box component="div" ref={termsDataTermsRef}>
-                    {termsData.terms.map((termSection, index) => (
-                        <Box component="div" key={index} sx={{ mt: 4 }}>
-                            <Typography
-
-                                sx={{
-                                    color: theme.palette.text.neutralLightest,
-                                    fontFamily: "Dosis",
-                                    fontSize: "24px",
-                                    fontWeight: 700,
-                                    lineHeight: "28px",
-                                }}
-                            >
-                                {termSection.title}
-                            </Typography>
-                            {renderListItems(termSection.list)}
-                        </Box>
-                    ))}
-                </Box>
+              <Box component="div" ref={termsDataTermsRef}>
+                {termsData.terms.map((termSection, index) => (
+                  <Box component="div" key={index} sx={{ mt: 4 }}>
+                    <Typography
+                      sx={{
+                        color: theme.palette.text.neutralLightest,
+                        fontFamily: "Dosis",
+                        fontSize: "24px",
+                        fontWeight: 700,
+                        lineHeight: "28px",
+                      }}
+                    >
+                      {termSection.title}
+                    </Typography>
+                    {renderListItems(termSection.list)}
+                  </Box>
+                ))}
+              </Box>
 
               {/* Disclaimer Section */}
               {termsData.disclaimer && (
                 <Box component="div" sx={{ mt: 4 }}>
                   <Typography
-                      ref={termsDataDisclaimerTitleRef}
+                    ref={termsDataDisclaimerTitleRef}
                     sx={{
                       color: theme.palette.text.neutralLightest,
                       fontFamily: "Dosis",
@@ -497,7 +535,7 @@ const TermsAndConditions: React.FC = () => {
               {termsData.contactus && (
                 <Box component="div" sx={{ mt: 4 }}>
                   <Typography
-                      ref={contactUsRef}
+                    ref={contactUsRef}
                     sx={{
                       color: theme.palette.text.neutralLightest,
                       fontFamily: "Dosis",

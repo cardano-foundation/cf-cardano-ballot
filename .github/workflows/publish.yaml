@@ -27,7 +27,7 @@ jobs:
 
       - name: ⛮ cf-gha-baseline
         uses: cardanofoundation/cf-gha-workflows/./actions/cf-gha-baseline@main
-        working-directory: backend-services/${{ env.APP_NAME }}
+        working-directory: ./backend-services/${{ env.APP_NAME }}
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PRIVATE_DOCKER_REGISTRY_URL: ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}
@@ -54,6 +54,7 @@ jobs:
 
       - name: ⛮ cf-gha-baseline
         uses: cardanofoundation/cf-gha-workflows/./actions/cf-gha-baseline@main
+        working-directory: ./backend-services/${{ env.APP_NAME }}
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PRIVATE_DOCKER_REGISTRY_URL: ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}
@@ -81,6 +82,7 @@ jobs:
 
       - name: ⛮ cf-gha-baseline
         uses: cardanofoundation/cf-gha-workflows/./actions/cf-gha-baseline@main
+        working-directory: ./backend-services/${{ env.APP_NAME }}
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PRIVATE_DOCKER_REGISTRY_URL: ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}
@@ -108,6 +110,7 @@ jobs:
 
       - name: ⛮ cf-gha-baseline
         uses: cardanofoundation/cf-gha-workflows/./actions/cf-gha-baseline@main
+        working-directory: ./backend-services/${{ env.APP_NAME }}
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PRIVATE_DOCKER_REGISTRY_URL: ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}
@@ -135,6 +138,7 @@ jobs:
 
       - name: ⛮ cf-gha-baseline
         uses: cardanofoundation/cf-gha-workflows/./actions/cf-gha-baseline@main
+        working-directory: ./backend-services/${{ env.APP_NAME }}
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PRIVATE_DOCKER_REGISTRY_URL: ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}
@@ -162,6 +166,7 @@ jobs:
 
       - name: ⛮ cf-gha-baseline
         uses: cardanofoundation/cf-gha-workflows/./actions/cf-gha-baseline@main
+        working-directory: ./backend-services/${{ env.APP_NAME }}
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PRIVATE_DOCKER_REGISTRY_URL: ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}
@@ -189,6 +194,7 @@ jobs:
 
       - name: ⛮ cf-gha-baseline
         uses: cardanofoundation/cf-gha-workflows/./actions/cf-gha-baseline@main
+        working-directory: ./backend-services/${{ env.APP_NAME }}
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PRIVATE_DOCKER_REGISTRY_URL: ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}

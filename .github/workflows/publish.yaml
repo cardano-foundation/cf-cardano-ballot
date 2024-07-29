@@ -21,7 +21,7 @@ jobs:
     runs-on: ${{ fromJson(vars.RUNS_ON) }}
     strategy:
       matrix:
-        service: ['voting-app', 'voting-commitment-app', 'voting-ledger-follower-app', 'voting-verification-app', 'user-verification-service', 'voting-admin-app']
+        service: ['voting-app', 'vote-commitment-app', 'voting-ledger-follower-app', 'voting-verification-app', 'user-verification-service', 'voting-admin-app']
     steps:
       - name: Checkout
         uses: actions/checkout@v4

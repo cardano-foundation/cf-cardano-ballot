@@ -17,10 +17,11 @@ env:
 
 jobs:
 
-  voting-app:
+  java-apps:
     runs-on: ${{ fromJson(vars.RUNS_ON) }}
-    env:
-      APP_NAME: voting-app
+    strategy:
+      matrix:
+        service: ['voting-app', 'voting-commitment-app', 'voting-ledger-follower-app', 'voting-verification-app', 'user-verification-service', 'voting-admin-app']
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,7 +29,7 @@ jobs:
       - name: ⛮ cf-gha-baseline
         uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-baseline@main
         with:
-          working-directory: ./backend-services/${{ env.APP_NAME }}
+          working-directory: ./backend-services/${{ matrix.service }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PRIVATE_DOCKER_REGISTRY_URL: ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}
           PRIVATE_DOCKER_REGISTRY_USER: ${{ env.PRIVATE_DOCKER_REGISTRY_USER }}
@@ -39,116 +40,7 @@ jobs:
 
       - name:  🌍 earthly (docker build and push)
         run: |
-          earthly +${{ env.APP_NAME }} \
-            --PUSH=${DOCKER_PUSH} \
-            --DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}" \
-            --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}"
-
-  voting-commitment-app:
-    runs-on: ${{ fromJson(vars.RUNS_ON) }}
-    env:
-      APP_NAME: vote-commitment-app
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: ⛮ cf-gha-baseline
-        uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-baseline@main
-        with:
-          working-directory: ./backend-services/${{ env.APP_NAME }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PRIVATE_DOCKER_REGISTRY_URL: ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}
-          PRIVATE_DOCKER_REGISTRY_USER: ${{ env.PRIVATE_DOCKER_REGISTRY_USER }}
-          PRIVATE_DOCKER_REGISTRY_PASS: ${{ env.PRIVATE_DOCKER_REGISTRY_PASS }}
-          HUB_DOCKER_COM_USER: ${{ secrets.HUB_DOCKER_COM_USER }}
-          HUB_DOCKER_COM_PASS: ${{ secrets.HUB_DOCKER_COM_PASS }}
-          DOCKER_REGISTRIES: "${{ secrets.DOCKER_REGISTRIES }}"
-
-      - name:  🌍 earthly (docker build and push)
-        run: |
-          earthly +${{ env.APP_NAME }} \
-            --PUSH=${DOCKER_PUSH} \
-            --DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}" \
-            --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}"
-  
-
-  voting-ledger-follower-app:
-    runs-on: ${{ fromJson(vars.RUNS_ON) }}
-    env:
-      APP_NAME: voting-ledger-follower-app
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: ⛮ cf-gha-baseline
-        uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-baseline@main
-        with:
-          working-directory: ./backend-services/${{ env.APP_NAME }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PRIVATE_DOCKER_REGISTRY_URL: ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}
-          PRIVATE_DOCKER_REGISTRY_USER: ${{ env.PRIVATE_DOCKER_REGISTRY_USER }}
-          PRIVATE_DOCKER_REGISTRY_PASS: ${{ env.PRIVATE_DOCKER_REGISTRY_PASS }}
-          HUB_DOCKER_COM_USER: ${{ secrets.HUB_DOCKER_COM_USER }}
-          HUB_DOCKER_COM_PASS: ${{ secrets.HUB_DOCKER_COM_PASS }}
-          DOCKER_REGISTRIES: "${{ secrets.DOCKER_REGISTRIES }}"
-
-      - name:  🌍 earthly (docker build and push)
-        run: |
-          earthly +${{ env.APP_NAME }} \
-            --PUSH=${DOCKER_PUSH} \
-            --DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}" \
-            --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}"
-
-  voting-verification-app:
-    runs-on: ${{ fromJson(vars.RUNS_ON) }}
-    env:
-      APP_NAME: voting-verification-app
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: ⛮ cf-gha-baseline
-        uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-baseline@main
-        with:
-          working-directory: ./backend-services/${{ env.APP_NAME }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PRIVATE_DOCKER_REGISTRY_URL: ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}
-          PRIVATE_DOCKER_REGISTRY_USER: ${{ env.PRIVATE_DOCKER_REGISTRY_USER }}
-          PRIVATE_DOCKER_REGISTRY_PASS: ${{ env.PRIVATE_DOCKER_REGISTRY_PASS }}
-          HUB_DOCKER_COM_USER: ${{ secrets.HUB_DOCKER_COM_USER }}
-          HUB_DOCKER_COM_PASS: ${{ secrets.HUB_DOCKER_COM_PASS }}
-          DOCKER_REGISTRIES: "${{ secrets.DOCKER_REGISTRIES }}"
-
-      - name:  🌍 earthly (docker build and push)
-        run: |
-          earthly +${{ env.APP_NAME }} \
-            --PUSH=${DOCKER_PUSH} \
-            --DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}" \
-            --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}"
-
-  user-verification-service:
-    runs-on: ${{ fromJson(vars.RUNS_ON) }}
-    env:
-      APP_NAME: user-verification-service
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: ⛮ cf-gha-baseline
-        uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-baseline@main
-        with:
-          working-directory: ./backend-services/${{ env.APP_NAME }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PRIVATE_DOCKER_REGISTRY_URL: ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}
-          PRIVATE_DOCKER_REGISTRY_USER: ${{ env.PRIVATE_DOCKER_REGISTRY_USER }}
-          PRIVATE_DOCKER_REGISTRY_PASS: ${{ env.PRIVATE_DOCKER_REGISTRY_PASS }}
-          HUB_DOCKER_COM_USER: ${{ secrets.HUB_DOCKER_COM_USER }}
-          HUB_DOCKER_COM_PASS: ${{ secrets.HUB_DOCKER_COM_PASS }}
-          DOCKER_REGISTRIES: "${{ secrets.DOCKER_REGISTRIES }}"
-
-      - name:  🌍 earthly (docker build and push)
-        run: |
-          earthly +${{ env.APP_NAME }} \
+          earthly +${{ matrix.service }} \
             --PUSH=${DOCKER_PUSH} \
             --DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}" \
             --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}"
@@ -165,33 +57,6 @@ jobs:
         uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-baseline@main
         with:
           working-directory: ./ui/summit-2024
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PRIVATE_DOCKER_REGISTRY_URL: ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}
-          PRIVATE_DOCKER_REGISTRY_USER: ${{ env.PRIVATE_DOCKER_REGISTRY_USER }}
-          PRIVATE_DOCKER_REGISTRY_PASS: ${{ env.PRIVATE_DOCKER_REGISTRY_PASS }}
-          HUB_DOCKER_COM_USER: ${{ secrets.HUB_DOCKER_COM_USER }}
-          HUB_DOCKER_COM_PASS: ${{ secrets.HUB_DOCKER_COM_PASS }}
-          DOCKER_REGISTRIES: "${{ secrets.DOCKER_REGISTRIES }}"
-
-      - name:  🌍 earthly (docker build and push)
-        run: |
-          earthly +${{ env.APP_NAME }} \
-            --PUSH=${DOCKER_PUSH} \
-            --DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}" \
-            --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}"
-
-  admin-cli:
-    runs-on: ${{ fromJson(vars.RUNS_ON) }}
-    env:
-      APP_NAME: voting-admin-app
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: ⛮ cf-gha-baseline
-        uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-baseline@main
-        with:
-          working-directory: ./backend-services/${{ env.APP_NAME }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PRIVATE_DOCKER_REGISTRY_URL: ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}
           PRIVATE_DOCKER_REGISTRY_USER: ${{ env.PRIVATE_DOCKER_REGISTRY_USER }}

@@ -13,6 +13,7 @@ env:
   PRIVATE_DOCKER_REGISTRY_URL: ${{ secrets.GITLAB_DOCKER_REGISTRY_URL }}
   PRIVATE_DOCKER_REGISTRY_USER: Deploy-Token
   PRIVATE_DOCKER_REGISTRY_PASS: ${{ secrets.GITLAB_PKG_REGISTRY_TOKEN }}
+  DOCKER_PUSH=false
 
 jobs:
 
@@ -39,7 +40,7 @@ jobs:
       - name:  🌍 earthly (docker build and push)
         run: |
           earthly +${{ env.APP_NAME }} \
-            --PUSH=true \
+            --PUSH=${DOCKER_PUSH} \
             --DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}" \
             --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}"
 
@@ -65,7 +66,7 @@ jobs:
       - name:  🌍 earthly (docker build and push)
         run: |
           earthly +${{ env.APP_NAME }} \
-            --PUSH=true \
+            --PUSH=${DOCKER_PUSH} \
             --DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}" \
             --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}"
   
@@ -92,7 +93,7 @@ jobs:
       - name:  🌍 earthly (docker build and push)
         run: |
           earthly +${{ env.APP_NAME }} \
-            --PUSH=true \
+            --PUSH=${DOCKER_PUSH} \
             --DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}" \
             --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}"
 
@@ -119,7 +120,7 @@ jobs:
       - name:  🌍 earthly (docker build and push)
         run: |
           earthly +${{ env.APP_NAME }} \
-            --PUSH=true \
+            --PUSH=${DOCKER_PUSH} \
             --DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}" \
             --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}"
 
@@ -146,7 +147,7 @@ jobs:
       - name:  🌍 earthly (docker build and push)
         run: |
           earthly +${{ env.APP_NAME }} \
-            --PUSH=true \
+            --PUSH=${DOCKER_PUSH} \
             --DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}" \
             --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}"
 
@@ -173,7 +174,7 @@ jobs:
       - name:  🌍 earthly (docker build and push)
         run: |
           earthly +${{ env.APP_NAME }} \
-            --PUSH=true \
+            --PUSH=${DOCKER_PUSH} \
             --DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}" \
             --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}"
 
@@ -200,6 +201,6 @@ jobs:
       - name:  🌍 earthly (docker build and push)
         run: |
           earthly +${{ env.APP_NAME }} \
-            --PUSH=true \
+            --PUSH=${DOCKER_PUSH} \
             --DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}" \
             --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}"

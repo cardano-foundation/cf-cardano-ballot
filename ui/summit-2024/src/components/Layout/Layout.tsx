@@ -10,12 +10,16 @@ type MenuItem = {
 
 type LayoutProps = {
   menuOptions: MenuItem[];
+  title: string;
+  bottom?: ReactNode;
   mode?: "scroll" | "change";
   defaultOption?: number;
 };
 
 const Layout: React.FC<LayoutProps> = ({
   menuOptions,
+    title,
+                                           bottom,
   mode = "scroll",
   defaultOption = 0,
 }) => {
@@ -192,7 +196,27 @@ const Layout: React.FC<LayoutProps> = ({
                 </>
             )}
         </Grid>
-        <Grid item xs={12} md={9.6} lg={10} sx={{ padding: "0px 20px" }}>
+        <Grid item xs={12} md={9.6} lg={10} sx={{
+          background: "transparent",
+          padding: {
+            xs: "0px 20px",
+            sm: "20px 0pxs",
+          },
+            marginTop: "10px"
+        }}>
+          <Typography
+              sx={{
+                color: theme.palette.text.neutralLightest,
+                fontFamily: "Dosis",
+                fontSize: "32px",
+                fontStyle: "normal",
+                fontWeight: 700,
+                lineHeight: "36px",
+                marginBottom: "32px",
+              }}
+          >
+            {title}
+          </Typography>
           {mode === "change"
             ? menuOptions.find((option) => option.label === selectedOption)
                 ?.content
@@ -208,6 +232,9 @@ const Layout: React.FC<LayoutProps> = ({
                   {option.content}
                 </div>
               ))}
+            {
+                bottom
+            }
         </Grid>
       </Grid>
     </Box>

@@ -2,13 +2,12 @@ import { useEffect } from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import { Home } from "../pages/Home";
 import { Categories } from "../pages/Categories";
-import { UserGuide } from "../pages/UserGuide/UserGuide";
 import { Leaderboard } from "../pages/Leaderboard/Leaderboard";
 import { ReceiptHistory } from "../pages/ReceiptHistory/ReceiptHistory";
 import { NotFound } from "../pages/NotFound/NotFound";
 import { TermsAndConditions } from "../pages/TermsAndPolicy/TermsAndConditions";
 import TermsAndConditions2 from "../pages/TermsAndPolicy2/TermsAndConditions2";
-import {UserGuide2} from "../pages/UserGuide2/UserGuide2";
+import UserGuide from "../pages/UserGuide/UserGuide";
 
 export const PAGE_PATH = "/";
 
@@ -38,7 +37,7 @@ const PageRouter = () => {
         <Route path={ROUTES.CATEGORIES} element={<Categories />} />
         <Route path={ROUTES.RECEIPTS} element={<ReceiptHistory />} />
         <Route path={ROUTES.LEADERBOARD} element={<Leaderboard />} />
-        <Route path={ROUTES.USER_GUIDE} element={<UserGuide2 />} />
+        <Route path={ROUTES.USER_GUIDE} element={<UserGuide />} />
         <Route
           path={ROUTES.TERMS_AND_CONDITIONS}
           element={<TermsAndConditions />}

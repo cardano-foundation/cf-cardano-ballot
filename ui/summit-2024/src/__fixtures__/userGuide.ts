@@ -12,12 +12,14 @@ interface UserGuideSection {
 
 interface UserGuideMenuEntry {
   label: string;
+  title: string;
   sections: UserGuideSection[];
 }
 
 const userGuideMenu: UserGuideMenuEntry[] = [
   {
     label: "What You’ll Need",
+    title: "To Submit Votes, You’ll Need:",
     sections: [
       {
         number: 1,
@@ -39,6 +41,7 @@ const userGuideMenu: UserGuideMenuEntry[] = [
   },
   {
     label: "Creating an Account",
+    title: "Create and Verify Your Account:",
     sections: [
       {
         number: 1,
@@ -58,6 +61,7 @@ const userGuideMenu: UserGuideMenuEntry[] = [
   },
   {
     label: "How to Vote",
+    title: "How to Submit a Vote:",
     sections: [
       {
         number: 1,
@@ -99,4 +103,5 @@ const userGuideMenu: UserGuideMenuEntry[] = [
   },
 ];
 
+export type { UserGuideMenuEntry }
 export { userGuideMenu };

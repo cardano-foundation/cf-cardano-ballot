@@ -5,9 +5,8 @@ import { Categories } from "../pages/Categories";
 import { Leaderboard } from "../pages/Leaderboard/Leaderboard";
 import { ReceiptHistory } from "../pages/ReceiptHistory/ReceiptHistory";
 import { NotFound } from "../pages/NotFound/NotFound";
-import { TermsAndConditions } from "../pages/TermsAndPolicy/TermsAndConditions";
-import TermsAndConditions2 from "../pages/TermsAndPolicy2/TermsAndConditions2";
 import UserGuide from "../pages/UserGuide/UserGuide";
+import TermsAndConditions from "../pages/TermsAndPolicy/TermsAndConditions";
 
 export const PAGE_PATH = "/";
 
@@ -41,10 +40,6 @@ const PageRouter = () => {
         <Route
           path={ROUTES.TERMS_AND_CONDITIONS}
           element={<TermsAndConditions />}
-        />
-        <Route
-          path="terms2"
-          element={<TermsAndConditions2 />}
         />
         <Route path="*" element={<NotFound />} />
       </Routes>

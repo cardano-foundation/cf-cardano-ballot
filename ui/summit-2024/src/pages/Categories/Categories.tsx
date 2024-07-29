@@ -1,10 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Box,
-  Typography,
-  useMediaQuery,
-  Drawer,
-} from "@mui/material";
+import { Box, Typography, useMediaQuery, Drawer } from "@mui/material";
 import theme from "../../common/styles/theme";
 import { CustomButton } from "../../components/common/CustomButton/CustomButton";
 import { VoteNowModal } from "./components/VoteNowModal";
@@ -18,6 +13,7 @@ import { Nominees } from "./components/Nominees";
 import { Winners } from "./components/Winners";
 import { BioModal } from "./components/BioModal";
 import Layout from "../../components/Layout/Layout";
+import Ellipses from "../../assets/ellipse.svg";
 
 const Categories: React.FC = () => {
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
@@ -100,75 +96,105 @@ const Categories: React.FC = () => {
     (n) => n.id === selectedNominee,
   );
 
-    const optionsForMenu = categoriesData.map((category: Category) => {
-        return {
-            label: category.id,
-            content: (
-                <>
-                  <Box
-                      component="div"
-                      sx={{
-                        width: "100%",
-                        marginBottom: "32px",
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "flex-start",
-                      }}
+  const optionsForMenu = categoriesData.map((category: Category) => {
+    return {
+      label: category.id,
+      content: (
+        <>
+          <Box
+            component="div"
+            sx={{
+              width: "100%",
+              marginBottom: "32px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+            }}
+          >
+            <Typography
+              // TODO: remove after demo
+              onClick={() => setShowWinners(!showWinners)}
+              variant="h5"
+              sx={{ fontWeight: "bold", fontFamily: "Dosis" }}
+            >
+              {category.id} Nominees ({category.proposals?.length})
+            </Typography>
+            <Typography
+              sx={{
+                color: "text.secondary",
+                maxWidth: { xs: "70%", md: "80%" },
+              }}
+            >
+              To commemorate the special commitment and work of a Cardano
+              Ambassador.
+            </Typography>
+            <CustomButton
+              onClick={() => handleOpenActionButton()}
+              sx={{
+                mt: -6,
+                alignSelf: "flex-end",
+                display: isTablet ? "none" : "inline-block",
+              }}
+              colorVariant="primary"
+              disabled={!selectedNominee}
+            >
+              {!showWinners ? <>Vote Now</> : <>View Receipt</>}
+            </CustomButton>
+          </Box>
+          {showWinners ? (
+            <Winners
+              fadeChecked={fadeChecked}
+              nominees={category.proposals}
+              handleSelectedNominee={handleSelectNominee}
+              selectedNominee={selectedNominee}
+              handleOpenLearnMore={handleOpenLearnMoreModal}
+            />
+          ) : (
+            <Nominees
+              fadeChecked={fadeChecked}
+              nominees={category.proposals}
+              handleSelectedNominee={handleSelectNominee}
+              selectedNominee={selectedNominee}
+              handleOpenLearnMore={handleOpenLearnMoreModal}
+            />
+          )}
+        </>
+      ),
+    };
+  });
+
+  const bottom = (
+      <>
+          {isTablet && (
+              <Box
+                  component="div"
+                  sx={{
+                      zIndex: 3,
+                      position: "fixed",
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      width: "100%",
+                      backgroundColor: theme.palette.background.default,
+                      px: "20px",
+                      marginBottom: "20x",
+                      display: "flex",
+                      justifyContent: "center",
+                      overflow: "none",
+                  }}
+              >
+                  <CustomButton
+                      onClick={() => handleOpenActionButton()}
+                      sx={{ width: "100%", height: "48px", my: "24px" }}
+                      colorVariant="primary"
+                      disabled={!selectedNominee}
                   >
-                    <Typography
-                        // TODO: remove after demo
-                        onClick={() => setShowWinners(!showWinners)}
-                        variant="h5"
-                        sx={{ fontWeight: "bold", fontFamily: "Dosis" }}
-                    >
-                      {category.id} Nominees (
-                      {category.proposals?.length})
-                    </Typography>
-                    <Typography
-                        sx={{
-                          color: "text.secondary",
-                          maxWidth: { xs: "70%", md: "80%" },
-                        }}
-                    >
-                      To commemorate the special commitment and work of a Cardano
-                      Ambassador.
-                    </Typography>
-                    <CustomButton
-                        onClick={() => handleOpenActionButton()}
-                        sx={{
-                          mt: -6,
-                          alignSelf: "flex-end",
-                          display: isTablet ? "none" : "inline-block",
-                        }}
-                        colorVariant="primary"
-                        disabled={!selectedNominee}
-                    >
                       {!showWinners ? <>Vote Now</> : <>View Receipt</>}
-                    </CustomButton>
-                  </Box>
-                    {showWinners ? (
-                        <Winners
-                            fadeChecked={fadeChecked}
-                            nominees={category.proposals}
-                            handleSelectedNominee={handleSelectNominee}
-                            selectedNominee={selectedNominee}
-                            handleOpenLearnMore={handleOpenLearnMoreModal}
-                        />
-                    ) : (
-                        <Nominees
-                            fadeChecked={fadeChecked}
-                            nominees={category.proposals}
-                            handleSelectedNominee={handleSelectNominee}
-                            selectedNominee={selectedNominee}
-                            handleOpenLearnMore={handleOpenLearnMoreModal}
-                        />
-                    )}
-                </>
-            )
-        }
-    })
-
-
+                  </CustomButton>
+              </Box>
+          )}
+      </>
+  )
   return (
     <>
       <PageBase title="Categories">
@@ -178,16 +204,27 @@ const Categories: React.FC = () => {
             height: "28px",
           }}
         />
-        <Layout menuOptions={optionsForMenu} mode="change" />
+        <Layout menuOptions={optionsForMenu} bottom={bottom} mode="change" defaultOption={0} />
+          <img
+              src={Ellipses}
+              style={{
+                  position: "fixed",
+                  right: "0",
+                  top: "70%",
+                  transform: "translateY(-25%)",
+                  zIndex: "-1",
+                  width: "70%",
+              }}
+          />
         <VoteNowModal
-            isOpen={openVotingModal}
-            onClose={() => setOpenVotingModal(false)}
-            selectedNominee={nomineeToVote}
+          isOpen={openVotingModal}
+          onClose={() => setOpenVotingModal(false)}
+          selectedNominee={nomineeToVote}
         />
         <BioModal
-            isOpen={openLearMoreCategory}
-            title={learMoreCategory}
-            onClose={() => setOpenLearMoreCategory(false)}
+          isOpen={openLearMoreCategory}
+          title={learMoreCategory}
+          onClose={() => setOpenLearMoreCategory(false)}
         />
         <Drawer
           open={openViewReceipt}

@@ -4,9 +4,9 @@ import { Home } from "../pages/Home";
 import { Leaderboard } from "../pages/Leaderboard";
 import { ReceiptHistory } from "../pages/ReceiptHistory";
 import { NotFound } from "../pages/NotFound";
-import {UserGuide} from "../pages/UserGuide";
+import { UserGuide } from "../pages/UserGuide";
 import TermsAndConditions from "../pages/TermsAndPolicy/TermsAndConditions";
-import {Categories} from "../pages/Categories";
+import { Categories } from "../pages/Categories";
 
 export const PAGE_PATH = "/";
 

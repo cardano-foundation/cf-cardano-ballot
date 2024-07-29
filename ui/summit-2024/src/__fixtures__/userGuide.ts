@@ -103,5 +103,5 @@ const userGuideMenu: UserGuideMenuEntry[] = [
   },
 ];
 
-export type { UserGuideMenuEntry }
+export type { UserGuideMenuEntry };
 export { userGuideMenu };

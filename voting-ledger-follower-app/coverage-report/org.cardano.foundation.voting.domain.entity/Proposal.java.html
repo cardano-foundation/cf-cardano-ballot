@@ -7,25 +7,25 @@ import org.hibernate.annotations.Immutable;
 import javax.annotation.Nullable;
 import java.util.Optional;
 
-<span class="fc" id="L10">@NoArgsConstructor</span>
-<span class="fc" id="L11">@AllArgsConstructor</span>
-<span class="pc" id="L12">@Builder</span>
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = &quot;proposal&quot;)
 public class Proposal extends AbstractTimestampEntity {
 
-<span class="fc" id="L17">    @Getter</span>
+    @Getter
     @Id
     @Column
-<span class="nc" id="L20">    @Setter</span>
+    @Setter
     private String id;
 
     @Column(name = &quot;name&quot;)
     @Nullable
     private String name;
 
-<span class="nc" id="L27">    @Getter</span>
-<span class="fc" id="L28">    @Setter</span>
+    @Getter
+    @Setter
     @ManyToOne(
             fetch = FetchType.EAGER,
             cascade = CascadeType.ALL
@@ -33,8 +33,8 @@ public class Proposal extends AbstractTimestampEntity {
     @JoinColumn(name = &quot;category_id&quot;)
     private Category category;
 
-<span class="nc" id="L36">    @Getter</span>
-<span class="nc" id="L37">    @Setter</span>
+    @Getter
+    @Setter
     @Column(name = &quot;absolute_slot&quot;)
     private long absoluteSlot;
 

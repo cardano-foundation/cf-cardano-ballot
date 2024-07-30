@@ -9,33 +9,33 @@ import lombok.*;
 import java.util.Arrays;
 import java.util.List;
 
-<span class="nc" id="L12">@NoArgsConstructor</span>
-<span class="nc" id="L13">@AllArgsConstructor</span>
-<span class="nc" id="L14">@Builder</span>
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = &quot;event_category_result_utxo_data&quot;)
 @Getter
-<span class="nc" id="L18">@Setter</span>
+@Setter
 public class EventResultsCategoryResultsUtxoData {
 
     @Id
     @Column(name = &quot;id&quot;, nullable = false)
-<span class="nc" id="L23">    private String id;</span>
+    private String id;
 
     @Column(name = &quot;address&quot;, nullable = false)
-<span class="nc" id="L26">    private String address;</span>
+    private String address;
 
     @Column(name = &quot;tx_hash&quot;, nullable = false)
-<span class="nc" id="L29">    private String txHash;</span>
+    private String txHash;
 
     @Column(name = &quot;index&quot;, nullable = false)
-<span class="nc" id="L32">    private int index;</span>
+    private int index;
 
     @Column(name = &quot;inline_datum&quot;, nullable = false, columnDefinition = &quot;text&quot;, length = 2048)
-<span class="nc" id="L35">    private String inlineDatum;</span>
+    private String inlineDatum;
 
     @Column(name = &quot;absolute_slot&quot;, nullable = false)
-<span class="nc" id="L38">    private long absoluteSlot;</span>
+    private long absoluteSlot;
 
     // blake2b 224 hashes of the verification keys of the witnesses
     @Column(name = &quot;witnesses_hashes&quot;, nullable = false, columnDefinition = &quot;text&quot;, length = 2048)

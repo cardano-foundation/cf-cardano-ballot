@@ -7,17 +7,17 @@ import lombok.Setter;
 import java.util.Date;
 
 @MappedSuperclass
-<span class="nc" id="L10">@Setter</span>
+@Setter
 @Getter
 <span class="fc" id="L12">public abstract class AbstractTimestampEntity {</span>
 
 <span class="fc" id="L14">    @Temporal(TemporalType.TIMESTAMP)</span>
     @Column(name = &quot;created_at&quot;, nullable = false)
-<span class="nc" id="L16">    protected Date createdAt = new Date();</span>
+    protected Date createdAt = new Date();
 
 <span class="fc" id="L18">    @Temporal(TemporalType.TIMESTAMP)</span>
     @Column(name = &quot;updated_at&quot;, nullable = false)
-<span class="nc" id="L20">    private Date updatedAt = new Date();</span>
+    private Date updatedAt = new Date();
 
     @PrePersist
     protected void onCreate() {

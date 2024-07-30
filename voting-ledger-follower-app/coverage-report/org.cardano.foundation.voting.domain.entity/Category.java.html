@@ -9,30 +9,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-<span class="nc" id="L12">@Setter</span>
-<span class="pc bpc" id="L13" title="2 of 4 branches missed.">@Builder</span>
-<span class="fc" id="L14">@AllArgsConstructor</span>
-<span class="fc" id="L15">@NoArgsConstructor</span>
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = &quot;category&quot;)
 public class Category extends AbstractTimestampEntity {
 
     @Id
     @Column(name = &quot;id&quot;, nullable = false)
-<span class="fc" id="L22">    private String id;</span>
+    private String id;
 
     @Column(name = &quot;gdpr_protection&quot;, nullable = false)
     @Builder.Default
-<span class="fc" id="L26">    private boolean gdprProtection = true;</span>
+    private boolean gdprProtection = true;
 
     @Column(name = &quot;schema_version&quot;, nullable = false)
-<span class="nc" id="L29">    private SchemaVersion version;</span>
+    private SchemaVersion version;
 
     @ManyToOne(
             fetch = FetchType.EAGER, cascade = CascadeType.ALL
     )
     @JoinColumn(name = &quot;event_id&quot;, nullable = false)
-<span class="nc" id="L35">    private Event event;</span>
+    private Event event;
 
     @OneToMany(
             mappedBy = &quot;category&quot;,
@@ -41,10 +41,10 @@ public class Category extends AbstractTimestampEntity {
             orphanRemoval = true
     )
     @Builder.Default
-<span class="fc" id="L44">    private List&lt;Proposal&gt; proposals =  new ArrayList&lt;&gt;();</span>
+    private List&lt;Proposal&gt; proposals =  new ArrayList&lt;&gt;();
 
     @Column(name = &quot;absolute_slot&quot;)
-<span class="nc" id="L47">    private long absoluteSlot;</span>
+    private long absoluteSlot;
 
     public boolean isValid() {
 <span class="pc bpc" id="L50" title="1 of 2 branches missed.">        return proposals.size() &gt; 1;</span>

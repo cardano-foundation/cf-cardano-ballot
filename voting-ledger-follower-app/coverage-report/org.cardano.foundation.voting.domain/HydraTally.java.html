@@ -10,54 +10,54 @@ import java.util.List;
 import java.util.Optional;
 
 @Embeddable
-<span class="nc" id="L13">@Builder</span>
-<span class="nc" id="L14">@NoArgsConstructor</span>
-<span class="nc" id="L15">@AllArgsConstructor</span>
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class HydraTally {
 
-<span class="nc" id="L18">    @Getter</span>
-<span class="nc" id="L19">    @Setter</span>
+    @Getter
+    @Setter
     @Column(name = &quot;hydra_tally_config__contract_name&quot;, nullable = false)
     private String contractName;
 
-<span class="nc" id="L23">    @Getter</span>
-<span class="nc" id="L24">    @Setter</span>
+    @Getter
+    @Setter
     @Column(name = &quot;hydra_tally_config__contract_description&quot;)
     @Nullable
     private String contractDescription;
 
-<span class="nc" id="L29">    @Getter</span>
-<span class="nc" id="L30">    @Setter</span>
+    @Getter
+    @Setter
     @Column(name = &quot;hydra_tally_config__contract_version&quot;, nullable = false)
     private String contractVersion;
 
-<span class="nc" id="L34">    @Getter</span>
-<span class="nc" id="L35">    @Setter</span>
+    @Getter
+    @Setter
     @Column(name = &quot;hydra_tally_config__compiled_script&quot;, nullable = false, columnDefinition = &quot;text&quot;, length = 16000)
     private String compiledScript;
 
-<span class="nc" id="L39">    @Getter</span>
-<span class="nc" id="L40">    @Setter</span>
+    @Getter
+    @Setter
     @Column(name = &quot;hydra_tally_config__compiled_script_hash&quot;, nullable = false)
     private String compiledScriptHash;
 
-<span class="nc" id="L44">    @Getter</span>
-<span class="nc" id="L45">    @Setter</span>
+    @Getter
+    @Setter
     @Column(name = &quot;hydra_tally_config__compiler_name&quot;, nullable = false)
     private String compilerName;
 
-<span class="nc" id="L49">    @Getter</span>
-<span class="nc" id="L50">    @Setter</span>
+    @Getter
+    @Setter
     @Column(name = &quot;hydra_tally_config__compiler_version&quot;, nullable = false)
     private String compilerVersion;
 
-<span class="nc" id="L54">    @Getter</span>
-<span class="nc" id="L55">    @Setter</span>
+    @Getter
+    @Setter
     @Column(name = &quot;hydra_tally_config__plutus_version&quot;, nullable = false)
     private String plutusVersion;
 
-<span class="nc" id="L59">    @Getter</span>
-<span class="nc" id="L60">    @Setter</span>
+    @Getter
+    @Setter
     @Column(name = &quot;hydra_tally_config__verification_key_hashes&quot;, nullable = false, columnDefinition = &quot;text&quot;, length = 1024)
     //@Column(name = &quot;hydra_tally_config__verification_key&quot;, nullable = false, columnDefinition = &quot;text&quot;, length = 1024)
     // comma separated list of blake224 hashes of the verification keys

@@ -9,16 +9,16 @@ import java.util.Map;
 import java.util.Optional;
 
 @Getter
-<span class="nc bnc" id="L12" title="All 2 branches missed.">@Builder</span>
+@Builder
 public class CommitmentsEnvelope {
 
-<span class="nc" id="L15">    private OnChainEventType type;</span>
-<span class="nc" id="L16">    private String schemaVersion;</span>
-<span class="nc" id="L17">    private long creationSlot;</span>
+    private OnChainEventType type;
+    private String schemaVersion;
+    private long creationSlot;
 
     // event -&gt; commitment map (hash) and
     @Builder.Default
-<span class="nc" id="L21">    private Map&lt;String, Map&lt;String, String&gt;&gt; commitments = new LinkedHashMap&lt;&gt;();</span>
+    private Map&lt;String, Map&lt;String, String&gt;&gt; commitments = new LinkedHashMap&lt;&gt;();
 
     public void addCommitment(String eventId, String rootHash) {
 <span class="nc" id="L24">        commitments.put(eventId, Map.of(&quot;hash&quot;, rootHash));</span>

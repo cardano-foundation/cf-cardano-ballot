@@ -13,21 +13,21 @@ import org.hibernate.annotations.Immutable;
 
 @Entity
 @Table(name = &quot;merkle_root_hash&quot;)
-<span class="pc" id="L16">@Builder</span>
-<span class="fc" id="L17">@RequiredArgsConstructor</span>
-<span class="fc" id="L18">@AllArgsConstructor</span>
+@Builder
+@RequiredArgsConstructor
+@AllArgsConstructor
 @Getter
 public class MerkleRootHash extends AbstractTimestampEntity {
 
     @Id
     @Column(name = &quot;id&quot;, nullable = false)
-<span class="nc" id="L24">    private String merkleRootHash;</span>
+    private String merkleRootHash;
 
     @Column(name = &quot;event_id&quot;, nullable = false)
-<span class="nc" id="L27">    private String eventId;</span>
+    private String eventId;
 
     @Column(name = &quot;absolute_slot&quot;, nullable = false)
-<span class="nc" id="L30">    private long absoluteSlot;</span>
+    private long absoluteSlot;
 
     @Override
     public String toString() {

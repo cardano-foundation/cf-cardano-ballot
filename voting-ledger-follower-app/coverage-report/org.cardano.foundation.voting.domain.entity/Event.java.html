@@ -20,25 +20,25 @@ import static org.cardano.foundation.voting.domain.VotingEventType.STAKE_BASED;
 
 @Entity
 @Table(name = &quot;event&quot;)
-<span class="pc bpc" id="L23" title="6 of 12 branches missed.">@Builder</span>
-<span class="fc" id="L24">@RequiredArgsConstructor</span>
-<span class="fc" id="L25">@AllArgsConstructor</span>
+@Builder
+@RequiredArgsConstructor
+@AllArgsConstructor
 public class Event extends AbstractTimestampEntity {
 
-<span class="fc" id="L28">    @Getter</span>
-<span class="nc" id="L29">    @Setter</span>
+    @Getter
+    @Setter
     @Column(nullable = false)
     @Id
     private String id;
 
     @Column(nullable = false)
-<span class="fc" id="L35">    @Getter</span>
-<span class="nc" id="L36">    @Setter</span>
+    @Getter
+    @Setter
     private String organisers;
 
     @Column(name = &quot;event_type&quot;, nullable = false)
-<span class="fc" id="L40">    @Getter</span>
-<span class="nc" id="L41">    @Setter</span>
+    @Getter
+    @Setter
     @Enumerated(STRING)
     private VotingEventType votingEventType;
 
@@ -51,22 +51,22 @@ public class Event extends AbstractTimestampEntity {
     @Column(name = &quot;allow_vote_changing&quot;)
     @Nullable
     @Builder.Default
-<span class="fc" id="L54">    private Boolean allowVoteChanging = false;</span>
+    private Boolean allowVoteChanging = false;
 
     @Column(name = &quot;high_level_event_results_while_voting&quot;)
     @Nullable
     @Builder.Default
-<span class="fc" id="L59">    private Boolean highLevelEventResultsWhileVoting = false;</span>
+    private Boolean highLevelEventResultsWhileVoting = false;
 
     @Column(name = &quot;high_level_category_results_while_voting&quot;)
     @Nullable
     @Builder.Default
-<span class="fc" id="L64">    private Boolean highLevelCategoryResultsWhileVoting = false;</span>
+    private Boolean highLevelCategoryResultsWhileVoting = false;
 
     @Column(name = &quot;category_results_while_voting&quot;)
     @Nullable
     @Builder.Default
-<span class="fc" id="L69">    private Boolean categoryResultsWhileVoting = false;</span>
+    private Boolean categoryResultsWhileVoting = false;
 
     @Column(name = &quot;start_epoch&quot;)
     // startEpoch is only needed for stake based voting events
@@ -104,8 +104,8 @@ public class Event extends AbstractTimestampEntity {
     private Long proposalsRevealSlot;
 
     @Column(name = &quot;schema_version&quot;)
-<span class="nc" id="L107">    @Getter</span>
-<span class="nc" id="L108">    @Setter</span>
+    @Getter
+    @Setter
     @Enumerated(STRING)
     private SchemaVersion version;
 
@@ -116,17 +116,17 @@ public class Event extends AbstractTimestampEntity {
             orphanRemoval = true
     )
     @Builder.Default
-<span class="fc" id="L119">    @Getter</span>
-<span class="nc" id="L120">    @Setter</span>
+    @Getter
+    @Setter
     private List&lt;Category&gt; categories = new ArrayList&lt;&gt;();
 
     @Column(name = &quot;absolute_slot&quot;)
-<span class="nc" id="L124">    @Getter</span>
-<span class="nc" id="L125">    @Setter</span>
+    @Getter
+    @Setter
     private long absoluteSlot;
 
-<span class="nc" id="L128">    @Setter</span>
-<span class="fc" id="L129">    @Getter</span>
+    @Setter
+    @Getter
     @ElementCollection(fetch = EAGER)
     @CollectionTable(
         name = &quot;event_tally&quot;,

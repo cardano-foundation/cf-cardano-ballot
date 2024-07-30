@@ -7,14 +7,14 @@ import org.cardano.foundation.voting.domain.HydraTally;
 
 import java.util.Optional;
 
-<span class="nc" id="L10">@Builder</span>
+@Builder
 @Embeddable
-<span class="nc" id="L12">@AllArgsConstructor</span>
-<span class="nc" id="L13">@NoArgsConstructor</span>
+@AllArgsConstructor
+@NoArgsConstructor
 public class Tally extends AbstractTimestampEntity {
 
-<span class="nc" id="L16">    @Getter</span>
-<span class="nc" id="L17">    @Setter</span>
+    @Getter
+    @Setter
     @Column(name = &quot;name&quot;, nullable = false)
     private String name;
 
@@ -22,13 +22,13 @@ public class Tally extends AbstractTimestampEntity {
     @Nullable
     private String description;
 
-<span class="nc" id="L25">    @Getter</span>
-<span class="nc" id="L26">    @Setter</span>
+    @Getter
+    @Setter
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private TallyType type;
 
-<span class="nc" id="L31">    @Getter</span>
+    @Getter
     @Embedded
     @AttributeOverrides({
         @AttributeOverride(name = &quot;contract_name&quot;, column = @Column(name = &quot;hydra_tally_config__contract_name&quot;)),

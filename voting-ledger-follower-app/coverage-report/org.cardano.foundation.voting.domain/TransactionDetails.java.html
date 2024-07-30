@@ -4,19 +4,19 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-<span class="pc" id="L7">@Builder</span>
+@Builder
 public class TransactionDetails {
 
-<span class="fc" id="L10">    private String transactionHash;</span>
+    private String transactionHash;
 
-<span class="fc" id="L12">    private long absoluteSlot;</span>
-<span class="fc" id="L13">    private String blockHash;</span>
+    private long absoluteSlot;
+    private String blockHash;
 
-<span class="fc" id="L15">    private long transactionsConfirmations;</span>
+    private long transactionsConfirmations;
 
-<span class="fc" id="L17">    private FinalityScore finalityScore;</span>
+    private FinalityScore finalityScore;
 
-<span class="fc" id="L19">    private CardanoNetwork network;</span>
+    private CardanoNetwork network;
 
 <span class="fc" id="L21">    public enum FinalityScore {</span>
 

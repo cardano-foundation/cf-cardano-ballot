@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 <span class="fc" id="L14">@Slf4j</span>
-<span class="fc" id="L15">@RequiredArgsConstructor</span>
+@RequiredArgsConstructor
 @Service
 @ConditionalOnProperty(prefix = &quot;rollback.handling&quot;, value = &quot;enabled&quot;, havingValue = &quot;true&quot;)
 public class RollbackHandler {

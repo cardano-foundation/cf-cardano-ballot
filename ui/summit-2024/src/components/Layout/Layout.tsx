@@ -83,6 +83,10 @@ const Layout: React.FC<LayoutProps> = ({
                     display: "none",
                   },
                   marginTop: "14px",
+                  position: 'fixed',
+                  top: 72,
+                  zIndex: 1200,
+                  background: theme.palette.background.default,
                 }}
               >
                 <List
@@ -90,11 +94,7 @@ const Layout: React.FC<LayoutProps> = ({
                     display: "flex",
                     flexDirection: "row",
                     padding: 0,
-                    margin: 0,
-                    position: "sticky",
-                    top: 102,
-                    zIndex: 1100,
-                    maxHeight: "calc(100vh - 102px)",
+                    margin: 0
                   }}
                 >
                   {menuOptions.map((option, index) => (
@@ -220,7 +220,7 @@ const Layout: React.FC<LayoutProps> = ({
               xs: "0px 20px",
               sm: "20px 0pxs",
             },
-            marginTop: "10px",
+            marginTop: isMobile ? "40px": "10px",
           }}
         >
           {title ? (

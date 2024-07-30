@@ -2,9 +2,9 @@ name: Run Tests
 
 on:
   push:
-    branches:
-      - main
-      - develop
+    branches: [ main, develop ]
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+*'
   pull_request:
     types: [ opened, synchronize ]
   workflow_dispatch:
@@ -19,7 +19,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Check if there were changes for the service
+        id: metadata
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]] \
+          || [[ "${{ github.event_name }}" == "push" ]] 
+          then
+            if git log --pretty=format:'%h' -n 1 backend-services/${{ matrix.service }} | grep -q ${{ github.sha }} 
+            then
+              echo "SERVICE_CHANGED=true" | tee -a "$GITHUB_OUTPUT"
+            else
+              echo "SERVICE_CHANGED=false" | tee -a "$GITHUB_OUTPUT"
+            fi
+          else # if the event is not a push or pull_request, then we assume that the service has changed
+            echo "SERVICE_CHANGED=true" | tee -a "$GITHUB_OUTPUT"
+          fi
+
       - name: Setup JDK 21
+        if: steps.metadata.outputs.SERVICE_CHANGED == true
         uses: actions/setup-java@v3
         with:
           java-version: '21'
@@ -27,10 +44,12 @@ jobs:
           cache: gradle
 
       - name: Run tests
+        if: steps.metadata.outputs.SERVICE_CHANGED == true
         working-directory: ./backend-services/${{ matrix.service }}
         run: ./gradlew test
           
       - name: Generate JaCoCo Badge
+        if: steps.metadata.outputs.SERVICE_CHANGED == true
         uses: cicirello/jacoco-badge-generator@v2
         with:
           generate-branches-badge: true
@@ -38,13 +57,14 @@ jobs:
           jacoco-csv-file: ./backend-services/${{ matrix.service }}/build/reports/jacoco/test/jacocoTestReport.csv
 
       - name: Log coverage percentage
+        if: steps.metadata.outputs.SERVICE_CHANGED == true
         run: |
           echo "coverage = ${{ steps.jacoco.outputs.coverage }}"
           echo "branch coverage = ${{ steps.jacoco.outputs.branches }}"
 
       - name: Publish coverage report to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' 
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages

@@ -16,16 +16,6 @@ public class YaciCustomMetadataStorage implements TxMetadataStorage {
     }
 
     @Override
-    public List<TxMetadataLabel> findByTxHash(String txHash) {
-        return List.of();
-    }
-
-    @Override
-    public List<TxMetadataLabel> findByLabel(String label, int page, int count) {
-        return List.of();
-    }
-
-    @Override
     public int deleteBySlotGreaterThan(long slot) {
         return 0;
     }

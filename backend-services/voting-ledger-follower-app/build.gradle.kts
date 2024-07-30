@@ -4,8 +4,8 @@ import cz.habarta.typescript.generator.TypeScriptOutputKind
 
 plugins {
 	java
-	id("org.springframework.boot") version "3.2.0"
-	id("io.spring.dependency-management") version "1.1.3"
+	id("org.springframework.boot") version "3.3.0"
+	id("io.spring.dependency-management") version "1.1.6"
 	id("org.graalvm.buildtools.native") version "0.9.26"
     id("org.flywaydb.flyway") version "9.22.1"
 	id("cz.habarta.typescript-generator") version "3.2.1263"
@@ -37,8 +37,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
-	testImplementation("io.rest-assured:rest-assured:5.3.2")
-	testImplementation("org.wiremock:wiremock-standalone:3.3.1")
+	testImplementation("io.rest-assured:rest-assured:5.4.0")
+	testImplementation("org.wiremock:wiremock-standalone:3.9.1")
 
 	implementation("org.springframework.boot:spring-boot-starter-cache")
 	testCompileOnly("org.springframework.boot:spring-boot-starter-test")
@@ -56,24 +56,24 @@ dependencies {
 
 	implementation("org.zalando:problem-spring-web-starter:0.29.1")
 
-	compileOnly("org.projectlombok:lombok:1.18.30")
-	annotationProcessor("org.projectlombok:lombok:1.18.30")
+	compileOnly("org.projectlombok:lombok:1.18.34")
+	annotationProcessor("org.projectlombok:lombok:1.18.34")
 
-	testCompileOnly("org.projectlombok:lombok:1.18.30")
-	testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
+	testCompileOnly("org.projectlombok:lombok:1.18.34")
+	testAnnotationProcessor("org.projectlombok:lombok:1.18.34")
 
 	implementation("com.querydsl:querydsl-jpa")
     annotationProcessor("com.querydsl:querydsl-apt")
 
-	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0")
-	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.0")
+	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.1")
+	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.1")
 	implementation("com.bloxbean.cardano:aiken-java-binding:0.0.8")
-	annotationProcessor("com.bloxbean.cardano:cardano-client-annotation-processor:0.5.0")
+	annotationProcessor("com.bloxbean.cardano:cardano-client-annotation-processor:0.5.1")
 
-	implementation("com.bloxbean.cardano:yaci-store-spring-boot-starter:0.0.12")
-	implementation("com.bloxbean.cardano:yaci-store-blocks-spring-boot-starter:0.0.12")
-	implementation("com.bloxbean.cardano:yaci-store-transaction-spring-boot-starter:0.0.12")
-	implementation("com.bloxbean.cardano:yaci-store-metadata-spring-boot-starter:0.0.12")
+	implementation("com.bloxbean.cardano:yaci-store-spring-boot-starter:0.1.0-rc4")
+	implementation("com.bloxbean.cardano:yaci-store-blocks-spring-boot-starter:0.1.0-rc4")
+	implementation("com.bloxbean.cardano:yaci-store-transaction-spring-boot-starter:0.1.0-rc4")
+	implementation("com.bloxbean.cardano:yaci-store-metadata-spring-boot-starter:0.1.0-rc4")
 
 	implementation("io.blockfrost:blockfrost-java:0.1.3")
 
@@ -82,9 +82,9 @@ dependencies {
 	runtimeOnly("org.postgresql:postgresql")
 
 	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.11")
-	implementation("org.cardanofoundation:cf-cardano-conversions-java:1.0.0")
+	implementation("org.cardanofoundation:cf-cardano-conversions-java:1.1.3")
 
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
 
 	implementation("me.paulschwarz:spring-dotenv:4.0.0")
 

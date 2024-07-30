@@ -31,9 +31,10 @@ jobs:
                 echo "SERVICE_CHANGED=true" | tee -a "$GITHUB_OUTPUT"
               fi
               ;;
-            push) # main branch should always trigger the job
+            push) # main and develop branches should always trigger the job
               BRANCH_NAME=${GITHUB_REF#refs/heads/}
-              if [ "${BRANCH_NAME}" == "main" ]
+              if [[ "${BRANCH_NAME}" == "main" ]] \
+              || [[ "${BRANCH_NAME}" == "develop" ]]
               then
                 echo "SERVICE_CHANGED=true" | tee -a "$GITHUB_OUTPUT"
               else
@@ -49,7 +50,7 @@ jobs:
           esac
 
       - name: Setup JDK 21
-        if: steps.metadata.outputs.SERVICE_CHANGED == true
+        if: steps.metadata.outputs.SERVICE_CHANGED == 'true'
         uses: actions/setup-java@v3
         with:
           java-version: '21'
@@ -57,12 +58,12 @@ jobs:
           cache: gradle
 
       - name: Run tests
-        if: steps.metadata.outputs.SERVICE_CHANGED == true
+        if: steps.metadata.outputs.SERVICE_CHANGED == 'true'
         working-directory: ./backend-services/${{ matrix.service }}
         run: ./gradlew test
           
       - name: Generate JaCoCo Badge
-        if: steps.metadata.outputs.SERVICE_CHANGED == true
+        if: steps.metadata.outputs.SERVICE_CHANGED == 'true'
         uses: cicirello/jacoco-badge-generator@v2
         with:
           generate-branches-badge: true
@@ -70,7 +71,7 @@ jobs:
           jacoco-csv-file: ./backend-services/${{ matrix.service }}/build/reports/jacoco/test/jacocoTestReport.csv
 
       - name: Log coverage percentage
-        if: steps.metadata.outputs.SERVICE_CHANGED == true
+        if: steps.metadata.outputs.SERVICE_CHANGED == 'true'
         run: |
           echo "coverage = ${{ steps.jacoco.outputs.coverage }}"
           echo "branch coverage = ${{ steps.jacoco.outputs.branches }}"

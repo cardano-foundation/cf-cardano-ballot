@@ -1,7 +1,13 @@
 import React, { useRef, useState, useEffect, ReactNode } from "react";
-import { Box, Grid, List, ListItem, Typography } from "@mui/material";
+import {
+  Box,
+  Grid,
+  List,
+  ListItem,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import theme from "../../common/styles/theme";
-import { useIsPortrait } from "../../common/hooks/useIsPortrait";
 
 type MenuItem = {
   label: string;
@@ -14,7 +20,7 @@ type LayoutProps = {
   bottom?: ReactNode;
   mode?: "scroll" | "change";
   defaultOption?: number;
-  onSelectMenuOption?: (option: string) => void
+  onSelectMenuOption?: (option: string) => void;
 };
 
 const Layout: React.FC<LayoutProps> = ({
@@ -23,9 +29,9 @@ const Layout: React.FC<LayoutProps> = ({
   bottom,
   mode = "scroll",
   defaultOption = 0,
-                                         onSelectMenuOption
+  onSelectMenuOption,
 }) => {
-  const isMobile = useIsPortrait();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [selectedOption, setSelectedOption] = useState("");
 
   const optionRefs = useRef<{ [key: string]: React.RefObject<HTMLDivElement> }>(
@@ -71,14 +77,11 @@ const Layout: React.FC<LayoutProps> = ({
               <Box
                 component="div"
                 sx={{
-                  overflowX: "auto",
                   width: "100%",
                   maxWidth: "100vw",
                   "&::-webkit-scrollbar": {
                     display: "none",
                   },
-                  scrollbarWidth: "none",
-                  msOverflowStyle: "none",
                   marginTop: "14px",
                 }}
               >
@@ -88,6 +91,10 @@ const Layout: React.FC<LayoutProps> = ({
                     flexDirection: "row",
                     padding: 0,
                     margin: 0,
+                    position: "sticky",
+                    top: 102,
+                    zIndex: 1100,
+                    maxHeight: "calc(100vh - 102px)",
                   }}
                 >
                   {menuOptions.map((option, index) => (

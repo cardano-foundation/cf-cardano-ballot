@@ -173,37 +173,37 @@ const Categories: React.FC = () => {
   });
 
   const bottom = (
-      <>
-          {isTablet && (
-              <Box
-                  component="div"
-                  sx={{
-                      zIndex: 3,
-                      position: "fixed",
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      width: "100%",
-                      backgroundColor: theme.palette.background.default,
-                      px: "20px",
-                      marginBottom: "20x",
-                      display: "flex",
-                      justifyContent: "center",
-                      overflow: "none",
-                  }}
-              >
-                  <CustomButton
-                      onClick={() => handleOpenActionButton()}
-                      sx={{ width: "100%", height: "48px", my: "24px" }}
-                      colorVariant="primary"
-                      disabled={!selectedNominee}
-                  >
-                      {!showWinners ? <>Vote Now</> : <>View Receipt</>}
-                  </CustomButton>
-              </Box>
-          )}
-      </>
-  )
+    <>
+      {isTablet && (
+        <Box
+          component="div"
+          sx={{
+            zIndex: 3,
+            position: "fixed",
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: "100%",
+            backgroundColor: theme.palette.background.default,
+            px: "20px",
+            marginBottom: "20x",
+            display: "flex",
+            justifyContent: "center",
+            overflow: "none",
+          }}
+        >
+          <CustomButton
+            onClick={() => handleOpenActionButton()}
+            sx={{ width: "100%", height: "48px", my: "24px" }}
+            colorVariant="primary"
+            disabled={!selectedNominee}
+          >
+            {!showWinners ? <>Vote Now</> : <>View Receipt</>}
+          </CustomButton>
+        </Box>
+      )}
+    </>
+  );
   return (
     <>
       <PageBase title="Categories">
@@ -213,18 +213,24 @@ const Categories: React.FC = () => {
             height: "28px",
           }}
         />
-        <Layout menuOptions={optionsForMenu} bottom={bottom} mode="change" defaultOption={0} onSelectMenuOption={(option) => handleClickMenuItem(option)} />
-          <img
-              src={Ellipses}
-              style={{
-                  position: "fixed",
-                  right: "0",
-                  top: "70%",
-                  transform: "translateY(-25%)",
-                  zIndex: "-1",
-                  width: "70%",
-              }}
-          />
+        <Layout
+          menuOptions={optionsForMenu}
+          bottom={bottom}
+          mode="change"
+          defaultOption={0}
+          onSelectMenuOption={(option) => handleClickMenuItem(option)}
+        />
+        <img
+          src={Ellipses}
+          style={{
+            position: "fixed",
+            right: "0",
+            top: "70%",
+            transform: "translateY(-25%)",
+            zIndex: "-1",
+            width: "70%",
+          }}
+        />
         <VoteNowModal
           isOpen={openVotingModal}
           onClose={() => setOpenVotingModal(false)}

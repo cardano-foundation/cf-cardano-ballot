@@ -19,6 +19,9 @@ const Categories: React.FC = () => {
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
   const eventCache = useAppSelector(getEventCache);
 
+  console.log("eventCache");
+  console.log(eventCache);
+
   const categoriesData = eventCache.categories;
 
   const [showWinners, setShowWinners] = useState(eventCache.finished);

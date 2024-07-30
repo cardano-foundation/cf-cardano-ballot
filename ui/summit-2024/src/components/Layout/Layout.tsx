@@ -33,6 +33,7 @@ const Layout: React.FC<LayoutProps> = ({
 }) => {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [selectedOption, setSelectedOption] = useState("");
+  const [userInteracted, setUserInteracted] = useState(false);
 
   const optionRefs = useRef<{ [key: string]: React.RefObject<HTMLDivElement> }>(
     menuOptions.reduce(
@@ -51,19 +52,17 @@ const Layout: React.FC<LayoutProps> = ({
   }, [menuOptions.length]);
 
   useEffect(() => {
-    if (
-      mode === "scroll" &&
-      selectedOption &&
-      optionRefs.current[selectedOption]
-    ) {
-      optionRefs.current[selectedOption].current?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
+    if (userInteracted && mode === "scroll" && selectedOption && optionRefs.current[selectedOption]) {
+      const element = optionRefs.current[selectedOption].current;
+      if (element) {
+        const topPos = element.getBoundingClientRect().top - 100;
+        window.scrollTo({ top: topPos, behavior: "smooth" });
+      }
     }
-  }, [selectedOption, mode]);
+  }, [selectedOption, mode, userInteracted]);
 
   const handleClickMenuItem = (label: string) => {
+    if (!userInteracted) setUserInteracted(true);
     setSelectedOption(label);
     if (onSelectMenuOption) onSelectMenuOption(label);
   };

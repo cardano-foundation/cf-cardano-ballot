@@ -22,18 +22,31 @@ jobs:
       - name: Check if there were changes for the service
         id: metadata
         run: |
-          if [[ "${{ github.event_name }}" == "pull_request" ]] \
-          || [[ "${{ github.event_name }}" == "push" ]] 
-          then
-            if git log --pretty=format:'%h' -n 1 backend-services/${{ matrix.service }} | grep -q ${{ github.sha }} 
-            then
+          echo "SERVICE_CHANGED=false" | tee -a "$GITHUB_OUTPUT"
+
+          case "${GITHUB_EVENT_NAME}" in
+            pull_request)
+              if git log --pretty=format:'%h' -n 1 backend-services/${{ matrix.service }} | grep -q ${{ github.sha }} 
+              then
+                echo "SERVICE_CHANGED=true" | tee -a "$GITHUB_OUTPUT"
+              fi
+              ;;
+            push) # main branch should always trigger the job
+              BRANCH_NAME=${GITHUB_REF#refs/heads/}
+              if [ "${BRANCH_NAME}" == "main" ]
+              then
+                echo "SERVICE_CHANGED=true" | tee -a "$GITHUB_OUTPUT"
+              else
+                if git log --pretty=format:'%h' -n 1 backend-services/${{ matrix.service }} | grep -q ${{ github.sha }} 
+                then
+                  echo "SERVICE_CHANGED=true" | tee -a "$GITHUB_OUTPUT"
+                fi
+              fi
+              ;;
+            *) # ie workflow_dispatch
               echo "SERVICE_CHANGED=true" | tee -a "$GITHUB_OUTPUT"
-            else
-              echo "SERVICE_CHANGED=false" | tee -a "$GITHUB_OUTPUT"
-            fi
-          else # if the event is not a push or pull_request, then we assume that the service has changed
-            echo "SERVICE_CHANGED=true" | tee -a "$GITHUB_OUTPUT"
-          fi
+              ;;
+          esac
 
       - name: Setup JDK 21
         if: steps.metadata.outputs.SERVICE_CHANGED == true

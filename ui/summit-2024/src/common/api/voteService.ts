@@ -1,18 +1,18 @@
-import { ChainTip } from "types/voting-ledger-follower-types";
-import {
-  Problem,
-  SignedWeb3Request,
-  Vote,
-  VoteReceipt,
-  UserVotes,
-} from "types/voting-app-types";
 import {
   DEFAULT_CONTENT_TYPE_HEADERS,
   doRequest,
   HttpMethods,
 } from "../handlers/httpHandler";
-import { env } from "common/constants/env";
 import { canonicalize } from "json-canonicalize";
+import { env } from "../constants/env";
+import {
+  Problem,
+  SignedWeb3Request,
+  UserVotes,
+  Vote,
+  VoteReceipt,
+} from "../../types/voting-app-types";
+import { ChainTip } from "../../types/voting-ledger-follower-types";
 
 export const CAST_VOTE_URL = `${env.VOTING_APP_SERVER_URL}/api/vote/cast`;
 export const VOTE_RECEIPT_URL = `${env.VOTING_APP_SERVER_URL}/api/vote/receipt`;
@@ -23,7 +23,7 @@ type voteInput = {
   voteId: string;
   proposalId: string;
   categoryId: string;
-  stakeAddress: string;
+  walletId: string;
   slotNumber: string;
 };
 
@@ -31,7 +31,7 @@ export const buildCanonicalVoteInputJson = ({
   voteId,
   categoryId,
   proposalId,
-  stakeAddress,
+  walletId,
   slotNumber,
 }: voteInput): ReturnType<typeof canonicalize> => {
   const startOfCurrentDay = new Date();
@@ -42,7 +42,7 @@ export const buildCanonicalVoteInputJson = ({
     slot: slotNumber,
     data: {
       id: voteId,
-      address: stakeAddress,
+      walletId: walletId,
       event: env.EVENT_ID,
       category: categoryId,
       proposal: proposalId,

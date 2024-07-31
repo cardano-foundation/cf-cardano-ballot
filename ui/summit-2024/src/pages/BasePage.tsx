@@ -15,7 +15,17 @@ const PageBase: React.FC<PageBaseProps> = ({ title, children }) => {
     });
   }, [trackPageView]);
 
-  return <div>{children}</div>;
+  return (
+    <div
+      style={{
+        minHeight: "80vh",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      {children}
+    </div>
+  );
 };
 
 export { PageBase };

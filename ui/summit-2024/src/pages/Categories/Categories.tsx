@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Box, Typography, useMediaQuery, Drawer } from "@mui/material";
 import theme from "../../common/styles/theme";
 import { CustomButton } from "../../components/common/CustomButton/CustomButton";
 import { VoteNowModal } from "./components/VoteNowModal";
 import { ViewReceipt } from "./components/ViewReceipt";
 import { STATE } from "./components/ViewReceipt.type";
-import { useAppSelector } from "../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { getEventCache } from "../../store/reducers/eventCache";
 import { Category } from "../../store/reducers/eventCache/eventCache.types";
 import { PageBase } from "../BasePage";
@@ -14,14 +14,28 @@ import { Winners } from "./components/Winners";
 import { BioModal } from "./components/BioModal";
 import Layout from "../../components/Layout/Layout";
 import Ellipses from "../../assets/ellipse.svg";
+import { v4 as uuidv4 } from "uuid";
+import {
+  buildCanonicalVoteInputJson,
+  castAVoteWithDigitalSignature,
+  getSlotNumber,
+  getVoteReceipt,
+} from "../../common/api/voteService";
+import { eventBus, EventName } from "../../utils/EventBus";
+import { getWalletIdentifier } from "../../store/reducers/userCache";
+import {
+  getSignedMessagePromise,
+  resolveCardanoNetwork,
+} from "../../utils/utils";
+import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
+import { env } from "../../common/constants/env";
+
+import { getUserInSession, tokenIsExpired } from "../../utils/session";
 
 const Categories: React.FC = () => {
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
   const eventCache = useAppSelector(getEventCache);
-
-  console.log("eventCache");
-  console.log(eventCache);
-
+  const walletIdentifier = useAppSelector(getWalletIdentifier);
   const categoriesData = eventCache.categories;
 
   const [showWinners, setShowWinners] = useState(eventCache.finished);
@@ -41,6 +55,14 @@ const Categories: React.FC = () => {
   const [openLearMoreCategory, setOpenLearMoreCategory] = useState(false);
 
   const [fadeChecked, setFadeChecked] = useState(true);
+
+  const session = getUserInSession();
+
+  const dispatch = useAppDispatch();
+
+  const { signMessage } = useCardano({
+    limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
+  });
 
   useEffect(() => {
     // Example: http://localhost:3000/categories?category=ambassador&nominee=63123e7f-dfc3-481e-bb9d-fed1d9f6e9b9
@@ -65,6 +87,11 @@ const Categories: React.FC = () => {
       setSelectedCategory(selectedCategory);
     }
   }, [fadeChecked, selectedCategory]);
+
+  const signMessagePromisified = useMemo(
+    () => getSignedMessagePromise(signMessage),
+    [signMessage],
+  );
 
   const handleClickMenuItem = (category: string) => {
     if (category !== selectedCategory) {
@@ -96,6 +123,67 @@ const Categories: React.FC = () => {
       handleOpenViewReceipt();
     } else {
       setOpenVotingModal(true);
+    }
+  };
+
+  const castVote = async (categoryId: string, proposalId: string) => {
+    if (eventCache?.finished) {
+      eventBus.publish(
+        EventName.ShowToast,
+        "'The event already ended', 'error'",
+      );
+      return;
+    }
+
+    try {
+      const absoluteSlot = (await getSlotNumber())?.absoluteSlot;
+      const canonicalVoteInput = buildCanonicalVoteInputJson({
+        voteId: uuidv4(),
+        categoryId: categoryId,
+        proposalId: proposalId,
+        walletId: walletIdentifier,
+        slotNumber: absoluteSlot.toString(),
+      });
+      const requestVoteObject =
+        await signMessagePromisified(canonicalVoteInput);
+
+      await castAVoteWithDigitalSignature(requestVoteObject);
+      eventBus.publish(EventName.ShowToast, "Vote submitted successfully");
+
+      if (session && !tokenIsExpired(session?.expiresAt)) {
+        getVoteReceipt(categoryId, session?.accessToken)
+          .then((r) => {
+            dispatch(setVoteReceipt({ categoryId: categoryId, receipt: r }));
+          })
+          .catch((e) => {
+            if (process.env.NODE_ENV === "development") {
+              console.log(
+                `Failed to fetch vote receipt, ${parseError(e.message)}`,
+              );
+            }
+          });
+        getUserVotes(session?.accessToken)
+          .then((response) => {
+            if (response) {
+              dispatch(setUserVotes({ userVotes: response }));
+            }
+          })
+          .catch((e) => {
+            if (process.env.NODE_ENV === "development") {
+              console.log(
+                `Failed to fetch user votes, ${parseError(e.message)}`,
+              );
+            }
+          });
+      } else {
+        eventBus.publish("openLoginModal", "Login to see your vote receipt.");
+      }
+    } catch (e) {
+      eventBus.publish(
+        "showToast",
+        e.message && e.message.length ? parseError(e.message) : "Action failed",
+        "error",
+      );
     }
   };
 
@@ -207,6 +295,7 @@ const Categories: React.FC = () => {
       )}
     </>
   );
+
   return (
     <>
       <PageBase title="Categories">

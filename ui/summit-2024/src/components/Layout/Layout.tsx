@@ -52,7 +52,12 @@ const Layout: React.FC<LayoutProps> = ({
   }, [menuOptions.length]);
 
   useEffect(() => {
-    if (userInteracted && mode === "scroll" && selectedOption && optionRefs.current[selectedOption]) {
+    if (
+      userInteracted &&
+      mode === "scroll" &&
+      selectedOption &&
+      optionRefs.current[selectedOption]
+    ) {
       const element = optionRefs.current[selectedOption].current;
       if (element) {
         const topPos = element.getBoundingClientRect().top - 100;
@@ -82,7 +87,7 @@ const Layout: React.FC<LayoutProps> = ({
                     display: "none",
                   },
                   marginTop: "14px",
-                  position: 'fixed',
+                  position: "fixed",
                   top: 72,
                   zIndex: 1200,
                   background: theme.palette.background.default,
@@ -93,7 +98,7 @@ const Layout: React.FC<LayoutProps> = ({
                     display: "flex",
                     flexDirection: "row",
                     padding: 0,
-                    margin: 0
+                    margin: 0,
                   }}
                 >
                   {menuOptions.map((option, index) => (
@@ -219,7 +224,7 @@ const Layout: React.FC<LayoutProps> = ({
               xs: "0px 20px",
               sm: "20px 0pxs",
             },
-            marginTop: isMobile ? "40px": "10px",
+            marginTop: isMobile ? "40px" : "10px",
           }}
         >
           {title ? (

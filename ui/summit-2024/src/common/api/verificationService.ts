@@ -4,7 +4,6 @@ import {
   HttpMethods,
 } from "../handlers/httpHandler";
 import { env } from "../constants/env";
-import { PhoneNumberCodeConfirmation } from "../../store2/types";
 import {
   MerkleProofItem,
   SignedKeriRequest,
@@ -69,7 +68,7 @@ export const confirmPhoneNumberCode = async (
   requestId: string,
   verificationCode: string,
 ) => {
-  return await doRequest<PhoneNumberCodeConfirmation>(
+  return await doRequest(
     HttpMethods.POST,
     `${CONFIRM_PHONE_NUMBER_CODE_URL}`,
     {
@@ -91,6 +90,19 @@ export const verifyDiscord = async (
   secret: string,
   signedMessaged: SignedKeriRequest | SignedWeb3Request,
 ) => {
+  console.log("signedMessaged");
+  console.log(signedMessaged);
+  console.log("secret");
+  console.log(secret);
+  console.log(
+    JSON.stringify({
+      eventId: env.EVENT_ID,
+      walletId: walletIdentifier,
+      walletType: resolveWalletIdentifierType(walletIdentifier),
+      secret,
+      ...signedMessaged,
+    }),
+  );
   return await doRequest<{ verified: boolean }>(
     HttpMethods.POST,
     `${DISCORD_VERIFICATION_URL}`,

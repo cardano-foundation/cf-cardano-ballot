@@ -147,5 +147,7 @@ def getRequiredParam(body, name):
     param = body.get(name)
     if param is None:
         raise falcon.HTTPBadRequest(description=f"required field '{name}' missing from request")
+    if not isinstance(param, str):
+        raise falcon.HTTPBadRequest(description=f"field '{name}' must be a string value")
 
     return param

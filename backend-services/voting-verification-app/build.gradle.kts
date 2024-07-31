@@ -7,10 +7,9 @@ plugins {
 	id("org.springframework.boot") version "3.2.0"
 	id("io.spring.dependency-management") version "1.1.3"
 	id("org.graalvm.buildtools.native") version "0.9.26"
-    id("org.flywaydb.flyway") version "9.22.1"
+  id("org.flywaydb.flyway") version "9.22.1"
 	id("cz.habarta.typescript-generator") version "3.2.1263"
-    id("com.github.ben-manes.versions") version "0.48.0"
-    id("com.gorylenko.gradle-git-properties") version "2.4.1"
+  id("com.github.ben-manes.versions") version "0.48.0"
 }
 
 springBoot {

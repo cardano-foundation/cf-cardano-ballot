@@ -1,4 +1,4 @@
-FROM openjdk:21-jdk-slim AS build
+FROM gradle:jdk21-alpine AS build
 WORKDIR /app
 COPY . /app
 RUN ./gradlew clean build

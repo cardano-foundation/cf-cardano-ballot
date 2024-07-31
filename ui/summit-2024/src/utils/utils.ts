@@ -93,17 +93,6 @@ const formatISODate = (isoDate: string): string | undefined => {
   return formatter.format(date);
 };
 
-const shortenString = (inputStr: string, x: number): string => {
-  if (inputStr.length <= x) {
-    return inputStr;
-  }
-  return inputStr.slice(0, x) + "...";
-};
-
-const delay = (time: number) => {
-  return new Promise((resolve) => setTimeout(resolve, time));
-};
-
 export {
   addressSlice,
   walletIcon,
@@ -112,7 +101,5 @@ export {
   capitalizeFirstLetter,
   resolveCardanoNetwork,
   openNewTab,
-  shortenString,
-  delay,
   formatISODate,
 };

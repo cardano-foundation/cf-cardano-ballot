@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import {
   Box,
@@ -18,16 +18,7 @@ import {
   MuiTelInputCountry,
 } from "mui-tel-input";
 import discordLogo from "../../common/resources/images/discord-icon.svg";
-import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
-import {
-  getSignedMessagePromise,
-  openNewTab,
-  resolveCardanoNetwork,
-} from "../../utils/utils";
-import {
-  SignedKeriRequest,
-  SignedWeb3Request,
-} from "../../types/voting-app-types";
+import { openNewTab } from "../../utils/utils";
 import { ErrorMessage } from "../common/ErrorMessage/ErrorMessage";
 import { CustomButton } from "../common/CustomButton/CustomButton";
 import Modal from "../common/Modal/Modal";
@@ -52,10 +43,8 @@ import { VerificationStarted } from "../../store/reducers/userCache/userCache.ty
 import { ToastType } from "../common/Toast/Toast.types";
 import { CustomInput } from "../common/CustomInput/CustomInput";
 import theme from "../../common/styles/theme";
-import {
-  resolveWalletIdentifierType,
-  WalletIdentifierType,
-} from "../../common/api/utils";
+import { resolveWalletIdentifierType } from "../../common/api/utils";
+import { useSignatures } from "../../common/hooks/useSignatures";
 
 // TODO: env.
 const excludedCountries: MuiTelInputCountry[] | undefined = [];
@@ -84,9 +73,7 @@ const VerifyWalletModal = () => {
     useState<boolean>(false);
   const [inputSecret, setInputSecret] = useState("");
 
-  const { signMessage } = useCardano({
-    limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
-  });
+  const { signWithWallet } = useSignatures();
   const userVerificationStarted = useAppSelector(getVerificationStarted);
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -120,11 +107,6 @@ const VerifyWalletModal = () => {
       );
     };
   }, []);
-
-  const signMessagePromisified = useMemo(
-    () => getSignedMessagePromise(signMessage),
-    [signMessage],
-  );
 
   const reset = (timout?: boolean) => {
     function clear() {
@@ -207,53 +189,35 @@ const VerifyWalletModal = () => {
       });
   };
 
-  const handleSignWithWallet = async (message: string) => {
-    if (
-      resolveWalletIdentifierType(walletIdentifier) ===
-      WalletIdentifierType.KERI
-    ) {
-      const api = window.cardano && window.cardano["idw_p2p"];
-      const enabledApi = await api?.enable();
-      const keriIdentifier = await enabledApi.experimental.getKeriIdentifier();
-      const signedMessage: string = await enabledApi.experimental.signKeri(
-        walletIdentifier,
-        message,
-      );
-
-      return {
-        keriPayload: message,
-        keriSignedMessage: signedMessage,
-        oobi: keriIdentifier.oobi,
-      };
-    } else {
-      return await signMessagePromisified(message);
-    }
-  };
-
   const handleVerifyDiscord = async () => {
     setDiscordIsConfirming(true);
-    handleSignWithWallet(inputSecret.trim())
-      .then((signedMessaged: SignedKeriRequest | SignedWeb3Request) => {
-        const parsedSecret = inputSecret.split("|")[1];
-        verifyDiscord(walletIdentifier, parsedSecret, signedMessaged)
-          .then((response: { verified: boolean }) => {
-            dispatch(setWalletIsVerified(response.verified));
-            eventBus.publish(
-              EventName.ShowToast,
-              "Wallet verified successfully",
-            );
-            setDiscordIsConfirming(false);
-            handleCloseModal();
-          })
-          .catch((e) => {
-            eventBus.publish("showToast", e.message, ToastType.Error);
-            setDiscordIsConfirming(false);
-          });
-      })
-      .catch((e) => {
-        eventBus.publish("showToast", e.message, ToastType.Error);
-        setDiscordIsConfirming(false);
-      });
+
+    const signedMessageResult = await signWithWallet(
+      inputSecret.trim(),
+      walletIdentifier,
+      resolveWalletIdentifierType(walletIdentifier),
+    );
+
+    if (!signedMessageResult?.success) {
+      eventBus.publish("showToast", "Error while signing", ToastType.Error);
+      return;
+    }
+    const parsedSecret = inputSecret.split("|")[1];
+    const verifyDiscordResult = await verifyDiscord(
+      walletIdentifier,
+      parsedSecret,
+      signedMessageResult.result,
+    );
+
+    if (verifyDiscordResult.error) {
+      eventBus.publish("showToast", "Error while verifying", ToastType.Error);
+      return;
+    }
+
+    dispatch(setWalletIsVerified(verifyDiscordResult.verified));
+    eventBus.publish(EventName.ShowToast, "Wallet verified successfully");
+    setDiscordIsConfirming(false);
+    handleCloseModal();
   };
 
   const renderStartVerification = () => {
@@ -885,7 +849,6 @@ const VerifyWalletModal = () => {
   };
 
   const handleBack = () => {
-    console.log("handleBack");
     if (verifyCurrentPaths.length >= 2) {
       setVerifyCurrentPaths((prev) => prev.slice(1));
     } else {
@@ -908,7 +871,7 @@ const VerifyWalletModal = () => {
       case VerifyWalletFlow.VERIFY_SMS:
         if (phoneCodeIsSent) {
           return {
-            title: "Verify with SMS",
+            title: "Confirm SMS Code",
             render: renderConfirmCode(),
           };
         } else {

@@ -53,7 +53,7 @@ export const buildCanonicalVoteInputJson = ({
   });
 };
 
-const castAVoteWithDigitalSignature = async (jsonRequest: SignedWeb3Request) =>
+const submitVoteWithDigitalSignature = async (jsonRequest: SignedWeb3Request) =>
   await doRequest<Problem | Vote>(
     HttpMethods.POST,
     CAST_VOTE_URL,
@@ -94,7 +94,7 @@ const getUserVotes = async (token: string) =>
   );
 
 export {
-  castAVoteWithDigitalSignature,
+  submitVoteWithDigitalSignature,
   getSlotNumber,
   getVoteReceipt,
   getUserVotes,

@@ -6,6 +6,8 @@ enum EventName {
   CloseConnectWalletModal = "closeConnectWalletModal",
   OpenVerifyWalletModal = "openVerifyWalletModal",
   CloseVerifyWalletModal = "closeVerifyWalletModal",
+  OpenLoginModal = "openLoginModal",
+  CloseLoginModal = "closeLoginModal",
 }
 
 class EventBus {

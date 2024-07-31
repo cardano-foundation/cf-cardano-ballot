@@ -1,13 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { eventCacheSlice } from "./reducers/eventCache";
 import { userCacheSlice } from "./reducers/userCache";
-import { receiptsCacheSlice } from "./reducers/receiptsCache/receiptsCache";
+import { votesCacheSlice } from "./reducers/votesCache/votesCache";
 
 const store = configureStore({
   reducer: {
     eventCache: eventCacheSlice.reducer,
     userCache: userCacheSlice.reducer,
-    receiptsCache: receiptsCacheSlice.reducer,
+    votesCache: votesCacheSlice.reducer,
   },
 });
 

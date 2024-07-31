@@ -142,6 +142,7 @@ export interface JwtLoginEnvelope {
 export interface SignedKeriRequest {
   keriSignedMessage: string;
   keriPayload: string;
+  oobi: string;
 }
 
 export interface SignedWeb3Request {

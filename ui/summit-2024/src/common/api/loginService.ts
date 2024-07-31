@@ -1,11 +1,11 @@
-import { SignedWeb3Request } from "types/voting-app-types";
 import {
   DEFAULT_CONTENT_TYPE_HEADERS,
   doRequest,
   HttpMethods,
 } from "../handlers/httpHandler";
-import { env } from "common/constants/env";
 import { canonicalize } from "json-canonicalize";
+import { SignedWeb3Request } from "../../types/voting-app-types";
+import { env } from "../constants/env";
 
 export const LOGIN_URL = `${env.VOTING_APP_SERVER_URL}/api/auth/login`;
 

@@ -4,7 +4,7 @@ const emptyProposal: Proposal = { id: "", name: null };
 const emptyCategory: Category = {
   id: "",
   gdprProtection: false,
-  proposals: [emptyProposal]
+  proposals: [emptyProposal],
 };
 const initialStateData: EventCacheProps = {
   id: "",

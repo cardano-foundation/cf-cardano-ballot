@@ -90,19 +90,6 @@ export const verifyDiscord = async (
   secret: string,
   signedMessaged: SignedKeriRequest | SignedWeb3Request,
 ) => {
-  console.log("signedMessaged");
-  console.log(signedMessaged);
-  console.log("secret");
-  console.log(secret);
-  console.log(
-    JSON.stringify({
-      eventId: env.EVENT_ID,
-      walletId: walletIdentifier,
-      walletType: resolveWalletIdentifierType(walletIdentifier),
-      secret,
-      ...signedMessaged,
-    }),
-  );
   return await doRequest<{ verified: boolean }>(
     HttpMethods.POST,
     `${DISCORD_VERIFICATION_URL}`,

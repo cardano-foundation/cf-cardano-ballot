@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Typography, useMediaQuery, Drawer } from "@mui/material";
 import theme from "../../common/styles/theme";
 import { CustomButton } from "../../components/common/CustomButton/CustomButton";
@@ -17,20 +17,22 @@ import Ellipses from "../../assets/ellipse.svg";
 import { v4 as uuidv4 } from "uuid";
 import {
   buildCanonicalVoteInputJson,
-  castAVoteWithDigitalSignature,
+  submitVoteWithDigitalSignature,
   getSlotNumber,
+  getUserVotes,
   getVoteReceipt,
 } from "../../common/api/voteService";
 import { eventBus, EventName } from "../../utils/EventBus";
 import { getWalletIdentifier } from "../../store/reducers/userCache";
-import {
-  getSignedMessagePromise,
-  resolveCardanoNetwork,
-} from "../../utils/utils";
-import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
-import { env } from "../../common/constants/env";
-
 import { getUserInSession, tokenIsExpired } from "../../utils/session";
+import { parseError } from "../../common/constants/errors";
+import {
+  setVoteReceipt,
+  setVotes,
+} from "../../store/reducers/votesCache/votesCache";
+import { ToastType } from "../../components/common/Toast/Toast.types";
+import { useSignatures } from "../../common/hooks/useSignatures";
+import { resolveWalletIdentifierType } from "../../common/api/utils";
 
 const Categories: React.FC = () => {
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
@@ -57,12 +59,8 @@ const Categories: React.FC = () => {
   const [fadeChecked, setFadeChecked] = useState(true);
 
   const session = getUserInSession();
-
+  const { signWithWallet } = useSignatures();
   const dispatch = useAppDispatch();
-
-  const { signMessage } = useCardano({
-    limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
-  });
 
   useEffect(() => {
     // Example: http://localhost:3000/categories?category=ambassador&nominee=63123e7f-dfc3-481e-bb9d-fed1d9f6e9b9
@@ -87,11 +85,6 @@ const Categories: React.FC = () => {
       setSelectedCategory(selectedCategory);
     }
   }, [fadeChecked, selectedCategory]);
-
-  const signMessagePromisified = useMemo(
-    () => getSignedMessagePromise(signMessage),
-    [signMessage],
-  );
 
   const handleClickMenuItem = (category: string) => {
     if (category !== selectedCategory) {
@@ -126,7 +119,7 @@ const Categories: React.FC = () => {
     }
   };
 
-  const castVote = async (categoryId: string, proposalId: string) => {
+  const submitVote = async (categoryId: string, proposalId: string) => {
     if (eventCache?.finished) {
       eventBus.publish(
         EventName.ShowToast,
@@ -144,15 +137,41 @@ const Categories: React.FC = () => {
         walletId: walletIdentifier,
         slotNumber: absoluteSlot.toString(),
       });
-      const requestVoteObject =
-        await signMessagePromisified(canonicalVoteInput);
 
-      await castAVoteWithDigitalSignature(requestVoteObject);
+      const requestVoteResult = await signWithWallet(
+        canonicalVoteInput,
+        walletIdentifier,
+        resolveWalletIdentifierType(walletIdentifier),
+      );
+
+      if (!requestVoteResult.success) {
+        eventBus.publish(
+          EventName.ShowToast,
+          "Error while signing",
+          ToastType.Error,
+        );
+        return;
+      }
+      const submitVoteResult = await submitVoteWithDigitalSignature(
+        requestVoteResult.result,
+      );
+      if (!submitVoteResult.error) {
+        eventBus.publish(
+          EventName.ShowToast,
+          "Error while signing",
+          ToastType.Error,
+        );
+        return;
+      }
       eventBus.publish(EventName.ShowToast, "Vote submitted successfully");
 
       if (session && !tokenIsExpired(session?.expiresAt)) {
         getVoteReceipt(categoryId, session?.accessToken)
           .then((r) => {
+            if (r.error) {
+              eventBus.publish(EventName.ShowToast, r.message, ToastType.Error);
+              return;
+            }
             dispatch(setVoteReceipt({ categoryId: categoryId, receipt: r }));
           })
           .catch((e) => {
@@ -165,7 +184,7 @@ const Categories: React.FC = () => {
         getUserVotes(session?.accessToken)
           .then((response) => {
             if (response) {
-              dispatch(setUserVotes({ userVotes: response }));
+              dispatch(setVotes({ votes: response }));
             }
           })
           .catch((e) => {
@@ -176,11 +195,14 @@ const Categories: React.FC = () => {
             }
           });
       } else {
-        eventBus.publish("openLoginModal", "Login to see your vote receipt.");
+        eventBus.publish(
+          EventName.OpenLoginModal,
+          "Login to see your vote receipt.",
+        );
       }
     } catch (e) {
       eventBus.publish(
-        "showToast",
+        EventName.ShowToast,
         e.message && e.message.length ? parseError(e.message) : "Action failed",
         "error",
       );

@@ -32,7 +32,7 @@ import {
 } from "../../store/reducers/votesCache/votesCache";
 import { ToastType } from "../../components/common/Toast/Toast.types";
 import { useSignatures } from "../../common/hooks/useSignatures";
-import { resolveWalletIdentifierType } from "../../common/api/utils";
+import { resolveWalletType } from "../../common/api/utils";
 
 const Categories: React.FC = () => {
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
@@ -119,11 +119,22 @@ const Categories: React.FC = () => {
     }
   };
 
-  const submitVote = async (categoryId: string, proposalId: string) => {
+  const submitVote = async () => {
     if (eventCache?.finished) {
       eventBus.publish(
         EventName.ShowToast,
-        "'The event already ended', 'error'",
+        "The event already ended", "error",
+      );
+      return;
+    }
+
+    const categoryId = categoryToRender?.id;
+    const proposalId = nomineeToVote?.id;
+
+    if (!categoryId || !proposalId){
+      eventBus.publish(
+          EventName.ShowToast,
+          "Nominee not selected", "error",
       );
       return;
     }
@@ -141,7 +152,7 @@ const Categories: React.FC = () => {
       const requestVoteResult = await signWithWallet(
         canonicalVoteInput,
         walletIdentifier,
-        resolveWalletIdentifierType(walletIdentifier),
+        resolveWalletType(walletIdentifier),
       );
 
       if (!requestVoteResult.success) {
@@ -152,6 +163,10 @@ const Categories: React.FC = () => {
         );
         return;
       }
+
+      // TODO: tmp
+      setOpenVotingModal(false);
+      return;
       const submitVoteResult = await submitVoteWithDigitalSignature(
         requestVoteResult.result,
       );
@@ -347,8 +362,9 @@ const Categories: React.FC = () => {
         />
         <VoteNowModal
           isOpen={openVotingModal}
-          onClose={() => setOpenVotingModal(false)}
           selectedNominee={nomineeToVote}
+          onClickVote={() => submitVote()}
+          onClose={() => setOpenVotingModal(false)}
         />
         <BioModal
           isOpen={openLearMoreCategory}

@@ -11,7 +11,7 @@ import {
 } from "../../types/voting-app-types";
 import { Problem } from "../../types/user-verification-app-types";
 import { VoteVerificationResult } from "../../types/voting-verification-app-types";
-import { resolveWalletIdentifierType } from "./utils";
+import { resolveWalletType } from "./utils";
 import { VerificationStartedExtended } from "../../store/reducers/userCache/userCache.types";
 
 export const USER_VERIFICATION_URL = `${env.VOTING_USER_VERIFICATION_SERVER_URL}/api/user-verification/verified`;
@@ -56,7 +56,7 @@ export const sendSmsCode = async (
     JSON.stringify({
       eventId: env.EVENT_ID,
       walletId: walletIdentifier,
-      walletType: resolveWalletIdentifierType(walletIdentifier),
+      walletType: resolveWalletType(walletIdentifier),
       phoneNumber,
     }),
   );
@@ -77,7 +77,7 @@ export const confirmPhoneNumberCode = async (
     JSON.stringify({
       eventId: env.EVENT_ID,
       walletId: walletIdentifier,
-      walletType: resolveWalletIdentifierType(walletIdentifier),
+      walletType: resolveWalletType(walletIdentifier),
       phoneNumber,
       requestId,
       verificationCode,
@@ -99,7 +99,7 @@ export const verifyDiscord = async (
     JSON.stringify({
       eventId: env.EVENT_ID,
       walletId: walletIdentifier,
-      walletType: resolveWalletIdentifierType(walletIdentifier),
+      walletType: resolveWalletType(walletIdentifier),
       secret,
       ...signedMessaged,
     }),

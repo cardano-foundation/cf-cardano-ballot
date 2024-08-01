@@ -43,7 +43,7 @@ import { VerificationStarted } from "../../store/reducers/userCache/userCache.ty
 import { ToastType } from "../common/Toast/Toast.types";
 import { CustomInput } from "../common/CustomInput/CustomInput";
 import theme from "../../common/styles/theme";
-import { resolveWalletIdentifierType } from "../../common/api/utils";
+import { resolveWalletType } from "../../common/api/utils";
 import { useSignatures } from "../../common/hooks/useSignatures";
 
 // TODO: env.
@@ -195,10 +195,10 @@ const VerifyWalletModal = () => {
     const signedMessageResult = await signWithWallet(
       inputSecret.trim(),
       walletIdentifier,
-      resolveWalletIdentifierType(walletIdentifier),
+      resolveWalletType(walletIdentifier),
     );
 
-    if (!signedMessageResult?.success) {
+    if (!signedMessageResult.success) {
       eventBus.publish("showToast", "Error while signing", ToastType.Error);
       return;
     }
@@ -209,8 +209,8 @@ const VerifyWalletModal = () => {
       signedMessageResult.result,
     );
 
-    if (verifyDiscordResult.error) {
-      eventBus.publish("showToast", "Error while verifying", ToastType.Error);
+    if ("error" in verifyDiscordResult && verifyDiscordResult.error) {
+      eventBus.publish("showToast", verifyDiscordResult.message || "Error while verifying", ToastType.Error);
       return;
     }
 

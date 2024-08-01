@@ -3,7 +3,7 @@ enum WalletIdentifierType {
   KERI = "KERI",
 }
 
-const resolveWalletIdentifierType = (
+const resolveWalletType = (
   walletIdentifier: string,
 ): WalletIdentifierType => {
   const regex = /^stake_[a-zA-Z0-9]+$/;
@@ -15,4 +15,4 @@ const resolveWalletIdentifierType = (
   }
 };
 
-export { resolveWalletIdentifierType, WalletIdentifierType };
+export { resolveWalletType, WalletIdentifierType };

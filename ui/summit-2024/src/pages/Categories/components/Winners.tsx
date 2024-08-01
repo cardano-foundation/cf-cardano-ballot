@@ -295,7 +295,15 @@ const Winners: React.FC<WinnersProps> = ({
 
   const NomineesList = () => (
     <TableContainer>
-      <Table sx={{ borderCollapse: "separate", borderSpacing: "0 4px" }}>
+      <Table
+        sx={{
+          borderCollapse: "separate",
+          borderSpacing: "0px 4px",
+          width: "100%",
+          maxWidth: "100%",
+          tableLayout: "fixed",
+        }}
+      >
         <TableHead sx={{ background: "transparent" }}>
           <TableRow>
             <TableCell
@@ -308,6 +316,9 @@ const Winners: React.FC<WinnersProps> = ({
                 fontWeight: 700,
                 lineHeight: "20px",
                 border: "none",
+                  width: {
+                    xs: "20%"
+                  }
               }}
             >
               Position
@@ -321,6 +332,11 @@ const Winners: React.FC<WinnersProps> = ({
                 fontWeight: 700,
                 lineHeight: "20px",
                 border: "none",
+                maxWidth: "137px",
+                  width: {
+                      xs: "40%",
+                      sm: "55%",
+                  }
               }}
             >
               Nominee
@@ -334,6 +350,9 @@ const Winners: React.FC<WinnersProps> = ({
                 fontWeight: 700,
                 lineHeight: "20px",
                 border: "none",
+                  width: {
+                      xs: "20%",
+                  }
               }}
             >
               Votes
@@ -347,6 +366,10 @@ const Winners: React.FC<WinnersProps> = ({
                 fontWeight: 700,
                 lineHeight: "20px",
                 border: "none",
+                  width: {
+                      xs: "20%",
+                      sm: "5%",
+                  }
               }}
             ></TableCell>
           </TableRow>
@@ -433,6 +456,10 @@ const Winners: React.FC<WinnersProps> = ({
                       ? `1px solid ${theme.palette.secondary.main}`
                       : `1px solid transparent`,
                   borderRight: "none",
+                  maxWidth: "137px",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
                 }}
               >
                 <Box
@@ -557,20 +584,34 @@ const Winners: React.FC<WinnersProps> = ({
           component="div"
           sx={{
             display: "flex",
-            flexDirection: { xs: "column", sm: "row" },
+            flexDirection: { xs: "column", sm: "column", md: "row" },
+            alignItems: { md: "flex-start" },
+            overflowX: "hidden",
           }}
         >
           <Box
             component="div"
             sx={{
               flex: 1,
-              marginRight: { sm: 2, xs: 0 },
-              marginBottom: { sm: 0, xs: 2 },
+              maxWidth: { xs: "335px", sm: "400px" },
+              marginBottom: { xs: 2, sm: 2 },
+              mx: { xs: "auto", sm: "auto", md: 0 },
             }}
           >
             <Winner />
           </Box>
-          <Box component="div" sx={{ flex: 2 }}>
+          <Box
+            component="div"
+            sx={{
+              flex: 2,
+              width: "100%",
+              mx: { xs: "auto", sm: "auto", md: 0 },
+                paddingLeft: {
+                  xs: "0px",
+                    md: "24px"
+                }
+            }}
+          >
             <NomineesList />
           </Box>
         </Box>

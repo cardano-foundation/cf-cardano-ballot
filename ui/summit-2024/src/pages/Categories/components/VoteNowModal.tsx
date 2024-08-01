@@ -7,17 +7,15 @@ import { Proposal } from "../../../store/reducers/eventCache/eventCache.types";
 
 interface VoteModalProps {
   isOpen: boolean;
-    selectedNominee: Proposal | undefined;
+  selectedNominee: Proposal | undefined;
   onClose: () => void;
   onClickVote: () => void;
 }
 const VoteNowModal: React.FC<VoteModalProps> = ({
   isOpen,
-                                                    selectedNominee,
-                                                    onClickVote,
+  selectedNominee,
+  onClickVote,
   onClose,
-
-
 }) => {
   const isMobile = useIsPortrait();
   return (
@@ -41,7 +39,7 @@ const VoteNowModal: React.FC<VoteModalProps> = ({
           }}
         >
           <CustomButton
-              onClick={() => onClickVote()}
+            onClick={() => onClickVote()}
             colorVariant="primary"
             sx={{
               minWidth: "256px",

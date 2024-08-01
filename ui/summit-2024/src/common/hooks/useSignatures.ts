@@ -33,7 +33,6 @@ export const useSignatures = () => {
           window.cardano &&
           window.cardano["idw_p2p"]
         ) {
-
           const api = window.cardano["idw_p2p"];
           const enabledApi = await api.enable();
           const keriIdentifier =

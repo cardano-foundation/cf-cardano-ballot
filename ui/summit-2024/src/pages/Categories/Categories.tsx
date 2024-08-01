@@ -121,21 +121,15 @@ const Categories: React.FC = () => {
 
   const submitVote = async () => {
     if (eventCache?.finished) {
-      eventBus.publish(
-        EventName.ShowToast,
-        "The event already ended", "error",
-      );
+      eventBus.publish(EventName.ShowToast, "The event already ended", "error");
       return;
     }
 
     const categoryId = categoryToRender?.id;
     const proposalId = nomineeToVote?.id;
 
-    if (!categoryId || !proposalId){
-      eventBus.publish(
-          EventName.ShowToast,
-          "Nominee not selected", "error",
-      );
+    if (!categoryId || !proposalId) {
+      eventBus.publish(EventName.ShowToast, "Nominee not selected", "error");
       return;
     }
 
@@ -146,6 +140,7 @@ const Categories: React.FC = () => {
         categoryId: categoryId,
         proposalId: proposalId,
         walletId: walletIdentifier,
+        walletType: resolveWalletType(walletIdentifier),
         slotNumber: absoluteSlot.toString(),
       });
 

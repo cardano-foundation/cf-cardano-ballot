@@ -3,9 +3,7 @@ enum WalletIdentifierType {
   KERI = "KERI",
 }
 
-const resolveWalletType = (
-  walletIdentifier: string,
-): WalletIdentifierType => {
+const resolveWalletType = (walletIdentifier: string): WalletIdentifierType => {
   const regex = /^stake_[a-zA-Z0-9]+$/;
 
   if (regex.test(walletIdentifier)) {

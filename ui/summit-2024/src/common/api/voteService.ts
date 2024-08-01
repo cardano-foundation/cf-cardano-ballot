@@ -13,6 +13,7 @@ import {
   VoteReceipt,
 } from "../../types/voting-app-types";
 import { ChainTip } from "../../types/voting-ledger-follower-types";
+import { WalletIdentifierType } from "./utils";
 
 export const CAST_VOTE_URL = `${env.VOTING_APP_SERVER_URL}/api/vote/cast`;
 export const VOTE_RECEIPT_URL = `${env.VOTING_APP_SERVER_URL}/api/vote/receipt`;
@@ -24,6 +25,7 @@ type voteInput = {
   proposalId: string;
   categoryId: string;
   walletId: string;
+  walletType: WalletIdentifierType;
   slotNumber: string;
 };
 

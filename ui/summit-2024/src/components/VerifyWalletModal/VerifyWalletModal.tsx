@@ -210,7 +210,11 @@ const VerifyWalletModal = () => {
     );
 
     if ("error" in verifyDiscordResult && verifyDiscordResult.error) {
-      eventBus.publish("showToast", verifyDiscordResult.message || "Error while verifying", ToastType.Error);
+      eventBus.publish(
+        "showToast",
+        verifyDiscordResult.message || "Error while verifying",
+        ToastType.Error,
+      );
       return;
     }
 

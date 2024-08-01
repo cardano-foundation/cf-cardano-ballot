@@ -77,10 +77,8 @@ const Winners: React.FC<WinnersProps> = ({
     <Box
       component="div"
       sx={{
-        width: {
-          xs: "auto",
-          sm: "400px",
-        },
+
+          width: "100%",
         borderRadius: "24px",
         overflow: "hidden",
         padding: "4px",
@@ -596,9 +594,14 @@ const Winners: React.FC<WinnersProps> = ({
             component="div"
             sx={{
               flex: 1,
-              maxWidth: { xs: "335px", sm: "400px" },
               marginBottom: { xs: 2, sm: 2 },
               mx: { xs: "auto", sm: "auto", md: 0 },
+                maxWidth: { xs: "100%", md: "400px" },
+                width: {
+                    xs: "100%",
+                    sm: "100%",
+                    md: "auto",
+                },
             }}
           >
             <Winner />

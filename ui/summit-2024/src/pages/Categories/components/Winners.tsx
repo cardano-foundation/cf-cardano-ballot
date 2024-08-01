@@ -316,9 +316,9 @@ const Winners: React.FC<WinnersProps> = ({
                 fontWeight: 700,
                 lineHeight: "20px",
                 border: "none",
-                  width: {
-                    xs: "20%"
-                  }
+                width: {
+                  xs: "20%",
+                },
               }}
             >
               Position
@@ -333,10 +333,10 @@ const Winners: React.FC<WinnersProps> = ({
                 lineHeight: "20px",
                 border: "none",
                 maxWidth: "137px",
-                  width: {
-                      xs: "40%",
-                      sm: "55%",
-                  }
+                width: {
+                  xs: "40%",
+                  sm: "55%",
+                },
               }}
             >
               Nominee
@@ -350,9 +350,9 @@ const Winners: React.FC<WinnersProps> = ({
                 fontWeight: 700,
                 lineHeight: "20px",
                 border: "none",
-                  width: {
-                      xs: "20%",
-                  }
+                width: {
+                  xs: "20%",
+                },
               }}
             >
               Votes
@@ -366,10 +366,10 @@ const Winners: React.FC<WinnersProps> = ({
                 fontWeight: 700,
                 lineHeight: "20px",
                 border: "none",
-                  width: {
-                      xs: "20%",
-                      sm: "5%",
-                  }
+                width: {
+                  xs: "20%",
+                  sm: "5%",
+                },
               }}
             ></TableCell>
           </TableRow>
@@ -419,6 +419,9 @@ const Winners: React.FC<WinnersProps> = ({
                   component="div"
                   sx={{
                     display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    width: "100%",
                   }}
                 >
                   <img
@@ -606,10 +609,10 @@ const Winners: React.FC<WinnersProps> = ({
               flex: 2,
               width: "100%",
               mx: { xs: "auto", sm: "auto", md: 0 },
-                paddingLeft: {
-                  xs: "0px",
-                    md: "24px"
-                }
+              paddingLeft: {
+                xs: "0px",
+                md: "24px",
+              },
             }}
           >
             <NomineesList />

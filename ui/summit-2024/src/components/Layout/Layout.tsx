@@ -75,7 +75,7 @@ const Layout: React.FC<LayoutProps> = ({
   return (
     <Box component="div" sx={{ width: "100%" }}>
       <Grid container>
-        <Grid item xs={12} md={2.4} lg={2}>
+        <Grid item xs={12} md={2.4} lg={2} sx={{}}>
           {isMobile ? (
             <>
               <Box
@@ -148,10 +148,31 @@ const Layout: React.FC<LayoutProps> = ({
                   borderRight: "1px solid #737380",
                 }}
               >
+                <ListItem
+                  sx={{
+                    paddingLeft: "0px",
+                    marginBottom: "16px",
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      fontFamily: "Dosis",
+                      fontSize: "32px",
+                      fontStyle: "normal",
+                      fontWeight: 700,
+                      lineHeight: "36px",
+                    }}
+                  >
+                    Categories({menuOptions.length})
+                  </Typography>
+                </ListItem>
                 {menuOptions.map((option, index) => (
                   <ListItem
                     onClick={() => handleClickMenuItem(option.label)}
                     key={index}
+                    sx={{
+                      paddingLeft: "0px",
+                    }}
                   >
                     {option.label === selectedOption ? (
                       <>
@@ -220,11 +241,15 @@ const Layout: React.FC<LayoutProps> = ({
           lg={10}
           sx={{
             background: "transparent",
-            padding: {
-              xs: "0px 20px",
-              sm: "20px 0pxs",
+            paddingLeft: {
+              xs: "16px",
+              md: "20px",
             },
-            marginTop: isMobile ? "40px" : "10px",
+            paddingRight: {
+              xs: "10px",
+              md: "0px",
+            },
+            marginTop: isMobile ? "60px" : "10px",
           }}
         >
           {title ? (

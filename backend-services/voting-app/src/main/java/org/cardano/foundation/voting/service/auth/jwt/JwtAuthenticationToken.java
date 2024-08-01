@@ -6,6 +6,7 @@ import lombok.SneakyThrows;
 import lombok.experimental.Accessors;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.domain.Role;
+import org.cardano.foundation.voting.domain.web3.WalletType;
 import org.cardano.foundation.voting.domain.web3.Web3Action;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -22,7 +23,9 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
 
     private ChainFollowerClient.EventDetailsResponse eventDetails;
 
-    private String stakeAddress;
+    private WalletType walletType;
+
+    private String walletId;
 
     private Role role;
 
@@ -44,8 +47,13 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
     }
 
     @SneakyThrows
-    public String getStakeAddress() {
-        return stakeAddress;
+    public String getWalletId() {
+        return walletId;
+    }
+
+    @SneakyThrows
+    public WalletType getWalletType() {
+        return walletType;
     }
 
     @Override

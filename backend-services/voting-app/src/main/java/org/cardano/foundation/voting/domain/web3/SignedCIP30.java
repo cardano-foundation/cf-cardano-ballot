@@ -5,19 +5,17 @@ import lombok.*;
 
 import java.util.Optional;
 
-// CIP-93 -> https://github.com/cardano-foundation/CIPs/pull/442/files
-
 @Getter
 @Setter
 @AllArgsConstructor
 @Builder
 @ToString
-public class SignedWeb3Request {
+public class SignedCIP30 {
 
     @NotBlank
-    protected String coseSignature;
+    protected String signature;
 
     @Builder.Default
-    protected Optional<@NotBlank String> cosePublicKey = Optional.empty();
+    protected Optional<@NotBlank String> publicKey = Optional.empty();
 
 }

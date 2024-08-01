@@ -122,7 +122,7 @@ public class BaseTest {
                                 .withBody(responseBodyTip)));
 
         String responseBodyStake = "{" +
-                    "\"stakeAddress\": \"stake_test1uzpq2pktpnj54e64kfgjkm8nrptdwfj7s7fvhp40e98qsusd9z7ek\", " +
+                    "\"walletId\": \"stake_test1uzpq2pktpnj54e64kfgjkm8nrptdwfj7s7fvhp40e98qsusd9z7ek\", " +
                     "\"votingPower\": \"10444555666\", " +
                     "\"epochNo\": 97, " +
                     "\"votingPowerAsset\": \"ADA\"" +

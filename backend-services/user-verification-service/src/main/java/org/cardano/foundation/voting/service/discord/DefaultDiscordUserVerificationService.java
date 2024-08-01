@@ -1,29 +1,33 @@
 package org.cardano.foundation.voting.service.discord;
+
+import com.bloxbean.cardano.client.util.HexUtil;
 import io.vavr.control.Either;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
+import org.cardano.foundation.voting.client.ChainFollowerClient.EventSummary;
 import org.cardano.foundation.voting.client.KeriVerificationClient;
-import org.cardano.foundation.voting.domain.CardanoNetwork;
+import org.cardano.foundation.voting.domain.ChainNetwork;
 import org.cardano.foundation.voting.domain.IsVerifiedRequest;
 import org.cardano.foundation.voting.domain.IsVerifiedResponse;
-import org.cardano.foundation.voting.service.common.VerificationResult;
+import org.cardano.foundation.voting.domain.WalletType;
 import org.cardano.foundation.voting.domain.discord.DiscordCheckVerificationRequest;
 import org.cardano.foundation.voting.domain.discord.DiscordStartVerificationRequest;
 import org.cardano.foundation.voting.domain.discord.DiscordStartVerificationResponse;
 import org.cardano.foundation.voting.domain.entity.DiscordUserVerification;
 import org.cardano.foundation.voting.repository.DiscordUserVerificationRepository;
-import org.cardano.foundation.voting.utils.StakeAddress;
-import org.cardano.foundation.voting.utils.WalletType;
+import org.cardano.foundation.voting.service.common.VerificationResult;
+import org.cardano.foundation.voting.utils.Addresses;
 import org.cardanofoundation.cip30.AddressFormat;
 import org.cardanofoundation.cip30.CIP30Verifier;
 import org.cardanofoundation.cip30.MessageFormat;
-import org.cardano.foundation.voting.client.ChainFollowerClient.EventSummary;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
+
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,36 +35,35 @@ import java.util.Optional;
 
 import static org.cardano.foundation.voting.domain.VerificationStatus.PENDING;
 import static org.cardano.foundation.voting.domain.VerificationStatus.VERIFIED;
+import static org.cardano.foundation.voting.domain.WalletType.CARDANO;
+import static org.cardano.foundation.voting.domain.WalletType.KERI;
 import static org.zalando.problem.Status.BAD_REQUEST;
 
+@RequiredArgsConstructor
 @Service
 @Slf4j
 public class DefaultDiscordUserVerificationService implements DiscordUserVerificationService {
 
-    @Autowired
-    private ChainFollowerClient chainFollowerClient;
+    private final ChainFollowerClient chainFollowerClient;
 
-    @Autowired
-    private KeriVerificationClient keriVerificationClient;
+    private final KeriVerificationClient keriVerificationClient;
 
-    @Autowired
-    private DiscordUserVerificationRepository userVerificationRepository;
+    private final DiscordUserVerificationRepository userVerificationRepository;
 
-    @Autowired
-    private Clock clock;
+    private final Clock clock;
+
+    private final ChainNetwork network;
 
     @Value("${validation.expiration.time.minutes}")
     private int validationExpirationTimeMinutes;
 
-    @Autowired
-    private CardanoNetwork network;
-
     @Override
     @Transactional
-    public Either<Problem, DiscordStartVerificationResponse> startVerification(String eventId, DiscordStartVerificationRequest startVerificationRequest) {
-        var discordIdHash = startVerificationRequest.getDiscordIdHash();
+    public Either<Problem, DiscordStartVerificationResponse> startVerification(String eventId,
+                                                                               DiscordStartVerificationRequest startVerificationRequest) {
+        val discordIdHash = startVerificationRequest.getDiscordIdHash();
 
-        var maybeCompletedVerificationBasedOnDiscordUserHash = userVerificationRepository
+        val maybeCompletedVerificationBasedOnDiscordUserHash = userVerificationRepository
                 .findCompletedVerificationBasedOnDiscordUserHash(eventId, discordIdHash);
 
         if (maybeCompletedVerificationBasedOnDiscordUserHash.isPresent()) {
@@ -71,16 +74,15 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
                     .build());
         }
 
-        var eventDetails = chainFollowerClient.findEventById(eventId);
+        val eventDetailsE = chainFollowerClient.findEventById(eventId);
+        if (eventDetailsE.isEmpty()) {
+            log.error("event error:{}", eventDetailsE.getLeft());
 
-        if (eventDetails.isEmpty()) {
-            log.error("event error:{}", eventDetails.getLeft());
-
-            return Either.left(eventDetails.getLeft());
+            return Either.left(eventDetailsE.getLeft());
         }
 
-        var maybeEvent = eventDetails.get();
-        if (maybeEvent.isEmpty()) {
+        val eventM = eventDetailsE.get();
+        if (eventM.isEmpty()) {
             log.warn("Event not found:{}", eventId);
 
             return Either.left(Problem.builder()
@@ -90,11 +92,11 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
                     .build());
         }
 
-        var event = maybeEvent.orElseThrow();
-        var createdAt = LocalDateTime.now(clock);
-        var expiresAt = createdAt.plusMinutes(validationExpirationTimeMinutes);
+        val event = eventM.orElseThrow();
+        val createdAt = LocalDateTime.now(clock);
+        val expiresAt = createdAt.plusMinutes(validationExpirationTimeMinutes);
 
-        var discordUserVerification = DiscordUserVerification.builder()
+        val discordUserVerification = DiscordUserVerification.builder()
                 .discordIdHash(discordIdHash)
                 .eventId(eventId)
                 .secretCode(startVerificationRequest.getSecret())
@@ -113,7 +115,7 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
                     .build());
         }
 
-        var saved = userVerificationRepository.saveAndFlush(discordUserVerification);
+        val saved = userVerificationRepository.saveAndFlush(discordUserVerification);
 
         return Either.right(DiscordStartVerificationResponse.builder()
                 .eventId(eventId)
@@ -126,18 +128,17 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
     @Override
     @Transactional
     public Either<Problem, IsVerifiedResponse> checkVerification(DiscordCheckVerificationRequest request) {
-        String eventId = request.getEventId();
-        String walletId = request.getWalletId();
-        Optional<WalletType> walletType = request.getWalletType();
+        val eventId = request.getEventId();
+        val walletId = request.getWalletId();
+        val walletType = request.getWalletType();
 
-        Either<Problem, EventSummary> eventValidationResult = validateEvent(eventId);
-        if (eventValidationResult.isLeft()) {
-            return Either.left(eventValidationResult.getLeft());
+        val eventValidationResultE = validateEvent(eventId);
+        if (eventValidationResultE.isLeft()) {
+            return Either.left(eventValidationResultE.getLeft());
         }
 
-        EventSummary eventSummary = eventValidationResult.get();
-
-        if (!eventSummary.userBased() && walletType.get() == WalletType.KERI) {
+        val eventSummary = eventValidationResultE.get();
+        if (!eventSummary.userBased() && walletType == KERI) {
             log.warn("Keri wallet not supported for BALANCE or STAKE type event");
 
             return Either.left(Problem.builder()
@@ -147,28 +148,20 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
                     .build());
         }
 
-        switch (walletType.get()) {
-            case CARDANO:
-                return handleCardanoVerification(request, eventId, request.getWalletId());
-            case KERI:
-                return handleKeriVerification(request, eventId, request.getWalletId());
-            default:
-                return Either.left(Problem.builder()
-                        .withTitle("UNSUPPORTED_WALLET_TYPE")
-                        .withDetail("The specified wallet type is not supported.")
-                        .withStatus(BAD_REQUEST)
-                        .build());
-        }
+        return switch (walletType) {
+            case CARDANO -> handleCardanoVerification(request, eventId, walletType, walletId);
+            case KERI -> handleKeriVerification(request, eventId, walletType, walletId);
+        };
     }
 
     private Either<Problem, EventSummary> validateEvent(String eventId) {
-        Either<Problem, Optional<EventSummary>> eventDetailsResult = chainFollowerClient.findEventById(eventId);
+        val eventDetailsResultE = chainFollowerClient.findEventById(eventId);
 
-        if (eventDetailsResult.isLeft()) {
-            return Either.left(eventDetailsResult.getLeft());
+        if (eventDetailsResultE.isLeft()) {
+            return Either.left(eventDetailsResultE.getLeft());
         }
 
-        return eventDetailsResult.get()
+        return eventDetailsResultE.get()
                 .map(Either::<Problem, EventSummary>right)
                 .orElseGet(() -> Either.left(Problem.builder()
                         .withTitle("EVENT_NOT_FOUND")
@@ -178,38 +171,39 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
     }
 
     @Transactional(propagation = Propagation.SUPPORTS)
-    private Either<Problem, IsVerifiedResponse> handleCardanoVerification(DiscordCheckVerificationRequest request, String eventId, String walletId) {
-
-        String signatureM = request.getCoseSignature().orElse(null);
-
-        if (signatureM == null) {
+    private Either<Problem, IsVerifiedResponse> handleCardanoVerification(DiscordCheckVerificationRequest request,
+                                                                          String eventId,
+                                                                          WalletType walletType,
+                                                                          String walletId) {
+        val signatureM = request.getSignature();
+        if (signatureM.isEmpty()) {
             return Either.left(Problem.builder()
                     .withTitle("MISSING_SIGNATURE")
                     .withDetail("Missing signature.")
                     .withStatus(BAD_REQUEST)
                     .build());
         }
+        val signature = signatureM.orElseThrow();
 
-        String publicKeyM = request.getCosePublicKey().orElse(null);
-
-        if (publicKeyM == null) {
+        val publicKeyM = request.getPublicKey();
+        if (publicKeyM.isEmpty()) {
             return Either.left(Problem.builder()
                     .withTitle("MISSING_PUBLIC_KEY")
                     .withDetail("Missing public key.")
                     .withStatus(BAD_REQUEST)
                     .build());
         }
+        val publicKey = publicKeyM.orElseThrow();
 
         // Verify signature specific to Cardano wallets
-        Either<Problem, VerificationResult> verificationResult = verifySignature(signatureM, publicKeyM);
-
+        val verificationResult = verifySignature(signature, publicKey);
         if (verificationResult.isLeft()) {
             return Either.left(verificationResult.getLeft());
         }
 
-        VerificationResult verificationData = verificationResult.get();
-        String msg = verificationData.getMessage();
-        var items = msg.split("\\|");
+        val verificationData = verificationResult.get();
+        val msg = verificationData.getMessage();
+        val items = msg.split("\\|");
 
         if (items.length != 2) {
             return Either.left(Problem.builder()
@@ -220,8 +214,8 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
             );
         }
 
-        var discordIdHash = items[0];
-        var cip30Secret = items[1];
+        val discordIdHash = items[0];
+        val cip30Secret = items[1];
 
         if (!request.getSecret().equals(cip30Secret)) {
             return Either.left(Problem.builder()
@@ -232,35 +226,31 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
             );
         }
 
-        Optional<String> maybeAddress = verificationData.getAddress();
-
-        if (!maybeAddress.isPresent()) {
+        val walletIdM = verificationData.getWalletId();
+        if (walletIdM.isEmpty()) {
             return Either.left(Problem.builder()
                     .withTitle("INVALID_CIP-30-SIGNATURE")
-                    .withDetail("Invalid CIP-30 signature, must have asdress in CIP-30 signature.")
+                    .withDetail("Invalid CIP-30 signature, must have walletId in CIP-30 signature.")
                     .withStatus(BAD_REQUEST)
                     .build()
             );
         }
 
-        String address = maybeAddress.get();
-
-        if (!walletId.equals(address)) {
+        if (!walletId.equals(walletIdM.get())) {
             return Either.left(Problem.builder()
-                    .withTitle("ADDRESS_MISMATCH")
-                    .withDetail(String.format("Address mismatch, walletId: %s, address: %s", walletId, address))
+                    .withTitle("WALLET_ID_MISMATCH")
+                    .withDetail(String.format("Wallet id mismatch, walletId: %s, walletId: %s", walletId, walletIdM.get()))
                     .withStatus(BAD_REQUEST)
                     .build()
             );
         }
 
-        var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, walletId);
-
-        if (stakeAddressCheckE.isEmpty()) {
-            return Either.left(stakeAddressCheckE.getLeft());
+        val walletIdCheck = Addresses.checkWalletId(network, walletType, walletId);
+        if (walletIdCheck.isEmpty()) {
+            return Either.left(walletIdCheck.getLeft());
         }
 
-        var maybeCompletedVerificationBasedOnDiscordUserHash = userVerificationRepository
+        val maybeCompletedVerificationBasedOnDiscordUserHash = userVerificationRepository
                 .findCompletedVerificationBasedOnDiscordUserHash(eventId, discordIdHash);
 
         if (maybeCompletedVerificationBasedOnDiscordUserHash.isPresent()) {
@@ -273,7 +263,7 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
             );
         }
 
-        var maybePendingVerification = userVerificationRepository.findPendingVerificationBasedOnDiscordUserHash(eventId, discordIdHash);
+        val maybePendingVerification = userVerificationRepository.findPendingVerificationBasedOnDiscordUserHash(eventId, discordIdHash);
 
         if (maybePendingVerification.isEmpty()) {
             return Either.left(Problem.builder()
@@ -285,8 +275,9 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
             );
         }
 
-        var pendingVerification = maybePendingVerification.get();
-        boolean isSecretCodeMatch = pendingVerification.getSecretCode().equals(cip30Secret)
+        val pendingVerification = maybePendingVerification.get();
+
+        val isSecretCodeMatch = pendingVerification.getSecretCode().equals(cip30Secret)
                 && pendingVerification.getSecretCode().equals(request.getSecret());
 
         if (!isSecretCodeMatch) {
@@ -298,11 +289,11 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
             );
         }
 
-        var pendingUserVerification = maybePendingVerification.orElseThrow();
+        val pendingUserVerification = maybePendingVerification.orElseThrow();
 
-        var now = LocalDateTime.now(clock);
+        val now = LocalDateTime.now(clock);
 
-        var isCodeExpired = now.isAfter(pendingUserVerification.getExpiresAt());
+        val isCodeExpired = now.isAfter(pendingUserVerification.getExpiresAt());
         if (isCodeExpired) {
             return Either.left(Problem.builder()
                     .withTitle("VERIFICATION_EXPIRED")
@@ -322,9 +313,10 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
         return Either.right(new IsVerifiedResponse(true));
     }
 
-    private Either<Problem, VerificationResult> verifySignature(String signature, String publicKey) {
-        CIP30Verifier verifier = new CIP30Verifier(signature, publicKey);
-        var result = verifier.verify();
+    private Either<Problem, VerificationResult> verifySignature(String signature,
+                                                                String publicKey) {
+        val verifier = new CIP30Verifier(signature, publicKey);
+        val result = verifier.verify();
 
         if (!result.isValid()) {
             return Either.left(Problem.builder()
@@ -335,50 +327,53 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
             );
         }
 
-        String msg = result.getMessage(MessageFormat.TEXT);
-        Optional<String> maybeAddress = result.getAddress(AddressFormat.TEXT);
+        val msg = result.getMessage(MessageFormat.TEXT);
+        val maybeAddress = result.getAddress(AddressFormat.TEXT);
 
-        return Either.right(new VerificationResult(msg, maybeAddress));
+        return Either.right(new VerificationResult(msg, CARDANO, maybeAddress));
     }
 
     @Transactional(propagation = Propagation.SUPPORTS)
-    private Either<Problem, IsVerifiedResponse> handleKeriVerification(DiscordCheckVerificationRequest request, String eventId, String walletId) {
-
-        String signatureM = request.getKeriSignedMessage().orElse(null);
-
-        if (signatureM == null) {
+    private Either<Problem, IsVerifiedResponse> handleKeriVerification(DiscordCheckVerificationRequest request,
+                                                                       String eventId,
+                                                                       WalletType walletType,
+                                                                       String walletId) {
+        val signatureM = request.getSignature();
+        if (signatureM.isEmpty()) {
             return Either.left(Problem.builder()
                     .withTitle("MISSING_SIGNATURE")
-                    .withDetail("Missing signature.")
+                    .withDetail("Missing KERI signature.")
+                    .withStatus(BAD_REQUEST)
+                    .build());
+        }
+        val signature = signatureM.orElseThrow();
+
+        val payloadM = request.getPayload();
+        if (payloadM.isEmpty()) {
+            return Either.left(Problem.builder()
+                    .withTitle("MISSING_PAYLOAD")
+                    .withDetail("Missing KERI payload.")
+                    .withStatus(BAD_REQUEST)
+                    .build());
+        }
+        val payload = new String(HexUtil.decodeHexString(payloadM.orElseThrow()));
+
+        val oobiM = request.getOobi();
+        if (oobiM.isEmpty()) {
+            return Either.left(Problem.builder()
+                    .withTitle("MISSING_SIGNATURE")
+                    .withDetail("Missing KERI oobi.")
                     .withStatus(BAD_REQUEST)
                     .build());
         }
 
-        String payload = request.getKeriPayload().orElse(null);
+        val oobi = oobiM.orElseThrow();
 
-        if (payload == null) {
-            return Either.left(Problem.builder()
-                    .withTitle("MISSING_SIGNATURE")
-                    .withDetail("Missing payload.")
-                    .withStatus(BAD_REQUEST)
-                    .build());
-        }
+        val items = payload.split("\\|");
+        val discordIdHash = items[0];
+        val secret = items[1];
 
-        String oobi = request.getOobi().orElse(null);
-
-        if (oobi == null) {
-            return Either.left(Problem.builder()
-                    .withTitle("MISSING_SIGNATURE")
-                    .withDetail("Missing oobi.")
-                    .withStatus(BAD_REQUEST)
-                    .build());
-        }
-
-        var items = payload.split("\\|");
-        var discordIdHash = items[0];
-        var secret = items[1];
-
-        var maybeCompletedVerificationBasedOnDiscordUserHash = userVerificationRepository
+        val maybeCompletedVerificationBasedOnDiscordUserHash = userVerificationRepository
                 .findCompletedVerificationBasedOnDiscordUserHash(eventId, discordIdHash);
 
         if (maybeCompletedVerificationBasedOnDiscordUserHash.isPresent()) {
@@ -391,7 +386,7 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
             );
         }
 
-        var maybePendingVerification = userVerificationRepository.findPendingVerificationBasedOnDiscordUserHash(eventId, discordIdHash);
+        val maybePendingVerification = userVerificationRepository.findPendingVerificationBasedOnDiscordUserHash(eventId, discordIdHash);
 
         if (maybePendingVerification.isEmpty()) {
             return Either.left(Problem.builder()
@@ -403,7 +398,7 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
             );
         }
 
-        var pendingVerification = maybePendingVerification.get();
+        val pendingVerification = maybePendingVerification.get();
         boolean isSecretCodeMatch = pendingVerification.getSecretCode().equals(secret)
                 && pendingVerification.getSecretCode().equals(request.getSecret());
 
@@ -416,11 +411,11 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
             );
         }
 
-        var pendingUserVerification = maybePendingVerification.orElseThrow();
+        val pendingUserVerification = maybePendingVerification.orElseThrow();
 
-        var now = LocalDateTime.now(clock);
+        val now = LocalDateTime.now(clock);
 
-        var isCodeExpired = now.isAfter(pendingUserVerification.getExpiresAt());
+        val isCodeExpired = now.isAfter(pendingUserVerification.getExpiresAt());
         if (isCodeExpired) {
             return Either.left(Problem.builder()
                     .withTitle("VERIFICATION_EXPIRED")
@@ -436,7 +431,7 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
 
         if (oobiCheckResult.isRight()) {
             log.info("OOBI already registered: {}", oobiCheckResult);
-            Either<Problem, Boolean> verificationResult = keriVerificationClient.verifySignature(walletId, signatureM, payload);
+            Either<Problem, Boolean> verificationResult = keriVerificationClient.verifySignature(walletId, signature, payload);
 
             if (verificationResult.isLeft()) {
                 return Either.left(verificationResult.getLeft());
@@ -460,30 +455,29 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
             return Either.right(new IsVerifiedResponse(true));
         }
 
-        log.info("OOBI not registered yet: {}", oobi);
+        log.info("OOBI not registered yet: {}", oobiM);
         // Step 2: Register OOBI if not already registered
-        Either<Problem, Boolean> oobiRegistrationResult = keriVerificationClient.registerOOBI(oobi);
+        val oobiRegistrationResultE = keriVerificationClient.registerOOBI(oobi);
 
-        if (oobiRegistrationResult.isLeft()) {
-            return Either.left(oobiRegistrationResult.getLeft());
+        if (oobiRegistrationResultE.isLeft()) {
+            return Either.left(oobiRegistrationResultE.getLeft());
         }
 
-        log.info("OOBI registered successfully: {}", oobi);
+        log.info("OOBI registered successfully: {}", oobiM);
 
         // Step 3: Attempt to verify OOBI registration up to 10 times
-        Either<Problem, String> oobiFetchResult = keriVerificationClient.getOOBI(oobi, 60);
-        if (oobiFetchResult.isLeft()) {
-            return Either.left(oobiFetchResult.getLeft());
+        val oobiFetchResultE = keriVerificationClient.getOOBI(oobi, 60);
+        if (oobiFetchResultE.isLeft()) {
+            return Either.left(oobiFetchResultE.getLeft());
         }
 
         // Step 4: Verify signature after OOBI registration
-        Either<Problem, Boolean> verificationResult = keriVerificationClient.verifySignature(walletId, signatureM, payload);
-
-        if (verificationResult.isLeft()) {
-            return Either.left(verificationResult.getLeft());
+        val verificationResultE = keriVerificationClient.verifySignature(walletId, signature, payload);
+        if (verificationResultE.isLeft()) {
+            return Either.left(verificationResultE.getLeft());
         }
 
-        if (!verificationResult.get()) {
+        if (!verificationResultE.get()) {
             return Either.left(Problem.builder()
                     .withTitle("KERI_VERIFICATION_FAILED")
                     .withDetail("The Keri verification failed.")
@@ -504,7 +498,11 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
     @Override
     @Transactional(readOnly = true)
     public Either<Problem, IsVerifiedResponse> isVerifiedBasedOnWalletId(IsVerifiedRequest isVerifiedRequest) {
-        var isVerified = userVerificationRepository.findCompletedVerifications(isVerifiedRequest.getEventId(), isVerifiedRequest.getWalletId())
+        val eventId = isVerifiedRequest.getEventId();
+        val walletType = isVerifiedRequest.getWalletType();
+        val walletId = isVerifiedRequest.getWalletId();
+
+        val isVerified = userVerificationRepository.findCompletedVerifications(eventId, walletType, walletId)
                 .stream().findFirst()
                 .map(uv -> new IsVerifiedResponse(true)).orElse(new IsVerifiedResponse(false));
 
@@ -514,7 +512,7 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
     @Override
     @Transactional(readOnly = true)
     public Either<Problem, IsVerifiedResponse> isVerifiedBasedOnDiscordIdHash(String eventId, String discordIdHash) {
-        var isVerified = userVerificationRepository.findCompletedVerificationBasedOnDiscordUserHash(eventId, discordIdHash)
+        val isVerified = userVerificationRepository.findCompletedVerificationBasedOnDiscordUserHash(eventId, discordIdHash)
                 .map(uv -> new IsVerifiedResponse(true)).orElse(new IsVerifiedResponse(false));
 
         return Either.right(isVerified);

@@ -4,25 +4,24 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 import io.vavr.control.Either;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
-import org.cardano.foundation.voting.domain.CardanoNetwork;
-import org.cardano.foundation.voting.domain.IsVerifiedRequest;
-import org.cardano.foundation.voting.domain.IsVerifiedResponse;
+import org.cardano.foundation.voting.domain.*;
 import org.cardano.foundation.voting.domain.entity.SMSUserVerification;
 import org.cardano.foundation.voting.domain.sms.SMSCheckVerificationRequest;
 import org.cardano.foundation.voting.domain.sms.SMSStartVerificationRequest;
 import org.cardano.foundation.voting.domain.sms.SMSStartVerificationResponse;
-import org.cardano.foundation.voting.domain.SaltHolder;
 import org.cardano.foundation.voting.repository.SMSUserVerificationRepository;
 import org.cardano.foundation.voting.service.pass.CodeGenService;
-import org.cardano.foundation.voting.utils.StakeAddress;
+import org.cardano.foundation.voting.utils.Addresses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
-import org.cardano.foundation.voting.utils.WalletType;
+
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.HexFormat;
@@ -57,7 +56,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
     private Clock clock;
 
     @Autowired
-    private CardanoNetwork network;
+    private ChainNetwork network;
 
     @Autowired
     private CodeGenService codeGenService;
@@ -74,28 +73,26 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
     @Override
     @Transactional
     public Either<Problem, SMSStartVerificationResponse> startVerification(SMSStartVerificationRequest startVerificationRequest) {
-        String eventId = startVerificationRequest.getEventId();
+        val eventId = startVerificationRequest.getEventId();
 
-        String walletId = startVerificationRequest.getWalletId();
-        Optional<WalletType> walletType = startVerificationRequest.getWalletType();
+        val walletId = startVerificationRequest.getWalletId();
+        val walletType = startVerificationRequest.getWalletType();
 
-        if (walletType.get() == WalletType.CARDANO) {
-            var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, walletId);
-            if (stakeAddressCheckE.isEmpty()) {
-                return Either.left(stakeAddressCheckE.getLeft());
-            }
+        val walletIdCheckE = Addresses.checkWalletId(network, walletType, walletId);
+        if (walletIdCheckE.isEmpty()) {
+            return Either.left(walletIdCheckE.getLeft());
         }
 
-        var eventDetails = chainFollowerClient.findEventById(eventId);
+        val eventDetailsE = chainFollowerClient.findEventById(eventId);
 
-        if (eventDetails.isEmpty()) {
-            log.error("event error:{}", eventDetails.getLeft());
+        if (eventDetailsE.isEmpty()) {
+            log.error("event error:{}", eventDetailsE.getLeft());
 
-            return Either.left(eventDetails.getLeft());
+            return Either.left(eventDetailsE.getLeft());
         }
 
-        var maybeEvent = eventDetails.get();
-        if (maybeEvent.isEmpty()) {
+        val eventM = eventDetailsE.get();
+        if (eventM.isEmpty()) {
             log.warn("Event not found:{}", eventId);
 
             return Either.left(Problem.builder()
@@ -105,9 +102,9 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
                     .build());
         }
 
-        var event = maybeEvent.orElseThrow();
+        val event = eventM.orElseThrow();
 
-        if (!event.userBased() && walletType.get() == WalletType.KERI) {
+        if (!event.userBased() && walletType == WalletType.KERI) {
             log.warn("Keri wallet not supported for BALANCE or STAKE type event");
 
             return Either.left(Problem.builder()
@@ -127,15 +124,16 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
                     .build());
         }
 
-        var maybeUserVerificationWalletId = smsUserVerificationRepository.findAllCompletedPerWalletId(
+        val maybeUserVerificationWalletId = smsUserVerificationRepository.findAllCompletedPerWalletId(
                 eventId,
+                walletType,
                 walletId
         ).stream().findFirst();
 
         if (maybeUserVerificationWalletId.isPresent()) {
             log.info("User verification already completed (walletId):{}", maybeUserVerificationWalletId.orElseThrow());
 
-            var userVerification = maybeUserVerificationWalletId.get();
+            val userVerification = maybeUserVerificationWalletId.get();
             if (userVerification.getStatus() == VERIFIED) {
                 return Either.left(Problem.builder()
                         .withTitle("USER_ALREADY_VERIFIED")
@@ -146,7 +144,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
             }
         }
 
-        var maybePhoneNum = isValidNumber(startVerificationRequest.getPhoneNumber());
+        val maybePhoneNum = isValidNumber(startVerificationRequest.getPhoneNumber());
         if (maybePhoneNum.isEmpty()) {
             log.error("Invalid phone number, phone hash:{}", saltedPhoneHash(startVerificationRequest.getPhoneNumber()));
 
@@ -157,11 +155,11 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
                     .build());
         }
 
-        var phoneNum = maybePhoneNum.orElseThrow();
-        var formattedPhoneStr = PhoneNumberUtil.getInstance().format(phoneNum, INTERNATIONAL);
-        var phoneHash = saltedPhoneHash(formattedPhoneStr);
+        val phoneNum = maybePhoneNum.orElseThrow();
+        val formattedPhoneStr = PhoneNumberUtil.getInstance().format(phoneNum, INTERNATIONAL);
+        val phoneHash = saltedPhoneHash(formattedPhoneStr);
 
-        var maybeUserVerificationPhoneHash = smsUserVerificationRepository.findAllCompletedPerPhone(
+        val maybeUserVerificationPhoneHash = smsUserVerificationRepository.findAllCompletedPerPhone(
                 eventId,
                 phoneHash
         ).stream().findFirst();
@@ -169,7 +167,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
         if (maybeUserVerificationPhoneHash.isPresent()) {
             log.info("User verification already completed (phone used):{}", maybeUserVerificationPhoneHash.orElseThrow());
 
-            var userVerification = maybeUserVerificationPhoneHash.get();
+            val userVerification = maybeUserVerificationPhoneHash.get();
             if (userVerification.getStatus() == VERIFIED) {
                 log.info("Phone already used, phoneHash:{}", userVerification.getPhoneNumberHash());
 
@@ -191,37 +189,37 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
                     .build());
         }
 
-        var randomVerificationCode = codeGenService.generateRandomCode();
+        val randomVerificationCode = codeGenService.generateRandomCode();
         // TODO transaction service based on phone number prefix?
-        var textMsg = String.format("Auth Code: %s. %s", randomVerificationCode, friendlyCustomName).trim();
+        val textMsg = String.format("Auth Code: %s. %s", randomVerificationCode, friendlyCustomName).trim();
 
-        var smsVerificationResponseE = smsService.publishTextMessage(textMsg, phoneNum);
+        val smsVerificationResponseE = smsService.publishTextMessage(textMsg, phoneNum);
 
         if (smsVerificationResponseE.isLeft()) {
             return Either.left(smsVerificationResponseE.getLeft());
         }
 
-        var smsVerificationResponse = smsVerificationResponseE.get();
+        val smsVerificationResponse = smsVerificationResponseE.get();
 
         log.info("SMS sent to:{} (blake2b 256 hash), SNS msgId:{}, code:{}", phoneHash, smsVerificationResponse.requestId(), randomVerificationCode);
 
-        var now = LocalDateTime.now(clock);
+        val now = LocalDateTime.now(clock);
 
-        var newUserVerification = SMSUserVerification.builder()
+        val newUserVerification = SMSUserVerification.builder()
                 .id(UUID.randomUUID().toString())
                 .eventId(eventId)
                 .status(PENDING)
                 .phoneNumberHash(phoneHash)
                 .walletId(walletId)
-                .walletType(walletType.get())
+                .walletType(walletType)
                 .verificationCode(String.valueOf(randomVerificationCode))
                 .requestId(smsVerificationResponse.requestId())
                 .expiresAt(now.plusMinutes(validationExpirationTimeMinutes))
                 .build();
 
-        var saved = smsUserVerificationRepository.saveAndFlush(newUserVerification);
+        val saved = smsUserVerificationRepository.saveAndFlush(newUserVerification);
 
-        var startVerificationResponse = new SMSStartVerificationResponse(
+        val startVerificationResponse = new SMSStartVerificationResponse(
                 saved.getEventId(),
                 saved.getWalletId(),
                 saved.getWalletType(),
@@ -238,17 +236,15 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
     public Either<Problem, IsVerifiedResponse> checkVerification(SMSCheckVerificationRequest checkVerificationRequest) {
         String eventId = checkVerificationRequest.getEventId();
 
-        String walletId = checkVerificationRequest.getWalletId();
-        Optional<WalletType> walletType = checkVerificationRequest.getWalletType();
+        val walletId = checkVerificationRequest.getWalletId();
+        val walletType = checkVerificationRequest.getWalletType();
 
-        if (walletType.equals(WalletType.CARDANO)) {
-            var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, walletId);
-            if (stakeAddressCheckE.isEmpty()) {
-                return Either.left(stakeAddressCheckE.getLeft());
-            }
+        val walletIdCheckE = Addresses.checkWalletId(network, walletType, walletId);
+        if (walletIdCheckE.isEmpty()) {
+            return Either.left(walletIdCheckE.getLeft());
         }
 
-        var activeEventE = chainFollowerClient.findEventById(eventId);
+        val activeEventE = chainFollowerClient.findEventById(eventId);
 
         if (activeEventE.isEmpty()) {
             log.error("Active event error:{}", activeEventE.getLeft());
@@ -256,7 +252,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
             return Either.left(activeEventE.getLeft());
         }
 
-        var maybeEvent = activeEventE.get();
+        val maybeEvent = activeEventE.get();
         if (maybeEvent.isEmpty()) {
             log.error("Event not found:{}", eventId);
 
@@ -267,7 +263,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
                     .build());
         }
 
-        var event = maybeEvent.orElseThrow();
+        val event = maybeEvent.orElseThrow();
 
         if (event.finished()) {
             log.error("Event already finished:{}", eventId);
@@ -279,15 +275,16 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
                     .build());
         }
 
-        var maybeUserVerification = smsUserVerificationRepository.findAllCompletedPerWalletId(
+        val maybeUserVerification = smsUserVerificationRepository.findAllCompletedPerWalletId(
                 eventId,
+                walletType,
                 walletId
         ).stream().findFirst();
 
         if (maybeUserVerification.isPresent()) {
             log.info("User verification already completed:{}", maybeUserVerification.orElseThrow());
 
-            var userVerification = maybeUserVerification.get();
+            val userVerification = maybeUserVerification.get();
             if (userVerification.getStatus() == VERIFIED) {
                 return Either.left(Problem.builder()
                         .withTitle("USER_ALREADY_VERIFIED")
@@ -298,7 +295,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
             }
         }
 
-        var maybePendingRequest = smsUserVerificationRepository.findPendingVerificationsByEventIdAndWalletIdAndRequestId(
+        val maybePendingRequest = smsUserVerificationRepository.findPendingVerificationsByEventIdAndWalletIdAndRequestId(
                 eventId,
                 walletId,
                 checkVerificationRequest.getRequestId()
@@ -313,7 +310,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
             );
         }
 
-        var pendingUserVerification = maybePendingRequest.orElseThrow();
+        val pendingUserVerification = maybePendingRequest.orElseThrow();
 
         if (pendingUserVerification.getStatus() == VERIFIED) {
             return Either.left(Problem.builder()
@@ -324,9 +321,9 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
             );
         }
 
-        var now = LocalDateTime.now(clock);
+        val now = LocalDateTime.now(clock);
 
-        var isValidVerificationCode = pendingUserVerification.getVerificationCode().trim().equals(checkVerificationRequest.getVerificationCode().trim());
+        val isValidVerificationCode = pendingUserVerification.getVerificationCode().trim().equals(checkVerificationRequest.getVerificationCode().trim());
         if (!isValidVerificationCode) {
             return Either.left(Problem.builder()
                     .withTitle("INVALID_VERIFICATION_CODE")
@@ -335,7 +332,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
                     .build());
         }
 
-        var isCodeExpired = now.isAfter(pendingUserVerification.getExpiresAt());
+        val isCodeExpired = now.isAfter(pendingUserVerification.getExpiresAt());
         if (isCodeExpired) {
                 return Either.left(Problem.builder()
                         .withTitle("VERIFICATION_EXPIRED")
@@ -347,7 +344,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
         pendingUserVerification.setStatus(VERIFIED);
         pendingUserVerification.setUpdatedAt(now);
 
-        var saved = smsUserVerificationRepository.saveAndFlush(pendingUserVerification);
+        val saved = smsUserVerificationRepository.saveAndFlush(pendingUserVerification);
 
         return Either.right(new IsVerifiedResponse(saved.getStatus() == VERIFIED));
     }
@@ -355,7 +352,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
     @Override
     @Transactional(readOnly = true)
     public Either<Problem, IsVerifiedResponse> isVerified(IsVerifiedRequest isVerifiedRequest) {
-        var activeEventE = chainFollowerClient.findEventById(isVerifiedRequest.getEventId());
+        val activeEventE = chainFollowerClient.findEventById(isVerifiedRequest.getEventId());
 
         if (activeEventE.isEmpty()) {
             log.error("Active event error:{}", activeEventE.getLeft());
@@ -363,7 +360,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
             return Either.left(activeEventE.getLeft());
         }
 
-        var maybeEvent = activeEventE.get();
+        val maybeEvent = activeEventE.get();
         if (maybeEvent.isEmpty()) {
             log.error("Event not found:{}", isVerifiedRequest.getEventId());
 
@@ -374,7 +371,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
                     .build());
         }
 
-        var event = maybeEvent.orElseThrow();
+        val event = maybeEvent.orElseThrow();
 
         if (event.finished()) {
             log.error("Event already finished:{}", isVerifiedRequest.getEventId());
@@ -386,8 +383,9 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
                     .build());
         }
 
-        var maybeUserVerification = smsUserVerificationRepository.findAllCompletedPerWalletId(
+        val maybeUserVerification = smsUserVerificationRepository.findAllCompletedPerWalletId(
                 isVerifiedRequest.getEventId(),
+                isVerifiedRequest.getWalletType(),
                 isVerifiedRequest.getWalletId()
         ).stream().findFirst();
 
@@ -397,10 +395,10 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
             return Either.right(new IsVerifiedResponse(false));
         }
 
-        var userVerification = maybeUserVerification.orElseThrow();
+        val userVerification = maybeUserVerification.orElseThrow();
         log.info("Using verification:{}", userVerification);
 
-        var status = userVerification.getStatus();
+        val status = userVerification.getStatus();
 
         return Either.right(new IsVerifiedResponse(status == VERIFIED));
     }
@@ -425,7 +423,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
 
     private static Optional<Phonenumber.PhoneNumber> isValidNumber(String userEnteredPhoneNumber) {
         try {
-            var phoneNumber = PhoneNumberUtil.getInstance().parse(userEnteredPhoneNumber, null);
+            val phoneNumber = PhoneNumberUtil.getInstance().parse(userEnteredPhoneNumber, null);
 
             if (PhoneNumberUtil.getInstance().isValidNumber(phoneNumber)) {
                 return Optional.of(phoneNumber);
@@ -439,7 +437,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
     }
 
     private String saltedPhoneHash(String phoneNumber) {
-        var value = saltHolder.salt() + phoneNumber;
+        val value = saltHolder.salt() + phoneNumber;
 
         byte[] bytes = value.getBytes(UTF_8);
 

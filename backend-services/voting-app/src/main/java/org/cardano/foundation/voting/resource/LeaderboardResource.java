@@ -24,7 +24,7 @@ import java.util.Optional;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.cardano.foundation.voting.domain.WinnerLeaderboardSource.db;
-import static org.cardano.foundation.voting.resource.Headers.XForceLeaderBoardResults;
+import static org.cardano.foundation.voting.resource.Headers.X_Force_LeaderBoard_Results;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
 import static org.zalando.problem.Status.NOT_FOUND;
@@ -58,7 +58,7 @@ public class LeaderboardResource {
     )
     public ResponseEntity<?> isHighLevelEventLeaderBoardAvailable(@Parameter(name = "eventId", description = "ID of the event", required = true)
                                                                   @PathVariable("eventId") String eventId,
-                                                                  @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = "false") boolean forceLeaderboardResults) {
+                                                                  @RequestHeader(value = X_Force_LeaderBoard_Results, required = false, defaultValue = "false") boolean forceLeaderboardResults) {
         var cacheControl = CacheControl.maxAge(5, MINUTES)
                 .noTransform()
                 .mustRevalidate();
@@ -110,7 +110,7 @@ public class LeaderboardResource {
     )
     public ResponseEntity<?> isHighLevelCategoryLeaderBoardAvailable(@Parameter(name = "eventId", description = "ID of the event", required = true)
                                                                      @PathVariable("eventId") String eventId,
-                                                                     @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = "false") boolean forceLeaderboardResults) {
+                                                                     @RequestHeader(value = X_Force_LeaderBoard_Results, required = false, defaultValue = "false") boolean forceLeaderboardResults) {
         var cacheControl = CacheControl.maxAge(5, MINUTES)
                 .noTransform()
                 .mustRevalidate();
@@ -162,7 +162,7 @@ public class LeaderboardResource {
                                                              @PathVariable("eventId") String eventId,
                                                              @Parameter(name = "categoryId", description = "ID of the category", required = true)
                                                              @PathVariable("categoryId") String categoryId,
-                                                             @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = "false") boolean forceLeaderboardResults,
+                                                             @RequestHeader(value = X_Force_LeaderBoard_Results, required = false, defaultValue = "false") boolean forceLeaderboardResults,
                                                              @Parameter(name = "source", description = "source of results, db or l1")
                                                              @Valid @RequestParam(name = "source") Optional<WinnerLeaderboardSource> winnerLeaderboardSourceM) {
         var winnerLeaderboardSource = winnerLeaderboardSourceM.orElse(db);
@@ -219,7 +219,7 @@ public class LeaderboardResource {
     public ResponseEntity<?> getEventLeaderBoard(
                                                  @Parameter(name = "eventId", description = "ID of the event", required = true)
                                                  @PathVariable("eventId") String eventId,
-                                                 @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = "false") boolean forceLeaderboardResults) {
+                                                 @RequestHeader(value = X_Force_LeaderBoard_Results, required = false, defaultValue = "false") boolean forceLeaderboardResults) {
         var cacheControl = CacheControl.maxAge(5, MINUTES)
                 .noTransform()
                 .mustRevalidate();
@@ -259,7 +259,7 @@ public class LeaderboardResource {
                                                     @PathVariable("eventId") String eventId,
                                                     @Parameter(name = "categoryId", description = "ID of the category", required = true)
                                                     @PathVariable("categoryId") String categoryId,
-                                                    @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = "false") boolean forceLeaderboardResults,
+                                                    @RequestHeader(value = X_Force_LeaderBoard_Results, required = false, defaultValue = "false") boolean forceLeaderboardResults,
                                                     @Parameter(name = "source", description = "source of results, db or l1")
                                                     @Valid @RequestParam(name = "source") Optional<WinnerLeaderboardSource> winnerLeaderboardSourceM) {
         var winnerLeaderboardSource = winnerLeaderboardSourceM.orElse(db);
@@ -305,7 +305,7 @@ public class LeaderboardResource {
     @Timed(value = "resource.leaderboard.category", histogram = true)
     public ResponseEntity<?> getCategoryLeaderBoardPerCategoryResults(@PathVariable("eventId") String eventId,
                                                                @PathVariable("categoryId") String categoryId,
-                                                               @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = "false") boolean forceLeaderboardResults,
+                                                               @RequestHeader(value = X_Force_LeaderBoard_Results, required = false, defaultValue = "false") boolean forceLeaderboardResults,
                                                                @Valid @RequestParam(name = "source") Optional<WinnerLeaderboardSource> winnerLeaderboardSourceM) {
         var winnerLeaderboardSource = winnerLeaderboardSourceM.orElse(db);
 
@@ -349,7 +349,7 @@ public class LeaderboardResource {
     @RequestMapping(value = "/{eventId}/results", method = GET, produces = "application/json")
     @Timed(value = "resource.leaderboard.category.all", histogram = true)
     public ResponseEntity<?> getCategoryLeaderBoardForAllCategoriesResults(@PathVariable("eventId") String eventId,
-                                                                    @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = "false") boolean forceLeaderboardResults,
+                                                                    @RequestHeader(value = X_Force_LeaderBoard_Results, required = false, defaultValue = "false") boolean forceLeaderboardResults,
                                                                     @Valid @RequestParam(name = "source") Optional<WinnerLeaderboardSource> winnerLeaderboardSourceM) {
         var winnerLeaderboardSource = winnerLeaderboardSourceM.orElse(db);
 

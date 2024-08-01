@@ -1,13 +1,19 @@
 package org.cardano.foundation.voting.api.tests;
 
 import io.restassured.response.Response;
+import lombok.val;
 import org.cardano.foundation.voting.api.BaseTest;
 import org.cardano.foundation.voting.api.endpoints.VotingAppEndpoints;
 import org.cardano.foundation.voting.domain.UserVotes;
 import org.cardano.foundation.voting.domain.VoteReceipt;
+import org.cardano.foundation.voting.domain.web3.WalletType;
 import org.junit.jupiter.api.*;
+
 import java.util.List;
+
 import static io.restassured.RestAssured.given;
+import static org.cardano.foundation.voting.api.endpoints.VotingAppEndpoints.LOGIN_ENDPOINT;
+import static org.cardano.foundation.voting.resource.Headers.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class VoteTests extends BaseTest {
@@ -27,10 +33,11 @@ public class VoteTests extends BaseTest {
               }
             }
         */
-        Response response = given()
-                .header("X-CIP93-Signature", signature)
-                .header("X-CIP93-Public-Key", publicKey)
-                .when().get(VotingAppEndpoints.LOGIN_ENDPOINT + "/login");
+        val response = given()
+                .header(X_Login_Signature, signature)
+                .header(X_Login_PublicKey, publicKey)
+                .header(X_Wallet_Type, WalletType.CARDANO.name())
+                .when().get(LOGIN_ENDPOINT + "/login");
 
         return response.jsonPath().getString("accessToken");
     }
@@ -45,7 +52,8 @@ public class VoteTests extends BaseTest {
               "actionText": "Cast Vote",
               "data": {
                 "id": "2658fb7d-cd12-48c3-bc95-23e73616b79f",
-                "address": "stake_test1uzpq2pktpnj54e64kfgjkm8nrptdwfj7s7fvhp40e98qsusd9z7ek",
+                "walletId": "stake_test1uruw6wswag80sd0l57alehj47llf6tx96402vt8vks46k0q0e2ne6",
+                "walletType": "CARDANO",
                 "event": "CF_TEST_EVENT_01",
                 "category": "CHANGE_SOMETHING",
                 "proposal": "YES",
@@ -57,12 +65,13 @@ public class VoteTests extends BaseTest {
               "uri": "https://evoting.cardano.org/voltaire"
             }
         */
-        String publicKey = "a4010103272006215820c9a521bd37b0a416ba404c120b1c8608745a56aff2530949c7893a5c3847d2fe";
-        String signature = "84582aa201276761646472657373581de0820506cb0ce54ae755b2512b6cf31856d7265e8792cb86afc94e0872a166686173686564f459017f7b22616374696f6e223a22434153545f564f5445222c22616374696f6e54657874223a224361737420566f7465222c2264617461223a7b226964223a2232363538666237642d636431322d343863332d626339352d323365373336313662373966222c2261646472657373223a227374616b655f7465737431757a707132706b74706e6a35346536346b66676a6b6d386e7270746477666a3773376676687034306539387173757364397a37656b222c226576656e74223a2243465f544553545f4556454e545f3031222c2263617465676f7279223a224348414e47455f534f4d455448494e47222c2270726f706f73616c223a22594553222c226e6574776f726b223a2250524550524f44222c22766f7465644174223a223430323632343036222c22766f74696e67506f776572223a223130343434353535363636227d2c22736c6f74223a223430323632343036222c22757269223a2268747470733a2f2f65766f74696e672e63617264616e6f2e6f72672f766f6c7461697265227d5840d4821a7870be3d3e5180a056b02ec31c7e77f8d50968819c7c79adbe46433ed88ae3ef13efa2202a2f29d499ee61d0b8377fd1d4b68ab71deeff0028b87a9707";
+        String publicKey = "a5010102581de0f8ed3a0eea0ef835ffa7bbfcde55f7fe9d2cc5d55ea62cecb42bab3c032720062158202b41abe97d5c84f30691740cb564305fd3f30514777e56581fd0bef02a92e29d";
+        String signature = "84584aa3012704581de0f8ed3a0eea0ef835ffa7bbfcde55f7fe9d2cc5d55ea62cecb42bab3c6761646472657373581de0f8ed3a0eea0ef835ffa7bbfcde55f7fe9d2cc5d55ea62cecb42bab3ca166686173686564f45902b40a2020202020202020202020207b0a202020202020202020202020202022616374696f6e223a2022434153545f564f5445222c0a202020202020202020202020202022616374696f6e54657874223a20224361737420566f7465222c0a20202020202020202020202020202264617461223a207b0a20202020202020202020202020202020226964223a202232363538666237642d636431322d343863332d626339352d323365373336313662373966222c0a202020202020202020202020202020202277616c6c65744964223a20227374616b655f74657374317572757736777377616738307364306c3537616c65686a34376c6c663674783936343032767438766b7334366b30713065326e6536222c0a202020202020202020202020202020202277616c6c657454797065223a202243415244414e4f222c0a20202020202020202020202020202020226576656e74223a202243465f544553545f4556454e545f3031222c0a202020202020202020202020202020202263617465676f7279223a20224348414e47455f534f4d455448494e47222c0a202020202020202020202020202020202270726f706f73616c223a2022594553222c0a20202020202020202020202020202020226e6574776f726b223a202250524550524f44222c0a2020202020202020202020202020202022766f7465644174223a20223430323632343036222c0a2020202020202020202020202020202022766f74696e67506f776572223a20223130343434353535363636220a20202020202020202020202020207d2c0a202020202020202020202020202022736c6f74223a20223430323632343036222c0a202020202020202020202020202022757269223a202268747470733a2f2f65766f74696e672e63617264616e6f2e6f72672f766f6c7461697265220a2020202020202020202020207d0a0a584069740e3d87ee22c6cc9e66db0cea6972c1007c9429346da890582d9435ef655fb127a1b9d4cb155b3bea6d8ccedbe810d53a4fd98c57f5dbdcb808c36ceee606";
 
         given()
-                .header("X-CIP93-Signature", signature)
-                .header("X-CIP93-Public-Key", publicKey)
+                .header(X_Login_Signature, signature)
+                .header(X_Login_PublicKey, publicKey)
+                .header(X_Wallet_Type, WalletType.CARDANO.name())
                 .when().post(VotingAppEndpoints.VOTE_ENDPOINT + "/cast")
                 .then()
                 .statusCode(200);

@@ -1,6 +1,7 @@
 package org.cardano.foundation.voting.api.tests;
 
 import io.restassured.response.Response;
+import lombok.val;
 import org.cardano.foundation.voting.api.BaseTest;
 import org.cardano.foundation.voting.api.endpoints.VotingAppEndpoints;
 import org.cardano.foundation.voting.domain.Leaderboard;
@@ -28,9 +29,10 @@ public class LeaderboardTests extends BaseTest {
                         "CF_TEST_EVENT_03");
 
         Assertions.assertEquals(200, response.getStatusCode());
-        Leaderboard.ByEventStats leaderboard = response.as(Leaderboard.ByEventStats.class);
-        Assertions.assertEquals(leaderboard.getTotalVotingPower(), "8151");
-        Assertions.assertEquals(leaderboard.getEvent(), "CF_TEST_EVENT_03");
+        val leaderboard = response.as(Leaderboard.ByEventStats.class);
+
+        Assertions.assertEquals("8151", leaderboard.getTotalVotingPower());
+        Assertions.assertEquals("CF_TEST_EVENT_03", leaderboard.getEvent());
         Assertions.assertEquals(leaderboard.getTotalVotesCount(), 3);
     }
 

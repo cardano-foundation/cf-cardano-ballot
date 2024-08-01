@@ -9,13 +9,15 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import io.micrometer.core.annotation.Timed;
 import io.vavr.control.Either;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.domain.CardanoNetwork;
+import lombok.val;
+import org.cardano.foundation.voting.domain.ChainNetwork;
 import org.cardano.foundation.voting.domain.LoginResult;
 import org.cardano.foundation.voting.domain.Role;
+import org.cardano.foundation.voting.domain.web3.WalletType;
+import org.cardano.foundation.voting.utils.Addresses;
 import org.cardano.foundation.voting.utils.Enums;
-import org.cardano.foundation.voting.utils.StakeAddress;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.zalando.problem.Problem;
@@ -23,24 +25,23 @@ import org.zalando.problem.Problem;
 import java.text.ParseException;
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.UUID;
 
 import static com.nimbusds.jose.JWSAlgorithm.EdDSA;
 import static org.cardano.foundation.voting.utils.MoreTime.convertToDateViaInstant;
 import static org.zalando.problem.Status.*;
 
+@RequiredArgsConstructor
 @Service
 @Slf4j
 public class JwtService {
 
-    @Autowired
-    private OctetKeyPair cfJWTKey;
+    private final OctetKeyPair cfJWTKey;
 
-    @Autowired
-    private Clock clock;
+    private final Clock clock;
 
-    @Autowired
-    private CardanoNetwork cardanoNetwork;
+    private final ChainNetwork chainNetworkStartedOn;
 
     @Value("${cardano.jwt.iss}")
     private String iss;
@@ -49,38 +50,41 @@ public class JwtService {
     private long tokenValidityDurationHours;
 
     @Timed(value = "service.jwt.generate", histogram = true)
-    public Either<Problem, LoginResult> generate(String stakeAddress,
+    public Either<Problem, LoginResult> generate(WalletType walletType,
+                                                 String walletId,
                                                  String eventId,
                                                  Role role) {
-        var now = LocalDateTime.now(clock);
-        try {
-            var signer = new Ed25519Signer(cfJWTKey);
-            var expirationLocalDateTime = now.plusHours(tokenValidityDurationHours);
-            var legacyExpirationDate = convertToDateViaInstant(expirationLocalDateTime);
+        val now = LocalDateTime.now(clock);
 
-            var claimsSet = new JWTClaimsSet.Builder()
-                    .subject(stakeAddress)
+        try {
+            val signer = new Ed25519Signer(cfJWTKey);
+            val expirationLocalDateTime = now.plusHours(tokenValidityDurationHours);
+            val legacyExpirationDate = convertToDateViaInstant(expirationLocalDateTime);
+
+            val claimsSet = new JWTClaimsSet.Builder()
+                    .subject(walletId)
                     .jwtID(UUID.randomUUID().toString())
                     .issuer(iss)
-                    .claim("stakeAddress", stakeAddress)
+                    .claim("walletType", walletType.name())
+                    .claim("walletId", walletId)
                     .claim("eventId", eventId)
                     .claim("role", role)
-                    .claim("cardanoNetwork", cardanoNetwork.name())
+                    .claim("network", chainNetworkStartedOn.name())
                     .issueTime(convertToDateViaInstant(now))
                     .expirationTime(legacyExpirationDate)
                     .build();
 
-            var header = new JWSHeader.Builder(EdDSA)
+            val header = new JWSHeader.Builder(EdDSA)
                     .keyID(cfJWTKey.getKeyID())
                     .build();
 
-            var signedJWT = new SignedJWT(header, claimsSet);
+            val signedJWT = new SignedJWT(header, claimsSet);
 
             signedJWT.sign(signer);
 
-            var accessToken = signedJWT.serialize();
+            val accessToken = signedJWT.serialize();
 
-            return Either.right(new LoginResult(accessToken, expirationLocalDateTime));
+            return Either.right(new LoginResult(accessToken, walletType, expirationLocalDateTime));
         } catch (JOSEException e) {
             log.error("JWT token generation error", e);
 
@@ -90,22 +94,21 @@ public class JwtService {
                     .withStatus(INTERNAL_SERVER_ERROR)
                     .build());
         }
-
     }
 
     @Timed(value = "service.jwt.verify", histogram = true)
     public Either<Problem, SignedJWT> verify(String token) {
-        var publicJWK = cfJWTKey.toPublicJWK();
+        val publicJWK = cfJWTKey.toPublicJWK();
 
         try {
-            var verifier = new Ed25519Verifier(publicJWK);
-            var signedJWT = SignedJWT.parse(token);
+            val verifier = new Ed25519Verifier(publicJWK);
+            val signedJWT = SignedJWT.parse(token);
 
             if (signedJWT.verify(verifier)) {
-                var jwtClaimsSet = signedJWT.getJWTClaimsSet();
-                var sub = jwtClaimsSet.getSubject();
+                val jwtClaimsSet = signedJWT.getJWTClaimsSet();
+                val sub = jwtClaimsSet.getSubject();
 
-                var issuerCheck = jwtClaimsSet.getIssuer().equals(iss);
+                val issuerCheck = jwtClaimsSet.getIssuer().equals(iss);
 
                 if (!issuerCheck) {
                     log.warn("JWT token verification failed for token:{}, issuer check failed.", token);
@@ -119,9 +122,9 @@ public class JwtService {
                     );
                 }
 
-                var now = LocalDateTime.now(clock);
-                var nowDate = convertToDateViaInstant(now);
-                var expDate = signedJWT.getJWTClaimsSet().getExpirationTime();
+                val now = LocalDateTime.now(clock);
+                val nowDate = convertToDateViaInstant(now);
+                val expDate = signedJWT.getJWTClaimsSet().getExpirationTime();
 
                 if (nowDate.after(expDate)) {
                     log.info("JWT token verification failed for token, token expired on: {}", expDate);
@@ -134,41 +137,51 @@ public class JwtService {
                                     .build());
                 }
 
-                var jwtCardanoNetwork = jwtClaimsSet.getStringClaim("cardanoNetwork");
-                var maybeNetwork = Enums.getIfPresent(CardanoNetwork.class, jwtCardanoNetwork);
-                if (maybeNetwork.isEmpty()) {
-                    log.warn("Invalid network, network:{}", jwtCardanoNetwork);
+                val jwtChainNetwork = jwtClaimsSet.getStringClaim("network");
+                val networkM = Enums.getIfPresent(ChainNetwork.class, jwtChainNetwork);
+                if (networkM.isEmpty()) {
+                    log.warn("Invalid network, network:{}", jwtChainNetwork);
 
                     return Either.left(Problem.builder()
                             .withTitle("INVALID_NETWORK")
-                            .withDetail("Invalid network, supported networks: " + CardanoNetwork.supportedNetworks())
+                            .withDetail("Invalid network, supported networks: " + ChainNetwork.supportedNetworks())
                             .withStatus(BAD_REQUEST)
                             .build());
                 }
 
-                var jwtNetwork = maybeNetwork.orElseThrow();
-
-                if (jwtNetwork != cardanoNetwork) {
+                val jwtNetwork = networkM.orElseThrow();
+                if (jwtNetwork != chainNetworkStartedOn) {
                     log.warn("Network mismatch, network:{}", jwtNetwork);
 
                     return Either.left(Problem.builder()
                             .withTitle("NETWORK_MISMATCH")
-                            .withDetail("Invalid network, backend configured with network: " + cardanoNetwork + ", however request is with network: " + jwtNetwork)
+                            .withDetail("Invalid network, backend configured with network: " + chainNetworkStartedOn + ", however request is with network: " + jwtNetwork)
                             .withStatus(BAD_REQUEST)
                             .build());
 
                 }
 
-                var jwtStakeAddress = jwtClaimsSet.getStringClaim("stakeAddress");
+                val walletId = jwtClaimsSet.getStringClaim("walletId");
+                val walletTypeM = Enums.getIfPresent(WalletType.class, jwtClaimsSet.getStringClaim("walletType"));
 
-                var stakeAddressCheckE = StakeAddress.checkStakeAddress(cardanoNetwork, jwtStakeAddress);
-                if (stakeAddressCheckE.isEmpty()) {
-                    return Either.left(stakeAddressCheckE.getLeft());
+                if (walletTypeM.isEmpty()) {
+                    log.warn("Invalid wallet type, walletType:{}", jwtClaimsSet.getStringClaim("walletType"));
+
+                    return Either.left(Problem.builder()
+                            .withTitle("INVALID_WALLET_TYPE")
+                            .withDetail("Invalid wallet type, supported wallet types:" + Arrays.asList(WalletType.values()))
+                            .withStatus(BAD_REQUEST)
+                            .build());
                 }
 
-                var maybeRole = Enums.getIfPresent(Role.class, jwtClaimsSet.getStringClaim("role"));
+                val walletType = walletTypeM.orElseThrow();
+                val walletIdCheck = Addresses.checkWalletId(chainNetworkStartedOn, walletType, walletId);
+                if (walletIdCheck.isEmpty()) {
+                    return Either.left(walletIdCheck.getLeft());
+                }
 
-                if (maybeRole.isEmpty()) {
+                val roleM = Enums.getIfPresent(Role.class, jwtClaimsSet.getStringClaim("role"));
+                if (roleM.isEmpty()) {
                     log.warn("Invalid role, role:{}", jwtClaimsSet.getStringClaim("role"));
 
                     return Either.left(Problem.builder()

@@ -7,7 +7,9 @@ import lombok.Data;
 @Builder
 public class Account {
 
-    private String stakeAddress;
+    private WalletType walletType;
+
+    private String walletId;
 
     private int epochNo;
 
@@ -15,6 +17,6 @@ public class Account {
 
     private VotingPowerAsset votingPowerAsset;
 
-    private CardanoNetwork network;
+    private ChainNetwork network;
 
 }

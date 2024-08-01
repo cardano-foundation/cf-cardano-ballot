@@ -420,7 +420,7 @@ import static org.zalando.problem.Status.BAD_REQUEST;
     @Override
     @Transactional(readOnly = true)
     public List&lt;SMSUserVerification&gt; findAllPending(String eventId) {
-<span class="nc" id="L423">        return smsUserVerificationRepository.findAllPending(eventId);</span>
+<span class="fc" id="L423">        return smsUserVerificationRepository.findAllPending(eventId);</span>
     }
 
     private static Optional&lt;Phonenumber.PhoneNumber&gt; isValidNumber(String userEnteredPhoneNumber) {

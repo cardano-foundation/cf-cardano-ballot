@@ -19,7 +19,7 @@ public abstract class AbstractTimestampEntity {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = &quot;created_at&quot;, nullable = false)
     @Builder.Default
-<span class="pc" id="L22">    protected LocalDateTime createdAt = LocalDateTime.now(); // TODO clock</span>
+<span class="fc" id="L22">    protected LocalDateTime createdAt = LocalDateTime.now(); // TODO clock</span>
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = &quot;updated_at&quot;, nullable = false)

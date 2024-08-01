@@ -110,7 +110,7 @@ public class VoteResource {
 
     @RequestMapping(value = "/cast", method = POST, produces = "application/json")
     @Timed(value = "resource.vote.cast", histogram = true)
-    @Operation(summary = "Cast a vote", description = "Allows users to cast their vote. Requires CIP-93 authentication.",
+    @Operation(summary = "Cast a vote", description = "Allows users to cast their vote. Requires authentication.",
         responses = {
                 @ApiResponse(responseCode = "200", description = "Vote successfully cast."),
                 @ApiResponse(responseCode = "400", description = "Bad request, possibly due to missing Web3 authentication.",
@@ -128,7 +128,7 @@ public class VoteResource {
         if (!(authentication instanceof Web3AuthenticationToken web3Auth)) {
             var problem = Problem.builder()
                     .withTitle("WEB3_AUTH_REQUIRED")
-                    .withDetail("CIP-93 auth headers tokens needed!")
+                    .withDetail("Auth headers tokens needed!")
                     .withStatus(BAD_REQUEST)
                     .build();
 
@@ -156,7 +156,7 @@ public class VoteResource {
 
     @RequestMapping(value = "/receipt", method = { HEAD, GET } , produces = "application/json")
     @Timed(value = "resource.vote.receipt.web3", histogram = true)
-    @Operation(summary = "Retrieve a vote receipt", description = "Allows users to retrieve a receipt for their vote. Requires CIP-93 authentication.",
+    @Operation(summary = "Retrieve a vote receipt", description = "Allows users to retrieve a receipt for their vote. Requires authentication.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Vote receipt retrieved successfully.",
                             content = @Content(
@@ -177,7 +177,7 @@ public class VoteResource {
         if (!(authentication instanceof Web3AuthenticationToken web3Auth)) {
             var problem = Problem.builder()
                     .withTitle("WEB3_AUTH_REQUIRED")
-                    .withDetail("CIP-93 auth headers tokens needed!")
+                    .withDetail("Auth headers tokens needed!")
                     .withStatus(BAD_REQUEST)
                     .build();
 

@@ -7,7 +7,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.VerificationStatus;
-import org.cardano.foundation.voting.utils.WalletType;
+import org.cardano.foundation.voting.domain.WalletType;
 
 import java.time.LocalDateTime;
 

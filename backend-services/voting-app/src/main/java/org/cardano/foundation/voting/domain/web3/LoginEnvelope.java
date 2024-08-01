@@ -9,11 +9,13 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class JwtLoginEnvelope {
+public class LoginEnvelope {
 
     private String event;
 
-    private String address;
+    private WalletType walletType;
+
+    private String walletId;
 
     private String network;
 

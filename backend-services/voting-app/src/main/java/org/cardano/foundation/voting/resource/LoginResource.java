@@ -34,7 +34,7 @@ public class LoginResource {
     @Timed(value = "resource.auth.login", histogram = true)
     @Operation(
             summary = "Log in using Web3 authentication token",
-            description = "Authenticate user using CIP-93 auth headers tokens. This endpoint allows you to obtain a JWT auth token based on Web3 authentication.",
+            description = "Authenticate user using login auth headers tokens. This endpoint allows you to obtain a JWT auth token based on Web3 authentication.",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
@@ -70,7 +70,7 @@ public class LoginResource {
         if (!(authentication instanceof Web3AuthenticationToken web3AuthenticationToken)) {
             var problem = Problem.builder()
                     .withTitle("WEB3_AUTH_REQUIRED")
-                    .withDetail("CIP-93 auth headers tokens needed!")
+                    .withDetail("WEB3_AUTH_REQUIRED auth headers tokens needed!")
                     .withStatus(BAD_REQUEST)
                     .build();
 

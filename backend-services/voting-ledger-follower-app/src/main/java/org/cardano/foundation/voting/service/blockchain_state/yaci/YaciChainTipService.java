@@ -4,7 +4,7 @@ import com.bloxbean.cardano.yaci.store.api.blocks.service.BlockService;
 import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.domain.CardanoNetwork;
+import org.cardano.foundation.voting.domain.ChainNetwork;
 import org.cardano.foundation.voting.domain.ChainTip;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataChainTipService;
 import org.cardano.foundation.voting.service.chain_sync.ChainSyncService;
@@ -28,7 +28,7 @@ public class YaciChainTipService implements BlockchainDataChainTipService {
 
     private final ChainSyncService chainSyncService;
 
-    private final CardanoNetwork cardanoNetwork;
+    private final ChainNetwork chainNetwork;
 
     private final CacheManager cacheManager;
 
@@ -54,7 +54,7 @@ public class YaciChainTipService implements BlockchainDataChainTipService {
                 .hash(latestBlock.getHash())
                 .epochNo(Optional.ofNullable(latestBlock.getEpochNumber()).orElse(-1))
                 .absoluteSlot(latestBlock.getSlot())
-                .network(cardanoNetwork)
+                .network(chainNetwork)
                 .isSynced(chainSync.isSynced())
                 .build());
     }

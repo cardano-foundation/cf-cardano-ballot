@@ -4,15 +4,20 @@ import io.micrometer.core.annotation.Timed;
 import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.client.UserVerificationClient;
 import org.cardano.foundation.voting.domain.UserVotes;
 import org.cardano.foundation.voting.domain.VoteReceipt;
 import org.cardano.foundation.voting.domain.entity.Vote;
 import org.cardano.foundation.voting.domain.entity.VoteMerkleProof;
+import org.cardano.foundation.voting.domain.web3.*;
 import org.cardano.foundation.voting.repository.VoteRepository;
 import org.cardano.foundation.voting.service.auth.jwt.JwtAuthenticationToken;
+import org.cardano.foundation.voting.service.auth.web3.CardanoWeb3Details;
+import org.cardano.foundation.voting.service.auth.web3.KeriWeb3Details;
 import org.cardano.foundation.voting.service.auth.web3.Web3AuthenticationToken;
+import org.cardano.foundation.voting.service.auth.web3.Web3ConcreteDetails;
 import org.cardano.foundation.voting.service.json.JsonService;
 import org.cardano.foundation.voting.service.merkle_tree.MerkleProofSerdeService;
 import org.cardano.foundation.voting.service.merkle_tree.VoteMerkleProofService;
@@ -29,9 +34,9 @@ import java.util.UUID;
 import static com.bloxbean.cardano.client.util.HexUtil.encodeHexString;
 import static org.cardano.foundation.voting.domain.VoteReceipt.Status.*;
 import static org.cardano.foundation.voting.domain.VotingEventType.*;
+import static org.cardano.foundation.voting.domain.web3.WalletType.KERI;
 import static org.cardano.foundation.voting.domain.web3.Web3Action.*;
 import static org.cardano.foundation.voting.utils.MoreNumber.isNumeric;
-import static org.cardanofoundation.cip30.MessageFormat.TEXT;
 import static org.zalando.problem.Status.*;
 
 @Service
@@ -40,23 +45,19 @@ import static org.zalando.problem.Status.*;
 public class DefaultVoteService implements VoteService {
 
     private final VoteRepository voteRepository;
-
     private final VoteMerkleProofService voteMerkleProofService;
-
     private final MerkleProofSerdeService merkleProofSerdeService;
-
     private final ChainFollowerClient chainFollowerClient;
-
     private final UserVerificationClient userVerificationClient;
-
     private final JsonService jsonService;
 
     @Override
     @Transactional(readOnly = true)
     @Timed(value = "service.vote.getVotes", histogram = true)
     public Either<Problem, List<UserVotes>> getVotes(JwtAuthenticationToken auth) {
-        var jwtEventId = auth.eventDetails().id();
-        var jwtStakeAddress = auth.getStakeAddress();
+        val jwtEventId = auth.eventDetails().id();
+        val jwtWalletType = auth.getWalletType();
+        val jwtWalletId = auth.getWalletId();
 
         if (auth.isActionNotAllowed(VOTES)) {
             return Either.left(Problem.builder()
@@ -66,10 +67,10 @@ public class DefaultVoteService implements VoteService {
                     .build());
         }
 
-        var userVotesList = voteRepository.getVotesByStakeAddress(jwtEventId, jwtStakeAddress)
+        val userVotesList = voteRepository.getVotesByWalletId(jwtEventId, jwtWalletType, jwtWalletId)
                 .stream().map(p -> {
-                    var cid = p.getCategoryId();
-                    var pid = p.getProposalId();
+                    val cid = p.getCategoryId();
+                    val pid = p.getProposalId();
 
                     return new UserVotes(cid, pid);
                 }).toList();
@@ -81,7 +82,7 @@ public class DefaultVoteService implements VoteService {
     @Timed(value = "service.vote.isVoteChangingPossible", histogram = true)
     public Either<Problem, Boolean> isVoteChangingPossible(String voteId,
                                                            JwtAuthenticationToken auth) {
-        var jwtEventId = auth.eventDetails().id();
+        val jwtEventId = auth.eventDetails().id();
 
         if (auth.isActionNotAllowed(IS_VOTE_CHANGING_ALLOWED)) {
             return Either.left(Problem.builder()
@@ -94,7 +95,7 @@ public class DefaultVoteService implements VoteService {
             return Either.right(false);
         }
 
-        var maybeExistingVote = voteRepository.findById(voteId);
+        val maybeExistingVote = voteRepository.findById(voteId);
         if (maybeExistingVote.isEmpty()) {
             return Either.left(Problem.builder()
                     .withTitle("VOTE_NOT_FOUND")
@@ -104,7 +105,7 @@ public class DefaultVoteService implements VoteService {
             );
         }
 
-        var maybeExistingProof = voteMerkleProofService.findLatestProof(jwtEventId, voteId);
+        val maybeExistingProof = voteMerkleProofService.findLatestProof(jwtEventId, voteId);
         if (maybeExistingProof.isPresent()) {
             return Either.left(Problem.builder()
                     .withTitle("VOTE_CANNOT_BE_CHANGED")
@@ -121,29 +122,20 @@ public class DefaultVoteService implements VoteService {
     @Transactional
     @Timed(value = "service.vote.castVote", histogram = true)
     public Either<Problem, Vote> castVote(Web3AuthenticationToken web3AuthenticationToken) {
-        var details = web3AuthenticationToken.getDetails();
-        var cip30VerificationResult = details.getCip30VerificationResult();
+        val concreteDetails = web3AuthenticationToken.getDetails();
+        val details = concreteDetails.getWeb3CommonDetails();
 
-        var event = details.getEvent();
-        var eventId = event.id();
-        var stakeAddress = details.getStakeAddress();
+        val event = details.getEvent();
+        val eventId = event.id();
+        val walletId = details.getWalletId();
+        val walletType = details.getWalletType();
 
-        var signedJson = cip30VerificationResult.getMessage(TEXT);
-
-        var castVoteRequestBodyJsonE = jsonService.decodeCIP93VoteEnvelope(signedJson);
-        if (castVoteRequestBodyJsonE.isLeft()) {
-            if (castVoteRequestBodyJsonE.isLeft()) {
-                return Either.left(
-                        Problem.builder()
-                                .withTitle("INVALID_CIP30_DATA_SIGNATURE")
-                                .withDetail("Invalid cast vote signature!")
-                                .withStatus(BAD_REQUEST)
-                                .build()
-                );
-            }
+        val castVoteE = unwrapCastCoteEnvelope(concreteDetails);
+        if (castVoteE.isLeft()) {
+            return Either.left(castVoteE.getLeft());
         }
-        var cip93VoteEnvelope = castVoteRequestBodyJsonE.get();
 
+        val castVote = castVoteE.get();
         if (details.getAction() != CAST_VOTE) {
             return Either.left(Problem.builder()
                     .withTitle("INVALID_ACTION")
@@ -163,7 +155,9 @@ public class DefaultVoteService implements VoteService {
                     .build());
         }
 
-        if (web3AuthenticationToken.getDetails().getChainTip().isNotSynced()) {
+
+
+        if (details.getChainTip().isNotSynced()) {
             return Either.left(Problem.builder()
                     .withTitle("CHAIN_FOLLOWER_NOT_SYNCED")
                     .withDetail("Chain follower service not fully synced, please try again later!")
@@ -173,7 +167,7 @@ public class DefaultVoteService implements VoteService {
 
         // check which is specific for the USER_BASED event type
         if (event.votingEventType() == USER_BASED) {
-            var userVerifiedE = userVerificationClient.isVerified(eventId, details.getStakeAddress());
+            val userVerifiedE = userVerificationClient.isVerified(eventId, walletType, details.getWalletId());
             if (userVerifiedE.isEmpty()) {
                 return Either.left(Problem.builder()
                         .withTitle("ERROR_GETTING_USER_VERIFICATION_STATUS")
@@ -182,7 +176,7 @@ public class DefaultVoteService implements VoteService {
                         .build()
                 );
             }
-            var userVerifiedResponse = userVerifiedE.get();
+            val userVerifiedResponse = userVerifiedE.get();
 
             if (userVerifiedResponse.isNotYetVerified()) {
                 log.warn("User is not verified, id:{}", eventId);
@@ -195,9 +189,9 @@ public class DefaultVoteService implements VoteService {
             }
         }
 
-        var categoryId = cip93VoteEnvelope.getData().getCategory();
-        var maybeCategory = event.categoryDetailsById(categoryId);
-        if (maybeCategory.isEmpty()) {
+        val categoryId = castVote.getCategory();
+        val categoryM = event.categoryDetailsById(categoryId);
+        if (categoryM.isEmpty()) {
             log.warn("Unrecognised category, id:{}", categoryId);
 
             return Either.left(Problem.builder()
@@ -206,13 +200,13 @@ public class DefaultVoteService implements VoteService {
                     .withStatus(BAD_REQUEST)
                     .build());
         }
-        var category = maybeCategory.orElseThrow();
+        val category = categoryM.orElseThrow();
 
-        var proposalIdOrName = cip93VoteEnvelope.getData().getProposal();
+        val proposalIdOrName = castVote.getProposal();
 
         ChainFollowerClient.ProposalDetailsResponse proposal;
         if (category.gdprProtection()) {
-            var maybeProposal = category.findProposalById(proposalIdOrName);
+            val maybeProposal = category.findProposalById(proposalIdOrName);
             if (maybeProposal.isEmpty()) {
                 log.warn("Unrecognised proposal, proposalId:{}", proposalIdOrName);
 
@@ -224,7 +218,7 @@ public class DefaultVoteService implements VoteService {
             }
             proposal = maybeProposal.orElseThrow();
         } else {
-            var maybeProposal = category.findProposalByName(proposalIdOrName);
+            val maybeProposal = category.findProposalByName(proposalIdOrName);
             if (maybeProposal.isEmpty()) {
                 log.warn("Unrecognised proposal, proposalId:{}", proposalIdOrName);
 
@@ -237,7 +231,7 @@ public class DefaultVoteService implements VoteService {
             proposal = maybeProposal.orElseThrow();
         }
 
-        String voteId = cip93VoteEnvelope.getData().getId();
+        String voteId = castVote.getId();
         if (voteId == null || !MoreUUID.isUUIDv4(voteId)) {
             return Either.left(
                     Problem.builder()
@@ -247,7 +241,7 @@ public class DefaultVoteService implements VoteService {
                             .build());
         }
 
-        var votedAtSlotStr = cip93VoteEnvelope.getData().getVotedAt();
+        val votedAtSlotStr = castVote.getVotedAt();
         if (!isNumeric(votedAtSlotStr)) {
             return Either.left(
                     Problem.builder()
@@ -257,117 +251,143 @@ public class DefaultVoteService implements VoteService {
                             .build()
             );
         }
-        var votedAtSlot = cip93VoteEnvelope.getData().getVotedAtSlot();
 
-        if (votedAtSlot != details.getEnvelope().getSlotAsLong()) {
-            log.warn("Slots mismatch, votedAt slot:{}, CIP-93 slot:{}", votedAtSlot, details.getEnvelope().getSlotAsLong());
+        val votedAtSlot = castVote.getVotedAtSlot();
 
+        val requestSlotE = concreteDetails.getRequestSlot();
+        if (requestSlotE.isEmpty()) {
             return Either.left(
                     Problem.builder()
-                            .withTitle("SLOT_MISMATCH")
-                            .withDetail("CIP93 envelope slot and votedAt slot mismatch!")
+                            .withTitle("INVALID_SLOT")
+                            .withDetail("Request slot is not numeric!")
                             .withStatus(BAD_REQUEST)
                             .build()
             );
         }
 
-        var maybeExistingVote = voteRepository.findByEventIdAndCategoryIdAndVoterStakingAddress(eventId, category.id(), details.getStakeAddress());
-        if (maybeExistingVote.isPresent()) {
+        val requestSlot = requestSlotE.get();
+        if (votedAtSlot != requestSlot) {
+            log.warn("Slots mismatch, votedAt slot:{}, envelope's slot:{}", votedAtSlot, concreteDetails.getRequestSlot());
 
+            return Either.left(
+                    Problem.builder()
+                            .withTitle("SLOT_MISMATCH")
+                            .withDetail("Request envelope's slot and votedAt slot mismatch!")
+                            .withStatus(BAD_REQUEST)
+                            .build()
+            );
+        }
+
+        val existingVoteM = voteRepository.findByEventIdAndCategoryIdAndWalletTypeAndWalletId(eventId, category.id(), walletType, walletId);
+        if (existingVoteM.isPresent()) {
             if (!event.allowVoteChanging()) {
                 return Either.left(Problem.builder()
                         .withTitle("VOTE_CANNOT_BE_CHANGED")
-                        .withDetail("Vote cannot be changed for the stake address: " + stakeAddress + ", within category: " + category.id() + ", for event: " + eventId)
+                        .withDetail("Vote cannot be changed for the address: " + walletId + ", within category: " + category.id() + ", for event: " + eventId)
                         .withStatus(BAD_REQUEST)
                         .build()
                 );
             }
-            var existingVote = maybeExistingVote.orElseThrow();
+            val existingVote = existingVoteM.orElseThrow();
 
-            var maybeLatestProof = voteMerkleProofService.findLatestProof(eventId, maybeExistingVote.orElseThrow().getId());
+            val maybeLatestProof = voteMerkleProofService.findLatestProof(eventId, existingVoteM.orElseThrow().getId());
             if (maybeLatestProof.isPresent()) {
-                log.warn("Cannot change existing vote for the stake address: " + stakeAddress, ", within category: " + category.id() + ", for event: " + eventId);
+                log.warn("Cannot change existing vote for the address: " + walletId, ", within category: " + category.id() + ", for event: " + eventId);
 
                 return Either.left(
                         Problem.builder()
                                 .withTitle("VOTE_CANNOT_BE_CHANGED")
-                                .withDetail("Vote cannot be changed for the stake address: " + stakeAddress + ", within category: " + category.id() + ", for event: " + eventId)
+                                .withDetail("Vote cannot be changed for the address: " + walletId + ", within category: " + category.id() + ", for event: " + eventId)
                                 .withStatus(BAD_REQUEST)
                                 .build()
                 );
             }
             existingVote.setId(existingVote.getId());
             existingVote.setProposalId(proposal.id());
-            existingVote.setVotedAtSlot(cip93VoteEnvelope.getSlotAsLong());
-            existingVote.setCoseSignature(details.getSignedWeb3Request().getCoseSignature());
-            existingVote.setCosePublicKey(details.getSignedWeb3Request().getCosePublicKey());
+            existingVote.setVotedAtSlot(castVote.getVotedAtSlot());
+            existingVote.setWalletType(walletType);
+            existingVote.setSignature(concreteDetails.getSignature());
+            existingVote.setPayload(concreteDetails.getPayload());
+            existingVote.setPublicKey(concreteDetails.getPublicKey());
 
             return Either.right(voteRepository.saveAndFlush(existingVote));
         }
 
-        var vote = new Vote();
+        val vote = new Vote();
         vote.setId(voteId);
         vote.setEventId(event.id());
         vote.setCategoryId(category.id());
         vote.setProposalId(proposal.id());
-        vote.setVoterStakingAddress(stakeAddress);
-        vote.setVotedAtSlot(cip93VoteEnvelope.getSlotAsLong());
-        vote.setCoseSignature(details.getSignedWeb3Request().getCoseSignature());
-        vote.setCosePublicKey(details.getSignedWeb3Request().getCosePublicKey());
+        vote.setWalletId(walletId);
+        vote.setWalletType(walletType);
+        vote.setVotedAtSlot(castVote.getVotedAtSlot());
+        vote.setSignature(concreteDetails.getSignature());
+        vote.setPayload(concreteDetails.getPayload());
+        vote.setPublicKey(concreteDetails.getPublicKey());
         vote.setIdNumericHash(UUID.fromString(voteId).hashCode() & 0xFFFFFFF);
 
+        if (event.votingEventType() != USER_BASED && concreteDetails.getWeb3CommonDetails().getWalletType() == KERI) {
+            return Either.left(
+                    Problem.builder()
+                            .withTitle("KERI_NOT_SUPPORTED")
+                            .withDetail("Only Cardano wallet type supported for account / balance voting events is not supported.")
+                            .withStatus(BAD_REQUEST)
+                            .build()
+            );
+        }
+
         if (List.of(STAKE_BASED, BALANCE_BASED).contains(event.votingEventType())) {
-            var accountE = chainFollowerClient.findAccount(eventId, stakeAddress);
+            val accountE = chainFollowerClient.findAccount(eventId, walletType, walletId);
             if (accountE.isEmpty()) {
                 return Either.left(Problem.builder()
                         .withTitle("ERROR_GETTING_ACCOUNT")
-                        .withDetail("Unable to get account from chain-tip follower service, stakeAddress:" + stakeAddress)
+                        .withDetail("Unable to get account from chain-tip follower service, address:" + walletId)
                         .withStatus(INTERNAL_SERVER_ERROR)
                         .build()
                 );
             }
-            var maybeAccount = accountE.get();
+            val maybeAccount = accountE.get();
             if (maybeAccount.isEmpty()) {
-                log.warn("State account not eligible to vote, e.g. not staked or power is less than equal 0 for the stake address: " + stakeAddress);
+                log.warn("State account not eligible to vote, e.g. not staked or power is less than equal 0 for the address: " + walletId);
 
                 return Either.left(
                         Problem.builder()
                                 .withTitle("NOT_ELIGIBLE")
-                                .withDetail("State account not eligible to vote, e.g. account not staked at snapshot epoch or voting power is less than equal 0 for the stake address:" + stakeAddress)
+                                .withDetail("State account not eligible to vote, e.g. account not staked at snapshot epoch or voting power is less than equal 0 for the address:" + walletId)
                                 .withStatus(BAD_REQUEST)
                                 .build()
                 );
             }
-            var account = maybeAccount.get();
+            val account = maybeAccount.get();
 
             // if we are eligible then we will have voting power
-            var blockchainVotingPowerStr = account.votingPower();
+            val blockchainVotingPowerStr = account.votingPower();
             if (!isNumeric(blockchainVotingPowerStr)) {
                 return Either.left(
                         Problem.builder()
                                 .withTitle("INVALID_VOTING_POWER")
-                                .withDetail("Invalid blockchain voting power for the stake address: " + stakeAddress)
+                                .withDetail("Invalid blockchain voting power for the address: " + walletId)
                                 .withStatus(BAD_REQUEST)
                                 .build()
                 );
             }
-            var blockchainVotingPower = Long.parseLong(blockchainVotingPowerStr);
+            val blockchainVotingPower = Long.parseLong(blockchainVotingPowerStr);
 
-            if (!isNumeric(cip93VoteEnvelope.getData().getVotingPower().orElseThrow())) {
+            if (!isNumeric(castVote.getVotingPower().orElseThrow())) {
                 return Either.left(
                         Problem.builder()
                                 .withTitle("INVALID_VOTING_POWER")
-                                .withDetail("CIP-93's envelope votingPower is not numeric for the stake address: " + stakeAddress)
+                                .withDetail("Vote's votingPower is not numeric for the address: " + walletId)
                                 .withStatus(BAD_REQUEST)
                                 .build()
                 );
             }
-            var signedVotingPower = Long.parseLong(cip93VoteEnvelope.getData().getVotingPower().orElseThrow());
+            val signedVotingPower = Long.parseLong(castVote.getVotingPower().orElseThrow());
             if (signedVotingPower != blockchainVotingPower) {
                 return Either.left(
                         Problem.builder()
                                 .withTitle("VOTING_POWER_MISMATCH")
-                                .withDetail("Signed voting power is not equal to blockchain voting power for the stake address: " + stakeAddress)
+                                .withDetail("Signed voting power is not equal to blockchain voting power for the stake address: " + walletId)
                                 .withStatus(BAD_REQUEST)
                                 .build()
                 );
@@ -391,51 +411,137 @@ public class DefaultVoteService implements VoteService {
         return Either.right(voteRepository.saveAndFlush(vote));
     }
 
+    private Either<Problem, ViewVoteReceiptEnvelope> unwrapViewVoteReceiptEnvelope(Web3ConcreteDetails concreteDetails) {
+        val signedJson = concreteDetails.getSignedJson();
+
+        switch (concreteDetails) {
+            case CardanoWeb3Details cardanoWeb3Details -> {
+                Either<Problem, CIP93Envelope<ViewVoteReceiptEnvelope>> viewVoteEnvelopeE = jsonService.decodeCIP93ViewVoteReceiptEnvelope(signedJson);
+                if (viewVoteEnvelopeE.isLeft()) {
+                    return Either.left(
+                            Problem.builder()
+                                    .withTitle("INVALID_CIP93_DATA_SIGNATURE")
+                                    .withDetail("Error while decoding view vote receipt signature!")
+                                    .withStatus(BAD_REQUEST)
+                                    .build()
+                    );
+                }
+
+                return Either.right(viewVoteEnvelopeE.get().getData());
+            }
+            case KeriWeb3Details keriWeb3Details -> {
+                Either<Problem, KERIEnvelope<ViewVoteReceiptEnvelope>> viewVoteEnvelopeE = jsonService.decodeKERIViewVoteReceiptEnvelope(signedJson);
+                if (viewVoteEnvelopeE.isLeft()) {
+                    return Either.left(
+                            Problem.builder()
+                                    .withTitle("INVALID_KERI_DATA_SIGNATURE")
+                                    .withDetail("Error while decoding KERI view vote receipt signature!")
+                                    .withStatus(BAD_REQUEST)
+                                    .build()
+                    );
+                }
+
+                return Either.right(viewVoteEnvelopeE.get().getData());
+            }
+            default -> {
+                return Either.left(Problem.builder()
+                        .withTitle("UNSUPPORTED_WALLET_TYPE")
+                        .withDetail("Unsupported web3 details type:" + concreteDetails.getClass().getName())
+                        .withStatus(BAD_REQUEST)
+                        .build()
+                );
+            }
+        }
+    }
+
+    private Either<Problem, VoteEnvelope> unwrapCastCoteEnvelope(Web3ConcreteDetails concreteDetails) {
+        val signedJson = concreteDetails.getSignedJson();
+
+        switch (concreteDetails) {
+            case CardanoWeb3Details cardanoWeb3Details -> {
+                val castVoteRequestBodyJsonE = jsonService.decodeCIP93VoteEnvelope(signedJson);
+                if (castVoteRequestBodyJsonE.isLeft()) {
+                    if (castVoteRequestBodyJsonE.isLeft()) {
+                        return Either.left(
+                                Problem.builder()
+                                        .withTitle("INVALID_CIP93_DATA_SIGNATURE")
+                                        .withDetail("Error while decoding cast vote signature!")
+                                        .withStatus(BAD_REQUEST)
+                                        .build()
+                        );
+                    }
+                }
+
+                val cip93CastVoteEnvelope = castVoteRequestBodyJsonE.get();
+
+                return Either.right(cip93CastVoteEnvelope.getData());
+            }
+            case KeriWeb3Details keriWeb3Details -> {
+                val castVoteRequestBodyJsonE = jsonService.decodeKERIVoteEnvelope(signedJson);
+                if (castVoteRequestBodyJsonE.isLeft()) {
+                    return Either.left(
+                            Problem.builder()
+                                    .withTitle("INVALID_KERI_DATA_SIGNATURE")
+                                    .withDetail("Error while decoding KERI cast vote signature!")
+                                    .withStatus(BAD_REQUEST)
+                                    .build()
+                    );
+                }
+                val keriCastVoteEnvelope = castVoteRequestBodyJsonE.get();
+
+                return Either.right(keriCastVoteEnvelope.getData());
+            }
+            default -> {
+                return Either.left(Problem.builder()
+                        .withTitle("UNSUPPORTED_WEB3_DETAILS")
+                        .withDetail("Unsupported web3 details type:" + concreteDetails.getWeb3CommonDetails().getWalletType())
+                        .withStatus(BAD_REQUEST)
+                        .build()
+                );
+            }
+        }
+    }
+
     @Override
     @Transactional(readOnly = true)
     @Timed(value = "service.vote.voteReceipt", histogram = true)
     public Either<Problem, VoteReceipt> voteReceipt(Web3AuthenticationToken web3AuthenticationToken) {
         log.info("Fetching voter's receipt for the signed data...");
 
-        var details = web3AuthenticationToken.getDetails();
-        var cip30VerificationResult = details.getCip30VerificationResult();
+        val concreteDetails = web3AuthenticationToken.getDetails();
+        val commonDetails = web3AuthenticationToken.getDetails().getWeb3CommonDetails();
 
-        var event = details.getEvent();
-        var stakeAddress = details.getStakeAddress();
+        val event = commonDetails.getEvent();
+        val walletType = commonDetails.getWalletType();
+        val walletId = commonDetails.getWalletId();
 
-        var signedJson = cip30VerificationResult.getMessage(TEXT);
-
-        var viewVoteReceiptEnvelopeE = jsonService.decodeCIP93ViewVoteReceiptEnvelope(signedJson);
+        val viewVoteReceiptEnvelopeE = unwrapViewVoteReceiptEnvelope(concreteDetails);
         if (viewVoteReceiptEnvelopeE.isLeft()) {
-            return Either.left(
-                    Problem.builder()
-                            .withTitle("INVALID_CIP30_DATA_SIGNATURE")
-                            .withDetail("Invalid view vote receipt signature!")
-                            .withStatus(BAD_REQUEST)
-                            .build()
-            );
+            return Either.left(viewVoteReceiptEnvelopeE.getLeft());
         }
-        var viewVoteReceiptEnvelope = viewVoteReceiptEnvelopeE.get();
 
-        if (details.getAction() != VIEW_VOTE_RECEIPT) {
+        val viewVoteReceiptEnvelope = viewVoteReceiptEnvelopeE.get();
+
+        if (commonDetails.getAction() != VIEW_VOTE_RECEIPT) {
             return Either.left(Problem.builder()
                     .withTitle("INVALID_ACTION")
-                    .withDetail("Action is not VIEW_VOTE_RECEIPT, action:" + details.getAction())
+                    .withDetail("Action is not VIEW_VOTE_RECEIPT, action:" + commonDetails.getAction())
                     .withStatus(BAD_REQUEST)
                     .build()
             );
         }
 
-        var categoryId = viewVoteReceiptEnvelope.getData().getCategory();
+        val categoryId = viewVoteReceiptEnvelope.getCategory();
 
-        return actualVoteReceipt(event, categoryId, stakeAddress);
+        return actualVoteReceipt(event, categoryId, walletType, walletId);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Either<Problem, VoteReceipt> voteReceipt(String categoryId,
                                                     JwtAuthenticationToken auth) {
-        var jwtStakeAddress = auth.getStakeAddress();
+        val jwtWalletId = auth.getWalletId();
+        val jwtWalletType = auth.getWalletType();
 
         if (auth.isActionNotAllowed(VIEW_VOTE_RECEIPT)) {
             return Either.left(Problem.builder()
@@ -445,14 +551,15 @@ public class DefaultVoteService implements VoteService {
                     .build());
         }
 
-        return actualVoteReceipt(auth.eventDetails(), categoryId, jwtStakeAddress);
+        return actualVoteReceipt(auth.eventDetails(), categoryId, jwtWalletType, jwtWalletId);
     }
 
     private Either<Problem, VoteReceipt> actualVoteReceipt(ChainFollowerClient.EventDetailsResponse event,
                                                            String categoryId,
-                                                           String stakeAddress) {
-        var maybeCategory = event.categoryDetailsById(categoryId);
-        if (maybeCategory.isEmpty()) {
+                                                           WalletType walletType,
+                                                           String walletId) {
+        val categoryM = event.categoryDetailsById(categoryId);
+        if (categoryM.isEmpty()) {
             log.warn("Unrecognised category, id:{}", categoryId);
 
             return Either.left(Problem.builder()
@@ -461,22 +568,22 @@ public class DefaultVoteService implements VoteService {
                     .withStatus(BAD_REQUEST)
                     .build());
         }
-        var category = maybeCategory.orElseThrow();
+        val category = categoryM.orElseThrow();
 
-        var maybeVote = voteRepository.findByEventIdAndCategoryIdAndVoterStakingAddress(event.id(), category.id(), stakeAddress);
-        if (maybeVote.isEmpty()) {
+        val voteM = voteRepository.findByEventIdAndCategoryIdAndWalletTypeAndWalletId(event.id(), category.id(), walletType, walletId);
+        if (voteM.isEmpty()) {
             return Either.left(
                     Problem.builder()
                             .withTitle("VOTE_NOT_FOUND")
-                            .withDetail("Not voted yet for stakeKey:" + stakeAddress)
+                            .withDetail("Not voted yet for stakeKey:" + walletId)
                             .withStatus(NOT_FOUND)
                             .build()
             );
         }
-        var vote = maybeVote.orElseThrow();
+        val vote = voteM.orElseThrow();
 
-        var maybeProposal = category.findProposalById(vote.getProposalId());
-        if (maybeProposal.isEmpty()) {
+        val proposalM = category.findProposalById(vote.getProposalId());
+        if (proposalM.isEmpty()) {
             return Either.left(
                     Problem.builder()
                             .withTitle("PROPOSAL_NOT_FOUND")
@@ -485,15 +592,15 @@ public class DefaultVoteService implements VoteService {
                             .build()
             );
         }
-        var proposal = maybeProposal.orElseThrow();
-        var proposalIdOrName = category.gdprProtection() ? proposal.id() : proposal.name();
+        val proposal = proposalM.orElseThrow();
+        val proposalIdOrName = category.gdprProtection() ? proposal.id() : proposal.name();
 
-        var latestVoteMerkleProof = voteMerkleProofService.findLatestProof(event.id(), vote.getId());
+        val latestVoteMerkleProof = voteMerkleProofService.findLatestProof(event.id(), vote.getId());
 
         return latestVoteMerkleProof.map(proof -> {
             log.info("Latest merkle proof found for voteId:{}", vote.getId());
 
-            var transactionDetailsE = chainFollowerClient.getTransactionDetails(proof.getL1TransactionHash());
+            val transactionDetailsE = chainFollowerClient.getTransactionDetails(proof.getL1TransactionHash());
             if (transactionDetailsE.isEmpty()) {
                 return Either.<Problem, VoteReceipt>left(Problem.builder()
                         .withTitle("ERROR_GETTING_TRANSACTION_DETAILS")
@@ -501,37 +608,41 @@ public class DefaultVoteService implements VoteService {
                         .withStatus(INTERNAL_SERVER_ERROR)
                         .build());
             }
-            var maybeTransactionDetails = transactionDetailsE.get();
+            val transactionDetailsM = transactionDetailsE.get();
 
-            var isL1CommitmentOnChain = maybeTransactionDetails.map(ChainFollowerClient.TransactionDetailsResponse::finalityScore);
+            val isL1CommitmentOnChain = transactionDetailsM.map(ChainFollowerClient.TransactionDetailsResponse::finalityScore);
 
             return Either.<Problem, VoteReceipt>right(VoteReceipt.builder()
                     .id(vote.getId())
                     .event(event.id())
                     .category(category.id())
                     .proposal(proposalIdOrName)
-                    .coseSignature(vote.getCoseSignature())
-                    .cosePublicKey(vote.getCosePublicKey())
+                    .signature(vote.getSignature())
+                    .payload(vote.getPayload())
+                    .publicKey(vote.getPublicKey())
                     .votedAtSlot(Long.valueOf(vote.getVotedAtSlot()).toString())
-                    .voterStakingAddress(vote.getVoterStakingAddress())
+                    .walletId(vote.getWalletId())
+                    .walletType(vote.getWalletType())
                     .votingPower(vote.getVotingPower().map(String::valueOf))
                     .status(readMerkleProofStatus(proof, isL1CommitmentOnChain))
                     .finalityScore(isL1CommitmentOnChain)
-                    .merkleProof(convertMerkleProof(proof, maybeTransactionDetails))
+                    .merkleProof(convertMerkleProof(proof, transactionDetailsM))
                     .build());
 
         }).orElseGet(() -> {
             log.info("Merkle proof not found yet for voteId:{}", vote.getId());
 
-            return Either.<Problem, VoteReceipt>right(VoteReceipt.builder()
+            return Either.right(VoteReceipt.builder()
                     .id(vote.getId())
                     .event(event.id())
                     .category(category.id())
                     .proposal(proposalIdOrName)
-                    .coseSignature(vote.getCoseSignature())
-                    .cosePublicKey(vote.getCosePublicKey())
+                    .signature(vote.getSignature())
+                    .payload(vote.getPayload())
+                    .publicKey(vote.getPublicKey())
                     .votedAtSlot(Long.valueOf(vote.getVotedAtSlot()).toString())
-                    .voterStakingAddress(vote.getVoterStakingAddress())
+                    .walletId(vote.getWalletId())
+                    .walletType(vote.getWalletType())
                     .votingPower(vote.getVotingPower().map(String::valueOf))
                     .status(BASIC)
                     .build()

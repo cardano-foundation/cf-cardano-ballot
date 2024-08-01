@@ -1,5 +1,6 @@
 package org.cardano.foundation.voting.repository;
 
+import org.cardano.foundation.voting.domain.WalletType;
 import org.cardano.foundation.voting.domain.entity.DiscordUserVerification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,8 +13,9 @@ import java.util.Optional;
 @Repository
 public interface DiscordUserVerificationRepository extends JpaRepository<DiscordUserVerification, String> {
 
-    @Query("SELECT uv FROM DiscordUserVerification uv WHERE uv.status = 'VERIFIED' AND uv.eventId = :eventId AND uv.walletId = :walletId")
+    @Query("SELECT uv FROM DiscordUserVerification uv WHERE uv.status = 'VERIFIED' AND uv.eventId = :eventId AND uv.walletType = :walletType AND uv.walletId = :walletId")
     List<DiscordUserVerification> findCompletedVerifications(@Param("eventId") String eventId,
+                                                             @Param("walletType") WalletType walletType,
                                                              @Param("walletId") String walletId
     );
 

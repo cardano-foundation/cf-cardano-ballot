@@ -1,6 +1,7 @@
 package org.cardano.foundation.voting.repository;
 
 import org.cardano.foundation.voting.domain.entity.SMSUserVerification;
+import org.cardano.foundation.voting.domain.WalletType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,8 +19,8 @@ public interface SMSUserVerificationRepository extends JpaRepository<SMSUserVeri
     @Query("SELECT uv FROM SMSUserVerification uv WHERE uv.status = 'VERIFIED' AND uv.eventId = :eventId AND uv.phoneNumberHash = :phoneNumberHash")
     List<SMSUserVerification> findAllCompletedPerPhone(@Param("eventId") String eventId, @Param("phoneNumberHash") String phoneNumberHash);
 
-    @Query("SELECT uv FROM SMSUserVerification uv WHERE uv.status = 'VERIFIED' AND uv.eventId = :eventId AND uv.walletId = :walletId")
-    List<SMSUserVerification> findAllCompletedPerWalletId(@Param("eventId") String eventId, @Param("walletId") String walletId);
+    @Query("SELECT uv FROM SMSUserVerification uv WHERE uv.status = 'VERIFIED' AND uv.eventId = :eventId AND uv.walletType = :walletType AND uv.walletId = :walletId")
+    List<SMSUserVerification> findAllCompletedPerWalletId(@Param("eventId") String eventId, @Param("walletType") WalletType walletType, @Param("walletId") String walletId);
 
     @Query("SELECT uv FROM SMSUserVerification uv WHERE uv.status = 'PENDING' AND uv.eventId = :eventId")
     List<SMSUserVerification> findAllPending(@Param("eventId") String eventId);

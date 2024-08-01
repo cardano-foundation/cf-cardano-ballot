@@ -1,6 +1,7 @@
 package org.cardano.foundation.voting.repository;
 
 import org.cardano.foundation.voting.domain.entity.Vote;
+import org.cardano.foundation.voting.domain.web3.WalletType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,13 +14,16 @@ import java.util.Optional;
 @Repository
 public interface VoteRepository extends JpaRepository<Vote, String> {
 
-    @Query("SELECT v.categoryId as categoryId, v.proposalId as proposalId FROM Vote v WHERE v.eventId = :eventId AND v.voterStakingAddress = :stakeAddress ORDER BY v.votedAtSlot, v.idNumericHash ASC")
-    List<CategoryProposalProjection> getVotesByStakeAddress(@Param("eventId") String eventId,
-                                                            @Param("stakeAddress") String stakeAddress);
+    @Query("SELECT v.categoryId as categoryId, v.proposalId as proposalId FROM Vote v WHERE v.eventId = :eventId AND v.walletType = :walletType AND v.walletId = :walletId ORDER BY v.votedAtSlot, v.idNumericHash ASC")
+    List<CategoryProposalProjection> getVotesByWalletId(@Param("eventId") String eventId,
+                                                        @Param("walletType") WalletType walletType,
+                                                        @Param("walletId") String walletId);
 
-    Optional<Vote> findByEventIdAndCategoryIdAndVoterStakingAddress(String eventId,
-                                                                    String categoryId,
-                                                                    String voterStakeAddress);
+    @Query("SELECT v FROM Vote v WHERE v.eventId = :eventId AND v.categoryId = :categoryId AND v.walletType = :walletType AND v.walletId = :walletId ORDER BY v.votedAtSlot, v.idNumericHash ASC")
+    Optional<Vote> findByEventIdAndCategoryIdAndWalletTypeAndWalletId(String eventId,
+                                                                      String categoryId,
+                                                                      WalletType walletType,
+                                                                      String walletId);
 
     @Query("SELECT COUNT(v) AS totalVoteCount, SUM(v.votingPower) AS totalVotingPower FROM Vote v WHERE v.eventId = :eventId")
     List<HighLevelEventVoteCount> getHighLevelEventStats(@Param("eventId") String eventId);

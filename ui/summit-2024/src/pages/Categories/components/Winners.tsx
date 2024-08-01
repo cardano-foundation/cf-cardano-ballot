@@ -169,124 +169,116 @@ const Winners: React.FC<WinnersProps> = ({
         >
           {nominees[0].id}
         </Typography>
-        <Box
-          component="div"
-          sx={{
-            display: "flex",
-            marginTop: "40px",
-          }}
-        >
           <Box
-            component="div"
-            sx={{
-              display: "flex",
-              alignItems: "flex-start",
-              flexDirection: "column",
-            }}
-          >
-            <Box
               component="div"
               sx={{
-                display: "flex",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginTop: "40px",
               }}
-            >
-              <img
-                src={votesIcon}
-                alt="Total Votes Icon"
-                width="24"
-                height="24"
-              />
-              <Typography
-                sx={{
-                  color: theme.palette.text.neutralLightest,
-                  textAlign: "center",
-                  fontFamily: "Dosis",
-                  textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
-                  fontSize: "16px",
-                  fontStyle: "normal",
-                  fontWeight: 500,
-                  lineHeight: "24px",
-                  marginLeft: "8px",
-                }}
-              >
-                Total Votes
-              </Typography>
-            </Box>
-
-            <Typography
-              sx={{
-                color: theme.palette.text.neutralLightest,
-                textAlign: "center",
-                fontFamily: "Dosis",
-                textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
-                fontSize: "24px",
-                fontStyle: "normal",
-                fontWeight: 700,
-                lineHeight: "28px",
-                marginTop: "4px",
-                marginLeft: "32px",
-              }}
-            >
-              100
-            </Typography>
-          </Box>
-
-          <Box
-            component="div"
-            sx={{
-              display: "flex",
-              alignItems: "flex-start",
-              flexDirection: "column",
-              marginLeft: "92px",
-            }}
           >
-            <Box
-              component="div"
-              sx={{
-                display: "flex",
-              }}
-            >
-              <img
-                src={positionIcon}
-                alt="Total Votes Icon"
-                width="24"
-                height="24"
-              />
-              <Typography
-                sx={{
-                  color: theme.palette.text.neutralLightest,
-                  textAlign: "center",
-                  fontFamily: "Dosis",
-                  textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
-                  fontSize: "16px",
-                  fontStyle: "normal",
-                  fontWeight: 500,
-                  lineHeight: "24px",
-                  marginLeft: "8px",
-                }}
+              <Box
+                  component="div"
+                  sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      flexDirection: "column",
+                      marginRight: { sm: "48px" },
+                  }}
               >
-                Position
-              </Typography>
-            </Box>
+                  <Box
+                      component="div"
+                      sx={{
+                          display: "flex",
+                          alignItems: "center",
+                      }}
+                  >
+                      <img src={votesIcon} alt="Total Votes Icon" width="24" height="24" />
+                      <Typography
+                          sx={{
+                              color: theme.palette.text.neutralLightest,
+                              textAlign: "center",
+                              fontFamily: "Dosis",
+                              textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
+                              fontSize: "16px",
+                              fontStyle: "normal",
+                              fontWeight: 500,
+                              lineHeight: "24px",
+                              marginLeft: "8px",
+                          }}
+                      >
+                          Total Votes
+                      </Typography>
+                  </Box>
 
-            <Typography
-              sx={{
-                color: theme.palette.text.neutralLightest,
-                textAlign: "center",
-                fontFamily: "Dosis",
-                textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
-                fontSize: "24px",
-                fontStyle: "normal",
-                fontWeight: 700,
-                lineHeight: "28px",
-                marginTop: "4px",
-                marginLeft: "32px",
-              }}
-            >
-              #1
-            </Typography>
+                  <Typography
+                      sx={{
+                          color: theme.palette.text.neutralLightest,
+                          textAlign: "center",
+                          fontFamily: "Dosis",
+                          textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
+                          fontSize: "24px",
+                          fontStyle: "normal",
+                          fontWeight: 700,
+                          lineHeight: "28px",
+                          marginTop: "4px",
+                      }}
+                  >
+                      100
+                  </Typography>
+              </Box>
+
+              <Box
+                  component="div"
+                  sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      flexDirection: "column",
+                  }}
+              >
+                  <Box
+                      component="div"
+                      sx={{
+                          display: "flex",
+                          alignItems: "center",
+                      }}
+                  >
+                      <img src={positionIcon} alt="Total Votes Icon" width="24" height="24" />
+                      <Typography
+                          sx={{
+                              color: theme.palette.text.neutralLightest,
+                              textAlign: "center",
+                              fontFamily: "Dosis",
+                              textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
+                              fontSize: "16px",
+                              fontStyle: "normal",
+                              fontWeight: 500,
+                              lineHeight: "24px",
+                              marginLeft: "8px",
+                          }}
+                      >
+                          Position
+                      </Typography>
+                  </Box>
+
+                  <Typography
+                      sx={{
+                          color: theme.palette.text.neutralLightest,
+                          textAlign: "center",
+                          fontFamily: "Dosis",
+                          textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
+                          fontSize: "24px",
+                          fontStyle: "normal",
+                          fontWeight: 700,
+                          lineHeight: "28px",
+                          marginTop: "4px",
+                      }}
+                  >
+                      #1
+                  </Typography>
+              </Box>
           </Box>
-        </Box>
       </Box>
     </Box>
   );
@@ -316,6 +308,7 @@ const Winners: React.FC<WinnersProps> = ({
                 border: "none",
                 width: {
                   xs: "20%",
+                    sm: "15%"
                 },
               }}
             >
@@ -365,8 +358,8 @@ const Winners: React.FC<WinnersProps> = ({
                 lineHeight: "20px",
                 border: "none",
                 width: {
-                  xs: "20%",
-                  sm: "5%",
+                  xs: "10%",
+                  sm: "10%",
                 },
               }}
             ></TableCell>
@@ -562,7 +555,6 @@ const Winners: React.FC<WinnersProps> = ({
                 <Box
                   component="div"
                   sx={{
-                    display: "flex",
                     width: "24px",
                   }}
                 >

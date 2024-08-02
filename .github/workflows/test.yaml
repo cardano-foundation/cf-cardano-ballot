@@ -23,10 +23,11 @@ jobs:
         id: metadata
         run: |
           echo "SERVICE_CHANGED=false" | tee -a "$GITHUB_OUTPUT"
+          GIT_SHORT_COMMIT=${GITHUB_SHA::7}
 
           case "${GITHUB_EVENT_NAME}" in
             pull_request)
-              if git log --pretty=format:'%h' -n 1 backend-services/${{ matrix.service }} | grep -q ${{ github.sha }} 
+              if git log --pretty=format:'%h' -n 1 backend-services/${{ matrix.service }} | grep -q ${GIT_SHORT_COMMIT}
               then
                 echo "SERVICE_CHANGED=true" | tee -a "$GITHUB_OUTPUT"
               fi
@@ -38,7 +39,7 @@ jobs:
               then
                 echo "SERVICE_CHANGED=true" | tee -a "$GITHUB_OUTPUT"
               else
-                if git log --pretty=format:'%h' -n 1 backend-services/${{ matrix.service }} | grep -q ${{ github.sha }} 
+                if git log --pretty=format:'%h' -n 1 backend-services/${{ matrix.service }} | grep -q ${GIT_SHORT_COMMIT}
                 then
                   echo "SERVICE_CHANGED=true" | tee -a "$GITHUB_OUTPUT"
                 fi

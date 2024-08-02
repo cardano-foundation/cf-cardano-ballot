@@ -1,8 +1,8 @@
 replicaCount: 1
 
 image:
-  repository: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/user-verification-service
-  tag: "0.0.1"
+  repository: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-user-verification-service
+  tag: latest
   pullPolicy: Always
 
 imagePullSecrets: []

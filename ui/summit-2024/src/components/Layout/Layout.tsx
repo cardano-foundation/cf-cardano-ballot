@@ -8,7 +8,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import theme from "../../common/styles/theme";
-import {ROUTES} from "../../routes";
+import { ROUTES } from "../../routes";
 
 type MenuItem = {
   label: string;
@@ -73,70 +73,73 @@ const Layout: React.FC<LayoutProps> = ({
     if (onSelectMenuOption) onSelectMenuOption(label);
   };
 
-  const isLeaderboardPage =
-      window.location.pathname === ROUTES.LEADERBOARD && !isMobile;
-
   return (
-    <Box component="div" sx={{ width: "100%",  marginTop: isLeaderboardPage ? "0px" : "60px",
-      paddingX: isLeaderboardPage ? "0px" : "16px", }}>
+    <Box
+      component="div"
+      sx={{
+        width: "100%",
+      }}
+    >
       <Grid container>
         <Grid item xs={12} md={2.4} lg={2} sx={{}}>
           {isMobile ? (
             <>
               <Box
-                  component="div"
-                  sx={{
-                    width: "100%",
-                    maxWidth: "100vw",
-                    overflowX: 'auto',
-                    overflowY: 'hidden',
-                    WebkitOverflowScrolling: 'touch',
-                    "&::-webkit-scrollbar": {
-                      display: "none",
-                    },
-                    marginTop: "14px",
-                    position: "fixed",
-                    top: 72,
-                    zIndex: 1200,
-                    background: theme.palette.background.default,
-                  }}
+                component="div"
+                sx={{
+                  width: "100%",
+                  maxWidth: "100vw",
+                  overflowX: "auto",
+                  overflowY: "hidden",
+                  WebkitOverflowScrolling: "touch",
+                  "&::-webkit-scrollbar": {
+                    display: "none",
+                  },
+                  marginTop: "14px",
+                  position: "fixed",
+                  top: 72,
+                  zIndex: 1200,
+                  background: theme.palette.background.default,
+                }}
               >
                 <List
-                    sx={{
-                      display: "flex",
-                      flexDirection: "row",
-                      padding: 0,
-                      margin: 0,
-                      whiteSpace: 'nowrap',
-                    }}
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    padding: 0,
+                    margin: 0,
+                    whiteSpace: "nowrap",
+                  }}
                 >
                   {menuOptions.map((option, index) => (
-                      <ListItem
-                          onClick={() => handleClickMenuItem(option.label)}
-                          key={index}
-                          sx={{
-                            marginRight: "8px",
-                            cursor: "pointer",
-                          }}
+                    <ListItem
+                      onClick={() => handleClickMenuItem(option.label)}
+                      key={index}
+                      sx={{
+                        marginRight: "8px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          color:
+                            option.label === selectedOption
+                              ? theme.palette.background.default
+                              : theme.palette.text.neutralLightest,
+                          background:
+                            option.label === selectedOption
+                              ? theme.palette.secondary.main
+                              : "none",
+                          padding: "8px 12px",
+                          borderRadius: "12px",
+                          fontSize: "16px",
+                          fontWeight: 500,
+                          lineHeight: "24px",
+                        }}
                       >
-                        <Typography
-                            sx={{
-                              color: option.label === selectedOption
-                                  ? theme.palette.background.default
-                                  : theme.palette.text.neutralLightest,
-                              background: option.label === selectedOption
-                                  ? theme.palette.secondary.main
-                                  : "none",
-                              padding: "8px 12px",
-                              borderRadius: "12px",
-                              fontSize: "16px",
-                              fontWeight: 500,
-                              lineHeight: "24px",
-                            }}
-                        >
-                          {option.label}
-                        </Typography>
-                      </ListItem>
+                        {option.label}
+                      </Typography>
+                    </ListItem>
                   ))}
                 </List>
               </Box>
@@ -153,26 +156,26 @@ const Layout: React.FC<LayoutProps> = ({
                   borderRight: "1px solid #737380",
                 }}
               >
-                {
-                  title ? <ListItem
-                      sx={{
-                        paddingLeft: "0px",
-                        marginBottom: "16px",
-                      }}
+                {title ? (
+                  <ListItem
+                    sx={{
+                      paddingLeft: "0px",
+                      marginBottom: "16px",
+                    }}
                   >
                     <Typography
-                        sx={{
-                          fontFamily: "Dosis",
-                          fontSize: "32px",
-                          fontStyle: "normal",
-                          fontWeight: 700,
-                          lineHeight: "36px",
-                        }}
+                      sx={{
+                        fontFamily: "Dosis",
+                        fontSize: "32px",
+                        fontStyle: "normal",
+                        fontWeight: 700,
+                        lineHeight: "36px",
+                      }}
                     >
                       {title} ({menuOptions.length})
                     </Typography>
-                  </ListItem> : null
-                }
+                  </ListItem>
+                ) : null}
 
                 {menuOptions.map((option, index) => (
                   <ListItem

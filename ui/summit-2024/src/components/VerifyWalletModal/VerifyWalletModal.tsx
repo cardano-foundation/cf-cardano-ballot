@@ -73,7 +73,7 @@ const VerifyWalletModal = () => {
     useState<boolean>(false);
   const [inputSecret, setInputSecret] = useState("");
 
-  const { signWithWallet } = useSignatures();
+  const { signWithWallet, isLoading } = useSignatures();
   const userVerificationStarted = useAppSelector(getVerificationStarted);
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -826,9 +826,7 @@ const VerifyWalletModal = () => {
           colorVariant="primary"
           onClick={() => handleVerifyDiscord()}
           disabled={
-            discordIsConfirming ||
-            inputSecret === "" ||
-            !validateSecret(inputSecret)
+            isLoading || inputSecret === "" || !validateSecret(inputSecret)
           }
           sx={{
             width: "100%",

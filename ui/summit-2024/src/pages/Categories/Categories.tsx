@@ -23,7 +23,10 @@ import {
   getVoteReceipt,
 } from "../../common/api/voteService";
 import { eventBus, EventName } from "../../utils/EventBus";
-import {getWalletIdentifier, getWalletIsVerified} from "../../store/reducers/userCache";
+import {
+  getWalletIdentifier,
+  getWalletIsVerified,
+} from "../../store/reducers/userCache";
 import { getUserInSession, tokenIsExpired } from "../../utils/session";
 import { parseError } from "../../common/constants/errors";
 import {
@@ -34,7 +37,11 @@ import { ToastType } from "../../components/common/Toast/Toast.types";
 import { useSignatures } from "../../common/hooks/useSignatures";
 import { resolveWalletType } from "../../common/api/utils";
 
-const Categories: React.FC = () => {
+interface CategoriesProps {
+  embedded?: boolean;
+}
+
+const Categories: React.FC<CategoriesProps> = ({embedded}) => {
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
   const eventCache = useAppSelector(getEventCache);
   const walletIdentifier = useAppSelector(getWalletIdentifier);
@@ -116,12 +123,20 @@ const Categories: React.FC = () => {
     if (showWinners) {
       handleOpenViewReceipt();
     } else {
-      if (!walletIdentifier.length){
-        eventBus.publish(EventName.ShowToast, "Connect your wallet in order to vote", "error");
+      if (!walletIdentifier.length) {
+        eventBus.publish(
+          EventName.ShowToast,
+          "Connect your wallet in order to vote",
+          "error",
+        );
         return;
       }
-      if (!walletIdentifierIsVerified){
-        eventBus.publish(EventName.ShowToast, "Verify your wallet in order to vote", "error");
+      if (!walletIdentifierIsVerified) {
+        eventBus.publish(
+          EventName.ShowToast,
+          "Verify your wallet in order to vote",
+          "error",
+        );
         return;
       }
       setOpenVotingModal(true);
@@ -129,7 +144,6 @@ const Categories: React.FC = () => {
   };
 
   const submitVote = async () => {
-
     if (eventCache?.finished) {
       eventBus.publish(EventName.ShowToast, "The event already ended", "error");
       return;
@@ -160,10 +174,11 @@ const Categories: React.FC = () => {
         resolveWalletType(walletIdentifier),
       );
 
+      console.log();
       if (!requestVoteResult.success) {
         eventBus.publish(
           EventName.ShowToast,
-          "Error while signing",
+          requestVoteResult.error || "Error while signing",
           ToastType.Error,
         );
         return;
@@ -341,14 +356,19 @@ const Categories: React.FC = () => {
   return (
     <>
       <PageBase title="Categories">
-        <Layout
-            title="Categories"
-            menuOptions={optionsForMenu}
-            bottom={bottom}
-            mode="change"
-            defaultOption={0}
-            onSelectMenuOption={(option) => handleClickMenuItem(option)}
-        />
+        <Box component="div" sx={{
+          marginTop: embedded ? "0px" : "60px",
+          paddingX: embedded ? "0px" : "16px",
+        }}>
+          <Layout
+              title="Categories"
+              menuOptions={optionsForMenu}
+              bottom={bottom}
+              mode="change"
+              defaultOption={0}
+              onSelectMenuOption={(option) => handleClickMenuItem(option)}
+          />
+        </Box>
         <img
           src={Ellipses}
           style={{

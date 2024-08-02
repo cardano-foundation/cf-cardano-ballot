@@ -59,6 +59,7 @@ export const useSignatures = () => {
         }
       } catch (e) {
         setError(`Error signing message: ${e.message}`);
+        setIsLoading(false);
         return { success: false, error: e.message };
       } finally {
         setIsLoading(false);

@@ -163,7 +163,6 @@ const UserGuide = () => {
       <PageBase title="User Guide">
         <Layout
           menuOptions={optionsForScroll}
-          title="User Guide"
           bottom={bottom}
           mode="scroll"
         />

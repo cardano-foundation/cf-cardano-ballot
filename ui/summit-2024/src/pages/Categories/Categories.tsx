@@ -33,7 +33,6 @@ import {
 import { ToastType } from "../../components/common/Toast/Toast.types";
 import { useSignatures } from "../../common/hooks/useSignatures";
 import { resolveWalletType } from "../../common/api/utils";
-import { ROUTES } from "../../routes";
 
 const Categories: React.FC = () => {
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
@@ -329,28 +328,17 @@ const Categories: React.FC = () => {
     </>
   );
 
-  const isCategoriesPage =
-    window.location.pathname === ROUTES.CATEGORIES && !isTablet;
   return (
     <>
       <PageBase title="Categories">
-        <Box
-          component="div"
-          sx={{
-            // TODO: work aorund, find another solution
-            marginTop: isCategoriesPage ? "60px" : "0px",
-            paddingX: isCategoriesPage ? "16px" : "0px",
-          }}
-        >
-          <Layout
+        <Layout
+            title="Categories"
             menuOptions={optionsForMenu}
             bottom={bottom}
             mode="change"
             defaultOption={0}
             onSelectMenuOption={(option) => handleClickMenuItem(option)}
-          />
-        </Box>
-
+        />
         <img
           src={Ellipses}
           style={{

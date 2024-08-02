@@ -51,7 +51,8 @@ dependencies {
 
 	runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 
-    implementation("org.flywaydb:flyway-core")
+  implementation("org.flywaydb:flyway-core")
+  implementation("org.flywaydb:flyway-database-postgresql")
 
 	implementation("org.zalando:problem-spring-web-starter:0.29.1")
 

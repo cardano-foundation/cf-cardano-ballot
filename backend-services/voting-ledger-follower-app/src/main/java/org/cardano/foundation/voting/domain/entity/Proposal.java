@@ -12,7 +12,6 @@ import java.util.Optional;
 @Builder
 @Entity
 @Table(name = "proposal")
-@Immutable
 public class Proposal extends AbstractTimestampEntity {
 
     @Getter

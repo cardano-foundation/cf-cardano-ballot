@@ -5,19 +5,39 @@ var mockUseCardano = jest.fn();
 import React from 'react';
 import '@testing-library/jest-dom';
 import { expect } from '@jest/globals';
-import { screen, within, waitFor, fireEvent, cleanup } from '@testing-library/react';
+import { screen, within, waitFor, fireEvent, cleanup, act } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import { ROUTES } from 'common/routes';
 import { UserState } from 'common/store/types';
-import { IntroductionPage, introItems } from 'pages/Introduction/Introduction';
+import { IntroductionPage } from 'pages/Introduction/Introduction';
 import { renderWithProviders } from 'test/mockProviders';
 import { eventMock_active, useCardanoMock, eventMock_notStarted, eventMock_finished } from 'test/mocks';
 import { CustomRouter } from 'test/CustomRouter';
 import { formatUTCDate } from 'common/utils/dateUtils';
 
+const title = 'Cardano Ballot on CIP-1694';
+const description =
+  'Cardano has reached an incredible milestone. After six years of initial development and feature cultivation, the Cardano blockchain has reached the age of Voltaire. Guided by a principles-first approach and led by the community, this new age of Cardano advances inclusive accountability for all participants in the ecosystem. Now is the time for the community to help guide our journey toward a shared future by participating in a non-binding poll on the deployment of on-chain governance, as described in CIP-1694. The feedback gathered will help inform 2024 plans and priorities in governance activities and development.';
+const imageSrc = '/static/cip-1694.jpg';
+
+jest.mock('../../../env', () => {
+  const original = jest.requireActual('../../../env');
+  return {
+    ...original,
+    env: {
+      ...original.env,
+      TARGET_NETWORK: 'Preprod',
+    },
+  };
+});
+
 jest.mock('@cardano-foundation/cardano-connect-with-wallet', () => {
   return {
     useCardano: mockUseCardano,
+    NetworkType: {
+      MAINNET: 'mainnet',
+      TESTNET: 'testnet',
+    },
     getWalletIcon: () => <span data-testid="getWalletIcon" />,
     ConnectWalletList: () => {
       return <span data-testid="ConnectWalletList" />;
@@ -27,19 +47,6 @@ jest.mock('@cardano-foundation/cardano-connect-with-wallet', () => {
     },
   };
 });
-
-jest.mock('swiper/react', () => ({
-  Swiper: ({ children }: { children: React.ReactElement }) => <div data-testid="Swiper-testId">{children}</div>,
-  SwiperSlide: ({ children }: { children: React.ReactElement }) => (
-    <div data-testid="SwiperSlide-testId">{children}</div>
-  ),
-}));
-
-jest.mock('swiper', () => ({
-  Pagination: () => null,
-  Navigation: () => null,
-  Autoplay: () => null,
-}));
 
 describe('For ongoing event:', () => {
   beforeEach(() => {
@@ -64,7 +71,7 @@ describe('For ongoing event:', () => {
 
       const eventTime = within(introductionPage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
-      expect(eventTime.textContent).toEqual('Voting closes: ');
+      expect(eventTime.textContent).toEqual('Ballot closes: ');
 
       const preloader = within(introductionPage).queryByTestId('event-time-loader');
       expect(preloader).not.toBeNull();
@@ -87,17 +94,17 @@ describe('For ongoing event:', () => {
 
       const eventTitle = within(introductionPage).queryByTestId('event-title');
       expect(eventTitle).not.toBeNull();
-      expect(eventTitle.textContent).toEqual(introItems[0].title);
+      expect(eventTitle.textContent).toEqual(title);
 
       const eventTime = within(introductionPage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
       expect(eventTime.textContent).toEqual(
-        `Voting closes: ${formatUTCDate(eventMock_active.eventEndDate.toString())}`
+        `Ballot closes: ${formatUTCDate(eventMock_active.eventEndDate.toString())}`
       );
 
       const eventDescription = within(introductionPage).queryByTestId('event-description');
       expect(eventDescription).not.toBeNull();
-      expect(eventDescription.textContent).toEqual(introItems[0].description);
+      expect(eventDescription.textContent).toEqual(description);
 
       const cta = within(introductionPage).queryByTestId('event-cta');
       expect(cta).not.toBeNull();
@@ -106,7 +113,7 @@ describe('For ongoing event:', () => {
       const image = within(introductionPage).queryByTestId('event-image');
       expect(image).not.toBeNull();
       expect(image.tagName).toEqual('IMG');
-      expect(image.attributes.getNamedItem('src').value).toEqual(introItems[0].image);
+      expect(image.attributes.getNamedItem('src').value).toEqual(imageSrc);
     });
   });
 
@@ -141,6 +148,12 @@ describe("For the event that hasn't started yet", () => {
   });
 
   test('should display proper state', async () => {
+    mockUseCardano.mockReset();
+    mockUseCardano.mockReturnValue({
+      useCardanoMock,
+      isConnected: false,
+    });
+
     const history = createMemoryHistory({ initialEntries: [ROUTES.INTRO] });
 
     renderWithProviders(
@@ -156,29 +169,57 @@ describe("For the event that hasn't started yet", () => {
 
       const eventTitle = within(introductionPage).queryByTestId('event-title');
       expect(eventTitle).not.toBeNull();
-      expect(eventTitle.textContent).toEqual(introItems[0].title);
+      expect(eventTitle.textContent).toEqual(title);
 
       const eventTime = within(introductionPage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
       expect(eventTime.textContent).toEqual(
-        `Vote from: ${formatUTCDate(eventMock_active.eventStartDate.toString())} - ${formatUTCDate(
+        `The ballot will be opened from: ${formatUTCDate(eventMock_active.eventStartDate.toString())} - ${formatUTCDate(
           eventMock_active.eventEndDate.toString()
         )}`
       );
 
       const eventDescription = within(introductionPage).queryByTestId('event-description');
       expect(eventDescription).not.toBeNull();
-      expect(eventDescription.textContent).toEqual(introItems[0].description);
+      expect(eventDescription.textContent).toEqual(description);
 
       const cta = within(introductionPage).queryByTestId('event-cta');
       expect(cta).not.toBeNull();
-      expect(cta.textContent).toEqual('View the vote');
+      expect(cta.textContent).toEqual('Get started');
 
       const image = within(introductionPage).queryByTestId('event-image');
       expect(image).not.toBeNull();
       expect(image.tagName).toEqual('IMG');
-      expect(image.attributes.getNamedItem('src').value).toEqual(introItems[0].image);
+      expect(image.attributes.getNamedItem('src').value).toEqual(imageSrc);
     });
+  });
+
+  test('should display connect wallet modal', async () => {
+    mockUseCardano.mockReset();
+    mockUseCardano.mockReturnValue({
+      useCardanoMock,
+      isConnected: false,
+    });
+    const history = createMemoryHistory({ initialEntries: [ROUTES.INTRO] });
+    const historyPushSpy = jest.spyOn(history, 'push');
+
+    const { store } = renderWithProviders(
+      <CustomRouter history={history}>
+        <IntroductionPage />
+      </CustomRouter>,
+      { preloadedState: { user: { event: eventMock_notStarted } as UserState } }
+    );
+
+    const cta = within(screen.queryByTestId('introduction-page')).queryByTestId('event-cta');
+
+    await act(async () => {
+      fireEvent.click(cta);
+    });
+
+    await waitFor(async () => {
+      expect(store.getState().user.isConnectWalletModalVisible).toBeTruthy();
+    });
+    historyPushSpy.mockRestore();
   });
 
   test('should redirect to vote page', async () => {
@@ -191,6 +232,9 @@ describe("For the event that hasn't started yet", () => {
       </CustomRouter>,
       { preloadedState: { user: { event: eventMock_notStarted } as UserState } }
     );
+
+    const introductionPage = screen.queryByTestId('introduction-page');
+    expect(within(introductionPage).queryByTestId('event-cta').textContent).toEqual('Preview the question');
 
     await waitFor(async () => {
       const cta = within(screen.queryByTestId('introduction-page')).queryByTestId('event-cta');
@@ -227,17 +271,17 @@ describe('For the event that has already finished', () => {
 
       const eventTitle = within(introductionPage).queryByTestId('event-title');
       expect(eventTitle).not.toBeNull();
-      expect(eventTitle.textContent).toEqual(introItems[0].title);
+      expect(eventTitle.textContent).toEqual(title);
 
       const eventTime = within(introductionPage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
       expect(eventTime.textContent).toEqual(
-        `The vote closed on ${formatUTCDate(eventMock_active.eventEndDate.toString())}`
+        `The ballot closed on ${formatUTCDate(eventMock_active.eventEndDate.toString())}`
       );
 
       const eventDescription = within(introductionPage).queryByTestId('event-description');
       expect(eventDescription).not.toBeNull();
-      expect(eventDescription.textContent).toEqual(introItems[0].description);
+      expect(eventDescription.textContent).toEqual(description);
 
       const cta = within(introductionPage).queryByTestId('event-cta');
       expect(cta).not.toBeNull();
@@ -246,7 +290,7 @@ describe('For the event that has already finished', () => {
       const image = within(introductionPage).queryByTestId('event-image');
       expect(image).not.toBeNull();
       expect(image.tagName).toEqual('IMG');
-      expect(image.attributes.getNamedItem('src').value).toEqual(introItems[0].image);
+      expect(image.attributes.getNamedItem('src').value).toEqual(imageSrc);
     });
   });
 

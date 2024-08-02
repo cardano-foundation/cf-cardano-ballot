@@ -2,6 +2,9 @@ name: Run Tests
 
 on:
   push:
+    branches: [ main, develop ]
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+*'
   pull_request:
     types: [ opened, synchronize ]
   workflow_dispatch:
@@ -11,23 +14,56 @@ jobs:
     runs-on: self-hosted
     strategy:
       matrix:
-        service: ['user-verification-service', 'voting-app']        
+        service: ['user-verification-service', 'voting-app', 'voting-ledger-follower-app']        
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Setup JDK 18
+      - name: Check if there were changes for the service
+        id: metadata
+        run: |
+          echo "SERVICE_CHANGED=false" | tee -a "$GITHUB_OUTPUT"
+
+          case "${GITHUB_EVENT_NAME}" in
+            pull_request)
+              if git log --pretty=format:'%h' -n 1 backend-services/${{ matrix.service }} | grep -q ${{ github.sha }} 
+              then
+                echo "SERVICE_CHANGED=true" | tee -a "$GITHUB_OUTPUT"
+              fi
+              ;;
+            push) # main and develop branches should always trigger the job
+              BRANCH_NAME=${GITHUB_REF#refs/heads/}
+              if [[ "${BRANCH_NAME}" == "main" ]] \
+              || [[ "${BRANCH_NAME}" == "develop" ]]
+              then
+                echo "SERVICE_CHANGED=true" | tee -a "$GITHUB_OUTPUT"
+              else
+                if git log --pretty=format:'%h' -n 1 backend-services/${{ matrix.service }} | grep -q ${{ github.sha }} 
+                then
+                  echo "SERVICE_CHANGED=true" | tee -a "$GITHUB_OUTPUT"
+                fi
+              fi
+              ;;
+            *) # ie workflow_dispatch
+              echo "SERVICE_CHANGED=true" | tee -a "$GITHUB_OUTPUT"
+              ;;
+          esac
+
+      - name: Setup JDK 21
+        if: steps.metadata.outputs.SERVICE_CHANGED == 'true'
         uses: actions/setup-java@v3
         with:
-          java-version: '17'
-          distribution: 'temurin'
+          java-version: '21'
+          distribution: 'corretto'
           cache: gradle
 
       - name: Run tests
+        if: steps.metadata.outputs.SERVICE_CHANGED == 'true'
         working-directory: ./backend-services/${{ matrix.service }}
         run: ./gradlew test
           
       - name: Generate JaCoCo Badge
+        if: steps.metadata.outputs.SERVICE_CHANGED == 'true'
         uses: cicirello/jacoco-badge-generator@v2
         with:
           generate-branches-badge: true
@@ -35,15 +71,42 @@ jobs:
           jacoco-csv-file: ./backend-services/${{ matrix.service }}/build/reports/jacoco/test/jacocoTestReport.csv
 
       - name: Log coverage percentage
+        if: steps.metadata.outputs.SERVICE_CHANGED == 'true'
         run: |
           echo "coverage = ${{ steps.jacoco.outputs.coverage }}"
           echo "branch coverage = ${{ steps.jacoco.outputs.branches }}"
 
       - name: Publish coverage report to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' 
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages
           folder: ./backend-services/${{ matrix.service }}/build/reports/jacoco/test/html
           target-folder: ${{ matrix.service }}/coverage-report/
+  
+  pytest:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      
+      - name: Set up Python 3.12.2
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.12.2
+      
+      - name: Install libsodium
+        run: sudo apt-get install -y libsodium23
+      
+      - name: Install dependencies
+        working-directory: ./backend-services/keri-ballot-verifier
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest
+          pip install -r requirements.txt
+      
+      - name: Run tests
+        working-directory: ./backend-services/keri-ballot-verifier
+        run: |
+          pytest tests/

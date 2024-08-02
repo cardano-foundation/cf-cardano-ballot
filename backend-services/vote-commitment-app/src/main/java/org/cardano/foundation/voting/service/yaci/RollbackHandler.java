@@ -6,21 +6,27 @@ import com.bloxbean.cardano.yaci.core.protocol.chainsync.messages.Point;
 import com.bloxbean.cardano.yaci.helper.BlockSync;
 import com.bloxbean.cardano.yaci.helper.listener.BlockChainDataListener;
 import com.bloxbean.cardano.yaci.helper.model.Transaction;
+import io.vavr.control.Either;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.domain.WellKnownPointWithProtocolMagic;
+import org.cardano.foundation.voting.service.merkle_tree.VoteCommitmentService;
 import org.cardano.foundation.voting.service.merkle_tree.VoteMerkleProofService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
+import org.zalando.problem.Problem;
 
 import java.util.List;
 import java.util.Optional;
 
 @Component
 @Slf4j
+@ConditionalOnProperty(prefix = "rollback.handling", value = "enabled", havingValue = "true")
 public class RollbackHandler {
 
     @Value("${cardano.node.ip}")
@@ -33,7 +39,13 @@ public class RollbackHandler {
     private CardanoNetwork cardanoNetwork;
 
     @Autowired
+    private ChainFollowerClient chainFollowerClient;
+
+    @Autowired
     private VoteMerkleProofService voteMerkleProofService;
+
+    @Autowired
+    private VoteCommitmentService voteCommitmentService;
 
     @Autowired
     private WellKnownPointWithProtocolMagic wellKnownPointWithProtocolMagic;
@@ -70,9 +82,35 @@ public class RollbackHandler {
 
             @Override
             public void onRollback(Point point) {
-                var slot = point.getSlot();
+                var allCommitmentWindowOpenEventsE = chainFollowerClient.findAllCommitmentWindowOpenEvents();
 
-                voteMerkleProofService.softDeleteAllProofsAfterSlot(slot);
+                if (allCommitmentWindowOpenEventsE.isEmpty()) {
+                    var issue = allCommitmentWindowOpenEventsE.swap().get();
+                    log.warn("Failed to get eventSummaries issue: {}, will try again in some time (on next rollback)...", issue.toString());
+
+                    return;
+                }
+
+                var allCommitmentWindowOpenEvents = allCommitmentWindowOpenEventsE.get();
+
+                if (allCommitmentWindowOpenEvents.isEmpty()) {
+                    log.info("No commitment window open events found. Skipping rollback handler...");
+
+                    return;
+                }
+
+                var absoluteSlot = point.getSlot();
+
+                for (var eventSummary : allCommitmentWindowOpenEvents) {
+                    String eventId = eventSummary.id();
+
+                    log.info("Processing rollback for eventId: {}, absoluteSlot: {}", eventId, absoluteSlot);
+
+                    int updatedVoteProofs = voteMerkleProofService.softDeleteAllProofsAfterSlot(eventId, absoluteSlot);
+
+                    log.info("Soft deleted {} vote proofs after slot: {} for eventId: {}", updatedVoteProofs, absoluteSlot, eventId);
+                }
+
             }
 
         });

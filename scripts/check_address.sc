@@ -1,6 +1,6 @@
 // mati@Mateuszs-MBP scripts % amm check_address.sc --mnemonic "solution ..."  
 
-import $ivy.`com.bloxbean.cardano:cardano-client-lib:0.5.0-beta3`
+import $ivy.`com.bloxbean.cardano:cardano-client-lib:0.5.0`
 
 import $ivy.`org.slf4j:slf4j-simple:2.0.9`
 

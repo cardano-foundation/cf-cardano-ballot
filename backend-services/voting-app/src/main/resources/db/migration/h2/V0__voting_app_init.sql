@@ -21,15 +21,21 @@ CREATE TABLE vote (
 CREATE INDEX idx_vote_stake_key
     ON vote (event_id, category_id, voter_stake_address);
 
+-- index for the leaderboard query
 CREATE INDEX idx_vote_event_id
     ON vote (event_id);
 
+-- index for the leaderboard query
+CREATE INDEX idx_vote_event_id_category_id
+    ON vote (event_id, category_id);
+
+-- index for the leaderboard query
 CREATE INDEX idx_vote_event_id_category_id_proposal_id
     ON vote (event_id, category_id, proposal_id);
 
 DROP TABLE IF EXISTS vote_merkle_proof;
 
--- benefit of storing vote merkle proof is that upon restart of app voter's receipt can be served from local db
+-- benefit of storing vote merkle proof is that upon restart of app voter's receipt can be served from a db
 CREATE TABLE vote_merkle_proof (
    vote_id VARCHAR(255) NOT NULL,
    vote_id_numeric_hash BIGINT NOT NULL,
@@ -53,3 +59,4 @@ CREATE INDEX idx_vote_merkle_proof_vote_id_event_id
 -- special index to help us find out all vote_merkle_proofs that took part in rolled back transaction
 CREATE INDEX idx_vote_merkle_proof_transaction_rollback
     ON vote_merkle_proof (absolute_slot);
+

@@ -27,8 +27,8 @@ import BlockIcon from '@mui/icons-material/Block';
 import { ROUTES } from 'common/routes';
 import { UserState } from 'common/store/types';
 import { EVENT_BY_ID_REFERENCE_URL } from 'common/api/referenceDataService';
-import { VotePage } from 'pages/Vote/Vote';
-import { Toast } from 'components/common/Toast/Toast';
+import { VotePage, errorsMap } from 'pages/Vote/Vote';
+import { Toast } from 'components/Toast/Toast';
 import { VERIFICATION_URL } from 'common/api/verificationService';
 import { formatUTCDate, getDateAndMonth } from 'common/utils/dateUtils';
 import { renderWithProviders } from 'test/mockProviders';
@@ -44,7 +44,6 @@ import {
   eventMock_finished,
   VoteReceiptMock_Full_MediumAssurance,
   userInSessionMock,
-  // VoteReceiptMock_Full_MediumAssurance,
 } from 'test/mocks';
 import { CustomRouter } from 'test/CustomRouter';
 import { capitalize } from 'lodash';
@@ -55,6 +54,10 @@ jest.mock('react-hot-toast', () => mockToast);
 jest.mock('@cardano-foundation/cardano-connect-with-wallet', () => {
   return {
     useCardano: mockUseCardano,
+    NetworkType: {
+      MAINNET: 'mainnet',
+      TESTNET: 'testnet',
+    },
     getWalletIcon: () => <span data-testid="getWalletIcon" />,
     ConnectWalletList: () => {
       return <span data-testid="ConnectWalletList" />;
@@ -65,27 +68,16 @@ jest.mock('@cardano-foundation/cardano-connect-with-wallet', () => {
   };
 });
 
-jest.mock('swiper/react', () => ({
-  Swiper: ({ children }: { children: React.ReactElement }) => <div data-testid="Swiper-testId">{children}</div>,
-  SwiperSlide: ({ children }: { children: React.ReactElement }) => (
-    <div data-testid="SwiperSlide-testId">{children}</div>
-  ),
-}));
-
-jest.mock('swiper', () => ({
-  Pagination: () => null,
-  Navigation: () => null,
-  Autoplay: () => null,
-}));
-
 jest.mock('../../../env', () => {
   const original = jest.requireActual('../../../env');
   return {
     ...original,
     env: {
       ...original.env,
+      QUESTIONS: ['Do you like pineapple pizza?', 'Do you like apples?'],
       CATEGORY_ID: 'CHANGE_GOV_STRUCTURE',
       EVENT_ID: 'CIP-1694_Pre_Ratification_3316',
+      TARGET_NETWORK: 'Preprod',
     },
   };
 });
@@ -186,7 +178,7 @@ describe('For ongoing event:', () => {
       const eventTime = within(votePage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
       expect(eventTime.textContent).toEqual(
-        `Voting closes: ${formatUTCDate(eventMock_active.eventEndDate.toString())}`
+        `Ballot closes: ${formatUTCDate(eventMock_active.eventEndDate.toString())}`
       );
 
       const eventDescription = within(votePage).queryByTestId('event-description');
@@ -203,7 +195,7 @@ describe('For ongoing event:', () => {
 
       const cta = within(votePage).queryByTestId('proposal-connect-button');
       expect(cta).not.toBeNull();
-      expect(cta.textContent).toEqual('Connect wallet to vote');
+      expect(cta.textContent).toEqual('Connect wallet to participate');
     });
   });
 
@@ -275,7 +267,7 @@ describe('For ongoing event:', () => {
       const eventTime = within(votePage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
       expect(eventTime.textContent).toEqual(
-        `Voting closes: ${formatUTCDate(eventMock_active.eventEndDate.toString())}`
+        `Ballot closes: ${formatUTCDate(eventMock_active.eventEndDate.toString())}`
       );
 
       const eventDescription = within(votePage).queryByTestId('event-description');
@@ -292,7 +284,7 @@ describe('For ongoing event:', () => {
 
       const cta = within(votePage).queryByTestId('proposal-submit-button');
       expect(cta).not.toBeNull();
-      expect(cta.textContent).toEqual('Submit your vote');
+      expect(cta.textContent).toEqual('Submit your ballot');
     });
   });
 
@@ -363,7 +355,7 @@ describe('For ongoing event:', () => {
 
     expect(mockToast).toBeCalledWith(
       <Toast
-        message={'Unable to submit your vote. Please try again'}
+        message={'Unable to submit your ballot. Please try again'}
         error
         icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
       />
@@ -371,7 +363,7 @@ describe('For ongoing event:', () => {
     mockCastAVoteWithDigitalSignature.mockReset();
   });
 
-  test('should submit vote and fetch vote receipt if there are more that on category', async () => {
+  test('should submit vote and fetch vote receipt if there are more than one category', async () => {
     const accessToken = 'accessToken';
     mockGetUserInSession.mockReset();
     mockGetUserInSession.mockReturnValue({ accessToken });
@@ -412,7 +404,9 @@ describe('For ongoing event:', () => {
 
     const cta = within(votePage).queryByTestId('proposal-submit-button');
     expect(cta).not.toBeNull();
+
     expect(cta.closest('button')).not.toBeDisabled();
+
     expect(mockGetVoteReceipt.mock.calls[0]).toEqual([eventMock_active.categories[0].id, accessToken]);
 
     expect(store.getState().user.isVoteSubmittedModalVisible).toBeFalsy();
@@ -422,6 +416,12 @@ describe('For ongoing event:', () => {
 
     expect(mockCastAVoteWithDigitalSignature).toHaveBeenCalledWith(canonicalVoteInputJsonMock);
     expect(store.getState().user.isVoteSubmittedModalVisible).toBeTruthy;
+    expect(screen.queryByTestId('vote-submitted-title')).toHaveTextContent('Vote submitted');
+    expect(screen.queryByTestId('vote-submitted-description')).toHaveTextContent(
+      `Thank you, your ballot has been submitted.Make sure to check back on ${getDateAndMonth(
+        eventMock_active?.proposalsRevealDate?.toString()
+      )} to see the results!`
+    );
 
     await act(async () => {
       fireEvent.click(screen.queryByTestId('vote-submitted-close'));
@@ -479,12 +479,131 @@ describe('For ongoing event:', () => {
     await act(async () => {
       fireEvent.click(options[0]);
     });
+
     const cta = within(votePage).queryByTestId('proposal-submit-button');
+    expect(cta).not.toBeDisabled();
+
     await act(async () => {
       fireEvent.click(cta);
     });
 
     expect(mockGetVoteReceipt).toBeCalledTimes(2);
+  });
+
+  test('should submit vote, fetch receipt for the last category and stay on the last category', async () => {
+    const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
+
+    mockUseCardano.mockReset();
+    mockUseCardano.mockReturnValue({
+      ...useCardanoMock,
+      signMessage: mockSignMessage,
+    });
+    mockGetSignedMessagePromise.mockReset();
+    mockGetSignedMessagePromise.mockImplementation(
+      (signMessage: (message: string) => string) => async (message: string) => await signMessage(message)
+    );
+    mockGetVotingPower.mockReset();
+    mockGetVotingPower.mockResolvedValue(accountDataMock);
+    mockBuildCanonicalVoteInputJson.mockReset();
+    mockBuildCanonicalVoteInputJson.mockReturnValue(canonicalVoteInputJsonMock);
+    mockGetVoteReceipt.mockReset();
+    mockGetVoteReceipt.mockReturnValue(VoteReceiptMock_Basic);
+
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
+
+    await act(async () => {
+      renderWithProviders(
+        <CustomRouter history={history}>
+          <VotePage />
+        </CustomRouter>,
+        {
+          preloadedState: {
+            user: {
+              event: eventMock_active,
+              tip: chainTipMock,
+            } as UserState,
+          },
+        }
+      );
+    });
+
+    const votePage = screen.queryByTestId('vote-page');
+    await act(async () => {
+      const error = { message: 'VOTE_NOT_FOUND' };
+      mockGetVoteReceipt.mockReset();
+      mockGetVoteReceipt.mockImplementation(async () => await Promise.reject(error));
+      fireEvent.click(within(votePage).queryByText('Next question'));
+    });
+
+    expect(mockGetVoteReceipt).toBeCalledTimes(1);
+    expect(mockGetVoteReceipt).toHaveBeenLastCalledWith(eventMock_active.categories[1].id, true);
+    expect(within(votePage).queryByTestId('next-question-button')).not.toBeInTheDocument();
+
+    const options = within(votePage).queryAllByTestId('option-card');
+    await act(async () => {
+      fireEvent.click(options[0]);
+    });
+
+    await act(async () => {
+      fireEvent.click(within(votePage).queryByTestId('proposal-submit-button'));
+    });
+
+    expect(mockGetVoteReceipt).toBeCalledTimes(2);
+    expect(mockGetVoteReceipt).toHaveBeenLastCalledWith(eventMock_active.categories[1].id, true);
+    expect(within(votePage).queryByText('Previous question')).not.toBeInTheDocument();
+    expect(within(votePage).queryByTestId('show-receipt-button')).toBeInTheDocument();
+  });
+
+  test('should show proper error if failed to fetch tip during vote submitting', async () => {
+    const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
+
+    mockUseCardano.mockReset();
+    mockUseCardano.mockReturnValue({
+      ...useCardanoMock,
+      signMessage: mockSignMessage,
+    });
+    mockGetSignedMessagePromise.mockReset();
+    mockGetSignedMessagePromise.mockImplementation(
+      (signMessage: (message: string) => string) => async (message: string) => await signMessage(message)
+    );
+    const error = { message: 'error' };
+    mockGetChainTip.mockReset();
+    mockGetChainTip.mockImplementation(async () => await Promise.reject(error));
+    mockBuildCanonicalVoteInputJson.mockReset();
+    mockBuildCanonicalVoteInputJson.mockReturnValue(canonicalVoteInputJsonMock);
+
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
+
+    await act(async () => {
+      renderWithProviders(
+        <CustomRouter history={history}>
+          <VotePage />
+        </CustomRouter>,
+        { preloadedState: { user: { event: eventMock_active, tip: chainTipMock } as UserState } }
+      );
+    });
+
+    const votePage = screen.queryByTestId('vote-page');
+
+    const options = within(votePage).queryAllByTestId('option-card');
+
+    await act(async () => {
+      fireEvent.click(options[0]);
+    });
+
+    const cta = within(votePage).queryByTestId('proposal-submit-button');
+
+    await act(async () => {
+      fireEvent.click(cta);
+    });
+
+    expect(mockToast).toBeCalledWith(
+      <Toast
+        message="Failed to fetch chain tip"
+        error
+        icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
+      />
+    );
   });
 
   test('should show proper error if failed to fetch voting power during vote submitting', async () => {
@@ -523,6 +642,7 @@ describe('For ongoing event:', () => {
     await act(async () => {
       fireEvent.click(options[0]);
     });
+
     const cta = within(votePage).queryByTestId('proposal-submit-button');
 
     await act(async () => {
@@ -530,11 +650,133 @@ describe('For ongoing event:', () => {
     });
     expect(mockToast).toBeCalledWith(
       <Toast
-        message={'Unable to submit your vote. Please try again'}
+        message={'Unable to submit your ballot. Please try again'}
         error
         icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
       />
     );
+  });
+
+  test('should show proper error if failed to fetch voting power during vote submitting due to STAKE_AMOUNT_NOT_AVAILABLE error', async () => {
+    const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
+
+    mockUseCardano.mockReset();
+    mockUseCardano.mockReturnValue({
+      ...useCardanoMock,
+      stakeAddress: 'stakeAddress',
+      signMessage: mockSignMessage,
+    });
+    mockGetSignedMessagePromise.mockReset();
+    mockGetSignedMessagePromise.mockImplementation(
+      (signMessage: (message: string) => string) => async (message: string) => await signMessage(message)
+    );
+    const error = { message: 'STAKE_AMOUNT_NOT_AVAILABLE' };
+    mockGetVotingPower.mockReset();
+    mockGetVotingPower.mockImplementation(async () => await Promise.reject(error));
+    mockBuildCanonicalVoteInputJson.mockReset();
+    mockBuildCanonicalVoteInputJson.mockReturnValue(canonicalVoteInputJsonMock);
+
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
+
+    await act(async () => {
+      renderWithProviders(
+        <CustomRouter history={history}>
+          <VotePage />
+        </CustomRouter>,
+        { preloadedState: { user: { event: eventMock_active, tip: chainTipMock } as UserState } }
+      );
+    });
+
+    const votePage = screen.queryByTestId('vote-page');
+
+    const options = within(votePage).queryAllByTestId('option-card');
+
+    await act(async () => {
+      fireEvent.click(options[0]);
+    });
+
+    const cta = within(votePage).queryByTestId('proposal-submit-button');
+
+    await act(async () => {
+      fireEvent.click(cta);
+    });
+    expect(mockToast).toBeCalledWith(
+      <Toast
+        message={errorsMap['STAKE_AMOUNT_NOT_AVAILABLE']('stakeAddress')}
+        error
+        icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
+      />
+    );
+  });
+
+  test('should show proper error if failed to submit vote due to VOTE_CANNOT_BE_CHANGED error', async () => {
+    const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
+
+    mockUseCardano.mockReset();
+    mockUseCardano.mockReturnValue({
+      ...useCardanoMock,
+      stakeAddress: 'stakeAddress',
+      signMessage: mockSignMessage,
+    });
+    mockGetSignedMessagePromise.mockReset();
+    mockGetSignedMessagePromise.mockImplementation(
+      (signMessage: (message: string) => string) => async (message: string) => await signMessage(message)
+    );
+    const error = { message: 'VOTE_CANNOT_BE_CHANGED' };
+    mockCastAVoteWithDigitalSignature.mockReset();
+    mockCastAVoteWithDigitalSignature.mockImplementation(async () => await Promise.reject(error));
+    mockBuildCanonicalVoteInputJson.mockReset();
+    mockBuildCanonicalVoteInputJson.mockReturnValue(canonicalVoteInputJsonMock);
+    mockGetVotingPower.mockReset();
+    mockGetVotingPower.mockResolvedValue(accountDataMock);
+    mockGetUserInSession.mockReset();
+    mockGetUserInSession.mockReturnValue(null);
+
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
+
+    await act(async () => {
+      renderWithProviders(
+        <CustomRouter history={history}>
+          <VotePage />
+        </CustomRouter>,
+        { preloadedState: { user: { event: eventMock_active, tip: chainTipMock } as UserState } }
+      );
+    });
+
+    const votePage = screen.queryByTestId('vote-page');
+    expect(screen.queryByTestId('confirm-with-signature-modal')).toBeInTheDocument();
+
+    await act(async () => {
+      fireEvent.click(
+        within(screen.queryByTestId('confirm-with-signature-modal')).queryByTestId('confirm-with-signature-close')
+      );
+    });
+
+    await waitFor(async () => {
+      expect(screen.queryByTestId('confirm-with-signature-modal')).not.toBeInTheDocument();
+    });
+
+    const options = within(votePage).queryAllByTestId('option-card');
+
+    await act(async () => {
+      fireEvent.click(options[0]);
+    });
+
+    const cta = within(votePage).queryByTestId('proposal-submit-button');
+
+    await act(async () => {
+      fireEvent.click(cta);
+    });
+    expect(mockToast).toBeCalledWith(
+      <Toast
+        message={errorsMap['VOTE_CANNOT_BE_CHANGED']('stakeAddress')}
+        error
+        icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
+      />
+    );
+    await waitFor(async () => {
+      expect(screen.queryByTestId('confirm-with-signature-modal')).toBeInTheDocument();
+    });
   });
 
   test('should ask to fetch receipt and display proper state if present and user session is active', async () => {
@@ -665,7 +907,7 @@ describe('For ongoing event:', () => {
       'Wallet signature'
     );
     expect(await within(confirmationModal).findByTestId('confirm-with-signature-description')).toHaveTextContent(
-      'We need to check if you’ve already voted. Please confirm with your wallet signature.'
+      'We need to check if you’ve already submitted your ballot.You will see a pop-up message from your wallet.Please confirm with your wallet signature.'
     );
     const confirmCta = await within(confirmationModal).findByTestId('confirm-with-signature-cta');
     expect(confirmCta).toHaveTextContent('Confirm');
@@ -683,7 +925,7 @@ describe('For ongoing event:', () => {
 
       const cta = within(votePage).queryByTestId('show-receipt-button');
       expect(cta).not.toBeNull();
-      expect(cta.textContent).toEqual('Vote receipt');
+      expect(cta.textContent).toEqual('Ballot receipt');
 
       expect(screen.queryByTestId('confirm-with-signature-modal')).toBeNull();
       expect(submitLoginMock).toBeCalledWith(canonicalVoteInput);
@@ -732,7 +974,7 @@ describe('For ongoing event:', () => {
       'Wallet signature'
     );
     expect(await within(confirmationModal).findByTestId('confirm-with-signature-description')).toHaveTextContent(
-      'We need to check if you’ve already voted. Please confirm with your wallet signature.'
+      'We need to check if you’ve already submitted your ballot.You will see a pop-up message from your wallet.Please confirm with your wallet signature.'
     );
     const confirmCta = await within(confirmationModal).findByTestId('confirm-with-signature-cta');
     expect(confirmCta).toHaveTextContent('Confirm');
@@ -750,13 +992,13 @@ describe('For ongoing event:', () => {
 
       const cta = within(votePage).queryByTestId('show-receipt-button');
       expect(cta).not.toBeNull();
-      expect(cta.textContent).toEqual('Vote receipt');
+      expect(cta.textContent).toEqual('Ballot receipt');
 
       expect(screen.queryByTestId('confirm-with-signature-modal')).toBeNull();
     });
   });
 
-  test('should show proper error if vote is not found', async () => {
+  test('should show proper state if vote is not found', async () => {
     const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
     const error = { message: 'VOTE_NOT_FOUND' };
     mockGetVoteReceipt.mockReset();
@@ -798,6 +1040,7 @@ describe('For ongoing event:', () => {
 
     const options = screen.queryAllByTestId('option-card');
     fireEvent.click(options[0]);
+
     expect(screen.queryByTestId('proposal-submit-button').closest('button')).not.toBeDisabled();
   });
 
@@ -848,7 +1091,7 @@ describe('For ongoing event:', () => {
     expect(screen.queryByTestId('vote-receipt')).toBeInTheDocument();
   });
 
-  test('should switch between categories', async () => {
+  test('should switch between categories and show pagination', async () => {
     const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
     mockGetVoteReceipt.mockReset();
     mockGetVoteReceipt.mockReturnValue(VoteReceiptMock_Basic);
@@ -888,6 +1131,7 @@ describe('For ongoing event:', () => {
     expect(cta.closest('button')).not.toBeDisabled();
     expect(mockGetVoteReceipt).toHaveBeenLastCalledWith(eventMock_active.categories[0].id, true);
     expect(cta).toHaveTextContent('Next question');
+    expect(within(votePage).queryByTestId('category-pagination')).toHaveTextContent('Question 1 of 2');
 
     await act(async () => {
       mockGetVoteReceipt.mockReset();
@@ -904,7 +1148,7 @@ describe('For ongoing event:', () => {
 
     const eventTime = within(votePage).queryByTestId('event-time');
     expect(eventTime).not.toBeNull();
-    expect(eventTime.textContent).toEqual(`Voting closes: ${formatUTCDate(eventMock_active.eventEndDate.toString())}`);
+    expect(eventTime.textContent).toEqual(`Ballot closes: ${formatUTCDate(eventMock_active.eventEndDate.toString())}`);
 
     const eventDescription = within(votePage).queryByTestId('event-description');
     expect(eventDescription).not.toBeNull();
@@ -920,6 +1164,7 @@ describe('For ongoing event:', () => {
     expect(screen.queryByTestId('vote-receipt')).not.toBeInTheDocument();
     expect(mockGetVoteReceipt).toHaveBeenLastCalledWith(eventMock_active.categories[1].id, true);
     expect(within(votePage).queryByTestId('next-question-button')).toHaveTextContent('Previous question');
+    expect(within(votePage).queryByTestId('category-pagination')).toHaveTextContent('Question 2 of 2');
   });
 
   test('should handle show vote receipt for inactive user session', async () => {
@@ -1021,7 +1266,7 @@ describe('For ongoing event:', () => {
     await act(async () => fireEvent.click(within(receipt).queryByTestId('refetch-receipt-button')));
     expect(mockToast).toBeCalledWith(
       <Toast
-        message="Unable to refresh your vote receipt. Please try again"
+        message="Unable to refresh your ballot receipt. Please try again"
         error
         icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
       />
@@ -1115,9 +1360,9 @@ describe("For the event that hasn't started yet", () => {
       const eventTime = within(votePage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
       expect(eventTime.textContent).toEqual(
-        `Vote from: ${formatUTCDate(eventMock_notStarted.eventStartDate.toString())} - ${formatUTCDate(
-          eventMock_notStarted.eventEndDate.toString()
-        )}`
+        `The ballot will be opened from: ${formatUTCDate(
+          eventMock_notStarted.eventStartDate.toString()
+        )} - ${formatUTCDate(eventMock_notStarted.eventEndDate.toString())}`
       );
 
       const eventDescription = within(votePage).queryByTestId('event-description');
@@ -1136,7 +1381,7 @@ describe("For the event that hasn't started yet", () => {
       const cta = within(votePage).queryByTestId('event-hasnt-started-submit-button');
       expect(cta).not.toBeNull();
       expect(cta.textContent).toEqual(
-        `Submit your vote from ${getDateAndMonth(eventMock_notStarted.eventStartDate?.toString())}`
+        `Submit your ballot from ${getDateAndMonth(eventMock_notStarted.eventStartDate?.toString())}`
       );
     });
   });
@@ -1179,7 +1424,7 @@ describe('For the event that has already finished', () => {
       const eventTime = within(votePage).queryByTestId('event-time');
       expect(eventTime).not.toBeNull();
       expect(eventTime.textContent).toEqual(
-        `The vote closed on ${formatUTCDate(eventMock_finished.eventEndDate.toString())}`
+        `The ballot closed on ${formatUTCDate(eventMock_finished.eventEndDate.toString())}`
       );
 
       const eventDescription = within(votePage).queryByTestId('event-description');
@@ -1196,7 +1441,7 @@ describe('For the event that has already finished', () => {
 
       const cta = within(votePage).queryByTestId('proposal-connect-button');
       expect(cta).not.toBeNull();
-      expect(cta.textContent).toEqual('Connect wallet to see your vote');
+      expect(cta.textContent).toEqual('Connect wallet to see your ballot');
     });
   });
 
@@ -1259,6 +1504,10 @@ describe('For the event that has already finished', () => {
     );
     mockGetVotingPower.mockReset();
     mockGetVotingPower.mockResolvedValue(accountDataMock);
+
+    mockGetUserInSession.mockReset();
+    mockGetUserInSession.mockReturnValue(null);
+
     const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
     const historyPushSpy = jest.spyOn(history, 'push');
 
@@ -1280,7 +1529,18 @@ describe('For the event that has already finished', () => {
 
     const votePage = screen.queryByTestId('vote-page');
 
+    expect(screen.queryByTestId('confirm-with-signature-modal')).toBeInTheDocument();
+
+    const confirmCta = await within(screen.queryByTestId('confirm-with-signature-modal')).findByTestId(
+      'confirm-with-signature-cta'
+    );
+
+    await act(async () => {
+      fireEvent.click(confirmCta);
+    });
+
     expect(screen.queryByTestId('vote-receipt')).not.toBeInTheDocument();
+
     const cta = within(votePage).queryByTestId('show-receipt-button');
     await act(async () => {
       fireEvent.click(cta);
@@ -1299,5 +1559,62 @@ describe('For the event that has already finished', () => {
     });
     expect((historyPushSpy.mock.lastCall[0] as unknown as any).pathname).toEqual(ROUTES.LEADERBOARD);
     historyPushSpy.mockRestore();
+  });
+
+  test('should not show view receipt button if vote is not found but should show pagination', async () => {
+    const mockSignMessage = jest.fn().mockImplementation(async (message) => await message);
+    const error = { message: 'VOTE_NOT_FOUND' };
+    mockGetVoteReceipt.mockReset();
+    mockGetVoteReceipt.mockImplementation(async () => await Promise.reject(error));
+    mockUseCardano.mockReset();
+    mockUseCardano.mockReturnValue({
+      ...useCardanoMock,
+      signMessage: mockSignMessage,
+    });
+    mockGetSignedMessagePromise.mockReset();
+    mockGetSignedMessagePromise.mockImplementation(
+      (signMessage: (message: string) => string) => async (message: string) => await signMessage(message)
+    );
+    mockGetVotingPower.mockReset();
+    mockGetVotingPower.mockResolvedValue(accountDataMock);
+
+    mockGetUserInSession.mockReset();
+    mockGetUserInSession.mockReturnValue(null);
+
+    const history = createMemoryHistory({ initialEntries: [ROUTES.VOTE] });
+
+    await act(async () => {
+      renderWithProviders(
+        <CustomRouter history={history}>
+          <VotePage />
+        </CustomRouter>,
+        {
+          preloadedState: {
+            user: {
+              event: eventMock_finished,
+              tip: chainTipMock,
+            } as UserState,
+          },
+        }
+      );
+    });
+
+    const votePage = screen.queryByTestId('vote-page');
+
+    expect(screen.queryByTestId('confirm-with-signature-modal')).toBeInTheDocument();
+    expect(
+      within(screen.queryByTestId('confirm-with-signature-modal')).queryByTestId('confirm-with-signature-close')
+    ).not.toBeInTheDocument();
+
+    const confirmCta = await within(screen.queryByTestId('confirm-with-signature-modal')).findByTestId(
+      'confirm-with-signature-cta'
+    );
+
+    await act(async () => {
+      fireEvent.click(confirmCta);
+    });
+
+    expect(within(votePage).queryByTestId('show-receipt-button')).not.toBeInTheDocument();
+    expect(within(votePage).queryByTestId('next-question-button')).toBeInTheDocument();
   });
 });

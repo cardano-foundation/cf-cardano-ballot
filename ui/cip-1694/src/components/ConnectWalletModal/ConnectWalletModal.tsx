@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useLayoutEffect } from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
@@ -17,15 +17,37 @@ type ConnectWalletModalProps = {
   id: string;
   openStatus: boolean;
   title: string;
-  description: string;
+  description: React.ReactNode;
   onConnectWallet: () => void;
-  onConnectWalletError: () => void;
+  onConnectWalletError: (walletName: string, error: Error) => void;
   onCloseFn: () => void;
+  installedExtensions: string[];
 };
 
 export const ConnectWalletModal = (props: ConnectWalletModalProps) => {
-  const { name, id, openStatus, title, description, onConnectWallet, onConnectWalletError, onCloseFn } = props;
-  const supportedWallets = env.SUPPORTED_WALLETS;
+  const {
+    name,
+    id,
+    openStatus,
+    title,
+    description,
+    onConnectWallet,
+    onConnectWalletError,
+    onCloseFn,
+    installedExtensions,
+  } = props;
+  const supportedWallets = installedExtensions
+    .filter((installedWallet) => env.SUPPORTED_WALLETS.includes(installedWallet))
+    .sort((a, b) => a.localeCompare(b));
+
+  useLayoutEffect(() => {
+    setTimeout(() => {
+      Array.from(document.querySelector("[data-testid='connect-wallet-list']")?.children || [])?.forEach((wallet) => {
+        const content = wallet.innerHTML;
+        wallet.innerHTML = content.replace('Typhoncip30', 'Typhon');
+      });
+    }, 0);
+  }, []);
 
   return (
     <Dialog
@@ -33,6 +55,7 @@ export const ConnectWalletModal = (props: ConnectWalletModalProps) => {
       open={!!openStatus}
       aria-labelledby={name}
       PaperProps={{ sx: { width: '400px', borderRadius: '16px' } }}
+      onClose={onCloseFn}
     >
       <DialogTitle
         sx={{ padding: { xs: '20px', md: '30px 30px 20px 30px' } }}
@@ -81,6 +104,7 @@ export const ConnectWalletModal = (props: ConnectWalletModalProps) => {
             >
               <Box width="100%">
                 <ConnectWalletList
+                  showUnavailableWallets={0}
                   supportedWallets={supportedWallets}
                   onConnect={onConnectWallet}
                   onConnectError={onConnectWalletError}

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
@@ -8,6 +9,7 @@ import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import styles from './VoteSubmittedModal.module.scss';
+import { env } from '../../env';
 
 type VoteSubmittedModalProps = {
   name: string;
@@ -23,6 +25,7 @@ export const VoteSubmittedModal = (props: VoteSubmittedModalProps) => {
 
   return (
     <Dialog
+      onClose={onCloseFn}
       open={!!openStatus}
       aria-labelledby={name}
       PaperProps={{ sx: { width: '400px', borderRadius: '16px' } }}
@@ -75,6 +78,9 @@ export const VoteSubmittedModal = (props: VoteSubmittedModalProps) => {
             >
               <Box width="100%">
                 <Button
+                  target="_blank"
+                  component={Link}
+                  to={env.GOOGLE_FORM_URL}
                   className={styles.button}
                   size="large"
                   variant="contained"
@@ -82,7 +88,7 @@ export const VoteSubmittedModal = (props: VoteSubmittedModalProps) => {
                   sx={{}}
                   data-testid="vote-submitted-cta"
                 >
-                  Done
+                  Share more context about your vote
                 </Button>
               </Box>
             </Grid>

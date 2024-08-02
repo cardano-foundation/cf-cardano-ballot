@@ -33,9 +33,9 @@ const TermsOptInModal = (props) => {
     const path = window.location.href;
 
     if (
-      path.includes(ROUTES.TERMSANDCONDITIONS) ||
-      path.includes(ROUTES.PRIVACYPOLICY) ||
-      path.includes(ROUTES.PAGENOTFOUND)
+      path.includes(ROUTES.TERMS_AND_CONDITIONS) ||
+      path.includes(ROUTES.PRIVACY_POLICY) ||
+      path.includes(ROUTES.PAGE_NOT_FOUND)
     )
       setOpen(false);
 
@@ -168,7 +168,7 @@ const TermsOptInModal = (props) => {
                       <>
                         I have read and agree to the Cardano Ballot
                         <Link
-                          href={ROUTES.TERMSANDCONDITIONS}
+                          href={ROUTES.TERMS_AND_CONDITIONS}
                           target="_blank"
                           sx={{ marginX: 1 }}
                         >
@@ -176,7 +176,7 @@ const TermsOptInModal = (props) => {
                         </Link>
                         and
                         <Link
-                          href={ROUTES.PRIVACYPOLICY}
+                          href={ROUTES.PRIVACY_POLICY}
                           target="_blank"
                           sx={{ marginX: 1 }}
                         >
@@ -216,7 +216,7 @@ const TermsOptInModal = (props) => {
                   <>
                     I have read and agree to the Cardano Ballot
                     <Link
-                      href={ROUTES.TERMSANDCONDITIONS}
+                      href={ROUTES.TERMS_AND_CONDITIONS}
                       target="_blank"
                       sx={{ marginX: 1 }}
                     >
@@ -224,7 +224,7 @@ const TermsOptInModal = (props) => {
                     </Link>
                     and
                     <Link
-                      href={ROUTES.PRIVACYPOLICY}
+                      href={ROUTES.PRIVACY_POLICY}
                       target="_blank"
                       sx={{ marginX: 1 }}
                     >

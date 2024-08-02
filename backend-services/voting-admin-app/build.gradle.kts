@@ -27,23 +27,25 @@ dependencies {
 	implementation("org.springframework.shell:spring-shell-starter")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 
-	compileOnly("org.projectlombok:lombok:1.18.28")
-	annotationProcessor("org.projectlombok:lombok:1.18.28")
+	compileOnly("org.projectlombok:lombok:1.18.30")
+	annotationProcessor("org.projectlombok:lombok:1.18.30")
 
-	testCompileOnly("org.projectlombok:lombok:1.18.28")
-	testAnnotationProcessor("org.projectlombok:lombok:1.18.28")
+	testCompileOnly("org.projectlombok:lombok:1.18.30")
+	testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
 
-	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0-beta3")
-	implementation("com.bloxbean.cardano:cardano-client-address:0.5.0-beta3")
-	implementation("com.bloxbean.cardano:cardano-client-metadata:0.5.0-beta3")
-	implementation("com.bloxbean.cardano:cardano-client-quicktx:0.5.0-beta3")
-	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.0-beta3")
-	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0-beta3")
+	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0")
+	implementation("com.bloxbean.cardano:cardano-client-address:0.5.0")
+	implementation("com.bloxbean.cardano:cardano-client-metadata:0.5.0")
+	implementation("com.bloxbean.cardano:cardano-client-quicktx:0.5.0")
+	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.0")
+	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0")
 
 	implementation("com.nimbusds:nimbus-jose-jwt:9.34")
 	implementation("com.google.crypto.tink:tink:1.10.0")
 
 	implementation("io.blockfrost:blockfrost-java:0.1.3")
+
+	implementation("me.paulschwarz:spring-dotenv:4.0.0")
 }
 
 dependencyManagement {

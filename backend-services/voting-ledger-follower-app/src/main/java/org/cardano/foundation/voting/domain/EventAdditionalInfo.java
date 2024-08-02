@@ -6,7 +6,8 @@ public record EventAdditionalInfo(String id,
                                   boolean finished,
                                   boolean active,
                                   boolean proposalsReveal,
-                                  boolean commitmentsWindowOpen
+                                  boolean commitmentsWindowOpen,
+                                  boolean userBased
 ) {
 
 }

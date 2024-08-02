@@ -7,6 +7,12 @@ export const CAST_VOTE_URL = `${env.VOTING_APP_SERVER_URL}/api/vote/cast`;
 export const VOTE_RECEIPT_URL = `${env.VOTING_APP_SERVER_URL}/api/vote/receipt`;
 export const BLOCKCHAIN_TIP_URL = `${env.VOTING_LEDGER_FOLLOWER_APP_SERVER_URL}/api/blockchain/tip`;
 export const VOTING_POWER_URL = `${env.VOTING_LEDGER_FOLLOWER_APP_SERVER_URL}/api/account`;
+export const GOOGLE_FORM_URL = env.GOOGLE_FORM_URL;
+
+export const ERRORS = {
+  STAKE_AMOUNT_NOT_AVAILABLE: 'STAKE_AMOUNT_NOT_AVAILABLE',
+  VOTE_CANNOT_BE_CHANGED: 'VOTE_CANNOT_BE_CHANGED',
+};
 
 export const castAVoteWithDigitalSignature = async (jsonRequest: SignedWeb3Request) =>
   await doRequest<Problem | Vote>(

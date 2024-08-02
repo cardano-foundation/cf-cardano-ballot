@@ -5,11 +5,11 @@ import CssBaseline from '@mui/material/CssBaseline';
 import BlockIcon from '@mui/icons-material/Block';
 import * as referenceDataService from 'common/api/referenceDataService';
 import { setEventData } from 'common/store/userSlice';
-import { Layout } from 'components/common/Layout/Layout';
-import { Toast } from 'components/common/Toast/Toast';
-import { Content } from './components/common/Content/Content';
-import { Footer } from './components/common/Footer/Footer';
-import { Header } from './components/common/Header/Header';
+import { Layout } from 'components/Layout/Layout';
+import { Toast } from 'components/Toast/Toast';
+import { Content } from './components/Content/Content';
+import { Footer } from './components/Footer/Footer';
+import { Header } from './components/Header/Header';
 import styles from './App.module.scss';
 import { env } from './env';
 
@@ -20,9 +20,6 @@ export const App = () => {
       const event = await referenceDataService.getEvent(env.EVENT_ID);
       dispatch(setEventData({ event }));
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
-        console.log(`Failed to fetch event, ${error?.info || error?.message || error?.toString()}`);
-      }
       toast(
         <Toast
           message="Failed to fetch event"

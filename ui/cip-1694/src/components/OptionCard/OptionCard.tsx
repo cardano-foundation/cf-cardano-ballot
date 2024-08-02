@@ -1,6 +1,7 @@
 import React, { useState, MouseEvent, useEffect } from 'react';
 import cn from 'classnames';
-import { Grid, Skeleton, Typography } from '@mui/material';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { Grid, Skeleton, Typography, Box } from '@mui/material';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { ProposalPresentation } from 'types/voting-ledger-follower-types';
@@ -35,7 +36,7 @@ export const OptionCard = ({
     >
       <ToggleButtonGroup
         disabled={disabled}
-        sx={{ width: '100%', flexDirection: { xs: 'column', md: 'row' }, gap: { xs: '20px', md: '51px' } }}
+        sx={{ width: '100%', flexDirection: { xs: 'column', md: 'row' }, gap: { xs: '20px', md: '24px' } }}
         color="primary"
         value={active}
         exclusive
@@ -51,10 +52,10 @@ export const OptionCard = ({
               xs={12}
               container
               direction={{ xs: 'row', md: 'column' }}
-              gap="15px"
               justifyContent={{ md: 'center', xs: 'flex-start' }}
               alignItems="center"
               height={{ xs: '62px', md: '138px' }}
+              minHeight={{ xs: '62px', md: '138px' }}
             >
               <Skeleton
                 sx={{ borderRadius: '16px' }}
@@ -69,8 +70,9 @@ export const OptionCard = ({
           <ToggleButton
             sx={{
               height: { xs: '62px', md: '138px' },
+              minHeight: { xs: '62px', md: '138px' },
               borderRadius: { xs: '8px !important', md: '16px !important' },
-              padding: '0px 20px',
+              padding: '16px 16px',
               maxWidth: 'auto',
             }}
             value={option.name}
@@ -97,6 +99,12 @@ export const OptionCard = ({
                 {option.label}
               </Typography>
             </Grid>
+            <Box
+              sx={{ top: { xs: '50%', md: '16px' }, transform: { xs: 'translateY(-50%)', md: 'none' } }}
+              className={styles.checkContainer}
+            >
+              {active === option.name && <CheckCircleIcon className={styles.checkIcon} />}
+            </Box>
           </ToggleButton>
         ))}
       </ToggleButtonGroup>

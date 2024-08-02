@@ -54,4 +54,13 @@
       box-shadow: 2px 2px 5px 0px rgba(29, 67, 155, 0.25) !important;
     }
   }
+
+  .buttonContent {
+    position: relative;
+
+    .loader {
+      position: absolute;
+      right: -30px;
+    }
+  }
 }

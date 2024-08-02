@@ -9,13 +9,15 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { VoteVerificationRequest } from 'types/voting-verification-app-types';
 import * as verificationService from 'common/api/verificationService';
 import { VoteReceipt as VoteReceiptType } from 'types/voting-app-types';
-import { Toast } from 'components/common/Toast/Toast';
+import { Toast } from 'components/Toast/Toast';
 import {
   AdvancedFullFieldsToDisplayArrayKeys,
   FieldsToDisplayArrayKeys,
   advancedFieldsToDisplay,
   advancedFullFieldsToDisplay,
   generalFieldsToDisplay,
+  voteItemDescriptionMap,
+  voteItemAdvancedDescriptionMap,
 } from './utils';
 import { ReceiptItem } from './components/ReceiptItem/ReceipItem';
 import { ReceiptInfo } from './components/ReceiptInfo/ReceiptInfo';
@@ -50,7 +52,7 @@ export const VoteReceipt = ({ setOpen, fetchReceipt, receipt }: VoteReceiptProps
     } catch (error) {
       toast(
         <Toast
-          message="Unable to verify vote receipt. Please try again"
+          message="Unable to verify ballot receipt. Please try again"
           error
           icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
         />
@@ -118,7 +120,7 @@ export const VoteReceipt = ({ setOpen, fetchReceipt, receipt }: VoteReceiptProps
           sx={{ marginBottom: '28px' }}
           data-testid="vote-receipt-title"
         >
-          Vote Receipt
+          Ballot Receipt
         </Typography>
       </Grid>
       <Grid
@@ -147,7 +149,7 @@ export const VoteReceipt = ({ setOpen, fetchReceipt, receipt }: VoteReceiptProps
         {Object.entries(fieldsToDisplay).map(([key, value]: [FieldsToDisplayArrayKeys, string]) => (
           <ReceiptItem
             key={key}
-            {...{ name: key, value, onItemClick }}
+            {...{ name: key, value, onItemClick, description: voteItemDescriptionMap[key] }}
           />
         ))}
         <Accordion
@@ -168,7 +170,7 @@ export const VoteReceipt = ({ setOpen, fetchReceipt, receipt }: VoteReceiptProps
               <ReceiptItem
                 dataTestId="receipt-item-extended"
                 key={key}
-                {...{ name: key, value, onItemClick }}
+                {...{ name: key, value, onItemClick, description: voteItemAdvancedDescriptionMap[key] }}
               />
             ))}
           </AccordionDetails>

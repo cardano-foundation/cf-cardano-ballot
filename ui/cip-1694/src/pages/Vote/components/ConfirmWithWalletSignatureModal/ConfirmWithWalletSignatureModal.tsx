@@ -2,8 +2,9 @@ import React from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
+import CloseIcon from '@mui/icons-material/Close';
 import DialogTitle from '@mui/material/DialogTitle';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, IconButton, Typography, CircularProgress } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import styles from './ConfirmWithWalletSignatureModal.module.scss';
 
@@ -11,19 +12,23 @@ type ConfirmWithWalletSignatureModalProps = {
   name: string;
   id: string;
   openStatus: boolean;
+  isConfirming: boolean;
+  showCloseBtn: boolean;
   title: string;
   description: string | React.ReactNode;
   onConfirm: () => void;
+  onCloseFn: () => void;
 };
 
 export const ConfirmWithWalletSignatureModal = (props: ConfirmWithWalletSignatureModalProps) => {
-  const { name, id, openStatus, title, description, onConfirm } = props;
+  const { name, id, openStatus, title, description, onConfirm, onCloseFn, isConfirming, showCloseBtn } = props;
 
   return (
     <Dialog
+      onClose={showCloseBtn ? onCloseFn : undefined}
       open={!!openStatus}
       aria-labelledby={name}
-      PaperProps={{ sx: { width: '400px', borderRadius: '16px' } }}
+      PaperProps={{ sx: { width: '410px', maxWidth: '410px', borderRadius: '16px' } }}
       data-testid="confirm-with-signature-modal"
     >
       <DialogTitle
@@ -33,6 +38,16 @@ export const ConfirmWithWalletSignatureModal = (props: ConfirmWithWalletSignatur
         data-testid="confirm-with-signature-title"
       >
         {title}
+        {showCloseBtn && (
+          <IconButton
+            aria-label="close"
+            onClick={onCloseFn}
+            className={styles.closeBtn}
+            data-testid="confirm-with-signature-close"
+          >
+            <CloseIcon className={styles.closeIcon} />
+          </IconButton>
+        )}
       </DialogTitle>
       <DialogContent
         sx={{ padding: { xs: '20px', md: '0px 30px 30px 30px' } }}
@@ -69,10 +84,19 @@ export const ConfirmWithWalletSignatureModal = (props: ConfirmWithWalletSignatur
                   size="large"
                   variant="contained"
                   onClick={() => onConfirm()}
-                  sx={{}}
+                  disabled={isConfirming}
                   data-testid="confirm-with-signature-cta"
                 >
-                  Confirm
+                  <span className={styles.buttonContent}>
+                    Confirm
+                    {isConfirming && (
+                      <CircularProgress
+                        size={20}
+                        className={styles.loader}
+                        color="inherit"
+                      />
+                    )}
+                  </span>
                 </Button>
               </Box>
             </Grid>

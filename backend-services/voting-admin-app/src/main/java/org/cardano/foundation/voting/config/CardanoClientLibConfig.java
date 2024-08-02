@@ -23,7 +23,7 @@ public class CardanoClientLibConfig {
     }
 
     @Bean
-    public Network cardanoNetwork(CardanoNetwork cardanoNetwork) {
+    public Network network(CardanoNetwork cardanoNetwork) {
         return switch(cardanoNetwork) {
             case MAIN -> Networks.mainnet();
             case PREPROD -> Networks.preprod();

@@ -32,7 +32,7 @@ public class MetadataEventHandler {
                 }
             }
         } catch (Exception e) {
-            log.warn("Error processing metadata event, cause:{}", e.getMessage());
+            log.warn("Error processing metadata event", e);
         }
     }
 

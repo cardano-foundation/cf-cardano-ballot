@@ -1,0 +1,24 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="VotingLedgerFollowerApp (YACI_DEV_KIT)" type="Application" factoryName="Application">
+    <envs>
+      <env name="SPRING_CONFIG_LOCATION" value="classpath:/application.properties,classpath:/application-dev--yaci-dev-kit.properties" />
+      <env name="SPRING_PROFILES_ACTIVE" value="dev--yaci-dev-kit" />
+    </envs>
+    <option name="MAIN_CLASS_NAME" value="org.cardano.foundation.voting.VotingLedgerFollowerApp" />
+    <module name="voting-ledger-follower-app.main" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="org.cardano.foundation.voting.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <extension name="software.aws.toolkits.jetbrains.core.execution.JavaAwsConnectionExtension">
+      <option name="credential" />
+      <option name="region" />
+      <option name="useCurrentConnection" value="false" />
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

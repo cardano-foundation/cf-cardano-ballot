@@ -1,5 +1,5 @@
 .container {
-  color: #1d439b;
+  color: #061d3c;
   display: flex;
   flex-direction: row;
   font-style: normal;
@@ -9,6 +9,7 @@
   line-height: 22px;
   text-align: left;
   width: 100%;
+  flex-wrap: wrap;
 }
 
 .skeleton {

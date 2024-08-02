@@ -1,10 +1,9 @@
 plugins {
 	java
-	id("org.springframework.boot") version "3.1.3"
+	id("org.springframework.boot") version "3.2.0-M3"
 	id("io.spring.dependency-management") version "1.1.3"
 	id("org.graalvm.buildtools.native") version "0.9.27"
-    id("com.github.ben-manes.versions") version "0.48.0"
-    id("com.gorylenko.gradle-git-properties") version "2.4.1"
+  id("com.github.ben-manes.versions") version "0.48.0"
 }
 
 springBoot {
@@ -13,7 +12,7 @@ springBoot {
 
 group = "org.cardano.foundation"
 version = "1.0.0-SNAPSHOT"
-java.sourceCompatibility = JavaVersion.VERSION_17
+java.sourceCompatibility = JavaVersion.VERSION_21
 
 configurations {
 	compileOnly {
@@ -30,7 +29,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.springframework.boot:spring-boot-starter-aop")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-	implementation("org.springframework.boot:spring-boot-starter-data-rest")
 	testCompileOnly("org.springframework.boot:spring-boot-starter-test")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -57,12 +55,12 @@ dependencies {
 	implementation("com.querydsl:querydsl-jpa")
     annotationProcessor("com.querydsl:querydsl-apt")
 
-	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0-beta3")
-    implementation("com.bloxbean.cardano:cardano-client-address:0.5.0-beta3")
-    implementation("com.bloxbean.cardano:cardano-client-metadata:0.5.0-beta3")
-	implementation("com.bloxbean.cardano:cardano-client-quicktx:0.5.0-beta3")
-	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.0-beta3")
-	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0-beta3")
+	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0")
+    implementation("com.bloxbean.cardano:cardano-client-address:0.5.0")
+    implementation("com.bloxbean.cardano:cardano-client-metadata:0.5.0")
+	implementation("com.bloxbean.cardano:cardano-client-quicktx:0.5.0")
+	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.0")
+	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0")
 
 	implementation("io.blockfrost:blockfrost-java:0.1.3")
 
@@ -72,6 +70,8 @@ dependencies {
 
 	implementation("org.cardanofoundation:merkle-tree-java:0.0.7")
 	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.11")
+
+	implementation("me.paulschwarz:spring-dotenv:4.0.0")
 
     // spring-boot overridden dependencies:
     runtimeOnly("com.h2database:h2:2.2.224") // GraalVM compatibility

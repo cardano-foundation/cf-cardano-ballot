@@ -10,19 +10,19 @@ import { expect } from '@jest/globals';
 import { screen, within, cleanup, waitFor } from '@testing-library/react';
 import { eventMock_active } from 'test/mocks';
 import { renderWithProviders } from 'test/mockProviders';
-import { Toast } from 'components/common/Toast/Toast';
+import { Toast } from 'components/Toast/Toast';
 import BlockIcon from '@mui/icons-material/Block';
 import { App } from './App';
 
-jest.mock('./components/common/Header/Header', () => ({
+jest.mock('./components/Header/Header', () => ({
   Header: mockHeader,
 }));
 
-jest.mock('./components/common/Content/Content', () => ({
+jest.mock('./components/Content/Content', () => ({
   Content: mockContent,
 }));
 
-jest.mock('./components/common/Footer/Footer', () => ({
+jest.mock('./components/Footer/Footer', () => ({
   Footer: mockFooter,
 }));
 
@@ -86,44 +86,6 @@ describe('App', () => {
           icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
         />
       );
-    });
-  });
-
-  test('should handle errors', async () => {
-    process.env = Object.assign(process.env, {
-      NODE_ENV: 'development',
-    });
-    const error = 'error';
-    mockGetEvent.mockReset();
-    mockGetEvent.mockImplementation(async () => await Promise.reject(error));
-    const consoleLogSpy = jest.spyOn(global.console, 'log');
-    renderWithProviders(<App />);
-
-    await waitFor(async () => {
-      expect(consoleLogSpy).toBeCalledWith(`Failed to fetch event, ${error}`);
-    });
-
-    const errorInfo = { info: 'info' };
-    mockGetEvent.mockReset();
-    mockGetEvent.mockImplementation(async () => await Promise.reject(errorInfo));
-    renderWithProviders(<App />);
-    await waitFor(async () => {
-      expect(consoleLogSpy).toBeCalledWith(`Failed to fetch event, ${errorInfo.info}`);
-    });
-
-    const errorMessage = { message: 'message' };
-    mockGetEvent.mockReset();
-    mockGetEvent.mockImplementation(async () => await Promise.reject(errorMessage));
-    renderWithProviders(<App />);
-    await waitFor(async () => {
-      expect(consoleLogSpy).toBeCalledWith(`Failed to fetch event, ${errorMessage.message}`);
-    });
-
-    mockGetEvent.mockReset();
-    mockGetEvent.mockImplementation(async () => await Promise.reject());
-    renderWithProviders(<App />);
-    await waitFor(async () => {
-      expect(consoleLogSpy).toBeCalledWith('Failed to fetch event, undefined');
     });
   });
 });

@@ -1,6 +1,6 @@
 import React from 'react';
 import Grid from '@mui/material/Grid';
-import { Button, IconButton, useMediaQuery, useTheme } from '@mui/material';
+import { Button, IconButton, Tooltip, Typography, useMediaQuery, useTheme } from '@mui/material';
 import QrCodeIcon from '@mui/icons-material/QrCode';
 import ReplayIcon from '@mui/icons-material/Replay';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
@@ -21,17 +21,36 @@ const InfoPanelTitle = ({ title, children }: { title: string; children?: React.R
     color="#061D3C"
   >
     {title} {children}
-    <IconButton sx={{ margin: '-8px' }}>
-      <InfoOutlinedIcon style={{ color: '#39486CA6', fontSize: '19px' }} />
-    </IconButton>
+    <Tooltip
+      classes={{ tooltip: styles.tooltip }}
+      title={
+        <Grid
+          container
+          direction="column"
+          alignItems="left"
+          gap={'8px'}
+        >
+          <Typography
+            className={styles.tooltipDescription}
+            variant="h4"
+          >
+            Assurance levels will update according to the finality of the transaction on-chain.
+          </Typography>
+        </Grid>
+      }
+    >
+      <IconButton sx={{ margin: '-8px' }}>
+        <InfoOutlinedIcon style={{ color: '#39486CA6', fontSize: '19px' }} />
+      </IconButton>
+    </Tooltip>
   </Grid>
 );
 
 const StatusToInfoPanelTitle: Record<Status | 'VERIFIED', React.FC<{ children?: React.ReactElement }>> = {
-  PARTIAL: () => <InfoPanelTitle title="Vote in progress" />,
+  PARTIAL: () => <InfoPanelTitle title="Ballot in progress" />,
   ROLLBACK: () => <InfoPanelTitle title="There’s been a rollback" />,
   VERIFIED: () => <InfoPanelTitle title="Verified" />,
-  BASIC: () => <InfoPanelTitle title="Vote not ready for verification" />,
+  BASIC: () => <InfoPanelTitle title="Ballot not ready for verification" />,
   FULL: ({ children }: { children: React.ReactElement }) => (
     <InfoPanelTitle title="Assurance:">{children}</InfoPanelTitle>
   ),
@@ -39,21 +58,21 @@ const StatusToInfoPanelTitle: Record<Status | 'VERIFIED', React.FC<{ children?: 
 
 const StatusToInfoPanelDescription: Partial<Record<Status | 'VERIFIED', string>> = {
   PARTIAL:
-    'Your transaction has been sent and is awaiting confirmation from the Cardano network (this could be 5-10 minutes). Once this has been confirmed you’ll be able to verify your vote.',
+    'Your transaction has been sent and is awaiting confirmation from the Cardano network (this could be 5-10 minutes). Once this has been confirmed you’ll be able to verify your ballot.',
   ROLLBACK:
-    'Don’t worry there’s nothing for you to do. We will automatically resubmit your vote. Please check back later (up to 30 minutes) to see your vote status.',
+    'Don’t worry there’s nothing for you to do. We will automatically resubmit your ballot. Please check back later (up to 30 minutes) to see your ballot status.',
   BASIC:
-    'Your vote has been successfully submitted. You might have to wait up to 30 minutes for this to be visible on chain. Please check back later to verify your vote.',
+    'Your ballot has been successfully submitted. You might have to wait up to 30 minutes for this to be visible on-chain. Please check back later to verify your ballot.',
   VERIFIED: '',
 };
 
 const HIGHT_ASSURANCE =
-  'Your vote is currently being verified. While in HIGH, the chance of a rollback is very unlikely. Check back later to see if verification has completed.';
+  'Your ballot is currently being verified. While in HIGH, the chance of a rollback is very unlikely. Check back later to see if verification has completed.';
 
 const FullStatusToInfoPanelDescription: Record<FinalityScore, string> = {
-  LOW: 'Your vote is currently being verified. While in LOW, there is the highest chance of a rollback. Check back later to see if verification has completed.',
+  LOW: 'Your ballot is currently being verified. While in LOW, there is the highest chance of a rollback. Check back later to see if verification has completed.',
   MEDIUM:
-    'Your vote is currently being verified. While in MEDIUM, the chance of rollback is still possible. Check back later to see if verification has completed.',
+    'Your ballot is currently being verified. While in MEDIUM, the chance of rollback is still possible. Check back later to see if verification has completed.',
   HIGH: HIGHT_ASSURANCE,
   VERY_HIGH: HIGHT_ASSURANCE,
   FINAL: HIGHT_ASSURANCE,

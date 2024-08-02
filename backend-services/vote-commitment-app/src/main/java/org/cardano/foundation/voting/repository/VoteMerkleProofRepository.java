@@ -7,13 +7,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import java.util.List;
 
 @Repository
 public interface VoteMerkleProofRepository extends JpaRepository<VoteMerkleProof, String> {
 
-    @Query("UPDATE VoteMerkleProof vmp SET vmp.invalidated = true where vmp.absoluteSlot > :slot")
     @Modifying
-    void invalidateMerkleProofsAfterSlot(@Param("slot") long slot);
+    @Query("UPDATE VoteMerkleProof vmp SET vmp.invalidated = true WHERE vmp.eventId = :eventId AND vmp.absoluteSlot > :slot")
+    int invalidateMerkleProofsAfterSlot(@Param("eventId") String eventId, @Param("slot") long slot);
+
+    List<VoteMerkleProof> findTop1ByEventIdAndInvalidatedOrderByCreatedAtDesc(String eventId, boolean invalidated);
 
 }

@@ -159,7 +159,7 @@ async function executeRequest<T>(
   if (body && (method === HttpMethods.POST || method === HttpMethods.PUT || method === HttpMethods.PATCH)) {
     request['body'] = body;
   }
-
+  request.headers['X-Force-Leaderboard-Results'] = true;
   const responseHandler = responseHandlerDelegate<T>();
   return responseHandler.parse(await fetch(requestUri, request));
 }

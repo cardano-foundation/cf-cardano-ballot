@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
-
+import org.cardano.foundation.voting.utils.WalletType;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.HexFormat;
@@ -75,11 +75,15 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
     @Transactional
     public Either<Problem, SMSStartVerificationResponse> startVerification(SMSStartVerificationRequest startVerificationRequest) {
         String eventId = startVerificationRequest.getEventId();
-        String stakeAddress = startVerificationRequest.getStakeAddress();
 
-        var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, stakeAddress);
-        if (stakeAddressCheckE.isEmpty()) {
-            return Either.left(stakeAddressCheckE.getLeft());
+        String walletId = startVerificationRequest.getWalletId();
+        Optional<WalletType> walletType = startVerificationRequest.getWalletType();
+
+        if (walletType.get() == WalletType.CARDANO) {
+            var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, walletId);
+            if (stakeAddressCheckE.isEmpty()) {
+                return Either.left(stakeAddressCheckE.getLeft());
+            }
         }
 
         var eventDetails = chainFollowerClient.findEventById(eventId);
@@ -103,6 +107,16 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
 
         var event = maybeEvent.orElseThrow();
 
+        if (!event.userBased() && walletType.get() == WalletType.KERI) {
+            log.warn("Keri wallet not supported for BALANCE or STAKE type event");
+
+            return Either.left(Problem.builder()
+                    .withTitle("WALLET_NOT_SUPPORTED")
+                    .withDetail("Keri wallet not supported for BALANCE or STAKE type event")
+                    .withStatus(BAD_REQUEST)
+                    .build());
+        }
+
         if (event.finished()) {
             log.warn("Event already finished:{}", eventId);
 
@@ -113,19 +127,19 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
                     .build());
         }
 
-        var maybeUserVerificationStakeAddress = smsUserVerificationRepository.findAllCompletedPerStake(
+        var maybeUserVerificationWalletId = smsUserVerificationRepository.findAllCompletedPerWalletId(
                 eventId,
-                stakeAddress
+                walletId
         ).stream().findFirst();
 
-        if (maybeUserVerificationStakeAddress.isPresent()) {
-            log.info("User verification already completed (stake):{}", maybeUserVerificationStakeAddress.orElseThrow());
+        if (maybeUserVerificationWalletId.isPresent()) {
+            log.info("User verification already completed (walletId):{}", maybeUserVerificationWalletId.orElseThrow());
 
-            var userVerification = maybeUserVerificationStakeAddress.get();
+            var userVerification = maybeUserVerificationWalletId.get();
             if (userVerification.getStatus() == VERIFIED) {
                 return Either.left(Problem.builder()
                         .withTitle("USER_ALREADY_VERIFIED")
-                        .withDetail("User already verified, stakeAddress:" + stakeAddress)
+                        .withDetail("User already verified, walletId:" + walletId)
                         .withStatus(BAD_REQUEST)
                         .build()
                 );
@@ -168,11 +182,11 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
             }
         }
 
-        int pendingPerStakeAddressCount = smsUserVerificationRepository.findPendingPerStakeAddressPerPhoneCount(eventId, stakeAddress, phoneHash);
-        if (pendingPerStakeAddressCount >= maxPendingVerificationAttempts) {
+        int pendingPerWalletIdCount = smsUserVerificationRepository.findPendingPerWalletIdPerPhoneCount(eventId, walletId, phoneHash);
+        if (pendingPerWalletIdCount >= maxPendingVerificationAttempts) {
             return Either.left(Problem.builder()
                     .withTitle("MAX_VERIFICATION_ATTEMPTS_REACHED")
-                    .withDetail(String.format("Max verification attempts reached for eventId:%s, stakeAddress:%s. Try again in 24 hours.", eventId, stakeAddress))
+                    .withDetail(String.format("Max verification attempts reached for eventId:%s, walletId:%s. Try again in 24 hours.", eventId, walletId))
                     .withStatus(BAD_REQUEST)
                     .build());
         }
@@ -198,7 +212,8 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
                 .eventId(eventId)
                 .status(PENDING)
                 .phoneNumberHash(phoneHash)
-                .stakeAddress(stakeAddress)
+                .walletId(walletId)
+                .walletType(walletType.get())
                 .verificationCode(String.valueOf(randomVerificationCode))
                 .requestId(smsVerificationResponse.requestId())
                 .expiresAt(now.plusMinutes(validationExpirationTimeMinutes))
@@ -208,7 +223,8 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
 
         var startVerificationResponse = new SMSStartVerificationResponse(
                 saved.getEventId(),
-                saved.getStakeAddress(),
+                saved.getWalletId(),
+                saved.getWalletType(),
                 saved.getRequestId(),
                 saved.getCreatedAt(),
                 saved.getExpiresAt()
@@ -221,11 +237,15 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
     @Transactional
     public Either<Problem, IsVerifiedResponse> checkVerification(SMSCheckVerificationRequest checkVerificationRequest) {
         String eventId = checkVerificationRequest.getEventId();
-        String stakeAddress = checkVerificationRequest.getStakeAddress();
 
-        var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, stakeAddress);
-        if (stakeAddressCheckE.isEmpty()) {
-            return Either.left(stakeAddressCheckE.getLeft());
+        String walletId = checkVerificationRequest.getWalletId();
+        Optional<WalletType> walletType = checkVerificationRequest.getWalletType();
+
+        if (walletType.equals(WalletType.CARDANO)) {
+            var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, walletId);
+            if (stakeAddressCheckE.isEmpty()) {
+                return Either.left(stakeAddressCheckE.getLeft());
+            }
         }
 
         var activeEventE = chainFollowerClient.findEventById(eventId);
@@ -259,9 +279,9 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
                     .build());
         }
 
-        var maybeUserVerification = smsUserVerificationRepository.findAllCompletedPerStake(
+        var maybeUserVerification = smsUserVerificationRepository.findAllCompletedPerWalletId(
                 eventId,
-                stakeAddress
+                walletId
         ).stream().findFirst();
 
         if (maybeUserVerification.isPresent()) {
@@ -271,23 +291,23 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
             if (userVerification.getStatus() == VERIFIED) {
                 return Either.left(Problem.builder()
                         .withTitle("USER_ALREADY_VERIFIED")
-                        .withDetail("User already verified, stakeAddress:" + stakeAddress)
+                        .withDetail("User already verified, walletId:" + walletId)
                         .withStatus(BAD_REQUEST)
                         .build()
                 );
             }
         }
 
-        var maybePendingRequest = smsUserVerificationRepository.findPendingVerificationsByEventIdAndStakeAddressAndRequestId(
+        var maybePendingRequest = smsUserVerificationRepository.findPendingVerificationsByEventIdAndWalletIdAndRequestId(
                 eventId,
-                stakeAddress,
+                walletId,
                 checkVerificationRequest.getRequestId()
         );
 
         if (maybePendingRequest.isEmpty()) {
             return Either.left(Problem.builder()
                     .withTitle("PENDING_USER_VERIFICATION_NOT_FOUND")
-                    .withDetail("User verification not found, stakeAddress:" + stakeAddress)
+                    .withDetail("User verification not found, walletId:" + walletId)
                     .withStatus(BAD_REQUEST)
                     .build()
             );
@@ -298,7 +318,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
         if (pendingUserVerification.getStatus() == VERIFIED) {
             return Either.left(Problem.builder()
                     .withTitle("USER_VERIFICATION_ALREADY_VERIFIED")
-                    .withDetail("User verification already verified, stakeAddress:" + stakeAddress)
+                    .withDetail("User verification already verified, walletId:" + walletId)
                     .withStatus(BAD_REQUEST)
                     .build()
             );
@@ -319,7 +339,7 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
         if (isCodeExpired) {
                 return Either.left(Problem.builder()
                         .withTitle("VERIFICATION_EXPIRED")
-                        .withDetail(String.format("Verification code: %s expired for stakeAddress: %s", checkVerificationRequest.getVerificationCode(), stakeAddress))
+                        .withDetail(String.format("Verification code: %s expired for walletId: %s", checkVerificationRequest.getVerificationCode(), walletId))
                         .withStatus(BAD_REQUEST)
                         .build());
         }
@@ -366,13 +386,13 @@ public class DefaultSMSSMSUserVerificationService implements SMSUserVerification
                     .build());
         }
 
-        var maybeUserVerification = smsUserVerificationRepository.findAllCompletedPerStake(
+        var maybeUserVerification = smsUserVerificationRepository.findAllCompletedPerWalletId(
                 isVerifiedRequest.getEventId(),
-                isVerifiedRequest.getStakeAddress()
+                isVerifiedRequest.getWalletId()
         ).stream().findFirst();
 
         if (maybeUserVerification.isEmpty()) {
-            log.info("Completed user verification not found for:{}", isVerifiedRequest.getStakeAddress());
+            log.info("Completed user verification not found for:{}", isVerifiedRequest.getWalletId());
 
             return Either.right(new IsVerifiedResponse(false));
         }

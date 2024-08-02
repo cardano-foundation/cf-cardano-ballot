@@ -1,11 +1,11 @@
 package org.cardano.foundation.voting.jobs;
 
 import io.micrometer.core.annotation.Timed;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.service.merkle_tree.VoteCommitmentService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
 
@@ -17,13 +17,8 @@ public class VoteCommitmentJob implements Runnable {
 
     private final VoteCommitmentService voteCommitmentService;
 
-    @PostConstruct
-    public void init() {
-        run();
-    }
-
     @Override
-    //@Scheduled(cron = "${vote.commitment.cron.expression}")
+    @Scheduled(cron = "${vote.commitment.cron.expression}")
     @Timed(value = "vote.commitment.cron.job", histogram = true)
     public void run() {
         log.info("Starting VoteCommitmentJob...");
@@ -39,7 +34,3 @@ public class VoteCommitmentJob implements Runnable {
     }
 
 }
-
-// 1 per day
-
-// monitoring

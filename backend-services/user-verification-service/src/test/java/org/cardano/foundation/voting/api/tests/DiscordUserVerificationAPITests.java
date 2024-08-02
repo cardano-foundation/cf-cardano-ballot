@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import java.util.Optional;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
@@ -135,10 +136,13 @@ public class DiscordUserVerificationAPITests extends BaseTest {
 
         DiscordCheckVerificationRequest discordCheckVerificationRequest = DiscordCheckVerificationRequest.builder()
                 .eventId(discordBotEventId)
-                .coseSignature(signature)
-                .stakeAddress(stakeAddress)
+                .coseSignature(Optional.of(signature))
+                .walletId(stakeAddress)
                 .cosePublicKey(publicKey.describeConstable())
                 .secret("chj3h3dtjq")
+                .keriSignedMessage(Optional.empty())
+                .keriPayload(Optional.empty())
+                .oobi(Optional.empty())
                 .build();
 
         int expectedStatusCode = 400;
@@ -172,10 +176,13 @@ public class DiscordUserVerificationAPITests extends BaseTest {
 
         DiscordCheckVerificationRequest discordCheckVerificationTestnetRequest = DiscordCheckVerificationRequest.builder()
                 .eventId(discordBotEventId)
-                .coseSignature(testnetSignature)
-                .stakeAddress(testnetStakeAddress)
+                .coseSignature(Optional.of(testnetSignature))
+                .walletId(testnetStakeAddress)
                 .cosePublicKey(testnetPublicKey.describeConstable())
                 .secret("chj3h3dtjq")
+                .keriSignedMessage(Optional.empty())
+                .keriPayload(Optional.empty())
+                .oobi(Optional.empty())
                 .build();
 
         given().contentType(ContentType.JSON)
@@ -187,7 +194,7 @@ public class DiscordUserVerificationAPITests extends BaseTest {
 
         // Testnet or mainnet should not validate a signature from the other network
         if (cardanoNetwork.equalsIgnoreCase("MAIN")) {
-            discordCheckVerificationRequest.setCoseSignature(testnetSignature);
+            discordCheckVerificationRequest.setCoseSignature(Optional.of(testnetSignature));
 
             given().contentType(ContentType.JSON)
                     .body(discordCheckVerificationRequest)
@@ -195,7 +202,7 @@ public class DiscordUserVerificationAPITests extends BaseTest {
                     .then()
                     .statusCode(400);
         } else {
-            discordCheckVerificationTestnetRequest.setCoseSignature(signature);
+            discordCheckVerificationTestnetRequest.setCoseSignature(Optional.of(signature));
 
             given().contentType(ContentType.JSON)
                     .body(discordCheckVerificationTestnetRequest)
@@ -232,10 +239,13 @@ public class DiscordUserVerificationAPITests extends BaseTest {
         // secret changed 49ayui27ue to chj3h3dtjq
         DiscordCheckVerificationRequest discordCheckVerificationRequest = DiscordCheckVerificationRequest.builder()
                 .eventId(discordBotEventId)
-                .coseSignature(signature)
-                .stakeAddress(stakeAddress)
+                .coseSignature(Optional.of(signature))
+                .walletId(stakeAddress)
                 .cosePublicKey(publicKey.describeConstable())
                 .secret("chj3h3dtjq")
+                .keriSignedMessage(Optional.empty())
+                .keriPayload(Optional.empty())
+                .oobi(Optional.empty())
                 .build();
 
         given().contentType(ContentType.JSON)
@@ -273,10 +283,13 @@ public class DiscordUserVerificationAPITests extends BaseTest {
 
         DiscordCheckVerificationRequest discordCheckVerificationRequest = DiscordCheckVerificationRequest.builder()
                 .eventId(discordBotEventId)
-                .coseSignature(signature)
-                .stakeAddress(stakeAddress)
+                .coseSignature(Optional.of(signature))
+                .walletId(stakeAddress)
                 .cosePublicKey(publicKey.describeConstable())
                 .secret("49ayui27ue")
+                .keriSignedMessage(Optional.empty())
+                .keriPayload(Optional.empty())
+                .oobi(Optional.empty())
                 .build();
 
         given().contentType(ContentType.JSON)
@@ -285,4 +298,5 @@ public class DiscordUserVerificationAPITests extends BaseTest {
                 .then()
                 .statusCode(400);
     }
+
 }

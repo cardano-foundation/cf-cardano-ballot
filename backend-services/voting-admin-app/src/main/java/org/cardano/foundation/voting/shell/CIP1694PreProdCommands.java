@@ -2,10 +2,7 @@ package org.cardano.foundation.voting.shell;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.domain.CardanoNetwork;
-import org.cardano.foundation.voting.domain.CreateCategoryCommand;
-import org.cardano.foundation.voting.domain.CreateEventCommand;
-import org.cardano.foundation.voting.domain.Proposal;
+import org.cardano.foundation.voting.domain.*;
 import org.cardano.foundation.voting.service.transaction_submit.L1SubmissionService;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
@@ -41,12 +38,12 @@ public class CIP1694PreProdCommands {
 
         CreateEventCommand createEventCommand = CreateEventCommand.builder()
                 .id(EVENT_NAME + "_" + shortUUID(4))
-                .startEpoch(Optional.of(94))
-                .endEpoch(Optional.of(100))
-                .snapshotEpoch(Optional.of(93))
-                .proposalsRevealEpoch(Optional.of(105))
+                .startEpoch(Optional.of(103))
+                .endEpoch(Optional.of(103))
+                .snapshotEpoch(Optional.of(100))
+                .proposalsRevealEpoch(Optional.of(104))
                 .votingPowerAsset(Optional.of(ADA))
-                .organisers("CF and IOG")
+                .organisers("IOG")
                 .votingEventType(STAKE_BASED)
                 .schemaVersion(V1)
                 .allowVoteChanging(false)
@@ -60,13 +57,13 @@ public class CIP1694PreProdCommands {
         return "Created CIP-1694 event: " + createEventCommand;
     }
 
-    @ShellMethod(key = "02_create-cip-1694-change-gov-structure-pre-prod", value = "Create a CIP-1694 Change Gov Structure category on a PRE-PROD network.")
-    public String createCIP1694ChangeGovStructureCategoryOnPreProd(@ShellOption String event) {
+    @ShellMethod(key = "02_create-cip-1694-approval-category-pre-prod", value = "Create a CIP1694_APPROVAL category on a PRE-PROD network.")
+    public String createCIP1694ApprovalCategoryOnPreProd(@ShellOption String event) {
         if (network != PREPROD) {
             return "This command can only be run on a PRE-PROD network!";
         }
 
-        log.info("Creating CIP-1694 Change Gov Structure category...");
+        log.info("Creating CIP-1694 CIP1694_APPROVAL Structure category...");
 
         Proposal yesProposal = Proposal.builder()
                 .id("1f082124-ee46-4deb-9140-84a4529f98be")
@@ -78,12 +75,17 @@ public class CIP1694PreProdCommands {
                 .name("NO")
                 .build();
 
+        Proposal abstainProposal = Proposal.builder()
+                .id("fd9f03e8-8ee9-4de5-93a3-40779216f151")
+                .name("ABSTAIN")
+                .build();
+
         CreateCategoryCommand createCategoryCommand = CreateCategoryCommand.builder()
-                .id("CHANGE_GOV_STRUCTURE")
+                .id("CIP1694_APPROVAL")
                 .event(event)
                 .gdprProtection(false)
                 .schemaVersion(V1)
-                .proposals(List.of(yesProposal, noProposal))
+                .proposals(List.of(yesProposal, noProposal, abstainProposal))
                 .build();
 
         l1SubmissionService.submitCategory(createCategoryCommand);
@@ -91,40 +93,48 @@ public class CIP1694PreProdCommands {
         return "Created CIP-1694 category: " + createCategoryCommand;
     }
 
-    @ShellMethod(key = "03_create-cip-1694-min-viable-gov-structure-pre-prod", value = "Create a CIP-1694 Min Viable Gov Structure category on a PRE-PROD network.")
-    public String createCIP1694MinViableGovCategoryOnPreProd(@ShellOption String event) {
+    @ShellMethod(key = "03_submit-cip-1694-tally-results-pre-prod", value = "Submit CIP1694_APPROVAL tally results on the PRE-PROD network.")
+    public String submitCIP1694TallyResultsOnPreProd() {
         if (network != PREPROD) {
             return "This command can only be run on a PRE-PROD network!";
         }
 
-        log.info("Creating CIP-1694 Min Viable Gov Structure category...");
+        log.info("Creating CIP-1694 CIP1694_APPROVAL Structure category...");
 
-        Proposal cipProposal = Proposal.builder()
-                .id("291f91b3-3e3c-402e-aebf-854f141b372b")
-                .name("CIP-1694")
+        ProposalResult yesProposal = ProposalResult.builder()
+                .id("1f082124-ee46-4deb-9140-84a4529f98be")
+                .name("YES")
+                .voteCount("120")
+                .votingPower("123000000000")
                 .build();
 
-        Proposal otherProposal = Proposal.builder()
-                .id("842cf5fc-2eda-44a0-b067-87e6a7035aa1")
-                .name("OTHER")
+        ProposalResult noProposal = ProposalResult.builder()
+                .id("ed9f03e8-8ee9-4de5-93a3-30779216f150")
+                .name("NO")
+                .voteCount("20")
+                .votingPower("4560000")
                 .build();
 
-        Proposal abatainProposal = Proposal.builder()
-                .id("adcec241-67de-4860-a881-aaa91a5283a2")
+        ProposalResult abstainProposal = ProposalResult.builder()
+                .id("fd9f03e8-8ee9-4de5-93a3-40779216f151")
                 .name("ABSTAIN")
+                .voteCount("10")
+                .votingPower("789009")
                 .build();
 
-        CreateCategoryCommand createCategoryCommand = CreateCategoryCommand.builder()
-                .id("MIN_VIABLE_GOV_STRUCTURE")
-                .event(event)
+        CreateTallyResultCommand createTallyResultCommand = CreateTallyResultCommand.builder()
+                .id("CIP1694_APPROVAL")
                 .gdprProtection(false)
-                .schemaVersion(V1)
-                .proposals(List.of(cipProposal, otherProposal, abatainProposal))
+                .showVoteCount(true)
+                .categoryResults(List.of(CategoryResult.builder()
+                        .id("CIP1694_APPROVAL")
+                        .proposalResults(List.of(yesProposal, noProposal, abstainProposal))
+                        .build()))
                 .build();
 
-        l1SubmissionService.submitCategory(createCategoryCommand);
+        l1SubmissionService.submitTallyResults(createTallyResultCommand);
 
-        return "Created CIP-1694 category: " + createCategoryCommand;
+        return "Submitted CIP-1694 tally results: " + createTallyResultCommand;
     }
 
 }

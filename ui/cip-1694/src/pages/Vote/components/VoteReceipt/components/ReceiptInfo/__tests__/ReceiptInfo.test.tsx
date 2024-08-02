@@ -11,6 +11,10 @@ import { ReceiptInfo } from '../ReceiptInfo';
 
 jest.mock('@cardano-foundation/cardano-connect-with-wallet', () => ({
   useCardano: jest.fn(),
+  NetworkType: {
+    MAINNET: 'mainnet',
+    TESTNET: 'testnet',
+  },
   getWalletIcon: () => <span data-testid="getWalletIcon" />,
   ConnectWalletList: () => {
     return <span data-testid="connected-wallet-list" />;
@@ -18,19 +22,6 @@ jest.mock('@cardano-foundation/cardano-connect-with-wallet', () => ({
   ConnectWalletButton: () => {
     return <span data-testid="connected-wallet-button" />;
   },
-}));
-
-jest.mock('swiper/react', () => ({
-  Swiper: ({ children }: { children: React.ReactElement }) => <div data-testid="Swiper-testId">{children}</div>,
-  SwiperSlide: ({ children }: { children: React.ReactElement }) => (
-    <div data-testid="SwiperSlide-testId">{children}</div>
-  ),
-}));
-
-jest.mock('swiper', () => ({
-  Pagination: () => null,
-  Navigation: () => null,
-  Autoplay: () => null,
 }));
 
 describe('ReceiptInfo:', () => {

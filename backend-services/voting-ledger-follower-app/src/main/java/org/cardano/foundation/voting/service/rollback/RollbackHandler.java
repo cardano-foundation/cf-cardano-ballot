@@ -1,19 +1,25 @@
 package org.cardano.foundation.voting.service.rollback;
 
 import com.bloxbean.cardano.yaci.store.events.RollbackEvent;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.cardano.foundation.voting.service.utxo.EventResultsUtxoDataService;
+import org.cardano.foundation.voting.service.vote.MerkleRootHashService;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
+@RequiredArgsConstructor
 @Service
+@ConditionalOnProperty(prefix = "rollback.handling", value = "enabled", havingValue = "true")
 public class RollbackHandler {
 
-    @Autowired
-    private ReferenceDataService referenceDataService;
+    private final EventResultsUtxoDataService eventResultsUtxoDataService;
+    private final ReferenceDataService referenceDataService;
+    private final MerkleRootHashService merkleRootHashService;
 
     @EventListener
     @Transactional
@@ -22,7 +28,17 @@ public class RollbackHandler {
 
         long rollbackToSlot = rollbackEvent.getRollbackTo().getSlot();
 
-        referenceDataService.rollbackReferenceDataAfterSlot(rollbackToSlot);
+        var eventResultsRolledBackCount = eventResultsUtxoDataService.rollbackAfterSlot(rollbackToSlot);
+
+        var merkleRootHahesRollbackCount = merkleRootHashService.rollbackAfterSlot(rollbackToSlot);
+
+        var referenceRollbackStats = referenceDataService.rollbackReferenceDataAfterSlot(rollbackToSlot);
+
+        log.info("Rollbacked:" +
+                " {} event results," +
+                " {} merkle root hashes," +
+                " {} reference data items.",
+                eventResultsRolledBackCount, merkleRootHahesRollbackCount, referenceRollbackStats);
 
         log.info("Rollbacked handled.");
     }

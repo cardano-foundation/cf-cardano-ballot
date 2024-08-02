@@ -1,5 +1,4 @@
 import React from 'react';
-import cn from 'classnames';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
@@ -18,14 +17,15 @@ type ResultsCommingSoonModalProps = {
   description: string | React.ReactNode;
   onCloseFn: () => void;
   onGoBackFn: () => void;
-  onConfirmFn: () => void;
+  onConfirmFn?: () => void;
 };
 
 export const ResultsCommingSoonModal = (props: ResultsCommingSoonModalProps) => {
-  const { name, id, openStatus, title, description, onCloseFn, onGoBackFn, onConfirmFn } = props;
+  const { name, id, openStatus, title, description, onCloseFn, onGoBackFn } = props;
 
   return (
     <Dialog
+      onClose={onCloseFn}
       open={!!openStatus}
       aria-labelledby={name}
       PaperProps={{ sx: { width: '400px', borderRadius: '16px' } }}
@@ -75,24 +75,6 @@ export const ResultsCommingSoonModal = (props: ResultsCommingSoonModalProps) => 
             <Grid
               item
               width="100%"
-            >
-              <Box width="100%">
-                <Button
-                  className={cn(styles.button, styles.secondary)}
-                  size="large"
-                  variant="contained"
-                  onClick={() => onConfirmFn()}
-                  sx={{}}
-                  data-testid="result-comming-soon-modal-cta"
-                >
-                  View leaderboard anyway
-                </Button>
-              </Box>
-            </Grid>
-            <Grid
-              item
-              width="100%"
-              marginTop="-13px"
             >
               <Box width="100%">
                 <Button

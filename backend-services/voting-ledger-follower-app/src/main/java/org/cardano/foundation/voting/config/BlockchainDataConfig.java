@@ -1,20 +1,23 @@
 package org.cardano.foundation.voting.config;
 
 import com.bloxbean.cardano.client.backend.api.BackendService;
+import com.bloxbean.cardano.yaci.store.api.blocks.service.BlockService;
+import com.bloxbean.cardano.yaci.store.api.transaction.service.TransactionService;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataChainTipService;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataStakePoolService;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataTransactionDetailsService;
 import org.cardano.foundation.voting.service.blockchain_state.FixedBlockchainDataStakePoolService;
-import org.cardano.foundation.voting.service.blockchain_state.backend_bridge.BackendServiceBlockchainDataChainTipService;
 import org.cardano.foundation.voting.service.blockchain_state.backend_bridge.BackendServiceBlockchainDataCurrentStakePoolService;
 import org.cardano.foundation.voting.service.blockchain_state.backend_bridge.BackendServiceBlockchainDataStakePoolService;
-import org.cardano.foundation.voting.service.blockchain_state.backend_bridge.BackendServiceBlockchainDataTransactionDetailsService;
+import org.cardano.foundation.voting.service.blockchain_state.yaci.YaciChainTipService;
+import org.cardano.foundation.voting.service.blockchain_state.yaci.YaciTransactionDetailsBlockchainDataService;
 import org.cardano.foundation.voting.service.chain_sync.ChainSyncService;
 import org.cardano.foundation.voting.service.chain_sync.DefaultChainSyncService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -24,9 +27,10 @@ public class BlockchainDataConfig {
 
     @Bean
     public BlockchainDataChainTipService blockchainDataChainTipService(CardanoNetwork network,
-                                                                       @Qualifier("yaci_blockfrost") BackendService backendService,
-                                                                       ChainSyncService chainSyncService) {
-        return new BackendServiceBlockchainDataChainTipService(backendService, chainSyncService, network);
+                                                                       BlockService blockService,
+                                                                       ChainSyncService chainSyncService,
+                                                                       CacheManager cacheManager) {
+        return new YaciChainTipService(blockService, chainSyncService, network, cacheManager);
     }
 
     @Bean
@@ -65,8 +69,11 @@ public class BlockchainDataConfig {
 
     @Bean
     public BlockchainDataTransactionDetailsService blockchainDataTransactionDetailsService(CardanoNetwork network,
-                                                                                           @Qualifier("yaci_blockfrost") BackendService backendService) {
-        return new BackendServiceBlockchainDataTransactionDetailsService(backendService, network);
+                                                                                           BlockService blockService,
+                                                                                           TransactionService transactionService,
+                                                                                           CacheManager cacheManager
+                                                                                           ) {
+        return new YaciTransactionDetailsBlockchainDataService(blockService, transactionService, network, cacheManager);
     }
 
 }

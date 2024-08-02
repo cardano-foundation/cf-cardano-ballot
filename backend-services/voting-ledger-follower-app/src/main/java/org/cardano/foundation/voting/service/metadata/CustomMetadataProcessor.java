@@ -5,12 +5,11 @@ import com.bloxbean.cardano.client.common.cbor.CborSerializationUtil;
 import com.bloxbean.cardano.client.metadata.cbor.CBORMetadata;
 import com.bloxbean.cardano.client.metadata.cbor.CBORMetadataMap;
 import lombok.extern.slf4j.Slf4j;
+import org.cardano.foundation.voting.domain.HydraTally;
 import org.cardano.foundation.voting.domain.OnChainEventType;
-import org.cardano.foundation.voting.domain.SchemaVersion;
-import org.cardano.foundation.voting.domain.entity.Category;
-import org.cardano.foundation.voting.domain.entity.Event;
-import org.cardano.foundation.voting.domain.entity.MerkleRootHash;
-import org.cardano.foundation.voting.domain.entity.Proposal;
+import org.cardano.foundation.voting.domain.entity.*;
+import org.cardano.foundation.voting.domain.web3.HydraTallyRegistrationEnvelope;
+import org.cardano.foundation.voting.domain.web3.TallyRegistrationEnvelope;
 import org.cardano.foundation.voting.service.cbor.CborService;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
 import org.cardano.foundation.voting.service.vote.MerkleRootHashService;
@@ -26,12 +25,15 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.bloxbean.cardano.client.crypto.Blake2bUtil.blake2bHash224;
 import static com.bloxbean.cardano.client.util.HexUtil.decodeHexString;
 import static com.bloxbean.cardano.client.util.HexUtil.encodeHexString;
 import static org.cardano.foundation.voting.domain.OnChainEventType.*;
+import static org.cardano.foundation.voting.domain.entity.Tally.TallyType.HYDRA;
 import static org.cardanofoundation.cip30.AddressFormat.TEXT;
 import static org.cardanofoundation.cip30.MessageFormat.HEX;
 
@@ -119,7 +121,7 @@ public class CustomMetadataProcessor {
         var cip30Parser = new CIP30Verifier(signatureHexString, Optional.ofNullable(keyHexString));
         var cip30VerificationResult = cip30Parser.verify();
         if (!cip30VerificationResult.isValid()) {
-            log.info("Signature invalid, ignoring id:{}", id);
+            log.info("Event registration signature invalid, ignoring id:{}", id);
 
             return Optional.empty();
         }
@@ -161,11 +163,14 @@ public class CustomMetadataProcessor {
             return Optional.empty();
         }
 
-        var maybeStoredEvent = referenceDataService.findEventByName(eventRegistration.getName());
-        if (maybeStoredEvent.isPresent()) {
-            log.info("Event already found, ignoring id:{}", id);
+        var eventM = referenceDataService.findEventByName(eventRegistration.getName());
 
-            return Optional.empty();
+        if (eventM.isPresent()) {
+            var event = eventM.orElseThrow();
+
+            log.info("Event already found, will be removing old one and re-creating it, id:{}", event.getId());
+
+            referenceDataService.removeEvent(event);
         }
 
         var event = new Event();
@@ -176,7 +181,7 @@ public class CustomMetadataProcessor {
         event.setHighLevelEventResultsWhileVoting(Optional.of(eventRegistration.isHighLevelEventResultsWhileVoting()));
         event.setHighLevelCategoryResultsWhileVoting(Optional.of(eventRegistration.isHighLevelCategoryResultsWhileVoting()));
         event.setCategoryResultsWhileVoting(Optional.of(eventRegistration.isCategoryResultsWhileVoting()));
-        event.setVersion(SchemaVersion.fromText(eventRegistration.getSchemaVersion()).orElseThrow());
+        event.setVersion(eventRegistration.getSchemaVersion());
 
         event.setStartEpoch(eventRegistration.getStartEpoch());
         event.setEndEpoch(eventRegistration.getEndEpoch());
@@ -193,7 +198,42 @@ public class CustomMetadataProcessor {
 
         event.setAbsoluteSlot(slot);
 
+        var tallies = eventRegistration.getTallies()
+                .stream()
+                .map(tally -> {
+                    var tallyBuilder = Tally.builder()
+                            .name(tally.getName())
+                            .type(tally.getType())
+                            .description(tally.getDescription());
+
+                    if (tally.getType() == HYDRA) {
+                        tallyBuilder.hydraTallyConfig(createTallyConfig(tally));
+                    }
+
+                    return tallyBuilder.build();
+                }
+        ).toList();
+
+        event.getTallies().clear();
+        event.getTallies().addAll(tallies);
+
         return Optional.of(referenceDataService.storeEvent(event));
+    }
+
+    private static HydraTally createTallyConfig(TallyRegistrationEnvelope tally) {
+        var tallyConfig = (HydraTallyRegistrationEnvelope) tally.getConfig();
+
+        return HydraTally.builder()
+                .contractName(tallyConfig.getContractName())
+                .contractDescription(tallyConfig.getContractDesc())
+                .contractVersion(tallyConfig.getContractVersion())
+                .compiledScript(tallyConfig.getCompiledScript())
+                .compiledScriptHash(tallyConfig.getCompiledScriptHash())
+                .compilerName(tallyConfig.getCompilerName())
+                .compilerVersion(tallyConfig.getCompilerVersion())
+                .plutusVersion(tallyConfig.getPlutusVersion())
+                .verificationKeyHashes(String.join(":", tallyConfig.getVerificationKeys()))
+                .build();
     }
 
     private Optional<Category> processCategoryRegistration(long slot,
@@ -207,7 +247,7 @@ public class CustomMetadataProcessor {
         var cip30Parser = new CIP30Verifier(signature, Optional.ofNullable(key));
         var cip30VerificationResult = cip30Parser.verify();
         if (!cip30VerificationResult.isValid()) {
-            log.info("Signature invalid, ignoring id: {}", id);
+            log.info("Category registration signature invalid, ignoring id: {}", id);
 
             return Optional.empty();
         }
@@ -254,31 +294,45 @@ public class CustomMetadataProcessor {
 
             return Optional.empty();
         }
-        var event = maybeStoredEvent.orElseThrow();
 
-        var maybeCategory = referenceDataService.findCategoryByName(categoryRegistration.getId());
-        if (maybeCategory.isPresent()) {
-            log.info("Category already found, ignoring id: {}", categoryRegistration.getId());
+        var eventM = referenceDataService.findEventByName(categoryRegistration.getEvent());
+
+        if (eventM.isEmpty()) {
+            log.warn("Category registration failed, event not found, category registration id: {}", id);
 
             return Optional.empty();
         }
 
+        var categoryM = referenceDataService.findCategoryByName(categoryRegistration.getId());
+
+
+        if (categoryM.isPresent()) {
+            var category = categoryM.orElseThrow();
+
+            log.info("Category already found, will be removing old one and re-creating it, id: {}", category.getId());
+
+            referenceDataService.removeCategory(category);
+        }
+
         var category = new Category();
         category.setId(categoryRegistration.getId());
-        category.setVersion(SchemaVersion.fromText(categoryRegistration.getSchemaVersion()).orElseThrow());
+        category.setVersion(categoryRegistration.getSchemaVersion());
         category.setGdprProtection(categoryRegistration.isGdprProtection());
         category.setAbsoluteSlot(slot);
-        category.setEvent(event);
+        category.setEvent(eventM.orElseThrow());
 
-        var proposals = categoryRegistration.getProposals().stream().map(proposalEnvelope -> Proposal.builder()
-                .id(proposalEnvelope.getId())
-                .name(proposalEnvelope.getName())
-                .category(category)
-                .absoluteSlot(slot)
-                .build()
+        var proposals = categoryRegistration.getProposals().stream().map(proposalEnvelope -> {
+                    return Proposal.builder()
+                            .id(proposalEnvelope.getId())
+                            .name(proposalEnvelope.getName())
+                            .category(category)
+                            .absoluteSlot(slot)
+                            .build();
+                }
         ).toList();
 
-        category.setProposals(proposals);
+        category.getProposals().clear();
+        category.getProposals().addAll(proposals);
 
         return Optional.of(referenceDataService.storeCategory(category));
     }
@@ -328,16 +382,10 @@ public class CustomMetadataProcessor {
         }
         var commitmentsEnvelope = maybeCommitmentsEnvelope.orElseThrow();
 
-        var merkleRootHashes = new ArrayList<MerkleRootHash>();
-        for (var eventId : commitmentsEnvelope.getCommitments().keySet()) {
-            if (!bindOnEventIds.contains(eventId)) {
-                // we have to remove commitments which we are not actively serving / running
-                if (commitmentsEnvelope.removeCommitment(eventId)) {
-                    log.info("Commitment removed for event id: {}", eventId);
-                }
-                continue;
-            }
+        var relevantCommitments = findOutRelevantEvents(commitmentsEnvelope.getCommitments());
 
+        var merkleRootHashes = new ArrayList<MerkleRootHash>();
+        for (var eventId : relevantCommitments.keySet()) {
             var maybeStoredEvent = referenceDataService.findEventByName(eventId);
             if (maybeStoredEvent.isEmpty()) {
                 log.info("Event not found, ignoring commitment, id: {}", eventId);
@@ -354,16 +402,27 @@ public class CustomMetadataProcessor {
                     .eventId(eventId)
                     .merkleRootHash(maybeEventCommitment.orElseThrow())
                     .absoluteSlot(slot)
-                    .build());
+                    .build()
+            );
         }
 
         if (merkleRootHashes.isEmpty()) {
-            log.info("No actual commitments (merkle root hashes) found in the actual on-chain COMMITMENTS event.");
+            //log.info("No actual commitments (merkle root hashes) found in the actual on-chain COMMITMENTS event.");
 
             return Optional.empty();
         }
 
         return Optional.of(merkleRootHashService.storeCommitments(merkleRootHashes));
+    }
+
+    /**
+     * We are only interested in commitments based on events we are binding into
+     */
+    private Map<String, Map<String, String>> findOutRelevantEvents(Map<String, Map<String, String>> commitments) {
+        return commitments.entrySet()
+                .stream()
+                .filter(entry -> bindOnEventIds.contains(entry.getKey()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
 }

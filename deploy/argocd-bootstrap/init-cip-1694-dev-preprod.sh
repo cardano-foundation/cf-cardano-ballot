@@ -18,6 +18,8 @@ if [ $? != 0 ]; then
   kubectl create ns cf-cardano-ballot > /dev/null 2>&1
 fi
 
+# Installing ArgoCD CRD
+kubectl apply -k "https://github.com/argoproj/argo-cd/manifests/crds?ref=v2.8.4"
 
 ## Blockfrost secrets
 kubectl create secret -n cf-cardano-ballot generic blockfrost-secrets \
@@ -68,7 +70,7 @@ echo "Updating helm dependencies for main app"
 helm dependency update
 
 helm upgrade --install argocd -n argocd . \
-  --set git.targetRevision=develop \
+  --set git.targetRevision=infra-develop-cip1694 \
   --set valueFile=values-dev-preprod.yaml \
   -f values-secrets.yaml \
   -f values-cip-1694-dev-preprod.yaml

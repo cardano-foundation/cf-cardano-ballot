@@ -14,6 +14,7 @@ const clearUserInSessionStorage = () => {
 };
 
 const tokenIsExpired = (expiresAt: string) => {
+  if (!expiresAt) return true;
   const currentDate = new Date();
   const givenDate = new Date(expiresAt);
   return givenDate < currentDate;

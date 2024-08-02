@@ -6,7 +6,11 @@ export const proposalColorsMap: Record<ProposalPresentation['name'], string> = {
   ABSTAIN: '#1D439B',
 };
 
-export const getPercentage = (value: number, total: number) => (value * 100) / total;
+export const formatNumber = (number: number | bigint) =>
+  new Intl.NumberFormat('en-EN', { maximumFractionDigits: 3 }).format(number);
+
+export const getPercentage = (value: number | string, total: number | string) =>
+  parseFloat(formatNumber(Number((BigInt(value) * BigInt(100) * BigInt(100)) / BigInt(total)) / 100));
 
 export const formatUTCDate = (date: string) => {
   if (!date) return '';

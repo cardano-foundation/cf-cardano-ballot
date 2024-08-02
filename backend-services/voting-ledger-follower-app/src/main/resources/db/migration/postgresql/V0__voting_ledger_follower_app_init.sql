@@ -30,6 +30,30 @@ CREATE TABLE event (
    CONSTRAINT pk_event PRIMARY KEY (id)
 );
 
+DROP TABLE IF EXISTS event_tally;
+
+CREATE TABLE event_tally (
+    name VARCHAR(255) NOT NULL, -- human readable name, should never contain PII data
+    event_id VARCHAR(255) NOT NULL,
+    description VARCHAR(255),
+    type VARCHAR(255) NOT NULL,
+
+    hydra_tally_config__contract_name VARCHAR(255) NOT NULL,
+    hydra_tally_config__contract_description VARCHAR(255),
+    hydra_tally_config__contract_version VARCHAR(255) NOT NULL,
+    hydra_tally_config__compiled_script TEXT NOT NULL,
+    hydra_tally_config__compiled_script_hash VARCHAR(255) NOT NULL,
+    hydra_tally_config__compiler_name VARCHAR(255) NOT NULL,
+    hydra_tally_config__compiler_version VARCHAR(255) NOT NULL,
+    hydra_tally_config__plutus_version VARCHAR(255) NOT NULL,
+    hydra_tally_config__verification_key_hashes TEXT NOT NULL,
+
+    created_at TIMESTAMP WITHOUT TIME ZONE,
+    updated_at TIMESTAMP WITHOUT TIME ZONE,
+
+   CONSTRAINT pk_event_tally PRIMARY KEY (name)
+);
+
 DROP TABLE IF EXISTS category;
 
 CREATE TABLE category (
@@ -82,3 +106,23 @@ CREATE INDEX idx_merkle_root_hash_event_id_and_id
 
 CREATE INDEX idx_merkle_root_hash_rollback
     ON merkle_root_hash(absolute_slot);
+
+DROP TABLE IF EXISTS utxo_category_result;
+
+CREATE TABLE event_category_result_utxo_data (
+    id VARCHAR(255) NOT NULL,
+    address VARCHAR(255) NOT NULL,
+    tx_hash VARCHAR(255) NOT NULL,
+    index INT NOT NULL,
+    inline_datum TEXT NOT NULL,
+    absolute_slot BIGINT NOT NULL,
+    witnesses_hashes TEXT NOT NULL,
+
+    CONSTRAINT pk_event_category_result_utxo_data PRIMARY KEY (id)
+);
+
+CREATE INDEX idx_utxo_category_result_address
+    ON event_category_result_utxo_data(address);
+
+CREATE INDEX idx_utxo_category_result_rollback
+    ON event_category_result_utxo_data(absolute_slot);

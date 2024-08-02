@@ -1,5 +1,6 @@
 package org.cardano.foundation.voting.service.vote;
 
+import io.micrometer.core.annotation.Timed;
 import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import org.cardano.foundation.voting.domain.entity.Event;
@@ -16,7 +17,9 @@ public class VotingPowerService {
 
     private final BlockchainDataStakePoolService blockchainDataStakePoolService;
 
-    public Either<Problem, Long> getVotingPower(Event event, String stakeAddress) {
+    @Timed(value = "service.voting_power.getVotingPower", histogram = true)
+    public Either<Problem, Long> getVotingPower(Event event,
+                                                String stakeAddress) {
         return switch (event.getVotingEventType()) {
             case USER_BASED -> {
                 yield Either.left(Problem.builder()
@@ -26,7 +29,13 @@ public class VotingPowerService {
                         .build());
             }
             case STAKE_BASED -> {
-                var maybeAmount = blockchainDataStakePoolService.getStakeAmount(event.getSnapshotEpoch().orElseThrow(), stakeAddress)
+                var snapshotEpoch = event.getSnapshotEpoch().orElseThrow();
+                // blockfrost uses active epoch to denote that certain balance from the snapshot was active in it,
+                // it is different than our definition since we use term snapshot,
+                // so we have to add 2 more epochs (this is  how it works on Cardano) from our snapshot epoch to get the blockfrost's active epoch
+                var blockfrostActiveEpoch = snapshotEpoch + 2;
+
+                var maybeAmount = blockchainDataStakePoolService.getStakeAmount(blockfrostActiveEpoch, stakeAddress)
                         .filter(amount -> amount > 0);
 
                 if (maybeAmount.isEmpty()) {

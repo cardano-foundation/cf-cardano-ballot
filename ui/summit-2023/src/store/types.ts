@@ -2,7 +2,6 @@ import { UserVotes, VoteReceipt } from '../types/voting-app-types';
 import { EventPresentation, ProposalPresentation } from '../types/voting-ledger-follower-types';
 
 interface UserState {
-  connectedWallet: string;
   connectedPeerWallet: boolean;
   walletIsVerified: boolean;
   walletIsLoggedIn: boolean;

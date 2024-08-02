@@ -25,6 +25,7 @@
     "allowSyntheticDefaultImports": true,
     "paths": {
       "common/*": ["./common/*"],
+      "resources/*": ["./resources/*"],
       "src/*": ["./src/*"]
     },
     "typeRoots": ["node_modules/@types"],

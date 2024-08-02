@@ -11,6 +11,8 @@ import DoneIcon from '@mui/icons-material/Done';
 import CloseIcon from '@mui/icons-material/Close';
 import DoDisturbIcon from '@mui/icons-material/DoDisturb';
 import ReceiptIcon from '@mui/icons-material/ReceiptLongOutlined';
+import ArrowBack from '@mui/icons-material/ArrowBack';
+import ArrowForward from '@mui/icons-material/ArrowForward';
 import BlockIcon from '@mui/icons-material/Block';
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import { ROUTES } from 'common/routes';
@@ -24,11 +26,11 @@ import { ProposalPresentation, Account, ChainTip } from 'types/voting-ledger-fol
 import { VoteReceipt as VoteReceiptType } from 'types/voting-app-types';
 import { RootState } from 'common/store';
 import { VoteReceipt } from 'pages/Vote/components/VoteReceipt/VoteReceipt';
-import { Toast } from 'components/common/Toast/Toast';
+import { Toast } from 'components/Toast/Toast';
 import { VoteSubmittedModal } from 'components/VoteSubmittedModal/VoteSubmittedModal';
 import { OptionCard } from 'components/OptionCard/OptionCard';
 import { OptionItem } from 'components/OptionCard/OptionCard.types';
-import SidePage from 'components/common/SidePage/SidePage';
+import SidePage from 'components/SidePage/SidePage';
 import { buildCanonicalVoteInputJson, getSignedMessagePromise } from 'common/utils/voteUtils';
 import * as voteService from 'common/api/voteService';
 import * as loginService from 'common/api/loginService';
@@ -40,16 +42,20 @@ import { ConfirmWithWalletSignatureModal } from './components/ConfirmWithWalletS
 import { env } from '../../env';
 import styles from './Vote.module.scss';
 
-const copies = [
-  {
-    title: 'The Governance of Cardano',
-    body: 'Do you like pineapple pizza?',
-  },
-  {
-    title: 'The Governance of Cardano',
-    body: 'Do you like apples?',
-  },
-];
+export const errorsMap = {
+  [voteService.ERRORS.STAKE_AMOUNT_NOT_AVAILABLE]: (stakeAddress: string) => (
+    <div>
+      <div>Stake amount not found for stake address:</div>
+      <div style={{ fontSize: '14px' }}>${stakeAddress}</div>
+    </div>
+  ),
+  [voteService.ERRORS.VOTE_CANNOT_BE_CHANGED]: (stakeAddress: string) => (
+    <div>
+      <div>Ballot cannot be changed for the stake address:</div>
+      <div style={{ fontSize: '14px' }}>${stakeAddress}</div>
+    </div>
+  ),
+};
 
 const iconsMap: Record<ProposalPresentation['name'], React.ReactElement | null> = {
   YES: <DoneIcon sx={{ fontSize: { xs: '30px', md: '52px' }, color: '#39486C' }} />,
@@ -66,11 +72,17 @@ export const VotePage = () => {
   const isVoteSubmittedModalVisible = useSelector((state: RootState) => state.user.isVoteSubmittedModalVisible);
   const [isReceiptDrawerInitializing, setIsReceiptDrawerInitializing] = useState(false);
   const [isCastingAVote, setIsCastingAVote] = useState(false);
+  const [isConfirmingWithSignature, setIsConfirmingWithSignature] = useState(false);
   const [optionId, setOptionId] = useState<string | null>();
   const [isConfirmWithWalletSignatureModalVisible, setIsConfirmWithWalletSignatureModalVisible] = useState(false);
   const [voteSubmitted, setVoteSubmitted] = useState(false);
-  const [category, setCategory] = useState(event?.categories?.[0].id);
-  const numOfCategories = event?.categories?.length;
+  const [activeCategoryId, setActiveCategoryId] = useState(event?.categories?.[0].id);
+  const categories = useMemo(
+    () => event?.categories?.filter((_category, index) => env.QUESTIONS?.[index]),
+    [event?.categories]
+  );
+  const numOfCategories = categories?.length;
+  const activeCategoryIndex = findIndex(categories, ['id', activeCategoryId]);
   const [isToggledReceipt, toggleReceipt] = useToggle(false);
   const dispatch = useDispatch();
 
@@ -82,7 +94,7 @@ export const VotePage = () => {
     } catch (error) {
       toast(
         <Toast
-          message="Failed to fecth chain tip"
+          message="Failed to fetch chain tip"
           error
           icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
         />
@@ -92,26 +104,21 @@ export const VotePage = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    setCategory(event?.categories?.[0].id);
-  }, [event]);
+    setActiveCategoryId(categories?.[0].id);
+  }, [categories]);
 
   useEffect(() => {
     const session = getUserInSession();
 
-    if (
-      tip?.absoluteSlot &&
-      stakeAddress &&
-      event?.notStarted === false &&
-      ((session && tokenIsExpired(session.expiresAt)) || !session)
-    ) {
+    if (stakeAddress && event?.notStarted === false && ((session && tokenIsExpired(session.expiresAt)) || !session)) {
       setIsConfirmWithWalletSignatureModalVisible(true);
     }
-  }, [event?.notStarted, tip?.absoluteSlot, stakeAddress]);
+  }, [event?.notStarted, stakeAddress, activeCategoryId]);
 
-  const items: OptionItem<ProposalPresentation['name']>[] = event?.categories
-    ?.find(({ id }) => id === category)
+  const items: OptionItem<ProposalPresentation['name']>[] = categories
+    ?.find(({ id }) => id === activeCategoryId)
     ?.proposals?.map(({ name }) => ({
-      id: `${category}-${name}`,
+      id: `${activeCategoryId}-${name}`,
       name,
       label: capitalize(name.toLowerCase()),
       icon: iconsMap[name] || null,
@@ -121,6 +128,7 @@ export const VotePage = () => {
 
   const login = useCallback(async () => {
     try {
+      setIsConfirmingWithSignature(true);
       const chainTip = await fetchChainTip();
       const canonicalVoteInput = loginService.buildCanonicalLoginJson({
         stakeAddress,
@@ -143,14 +151,16 @@ export const VotePage = () => {
           icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
         />
       );
+    } finally {
+      setIsConfirmingWithSignature(false);
     }
   }, [fetchChainTip, signMessagePromisified, stakeAddress]);
 
   const fetchReceipt = useCallback(
     async ({ cb, refetch = false }: { cb?: () => void; refetch?: boolean }) => {
       const errorPrefix = refetch
-        ? 'Unable to refresh your vote receipt. Please try again'
-        : 'Unable to fetch your vote receipt. Please try again';
+        ? 'Unable to refresh your ballot receipt. Please try again'
+        : 'Unable to fetch your ballot receipt. Please try again';
       try {
         const session = getUserInSession();
         let token = session?.accessToken;
@@ -158,7 +168,7 @@ export const VotePage = () => {
           token = await login();
         }
         if (!token) return;
-        const receiptResponse = await voteService.getVoteReceipt(category, token);
+        const receiptResponse = await voteService.getVoteReceipt(activeCategoryId, token);
 
         if ('id' in receiptResponse) {
           setReceipt(receiptResponse);
@@ -192,38 +202,37 @@ export const VotePage = () => {
       setIsReceiptDrawerInitializing(false);
       setIsConfirmWithWalletSignatureModalVisible(false);
     },
-    [login, category]
+    [login, activeCategoryId]
   );
 
   useEffect(() => {
     const session = getUserInSession();
-    if (isConnected && tip?.absoluteSlot && stakeAddress && session && !tokenIsExpired(session.expiresAt) && category) {
+    if (isConnected && stakeAddress && session && !tokenIsExpired(session.expiresAt) && activeCategoryId) {
       fetchReceipt({});
     }
-  }, [fetchReceipt, isConnected, stakeAddress, tip?.absoluteSlot, category]);
+  }, [fetchReceipt, isConnected, stakeAddress, activeCategoryId]);
 
   const openReceiptDrawer = async () => {
     setIsReceiptDrawerInitializing(true);
     await fetchReceipt({
       cb: () => {
         toggleReceipt();
-        setIsReceiptDrawerInitializing(false);
       },
     });
+    setIsReceiptDrawerInitializing(false);
   };
 
   const onChangeOption = (option: string | null) => {
     setOptionId(option);
-    if (!isConnected) dispatch(setIsConnectWalletModalVisible({ isVisible: true }));
+    if (!isConnected && option) dispatch(setIsConnectWalletModalVisible({ isVisible: true }));
   };
 
-  const onChangeCategory = () => {
+  const onChangeCategory = (categoryIndex: number) => {
     setReceipt(null);
     setOptionId(null);
     setVoteSubmitted(false);
     setIsReceiptFetched(false);
-    const currentCategoryIndex = findIndex(event?.categories, ['id', category]);
-    setCategory(event?.categories[(currentCategoryIndex + 1) % numOfCategories]?.id);
+    setActiveCategoryId(categories[categoryIndex]?.id);
   };
 
   const handleSubmit = async () => {
@@ -234,7 +243,7 @@ export const VotePage = () => {
       toast(
         <Toast
           error
-          message="Unable to submit your vote. Please try again"
+          message={errorsMap[error?.message]?.(stakeAddress) || 'Unable to submit your ballot. Please try again'}
           icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
         />
       );
@@ -251,36 +260,34 @@ export const VotePage = () => {
         voteId: uuidv4(),
         slotNumber: chainTip.absoluteSlot.toString(),
         votingPower,
-        category,
+        category: activeCategoryId,
+        uri: env.ENV_URI,
       });
       setIsCastingAVote(true);
       const requestVoteObject = await signMessagePromisified(canonicalVoteInput);
       await voteService.castAVoteWithDigitalSignature(requestVoteObject);
       dispatch(setIsVoteSubmittedModalVisible({ isVisible: true }));
       setVoteSubmitted(true);
-      if (numOfCategories === 1) {
+      if (numOfCategories === 1 || activeCategoryIndex === numOfCategories - 1) {
         await fetchReceipt({});
       } else {
-        onChangeCategory();
+        onChangeCategory(activeCategoryIndex + 1);
       }
     } catch (error) {
+      toast(
+        <Toast
+          error
+          message={errorsMap[error?.message]?.(stakeAddress) || 'Unable to submit your ballot. Please try again'}
+          icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
+        />
+      );
       if (error instanceof HttpError && error.code === 400) {
-        toast(
-          <Toast
-            error
-            message="Unable to submit your vote. Please try again"
-            icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
-          />
-        );
         setOptionId('');
-      } else if (error instanceof Error) {
-        toast(
-          <Toast
-            error
-            message="Unable to submit your vote. Please try again"
-            icon={<BlockIcon style={{ fontSize: '19px', color: '#F5F9FF' }} />}
-          />
-        );
+      }
+
+      if (error.message === 'VOTE_CANNOT_BE_CHANGED') {
+        setOptionId('');
+        setIsConfirmWithWalletSignatureModalVisible(true);
       }
     }
     setIsCastingAVote(false);
@@ -292,11 +299,14 @@ export const VotePage = () => {
 
   const cantSelectOptions =
     !!receipt || voteSubmitted || (isConnected && !isReceiptFetched) || event?.notStarted || event?.finished;
-  const showViewReceiptButton = receipt?.id || voteSubmitted || (isReceiptFetched && event?.finished);
+  const showViewReceiptButton = receipt?.id || voteSubmitted;
   const showConnectButton = event && !isConnected && event?.notStarted === false;
   const showSubmitButton =
     event && isConnected && event?.notStarted === false && event?.finished === false && !showViewReceiptButton;
-  const showPagination = isConnected && receipt && category === receipt?.category && numOfCategories > 1;
+  const showPagination =
+    isConnected &&
+    numOfCategories > 1 &&
+    ((receipt && activeCategoryId === receipt?.category) || event?.finished === true);
 
   return (
     <>
@@ -326,7 +336,7 @@ export const VotePage = () => {
                 md: '65px',
               }}
             >
-              {copies[findIndex(event?.categories, ['id', category])]?.title}
+              The Governance of Cardano
             </Typography>
           </Grid>
           <Grid item>
@@ -339,21 +349,37 @@ export const VotePage = () => {
               />
             </Typography>
           </Grid>
-          <Grid item>
+          <Grid
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+            item
+          >
             <Typography
               variant="h5"
               className={styles.description}
-              lineHeight={{ xs: '19px', md: '36px' }}
-              fontSize={{ xs: '16px', md: '28px' }}
+              lineHeight={{ xs: '19px', md: '24px' }}
+              fontSize={{ xs: '16px', md: '24px' }}
               data-testid="event-description"
             >
-              {copies[findIndex(event?.categories, ['id', category])]?.body}
+              {env.QUESTIONS[activeCategoryIndex]}
             </Typography>
+            {numOfCategories > 1 && (
+              <Typography
+                variant="h5"
+                className={styles.categoryPagination}
+                data-testid="category-pagination"
+                lineHeight={{ xs: '16px', md: '22px' }}
+                fontSize={{ xs: '16px', md: '22px' }}
+              >
+                Question {activeCategoryIndex + 1} of {numOfCategories}
+              </Typography>
+            )}
           </Grid>
           <Grid item>
             <OptionCard
-              key={category}
-              selectedOption={isConnected && receipt?.proposal}
+              key={activeCategoryId}
+              selectedOption={(isConnected && receipt?.proposal) || optionId}
               disabled={cantSelectOptions}
               items={items}
               onChangeOption={onChangeOption}
@@ -364,7 +390,7 @@ export const VotePage = () => {
               container
               direction={{ xs: 'column', md: 'row' }}
               justifyContent={'center'}
-              gap={{ xs: '0px', md: '51px' }}
+              gap={{ xs: '0px', md: '24px' }}
               wrap="nowrap"
             >
               <Grid
@@ -397,13 +423,15 @@ export const VotePage = () => {
                     data-testid="show-receipt-button"
                     disabled={isReceiptDrawerInitializing || !tip?.absoluteSlot}
                   >
-                    Vote receipt
-                    {isReceiptDrawerInitializing && (
-                      <CircularProgress
-                        size={20}
-                        sx={{ marginLeft: '10px' }}
-                      />
-                    )}
+                    <span className={styles.buttonContent}>
+                      Ballot receipt
+                      {isReceiptDrawerInitializing && (
+                        <CircularProgress
+                          className={styles.loader}
+                          size={20}
+                        />
+                      )}
+                    </span>
                   </Button>
                 )}
                 {showConnectButton && (
@@ -414,27 +442,33 @@ export const VotePage = () => {
                     onClick={() => dispatch(setIsConnectWalletModalVisible({ isVisible: true }))}
                     data-testid="proposal-connect-button"
                   >
-                    {event?.finished ? 'Connect wallet to see your vote' : 'Connect wallet to vote'}
+                    {event?.finished ? 'Connect wallet to see your ballot' : 'Connect wallet to participate'}
                   </Button>
                 )}
                 {showSubmitButton && (
                   <Button
                     className={cn(styles.button, {
+                      // [styles.disabled]: !optionId || !isReceiptFetched || !isTAndCAndPPChecked,
                       [styles.disabled]: !optionId || !isReceiptFetched,
                     })}
                     size="large"
                     variant="contained"
-                    disabled={!optionId || !isReceiptFetched || isCastingAVote || !tip?.absoluteSlot}
+                    disabled={
+                      // !optionId || !isReceiptFetched || isCastingAVote || !tip?.absoluteSlot || !isTAndCAndPPChecked
+                      !optionId || !isReceiptFetched || isCastingAVote || !tip?.absoluteSlot
+                    }
                     onClick={() => handleSubmit()}
                     data-testid="proposal-submit-button"
                   >
-                    Submit your vote
-                    {isCastingAVote && (
-                      <CircularProgress
-                        size={20}
-                        sx={{ marginLeft: '10px' }}
-                      />
-                    )}
+                    <span className={styles.buttonContent}>
+                      Submit your ballot
+                      {isCastingAVote && (
+                        <CircularProgress
+                          size={20}
+                          className={styles.loader}
+                        />
+                      )}
+                    </span>
                   </Button>
                 )}
                 {event?.notStarted && (
@@ -445,7 +479,8 @@ export const VotePage = () => {
                     disabled
                     data-testid="event-hasnt-started-submit-button"
                   >
-                    Submit your vote from {event?.eventStartDate && getDateAndMonth(event?.eventStartDate?.toString())}
+                    Submit your ballot from{' '}
+                    {event?.eventStartDate && getDateAndMonth(event?.eventStartDate?.toString())}
                   </Button>
                 )}
                 {isConnected && event?.finished && (
@@ -462,13 +497,16 @@ export const VotePage = () => {
                 )}
                 {showPagination && (
                   <Button
-                    onClick={() => onChangeCategory()}
+                    startIcon={activeCategoryIndex === 1 && <ArrowBack style={{ fontSize: '20px', margin: '0' }} />}
+                    endIcon={activeCategoryIndex === 0 && <ArrowForward style={{ fontSize: '20px', margin: '0' }} />}
+                    onClick={() => onChangeCategory(activeCategoryIndex === 0 ? 1 : 0)}
+                    sx={{ gap: '10px' }}
                     className={styles.button}
                     size="large"
                     variant="contained"
                     data-testid="next-question-button"
                   >
-                    {findIndex(event?.categories, ['id', category]) === 0 ? 'Next question' : 'Previous question'}
+                    {activeCategoryIndex === 0 ? 'Next question' : 'Previous question'}
                   </Button>
                 )}
               </Grid>
@@ -485,6 +523,7 @@ export const VotePage = () => {
             </Grid>
           </Grid>
         </Grid>
+
         <SidePage
           anchor="right"
           open={isToggledReceipt}
@@ -507,19 +546,33 @@ export const VotePage = () => {
         title="Vote submitted"
         description={
           <>
-            <div style={{ marginBottom: '10px' }}>Thank you, your vote has been submitted.</div>
+            <div style={{ marginBottom: '10px' }}>Thank you, your ballot has been submitted.</div>
             Make sure to check back on{' '}
-            <b>{event?.eventStartDate && getDateAndMonth(event?.eventEndDate?.toString())}</b> to see the results!
+            <b>{event?.proposalsRevealDate && getDateAndMonth(event?.proposalsRevealDate?.toString())}</b> to see the results!
           </>
         }
       />
       <ConfirmWithWalletSignatureModal
         openStatus={isConfirmWithWalletSignatureModalVisible}
         onConfirm={() => fetchReceipt({ cb: () => setIsConfirmWithWalletSignatureModalVisible(false) })}
+        showCloseBtn={event?.finished === false}
+        onCloseFn={() => {
+          setIsReceiptFetched(true);
+          setIsConfirmWithWalletSignatureModalVisible(false);
+        }}
         name="vote-submitted-modal"
         id="vote-submitted-modal"
         title="Wallet signature"
-        description="We need to check if you’ve already voted. Please confirm with your wallet signature."
+        isConfirming={isConfirmingWithSignature}
+        description={
+          <>
+            We need to check if you’ve already submitted your ballot.
+            <br />
+            You will see a pop-up message from your wallet.
+            <br />
+            Please confirm with your wallet signature.
+          </>
+        }
       />
     </>
   );

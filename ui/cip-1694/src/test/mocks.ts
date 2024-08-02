@@ -4,15 +4,6 @@ import { EventPresentation, ChainTip, Account } from 'types/voting-ledger-follow
 import { useCardano } from '@cardano-foundation/cardano-connect-with-wallet';
 import { canonicalize } from 'json-canonicalize';
 
-export const voteStats: ByProposalsInCategoryStats = {
-  category: 'CHANGE_GOV_STRUCTURE',
-  proposals: {
-    YES: { votes: 2134, votingPower: '123' },
-    NO: { votes: 700, votingPower: '123' },
-    ABSTAIN: { votes: 61, votingPower: '123' },
-  },
-};
-
 export const canonicalVoteInputJsonMock = canonicalize({
   action: 'CAST_VOTE',
   actionText: 'Cast Vote',
@@ -209,4 +200,12 @@ export const userInSessionMock = {
   accessToken:
     'eyJhbGciOiJFZERTQSJ9.eyJzdWIiOiJzdGFrZV90ZXN0MXVxd2N6MDc1NHd3cHVobTZ4aGRwZGE2dTllbnlhaGFqNXlubGM5YXk1bDRtbG1zNHB5cXlnIiwiZXZlbnRJZCI6IkNJUC0xNjk0X1ByZV9SYXRpZmljYXRpb25fMzMxNiIsInJvbGUiOiJWT1RFUiIsImlzcyI6Imh0dHBzOi8vY2FyZGFub2ZvdW5kYXRpb24ub3JnIiwic3Rha2VBZGRyZXNzIjoic3Rha2VfdGVzdDF1cXdjejA3NTR3d3B1aG02eGhkcGRhNnU5ZW55YWhhajV5bmxjOWF5NWw0bWxtczRweXF5ZyIsImV4cCI6MTY5NDc4NDk4NCwiaWF0IjoxNjk0Njk4NTg0LCJqdGkiOiIzNmIxZjc1NS1mZDc2LTQyMzAtYTVmMy0zYjhkMDJhN2I2ZGYiLCJjYXJkYW5vTmV0d29yayI6IlBSRVBST0QifQ.MHXhEiXhak-5HOVxBRN9y5kx5LGO2zIpU3c4L09GNlg8cJDqtfSgFwgDl0eY0kZQQKkWJhT5kpz5V7Bqu7fxDQ',
   expiresAt: '2023-09-15T16:36:24.903634',
+};
+
+export const voteStats: ByProposalsInCategoryStats = {
+  category: 'CHANGE_GOV_STRUCTURE',
+  proposals: {
+    [eventMock_finished.categories[0].proposals[0].id]: { votes: 2134123, votingPower: '91000000000000' },
+    [eventMock_finished.categories[0].proposals[1].id]: { votes: 70011, votingPower: '1000000000000000' },
+  },
 };

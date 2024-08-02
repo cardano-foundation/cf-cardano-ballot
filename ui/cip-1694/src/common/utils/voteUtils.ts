@@ -10,6 +10,7 @@ type voteInput = {
   slotNumber: string;
   votingPower: string;
   category: string;
+  uri: string;
 };
 
 export const buildCanonicalVoteInputJson = ({
@@ -19,12 +20,12 @@ export const buildCanonicalVoteInputJson = ({
   slotNumber,
   votingPower,
   category,
+  uri,
 }: voteInput): ReturnType<typeof canonicalize> => {
   const startOfCurrentDay = new Date();
   startOfCurrentDay.setUTCMinutes(0, 0, 0);
   return canonicalize({
-    // TODO: should this one be hardcoded?
-    uri: 'https://evoting.cardano.org/voltaire',
+    uri,
     action: 'CAST_VOTE',
     actionText: 'Cast Vote',
     slot: slotNumber,
@@ -47,7 +48,9 @@ export const getSignedMessagePromise = (signMessage: ReturnType<typeof useCardan
       signMessage(
         message,
         (signature, key) => resolve({ coseSignature: signature, cosePublicKey: key || '' }),
-        (error: Error) => reject(error)
+        (error: Error) => {
+          return reject(error);
+        }
       );
     });
 };

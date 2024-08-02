@@ -23,7 +23,7 @@ import {
   getVoteReceipt,
 } from "../../common/api/voteService";
 import { eventBus, EventName } from "../../utils/EventBus";
-import { getWalletIdentifier } from "../../store/reducers/userCache";
+import {getWalletIdentifier, getWalletIsVerified} from "../../store/reducers/userCache";
 import { getUserInSession, tokenIsExpired } from "../../utils/session";
 import { parseError } from "../../common/constants/errors";
 import {
@@ -38,6 +38,7 @@ const Categories: React.FC = () => {
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
   const eventCache = useAppSelector(getEventCache);
   const walletIdentifier = useAppSelector(getWalletIdentifier);
+  const walletIdentifierIsVerified = useAppSelector(getWalletIsVerified);
   const categoriesData = eventCache.categories;
 
   const [showWinners, setShowWinners] = useState(eventCache.finished);
@@ -115,11 +116,20 @@ const Categories: React.FC = () => {
     if (showWinners) {
       handleOpenViewReceipt();
     } else {
+      if (!walletIdentifier.length){
+        eventBus.publish(EventName.ShowToast, "Connect your wallet in order to vote", "error");
+        return;
+      }
+      if (!walletIdentifierIsVerified){
+        eventBus.publish(EventName.ShowToast, "Verify your wallet in order to vote", "error");
+        return;
+      }
       setOpenVotingModal(true);
     }
   };
 
   const submitVote = async () => {
+
     if (eventCache?.finished) {
       eventBus.publish(EventName.ShowToast, "The event already ended", "error");
       return;

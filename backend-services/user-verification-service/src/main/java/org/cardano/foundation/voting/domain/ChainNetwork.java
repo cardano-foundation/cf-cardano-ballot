@@ -3,7 +3,7 @@ package org.cardano.foundation.voting.domain;
 import java.util.Arrays;
 import java.util.List;
 
-public enum CardanoNetwork {
+public enum ChainNetwork {
 
     MAIN, // main-net
     PREPROD, // preprod-net
@@ -11,7 +11,7 @@ public enum CardanoNetwork {
     DEV; // e.g. local Yaci-Dev net
 
     public static List<String> supportedNetworks() {
-        return Arrays.stream(CardanoNetwork.values()).map(network -> network.name().toLowerCase()).toList();
+        return Arrays.stream(ChainNetwork.values()).map(network -> network.name().toLowerCase()).toList();
     }
 
     public boolean isTestnet() {

@@ -2,12 +2,14 @@ package org.cardano.foundation.voting.client;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.vavr.control.Either;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.domain.CardanoNetwork;
+import lombok.val;
+import org.cardano.foundation.voting.domain.ChainNetwork;
 import org.cardano.foundation.voting.domain.TallyType;
 import org.cardano.foundation.voting.domain.VotingEventType;
 import org.cardano.foundation.voting.domain.VotingPowerAsset;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.cardano.foundation.voting.domain.web3.WalletType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
@@ -15,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 import org.zalando.problem.Problem;
 import org.zalando.problem.spring.common.HttpStatusAdapter;
 
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -22,12 +25,12 @@ import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
+@RequiredArgsConstructor
 @Component
 @Slf4j
 public class ChainFollowerClient {
 
-    @Autowired
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
 
     @Value("${ledger.follower.app.base.url}")
     private String ledgerFollowerBaseUrl;
@@ -39,7 +42,14 @@ public class ChainFollowerClient {
         var url = String.format("%s/api/tally/voting-results/{eventId}/{categoryId}/{tallyName}", ledgerFollowerBaseUrl);
 
         try {
-            return Either.right(restTemplate.getForObject(url, L1CategoryResults.class, eventId, categoryId, tallyName));
+            val l1CategoryResults = restTemplate.getForObject(url,
+                    L1CategoryResults.class,
+                    eventId,
+                    categoryId,
+                    tallyName
+            );
+
+            return Either.right(l1CategoryResults);
         } catch (HttpClientErrorException e) {
             return Either.left(Problem.builder()
                     .withTitle("CATEGORY_RESULTS_ERROR")
@@ -55,7 +65,12 @@ public class ChainFollowerClient {
         var url = String.format("%s/api/tally/voting-results/{eventId}/{tallyName}", ledgerFollowerBaseUrl);
 
         try {
-            return Either.right(Arrays.asList(restTemplate.getForObject(url, L1CategoryResults[].class, eventId, tallyName)));
+            val l1CategoryResults = restTemplate.getForObject(url, L1CategoryResults[].class, eventId, tallyName);
+            if (l1CategoryResults == null) {
+                return Either.right(List.of());
+            }
+
+            return Either.right(Arrays.asList(l1CategoryResults));
         } catch (HttpClientErrorException e) {
             return Either.left(Problem.builder()
                     .withTitle("CATEGORY_RESULTS_ERROR")
@@ -80,11 +95,20 @@ public class ChainFollowerClient {
         }
     }
 
-    public Either<Problem, Optional<AccountResponse>> findAccount(String eventName, String stakeAddress) {
-        var url = String.format("%s/api/account/{event}/{stakeAddress}", ledgerFollowerBaseUrl);
+    public Either<Problem, Optional<AccountResponse>> findAccount(String eventName,
+                                                                  WalletType walletType,
+                                                                  String walletId) {
+        var url = String.format("%s/api/account/{event}/{walletType}/{walletId}", ledgerFollowerBaseUrl);
 
         try {
-            return Either.right(Optional.ofNullable(restTemplate.getForObject(url, AccountResponse.class, eventName, stakeAddress)));
+            @Nullable
+            val accountResponse = restTemplate.getForObject(url, AccountResponse.class,
+                    eventName,
+                    walletType,
+                    walletId
+            );
+
+            return Either.right(Optional.ofNullable(accountResponse));
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == NOT_FOUND) {
                 return Either.right(Optional.empty());
@@ -104,7 +128,7 @@ public class ChainFollowerClient {
         try {
             var txResponse = restTemplate.getForObject(url, TransactionDetailsResponse.class, txHash);
 
-            return Either.right(Optional.of(txResponse));
+            return Either.right(Optional.ofNullable(txResponse));
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == NOT_FOUND) {
                 return Either.right(Optional.empty());
@@ -122,7 +146,10 @@ public class ChainFollowerClient {
         var url = String.format("%s/api/reference/event/{id}", ledgerFollowerBaseUrl);
 
         try {
-            return Either.right(Optional.ofNullable(restTemplate.getForObject(url, EventDetailsResponse.class, eventId)));
+            @Nullable
+            val eventDetailsResponse = restTemplate.getForObject(url, EventDetailsResponse.class, eventId);
+
+            return Either.right(Optional.ofNullable(eventDetailsResponse));
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == NOT_FOUND) {
                 return Either.right(Optional.empty());
@@ -214,13 +241,13 @@ public class ChainFollowerClient {
                                       String blockHash,
                                       long transactionsConfirmations,
                                       FinalityScore finalityScore,
-                                      CardanoNetwork network) {}
+                                      ChainNetwork network) {}
 
     public record ChainTipResponse(String hash,
                                    int epochNo,
-                                   int absoluteSlot,
+                                   long absoluteSlot,
                                    boolean synced,
-                                   CardanoNetwork network) {
+                                   ChainNetwork network) {
 
         public boolean isNotSynced() {
             return !synced;
@@ -229,7 +256,8 @@ public class ChainFollowerClient {
     }
 
     public record AccountResponse(
-                           String stakeAddress,
+                           WalletType walletType,
+                           String walletId,
                            int epochNo,
                            String votingPower,
                            VotingPowerAsset votingPowerAsset) { }

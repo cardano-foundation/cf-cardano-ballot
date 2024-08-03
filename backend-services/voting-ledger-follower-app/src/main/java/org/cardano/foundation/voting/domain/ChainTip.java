@@ -15,7 +15,7 @@ public class ChainTip {
 
     private int epochNo;
 
-    private CardanoNetwork network;
+    private ChainNetwork network;
 
     private boolean isSynced;
 

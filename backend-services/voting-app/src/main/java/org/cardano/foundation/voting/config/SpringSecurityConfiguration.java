@@ -1,7 +1,7 @@
 package org.cardano.foundation.voting.config;
 
 import org.cardano.foundation.voting.service.auth.jwt.JwtFilter;
-import org.cardano.foundation.voting.service.auth.web3.Web3Filter;
+import org.cardano.foundation.voting.service.auth.web3.Web3CardanoFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -35,7 +35,7 @@ public class SpringSecurityConfiguration {
     private JwtFilter jwtFilter;
 
     @Autowired
-    private Web3Filter web3Filter;
+    private Web3CardanoFilter web3CardanoFilter;
 
     @Value("${cors.allowed.origins:http://localhost:3000}")
     private String allowedUrls;
@@ -64,7 +64,7 @@ public class SpringSecurityConfiguration {
                 }))
                 .csrf(AbstractHttpConfigurer::disable)
 
-                .addFilterBefore(web3Filter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(web3CardanoFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 
                 .sessionManagement(AbstractHttpConfigurer::disable)

@@ -23,14 +23,15 @@ import org.slf4j.LoggerFactory;
 
 val mapper = new ObjectMapper()
 
-val orgMnemonic = "ENTER WALLET MNEMO HERE"
+val orgMnemonic = "test test test test test test test test test test test test test test test test test test test test test test test sauce"
 
-val organiserAccount = new Account(Networks.mainnet(), orgMnemonic)
+val organiserAccount = new Account(Networks.preprod(), orgMnemonic)
 
 val logger = LoggerFactory.getLogger(getClass());
 
 def signCIP30LoginEnvelope(): Unit = {
-    val lastSlot = latestAbsoluteSlot(mapper)
+    //val lastSlot = latestAbsoluteSlot(mapper)
+    val lastSlot = 40162406;
 
     if (lastSlot == -1) {
         logger.error("lastSlot error")
@@ -38,21 +39,28 @@ def signCIP30LoginEnvelope(): Unit = {
     }
 
     val stakeAddress = organiserAccount.stakeAddress()
+
     val stakeAddressAccount = new Address(stakeAddress)
 
     val inputJSON = s"""
-    {
-        "uri": "https://evoting.cardano.org/voltaire",
-        "action": "LOGIN",
-        "actionText": "Login",
-        "slot": "${lastSlot}",
-        "data": {
-            "address": "${stakeAddress}",
-            "event": "CF_SUMMIT_2023_TEST2",
-            "network": "MAIN",
-            "role": "VOTER"
-        }
-   }
+            {
+              "action": "CAST_VOTE",
+              "actionText": "Cast Vote",
+              "data": {
+                "id": "2658fb7d-cd12-48c3-bc95-23e73616b79f",
+                "walletId": "stake_test1uruw6wswag80sd0l57alehj47llf6tx96402vt8vks46k0q0e2ne6",
+                "walletType": "CARDANO",
+                "event": "CF_TEST_EVENT_01",
+                "category": "CHANGE_SOMETHING",
+                "proposal": "YES",
+                "network": "PREPROD",
+                "votedAt": "40262406",
+                "votingPower": "10444555666"
+              },
+              "slot": "40262406",
+              "uri": "https://evoting.cardano.org/voltaire"
+            }
+
 """.stripMargin
 
     println(inputJSON)
@@ -65,8 +73,9 @@ def signCIP30LoginEnvelope(): Unit = {
     );
 
     val output = s"""
-        X-CIP93-Signature: ${cip30Result.signature()}
-        X-CIP93-Public-Key: ${cip30Result.key()}
+        X-Login-Signature: ${cip30Result.signature()}
+        X-Login-Public-Key: ${cip30Result.key()}
+        X-Wallet-Type: "CARDANO"
 """.stripMargin
 
     println(output)
@@ -169,12 +178,16 @@ def signCIP30ViewVoteReceiptEnvelope(): Unit = {
 
 def latestAbsoluteSlot(mapper: ObjectMapper): Long = {
     val r = requests.get(
-        "https://follower-api.pro.cf-summit-2023-mainnet.eu-west-1.voting.summit.cardano.org/yaci-api/blocks/latest",
-        headers = Map("Content-Type" -> "application/json")
+        "https://cardano-preprod.blockfrost.io/api/v0/blocks/latest",
+        headers = Map
+            (
+            "Content-Type" -> "application/json",
+            "project_id" -> "preprodTkCORBc752YRMKxBPw83zybOuRNelcP7"
+            )
     )
 
     if (r.statusCode == 200) {
-        val body = r.text
+        val body = r.text()
         val tree = mapper.readTree(body);
 
         val slot = tree.get("slot").asLong()

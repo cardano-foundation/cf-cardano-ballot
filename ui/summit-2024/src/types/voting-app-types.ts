@@ -141,14 +141,14 @@ export interface JwtLoginEnvelope {
 }
 
 export interface SignedKeriRequest {
-  keriSignedMessage: string;
-  keriPayload: string;
+  signature: string;
+  payload: string;
   oobi: string;
 }
 
 export interface SignedWeb3Request {
-  coseSignature: string;
-  cosePublicKey?: string;
+  signature: string;
+  publicKey?: string;
 }
 
 export interface SignedWeb3RequestBuilder {}

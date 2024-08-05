@@ -88,7 +88,7 @@ export const confirmPhoneNumberCode = async (
 export const verifyDiscord = async (
   walletIdentifier: string,
   secret: string,
-  signedMessaged: SignedKeriRequest | SignedWeb3Request,
+  signedMessagedEnvelope: SignedKeriRequest | SignedWeb3Request
 ) => {
   return await doRequest<{ verified: boolean }>(
     HttpMethods.POST,
@@ -101,7 +101,7 @@ export const verifyDiscord = async (
       walletId: walletIdentifier,
       walletType: resolveWalletType(walletIdentifier),
       secret,
-      ...signedMessaged,
+      ...signedMessagedEnvelope
     }),
   );
 };

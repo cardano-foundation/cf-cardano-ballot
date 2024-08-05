@@ -158,7 +158,7 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
               }}
               className="menu-button last-button"
               color="inherit"
-              onClick={onDisconnectWallet}
+              onClick={() => onDisconnectWallet()}
             >
               <ListItemText primary="Logout" />
               <ListItemIcon sx={{ minWidth: "auto" }}>

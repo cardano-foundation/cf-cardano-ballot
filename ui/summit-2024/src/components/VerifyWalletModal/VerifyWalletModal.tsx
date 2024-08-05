@@ -205,6 +205,7 @@ const VerifyWalletModal = () => {
       parsedSecret,
       // @ts-ignore
       signedMessageResult.result,
+        inputSecret.trim()
     );
 
     if ("error" in verifyDiscordResult && verifyDiscordResult.error) {

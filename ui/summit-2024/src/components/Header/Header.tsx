@@ -228,7 +228,7 @@ const Header = () => {
                   onOpenConnectWalletModal={handleConnectWalletModal}
                   onOpenVerifyWalletModal={handleOpenVerify}
                   onLogin={handleLogin}
-                  onDisconnectWallet={onDisconnectWallet}
+                  onDisconnectWallet={() => onDisconnectWallet()}
                 />
 
                 {isPortrait ? (

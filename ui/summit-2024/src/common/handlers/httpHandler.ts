@@ -244,9 +244,13 @@ export const doRequest = async <T>(
 ) => {
   const allHeaders = { ...headers, ...DEFAULT_CONTENT_TYPE_HEADERS };
 
+  console.log("body");
+  console.log(body);
   if (body && bodyInHeader) {
-    allHeaders["X-CIP93-Signature"] = JSON.parse(body).coseSignature;
-    allHeaders["X-CIP93-Public-Key"] = JSON.parse(body).cosePublicKey;
+    allHeaders["X-Login-Signature"] = JSON.parse(body).signature;
+    allHeaders["X-Login-Public-Key"] = JSON.parse(body).publicKey;
+    allHeaders["X-Login-Payload"] = JSON.parse(body).payload;
+    allHeaders["X-Wallet-Type"] = JSON.parse(body).walletType;
     body = undefined;
   }
 

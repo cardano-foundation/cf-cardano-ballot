@@ -43,12 +43,12 @@ const AppWrapper = (props: { children: ReactNode }) => {
   useEffect(() => {
     if (stakeAddress && enabledWallet) {
       dispatch(
-          setConnectedWallet({
-            address: stakeAddress,
-            name: enabledWallet,
-            icon: window.cardano[enabledWallet].icon,
-            version: window.cardano[enabledWallet].version,
-          }),
+        setConnectedWallet({
+          address: stakeAddress,
+          name: enabledWallet,
+          icon: window.cardano[enabledWallet].icon,
+          version: window.cardano[enabledWallet].version,
+        }),
       );
     }
   }, [stakeAddress]);

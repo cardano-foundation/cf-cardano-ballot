@@ -1,12 +1,12 @@
-import {useCallback, useMemo, useState} from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 import { WalletIdentifierType } from "../api/utils";
-import { Buffer } from 'buffer';
+import { Buffer } from "buffer";
 import {
   SignedKeriRequest,
   SignedWeb3Request,
 } from "../../types/voting-app-types";
-import {getSignedMessagePromise} from "../../utils/utils";
+import { getSignedMessagePromise } from "../../utils/utils";
 
 interface SignResponse {
   success: boolean;
@@ -19,7 +19,10 @@ export const useSignatures = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const signMessagePromisified = useMemo(() => getSignedMessagePromise(signMessage), [signMessage]);
+  const signMessagePromisified = useMemo(
+    () => getSignedMessagePromise(signMessage),
+    [signMessage],
+  );
 
   const signWithWallet = useCallback(
     async (
@@ -51,7 +54,7 @@ export const useSignatures = () => {
             result: {
               signature: signedMessage,
               publicKey: keriIdentifier.id,
-              payload: Buffer.from(message, 'utf8').toString('hex'),
+              payload: Buffer.from(message, "utf8").toString("hex"),
               oobi: keriIdentifier.oobi,
             },
           };
@@ -63,7 +66,7 @@ export const useSignatures = () => {
             result: {
               signature: signedMessage.signature,
               publicKey: signedMessage.publicKey,
-              payload: Buffer.from(message, 'utf8').toString('hex'),
+              payload: Buffer.from(message, "utf8").toString("hex"),
             },
           };
         }

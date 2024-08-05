@@ -12,9 +12,7 @@ import { ConnectWalletProps } from "./ConnectWalletModal.type";
 import { eventBus, EventName } from "../../utils/EventBus";
 import { useIsPortrait } from "../../common/hooks/useIsPortrait";
 import { useAppDispatch } from "../../store/hooks";
-import {
-  setConnectedWallet
-} from "../../store/reducers/userCache";
+import { setConnectedWallet } from "../../store/reducers/userCache";
 import { ToastType } from "../common/Toast/Toast.types";
 import { initialConnectedWallet } from "../../store/reducers/userCache/initialState";
 
@@ -85,7 +83,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
 
       const onApiInject = async (name: string) => {
         console.log("onApiInject");
-        console.log(name)
+        console.log(name);
         if (name === "idw_p2p") {
           const api = window.cardano && window.cardano[name];
           if (api) {
@@ -157,9 +155,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
         console.log("onP2PConnect");
         console.log(peerConnectWalletInfo);
         if (peerConnectWalletInfo?.address) {
-          dispatch(
-              setConnectedWallet(peerConnectWalletInfo),
-          );
+          dispatch(setConnectedWallet(peerConnectWalletInfo));
         }
       };
 
@@ -213,10 +209,12 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
                 const enabledApi = await api.enable();
                 const keriIdentifier =
                   await enabledApi.experimental.getKeriIdentifier();
-                dispatch(setConnectedWallet({
-                  ...peerConnectWalletInfo,
-                  address: keriIdentifier.id
-                }));
+                dispatch(
+                  setConnectedWallet({
+                    ...peerConnectWalletInfo,
+                    address: keriIdentifier.id,
+                  }),
+                );
               } else {
                 eventBus.publish(
                   EventName.ShowToast,
@@ -224,11 +222,11 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
                   ToastType.Error,
                 );
               }
-              props.handleCloseConnectWalletModal();
+              handleModalClose();
             }
           }, interval);
         } else {
-          props.handleCloseConnectWalletModal();
+          handleModalClose();
         }
       });
     }
@@ -239,7 +237,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
     setTimeout(() => {
       setConnectCurrentPaths([ConnectWalletFlow.SELECT_WALLET]);
     }, 500);
-  }
+  };
 
   const getModalProps = () => {
     switch (connectCurrentPaths[0]) {

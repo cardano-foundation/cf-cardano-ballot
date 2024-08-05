@@ -144,6 +144,8 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   };
 
   const submitVote = async () => {
+
+    console.log("submitVote");
     if (eventCache?.finished) {
       eventBus.publish(EventName.ShowToast, "The event already ended", "error");
       return;
@@ -151,6 +153,11 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
 
     const categoryId = categoryToRender?.id;
     const proposalId = nomineeToVote?.id;
+
+    console.log("categoryId");
+    console.log(categoryId);
+    console.log("proposalId");
+    console.log(proposalId);
 
     if (!categoryId || !proposalId) {
       eventBus.publish(EventName.ShowToast, "Nominee not selected", "error");
@@ -160,6 +167,8 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
     try {
       // @ts-ignore
       const absoluteSlot = (await getSlotNumber())?.absoluteSlot;
+      console.log("absoluteSlot");
+      console.log(absoluteSlot);
       const canonicalVoteInput = buildCanonicalVoteInputJson({
         voteId: uuidv4(),
         categoryId: categoryId,
@@ -169,13 +178,15 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
         slotNumber: absoluteSlot.toString(),
       });
 
+      console.log("canonicalVoteInput");
+      console.log(canonicalVoteInput);
+
       const requestVoteResult = await signWithWallet(
         canonicalVoteInput,
-          connectedWallet.address,
+        connectedWallet.address,
         resolveWalletType(connectedWallet.address),
       );
 
-      console.log();
       if (!requestVoteResult.success) {
         eventBus.publish(
           EventName.ShowToast,
@@ -185,18 +196,22 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
         return;
       }
 
-      // TODO: tmp
-      setOpenVotingModal(false);
-      return;
+      console.log("requestVoteResult");
+      console.log(requestVoteResult);
+
       const submitVoteResult = await submitVoteWithDigitalSignature(
         // @ts-ignore
         requestVoteResult.result,
+        resolveWalletType(connectedWallet.address)
       );
+      console.log("submitVoteResult");
+      console.log(submitVoteResult);
+
       // @ts-ignore
-      if (!submitVoteResult.error) {
+      if ("error" in submitVoteResult && submitVoteResult.error && "message" in submitVoteResult) {
         eventBus.publish(
           EventName.ShowToast,
-          "Error while signing",
+            submitVoteResult.message || "Error while voting",
           ToastType.Error,
         );
         return;
@@ -243,6 +258,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
           "Login to see your vote receipt.",
         );
       }
+      setOpenVotingModal(false);
     } catch (e) {
       eventBus.publish(
         EventName.ShowToast,

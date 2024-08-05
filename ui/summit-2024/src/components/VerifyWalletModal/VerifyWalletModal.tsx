@@ -33,10 +33,10 @@ import { CustomCheckBox } from "../common/CustomCheckBox/CustomCheckBox";
 import { validatePhoneNumberLength } from "libphonenumber-js";
 import { eventBus, EventName } from "../../utils/EventBus";
 import {
-    getConnectedWallet,
-    getVerificationStarted,
-    setVerificationStarted,
-    setWalletIsVerified,
+  getConnectedWallet,
+  getVerificationStarted,
+  setVerificationStarted,
+  setWalletIsVerified,
 } from "../../store/reducers/userCache";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { VerificationStarted } from "../../store/reducers/userCache/userCache.types";
@@ -50,7 +50,7 @@ import { useSignatures } from "../../common/hooks/useSignatures";
 const excludedCountries: MuiTelInputCountry[] | undefined = [];
 
 const VerifyWalletModal = () => {
-    const connectedWallet = useAppSelector(getConnectedWallet);
+  const connectedWallet = useAppSelector(getConnectedWallet);
   const dispatch = useAppDispatch();
 
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -141,7 +141,7 @@ const VerifyWalletModal = () => {
           handleSetCurrentPath(VerifyWalletFlow.CONFIRM_CODE);
           dispatch(
             setVerificationStarted({
-                walletIdentifier: connectedWallet.address,
+              walletIdentifier: connectedWallet.address,
               ...response,
             }),
           );
@@ -158,7 +158,7 @@ const VerifyWalletModal = () => {
   const handleVerifyPhoneCode = () => {
     setPhoneCodeIsBeenConfirming(true);
     confirmPhoneNumberCode(
-        connectedWallet.address,
+      connectedWallet.address,
       phone.trim().replace(" ", ""),
       userVerificationStarted.requestId,
       codes.join(""),
@@ -192,10 +192,10 @@ const VerifyWalletModal = () => {
   };
 
   const handleVerifyDiscord = async () => {
-      setEnableSignDiscordSecret(false);
+    setEnableSignDiscordSecret(false);
     const signedMessageResult = await signWithWallet(
       inputSecret.trim(),
-        connectedWallet.address,
+      connectedWallet.address,
       resolveWalletType(connectedWallet.address),
     );
 
@@ -205,10 +205,10 @@ const VerifyWalletModal = () => {
     }
     const parsedSecret = inputSecret.split("|")[1];
     const verifyDiscordResult = await verifyDiscord(
-        connectedWallet.address,
+      connectedWallet.address,
       parsedSecret,
       // @ts-ignore
-      signedMessageResult.result
+      signedMessageResult.result,
     );
 
     if ("error" in verifyDiscordResult && verifyDiscordResult.error) {
@@ -827,7 +827,10 @@ const VerifyWalletModal = () => {
           colorVariant="primary"
           onClick={() => handleVerifyDiscord()}
           disabled={
-              enableSignDiscordSecret || isLoading || inputSecret === "" || !validateSecret(inputSecret)
+            !enableSignDiscordSecret ||
+            isLoading ||
+            inputSecret === "" ||
+            !validateSecret(inputSecret)
           }
           sx={{
             width: "100%",

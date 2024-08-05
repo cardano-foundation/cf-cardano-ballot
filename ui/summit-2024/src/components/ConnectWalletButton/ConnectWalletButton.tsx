@@ -46,7 +46,7 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
   const isExpired = tokenIsExpired(session?.expiresAt);
 
   const handleConnectWallet = () => {
-    if (!connectedWallet.address || !connectedWallet.address .length) {
+    if (!connectedWallet.address || !connectedWallet.address.length) {
       onOpenConnectWalletModal();
     }
   };
@@ -64,12 +64,14 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
       <Button
         sx={{ zIndex: "99", padding: isMobile ? "10px 10px" : "16px 20px" }}
         className={`main-button ${
-            connectedWallet.address ?.length ? "connected-button" : "connect-button"
+          connectedWallet.address?.length
+            ? "connected-button"
+            : "connect-button"
         }`}
         color="inherit"
         onClick={() => handleConnectWallet()}
       >
-        {connectedWallet.address ?.length ? (
+        {connectedWallet.address?.length ? (
           <Avatar
             src={connectedWallet.icon}
             style={{ width: "24px", height: "24px" }}
@@ -77,12 +79,12 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
         ) : (
           <AccountBalanceWalletIcon />
         )}
-        {connectedWallet.address ?.length ? (
+        {connectedWallet.address?.length ? (
           <>
             {isMobile
               ? null
               : connectedWallet.address
-                    ? addressSlice(connectedWallet.address , 5)
+                ? addressSlice(connectedWallet.address, 5)
                 : null}
             {walletIsVerified ? (
               <VerifiedIcon
@@ -101,7 +103,7 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
           <>{props.label?.length ? <span>{props.label}</span> : null}</>
         )}
       </Button>
-      {connectedWallet.address ?.length ? (
+      {connectedWallet.address?.length ? (
         <Box
           component="div"
           className="disconnect-wrapper"

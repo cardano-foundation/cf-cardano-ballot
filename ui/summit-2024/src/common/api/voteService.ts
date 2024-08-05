@@ -34,6 +34,7 @@ export const buildCanonicalVoteInputJson = ({
   categoryId,
   proposalId,
   walletId,
+  walletType,
   slotNumber,
 }: voteInput): ReturnType<typeof canonicalize> => {
   const startOfCurrentDay = new Date();
@@ -45,6 +46,7 @@ export const buildCanonicalVoteInputJson = ({
     data: {
       id: voteId,
       walletId: walletId,
+      walletType: walletType,
       event: env.EVENT_ID,
       category: categoryId,
       proposal: proposalId,
@@ -55,15 +57,21 @@ export const buildCanonicalVoteInputJson = ({
   });
 };
 
-const submitVoteWithDigitalSignature = async (jsonRequest: SignedWeb3Request) =>
-  await doRequest<Problem | Vote>(
-    HttpMethods.POST,
-    CAST_VOTE_URL,
-    DEFAULT_CONTENT_TYPE_HEADERS,
-    JSON.stringify(jsonRequest),
-    undefined,
-    true,
+const submitVoteWithDigitalSignature = async (jsonRequest: SignedWeb3Request, walletType: string) => {
+  console.log("jsonRequest");
+  console.log(jsonRequest);
+  return await doRequest<Problem | Vote>(
+      HttpMethods.POST,
+      CAST_VOTE_URL,
+      DEFAULT_CONTENT_TYPE_HEADERS,
+      JSON.stringify({
+        ...jsonRequest,
+        walletType
+      }),
+      undefined,
+      true,
   );
+}
 
 const getSlotNumber = async () => {
   return await doRequest<ChainTip>(

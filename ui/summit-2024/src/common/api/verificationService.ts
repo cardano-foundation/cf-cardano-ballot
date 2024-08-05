@@ -36,7 +36,7 @@ export const verifyVote = async (payload: {
 export const getIsVerified = async (walletIdentifier: string) => {
   return await doRequest<{ verified: boolean }>(
     HttpMethods.GET,
-    `${USER_VERIFICATION_URL}/${env.EVENT_ID}/${walletIdentifier}`,
+    `${USER_VERIFICATION_URL}/${env.EVENT_ID}/${resolveWalletType(walletIdentifier)}/${walletIdentifier}`,
     {
       ...DEFAULT_CONTENT_TYPE_HEADERS,
     },
@@ -88,7 +88,7 @@ export const confirmPhoneNumberCode = async (
 export const verifyDiscord = async (
   walletIdentifier: string,
   secret: string,
-  signedMessagedEnvelope: SignedKeriRequest | SignedWeb3Request
+  signedMessagedEnvelope: SignedKeriRequest | SignedWeb3Request,
 ) => {
   return await doRequest<{ verified: boolean }>(
     HttpMethods.POST,
@@ -101,7 +101,7 @@ export const verifyDiscord = async (
       walletId: walletIdentifier,
       walletType: resolveWalletType(walletIdentifier),
       secret,
-      ...signedMessagedEnvelope
+      ...signedMessagedEnvelope,
     }),
   );
 };

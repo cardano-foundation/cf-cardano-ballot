@@ -35,8 +35,8 @@ public class DefaultAccountService implements AccountService {
     public Either<Problem, Account> findAccount(String eventName, WalletType walletType, String walletId) {
         if (walletType == WalletType.KERI) {
             return Either.left(Problem.builder()
-                    .withTitle("KERI_NOT_SUPPORED")
-                    .withDetail("Only Cardano wallet type supported for account / balance queries are supported.")
+                    .withTitle("KERI_NOT_SUPPORTED")
+                    .withDetail("Only Cardano wallet type supported for account / balance queries is supported.")
                     .withStatus(BAD_REQUEST)
                     .build()
             );

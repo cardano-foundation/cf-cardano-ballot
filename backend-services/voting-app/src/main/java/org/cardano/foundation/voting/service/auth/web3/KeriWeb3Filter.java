@@ -77,7 +77,7 @@ public class KeriWeb3Filter extends OncePerRequestFilter {
         if (headerSignatureM.isEmpty()) {
             val problem = Problem.builder()
                     .withTitle("NO_LOGIN_HTTP_HEADERS_SET")
-                    .withDetail("X_Login_Signature http headers must be set.")
+                    .withDetail(X_Login_Signature + " http header must be set.")
                     .withStatus(BAD_REQUEST)
                     .build();
 
@@ -87,7 +87,7 @@ public class KeriWeb3Filter extends OncePerRequestFilter {
         if (headerPayloadM.isEmpty()) {
             val problem = Problem.builder()
                     .withTitle("NO_LOGIN_HTTP_HEADERS_SET")
-                    .withDetail("X_Login_Payload http headers must be set.")
+                    .withDetail(X_Login_Payload + "http header must be set.")
                     .withStatus(BAD_REQUEST)
                     .build();
 
@@ -97,7 +97,7 @@ public class KeriWeb3Filter extends OncePerRequestFilter {
         if (headerAidM.isEmpty()) {
             val problem = Problem.builder()
                     .withTitle("NO_LOGIN_HTTP_HEADERS_SET")
-                    .withDetail("X_Login_PublicKey http headers must be set.")
+                    .withDetail(X_Login_PublicKey + " http header must be set.")
                     .withStatus(BAD_REQUEST)
                     .build();
 
@@ -105,10 +105,10 @@ public class KeriWeb3Filter extends OncePerRequestFilter {
             return;
         }
         val headerSignature = headerSignatureM.orElseThrow();
-        val headerPayload = new String(decodeHexString(headerPayloadM.orElseThrow()));
+        val headerSignedJson = new String(decodeHexString(headerPayloadM.orElseThrow()));
         val headerAid = headerAidM.orElseThrow();
 
-        val keriVerificationResultE = keriVerificationClient.verifySignature(headerAid, headerSignature, headerPayload);
+        val keriVerificationResultE = keriVerificationClient.verifySignature(headerAid, headerSignature, headerSignedJson);
         if (keriVerificationResultE.isEmpty()) {
             val problem = Problem.builder()
                     .withTitle("KERI_SIGNATURE_VERIFICATION_FAILED")
@@ -120,7 +120,7 @@ public class KeriWeb3Filter extends OncePerRequestFilter {
             return;
         }
 
-        val keriEnvelopeE = jsonService.decodeGenericKeri(headerPayload);
+        val keriEnvelopeE = jsonService.decodeGenericKeri(headerSignedJson);
         if (keriEnvelopeE.isEmpty()) {
             log.info("Invalid KERI envelope!");
 
@@ -314,7 +314,7 @@ public class KeriWeb3Filter extends OncePerRequestFilter {
 
         val eventDetails = eventDetailsM.orElseThrow();
 
-        val signedKERI = new SignedKERI(headerSignature, headerPayload, headerAid);
+        val signedKERI = new SignedKERI(headerSignature, headerSignedJson, headerAid);
 
         val web3Details = Web3CommonDetails.builder()
                 .event(eventDetails)
@@ -329,6 +329,7 @@ public class KeriWeb3Filter extends OncePerRequestFilter {
                 .web3CommonDetails(web3Details)
                 .signedKERI(signedKERI)
                 .envelope(genericEnvelope)
+                //.signedJson(headerSignedJson)
                 .build();
 
         val authentication = new Web3AuthenticationToken(keriDetails, List.of(new SimpleGrantedAuthority(VOTER.name())));

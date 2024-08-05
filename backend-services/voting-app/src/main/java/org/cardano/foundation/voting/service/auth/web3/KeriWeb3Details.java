@@ -18,8 +18,6 @@ public class KeriWeb3Details implements Web3ConcreteDetails {
 
     private SignedKERI signedKERI;
 
-    private String signedJson;
-
     private KERIEnvelope<Map<String, Object>> envelope;
 
     public String getUri() {
@@ -53,7 +51,7 @@ public class KeriWeb3Details implements Web3ConcreteDetails {
 
     @Override
     public String getSignedJson() {
-        return signedJson;
+         return signedKERI.getPayload();
     }
 
 }

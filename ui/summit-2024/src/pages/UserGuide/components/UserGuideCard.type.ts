@@ -10,4 +10,4 @@ interface CustomCardProps {
     | undefined;
 }
 
-export { CustomCardProps };
+export type { CustomCardProps };

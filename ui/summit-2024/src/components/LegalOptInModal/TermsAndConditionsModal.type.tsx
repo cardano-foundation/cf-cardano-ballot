@@ -51,7 +51,7 @@ interface TermsData {
   };
 }
 
-export {
+export type {
   Definition,
   ExtraDetails,
   Subsection,

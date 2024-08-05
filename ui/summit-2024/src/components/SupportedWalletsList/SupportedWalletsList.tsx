@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Avatar,
   IconButton,
@@ -11,8 +10,8 @@ import {
 import InstallDesktopIcon from "@mui/icons-material/InstallDesktop";
 import "./SupportedWalletsList.scss";
 import { openNewTab, resolveCardanoNetwork } from "../../utils/utils";
-import { env } from "common/constants/env";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
+import { env } from "../../common/constants/env";
 
 type ConnectWalletModalProps = {
   description: string;

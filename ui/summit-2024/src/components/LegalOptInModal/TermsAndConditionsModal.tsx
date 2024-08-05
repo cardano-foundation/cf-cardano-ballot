@@ -38,7 +38,7 @@ const TermsAndConditionsModal = () => {
   const renderContent = () => {
     const renderListItems = (list: List[]) =>
       list.map((item, index) => (
-        <Box key={index} sx={{ mt: 1 }}>
+        <Box component="div" key={index} sx={{ mt: 1 }}>
           <Typography
             sx={{
               color: theme.palette.text.neutralLight,
@@ -106,7 +106,7 @@ const TermsAndConditionsModal = () => {
                   />
                 ))}
                 {section.subsections?.map((subsection, sIndex) => (
-                  <Box key={sIndex} sx={{ mt: 2 }}>
+                  <Box component="div" key={sIndex} sx={{ mt: 2 }}>
                     <Typography
                       sx={{
                         color: theme.palette.text.neutralLightest,
@@ -133,7 +133,7 @@ const TermsAndConditionsModal = () => {
                     ))}
                     {subsection.definitions &&
                       Object.entries(subsection.definitions).map(
-                        ([key, value], dIndex) => (
+                        ([_, value], dIndex) => (
                           <Typography
                             key={dIndex}
                             sx={{
@@ -152,7 +152,7 @@ const TermsAndConditionsModal = () => {
               </Box>
             ))}
             {termsData.terms.map((termSection, index) => (
-              <Box key={index} sx={{ mt: 4 }}>
+              <Box component="div" key={index} sx={{ mt: 4 }}>
                 <Typography
                   sx={{
                     color: theme.palette.text.neutralLightest,
@@ -170,7 +170,7 @@ const TermsAndConditionsModal = () => {
 
             {/* Disclaimer Section */}
             {termsData.disclaimer && (
-              <Box sx={{ mt: 4 }}>
+              <Box component="div" sx={{ mt: 4 }}>
                 <Typography
                   sx={{
                     color: theme.palette.text.neutralLightest,
@@ -200,7 +200,7 @@ const TermsAndConditionsModal = () => {
 
             {/* Liability Section */}
             {termsData.liability && (
-              <Box sx={{ mt: 4 }}>
+              <Box component="div" sx={{ mt: 4 }}>
                 <Typography
                   sx={{
                     color: theme.palette.text.neutralLightest,
@@ -230,7 +230,7 @@ const TermsAndConditionsModal = () => {
 
             {/* Miscellaneous Section */}
             {termsData.miscellaneous && (
-              <Box sx={{ mt: 4 }}>
+              <Box component="div" sx={{ mt: 4 }}>
                 <Typography
                   sx={{
                     color: theme.palette.text.neutralLightest,
@@ -248,7 +248,7 @@ const TermsAndConditionsModal = () => {
 
             {/* Contact Us Section */}
             {termsData.contactus && (
-              <Box sx={{ mt: 4 }}>
+              <Box component="div" sx={{ mt: 4 }}>
                 <Typography
                   sx={{
                     color: theme.palette.text.neutralLightest,
@@ -279,7 +279,7 @@ const TermsAndConditionsModal = () => {
       }
       case 1: {
         const renderExtras = (extras: ExtraDetails) => {
-          return Object.entries(extras).map(([key, value], index) => (
+          return Object.entries(extras).map(([_, value], index) => (
             <Typography
               key={index}
               sx={{
@@ -335,7 +335,7 @@ const TermsAndConditionsModal = () => {
             ))}
 
             {privacyData.sections.map((section, index) => (
-              <Box key={index} sx={{ mt: 2 }}>
+              <Box component="div" key={index} sx={{ mt: 2 }}>
                 <Typography
                   sx={{
                     color: theme.palette.text.neutralLightest,
@@ -351,7 +351,7 @@ const TermsAndConditionsModal = () => {
 
                 {section.subsections.map((subsection, subIndex) => (
                   // TODO: contact subsection styles
-                  <Box key={subIndex} sx={{ mt: 1 }}>
+                  <Box component="div" key={subIndex} sx={{ mt: 1 }}>
                     <Typography
                       sx={{
                         color: theme.palette.text.neutralLightest,
@@ -394,6 +394,7 @@ const TermsAndConditionsModal = () => {
     <Dialog
       open={!termsAndConditionsChecked}
       keepMounted
+      // @ts-ignore
       disableBackdropClick
       onClose={() => setTermsAndConditionsChecked(false)}
       scroll={"paper"}
@@ -430,6 +431,7 @@ const TermsAndConditionsModal = () => {
         }}
       >
         <Box
+          component="div"
           sx={{
             display: "flex",
             alignItems: "center",
@@ -450,6 +452,7 @@ const TermsAndConditionsModal = () => {
         </Box>
 
         <Box
+          component="div"
           sx={{
             display: "flex",
             flexDirection: { xs: "column", sm: "row" },

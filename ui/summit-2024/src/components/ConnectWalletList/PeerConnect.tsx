@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Avatar,
   Box,
@@ -9,7 +8,6 @@ import {
   ListItemAvatar,
   Typography,
 } from "@mui/material";
-import PhonelinkRingIcon from "@mui/icons-material/PhonelinkRing";
 import OpenInNewOutlinedIcon from "@mui/icons-material/OpenInNewOutlined";
 import QrCodeOutlinedIcon from "@mui/icons-material/QrCodeOutlined";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
@@ -27,8 +25,7 @@ type PeerConnectProps = {
 const SUPPORTED_WALLETS = env.SUPPORTED_WALLETS;
 
 const PeerConnect = (props: PeerConnectProps) => {
-  const { description, onConnectWallet, onConnectError, onOpenPeerConnect } =
-    props;
+  const { description, onConnectWallet, onConnectError } = props;
   const { installedExtensions, connect } = useCardano({
     limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
   });
@@ -75,7 +72,10 @@ const PeerConnect = (props: PeerConnectProps) => {
           }}
           onClick={() => connect("", onConnectWallet, onConnectError)}
         >
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          <Box
+            component="div"
+            sx={{ display: "flex", alignItems: "center", gap: 2 }}
+          >
             <ListItemAvatar>
               <Avatar src={IDWLogo} sx={{ width: 24, height: 24 }} />
             </ListItemAvatar>
@@ -128,7 +128,10 @@ const PeerConnect = (props: PeerConnectProps) => {
                 connect(walletName, onConnectWallet, onConnectError)
               }
             >
-              <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <Box
+                component="div"
+                sx={{ display: "flex", alignItems: "center", gap: 2 }}
+              >
                 <ListItemAvatar>
                   <Avatar
                     src={walletIcon(walletName)}

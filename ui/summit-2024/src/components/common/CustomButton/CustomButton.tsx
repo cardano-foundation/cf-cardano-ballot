@@ -61,8 +61,8 @@ const CustomButton: React.FC<CustomButtonProps> = ({
     ...(disabled
       ? disabledStyles
       : colorVariant === "primary"
-      ? getPrimaryStyles()
-      : getSecondaryStyles()),
+        ? getPrimaryStyles()
+        : getSecondaryStyles()),
   };
 
   const combinedSx = [defaultStyles, ...(Array.isArray(sx) ? sx : [sx])];

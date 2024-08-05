@@ -8,7 +8,6 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import theme from "../../common/styles/theme";
-import { ROUTES } from "../../routes";
 
 type MenuItem = {
   label: string;

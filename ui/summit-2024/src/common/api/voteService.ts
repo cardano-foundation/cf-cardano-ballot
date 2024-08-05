@@ -80,7 +80,7 @@ const getVoteReceipt = async (categoryId: string, token: string) =>
     {
       ...DEFAULT_CONTENT_TYPE_HEADERS,
     },
-    null,
+    undefined,
     token,
   );
 
@@ -91,7 +91,7 @@ const getUserVotes = async (token: string) =>
     {
       ...DEFAULT_CONTENT_TYPE_HEADERS,
     },
-    null,
+    undefined,
     token,
   );
 

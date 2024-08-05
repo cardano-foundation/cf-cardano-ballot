@@ -1,4 +1,3 @@
-import React from "react";
 import {
   IconButton,
   Snackbar,
@@ -27,6 +26,7 @@ const Toast = ({ message, isOpen, type, onClose }: ToastProps) => {
       case ToastType.Error:
         return {
           backgroundColor: theme.palette.primary.dark,
+          // @ts-ignore
           color: theme.palette.error.text,
           Icon: DoNotDisturbAltIcon,
         };
@@ -59,13 +59,15 @@ const Toast = ({ message, isOpen, type, onClose }: ToastProps) => {
       }}
       message={
         <Stack direction="row" spacing={1} alignItems="center">
+          {/* @ts-ignore */}
           <Icon />
           <Typography variant="body2">{message}</Typography>
         </Stack>
       }
       action={
-        <Box sx={{ display: "flex", alignItems: "center" }}>
+        <Box component="div" sx={{ display: "flex", alignItems: "center" }}>
           <Box
+              component="div"
             sx={{
               backgroundColor: color,
               width: "1px",

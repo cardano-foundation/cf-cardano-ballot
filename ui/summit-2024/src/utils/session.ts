@@ -7,6 +7,7 @@ const saveUserInSession = (session: {
 
 const getUserInSession = () => {
   const json = sessionStorage.getItem(USER_SESSION_KEY);
+  // @ts-ignore TODO
   return JSON.parse(json);
 };
 

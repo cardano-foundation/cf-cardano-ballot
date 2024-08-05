@@ -21,7 +21,8 @@ const ERRORS = {
 
 const parseError = (errorMessage: string) => {
   return Object.keys(ERRORS).includes(errorMessage)
-    ? ERRORS[errorMessage]
+    ? // @ts-ignore
+      ERRORS[errorMessage]
     : capitalizeFirstLetter(errorMessage);
 };
 

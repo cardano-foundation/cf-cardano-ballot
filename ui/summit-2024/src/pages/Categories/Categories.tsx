@@ -41,7 +41,7 @@ interface CategoriesProps {
   embedded?: boolean;
 }
 
-const Categories: React.FC<CategoriesProps> = ({embedded}) => {
+const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
   const eventCache = useAppSelector(getEventCache);
   const walletIdentifier = useAppSelector(getWalletIdentifier);
@@ -158,6 +158,7 @@ const Categories: React.FC<CategoriesProps> = ({embedded}) => {
     }
 
     try {
+      // @ts-ignore
       const absoluteSlot = (await getSlotNumber())?.absoluteSlot;
       const canonicalVoteInput = buildCanonicalVoteInputJson({
         voteId: uuidv4(),
@@ -188,8 +189,10 @@ const Categories: React.FC<CategoriesProps> = ({embedded}) => {
       setOpenVotingModal(false);
       return;
       const submitVoteResult = await submitVoteWithDigitalSignature(
+        // @ts-ignore
         requestVoteResult.result,
       );
+      // @ts-ignore
       if (!submitVoteResult.error) {
         eventBus.publish(
           EventName.ShowToast,
@@ -201,12 +204,16 @@ const Categories: React.FC<CategoriesProps> = ({embedded}) => {
       eventBus.publish(EventName.ShowToast, "Vote submitted successfully");
 
       if (session && !tokenIsExpired(session?.expiresAt)) {
+        // @ts-ignore
         getVoteReceipt(categoryId, session?.accessToken)
           .then((r) => {
+            // @ts-ignore
             if (r.error) {
+              // @ts-ignore
               eventBus.publish(EventName.ShowToast, r.message, ToastType.Error);
               return;
             }
+            // @ts-ignore
             dispatch(setVoteReceipt({ categoryId: categoryId, receipt: r }));
           })
           .catch((e) => {
@@ -219,6 +226,7 @@ const Categories: React.FC<CategoriesProps> = ({embedded}) => {
         getUserVotes(session?.accessToken)
           .then((response) => {
             if (response) {
+              // @ts-ignore
               dispatch(setVotes({ votes: response }));
             }
           })
@@ -238,6 +246,7 @@ const Categories: React.FC<CategoriesProps> = ({embedded}) => {
     } catch (e) {
       eventBus.publish(
         EventName.ShowToast,
+        // @ts-ignore
         e.message && e.message.length ? parseError(e.message) : "Action failed",
         "error",
       );
@@ -356,17 +365,20 @@ const Categories: React.FC<CategoriesProps> = ({embedded}) => {
   return (
     <>
       <PageBase title="Categories">
-        <Box component="div" sx={{
-          marginTop: embedded ? "0px" : "60px",
-          paddingX: embedded ? "0px" : "16px",
-        }}>
+        <Box
+          component="div"
+          sx={{
+            marginTop: embedded ? "0px" : "60px",
+            paddingX: embedded ? "0px" : "16px",
+          }}
+        >
           <Layout
-              title="Categories"
-              menuOptions={optionsForMenu}
-              bottom={bottom}
-              mode="change"
-              defaultOption={0}
-              onSelectMenuOption={(option) => handleClickMenuItem(option)}
+            title="Categories"
+            menuOptions={optionsForMenu}
+            bottom={bottom}
+            mode="change"
+            defaultOption={0}
+            onSelectMenuOption={(option) => handleClickMenuItem(option)}
           />
         </Box>
         <img

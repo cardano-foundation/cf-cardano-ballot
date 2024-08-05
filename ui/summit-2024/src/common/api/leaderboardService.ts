@@ -1,14 +1,14 @@
 import {
-  ByEventStats,
-  ByProposalsInCategoryStats,
-} from "types/voting-app-types";
-import {
   DEFAULT_CONTENT_TYPE_HEADERS,
   doRequest,
   HttpMethods,
 } from "../handlers/httpHandler";
 import { env } from "../constants/env";
-import { TallyResults } from "types/voting-ledger-follower-types";
+import {
+  ByEventStats,
+  ByProposalsInCategoryStats,
+} from "../../types/voting-app-types";
+import { TallyResults } from "../../types/voting-ledger-follower-types";
 
 const LEADERBOARD_URL = `${env.VOTING_APP_SERVER_URL}/api/leaderboard`;
 const HYDRATALLY_URL = `${env.VOTING_LEDGER_FOLLOWER_APP_SERVER_URL}/api/tally/voting-results`;

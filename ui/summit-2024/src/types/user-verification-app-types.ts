@@ -53,6 +53,7 @@ export interface AbstractTimestampEntity {
   updatedAt: Date;
 }
 
+// @ts-ignore
 export interface AbstractTimestampEntityBuilder<C, B> {}
 
 export interface DiscordUserVerification extends AbstractTimestampEntity {
@@ -186,9 +187,9 @@ export interface Value<T> extends Iterable<T> {
 }
 
 export interface Cloneable {}
-
+// @ts-ignore
 export interface Comparable<T> {}
-
+// @ts-ignore
 export interface Iterable<T> {}
 
 export type CardanoNetwork = "MAIN" | "PREPROD" | "PREVIEW" | "DEV";

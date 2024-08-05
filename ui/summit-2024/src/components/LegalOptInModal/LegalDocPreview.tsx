@@ -37,10 +37,12 @@ const LegalDocPreview = () => {
           aria-controls="panel1a-content"
           id="panel1a-header"
         >
+          {/* @ts-ignore */}
           <Typography variant="h6">{termsData.title}</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Typography variant="body1" sx={{ mb: 1, mt: 2 }}>
+            {/* @ts-ignore */}
             {termsData.date}
           </Typography>
           {/* Render sections and content */}

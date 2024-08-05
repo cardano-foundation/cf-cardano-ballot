@@ -1,4 +1,3 @@
-import React from "react";
 import { Tab, Tabs, Box } from "@mui/material";
 
 const TabsSegment = ({ setCurrentTab, currentTab, tabs }) => {
@@ -8,11 +7,12 @@ const TabsSegment = ({ setCurrentTab, currentTab, tabs }) => {
 
   return (
     <Box
+      component="div"
       sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
     >
       <Tabs
         value={currentTab}
-        onChange={(event, newValue) => handleChange(newValue)}
+        onChange={(_, newValue) => handleChange(newValue)}
         aria-label="mnemonic length segment"
         sx={{
           borderRadius: 24,

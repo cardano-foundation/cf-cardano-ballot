@@ -1,2 +1,2 @@
-export * from "./TermsAndPrivacyOpt";
+export * from "./TermsAndConditionsModal";
 export * from "./LegalDocPreview";

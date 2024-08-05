@@ -66,6 +66,7 @@ const getErrorMessage = (response: AnuthorizedResponse): string => {
     const messages = [];
     if (response && response.errors && response.errors.length > 0) {
       for (const e of response.errors) {
+        // @ts-ignore
         messages.push(e.errorCode);
       }
     }
@@ -79,6 +80,7 @@ const getErrorMessage = (response: AnuthorizedResponse): string => {
       const errors = JSON.parse(response.message);
       const messages = [];
       for (const e of errors) {
+        // @ts-ignore
         messages.push(e.errorCode + ": " + e.message);
       }
       return messages.toString();
@@ -249,6 +251,7 @@ export const doRequest = async <T>(
   }
 
   if (token) {
+    // @ts-ignore
     allHeaders["Authorization"] = `Bearer ${token}`;
   }
 

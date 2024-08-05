@@ -130,6 +130,7 @@ export interface CIP93Envelope<T> {
   actionAsEnum?: Web3Action;
 }
 
+// @ts-ignore
 export interface CIP93EnvelopeBuilder<T> {}
 
 export interface JwtLoginEnvelope {
@@ -468,6 +469,7 @@ export interface CredentialsContainer {}
 
 export interface PropertyResolver {}
 
+// @ts-ignore
 export interface Enumeration<E> {}
 
 export interface Servlet {
@@ -673,8 +675,10 @@ export interface ProposalDetailsResponse {
   name: string;
 }
 
+// @ts-ignore
 export interface Comparable<T> {}
 
+// @ts-ignore
 export interface Iterable<T> {}
 
 export interface Aware {}

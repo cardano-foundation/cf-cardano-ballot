@@ -67,8 +67,6 @@ const VerifyWalletModal = () => {
   const [phoneCodeShowError, setPhoneCodeShowError] = useState<boolean>(false);
   const [checkImNotARobot, setCheckImNotARobot] = useState<boolean>(false);
   const [isPhoneInputDisabled] = useState<boolean>(false);
-  const [discordIsConfirming, setDiscordIsConfirming] =
-    useState<boolean>(false);
   const [phoneCodeIsBeenConfirming, setPhoneCodeIsBeenConfirming] =
     useState<boolean>(false);
   const [inputSecret, setInputSecret] = useState("");
@@ -115,7 +113,6 @@ const VerifyWalletModal = () => {
       setPhoneCodeShowError(false);
       setPhone("");
       setInputSecret("");
-      setDiscordIsConfirming(false);
       setCodes(Array(6).fill(""));
       setVerifyCurrentPaths([VerifyWalletFlow.INTRO]);
     }
@@ -136,6 +133,7 @@ const VerifyWalletModal = () => {
     if (matchIsValidTel(phone) && checkImNotARobot) {
       setPhoneCodeIsBeenSending(true);
       sendSmsCode(walletIdentifier, phone.trim().replace(" ", ""))
+        // @ts-ignore
         .then((response: VerificationStarted) => {
           handleSetCurrentPath(VerifyWalletFlow.CONFIRM_CODE);
           dispatch(
@@ -162,6 +160,7 @@ const VerifyWalletModal = () => {
       userVerificationStarted.requestId,
       codes.join(""),
     )
+      // @ts-ignore
       .then((response: { verified: boolean }) => {
         dispatch(setWalletIsVerified(response.verified));
         if (response.verified) {
@@ -190,8 +189,6 @@ const VerifyWalletModal = () => {
   };
 
   const handleVerifyDiscord = async () => {
-    setDiscordIsConfirming(true);
-
     const signedMessageResult = await signWithWallet(
       inputSecret.trim(),
       walletIdentifier,
@@ -206,6 +203,7 @@ const VerifyWalletModal = () => {
     const verifyDiscordResult = await verifyDiscord(
       walletIdentifier,
       parsedSecret,
+      // @ts-ignore
       signedMessageResult.result,
     );
 
@@ -217,10 +215,9 @@ const VerifyWalletModal = () => {
       );
       return;
     }
-
+    // @ts-ignore
     dispatch(setWalletIsVerified(verifyDiscordResult.verified));
     eventBus.publish(EventName.ShowToast, "Wallet verified successfully");
-    setDiscordIsConfirming(false);
     handleCloseModal();
   };
 

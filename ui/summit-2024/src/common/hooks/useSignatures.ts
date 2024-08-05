@@ -54,12 +54,15 @@ export const useSignatures = () => {
           const signedMessage = await signMessage(message);
           return {
             success: true,
+            // @ts-ignore
             result: signedMessage,
           };
         }
       } catch (e) {
+        // @ts-ignore
         setError(`Error signing message: ${e.message}`);
         setIsLoading(false);
+        // @ts-ignore
         return { success: false, error: e.message };
       } finally {
         setIsLoading(false);

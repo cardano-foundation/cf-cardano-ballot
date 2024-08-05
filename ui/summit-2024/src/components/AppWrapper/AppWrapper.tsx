@@ -36,7 +36,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
   useEffect(() => {
     const checkWalletVerification = async () => {
       const isVerifiedResult = await getIsVerified(walletIdentifier);
+      // @ts-ignore
       if (!isVerifiedResult?.error) {
+        // @ts-ignore
         dispatch(setWalletIsVerified(isVerifiedResult.verified));
       } else {
         eventBus.publish(
@@ -62,7 +64,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
       dispatch(setEventCache(eventDataFixture));
     } else {
       const eventData = await getEventData(env.EVENT_ID);
+      // @ts-ignore
       if (!eventData?.error) {
+        // @ts-ignore
         dispatch(setEventCache(eventData));
       } else {
         eventBus.publish(

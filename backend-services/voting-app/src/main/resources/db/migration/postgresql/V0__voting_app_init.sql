@@ -3,14 +3,18 @@ DROP TABLE IF EXISTS vote;
 CREATE TABLE vote (
    id VARCHAR(255) NOT NULL,
    id_numeric_hash BIGINT NOT NULL,
+
    event_id VARCHAR(255) NOT NULL,
    category_id VARCHAR(255) NOT NULL,
    proposal_id VARCHAR(255) NOT NULL,
+
    wallet_type VARCHAR(255) NOT NULL,
    wallet_id VARCHAR(255) NOT NULL,
+
    signature TEXT NOT NULL,
-   payload TEXT,
+   payload TEXT, -- nullable since Cardano wallet type contains signature and payload in one
    public_key VARCHAR(255),
+
    voting_power BIGINT,
    voted_at_slot BIGINT NOT NULL,
 

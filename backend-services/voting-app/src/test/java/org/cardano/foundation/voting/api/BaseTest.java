@@ -47,6 +47,7 @@ public class BaseTest {
 
         String responseBodyEvent = "[{\"id\": \"" + eventId + "\", \"finished\": false}, " +
                 "{\"notStarted\": false, \"active\": true}]";
+
         wireMockServer.stubFor(
                 WireMock.get(urlEqualTo("/api/reference/event"))
                         .willReturn(aResponse()

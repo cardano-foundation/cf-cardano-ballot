@@ -8,11 +8,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.cardano.foundation.voting.domain.WinnerLeaderboardSource;
 import org.cardano.foundation.voting.service.leader_board.HighLevelLeaderBoardService;
 import org.cardano.foundation.voting.service.leader_board.LeaderboardWinnersProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
@@ -29,17 +30,16 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
 import static org.zalando.problem.Status.NOT_FOUND;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/leaderboard")
 @Slf4j
 @Tag(name = "Leaderboard", description = "Operations related to the leaderboard")
 public class LeaderboardResource {
 
-    @Autowired
-    private HighLevelLeaderBoardService highLevelLeaderBoardService;
+    private final HighLevelLeaderBoardService highLevelLeaderBoardService;
 
-    @Autowired
-    private LeaderboardWinnersProvider leaderboardWinnersProvider;
+    private final LeaderboardWinnersProvider leaderboardWinnersProvider;
 
     @Value("${leaderboard.force.results:false}")
     private boolean forceLeaderboardResultsAvailability;
@@ -59,13 +59,13 @@ public class LeaderboardResource {
     public ResponseEntity<?> isHighLevelEventLeaderBoardAvailable(@Parameter(name = "eventId", description = "ID of the event", required = true)
                                                                   @PathVariable("eventId") String eventId,
                                                                   @RequestHeader(value = X_Force_LeaderBoard_Results, required = false, defaultValue = "false") boolean forceLeaderboardResults) {
-        var cacheControl = CacheControl.maxAge(5, MINUTES)
+        val cacheControl = CacheControl.maxAge(5, MINUTES)
                 .noTransform()
                 .mustRevalidate();
 
-        var forceLeaderboard = forceLeaderboardResults && forceLeaderboardResultsAvailability;
+        val forceLeaderboard = forceLeaderboardResults && forceLeaderboardResultsAvailability;
 
-        var availableE = highLevelLeaderBoardService.isHighLevelEventLeaderboardAvailable(eventId, forceLeaderboard);
+        val availableE = highLevelLeaderBoardService.isHighLevelEventLeaderboardAvailable(eventId, forceLeaderboard);
 
         return availableE.fold(problem -> {
                     return ResponseEntity
@@ -81,7 +81,7 @@ public class LeaderboardResource {
                                 .build();
                     }
 
-                    var problem = Problem.builder()
+                    val problem = Problem.builder()
                             .withTitle("VOTING_RESULTS_NOT_AVAILABLE")
                             .withDetail("Leaderboard not yet available for event: " + eventId)
                             .withStatus(Status.FORBIDDEN)
@@ -111,13 +111,13 @@ public class LeaderboardResource {
     public ResponseEntity<?> isHighLevelCategoryLeaderBoardAvailable(@Parameter(name = "eventId", description = "ID of the event", required = true)
                                                                      @PathVariable("eventId") String eventId,
                                                                      @RequestHeader(value = X_Force_LeaderBoard_Results, required = false, defaultValue = "false") boolean forceLeaderboardResults) {
-        var cacheControl = CacheControl.maxAge(5, MINUTES)
+        val cacheControl = CacheControl.maxAge(5, MINUTES)
                 .noTransform()
                 .mustRevalidate();
 
-        var forceLeaderboard = forceLeaderboardResults && forceLeaderboardResultsAvailability;
+        val forceLeaderboard = forceLeaderboardResults && forceLeaderboardResultsAvailability;
 
-        var availableE = highLevelLeaderBoardService.isHighLevelCategoryLeaderboardAvailable(eventId, forceLeaderboard);
+        val availableE = highLevelLeaderBoardService.isHighLevelCategoryLeaderboardAvailable(eventId, forceLeaderboard);
 
         return availableE.fold(problem -> {
                     return ResponseEntity
@@ -132,7 +132,7 @@ public class LeaderboardResource {
                                 .cacheControl(cacheControl)
                                 .build();
                     }
-                    var problem = Problem.builder()
+                    val problem = Problem.builder()
                             .withTitle("VOTING_RESULTS_NOT_AVAILABLE")
                             .withDetail("Leaderboard not yet available for event: " + eventId)
                             .withStatus(Status.FORBIDDEN)
@@ -165,15 +165,15 @@ public class LeaderboardResource {
                                                              @RequestHeader(value = X_Force_LeaderBoard_Results, required = false, defaultValue = "false") boolean forceLeaderboardResults,
                                                              @Parameter(name = "source", description = "source of results, db or l1")
                                                              @Valid @RequestParam(name = "source") Optional<WinnerLeaderboardSource> winnerLeaderboardSourceM) {
-        var winnerLeaderboardSource = winnerLeaderboardSourceM.orElse(db);
+        val winnerLeaderboardSource = winnerLeaderboardSourceM.orElse(db);
 
-        var cacheControl = CacheControl.maxAge(5, MINUTES)
+        val cacheControl = CacheControl.maxAge(5, MINUTES)
                 .noTransform()
                 .mustRevalidate();
 
-        var forceLeaderboard = forceLeaderboardResults && forceLeaderboardResultsAvailability;
+        val forceLeaderboard = forceLeaderboardResults && forceLeaderboardResultsAvailability;
 
-        var categoryLeaderboardAvailableE = leaderboardWinnersProvider
+        val categoryLeaderboardAvailableE = leaderboardWinnersProvider
                 .getWinnerLeaderboardSource(winnerLeaderboardSource)
                 .isCategoryLeaderboardAvailable(eventId, categoryId, forceLeaderboard);
 
@@ -190,7 +190,7 @@ public class LeaderboardResource {
                                         .cacheControl(cacheControl)
                                         .build();
                             }
-                            var problem = Problem.builder()
+                            val problem = Problem.builder()
                                     .withTitle("VOTING_RESULTS_NOT_AVAILABLE")
                                     .withDetail("Leaderboard not yet available for event: " + eventId)
                                     .withStatus(Status.FORBIDDEN)
@@ -220,13 +220,13 @@ public class LeaderboardResource {
                                                  @Parameter(name = "eventId", description = "ID of the event", required = true)
                                                  @PathVariable("eventId") String eventId,
                                                  @RequestHeader(value = X_Force_LeaderBoard_Results, required = false, defaultValue = "false") boolean forceLeaderboardResults) {
-        var cacheControl = CacheControl.maxAge(5, MINUTES)
+        val cacheControl = CacheControl.maxAge(5, MINUTES)
                 .noTransform()
                 .mustRevalidate();
 
-        var forceLeaderboard = forceLeaderboardResults && forceLeaderboardResultsAvailability;
+        val forceLeaderboard = forceLeaderboardResults && forceLeaderboardResultsAvailability;
 
-        var eventLeaderboardE = highLevelLeaderBoardService.getEventLeaderboard(eventId, forceLeaderboard);
+        val eventLeaderboardE = highLevelLeaderBoardService.getEventLeaderboard(eventId, forceLeaderboard);
 
         return eventLeaderboardE.fold(problem -> {
                     return ResponseEntity
@@ -262,15 +262,15 @@ public class LeaderboardResource {
                                                     @RequestHeader(value = X_Force_LeaderBoard_Results, required = false, defaultValue = "false") boolean forceLeaderboardResults,
                                                     @Parameter(name = "source", description = "source of results, db or l1")
                                                     @Valid @RequestParam(name = "source") Optional<WinnerLeaderboardSource> winnerLeaderboardSourceM) {
-        var winnerLeaderboardSource = winnerLeaderboardSourceM.orElse(db);
+        val winnerLeaderboardSource = winnerLeaderboardSourceM.orElse(db);
 
-        var cacheControl = CacheControl.maxAge(5, MINUTES)
+        val cacheControl = CacheControl.maxAge(5, MINUTES)
                 .noTransform()
                 .mustRevalidate();
 
-        var forceLeaderboard = forceLeaderboardResults && forceLeaderboardResultsAvailability;
+        val forceLeaderboard = forceLeaderboardResults && forceLeaderboardResultsAvailability;
 
-        var categoryLeaderboardE = leaderboardWinnersProvider
+        val categoryLeaderboardE = leaderboardWinnersProvider
                 .getWinnerLeaderboardSource(winnerLeaderboardSource)
                 .getCategoryLeaderboard(eventId, categoryId, forceLeaderboard);
 
@@ -282,7 +282,7 @@ public class LeaderboardResource {
                         },
                         proposalsInCategoryStatsM -> {
                             if (proposalsInCategoryStatsM.isEmpty()) {
-                                var problem = Problem.builder()
+                                val problem = Problem.builder()
                                         .withTitle("VOTING_RESULTS_NOT_YET_AVAILABLE")
                                         .withDetail("Leaderboard not yet available for event: " + eventId)
                                         .withStatus(NOT_FOUND)
@@ -307,15 +307,15 @@ public class LeaderboardResource {
                                                                @PathVariable("categoryId") String categoryId,
                                                                @RequestHeader(value = X_Force_LeaderBoard_Results, required = false, defaultValue = "false") boolean forceLeaderboardResults,
                                                                @Valid @RequestParam(name = "source") Optional<WinnerLeaderboardSource> winnerLeaderboardSourceM) {
-        var winnerLeaderboardSource = winnerLeaderboardSourceM.orElse(db);
+        val winnerLeaderboardSource = winnerLeaderboardSourceM.orElse(db);
 
-        var cacheControl = CacheControl.maxAge(5, MINUTES)
+        val cacheControl = CacheControl.maxAge(5, MINUTES)
                 .noTransform()
                 .mustRevalidate();
 
-        var forceLeaderboard = forceLeaderboardResults && forceLeaderboardResultsAvailability;
+        val forceLeaderboard = forceLeaderboardResults && forceLeaderboardResultsAvailability;
 
-        var categoryLeaderboardE = leaderboardWinnersProvider
+        val categoryLeaderboardE = leaderboardWinnersProvider
                 .getWinnerLeaderboardSource(winnerLeaderboardSource)
                 .getCategoryLeaderboard(eventId, categoryId, forceLeaderboard);
 
@@ -327,7 +327,7 @@ public class LeaderboardResource {
                         },
                         proposalsInCategoryStatsM -> {
                             if (proposalsInCategoryStatsM.isEmpty()) {
-                                var problem = Problem.builder()
+                                val problem = Problem.builder()
                                         .withTitle("VOTING_RESULTS_NOT_YET_AVAILABLE")
                                         .withDetail("Leaderboard not yet available for event: " + eventId)
                                         .withStatus(NOT_FOUND)
@@ -351,15 +351,15 @@ public class LeaderboardResource {
     public ResponseEntity<?> getCategoryLeaderBoardForAllCategoriesResults(@PathVariable("eventId") String eventId,
                                                                     @RequestHeader(value = X_Force_LeaderBoard_Results, required = false, defaultValue = "false") boolean forceLeaderboardResults,
                                                                     @Valid @RequestParam(name = "source") Optional<WinnerLeaderboardSource> winnerLeaderboardSourceM) {
-        var winnerLeaderboardSource = winnerLeaderboardSourceM.orElse(db);
+        val winnerLeaderboardSource = winnerLeaderboardSourceM.orElse(db);
 
-        var cacheControl = CacheControl.maxAge(5, MINUTES)
+        val cacheControl = CacheControl.maxAge(5, MINUTES)
                 .noTransform()
                 .mustRevalidate();
 
-        var forceLeaderboard = forceLeaderboardResults && forceLeaderboardResultsAvailability;
+        val forceLeaderboard = forceLeaderboardResults && forceLeaderboardResultsAvailability;
 
-        var categoryLeaderboardE = leaderboardWinnersProvider
+        val categoryLeaderboardE = leaderboardWinnersProvider
                 .getWinnerLeaderboardSource(winnerLeaderboardSource)
                 .getAllCategoriesLeaderboard(eventId, forceLeaderboard);
 

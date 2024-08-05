@@ -58,8 +58,6 @@ export const buildCanonicalVoteInputJson = ({
 };
 
 const submitVoteWithDigitalSignature = async (jsonRequest: SignedWeb3Request, walletType: string) => {
-  console.log("jsonRequest");
-  console.log(jsonRequest);
   return await doRequest<Problem | Vote>(
       HttpMethods.POST,
       CAST_VOTE_URL,

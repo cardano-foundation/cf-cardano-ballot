@@ -20,7 +20,7 @@ import org.cardano.foundation.voting.service.json.JsonService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.zalando.problem.Problem;
 
 import java.io.IOException;
@@ -28,12 +28,13 @@ import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.cardano.foundation.voting.domain.ChainNetwork.MAIN;
+import static org.cardano.foundation.voting.domain.ChainNetwork.*;
 import static org.cardano.foundation.voting.resource.Headers.*;
 import static org.cardano.foundation.voting.service.auth.LoginSystem.KERI_SIGN;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.zalando.problem.Status.BAD_REQUEST;
+import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 
 class KeriWeb3FilterTest {
 
@@ -47,9 +48,6 @@ class KeriWeb3FilterTest {
     private ChainFollowerClient chainFollowerClient;
     private LoginSystemDetector loginSystemDetector;
     private KeriVerificationClient keriVerificationClient;
-
-    @Captor
-    ArgumentCaptor<Problem> problemCaptor;
 
     @BeforeEach
     void setUp() throws IOException {
@@ -144,6 +142,7 @@ class KeriWeb3FilterTest {
         filter.doFilterInternal(request, response, chain);
 
         verify(objectMapper, times(1)).writeValueAsString(problemCaptor.capture());
+
         val capturedProblem = problemCaptor.getValue();
         assertThat(capturedProblem.getTitle()).isEqualTo("INVALID_KERI_ENVELOPE");
         assertThat(capturedProblem.getStatus()).isEqualTo(BAD_REQUEST);
@@ -235,218 +234,356 @@ class KeriWeb3FilterTest {
         when(jsonService.decodeGenericKeri(any())).thenReturn(Either.right(genericEnvelope));
 
         filter.doFilterInternal(request, response, chain);
-
         val problemCaptor = ArgumentCaptor.forClass(Problem.class);
+
         verify(objectMapper, times(1)).writeValueAsString(problemCaptor.capture());
         val capturedProblem = problemCaptor.getValue();
         assertThat(capturedProblem.getTitle()).isEqualTo("INVALID_SLOT");
         assertThat(capturedProblem.getStatus()).isEqualTo(BAD_REQUEST);
     }
 
-//    @Test
-//    void doFilterInternal_shouldReturnInternalServerError_whenChainTipFails() throws ServletException, IOException {
-//        when(loginSystemDetector.detect(request)).thenReturn(Optional.of(KERI_SIGN));
-//        when(request.getHeader(X_Login_Signature)).thenReturn("signature");
-//        when(request.getHeader(X_Login_Payload)).thenReturn("payload");
-//        when(request.getHeader(X_Login_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
-//
-//        val genericEnvelope = mock(GenericEnvelope.class);
-//        when(jsonService.decodeGenericKeri(any())).thenReturn(Optional.of(genericEnvelope));
-//        when(genericEnvelope.getData()).thenReturn(Map.of("walletId", "walletId", "walletType", "KERI"));
-//        when(genericEnvelope.getSlot()).thenReturn("123");
-//
-//        when(chainFollowerClient.getChainTip()).thenReturn(Optional.empty());
-//
-//        filter.doFilterInternal(request, response, chain);
-//
-//        verify(objectMapper, times(1)).writeValue(any(), any(Problem.class));
-//    }
+    @Test
+    void doFilterInternal_shouldReturnInternalServerError_whenChainTipFails() throws ServletException, IOException {
+        when(loginSystemDetector.detect(request)).thenReturn(Optional.of(KERI_SIGN));
+        when(request.getHeader(X_Login_Signature)).thenReturn("signature");
+        when(request.getHeader(X_Login_Payload)).thenReturn("7061796C6F6164");
+        when(request.getHeader(X_Login_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
 
-//    @Test
-//    void doFilterInternal_shouldReturnBadRequest_whenSlotIsExpired() throws ServletException, IOException {
-//        when(loginSystemDetector.detect(request)).thenReturn(Optional.of(KERI_SIGN));
-//        when(request.getHeader(X_Login_Signature)).thenReturn("signature");
-//        when(request.getHeader(X_Login_Payload)).thenReturn("payload");
-//        when(request.getHeader(X_Login_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
-//
-//        val genericEnvelope = mock(GenericEnvelope.class);
-//        when(jsonService.decodeGenericKeri(any())).thenReturn(Optional.of(genericEnvelope));
-//        when(genericEnvelope.getData()).thenReturn(Map.of("walletId", "walletId", "walletType", "KERI"));
-//        when(genericEnvelope.getSlot()).thenReturn("123");
-//
-//        val chainTip = mock(ChainTip.class);
-//        when(chainFollowerClient.getChainTip()).thenReturn(Optional.of(chainTip));
-//        when(expirationService.isSlotExpired(chainTip, 123L)).thenReturn(true);
-//
-//        filter.doFilterInternal(request, response, chain);
-//
-//        verify(objectMapper, times(1)).writeValue(any(), any(Problem.class));
-//    }
-//
-//    @Test
-//    void doFilterInternal_shouldReturnBadRequest_whenNetworkIsInvalid() throws ServletException, IOException {
-//        when(loginSystemDetector.detect(request)).thenReturn(Optional.of(KERI_SIGN));
-//        when(request.getHeader(X_Login_Signature)).thenReturn("signature");
-//        when(request.getHeader(X_Login_Payload)).thenReturn("payload");
-//        when(request.getHeader(X_Login_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
-//
-//        val genericEnvelope = mock(GenericEnvelope.class);
-//        when(jsonService.decodeGenericKeri(any())).thenReturn(Optional.of(genericEnvelope));
-//        when(genericEnvelope.getData()).thenReturn(Map.of("walletId", "walletId", "walletType", "KERI", "network", "INVALID"));
-//        when(genericEnvelope.getSlot()).thenReturn("123");
-//
-//        val chainTip = mock(ChainTip.class);
-//        when(chainFollowerClient.getChainTip()).thenReturn(Optional.of(chainTip));
-//        when(expirationService.isSlotExpired(chainTip, 123L)).thenReturn(false);
-//
-//        filter.doFilterInternal(request, response, chain);
-//
-//        verify(objectMapper, times(1)).writeValue(any(), any(Problem.class));
-//    }
-//
-//    @Test
-//    void doFilterInternal_shouldReturnBadRequest_whenChainNetworkMismatch() throws ServletException, IOException {
-//        when(loginSystemDetector.detect(request)).thenReturn(Optional.of(KERI_SIGN));
-//        when(request.getHeader(X_Login_Signature)).thenReturn("signature");
-//        when(request.getHeader(X_Login_Payload)).thenReturn("payload");
-//        when(request.getHeader(X_Login_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
-//
-//        val genericEnvelope = mock(GenericEnvelope.class);
-//        when(jsonService.decodeGenericKeri(any())).thenReturn(Optional.of(genericEnvelope));
-//        when(genericEnvelope.getData()).thenReturn(Map.of("walletId", "walletId", "walletType", "KERI", "network", "TESTNET"));
-//        when(genericEnvelope.getSlot()).thenReturn("123");
-//
-//        val chainTip = mock(ChainTip.class);
-//        when(chainFollowerClient.getChainTip()).thenReturn(Optional.of(chainTip));
-//        when(expirationService.isSlotExpired(chainTip, 123L)).thenReturn(false);
-//
-//        filter.doFilterInternal(request, response, chain);
-//
-//        verify(objectMapper, times(1)).writeValue(any(), any(Problem.class));
-//    }
-//
-//    @Test
-//    void doFilterInternal_shouldReturnBadRequest_whenAidCheckFails() throws ServletException, IOException {
-//        when(loginSystemDetector.detect(request)).thenReturn(Optional.of(KERI_SIGN));
-//        when(request.getHeader(X_Login_Signature)).thenReturn("signature");
-//        when(request.getHeader(X_Login_Payload)).thenReturn("payload");
-//        when(request.getHeader(X_Login_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
-//
-//        val genericEnvelope = mock(GenericEnvelope.class);
-//        when(jsonService.decodeGenericKeri(any())).thenReturn(Optional.of(genericEnvelope));
-//        when(genericEnvelope.getData()).thenReturn(Map.of("walletId", "walletId", "walletType", "KERI", "network", "MAINNET"));
-//        when(genericEnvelope.getSlot()).thenReturn("123");
-//
-//        val chainTip = mock(ChainTip.class);
-//        when(chainFollowerClient.getChainTip()).thenReturn(Optional.of(chainTip));
-//        when(expirationService.isSlotExpired(chainTip, 123L)).thenReturn(false);
-//
-//        when(Keri.checkAid("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO")).thenReturn(Optional.empty());
-//
-//        filter.doFilterInternal(request, response, chain);
-//
-//        verify(objectMapper, times(1)).writeValue(any(), any(Problem.class));
-//    }
-//
-//    @Test
-//    void doFilterInternal_shouldReturnBadRequest_whenAidMismatch() throws ServletException, IOException {
-//        when(loginSystemDetector.detect(request)).thenReturn(Optional.of(KERI_SIGN));
-//        when(request.getHeader(X_Login_Signature)).thenReturn("signature");
-//        when(request.getHeader(X_Login_Payload)).thenReturn("payload");
-//        when(request.getHeader(X_Login_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
-//
-//        val genericEnvelope = mock(GenericEnvelope.class);
-//        when(jsonService.decodeGenericKeri(any())).thenReturn(Optional.of(genericEnvelope));
-//        when(genericEnvelope.getData()).thenReturn(Map.of("walletId", "differentWalletId", "walletType", "KERI", "network", "MAINNET"));
-//        when(genericEnvelope.getSlot()).thenReturn("123");
-//
-//        val chainTip = mock(ChainTip.class);
-//        when(chainFollowerClient.getChainTip()).thenReturn(Optional.of(chainTip));
-//        when(expirationService.isSlotExpired(chainTip, 123L)).thenReturn(false);
-//
-//        when(Keri.checkAid("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO")).thenReturn(Optional.of(mock(Problem.class)));
-//
-//        filter.doFilterInternal(request, response, chain);
-//
-//        verify(objectMapper, times(1)).writeValue(any(), any(Problem.class));
-//    }
-//
-//    @Test
-//    void doFilterInternal_shouldReturnInternalServerError_whenEventDetailsFails() throws ServletException, IOException {
-//        when(loginSystemDetector.detect(request)).thenReturn(Optional.of(KERI_SIGN));
-//        when(request.getHeader(X_Login_Signature)).thenReturn("signature");
-//        when(request.getHeader(X_Login_Payload)).thenReturn("payload");
-//        when(request.getHeader(X_Login_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
-//
-//        val genericEnvelope = mock(GenericEnvelope.class);
-//        when(jsonService.decodeGenericKeri(any())).thenReturn(Optional.of(genericEnvelope));
-//        when(genericEnvelope.getData()).thenReturn(Map.of("walletId", "walletId", "walletType", "KERI", "network", "MAINNET", "event", "eventId"));
-//        when(genericEnvelope.getSlot()).thenReturn("123");
-//
-//        val chainTip = mock(ChainTip.class);
-//        when(chainFollowerClient.getChainTip()).thenReturn(Optional.of(chainTip));
-//        when(expirationService.isSlotExpired(chainTip, 123L)).thenReturn(false);
-//
-//        when(Keri.checkAid("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO")).thenReturn(Optional.of(mock(Problem.class)));
-//
-//        when(chainFollowerClient.getEventDetails("eventId")).thenReturn(Optional.empty());
-//
-//        filter.doFilterInternal(request, response, chain);
-//
-//        verify(objectMapper, times(1)).writeValue(any(), any(Problem.class));
-//    }
-//
-//    @Test
-//    void doFilterInternal_shouldReturnBadRequest_whenEventDetailsNotFound() throws ServletException, IOException {
-//        when(loginSystemDetector.detect(request)).thenReturn(Optional.of(KERI_SIGN));
-//        when(request.getHeader(X_Login_Signature)).thenReturn("signature");
-//        when(request.getHeader(X_Login_Payload)).thenReturn("payload");
-//        when(request.getHeader(X_Login_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
-//
-//        val genericEnvelope = mock(GenericEnvelope.class);
-//        when(jsonService.decodeGenericKeri(any())).thenReturn(Optional.of(genericEnvelope));
-//        when(genericEnvelope.getData()).thenReturn(Map.of("walletId", "walletId", "walletType", "KERI", "network", "MAINNET", "event", "eventId"));
-//        when(genericEnvelope.getSlot()).thenReturn("123");
-//
-//        val chainTip = mock(ChainTip.class);
-//        when(chainFollowerClient.getChainTip()).thenReturn(Optional.of(chainTip));
-//        when(expirationService.isSlotExpired(chainTip, 123L)).thenReturn(false);
-//
-//        when(Keri.checkAid("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO")).thenReturn(Optional.of(mock(Problem.class)));
-//
-//        val eventDetails = mock(EventDetails.class);
-//        when(chainFollowerClient.getEventDetails("eventId")).thenReturn(Optional.of(Optional.empty()));
-//
-//        filter.doFilterInternal(request, response, chain);
-//
-//        verify(objectMapper, times(1)).writeValue(any(), any(Problem.class));
-//    }
-//
-//    @Test
-//    void doFilterInternal_shouldAuthenticate_whenAllConditionsMet() throws ServletException, IOException {
-//        when(loginSystemDetector.detect(request)).thenReturn(Optional.of(KERI_SIGN));
-//        when(request.getHeader(X_Login_Signature)).thenReturn("signature");
-//        when(request.getHeader(X_Login_Payload)).thenReturn("payload");
-//        when(request.getHeader(X_Login_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
-//
-//        val genericEnvelope = mock(GenericEnvelope.class);
-//        when(jsonService.decodeGenericKeri(any())).thenReturn(Optional.of(genericEnvelope));
-//        when(genericEnvelope.getData()).thenReturn(Map.of("walletId", "walletId", "walletType", "KERI", "network", "MAINNET", "event", "eventId"));
-//        when(genericEnvelope.getSlot()).thenReturn("123");
-//
-//        val chainTip = mock(ChainTip.class);
-//        when(chainFollowerClient.getChainTip()).thenReturn(Optional.of(chainTip));
-//        when(expirationService.isSlotExpired(chainTip, 123L)).thenReturn(false);
-//
-//        when(Keri.checkAid("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO")).thenReturn(Optional.of(mock(Problem.class)));
-//
-//        val eventDetails = mock(EventDetails.class);
-//        when(chainFollowerClient.getEventDetails("eventId")).thenReturn(Optional.of(Optional.of(eventDetails)));
-//
-//        filter.doFilterInternal(request, response, chain);
-//
-//        verify(chain, times(1)).doFilter(request, response);
-//        assertThat(SecurityContextHolder.getContext().getAuthentication()).isNotNull();
-//    }
+        when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
+
+        when(chainFollowerClient.getChainTip()).thenReturn(Either.left(Problem.builder()
+                .withTitle("CHAIN_TIP_NOT_FOUND")
+                .withDetail("Unable to get chain tip from backend service.")
+                .withStatus(INTERNAL_SERVER_ERROR)
+                .build())
+        );
+
+        val genericEnvelope = KERIEnvelope.<Map<String, Object>>builder()
+                .uri("uri")
+                .action("LOGIN")
+                .slot("33942349")
+                .data(Map.of(
+                        "walletId", "EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO",
+                        "walletType", WalletType.KERI.name(),
+                        "slot", "33942349",
+                        "network", MAIN.name())
+                )
+                .build();
+
+        when(jsonService.decodeGenericKeri(any())).thenReturn(Either.right(genericEnvelope));
+
+        filter.doFilterInternal(request, response, chain);
+        val problemCaptor = ArgumentCaptor.forClass(Problem.class);
+
+        verify(objectMapper, times(1)).writeValueAsString(problemCaptor.capture());
+        val capturedProblem = problemCaptor.getValue();
+        assertThat(capturedProblem.getTitle()).isEqualTo("CHAIN_TIP_ERROR");
+        assertThat(capturedProblem.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
+    }
+
+    @Test
+    void doFilterInternal_shouldReturnBadRequest_whenSlotIsExpired() throws ServletException, IOException {
+        when(loginSystemDetector.detect(request)).thenReturn(Optional.of(KERI_SIGN));
+        when(request.getHeader(X_Login_Signature)).thenReturn("signature");
+        when(request.getHeader(X_Login_Payload)).thenReturn("7061796C6F6164");
+        when(request.getHeader(X_Login_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
+
+        when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
+
+        when(expirationService.isSlotExpired(any(), anyLong())).thenReturn(true);
+
+        when(chainFollowerClient.getChainTip()).thenReturn(Either.right(
+                new ChainFollowerClient.ChainTipResponse("hash", 500, 23942349L, true, MAIN))
+        );
+
+        val genericEnvelope = KERIEnvelope.<Map<String, Object>>builder()
+                .uri("uri")
+                .action("LOGIN")
+                .slot("23942349")
+                .data(Map.of(
+                        "walletId", "EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO",
+                        "walletType", WalletType.KERI.name(),
+                        "slot", "23942349",
+                        "network", MAIN.name())
+                )
+                .build();
+
+        when(jsonService.decodeGenericKeri(any())).thenReturn(Either.right(genericEnvelope));
+
+        filter.doFilterInternal(request, response, chain);
+        val problemCaptor = ArgumentCaptor.forClass(Problem.class);
+
+        verify(objectMapper, times(1)).writeValueAsString(problemCaptor.capture());
+        val capturedProblem = problemCaptor.getValue();
+
+        assertThat(capturedProblem.getTitle()).isEqualTo("EXPIRED_SLOT");
+        assertThat(capturedProblem.getStatus()).isEqualTo(BAD_REQUEST);
+    }
+
+    @Test
+    void doFilterInternal_shouldReturnBadRequest_whenNetworkIsInvalid() throws ServletException, IOException {
+        when(loginSystemDetector.detect(request)).thenReturn(Optional.of(KERI_SIGN));
+        when(request.getHeader(X_Login_Signature)).thenReturn("signature");
+        when(request.getHeader(X_Login_Payload)).thenReturn("7061796C6F6164");
+        when(request.getHeader(X_Login_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
+
+        when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
+
+        when(chainFollowerClient.getChainTip()).thenReturn(Either.right(
+                new ChainFollowerClient.ChainTipResponse("hash", 500, 23942349L, true, MAIN))
+        );
+
+        val genericEnvelope = KERIEnvelope.<Map<String, Object>>builder()
+                .uri("uri")
+                .action("LOGIN")
+                .slot("23942349")
+                .data(Map.of(
+                        "walletId", "EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO",
+                        "walletType", WalletType.KERI.name(),
+                        "slot", "23942349",
+                        "network", "DOES_NOT_EXIST")
+                )
+                .build();
+
+        when(jsonService.decodeGenericKeri(any())).thenReturn(Either.right(genericEnvelope));
+
+        filter.doFilterInternal(request, response, chain);
+        val problemCaptor = ArgumentCaptor.forClass(Problem.class);
+
+        verify(objectMapper, times(1)).writeValueAsString(problemCaptor.capture());
+        val capturedProblem = problemCaptor.getValue();
+
+        assertThat(capturedProblem.getTitle()).isEqualTo("INVALID_NETWORK");
+        assertThat(capturedProblem.getStatus()).isEqualTo(BAD_REQUEST);
+    }
+
+    @Test
+    void doFilterInternal_shouldReturnBadRequest_whenChainNetworkMismatch() throws ServletException, IOException {
+        when(loginSystemDetector.detect(request)).thenReturn(Optional.of(KERI_SIGN));
+        when(request.getHeader(X_Login_Signature)).thenReturn("signature");
+        when(request.getHeader(X_Login_Payload)).thenReturn("7061796C6F6164");
+        when(request.getHeader(X_Login_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
+
+        when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
+
+        when(chainFollowerClient.getChainTip()).thenReturn(Either.right(
+                new ChainFollowerClient.ChainTipResponse("hash", 500, 23942349L, true, PREPROD))
+        );
+
+        val genericEnvelope = KERIEnvelope.<Map<String, Object>>builder()
+                .uri("uri")
+                .action("LOGIN")
+                .slot("23942349")
+                .data(Map.of(
+                        "walletId", "EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO",
+                        "walletType", WalletType.KERI.name(),
+                        "slot", "23942349",
+                        "network", DEV.name())
+                )
+                .build();
+
+        when(jsonService.decodeGenericKeri(any())).thenReturn(Either.right(genericEnvelope));
+
+        filter.doFilterInternal(request, response, chain);
+        val problemCaptor = ArgumentCaptor.forClass(Problem.class);
+
+        verify(objectMapper, times(1)).writeValueAsString(problemCaptor.capture());
+        val capturedProblem = problemCaptor.getValue();
+
+        assertThat(capturedProblem.getTitle()).isEqualTo("NETWORK_MISMATCH");
+        assertThat(capturedProblem.getStatus()).isEqualTo(BAD_REQUEST);
+    }
+
+    @Test
+    void doFilterInternal_shouldReturnBadRequest_whenAidCheckFails() throws ServletException, IOException {
+        when(loginSystemDetector.detect(request)).thenReturn(Optional.of(KERI_SIGN));
+        when(request.getHeader(X_Login_Signature)).thenReturn("signature");
+        when(request.getHeader(X_Login_Payload)).thenReturn("7061796C6F6164");
+        when(request.getHeader(X_Login_PublicKey)).thenReturn("AIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
+
+        when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
+
+        when(chainFollowerClient.getChainTip()).thenReturn(Either.right(
+                new ChainFollowerClient.ChainTipResponse("hash", 500, 23942349L, true, MAIN))
+        );
+
+        val genericEnvelope = KERIEnvelope.<Map<String, Object>>builder()
+                .uri("uri")
+                .action("LOGIN")
+                .slot("23942349")
+                .data(Map.of(
+                        "walletId", "EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO",
+                        "walletType", WalletType.KERI.name(),
+                        "slot", "23942349",
+                        "network", MAIN.name())
+                )
+                .build();
+
+        when(jsonService.decodeGenericKeri(any())).thenReturn(Either.right(genericEnvelope));
+
+        filter.doFilterInternal(request, response, chain);
+        val problemCaptor = ArgumentCaptor.forClass(Problem.class);
+
+        verify(objectMapper, times(1)).writeValueAsString(problemCaptor.capture());
+        val capturedProblem = problemCaptor.getValue();
+
+        assertThat(capturedProblem.getTitle()).isEqualTo("INVALID_KERI_AID");
+        assertThat(capturedProblem.getStatus()).isEqualTo(BAD_REQUEST);
+    }
+
+    @Test
+    void doFilterInternal_shouldReturnBadRequest_whenAidMismatch() throws ServletException, IOException {
+        when(loginSystemDetector.detect(request)).thenReturn(Optional.of(KERI_SIGN));
+        when(request.getHeader(X_Login_Signature)).thenReturn("signature");
+        when(request.getHeader(X_Login_Payload)).thenReturn("7061796C6F6164");
+        when(request.getHeader(X_Login_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
+
+        when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
+
+        when(chainFollowerClient.getChainTip()).thenReturn(Either.right(
+                new ChainFollowerClient.ChainTipResponse("hash", 500, 23942349L, true, MAIN))
+        );
+
+        val genericEnvelope = KERIEnvelope.<Map<String, Object>>builder()
+                .uri("uri")
+                .action("LOGIN")
+                .slot("23942349")
+                .data(Map.of(
+                        "walletId", "EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPP",
+                        "walletType", WalletType.KERI.name(),
+                        "slot", "23942349",
+                        "network", MAIN.name())
+                )
+                .build();
+
+        when(jsonService.decodeGenericKeri(any())).thenReturn(Either.right(genericEnvelope));
+
+        filter.doFilterInternal(request, response, chain);
+        val problemCaptor = ArgumentCaptor.forClass(Problem.class);
+
+        verify(objectMapper, times(1)).writeValueAsString(problemCaptor.capture());
+        val capturedProblem = problemCaptor.getValue();
+
+        assertThat(capturedProblem.getTitle()).isEqualTo("AID_MISMATCH");
+        assertThat(capturedProblem.getStatus()).isEqualTo(BAD_REQUEST);
+    }
+
+    @Test
+    void doFilterInternal_shouldReturnInternalServerError_whenEventDetailsFails() throws ServletException, IOException {
+        when(loginSystemDetector.detect(request)).thenReturn(Optional.of(KERI_SIGN));
+        when(request.getHeader(X_Login_Signature)).thenReturn("signature");
+        when(request.getHeader(X_Login_Payload)).thenReturn("7061796C6F6164");
+        when(request.getHeader(X_Login_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
+
+        when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
+
+        when(chainFollowerClient.getChainTip()).thenReturn(Either.right(
+                new ChainFollowerClient.ChainTipResponse("hash", 500, 23942349L, true, MAIN))
+        );
+
+        val genericEnvelope = KERIEnvelope.<Map<String, Object>>builder()
+                .uri("uri")
+                .action("LOGIN")
+                .slot("23942349")
+                .data(Map.of(
+                        "walletId", "EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO",
+                        "walletType", WalletType.KERI.name(),
+                        "slot", "23942349",
+                        "network", MAIN.name())
+                )
+                .build();
+
+        when(chainFollowerClient.getEventDetails(any())).thenReturn(Either.left(Problem.builder()
+                .withTitle("EVENT_DETAILS_ERROR")
+                .withDetail("Unable to get event details from backend service.")
+                .withStatus(INTERNAL_SERVER_ERROR)
+                .build())
+        );
+
+        when(jsonService.decodeGenericKeri(any())).thenReturn(Either.right(genericEnvelope));
+
+        filter.doFilterInternal(request, response, chain);
+        val problemCaptor = ArgumentCaptor.forClass(Problem.class);
+
+        verify(objectMapper, times(1)).writeValueAsString(problemCaptor.capture());
+        val capturedProblem = problemCaptor.getValue();
+
+        assertThat(capturedProblem.getTitle()).isEqualTo("ERROR_GETTING_EVENT_DETAILS");
+        assertThat(capturedProblem.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
+    }
+
+    @Test
+    void doFilterInternal_shouldReturnBadRequest_whenEventDetailsNotFound() throws ServletException, IOException {
+        when(loginSystemDetector.detect(request)).thenReturn(Optional.of(KERI_SIGN));
+        when(request.getHeader(X_Login_Signature)).thenReturn("signature");
+        when(request.getHeader(X_Login_Payload)).thenReturn("7061796C6F6164");
+        when(request.getHeader(X_Login_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
+
+        when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
+
+        when(chainFollowerClient.getChainTip()).thenReturn(Either.right(
+                new ChainFollowerClient.ChainTipResponse("hash", 500, 23942349L, true, MAIN))
+        );
+
+        val genericEnvelope = KERIEnvelope.<Map<String, Object>>builder()
+                .uri("uri")
+                .action("LOGIN")
+                .slot("23942349")
+                .data(Map.of(
+                        "walletId", "EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO",
+                        "walletType", WalletType.KERI.name(),
+                        "slot", "23942349",
+                        "network", MAIN.name())
+                )
+                .build();
+
+        when(chainFollowerClient.getEventDetails(any())).thenReturn(Either.right(Optional.empty()));
+
+        when(jsonService.decodeGenericKeri(any())).thenReturn(Either.right(genericEnvelope));
+
+        filter.doFilterInternal(request, response, chain);
+        val problemCaptor = ArgumentCaptor.forClass(Problem.class);
+
+        verify(objectMapper, times(1)).writeValueAsString(problemCaptor.capture());
+        val capturedProblem = problemCaptor.getValue();
+
+        assertThat(capturedProblem.getTitle()).isEqualTo("UNRECOGNISED_EVENT");
+        assertThat(capturedProblem.getStatus()).isEqualTo(BAD_REQUEST);
+    }
+
+    @Test
+    void doFilterInternal_shouldAuthenticate_whenAllConditionsMet() throws ServletException, IOException {
+        when(loginSystemDetector.detect(request)).thenReturn(Optional.of(KERI_SIGN));
+        when(request.getHeader(X_Login_Signature)).thenReturn("signature");
+        when(request.getHeader(X_Login_Payload)).thenReturn("7061796C6F6164");
+        when(request.getHeader(X_Login_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
+
+        when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
+
+        when(chainFollowerClient.getChainTip()).thenReturn(Either.right(
+                new ChainFollowerClient.ChainTipResponse("hash", 500, 23942349L, true, MAIN))
+        );
+
+        val genericEnvelope = KERIEnvelope.<Map<String, Object>>builder()
+                .uri("uri")
+                .action("LOGIN")
+                .slot("23942349")
+                .data(Map.of(
+                        "walletId", "EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO",
+                        "walletType", WalletType.KERI.name(),
+                        "slot", "23942349",
+                        "network", MAIN.name())
+                )
+                .build();
+
+        when(chainFollowerClient.getEventDetails(any())).thenReturn(Either.right(Optional.of(mock(ChainFollowerClient.EventDetailsResponse.class))));
+
+        when(jsonService.decodeGenericKeri(any())).thenReturn(Either.right(genericEnvelope));
+
+        filter.doFilterInternal(request, response, chain);
+
+        verify(chain, times(1)).doFilter(request, response);
+        assertThat(SecurityContextHolder.getContext().getAuthentication()).isNotNull();
+    }
 
 }

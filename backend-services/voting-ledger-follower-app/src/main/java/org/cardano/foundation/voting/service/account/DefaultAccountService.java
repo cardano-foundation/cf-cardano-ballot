@@ -19,6 +19,7 @@ import java.util.List;
 import static org.cardano.foundation.voting.domain.VotingEventType.BALANCE_BASED;
 import static org.cardano.foundation.voting.domain.VotingEventType.STAKE_BASED;
 import static org.zalando.problem.Status.BAD_REQUEST;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor

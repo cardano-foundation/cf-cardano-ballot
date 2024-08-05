@@ -70,7 +70,6 @@ const PeerConnect = (props: PeerConnectProps) => {
               opacity: 0.8,
             },
           }}
-          onClick={() => connect("", onConnectWallet, onConnectError)}
         >
           <Box
             component="div"

@@ -69,6 +69,8 @@ const VerifyWalletModal = () => {
   const [isPhoneInputDisabled] = useState<boolean>(false);
   const [phoneCodeIsBeenConfirming, setPhoneCodeIsBeenConfirming] =
     useState<boolean>(false);
+  const [enableSignDiscordSecret, setEnableSignDiscordSecret] =
+    useState<boolean>(true);
   const [inputSecret, setInputSecret] = useState("");
 
   const { signWithWallet, isLoading } = useSignatures();
@@ -111,6 +113,7 @@ const VerifyWalletModal = () => {
       setCheckImNotARobot(false);
       setPhoneCodeIsSent(false);
       setPhoneCodeShowError(false);
+      setEnableSignDiscordSecret(true);
       setPhone("");
       setInputSecret("");
       setCodes(Array(6).fill(""));
@@ -189,6 +192,7 @@ const VerifyWalletModal = () => {
   };
 
   const handleVerifyDiscord = async () => {
+      setEnableSignDiscordSecret(false);
     const signedMessageResult = await signWithWallet(
       inputSecret.trim(),
         connectedWallet.address,
@@ -204,8 +208,7 @@ const VerifyWalletModal = () => {
         connectedWallet.address,
       parsedSecret,
       // @ts-ignore
-      signedMessageResult.result,
-        inputSecret.trim()
+      signedMessageResult.result
     );
 
     if ("error" in verifyDiscordResult && verifyDiscordResult.error) {
@@ -824,7 +827,7 @@ const VerifyWalletModal = () => {
           colorVariant="primary"
           onClick={() => handleVerifyDiscord()}
           disabled={
-            isLoading || inputSecret === "" || !validateSecret(inputSecret)
+              enableSignDiscordSecret || isLoading || inputSecret === "" || !validateSecret(inputSecret)
           }
           sx={{
             width: "100%",

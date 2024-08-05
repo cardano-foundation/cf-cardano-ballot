@@ -84,6 +84,8 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
       };
 
       const onApiInject = async (name: string) => {
+        console.log("onApiInject");
+        console.log(name)
         if (name === "idw_p2p") {
           const api = window.cardano && window.cardano[name];
           if (api) {
@@ -140,6 +142,8 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
       };
 
       const onApiEject = (name: string): void => {
+        console.log("onApiEject");
+        console.log(name);
         dispatch(setConnectedWallet(initialConnectedWallet));
         setPeerConnectWalletInfo(undefined);
         eventBus.publish(
@@ -150,6 +154,8 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
       };
 
       const onP2PConnect = (): void => {
+        console.log("onP2PConnect");
+        console.log(peerConnectWalletInfo);
         if (peerConnectWalletInfo?.address) {
           dispatch(
               setConnectedWallet(peerConnectWalletInfo),
@@ -170,7 +176,6 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
   }, []);
 
   const handleConnectExtensionWallet = async (walletName: string) => {
-    console.log("hey");
     await connect(
       walletName,
       () => {
@@ -229,6 +234,13 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
     }
   };
 
+  const handleModalClose = () => {
+    props.handleCloseConnectWalletModal();
+    setTimeout(() => {
+      setConnectCurrentPaths([ConnectWalletFlow.SELECT_WALLET]);
+    }, 500);
+  }
+
   const getModalProps = () => {
     switch (connectCurrentPaths[0]) {
       case ConnectWalletFlow.SELECT_WALLET:
@@ -264,7 +276,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
             ? "Connect Identity Wallet"
             : "Connect Peer Wallet"
         }
-        onClose={() => props.handleCloseConnectWalletModal()}
+        onClose={() => handleModalClose()}
         width={isMobile ? "auto" : "450px"}
         backButton={connectCurrentPaths[0] !== ConnectWalletFlow.SELECT_WALLET}
         onBack={() => handleBack()}
@@ -279,7 +291,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
           setCurrentPath={(currentPath: ConnectWalletFlow) =>
             setCurrentPath(currentPath)
           }
-          closeModal={() => props.handleCloseConnectWalletModal()}
+          closeModal={() => handleModalClose()}
           connectExtensionWallet={(walletName: string) =>
             handleConnectExtensionWallet(walletName)
           }

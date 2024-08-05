@@ -584,6 +584,17 @@ class KeriWeb3FilterTest {
 
         verify(chain, times(1)).doFilter(request, response);
         assertThat(SecurityContextHolder.getContext().getAuthentication()).isNotNull();
+        assertThat(SecurityContextHolder.getContext().getAuthentication().getPrincipal()).isEqualTo("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
+
+        val keriDetails = (KeriWeb3Details) SecurityContextHolder.getContext().getAuthentication().getDetails();
+
+        assertThat(keriDetails.getSignedKERI()).isNotNull();
+        assertThat(keriDetails.getSignedJson()).isNotNull();
+        assertThat(keriDetails.getPayload()).isNotNull();
+        assertThat(keriDetails.getWeb3CommonDetails()).isNotNull();
+        assertThat(keriDetails.getPublicKey()).isNotNull();
+        assertThat(keriDetails.getData()).isNotNull();
+        assertThat(keriDetails.getEnvelope()).isNotNull();
     }
 
 }

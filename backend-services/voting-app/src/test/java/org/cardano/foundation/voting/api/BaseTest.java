@@ -82,28 +82,29 @@ public class BaseTest {
                                 .withHeader("Content-Type", "application/json")
                                 .withBody(responseBodyEvent1Details)));
 
-        String responseBodyEvent3Details = "{" +
-                "\"id\": \"CF_TEST_EVENT_03\", " +
-                "\"finished\": false, " +
-                "\"notStarted\": false, " +
-                "\"active\": true, " +
-                "\"isStarted\": true, " +
-                "\"proposalsReveal\": true, " +
-                "\"commitmentsWindowOpen\": true, " +
-                "\"allowVoteChanging\": true, " +
-                "\"highLevelEventResultsWhileVoting\": true, " +
-                "\"highLevelCategoryResultsWhileVoting\": true, " +
-                "\"categoryResultsWhileVoting\": true, " +
-                "\"votingEventType\": \"STAKE_BASED\", " +
-                "\"categories\": [" +
-                "{\"id\": \"CHANGE_MAYBE\", \"gdprProtection\": false, \"proposals\": [" +
-                "{\"id\": \"YES\", \"name\": \"YES\"}, " +
-                "{\"id\": \"NO\", \"name\": \"NO\"}," +
-                "{\"id\": \"MAYBE\", \"name\": \"MAYBE\"}" +
-                "]" +
-                "}" +
-                "]" +
-                "}";
+        String responseBodyEvent3Details = """
+                {\
+                "id": "CF_TEST_EVENT_03", \
+                "finished": false, \
+                "notStarted": false, \
+                "active": true, \
+                "isStarted": true, \
+                "proposalsReveal": true, \
+                "commitmentsWindowOpen": true, \
+                "allowVoteChanging": true, \
+                "highLevelEventResultsWhileVoting": true, \
+                "highLevelCategoryResultsWhileVoting": true, \
+                "categoryResultsWhileVoting": true, \
+                "votingEventType": "STAKE_BASED", \
+                "categories": [\
+                {"id": "CHANGE_MAYBE", "gdprProtection": false, "proposals": [\
+                {"id": "YES", "name": "YES"},\
+                {"id": "NO", "name": "NO"},\
+                {"id": "MAYBE", "name": "MAYBE"}\
+                ]\
+                }\
+                ]\
+                }""";
         wireMockServer.stubFor(
                 WireMock.get(urlEqualTo("/api/reference/event/CF_TEST_EVENT_03"))
                         .willReturn(aResponse()
@@ -116,23 +117,27 @@ public class BaseTest {
                         .willReturn(aResponse()
                                 .withStatus(404)));
 
-        String responseBodyTip = "{\"hash\": \"c1bd418bb511b7911f3201802b15fc40722a054143798126e37af2ff143abc8c\", " +
-                "\"epochNo\": 97, \"synced\": true, \"network\": \"PREPROD\", \"absoluteSlot\": 40262417}";
+        String responseBodyTip = """
+                {"hash": "c1bd418bb511b7911f3201802b15fc40722a054143798126e37af2ff143abc8c", \
+                "epochNo": 97, "synced": true, "network": "PREPROD", "absoluteSlot": 40262417}
+        """;
 
         wireMockServer.stubFor(
+
                 WireMock.get(urlEqualTo("/api/blockchain/tip"))
                         .willReturn(aResponse()
                                 .withStatus(200)
                                 .withHeader("Content-Type", "application/json")
                                 .withBody(responseBodyTip)));
 
-        String responseBodyStake = "{" +
-                    "\"walletId\": \"stake_test1uruw6wswag80sd0l57alehj47llf6tx96402vt8vks46k0q0e2ne6\", " +
-                    "\"walletType\": \"CARDANO\", " +
-                    "\"votingPower\": \"10444555666\", " +
-                    "\"epochNo\": 97, " +
-                    "\"votingPowerAsset\": \"ADA\"" +
-                "}";
+        String responseBodyStake = """
+                {
+                "walletId": "stake_test1uruw6wswag80sd0l57alehj47llf6tx96402vt8vks46k0q0e2ne6",
+                "walletType": "CARDANO",
+                "votingPower": "10444555666",
+                "epochNo": 97,
+                "votingPowerAsset": "ADA"
+                }""";
 
         wireMockServer.stubFor(
                 WireMock.get(urlEqualTo("/api/account/CF_TEST_EVENT_01/CARDANO/stake_test1uruw6wswag80sd0l57alehj47llf6tx96402vt8vks46k0q0e2ne6"))

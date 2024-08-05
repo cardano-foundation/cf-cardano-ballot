@@ -326,6 +326,7 @@ public class DefaultVoteService implements VoteService {
         vote.setPublicKey(concreteDetails.getPublicKey());
         vote.setIdNumericHash(UUID.fromString(voteId).hashCode() & 0xFFFFFFF);
 
+        // KERI wallet type is not supported for account / balance voting events
         if (event.votingEventType() != USER_BASED && concreteDetails.getWeb3CommonDetails().getWalletType() == KERI) {
             return Either.left(
                     Problem.builder()

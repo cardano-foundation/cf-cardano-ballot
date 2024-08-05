@@ -49,8 +49,8 @@ def signCIP30LoginEnvelope(): Unit = {
               "actionText": "Login",
               "slot": "40262406",
               "data": {
-                "walletId": "stake_test1uruw6wswag80sd0l57alehj47llf6tx96402vt8vks46k0q0e2ne6",
-                "walletType: "CARDANO",
+                "walletId": "stake_test1uzanmeujweq3cl4qxkfagxl0frahpk6eyck92faxv7mp9sst9nhwa",
+                "walletType": "CARDANO",
                 "event": "CF_TEST_EVENT_01",
                 "network": "PREPROD",
                 "role": "VOTER"
@@ -140,19 +140,18 @@ def signCIP30ViewVoteReceiptEnvelope(): Unit = {
     val voteId = java.util.UUID.randomUUID().toString()
 
     val inputJSON = s"""
-    {
-        "uri": "https://evoting.cardano.org/voltaire",
-        "action": "VIEW_VOTE_RECEIPT",
-        "actionText": "Vote",
-        "slot": "${lastSlot}",
-        "data": {
-            "id": "${voteId}",
-            "address": "${stakeAddress}",
-            "event": "CIP-1694_Pre_Ratification_3316",
-            "category": "CHANGE_GOV_STRUCTURE",
+        {
+            "action": "VIEW_VOTE_RECEIPT",
+            "actionText": "View Vote Receipt",
+            "slot": "40262406",
+            "data": {
+            "walletId": "stake_test1uruw6wswag80sd0l57alehj47llf6tx96402vt8vks46k0q0e2ne6",
+            "walletType": "CARDANO",
+            "event": "CF_TEST_EVENT_01",
+            "category": "CHANGE_SOMETHING",
             "network": "PREPROD"
+            }
         }
-   }
 """.stripMargin
 
     println(inputJSON)
@@ -197,6 +196,6 @@ def latestAbsoluteSlot(mapper: ObjectMapper): Long = {
 @main
 def main() = {
     //signCIP30LoginEnvelope()
-    signCIP30VoteCastEnvelope()
-    //signCIP30ViewVoteReceiptEnvelope()
+    //signCIP30VoteCastEnvelope()
+    signCIP30ViewVoteReceiptEnvelope()
 }

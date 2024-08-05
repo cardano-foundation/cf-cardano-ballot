@@ -13,8 +13,7 @@ import { eventBus, EventName } from "../../utils/EventBus";
 import { useIsPortrait } from "../../common/hooks/useIsPortrait";
 import { useAppDispatch } from "../../store/hooks";
 import {
-  setConnectedWallet,
-  setWalletIdentifier,
+  setConnectedWallet
 } from "../../store/reducers/userCache";
 import { ToastType } from "../common/Toast/Toast.types";
 import { initialConnectedWallet } from "../../store/reducers/userCache/initialState";
@@ -36,10 +35,17 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
     /*TODO */
   });
 
-  const { connect, dAppConnect, meerkatAddress, initDappConnect, disconnect } =
-    useCardano({
-      limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
-    });
+  const {
+    connect,
+    dAppConnect,
+    stakeAddress,
+    enabledWallet,
+    meerkatAddress,
+    initDappConnect,
+    disconnect,
+  } = useCardano({
+    limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
+  });
 
   const isMobile = useIsPortrait();
 
@@ -58,11 +64,6 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
   const setCurrentPath = (currentPath: ConnectWalletFlow) => {
     const filteredPaths = connectCurrentPaths.filter((p) => p !== currentPath);
     return setConnectCurrentPaths([currentPath, ...filteredPaths]);
-  };
-
-  const onConnectWallet = () => {
-    eventBus.publish(EventName.CloseConnectWalletModal);
-    eventBus.publish(EventName.ShowToast, "Wallet connected successfully");
   };
 
   const onConnectError = (e: Error) => {
@@ -89,10 +90,9 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
             const enabledApi = await api.enable();
             const keriIdentifier =
               await enabledApi.experimental.getKeriIdentifier();
-            dispatch(setWalletIdentifier(keriIdentifier.id));
             dispatch(
               setConnectedWallet({
-                address: api.identifier,
+                address: keriIdentifier,
                 name: api.name,
                 icon: api.icon,
                 requestAutoconnect: true,
@@ -115,11 +115,22 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
           connect(
             name,
             () => {
-              eventBus.publish(
-                EventName.ShowToast,
-                `${name} Wallet connected successfully`,
-              );
-              props.handleCloseConnectWalletModal();
+              if (stakeAddress && enabledWallet) {
+                dispatch(
+                  setConnectedWallet({
+                    address: stakeAddress,
+                    name: enabledWallet,
+                    icon: window.cardano[name].icon,
+                    version: window.cardano[name].version,
+                  }),
+                );
+
+                eventBus.publish(
+                  EventName.ShowToast,
+                  `${name} Wallet connected successfully`,
+                );
+                props.handleCloseConnectWalletModal();
+              }
             },
             (e: Error) => {
               eventBus.publish(EventName.ShowToast, e.message, ToastType.Error);
@@ -129,7 +140,6 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
       };
 
       const onApiEject = (name: string): void => {
-        dispatch(setWalletIdentifier(""));
         dispatch(setConnectedWallet(initialConnectedWallet));
         setPeerConnectWalletInfo(undefined);
         eventBus.publish(
@@ -141,7 +151,9 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
 
       const onP2PConnect = (): void => {
         if (peerConnectWalletInfo?.address) {
-          dispatch(setWalletIdentifier(peerConnectWalletInfo.address));
+          dispatch(
+              setConnectedWallet(peerConnectWalletInfo),
+          );
         }
       };
 
@@ -157,8 +169,24 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
     }
   }, []);
 
-  const handleConnectExtensionWallet = (walletName: string) => {
-    connect(walletName, onConnectWallet, onConnectError);
+  const handleConnectExtensionWallet = async (walletName: string) => {
+    console.log("hey");
+    await connect(
+      walletName,
+      () => {
+        dispatch(
+          setConnectedWallet({
+            address: stakeAddress || "",
+            name: walletName,
+            icon: window.cardano[walletName].icon,
+            version: window.cardano[walletName].version,
+          }),
+        );
+        eventBus.publish(EventName.CloseConnectWalletModal);
+        eventBus.publish(EventName.ShowToast, "Wallet connected successfully");
+      },
+      onConnectError,
+    );
   };
 
   const handleAcceptP2PWallet = () => {
@@ -180,8 +208,10 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
                 const enabledApi = await api.enable();
                 const keriIdentifier =
                   await enabledApi.experimental.getKeriIdentifier();
-                dispatch(setWalletIdentifier(keriIdentifier.id));
-                dispatch(setConnectedWallet(peerConnectWalletInfo));
+                dispatch(setConnectedWallet({
+                  ...peerConnectWalletInfo,
+                  address: keriIdentifier.id
+                }));
               } else {
                 eventBus.publish(
                   EventName.ShowToast,

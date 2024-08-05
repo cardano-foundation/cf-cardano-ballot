@@ -16,7 +16,7 @@ interface VerificationStarted {
   expiresAt: string;
 }
 interface VerificationStartedExtended extends VerificationStarted {
-  walletIdentifier?: string;
+  walletIdentifier: string;
 }
 
 interface UserVotes {

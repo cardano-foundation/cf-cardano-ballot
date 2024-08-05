@@ -33,10 +33,10 @@ import { CustomCheckBox } from "../common/CustomCheckBox/CustomCheckBox";
 import { validatePhoneNumberLength } from "libphonenumber-js";
 import { eventBus, EventName } from "../../utils/EventBus";
 import {
-  getVerificationStarted,
-  getWalletIdentifier,
-  setVerificationStarted,
-  setWalletIsVerified,
+    getConnectedWallet,
+    getVerificationStarted,
+    setVerificationStarted,
+    setWalletIsVerified,
 } from "../../store/reducers/userCache";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { VerificationStarted } from "../../store/reducers/userCache/userCache.types";
@@ -50,7 +50,7 @@ import { useSignatures } from "../../common/hooks/useSignatures";
 const excludedCountries: MuiTelInputCountry[] | undefined = [];
 
 const VerifyWalletModal = () => {
-  const walletIdentifier = useAppSelector(getWalletIdentifier);
+    const connectedWallet = useAppSelector(getConnectedWallet);
   const dispatch = useAppDispatch();
 
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -132,13 +132,13 @@ const VerifyWalletModal = () => {
   const handleSendCode = async () => {
     if (matchIsValidTel(phone) && checkImNotARobot) {
       setPhoneCodeIsBeenSending(true);
-      sendSmsCode(walletIdentifier, phone.trim().replace(" ", ""))
+      sendSmsCode(connectedWallet.address, phone.trim().replace(" ", ""))
         // @ts-ignore
         .then((response: VerificationStarted) => {
           handleSetCurrentPath(VerifyWalletFlow.CONFIRM_CODE);
           dispatch(
             setVerificationStarted({
-              walletIdentifier,
+                walletIdentifier: connectedWallet.address,
               ...response,
             }),
           );
@@ -155,7 +155,7 @@ const VerifyWalletModal = () => {
   const handleVerifyPhoneCode = () => {
     setPhoneCodeIsBeenConfirming(true);
     confirmPhoneNumberCode(
-      walletIdentifier,
+        connectedWallet.address,
       phone.trim().replace(" ", ""),
       userVerificationStarted.requestId,
       codes.join(""),
@@ -191,8 +191,8 @@ const VerifyWalletModal = () => {
   const handleVerifyDiscord = async () => {
     const signedMessageResult = await signWithWallet(
       inputSecret.trim(),
-      walletIdentifier,
-      resolveWalletType(walletIdentifier),
+        connectedWallet.address,
+      resolveWalletType(connectedWallet.address),
     );
 
     if (!signedMessageResult.success) {
@@ -201,7 +201,7 @@ const VerifyWalletModal = () => {
     }
     const parsedSecret = inputSecret.split("|")[1];
     const verifyDiscordResult = await verifyDiscord(
-      walletIdentifier,
+        connectedWallet.address,
       parsedSecret,
       // @ts-ignore
       signedMessageResult.result,

@@ -67,7 +67,7 @@ const Toast = ({ message, isOpen, type, onClose }: ToastProps) => {
       action={
         <Box component="div" sx={{ display: "flex", alignItems: "center" }}>
           <Box
-              component="div"
+            component="div"
             sx={{
               backgroundColor: color,
               width: "1px",

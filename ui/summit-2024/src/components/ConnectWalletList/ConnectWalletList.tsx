@@ -49,7 +49,6 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
     setCurrentPath,
     handleOnPeerConnectAccept,
     closeModal,
-
     connectExtensionWallet,
   } = props;
 

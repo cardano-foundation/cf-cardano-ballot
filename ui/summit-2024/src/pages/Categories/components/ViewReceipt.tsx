@@ -141,7 +141,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
               sx={{
                 width: "24px",
                 height: "24px",
-                  // @ts-ignore
+                // @ts-ignore
                 color: theme.palette.error.text,
               }}
             />
@@ -200,7 +200,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
               sx={{
                 width: "24px",
                 height: "24px",
-                  // @ts-ignore
+                // @ts-ignore
                 color: theme.palette.error.text,
               }}
             />

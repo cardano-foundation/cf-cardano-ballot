@@ -24,7 +24,7 @@ import {
 } from "../../common/api/voteService";
 import { eventBus, EventName } from "../../utils/EventBus";
 import {
-  getWalletIdentifier,
+  getConnectedWallet,
   getWalletIsVerified,
 } from "../../store/reducers/userCache";
 import { getUserInSession, tokenIsExpired } from "../../utils/session";
@@ -44,7 +44,7 @@ interface CategoriesProps {
 const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
   const eventCache = useAppSelector(getEventCache);
-  const walletIdentifier = useAppSelector(getWalletIdentifier);
+  const connectedWallet = useAppSelector(getConnectedWallet);
   const walletIdentifierIsVerified = useAppSelector(getWalletIsVerified);
   const categoriesData = eventCache.categories;
 
@@ -123,7 +123,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
     if (showWinners) {
       handleOpenViewReceipt();
     } else {
-      if (!walletIdentifier.length) {
+      if (!connectedWallet.address.length) {
         eventBus.publish(
           EventName.ShowToast,
           "Connect your wallet in order to vote",
@@ -164,15 +164,15 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
         voteId: uuidv4(),
         categoryId: categoryId,
         proposalId: proposalId,
-        walletId: walletIdentifier,
-        walletType: resolveWalletType(walletIdentifier),
+        walletId: connectedWallet.address,
+        walletType: resolveWalletType(connectedWallet.address),
         slotNumber: absoluteSlot.toString(),
       });
 
       const requestVoteResult = await signWithWallet(
         canonicalVoteInput,
-        walletIdentifier,
-        resolveWalletType(walletIdentifier),
+          connectedWallet.address,
+        resolveWalletType(connectedWallet.address),
       );
 
       console.log();

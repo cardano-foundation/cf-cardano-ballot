@@ -1,4 +1,3 @@
-import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 import {
   Avatar,
   Box,
@@ -14,19 +13,13 @@ import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import "./ConnectWalletButton.scss";
 import { getUserInSession, tokenIsExpired } from "../../utils/session";
-import {
-  addressSlice,
-  resolveCardanoNetwork,
-  walletIcon,
-} from "../../utils/utils";
-import { env } from "../../common/constants/env";
+import { addressSlice } from "../../utils/utils";
 import { eventBus } from "../../utils/EventBus";
 import { useIsPortrait } from "../../common/hooks/useIsPortrait";
 import { useAppSelector } from "../../store/hooks";
 import { getEventCache } from "../../store/reducers/eventCache";
 import {
   getConnectedWallet,
-  getWalletIdentifier,
   getWalletIsVerified,
 } from "../../store/reducers/userCache";
 import { useNavigate } from "react-router-dom";
@@ -47,20 +40,13 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
   const isMobile = useIsPortrait();
   const eventCache = useAppSelector(getEventCache);
   const walletIsVerified = useAppSelector(getWalletIsVerified);
-  const walletIdentifier = useAppSelector(getWalletIdentifier);
   const connectedWallet = useAppSelector(getConnectedWallet);
 
   const session = getUserInSession();
   const isExpired = tokenIsExpired(session?.expiresAt);
 
-  const { enabledWallet, stakeAddress } = useCardano({
-    limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
-  });
-
-  const walletName = stakeAddress ? enabledWallet : connectedWallet.name;
-
   const handleConnectWallet = () => {
-    if (!walletIdentifier || !walletIdentifier.length) {
+    if (!connectedWallet.address || !connectedWallet.address .length) {
       onOpenConnectWalletModal();
     }
   };
@@ -78,25 +64,25 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
       <Button
         sx={{ zIndex: "99", padding: isMobile ? "10px 10px" : "16px 20px" }}
         className={`main-button ${
-          walletIdentifier?.length ? "connected-button" : "connect-button"
+            connectedWallet.address ?.length ? "connected-button" : "connect-button"
         }`}
         color="inherit"
         onClick={() => handleConnectWallet()}
       >
-        {walletIdentifier?.length ? (
+        {connectedWallet.address ?.length ? (
           <Avatar
-            src={walletIcon(walletName)}
+            src={connectedWallet.icon}
             style={{ width: "24px", height: "24px" }}
           />
         ) : (
           <AccountBalanceWalletIcon />
         )}
-        {walletIdentifier?.length ? (
+        {connectedWallet.address ?.length ? (
           <>
             {isMobile
               ? null
-              : walletIdentifier
-                ? addressSlice(walletIdentifier, 5)
+              : connectedWallet.address
+                    ? addressSlice(connectedWallet.address , 5)
                 : null}
             {walletIsVerified ? (
               <VerifiedIcon
@@ -115,7 +101,7 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
           <>{props.label?.length ? <span>{props.label}</span> : null}</>
         )}
       </Button>
-      {walletIdentifier?.length ? (
+      {connectedWallet.address ?.length ? (
         <Box
           component="div"
           className="disconnect-wrapper"

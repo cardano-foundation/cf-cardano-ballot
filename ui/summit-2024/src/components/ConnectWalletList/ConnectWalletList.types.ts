@@ -3,7 +3,7 @@ interface IWalletInfo {
   name: string;
   version: string;
   icon: string;
-  requestAutoconnect: boolean;
+  requestAutoconnect?: boolean;
 }
 
 enum ConnectWalletFlow {

@@ -20,9 +20,6 @@ const userCacheSlice = createSlice({
     resetUser: (_state) => {
       return initialState;
     },
-    setWalletIdentifier: (state, action: PayloadAction<string>) => {
-      state.walletIdentifier = action.payload;
-    },
     setConnectedWallet: (state, action: PayloadAction<IWalletInfo>) => {
       state.connectedWallet = action.payload;
     },
@@ -46,7 +43,6 @@ const {
   resetUser,
   setWalletIsVerified,
   setUserVotes,
-  setWalletIdentifier,
   setConnectedWallet,
   setVerificationStarted,
 } = userCacheSlice.actions;
@@ -54,8 +50,6 @@ const {
 const getUser = (state: RootState) => state.userCache;
 const getWalletIsVerified = (state: RootState) => state.userCache.isVerified;
 const getUserVotes = (state: RootState) => state.userCache.userVotes;
-const getWalletIdentifier = (state: RootState) =>
-  state.userCache.walletIdentifier;
 const getConnectedWallet = (state: RootState) =>
   state.userCache.connectedWallet;
 const getVerificationStarted = (state: RootState) =>
@@ -68,13 +62,11 @@ export {
   resetUser,
   setWalletIsVerified,
   setUserVotes,
-  setWalletIdentifier,
   setVerificationStarted,
   setConnectedWallet,
   getUser,
   getWalletIsVerified,
   getUserVotes,
-  getWalletIdentifier,
   getConnectedWallet,
   getVerificationStarted,
 };

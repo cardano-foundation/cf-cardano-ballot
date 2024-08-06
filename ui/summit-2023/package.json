@@ -62,7 +62,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "PORT=4000 react-scripts start",
     "build": "GENERATE_SOURCEMAP=false react-scripts build",
     "jest-test": "react-scripts test",
     "cypress:open": "cypress open",

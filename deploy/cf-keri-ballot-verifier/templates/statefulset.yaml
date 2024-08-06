@@ -24,7 +24,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: VERIFIER_URL
-              value: {{ .Values.url }}
+              value: {{ tpl .Values.url . | default "http://localhost:5666" }}
             - name: VERIFIER_PORT
               value: {{ .Values.service.port | default "5666" | quote }}
             - name: VERIFIER_ADMIN_PORT

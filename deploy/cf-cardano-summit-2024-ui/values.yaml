@@ -31,3 +31,4 @@ nodeSelector: {}
 
 showWinners: "false"
 showHydraTally: "false"
+usingFixtures: "false"

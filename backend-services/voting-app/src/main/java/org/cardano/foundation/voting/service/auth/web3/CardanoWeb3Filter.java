@@ -42,7 +42,7 @@ import static org.zalando.problem.Status.*;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class Web3CardanoFilter extends OncePerRequestFilter {
+public class CardanoWeb3Filter extends OncePerRequestFilter {
 
     private final JsonService jsonService;
 

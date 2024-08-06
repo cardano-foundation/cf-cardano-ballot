@@ -54,7 +54,11 @@ spec:
             - name: VITE_COMMIT_HASH
               value: {{ .Values.image.tag | default "latest" }}
             - name: VITE_WEB_URL
-              value: {{ .Values.webUrl | default "https://{{ .Values.domain }}" }}
+              {{ if .Values.webUrl }}
+              value: {{ .Values.webUrl }}
+              {{ else }}
+              value: "https://{{ .Values.domain }}"
+              {{ end }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}

@@ -12,16 +12,14 @@ RUN npm run build
 
 # Bundle static assets with nginx
 FROM nginx:alpine as production
+EXPOSE 80
 WORKDIR /app
 
-# Copy built assets from builder
-#COPY --from=builder /app/build /usr/share/nginx/html
-## Add your nginx.conf
-#COPY docker-assets/nginx.conf /etc/nginx/conf.d/default.conf
-#COPY docker-assets/bin/entrypoint.sh /app/entrypoint.sh
-#COPY env.global.tmp.js /app/env.global.tmp.js
-#COPY package.json /app/
-## Expose port
-#EXPOSE 80
-## Start nginx
-#CMD ["sh", "/app/entrypoint.sh"]
+COPY --from=build /app/dist /usr/share/nginx/html
+
+RUN rm -rf /etc/nginx/conf.d
+COPY docker-assets/etc/nginx/conf.d /etc/nginx/conf.d
+COPY docker-assets/bin/entrypoint.sh /app/entrypoint.sh
+COPY package.json /app/
+
+CMD ["sh", "/app/entrypoint.sh"]

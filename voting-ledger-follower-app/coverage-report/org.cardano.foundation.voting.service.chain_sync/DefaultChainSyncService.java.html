@@ -51,10 +51,10 @@ public class DefaultChainSyncService implements ChainSyncService {
 
     public SyncStatus fetchSyncStatus() {
         try {
-<span class="nc" id="L54">            var orgLastBlockResult = orgBackendService.getBlockService().getLatestBlock();</span>
-<span class="nc" id="L55">            var yaciLastBlockResult = yaciBackendService.getBlockService().getLatestBlock();</span>
+<span class="fc" id="L54">            var orgLastBlockResult = orgBackendService.getBlockService().getLatestBlock();</span>
+<span class="fc" id="L55">            var yaciLastBlockResult = yaciBackendService.getBlockService().getLatestBlock();</span>
 
-<span class="nc bnc" id="L57" title="All 4 branches missed.">            if (orgLastBlockResult.isSuccessful() &amp;&amp; yaciLastBlockResult.isSuccessful()) {</span>
+<span class="pc bpc" id="L57" title="3 of 4 branches missed.">            if (orgLastBlockResult.isSuccessful() &amp;&amp; yaciLastBlockResult.isSuccessful()) {</span>
 <span class="nc" id="L58">                var diff = orgLastBlockResult.getValue().getSlot() - yaciLastBlockResult.getValue().getSlot();</span>
 
 <span class="nc" id="L60">                log.info(&quot;Current diff: {} (slots) between blockfrost and yaci.&quot;, diff);</span>
@@ -70,11 +70,11 @@ public class DefaultChainSyncService implements ChainSyncService {
 <span class="nc" id="L70">                return SyncStatus.notYet(diff);</span>
             }
 
-<span class="nc" id="L73">            return SyncStatus.unknownError();</span>
-<span class="fc" id="L74">        } catch (Exception e) {</span>
-<span class="fc" id="L75">            log.error(&quot;Backend service is not available: {}&quot;, e.getMessage());</span>
+<span class="fc" id="L73">            return SyncStatus.unknownError();</span>
+<span class="nc" id="L74">        } catch (Exception e) {</span>
+<span class="nc" id="L75">            log.error(&quot;Backend service is not available: {}&quot;, e.getMessage());</span>
 
-<span class="fc" id="L77">            return SyncStatus.error(e);</span>
+<span class="nc" id="L77">            return SyncStatus.error(e);</span>
         }
     }
 

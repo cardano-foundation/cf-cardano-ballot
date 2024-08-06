@@ -14,7 +14,7 @@ import VerifiedIcon from "@mui/icons-material/Verified";
 import "./ConnectWalletButton.scss";
 import { getUserInSession, tokenIsExpired } from "../../utils/session";
 import { addressSlice } from "../../utils/utils";
-import { eventBus } from "../../utils/EventBus";
+import {eventBus, EventName} from "../../utils/EventBus";
 import { useIsPortrait } from "../../common/hooks/useIsPortrait";
 import { useAppSelector } from "../../store/hooks";
 import { getEventCache } from "../../store/reducers/eventCache";
@@ -31,11 +31,10 @@ type ConnectWalletButtonProps = {
   onOpenConnectWalletModal: () => void;
   onOpenVerifyWalletModal: () => void;
   onDisconnectWallet: () => void;
-  onLogin: () => void;
 };
 
 const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
-  const { onOpenConnectWalletModal, onLogin, onDisconnectWallet } = props;
+  const { onOpenConnectWalletModal, onDisconnectWallet } = props;
   const navigate = useNavigate();
   const isMobile = useIsPortrait();
   const eventCache = useAppSelector(getEventCache);
@@ -52,7 +51,11 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
   };
 
   const handleVerifyWallet = () => {
-    eventBus.publish("openVerifyWalletModal");
+    eventBus.publish(EventName.OpenVerifyWalletModal);
+  };
+
+  const handleOpenLoginModal = () => {
+    eventBus.publish(EventName.OpenLoginModal);
   };
 
   const handleOpenVoteReceipts = () => {
@@ -132,7 +135,7 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
                 sx={{ zIndex: "99" }}
                 className="menu-button"
                 color="inherit"
-                onClick={() => onLogin()}
+                onClick={() => handleOpenLoginModal()}
                 disabled={session && !isExpired}
               >
                 Login

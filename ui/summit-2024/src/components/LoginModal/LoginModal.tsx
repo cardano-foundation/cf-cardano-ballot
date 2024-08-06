@@ -5,12 +5,25 @@ import Modal from "../common/Modal/Modal";
 import { useIsPortrait } from "../../common/hooks/useIsPortrait";
 import theme from "../../common/styles/theme";
 import {eventBus, EventName} from "../../utils/EventBus";
+import {getSlotNumber, getUserVotes} from "../../common/api/voteService";
+import {buildCanonicalLoginJson, submitLogin} from "../../common/api/loginService";
+import {useAppDispatch, useAppSelector} from "../../store/hooks";
+import {getConnectedWallet, setIsLogin, setUserVotes} from "../../store/reducers/userCache";
+import {resolveWalletType} from "../../common/api/utils";
+import {useSignatures} from "../../common/hooks/useSignatures";
+import {ToastType} from "../common/Toast/Toast.types";
+import {saveUserInSession} from "../../utils/session";
+import {parseError} from "../../common/constants/errors";
 
 const LoginModal: React.FC = () => {
-  const isMobile = useIsPortrait();
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [isLogging, setIsLogging] = useState<boolean>(false);
+    const dispatch = useAppDispatch();
 
+    const isMobile = useIsPortrait();
+    const connectedWallet = useAppSelector(getConnectedWallet);
+
+    const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isLogging, setIsLogging] = useState<boolean>(false);
+    const { signWithWallet } = useSignatures();
     useEffect(() => {
         const openLoginModal = () => {
             setIsOpen(true);
@@ -36,9 +49,68 @@ const LoginModal: React.FC = () => {
         };
     }, []);
 
-  const handleLogin = () => {
-    setIsLogging(true);
+  const handleLogin = async () => {
+      try {
+          setIsLogging(true);
+          // @ts-ignore
+          const absoluteSlot = (await getSlotNumber())?.absoluteSlot;
+          const canonicalLoginInput = buildCanonicalLoginJson({
+              walletId: connectedWallet.address,
+              walletType: resolveWalletType(connectedWallet.address),
+              slotNumber: absoluteSlot.toString(),
+          });
+
+          const loginSignatureResult = await signWithWallet(
+              canonicalLoginInput,
+              connectedWallet.address,
+              resolveWalletType(connectedWallet.address),
+          );
+
+          if (!loginSignatureResult.success) {
+              eventBus.publish(
+                  EventName.ShowToast,
+                  loginSignatureResult.error || "Error while signing",
+                  ToastType.Error,
+              );
+              return;
+          }
+
+          // @ts-ignore
+          submitLogin(loginSignatureResult.result, resolveWalletType(connectedWallet.address))
+              .then((response) => {
+                  const newSession = {
+                      // @ts-ignore
+                      accessToken: response.accessToken,
+                      // @ts-ignore
+                      expiresAt: response.expiresAt,
+                  };
+                  saveUserInSession(newSession);
+                  dispatch(setIsLogin(true));
+                  eventBus.publish(EventName.ShowToast, "Login successfully");
+                  getUserVotes(newSession?.accessToken)
+                      .then((uVotes) => {
+                          if (uVotes) {
+                              // @ts-ignore
+                              dispatch(setUserVotes(uVotes));
+                          }
+                          handleCloseModal();
+                      })
+                      .catch((e) => {
+                          setIsLogging(false);
+                          eventBus.publish(EventName.ShowToast, parseError(e.message), ToastType.Error);
+                      });
+              })
+              .catch((e) => {
+                  setIsLogging(false);
+                  eventBus.publish(EventName.ShowToast, parseError(e.message), ToastType.Error);
+              });
+      } catch (e) {
+          setIsLogging(false);
+          // @ts-ignore
+          eventBus.publish(EventName.ShowToast, e.message, ToastType.Error);
+      }
   };
+
   const handleCloseModal= () => {
     setIsOpen(false);
     setIsLogging(false);
@@ -59,7 +131,7 @@ const LoginModal: React.FC = () => {
           sx={{
             width: {
               xs: "100%",
-              sm: "450px",
+              sm: "400px",
             },
             display: "flex",
             justifyContent: "center",
@@ -84,8 +156,8 @@ const LoginModal: React.FC = () => {
             colorVariant="primary"
             sx={{
               minWidth: "256px",
-              mt: "50px",
-              mb: "20px",
+              mt: "24px",
+              mb: "28px",
             }}
             disabled={isLogging}
           >

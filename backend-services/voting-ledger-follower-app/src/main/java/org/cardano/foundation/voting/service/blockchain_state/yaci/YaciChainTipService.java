@@ -1,6 +1,6 @@
 package org.cardano.foundation.voting.service.blockchain_state.yaci;
 
-import com.bloxbean.cardano.yaci.store.blocks.service.BlockService;
+import com.bloxbean.cardano.yaci.store.api.blocks.service.BlockService;
 import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,8 +1,8 @@
 package org.cardano.foundation.voting.config;
 
 import com.bloxbean.cardano.client.backend.api.BackendService;
-import com.bloxbean.cardano.yaci.store.blocks.service.BlockService;
-import com.bloxbean.cardano.yaci.store.transaction.service.TransactionService;
+import com.bloxbean.cardano.yaci.store.api.blocks.service.BlockService;
+import com.bloxbean.cardano.yaci.store.api.transaction.service.TransactionService;
 import org.cardano.foundation.voting.domain.CardanoNetwork;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataChainTipService;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataStakePoolService;

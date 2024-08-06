@@ -1,6 +1,6 @@
 image:
-  repository: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/voting-ledger-follower-app
-  tag: "0.0.1"
+  repository: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-voting-ledger-follower-app
+  tag: latest
   pullPolicy: Always
 
 imagePullSecrets: []

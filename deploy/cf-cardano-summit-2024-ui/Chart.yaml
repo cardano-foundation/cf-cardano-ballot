@@ -1,5 +1,5 @@
 apiVersion: v2
-name: summit-2023-ui
+name: summit-2024-ui
 description: A Helm chart for Kubernetes
 type: application
 version: 0.0.1

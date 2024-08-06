@@ -17,11 +17,18 @@ env:
 
 jobs:
 
-  java-apps:
+  backend-services:
     runs-on: ${{ fromJson(vars.RUNS_ON) }}
     strategy:
       matrix:
-        service: ['voting-app', 'vote-commitment-app', 'voting-ledger-follower-app', 'voting-verification-app', 'user-verification-service', 'voting-admin-app']
+        service:
+          - voting-app
+          - vote-commitment-app
+          - voting-ledger-follower-app
+          - voting-verification-app
+          - user-verification-service
+          - voting-admin-app
+          - keri-ballot-verifier
     steps:
       - name: Checkout
         uses: actions/checkout@v4

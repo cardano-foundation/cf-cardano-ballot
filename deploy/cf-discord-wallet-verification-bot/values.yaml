@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-discord-wallet-verification-bot
-  tag: "0.0.1"
+  tag: latest
   pullPolicy: Always
 
 imagePullSecrets: []

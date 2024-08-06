@@ -1,11 +1,12 @@
 VERSION 0.8
 
-ARG --global DOCKER_IMAGES_TARGETS="voting-app vote-commitment-app voting-ledger-follower-app voting-verification-app user-verification-service ui-summit-2024 voting-admin-app"
+IMPORT --allow-privileged github.com/cardano-foundation/cf-gha-workflows/./earthfiles/functions:main AS functions
 
-ARG --global DOCKER_IMAGE_PREFIX="cf"
+ARG --global DOCKER_IMAGES_TARGETS="voting-app vote-commitment-app voting-ledger-follower-app voting-verification-app user-verification-service voting-admin-app keri-ballot-verifier ui-summit-2024"
+
+ARG --global DOCKER_IMAGES_PREFIX="cf"
 ARG --global DOCKER_IMAGES_EXTRA_TAGS=""
-ARG --global DOCKER_REGISTRIES="hub.docker.com"
-ARG --global HUB_DOCKER_COM_USER=cardanofoundation
+ARG --global DOCKER_REGISTRIES=""
 ARG --global RELEASE_TAG=""
 ARG --global PUSH=false
 
@@ -17,32 +18,6 @@ all:
 
 docker-publish:
   BUILD +all --PUSH=$PUSH
-
-TEMPLATED_DOCKER_TAG_N_PUSH:
-  FUNCTION
-  ARG EARTHLY_GIT_SHORT_HASH
-  ARG PUSH # we use this as --push is not supported in LOCALLY blocks
-  ARG DOCKER_IMAGE_NAME
-  ARG DOCKER_IMAGES_EXTRA_TAGS
-  LOCALLY
-  FOR registry IN $DOCKER_REGISTRIES
-    FOR image_tag IN $DOCKER_IMAGES_EXTRA_TAGS
-      IF [ "$registry" = "hub.docker.com" ]
-        RUN docker tag ${DOCKER_IMAGE_NAME}:latest ${HUB_DOCKER_COM_USER}/${DOCKER_IMAGE_NAME}:${image_tag}
-        RUN if [ "$PUSH" = "true" ]; then docker push ${HUB_DOCKER_COM_USER}/${DOCKER_IMAGE_NAME}:${image_tag}; fi
-      ELSE
-        RUN docker tag ${DOCKER_IMAGE_NAME}:latest ${registry}/${DOCKER_IMAGE_NAME}:${image_tag}
-        RUN if [ "$PUSH" = "true" ]; then docker push ${registry}/${DOCKER_IMAGE_NAME}:${image_tag}; fi
-      END
-    END
-    IF [ "$registry" = "hub.docker.com" ]
-      RUN docker tag ${DOCKER_IMAGE_NAME}:latest ${HUB_DOCKER_COM_USER}/${DOCKER_IMAGE_NAME}:${EARTHLY_GIT_SHORT_HASH}
-      RUN if [ "$PUSH" = "true" ]; then docker push ${HUB_DOCKER_COM_USER}/${DOCKER_IMAGE_NAME}:${EARTHLY_GIT_SHORT_HASH}; fi
-    ELSE
-      RUN docker tag ${DOCKER_IMAGE_NAME}:latest ${registry}/${DOCKER_IMAGE_NAME}:${EARTHLY_GIT_SHORT_HASH}
-      RUN if [ "$PUSH" = "true" ]; then docker push ${registry}/${DOCKER_IMAGE_NAME}:${EARTHLY_GIT_SHORT_HASH}; fi
-    END
-  END
 
 TEMPLATED_RELEASE_PREPARATION:
   FUNCTION
@@ -56,7 +31,7 @@ TEMPLATED_RELEASE_PREPARATION:
 
 voting-app:
   ARG EARTHLY_TARGET_NAME
-  LET DOCKER_IMAGE_NAME=${DOCKER_IMAGE_PREFIX}-${EARTHLY_TARGET_NAME}
+  LET DOCKER_IMAGE_NAME=${DOCKER_IMAGES_PREFIX}-${EARTHLY_TARGET_NAME}
 
   WAIT
     FROM DOCKERFILE ./backend-services/${EARTHLY_TARGET_NAME}
@@ -64,7 +39,7 @@ voting-app:
   WAIT
     SAVE IMAGE ${DOCKER_IMAGE_NAME}
   END
-  DO +TEMPLATED_DOCKER_TAG_N_PUSH \
+  DO functions+DOCKER_TAG_N_PUSH \
      --PUSH=$PUSH \
      --DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME} \
      --DOCKER_IMAGES_EXTRA_TAGS="${DOCKER_IMAGES_EXTRA_TAGS}"
@@ -80,7 +55,7 @@ voting-app:
 
 vote-commitment-app:
   ARG EARTHLY_TARGET_NAME
-  LET DOCKER_IMAGE_NAME=${DOCKER_IMAGE_PREFIX}-${EARTHLY_TARGET_NAME}
+  LET DOCKER_IMAGE_NAME=${DOCKER_IMAGES_PREFIX}-${EARTHLY_TARGET_NAME}
 
   WAIT
     FROM DOCKERFILE ./backend-services/${EARTHLY_TARGET_NAME}
@@ -88,14 +63,14 @@ vote-commitment-app:
   WAIT
     SAVE IMAGE ${DOCKER_IMAGE_NAME}
   END
-  DO +TEMPLATED_DOCKER_TAG_N_PUSH \
+  DO functions+DOCKER_TAG_N_PUSH \
      --PUSH=$PUSH \
      --DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME} \
      --DOCKER_IMAGES_EXTRA_TAGS="${DOCKER_IMAGES_EXTRA_TAGS}"
 
 voting-ledger-follower-app:
   ARG EARTHLY_TARGET_NAME
-  LET DOCKER_IMAGE_NAME=${DOCKER_IMAGE_PREFIX}-${EARTHLY_TARGET_NAME}
+  LET DOCKER_IMAGE_NAME=${DOCKER_IMAGES_PREFIX}-${EARTHLY_TARGET_NAME}
 
   WAIT
     FROM DOCKERFILE ./backend-services/${EARTHLY_TARGET_NAME}
@@ -103,14 +78,14 @@ voting-ledger-follower-app:
   WAIT
     SAVE IMAGE ${DOCKER_IMAGE_NAME}
   END
-  DO +TEMPLATED_DOCKER_TAG_N_PUSH \
+  DO functions+DOCKER_TAG_N_PUSH \
      --PUSH=$PUSH \
      --DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME} \
      --DOCKER_IMAGES_EXTRA_TAGS="${DOCKER_IMAGES_EXTRA_TAGS}"
 
 voting-verification-app:
   ARG EARTHLY_TARGET_NAME
-  LET DOCKER_IMAGE_NAME=${DOCKER_IMAGE_PREFIX}-${EARTHLY_TARGET_NAME}
+  LET DOCKER_IMAGE_NAME=${DOCKER_IMAGES_PREFIX}-${EARTHLY_TARGET_NAME}
 
   WAIT
     FROM DOCKERFILE ./backend-services/${EARTHLY_TARGET_NAME}
@@ -118,14 +93,14 @@ voting-verification-app:
   WAIT
     SAVE IMAGE ${DOCKER_IMAGE_NAME}
   END
-  DO +TEMPLATED_DOCKER_TAG_N_PUSH \
+  DO functions+DOCKER_TAG_N_PUSH \
      --PUSH=$PUSH \
      --DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME} \
      --DOCKER_IMAGES_EXTRA_TAGS="${DOCKER_IMAGES_EXTRA_TAGS}"
 
 user-verification-service:
   ARG EARTHLY_TARGET_NAME
-  LET DOCKER_IMAGE_NAME=${DOCKER_IMAGE_PREFIX}-${EARTHLY_TARGET_NAME}
+  LET DOCKER_IMAGE_NAME=${DOCKER_IMAGES_PREFIX}-${EARTHLY_TARGET_NAME}
 
   WAIT
     FROM DOCKERFILE ./backend-services/${EARTHLY_TARGET_NAME}
@@ -133,14 +108,14 @@ user-verification-service:
   WAIT
     SAVE IMAGE ${DOCKER_IMAGE_NAME}
   END
-  DO +TEMPLATED_DOCKER_TAG_N_PUSH \
+  DO functions+DOCKER_TAG_N_PUSH \
      --PUSH=$PUSH \
      --DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME} \
      --DOCKER_IMAGES_EXTRA_TAGS="${DOCKER_IMAGES_EXTRA_TAGS}"
 
 ui-summit-2024:
   ARG EARTHLY_TARGET_NAME
-  LET DOCKER_IMAGE_NAME=${DOCKER_IMAGE_PREFIX}-${EARTHLY_TARGET_NAME}
+  LET DOCKER_IMAGE_NAME=${DOCKER_IMAGES_PREFIX}-${EARTHLY_TARGET_NAME}
 
   WAIT
     FROM DOCKERFILE ./ui/summit-2024
@@ -148,14 +123,14 @@ ui-summit-2024:
   WAIT
     SAVE IMAGE ${DOCKER_IMAGE_NAME}
   END
-  DO +TEMPLATED_DOCKER_TAG_N_PUSH \
+  DO functions+DOCKER_TAG_N_PUSH \
      --PUSH=$PUSH \
      --DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME} \
      --DOCKER_IMAGES_EXTRA_TAGS="${DOCKER_IMAGES_EXTRA_TAGS}"
 
 voting-admin-app:
   ARG EARTHLY_TARGET_NAME
-  LET DOCKER_IMAGE_NAME=${DOCKER_IMAGE_PREFIX}-${EARTHLY_TARGET_NAME}
+  LET DOCKER_IMAGE_NAME=${DOCKER_IMAGES_PREFIX}-${EARTHLY_TARGET_NAME}
 
   WAIT
     FROM DOCKERFILE ./backend-services/${EARTHLY_TARGET_NAME}
@@ -163,7 +138,22 @@ voting-admin-app:
   WAIT
     SAVE IMAGE ${DOCKER_IMAGE_NAME}
   END
-  DO +TEMPLATED_DOCKER_TAG_N_PUSH \
+  DO functions+DOCKER_TAG_N_PUSH \
+     --PUSH=$PUSH \
+     --DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME} \
+     --DOCKER_IMAGES_EXTRA_TAGS="${DOCKER_IMAGES_EXTRA_TAGS}"
+
+keri-ballot-verifier:
+  ARG EARTHLY_TARGET_NAME
+  LET DOCKER_IMAGE_NAME=${DOCKER_IMAGES_PREFIX}-${EARTHLY_TARGET_NAME}
+
+  WAIT
+    FROM DOCKERFILE ./backend-services/${EARTHLY_TARGET_NAME}
+  END
+  WAIT
+    SAVE IMAGE ${DOCKER_IMAGE_NAME}
+  END
+  DO functions+DOCKER_TAG_N_PUSH \
      --PUSH=$PUSH \
      --DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME} \
      --DOCKER_IMAGES_EXTRA_TAGS="${DOCKER_IMAGES_EXTRA_TAGS}"

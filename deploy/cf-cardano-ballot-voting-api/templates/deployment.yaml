@@ -137,6 +137,9 @@ spec:
             - name: LEADERBOARD_FORCE_RESULTS
               value: {{ .Values.leaderboardForceResults | quote }}
 
+            - name: ROLLBACK_HANDLING_ENABLED
+              value: {{ $.Values.rollbackHandlingEnabled | default "true" | quote }}
+
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}

@@ -1,9 +1,0 @@
-mainAppPath: "deploy/main-app"
-
-argo-cd:
-  crds:
-    install: false
-  server:
-    ingress:
-      hosts:
-        - argocd.dev.cf-cip1694-preprod.eu-west-1.metadata.dev.cf-deployments.org

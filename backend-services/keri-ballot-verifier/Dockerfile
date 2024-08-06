@@ -16,7 +16,8 @@ FROM python:3.12-slim AS base
 WORKDIR /src
 
 RUN apt update -qq && \
-    apt install -y libsodium23
+    apt install -y libsodium23 && \
+    apt clean
 
 COPY --from=builder /usr/local /usr/local
 

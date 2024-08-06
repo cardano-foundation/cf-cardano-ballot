@@ -28,7 +28,7 @@ spec:
             - name: VERIFIER_PORT
               value: {{ .Values.service.port | default "5666" | quote }}
             - name: VERIFIER_ADMIN_PORT
-              value: {{ .Values.service.port | default "5667" | quote }}
+              value: {{ .Values.service.adminPort | default "5667" | quote }}
             - name: VERIFIER_CONFIG_DIR
               value: {{ .Values.configDir | default "/usr/local/var/keri" }}
             - name: VERIFIER_STORE_DIR

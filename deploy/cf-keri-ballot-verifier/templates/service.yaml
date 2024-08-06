@@ -10,10 +10,10 @@ spec:
     - port: {{ .Values.service.port | default "5666"}}
       targetPort: public
       protocol: TCP
-      name: http
+      name: public
     - port: {{ .Values.service.adminPort | default "5667"}}
       targetPort: admin
       protocol: TCP
-      name: http
+      name: admin
   selector:
     {{- include "keri-ballot-verifier.selectorLabels" . | nindent 4 }}

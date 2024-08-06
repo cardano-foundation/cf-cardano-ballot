@@ -6,12 +6,11 @@ import com.bloxbean.cardano.yaci.core.protocol.chainsync.messages.Point;
 import com.bloxbean.cardano.yaci.helper.BlockSync;
 import com.bloxbean.cardano.yaci.helper.listener.BlockChainDataListener;
 import com.bloxbean.cardano.yaci.helper.model.Transaction;
-import io.vavr.control.Either;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
-import org.cardano.foundation.voting.domain.CardanoNetwork;
+import org.cardano.foundation.voting.domain.ChainNetwork;
 import org.cardano.foundation.voting.domain.WellKnownPointWithProtocolMagic;
 import org.cardano.foundation.voting.service.merkle_tree.VoteCommitmentService;
 import org.cardano.foundation.voting.service.merkle_tree.VoteMerkleProofService;
@@ -19,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
-import org.zalando.problem.Problem;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,7 +34,7 @@ public class RollbackHandler {
     private int cardanoNodePort;
 
     @Autowired
-    private CardanoNetwork cardanoNetwork;
+    private ChainNetwork chainNetwork;
 
     @Autowired
     private ChainFollowerClient chainFollowerClient;
@@ -54,7 +52,7 @@ public class RollbackHandler {
 
     @PostConstruct
     public void init() {
-        log.info("Starting cardano block sync on network: {}...", cardanoNetwork);
+        log.info("Starting cardano block sync on network: {}...", chainNetwork);
 
         if (wellKnownPointWithProtocolMagic.wellKnownPointForNetwork().isEmpty()) {
             log.warn("Well known point is not known. Skipping rollback handler / sync...");

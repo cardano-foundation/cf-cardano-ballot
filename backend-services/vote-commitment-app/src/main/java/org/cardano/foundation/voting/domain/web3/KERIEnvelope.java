@@ -12,7 +12,7 @@ import static org.zalando.problem.Status.BAD_REQUEST;
 
 @Builder
 @Getter
-public class CIP93Envelope<T> {
+public class KERIEnvelope<T> {
 
     private String uri;
     private String action;

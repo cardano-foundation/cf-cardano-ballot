@@ -2,7 +2,7 @@ package org.cardano.foundation.voting.client;
 
 import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.domain.CardanoNetwork;
+import org.cardano.foundation.voting.domain.ChainNetwork;
 import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,7 +21,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @Component
 @Slf4j
 @RegisterReflectionForBinding({
-        CardanoNetwork.class,
+        ChainNetwork.class,
         ChainFollowerClient.ChainTipResponse.class,
         ChainFollowerClient.TransactionDetailsResponse.class,
         ChainFollowerClient.FinalityScore.class,
@@ -135,7 +135,7 @@ public class ChainFollowerClient {
                                              String blockHash,
                                              long transactionsConfirmations,
                                              FinalityScore finalityScore,
-                                             CardanoNetwork network) {}
+                                             ChainNetwork network) {}
 
 
     public enum FinalityScore {
@@ -162,7 +162,7 @@ public class ChainFollowerClient {
                                    int epochNo,
                                    int absoluteSlot,
                                    boolean synced,
-                                   CardanoNetwork network) {
+                                   ChainNetwork network) {
 
         public boolean isNotSynced() {
             return !synced;

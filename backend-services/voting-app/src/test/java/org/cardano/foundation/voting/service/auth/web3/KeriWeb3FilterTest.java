@@ -13,6 +13,7 @@ import org.cardano.foundation.voting.client.KeriVerificationClient;
 import org.cardano.foundation.voting.domain.ChainNetwork;
 import org.cardano.foundation.voting.domain.web3.KERIEnvelope;
 import org.cardano.foundation.voting.domain.web3.WalletType;
+import org.cardano.foundation.voting.domain.web3.Web3Action;
 import org.cardano.foundation.voting.service.auth.LoginSystem;
 import org.cardano.foundation.voting.service.auth.LoginSystemDetector;
 import org.cardano.foundation.voting.service.expire.ExpirationService;
@@ -109,7 +110,7 @@ class KeriWeb3FilterTest {
     void doFilterInternal_shouldReturnBadRequest_whenHeaderAidIsMissing() throws ServletException, IOException {
         when(loginSystemDetector.detect(request)).thenReturn(Optional.of(KERI_SIGN));
         when(request.getHeader(X_Login_Signature)).thenReturn("signature");
-        when(request.getHeader(X_Login_Payload)).thenReturn("payload");
+        when(request.getHeader(X_Login_Payload)).thenReturn("7061796C6F6164");
 
         filter.doFilterInternal(request, response, chain);
 
@@ -588,11 +589,15 @@ class KeriWeb3FilterTest {
 
         val keriDetails = (KeriWeb3Details) SecurityContextHolder.getContext().getAuthentication().getDetails();
 
-        assertThat(keriDetails.getSignedKERI()).isNotNull();
+        assertThat(keriDetails.getSignedKERI().getSignature()).isEqualTo("signature");
+        assertThat(keriDetails.getSignedKERI().getPayload()).isEqualTo("payload");
+        assertThat(keriDetails.getSignedKERI().getAid()).isEqualTo("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
+
         assertThat(keriDetails.getSignedJson()).isNotNull();
-        assertThat(keriDetails.getPayload()).isNotNull();
+
         assertThat(keriDetails.getWeb3CommonDetails()).isNotNull();
-        assertThat(keriDetails.getPublicKey()).isNotNull();
+        assertThat(keriDetails.getWeb3CommonDetails().getAction()).isEqualTo(Web3Action.LOGIN);
+        assertThat(keriDetails.getWeb3CommonDetails().getNetwork()).isEqualTo(MAIN);
         assertThat(keriDetails.getData()).isNotNull();
         assertThat(keriDetails.getEnvelope()).isNotNull();
     }

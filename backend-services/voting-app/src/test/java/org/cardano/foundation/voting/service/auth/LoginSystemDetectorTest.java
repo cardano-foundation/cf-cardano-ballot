@@ -48,7 +48,7 @@ class LoginSystemDetectorTest {
     void detect_shouldReturnKeriSign_whenXLoginSignatureAndXLoginPayloadArePresentAndWalletTypeIsKeri() {
         when(request.getHeader(AUTHORIZATION)).thenReturn(null);
         when(request.getHeader(X_Login_Signature)).thenReturn("signature");
-        when(request.getHeader(X_Login_Payload)).thenReturn("payload");
+        when(request.getHeader(X_Login_Payload)).thenReturn("7061796C6F6164");
         when(request.getHeader(X_Wallet_Type)).thenReturn(WalletType.KERI.name());
 
         Optional<LoginSystem> result = loginSystemDetector.detect(request);

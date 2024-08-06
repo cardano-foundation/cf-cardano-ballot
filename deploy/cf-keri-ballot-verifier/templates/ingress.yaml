@@ -13,7 +13,7 @@ metadata:
   {{- end }}
 spec:
   rules:
-    - host: "{{ .Values.domain }}"
+    - host: "keri-ballot-verifier.{{ .Values.domain }}"
       http:
         paths:
           - path: /

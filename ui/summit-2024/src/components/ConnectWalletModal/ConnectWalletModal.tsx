@@ -82,8 +82,6 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
       };
 
       const onApiInject = async (name: string) => {
-        console.log("onApiInject");
-        console.log(name);
         if (name === "idw_p2p") {
           const api = window.cardano && window.cardano[name];
           if (api) {
@@ -92,7 +90,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
               await enabledApi.experimental.getKeriIdentifier();
             dispatch(
               setConnectedWallet({
-                address: keriIdentifier,
+                address: keriIdentifier.id,
                 name: api.name,
                 icon: api.icon,
                 requestAutoconnect: true,
@@ -140,8 +138,6 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
       };
 
       const onApiEject = (name: string): void => {
-        console.log("onApiEject");
-        console.log(name);
         dispatch(setConnectedWallet(initialConnectedWallet));
         setPeerConnectWalletInfo(undefined);
         eventBus.publish(
@@ -152,8 +148,6 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
       };
 
       const onP2PConnect = (): void => {
-        console.log("onP2PConnect");
-        console.log(peerConnectWalletInfo);
         if (peerConnectWalletInfo?.address) {
           dispatch(setConnectedWallet(peerConnectWalletInfo));
         }

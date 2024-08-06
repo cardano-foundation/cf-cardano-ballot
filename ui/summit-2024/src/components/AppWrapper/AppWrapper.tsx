@@ -51,7 +51,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
         }),
       );
     }
-  }, [stakeAddress]);
+  }, [stakeAddress, connectedWallet.address]);
 
   const initApp = async () => {
     if (env.USING_FIXTURES) {

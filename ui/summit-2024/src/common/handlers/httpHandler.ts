@@ -254,6 +254,9 @@ export const doRequest = async <T>(
     body = undefined;
   }
 
+  console.log("allHeaders");
+  console.log(allHeaders);
+
   if (token) {
     // @ts-ignore
     allHeaders["Authorization"] = `Bearer ${token}`;

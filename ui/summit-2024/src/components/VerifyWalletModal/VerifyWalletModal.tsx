@@ -73,7 +73,7 @@ const VerifyWalletModal = () => {
     useState<boolean>(true);
   const [inputSecret, setInputSecret] = useState("");
 
-  const { signWithWallet, isLoading } = useSignatures();
+  const { signWithWallet, isLoading, setIsLoading } = useSignatures();
   const userVerificationStarted = useAppSelector(getVerificationStarted);
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -114,6 +114,7 @@ const VerifyWalletModal = () => {
       setPhoneCodeIsSent(false);
       setPhoneCodeShowError(false);
       setEnableSignDiscordSecret(true);
+      setIsLoading(false);
       setPhone("");
       setInputSecret("");
       setCodes(Array(6).fill(""));
@@ -212,6 +213,8 @@ const VerifyWalletModal = () => {
     );
 
     if ("error" in verifyDiscordResult && verifyDiscordResult.error) {
+        console.log("verifyDiscordResult");
+        console.log(verifyDiscordResult);
       eventBus.publish(
         "showToast",
         verifyDiscordResult.message || "Error while verifying",

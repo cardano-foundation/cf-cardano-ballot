@@ -86,6 +86,7 @@ export const useSignatures = () => {
   return {
     signWithWallet,
     isLoading,
+    setIsLoading,
     error,
   };
 };

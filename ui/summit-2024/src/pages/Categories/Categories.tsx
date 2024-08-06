@@ -207,9 +207,11 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
       console.log("submitVoteResult");
       console.log(submitVoteResult);
 
+      // @ts-ignore
       if (submitVoteResult.error && submitVoteResult.message) {
         eventBus.publish(
           EventName.ShowToast,
+            // @ts-ignore
             submitVoteResult.message || "Error while voting",
           ToastType.Error,
         );

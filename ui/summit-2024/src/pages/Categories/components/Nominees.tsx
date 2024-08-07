@@ -6,6 +6,7 @@ import { NomineeCard } from "./NomineeCard";
 interface NomineesProps {
   fadeChecked: boolean;
   nominees: Proposal[];
+  categoryAlreadyVoted: boolean;
   selectedNominee: string | undefined;
   handleSelectedNominee: (nomineeId: string) => void;
   handleOpenLearnMore: (nomineeId: string) => void;
@@ -14,6 +15,7 @@ interface NomineesProps {
 const Nominees: React.FC<NomineesProps> = ({
   fadeChecked,
   nominees,
+                                             categoryAlreadyVoted,
   selectedNominee,
   handleSelectedNominee,
   handleOpenLearnMore,
@@ -44,6 +46,7 @@ const Nominees: React.FC<NomineesProps> = ({
               <NomineeCard
                 key={index}
                 nominee={nominee}
+                categoryAlreadyVoted={categoryAlreadyVoted}
                 selectedNominee={selectedNominee}
                 handleSelectNominee={handleSelectNominee}
                 handleLearnMoreClick={handleLearnMoreClick}

@@ -26,7 +26,7 @@ import { eventBus, EventName } from "../../utils/EventBus";
 import {
   getConnectedWallet,
   getWalletIsVerified,
-  getUserVotes,
+  getUserVotes, setUserVotes,
 } from "../../store/reducers/userCache";
 import { getUserInSession, tokenIsExpired } from "../../utils/session";
 import { parseError } from "../../common/constants/errors";
@@ -47,9 +47,6 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   const userVotes = useAppSelector(getUserVotes);
   const categoriesData = eventCache.categories;
   const [showWinners, setShowWinners] = useState(eventCache.finished);
-
-  console.log("userVotes");
-  console.log(userVotes);
 
   const [selectedCategory, setSelectedCategory] = useState(
     categoriesData[0].id,
@@ -76,16 +73,14 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
     categoryToRender = categoriesData[0];
   }
 
-  const nomineeToVote = categoryToRender.proposals?.find(
-    (n) => n.id === selectedNominee,
+  const nomineeToVote = categoryToRender.proposals.find(
+    (p) => p.id === selectedNominee,
   );
 
   const categoryAlreadyVoted = !!userVotes.find(
     (vote) => vote.categoryId === categoryToRender?.id,
   );
 
-  console.log("categoryAlreadyVoted");
-  console.log(categoryAlreadyVoted);
 
   useEffect(() => {
     // Example: http://localhost:3000/categories?category=ambassador&nominee=63123e7f-dfc3-481e-bb9d-fed1d9f6e9b9
@@ -114,6 +109,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   const handleClickMenuItem = (category: string) => {
     if (category !== selectedCategory) {
       setFadeChecked(false);
+      setSelectedCategory(category);
       setTimeout(() => {
         setFadeChecked(true);
       }, 200);
@@ -235,6 +231,11 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
       }
       eventBus.publish(EventName.ShowToast, "Vote submitted successfully");
 
+      let updatedUserVotes = {
+        ...userVotes
+      };
+      updatedUserVotes[categoryId] = proposalId;
+      dispatch(setUserVotes(updatedUserVotes));
       if (session && !tokenIsExpired(session?.expiresAt)) {
         // @ts-ignore
         getVoteReceipt(categoryId, session?.accessToken)
@@ -344,6 +345,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
             <Nominees
               fadeChecked={fadeChecked}
               nominees={category.proposals}
+              categoryAlreadyVoted={categoryAlreadyVoted}
               handleSelectedNominee={handleSelectNominee}
               selectedNominee={selectedNominee}
               handleOpenLearnMore={handleOpenLearnMoreModal}

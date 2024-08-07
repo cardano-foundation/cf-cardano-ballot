@@ -9,6 +9,7 @@ import { getUserVotes } from "../../../store/reducers/userCache";
 
 interface NomineeCardProps {
   nominee: Proposal;
+  categoryAlreadyVoted: boolean;
   selectedNominee: string | undefined;
   handleSelectNominee: (id: string) => void;
   handleLearnMoreClick: (
@@ -20,6 +21,7 @@ interface NomineeCardProps {
 const NomineeCard: React.FC<NomineeCardProps> = ({
   nominee,
   selectedNominee,
+                                                     categoryAlreadyVoted,
   handleSelectNominee,
   handleLearnMoreClick,
 }) => {
@@ -28,8 +30,8 @@ const NomineeCard: React.FC<NomineeCardProps> = ({
   const votedNominee = !!userVotes.find(
     (vote) => vote.proposalId === nominee.id,
   );
-  console.log("votedNominee");
-  console.log(votedNominee);
+
+  const allowToVote = !categoryAlreadyVoted;
   return (
     <Grid
       item
@@ -43,7 +45,7 @@ const NomineeCard: React.FC<NomineeCardProps> = ({
       }}
     >
       <Paper
-        onClick={() => (votedNominee ? handleSelectNominee(nominee.id) : null)}
+        onClick={() => {allowToVote ? handleSelectNominee(nominee.id) : null}}
         elevation={3}
         sx={{
           width: "100%",
@@ -77,7 +79,7 @@ const NomineeCard: React.FC<NomineeCardProps> = ({
           }}
         >
           <Box component="div" sx={{ position: "absolute", right: 8, top: 8 }}>
-            {votedNominee ? (
+            {allowToVote ? (
               <HoverCircle
                 selected={selectedNominee === nominee.id || votedNominee}
               />

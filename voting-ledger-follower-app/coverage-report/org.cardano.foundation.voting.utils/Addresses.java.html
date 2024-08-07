@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Addresses.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-ledger-follower-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.utils</a> &gt; <span class="el_source">Addresses.java</span></div><h1>Addresses.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.utils;
+
+import com.bloxbean.cardano.client.address.Address;
+import io.vavr.control.Either;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+import org.cardano.foundation.voting.domain.ChainNetwork;
+import org.cardano.foundation.voting.domain.WalletType;
+import org.zalando.problem.Problem;
+
+import static org.cardano.foundation.voting.utils.CardanoMoreAddress.isMainnet;
+import static org.cardano.foundation.voting.utils.CardanoMoreAddress.isTestnet;
+import static org.zalando.problem.Status.BAD_REQUEST;
+
+<span class="fc" id="L15">@Slf4j</span>
+<span class="nc" id="L16">public final class Addresses {</span>
+
+    public static Either&lt;Problem, Boolean&gt; checkWalletId(ChainNetwork network, WalletType walletType, String walletId) {
+<span class="pc bpc" id="L19" title="2 of 3 branches missed.">        switch (walletType) {</span>
+            case WalletType.CARDANO:
+<span class="fc" id="L21">                return checkIfAddressIsValid(walletId)</span>
+<span class="fc" id="L22">                        .flatMap(isStakeAddress -&gt; {</span>
+<span class="pc bpc" id="L23" title="1 of 2 branches missed.">                            if (!isStakeAddress) {</span>
+<span class="nc" id="L24">                                return Either.right(false);</span>
+                            }
+
+<span class="fc" id="L27">                            return checkStakeAddressNetwork(network, walletId);</span>
+                        });
+            case KERI:
+<span class="nc" id="L30">                val aidValidationResultE = Keri.checkAid(walletId);</span>
+<span class="nc bnc" id="L31" title="All 2 branches missed.">                if (aidValidationResultE.isLeft()) {</span>
+<span class="nc" id="L32">                    return Either.left(aidValidationResultE.getLeft());</span>
+                }
+
+<span class="nc" id="L35">                return Either.right(true);</span>
+            default:
+<span class="nc" id="L37">                return Either.left(Problem.builder()</span>
+<span class="nc" id="L38">                        .withTitle(&quot;UNSUPPORTED_WALLET_TYPE&quot;)</span>
+<span class="nc" id="L39">                        .withDetail(&quot;Unsupported wallet type:&quot; + walletType)</span>
+<span class="nc" id="L40">                        .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L41">                        .build());</span>
+        }
+    }
+
+    private static Either&lt;Problem, Boolean&gt; checkIfAddressIsValid(String address) {
+        try {
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">            if (new Address(address).getDelegationCredential().isEmpty()) {</span>
+<span class="nc" id="L48">                return Either.left(Problem.builder()</span>
+<span class="nc" id="L49">                        .withTitle(&quot;NOT_STAKE_ADDRESS&quot;)</span>
+<span class="nc" id="L50">                        .withDetail(&quot;Address is not a walletId, address:&quot; + address)</span>
+<span class="nc" id="L51">                        .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L52">                        .build());</span>
+            }
+
+<span class="fc" id="L55">            return Either.right(true);</span>
+<span class="nc" id="L56">        } catch (Exception e) {</span>
+<span class="nc" id="L57">            log.warn(&quot;Unable to parse address, address:{}, reason:{}&quot;, address, e.getMessage());</span>
+
+<span class="nc" id="L59">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L60">                    .withTitle(&quot;STAKE_ADDRESS_PARSE_ERROR&quot;)</span>
+<span class="nc" id="L61">                    .withDetail(&quot;Unable to parse address, address:&quot; + address)</span>
+<span class="nc" id="L62">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L63">                    .build());</span>
+        }
+    }
+
+    private static Either&lt;Problem, Boolean&gt; checkStakeAddressNetwork(ChainNetwork network, String walletId) {
+<span class="pc bpc" id="L68" title="3 of 4 branches missed.">        if (isMainnet(walletId) &amp;&amp; network.isMainnet()) {</span>
+<span class="nc" id="L69">            return Either.right(true);</span>
+        }
+
+<span class="pc bpc" id="L72" title="2 of 4 branches missed.">        if (isTestnet(walletId) &amp;&amp; network.isTestnet()) {</span>
+<span class="fc" id="L73">            return Either.right(true);</span>
+        }
+
+<span class="nc" id="L76">        log.warn(&quot;Network mismatch, walletId:{}, network:{}&quot;, walletId, network);</span>
+
+<span class="nc" id="L78">        return Either.left(Problem.builder()</span>
+<span class="nc" id="L79">                .withTitle(&quot;STAKE_ADDRESS_NETWORK_MISMATCH&quot;)</span>
+<span class="nc" id="L80">                .withDetail(&quot;Stake address, walletId:&quot; + walletId)</span>
+<span class="nc" id="L81">                .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L82">                .build()</span>
+        );
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

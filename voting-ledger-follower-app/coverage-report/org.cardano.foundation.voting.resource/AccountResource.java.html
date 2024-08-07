@@ -7,9 +7,11 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.Account;
+import org.cardano.foundation.voting.domain.WalletType;
 import org.cardano.foundation.voting.service.account.AccountService;
 import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
@@ -23,20 +25,20 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @RestController
 @RequestMapping(&quot;/api/account&quot;)
-<span class="fc" id="L26">@Slf4j</span>
+<span class="fc" id="L28">@Slf4j</span>
 @RequiredArgsConstructor
 @Tag(name = &quot;Account&quot;, description = &quot;The account API&quot;)
 public class AccountResource {
 
     private final AccountService accountService;
 
-    @RequestMapping(value = &quot;/{eventId}/{stakeAddress}&quot;, method = GET, produces = &quot;application/json&quot;)
+    @RequestMapping(value = &quot;/{eventId}/{walletType}/{walletId}&quot;, method = GET, produces = &quot;application/json&quot;)
     @Timed(value = &quot;resource.account.find&quot;, histogram = true)
-    @Operation(summary = &quot;Find account details associated with an event and stake address&quot;,
-            description = &quot;This endpoint fetches the account details based on a given event ID and stake address. &quot; +
+    @Operation(summary = &quot;Find account details associated with an event, wallet type and wallet id&quot;,
+            description = &quot;This endpoint fetches the account details based on a given event ID, wallet type and wallet id. &quot; +
                     &quot;If the account is not found, an appropriate error is returned.&quot;,
         responses = {
-                @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Successfully retrieved the Account object for event ID and stake address&quot;,
+                @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Successfully retrieved the Account object&quot;,
                         content = { @Content(mediaType = &quot;application/json&quot;,
                                 schema = @Schema(implementation = Account.class)) }),
                 @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Bad request due to validation issues or malformed request&quot;,
@@ -48,24 +50,28 @@ public class AccountResource {
     public ResponseEntity&lt;?&gt; findAccount(
             @Parameter(description = &quot;Event ID associated with the account&quot;, required = true)
             @PathVariable(&quot;eventId&quot;) String eventId,
-            @Parameter(description = &quot;Stake address of the account&quot;, required = true)
-            @PathVariable String stakeAddress) {
-<span class="fc" id="L53">        var cacheControl = CacheControl.maxAge(1, HOURS)</span>
-<span class="fc" id="L54">                .noTransform()</span>
-<span class="fc" id="L55">                .mustRevalidate();</span>
 
-<span class="fc" id="L57">        return accountService.findAccount(eventId, stakeAddress)</span>
-<span class="fc" id="L58">                .fold(problem -&gt; {</span>
-<span class="fc" id="L59">                            return ResponseEntity</span>
-<span class="fc" id="L60">                                    .status(problem.getStatus().getStatusCode())</span>
-<span class="fc" id="L61">                                    .cacheControl(cacheControl)</span>
-<span class="fc" id="L62">                                    .body(problem);</span>
+            @Parameter(description = &quot;Wallet type of a given account&quot;, required = true)
+            @PathVariable(&quot;walletType&quot;) @Valid WalletType walletType,
+
+            @Parameter(description = &quot;WalletId of the account&quot;, required = true)
+            @PathVariable String walletId) {
+<span class="fc" id="L59">        var cacheControl = CacheControl.maxAge(1, HOURS)</span>
+<span class="fc" id="L60">                .noTransform()</span>
+<span class="fc" id="L61">                .mustRevalidate();</span>
+
+<span class="fc" id="L63">        return accountService.findAccount(eventId, walletType, walletId)</span>
+<span class="fc" id="L64">                .fold(problem -&gt; {</span>
+<span class="fc" id="L65">                            return ResponseEntity</span>
+<span class="fc" id="L66">                                    .status(problem.getStatus().getStatusCode())</span>
+<span class="fc" id="L67">                                    .cacheControl(cacheControl)</span>
+<span class="fc" id="L68">                                    .body(problem);</span>
                         },
                         account -&gt; {
-<span class="fc" id="L65">                            return ResponseEntity</span>
-<span class="fc" id="L66">                                    .ok()</span>
-<span class="fc" id="L67">                                    .cacheControl(cacheControl)</span>
-<span class="fc" id="L68">                                    .body(account);</span>
+<span class="fc" id="L71">                            return ResponseEntity</span>
+<span class="fc" id="L72">                                    .ok()</span>
+<span class="fc" id="L73">                                    .cacheControl(cacheControl)</span>
+<span class="fc" id="L74">                                    .body(account);</span>
                         });
     }
 

@@ -38,12 +38,12 @@ public class VotingPowerService {
 <span class="fc" id="L38">                var maybeAmount = blockchainDataStakePoolService.getStakeAmount(blockfrostActiveEpoch, stakeAddress)</span>
 <span class="pc bpc" id="L39" title="1 of 2 branches missed.">                        .filter(amount -&gt; amount &gt; 0);</span>
 
-<span class="fc bfc" id="L41" title="All 2 branches covered.">                if (maybeAmount.isEmpty()) {</span>
-<span class="fc" id="L42">                    yield Either.left(Problem.builder()</span>
-<span class="fc" id="L43">                            .withTitle(&quot;STAKE_AMOUNT_NOT_AVAILABLE&quot;)</span>
-<span class="fc" id="L44">                            .withDetail(&quot;Stake amount not found (like wallet not staked) for event: &quot; + event.getId() + &quot; and stake address: &quot; + stakeAddress)</span>
-<span class="fc" id="L45">                            .withStatus(NOT_FOUND)</span>
-<span class="fc" id="L46">                            .build()</span>
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">                if (maybeAmount.isEmpty()) {</span>
+<span class="nc" id="L42">                    yield Either.left(Problem.builder()</span>
+<span class="nc" id="L43">                            .withTitle(&quot;STAKE_AMOUNT_NOT_AVAILABLE&quot;)</span>
+<span class="nc" id="L44">                            .withDetail(&quot;Stake amount not found (like wallet not staked) for event: &quot; + event.getId() + &quot; and stake address: &quot; + stakeAddress)</span>
+<span class="nc" id="L45">                            .withStatus(NOT_FOUND)</span>
+<span class="nc" id="L46">                            .build()</span>
                     );
                 }
 

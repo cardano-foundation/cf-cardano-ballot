@@ -146,283 +146,284 @@ import static org.cardanofoundation.cip30.MessageFormat.HEX;
 
 <span class="nc bnc" id="L147" title="All 2 branches missed.">        if (!organiserStakeAddress.equals(eventAddress)) {</span>
 <span class="nc" id="L148">            log.warn(&quot;Addresses mismatch, orgAccountStakeAddress: {}, eventAddress:{}&quot;, organiserStakeAddress, eventAddress);</span>
-<span class="nc" id="L149">            return Optional.empty();</span>
+
+<span class="nc" id="L150">            return Optional.empty();</span>
         }
 
-<span class="nc" id="L152">        var maybeEventRegistration = cborService.decodeEventRegistrationEnvelope(payload);</span>
-<span class="nc bnc" id="L153" title="All 2 branches missed.">        if (maybeEventRegistration.isLeft()) {</span>
-<span class="nc" id="L154">            log.info(&quot;Event registration invalid, reason:{} :{}&quot;, maybeEventRegistration.getLeft().getDetail(), id);</span>
+<span class="nc" id="L153">        var maybeEventRegistration = cborService.decodeEventRegistrationEnvelope(payload);</span>
+<span class="nc bnc" id="L154" title="All 2 branches missed.">        if (maybeEventRegistration.isLeft()) {</span>
+<span class="nc" id="L155">            log.info(&quot;Event registration invalid, reason:{} :{}&quot;, maybeEventRegistration.getLeft().getDetail(), id);</span>
 
-<span class="nc" id="L156">            return Optional.empty();</span>
+<span class="nc" id="L157">            return Optional.empty();</span>
         }
-<span class="nc" id="L158">        var eventRegistration = maybeEventRegistration.get();</span>
+<span class="nc" id="L159">        var eventRegistration = maybeEventRegistration.get();</span>
 
-<span class="nc bnc" id="L160" title="All 2 branches missed.">        if (!bindOnEventIds.contains(eventRegistration.getName())) {</span>
-<span class="nc" id="L161">            log.info(&quot;Event NOT found in bindOnEventIds, ignoring id:{}&quot;, id);</span>
+<span class="nc bnc" id="L161" title="All 2 branches missed.">        if (!bindOnEventIds.contains(eventRegistration.getName())) {</span>
+<span class="nc" id="L162">            log.info(&quot;Event NOT found in bindOnEventIds, ignoring id:{}&quot;, id);</span>
 
-<span class="nc" id="L163">            return Optional.empty();</span>
-        }
-
-<span class="nc" id="L166">        var eventM = referenceDataService.findEventByName(eventRegistration.getName());</span>
-
-<span class="nc bnc" id="L168" title="All 2 branches missed.">        if (eventM.isPresent()) {</span>
-<span class="nc" id="L169">            var event = eventM.orElseThrow();</span>
-
-<span class="nc" id="L171">            log.info(&quot;Event already found, will be removing old one and re-creating it, id:{}&quot;, event.getId());</span>
-
-<span class="nc" id="L173">            referenceDataService.removeEvent(event);</span>
+<span class="nc" id="L164">            return Optional.empty();</span>
         }
 
-<span class="nc" id="L176">        var event = new Event();</span>
-<span class="nc" id="L177">        event.setId(eventRegistration.getName());</span>
-<span class="nc" id="L178">        event.setVersion(event.getVersion());</span>
-<span class="nc" id="L179">        event.setOrganisers(eventRegistration.getOrganisers());</span>
+<span class="nc" id="L167">        var eventM = referenceDataService.findEventByName(eventRegistration.getName());</span>
 
-<span class="nc" id="L181">        event.setHighLevelEventResultsWhileVoting(Optional.of(eventRegistration.isHighLevelEventResultsWhileVoting()));</span>
-<span class="nc" id="L182">        event.setHighLevelCategoryResultsWhileVoting(Optional.of(eventRegistration.isHighLevelCategoryResultsWhileVoting()));</span>
-<span class="nc" id="L183">        event.setCategoryResultsWhileVoting(Optional.of(eventRegistration.isCategoryResultsWhileVoting()));</span>
-<span class="nc" id="L184">        event.setVersion(eventRegistration.getSchemaVersion());</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">        if (eventM.isPresent()) {</span>
+<span class="nc" id="L170">            var event = eventM.orElseThrow();</span>
 
-<span class="nc" id="L186">        event.setStartEpoch(eventRegistration.getStartEpoch());</span>
-<span class="nc" id="L187">        event.setEndEpoch(eventRegistration.getEndEpoch());</span>
-<span class="nc" id="L188">        event.setSnapshotEpoch(eventRegistration.getSnapshotEpoch());</span>
-<span class="nc" id="L189">        event.setVotingPowerAsset(eventRegistration.getVotingPowerAsset());</span>
+<span class="nc" id="L172">            log.info(&quot;Event already found, will be removing old one and re-creating it, id:{}&quot;, event.getId());</span>
 
-<span class="nc" id="L191">        event.setVotingEventType(eventRegistration.getVotingEventType());</span>
+<span class="nc" id="L174">            referenceDataService.removeEvent(event);</span>
+        }
 
-<span class="nc" id="L193">        event.setStartSlot(eventRegistration.getStartSlot());</span>
-<span class="nc" id="L194">        event.setEndSlot(eventRegistration.getEndSlot());</span>
+<span class="nc" id="L177">        var event = new Event();</span>
+<span class="nc" id="L178">        event.setId(eventRegistration.getName());</span>
+<span class="nc" id="L179">        event.setVersion(event.getVersion());</span>
+<span class="nc" id="L180">        event.setOrganisers(eventRegistration.getOrganisers());</span>
 
-<span class="nc" id="L196">        event.setProposalsRevealEpoch(eventRegistration.getProposalsRevealEpoch());</span>
-<span class="nc" id="L197">        event.setProposalsRevealSlot(eventRegistration.getProposalsRevealSlot());</span>
+<span class="nc" id="L182">        event.setHighLevelEventResultsWhileVoting(Optional.of(eventRegistration.isHighLevelEventResultsWhileVoting()));</span>
+<span class="nc" id="L183">        event.setHighLevelCategoryResultsWhileVoting(Optional.of(eventRegistration.isHighLevelCategoryResultsWhileVoting()));</span>
+<span class="nc" id="L184">        event.setCategoryResultsWhileVoting(Optional.of(eventRegistration.isCategoryResultsWhileVoting()));</span>
+<span class="nc" id="L185">        event.setVersion(eventRegistration.getSchemaVersion());</span>
 
-<span class="nc" id="L199">        event.setAbsoluteSlot(slot);</span>
+<span class="nc" id="L187">        event.setStartEpoch(eventRegistration.getStartEpoch());</span>
+<span class="nc" id="L188">        event.setEndEpoch(eventRegistration.getEndEpoch());</span>
+<span class="nc" id="L189">        event.setSnapshotEpoch(eventRegistration.getSnapshotEpoch());</span>
+<span class="nc" id="L190">        event.setVotingPowerAsset(eventRegistration.getVotingPowerAsset());</span>
 
-<span class="nc" id="L201">        var tallies = eventRegistration.getTallies()</span>
-<span class="nc" id="L202">                .stream()</span>
-<span class="nc" id="L203">                .map(tally -&gt; {</span>
-<span class="nc" id="L204">                    var tallyBuilder = Tally.builder()</span>
-<span class="nc" id="L205">                            .name(tally.getName())</span>
-<span class="nc" id="L206">                            .type(tally.getType())</span>
-<span class="nc" id="L207">                            .description(tally.getDescription());</span>
+<span class="nc" id="L192">        event.setVotingEventType(eventRegistration.getVotingEventType());</span>
 
-<span class="nc bnc" id="L209" title="All 2 branches missed.">                    if (tally.getType() == HYDRA) {</span>
-<span class="nc" id="L210">                        tallyBuilder.hydraTallyConfig(createTallyConfig(tally));</span>
+<span class="nc" id="L194">        event.setStartSlot(eventRegistration.getStartSlot());</span>
+<span class="nc" id="L195">        event.setEndSlot(eventRegistration.getEndSlot());</span>
+
+<span class="nc" id="L197">        event.setProposalsRevealEpoch(eventRegistration.getProposalsRevealEpoch());</span>
+<span class="nc" id="L198">        event.setProposalsRevealSlot(eventRegistration.getProposalsRevealSlot());</span>
+
+<span class="nc" id="L200">        event.setAbsoluteSlot(slot);</span>
+
+<span class="nc" id="L202">        var tallies = eventRegistration.getTallies()</span>
+<span class="nc" id="L203">                .stream()</span>
+<span class="nc" id="L204">                .map(tally -&gt; {</span>
+<span class="nc" id="L205">                    var tallyBuilder = Tally.builder()</span>
+<span class="nc" id="L206">                            .name(tally.getName())</span>
+<span class="nc" id="L207">                            .type(tally.getType())</span>
+<span class="nc" id="L208">                            .description(tally.getDescription());</span>
+
+<span class="nc bnc" id="L210" title="All 2 branches missed.">                    if (tally.getType() == HYDRA) {</span>
+<span class="nc" id="L211">                        tallyBuilder.hydraTallyConfig(createTallyConfig(tally));</span>
                     }
 
-<span class="nc" id="L213">                    return tallyBuilder.build();</span>
+<span class="nc" id="L214">                    return tallyBuilder.build();</span>
                 }
-<span class="nc" id="L215">        ).toList();</span>
+<span class="nc" id="L216">        ).toList();</span>
 
-<span class="nc" id="L217">        event.getTallies().clear();</span>
-<span class="nc" id="L218">        event.getTallies().addAll(tallies);</span>
+<span class="nc" id="L218">        event.getTallies().clear();</span>
+<span class="nc" id="L219">        event.getTallies().addAll(tallies);</span>
 
-<span class="nc" id="L220">        return Optional.of(referenceDataService.storeEvent(event));</span>
+<span class="nc" id="L221">        return Optional.of(referenceDataService.storeEvent(event));</span>
     }
 
     private static HydraTally createTallyConfig(TallyRegistrationEnvelope tally) {
-<span class="nc" id="L224">        var tallyConfig = (HydraTallyRegistrationEnvelope) tally.getConfig();</span>
+<span class="nc" id="L225">        var tallyConfig = (HydraTallyRegistrationEnvelope) tally.getConfig();</span>
 
-<span class="nc" id="L226">        return HydraTally.builder()</span>
-<span class="nc" id="L227">                .contractName(tallyConfig.getContractName())</span>
-<span class="nc" id="L228">                .contractDescription(tallyConfig.getContractDesc())</span>
-<span class="nc" id="L229">                .contractVersion(tallyConfig.getContractVersion())</span>
-<span class="nc" id="L230">                .compiledScript(tallyConfig.getCompiledScript())</span>
-<span class="nc" id="L231">                .compiledScriptHash(tallyConfig.getCompiledScriptHash())</span>
-<span class="nc" id="L232">                .compilerName(tallyConfig.getCompilerName())</span>
-<span class="nc" id="L233">                .compilerVersion(tallyConfig.getCompilerVersion())</span>
-<span class="nc" id="L234">                .plutusVersion(tallyConfig.getPlutusVersion())</span>
-<span class="nc" id="L235">                .verificationKeyHashes(String.join(&quot;:&quot;, tallyConfig.getVerificationKeys()))</span>
-<span class="nc" id="L236">                .build();</span>
+<span class="nc" id="L227">        return HydraTally.builder()</span>
+<span class="nc" id="L228">                .contractName(tallyConfig.getContractName())</span>
+<span class="nc" id="L229">                .contractDescription(tallyConfig.getContractDesc())</span>
+<span class="nc" id="L230">                .contractVersion(tallyConfig.getContractVersion())</span>
+<span class="nc" id="L231">                .compiledScript(tallyConfig.getCompiledScript())</span>
+<span class="nc" id="L232">                .compiledScriptHash(tallyConfig.getCompiledScriptHash())</span>
+<span class="nc" id="L233">                .compilerName(tallyConfig.getCompilerName())</span>
+<span class="nc" id="L234">                .compilerVersion(tallyConfig.getCompilerVersion())</span>
+<span class="nc" id="L235">                .plutusVersion(tallyConfig.getPlutusVersion())</span>
+<span class="nc" id="L236">                .verificationKeyHashes(String.join(&quot;:&quot;, tallyConfig.getVerificationKeys()))</span>
+<span class="nc" id="L237">                .build();</span>
     }
 
     private Optional&lt;Category&gt; processCategoryRegistration(long slot,
                                                            String signature,
                                                            String key,
                                                            CBORMetadataMap payload) throws CborException {
-<span class="nc" id="L243">        var id = encodeHexString(blake2bHash224(decodeHexString(signature)));</span>
+<span class="nc" id="L244">        var id = encodeHexString(blake2bHash224(decodeHexString(signature)));</span>
 
-<span class="nc" id="L245">        log.info(&quot;Processing category registration id: {}&quot;, id);</span>
+<span class="nc" id="L246">        log.info(&quot;Processing category registration id: {}&quot;, id);</span>
 
-<span class="nc" id="L247">        var cip30Parser = new CIP30Verifier(signature, Optional.ofNullable(key));</span>
-<span class="nc" id="L248">        var cip30VerificationResult = cip30Parser.verify();</span>
-<span class="nc bnc" id="L249" title="All 2 branches missed.">        if (!cip30VerificationResult.isValid()) {</span>
-<span class="nc" id="L250">            log.info(&quot;Category registration signature invalid, ignoring id: {}&quot;, id);</span>
+<span class="nc" id="L248">        var cip30Parser = new CIP30Verifier(signature, Optional.ofNullable(key));</span>
+<span class="nc" id="L249">        var cip30VerificationResult = cip30Parser.verify();</span>
+<span class="nc bnc" id="L250" title="All 2 branches missed.">        if (!cip30VerificationResult.isValid()) {</span>
+<span class="nc" id="L251">            log.info(&quot;Category registration signature invalid, ignoring id: {}&quot;, id);</span>
 
-<span class="nc" id="L252">            return Optional.empty();</span>
+<span class="nc" id="L253">            return Optional.empty();</span>
         }
-<span class="nc" id="L254">        var maybeEventAddress = cip30VerificationResult.getAddress(TEXT);</span>
-<span class="nc bnc" id="L255" title="All 2 branches missed.">        if (maybeEventAddress.isEmpty()) {</span>
-<span class="nc" id="L256">            log.info(&quot;Address not found or invalid, ignoring id: {}&quot;, id);</span>
-<span class="nc" id="L257">            return Optional.empty();</span>
+<span class="nc" id="L255">        var maybeEventAddress = cip30VerificationResult.getAddress(TEXT);</span>
+<span class="nc bnc" id="L256" title="All 2 branches missed.">        if (maybeEventAddress.isEmpty()) {</span>
+<span class="nc" id="L257">            log.info(&quot;Address not found or invalid, ignoring id: {}&quot;, id);</span>
+<span class="nc" id="L258">            return Optional.empty();</span>
         }
-<span class="nc" id="L259">        var eventAddress = maybeEventAddress.orElseThrow();</span>
+<span class="nc" id="L260">        var eventAddress = maybeEventAddress.orElseThrow();</span>
 
-<span class="nc bnc" id="L261" title="All 2 branches missed.">        if (!organiserStakeAddress.equals(eventAddress)) {</span>
-<span class="nc" id="L262">            log.warn(&quot;Addresses mismatch, orgAccountStakeAddress: {}, eventAddress:{}&quot;, organiserStakeAddress, eventAddress);</span>
+<span class="nc bnc" id="L262" title="All 2 branches missed.">        if (!organiserStakeAddress.equals(eventAddress)) {</span>
+<span class="nc" id="L263">            log.warn(&quot;Addresses mismatch, orgAccountStakeAddress: {}, eventAddress:{}&quot;, organiserStakeAddress, eventAddress);</span>
 
-<span class="nc" id="L264">            return Optional.empty();</span>
-        }
-
-<span class="nc" id="L267">        var signaturePayloadHexString = Optional.ofNullable(cip30VerificationResult.getMessage(HEX)).orElse(&quot;&quot;);</span>
-<span class="nc" id="L268">        var payloadHexString = encodeHexString(blake2bHash224(CborSerializationUtil.serialize(payload.getMap())));</span>
-
-<span class="nc bnc" id="L270" title="All 2 branches missed.">        if (!signaturePayloadHexString.equals(payloadHexString)) {</span>
-<span class="nc" id="L271">            log.warn(&quot;Payload hash mismatch, signaturePayloadHexString: {}, payloadHexString:{}&quot;, signaturePayloadHexString, payloadHexString);</span>
-
-<span class="nc" id="L273">            return Optional.empty();</span>
+<span class="nc" id="L265">            return Optional.empty();</span>
         }
 
-<span class="nc" id="L276">        var maybeCategoryRegistration = cborService.decodeCategoryRegistrationEnvelope(payload).toJavaOptional();</span>
-<span class="nc bnc" id="L277" title="All 2 branches missed.">        if (maybeCategoryRegistration.isEmpty()) {</span>
-<span class="nc" id="L278">            log.info(&quot;Category registration invalid, ignoring id: {}&quot;, id);</span>
+<span class="nc" id="L268">        var signaturePayloadHexString = Optional.ofNullable(cip30VerificationResult.getMessage(HEX)).orElse(&quot;&quot;);</span>
+<span class="nc" id="L269">        var payloadHexString = encodeHexString(blake2bHash224(CborSerializationUtil.serialize(payload.getMap())));</span>
 
-<span class="nc" id="L280">            return Optional.empty();</span>
-        }
-<span class="nc" id="L282">        var categoryRegistration = maybeCategoryRegistration.orElseThrow();</span>
-<span class="nc" id="L283">        log.info(categoryRegistration.toString());</span>
+<span class="nc bnc" id="L271" title="All 2 branches missed.">        if (!signaturePayloadHexString.equals(payloadHexString)) {</span>
+<span class="nc" id="L272">            log.warn(&quot;Payload hash mismatch, signaturePayloadHexString: {}, payloadHexString:{}&quot;, signaturePayloadHexString, payloadHexString);</span>
 
-<span class="nc bnc" id="L285" title="All 2 branches missed.">        if (!bindOnEventIds.contains(categoryRegistration.getEvent())) {</span>
-<span class="nc" id="L286">            log.info(&quot;Event in category NOT found in bindOnEventIds, ignoring id:{}&quot;, id);</span>
-
-<span class="nc" id="L288">            return Optional.empty();</span>
+<span class="nc" id="L274">            return Optional.empty();</span>
         }
 
-<span class="nc" id="L291">        var maybeStoredEvent = referenceDataService.findEventByName(categoryRegistration.getEvent());</span>
-<span class="nc bnc" id="L292" title="All 2 branches missed.">        if (maybeStoredEvent.isEmpty()) {</span>
-<span class="nc" id="L293">            log.warn(&quot;Event not found, category registration id: {}&quot;, id);</span>
+<span class="nc" id="L277">        var maybeCategoryRegistration = cborService.decodeCategoryRegistrationEnvelope(payload).toJavaOptional();</span>
+<span class="nc bnc" id="L278" title="All 2 branches missed.">        if (maybeCategoryRegistration.isEmpty()) {</span>
+<span class="nc" id="L279">            log.info(&quot;Category registration invalid, ignoring id: {}&quot;, id);</span>
 
-<span class="nc" id="L295">            return Optional.empty();</span>
+<span class="nc" id="L281">            return Optional.empty();</span>
+        }
+<span class="nc" id="L283">        var categoryRegistration = maybeCategoryRegistration.orElseThrow();</span>
+<span class="nc" id="L284">        log.info(categoryRegistration.toString());</span>
+
+<span class="nc bnc" id="L286" title="All 2 branches missed.">        if (!bindOnEventIds.contains(categoryRegistration.getEvent())) {</span>
+<span class="nc" id="L287">            log.info(&quot;Event in category NOT found in bindOnEventIds, ignoring id:{}&quot;, id);</span>
+
+<span class="nc" id="L289">            return Optional.empty();</span>
         }
 
-<span class="nc" id="L298">        var eventM = referenceDataService.findEventByName(categoryRegistration.getEvent());</span>
+<span class="nc" id="L292">        var maybeStoredEvent = referenceDataService.findEventByName(categoryRegistration.getEvent());</span>
+<span class="nc bnc" id="L293" title="All 2 branches missed.">        if (maybeStoredEvent.isEmpty()) {</span>
+<span class="nc" id="L294">            log.warn(&quot;Event not found, category registration id: {}&quot;, id);</span>
 
-<span class="nc bnc" id="L300" title="All 2 branches missed.">        if (eventM.isEmpty()) {</span>
-<span class="nc" id="L301">            log.warn(&quot;Category registration failed, event not found, category registration id: {}&quot;, id);</span>
-
-<span class="nc" id="L303">            return Optional.empty();</span>
+<span class="nc" id="L296">            return Optional.empty();</span>
         }
 
-<span class="nc" id="L306">        var categoryM = referenceDataService.findCategoryByName(categoryRegistration.getId());</span>
+<span class="nc" id="L299">        var eventM = referenceDataService.findEventByName(categoryRegistration.getEvent());</span>
 
+<span class="nc bnc" id="L301" title="All 2 branches missed.">        if (eventM.isEmpty()) {</span>
+<span class="nc" id="L302">            log.warn(&quot;Category registration failed, event not found, category registration id: {}&quot;, id);</span>
 
-<span class="nc bnc" id="L309" title="All 2 branches missed.">        if (categoryM.isPresent()) {</span>
-<span class="nc" id="L310">            var category = categoryM.orElseThrow();</span>
-
-<span class="nc" id="L312">            log.info(&quot;Category already found, will be removing old one and re-creating it, id: {}&quot;, category.getId());</span>
-
-<span class="nc" id="L314">            referenceDataService.removeCategory(category);</span>
+<span class="nc" id="L304">            return Optional.empty();</span>
         }
 
-<span class="nc" id="L317">        var category = new Category();</span>
-<span class="nc" id="L318">        category.setId(categoryRegistration.getId());</span>
-<span class="nc" id="L319">        category.setVersion(categoryRegistration.getSchemaVersion());</span>
-<span class="nc" id="L320">        category.setGdprProtection(categoryRegistration.isGdprProtection());</span>
-<span class="nc" id="L321">        category.setAbsoluteSlot(slot);</span>
-<span class="nc" id="L322">        category.setEvent(eventM.orElseThrow());</span>
+<span class="nc" id="L307">        var categoryM = referenceDataService.findCategoryByName(categoryRegistration.getId());</span>
 
-<span class="nc" id="L324">        var proposals = categoryRegistration.getProposals().stream().map(proposalEnvelope -&gt; {</span>
-<span class="nc" id="L325">                    return Proposal.builder()</span>
-<span class="nc" id="L326">                            .id(proposalEnvelope.getId())</span>
-<span class="nc" id="L327">                            .name(proposalEnvelope.getName())</span>
-<span class="nc" id="L328">                            .category(category)</span>
-<span class="nc" id="L329">                            .absoluteSlot(slot)</span>
-<span class="nc" id="L330">                            .build();</span>
+
+<span class="nc bnc" id="L310" title="All 2 branches missed.">        if (categoryM.isPresent()) {</span>
+<span class="nc" id="L311">            var category = categoryM.orElseThrow();</span>
+
+<span class="nc" id="L313">            log.info(&quot;Category already found, will be removing old one and re-creating it, id: {}&quot;, category.getId());</span>
+
+<span class="nc" id="L315">            referenceDataService.removeCategory(category);</span>
+        }
+
+<span class="nc" id="L318">        var category = new Category();</span>
+<span class="nc" id="L319">        category.setId(categoryRegistration.getId());</span>
+<span class="nc" id="L320">        category.setVersion(categoryRegistration.getSchemaVersion());</span>
+<span class="nc" id="L321">        category.setGdprProtection(categoryRegistration.isGdprProtection());</span>
+<span class="nc" id="L322">        category.setAbsoluteSlot(slot);</span>
+<span class="nc" id="L323">        category.setEvent(eventM.orElseThrow());</span>
+
+<span class="nc" id="L325">        var proposals = categoryRegistration.getProposals().stream().map(proposalEnvelope -&gt; {</span>
+<span class="nc" id="L326">                    return Proposal.builder()</span>
+<span class="nc" id="L327">                            .id(proposalEnvelope.getId())</span>
+<span class="nc" id="L328">                            .name(proposalEnvelope.getName())</span>
+<span class="nc" id="L329">                            .category(category)</span>
+<span class="nc" id="L330">                            .absoluteSlot(slot)</span>
+<span class="nc" id="L331">                            .build();</span>
                 }
-<span class="nc" id="L332">        ).toList();</span>
+<span class="nc" id="L333">        ).toList();</span>
 
-<span class="nc" id="L334">        category.getProposals().clear();</span>
-<span class="nc" id="L335">        category.getProposals().addAll(proposals);</span>
+<span class="nc" id="L335">        category.getProposals().clear();</span>
+<span class="nc" id="L336">        category.getProposals().addAll(proposals);</span>
 
-<span class="nc" id="L337">        return Optional.of(referenceDataService.storeCategory(category));</span>
+<span class="nc" id="L338">        return Optional.of(referenceDataService.storeCategory(category));</span>
     }
 
     private Optional&lt;List&lt;MerkleRootHash&gt;&gt; processCommitments(long slot,
                                                               String signature,
                                                               String key,
                                                               CBORMetadataMap payload) throws CborException {
-<span class="nc" id="L344">        var id = encodeHexString(blake2bHash224(decodeHexString(signature)));</span>
+<span class="nc" id="L345">        var id = encodeHexString(blake2bHash224(decodeHexString(signature)));</span>
 
-<span class="nc" id="L346">        log.info(&quot;Processing on-chain commitments: {}&quot;, id);</span>
+<span class="nc" id="L347">        log.info(&quot;Processing on-chain commitments: {}&quot;, id);</span>
 
-<span class="nc" id="L348">        var cip30Parser = new CIP30Verifier(signature, Optional.ofNullable(key));</span>
-<span class="nc" id="L349">        var cip30VerificationResult = cip30Parser.verify();</span>
-<span class="nc bnc" id="L350" title="All 2 branches missed.">        if (!cip30VerificationResult.isValid()) {</span>
-<span class="nc" id="L351">            log.info(&quot;Signature invalid, ignoring id: {}&quot;, id);</span>
+<span class="nc" id="L349">        var cip30Parser = new CIP30Verifier(signature, Optional.ofNullable(key));</span>
+<span class="nc" id="L350">        var cip30VerificationResult = cip30Parser.verify();</span>
+<span class="nc bnc" id="L351" title="All 2 branches missed.">        if (!cip30VerificationResult.isValid()) {</span>
+<span class="nc" id="L352">            log.info(&quot;Signature invalid, ignoring id: {}&quot;, id);</span>
 
-<span class="nc" id="L353">            return Optional.empty();</span>
+<span class="nc" id="L354">            return Optional.empty();</span>
         }
-<span class="nc" id="L355">        var maybeEventAddress = cip30VerificationResult.getAddress(TEXT);</span>
-<span class="nc bnc" id="L356" title="All 2 branches missed.">        if (maybeEventAddress.isEmpty()) {</span>
-<span class="nc" id="L357">            log.info(&quot;Address not found or invalid, ignoring id: {}&quot;, id);</span>
-<span class="nc" id="L358">            return Optional.empty();</span>
+<span class="nc" id="L356">        var maybeEventAddress = cip30VerificationResult.getAddress(TEXT);</span>
+<span class="nc bnc" id="L357" title="All 2 branches missed.">        if (maybeEventAddress.isEmpty()) {</span>
+<span class="nc" id="L358">            log.info(&quot;Address not found or invalid, ignoring id: {}&quot;, id);</span>
+<span class="nc" id="L359">            return Optional.empty();</span>
         }
-<span class="nc" id="L360">        var eventAddress = maybeEventAddress.orElseThrow();</span>
+<span class="nc" id="L361">        var eventAddress = maybeEventAddress.orElseThrow();</span>
 
-<span class="nc bnc" id="L362" title="All 2 branches missed.">        if (!organiserStakeAddress.equals(eventAddress)) {</span>
-<span class="nc" id="L363">            log.warn(&quot;Addresses mismatch, orgAccountStakeAddress: {}, eventAddress:{}&quot;, organiserStakeAddress, eventAddress);</span>
+<span class="nc bnc" id="L363" title="All 2 branches missed.">        if (!organiserStakeAddress.equals(eventAddress)) {</span>
+<span class="nc" id="L364">            log.warn(&quot;Addresses mismatch, orgAccountStakeAddress: {}, eventAddress:{}&quot;, organiserStakeAddress, eventAddress);</span>
 
-<span class="nc" id="L365">            return Optional.empty();</span>
-        }
-
-<span class="nc" id="L368">        var signaturePayloadHexString = Optional.ofNullable(cip30VerificationResult.getMessage(HEX)).orElse(&quot;&quot;);</span>
-<span class="nc" id="L369">        var payloadHexString = encodeHexString(blake2bHash224(CborSerializationUtil.serialize(payload.getMap())));</span>
-
-<span class="nc bnc" id="L371" title="All 2 branches missed.">        if (!signaturePayloadHexString.equals(payloadHexString)) {</span>
-<span class="nc" id="L372">            log.warn(&quot;Payload hash mismatch, signaturePayloadHexString: {}, payloadHexString:{}&quot;, signaturePayloadHexString, payloadHexString);</span>
-
-<span class="nc" id="L374">            return Optional.empty();</span>
+<span class="nc" id="L366">            return Optional.empty();</span>
         }
 
-<span class="nc" id="L377">        var maybeCommitmentsEnvelope = cborService.decodeCommitmentsEnvelope(payload).toJavaOptional();</span>
-<span class="nc bnc" id="L378" title="All 2 branches missed.">        if (maybeCommitmentsEnvelope.isEmpty()) {</span>
-<span class="nc" id="L379">            log.info(&quot;Category registration invalid, ignoring id: {}&quot;, id);</span>
+<span class="nc" id="L369">        var signaturePayloadHexString = Optional.ofNullable(cip30VerificationResult.getMessage(HEX)).orElse(&quot;&quot;);</span>
+<span class="nc" id="L370">        var payloadHexString = encodeHexString(blake2bHash224(CborSerializationUtil.serialize(payload.getMap())));</span>
 
-<span class="nc" id="L381">            return Optional.empty();</span>
+<span class="nc bnc" id="L372" title="All 2 branches missed.">        if (!signaturePayloadHexString.equals(payloadHexString)) {</span>
+<span class="nc" id="L373">            log.warn(&quot;Payload hash mismatch, signaturePayloadHexString: {}, payloadHexString:{}&quot;, signaturePayloadHexString, payloadHexString);</span>
+
+<span class="nc" id="L375">            return Optional.empty();</span>
         }
-<span class="nc" id="L383">        var commitmentsEnvelope = maybeCommitmentsEnvelope.orElseThrow();</span>
 
-<span class="nc" id="L385">        var relevantCommitments = findOutRelevantEvents(commitmentsEnvelope.getCommitments());</span>
+<span class="nc" id="L378">        var maybeCommitmentsEnvelope = cborService.decodeCommitmentsEnvelope(payload).toJavaOptional();</span>
+<span class="nc bnc" id="L379" title="All 2 branches missed.">        if (maybeCommitmentsEnvelope.isEmpty()) {</span>
+<span class="nc" id="L380">            log.info(&quot;Category registration invalid, ignoring id: {}&quot;, id);</span>
 
-<span class="nc" id="L387">        var merkleRootHashes = new ArrayList&lt;MerkleRootHash&gt;();</span>
-<span class="nc bnc" id="L388" title="All 2 branches missed.">        for (var eventId : relevantCommitments.keySet()) {</span>
-<span class="nc" id="L389">            var maybeStoredEvent = referenceDataService.findEventByName(eventId);</span>
-<span class="nc bnc" id="L390" title="All 2 branches missed.">            if (maybeStoredEvent.isEmpty()) {</span>
-<span class="nc" id="L391">                log.info(&quot;Event not found, ignoring commitment, id: {}&quot;, eventId);</span>
-<span class="nc" id="L392">                continue;</span>
+<span class="nc" id="L382">            return Optional.empty();</span>
+        }
+<span class="nc" id="L384">        var commitmentsEnvelope = maybeCommitmentsEnvelope.orElseThrow();</span>
+
+<span class="nc" id="L386">        var relevantCommitments = findOutRelevantEvents(commitmentsEnvelope.getCommitments());</span>
+
+<span class="nc" id="L388">        var merkleRootHashes = new ArrayList&lt;MerkleRootHash&gt;();</span>
+<span class="nc bnc" id="L389" title="All 2 branches missed.">        for (var eventId : relevantCommitments.keySet()) {</span>
+<span class="nc" id="L390">            var maybeStoredEvent = referenceDataService.findEventByName(eventId);</span>
+<span class="nc bnc" id="L391" title="All 2 branches missed.">            if (maybeStoredEvent.isEmpty()) {</span>
+<span class="nc" id="L392">                log.info(&quot;Event not found, ignoring commitment, id: {}&quot;, eventId);</span>
+<span class="nc" id="L393">                continue;</span>
             }
 
-<span class="nc" id="L395">            var maybeEventCommitment = commitmentsEnvelope.getCommitment(eventId);</span>
-<span class="nc bnc" id="L396" title="All 2 branches missed.">            if (maybeEventCommitment.isEmpty()) {</span>
-<span class="nc" id="L397">                log.info(&quot;Commitment not found, ignoring commitment, id: {}&quot;, eventId);</span>
-<span class="nc" id="L398">                continue;</span>
+<span class="nc" id="L396">            var maybeEventCommitment = commitmentsEnvelope.getCommitment(eventId);</span>
+<span class="nc bnc" id="L397" title="All 2 branches missed.">            if (maybeEventCommitment.isEmpty()) {</span>
+<span class="nc" id="L398">                log.info(&quot;Commitment not found, ignoring commitment, id: {}&quot;, eventId);</span>
+<span class="nc" id="L399">                continue;</span>
             }
 
-<span class="nc" id="L401">            merkleRootHashes.add(MerkleRootHash.builder()</span>
-<span class="nc" id="L402">                    .eventId(eventId)</span>
-<span class="nc" id="L403">                    .merkleRootHash(maybeEventCommitment.orElseThrow())</span>
-<span class="nc" id="L404">                    .absoluteSlot(slot)</span>
-<span class="nc" id="L405">                    .build()</span>
+<span class="nc" id="L402">            merkleRootHashes.add(MerkleRootHash.builder()</span>
+<span class="nc" id="L403">                    .eventId(eventId)</span>
+<span class="nc" id="L404">                    .merkleRootHash(maybeEventCommitment.orElseThrow())</span>
+<span class="nc" id="L405">                    .absoluteSlot(slot)</span>
+<span class="nc" id="L406">                    .build()</span>
             );
-<span class="nc" id="L407">        }</span>
+<span class="nc" id="L408">        }</span>
 
-<span class="nc bnc" id="L409" title="All 2 branches missed.">        if (merkleRootHashes.isEmpty()) {</span>
+<span class="nc bnc" id="L410" title="All 2 branches missed.">        if (merkleRootHashes.isEmpty()) {</span>
             //log.info(&quot;No actual commitments (merkle root hashes) found in the actual on-chain COMMITMENTS event.&quot;);
 
-<span class="nc" id="L412">            return Optional.empty();</span>
+<span class="nc" id="L413">            return Optional.empty();</span>
         }
 
-<span class="nc" id="L415">        return Optional.of(merkleRootHashService.storeCommitments(merkleRootHashes));</span>
+<span class="nc" id="L416">        return Optional.of(merkleRootHashService.storeCommitments(merkleRootHashes));</span>
     }
 
     /**
      * We are only interested in commitments based on events we are binding into
      */
     private Map&lt;String, Map&lt;String, String&gt;&gt; findOutRelevantEvents(Map&lt;String, Map&lt;String, String&gt;&gt; commitments) {
-<span class="nc" id="L422">        return commitments.entrySet()</span>
-<span class="nc" id="L423">                .stream()</span>
-<span class="nc" id="L424">                .filter(entry -&gt; bindOnEventIds.contains(entry.getKey()))</span>
-<span class="nc" id="L425">                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));</span>
+<span class="nc" id="L423">        return commitments.entrySet()</span>
+<span class="nc" id="L424">                .stream()</span>
+<span class="nc" id="L425">                .filter(entry -&gt; bindOnEventIds.contains(entry.getKey()))</span>
+<span class="nc" id="L426">                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));</span>
     }
 
 }

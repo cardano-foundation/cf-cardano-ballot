@@ -30,7 +30,7 @@ public class BackendServiceBlockchainDataStakePoolService implements BlockchainD
 <span class="fc" id="L30">            int page = 1;</span>
             do {
 <span class="fc" id="L32">                var accountHistoryResult = accountService.getAccountHistory(stakeAddress, 100, page);</span>
-<span class="fc bfc" id="L33" title="All 2 branches covered.">                if (accountHistoryResult.isSuccessful()) {</span>
+<span class="pc bpc" id="L33" title="1 of 2 branches missed.">                if (accountHistoryResult.isSuccessful()) {</span>
 <span class="fc" id="L34">                    var accountHistory = accountHistoryResult.getValue();</span>
 
 <span class="fc" id="L36">                    var maybeStakeAmount = getStakeAmount(epochNo, accountHistory);</span>
@@ -44,8 +44,8 @@ public class BackendServiceBlockchainDataStakePoolService implements BlockchainD
                     }
 <span class="nc" id="L45">                    page++;</span>
 <span class="nc" id="L46">                } else {</span>
-<span class="fc" id="L47">                    log.warn(&quot;Failed to get stake amount for epoch {} and stake address {}, page {}&quot;, epochNo, stakeAddress, page);</span>
-<span class="fc" id="L48">                    return Optional.empty();</span>
+<span class="nc" id="L47">                    log.warn(&quot;Failed to get stake amount for epoch {} and stake address {}, page {}&quot;, epochNo, stakeAddress, page);</span>
+<span class="nc" id="L48">                    return Optional.empty();</span>
                 }
 
 <span class="nc" id="L51">            } while (true);</span>

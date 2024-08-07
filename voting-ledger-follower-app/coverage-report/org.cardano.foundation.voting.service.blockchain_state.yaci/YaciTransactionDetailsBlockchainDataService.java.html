@@ -6,7 +6,7 @@ import com.bloxbean.cardano.yaci.store.blocks.domain.Block;
 import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.domain.CardanoNetwork;
+import org.cardano.foundation.voting.domain.ChainNetwork;
 import org.cardano.foundation.voting.domain.TransactionDetails;
 import org.cardano.foundation.voting.service.blockchain_state.BlockchainDataTransactionDetailsService;
 import org.springframework.cache.CacheManager;
@@ -27,7 +27,7 @@ public class YaciTransactionDetailsBlockchainDataService implements BlockchainDa
 
     private final TransactionService transactionService;
 
-    private final CardanoNetwork cardanoNetwork;
+    private final ChainNetwork chainNetwork;
 
     private final CacheManager cacheManager;
 
@@ -50,7 +50,7 @@ public class YaciTransactionDetailsBlockchainDataService implements BlockchainDa
 <span class="fc" id="L50">                                .finalityScore(TransactionDetails.FinalityScore.fromConfirmations(blockConfirmations))</span>
 <span class="fc" id="L51">                                .blockHash(block.getHash())</span>
 <span class="fc" id="L52">                                .absoluteSlot(txn.getSlot())</span>
-<span class="fc" id="L53">                                .network(cardanoNetwork)</span>
+<span class="fc" id="L53">                                .network(chainNetwork)</span>
 <span class="fc" id="L54">                                .build();</span>
                     });
                 }));

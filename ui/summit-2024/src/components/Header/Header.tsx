@@ -114,8 +114,6 @@ const Header = () => {
 
   const handleOpenVerify = () => {};
 
-  const handleLogin = () => {};
-
   const onDisconnectWallet = () => {
     dispatch(resetUser());
     disconnect();
@@ -228,7 +226,6 @@ const Header = () => {
                   label={isPortrait ? "" : "Connect Wallet"}
                   onOpenConnectWalletModal={handleConnectWalletModal}
                   onOpenVerifyWalletModal={handleOpenVerify}
-                  onLogin={handleLogin}
                   onDisconnectWallet={() => onDisconnectWallet()}
                 />
 

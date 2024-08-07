@@ -76,8 +76,8 @@ const LoginModal: React.FC = () => {
         return;
       }
 
-      // @ts-ignore
       submitLogin(
+          // @ts-ignore
         loginSignatureResult.result,
         resolveWalletType(connectedWallet.address),
       )

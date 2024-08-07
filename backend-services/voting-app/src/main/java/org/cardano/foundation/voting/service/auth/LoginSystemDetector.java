@@ -27,12 +27,12 @@ public class LoginSystemDetector {
         }
 
         @Nullable
-        val xLoginSignature = request.getHeader(X_Login_Signature);
+        val xLoginSignature = request.getHeader(X_Ballot_Signature);
 
         @Nullable
-        val xLoginPayload = request.getHeader(X_Login_Payload);
+        val xLoginPayload = request.getHeader(X_Ballot_Payload);
 
-        val xWalletTypeM = Enums.getIfPresent(WalletType.class, request.getHeader(X_Wallet_Type));
+        val xWalletTypeM = Enums.getIfPresent(WalletType.class, request.getHeader(X_Ballot_Wallet_Type));
 
         if (xWalletTypeM.isEmpty()) {
             return Optional.empty();

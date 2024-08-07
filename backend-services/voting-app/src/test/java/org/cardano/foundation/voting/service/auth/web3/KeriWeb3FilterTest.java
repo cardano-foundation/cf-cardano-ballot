@@ -50,6 +50,8 @@ class KeriWeb3FilterTest {
     private LoginSystemDetector loginSystemDetector;
     private KeriVerificationClient keriVerificationClient;
 
+    private final ChainNetwork chainNetworkStartedOn = PREPROD;
+
     @BeforeEach
     void setUp() throws IOException {
         objectMapper = mock(ObjectMapper.class);
@@ -62,9 +64,7 @@ class KeriWeb3FilterTest {
         response = mock(HttpServletResponse.class);
         chain = mock(FilterChain.class);
 
-        ChainNetwork chainNetworkStartedOn = MAIN;  // Example initialization
-
-        filter = new KeriWeb3Filter(jsonService, expirationService, objectMapper, chainFollowerClient, chainNetworkStartedOn, loginSystemDetector, keriVerificationClient);
+        filter = new KeriWeb3Filter(jsonService, expirationService, objectMapper, chainFollowerClient, this.chainNetworkStartedOn, loginSystemDetector, keriVerificationClient);
         ServletOutputStream outputStream = mock(ServletOutputStream.class);
         when(response.getOutputStream()).thenReturn(outputStream);
     }
@@ -99,7 +99,7 @@ class KeriWeb3FilterTest {
     @Test
     void doFilterInternal_shouldReturnBadRequest_whenHeaderPayloadIsMissing() throws ServletException, IOException {
         when(loginSystemDetector.detect(request)).thenReturn(Optional.of(KERI_SIGN));
-        when(request.getHeader(X_Login_Signature)).thenReturn("signature");
+        when(request.getHeader(X_Ballot_Signature)).thenReturn("signature");
 
         filter.doFilterInternal(request, response, chain);
 
@@ -109,8 +109,8 @@ class KeriWeb3FilterTest {
     @Test
     void doFilterInternal_shouldReturnBadRequest_whenHeaderAidIsMissing() throws ServletException, IOException {
         when(loginSystemDetector.detect(request)).thenReturn(Optional.of(KERI_SIGN));
-        when(request.getHeader(X_Login_Signature)).thenReturn("signature");
-        when(request.getHeader(X_Login_Payload)).thenReturn("7061796C6F6164");
+        when(request.getHeader(X_Ballot_Signature)).thenReturn("signature");
+        when(request.getHeader(X_Ballot_Payload)).thenReturn("7061796C6F6164");
 
         filter.doFilterInternal(request, response, chain);
 
@@ -120,9 +120,9 @@ class KeriWeb3FilterTest {
     @Test
     void doFilterInternal_shouldReturnBadRequest_whenKeriVerificationFails() throws ServletException, IOException {
         when(loginSystemDetector.detect(request)).thenReturn(Optional.of(KERI_SIGN));
-        when(request.getHeader(X_Login_Signature)).thenReturn("signature");
-        when(request.getHeader(X_Login_Payload)).thenReturn("7061796C6F6164");
-        when(request.getHeader(X_Login_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
+        when(request.getHeader(X_Ballot_Signature)).thenReturn("signature");
+        when(request.getHeader(X_Ballot_Payload)).thenReturn("7061796C6F6164");
+        when(request.getHeader(X_Ballot_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.left(mock(Problem.class)));
 
         filter.doFilterInternal(request, response, chain);
@@ -133,9 +133,9 @@ class KeriWeb3FilterTest {
     @Test
     void doFilterInternal_shouldReturnBadRequest_whenKeriEnvelopeDecodingFails() throws ServletException, IOException {
         when(loginSystemDetector.detect(request)).thenReturn(Optional.of(KERI_SIGN));
-        when(request.getHeader(X_Login_Signature)).thenReturn("signature");
-        when(request.getHeader(X_Login_Payload)).thenReturn("7061796C6F6164");
-        when(request.getHeader(X_Login_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
+        when(request.getHeader(X_Ballot_Signature)).thenReturn("signature");
+        when(request.getHeader(X_Ballot_Payload)).thenReturn("7061796C6F6164");
+        when(request.getHeader(X_Ballot_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
         when(jsonService.decodeGenericKeri(any())).thenReturn(Either.left(mock(Problem.class)));
 
@@ -153,9 +153,9 @@ class KeriWeb3FilterTest {
     void doFilterInternal_shouldReturnBadRequest_whenWalletIdIsMissingInEnvelope() throws ServletException, IOException {
         // Setup mocks and stubs for successful KERI verification and decoding
         when(loginSystemDetector.detect(request)).thenReturn(Optional.of(KERI_SIGN));
-        when(request.getHeader(X_Login_Signature)).thenReturn("signature");
-        when(request.getHeader(X_Login_Payload)).thenReturn("7061796C6F6164");
-        when(request.getHeader(X_Login_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
+        when(request.getHeader(X_Ballot_Signature)).thenReturn("signature");
+        when(request.getHeader(X_Ballot_Payload)).thenReturn("7061796C6F6164");
+        when(request.getHeader(X_Ballot_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
 
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
 
@@ -180,9 +180,9 @@ class KeriWeb3FilterTest {
     @Test
     void doFilterInternal_shouldReturnBadRequest_whenInvalidWalletType() throws ServletException, IOException {
         when(loginSystemDetector.detect(request)).thenReturn(Optional.of(KERI_SIGN));
-        when(request.getHeader(X_Login_Signature)).thenReturn("signature");
-        when(request.getHeader(X_Login_Payload)).thenReturn("7061796C6F6164");
-        when(request.getHeader(X_Login_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
+        when(request.getHeader(X_Ballot_Signature)).thenReturn("signature");
+        when(request.getHeader(X_Ballot_Payload)).thenReturn("7061796C6F6164");
+        when(request.getHeader(X_Ballot_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
 
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
 
@@ -210,9 +210,9 @@ class KeriWeb3FilterTest {
     @Test
     void doFilterInternal_shouldReturnBadRequest_whenSlotIsNotNumeric() throws ServletException, IOException {
         when(loginSystemDetector.detect(request)).thenReturn(Optional.of(KERI_SIGN));
-        when(request.getHeader(X_Login_Signature)).thenReturn("signature");
-        when(request.getHeader(X_Login_Payload)).thenReturn("7061796C6F6164");
-        when(request.getHeader(X_Login_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
+        when(request.getHeader(X_Ballot_Signature)).thenReturn("signature");
+        when(request.getHeader(X_Ballot_Payload)).thenReturn("7061796C6F6164");
+        when(request.getHeader(X_Ballot_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
 
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
 
@@ -246,9 +246,9 @@ class KeriWeb3FilterTest {
     @Test
     void doFilterInternal_shouldReturnInternalServerError_whenChainTipFails() throws ServletException, IOException {
         when(loginSystemDetector.detect(request)).thenReturn(Optional.of(KERI_SIGN));
-        when(request.getHeader(X_Login_Signature)).thenReturn("signature");
-        when(request.getHeader(X_Login_Payload)).thenReturn("7061796C6F6164");
-        when(request.getHeader(X_Login_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
+        when(request.getHeader(X_Ballot_Signature)).thenReturn("signature");
+        when(request.getHeader(X_Ballot_Payload)).thenReturn("7061796C6F6164");
+        when(request.getHeader(X_Ballot_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
 
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
 
@@ -285,9 +285,9 @@ class KeriWeb3FilterTest {
     @Test
     void doFilterInternal_shouldReturnBadRequest_whenSlotIsExpired() throws ServletException, IOException {
         when(loginSystemDetector.detect(request)).thenReturn(Optional.of(KERI_SIGN));
-        when(request.getHeader(X_Login_Signature)).thenReturn("signature");
-        when(request.getHeader(X_Login_Payload)).thenReturn("7061796C6F6164");
-        when(request.getHeader(X_Login_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
+        when(request.getHeader(X_Ballot_Signature)).thenReturn("signature");
+        when(request.getHeader(X_Ballot_Payload)).thenReturn("7061796C6F6164");
+        when(request.getHeader(X_Ballot_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
 
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
 
@@ -324,9 +324,9 @@ class KeriWeb3FilterTest {
     @Test
     void doFilterInternal_shouldReturnBadRequest_whenNetworkIsInvalid() throws ServletException, IOException {
         when(loginSystemDetector.detect(request)).thenReturn(Optional.of(KERI_SIGN));
-        when(request.getHeader(X_Login_Signature)).thenReturn("signature");
-        when(request.getHeader(X_Login_Payload)).thenReturn("7061796C6F6164");
-        when(request.getHeader(X_Login_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
+        when(request.getHeader(X_Ballot_Signature)).thenReturn("signature");
+        when(request.getHeader(X_Ballot_Payload)).thenReturn("7061796C6F6164");
+        when(request.getHeader(X_Ballot_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
 
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
 
@@ -361,9 +361,9 @@ class KeriWeb3FilterTest {
     @Test
     void doFilterInternal_shouldReturnBadRequest_whenChainNetworkMismatch() throws ServletException, IOException {
         when(loginSystemDetector.detect(request)).thenReturn(Optional.of(KERI_SIGN));
-        when(request.getHeader(X_Login_Signature)).thenReturn("signature");
-        when(request.getHeader(X_Login_Payload)).thenReturn("7061796C6F6164");
-        when(request.getHeader(X_Login_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
+        when(request.getHeader(X_Ballot_Signature)).thenReturn("signature");
+        when(request.getHeader(X_Ballot_Payload)).thenReturn("7061796C6F6164");
+        when(request.getHeader(X_Ballot_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
 
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
 
@@ -398,14 +398,14 @@ class KeriWeb3FilterTest {
     @Test
     void doFilterInternal_shouldReturnBadRequest_whenAidCheckFails() throws ServletException, IOException {
         when(loginSystemDetector.detect(request)).thenReturn(Optional.of(KERI_SIGN));
-        when(request.getHeader(X_Login_Signature)).thenReturn("signature");
-        when(request.getHeader(X_Login_Payload)).thenReturn("7061796C6F6164");
-        when(request.getHeader(X_Login_PublicKey)).thenReturn("AIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
+        when(request.getHeader(X_Ballot_Signature)).thenReturn("signature");
+        when(request.getHeader(X_Ballot_Payload)).thenReturn("7061796C6F6164");
+        when(request.getHeader(X_Ballot_PublicKey)).thenReturn("AIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
 
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
 
         when(chainFollowerClient.getChainTip()).thenReturn(Either.right(
-                new ChainFollowerClient.ChainTipResponse("hash", 500, 23942349L, true, MAIN))
+                new ChainFollowerClient.ChainTipResponse("hash", 500, 23942349L, true, PREPROD))
         );
 
         val genericEnvelope = KERIEnvelope.<Map<String, Object>>builder()
@@ -416,7 +416,7 @@ class KeriWeb3FilterTest {
                         "walletId", "EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO",
                         "walletType", WalletType.KERI.name(),
                         "slot", "23942349",
-                        "network", MAIN.name())
+                        "network", PREPROD.name())
                 )
                 .build();
 
@@ -435,14 +435,14 @@ class KeriWeb3FilterTest {
     @Test
     void doFilterInternal_shouldReturnBadRequest_whenAidMismatch() throws ServletException, IOException {
         when(loginSystemDetector.detect(request)).thenReturn(Optional.of(KERI_SIGN));
-        when(request.getHeader(X_Login_Signature)).thenReturn("signature");
-        when(request.getHeader(X_Login_Payload)).thenReturn("7061796C6F6164");
-        when(request.getHeader(X_Login_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
+        when(request.getHeader(X_Ballot_Signature)).thenReturn("signature");
+        when(request.getHeader(X_Ballot_Payload)).thenReturn("7061796C6F6164");
+        when(request.getHeader(X_Ballot_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
 
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
 
         when(chainFollowerClient.getChainTip()).thenReturn(Either.right(
-                new ChainFollowerClient.ChainTipResponse("hash", 500, 23942349L, true, MAIN))
+                new ChainFollowerClient.ChainTipResponse("hash", 500, 23942349L, true, PREPROD))
         );
 
         val genericEnvelope = KERIEnvelope.<Map<String, Object>>builder()
@@ -453,7 +453,7 @@ class KeriWeb3FilterTest {
                         "walletId", "EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPP",
                         "walletType", WalletType.KERI.name(),
                         "slot", "23942349",
-                        "network", MAIN.name())
+                        "network", PREPROD.name())
                 )
                 .build();
 
@@ -472,14 +472,14 @@ class KeriWeb3FilterTest {
     @Test
     void doFilterInternal_shouldReturnInternalServerError_whenEventDetailsFails() throws ServletException, IOException {
         when(loginSystemDetector.detect(request)).thenReturn(Optional.of(KERI_SIGN));
-        when(request.getHeader(X_Login_Signature)).thenReturn("signature");
-        when(request.getHeader(X_Login_Payload)).thenReturn("7061796C6F6164");
-        when(request.getHeader(X_Login_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
+        when(request.getHeader(X_Ballot_Signature)).thenReturn("signature");
+        when(request.getHeader(X_Ballot_Payload)).thenReturn("7061796C6F6164");
+        when(request.getHeader(X_Ballot_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
 
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
 
         when(chainFollowerClient.getChainTip()).thenReturn(Either.right(
-                new ChainFollowerClient.ChainTipResponse("hash", 500, 23942349L, true, MAIN))
+                new ChainFollowerClient.ChainTipResponse("hash", 500, 23942349L, true, PREPROD))
         );
 
         val genericEnvelope = KERIEnvelope.<Map<String, Object>>builder()
@@ -490,7 +490,7 @@ class KeriWeb3FilterTest {
                         "walletId", "EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO",
                         "walletType", WalletType.KERI.name(),
                         "slot", "23942349",
-                        "network", MAIN.name())
+                        "network", PREPROD.name())
                 )
                 .build();
 
@@ -516,14 +516,14 @@ class KeriWeb3FilterTest {
     @Test
     void doFilterInternal_shouldReturnBadRequest_whenEventDetailsNotFound() throws ServletException, IOException {
         when(loginSystemDetector.detect(request)).thenReturn(Optional.of(KERI_SIGN));
-        when(request.getHeader(X_Login_Signature)).thenReturn("signature");
-        when(request.getHeader(X_Login_Payload)).thenReturn("7061796C6F6164");
-        when(request.getHeader(X_Login_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
+        when(request.getHeader(X_Ballot_Signature)).thenReturn("signature");
+        when(request.getHeader(X_Ballot_Payload)).thenReturn("7061796C6F6164");
+        when(request.getHeader(X_Ballot_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
 
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
 
         when(chainFollowerClient.getChainTip()).thenReturn(Either.right(
-                new ChainFollowerClient.ChainTipResponse("hash", 500, 23942349L, true, MAIN))
+                new ChainFollowerClient.ChainTipResponse("hash", 500, 23942349L, true, PREPROD))
         );
 
         val genericEnvelope = KERIEnvelope.<Map<String, Object>>builder()
@@ -534,7 +534,7 @@ class KeriWeb3FilterTest {
                         "walletId", "EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO",
                         "walletType", WalletType.KERI.name(),
                         "slot", "23942349",
-                        "network", MAIN.name())
+                        "network", PREPROD.name())
                 )
                 .build();
 
@@ -555,9 +555,9 @@ class KeriWeb3FilterTest {
     @Test
     void doFilterInternal_shouldAuthenticate_whenAllConditionsMet() throws ServletException, IOException {
         when(loginSystemDetector.detect(request)).thenReturn(Optional.of(KERI_SIGN));
-        when(request.getHeader(X_Login_Signature)).thenReturn("signature");
-        when(request.getHeader(X_Login_Payload)).thenReturn("7061796C6F6164");
-        when(request.getHeader(X_Login_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
+        when(request.getHeader(X_Ballot_Signature)).thenReturn("signature");
+        when(request.getHeader(X_Ballot_Payload)).thenReturn("7061796C6F6164");
+        when(request.getHeader(X_Ballot_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
 
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
 
@@ -573,7 +573,7 @@ class KeriWeb3FilterTest {
                         "walletId", "EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO",
                         "walletType", WalletType.KERI.name(),
                         "slot", "23942349",
-                        "network", MAIN.name())
+                        "network", PREPROD.name())
                 )
                 .build();
 
@@ -597,7 +597,7 @@ class KeriWeb3FilterTest {
 
         assertThat(keriDetails.getWeb3CommonDetails()).isNotNull();
         assertThat(keriDetails.getWeb3CommonDetails().getAction()).isEqualTo(Web3Action.LOGIN);
-        assertThat(keriDetails.getWeb3CommonDetails().getNetwork()).isEqualTo(MAIN);
+        assertThat(keriDetails.getWeb3CommonDetails().getNetwork()).isEqualTo(PREPROD);
         assertThat(keriDetails.getData()).isNotNull();
         assertThat(keriDetails.getEnvelope()).isNotNull();
     }

@@ -32,8 +32,8 @@ import java.util.Optional;
 
 import static org.cardano.foundation.voting.domain.Role.VOTER;
 import static org.cardano.foundation.voting.domain.web3.WalletType.CARDANO;
-import static org.cardano.foundation.voting.resource.Headers.X_Login_PublicKey;
-import static org.cardano.foundation.voting.resource.Headers.X_Login_Signature;
+import static org.cardano.foundation.voting.resource.Headers.X_Ballot_PublicKey;
+import static org.cardano.foundation.voting.resource.Headers.X_Ballot_Signature;
 import static org.cardano.foundation.voting.service.auth.LoginSystem.CARDANO_CIP93;
 import static org.cardano.foundation.voting.service.auth.web3.MoreFilters.sendBackProblem;
 import static org.cardano.foundation.voting.utils.MoreNumber.isNumeric;
@@ -75,8 +75,8 @@ public class CardanoWeb3Filter extends OncePerRequestFilter {
             return;
         }
 
-        val signatureM = Optional.ofNullable(req.getHeader(X_Login_Signature));
-        val publicKey = req.getHeader(X_Login_PublicKey);
+        val signatureM = Optional.ofNullable(req.getHeader(X_Ballot_Signature));
+        val publicKey = req.getHeader(X_Ballot_PublicKey);
 
         if (signatureM.isEmpty()) {
             val problem = Problem.builder()

@@ -47,9 +47,9 @@ def signCIP30LoginEnvelope(): Unit = {
             {
               "action": "LOGIN",
               "actionText": "Login",
-              "slot": "40262406",
+              "slot": "23942349",
               "data": {
-                "walletId": "stake_test1uzanmeujweq3cl4qxkfagxl0frahpk6eyck92faxv7mp9sst9nhwa",
+                "walletId": "${stakeAddress}",
                 "walletType": "CARDANO",
                 "event": "CF_TEST_EVENT_01",
                 "network": "PREPROD",
@@ -95,7 +95,7 @@ def signCIP30VoteCastEnvelope(): Unit = {
               "actionText": "Cast Vote",
               "data": {
                 "id": "2658fb7d-cd12-48c3-bc95-23e73616b79f",
-                "walletId": "stake_test1uruw6wswag80sd0l57alehj47llf6tx96402vt8vks46k0q0e2ne6",
+                "walletId": ${},
                 "walletType": "CARDANO",
                 "event": "CF_TEST_EVENT_01",
                 "category": "CHANGE_SOMETHING",
@@ -119,8 +119,9 @@ def signCIP30VoteCastEnvelope(): Unit = {
     );
 
     val output = s"""
-        X-CIP93-Signature: ${cip30Result.signature()}
-        X-CIP93-Public-Key: ${cip30Result.key()}
+        X-Login-Signature: ${cip30Result.signature()}
+        X-Login-Public-Key: ${cip30Result.key()}
+        X-Wallet-Type: "CARDANO"
 """.stripMargin
 
     println(output)
@@ -164,8 +165,9 @@ def signCIP30ViewVoteReceiptEnvelope(): Unit = {
     );
 
     val output = s"""
-        X-CIP93-Signature: ${cip30Result.signature()}
-        X-CIP93-Public-Key: ${cip30Result.key()}
+        X-Login-Signature: ${cip30Result.signature()}
+        X-Login-Public-Key: ${cip30Result.key()}
+        X-Wallet-Type: "CARDANO"
 """.stripMargin
 
     println(output)
@@ -195,7 +197,7 @@ def latestAbsoluteSlot(mapper: ObjectMapper): Long = {
 
 @main
 def main() = {
-    //signCIP30LoginEnvelope()
+    signCIP30LoginEnvelope()
     //signCIP30VoteCastEnvelope()
-    signCIP30ViewVoteReceiptEnvelope()
+    //signCIP30ViewVoteReceiptEnvelope()
 }

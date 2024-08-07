@@ -36,8 +36,8 @@ class LoginSystemDetectorTest {
     @Test
     void detect_shouldReturnCardanoCIP93_whenXLoginSignatureIsPresentAndWalletTypeIsCardano() {
         when(request.getHeader(AUTHORIZATION)).thenReturn(null);
-        when(request.getHeader(X_Login_Signature)).thenReturn("signature");
-        when(request.getHeader(X_Wallet_Type)).thenReturn(WalletType.CARDANO.name());
+        when(request.getHeader(X_Ballot_Signature)).thenReturn("signature");
+        when(request.getHeader(X_Ballot_Wallet_Type)).thenReturn(WalletType.CARDANO.name());
 
         Optional<LoginSystem> result = loginSystemDetector.detect(request);
 
@@ -47,9 +47,9 @@ class LoginSystemDetectorTest {
     @Test
     void detect_shouldReturnKeriSign_whenXLoginSignatureAndXLoginPayloadArePresentAndWalletTypeIsKeri() {
         when(request.getHeader(AUTHORIZATION)).thenReturn(null);
-        when(request.getHeader(X_Login_Signature)).thenReturn("signature");
-        when(request.getHeader(X_Login_Payload)).thenReturn("7061796C6F6164");
-        when(request.getHeader(X_Wallet_Type)).thenReturn(WalletType.KERI.name());
+        when(request.getHeader(X_Ballot_Signature)).thenReturn("signature");
+        when(request.getHeader(X_Ballot_Payload)).thenReturn("7061796C6F6164");
+        when(request.getHeader(X_Ballot_Wallet_Type)).thenReturn(WalletType.KERI.name());
 
         Optional<LoginSystem> result = loginSystemDetector.detect(request);
 
@@ -59,7 +59,7 @@ class LoginSystemDetectorTest {
     @Test
     void detect_shouldReturnEmpty_whenXWalletTypeIsEmpty() {
         when(request.getHeader(AUTHORIZATION)).thenReturn(null);
-        when(request.getHeader(X_Wallet_Type)).thenReturn(null);
+        when(request.getHeader(X_Ballot_Wallet_Type)).thenReturn(null);
 
         Optional<LoginSystem> result = loginSystemDetector.detect(request);
 
@@ -69,7 +69,7 @@ class LoginSystemDetectorTest {
     @Test
     void detect_shouldReturnEmpty_whenXLoginSignatureIsAbsentAndWalletTypeIsCardano() {
         when(request.getHeader(AUTHORIZATION)).thenReturn(null);
-        when(request.getHeader(X_Wallet_Type)).thenReturn(WalletType.CARDANO.name());
+        when(request.getHeader(X_Ballot_Wallet_Type)).thenReturn(WalletType.CARDANO.name());
 
         Optional<LoginSystem> result = loginSystemDetector.detect(request);
 
@@ -79,7 +79,7 @@ class LoginSystemDetectorTest {
     @Test
     void detect_shouldReturnEmpty_whenXLoginSignatureIsAbsentAndXLoginPayloadIsAbsentAndWalletTypeIsKeri() {
         when(request.getHeader(AUTHORIZATION)).thenReturn(null);
-        when(request.getHeader(X_Wallet_Type)).thenReturn(WalletType.KERI.name());
+        when(request.getHeader(X_Ballot_Wallet_Type)).thenReturn(WalletType.KERI.name());
 
         Optional<LoginSystem> result = loginSystemDetector.detect(request);
 

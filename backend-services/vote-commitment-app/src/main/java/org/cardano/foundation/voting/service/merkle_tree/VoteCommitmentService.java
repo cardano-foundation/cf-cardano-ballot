@@ -156,6 +156,7 @@ public class VoteCommitmentService {
                     case KERI -> handleKeriWalletType(vote, proofItems, merkleRootHash, l1SubmissionData);
                     case CARDANO -> handleCardanoWalletType(vote, proofItems, merkleRootHash, l1SubmissionData);
                 }
+
                 log.info("Storing vote merkle proofs for all events completed.");
             }
 

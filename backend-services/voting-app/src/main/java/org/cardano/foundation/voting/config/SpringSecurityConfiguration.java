@@ -46,8 +46,7 @@ public class SpringSecurityConfiguration {
 
     @ConditionalOnProperty( //to make sure it is active if console is enabled
             value="spring.h2.console.enabled",
-            havingValue = "true",
-            matchIfMissing = false)
+            havingValue = "true")
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring().requestMatchers(new AntPathRequestMatcher("/h2-console/**"));

@@ -70,14 +70,14 @@ public class KeriWeb3Filter extends OncePerRequestFilter {
             return;
         }
 
-        val headerSignatureM = Optional.ofNullable(req.getHeader(X_Login_Signature));
-        val headerPayloadM = Optional.ofNullable(req.getHeader(X_Login_Payload));
-        val headerAidM = Optional.ofNullable(req.getHeader(X_Login_PublicKey));
+        val headerSignatureM = Optional.ofNullable(req.getHeader(X_Ballot_Signature));
+        val headerPayloadM = Optional.ofNullable(req.getHeader(X_Ballot_Payload));
+        val headerAidM = Optional.ofNullable(req.getHeader(X_Ballot_PublicKey));
 
         if (headerSignatureM.isEmpty()) {
             val problem = Problem.builder()
                     .withTitle("NO_LOGIN_HTTP_HEADERS_SET")
-                    .withDetail(X_Login_Signature + " http header must be set.")
+                    .withDetail(X_Ballot_Signature + " http header must be set.")
                     .withStatus(BAD_REQUEST)
                     .build();
 
@@ -87,7 +87,7 @@ public class KeriWeb3Filter extends OncePerRequestFilter {
         if (headerPayloadM.isEmpty()) {
             val problem = Problem.builder()
                     .withTitle("NO_LOGIN_HTTP_HEADERS_SET")
-                    .withDetail(X_Login_Payload + "http header must be set.")
+                    .withDetail(X_Ballot_Payload + "http header must be set.")
                     .withStatus(BAD_REQUEST)
                     .build();
 
@@ -97,7 +97,7 @@ public class KeriWeb3Filter extends OncePerRequestFilter {
         if (headerAidM.isEmpty()) {
             val problem = Problem.builder()
                     .withTitle("NO_LOGIN_HTTP_HEADERS_SET")
-                    .withDetail(X_Login_PublicKey + " http header must be set.")
+                    .withDetail(X_Ballot_PublicKey + " http header must be set.")
                     .withStatus(BAD_REQUEST)
                     .build();
 
@@ -329,7 +329,6 @@ public class KeriWeb3Filter extends OncePerRequestFilter {
                 .web3CommonDetails(web3Details)
                 .signedKERI(signedKERI)
                 .envelope(genericEnvelope)
-                //.signedJson(headerSignedJson)
                 .build();
 
         val authentication = new Web3AuthenticationToken(keriDetails, List.of(new SimpleGrantedAuthority(VOTER.name())));

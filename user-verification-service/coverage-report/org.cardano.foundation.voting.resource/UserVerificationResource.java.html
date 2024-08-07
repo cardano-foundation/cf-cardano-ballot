@@ -6,11 +6,13 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.IsVerifiedRequest;
 import org.cardano.foundation.voting.domain.IsVerifiedResponse;
 import org.cardano.foundation.voting.service.common.UserVerificationService;
+import org.cardano.foundation.voting.domain.WalletType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,14 +23,14 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @RestController
 @RequestMapping(&quot;/api/user-verification&quot;)
-<span class="fc" id="L24">@Slf4j</span>
-<span class="fc" id="L25">@RequiredArgsConstructor</span>
+<span class="fc" id="L26">@Slf4j</span>
+@RequiredArgsConstructor
 @Tag(name = &quot;User Verification&quot;, description = &quot;Operations related to user verification&quot;)
 public class UserVerificationResource {
 
     private final UserVerificationService userVerificationService;
 
-    @RequestMapping(value = &quot;/verified/{eventId}/{walletId}&quot;, method = GET, produces = &quot;application/json&quot;)
+    @RequestMapping(value = &quot;/verified/{eventId}/{walletType}/{walletId}&quot;, method = GET, produces = &quot;application/json&quot;)
     @Timed(value = &quot;resource.isVerified&quot;, histogram = true)
     @Operation(
             summary = &quot;Check the verification status for a user based on event ID and stake address&quot;,
@@ -54,19 +56,20 @@ public class UserVerificationResource {
             }
     )
     public ResponseEntity&lt;?&gt; isVerified(@PathVariable(&quot;eventId&quot;) String eventId,
+                                        @PathVariable(&quot;walletType&quot;) @Valid WalletType walletType,
                                         @PathVariable(&quot;walletId&quot;) String walletId) {
-<span class="nc" id="L58">        var isVerifiedRequest = new IsVerifiedRequest(eventId, walletId);</span>
+<span class="nc" id="L61">        var isVerifiedRequest = new IsVerifiedRequest(eventId, walletType, walletId);</span>
 
-<span class="nc" id="L60">        return userVerificationService.isVerified(isVerifiedRequest)</span>
-<span class="nc" id="L61">                .fold(problem -&gt; {</span>
-<span class="nc" id="L62">                            return ResponseEntity</span>
-<span class="nc" id="L63">                                    .status(problem.getStatus().getStatusCode())</span>
-<span class="nc" id="L64">                                    .body(problem);</span>
+<span class="nc" id="L63">        return userVerificationService.isVerified(isVerifiedRequest)</span>
+<span class="nc" id="L64">                .fold(problem -&gt; {</span>
+<span class="nc" id="L65">                            return ResponseEntity</span>
+<span class="nc" id="L66">                                    .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L67">                                    .body(problem);</span>
                         },
                         isVerifiedResponse -&gt; {
-<span class="nc" id="L67">                            return ResponseEntity</span>
-<span class="nc" id="L68">                                    .ok()</span>
-<span class="nc" id="L69">                                    .body(isVerifiedResponse);</span>
+<span class="nc" id="L70">                            return ResponseEntity</span>
+<span class="nc" id="L71">                                    .ok()</span>
+<span class="nc" id="L72">                                    .body(isVerifiedResponse);</span>
                         }
                 );
     }

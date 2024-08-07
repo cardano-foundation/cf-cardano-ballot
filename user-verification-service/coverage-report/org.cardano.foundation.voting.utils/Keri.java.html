@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Keri.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">user-verification-service</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.utils</a> &gt; <span class="el_source">Keri.java</span></div><h1>Keri.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.utils;
+
+import io.vavr.control.Either;
+import lombok.val;
+import org.zalando.problem.Problem;
+
+import static org.zalando.problem.Status.BAD_REQUEST;
+
+<span class="nc" id="L9">public final class Keri {</span>
+
+    public static Either&lt;Problem, Boolean&gt; checkAid(String aid) {
+<span class="fc bfc" id="L12" title="All 4 branches covered.">        if (aid == null || aid.isEmpty()) {</span>
+<span class="fc" id="L13">            return Either.left(Problem.builder()</span>
+<span class="fc" id="L14">                    .withTitle(&quot;INVALID_KERI_AID&quot;)</span>
+<span class="fc" id="L15">                    .withDetail(&quot;Aid is required&quot;)</span>
+<span class="fc" id="L16">                    .withStatus(BAD_REQUEST)</span>
+<span class="fc" id="L17">                    .build()</span>
+            );
+        }
+
+<span class="fc bfc" id="L21" title="All 2 branches covered.">        if (aid.length() != 44) {</span>
+<span class="fc" id="L22">            return Either.left(Problem.builder()</span>
+<span class="fc" id="L23">                    .withTitle(&quot;INVALID_KERI_AID&quot;)</span>
+<span class="fc" id="L24">                    .withDetail(&quot;Aid must be 44 characters long&quot;)</span>
+<span class="fc" id="L25">                    .withStatus(BAD_REQUEST)</span>
+<span class="fc" id="L26">                    .build()</span>
+            );
+        }
+
+<span class="fc" id="L30">        val firstChar = aid.charAt(0);</span>
+
+<span class="fc bfc" id="L32" title="All 4 branches covered.">        if (firstChar != 'E' &amp;&amp; firstChar != 'B') {</span>
+<span class="fc" id="L33">            return Either.left(Problem.builder()</span>
+<span class="fc" id="L34">                    .withTitle(&quot;INVALID_KERI_AID&quot;)</span>
+<span class="fc" id="L35">                    .withDetail(&quot;Aid must start with 'E' or 'B'&quot;)</span>
+<span class="fc" id="L36">                    .withStatus(BAD_REQUEST)</span>
+<span class="fc" id="L37">                    .build()</span>
+            );
+        }
+
+<span class="fc" id="L41">        return Either.right(true);</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

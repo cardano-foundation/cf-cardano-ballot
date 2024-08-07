@@ -8,7 +8,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.VerificationStatus;
-import org.cardano.foundation.voting.utils.WalletType;
+import org.cardano.foundation.voting.domain.WalletType;
 
 import javax.annotation.Nullable;
 import java.time.LocalDateTime;
@@ -17,20 +17,20 @@ import java.util.Optional;
 @Entity
 @Table(name = &quot;discord_user_verification&quot;)
 <span class="fc" id="L19">@Slf4j</span>
-<span class="fc" id="L20">@NoArgsConstructor</span>
-<span class="pc" id="L21">@SuperBuilder</span>
-<span class="nc" id="L22">@AllArgsConstructor</span>
+@NoArgsConstructor
+@SuperBuilder
+@AllArgsConstructor
 public class DiscordUserVerification extends AbstractTimestampEntity {
 
     @Id
     @Column(name = &quot;id&quot;, nullable = false)
-<span class="fc" id="L27">    @Getter</span>
-<span class="nc" id="L28">    @Setter</span>
+    @Getter
+    @Setter
     private String discordIdHash;
 
     @Column(name = &quot;event_id&quot;, nullable = false)
-<span class="nc" id="L32">    @Getter</span>
-<span class="nc" id="L33">    @Setter</span>
+    @Getter
+    @Setter
     private String eventId;
 
     @Column(name = &quot;wallet_id&quot;)
@@ -38,46 +38,31 @@ public class DiscordUserVerification extends AbstractTimestampEntity {
     private String walletId;
 
     @Column(name = &quot;wallet_type&quot;)
-    @Nullable
     @Enumerated(EnumType.STRING)
+    @Getter
+    @Setter
     private WalletType walletType;
 
     @Column(name = &quot;secret_code&quot;, nullable = false)
-<span class="fc" id="L46">    @Getter</span>
-<span class="nc" id="L47">    @Setter</span>
+    @Getter
+    @Setter
     private String secretCode;
 
     @Column(name = &quot;status&quot;, nullable = false)
     @Enumerated(EnumType.STRING)
-<span class="fc" id="L52">    @Getter</span>
-<span class="fc" id="L53">    @Setter</span>
+    @Getter
+    @Setter
     private VerificationStatus status;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = &quot;expires_at&quot;, nullable = false)
-<span class="fc" id="L58">    @Getter</span>
-<span class="nc" id="L59">    @Setter</span>
+    @Getter
+    @Setter
     private LocalDateTime expiresAt;
-
-    public Optional&lt;String&gt; getWalletId() {
-<span class="nc" id="L63">        return Optional.ofNullable(walletId);</span>
-    }
-
-    public Optional&lt;WalletType&gt; getWalletType() {
-<span class="nc" id="L67">        return Optional.ofNullable(walletType);</span>
-    }
-
-    public void setWalletId(Optional&lt;String&gt; walletId) {
-<span class="fc" id="L71">        this.walletId = walletId.orElse(null);</span>
-<span class="fc" id="L72">    }</span>
-
-    public void setWalletType(Optional&lt;WalletType&gt; walletType) {
-<span class="fc" id="L75">        this.walletType = walletType.orElse(null);</span>
-<span class="fc" id="L76">    }</span>
 
     @Override
     public String toString() {
-<span class="nc" id="L80">        return &quot;DiscordUserVerification{&quot; +</span>
+<span class="nc" id="L65">        return &quot;DiscordUserVerification{&quot; +</span>
                 &quot;discordIdHash='&quot; + discordIdHash + '\'' +
                 &quot;, walletId='&quot; + walletId + '\'' +
                 &quot;, walletType='&quot; + walletType + '\'' +
@@ -89,6 +74,14 @@ public class DiscordUserVerification extends AbstractTimestampEntity {
                 &quot;, updatedAt=&quot; + updatedAt +
                 '}';
     }
+
+    public Optional&lt;String&gt; getWalletId() {
+<span class="nc" id="L79">        return Optional.ofNullable(walletId);</span>
+    }
+
+    public void setWalletId(Optional&lt;String&gt; walletId) {
+<span class="fc" id="L83">        this.walletId = walletId.orElse(null);</span>
+<span class="fc" id="L84">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

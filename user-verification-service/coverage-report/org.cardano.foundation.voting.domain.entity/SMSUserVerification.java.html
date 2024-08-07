@@ -7,49 +7,49 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.VerificationStatus;
-import org.cardano.foundation.voting.utils.WalletType;
+import org.cardano.foundation.voting.domain.WalletType;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = &quot;sms_user_verification&quot;)
 <span class="fc" id="L16">@Slf4j</span>
-<span class="nc" id="L17">@NoArgsConstructor</span>
+@NoArgsConstructor
 @Getter
-<span class="nc" id="L19">@Setter</span>
-<span class="nc" id="L20">@SuperBuilder</span>
+@Setter
+@SuperBuilder
 public class SMSUserVerification extends AbstractTimestampEntity {
 
     @Id
     @Column(name = &quot;id&quot;, nullable = false)
-<span class="nc" id="L25">    private String id;</span>
+    private String id;
 
     @Column(name = &quot;wallet_id&quot;, nullable = false)
-<span class="nc" id="L28">    private String walletId;</span>
+    private String walletId;
 
     @Column(name = &quot;wallet_type&quot;, nullable = false)
     @Enumerated(EnumType.STRING)
-<span class="nc" id="L32">    private WalletType walletType;</span>
+    private WalletType walletType;
 
     @Column(name = &quot;event_id&quot;, nullable = false)
-<span class="nc" id="L35">    private String eventId;</span>
+    private String eventId;
 
     @Column(name = &quot;verification_code&quot;, nullable = false)
-<span class="nc" id="L38">    private String verificationCode;</span>
+    private String verificationCode;
 
     @Column(name = &quot;request_id&quot;, nullable = false)
-<span class="nc" id="L41">    private String requestId;</span>
+    private String requestId;
 
     @Column(name = &quot;phone_number_hash&quot;, nullable = false)
-<span class="nc" id="L44">    private String phoneNumberHash;</span>
+    private String phoneNumberHash;
 
     @Column(name = &quot;status&quot;, nullable = false)
     @Enumerated(EnumType.STRING)
-<span class="nc" id="L48">    private VerificationStatus status;</span>
+    private VerificationStatus status;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = &quot;expires_at&quot;, nullable = false)
-<span class="nc" id="L52">    private LocalDateTime expiresAt;</span>
+    private LocalDateTime expiresAt;
 
     @Override
     public String toString() {

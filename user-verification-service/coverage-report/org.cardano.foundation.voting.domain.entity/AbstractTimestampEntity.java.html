@@ -10,21 +10,21 @@ import lombok.experimental.SuperBuilder;
 import java.time.LocalDateTime;
 
 @MappedSuperclass
-<span class="pc" id="L13">@Setter</span>
+@Setter
 @Getter
-<span class="pc bpc" id="L15" title="2 of 4 branches missed.">@SuperBuilder</span>
-<span class="fc" id="L16">@NoArgsConstructor</span>
+@SuperBuilder
+@NoArgsConstructor
 public abstract class AbstractTimestampEntity {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = &quot;created_at&quot;, nullable = false)
     @Builder.Default
-<span class="pc" id="L22">    protected LocalDateTime createdAt = LocalDateTime.now(); // TODO clock</span>
+    protected LocalDateTime createdAt = LocalDateTime.now(); // TODO clock
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = &quot;updated_at&quot;, nullable = false)
     @Builder.Default
-<span class="pc" id="L27">    protected LocalDateTime updatedAt = LocalDateTime.now(); // TODO clock</span>
+    protected LocalDateTime updatedAt = LocalDateTime.now(); // TODO clock
 
     @PrePersist
     protected void onCreate() {

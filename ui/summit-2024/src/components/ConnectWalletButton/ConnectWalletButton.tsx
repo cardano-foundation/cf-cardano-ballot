@@ -14,7 +14,7 @@ import VerifiedIcon from "@mui/icons-material/Verified";
 import "./ConnectWalletButton.scss";
 import { getUserInSession, tokenIsExpired } from "../../utils/session";
 import { addressSlice } from "../../utils/utils";
-import {eventBus, EventName} from "../../utils/EventBus";
+import { eventBus, EventName } from "../../utils/EventBus";
 import { useIsPortrait } from "../../common/hooks/useIsPortrait";
 import { useAppSelector } from "../../store/hooks";
 import { getEventCache } from "../../store/reducers/eventCache";

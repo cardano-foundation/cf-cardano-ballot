@@ -30,10 +30,7 @@ import {
 } from "../../store/reducers/userCache";
 import { getUserInSession, tokenIsExpired } from "../../utils/session";
 import { parseError } from "../../common/constants/errors";
-import {
-  setVoteReceipt,
-  setVotes,
-} from "../../store/reducers/votesCache";
+import { setVoteReceipt, setVotes } from "../../store/reducers/votesCache";
 import { ToastType } from "../../components/common/Toast/Toast.types";
 import { useSignatures } from "../../common/hooks/useSignatures";
 import { resolveWalletType } from "../../common/api/utils";
@@ -80,10 +77,12 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   }
 
   const nomineeToVote = categoryToRender.proposals?.find(
-      (n) => n.id === selectedNominee,
+    (n) => n.id === selectedNominee,
   );
 
-  const categoryAlreadyVoted = !!userVotes.find(vote => vote.categoryId === categoryToRender?.id);
+  const categoryAlreadyVoted = !!userVotes.find(
+    (vote) => vote.categoryId === categoryToRender?.id,
+  );
 
   console.log("categoryAlreadyVoted");
   console.log(categoryAlreadyVoted);
@@ -162,23 +161,20 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
     }
   };
   const renderButtonAction = () => {
-
     if (categoryAlreadyVoted && !session) {
       return {
-        label: "Sign In"
-      }
-    }
-    else if (categoryAlreadyVoted) {
+        label: "Sign In",
+      };
+    } else if (categoryAlreadyVoted) {
       return {
-        label: "View Receipt"
-      }
+        label: "View Receipt",
+      };
     } else {
       return {
-        label: "Vote Now"
-      }
+        label: "Vote Now",
+      };
     }
-
-  }
+  };
 
   const submitVote = async () => {
     if (eventCache?.finished) {

@@ -34,8 +34,10 @@ const buildCanonicalLoginJson = ({
   });
 };
 
-const submitLogin = async (jsonRequest: SignedWeb3Request,
-                           walletType: string,) => {
+const submitLogin = async (
+  jsonRequest: SignedWeb3Request,
+  walletType: string,
+) => {
   return await doRequest<{ accessToken: string; expiresAt: string }>(
     HttpMethods.GET,
     LOGIN_URL,

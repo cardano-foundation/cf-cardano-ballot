@@ -35,10 +35,7 @@ const userCacheSlice = createSlice({
     ) => {
       state.verificationStarted = action.payload;
     },
-    setIsLogin: (
-      state,
-      action: PayloadAction<boolean>,
-    ) => {
+    setIsLogin: (state, action: PayloadAction<boolean>) => {
       state.isVerified = action.payload;
     },
   },

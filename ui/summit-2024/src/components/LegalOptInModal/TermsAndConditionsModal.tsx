@@ -22,19 +22,18 @@ import AnimatedSwitch from "../AnimatedSwitch/AnimatedSwitch";
 const TermsAndConditionsModal = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-    const tabs = [
-        isMobile ? "T&Cs" : "Terms & Conditions",
-        isMobile ? "Privacy" : "Privacy Policy",
-    ];
+  const tabs = [
+    isMobile ? "T&Cs" : "Terms & Conditions",
+    isMobile ? "Privacy" : "Privacy Policy",
+  ];
 
   const [currentTab, setCurrentTab] = useState(tabs[0]);
   const [isChecked, setIsChecked] = useState(false);
   const [termsAndConditionsChecked, setTermsAndConditionsChecked] =
     useLocalStorage(CB_TERMS_AND_PRIVACY, false);
 
-
   const handleSetCurrentTab = (option: string) => {
-      setCurrentTab(option);
+    setCurrentTab(option);
   };
   const handleAccept = () => {
     setTermsAndConditionsChecked(true);
@@ -410,21 +409,21 @@ const TermsAndConditionsModal = () => {
       aria-labelledby="terms-modal-title"
       aria-describedby="terms-modal-description"
     >
-        <DialogTitle
-            sx={{
-                backgroundColor: theme.palette.background.default,
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center"
-            }}
-        >
-            <AnimatedSwitch
-                defaultValue={tabs[0]}
-                optionA={tabs[0]}
-                optionB={tabs[1]}
-                onClickOption={(option: string) => handleSetCurrentTab(option)}
-            />
-        </DialogTitle>
+      <DialogTitle
+        sx={{
+          backgroundColor: theme.palette.background.default,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <AnimatedSwitch
+          defaultValue={tabs[0]}
+          optionA={tabs[0]}
+          optionB={tabs[1]}
+          onClickOption={(option: string) => handleSetCurrentTab(option)}
+        />
+      </DialogTitle>
       <DialogContent
         dividers
         sx={{ backgroundColor: theme.palette.background.default }}

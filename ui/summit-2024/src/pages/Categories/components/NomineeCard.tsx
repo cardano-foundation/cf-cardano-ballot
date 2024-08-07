@@ -4,8 +4,8 @@ import HoverCircle from "../../../components/common/HoverCircle/HoverCircle";
 import theme from "../../../common/styles/theme";
 import nomineeBg from "../../../assets/bg/nomineeCard.svg";
 import { Proposal } from "../../../store/reducers/eventCache/eventCache.types";
-import {useAppSelector} from "../../../store/hooks";
-import {getUserVotes} from "../../../store/reducers/userCache";
+import { useAppSelector } from "../../../store/hooks";
+import { getUserVotes } from "../../../store/reducers/userCache";
 
 interface NomineeCardProps {
   nominee: Proposal;
@@ -23,11 +23,13 @@ const NomineeCard: React.FC<NomineeCardProps> = ({
   handleSelectNominee,
   handleLearnMoreClick,
 }) => {
-    const userVotes = useAppSelector(getUserVotes);
+  const userVotes = useAppSelector(getUserVotes);
 
-    const votedNominee = !!userVotes.find(vote => vote.proposalId === nominee.id)
-    console.log("votedNominee");
-    console.log(votedNominee);
+  const votedNominee = !!userVotes.find(
+    (vote) => vote.proposalId === nominee.id,
+  );
+  console.log("votedNominee");
+  console.log(votedNominee);
   return (
     <Grid
       item
@@ -41,7 +43,7 @@ const NomineeCard: React.FC<NomineeCardProps> = ({
       }}
     >
       <Paper
-        onClick={() => votedNominee ? handleSelectNominee(nominee.id) : null}
+        onClick={() => (votedNominee ? handleSelectNominee(nominee.id) : null)}
         elevation={3}
         sx={{
           width: "100%",
@@ -75,9 +77,11 @@ const NomineeCard: React.FC<NomineeCardProps> = ({
           }}
         >
           <Box component="div" sx={{ position: "absolute", right: 8, top: 8 }}>
-              {
-                  votedNominee ? <HoverCircle selected={selectedNominee === nominee.id || votedNominee} /> : null
-              }
+            {votedNominee ? (
+              <HoverCircle
+                selected={selectedNominee === nominee.id || votedNominee}
+              />
+            ) : null}
           </Box>
           <Typography
             variant="h6"

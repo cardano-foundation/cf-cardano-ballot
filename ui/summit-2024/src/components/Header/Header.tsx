@@ -18,7 +18,7 @@ import { RightMenu } from "./RightMenu/RightMenu";
 import theme from "../../common/styles/theme";
 import { useAppDispatch } from "../../store/hooks";
 import { resetUser } from "../../store/reducers/userCache";
-import {LoginModal} from "../LoginModal/LoginModal";
+import { LoginModal } from "../LoginModal/LoginModal";
 
 const Header = () => {
   const dispatch = useAppDispatch();

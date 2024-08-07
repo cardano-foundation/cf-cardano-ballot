@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CardanoConfig.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.config</a> &gt; <span class="el_source">CardanoConfig.java</span></div><h1>CardanoConfig.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.config;
 
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.domain.CardanoNetwork;
+import org.cardano.foundation.voting.domain.ChainNetwork;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 <span class="fc" id="L11">public class CardanoConfig {</span>
 
     @Bean
-    public CardanoNetwork cardanoNetwork(@Value(&quot;${cardano.network:main}&quot;) CardanoNetwork network) {
+    public ChainNetwork cardanoNetwork(@Value(&quot;${cardano.network:main}&quot;) ChainNetwork network) {
 <span class="fc" id="L15">        log.info(&quot;Configured backend network:{}&quot;, network);</span>
 
 <span class="fc" id="L17">        return network;</span>

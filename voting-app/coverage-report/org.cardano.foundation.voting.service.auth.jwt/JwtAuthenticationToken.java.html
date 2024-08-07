@@ -6,6 +6,7 @@ import lombok.SneakyThrows;
 import lombok.experimental.Accessors;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.domain.Role;
+import org.cardano.foundation.voting.domain.web3.WalletType;
 import org.cardano.foundation.voting.domain.web3.Web3Action;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -13,55 +14,62 @@ import org.springframework.security.core.GrantedAuthority;
 import javax.annotation.Nullable;
 import java.util.Collection;
 
-<span class="fc" id="L16">@Setter</span>
+<span class="fc" id="L17">@Setter</span>
 @Getter
 @Accessors(fluent = true)
 public class JwtAuthenticationToken extends AbstractAuthenticationToken {
 
-<span class="nc" id="L21">    private final JwtPrincipal principal;</span>
+<span class="nc" id="L22">    private final JwtPrincipal principal;</span>
 
-<span class="fc" id="L23">    private ChainFollowerClient.EventDetailsResponse eventDetails;</span>
+<span class="fc" id="L24">    private ChainFollowerClient.EventDetailsResponse eventDetails;</span>
 
-<span class="nc" id="L25">    private String stakeAddress;</span>
+<span class="nc" id="L26">    private WalletType walletType;</span>
 
-<span class="nc" id="L27">    private Role role;</span>
+<span class="nc" id="L28">    private String walletId;</span>
+
+<span class="nc" id="L30">    private Role role;</span>
 
     public JwtAuthenticationToken(JwtPrincipal principal,
                                   Collection&lt;? extends GrantedAuthority&gt; authorities) {
-<span class="fc" id="L31">        super(authorities);</span>
-<span class="fc" id="L32">        this.principal = principal;</span>
-<span class="fc" id="L33">        this.setAuthenticated(true);</span>
-<span class="fc" id="L34">    }</span>
+<span class="fc" id="L34">        super(authorities);</span>
+<span class="fc" id="L35">        this.principal = principal;</span>
+<span class="fc" id="L36">        this.setAuthenticated(true);</span>
+<span class="fc" id="L37">    }</span>
 
     public boolean isActionAllowed(Web3Action action) {
-<span class="fc" id="L37">        var allowedRoles = role.allowedActions();</span>
+<span class="fc" id="L40">        var allowedRoles = role.allowedActions();</span>
 
-<span class="fc" id="L39">        return allowedRoles.contains(action);</span>
+<span class="fc" id="L42">        return allowedRoles.contains(action);</span>
     }
 
     public boolean isActionNotAllowed(Web3Action action) {
-<span class="pc bpc" id="L43" title="1 of 2 branches missed.">        return !isActionAllowed(action);</span>
+<span class="pc bpc" id="L46" title="1 of 2 branches missed.">        return !isActionAllowed(action);</span>
     }
 
-<span class="nc" id="L46">    @SneakyThrows</span>
-    public String getStakeAddress() {
-<span class="fc" id="L48">        return stakeAddress;</span>
+<span class="nc" id="L49">    @SneakyThrows</span>
+    public String getWalletId() {
+<span class="fc" id="L51">        return walletId;</span>
+    }
+
+<span class="nc" id="L54">    @SneakyThrows</span>
+    public WalletType getWalletType() {
+<span class="fc" id="L56">        return walletType;</span>
     }
 
     @Override
     public Object getDetails() {
-<span class="nc" id="L53">        return principal.getSignedJWT();</span>
+<span class="nc" id="L61">        return principal.getSignedJWT();</span>
     }
 
     @Override
     public Object getPrincipal() {
-<span class="fc" id="L58">        return principal;</span>
+<span class="fc" id="L66">        return principal;</span>
     }
 
     @Override
     @Nullable
     public Object getCredentials() {
-<span class="nc" id="L64">        return null;</span>
+<span class="nc" id="L72">        return null;</span>
     }
 
 }

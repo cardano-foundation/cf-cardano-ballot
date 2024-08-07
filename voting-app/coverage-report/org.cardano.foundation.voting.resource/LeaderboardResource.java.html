@@ -8,11 +8,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.cardano.foundation.voting.domain.WinnerLeaderboardSource;
 import org.cardano.foundation.voting.service.leader_board.HighLevelLeaderBoardService;
 import org.cardano.foundation.voting.service.leader_board.LeaderboardWinnersProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
@@ -24,22 +25,21 @@ import java.util.Optional;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.cardano.foundation.voting.domain.WinnerLeaderboardSource.db;
-import static org.cardano.foundation.voting.resource.Headers.XForceLeaderBoardResults;
+import static org.cardano.foundation.voting.resource.Headers.X_Ballot_Force_LeaderBoard_Results;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.HEAD;
 import static org.zalando.problem.Status.NOT_FOUND;
 
+<span class="fc" id="L33">@RequiredArgsConstructor</span>
 @RestController
 @RequestMapping(&quot;/api/leaderboard&quot;)
-<span class="fc" id="L34">@Slf4j</span>
+<span class="fc" id="L36">@Slf4j</span>
 @Tag(name = &quot;Leaderboard&quot;, description = &quot;Operations related to the leaderboard&quot;)
-<span class="fc" id="L36">public class LeaderboardResource {</span>
+public class LeaderboardResource {
 
-    @Autowired
-    private HighLevelLeaderBoardService highLevelLeaderBoardService;
+    private final HighLevelLeaderBoardService highLevelLeaderBoardService;
 
-    @Autowired
-    private LeaderboardWinnersProvider leaderboardWinnersProvider;
+    private final LeaderboardWinnersProvider leaderboardWinnersProvider;
 
     @Value(&quot;${leaderboard.force.results:false}&quot;)
     private boolean forceLeaderboardResultsAvailability;
@@ -58,14 +58,14 @@ import static org.zalando.problem.Status.NOT_FOUND;
     )
     public ResponseEntity&lt;?&gt; isHighLevelEventLeaderBoardAvailable(@Parameter(name = &quot;eventId&quot;, description = &quot;ID of the event&quot;, required = true)
                                                                   @PathVariable(&quot;eventId&quot;) String eventId,
-                                                                  @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = &quot;false&quot;) boolean forceLeaderboardResults) {
-<span class="fc" id="L62">        var cacheControl = CacheControl.maxAge(5, MINUTES)</span>
+                                                                  @RequestHeader(value = X_Ballot_Force_LeaderBoard_Results, required = false, defaultValue = &quot;false&quot;) boolean forceLeaderboardResults) {
+<span class="fc" id="L62">        val cacheControl = CacheControl.maxAge(5, MINUTES)</span>
 <span class="fc" id="L63">                .noTransform()</span>
 <span class="fc" id="L64">                .mustRevalidate();</span>
 
-<span class="pc bpc" id="L66" title="3 of 4 branches missed.">        var forceLeaderboard = forceLeaderboardResults &amp;&amp; forceLeaderboardResultsAvailability;</span>
+<span class="pc bpc" id="L66" title="3 of 4 branches missed.">        val forceLeaderboard = forceLeaderboardResults &amp;&amp; forceLeaderboardResultsAvailability;</span>
 
-<span class="fc" id="L68">        var availableE = highLevelLeaderBoardService.isHighLevelEventLeaderboardAvailable(eventId, forceLeaderboard);</span>
+<span class="fc" id="L68">        val availableE = highLevelLeaderBoardService.isHighLevelEventLeaderboardAvailable(eventId, forceLeaderboard);</span>
 
 <span class="fc" id="L70">        return availableE.fold(problem -&gt; {</span>
 <span class="nc" id="L71">                    return ResponseEntity</span>
@@ -81,7 +81,7 @@ import static org.zalando.problem.Status.NOT_FOUND;
 <span class="fc" id="L81">                                .build();</span>
                     }
 
-<span class="nc" id="L84">                    var problem = Problem.builder()</span>
+<span class="nc" id="L84">                    val problem = Problem.builder()</span>
 <span class="nc" id="L85">                            .withTitle(&quot;VOTING_RESULTS_NOT_AVAILABLE&quot;)</span>
 <span class="nc" id="L86">                            .withDetail(&quot;Leaderboard not yet available for event: &quot; + eventId)</span>
 <span class="nc" id="L87">                            .withStatus(Status.FORBIDDEN)</span>
@@ -110,14 +110,14 @@ import static org.zalando.problem.Status.NOT_FOUND;
     )
     public ResponseEntity&lt;?&gt; isHighLevelCategoryLeaderBoardAvailable(@Parameter(name = &quot;eventId&quot;, description = &quot;ID of the event&quot;, required = true)
                                                                      @PathVariable(&quot;eventId&quot;) String eventId,
-                                                                     @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = &quot;false&quot;) boolean forceLeaderboardResults) {
-<span class="nc" id="L114">        var cacheControl = CacheControl.maxAge(5, MINUTES)</span>
+                                                                     @RequestHeader(value = X_Ballot_Force_LeaderBoard_Results, required = false, defaultValue = &quot;false&quot;) boolean forceLeaderboardResults) {
+<span class="nc" id="L114">        val cacheControl = CacheControl.maxAge(5, MINUTES)</span>
 <span class="nc" id="L115">                .noTransform()</span>
 <span class="nc" id="L116">                .mustRevalidate();</span>
 
-<span class="nc bnc" id="L118" title="All 4 branches missed.">        var forceLeaderboard = forceLeaderboardResults &amp;&amp; forceLeaderboardResultsAvailability;</span>
+<span class="nc bnc" id="L118" title="All 4 branches missed.">        val forceLeaderboard = forceLeaderboardResults &amp;&amp; forceLeaderboardResultsAvailability;</span>
 
-<span class="nc" id="L120">        var availableE = highLevelLeaderBoardService.isHighLevelCategoryLeaderboardAvailable(eventId, forceLeaderboard);</span>
+<span class="nc" id="L120">        val availableE = highLevelLeaderBoardService.isHighLevelCategoryLeaderboardAvailable(eventId, forceLeaderboard);</span>
 
 <span class="nc" id="L122">        return availableE.fold(problem -&gt; {</span>
 <span class="nc" id="L123">                    return ResponseEntity</span>
@@ -132,7 +132,7 @@ import static org.zalando.problem.Status.NOT_FOUND;
 <span class="nc" id="L132">                                .cacheControl(cacheControl)</span>
 <span class="nc" id="L133">                                .build();</span>
                     }
-<span class="nc" id="L135">                    var problem = Problem.builder()</span>
+<span class="nc" id="L135">                    val problem = Problem.builder()</span>
 <span class="nc" id="L136">                            .withTitle(&quot;VOTING_RESULTS_NOT_AVAILABLE&quot;)</span>
 <span class="nc" id="L137">                            .withDetail(&quot;Leaderboard not yet available for event: &quot; + eventId)</span>
 <span class="nc" id="L138">                            .withStatus(Status.FORBIDDEN)</span>
@@ -162,18 +162,18 @@ import static org.zalando.problem.Status.NOT_FOUND;
                                                              @PathVariable(&quot;eventId&quot;) String eventId,
                                                              @Parameter(name = &quot;categoryId&quot;, description = &quot;ID of the category&quot;, required = true)
                                                              @PathVariable(&quot;categoryId&quot;) String categoryId,
-                                                             @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = &quot;false&quot;) boolean forceLeaderboardResults,
+                                                             @RequestHeader(value = X_Ballot_Force_LeaderBoard_Results, required = false, defaultValue = &quot;false&quot;) boolean forceLeaderboardResults,
                                                              @Parameter(name = &quot;source&quot;, description = &quot;source of results, db or l1&quot;)
                                                              @Valid @RequestParam(name = &quot;source&quot;) Optional&lt;WinnerLeaderboardSource&gt; winnerLeaderboardSourceM) {
-<span class="nc" id="L168">        var winnerLeaderboardSource = winnerLeaderboardSourceM.orElse(db);</span>
+<span class="nc" id="L168">        val winnerLeaderboardSource = winnerLeaderboardSourceM.orElse(db);</span>
 
-<span class="nc" id="L170">        var cacheControl = CacheControl.maxAge(5, MINUTES)</span>
+<span class="nc" id="L170">        val cacheControl = CacheControl.maxAge(5, MINUTES)</span>
 <span class="nc" id="L171">                .noTransform()</span>
 <span class="nc" id="L172">                .mustRevalidate();</span>
 
-<span class="nc bnc" id="L174" title="All 4 branches missed.">        var forceLeaderboard = forceLeaderboardResults &amp;&amp; forceLeaderboardResultsAvailability;</span>
+<span class="nc bnc" id="L174" title="All 4 branches missed.">        val forceLeaderboard = forceLeaderboardResults &amp;&amp; forceLeaderboardResultsAvailability;</span>
 
-<span class="nc" id="L176">        var categoryLeaderboardAvailableE = leaderboardWinnersProvider</span>
+<span class="nc" id="L176">        val categoryLeaderboardAvailableE = leaderboardWinnersProvider</span>
 <span class="nc" id="L177">                .getWinnerLeaderboardSource(winnerLeaderboardSource)</span>
 <span class="nc" id="L178">                .isCategoryLeaderboardAvailable(eventId, categoryId, forceLeaderboard);</span>
 
@@ -190,7 +190,7 @@ import static org.zalando.problem.Status.NOT_FOUND;
 <span class="nc" id="L190">                                        .cacheControl(cacheControl)</span>
 <span class="nc" id="L191">                                        .build();</span>
                             }
-<span class="nc" id="L193">                            var problem = Problem.builder()</span>
+<span class="nc" id="L193">                            val problem = Problem.builder()</span>
 <span class="nc" id="L194">                                    .withTitle(&quot;VOTING_RESULTS_NOT_AVAILABLE&quot;)</span>
 <span class="nc" id="L195">                                    .withDetail(&quot;Leaderboard not yet available for event: &quot; + eventId)</span>
 <span class="nc" id="L196">                                    .withStatus(Status.FORBIDDEN)</span>
@@ -219,14 +219,14 @@ import static org.zalando.problem.Status.NOT_FOUND;
     public ResponseEntity&lt;?&gt; getEventLeaderBoard(
                                                  @Parameter(name = &quot;eventId&quot;, description = &quot;ID of the event&quot;, required = true)
                                                  @PathVariable(&quot;eventId&quot;) String eventId,
-                                                 @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = &quot;false&quot;) boolean forceLeaderboardResults) {
-<span class="fc" id="L223">        var cacheControl = CacheControl.maxAge(5, MINUTES)</span>
+                                                 @RequestHeader(value = X_Ballot_Force_LeaderBoard_Results, required = false, defaultValue = &quot;false&quot;) boolean forceLeaderboardResults) {
+<span class="fc" id="L223">        val cacheControl = CacheControl.maxAge(5, MINUTES)</span>
 <span class="fc" id="L224">                .noTransform()</span>
 <span class="fc" id="L225">                .mustRevalidate();</span>
 
-<span class="pc bpc" id="L227" title="3 of 4 branches missed.">        var forceLeaderboard = forceLeaderboardResults &amp;&amp; forceLeaderboardResultsAvailability;</span>
+<span class="pc bpc" id="L227" title="3 of 4 branches missed.">        val forceLeaderboard = forceLeaderboardResults &amp;&amp; forceLeaderboardResultsAvailability;</span>
 
-<span class="fc" id="L229">        var eventLeaderboardE = highLevelLeaderBoardService.getEventLeaderboard(eventId, forceLeaderboard);</span>
+<span class="fc" id="L229">        val eventLeaderboardE = highLevelLeaderBoardService.getEventLeaderboard(eventId, forceLeaderboard);</span>
 
 <span class="fc" id="L231">        return eventLeaderboardE.fold(problem -&gt; {</span>
 <span class="nc" id="L232">                    return ResponseEntity</span>
@@ -259,18 +259,18 @@ import static org.zalando.problem.Status.NOT_FOUND;
                                                     @PathVariable(&quot;eventId&quot;) String eventId,
                                                     @Parameter(name = &quot;categoryId&quot;, description = &quot;ID of the category&quot;, required = true)
                                                     @PathVariable(&quot;categoryId&quot;) String categoryId,
-                                                    @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = &quot;false&quot;) boolean forceLeaderboardResults,
+                                                    @RequestHeader(value = X_Ballot_Force_LeaderBoard_Results, required = false, defaultValue = &quot;false&quot;) boolean forceLeaderboardResults,
                                                     @Parameter(name = &quot;source&quot;, description = &quot;source of results, db or l1&quot;)
                                                     @Valid @RequestParam(name = &quot;source&quot;) Optional&lt;WinnerLeaderboardSource&gt; winnerLeaderboardSourceM) {
-<span class="fc" id="L265">        var winnerLeaderboardSource = winnerLeaderboardSourceM.orElse(db);</span>
+<span class="fc" id="L265">        val winnerLeaderboardSource = winnerLeaderboardSourceM.orElse(db);</span>
 
-<span class="fc" id="L267">        var cacheControl = CacheControl.maxAge(5, MINUTES)</span>
+<span class="fc" id="L267">        val cacheControl = CacheControl.maxAge(5, MINUTES)</span>
 <span class="fc" id="L268">                .noTransform()</span>
 <span class="fc" id="L269">                .mustRevalidate();</span>
 
-<span class="pc bpc" id="L271" title="3 of 4 branches missed.">        var forceLeaderboard = forceLeaderboardResults &amp;&amp; forceLeaderboardResultsAvailability;</span>
+<span class="pc bpc" id="L271" title="3 of 4 branches missed.">        val forceLeaderboard = forceLeaderboardResults &amp;&amp; forceLeaderboardResultsAvailability;</span>
 
-<span class="fc" id="L273">        var categoryLeaderboardE = leaderboardWinnersProvider</span>
+<span class="fc" id="L273">        val categoryLeaderboardE = leaderboardWinnersProvider</span>
 <span class="fc" id="L274">                .getWinnerLeaderboardSource(winnerLeaderboardSource)</span>
 <span class="fc" id="L275">                .getCategoryLeaderboard(eventId, categoryId, forceLeaderboard);</span>
 
@@ -282,7 +282,7 @@ import static org.zalando.problem.Status.NOT_FOUND;
                         },
                         proposalsInCategoryStatsM -&gt; {
 <span class="pc bpc" id="L284" title="1 of 2 branches missed.">                            if (proposalsInCategoryStatsM.isEmpty()) {</span>
-<span class="nc" id="L285">                                var problem = Problem.builder()</span>
+<span class="nc" id="L285">                                val problem = Problem.builder()</span>
 <span class="nc" id="L286">                                        .withTitle(&quot;VOTING_RESULTS_NOT_YET_AVAILABLE&quot;)</span>
 <span class="nc" id="L287">                                        .withDetail(&quot;Leaderboard not yet available for event: &quot; + eventId)</span>
 <span class="nc" id="L288">                                        .withStatus(NOT_FOUND)</span>
@@ -305,17 +305,17 @@ import static org.zalando.problem.Status.NOT_FOUND;
     @Timed(value = &quot;resource.leaderboard.category&quot;, histogram = true)
     public ResponseEntity&lt;?&gt; getCategoryLeaderBoardPerCategoryResults(@PathVariable(&quot;eventId&quot;) String eventId,
                                                                @PathVariable(&quot;categoryId&quot;) String categoryId,
-                                                               @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = &quot;false&quot;) boolean forceLeaderboardResults,
+                                                               @RequestHeader(value = X_Ballot_Force_LeaderBoard_Results, required = false, defaultValue = &quot;false&quot;) boolean forceLeaderboardResults,
                                                                @Valid @RequestParam(name = &quot;source&quot;) Optional&lt;WinnerLeaderboardSource&gt; winnerLeaderboardSourceM) {
-<span class="nc" id="L310">        var winnerLeaderboardSource = winnerLeaderboardSourceM.orElse(db);</span>
+<span class="nc" id="L310">        val winnerLeaderboardSource = winnerLeaderboardSourceM.orElse(db);</span>
 
-<span class="nc" id="L312">        var cacheControl = CacheControl.maxAge(5, MINUTES)</span>
+<span class="nc" id="L312">        val cacheControl = CacheControl.maxAge(5, MINUTES)</span>
 <span class="nc" id="L313">                .noTransform()</span>
 <span class="nc" id="L314">                .mustRevalidate();</span>
 
-<span class="nc bnc" id="L316" title="All 4 branches missed.">        var forceLeaderboard = forceLeaderboardResults &amp;&amp; forceLeaderboardResultsAvailability;</span>
+<span class="nc bnc" id="L316" title="All 4 branches missed.">        val forceLeaderboard = forceLeaderboardResults &amp;&amp; forceLeaderboardResultsAvailability;</span>
 
-<span class="nc" id="L318">        var categoryLeaderboardE = leaderboardWinnersProvider</span>
+<span class="nc" id="L318">        val categoryLeaderboardE = leaderboardWinnersProvider</span>
 <span class="nc" id="L319">                .getWinnerLeaderboardSource(winnerLeaderboardSource)</span>
 <span class="nc" id="L320">                .getCategoryLeaderboard(eventId, categoryId, forceLeaderboard);</span>
 
@@ -327,7 +327,7 @@ import static org.zalando.problem.Status.NOT_FOUND;
                         },
                         proposalsInCategoryStatsM -&gt; {
 <span class="nc bnc" id="L329" title="All 2 branches missed.">                            if (proposalsInCategoryStatsM.isEmpty()) {</span>
-<span class="nc" id="L330">                                var problem = Problem.builder()</span>
+<span class="nc" id="L330">                                val problem = Problem.builder()</span>
 <span class="nc" id="L331">                                        .withTitle(&quot;VOTING_RESULTS_NOT_YET_AVAILABLE&quot;)</span>
 <span class="nc" id="L332">                                        .withDetail(&quot;Leaderboard not yet available for event: &quot; + eventId)</span>
 <span class="nc" id="L333">                                        .withStatus(NOT_FOUND)</span>
@@ -349,17 +349,17 @@ import static org.zalando.problem.Status.NOT_FOUND;
     @RequestMapping(value = &quot;/{eventId}/results&quot;, method = GET, produces = &quot;application/json&quot;)
     @Timed(value = &quot;resource.leaderboard.category.all&quot;, histogram = true)
     public ResponseEntity&lt;?&gt; getCategoryLeaderBoardForAllCategoriesResults(@PathVariable(&quot;eventId&quot;) String eventId,
-                                                                    @RequestHeader(value = XForceLeaderBoardResults, required = false, defaultValue = &quot;false&quot;) boolean forceLeaderboardResults,
+                                                                    @RequestHeader(value = X_Ballot_Force_LeaderBoard_Results, required = false, defaultValue = &quot;false&quot;) boolean forceLeaderboardResults,
                                                                     @Valid @RequestParam(name = &quot;source&quot;) Optional&lt;WinnerLeaderboardSource&gt; winnerLeaderboardSourceM) {
-<span class="nc" id="L354">        var winnerLeaderboardSource = winnerLeaderboardSourceM.orElse(db);</span>
+<span class="nc" id="L354">        val winnerLeaderboardSource = winnerLeaderboardSourceM.orElse(db);</span>
 
-<span class="nc" id="L356">        var cacheControl = CacheControl.maxAge(5, MINUTES)</span>
+<span class="nc" id="L356">        val cacheControl = CacheControl.maxAge(5, MINUTES)</span>
 <span class="nc" id="L357">                .noTransform()</span>
 <span class="nc" id="L358">                .mustRevalidate();</span>
 
-<span class="nc bnc" id="L360" title="All 4 branches missed.">        var forceLeaderboard = forceLeaderboardResults &amp;&amp; forceLeaderboardResultsAvailability;</span>
+<span class="nc bnc" id="L360" title="All 4 branches missed.">        val forceLeaderboard = forceLeaderboardResults &amp;&amp; forceLeaderboardResultsAvailability;</span>
 
-<span class="nc" id="L362">        var categoryLeaderboardE = leaderboardWinnersProvider</span>
+<span class="nc" id="L362">        val categoryLeaderboardE = leaderboardWinnersProvider</span>
 <span class="nc" id="L363">                .getWinnerLeaderboardSource(winnerLeaderboardSource)</span>
 <span class="nc" id="L364">                .getAllCategoriesLeaderboard(eventId, forceLeaderboard);</span>
 

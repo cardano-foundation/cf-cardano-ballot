@@ -8,23 +8,23 @@ import java.util.Collection;
 
 public class Web3AuthenticationToken extends AbstractAuthenticationToken {
 
-    private final Web3Details web3Details;
+    private final Web3ConcreteDetails web3ConcreteDetails;
 
-    public Web3AuthenticationToken(Web3Details web3Details,
+    public Web3AuthenticationToken(Web3ConcreteDetails web3ConcreteDetails,
                                    Collection&lt;? extends GrantedAuthority&gt; authorities) {
 <span class="fc" id="L15">        super(authorities);</span>
-<span class="fc" id="L16">        this.web3Details = web3Details;</span>
+<span class="fc" id="L16">        this.web3ConcreteDetails = web3ConcreteDetails;</span>
 <span class="fc" id="L17">        this.setAuthenticated(true);</span>
 <span class="fc" id="L18">    }</span>
 
     @Override
-    public Web3Details getDetails() {
-<span class="fc" id="L22">        return web3Details;</span>
+    public Web3ConcreteDetails getDetails() {
+<span class="fc" id="L22">        return web3ConcreteDetails;</span>
     }
 
     @Override
     public Object getPrincipal() {
-<span class="fc" id="L27">        return web3Details.getStakeAddress();</span>
+<span class="fc" id="L27">        return web3ConcreteDetails.getWeb3CommonDetails().getWalletId();</span>
     }
 
     @Override

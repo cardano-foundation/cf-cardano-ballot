@@ -5,13 +5,13 @@ import java.util.Optional;
 <span class="nc" id="L5">public final class Enums {</span>
 
     public static &lt;T extends Enum&lt;T&gt;&gt; Optional&lt;T&gt; getIfPresent(Class&lt;T&gt; enumClass, String value) {
-<span class="pc bpc" id="L8" title="1 of 2 branches missed.">        if (value == null) {</span>
-<span class="nc" id="L9">            return Optional.empty();</span>
+<span class="fc bfc" id="L8" title="All 2 branches covered.">        if (value == null) {</span>
+<span class="fc" id="L9">            return Optional.empty();</span>
         }
         try {
 <span class="fc" id="L12">            return Optional.of(Enum.valueOf(enumClass, value.toUpperCase()));</span>
-<span class="nc" id="L13">        } catch (IllegalArgumentException e) {</span>
-<span class="nc" id="L14">            return Optional.empty();</span>
+<span class="fc" id="L13">        } catch (IllegalArgumentException e) {</span>
+<span class="fc" id="L14">            return Optional.empty();</span>
         }
     }
 

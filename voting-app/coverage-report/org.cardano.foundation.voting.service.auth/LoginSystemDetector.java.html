@@ -1,31 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LoginSystemDetector.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.service.auth</a> &gt; <span class="el_source">LoginSystemDetector.java</span></div><h1>LoginSystemDetector.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.service.auth;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.val;
+import org.cardano.foundation.voting.domain.web3.WalletType;
+import org.cardano.foundation.voting.utils.Enums;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 
 import static com.google.common.net.HttpHeaders.AUTHORIZATION;
 import static io.micrometer.common.util.StringUtils.isEmpty;
-import static org.cardano.foundation.voting.service.auth.LoginSystem.CIP93;
+import static org.cardano.foundation.voting.domain.web3.WalletType.CARDANO;
+import static org.cardano.foundation.voting.resource.Headers.*;
+import static org.cardano.foundation.voting.service.auth.LoginSystem.CARDANO_CIP93;
 import static org.cardano.foundation.voting.service.auth.LoginSystem.JWT;
 
 @Component
-<span class="fc" id="L14">public class LoginSystemDetector {</span>
+<span class="fc" id="L20">public class LoginSystemDetector {</span>
 
     public Optional&lt;LoginSystem&gt; detect(HttpServletRequest request) {
-<span class="fc" id="L17">        var authHeader = request.getHeader(AUTHORIZATION);</span>
-<span class="fc" id="L18">        var cip93SignatureHeader = request.getHeader(&quot;X-CIP93-Signature&quot;);</span>
+<span class="fc" id="L23">        val authHeader = request.getHeader(AUTHORIZATION);</span>
 
-<span class="pc bpc" id="L20" title="1 of 4 branches missed.">        if (!isEmpty(authHeader) &amp;&amp; authHeader.startsWith(&quot;Bearer &quot;)) {</span>
-<span class="fc" id="L21">            return Optional.of(JWT);</span>
+<span class="pc bpc" id="L25" title="1 of 4 branches missed.">        if (!isEmpty(authHeader) &amp;&amp; authHeader.startsWith(&quot;Bearer &quot;)) {</span>
+<span class="fc" id="L26">            return Optional.of(JWT);</span>
         }
 
-<span class="fc bfc" id="L24" title="All 2 branches covered.">        if (!isEmpty(cip93SignatureHeader)) {</span>
-<span class="fc" id="L25">            return Optional.of(CIP93);</span>
+        @Nullable
+<span class="fc" id="L30">        val xLoginSignature = request.getHeader(X_Ballot_Signature);</span>
+
+        @Nullable
+<span class="fc" id="L33">        val xLoginPayload = request.getHeader(X_Ballot_Payload);</span>
+
+<span class="fc" id="L35">        val xWalletTypeM = Enums.getIfPresent(WalletType.class, request.getHeader(X_Ballot_Wallet_Type));</span>
+
+<span class="fc bfc" id="L37" title="All 2 branches covered.">        if (xWalletTypeM.isEmpty()) {</span>
+<span class="fc" id="L38">            return Optional.empty();</span>
         }
 
-<span class="fc" id="L28">        return Optional.empty();</span>
+<span class="fc" id="L41">        val xWalletType = xWalletTypeM.orElseThrow();</span>
+
+<span class="fc bfc" id="L43" title="All 4 branches covered.">        if (!isEmpty(xLoginSignature) &amp;&amp; xWalletType == CARDANO) {</span>
+<span class="fc" id="L44">            return Optional.of(CARDANO_CIP93);</span>
+        }
+
+<span class="pc bpc" id="L47" title="2 of 6 branches missed.">        if (!isEmpty(xLoginSignature) &amp;&amp; !isEmpty(xLoginPayload) &amp;&amp; xWalletType == WalletType.KERI) {</span>
+<span class="fc" id="L48">            return Optional.of(LoginSystem.KERI_SIGN);</span>
+        }
+
+<span class="fc" id="L51">        return Optional.empty();</span>
     }
 
 }

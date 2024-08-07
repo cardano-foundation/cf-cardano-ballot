@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CardanoWeb3Filter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.service.auth.web3</a> &gt; <span class="el_source">CardanoWeb3Filter.java</span></div><h1>CardanoWeb3Filter.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.service.auth.web3;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+import org.cardano.foundation.voting.client.ChainFollowerClient;
+import org.cardano.foundation.voting.domain.ChainNetwork;
+import org.cardano.foundation.voting.domain.web3.SignedCIP30;
+import org.cardano.foundation.voting.domain.web3.WalletType;
+import org.cardano.foundation.voting.service.auth.LoginSystemDetector;
+import org.cardano.foundation.voting.service.expire.ExpirationService;
+import org.cardano.foundation.voting.service.json.JsonService;
+import org.cardano.foundation.voting.utils.Addresses;
+import org.cardano.foundation.voting.utils.Enums;
+import org.cardanofoundation.cip30.AddressFormat;
+import org.cardanofoundation.cip30.CIP30Verifier;
+import org.cardanofoundation.cip30.MessageFormat;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+import org.zalando.problem.Problem;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
+
+import static org.cardano.foundation.voting.domain.Role.VOTER;
+import static org.cardano.foundation.voting.domain.web3.WalletType.CARDANO;
+import static org.cardano.foundation.voting.resource.Headers.X_Ballot_PublicKey;
+import static org.cardano.foundation.voting.resource.Headers.X_Ballot_Signature;
+import static org.cardano.foundation.voting.service.auth.LoginSystem.CARDANO_CIP93;
+import static org.cardano.foundation.voting.service.auth.web3.MoreFilters.sendBackProblem;
+import static org.cardano.foundation.voting.utils.MoreNumber.isNumeric;
+import static org.zalando.problem.Status.*;
+
+@Component
+<span class="fc" id="L43">@RequiredArgsConstructor</span>
+<span class="fc" id="L44">@Slf4j</span>
+public class CardanoWeb3Filter extends OncePerRequestFilter {
+
+    private final JsonService jsonService;
+
+    private final ExpirationService expirationService;
+
+    private final ObjectMapper objectMapper;
+
+    // TODO can we do this via local access?
+    private final ChainFollowerClient chainFollowerClient;
+
+    private final ChainNetwork chainNetworkStartedOn;
+
+    private final LoginSystemDetector loginSystemDetector;
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest req,
+                                    HttpServletResponse res,
+                                    FilterChain chain) throws ServletException, IOException {
+<span class="fc" id="L64">        val maybeLoginSystem = loginSystemDetector.detect(req);</span>
+
+<span class="fc bfc" id="L66" title="All 2 branches covered.">        if (maybeLoginSystem.isEmpty()) {</span>
+<span class="fc" id="L67">            chain.doFilter(req, res);</span>
+<span class="fc" id="L68">            return;</span>
+        }
+
+<span class="fc" id="L71">        val loginSystem = maybeLoginSystem.orElseThrow();</span>
+
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        if (loginSystem != CARDANO_CIP93) {</span>
+<span class="fc" id="L74">            chain.doFilter(req, res);</span>
+<span class="fc" id="L75">            return;</span>
+        }
+
+<span class="fc" id="L78">        val signatureM = Optional.ofNullable(req.getHeader(X_Ballot_Signature));</span>
+<span class="fc" id="L79">        val publicKey = req.getHeader(X_Ballot_PublicKey);</span>
+
+<span class="fc bfc" id="L81" title="All 2 branches covered.">        if (signatureM.isEmpty()) {</span>
+<span class="fc" id="L82">            val problem = Problem.builder()</span>
+<span class="fc" id="L83">                    .withTitle(&quot;NO_LOGIN_HTTP_HEADERS_SET&quot;)</span>
+<span class="fc" id="L84">                    .withDetail(&quot;LOGIN http headers must be set.&quot;)</span>
+<span class="fc" id="L85">                    .withStatus(BAD_REQUEST)</span>
+<span class="fc" id="L86">                    .build();</span>
+
+<span class="fc" id="L88">            sendBackProblem(objectMapper, res, problem);</span>
+<span class="fc" id="L89">            return;</span>
+        }
+<span class="fc" id="L91">        val signature = signatureM.orElseThrow();</span>
+<span class="fc" id="L92">        val signedWeb3Request = new SignedCIP30(signature, Optional.ofNullable(publicKey));</span>
+
+<span class="fc" id="L94">        val cip30Verifier = new CIP30Verifier(signedWeb3Request.getSignature(), signedWeb3Request.getPublicKey());</span>
+<span class="fc" id="L95">        val cipVerificationResult = cip30Verifier.verify();</span>
+
+<span class="fc bfc" id="L97" title="All 2 branches covered.">        if (!cipVerificationResult.isValid()) {</span>
+<span class="fc" id="L98">            log.info(&quot;Unable to decode valid signed web3 request!&quot;);</span>
+
+<span class="fc" id="L100">            val problem = Problem.builder()</span>
+<span class="fc" id="L101">                    .withTitle(&quot;INVALID_CIP30_DATA_SIGNATURE&quot;)</span>
+<span class="fc" id="L102">                    .withDetail(&quot;Invalid CIP93 cose signature!&quot;)</span>
+<span class="fc" id="L103">                    .withStatus(UNAUTHORIZED)</span>
+<span class="fc" id="L104">                    .build();</span>
+
+<span class="fc" id="L106">            sendBackProblem(objectMapper, res, problem);</span>
+<span class="fc" id="L107">            return;</span>
+        }
+
+<span class="fc" id="L110">        val maybeAddress = cipVerificationResult.getAddress(AddressFormat.TEXT);</span>
+
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">        if (maybeAddress.isEmpty()) {</span>
+<span class="nc" id="L113">            val problem = Problem.builder()</span>
+<span class="nc" id="L114">                    .withTitle(&quot;ADDRESS_NOT_FOUND&quot;)</span>
+<span class="nc" id="L115">                    .withDetail(&quot;Bech32 address not found in the signed data.&quot;)</span>
+<span class="nc" id="L116">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L117">                    .build();</span>
+
+<span class="nc" id="L119">            sendBackProblem(objectMapper, res, problem);</span>
+<span class="nc" id="L120">            return;</span>
+        }
+
+<span class="fc" id="L123">        val walletId = maybeAddress.orElseThrow();</span>
+
+<span class="fc" id="L125">        val cipBody = cipVerificationResult.getMessage(MessageFormat.TEXT);</span>
+
+<span class="fc" id="L127">        val cip93EnvelopeE = jsonService.decodeGenericCIP93(cipBody);</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">        if (cip93EnvelopeE.isEmpty()) {</span>
+<span class="fc" id="L129">            log.info(&quot;Invalid CIP-93 envelope!&quot;);</span>
+
+<span class="fc" id="L131">            val problem = Problem.builder()</span>
+<span class="fc" id="L132">                    .withTitle(&quot;INVALID_CIP93_ENVELOPE&quot;)</span>
+<span class="fc" id="L133">                    .withDetail(&quot;CIP-93 envelope decoding failed.&quot;)</span>
+<span class="fc" id="L134">                    .withStatus(BAD_REQUEST)</span>
+<span class="fc" id="L135">                    .build();</span>
+
+<span class="fc" id="L137">            sendBackProblem(objectMapper, res, problem);</span>
+
+<span class="fc" id="L139">            return;</span>
+        }
+
+<span class="fc" id="L142">        val genericEnvelope = cip93EnvelopeE.get();</span>
+
+<span class="fc" id="L144">        val maybeWeb3Action = genericEnvelope.getActionAsEnum();</span>
+<span class="pc bpc" id="L145" title="1 of 2 branches missed.">        if (maybeWeb3Action.isEmpty()) {</span>
+<span class="nc" id="L146">            log.info(&quot;Unrecognised action, action:{}&quot;, genericEnvelope.getAction());</span>
+
+<span class="nc" id="L148">            val problem = Problem.builder()</span>
+<span class="nc" id="L149">                    .withTitle(&quot;ACTION_NOT_FOUND&quot;)</span>
+<span class="nc" id="L150">                    .withDetail(&quot;Action not found!&quot;)</span>
+<span class="nc" id="L151">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L152">                    .build();</span>
+
+<span class="nc" id="L154">            sendBackProblem(objectMapper, res, problem);</span>
+<span class="nc" id="L155">            return;</span>
+        }
+
+<span class="fc" id="L158">        val web3Action = maybeWeb3Action.orElseThrow();</span>
+
+<span class="fc" id="L160">        val slotStr = genericEnvelope.getSlot();</span>
+
+<span class="fc bfc" id="L162" title="All 2 branches covered.">        if (!isNumeric(slotStr)) {</span>
+<span class="fc" id="L163">            val problem = Problem.builder()</span>
+<span class="fc" id="L164">                    .withTitle(&quot;INVALID_SLOT&quot;)</span>
+<span class="fc" id="L165">                    .withDetail(&quot;CIP-93 envelope slot is not numeric!&quot;)</span>
+<span class="fc" id="L166">                    .withStatus(BAD_REQUEST)</span>
+<span class="fc" id="L167">                    .build();</span>
+
+<span class="fc" id="L169">            sendBackProblem(objectMapper, res, problem);</span>
+<span class="fc" id="L170">            return;</span>
+        }
+
+<span class="fc" id="L173">        val chainTipE = chainFollowerClient.getChainTip();</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">        if (chainTipE.isEmpty()) {</span>
+<span class="fc" id="L175">            val problem = Problem.builder()</span>
+<span class="fc" id="L176">                    .withTitle(&quot;CHAIN_TIP_ERROR&quot;)</span>
+<span class="fc" id="L177">                    .withDetail(&quot;Unable to get chain tip from chain-tip follower service, reason: &quot; + chainTipE.swap().get().getDetail())</span>
+<span class="fc" id="L178">                    .withStatus(INTERNAL_SERVER_ERROR)</span>
+<span class="fc" id="L179">                    .build();</span>
+
+<span class="fc" id="L181">            sendBackProblem(objectMapper, res, problem);</span>
+<span class="fc" id="L182">            return;</span>
+        }
+<span class="fc" id="L184">        val chainTip = chainTipE.get();</span>
+
+<span class="fc" id="L186">        val slotE = genericEnvelope.getSlotAsLong();</span>
+<span class="pc bpc" id="L187" title="1 of 2 branches missed.">        if (slotE.isLeft()) {</span>
+<span class="nc" id="L188">            val problem = slotE.getLeft();</span>
+
+<span class="nc" id="L190">            sendBackProblem(objectMapper, res, problem);</span>
+<span class="nc" id="L191">            return;</span>
+        }
+<span class="fc" id="L193">        val slot = slotE.get();</span>
+
+<span class="fc" id="L195">        val slotExpired = expirationService.isSlotExpired(chainTip, slot);</span>
+
+<span class="fc bfc" id="L197" title="All 2 branches covered.">        if (slotExpired) {</span>
+<span class="fc" id="L198">            val problem = Problem.builder()</span>
+<span class="fc" id="L199">                    .withTitle(&quot;EXPIRED_SLOT&quot;)</span>
+<span class="fc" id="L200">                    .withDetail(&quot;CIP-93 envelope slot expired!&quot;)</span>
+<span class="fc" id="L201">                    .withStatus(BAD_REQUEST)</span>
+<span class="fc" id="L202">                    .build();</span>
+
+<span class="fc" id="L204">            sendBackProblem(objectMapper, res, problem);</span>
+<span class="fc" id="L205">            return;</span>
+        }
+
+<span class="fc" id="L208">        val eventId = (String) genericEnvelope.getData().get(&quot;event&quot;);</span>
+<span class="fc" id="L209">        val networkString = (String) genericEnvelope.getData().get(&quot;network&quot;);</span>
+<span class="fc" id="L210">        val envelopeWalletId = (String) genericEnvelope.getData().get(&quot;walletId&quot;);</span>
+<span class="fc" id="L211">        val envelopeWalletTypeM = Enums.getIfPresent(WalletType.class, (String) genericEnvelope.getData().get(&quot;walletType&quot;));</span>
+
+<span class="fc bfc" id="L213" title="All 2 branches covered.">        if (envelopeWalletTypeM.isEmpty()) {</span>
+<span class="fc" id="L214">            val problem = Problem.builder()</span>
+<span class="fc" id="L215">                    .withTitle(&quot;MISSING_WALLET_TYPE&quot;)</span>
+<span class="fc" id="L216">                    .withDetail(&quot;CIP-93 envelope walletType not found!&quot;)</span>
+<span class="fc" id="L217">                    .withStatus(BAD_REQUEST)</span>
+<span class="fc" id="L218">                    .build();</span>
+
+<span class="fc" id="L220">            sendBackProblem(objectMapper, res, problem);</span>
+<span class="fc" id="L221">            return;</span>
+        }
+<span class="fc" id="L223">        val envelopeWalletType = envelopeWalletTypeM.orElseThrow();</span>
+
+<span class="pc bpc" id="L225" title="1 of 2 branches missed.">        if (envelopeWalletType != CARDANO) {</span>
+<span class="nc" id="L226">            val problem = Problem.builder()</span>
+<span class="nc" id="L227">                    .withTitle(&quot;MUST_BE_CARDANO_WALLET&quot;)</span>
+<span class="nc" id="L228">                    .withDetail(&quot;Only Cardano wallet type supported for CIP-93 envelopes!&quot;)</span>
+<span class="nc" id="L229">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L230">                    .build();</span>
+
+<span class="nc" id="L232">            sendBackProblem(objectMapper, res, problem);</span>
+<span class="nc" id="L233">            return;</span>
+        }
+
+<span class="fc" id="L236">        val networkM = Enums.getIfPresent(ChainNetwork.class, networkString);</span>
+<span class="fc bfc" id="L237" title="All 2 branches covered.">        if (networkM.isEmpty()) {</span>
+<span class="fc" id="L238">            val problem = Problem.builder()</span>
+<span class="fc" id="L239">                    .withTitle(&quot;INVALID_NETWORK&quot;)</span>
+<span class="fc" id="L240">                    .withDetail(&quot;Invalid chainNetwork, supported networks:&quot; + ChainNetwork.supportedNetworks())</span>
+<span class="fc" id="L241">                    .withStatus(BAD_REQUEST)</span>
+<span class="fc" id="L242">                    .build();</span>
+
+<span class="fc" id="L244">            sendBackProblem(objectMapper, res, problem);</span>
+<span class="fc" id="L245">            return;</span>
+        }
+
+<span class="fc" id="L248">        val chainNetwork = networkM.get();</span>
+<span class="fc bfc" id="L249" title="All 2 branches covered.">        if (chainNetwork != chainNetworkStartedOn) {</span>
+<span class="fc" id="L250">            log.warn(&quot;Invalid chainNetwork, network:{}&quot;, networkString);</span>
+
+<span class="fc" id="L252">            val problem = Problem.builder()</span>
+<span class="fc" id="L253">                    .withTitle(&quot;NETWORK_MISMATCH&quot;)</span>
+<span class="fc" id="L254">                    .withDetail(&quot;Invalid chainNetwork, backed configured with chainNetwork:&quot; + chainNetworkStartedOn + &quot;, however request is with chainNetwork:&quot; + chainNetwork)</span>
+<span class="fc" id="L255">                    .withStatus(BAD_REQUEST)</span>
+<span class="fc" id="L256">                    .build();</span>
+
+<span class="fc" id="L258">            sendBackProblem(objectMapper, res, problem);</span>
+<span class="fc" id="L259">            return;</span>
+        }
+
+<span class="fc" id="L262">        val walletIdE = Addresses.checkWalletId(chainNetwork, CARDANO, walletId);</span>
+<span class="fc bfc" id="L263" title="All 2 branches covered.">        if (walletIdE.isEmpty()) {</span>
+<span class="fc" id="L264">            val problem = walletIdE.getLeft();</span>
+
+<span class="fc" id="L266">            sendBackProblem(objectMapper, res, problem);</span>
+<span class="fc" id="L267">            return;</span>
+        }
+
+<span class="fc bfc" id="L270" title="All 2 branches covered.">        if (!walletId.equals(envelopeWalletId)) {</span>
+<span class="fc" id="L271">            val problem = Problem.builder()</span>
+<span class="fc" id="L272">                    .withTitle(&quot;STAKE_ADDRESS_MISMATCH&quot;)</span>
+<span class="fc" id="L273">                    .withDetail(&quot;Stake address mismatch, CIP-93 signed address:&quot; + walletId + &quot;, however request is with address:&quot; + envelopeWalletId)</span>
+<span class="fc" id="L274">                    .withStatus(BAD_REQUEST)</span>
+<span class="fc" id="L275">                    .build();</span>
+
+<span class="fc" id="L277">            sendBackProblem(objectMapper, res, problem);</span>
+<span class="fc" id="L278">            return;</span>
+        }
+
+
+<span class="fc" id="L282">        val eventDetailsE = chainFollowerClient.getEventDetails(eventId);</span>
+<span class="fc bfc" id="L283" title="All 2 branches covered.">        if (eventDetailsE.isEmpty()) {</span>
+<span class="fc" id="L284">            val problem = Problem.builder()</span>
+<span class="fc" id="L285">                    .withTitle(&quot;ERROR_GETTING_EVENT_DETAILS&quot;)</span>
+<span class="fc" id="L286">                    .withDetail(&quot;Unable to get event details from chain-tip follower service, event:&quot; + eventId)</span>
+<span class="fc" id="L287">                    .withStatus(INTERNAL_SERVER_ERROR)</span>
+<span class="fc" id="L288">                    .build();</span>
+
+<span class="fc" id="L290">            sendBackProblem(objectMapper, res, problem);</span>
+<span class="fc" id="L291">            return;</span>
+        }
+
+<span class="fc" id="L294">        val eventDetailsM = eventDetailsE.get();</span>
+<span class="fc bfc" id="L295" title="All 2 branches covered.">        if (eventDetailsM.isEmpty()) {</span>
+<span class="fc" id="L296">            val problem = Problem.builder()</span>
+<span class="fc" id="L297">                    .withTitle(&quot;UNRECOGNISED_EVENT&quot;)</span>
+<span class="fc" id="L298">                    .withDetail(&quot;Event not found, id: &quot; + eventId)</span>
+<span class="fc" id="L299">                    .withStatus(BAD_REQUEST)</span>
+<span class="fc" id="L300">                    .build();</span>
+
+<span class="fc" id="L302">            sendBackProblem(objectMapper, res, problem);</span>
+<span class="fc" id="L303">            return;</span>
+        }
+
+<span class="fc" id="L306">        val eventDetails = eventDetailsM.orElseThrow();</span>
+
+<span class="fc" id="L308">        val commonWeb3Details = Web3CommonDetails.builder()</span>
+<span class="fc" id="L309">                .event(eventDetails)</span>
+<span class="fc" id="L310">                .walletType(CARDANO)</span>
+<span class="fc" id="L311">                .walletId(walletId)</span>
+<span class="fc" id="L312">                .chainTip(chainTip)</span>
+<span class="fc" id="L313">                .action(web3Action)</span>
+<span class="fc" id="L314">                .network(chainNetwork)</span>
+<span class="fc" id="L315">                .build();</span>
+
+<span class="fc" id="L317">        val cardanoWeb3Details = CardanoWeb3Details.builder()</span>
+<span class="fc" id="L318">                .web3CommonDetails(commonWeb3Details)</span>
+<span class="fc" id="L319">                .envelope(genericEnvelope)</span>
+<span class="fc" id="L320">                .signedCIP30(signedWeb3Request)</span>
+<span class="fc" id="L321">                .cip30VerificationResult(cipVerificationResult)</span>
+<span class="fc" id="L322">                .build();</span>
+
+<span class="fc" id="L324">        val authentication = new Web3AuthenticationToken(cardanoWeb3Details, List.of(new SimpleGrantedAuthority(VOTER.name())));</span>
+
+<span class="fc" id="L326">        SecurityContextHolder.getContext().setAuthentication(authentication);</span>
+
+<span class="fc" id="L328">        chain.doFilter(req, res);</span>
+<span class="fc" id="L329">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

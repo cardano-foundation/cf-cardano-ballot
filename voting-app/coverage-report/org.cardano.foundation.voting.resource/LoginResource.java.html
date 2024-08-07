@@ -34,7 +34,7 @@ public class LoginResource {
     @Timed(value = &quot;resource.auth.login&quot;, histogram = true)
     @Operation(
             summary = &quot;Log in using Web3 authentication token&quot;,
-            description = &quot;Authenticate user using CIP-93 auth headers tokens. This endpoint allows you to obtain a JWT auth token based on Web3 authentication.&quot;,
+            description = &quot;Authenticate user using login auth headers tokens. This endpoint allows you to obtain a JWT auth token based on Web3 authentication.&quot;,
             responses = {
                     @ApiResponse(
                             responseCode = &quot;200&quot;,
@@ -70,7 +70,7 @@ public class LoginResource {
 <span class="pc bpc" id="L70" title="1 of 2 branches missed.">        if (!(authentication instanceof Web3AuthenticationToken web3AuthenticationToken)) {</span>
 <span class="nc" id="L71">            var problem = Problem.builder()</span>
 <span class="nc" id="L72">                    .withTitle(&quot;WEB3_AUTH_REQUIRED&quot;)</span>
-<span class="nc" id="L73">                    .withDetail(&quot;CIP-93 auth headers tokens needed!&quot;)</span>
+<span class="nc" id="L73">                    .withDetail(&quot;WEB3_AUTH_REQUIRED auth headers tokens needed!&quot;)</span>
 <span class="nc" id="L74">                    .withStatus(BAD_REQUEST)</span>
 <span class="nc" id="L75">                    .build();</span>
 

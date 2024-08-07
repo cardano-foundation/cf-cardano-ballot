@@ -4,12 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.vavr.control.Either;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.domain.web3.CIP93Envelope;
-import org.cardano.foundation.voting.domain.web3.JwtLoginEnvelope;
-import org.cardano.foundation.voting.domain.web3.ViewVoteReceiptEnvelope;
-import org.cardano.foundation.voting.domain.web3.VoteEnvelope;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.cardano.foundation.voting.domain.web3.*;
 import org.springframework.stereotype.Component;
 import org.zalando.problem.Problem;
 
@@ -18,78 +15,140 @@ import java.util.Map;
 import static org.zalando.problem.Status.BAD_REQUEST;
 
 @Component
-<span class="fc" id="L21">@Slf4j</span>
-<span class="fc" id="L22">public final class JsonService {</span>
+<span class="fc" id="L18">@Slf4j</span>
+<span class="fc" id="L19">@RequiredArgsConstructor</span>
+public final class JsonService {
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
     public Either&lt;Problem, CIP93Envelope&lt;Map&lt;String, Object&gt;&gt;&gt; decodeGenericCIP93(String json) {
         try {
-<span class="fc" id="L29">            return Either.right(objectMapper.readValue(json, new TypeReference&lt;&gt;() { }));</span>
-<span class="nc" id="L30">        } catch (JsonProcessingException e) {</span>
-<span class="nc" id="L31">            log.warn(&quot;Invalid json:{}&quot;, json, e);</span>
+<span class="fc" id="L26">            CIP93Envelope&lt;Map&lt;String, Object&gt;&gt; envelope = objectMapper.readValue(json, new TypeReference&lt;&gt;() {</span>
+            });
 
-<span class="nc" id="L33">            return Either.left(</span>
-<span class="nc" id="L34">                    Problem.builder()</span>
-<span class="nc" id="L35">                            .withTitle(&quot;INVALID_JSON&quot;)</span>
-<span class="nc" id="L36">                            .withDetail(&quot;Invalid json:&quot; + json)</span>
-<span class="nc" id="L37">                            .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L38">                            .withDetail(e.getMessage())</span>
-<span class="nc" id="L39">                            .build()</span>
+<span class="fc" id="L29">            return Either.right(envelope);</span>
+<span class="fc" id="L30">        } catch (JsonProcessingException e) {</span>
+<span class="fc" id="L31">            log.warn(&quot;Invalid json:{}&quot;, json, e);</span>
+
+<span class="fc" id="L33">            return Either.left(</span>
+<span class="fc" id="L34">                    Problem.builder()</span>
+<span class="fc" id="L35">                            .withTitle(&quot;INVALID_JSON&quot;)</span>
+<span class="fc" id="L36">                            .withDetail(&quot;Invalid json:&quot; + json)</span>
+<span class="fc" id="L37">                            .withStatus(BAD_REQUEST)</span>
+<span class="fc" id="L38">                            .withDetail(e.getMessage())</span>
+<span class="fc" id="L39">                            .build()</span>
             );
         }
     }
 
-    public Either&lt;Problem, CIP93Envelope&lt;JwtLoginEnvelope&gt;&gt; decodeCIP93LoginEnvelope(String json) {
+    public Either&lt;Problem, KERIEnvelope&lt;Map&lt;String, Object&gt;&gt;&gt; decodeGenericKeri(String json) {
         try {
-<span class="fc" id="L46">            return Either.right(objectMapper.readValue(json, new TypeReference&lt;&gt;() { }));</span>
-<span class="nc" id="L47">        } catch (JsonProcessingException e) {</span>
-<span class="nc" id="L48">            log.warn(&quot;Invalid json:{}&quot;, json, e);</span>
+<span class="nc" id="L46">            KERIEnvelope&lt;Map&lt;String, Object&gt;&gt; envelope = objectMapper.readValue(json, new TypeReference&lt;&gt;() {</span>
+            });
 
-<span class="nc" id="L50">            return Either.left(</span>
-<span class="nc" id="L51">                    Problem.builder()</span>
-<span class="nc" id="L52">                            .withTitle(&quot;INVALID_JSON&quot;)</span>
-<span class="nc" id="L53">                            .withDetail(&quot;Invalid json:&quot; + json)</span>
-<span class="nc" id="L54">                            .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L55">                            .withDetail(e.getMessage())</span>
-<span class="nc" id="L56">                            .build()</span>
+<span class="nc" id="L49">            return Either.right(envelope);</span>
+<span class="nc" id="L50">        } catch (JsonProcessingException e) {</span>
+<span class="nc" id="L51">            log.warn(&quot;Invalid json:{}&quot;, json, e);</span>
+
+<span class="nc" id="L53">            return Either.left(</span>
+<span class="nc" id="L54">                    Problem.builder()</span>
+<span class="nc" id="L55">                            .withTitle(&quot;INVALID_JSON&quot;)</span>
+<span class="nc" id="L56">                            .withDetail(&quot;Invalid json:&quot; + json)</span>
+<span class="nc" id="L57">                            .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L58">                            .withDetail(e.getMessage())</span>
+<span class="nc" id="L59">                            .build()</span>
+            );
+        }
+    }
+
+    public Either&lt;Problem, CIP93Envelope&lt;LoginEnvelope&gt;&gt; decodeCIP93LoginEnvelope(String json) {
+        try {
+<span class="fc" id="L66">            CIP93Envelope&lt;LoginEnvelope&gt; envelope = objectMapper.readValue(json, new TypeReference&lt;&gt;() {</span>
+            });
+
+<span class="fc" id="L69">            return Either.right(envelope);</span>
+<span class="nc" id="L70">        } catch (JsonProcessingException e) {</span>
+<span class="nc" id="L71">            log.warn(&quot;Invalid json:{}&quot;, json, e);</span>
+
+<span class="nc" id="L73">            return Either.left(</span>
+<span class="nc" id="L74">                    Problem.builder()</span>
+<span class="nc" id="L75">                            .withTitle(&quot;INVALID_JSON&quot;)</span>
+<span class="nc" id="L76">                            .withDetail(&quot;Invalid json:&quot; + json)</span>
+<span class="nc" id="L77">                            .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L78">                            .withDetail(e.getMessage())</span>
+<span class="nc" id="L79">                            .build()</span>
             );
         }
     }
 
     public Either&lt;Problem, CIP93Envelope&lt;ViewVoteReceiptEnvelope&gt;&gt; decodeCIP93ViewVoteReceiptEnvelope(String json) {
         try {
-<span class="fc" id="L63">            return Either.right(objectMapper.readValue(json, new TypeReference&lt;&gt;() {</span>
+<span class="fc" id="L86">            return Either.right(objectMapper.readValue(json, new TypeReference&lt;&gt;() {</span>
             }));
-<span class="nc" id="L65">        } catch (JsonProcessingException e) {</span>
-<span class="nc" id="L66">            log.warn(&quot;Invalid json:{}&quot;, json, e);</span>
+<span class="nc" id="L88">        } catch (JsonProcessingException e) {</span>
+<span class="nc" id="L89">            log.warn(&quot;Invalid json:{}&quot;, json, e);</span>
 
-<span class="nc" id="L68">            return Either.left(</span>
-<span class="nc" id="L69">                    Problem.builder()</span>
-<span class="nc" id="L70">                            .withTitle(&quot;INVALID_JSON&quot;)</span>
-<span class="nc" id="L71">                            .withDetail(&quot;Invalid json:&quot; + json)</span>
-<span class="nc" id="L72">                            .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L73">                            .withDetail(e.getMessage())</span>
-<span class="nc" id="L74">                            .build()</span>
+<span class="nc" id="L91">            return Either.left(</span>
+<span class="nc" id="L92">                    Problem.builder()</span>
+<span class="nc" id="L93">                            .withTitle(&quot;INVALID_JSON&quot;)</span>
+<span class="nc" id="L94">                            .withDetail(&quot;Invalid json:&quot; + json)</span>
+<span class="nc" id="L95">                            .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L96">                            .withDetail(e.getMessage())</span>
+<span class="nc" id="L97">                            .build()</span>
             );
         }
     }
 
     public Either&lt;Problem, CIP93Envelope&lt;VoteEnvelope&gt;&gt; decodeCIP93VoteEnvelope(String json) {
         try {
-<span class="fc" id="L81">            return Either.right(objectMapper.readValue(json, new TypeReference&lt;&gt;() {</span>
+<span class="fc" id="L104">            return Either.right(objectMapper.readValue(json, new TypeReference&lt;&gt;() {</span>
             }));
-<span class="nc" id="L83">        } catch (JsonProcessingException e) {</span>
-<span class="nc" id="L84">            log.warn(&quot;Invalid json:{}&quot;, json, e);</span>
+<span class="nc" id="L106">        } catch (JsonProcessingException e) {</span>
+<span class="nc" id="L107">            log.warn(&quot;Invalid json:{}&quot;, json, e);</span>
 
-<span class="nc" id="L86">            return Either.left(</span>
-<span class="nc" id="L87">                    Problem.builder()</span>
-<span class="nc" id="L88">                            .withTitle(&quot;INVALID_JSON&quot;)</span>
-<span class="nc" id="L89">                            .withDetail(&quot;Invalid json:&quot; + json)</span>
-<span class="nc" id="L90">                            .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L91">                            .withDetail(e.getMessage())</span>
-<span class="nc" id="L92">                            .build()</span>
+<span class="nc" id="L109">            return Either.left(</span>
+<span class="nc" id="L110">                    Problem.builder()</span>
+<span class="nc" id="L111">                            .withTitle(&quot;INVALID_JSON&quot;)</span>
+<span class="nc" id="L112">                            .withDetail(&quot;Invalid json:&quot; + json)</span>
+<span class="nc" id="L113">                            .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L114">                            .withDetail(e.getMessage())</span>
+<span class="nc" id="L115">                            .build()</span>
+            );
+        }
+    }
+
+    public Either&lt;Problem, KERIEnvelope&lt;VoteEnvelope&gt;&gt; decodeKERIVoteEnvelope(String json) {
+        try {
+<span class="nc" id="L122">            return Either.right(objectMapper.readValue(json, new TypeReference&lt;&gt;() {</span>
+            }));
+<span class="nc" id="L124">        } catch (JsonProcessingException e) {</span>
+<span class="nc" id="L125">            log.warn(&quot;Invalid json:{}&quot;, json, e);</span>
+
+<span class="nc" id="L127">            return Either.left(</span>
+<span class="nc" id="L128">                    Problem.builder()</span>
+<span class="nc" id="L129">                            .withTitle(&quot;INVALID_JSON&quot;)</span>
+<span class="nc" id="L130">                            .withDetail(&quot;Invalid json:&quot; + json)</span>
+<span class="nc" id="L131">                            .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L132">                            .withDetail(e.getMessage())</span>
+<span class="nc" id="L133">                            .build()</span>
+            );
+        }
+    }
+
+    public Either&lt;Problem, KERIEnvelope&lt;ViewVoteReceiptEnvelope&gt;&gt; decodeKERIViewVoteReceiptEnvelope(String json) {
+        try {
+<span class="nc" id="L140">            return Either.right(objectMapper.readValue(json, new TypeReference&lt;&gt;() {</span>
+            }));
+<span class="nc" id="L142">        } catch (JsonProcessingException e) {</span>
+<span class="nc" id="L143">            log.warn(&quot;Invalid json:{}&quot;, json, e);</span>
+
+<span class="nc" id="L145">            return Either.left(</span>
+<span class="nc" id="L146">                    Problem.builder()</span>
+<span class="nc" id="L147">                            .withTitle(&quot;INVALID_JSON&quot;)</span>
+<span class="nc" id="L148">                            .withDetail(&quot;Invalid json:&quot; + json)</span>
+<span class="nc" id="L149">                            .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L150">                            .withDetail(e.getMessage())</span>
+<span class="nc" id="L151">                            .build()</span>
             );
         }
     }

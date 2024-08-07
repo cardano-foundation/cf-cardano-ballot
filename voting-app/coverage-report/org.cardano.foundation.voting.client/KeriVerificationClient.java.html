@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>KeriVerificationClient.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.client</a> &gt; <span class="el_source">KeriVerificationClient.java</span></div><h1>KeriVerificationClient.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.client;
+
+import io.vavr.control.Either;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
+import org.zalando.problem.Problem;
+import org.zalando.problem.spring.common.HttpStatusAdapter;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.springframework.http.HttpMethod.POST;
+
+<span class="fc" id="L21">@RequiredArgsConstructor</span>
+@Component
+<span class="fc" id="L23">@Slf4j</span>
+public class KeriVerificationClient {
+
+    private final RestTemplate restTemplate;
+
+    @Value(&quot;${keri.ballot.verifier.base.url}&quot;)
+    private String keriVerifierBaseUrl;
+
+    public Either&lt;Problem, Boolean&gt; verifySignature(String aid,
+                                                    String signature,
+                                                    String payload) {
+<span class="nc" id="L34">        val url = String.format(&quot;%s/verify&quot;, keriVerifierBaseUrl);</span>
+
+<span class="nc" id="L36">        val headers = new HttpHeaders();</span>
+<span class="nc" id="L37">        headers.add(&quot;Content-Type&quot;, &quot;application/json&quot;);</span>
+
+<span class="nc" id="L39">        val requestBody = new HashMap&lt;String, String&gt;();</span>
+<span class="nc" id="L40">        requestBody.put(&quot;pre&quot;, aid);</span>
+<span class="nc" id="L41">        requestBody.put(&quot;signature&quot;, signature);</span>
+<span class="nc" id="L42">        requestBody.put(&quot;payload&quot;, payload);</span>
+
+<span class="nc" id="L44">        val entity = new HttpEntity&lt;Map&lt;String, String&gt;&gt;(requestBody, headers);</span>
+
+        try {
+<span class="nc" id="L47">            val response = restTemplate.exchange(url, POST, entity, String.class);</span>
+
+<span class="nc bnc" id="L49" title="All 2 branches missed.">            if (response.getStatusCode().is2xxSuccessful()) {</span>
+<span class="nc" id="L50">                return Either.right(true);</span>
+            }
+
+<span class="nc" id="L53">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L54">                    .withTitle(&quot;KERI_VERIFICATION_FAILED&quot;)</span>
+<span class="nc" id="L55">                    .withDetail(&quot;The Keri-specific condition was not met.&quot;)</span>
+<span class="nc" id="L56">                    .withStatus(new HttpStatusAdapter(response.getStatusCode()))</span>
+<span class="nc" id="L57">                    .build());</span>
+<span class="nc" id="L58">        } catch (HttpClientErrorException e) {</span>
+<span class="nc" id="L59">            log.error(&quot;Unable to verify signature, reason: {}&quot;, e.getMessage());</span>
+
+<span class="nc" id="L61">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L62">                    .withTitle(&quot;KERI_VERIFICATION_ERROR&quot;)</span>
+<span class="nc" id="L63">                    .withDetail(&quot;Unable to verify signature, reason: &quot; + e.getMessage())</span>
+<span class="nc" id="L64">                    .withStatus(new HttpStatusAdapter(e.getStatusCode()))</span>
+<span class="nc" id="L65">                    .build());</span>
+        }
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

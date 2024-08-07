@@ -110,7 +110,7 @@ public class VoteResource {
 
     @RequestMapping(value = &quot;/cast&quot;, method = POST, produces = &quot;application/json&quot;)
     @Timed(value = &quot;resource.vote.cast&quot;, histogram = true)
-    @Operation(summary = &quot;Cast a vote&quot;, description = &quot;Allows users to cast their vote. Requires CIP-93 authentication.&quot;,
+    @Operation(summary = &quot;Cast a vote&quot;, description = &quot;Allows users to cast their vote. Requires authentication.&quot;,
         responses = {
                 @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Vote successfully cast.&quot;),
                 @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Bad request, possibly due to missing Web3 authentication.&quot;,
@@ -128,7 +128,7 @@ public class VoteResource {
 <span class="pc bpc" id="L128" title="1 of 2 branches missed.">        if (!(authentication instanceof Web3AuthenticationToken web3Auth)) {</span>
 <span class="nc" id="L129">            var problem = Problem.builder()</span>
 <span class="nc" id="L130">                    .withTitle(&quot;WEB3_AUTH_REQUIRED&quot;)</span>
-<span class="nc" id="L131">                    .withDetail(&quot;CIP-93 auth headers tokens needed!&quot;)</span>
+<span class="nc" id="L131">                    .withDetail(&quot;Auth headers tokens needed!&quot;)</span>
 <span class="nc" id="L132">                    .withStatus(BAD_REQUEST)</span>
 <span class="nc" id="L133">                    .build();</span>
 
@@ -156,7 +156,7 @@ public class VoteResource {
 
     @RequestMapping(value = &quot;/receipt&quot;, method = { HEAD, GET } , produces = &quot;application/json&quot;)
     @Timed(value = &quot;resource.vote.receipt.web3&quot;, histogram = true)
-    @Operation(summary = &quot;Retrieve a vote receipt&quot;, description = &quot;Allows users to retrieve a receipt for their vote. Requires CIP-93 authentication.&quot;,
+    @Operation(summary = &quot;Retrieve a vote receipt&quot;, description = &quot;Allows users to retrieve a receipt for their vote. Requires authentication.&quot;,
             responses = {
                     @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Vote receipt retrieved successfully.&quot;,
                             content = @Content(
@@ -177,7 +177,7 @@ public class VoteResource {
 <span class="pc bpc" id="L177" title="1 of 2 branches missed.">        if (!(authentication instanceof Web3AuthenticationToken web3Auth)) {</span>
 <span class="nc" id="L178">            var problem = Problem.builder()</span>
 <span class="nc" id="L179">                    .withTitle(&quot;WEB3_AUTH_REQUIRED&quot;)</span>
-<span class="nc" id="L180">                    .withDetail(&quot;CIP-93 auth headers tokens needed!&quot;)</span>
+<span class="nc" id="L180">                    .withDetail(&quot;Auth headers tokens needed!&quot;)</span>
 <span class="nc" id="L181">                    .withStatus(BAD_REQUEST)</span>
 <span class="nc" id="L182">                    .build();</span>
 

@@ -7,8 +7,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.domain.Role;
+import org.cardano.foundation.voting.domain.web3.WalletType;
 import org.cardano.foundation.voting.service.auth.LoginSystemDetector;
 import org.cardano.foundation.voting.utils.Enums;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -28,112 +30,123 @@ import static org.zalando.problem.Status.BAD_REQUEST;
 import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
 
 @Component
-<span class="fc" id="L31">@Slf4j</span>
-<span class="fc" id="L32">@RequiredArgsConstructor</span>
+<span class="fc" id="L33">@Slf4j</span>
+<span class="fc" id="L34">@RequiredArgsConstructor</span>
 public class JwtFilter extends OncePerRequestFilter {
 
     private final ChainFollowerClient chainFollowerClient;
-
     private final JwtService jwtService;
-
     private final LoginSystemDetector loginSystemDetector;
-
     private final ObjectMapper objectMapper;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain chain) throws ServletException, IOException {
-<span class="fc" id="L47">        var maybeLoginSystem = loginSystemDetector.detect(request);</span>
+<span class="fc" id="L46">        val maybeLoginSystem = loginSystemDetector.detect(request);</span>
 
-<span class="fc bfc" id="L49" title="All 2 branches covered.">        if (maybeLoginSystem.isEmpty()) {</span>
-<span class="fc" id="L50">            chain.doFilter(request, response);</span>
-<span class="fc" id="L51">            return;</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">        if (maybeLoginSystem.isEmpty()) {</span>
+<span class="fc" id="L49">            chain.doFilter(request, response);</span>
+<span class="fc" id="L50">            return;</span>
         }
-<span class="fc" id="L53">        var loginSystem = maybeLoginSystem.orElseThrow();</span>
+<span class="fc" id="L52">        val loginSystem = maybeLoginSystem.orElseThrow();</span>
 
-<span class="fc bfc" id="L55" title="All 2 branches covered.">        if (loginSystem != JWT) {</span>
-<span class="fc" id="L56">            chain.doFilter(request, response);</span>
-<span class="fc" id="L57">            return;</span>
-        }
-
-<span class="fc" id="L60">        var header = request.getHeader(AUTHORIZATION);</span>
-<span class="fc" id="L61">        var token = header.split(&quot; &quot;)[1].trim();</span>
-<span class="fc" id="L62">        var verificationResultE = jwtService.verify(token);</span>
-
-<span class="pc bpc" id="L64" title="1 of 2 branches missed.">        if (verificationResultE.isEmpty()) {</span>
-<span class="nc" id="L65">            sendBackProblem(response, verificationResultE.getLeft());</span>
-<span class="nc" id="L66">            return;</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">        if (loginSystem != JWT) {</span>
+<span class="fc" id="L55">            chain.doFilter(request, response);</span>
+<span class="fc" id="L56">            return;</span>
         }
 
-<span class="fc" id="L69">        var signedJwt = verificationResultE.get();</span>
+<span class="fc" id="L59">        val header = request.getHeader(AUTHORIZATION);</span>
+<span class="fc" id="L60">        val token = header.split(&quot; &quot;)[1].trim();</span>
+<span class="fc" id="L61">        val verificationResultE = jwtService.verify(token);</span>
+
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">        if (verificationResultE.isEmpty()) {</span>
+<span class="nc" id="L64">            sendBackProblem(response, verificationResultE.getLeft());</span>
+<span class="nc" id="L65">            return;</span>
+        }
+
+<span class="fc" id="L68">        val signedJwt = verificationResultE.get();</span>
 
         try {
-<span class="fc" id="L72">            var jwtClaimsSet = signedJwt.getJWTClaimsSet();</span>
-<span class="fc" id="L73">            var eventId = jwtClaimsSet.getStringClaim(&quot;eventId&quot;);</span>
-<span class="fc" id="L74">            var stakeAddress = jwtClaimsSet.getStringClaim(&quot;stakeAddress&quot;);</span>
-<span class="fc" id="L75">            var role = Enums.getIfPresent(Role.class, jwtClaimsSet.getStringClaim(&quot;role&quot;)).orElseThrow();</span>
-<span class="fc" id="L76">            var principal = new JwtPrincipal(signedJwt);</span>
-<span class="fc" id="L77">            var authorities = List.of(new SimpleGrantedAuthority(role.name()));</span>
+<span class="fc" id="L71">            val jwtClaimsSet = signedJwt.getJWTClaimsSet();</span>
+<span class="fc" id="L72">            val eventId = jwtClaimsSet.getStringClaim(&quot;eventId&quot;);</span>
+<span class="fc" id="L73">            val walletTypeM = Enums.getIfPresent(WalletType.class, jwtClaimsSet.getStringClaim(&quot;walletType&quot;));</span>
 
-<span class="fc" id="L79">            var eventDetailsE = chainFollowerClient.getEventDetails(eventId);</span>
-<span class="pc bpc" id="L80" title="1 of 2 branches missed.">            if (eventDetailsE.isEmpty()) {</span>
-<span class="nc" id="L81">                var problem = Problem.builder()</span>
-<span class="nc" id="L82">                        .withTitle(&quot;ERROR_GETTING_EVENT_DETAILS&quot;)</span>
-<span class="nc" id="L83">                        .withDetail(&quot;Unable to get eventDetails details from chain-tip follower service, eventDetails:&quot; + eventId)</span>
-<span class="nc" id="L84">                        .withStatus(INTERNAL_SERVER_ERROR)</span>
-<span class="nc" id="L85">                        .build();</span>
+<span class="pc bpc" id="L75" title="1 of 2 branches missed.">            if (walletTypeM.isEmpty()) {</span>
+<span class="nc" id="L76">                val problem = Problem.builder()</span>
+<span class="nc" id="L77">                        .withTitle(&quot;INVALID_WALLET_TYPE&quot;)</span>
+<span class="nc" id="L78">                        .withDetail(&quot;Invalid wallet type in JWT claims, walletType:&quot; + jwtClaimsSet.getStringClaim(&quot;walletType&quot;))</span>
+<span class="nc" id="L79">                        .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L80">                        .build();</span>
 
-<span class="nc" id="L87">                sendBackProblem(response, problem);</span>
-<span class="nc" id="L88">                return;</span>
+<span class="nc" id="L82">                sendBackProblem(response, problem);</span>
+<span class="nc" id="L83">                return;</span>
             }
 
-<span class="fc" id="L91">            var maybeEventDetails = eventDetailsE.get();</span>
-<span class="pc bpc" id="L92" title="1 of 2 branches missed.">            if (maybeEventDetails.isEmpty()) {</span>
-<span class="nc" id="L93">                var problem = Problem.builder()</span>
-<span class="nc" id="L94">                        .withTitle(&quot;UNRECOGNISED_EVENT&quot;)</span>
-<span class="nc" id="L95">                        .withDetail(&quot;Event not found, id: &quot; + eventId)</span>
-<span class="nc" id="L96">                        .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L97">                        .build();</span>
+<span class="fc" id="L86">            val walletType = walletTypeM.orElseThrow();</span>
+<span class="fc" id="L87">            val walletId = jwtClaimsSet.getStringClaim(&quot;walletId&quot;);</span>
+            
+<span class="fc" id="L89">            val role = Enums.getIfPresent(Role.class, jwtClaimsSet.getStringClaim(&quot;role&quot;)).orElseThrow();</span>
+<span class="fc" id="L90">            val principal = new JwtPrincipal(signedJwt);</span>
+<span class="fc" id="L91">            val authorities = List.of(new SimpleGrantedAuthority(role.name()));</span>
 
-<span class="nc" id="L99">                sendBackProblem(response, problem);</span>
-<span class="nc" id="L100">                return;</span>
+<span class="fc" id="L93">            val eventDetailsE = chainFollowerClient.getEventDetails(eventId);</span>
+<span class="pc bpc" id="L94" title="1 of 2 branches missed.">            if (eventDetailsE.isEmpty()) {</span>
+<span class="nc" id="L95">                val problem = Problem.builder()</span>
+<span class="nc" id="L96">                        .withTitle(&quot;ERROR_GETTING_EVENT_DETAILS&quot;)</span>
+<span class="nc" id="L97">                        .withDetail(&quot;Unable to get eventDetails details from chain-tip follower service, eventDetails:&quot; + eventId)</span>
+<span class="nc" id="L98">                        .withStatus(INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L99">                        .build();</span>
+
+<span class="nc" id="L101">                sendBackProblem(response, problem);</span>
+<span class="nc" id="L102">                return;</span>
             }
-<span class="fc" id="L102">            var eventDetails = maybeEventDetails.orElseThrow();</span>
 
-<span class="fc" id="L104">            var authentication = new JwtAuthenticationToken(principal, authorities)</span>
-<span class="fc" id="L105">                    .eventDetails(eventDetails)</span>
-<span class="fc" id="L106">                    .role(role)</span>
-<span class="fc" id="L107">                    .stakeAddress(stakeAddress)</span>
-                    ;
+<span class="fc" id="L105">            val maybeEventDetails = eventDetailsE.get();</span>
+<span class="pc bpc" id="L106" title="1 of 2 branches missed.">            if (maybeEventDetails.isEmpty()) {</span>
+<span class="nc" id="L107">                val problem = Problem.builder()</span>
+<span class="nc" id="L108">                        .withTitle(&quot;UNRECOGNISED_EVENT&quot;)</span>
+<span class="nc" id="L109">                        .withDetail(&quot;Event not found, id: &quot; + eventId)</span>
+<span class="nc" id="L110">                        .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L111">                        .build();</span>
 
-<span class="fc" id="L110">            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));</span>
+<span class="nc" id="L113">                sendBackProblem(response, problem);</span>
+<span class="nc" id="L114">                return;</span>
+            }
+<span class="fc" id="L116">            val eventDetails = maybeEventDetails.orElseThrow();</span>
 
-<span class="fc" id="L112">            SecurityContextHolder.getContext().setAuthentication(authentication);</span>
+<span class="fc" id="L118">            val authentication = new JwtAuthenticationToken(principal, authorities)</span>
+<span class="fc" id="L119">                    .eventDetails(eventDetails)</span>
+<span class="fc" id="L120">                    .role(role)</span>
+<span class="fc" id="L121">                    .walletId(walletId)</span>
+<span class="fc" id="L122">                    .walletType(walletType);</span>
 
-<span class="fc" id="L114">            chain.doFilter(request, response);</span>
-<span class="nc" id="L115">        } catch (ParseException e) {</span>
-<span class="nc" id="L116">            log.warn(&quot;JWT parse error, reason:{}&quot;, e.getMessage());</span>
+<span class="fc" id="L124">            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));</span>
 
-<span class="nc" id="L118">            var problem = Problem.builder()</span>
-<span class="nc" id="L119">                            .withTitle(&quot;JWT_PARSE_ERROR&quot;)</span>
-<span class="nc" id="L120">                            .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L121">                            .build();</span>
+<span class="fc" id="L126">            SecurityContextHolder.getContext().setAuthentication(authentication);</span>
 
-<span class="nc" id="L123">            sendBackProblem(response, problem);</span>
-<span class="fc" id="L124">        }</span>
-<span class="fc" id="L125">    }</span>
+<span class="fc" id="L128">            chain.doFilter(request, response);</span>
+<span class="nc" id="L129">        } catch (ParseException e) {</span>
+<span class="nc" id="L130">            log.warn(&quot;JWT parse error, reason:{}&quot;, e.getMessage());</span>
+
+<span class="nc" id="L132">            val problem = Problem.builder()</span>
+<span class="nc" id="L133">                            .withTitle(&quot;JWT_PARSE_ERROR&quot;)</span>
+<span class="nc" id="L134">                            .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L135">                            .build();</span>
+
+<span class="nc" id="L137">            sendBackProblem(response, problem);</span>
+<span class="fc" id="L138">        }</span>
+<span class="fc" id="L139">    }</span>
 
     private void sendBackProblem(HttpServletResponse response, Problem problem) throws IOException {
-<span class="nc" id="L128">        var statusCode = problem.getStatus().getStatusCode();</span>
+<span class="nc" id="L142">        val statusCode = problem.getStatus().getStatusCode();</span>
 
-<span class="nc" id="L130">        response.setStatus(statusCode);</span>
-<span class="nc" id="L131">        response.setContentType(&quot;application/json&quot;);</span>
-<span class="nc" id="L132">        response.setCharacterEncoding(&quot;UTF-8&quot;);</span>
-<span class="nc" id="L133">        response.getOutputStream().println(objectMapper.writeValueAsString(problem));</span>
-<span class="nc" id="L134">        response.getOutputStream().flush();</span>
-<span class="nc" id="L135">    }</span>
-
+<span class="nc" id="L144">        response.setStatus(statusCode);</span>
+<span class="nc" id="L145">        response.setContentType(&quot;application/json&quot;);</span>
+<span class="nc" id="L146">        response.setCharacterEncoding(&quot;UTF-8&quot;);</span>
+<span class="nc" id="L147">        response.getOutputStream().println(objectMapper.writeValueAsString(problem));</span>
+<span class="nc" id="L148">        response.getOutputStream().flush();</span>
+<span class="nc" id="L149">    }</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

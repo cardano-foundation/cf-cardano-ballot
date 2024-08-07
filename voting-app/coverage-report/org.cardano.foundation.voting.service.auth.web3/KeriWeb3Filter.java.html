@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>KeriWeb3Filter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">voting-app</a> &gt; <a href="index.source.html" class="el_package">org.cardano.foundation.voting.service.auth.web3</a> &gt; <span class="el_source">KeriWeb3Filter.java</span></div><h1>KeriWeb3Filter.java</h1><pre class="source lang-java linenums">package org.cardano.foundation.voting.service.auth.web3;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import lombok.val;
+import org.cardano.foundation.voting.client.ChainFollowerClient;
+import org.cardano.foundation.voting.client.KeriVerificationClient;
+import org.cardano.foundation.voting.domain.ChainNetwork;
+import org.cardano.foundation.voting.domain.web3.SignedKERI;
+import org.cardano.foundation.voting.domain.web3.WalletType;
+import org.cardano.foundation.voting.service.auth.LoginSystemDetector;
+import org.cardano.foundation.voting.service.expire.ExpirationService;
+import org.cardano.foundation.voting.service.json.JsonService;
+import org.cardano.foundation.voting.utils.Enums;
+import org.cardano.foundation.voting.utils.Keri;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+import org.zalando.problem.Problem;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import static com.bloxbean.cardano.client.util.HexUtil.decodeHexString;
+import static org.cardano.foundation.voting.domain.Role.VOTER;
+import static org.cardano.foundation.voting.domain.web3.WalletType.KERI;
+import static org.cardano.foundation.voting.resource.Headers.*;
+import static org.cardano.foundation.voting.service.auth.LoginSystem.KERI_SIGN;
+import static org.cardano.foundation.voting.service.auth.web3.MoreFilters.sendBackProblem;
+import static org.cardano.foundation.voting.utils.MoreNumber.isNumeric;
+import static org.zalando.problem.Status.BAD_REQUEST;
+import static org.zalando.problem.Status.INTERNAL_SERVER_ERROR;
+
+@Component
+<span class="fc" id="L43">@RequiredArgsConstructor</span>
+<span class="fc" id="L44">@Slf4j</span>
+public class KeriWeb3Filter extends OncePerRequestFilter {
+
+    private final JsonService jsonService;
+    private final ExpirationService expirationService;
+    private final ObjectMapper objectMapper;
+
+    // TODO can we do this via local access?
+    private final ChainFollowerClient chainFollowerClient;
+    private final ChainNetwork chainNetworkStartedOn;
+    private final LoginSystemDetector loginSystemDetector;
+    private final KeriVerificationClient keriVerificationClient;
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest req,
+                                    HttpServletResponse res,
+                                    FilterChain chain) throws ServletException, IOException {
+<span class="fc" id="L61">        val logonSystemM = loginSystemDetector.detect(req);</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">        if (logonSystemM.isEmpty()) {</span>
+<span class="fc" id="L63">            chain.doFilter(req, res);</span>
+<span class="fc" id="L64">            return;</span>
+        }
+
+<span class="fc" id="L67">        val loginSystem = logonSystemM.orElseThrow();</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">        if (loginSystem != KERI_SIGN) {</span>
+<span class="fc" id="L69">            chain.doFilter(req, res);</span>
+<span class="fc" id="L70">            return;</span>
+        }
+
+<span class="fc" id="L73">        val headerSignatureM = Optional.ofNullable(req.getHeader(X_Ballot_Signature));</span>
+<span class="fc" id="L74">        val headerPayloadM = Optional.ofNullable(req.getHeader(X_Ballot_Payload));</span>
+<span class="fc" id="L75">        val headerAidM = Optional.ofNullable(req.getHeader(X_Ballot_PublicKey));</span>
+
+<span class="fc bfc" id="L77" title="All 2 branches covered.">        if (headerSignatureM.isEmpty()) {</span>
+<span class="fc" id="L78">            val problem = Problem.builder()</span>
+<span class="fc" id="L79">                    .withTitle(&quot;NO_LOGIN_HTTP_HEADERS_SET&quot;)</span>
+<span class="fc" id="L80">                    .withDetail(X_Ballot_Signature + &quot; http header must be set.&quot;)</span>
+<span class="fc" id="L81">                    .withStatus(BAD_REQUEST)</span>
+<span class="fc" id="L82">                    .build();</span>
+
+<span class="fc" id="L84">            sendBackProblem(objectMapper, res, problem);</span>
+<span class="fc" id="L85">            return;</span>
+        }
+<span class="fc bfc" id="L87" title="All 2 branches covered.">        if (headerPayloadM.isEmpty()) {</span>
+<span class="fc" id="L88">            val problem = Problem.builder()</span>
+<span class="fc" id="L89">                    .withTitle(&quot;NO_LOGIN_HTTP_HEADERS_SET&quot;)</span>
+<span class="fc" id="L90">                    .withDetail(X_Ballot_Payload + &quot;http header must be set.&quot;)</span>
+<span class="fc" id="L91">                    .withStatus(BAD_REQUEST)</span>
+<span class="fc" id="L92">                    .build();</span>
+
+<span class="fc" id="L94">            sendBackProblem(objectMapper, res, problem);</span>
+<span class="fc" id="L95">            return;</span>
+        }
+<span class="fc bfc" id="L97" title="All 2 branches covered.">        if (headerAidM.isEmpty()) {</span>
+<span class="fc" id="L98">            val problem = Problem.builder()</span>
+<span class="fc" id="L99">                    .withTitle(&quot;NO_LOGIN_HTTP_HEADERS_SET&quot;)</span>
+<span class="fc" id="L100">                    .withDetail(X_Ballot_PublicKey + &quot; http header must be set.&quot;)</span>
+<span class="fc" id="L101">                    .withStatus(BAD_REQUEST)</span>
+<span class="fc" id="L102">                    .build();</span>
+
+<span class="fc" id="L104">            sendBackProblem(objectMapper, res, problem);</span>
+<span class="fc" id="L105">            return;</span>
+        }
+<span class="fc" id="L107">        val headerSignature = headerSignatureM.orElseThrow();</span>
+<span class="fc" id="L108">        val headerSignedJson = new String(decodeHexString(headerPayloadM.orElseThrow()));</span>
+<span class="fc" id="L109">        val headerAid = headerAidM.orElseThrow();</span>
+
+<span class="fc" id="L111">        val keriVerificationResultE = keriVerificationClient.verifySignature(headerAid, headerSignature, headerSignedJson);</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">        if (keriVerificationResultE.isEmpty()) {</span>
+<span class="fc" id="L113">            val problem = Problem.builder()</span>
+<span class="fc" id="L114">                    .withTitle(&quot;KERI_SIGNATURE_VERIFICATION_FAILED&quot;)</span>
+<span class="fc" id="L115">                    .withDetail(&quot;Unable to verify KERI header signature, reason: &quot; + keriVerificationResultE.swap().get().getDetail())</span>
+<span class="fc" id="L116">                    .withStatus(BAD_REQUEST)</span>
+<span class="fc" id="L117">                    .build();</span>
+
+<span class="fc" id="L119">            sendBackProblem(objectMapper, res, problem);</span>
+<span class="fc" id="L120">            return;</span>
+        }
+
+<span class="fc" id="L123">        val keriEnvelopeE = jsonService.decodeGenericKeri(headerSignedJson);</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">        if (keriEnvelopeE.isEmpty()) {</span>
+<span class="fc" id="L125">            log.info(&quot;Invalid KERI envelope!&quot;);</span>
+
+<span class="fc" id="L127">            val problem = Problem.builder()</span>
+<span class="fc" id="L128">                    .withTitle(&quot;INVALID_KERI_ENVELOPE&quot;)</span>
+<span class="fc" id="L129">                    .withDetail(&quot;KERI envelope decoding failed.&quot;)</span>
+<span class="fc" id="L130">                    .withStatus(BAD_REQUEST)</span>
+<span class="fc" id="L131">                    .build();</span>
+
+<span class="fc" id="L133">            sendBackProblem(objectMapper, res, problem);</span>
+
+<span class="fc" id="L135">            return;</span>
+        }
+
+<span class="fc" id="L138">        val genericEnvelope = keriEnvelopeE.get();</span>
+
+<span class="fc" id="L140">        val envelopeWalletIdM = Optional.ofNullable((String) genericEnvelope.getData().get(&quot;walletId&quot;));</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">        if (envelopeWalletIdM.isEmpty()) {</span>
+<span class="fc" id="L142">            val problem = Problem.builder()</span>
+<span class="fc" id="L143">                    .withTitle(&quot;WALLET_ID_NOT_FOUND&quot;)</span>
+<span class="fc" id="L144">                    .withDetail(&quot;WalletId not found in the KERI envelope.&quot;)</span>
+<span class="fc" id="L145">                    .withStatus(BAD_REQUEST)</span>
+<span class="fc" id="L146">                    .build();</span>
+
+<span class="fc" id="L148">            sendBackProblem(objectMapper, res, problem);</span>
+<span class="fc" id="L149">            return;</span>
+        }
+<span class="fc" id="L151">        val envelopeWalletId = envelopeWalletIdM.orElseThrow();</span>
+
+<span class="fc" id="L153">        val envelopeWalletTypeM = Enums.getIfPresent(WalletType.class, (String) genericEnvelope.getData().get(&quot;walletType&quot;));</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">        if (envelopeWalletTypeM.isEmpty()) {</span>
+<span class="fc" id="L155">            val problem = Problem.builder()</span>
+<span class="fc" id="L156">                    .withTitle(&quot;INVALID_WALLET_TYPE&quot;)</span>
+<span class="fc" id="L157">                    .withDetail(&quot;Invalid wallet type, supported wallet types:&quot; + Arrays.asList(WalletType.values()))</span>
+<span class="fc" id="L158">                    .withStatus(BAD_REQUEST)</span>
+<span class="fc" id="L159">                    .build();</span>
+
+<span class="fc" id="L161">            sendBackProblem(objectMapper, res, problem);</span>
+<span class="fc" id="L162">            return;</span>
+        }
+<span class="fc" id="L164">        val envelopeWalletType = envelopeWalletTypeM.get();</span>
+
+<span class="pc bpc" id="L166" title="1 of 2 branches missed.">        if (envelopeWalletType != KERI) {</span>
+<span class="nc" id="L167">            val problem = Problem.builder()</span>
+<span class="nc" id="L168">                    .withTitle(&quot;INVALID_WALLET_TYPE&quot;)</span>
+<span class="nc" id="L169">                    .withDetail(&quot;Invalid wallet type, supported wallet types:&quot; + Arrays.asList(WalletType.values()))</span>
+<span class="nc" id="L170">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L171">                    .build();</span>
+
+<span class="nc" id="L173">            sendBackProblem(objectMapper, res, problem);</span>
+<span class="nc" id="L174">            return;</span>
+        }
+
+<span class="fc" id="L177">        val envelopeWebActionM = genericEnvelope.getActionAsEnum();</span>
+<span class="pc bpc" id="L178" title="1 of 2 branches missed.">        if (envelopeWebActionM.isEmpty()) {</span>
+<span class="nc" id="L179">            log.info(&quot;Unrecognised action, action:{}&quot;, genericEnvelope.getAction());</span>
+
+<span class="nc" id="L181">            val problem = Problem.builder()</span>
+<span class="nc" id="L182">                    .withTitle(&quot;ACTION_NOT_FOUND&quot;)</span>
+<span class="nc" id="L183">                    .withDetail(&quot;Action not found!&quot;)</span>
+<span class="nc" id="L184">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L185">                    .build();</span>
+
+<span class="nc" id="L187">            sendBackProblem(objectMapper, res, problem);</span>
+<span class="nc" id="L188">            return;</span>
+        }
+
+<span class="fc" id="L191">        val web3Action = envelopeWebActionM.orElseThrow();</span>
+
+<span class="fc" id="L193">        val slotStr = genericEnvelope.getSlot();</span>
+
+<span class="fc bfc" id="L195" title="All 2 branches covered.">        if (!isNumeric(slotStr)) {</span>
+<span class="fc" id="L196">            val problem = Problem.builder()</span>
+<span class="fc" id="L197">                    .withTitle(&quot;INVALID_SLOT&quot;)</span>
+<span class="fc" id="L198">                    .withDetail(&quot;KERI envelope slot is not numeric!&quot;)</span>
+<span class="fc" id="L199">                    .withStatus(BAD_REQUEST)</span>
+<span class="fc" id="L200">                    .build();</span>
+
+<span class="fc" id="L202">            sendBackProblem(objectMapper, res, problem);</span>
+<span class="fc" id="L203">            return;</span>
+        }
+
+<span class="fc" id="L206">        val chainTipE = chainFollowerClient.getChainTip();</span>
+<span class="fc bfc" id="L207" title="All 2 branches covered.">        if (chainTipE.isEmpty()) {</span>
+<span class="fc" id="L208">            val problem = Problem.builder()</span>
+<span class="fc" id="L209">                    .withTitle(&quot;CHAIN_TIP_ERROR&quot;)</span>
+<span class="fc" id="L210">                    .withDetail(&quot;Unable to get chain tip from chain-tip follower service, reason: &quot; + chainTipE.swap().get().getDetail())</span>
+<span class="fc" id="L211">                    .withStatus(INTERNAL_SERVER_ERROR)</span>
+<span class="fc" id="L212">                    .build();</span>
+
+<span class="fc" id="L214">            sendBackProblem(objectMapper, res, problem);</span>
+<span class="fc" id="L215">            return;</span>
+        }
+
+<span class="fc" id="L218">        val chainTip = chainTipE.get();</span>
+
+<span class="fc" id="L220">        val slotE = genericEnvelope.getSlotAsLong();</span>
+<span class="pc bpc" id="L221" title="1 of 2 branches missed.">        if (slotE.isEmpty()) {</span>
+<span class="nc" id="L222">            sendBackProblem(objectMapper, res, slotE.swap().get());</span>
+<span class="nc" id="L223">            return;</span>
+        }
+<span class="fc" id="L225">        val slot = slotE.get();</span>
+
+<span class="fc" id="L227">        val slotExpired = expirationService.isSlotExpired(chainTip, slot);</span>
+<span class="fc bfc" id="L228" title="All 2 branches covered.">        if (slotExpired) {</span>
+<span class="fc" id="L229">            val problem = Problem.builder()</span>
+<span class="fc" id="L230">                    .withTitle(&quot;EXPIRED_SLOT&quot;)</span>
+<span class="fc" id="L231">                    .withDetail(&quot;Slot has expired!&quot;)</span>
+<span class="fc" id="L232">                    .withStatus(BAD_REQUEST)</span>
+<span class="fc" id="L233">                    .build();</span>
+
+<span class="fc" id="L235">            sendBackProblem(objectMapper, res, problem);</span>
+<span class="fc" id="L236">            return;</span>
+        }
+
+<span class="fc" id="L239">        val envelopeEventId = (String) genericEnvelope.getData().get(&quot;event&quot;);</span>
+<span class="fc" id="L240">        val envelopeNetworkString = (String) genericEnvelope.getData().get(&quot;network&quot;);</span>
+
+<span class="fc" id="L242">        val networkM = Enums.getIfPresent(ChainNetwork.class, envelopeNetworkString);</span>
+<span class="fc bfc" id="L243" title="All 2 branches covered.">        if (networkM.isEmpty()) {</span>
+<span class="fc" id="L244">            val problem = Problem.builder()</span>
+<span class="fc" id="L245">                    .withTitle(&quot;INVALID_NETWORK&quot;)</span>
+<span class="fc" id="L246">                    .withDetail(&quot;Invalid chainNetwork, supported networks:&quot; + ChainNetwork.supportedNetworks())</span>
+<span class="fc" id="L247">                    .withStatus(BAD_REQUEST)</span>
+<span class="fc" id="L248">                    .build();</span>
+
+<span class="fc" id="L250">            sendBackProblem(objectMapper, res, problem);</span>
+<span class="fc" id="L251">            return;</span>
+        }
+<span class="fc" id="L253">        val chainNetwork = networkM.get();</span>
+
+<span class="fc bfc" id="L255" title="All 2 branches covered.">        if (chainNetwork != chainNetworkStartedOn) {</span>
+<span class="fc" id="L256">            log.warn(&quot;Invalid chainNetwork, network:{}&quot;, envelopeNetworkString);</span>
+
+<span class="fc" id="L258">            val problem = Problem.builder()</span>
+<span class="fc" id="L259">                    .withTitle(&quot;NETWORK_MISMATCH&quot;)</span>
+<span class="fc" id="L260">                    .withDetail(&quot;Invalid chainNetwork, backed configured with chainNetwork:&quot; + chainNetworkStartedOn + &quot;, however request is with chainNetwork:&quot; + chainNetwork)</span>
+<span class="fc" id="L261">                    .withStatus(BAD_REQUEST)</span>
+<span class="fc" id="L262">                    .build();</span>
+
+<span class="fc" id="L264">            sendBackProblem(objectMapper, res, problem);</span>
+<span class="fc" id="L265">            return;</span>
+        }
+
+<span class="fc" id="L268">        val keriE = Keri.checkAid(headerAid);</span>
+<span class="fc bfc" id="L269" title="All 2 branches covered.">        if (keriE.isEmpty()) {</span>
+<span class="fc" id="L270">            val problem = Problem.builder()</span>
+<span class="fc" id="L271">                    .withTitle(&quot;INVALID_KERI_AID&quot;)</span>
+<span class="fc" id="L272">                    .withDetail(&quot;Invalid KERI Aid, reason: &quot; + keriE.swap().get().getDetail())</span>
+<span class="fc" id="L273">                    .withStatus(BAD_REQUEST)</span>
+<span class="fc" id="L274">                    .build();</span>
+
+<span class="fc" id="L276">            sendBackProblem(objectMapper, res, problem);</span>
+<span class="fc" id="L277">            return;</span>
+        }
+
+<span class="fc bfc" id="L280" title="All 2 branches covered.">        if (!headerAid.equals(envelopeWalletId)) {</span>
+<span class="fc" id="L281">            val problem = Problem.builder()</span>
+<span class="fc" id="L282">                    .withTitle(&quot;AID_MISMATCH&quot;)</span>
+<span class="fc" id="L283">                    .withDetail(&quot;Aid mismatch, KERI signed address:&quot; + headerAid + &quot;, however request is with walletId:&quot; + envelopeWalletId)</span>
+<span class="fc" id="L284">                    .withStatus(BAD_REQUEST)</span>
+<span class="fc" id="L285">                    .build();</span>
+
+<span class="fc" id="L287">            sendBackProblem(objectMapper, res, problem);</span>
+<span class="fc" id="L288">            return;</span>
+        }
+
+<span class="fc" id="L291">        val eventDetailsE = chainFollowerClient.getEventDetails(envelopeEventId);</span>
+<span class="fc bfc" id="L292" title="All 2 branches covered.">        if (eventDetailsE.isEmpty()) {</span>
+<span class="fc" id="L293">            val problem = Problem.builder()</span>
+<span class="fc" id="L294">                    .withTitle(&quot;ERROR_GETTING_EVENT_DETAILS&quot;)</span>
+<span class="fc" id="L295">                    .withDetail(&quot;Unable to get event details from chain-tip follower service, event:&quot; + envelopeEventId)</span>
+<span class="fc" id="L296">                    .withStatus(INTERNAL_SERVER_ERROR)</span>
+<span class="fc" id="L297">                    .build();</span>
+
+<span class="fc" id="L299">            sendBackProblem(objectMapper, res, problem);</span>
+<span class="fc" id="L300">            return;</span>
+        }
+
+<span class="fc" id="L303">        val eventDetailsM = eventDetailsE.get();</span>
+<span class="fc bfc" id="L304" title="All 2 branches covered.">        if (eventDetailsM.isEmpty()) {</span>
+<span class="fc" id="L305">            val problem = Problem.builder()</span>
+<span class="fc" id="L306">                    .withTitle(&quot;UNRECOGNISED_EVENT&quot;)</span>
+<span class="fc" id="L307">                    .withDetail(&quot;Event not found, id: &quot; + envelopeEventId)</span>
+<span class="fc" id="L308">                    .withStatus(BAD_REQUEST)</span>
+<span class="fc" id="L309">                    .build();</span>
+
+<span class="fc" id="L311">            sendBackProblem(objectMapper, res, problem);</span>
+<span class="fc" id="L312">            return;</span>
+        }
+
+<span class="fc" id="L315">        val eventDetails = eventDetailsM.orElseThrow();</span>
+
+<span class="fc" id="L317">        val signedKERI = new SignedKERI(headerSignature, headerSignedJson, headerAid);</span>
+
+<span class="fc" id="L319">        val web3Details = Web3CommonDetails.builder()</span>
+<span class="fc" id="L320">                .event(eventDetails)</span>
+<span class="fc" id="L321">                .walletType(KERI)</span>
+<span class="fc" id="L322">                .walletId(envelopeWalletId)</span>
+<span class="fc" id="L323">                .chainTip(chainTip)</span>
+<span class="fc" id="L324">                .action(web3Action)</span>
+<span class="fc" id="L325">                .network(chainNetwork)</span>
+<span class="fc" id="L326">                .build();</span>
+
+<span class="fc" id="L328">        val keriDetails = KeriWeb3Details.builder()</span>
+<span class="fc" id="L329">                .web3CommonDetails(web3Details)</span>
+<span class="fc" id="L330">                .signedKERI(signedKERI)</span>
+<span class="fc" id="L331">                .envelope(genericEnvelope)</span>
+<span class="fc" id="L332">                .build();</span>
+
+<span class="fc" id="L334">        val authentication = new Web3AuthenticationToken(keriDetails, List.of(new SimpleGrantedAuthority(VOTER.name())));</span>
+
+<span class="fc" id="L336">        SecurityContextHolder.getContext().setAuthentication(authentication);</span>
+
+<span class="fc" id="L338">        chain.doFilter(req, res);</span>
+<span class="fc" id="L339">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>

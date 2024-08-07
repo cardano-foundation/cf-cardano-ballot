@@ -46,15 +46,19 @@ spec:
             - name: VITE_SUPPORTED_WALLETS
               value: {{ .Values.supportedWallets | default "flint,eternl,nami,typhon,yoroi,nufi,gerowallet,lace" }}
             - name: VITE_SHOW_WINNERS
-              value: {{ .Values.showWinners | default "false" }}
+              value: {{ .Values.showWinners | default "false" | quote }}
             - name: VITE_SHOW_HYDRA_TALLY
-              value: {{ .Values.showHydraTally | default "false" }}
+              value: {{ .Values.showHydraTally | default "false" | quote }}
             - name: VITE_USING_FIXTURES
-              value: {{ .Values.usingFixtures | default "false" }}
+              value: {{ .Values.usingFixtures | default "false" | quote }}
             - name: VITE_COMMIT_HASH
               value: {{ .Values.image.tag | default "latest" }}
             - name: VITE_WEB_URL
-              value: {{ .Values.webUrl | default "http://localhost:3000" }}
+              {{ if .Values.webUrl }}
+              value: {{ .Values.webUrl }}
+              {{ else }}
+              value: "https://{{ .Values.domain }}"
+              {{ end }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}

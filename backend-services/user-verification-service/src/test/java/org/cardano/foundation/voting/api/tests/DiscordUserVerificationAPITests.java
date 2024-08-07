@@ -3,6 +3,7 @@ package org.cardano.foundation.voting.api.tests;
 import io.restassured.http.ContentType;
 import org.cardano.foundation.voting.api.BaseTest;
 import org.cardano.foundation.voting.api.endpoints.UserVerificationEndpoints;
+import org.cardano.foundation.voting.domain.WalletType;
 import org.cardano.foundation.voting.domain.discord.DiscordCheckVerificationRequest;
 import org.cardano.foundation.voting.domain.discord.DiscordStartVerificationRequest;
 import org.junit.jupiter.api.Test;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
 import java.util.Optional;
 
 import static io.restassured.RestAssured.given;
@@ -27,7 +29,7 @@ public class DiscordUserVerificationAPITests extends BaseTest {
     private String discordBotEventId;
 
     @Value("${cardano.network}")
-    private String cardanoNetwork;
+    private String chainNetwork;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -132,22 +134,22 @@ public class DiscordUserVerificationAPITests extends BaseTest {
                 "a4f8b573b52de70104714a9de73946a7f24d1e0f58607";
 
         String publicKey = "a4010103272006215820c9a521bd37b0a416ba404c120b1c8608745a56aff2530949c7893a5c3847d2fe";
-        String stakeAddress = "stake1uxpq2pktpnj54e64kfgjkm8nrptdwfj7s7fvhp40e98qsus20guat";
+        String walletId = "stake1uxpq2pktpnj54e64kfgjkm8nrptdwfj7s7fvhp40e98qsus20guat";
 
         DiscordCheckVerificationRequest discordCheckVerificationRequest = DiscordCheckVerificationRequest.builder()
                 .eventId(discordBotEventId)
-                .coseSignature(Optional.of(signature))
-                .walletId(stakeAddress)
-                .cosePublicKey(publicKey.describeConstable())
+                .walletType(WalletType.CARDANO)
+                .walletId(walletId)
+                .signature(Optional.of(signature))
+                .publicKey(publicKey.describeConstable())
                 .secret("chj3h3dtjq")
-                .keriSignedMessage(Optional.empty())
-                .keriPayload(Optional.empty())
+                .payload(Optional.empty())
                 .oobi(Optional.empty())
                 .build();
 
         int expectedStatusCode = 400;
         Boolean expectedVerified = null;
-        if (cardanoNetwork.equalsIgnoreCase("MAIN")) {
+        if (chainNetwork.equalsIgnoreCase("MAIN")) {
             expectedStatusCode = 200;
             expectedVerified = true;
         }
@@ -169,19 +171,19 @@ public class DiscordUserVerificationAPITests extends BaseTest {
 
         expectedStatusCode = 200;
         expectedVerified = true;
-        if (cardanoNetwork.equalsIgnoreCase("MAIN")) {
+        if (chainNetwork.equalsIgnoreCase("MAIN")) {
             expectedStatusCode = 400;
             expectedVerified = null;
         }
 
         DiscordCheckVerificationRequest discordCheckVerificationTestnetRequest = DiscordCheckVerificationRequest.builder()
                 .eventId(discordBotEventId)
-                .coseSignature(Optional.of(testnetSignature))
+                .signature(Optional.of(testnetSignature))
+                .walletType(WalletType.CARDANO)
                 .walletId(testnetStakeAddress)
-                .cosePublicKey(testnetPublicKey.describeConstable())
+                .publicKey(testnetPublicKey.describeConstable())
                 .secret("chj3h3dtjq")
-                .keriSignedMessage(Optional.empty())
-                .keriPayload(Optional.empty())
+                .payload(Optional.empty())
                 .oobi(Optional.empty())
                 .build();
 
@@ -193,8 +195,8 @@ public class DiscordUserVerificationAPITests extends BaseTest {
                 .body("verified", equalTo(expectedVerified));
 
         // Testnet or mainnet should not validate a signature from the other network
-        if (cardanoNetwork.equalsIgnoreCase("MAIN")) {
-            discordCheckVerificationRequest.setCoseSignature(Optional.of(testnetSignature));
+        if (chainNetwork.equalsIgnoreCase("MAIN")) {
+            discordCheckVerificationRequest.setSignature(Optional.of(testnetSignature));
 
             given().contentType(ContentType.JSON)
                     .body(discordCheckVerificationRequest)
@@ -202,7 +204,7 @@ public class DiscordUserVerificationAPITests extends BaseTest {
                     .then()
                     .statusCode(400);
         } else {
-            discordCheckVerificationTestnetRequest.setCoseSignature(Optional.of(signature));
+            discordCheckVerificationTestnetRequest.setSignature(Optional.of(signature));
 
             given().contentType(ContentType.JSON)
                     .body(discordCheckVerificationTestnetRequest)
@@ -239,12 +241,12 @@ public class DiscordUserVerificationAPITests extends BaseTest {
         // secret changed 49ayui27ue to chj3h3dtjq
         DiscordCheckVerificationRequest discordCheckVerificationRequest = DiscordCheckVerificationRequest.builder()
                 .eventId(discordBotEventId)
-                .coseSignature(Optional.of(signature))
+                .signature(Optional.of(signature))
+                .walletType(WalletType.CARDANO)
                 .walletId(stakeAddress)
-                .cosePublicKey(publicKey.describeConstable())
+                .publicKey(publicKey.describeConstable())
                 .secret("chj3h3dtjq")
-                .keriSignedMessage(Optional.empty())
-                .keriPayload(Optional.empty())
+                .payload(Optional.empty())
                 .oobi(Optional.empty())
                 .build();
 
@@ -283,12 +285,12 @@ public class DiscordUserVerificationAPITests extends BaseTest {
 
         DiscordCheckVerificationRequest discordCheckVerificationRequest = DiscordCheckVerificationRequest.builder()
                 .eventId(discordBotEventId)
-                .coseSignature(Optional.of(signature))
+                .walletType(WalletType.CARDANO)
                 .walletId(stakeAddress)
-                .cosePublicKey(publicKey.describeConstable())
+                .publicKey(publicKey.describeConstable())
                 .secret("49ayui27ue")
-                .keriSignedMessage(Optional.empty())
-                .keriPayload(Optional.empty())
+                .signature(Optional.of(signature))
+                .payload(Optional.empty())
                 .oobi(Optional.empty())
                 .build();
 

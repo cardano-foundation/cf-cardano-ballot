@@ -1,5 +1,6 @@
 package org.cardano.foundation.voting.repository;
 
+import org.cardano.foundation.voting.domain.WalletType;
 import org.cardano.foundation.voting.domain.entity.Vote;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,9 +18,13 @@ public interface VoteRepository extends JpaRepository<Vote, String> {
 
     interface CompactVote {
 
-        String getCoseSignature();
+        String getSignature();
 
-        Optional<String> getCosePublicKey();
+        WalletType getWalletType();
+
+        Optional<String> getPayload();
+
+        Optional<String> getPublicKey();
 
     }
 

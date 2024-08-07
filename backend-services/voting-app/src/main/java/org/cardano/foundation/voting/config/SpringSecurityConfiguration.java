@@ -1,7 +1,8 @@
 package org.cardano.foundation.voting.config;
 
 import org.cardano.foundation.voting.service.auth.jwt.JwtFilter;
-import org.cardano.foundation.voting.service.auth.web3.Web3Filter;
+import org.cardano.foundation.voting.service.auth.web3.CardanoWeb3Filter;
+import org.cardano.foundation.voting.service.auth.web3.KeriWeb3Filter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -35,15 +36,17 @@ public class SpringSecurityConfiguration {
     private JwtFilter jwtFilter;
 
     @Autowired
-    private Web3Filter web3Filter;
+    private CardanoWeb3Filter cardanoWeb3Filter;
+
+    @Autowired
+    private KeriWeb3Filter keriWeb3Filter;
 
     @Value("${cors.allowed.origins:http://localhost:3000}")
     private String allowedUrls;
 
     @ConditionalOnProperty( //to make sure it is active if console is enabled
             value="spring.h2.console.enabled",
-            havingValue = "true",
-            matchIfMissing = false)
+            havingValue = "true")
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring().requestMatchers(new AntPathRequestMatcher("/h2-console/**"));
@@ -64,7 +67,8 @@ public class SpringSecurityConfiguration {
                 }))
                 .csrf(AbstractHttpConfigurer::disable)
 
-                .addFilterBefore(web3Filter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(cardanoWeb3Filter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(keriWeb3Filter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 
                 .sessionManagement(AbstractHttpConfigurer::disable)

@@ -1,6 +1,7 @@
 package org.cardano.foundation.voting.api.tests;
 
 import io.restassured.response.Response;
+import lombok.val;
 import org.cardano.foundation.voting.api.BaseTest;
 import org.cardano.foundation.voting.api.endpoints.VotingAppEndpoints;
 import org.cardano.foundation.voting.domain.Leaderboard;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
+import static org.cardano.foundation.voting.api.endpoints.VotingAppEndpoints.LEADERBOARD_ENDPOINT;
 
 public class LeaderboardTests extends BaseTest {
 
@@ -15,22 +17,23 @@ public class LeaderboardTests extends BaseTest {
     public void testIsHighLevelEventLeaderBoardAvailable() {
         given()
                 .when()
-                .head(VotingAppEndpoints.LEADERBOARD_ENDPOINT + "/event/CF_TEST_EVENT_01")
+                .head(LEADERBOARD_ENDPOINT + "/event/CF_TEST_EVENT_01")
                 .then()
                 .statusCode(200);
     }
 
     @Test
     public void testGetEventLeaderBoard() {
+        
         Response response = given()
                 .when()
-                .get(VotingAppEndpoints.LEADERBOARD_ENDPOINT + "/" +
-                        "CF_TEST_EVENT_03");
+                .get(LEADERBOARD_ENDPOINT + "/" + "CF_TEST_EVENT_03");
 
         Assertions.assertEquals(200, response.getStatusCode());
-        Leaderboard.ByEventStats leaderboard = response.as(Leaderboard.ByEventStats.class);
-        Assertions.assertEquals(leaderboard.getTotalVotingPower(), "8151");
-        Assertions.assertEquals(leaderboard.getEvent(), "CF_TEST_EVENT_03");
+        val leaderboard = response.as(Leaderboard.ByEventStats.class);
+
+        Assertions.assertEquals("8151", leaderboard.getTotalVotingPower());
+        Assertions.assertEquals("CF_TEST_EVENT_03", leaderboard.getEvent());
         Assertions.assertEquals(leaderboard.getTotalVotesCount(), 3);
     }
 
@@ -38,7 +41,7 @@ public class LeaderboardTests extends BaseTest {
     public void testGetCategoryLeaderBoard() {
         given()
                 .when()
-                .get(VotingAppEndpoints.LEADERBOARD_ENDPOINT + "/" +
+                .get(LEADERBOARD_ENDPOINT + "/" +
                         "CF_TEST_EVENT_01" + "/" + "CHANGE_SOMETHING")
                 .then()
                 .statusCode(200);
@@ -49,7 +52,7 @@ public class LeaderboardTests extends BaseTest {
     public void testGetCategoryLeaderBoardOfUnknownCategory() {
         given()
                 .when()
-                .get(VotingAppEndpoints.LEADERBOARD_ENDPOINT + "/" +
+                .get(LEADERBOARD_ENDPOINT + "/" +
                         "CF_TEST_EVENT_01" + "/" + "CHANGE_NOTHING")
                 .then()
                 .statusCode(400);
@@ -60,9 +63,9 @@ public class LeaderboardTests extends BaseTest {
     public void testGetCategoryLeaderBoardOfUnknownEvent() {
         given()
                 .when()
-                .get(VotingAppEndpoints.LEADERBOARD_ENDPOINT + "/" +
-                        "CF_TEST_EVENT_02" + "/" + "CHANGE_SOMETHING")
+                .get(LEADERBOARD_ENDPOINT + "/" + "CF_TEST_EVENT_02" + "/" + "CHANGE_SOMETHING")
                 .then()
                 .statusCode(400);
     }
+
 }

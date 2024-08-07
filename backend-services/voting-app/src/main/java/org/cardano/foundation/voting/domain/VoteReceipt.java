@@ -3,6 +3,7 @@ package org.cardano.foundation.voting.domain;
 import lombok.Builder;
 import lombok.Data;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
+import org.cardano.foundation.voting.domain.web3.WalletType;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,12 +23,17 @@ public class VoteReceipt {
     @Builder.Default
     private Optional<String> votingPower = Optional.empty();
 
-    private String voterStakingAddress;
+    private String walletId;
 
-    private String coseSignature;
+    private WalletType walletType;
+
+    private String signature;
 
     @Builder.Default
-    private Optional<String> cosePublicKey = Optional.empty();
+    private Optional<String> payload = Optional.empty();
+
+    @Builder.Default
+    private Optional<String> publicKey = Optional.empty();
 
     private Status status;
 
@@ -55,10 +61,13 @@ public class VoteReceipt {
     public static class MerkleProof {
 
         private String transactionHash;
+
         @Builder.Default
         private Optional<Long> absoluteSlot = Optional.empty();
+
         @Builder.Default
         private Optional<String> blockHash = Optional.empty();
+
         private String rootHash;
 
         private List<MerkleProofItem> steps;

@@ -1,5 +1,6 @@
 package org.cardano.foundation.voting.domain;
 
+import lombok.val;
 import org.cardano.foundation.voting.repository.VoteRepository;
 import org.cardanofoundation.cip30.CIP30Verifier;
 
@@ -13,13 +14,20 @@ public final class VoteSerialisations {
     public static final Function<VoteRepository.CompactVote, byte[]> VOTE_SERIALISER = createSerialiserFunction();
 
     public static Function<VoteRepository.CompactVote, byte[]> createSerialiserFunction() {
-        return vote -> {
-            var cip30Verifier = new CIP30Verifier(vote.getCoseSignature(), vote.getCosePublicKey());
-            var verificationResult = cip30Verifier.verify();
+        return vote -> switch (vote.getWalletType()) {
+            case CARDANO -> {
+                val cip30Verifier = new CIP30Verifier(vote.getSignature(), vote.getPublicKey());
+                val verificationResult = cip30Verifier.verify();
 
-            var bytes = Optional.ofNullable(verificationResult.getMessage()).orElse(new byte[0]);
+                val bytes = Optional.ofNullable(verificationResult.getMessage()).orElse(new byte[0]);
 
-            return blake2bHash256(bytes);
+                yield blake2bHash256(bytes);
+            }
+            case KERI -> {
+                val bytes = vote.getPayload().map(String::getBytes).orElse(new byte[0]);
+
+                yield blake2bHash256(bytes);
+            }
         };
     }
 

@@ -5,7 +5,7 @@ import com.bloxbean.cardano.client.backend.blockfrost.service.BFBackendService;
 import com.bloxbean.cardano.client.common.model.Network;
 import com.bloxbean.cardano.client.common.model.Networks;
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.domain.CardanoNetwork;
+import org.cardano.foundation.voting.domain.ChainNetwork;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -23,8 +23,8 @@ public class CardanoClientLibConfig {
     }
 
     @Bean
-    public Network network(CardanoNetwork cardanoNetwork) {
-        return switch(cardanoNetwork) {
+    public Network network(ChainNetwork chainNetwork) {
+        return switch(chainNetwork) {
             case MAIN -> Networks.mainnet();
             case PREPROD -> Networks.preprod();
             case PREVIEW -> Networks.preview();

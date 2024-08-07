@@ -146,6 +146,7 @@ public class CustomMetadataProcessor {
 
         if (!organiserStakeAddress.equals(eventAddress)) {
             log.warn("Addresses mismatch, orgAccountStakeAddress: {}, eventAddress:{}", organiserStakeAddress, eventAddress);
+
             return Optional.empty();
         }
 

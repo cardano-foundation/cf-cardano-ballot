@@ -3,11 +3,13 @@ package org.cardano.foundation.voting.service.account;
 import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.cardano.foundation.voting.domain.Account;
-import org.cardano.foundation.voting.domain.CardanoNetwork;
+import org.cardano.foundation.voting.domain.ChainNetwork;
+import org.cardano.foundation.voting.domain.WalletType;
 import org.cardano.foundation.voting.service.reference_data.ReferenceDataService;
 import org.cardano.foundation.voting.service.vote.VotingPowerService;
-import org.cardano.foundation.voting.utils.StakeAddress;
+import org.cardano.foundation.voting.utils.Addresses;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
@@ -17,6 +19,7 @@ import java.util.List;
 import static org.cardano.foundation.voting.domain.VotingEventType.BALANCE_BASED;
 import static org.cardano.foundation.voting.domain.VotingEventType.STAKE_BASED;
 import static org.zalando.problem.Status.BAD_REQUEST;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -26,13 +29,22 @@ public class DefaultAccountService implements AccountService {
 
     private final VotingPowerService votingPowerService;
 
-    private final CardanoNetwork network;
+    private final ChainNetwork network;
 
     @Override
     @Transactional(readOnly = true)
-    public Either<Problem, Account> findAccount(String eventName, String stakeAddress) {
-        var maybeEvent = referenceDataService.findValidEventByName(eventName);
-        if (maybeEvent.isEmpty()) {
+    public Either<Problem, Account> findAccount(String eventName, WalletType walletType, String walletId) {
+        if (walletType == WalletType.KERI) {
+            return Either.left(Problem.builder()
+                    .withTitle("KERI_NOT_SUPPORTED")
+                    .withDetail("Only Cardano wallet type supported for account / balance queries is supported.")
+                    .withStatus(BAD_REQUEST)
+                    .build()
+            );
+        }
+
+        val eventM = referenceDataService.findValidEventByName(eventName);
+        if (eventM.isEmpty()) {
             log.warn("Unrecognised event, eventName:{}", eventName);
 
             return Either.left(Problem.builder()
@@ -41,11 +53,12 @@ public class DefaultAccountService implements AccountService {
                     .withStatus(BAD_REQUEST)
                     .build());
         }
-        var event = maybeEvent.orElseThrow();
+        val event = eventM.orElseThrow();
 
-        var stakeAddressCheckE = StakeAddress.checkStakeAddress(network, stakeAddress);
-        if (stakeAddressCheckE.isEmpty()) {
-            return Either.left(stakeAddressCheckE.getLeft());
+
+        val walletIdCheckE = Addresses.checkWalletId(network, walletType, walletId);
+        if (walletIdCheckE.isEmpty()) {
+            return Either.left(walletIdCheckE.getLeft());
         }
 
         if (!List.of(STAKE_BASED, BALANCE_BASED).contains(event.getVotingEventType())) {
@@ -56,16 +69,17 @@ public class DefaultAccountService implements AccountService {
                     .build());
         }
 
-        var amountE = votingPowerService.getVotingPower(event, stakeAddress);
+        val amountE = votingPowerService.getVotingPower(event, walletId);
 
         if (amountE.isEmpty()) {
             return Either.left(amountE.getLeft());
         }
 
-        var amount = amountE.get();
+        val amount = amountE.get();
 
         return Either.right(Account.builder()
-                .stakeAddress(stakeAddress)
+                .walletType(walletType)
+                .walletId(walletId)
                 .network(network)
                 .epochNo(event.getSnapshotEpoch().orElseThrow())
                 .votingPower(String.valueOf(amount))

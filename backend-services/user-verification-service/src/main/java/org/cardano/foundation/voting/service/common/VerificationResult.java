@@ -1,20 +1,17 @@
 package org.cardano.foundation.voting.service.common;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.cardano.foundation.voting.domain.WalletType;
+
 import java.util.Optional;
 
+@RequiredArgsConstructor
+@Getter
 public class VerificationResult {
+
     private final String message;
-    private final Optional<String> address;
+    private final WalletType walletType;
+    private final Optional<String> walletId;
 
-    public VerificationResult(String message, Optional<String> address) {
-        this.message = message;
-        this.address = address;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public Optional<String> getAddress() {
-        return address;
-    }
 }

@@ -3,15 +3,18 @@ package org.cardano.foundation.voting.service.merkle_tree;
 import io.vavr.Value;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.domain.L1MerkleCommitment;
 import org.cardano.foundation.voting.domain.L1SubmissionData;
 import org.cardano.foundation.voting.domain.entity.VoteMerkleProof;
+import org.cardano.foundation.voting.repository.VoteRepository;
 import org.cardano.foundation.voting.service.json.JsonService;
 import org.cardano.foundation.voting.service.transaction_submit.L1SubmissionService;
 import org.cardano.foundation.voting.service.vote.VoteService;
 import org.cardanofoundation.cip30.CIP30Verifier;
 import org.cardanofoundation.merkle.MerkleTree;
+import org.cardanofoundation.merkle.ProofItem;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
 
@@ -42,7 +45,7 @@ public class VoteCommitmentService {
     private final JsonService jsonService;
 
     public void processVotesForAllEvents() {
-        var l1MerkleCommitments = getValidL1MerkleCommitments();
+        val l1MerkleCommitments = getValidL1MerkleCommitments();
         if (l1MerkleCommitments.isEmpty()) {
             log.info("No l1 commitments to process.");
             return;
@@ -54,79 +57,72 @@ public class VoteCommitmentService {
             return;
         }
 
-        var l1TransactionDataE = l1SubmissionService.submitMerkleCommitments(l1MerkleCommitments);
+        val l1TransactionDataE = l1SubmissionService.submitMerkleCommitments(l1MerkleCommitments);
         if (l1TransactionDataE.isEmpty()) {
-            var problem = l1TransactionDataE.swap().get();
+            val problem = l1TransactionDataE.swap().get();
 
             log.error("Transaction submission failed, problem:{}, will try to submit again in some time...", problem.toString());
             return;
         }
 
-        var l1SubmissionData = l1TransactionDataE.get();
+        val l1SubmissionData = l1TransactionDataE.get();
 
         generateAndStoreMerkleProofs(l1MerkleCommitments, l1SubmissionData);
     }
 
     private List<L1MerkleCommitment> getValidL1MerkleCommitments() {
-        var allCommitmentWindowOpenEventsE = chainFollowerClient.findAllCommitmentWindowOpenEvents();
+        val allCommitmentWindowOpenEventsE = chainFollowerClient.findAllCommitmentWindowOpenEvents();
 
 
         if (allCommitmentWindowOpenEventsE.isEmpty()) {
-            var issue = allCommitmentWindowOpenEventsE.swap().get();
+            val issue = allCommitmentWindowOpenEventsE.swap().get();
 
             log.error("Failed to get open window eventSummaries issue:{}, will try again in some time...", issue.toString());
 
             return List.of();
         }
 
-        var eventsToProcess1 = allCommitmentWindowOpenEventsE.get();
+        val eventsToProcess1 = allCommitmentWindowOpenEventsE.get();
 
         log.info("Found events with active commitments window: {}", eventsToProcess1.stream()
                 .map(ChainFollowerClient.EventSummary::id)
                 .toList());
 
-        var allFinishedEventsWithClosedCommitmentWindowE = chainFollowerClient.findAllEndedEventsWithoutOpenCommitmentWindow();
+        val allFinishedEventsWithClosedCommitmentWindowE = chainFollowerClient.findAllEndedEventsWithoutOpenCommitmentWindow();
 
         if (allFinishedEventsWithClosedCommitmentWindowE.isEmpty()) {
-            var issue = allFinishedEventsWithClosedCommitmentWindowE.swap().get();
+            val issue = allFinishedEventsWithClosedCommitmentWindowE.swap().get();
 
             log.error("Failed to get finished and with close window eventSummaries issue :{}, will try again in some time...", issue.toString());
 
             return List.of();
         }
 
-        var allFinishedEventsWithClosedCommitmentWindow = allFinishedEventsWithClosedCommitmentWindowE.get();
+        val allFinishedEventsWithClosedCommitmentWindow = allFinishedEventsWithClosedCommitmentWindowE.get();
 
-        List<ChainFollowerClient.EventSummary> eventsToProcess2 = allFinishedEventsWithClosedCommitmentWindow.stream()
+        val eventsToProcess2 = allFinishedEventsWithClosedCommitmentWindow.stream()
                 // if we find at least one vote merkle proof which is not validated
                 .filter(eventSummary -> !voteMerkleProofService.findTop1InvalidatedByEventId(eventSummary.id()).isEmpty())
                 .toList();
 
-        var allEventsToProcess = Stream.concat(
-                eventsToProcess1.stream(),
-                eventsToProcess2.stream())
+        val allEventsToProcess = Stream.concat(
+                        eventsToProcess1.stream(),
+                        eventsToProcess2.stream())
                 .toList();
 
         return allEventsToProcess.stream()
                 .map(event -> {
                     // TODO caching or paging or both or neither? Maybe we use Redis???
                     log.info("Loading signedVotes from db for event:{}", event.id());
-                    var stopWatch = new StopWatch();
+                    val stopWatch = new StopWatch();
                     stopWatch.start();
 
-                    var votes = voteService.findAllCompactVotesByEventId(event.id())
-                            .stream()
-                            .filter(signedWeb3Request -> {
-                                var cip30Result = new CIP30Verifier(signedWeb3Request.getCoseSignature(), signedWeb3Request.getCosePublicKey());
-
-                                return cip30Result.verify().isValid();
-                            })
-                            .toList();
+                    val votes = voteService.findAllCompactVotesByEventId(event.id());
 
                     stopWatch.stop();
                     log.info("Loaded signedVotes, count:{}, time: {} secs", votes.size(), stopWatch.getTotalTimeSeconds());
 
-                    var root = MerkleTree.fromList(votes, VOTE_SERIALISER);
+                    val root = MerkleTree.fromList(votes, VOTE_SERIALISER);
 
                     return new L1MerkleCommitment(votes, root, event.id());
                 })
@@ -137,63 +133,117 @@ public class VoteCommitmentService {
                                               L1SubmissionData l1SubmissionData) {
         log.info("Storing vote merkle proofs...");
 
-        for (var l1MerkleCommitment : l1MerkleCommitments) {
-            var root = l1MerkleCommitment.root();
+        for (val l1MerkleCommitment : l1MerkleCommitments) {
+            val root = l1MerkleCommitment.root();
 
             log.info("Storing merkle proofs for event: {}", l1MerkleCommitment.eventId());
 
-            var storeProofsStartStop = new StopWatch();
+            val storeProofsStartStop = new StopWatch();
             storeProofsStartStop.start();
-            for (var vote : l1MerkleCommitment.signedVotes()) {
-                var maybeMerkleProof = MerkleTree.getProof(root, vote, createSerialiserFunction()).map(Value::toJavaList);
+
+            for (val vote : l1MerkleCommitment.signedVotes()) {
+                val maybeMerkleProof = MerkleTree.getProof(root, vote, createSerialiserFunction()).map(Value::toJavaList);
                 if (maybeMerkleProof.isEmpty()) {
-                    log.error("Merkle proof is empty for vote: {}, this should never ever happen", vote.getCoseSignature());
-                    throw new RuntimeException("Merkle proof is empty for vote: " + vote.getCoseSignature());
+                    log.error("Merkle proof is empty for vote: {}, this should never ever happen", vote.getSignature());
+                    throw new RuntimeException("Merkle proof is empty for vote: " + vote.getSignature());
                 }
-                var proofItems = maybeMerkleProof.orElseThrow();
-                var merkleRootHash = encodeHexString(root.itemHash());
+                val proofItems = maybeMerkleProof.orElseThrow();
+                val merkleRootHash = encodeHexString(root.itemHash());
 
-                var proofItemsJson = merkleProofSerdeService.serialiseAsString(proofItems);
+                val walletType = vote.getWalletType();
 
-                var cip30Verifier = new CIP30Verifier(vote.getCoseSignature(), vote.getCosePublicKey());
-
-                var cip30VerificationResult = cip30Verifier.verify();
-                if (!cip30VerificationResult.isValid()) {
-                    log.error("Invalid CIP 30 signature for vote:{}", vote.getCoseSignature());
-                    continue;
+                switch (walletType) {
+                    case KERI -> handleKeriWalletType(vote, proofItems, merkleRootHash, l1SubmissionData);
+                    case CARDANO -> handleCardanoWalletType(vote, proofItems, merkleRootHash, l1SubmissionData);
                 }
 
-                var voteSignedJsonPayload = cip30VerificationResult.getMessage(TEXT);
-
-                var cip93EnvelopeE = jsonService.decodeCIP93VoteEnvelope(voteSignedJsonPayload);
-
-                if (cip93EnvelopeE.isEmpty()) {
-                    log.error("Invalid voteSignedJsonPayload for vote:{}", vote.getCoseSignature());
-                    continue;
-                }
-
-                var voteEnvelopeCIP93Envelope = cip93EnvelopeE.get();
-
-                var voteId = voteEnvelopeCIP93Envelope.getData().getId();
-                var voteMerkleProof = VoteMerkleProof.builder()
-                        .voteId(voteId)
-                        .voteIdNumericHash(UUID.fromString(voteId).hashCode() & 0xFFFFFFF)
-                        .eventId(voteEnvelopeCIP93Envelope.getData().getEvent())
-                        .rootHash(merkleRootHash)
-                        .absoluteSlot(l1SubmissionData.slot())
-                        .proofItemsJson(proofItemsJson)
-                        .l1TransactionHash(l1SubmissionData.txHash())
-                        .invalidated(false)
-                        .build();
-
-                voteMerkleProofService.store(voteMerkleProof);
+                log.info("Storing vote merkle proofs for all events completed.");
             }
+
             storeProofsStartStop.stop();
 
             log.info("Storing merkle proofs: {}, completed for event: {}, time: {} secs", l1MerkleCommitment.signedVotes().size(), l1MerkleCommitment.eventId(), storeProofsStartStop.getTotalTimeSeconds());
         }
+    }
 
-        log.info("Storing vote merkle proofs for all events completed.");
+    private void handleKeriWalletType(VoteRepository.CompactVote vote,
+                                      List<ProofItem> proofItems,
+                                      String merkleRootHash,
+                                      L1SubmissionData l1SubmissionData) {
+        // TODO KERI signature validation?
+
+        val payloadM = vote.getPayload();
+        if (payloadM.isEmpty()) {
+            log.error("Payload is empty for KERI vote:{}", vote.getSignature());
+            return;
+        }
+
+        val payload =  payloadM.orElseThrow();
+
+        val keriVoteEnvelopeE = jsonService.decodeKERIVoteEnvelope(payload);
+        if (keriVoteEnvelopeE.isEmpty()) {
+            log.error("Invalid KERI vote payload for vote:{}", vote.getSignature());
+            return;
+        }
+
+        val keriVoteEnvelope = keriVoteEnvelopeE.get();
+
+        val voteId = keriVoteEnvelope.getData().getId();
+
+        val proofItemsJson = merkleProofSerdeService.serialiseAsString(proofItems);
+        val eventId = keriVoteEnvelope.getData().getEvent();
+
+        val voteMerkleProof = VoteMerkleProof.builder()
+                .voteId(voteId)
+                .voteIdNumericHash(UUID.fromString(voteId).hashCode() & 0xFFFFFFF)
+                .eventId(eventId)
+                .rootHash(merkleRootHash)
+                .absoluteSlot(l1SubmissionData.slot())
+                .proofItemsJson(proofItemsJson)
+                .l1TransactionHash(l1SubmissionData.txHash())
+                .invalidated(false)
+                .build();
+
+        voteMerkleProofService.store(voteMerkleProof);
+    }
+
+    private void handleCardanoWalletType(VoteRepository.CompactVote vote,
+                                         List<ProofItem> proofItems,
+                                         String merkleRootHash,
+                                         L1SubmissionData l1SubmissionData) {
+        val cip30Verifier = new CIP30Verifier(vote.getSignature(), vote.getPublicKey());
+
+        val cip30VerificationResult = cip30Verifier.verify();
+        if (!cip30VerificationResult.isValid()) {
+            log.error("Invalid CIP 30 signature for vote:{}", vote.getSignature());
+            return;
+        }
+
+        val voteSignedJsonPayload = cip30VerificationResult.getMessage(TEXT);
+
+        val cip93EnvelopeE = jsonService.decodeCIP93VoteEnvelope(voteSignedJsonPayload);
+
+        if (cip93EnvelopeE.isEmpty()) {
+            log.error("Invalid voteSignedJsonPayload for vote:{}", vote.getSignature());
+            return;
+        }
+        val voteEnvelopeCIP93Envelope = cip93EnvelopeE.get();
+        val voteId = voteEnvelopeCIP93Envelope.getData().getId();
+
+        val proofItemsJson = merkleProofSerdeService.serialiseAsString(proofItems);
+
+        val voteMerkleProof = VoteMerkleProof.builder()
+                .voteId(voteId)
+                .voteIdNumericHash(UUID.fromString(voteId).hashCode() & 0xFFFFFFF)
+                .eventId(voteEnvelopeCIP93Envelope.getData().getEvent())
+                .rootHash(merkleRootHash)
+                .absoluteSlot(l1SubmissionData.slot())
+                .proofItemsJson(proofItemsJson)
+                .l1TransactionHash(l1SubmissionData.txHash())
+                .invalidated(false)
+                .build();
+
+        voteMerkleProofService.store(voteMerkleProof);
     }
 
 }

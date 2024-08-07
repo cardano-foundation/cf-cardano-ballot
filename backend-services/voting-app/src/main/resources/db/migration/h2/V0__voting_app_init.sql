@@ -6,9 +6,12 @@ CREATE TABLE vote (
    event_id VARCHAR(255) NOT NULL,
    category_id VARCHAR(255) NOT NULL,
    proposal_id VARCHAR(255) NOT NULL,
-   voter_stake_address VARCHAR(255) NOT NULL,
-   cose_signature TEXT NOT NULL,
-   cose_public_key VARCHAR(255),
+   wallet_type VARCHAR(255) NOT NULL,
+   wallet_id VARCHAR(255) NOT NULL,
+
+   signature TEXT NOT NULL,
+   payload TEXT, -- nullable since Cardano wallet type contains signature and payload in one
+   public_key VARCHAR(255),
    voting_power BIGINT,
    voted_at_slot BIGINT NOT NULL,
 
@@ -18,8 +21,8 @@ CREATE TABLE vote (
    CONSTRAINT pk_vote PRIMARY KEY (id)
 );
 
-CREATE INDEX idx_vote_stake_key
-    ON vote (event_id, category_id, voter_stake_address);
+CREATE INDEX idx_vote_wallet_id
+    ON vote (event_id, category_id, wallet_type, wallet_id);
 
 -- index for the leaderboard query
 CREATE INDEX idx_vote_event_id

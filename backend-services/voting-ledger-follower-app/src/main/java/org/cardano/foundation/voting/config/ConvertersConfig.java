@@ -1,6 +1,6 @@
 package org.cardano.foundation.voting.config;
 
-import org.cardano.foundation.voting.domain.CardanoNetwork;
+import org.cardano.foundation.voting.domain.ChainNetwork;
 import org.cardanofoundation.conversions.CardanoConverters;
 import org.cardanofoundation.conversions.ClasspathConversionsFactory;
 import org.cardanofoundation.conversions.domain.NetworkType;
@@ -16,11 +16,11 @@ public class ConvertersConfig {
     }
 
     @Bean
-    public NetworkType conversionsNetworkType(CardanoNetwork cardanoNetwork) {
-        return switch(cardanoNetwork) {
+    public NetworkType conversionsNetworkType(ChainNetwork chainNetwork) {
+        return switch(chainNetwork) {
             case MAIN -> NetworkType.MAINNET;
             case PREPROD -> NetworkType.PREPROD;
-            default -> throw new IllegalStateException("Unsupported network type: " + cardanoNetwork);
+            default -> throw new IllegalStateException("Unsupported network type: " + chainNetwork);
         };
     }
 

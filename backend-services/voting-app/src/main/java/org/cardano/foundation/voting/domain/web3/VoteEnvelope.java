@@ -10,7 +10,7 @@ import java.util.Optional;
 public class VoteEnvelope {
 
     private String id;
-    private String address;
+    private String walletId;
     private String event;
     private String category;
     private String proposal;

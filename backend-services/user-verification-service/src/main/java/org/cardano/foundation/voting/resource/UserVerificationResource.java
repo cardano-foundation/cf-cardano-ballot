@@ -6,11 +6,13 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.cardano.foundation.voting.domain.IsVerifiedRequest;
 import org.cardano.foundation.voting.domain.IsVerifiedResponse;
 import org.cardano.foundation.voting.service.common.UserVerificationService;
+import org.cardano.foundation.voting.domain.WalletType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,7 +30,7 @@ public class UserVerificationResource {
 
     private final UserVerificationService userVerificationService;
 
-    @RequestMapping(value = "/verified/{eventId}/{walletId}", method = GET, produces = "application/json")
+    @RequestMapping(value = "/verified/{eventId}/{walletType}/{walletId}", method = GET, produces = "application/json")
     @Timed(value = "resource.isVerified", histogram = true)
     @Operation(
             summary = "Check the verification status for a user based on event ID and stake address",
@@ -54,8 +56,9 @@ public class UserVerificationResource {
             }
     )
     public ResponseEntity<?> isVerified(@PathVariable("eventId") String eventId,
+                                        @PathVariable("walletType") @Valid WalletType walletType,
                                         @PathVariable("walletId") String walletId) {
-        var isVerifiedRequest = new IsVerifiedRequest(eventId, walletId);
+        var isVerifiedRequest = new IsVerifiedRequest(eventId, walletType, walletId);
 
         return userVerificationService.isVerified(isVerifiedRequest)
                 .fold(problem -> {

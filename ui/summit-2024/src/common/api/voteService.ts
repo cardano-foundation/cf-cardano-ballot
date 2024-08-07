@@ -57,19 +57,22 @@ export const buildCanonicalVoteInputJson = ({
   });
 };
 
-const submitVoteWithDigitalSignature = async (jsonRequest: SignedWeb3Request, walletType: string) => {
+const submitVoteWithDigitalSignature = async (
+  jsonRequest: SignedWeb3Request,
+  walletType: string,
+) => {
   return await doRequest<Problem | Vote>(
-      HttpMethods.POST,
-      CAST_VOTE_URL,
-      DEFAULT_CONTENT_TYPE_HEADERS,
-      JSON.stringify({
-        ...jsonRequest,
-        walletType
-      }),
-      undefined,
-      true,
+    HttpMethods.POST,
+    CAST_VOTE_URL,
+    DEFAULT_CONTENT_TYPE_HEADERS,
+    JSON.stringify({
+      ...jsonRequest,
+      walletType,
+    }),
+    undefined,
+    true,
   );
-}
+};
 
 const getSlotNumber = async () => {
   return await doRequest<ChainTip>(

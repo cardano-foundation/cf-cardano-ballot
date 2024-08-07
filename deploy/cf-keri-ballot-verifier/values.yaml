@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-ui-summit-2024
+  repository: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-keri-ballot-verifier
   tag: "latest"
   pullPolicy: Always
 
@@ -11,7 +11,8 @@ fullnameOverride: ""
 
 service:
   type: ClusterIP
-  port: 80
+  port: 5666
+  adminPort: 5667
 
 ingress:
   enabled: true
@@ -27,7 +28,3 @@ resources: {}
   #   memory: 128Mi
 
 nodeSelector: {}
-
-showWinners: "false"
-showHydraTally: "false"
-usingFixtures: "false"

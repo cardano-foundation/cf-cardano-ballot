@@ -48,6 +48,8 @@ spec:
                   key: VERIFIED_ROLE_ID
             - name: BACKEND_BASE_URL
               value: {{ tpl .Values.backendBaseUrl . }}
+            - name: BACKEND_BASIC_AUTH_ENABLED
+              value: {{ .Values.backendBasicAuthEnabled | default "true" | quote }}
             - name: BACKEND_BASIC_AUTH_USER
               valueFrom:
                 secretKeyRef:

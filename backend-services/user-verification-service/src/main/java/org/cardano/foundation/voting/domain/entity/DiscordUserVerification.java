@@ -34,8 +34,6 @@ public class DiscordUserVerification extends AbstractTimestampEntity {
     private String eventId;
 
     @Column(name = "wallet_id")
-    @Getter
-    @Setter
     @Nullable
     private String walletId;
 

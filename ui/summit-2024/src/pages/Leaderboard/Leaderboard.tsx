@@ -84,14 +84,16 @@ const Leaderboard: React.FC = () => {
                   fontStyle: "normal",
                   fontWeight: 700,
                   lineHeight: "36px",
-                  textAlign: "left", // Alineación izquierda en todas las pantallas
-                  marginBottom: { xs: 2, md: 0 }, // Espacio entre el texto y el switch en pantallas pequeñas
+                  textAlign: "left",
+                  marginBottom: { xs: 2, md: 0 },
                 }}
               >
                 Leaderboard
               </Typography>
               <AnimatedSwitch
                 defaultValue="Overall Votes"
+                optionA="Winners"
+                optionB="Overall Votes"
                 onClickOption={handleSwitch}
               />
             </Box>

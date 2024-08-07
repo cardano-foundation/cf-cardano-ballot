@@ -5,7 +5,7 @@ import Modal from "../common/Modal/Modal";
 import { useIsPortrait } from "../../common/hooks/useIsPortrait";
 import theme from "../../common/styles/theme";
 import {eventBus, EventName} from "../../utils/EventBus";
-import {getSlotNumber, getUserVotes} from "../../common/api/voteService";
+import {getSlotNumber, submitGetUserVotes} from "../../common/api/voteService";
 import {buildCanonicalLoginJson, submitLogin} from "../../common/api/loginService";
 import {useAppDispatch, useAppSelector} from "../../store/hooks";
 import {getConnectedWallet, setIsLogin, setUserVotes} from "../../store/reducers/userCache";
@@ -87,7 +87,7 @@ const LoginModal: React.FC = () => {
                   saveUserInSession(newSession);
                   dispatch(setIsLogin(true));
                   eventBus.publish(EventName.ShowToast, "Login successfully");
-                  getUserVotes(newSession?.accessToken)
+                  submitGetUserVotes(newSession?.accessToken)
                       .then((uVotes) => {
                           if (uVotes) {
                               // @ts-ignore

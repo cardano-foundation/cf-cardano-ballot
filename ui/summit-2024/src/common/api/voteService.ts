@@ -93,7 +93,7 @@ const getVoteReceipt = async (categoryId: string, token: string) =>
     token,
   );
 
-const getUserVotes = async (token: string) =>
+const submitGetUserVotes = async (token: string) =>
   await doRequest<UserVotes[]>(
     HttpMethods.GET,
     `${USER_VOTES_URL}/${env.EVENT_ID}`,
@@ -108,5 +108,5 @@ export {
   submitVoteWithDigitalSignature,
   getSlotNumber,
   getVoteReceipt,
-  getUserVotes,
+  submitGetUserVotes,
 };

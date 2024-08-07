@@ -1,39 +1,57 @@
 import React, { useState } from "react";
 import { Box, Typography, styled } from "@mui/material";
-import theme from "../../common/styles/theme";
 
 interface AnimatedSwitchProps {
-  defaultValue: string;
-  onClickOption: (option: string) => void;
+    defaultValue: string;
+    optionA: string;
+    optionB: string;
+    onClickOption: (option: string) => void;
 }
 
 const SwitchContainer = styled(Box)(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  borderRadius: "24px",
-  overflow: "hidden",
-  cursor: "pointer",
-  userSelect: "none",
-  position: "relative",
-  width: "388px",
-  height: "48px",
-  background: theme.palette.background.neutralDark,
+    display: "flex",
+    alignItems: "center",
+    borderRadius: "24px",
+    overflow: "hidden",
+    cursor: "pointer",
+    userSelect: "none",
+    position: "relative",
+    width: "100%",
+    maxWidth: "388px",
+    height: "48px",
+    background: theme.palette.background.neutralDark,
+    "@media (max-width: 600px)": {
+        height: "40px",
+        maxWidth: "300px",
+    },
+    "@media (max-width: 400px)": {
+        height: "32px",
+        maxWidth: "250px",
+    },
 }));
 
-const Option = styled(Box)<{ selected: boolean }>(() => ({
-  flex: 1,
-  padding: "12px 24px",
-  textAlign: "center",
-  zIndex: 1,
-  position: "relative",
-  transition: "color 0.3s ease-in-out",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
+const Option = styled(Box)<{ selected: boolean }>(({ theme, selected }) => ({
+    flex: 1,
+    padding: "12px 24px",
+    textAlign: "center",
+    zIndex: 1,
+    position: "relative",
+    transition: "color 0.3s ease-in-out",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    color: selected ? theme.palette.background.default : "inherit",
+    "@media (max-width: 600px)": {
+        padding: "8px 16px",
+        fontSize: "14px",
+    },
+    "@media (max-width: 400px)": {
+        padding: "6px 12px",
+        fontSize: "12px",
+    },
 }));
 
-const AnimatedRectangle = styled(Box)<{ selected: boolean }>(
-  ({ selected }) => ({
+const AnimatedRectangle = styled(Box)<{ selected: boolean }>(({ theme, selected }) => ({
     position: "absolute",
     top: 0,
     left: 0,
@@ -43,65 +61,66 @@ const AnimatedRectangle = styled(Box)<{ selected: boolean }>(
     borderRadius: "24px",
     transition: "transform 0.3s ease-in-out",
     transform: selected ? "translateX(100%)" : "translateX(0)",
-  }),
-);
+}));
 
 const AnimatedSwitch: React.FC<AnimatedSwitchProps> = ({
-  defaultValue,
-  onClickOption,
-}) => {
-  const [selected, setSelected] = useState<string>(defaultValue);
+                                                           defaultValue,
+                                                           optionA,
+                                                           optionB,
+                                                           onClickOption,
+                                                       }) => {
+    const [selected, setSelected] = useState<string>(defaultValue);
 
-  const handleClick = (option: string) => {
-    setSelected(option);
-    onClickOption(option);
-  };
+    const handleClick = (option: string) => {
+        setSelected(option);
+        onClickOption(option);
+    };
 
-  return (
-    <SwitchContainer>
-      <AnimatedRectangle selected={selected === "Overall Votes"} />
-      <Option
-        selected={selected === "Winners"}
-        onClick={() => handleClick("Winners")}
-      >
-        <Typography
-          sx={{
-            fontSize: "16px",
-            fontStyle: "normal",
-            fontWeight: 500,
-            lineHeight: "24px",
-          }}
-          color={
-            selected === "Winners"
-              ? theme.palette.background.default
-              : "inherit"
-          }
-        >
-          Winners
-        </Typography>
-      </Option>
-      <Option
-        selected={selected === "Overall Votes"}
-        onClick={() => handleClick("Overall Votes")}
-      >
-        <Typography
-          sx={{
-            fontSize: "16px",
-            fontStyle: "normal",
-            fontWeight: 500,
-            lineHeight: "24px",
-          }}
-          color={
-            selected === "Overall Votes"
-              ? theme.palette.background.default
-              : "inherit"
-          }
-        >
-          Overall Votes
-        </Typography>
-      </Option>
-    </SwitchContainer>
-  );
+    return (
+        <SwitchContainer>
+            <AnimatedRectangle selected={selected === optionB} />
+            <Option selected={selected === optionA} onClick={() => handleClick(optionA)}>
+                <Typography
+                    sx={{
+                        fontSize: "16px",
+                        fontStyle: "normal",
+                        fontWeight: 500,
+                        lineHeight: "24px",
+                        "@media (max-width: 600px)": {
+                            fontSize: "14px",
+                            lineHeight: "20px",
+                        },
+                        "@media (max-width: 400px)": {
+                            fontSize: "12px",
+                            lineHeight: "18px",
+                        },
+                    }}
+                >
+                    {optionA}
+                </Typography>
+            </Option>
+            <Option selected={selected === optionB} onClick={() => handleClick(optionB)}>
+                <Typography
+                    sx={{
+                        fontSize: "16px",
+                        fontStyle: "normal",
+                        fontWeight: 500,
+                        lineHeight: "24px",
+                        "@media (max-width: 600px)": {
+                            fontSize: "14px",
+                            lineHeight: "20px",
+                        },
+                        "@media (max-width: 400px)": {
+                            fontSize: "12px",
+                            lineHeight: "18px",
+                        },
+                    }}
+                >
+                    {optionB}
+                </Typography>
+            </Option>
+        </SwitchContainer>
+    );
 };
 
 export default AnimatedSwitch;

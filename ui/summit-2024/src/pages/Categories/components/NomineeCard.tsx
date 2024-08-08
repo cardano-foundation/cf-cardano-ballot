@@ -5,7 +5,7 @@ import theme from "../../../common/styles/theme";
 import nomineeBg from "../../../assets/bg/nomineeCard.svg";
 import { Proposal } from "../../../store/reducers/eventCache/eventCache.types";
 import { useAppSelector } from "../../../store/hooks";
-import { getUserVotes } from "../../../store/reducers/userCache";
+import {getVotes} from "../../../store/reducers/votesCache";
 
 interface NomineeCardProps {
   nominee: Proposal;
@@ -25,7 +25,7 @@ const NomineeCard: React.FC<NomineeCardProps> = ({
   handleSelectNominee,
   handleLearnMoreClick,
 }) => {
-  const userVotes = useAppSelector(getUserVotes);
+  const userVotes = useAppSelector(getVotes);
 
   const votedNominee = !!userVotes.find(
     (vote) => vote.proposalId === nominee.id,

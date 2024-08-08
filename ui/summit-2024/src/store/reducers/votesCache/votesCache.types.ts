@@ -1,12 +1,14 @@
 import { VoteReceipt } from "../../../types/voting-app-types";
 
+interface VoteCacheProps {
+  categoryId: string,
+  proposalId: string
+}
 interface VotesCacheProps {
-  votes: {
-    [categoryId: string]: string;
-  };
+  votes: VoteCacheProps[];
   receipts: {
     [categoryId: string]: VoteReceipt;
   };
 }
 
-export type { VotesCacheProps };
+export type { VoteCacheProps, VotesCacheProps };

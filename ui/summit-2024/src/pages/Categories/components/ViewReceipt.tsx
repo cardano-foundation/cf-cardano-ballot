@@ -20,8 +20,8 @@ const jsonExample = {
 };
 const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
   const receipts = useAppSelector(getReceipts);
-  console.log("receipts");
-  console.log(receipts);
+  //console.log("receipts");
+  //console.log(receipts);
 
   const getContent = () => {
     switch (state) {

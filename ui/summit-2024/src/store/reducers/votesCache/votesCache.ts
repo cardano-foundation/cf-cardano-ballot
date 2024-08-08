@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../index";
-import { VotesCacheProps } from "./votesCache.types";
+import {VoteCacheProps, VotesCacheProps} from "./votesCache.types";
 import { initialStateData } from "./initialState";
 import { UserVotes, VoteReceipt } from "../../../types/voting-app-types";
 
@@ -21,9 +21,9 @@ const votesCacheSlice = createSlice({
     },
     setVotes: (
       state,
-      action: PayloadAction<{ votes: { [categoryId: string]: string } }>,
+      action: PayloadAction<VoteCacheProps[]>,
     ) => {
-      state.votes = action.payload.votes;
+      state.votes = action.payload;
     },
     setVoteReceipt: (
       state,

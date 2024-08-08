@@ -26,13 +26,11 @@ import { eventBus, EventName } from "../../utils/EventBus";
 import {
   getConnectedWallet,
   getWalletIsVerified,
-  getUserVotes,
-  setUserVotes,
 } from "../../store/reducers/userCache";
 import { getUserInSession, tokenIsExpired } from "../../utils/session";
 import { parseError } from "../../common/constants/errors";
 import {
-  getReceipts,
+  getReceipts, getVotes, setVote,
   setVoteReceipt,
   setVotes,
 } from "../../store/reducers/votesCache";
@@ -50,7 +48,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   const connectedWallet = useAppSelector(getConnectedWallet);
   const walletIdentifierIsVerified = useAppSelector(getWalletIsVerified);
   const receipts = useAppSelector(getReceipts);
-  const userVotes = useAppSelector(getUserVotes);
+  const userVotes = useAppSelector(getVotes);
   const categoriesData = eventCache.categories;
   const [showWinners, setShowWinners] = useState(eventCache.finished);
 
@@ -141,8 +139,6 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   const handleSignIn = () => {};
 
   const handleViewReceipt = async () => {
-    console.log("view receipt");
-
     if (!categoryToRender) return;
     if (receipts[categoryToRender?.id] !== undefined) {
       setOpenViewReceipt(true);
@@ -154,8 +150,6 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
             // @ts-ignore
             setVoteReceipt({ categoryId: categoryToRender?.id, receipt: r }),
           );
-          console.log("VoteReceipt");
-          console.log(r);
           setOpenViewReceipt(true);
         })
         .catch((e) => {
@@ -225,9 +219,6 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
         resolveWalletType(connectedWallet.address),
       );
 
-      console.log("requestVoteResult");
-      console.log(requestVoteResult);
-
       if (!requestVoteResult.success) {
         eventBus.publish(
           EventName.ShowToast,
@@ -255,7 +246,8 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
       }
       eventBus.publish(EventName.ShowToast, "Vote submitted successfully");
 
-      dispatch(setUserVotes([...userVotes, { categoryId, proposalId }]));
+      // @ts-ignore
+      dispatch(setVote([...userVotes, { categoryId, proposalId }]));
       if (session && !tokenIsExpired(session?.expiresAt)) {
         // @ts-ignore
         getVoteReceipt(categoryId, session?.accessToken)
@@ -291,7 +283,6 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
             }
           });
       } else {
-        console.log("open login modal");
         eventBus.publish(
           EventName.OpenLoginModal,
           "Login to see your vote receipt.",
@@ -309,8 +300,6 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   };
 
   const renderActionButton = () => {
-    console.log("session");
-    console.log(session);
     if (categoryAlreadyVoted && !session) {
       return {
         label: "Sign In",

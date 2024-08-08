@@ -2,7 +2,6 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../index";
 import {
   UserCacheProps,
-  UserVotes,
   VerificationStartedExtended,
 } from "./userCache.types";
 import { initialStateData } from "./initialState";
@@ -26,9 +25,6 @@ const userCacheSlice = createSlice({
     setWalletIsVerified: (state, action: PayloadAction<boolean>) => {
       state.isVerified = action.payload;
     },
-    setUserVotes: (state, action: PayloadAction<UserVotes[]>) => {
-      state.userVotes = action.payload;
-    },
     setVerificationStarted: (
       state,
       action: PayloadAction<VerificationStartedExtended>,
@@ -46,7 +42,6 @@ const {
   resetUser,
   setWalletIsVerified,
   setIsLogin,
-  setUserVotes,
   setConnectedWallet,
   setVerificationStarted,
 } = userCacheSlice.actions;
@@ -54,7 +49,6 @@ const {
 const getUser = (state: RootState) => state.userCache;
 const getWalletIsVerified = (state: RootState) => state.userCache.isVerified;
 const getWalletIsLogin = (state: RootState) => state.userCache.isLogin;
-const getUserVotes = (state: RootState) => state.userCache.userVotes;
 const getConnectedWallet = (state: RootState) =>
   state.userCache.connectedWallet;
 const getVerificationStarted = (state: RootState) =>
@@ -66,14 +60,12 @@ export {
   setUser,
   resetUser,
   setWalletIsVerified,
-  setUserVotes,
   setVerificationStarted,
   setConnectedWallet,
   getUser,
   getWalletIsVerified,
   getWalletIsLogin,
   setIsLogin,
-  getUserVotes,
   getConnectedWallet,
   getVerificationStarted,
 };

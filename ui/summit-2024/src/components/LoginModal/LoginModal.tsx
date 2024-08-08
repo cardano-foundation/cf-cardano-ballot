@@ -16,14 +16,14 @@ import {
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import {
   getConnectedWallet,
-  setIsLogin,
-  setUserVotes,
+  setIsLogin
 } from "../../store/reducers/userCache";
 import { resolveWalletType } from "../../common/api/utils";
 import { useSignatures } from "../../common/hooks/useSignatures";
 import { ToastType } from "../common/Toast/Toast.types";
 import { saveUserInSession } from "../../utils/session";
 import { parseError } from "../../common/constants/errors";
+import {setVotes} from "../../store/reducers/votesCache";
 
 const LoginModal: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -95,7 +95,7 @@ const LoginModal: React.FC = () => {
             .then((uVotes) => {
               if (uVotes) {
                 // @ts-ignore
-                dispatch(setUserVotes(uVotes));
+                  dispatch(setVotes(uVotes));
               }
               handleCloseModal();
             })

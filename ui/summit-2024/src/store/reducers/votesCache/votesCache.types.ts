@@ -1,8 +1,8 @@
 import { VoteReceipt } from "../../../types/voting-app-types";
 
 interface VoteCacheProps {
-  categoryId: string,
-  proposalId: string
+  categoryId: string;
+  proposalId: string;
 }
 interface VotesCacheProps {
   votes: VoteCacheProps[];

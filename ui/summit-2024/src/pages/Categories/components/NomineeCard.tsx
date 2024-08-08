@@ -5,7 +5,7 @@ import theme from "../../../common/styles/theme";
 import nomineeBg from "../../../assets/bg/nomineeCard.svg";
 import { Proposal } from "../../../store/reducers/eventCache/eventCache.types";
 import { useAppSelector } from "../../../store/hooks";
-import {getVotes} from "../../../store/reducers/votesCache";
+import { getVotes } from "../../../store/reducers/votesCache";
 
 interface NomineeCardProps {
   nominee: Proposal;

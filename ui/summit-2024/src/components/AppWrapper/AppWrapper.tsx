@@ -8,16 +8,17 @@ import { eventDataFixture } from "../../__fixtures__/event";
 import { ToastType } from "../common/Toast/Toast.types";
 import { getIsVerified } from "../../common/api/verificationService";
 import {
-  getConnectedWallet, getWalletIsVerified,
+  getConnectedWallet,
+  getWalletIsVerified,
   setConnectedWallet,
   setWalletIsVerified,
 } from "../../store/reducers/userCache";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 import { resolveCardanoNetwork } from "../../utils/utils";
-import {getUserInSession, tokenIsExpired} from "../../utils/session";
-import {submitGetUserVotes} from "../../common/api/voteService";
-import {setVotes} from "../../store/reducers/votesCache";
-import {parseError} from "../../common/constants/errors";
+import { getUserInSession, tokenIsExpired } from "../../utils/session";
+import { submitGetUserVotes } from "../../common/api/voteService";
+import { setVotes } from "../../store/reducers/votesCache";
+import { parseError } from "../../common/constants/errors";
 
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
@@ -35,21 +36,16 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
   useEffect(() => {
     const updateUserVotes = async () => {
-      console.log("updateUserVotes");
       submitGetUserVotes(session.accessToken)
-          .then((response) => {
-            console.log("response");
-            console.log(response);
-            // @ts-ignore
-            dispatch(setVotes(response));
-          })
-          .catch((e) => {
-            if (process.env.NODE_ENV === "development") {
-              console.log(
-                  `Failed to fetch user votes, ${parseError(e.message)}`,
-              );
-            }
-          });
+        .then((response) => {
+          // @ts-ignore
+          dispatch(setVotes(response));
+        })
+        .catch((e) => {
+          if (process.env.NODE_ENV === "development") {
+            console.log(`Failed to fetch user votes, ${parseError(e.message)}`);
+          }
+        });
     };
     if (connectedWallet.address.length && walletIsVerified && !isExpired) {
       updateUserVotes();

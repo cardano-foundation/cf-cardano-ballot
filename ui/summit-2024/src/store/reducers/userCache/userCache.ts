@@ -1,9 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../index";
-import {
-  UserCacheProps,
-  VerificationStartedExtended,
-} from "./userCache.types";
+import { UserCacheProps, VerificationStartedExtended } from "./userCache.types";
 import { initialStateData } from "./initialState";
 import { IWalletInfo } from "../../../components/ConnectWalletList/ConnectWalletList.types";
 

@@ -12,19 +12,68 @@ import { STATE, ViewReceiptProps } from "./ViewReceipt.type";
 import { CustomAccordion } from "../../../components/common/CustomAccordion/CustomAccordion";
 import { JsonView } from "../../../components/common/JsonView/JsonView";
 import { useAppSelector } from "../../../store/hooks";
-import { getReceipts } from "../../../store/reducers/votesCache";
+import {
+  getReceipts,
+  setVoteReceipt,
+  setVotes,
+} from "../../../store/reducers/votesCache";
+import { addressSlice } from "../../../utils/utils";
+import { getUserInSession, tokenIsExpired } from "../../../utils/session";
+import {
+  getVoteReceipt,
+  submitGetUserVotes,
+} from "../../../common/api/voteService";
+import { eventBus, EventName } from "../../../utils/EventBus";
+import { ToastType } from "../../../components/common/Toast/Toast.types";
+import { parseError } from "../../../common/constants/errors";
 
-const jsonExample = {
-  example: "example",
-  example2: "example2",
-};
-const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
+const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
+  const session = getUserInSession();
   const receipts = useAppSelector(getReceipts);
-  //console.log("receipts");
-  //console.log(receipts);
+  const receipt = receipts[categoryId];
 
+  const refreshReceipt = () => {
+    if (session && !tokenIsExpired(session?.expiresAt)) {
+      // @ts-ignore
+      getVoteReceipt(categoryId, session?.accessToken)
+        .then((r) => {
+          // @ts-ignore
+          if (r.error) {
+            // @ts-ignore
+            eventBus.publish(EventName.ShowToast, r.message, ToastType.Error);
+            return;
+          }
+          // @ts-ignore
+          dispatch(setVoteReceipt({ categoryId: categoryId, receipt: r }));
+        })
+        .catch((e) => {
+          if (process.env.NODE_ENV === "development") {
+            console.log(
+              `Failed to fetch vote receipt, ${parseError(e.message)}`,
+            );
+          }
+        });
+      submitGetUserVotes(session?.accessToken)
+        .then((response) => {
+          if (response) {
+            // @ts-ignore
+            dispatch(setVotes({ votes: response }));
+          }
+        })
+        .catch((e) => {
+          if (process.env.NODE_ENV === "development") {
+            console.log(`Failed to fetch user votes, ${parseError(e.message)}`);
+          }
+        });
+    } else {
+      eventBus.publish(
+        EventName.OpenLoginModal,
+        "Login to see your vote receipt.",
+      );
+    }
+  };
   const getContent = () => {
-    switch (state) {
+    switch (receipt?.status) {
       case STATE.BASIC: {
         return {
           leftIcon: (
@@ -48,35 +97,32 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
             />
           ),
           labelBottom: "Refresh Status",
+          iconBottomAction: refreshReceipt,
           infoList: [
             {
-              title: "Event",
-              value: "Ambassador - Cardano Summit 2024",
+              title: "Category",
+              value: receipt?.category,
               tooltip: "info",
             },
             {
               title: "Proposal",
-              value: "Plutus Bear Pop-Tart",
+              value: receipt?.proposal,
               tooltip: "info",
             },
             {
-              title: "Voting Power",
-              value: "9,997k ADA",
-              tooltip: "info",
-            },
-            {
-              title: "Voter Staking Address",
-              value: "stake123...456spyqyg890",
+              title: "User Address",
+              // @ts-ignore
+              value: receipt?.walletId,
               tooltip: "info",
             },
             {
               title: "Status",
-              value: "Ambassador - Cardano Summit 2024",
+              value: receipt?.status,
               tooltip: "info",
             },
             {
               title: "Event",
-              value: state,
+              value: receipt?.event,
               tooltip: "info",
             },
           ],
@@ -106,35 +152,32 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
             />
           ),
           labelBottom: "Refresh Status",
+          iconBottomAction: refreshReceipt,
           infoList: [
             {
-              title: "Event",
-              value: "Ambassador - Cardano Summit 2024",
+              title: "Category",
+              value: receipt?.category,
               tooltip: "info",
             },
             {
               title: "Proposal",
-              value: "Plutus Bear Pop-Tart",
+              value: receipt?.proposal,
               tooltip: "info",
             },
             {
-              title: "Voting Power",
-              value: "9,997k ADA",
-              tooltip: "info",
-            },
-            {
-              title: "Voter Staking Address",
-              value: "stake123...456spyqyg890",
+              title: "User Address",
+              // @ts-ignore
+              value: receipt?.walletId,
               tooltip: "info",
             },
             {
               title: "Status",
-              value: "Ambassador - Cardano Summit 2024",
+              value: receipt?.status,
               tooltip: "info",
             },
             {
               title: "Event",
-              value: state,
+              value: receipt?.event,
               tooltip: "info",
             },
           ],
@@ -165,35 +208,32 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
             />
           ),
           labelBottom: "Refresh Status",
+          iconBottomAction: refreshReceipt,
           infoList: [
             {
-              title: "Event",
-              value: "Ambassador - Cardano Summit 2024",
+              title: "Category",
+              value: receipt?.category,
               tooltip: "info",
             },
             {
               title: "Proposal",
-              value: "Plutus Bear Pop-Tart",
+              value: receipt?.proposal,
               tooltip: "info",
             },
             {
-              title: "Voting Power",
-              value: "9,997k ADA",
-              tooltip: "info",
-            },
-            {
-              title: "Voter Staking Address",
-              value: "stake123...456spyqyg890",
+              title: "User Address",
+              // @ts-ignore
+              value: receipt?.walletId,
               tooltip: "info",
             },
             {
               title: "Status",
-              value: "Ambassador - Cardano Summit 2024",
+              value: receipt?.status,
               tooltip: "info",
             },
             {
               title: "Event",
-              value: state,
+              value: receipt?.event,
               tooltip: "info",
             },
           ],
@@ -224,35 +264,32 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
             />
           ),
           labelBottom: "Refresh Status",
+          iconBottomAction: refreshReceipt,
           infoList: [
             {
-              title: "Event",
-              value: "Ambassador - Cardano Summit 2024",
+              title: "Category",
+              value: receipt?.category,
               tooltip: "info",
             },
             {
               title: "Proposal",
-              value: "Plutus Bear Pop-Tart",
+              value: receipt?.proposal,
               tooltip: "info",
             },
             {
-              title: "Voting Power",
-              value: "9,997k ADA",
-              tooltip: "info",
-            },
-            {
-              title: "Voter Staking Address",
-              value: "stake123...456spyqyg890",
+              title: "User Address",
+              // @ts-ignore
+              value: receipt?.walletId,
               tooltip: "info",
             },
             {
               title: "Status",
-              value: "Ambassador - Cardano Summit 2024",
+              value: receipt?.status,
               tooltip: "info",
             },
             {
               title: "Event",
-              value: state,
+              value: receipt.event,
               tooltip: "info",
             },
           ],
@@ -395,6 +432,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
               </Box>
             </Box>
             <Box
+              onClick={() => content?.iconBottomAction()}
               component="div"
               sx={{
                 display: "flex",
@@ -552,7 +590,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
                       fontStyle: "normal",
                     }}
                   >
-                    453241
+                    {receipt?.votedAtSlot}
                   </Typography>
                 </ListItem>
                 <ListItem
@@ -586,7 +624,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
                         fontStyle: "normal",
                       }}
                     >
-                      ID
+                      Signature
                     </Typography>
                     <Tooltip title="info" placement="top">
                       <InfoIcon
@@ -606,7 +644,8 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
                       fontStyle: "normal",
                     }}
                   >
-                    e51fdf09...4c836052b4f0
+                    {/* @ts-ignore*/}
+                    {addressSlice(receipt?.signature)}
                   </Typography>
                 </ListItem>
                 <ListItem
@@ -640,7 +679,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
                         fontStyle: "normal",
                       }}
                     >
-                      Vote Proof
+                      Payload
                     </Typography>
                     <Tooltip title="info" placement="top">
                       <InfoIcon
@@ -651,7 +690,8 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
                     </Tooltip>
                   </Box>
                   <JsonView
-                    data={JSON.stringify(jsonExample, null, 2)}
+                    // @ts-ignore
+                    data={JSON.stringify(JSON.parse(receipt?.payload), null, 2)}
                     sx={{
                       marginTop: "10px",
                     }}

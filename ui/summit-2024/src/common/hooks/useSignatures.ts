@@ -54,11 +54,11 @@ export const useSignatures = () => {
             return {
               success: false,
               error:
-              // @ts-ignore
+                // @ts-ignore
                 signedMessage.error.code === 2
                   ? "User declined to sign"
-                    // @ts-ignore
-                  : signedMessage.error.info,
+                  : // @ts-ignore
+                    signedMessage.error.info,
             };
           }
           return {
@@ -78,11 +78,11 @@ export const useSignatures = () => {
             return {
               success: false,
               error:
-              // @ts-ignore
+                // @ts-ignore
                 signedMessage.error.code === 2
                   ? "User declined to sign"
-                    // @ts-ignore
-                  : signedMessage.error.info,
+                  : // @ts-ignore
+                    signedMessage.error.info,
             };
           }
           return {

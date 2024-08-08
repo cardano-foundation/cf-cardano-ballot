@@ -4,7 +4,6 @@ import theme from "../../common/styles/theme";
 import { CustomButton } from "../../components/common/CustomButton/CustomButton";
 import { VoteNowModal } from "./components/VoteNowModal";
 import { ViewReceipt } from "./components/ViewReceipt";
-import { STATE } from "./components/ViewReceipt.type";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { getEventCache } from "../../store/reducers/eventCache";
 import { Category } from "../../store/reducers/eventCache/eventCache.types";
@@ -30,7 +29,9 @@ import {
 import { getUserInSession, tokenIsExpired } from "../../utils/session";
 import { parseError } from "../../common/constants/errors";
 import {
-  getReceipts, getVotes, setVote,
+  getReceipts,
+  getVotes,
+  setVote,
   setVoteReceipt,
   setVotes,
 } from "../../store/reducers/votesCache";
@@ -248,6 +249,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
 
       // @ts-ignore
       dispatch(setVote([...userVotes, { categoryId, proposalId }]));
+      // TODO: refactor
       if (session && !tokenIsExpired(session?.expiresAt)) {
         // @ts-ignore
         getVoteReceipt(categoryId, session?.accessToken)
@@ -469,7 +471,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
           onClose={() => setOpenViewReceipt(false)}
         >
           <ViewReceipt
-            state={STATE.ROLLBACK}
+            categoryId={categoryToRender.id}
             close={() => setOpenViewReceipt(false)}
           />
         </Drawer>

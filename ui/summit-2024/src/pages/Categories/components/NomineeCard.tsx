@@ -6,6 +6,7 @@ import nomineeBg from "../../../assets/bg/nomineeCard.svg";
 import { Proposal } from "../../../store/reducers/eventCache/eventCache.types";
 import { useAppSelector } from "../../../store/hooks";
 import { getVotes } from "../../../store/reducers/votesCache";
+import {getWalletIsVerified} from "../../../store/reducers/userCache";
 
 interface NomineeCardProps {
   nominee: Proposal;
@@ -26,12 +27,13 @@ const NomineeCard: React.FC<NomineeCardProps> = ({
   handleLearnMoreClick,
 }) => {
   const userVotes = useAppSelector(getVotes);
+  const walletIsVerified = useAppSelector(getWalletIsVerified);
 
   const votedNominee = !!userVotes.find(
     (vote) => vote.proposalId === nominee.id,
   );
 
-  const allowToVote = !categoryAlreadyVoted;
+  const allowToVote = !categoryAlreadyVoted && walletIsVerified;
   return (
     <Grid
       item

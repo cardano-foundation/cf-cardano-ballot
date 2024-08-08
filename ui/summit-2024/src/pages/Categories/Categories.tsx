@@ -318,7 +318,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
       return {
         label: "Vote Now",
         action: submitVote,
-        disabled: !selectedNominee,
+        disabled: !walletIdentifierIsVerified && !selectedNominee,
       };
     }
   };

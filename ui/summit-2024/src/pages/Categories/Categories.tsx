@@ -26,11 +26,16 @@ import { eventBus, EventName } from "../../utils/EventBus";
 import {
   getConnectedWallet,
   getWalletIsVerified,
-  getUserVotes, setUserVotes,
+  getUserVotes,
+  setUserVotes,
 } from "../../store/reducers/userCache";
 import { getUserInSession, tokenIsExpired } from "../../utils/session";
 import { parseError } from "../../common/constants/errors";
-import { setVoteReceipt, setVotes } from "../../store/reducers/votesCache";
+import {
+  getReceipts,
+  setVoteReceipt,
+  setVotes,
+} from "../../store/reducers/votesCache";
 import { ToastType } from "../../components/common/Toast/Toast.types";
 import { useSignatures } from "../../common/hooks/useSignatures";
 import { resolveWalletType } from "../../common/api/utils";
@@ -44,6 +49,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   const eventCache = useAppSelector(getEventCache);
   const connectedWallet = useAppSelector(getConnectedWallet);
   const walletIdentifierIsVerified = useAppSelector(getWalletIsVerified);
+  const receipts = useAppSelector(getReceipts);
   const userVotes = useAppSelector(getUserVotes);
   const categoriesData = eventCache.categories;
   const [showWinners, setShowWinners] = useState(eventCache.finished);
@@ -77,10 +83,9 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
     (p) => p.id === selectedNominee,
   );
 
-  const categoryAlreadyVoted = !!userVotes.find(
+  const categoryAlreadyVoted = !!userVotes?.find(
     (vote) => vote.categoryId === categoryToRender?.id,
   );
-
 
   useEffect(() => {
     // Example: http://localhost:3000/categories?category=ambassador&nominee=63123e7f-dfc3-481e-bb9d-fed1d9f6e9b9
@@ -133,6 +138,37 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
     setOpenViewReceipt(true);
   };
 
+  const handleSignIn = () => {};
+
+  const handleViewReceipt = async () => {
+    console.log("view receipt");
+
+    if (!categoryToRender) return;
+    if (receipts[categoryToRender?.id] !== undefined) {
+      setOpenViewReceipt(true);
+    }
+    if (!tokenIsExpired(session?.expiresAt)) {
+      await getVoteReceipt(categoryToRender?.id, session?.accessToken)
+        .then((r) => {
+          dispatch(
+            // @ts-ignore
+            setVoteReceipt({ categoryId: categoryToRender?.id, receipt: r }),
+          );
+          console.log("VoteReceipt");
+          console.log(r);
+          setOpenViewReceipt(true);
+        })
+        .catch((e) => {
+          eventBus.publish(EventName.ShowToast, e.message, ToastType.Error);
+        });
+    } else {
+      eventBus.publish(
+        EventName.ShowToast,
+        "Login to see your vote receipt",
+        ToastType.Error,
+      );
+    }
+  };
   const handleOpenActionButton = () => {
     if (showWinners) {
       handleOpenViewReceipt();
@@ -141,7 +177,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
         eventBus.publish(
           EventName.ShowToast,
           "Connect your wallet in order to vote",
-          "error",
+          ToastType.Error,
         );
         return;
       }
@@ -149,26 +185,11 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
         eventBus.publish(
           EventName.ShowToast,
           "Verify your wallet in order to vote",
-          "error",
+          ToastType.Error,
         );
         return;
       }
       setOpenVotingModal(true);
-    }
-  };
-  const renderButtonAction = () => {
-    if (categoryAlreadyVoted && !session) {
-      return {
-        label: "Sign In",
-      };
-    } else if (categoryAlreadyVoted) {
-      return {
-        label: "View Receipt",
-      };
-    } else {
-      return {
-        label: "Vote Now",
-      };
     }
   };
 
@@ -204,6 +225,9 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
         resolveWalletType(connectedWallet.address),
       );
 
+      console.log("requestVoteResult");
+      console.log(requestVoteResult);
+
       if (!requestVoteResult.success) {
         eventBus.publish(
           EventName.ShowToast,
@@ -231,11 +255,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
       }
       eventBus.publish(EventName.ShowToast, "Vote submitted successfully");
 
-      let updatedUserVotes = {
-        ...userVotes
-      };
-      updatedUserVotes[categoryId] = proposalId;
-      dispatch(setUserVotes(updatedUserVotes));
+      dispatch(setUserVotes([...userVotes, { categoryId, proposalId }]));
       if (session && !tokenIsExpired(session?.expiresAt)) {
         // @ts-ignore
         getVoteReceipt(categoryId, session?.accessToken)
@@ -288,6 +308,30 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
     }
   };
 
+  const renderActionButton = () => {
+    console.log("session");
+    console.log(session);
+    if (categoryAlreadyVoted && !session) {
+      return {
+        label: "Sign In",
+        action: handleSignIn,
+        disabled: false,
+      };
+    } else if (categoryAlreadyVoted) {
+      return {
+        label: "View Receipt",
+        action: handleViewReceipt,
+        disabled: false,
+      };
+    } else {
+      return {
+        label: "Vote Now",
+        action: submitVote,
+        disabled: !selectedNominee,
+      };
+    }
+  };
+
   const optionsForMenu = categoriesData.map((category: Category) => {
     return {
       label: category.id,
@@ -321,16 +365,16 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
               Ambassador.
             </Typography>
             <CustomButton
-              onClick={() => handleOpenActionButton()}
+              onClick={() => renderActionButton().action()}
               sx={{
                 mt: -6,
                 alignSelf: "flex-end",
                 display: isTablet ? "none" : "inline-block",
               }}
               colorVariant="primary"
-              disabled={!selectedNominee}
+              disabled={renderActionButton().disabled}
             >
-              {renderButtonAction().label}
+              {renderActionButton().label}
             </CustomButton>
           </Box>
           {showWinners ? (

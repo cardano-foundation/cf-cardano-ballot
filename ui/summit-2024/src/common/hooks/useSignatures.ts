@@ -49,6 +49,18 @@ export const useSignatures = () => {
             walletIdentifier,
             message,
           );
+          // @ts-ignore
+          if (signedMessage.error) {
+            return {
+              success: false,
+              error:
+              // @ts-ignore
+                signedMessage.error.code === 2
+                  ? "User declined to sign"
+                    // @ts-ignore
+                  : signedMessage.error.info,
+            };
+          }
           return {
             success: true,
             result: {
@@ -60,9 +72,21 @@ export const useSignatures = () => {
           };
         } else {
           const signedMessage = await signMessagePromisified(message);
+          // @ts-ignore
+          if (signedMessage.error) {
+            // @ts-ignore
+            return {
+              success: false,
+              error:
+              // @ts-ignore
+                signedMessage.error.code === 2
+                  ? "User declined to sign"
+                    // @ts-ignore
+                  : signedMessage.error.info,
+            };
+          }
           return {
             success: true,
-
             result: {
               signature: signedMessage.signature,
               publicKey: signedMessage.publicKey,

@@ -28,7 +28,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
   useEffect(() => {
     const checkWalletVerification = async () => {
-
       const isVerifiedResult = await getIsVerified(connectedWallet.address);
       // @ts-ignore
       if (!isVerifiedResult?.error) {

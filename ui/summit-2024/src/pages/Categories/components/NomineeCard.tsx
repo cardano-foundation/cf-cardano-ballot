@@ -21,7 +21,7 @@ interface NomineeCardProps {
 const NomineeCard: React.FC<NomineeCardProps> = ({
   nominee,
   selectedNominee,
-                                                     categoryAlreadyVoted,
+  categoryAlreadyVoted,
   handleSelectNominee,
   handleLearnMoreClick,
 }) => {
@@ -45,7 +45,9 @@ const NomineeCard: React.FC<NomineeCardProps> = ({
       }}
     >
       <Paper
-        onClick={() => {allowToVote ? handleSelectNominee(nominee.id) : null}}
+        onClick={() => {
+          allowToVote ? handleSelectNominee(nominee.id) : null;
+        }}
         elevation={3}
         sx={{
           width: "100%",
@@ -66,7 +68,7 @@ const NomineeCard: React.FC<NomineeCardProps> = ({
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          cursor: votedNominee ? "auto" : "pointer",
+          cursor: allowToVote ? "auto" : "pointer",
           backgroundImage: `url(${nomineeBg})`,
           backgroundSize: "160% 160%",
           backgroundPosition: "center",
@@ -79,7 +81,7 @@ const NomineeCard: React.FC<NomineeCardProps> = ({
           }}
         >
           <Box component="div" sx={{ position: "absolute", right: 8, top: 8 }}>
-            {allowToVote ? (
+            {allowToVote || votedNominee ? (
               <HoverCircle
                 selected={selectedNominee === nominee.id || votedNominee}
               />

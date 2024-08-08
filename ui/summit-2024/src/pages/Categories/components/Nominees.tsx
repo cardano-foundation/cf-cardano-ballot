@@ -15,7 +15,7 @@ interface NomineesProps {
 const Nominees: React.FC<NomineesProps> = ({
   fadeChecked,
   nominees,
-                                             categoryAlreadyVoted,
+  categoryAlreadyVoted,
   selectedNominee,
   handleSelectedNominee,
   handleOpenLearnMore,

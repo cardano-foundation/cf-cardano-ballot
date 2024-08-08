@@ -11,12 +11,18 @@ import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import { STATE, ViewReceiptProps } from "./ViewReceipt.type";
 import { CustomAccordion } from "../../../components/common/CustomAccordion/CustomAccordion";
 import { JsonView } from "../../../components/common/JsonView/JsonView";
+import { useAppSelector } from "../../../store/hooks";
+import { getReceipts } from "../../../store/reducers/votesCache";
 
 const jsonExample = {
   example: "example",
   example2: "example2",
 };
 const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
+  const receipts = useAppSelector(getReceipts);
+  console.log("receipts");
+  console.log(receipts);
+
   const getContent = () => {
     switch (state) {
       case STATE.BASIC: {

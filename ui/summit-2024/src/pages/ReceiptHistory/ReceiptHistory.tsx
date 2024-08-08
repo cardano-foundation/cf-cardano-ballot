@@ -12,7 +12,6 @@ import {
 } from "@mui/material";
 import { PageBase } from "../BasePage";
 import { ViewReceipt } from "../Categories/components/ViewReceipt";
-import { STATE } from "../Categories/components/ViewReceipt.type";
 import theme from "../../common/styles/theme";
 import nomineeIcon from "../../assets/nomineeIcon.svg";
 import rightArrowIcon from "../../assets/rightArrowIcon.svg";
@@ -312,7 +311,7 @@ const ReceiptHistory: React.FC = () => {
           onClose={() => setOpenViewReceipt(false)}
         >
           <ViewReceipt
-            state={STATE.ROLLBACK}
+            categoryId={""}
             close={() => setOpenViewReceipt(false)}
           />
         </Drawer>

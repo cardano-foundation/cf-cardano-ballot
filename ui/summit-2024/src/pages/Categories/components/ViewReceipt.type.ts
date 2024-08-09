@@ -1,5 +1,5 @@
 interface ViewReceiptProps {
-  state: STATE;
+  categoryId: string;
   close: () => void;
 }
 enum STATE {

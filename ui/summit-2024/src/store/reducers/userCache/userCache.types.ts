@@ -30,6 +30,7 @@ interface UserCacheProps {
   verificationStarted: VerificationStarted;
   userVotes: UserVotes[];
   isVerified: boolean;
+  isLogin: boolean;
 }
 
 export type {

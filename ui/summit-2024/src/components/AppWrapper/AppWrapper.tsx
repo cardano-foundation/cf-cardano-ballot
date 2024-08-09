@@ -9,14 +9,22 @@ import { ToastType } from "../common/Toast/Toast.types";
 import { getIsVerified } from "../../common/api/verificationService";
 import {
   getConnectedWallet,
+  getWalletIsVerified,
   setConnectedWallet,
   setWalletIsVerified,
 } from "../../store/reducers/userCache";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 import { resolveCardanoNetwork } from "../../utils/utils";
+import { getUserInSession, tokenIsExpired } from "../../utils/session";
+import { submitGetUserVotes } from "../../common/api/voteService";
+import { setVotes } from "../../store/reducers/votesCache";
+import { parseError } from "../../common/constants/errors";
 
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
+  const session = getUserInSession();
+  const isExpired = tokenIsExpired(session?.expiresAt);
+  const walletIsVerified = useAppSelector(getWalletIsVerified);
   const connectedWallet = useAppSelector(getConnectedWallet);
   const { stakeAddress, enabledWallet } = useCardano({
     limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
@@ -25,6 +33,24 @@ const AppWrapper = (props: { children: ReactNode }) => {
   useEffect(() => {
     initApp();
   }, []);
+
+  useEffect(() => {
+    const updateUserVotes = async () => {
+      submitGetUserVotes(session.accessToken)
+        .then((response) => {
+          // @ts-ignore
+          dispatch(setVotes(response));
+        })
+        .catch((e) => {
+          if (process.env.NODE_ENV === "development") {
+            console.log(`Failed to fetch user votes, ${parseError(e.message)}`);
+          }
+        });
+    };
+    if (connectedWallet.address.length && walletIsVerified && !isExpired) {
+      updateUserVotes();
+    }
+  }, [connectedWallet.address, walletIsVerified]);
 
   useEffect(() => {
     const checkWalletVerification = async () => {

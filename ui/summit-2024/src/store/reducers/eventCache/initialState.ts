@@ -1,10 +1,9 @@
-import { Category, EventCacheProps, Proposal } from "./eventCache.types";
+import { Category, EventCacheProps } from "./eventCache.types";
 
-const emptyProposal: Proposal = { id: "", name: null };
 const emptyCategory: Category = {
   id: "",
   gdprProtection: false,
-  proposals: [emptyProposal],
+  proposals: [],
 };
 const initialStateData: EventCacheProps = {
   id: "",

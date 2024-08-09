@@ -1,7 +1,7 @@
 import { VotesCacheProps } from "./votesCache.types";
 
 const initialStateData: VotesCacheProps = {
-  votes: {},
+  votes: [],
   receipts: {},
 };
 

@@ -11,13 +11,14 @@ import {
 import { ConnectWalletProps } from "./ConnectWalletModal.type";
 import { eventBus, EventName } from "../../utils/EventBus";
 import { useIsPortrait } from "../../common/hooks/useIsPortrait";
-import { useAppDispatch } from "../../store/hooks";
-import { setConnectedWallet } from "../../store/reducers/userCache";
+import {useAppDispatch, useAppSelector} from "../../store/hooks";
+import {getWalletIsVerified, setConnectedWallet} from "../../store/reducers/userCache";
 import { ToastType } from "../common/Toast/Toast.types";
 import { initialConnectedWallet } from "../../store/reducers/userCache/initialState";
 
 const ConnectWalletModal = (props: ConnectWalletProps) => {
   const dispatch = useAppDispatch();
+  const walletIsVerified = useAppSelector(getWalletIsVerified);
   const [peerConnectWalletInfo, setPeerConnectWalletInfo] = useState<
     IWalletInfo | undefined
   >(undefined);
@@ -179,6 +180,9 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
         );
         eventBus.publish(EventName.CloseConnectWalletModal);
         eventBus.publish(EventName.ShowToast, "Wallet connected successfully");
+        if (!walletIsVerified){
+          eventBus.publish(EventName.OpenVerifyWalletModal);
+        }
       },
       onConnectError,
     );
@@ -215,6 +219,9 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
                   `Timeout while connecting P2P ${peerConnectWalletInfo.name} wallet`,
                   ToastType.Error,
                 );
+              }
+              if (!walletIsVerified){
+                eventBus.publish(EventName.OpenVerifyWalletModal);
               }
               handleModalClose();
             }

@@ -1,7 +1,6 @@
 import { SignedWeb3Request } from "../types/voting-app-types";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 import { NetworkType } from "../components/ConnectWalletList/ConnectWalletList.types";
-import {env} from "../common/constants/env";
 
 const addressSlice = (
   address: string,
@@ -59,12 +58,6 @@ const capitalizeFirstLetter = (input: string): string => {
 };
 
 const resolveCardanoNetwork = (network: string): NetworkType => {
-  console.log("env");
-  console.log(env);
-  console.log("window._env_");
-  console.log(window._env_);
-  console.log("import.meta.env");
-  console.log(import.meta.env);
   if (["MAINNET", "MAIN"].includes(network.toUpperCase())) {
     return NetworkType.MAINNET;
   } else {

@@ -48,7 +48,7 @@ export interface LoginResult {
   expiresAt: Date;
 }
 
-export interface UserVotes {
+export interface UserVote {
   categoryId: string;
   proposalId: string;
 }

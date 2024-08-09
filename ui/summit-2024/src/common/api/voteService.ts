@@ -8,7 +8,7 @@ import { env } from "../constants/env";
 import {
   Problem,
   SignedWeb3Request,
-  UserVotes,
+  UserVote,
   Vote,
   VoteReceipt,
 } from "../../types/voting-app-types";
@@ -94,7 +94,7 @@ const getVoteReceipt = async (categoryId: string, token: string) =>
   );
 
 const submitGetUserVotes = async (token: string) =>
-  await doRequest<UserVotes[]>(
+  await doRequest<UserVote[]>(
     HttpMethods.GET,
     `${USER_VOTES_URL}/${env.EVENT_ID}`,
     {

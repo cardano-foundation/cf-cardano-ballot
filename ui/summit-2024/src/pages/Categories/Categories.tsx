@@ -31,7 +31,6 @@ import { parseError } from "../../common/constants/errors";
 import {
   getReceipts,
   getVotes,
-  setVote,
   setVoteReceipt,
   setVotes,
 } from "../../store/reducers/votesCache";
@@ -248,7 +247,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
       eventBus.publish(EventName.ShowToast, "Vote submitted successfully");
 
       // @ts-ignore
-      dispatch(setVote([...userVotes, { categoryId, proposalId }]));
+      dispatch(setVotes([...userVotes, { categoryId, proposalId }]));
       // TODO: refactor
       if (session && !tokenIsExpired(session?.expiresAt)) {
         // @ts-ignore
@@ -274,7 +273,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
           .then((response) => {
             if (response) {
               // @ts-ignore
-              dispatch(setVotes({ votes: response }));
+              dispatch(setVotes(response));
             }
           })
           .catch((e) => {

@@ -57,7 +57,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
         .then((response) => {
           if (response) {
             // @ts-ignore
-            dispatch(setVotes({ votes: response }));
+            dispatch(setVotes(response));
           }
         })
         .catch((e) => {

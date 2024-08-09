@@ -63,6 +63,8 @@ const resolveCardanoNetwork = (network: string): NetworkType => {
   console.log(env);
   console.log("window._env_");
   console.log(window._env_);
+  console.log("import.meta.env");
+  console.log(import.meta.env);
   if (["MAINNET", "MAIN"].includes(network.toUpperCase())) {
     return NetworkType.MAINNET;
   } else {

@@ -31,6 +31,7 @@ const ReceiptHistory: React.FC = () => {
   const receipts = useAppSelector(getReceipts);
   const session = getUserInSession();
   const dispatch = useAppDispatch();
+
   useEffect(() => {
     if (!tokenIsExpired(session?.expiresAt)) {
       getVoteReceipts(session?.accessToken).then((receipts) => {

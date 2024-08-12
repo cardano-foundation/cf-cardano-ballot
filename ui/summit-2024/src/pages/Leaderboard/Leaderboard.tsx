@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -17,16 +17,25 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { PieChart, pieChartDefaultProps } from "react-minimal-pie-chart";
 import leaderboard1Bg from "../../assets/bg/leaderboard1.svg";
 import { addressSlice } from "../../utils/utils";
-import { categoriesData } from "../../__fixtures__/leaderboard";
 import { PageBase } from "../BasePage";
 import AnimatedSwitch from "../../components/AnimatedSwitch/AnimatedSwitch";
 import { Categories } from "../Categories";
+import { getStats } from "../../common/api/leaderboardService";
+import { ByCategoryStats } from "../../types/voting-app-types";
 
 const Leaderboard: React.FC = () => {
+  const [stats, setStats] = useState<ByCategoryStats[]>();
   const [selected, setSelected] = useState<number | undefined>(undefined);
   const [hovered, setHovered] = useState<number | undefined>(undefined);
   const [content, setContent] = useState("Overall Votes");
   const [fade, setFade] = useState(true);
+
+  useEffect(() => {
+    getStats().then((response) => {
+      // @ts-ignore
+        setStats(response.categories);
+    });
+  }, []);
 
   const colors = [
     "#F8D6C3",
@@ -40,13 +49,20 @@ const Leaderboard: React.FC = () => {
     "#200E04",
   ];
 
-  const dataForChart = categoriesData.map((item, index) => ({
-    title: item.category,
+  const dataForChart = stats?.map((item, index) => ({
+    title: item.id,
     value: item.votes,
     color: colors[index % colors.length],
   }));
 
-  const handleSwitch = (option: string) => {
+  const totalVotes = stats?.reduce((total, item) => total + item.votes, 0) || 0;
+
+  let selectedCategoryValue = -1;
+  if (dataForChart !== undefined && selected !== undefined){
+      selectedCategoryValue = dataForChart[selected].value;
+  }
+
+    const handleSwitch = (option: string) => {
     if (option !== content) {
       setFade(false);
       setTimeout(() => {
@@ -126,7 +142,7 @@ const Leaderboard: React.FC = () => {
                             sx={{
                               p: "28px",
                               backgroundImage: `url(${leaderboard1Bg})`,
-                              backgroundSize: "200% 200%",
+                              backgroundSize: "350% 350%",
                               backgroundPosition: "center",
                               borderRadius: "24px",
                               backdropFilter: "blur(5px)",
@@ -173,7 +189,7 @@ const Leaderboard: React.FC = () => {
                                 lineHeight: "40px",
                               }}
                             >
-                              1,000
+                                {totalVotes}
                             </Typography>
                             <TableContainer>
                               <Table size="small">
@@ -211,8 +227,8 @@ const Leaderboard: React.FC = () => {
                                   </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                  {Array.from({ length: 10 }).map(
-                                    (_, index) => (
+                                  {stats?.map(
+                                    (item, index) => (
                                       <TableRow key={index}>
                                         <TableCell
                                           component="th"
@@ -230,13 +246,13 @@ const Leaderboard: React.FC = () => {
                                             padding: "12px 0px",
                                           }}
                                         >
-                                          Category {index + 1}
+                                          {item.id}
                                         </TableCell>
                                         <TableCell align="left">
-                                          {100 + index}
+                                          {item.votes}
                                         </TableCell>
                                         <TableCell align="left">
-                                          {10 + index}%
+                                            {((item.votes / totalVotes) * 100).toFixed(2)}%
                                         </TableCell>
                                       </TableRow>
                                     ),
@@ -307,7 +323,8 @@ const Leaderboard: React.FC = () => {
                                 }}
                               >
                                 <PieChart
-                                  data={dataForChart.map((entry, index) => ({
+                                  // @ts-ignore
+                                  data={dataForChart?.map((entry, index) => ({
                                     ...entry,
                                     color:
                                       hovered === index
@@ -370,9 +387,9 @@ const Leaderboard: React.FC = () => {
                                       lineHeight: "32px",
                                     }}
                                   >
-                                    {selected !== undefined
-                                      ? `${dataForChart[selected].value} Votes`
-                                      : "1,000"}
+                                    {selectedCategoryValue > 0
+                                      ? `${selectedCategoryValue} Votes`
+                                      : totalVotes}
                                   </Typography>
                                 </Box>
                               </Box>
@@ -386,7 +403,7 @@ const Leaderboard: React.FC = () => {
                                   flexWrap: "wrap",
                                 }}
                               >
-                                {dataForChart.map((entry, index) => (
+                                {dataForChart?.map((entry, index) => (
                                   <Box
                                     component="div"
                                     key={index}

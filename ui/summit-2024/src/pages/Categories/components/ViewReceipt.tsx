@@ -719,8 +719,8 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                         </Tooltip>
                       </Box>
                       <JsonView
-                        // @ts-ignore
                         data={JSON.stringify(
+                          // @ts-ignore
                           JSON.parse(receipt?.payload),
                           null,
                           2,

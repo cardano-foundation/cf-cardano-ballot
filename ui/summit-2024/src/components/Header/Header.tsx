@@ -19,7 +19,7 @@ import theme from "../../common/styles/theme";
 import { useAppDispatch } from "../../store/hooks";
 import { resetUser } from "../../store/reducers/userCache";
 import { LoginModal } from "../LoginModal/LoginModal";
-import {clearUserInSessionStorage} from "../../utils/session";
+import { clearUserInSessionStorage } from "../../utils/session";
 
 const Header = () => {
   const dispatch = useAppDispatch();

@@ -11,11 +11,11 @@ import {
 import { ConnectWalletProps } from "./ConnectWalletModal.type";
 import { eventBus, EventName } from "../../utils/EventBus";
 import { useIsPortrait } from "../../common/hooks/useIsPortrait";
-import {useAppDispatch} from "../../store/hooks";
-import {setConnectedWallet} from "../../store/reducers/userCache";
+import { useAppDispatch } from "../../store/hooks";
+import { setConnectedWallet } from "../../store/reducers/userCache";
 import { ToastType } from "../common/Toast/Toast.types";
 import { initialConnectedWallet } from "../../store/reducers/userCache/initialState";
-import {clearUserInSessionStorage} from "../../utils/session";
+import { clearUserInSessionStorage } from "../../utils/session";
 
 const ConnectWalletModal = (props: ConnectWalletProps) => {
   const dispatch = useAppDispatch();

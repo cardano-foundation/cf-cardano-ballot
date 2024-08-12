@@ -94,7 +94,6 @@ const getVoteReceipt = async (categoryId: string, token: string) =>
     token,
   );
 
-
 const getVoteReceipts = async (token: string) =>
   await doRequest<VoteReceipt>(
     HttpMethods.GET,

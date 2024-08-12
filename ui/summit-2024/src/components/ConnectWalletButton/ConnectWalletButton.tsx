@@ -36,12 +36,12 @@ type ConnectWalletButtonProps = {
 const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
   const { onOpenConnectWalletModal, onDisconnectWallet } = props;
   const navigate = useNavigate();
+  const session = getUserInSession();
   const isMobile = useIsPortrait();
   const eventCache = useAppSelector(getEventCache);
   const walletIsVerified = useAppSelector(getWalletIsVerified);
   const connectedWallet = useAppSelector(getConnectedWallet);
 
-  const session = getUserInSession();
   const isExpired = tokenIsExpired(session?.expiresAt);
 
   const handleConnectWallet = () => {
@@ -141,19 +141,21 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
                 Login
               </ListItem>
             ) : null}
-            <ListItem
-              sx={{
-                zIndex: "99",
-                display: "flex",
-                justifyContent: "space-between",
-                width: "100%",
-              }}
-              className="menu-button last-button"
-              color="inherit"
-              onClick={handleOpenVoteReceipts}
-            >
-              <ListItemText primary="Votes Receipts" />
-            </ListItem>
+            {!tokenIsExpired(session?.expiresAt) ? (
+              <ListItem
+                sx={{
+                  zIndex: "99",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  width: "100%",
+                }}
+                className="menu-button last-button"
+                color="inherit"
+                onClick={handleOpenVoteReceipts}
+              >
+                <ListItemText primary="Votes Receipts" />
+              </ListItem>
+            ) : null}
             <ListItem
               sx={{
                 zIndex: "99",

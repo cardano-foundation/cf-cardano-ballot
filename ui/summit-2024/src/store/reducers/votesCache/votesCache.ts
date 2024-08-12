@@ -22,11 +22,8 @@ const votesCacheSlice = createSlice({
         [action.payload.categoryId]: action.payload.receipt,
       };
     },
-    setVoteReceipts: (
-        state,
-        action: PayloadAction<VoteReceipt[]>,
-    ) => {
-      action.payload.forEach(receipt => {
+    setVoteReceipts: (state, action: PayloadAction<VoteReceipt[]>) => {
+      action.payload.forEach((receipt) => {
         state.receipts[receipt.category] = receipt;
       });
     },

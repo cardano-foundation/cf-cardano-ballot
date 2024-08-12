@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Drawer,
@@ -19,36 +19,36 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { copyToClipboard } from "../../utils/utils";
 import { eventBus, EventName } from "../../utils/EventBus";
-import {getUserInSession, tokenIsExpired} from "../../utils/session";
-import {getVoteReceipts} from "../../common/api/voteService";
-import {useAppDispatch, useAppSelector} from "../../store/hooks";
-import {getReceipts, setVoteReceipts} from "../../store/reducers/votesCache";
+import { getUserInSession, tokenIsExpired } from "../../utils/session";
+import { getVoteReceipts } from "../../common/api/voteService";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { getReceipts, setVoteReceipts } from "../../store/reducers/votesCache";
 
 const ReceiptHistory: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [openViewReceipt, setOpenViewReceipt] = useState(false);
   const [copied, setCopied] = React.useState(false);
-    const receipts = useAppSelector(getReceipts);
-    const session = getUserInSession();
-    const dispatch = useAppDispatch();
-    useEffect(() => {
-        if (!tokenIsExpired(session?.expiresAt)) {
-            getVoteReceipts(session?.accessToken).then(receipts => {
-                // @ts-ignore
-                dispatch(setVoteReceipts(receipts));
-            })
-        }
-    }, []);
+  const receipts = useAppSelector(getReceipts);
+  const session = getUserInSession();
+  const dispatch = useAppDispatch();
+  useEffect(() => {
+    if (!tokenIsExpired(session?.expiresAt)) {
+      getVoteReceipts(session?.accessToken).then((receipts) => {
+        // @ts-ignore
+        dispatch(setVoteReceipts(receipts));
+      });
+    }
+  }, []);
 
   const handleReceiptClick = (cat: string) => {
     setOpenViewReceipt(true);
     setSelectedCategory(cat);
-      if (!tokenIsExpired(session?.expiresAt)) {
-          getVoteReceipts(session?.accessToken).then((receipts) => {
-              // @ts-ignore
-              dispatch(setVoteReceipts(receipts));
-          })
-      }
+    if (!tokenIsExpired(session?.expiresAt)) {
+      getVoteReceipts(session?.accessToken).then((receipts) => {
+        // @ts-ignore
+        dispatch(setVoteReceipts(receipts));
+      });
+    }
   };
 
   const handleCopy = async (transactionId: string) => {
@@ -118,7 +118,7 @@ const ReceiptHistory: React.FC = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          { Object.keys(receipts).map((category: string, index) => (
+          {Object.keys(receipts).map((category: string, index) => (
             <TableRow
               key={index}
               sx={{
@@ -168,7 +168,7 @@ const ReceiptHistory: React.FC = () => {
                       marginLeft: "8px",
                     }}
                   >
-                      {receipts[category].proposal}
+                    {receipts[category].proposal}
                   </Typography>
                 </Box>
               </TableCell>
@@ -198,7 +198,7 @@ const ReceiptHistory: React.FC = () => {
                       cursor: "pointer",
                     }}
                   >
-                      {receipts[category].category}
+                    {receipts[category].category}
                   </Typography>
                 </Box>
               </TableCell>
@@ -227,7 +227,7 @@ const ReceiptHistory: React.FC = () => {
                       marginLeft: "8px",
                     }}
                   >
-                      {receipts[category].votedAtSlot}
+                    {receipts[category].votedAtSlot}
                   </Typography>
                 </Box>
               </TableCell>

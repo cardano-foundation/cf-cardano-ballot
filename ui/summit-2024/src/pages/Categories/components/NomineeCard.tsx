@@ -6,7 +6,7 @@ import nomineeBg from "../../../assets/bg/nomineeCard.svg";
 import { Proposal } from "../../../store/reducers/eventCache/eventCache.types";
 import { useAppSelector } from "../../../store/hooks";
 import { getVotes } from "../../../store/reducers/votesCache";
-import {getWalletIsVerified} from "../../../store/reducers/userCache";
+import { getWalletIsVerified } from "../../../store/reducers/userCache";
 
 interface NomineeCardProps {
   nominee: Proposal;

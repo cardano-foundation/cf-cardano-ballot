@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
   Box,
   Drawer,
@@ -19,13 +19,36 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { copyToClipboard } from "../../utils/utils";
 import { eventBus, EventName } from "../../utils/EventBus";
+import {getUserInSession, tokenIsExpired} from "../../utils/session";
+import {getVoteReceipts} from "../../common/api/voteService";
+import {useAppDispatch, useAppSelector} from "../../store/hooks";
+import {getReceipts, setVoteReceipts} from "../../store/reducers/votesCache";
 
 const ReceiptHistory: React.FC = () => {
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [openViewReceipt, setOpenViewReceipt] = useState(false);
   const [copied, setCopied] = React.useState(false);
+    const receipts = useAppSelector(getReceipts);
+    const session = getUserInSession();
+    const dispatch = useAppDispatch();
+    useEffect(() => {
+        if (!tokenIsExpired(session?.expiresAt)) {
+            getVoteReceipts(session?.accessToken).then(receipts => {
+                // @ts-ignore
+                dispatch(setVoteReceipts(receipts));
+            })
+        }
+    }, []);
 
-  const handleReceiptClick = () => {
+  const handleReceiptClick = (cat: string) => {
     setOpenViewReceipt(true);
+    setSelectedCategory(cat);
+      if (!tokenIsExpired(session?.expiresAt)) {
+          getVoteReceipts(session?.accessToken).then((receipts) => {
+              // @ts-ignore
+              dispatch(setVoteReceipts(receipts));
+          })
+      }
   };
 
   const handleCopy = async (transactionId: string) => {
@@ -77,7 +100,7 @@ const ReceiptHistory: React.FC = () => {
                 border: "none",
               }}
             >
-              Voted Timestamp
+              Voted At Slot
             </TableCell>
             <TableCell
               sx={{
@@ -95,7 +118,7 @@ const ReceiptHistory: React.FC = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {[1, 2, 4, 5, 6, 7, 8, 9, 10].map((_: number, index) => (
+          { Object.keys(receipts).map((category: string, index) => (
             <TableRow
               key={index}
               sx={{
@@ -145,7 +168,7 @@ const ReceiptHistory: React.FC = () => {
                       marginLeft: "8px",
                     }}
                   >
-                    Plutus Bear Pop-Tart
+                      {receipts[category].proposal}
                   </Typography>
                 </Box>
               </TableCell>
@@ -175,7 +198,7 @@ const ReceiptHistory: React.FC = () => {
                       cursor: "pointer",
                     }}
                   >
-                    Ambassador
+                      {receipts[category].category}
                   </Typography>
                 </Box>
               </TableCell>
@@ -204,7 +227,7 @@ const ReceiptHistory: React.FC = () => {
                       marginLeft: "8px",
                     }}
                   >
-                    09/17/2024 15:18:34
+                      {receipts[category].votedAtSlot}
                   </Typography>
                 </Box>
               </TableCell>
@@ -262,7 +285,7 @@ const ReceiptHistory: React.FC = () => {
                     }}
                   >
                     <img
-                      onClick={() => handleReceiptClick()}
+                      onClick={() => handleReceiptClick(category)}
                       src={rightArrowIcon}
                       alt="Total Votes"
                       width="24"
@@ -311,7 +334,7 @@ const ReceiptHistory: React.FC = () => {
           onClose={() => setOpenViewReceipt(false)}
         >
           <ViewReceipt
-            categoryId={""}
+            categoryId={selectedCategory}
             close={() => setOpenViewReceipt(false)}
           />
         </Drawer>

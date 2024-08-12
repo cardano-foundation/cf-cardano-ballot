@@ -22,10 +22,18 @@ const votesCacheSlice = createSlice({
         [action.payload.categoryId]: action.payload.receipt,
       };
     },
+    setVoteReceipts: (
+        state,
+        action: PayloadAction<VoteReceipt[]>,
+    ) => {
+      action.payload.forEach(receipt => {
+        state.receipts[receipt.category] = receipt;
+      });
+    },
   },
 });
 
-const { setVotes, setVoteReceipt } = votesCacheSlice.actions;
+const { setVotes, setVoteReceipt, setVoteReceipts } = votesCacheSlice.actions;
 
 const getVotes = (state: RootState) => state.votesCache.votes;
 const getReceipts = (state: RootState) => state.votesCache.receipts;
@@ -35,6 +43,7 @@ export {
   initialState,
   setVotes,
   setVoteReceipt,
+  setVoteReceipts,
   getVotes,
   getReceipts,
 };

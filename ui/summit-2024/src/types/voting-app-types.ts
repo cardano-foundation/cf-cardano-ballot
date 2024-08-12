@@ -61,6 +61,7 @@ export interface VoteReceipt {
   votingPower?: string;
   voterStakingAddress: string;
   coseSignature: string;
+  signature: string;
   cosePublicKey?: string;
   status: Status;
   merkleProof: MerkleProof;

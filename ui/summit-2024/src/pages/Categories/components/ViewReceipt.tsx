@@ -17,7 +17,7 @@ import {
   setVoteReceipt,
   setVotes,
 } from "../../../store/reducers/votesCache";
-import { addressSlice } from "../../../utils/utils";
+import {copyToClipboard} from "../../../utils/utils";
 import { getUserInSession, tokenIsExpired } from "../../../utils/session";
 import {
   getVoteReceipt,
@@ -32,6 +32,11 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
   const receipts = useAppSelector(getReceipts);
   const receipt = receipts[categoryId];
 
+    const handleCopy = async (data: string) => {
+        await copyToClipboard(data);
+        eventBus.publish(EventName.ShowToast, "Copied to clipboard successfully");
+    };
+
   const refreshReceipt = () => {
     if (session && !tokenIsExpired(session?.expiresAt)) {
       // @ts-ignore
@@ -43,8 +48,13 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
             eventBus.publish(EventName.ShowToast, r.message, ToastType.Error);
             return;
           }
-          // @ts-ignore
-          dispatch(setVoteReceipt({ categoryId: categoryId, receipt: r }));
+          if (JSON.stringify(r) === JSON.stringify(receipts[categoryId])){
+              eventBus.publish(EventName.ShowToast, "No changes detected in the receipt");
+          } else {
+              eventBus.publish(EventName.ShowToast, "Receipt updated successfully!");
+              // @ts-ignore
+              dispatch(setVoteReceipt({ categoryId: categoryId, receipt: r }));
+          }
         })
         .catch((e) => {
           if (process.env.NODE_ENV === "development") {
@@ -463,6 +473,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
             {content?.infoList?.map((item) => {
               return (
                 <ListItem
+                    onClick={() => handleCopy(item.value)}
                   sx={{
                     display: "flex",
                     width: "394px",
@@ -473,6 +484,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                     border: `1px solid ${theme.palette.background.darker}`,
                     background: theme.palette.background.default,
                     marginTop: "8px",
+                      cursor: "pointer"
                   }}
                 >
                   <Box
@@ -503,18 +515,21 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                       />
                     </Tooltip>
                   </Box>
-                  <Typography
-                    sx={{
-                      width: "100%",
-                      color: theme.palette.text.neutralLight,
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      lineHeight: "20px",
-                      fontStyle: "normal",
-                    }}
-                  >
-                    {item.value}
-                  </Typography>
+                    <Typography
+                        sx={{
+                            width: "90%",
+                            color: theme.palette.text.neutralLight,
+                            fontSize: "12px",
+                            fontWeight: 500,
+                            lineHeight: "20px",
+                            fontStyle: "normal",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                        }}
+                    >
+                        {item.value}
+                    </Typography>
                 </ListItem>
               );
             })}
@@ -540,6 +555,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
             >
               <List>
                 <ListItem
+                    onClick={() => handleCopy(receipt?.votedAtSlot)}
                   sx={{
                     display: "flex",
                     width: "394px",
@@ -594,6 +610,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                   </Typography>
                 </ListItem>
                 <ListItem
+                    onClick={() => handleCopy(receipt?.signature)}
                   sx={{
                     display: "flex",
                     width: "394px",
@@ -636,67 +653,73 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                   </Box>
                   <Typography
                     sx={{
-                      width: "100%",
+                      width: "90%",
                       color: theme.palette.text.neutralLight,
                       fontSize: "12px",
                       fontWeight: 500,
                       lineHeight: "20px",
                       fontStyle: "normal",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
                     }}
                   >
-                    {/* @ts-ignore*/}
-                    {addressSlice(receipt?.signature)}
+                      {/*@ts-ignore */}
+                    {receipt?.signature}
                   </Typography>
                 </ListItem>
-                <ListItem
-                  sx={{
-                    display: "flex",
-                    width: "394px",
-                    padding: "12px 16px",
-                    flexDirection: "column",
-                    alignItems: "flex-start",
-                    borderRadius: "12px",
-                    border: `1px solid ${theme.palette.background.darker}`,
-                    background: theme.palette.background.default,
-                    marginTop: "8px",
-                  }}
-                >
-                  <Box
-                    component="div"
-                    sx={{
-                      display: "flex",
-                      width: "100%",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Typography
-                      sx={{
-                        color: theme.palette.text.neutralLightest,
-                        fontSize: "16px",
-                        fontWeight: 500,
-                        lineHeight: "24px",
-                        fontStyle: "normal",
-                      }}
-                    >
-                      Payload
-                    </Typography>
-                    <Tooltip title="info" placement="top">
-                      <InfoIcon
-                        sx={{
-                          cursor: "pointer",
-                        }}
-                      />
-                    </Tooltip>
-                  </Box>
-                  <JsonView
-                    // @ts-ignore
-                    data={JSON.stringify(JSON.parse(receipt?.payload), null, 2)}
-                    sx={{
-                      marginTop: "10px",
-                    }}
-                  />
-                </ListItem>
+                  {
+                      // @ts-ignore
+                      receipt?.payload ? <ListItem
+                          sx={{
+                              display: "flex",
+                              width: "394px",
+                              padding: "12px 16px",
+                              flexDirection: "column",
+                              alignItems: "flex-start",
+                              borderRadius: "12px",
+                              border: `1px solid ${theme.palette.background.darker}`,
+                              background: theme.palette.background.default,
+                              marginTop: "8px",
+                          }}
+                      >
+                          <Box
+                              component="div"
+                              sx={{
+                                  display: "flex",
+                                  width: "100%",
+                                  justifyContent: "space-between",
+                                  alignItems: "center",
+                              }}
+                          >
+                              <Typography
+                                  sx={{
+                                      color: theme.palette.text.neutralLightest,
+                                      fontSize: "16px",
+                                      fontWeight: 500,
+                                      lineHeight: "24px",
+                                      fontStyle: "normal",
+                                  }}
+                              >
+                                  Payload
+                              </Typography>
+                              <Tooltip title="info" placement="top">
+                                  <InfoIcon
+                                      sx={{
+                                          cursor: "pointer",
+                                      }}
+                                  />
+                              </Tooltip>
+                          </Box>
+                          <JsonView
+                              // @ts-ignore
+                              data={JSON.stringify(JSON.parse(receipt?.payload), null, 2)}
+                              sx={{
+                                  marginTop: "10px",
+                              }}
+                          />
+                      </ListItem> : null
+                  }
               </List>
             </CustomAccordion>
           </Box>

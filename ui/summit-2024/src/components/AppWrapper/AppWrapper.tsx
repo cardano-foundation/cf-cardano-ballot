@@ -59,6 +59,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
       if (!isVerifiedResult?.error) {
         // @ts-ignore
         dispatch(setWalletIsVerified(isVerifiedResult.verified));
+      } else {
+        eventBus.publish(EventName.OpenVerifyWalletModal);
       }
     };
     if (connectedWallet.address?.length) {

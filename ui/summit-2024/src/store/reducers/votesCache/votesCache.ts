@@ -7,7 +7,7 @@ import { VoteReceipt } from "../../../types/voting-app-types";
 const initialState: VotesCacheProps = initialStateData;
 
 const votesCacheSlice = createSlice({
-  name: "receiptsCache",
+  name: "votesCache",
   initialState,
   reducers: {
     setVotes: (state, action: PayloadAction<VoteCacheProps[]>) => {

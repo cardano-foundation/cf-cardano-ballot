@@ -12,26 +12,29 @@ import {
 import { useState } from "react";
 import { useLocalStorage } from "../../common/hooks/useLocalStorage";
 import { CB_TERMS_AND_PRIVACY } from "../../common/constants/local";
-import { TabsSegment } from "../common/TabPanel/TabsSegment";
 import termsData from "../../common/resources/data/termsAndConditions.json";
 import privacyData from "../../common/resources/data/privacyPolicy.json";
 import theme from "../../common/styles/theme";
 import { ExtraDetails, List } from "./TermsAndConditionsModal.type";
 import { CustomCheckBox } from "../common/CustomCheckBox/CustomCheckBox";
+import AnimatedSwitch from "../AnimatedSwitch/AnimatedSwitch";
 
 const TermsAndConditionsModal = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
-  const [currentTab, setCurrentTab] = useState(0);
-  const [isChecked, setIsChecked] = useState(false);
-  const [termsAndConditionsChecked, setTermsAndConditionsChecked] =
-    useLocalStorage(CB_TERMS_AND_PRIVACY, false);
 
   const tabs = [
     isMobile ? "T&Cs" : "Terms & Conditions",
     isMobile ? "Privacy" : "Privacy Policy",
   ];
 
+  const [currentTab, setCurrentTab] = useState(tabs[0]);
+  const [isChecked, setIsChecked] = useState(false);
+  const [termsAndConditionsChecked, setTermsAndConditionsChecked] =
+    useLocalStorage(CB_TERMS_AND_PRIVACY, false);
+
+  const handleSetCurrentTab = (option: string) => {
+    setCurrentTab(option);
+  };
   const handleAccept = () => {
     setTermsAndConditionsChecked(true);
   };
@@ -54,7 +57,7 @@ const TermsAndConditionsModal = () => {
       ));
     // TODO: fix text styles based on figma reqs
     switch (currentTab) {
-      case 0: {
+      case tabs[0]: {
         return (
           <>
             <Typography
@@ -277,7 +280,7 @@ const TermsAndConditionsModal = () => {
           </>
         );
       }
-      case 1: {
+      case tabs[1]: {
         const renderExtras = (extras: ExtraDetails) => {
           return Object.entries(extras).map(([_, value], index) => (
             <Typography
@@ -406,11 +409,19 @@ const TermsAndConditionsModal = () => {
       aria-labelledby="terms-modal-title"
       aria-describedby="terms-modal-description"
     >
-      <DialogTitle sx={{ backgroundColor: theme.palette.background.default }}>
-        <TabsSegment
-          tabs={tabs}
-          currentTab={currentTab}
-          setCurrentTab={(tab: number) => setCurrentTab(tab)}
+      <DialogTitle
+        sx={{
+          backgroundColor: theme.palette.background.default,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <AnimatedSwitch
+          defaultValue={tabs[0]}
+          optionA={tabs[0]}
+          optionB={tabs[1]}
+          onClickOption={(option: string) => handleSetCurrentTab(option)}
         />
       </DialogTitle>
       <DialogContent

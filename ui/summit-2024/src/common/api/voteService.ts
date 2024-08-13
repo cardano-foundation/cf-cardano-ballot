@@ -8,7 +8,7 @@ import { env } from "../constants/env";
 import {
   Problem,
   SignedWeb3Request,
-  UserVotes,
+  UserVote,
   Vote,
   VoteReceipt,
 } from "../../types/voting-app-types";
@@ -17,6 +17,7 @@ import { WalletIdentifierType } from "./utils";
 
 export const CAST_VOTE_URL = `${env.VOTING_APP_SERVER_URL}/api/vote/cast`;
 export const VOTE_RECEIPT_URL = `${env.VOTING_APP_SERVER_URL}/api/vote/receipt`;
+export const VOTE_RECEIPTS_URL = `${env.VOTING_APP_SERVER_URL}/api/vote/receipts`;
 export const BLOCKCHAIN_TIP_URL = `${env.VOTING_LEDGER_FOLLOWER_APP_SERVER_URL}/api/blockchain/tip`;
 export const USER_VOTES_URL = `${env.VOTING_APP_SERVER_URL}/api/vote/votes`;
 
@@ -93,8 +94,19 @@ const getVoteReceipt = async (categoryId: string, token: string) =>
     token,
   );
 
-const getUserVotes = async (token: string) =>
-  await doRequest<UserVotes[]>(
+const getVoteReceipts = async (token: string) =>
+  await doRequest<VoteReceipt>(
+    HttpMethods.GET,
+    `${VOTE_RECEIPTS_URL}`,
+    {
+      ...DEFAULT_CONTENT_TYPE_HEADERS,
+    },
+    undefined,
+    token,
+  );
+
+const submitGetUserVotes = async (token: string) =>
+  await doRequest<UserVote[]>(
     HttpMethods.GET,
     `${USER_VOTES_URL}/${env.EVENT_ID}`,
     {
@@ -108,5 +120,6 @@ export {
   submitVoteWithDigitalSignature,
   getSlotNumber,
   getVoteReceipt,
-  getUserVotes,
+  getVoteReceipts,
+  submitGetUserVotes,
 };

@@ -11,14 +11,85 @@ import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import { STATE, ViewReceiptProps } from "./ViewReceipt.type";
 import { CustomAccordion } from "../../../components/common/CustomAccordion/CustomAccordion";
 import { JsonView } from "../../../components/common/JsonView/JsonView";
+import { useAppSelector } from "../../../store/hooks";
+import {
+  getReceipts,
+  setVoteReceipt,
+  setVotes,
+} from "../../../store/reducers/votesCache";
+import { copyToClipboard } from "../../../utils/utils";
+import { getUserInSession, tokenIsExpired } from "../../../utils/session";
+import {
+  getVoteReceipt,
+  submitGetUserVotes,
+} from "../../../common/api/voteService";
+import { eventBus, EventName } from "../../../utils/EventBus";
+import { ToastType } from "../../../components/common/Toast/Toast.types";
+import { parseError } from "../../../common/constants/errors";
 
-const jsonExample = {
-  example: "example",
-  example2: "example2",
-};
-const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
+const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
+  const session = getUserInSession();
+  const receipts = useAppSelector(getReceipts);
+  const receipt = receipts[categoryId];
+
+  const handleCopy = async (data: string) => {
+    await copyToClipboard(data);
+    eventBus.publish(EventName.ShowToast, "Copied to clipboard successfully");
+  };
+
+  const refreshReceipt = () => {
+    if (session && !tokenIsExpired(session?.expiresAt)) {
+      // @ts-ignore
+      getVoteReceipt(categoryId, session?.accessToken)
+        .then((r) => {
+          // @ts-ignore
+          if (r.error) {
+            // @ts-ignore
+            eventBus.publish(EventName.ShowToast, r.message, ToastType.Error);
+            return;
+          }
+          if (JSON.stringify(r) === JSON.stringify(receipts[categoryId])) {
+            eventBus.publish(
+              EventName.ShowToast,
+              "No changes detected in the receipt",
+            );
+          } else {
+            eventBus.publish(
+              EventName.ShowToast,
+              "Receipt updated successfully!",
+            );
+            // @ts-ignore
+            dispatch(setVoteReceipt({ categoryId: categoryId, receipt: r }));
+          }
+        })
+        .catch((e) => {
+          if (process.env.NODE_ENV === "development") {
+            console.log(
+              `Failed to fetch vote receipt, ${parseError(e.message)}`,
+            );
+          }
+        });
+      submitGetUserVotes(session?.accessToken)
+        .then((response) => {
+          if (response) {
+            // @ts-ignore
+            dispatch(setVotes(response));
+          }
+        })
+        .catch((e) => {
+          if (process.env.NODE_ENV === "development") {
+            console.log(`Failed to fetch user votes, ${parseError(e.message)}`);
+          }
+        });
+    } else {
+      eventBus.publish(
+        EventName.OpenLoginModal,
+        "Login to see your vote receipt.",
+      );
+    }
+  };
   const getContent = () => {
-    switch (state) {
+    switch (receipt?.status) {
       case STATE.BASIC: {
         return {
           leftIcon: (
@@ -42,35 +113,32 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
             />
           ),
           labelBottom: "Refresh Status",
+          iconBottomAction: refreshReceipt,
           infoList: [
             {
-              title: "Event",
-              value: "Ambassador - Cardano Summit 2024",
+              title: "Category",
+              value: receipt?.category,
               tooltip: "info",
             },
             {
               title: "Proposal",
-              value: "Plutus Bear Pop-Tart",
+              value: receipt?.proposal,
               tooltip: "info",
             },
             {
-              title: "Voting Power",
-              value: "9,997k ADA",
-              tooltip: "info",
-            },
-            {
-              title: "Voter Staking Address",
-              value: "stake123...456spyqyg890",
+              title: "User Address",
+              // @ts-ignore
+              value: receipt?.walletId,
               tooltip: "info",
             },
             {
               title: "Status",
-              value: "Ambassador - Cardano Summit 2024",
+              value: receipt?.status,
               tooltip: "info",
             },
             {
               title: "Event",
-              value: state,
+              value: receipt?.event,
               tooltip: "info",
             },
           ],
@@ -100,35 +168,32 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
             />
           ),
           labelBottom: "Refresh Status",
+          iconBottomAction: refreshReceipt,
           infoList: [
             {
-              title: "Event",
-              value: "Ambassador - Cardano Summit 2024",
+              title: "Category",
+              value: receipt?.category,
               tooltip: "info",
             },
             {
               title: "Proposal",
-              value: "Plutus Bear Pop-Tart",
+              value: receipt?.proposal,
               tooltip: "info",
             },
             {
-              title: "Voting Power",
-              value: "9,997k ADA",
-              tooltip: "info",
-            },
-            {
-              title: "Voter Staking Address",
-              value: "stake123...456spyqyg890",
+              title: "User Address",
+              // @ts-ignore
+              value: receipt?.walletId,
               tooltip: "info",
             },
             {
               title: "Status",
-              value: "Ambassador - Cardano Summit 2024",
+              value: receipt?.status,
               tooltip: "info",
             },
             {
               title: "Event",
-              value: state,
+              value: receipt?.event,
               tooltip: "info",
             },
           ],
@@ -159,35 +224,32 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
             />
           ),
           labelBottom: "Refresh Status",
+          iconBottomAction: refreshReceipt,
           infoList: [
             {
-              title: "Event",
-              value: "Ambassador - Cardano Summit 2024",
+              title: "Category",
+              value: receipt?.category,
               tooltip: "info",
             },
             {
               title: "Proposal",
-              value: "Plutus Bear Pop-Tart",
+              value: receipt?.proposal,
               tooltip: "info",
             },
             {
-              title: "Voting Power",
-              value: "9,997k ADA",
-              tooltip: "info",
-            },
-            {
-              title: "Voter Staking Address",
-              value: "stake123...456spyqyg890",
+              title: "User Address",
+              // @ts-ignore
+              value: receipt?.walletId,
               tooltip: "info",
             },
             {
               title: "Status",
-              value: "Ambassador - Cardano Summit 2024",
+              value: receipt?.status,
               tooltip: "info",
             },
             {
               title: "Event",
-              value: state,
+              value: receipt?.event,
               tooltip: "info",
             },
           ],
@@ -218,35 +280,32 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
             />
           ),
           labelBottom: "Refresh Status",
+          iconBottomAction: refreshReceipt,
           infoList: [
             {
-              title: "Event",
-              value: "Ambassador - Cardano Summit 2024",
+              title: "Category",
+              value: receipt?.category,
               tooltip: "info",
             },
             {
               title: "Proposal",
-              value: "Plutus Bear Pop-Tart",
+              value: receipt?.proposal,
               tooltip: "info",
             },
             {
-              title: "Voting Power",
-              value: "9,997k ADA",
-              tooltip: "info",
-            },
-            {
-              title: "Voter Staking Address",
-              value: "stake123...456spyqyg890",
+              title: "User Address",
+              // @ts-ignore
+              value: receipt?.walletId,
               tooltip: "info",
             },
             {
               title: "Status",
-              value: "Ambassador - Cardano Summit 2024",
+              value: receipt?.status,
               tooltip: "info",
             },
             {
               title: "Event",
-              value: state,
+              value: receipt.event,
               tooltip: "info",
             },
           ],
@@ -389,6 +448,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
               </Box>
             </Box>
             <Box
+              onClick={() => content?.iconBottomAction()}
               component="div"
               sx={{
                 display: "flex",
@@ -419,6 +479,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
             {content?.infoList?.map((item) => {
               return (
                 <ListItem
+                  onClick={() => handleCopy(item.value)}
                   sx={{
                     display: "flex",
                     width: "394px",
@@ -429,6 +490,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
                     border: `1px solid ${theme.palette.background.darker}`,
                     background: theme.palette.background.default,
                     marginTop: "8px",
+                    cursor: "pointer",
                   }}
                 >
                   <Box
@@ -461,12 +523,15 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
                   </Box>
                   <Typography
                     sx={{
-                      width: "100%",
+                      width: "90%",
                       color: theme.palette.text.neutralLight,
                       fontSize: "12px",
                       fontWeight: 500,
                       lineHeight: "20px",
                       fontStyle: "normal",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
                     }}
                   >
                     {item.value}
@@ -496,6 +561,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
             >
               <List>
                 <ListItem
+                  onClick={() => handleCopy(receipt?.votedAtSlot)}
                   sx={{
                     display: "flex",
                     width: "394px",
@@ -546,10 +612,11 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
                       fontStyle: "normal",
                     }}
                   >
-                    453241
+                    {receipt?.votedAtSlot}
                   </Typography>
                 </ListItem>
                 <ListItem
+                  onClick={() => handleCopy(receipt?.signature)}
                   sx={{
                     display: "flex",
                     width: "394px",
@@ -580,7 +647,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
                         fontStyle: "normal",
                       }}
                     >
-                      ID
+                      Signature
                     </Typography>
                     <Tooltip title="info" placement="top">
                       <InfoIcon
@@ -592,65 +659,79 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
                   </Box>
                   <Typography
                     sx={{
-                      width: "100%",
+                      width: "90%",
                       color: theme.palette.text.neutralLight,
                       fontSize: "12px",
                       fontWeight: 500,
                       lineHeight: "20px",
                       fontStyle: "normal",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
                     }}
                   >
-                    e51fdf09...4c836052b4f0
+                    {/*@ts-ignore */}
+                    {receipt?.signature}
                   </Typography>
                 </ListItem>
-                <ListItem
-                  sx={{
-                    display: "flex",
-                    width: "394px",
-                    padding: "12px 16px",
-                    flexDirection: "column",
-                    alignItems: "flex-start",
-                    borderRadius: "12px",
-                    border: `1px solid ${theme.palette.background.darker}`,
-                    background: theme.palette.background.default,
-                    marginTop: "8px",
-                  }}
-                >
-                  <Box
-                    component="div"
-                    sx={{
-                      display: "flex",
-                      width: "100%",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Typography
+                {
+                  // @ts-ignore
+                  receipt?.payload ? (
+                    <ListItem
                       sx={{
-                        color: theme.palette.text.neutralLightest,
-                        fontSize: "16px",
-                        fontWeight: 500,
-                        lineHeight: "24px",
-                        fontStyle: "normal",
+                        display: "flex",
+                        width: "394px",
+                        padding: "12px 16px",
+                        flexDirection: "column",
+                        alignItems: "flex-start",
+                        borderRadius: "12px",
+                        border: `1px solid ${theme.palette.background.darker}`,
+                        background: theme.palette.background.default,
+                        marginTop: "8px",
                       }}
                     >
-                      Vote Proof
-                    </Typography>
-                    <Tooltip title="info" placement="top">
-                      <InfoIcon
+                      <Box
+                        component="div"
                         sx={{
-                          cursor: "pointer",
+                          display: "flex",
+                          width: "100%",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Typography
+                          sx={{
+                            color: theme.palette.text.neutralLightest,
+                            fontSize: "16px",
+                            fontWeight: 500,
+                            lineHeight: "24px",
+                            fontStyle: "normal",
+                          }}
+                        >
+                          Payload
+                        </Typography>
+                        <Tooltip title="info" placement="top">
+                          <InfoIcon
+                            sx={{
+                              cursor: "pointer",
+                            }}
+                          />
+                        </Tooltip>
+                      </Box>
+                      <JsonView
+                        data={JSON.stringify(
+                          // @ts-ignore
+                          JSON.parse(receipt?.payload),
+                          null,
+                          2,
+                        )}
+                        sx={{
+                          marginTop: "10px",
                         }}
                       />
-                    </Tooltip>
-                  </Box>
-                  <JsonView
-                    data={JSON.stringify(jsonExample, null, 2)}
-                    sx={{
-                      marginTop: "10px",
-                    }}
-                  />
-                </ListItem>
+                    </ListItem>
+                  ) : null
+                }
               </List>
             </CustomAccordion>
           </Box>

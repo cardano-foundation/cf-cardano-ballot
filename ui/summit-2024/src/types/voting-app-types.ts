@@ -48,7 +48,7 @@ export interface LoginResult {
   expiresAt: Date;
 }
 
-export interface UserVotes {
+export interface UserVote {
   categoryId: string;
   proposalId: string;
 }
@@ -61,6 +61,7 @@ export interface VoteReceipt {
   votingPower?: string;
   voterStakingAddress: string;
   coseSignature: string;
+  signature: string;
   cosePublicKey?: string;
   status: Status;
   merkleProof: MerkleProof;

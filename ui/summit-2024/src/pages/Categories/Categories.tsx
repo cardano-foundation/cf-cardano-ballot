@@ -4,7 +4,6 @@ import theme from "../../common/styles/theme";
 import { CustomButton } from "../../components/common/CustomButton/CustomButton";
 import { VoteNowModal } from "./components/VoteNowModal";
 import { ViewReceipt } from "./components/ViewReceipt";
-import { STATE } from "./components/ViewReceipt.type";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { getEventCache } from "../../store/reducers/eventCache";
 import { Category } from "../../store/reducers/eventCache/eventCache.types";
@@ -19,7 +18,7 @@ import {
   buildCanonicalVoteInputJson,
   submitVoteWithDigitalSignature,
   getSlotNumber,
-  getUserVotes,
+  submitGetUserVotes,
   getVoteReceipt,
 } from "../../common/api/voteService";
 import { eventBus, EventName } from "../../utils/EventBus";
@@ -30,9 +29,11 @@ import {
 import { getUserInSession, tokenIsExpired } from "../../utils/session";
 import { parseError } from "../../common/constants/errors";
 import {
+  getReceipts,
+  getVotes,
   setVoteReceipt,
   setVotes,
-} from "../../store/reducers/votesCache/votesCache";
+} from "../../store/reducers/votesCache";
 import { ToastType } from "../../components/common/Toast/Toast.types";
 import { useSignatures } from "../../common/hooks/useSignatures";
 import { resolveWalletType } from "../../common/api/utils";
@@ -46,8 +47,9 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   const eventCache = useAppSelector(getEventCache);
   const connectedWallet = useAppSelector(getConnectedWallet);
   const walletIdentifierIsVerified = useAppSelector(getWalletIsVerified);
+  const receipts = useAppSelector(getReceipts);
+  const userVotes = useAppSelector(getVotes);
   const categoriesData = eventCache.categories;
-
   const [showWinners, setShowWinners] = useState(eventCache.finished);
 
   const [selectedCategory, setSelectedCategory] = useState(
@@ -69,6 +71,19 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   const session = getUserInSession();
   const { signWithWallet } = useSignatures();
   const dispatch = useAppDispatch();
+
+  let categoryToRender = categoriesData.find((c) => c.id === selectedCategory);
+  if (categoryToRender === undefined) {
+    categoryToRender = categoriesData[0];
+  }
+
+  const nomineeToVote = categoryToRender.proposals.find(
+    (p) => p.id === selectedNominee,
+  );
+
+  const categoryAlreadyVoted = !!userVotes?.find(
+    (vote) => vote.categoryId === categoryToRender?.id,
+  );
 
   useEffect(() => {
     // Example: http://localhost:3000/categories?category=ambassador&nominee=63123e7f-dfc3-481e-bb9d-fed1d9f6e9b9
@@ -97,6 +112,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   const handleClickMenuItem = (category: string) => {
     if (category !== selectedCategory) {
       setFadeChecked(false);
+      setSelectedCategory(category);
       setTimeout(() => {
         setFadeChecked(true);
       }, 200);
@@ -119,6 +135,34 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   const handleOpenViewReceipt = () => {
     setOpenViewReceipt(true);
   };
+
+  const handleSignIn = () => {};
+
+  const handleViewReceipt = async () => {
+    if (!categoryToRender) return;
+    if (receipts[categoryToRender?.id] !== undefined) {
+      setOpenViewReceipt(true);
+    }
+    if (!tokenIsExpired(session?.expiresAt)) {
+      await getVoteReceipt(categoryToRender?.id, session?.accessToken)
+        .then((r) => {
+          dispatch(
+            // @ts-ignore
+            setVoteReceipt({ categoryId: categoryToRender?.id, receipt: r }),
+          );
+          setOpenViewReceipt(true);
+        })
+        .catch((e) => {
+          eventBus.publish(EventName.ShowToast, e.message, ToastType.Error);
+        });
+    } else {
+      eventBus.publish(
+        EventName.ShowToast,
+        "Login to see your vote receipt",
+        ToastType.Error,
+      );
+    }
+  };
   const handleOpenActionButton = () => {
     if (showWinners) {
       handleOpenViewReceipt();
@@ -127,7 +171,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
         eventBus.publish(
           EventName.ShowToast,
           "Connect your wallet in order to vote",
-          "error",
+          ToastType.Error,
         );
         return;
       }
@@ -135,7 +179,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
         eventBus.publish(
           EventName.ShowToast,
           "Verify your wallet in order to vote",
-          "error",
+          ToastType.Error,
         );
         return;
       }
@@ -202,8 +246,9 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
       }
       eventBus.publish(EventName.ShowToast, "Vote submitted successfully");
 
-      console.log("session");
-      console.log(session);
+      // @ts-ignore
+      dispatch(setVotes([...userVotes, { categoryId, proposalId }]));
+      // TODO: refactor
       if (session && !tokenIsExpired(session?.expiresAt)) {
         // @ts-ignore
         getVoteReceipt(categoryId, session?.accessToken)
@@ -224,11 +269,11 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
               );
             }
           });
-        getUserVotes(session?.accessToken)
+        submitGetUserVotes(session?.accessToken)
           .then((response) => {
             if (response) {
               // @ts-ignore
-              dispatch(setVotes({ votes: response }));
+              dispatch(setVotes(response));
             }
           })
           .catch((e) => {
@@ -239,7 +284,6 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
             }
           });
       } else {
-        console.log("open login modal");
         eventBus.publish(
           EventName.OpenLoginModal,
           "Login to see your vote receipt.",
@@ -256,14 +300,27 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
     }
   };
 
-  let categoryToRender = categoriesData.find((c) => c.id === selectedCategory);
-  if (categoryToRender === undefined) {
-    categoryToRender = categoriesData[0];
-  }
-
-  const nomineeToVote = categoryToRender.proposals?.find(
-    (n) => n.id === selectedNominee,
-  );
+  const renderActionButton = () => {
+    if (categoryAlreadyVoted && !session) {
+      return {
+        label: "Sign In",
+        action: handleSignIn,
+        disabled: false,
+      };
+    } else if (categoryAlreadyVoted) {
+      return {
+        label: "View Receipt",
+        action: handleViewReceipt,
+        disabled: false,
+      };
+    } else {
+      return {
+        label: "Vote Now",
+        action: submitVote,
+        disabled: !walletIdentifierIsVerified && !selectedNominee,
+      };
+    }
+  };
 
   const optionsForMenu = categoriesData.map((category: Category) => {
     return {
@@ -298,16 +355,16 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
               Ambassador.
             </Typography>
             <CustomButton
-              onClick={() => handleOpenActionButton()}
+              onClick={() => renderActionButton().action()}
               sx={{
                 mt: -6,
                 alignSelf: "flex-end",
                 display: isTablet ? "none" : "inline-block",
               }}
               colorVariant="primary"
-              disabled={!selectedNominee}
+              disabled={renderActionButton().disabled}
             >
-              {!showWinners ? <>Vote Now</> : <>View Receipt</>}
+              {renderActionButton().label}
             </CustomButton>
           </Box>
           {showWinners ? (
@@ -322,6 +379,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
             <Nominees
               fadeChecked={fadeChecked}
               nominees={category.proposals}
+              categoryAlreadyVoted={categoryAlreadyVoted}
               handleSelectedNominee={handleSelectNominee}
               selectedNominee={selectedNominee}
               handleOpenLearnMore={handleOpenLearnMoreModal}
@@ -412,7 +470,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
           onClose={() => setOpenViewReceipt(false)}
         >
           <ViewReceipt
-            state={STATE.ROLLBACK}
+            categoryId={categoryToRender.id}
             close={() => setOpenViewReceipt(false)}
           />
         </Drawer>

@@ -140,6 +140,9 @@ spec:
             - name: ROLLBACK_HANDLING_ENABLED
               value: {{ $.Values.rollbackHandlingEnabled | default "true" | quote }}
 
+            - name: KERI_BALLOT_VERIFIER_APP_URL
+              value: {{ .Values.keriBallotVerifierAppUrl | default "http://cf-keri-ballot-verifier:5667" }}
+
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}

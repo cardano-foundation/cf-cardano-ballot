@@ -35,6 +35,7 @@ jobs:
 
       - name: ⛮ cf-gha-baseline
         uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-baseline@main
+        id: cf-gha-baseline
         with:
           working-directory: ./backend-services/${{ matrix.service }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -73,6 +74,7 @@ jobs:
 
       - name: ⛮ cf-gha-baseline
         uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-baseline@main
+        id: cf-gha-baseline
         with:
           working-directory: ./ui/summit-2024
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

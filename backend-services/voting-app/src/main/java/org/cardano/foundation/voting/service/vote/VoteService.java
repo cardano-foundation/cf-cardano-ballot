@@ -22,4 +22,6 @@ public interface VoteService {
 
     Either<Problem, VoteReceipt> voteReceipt(String categoryId, JwtAuthenticationToken auth);
 
+    Either<Problem, List<VoteReceipt>> voteReceipts(JwtAuthenticationToken auth);
+
 }

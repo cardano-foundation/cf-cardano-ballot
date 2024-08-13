@@ -210,4 +210,27 @@ public class VoteTests extends BaseTest {
                 .statusCode(403);
     }
 
+    @Test
+    @Order(7)
+    public void testGetAllVoteReceipts() {
+        // Get bearer token from login
+        String accessToken = getAccessToken();
+
+        // Get all vote receipts
+        Response response = given()
+                .header("Authorization", "Bearer " + accessToken)
+                .when().get(VOTE_ENDPOINT + "/receipts");
+
+        assertEquals(200, response.getStatusCode());
+
+        List<VoteReceipt> voteReceipts = response.jsonPath().getList(".", VoteReceipt.class);
+        Assertions.assertNotNull(voteReceipts);
+        Assertions.assertFalse(voteReceipts.isEmpty(), "The vote receipts list should not be empty.");
+
+        VoteReceipt firstReceipt = voteReceipts.get(0);
+        Assertions.assertNotNull(firstReceipt.getEvent(), "Event ID should not be null.");
+        Assertions.assertNotNull(firstReceipt.getCategory(), "Category should not be null.");
+        Assertions.assertNotNull(firstReceipt.getProposal(), "Proposal should not be null.");
+        Assertions.assertNotNull(firstReceipt.getVotingPower(), "Voting power should not be null.");
+    }
 }

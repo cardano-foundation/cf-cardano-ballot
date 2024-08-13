@@ -37,11 +37,11 @@ spec:
 
 
             - name: CARDANO_NODE_HOST
-              value: {{ $.Values.yaci.cardanoNodeHost | default "preprod-node.world.dev.cardano.org" }}
+              value: {{ $instance.yaci.cardanoNodeHost | default "preprod-node.world.dev.cardano.org" }}
             - name: CARDANO_NODE_PORT
-              value: {{ $.Values.yaci.cardanoNodePort | default 30000 | quote }}
+              value: {{ $instance.yaci.cardanoNodePort | default 30000 | quote }}
             - name: CARDANO_NODE_PROTOCOL_MAGIC
-              value: {{ $.Values.yaci.cardanoNodeProtocolMagic | default 1 | quote }}
+              value: {{ $instance.yaci.cardanoNodeProtocolMagic | default 1 | quote }}
 
             - name: VOTING_METADATA_LABEL
               value: {{ $.Values.votingMetadataLabel | default 11113 | quote }}

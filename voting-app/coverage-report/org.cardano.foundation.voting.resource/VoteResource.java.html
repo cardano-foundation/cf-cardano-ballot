@@ -204,6 +204,63 @@ public class VoteResource {
                         });
     }
 
+    @RequestMapping(value = &quot;/receipts&quot;, method = { GET, HEAD }, produces = &quot;application/json&quot;)
+    @Timed(value = &quot;resource.vote.receipts&quot;, histogram = true)
+    @Operation(
+            summary = &quot;Retrieve all vote receipts for the authenticated user&quot;,
+            description = &quot;Allows users to retrieve all vote receipts for their votes. Requires JWT authentication.&quot;,
+            responses = {
+                    @ApiResponse(
+                            responseCode = &quot;200&quot;,
+                            description = &quot;Vote receipts retrieved successfully.&quot;,
+                            content = @Content(
+                                    mediaType = &quot;application/json&quot;, schema = @Schema(implementation = VoteReceipt.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = &quot;400&quot;,
+                            description = &quot;Bad request, possibly due to missing JWT authentication.&quot;,
+                            content = {
+                                    @Content(mediaType = &quot;application/json&quot;,
+                                            schema = @Schema(implementation = Problem.class))
+                            }
+                    ),
+                    @ApiResponse(responseCode = &quot;500&quot;, description = &quot;Internal server error&quot;)
+            }
+    )
+    public ResponseEntity&lt;?&gt; getAllVoteReceipts(Authentication authentication) {
+<span class="pc bpc" id="L232" title="1 of 2 branches missed.">        if (!(authentication instanceof JwtAuthenticationToken jwtAuth)) {</span>
+<span class="nc" id="L233">            var problem = Problem.builder()</span>
+<span class="nc" id="L234">                    .withTitle(&quot;JWT_REQUIRED&quot;)</span>
+<span class="nc" id="L235">                    .withDetail(&quot;JWT auth token needed!&quot;)</span>
+<span class="nc" id="L236">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L237">                    .build();</span>
+
+<span class="nc" id="L239">            return ResponseEntity</span>
+<span class="nc" id="L240">                    .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L241">                    .body(problem);</span>
+        }
+
+<span class="fc" id="L244">        return voteService.voteReceipts(jwtAuth)</span>
+<span class="fc" id="L245">                .fold(problem -&gt; {</span>
+<span class="nc" id="L246">                            log.warn(&quot;Failed to retrieve vote receipts, problem: {}&quot;, problem);</span>
+
+<span class="nc" id="L248">                            return ResponseEntity</span>
+<span class="nc" id="L249">                                    .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L250">                                    .body(problem);</span>
+                        },
+                        voteReceipts -&gt; {
+<span class="fc" id="L253">                            var cacheControl = CacheControl.maxAge(1, MINUTES)</span>
+<span class="fc" id="L254">                                    .noTransform()</span>
+<span class="fc" id="L255">                                    .mustRevalidate();</span>
+
+<span class="fc" id="L257">                            return ResponseEntity</span>
+<span class="fc" id="L258">                                    .ok()</span>
+<span class="fc" id="L259">                                    .cacheControl(cacheControl)</span>
+<span class="fc" id="L260">                                    .body(voteReceipts);</span>
+                        });
+    }
+
     @RequestMapping(value = &quot;/receipt/{eventId}/{categoryId}&quot;, method = { HEAD, GET }, produces = &quot;application/json&quot;)
     @Timed(value = &quot;resource.vote.receipt.jwt&quot;, histogram = true)
     @Operation(
@@ -231,45 +288,45 @@ public class VoteResource {
     public ResponseEntity&lt;?&gt; getVoteReceipt(@PathVariable(value = &quot;eventId&quot;, required = false) Optional&lt;String&gt; maybeEventId,
                                             @PathVariable(&quot;categoryId&quot;) String categoryId,
                                             Authentication authentication) {
-<span class="pc bpc" id="L234" title="1 of 2 branches missed.">        if (!(authentication instanceof JwtAuthenticationToken jwtAuth)) {</span>
-<span class="nc" id="L235">            var problem = Problem.builder()</span>
-<span class="nc" id="L236">                    .withTitle(&quot;JWT_REQUIRED&quot;)</span>
-<span class="nc" id="L237">                    .withDetail(&quot;JWT auth token needed!&quot;)</span>
-<span class="nc" id="L238">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L239">                    .build();</span>
+<span class="pc bpc" id="L291" title="1 of 2 branches missed.">        if (!(authentication instanceof JwtAuthenticationToken jwtAuth)) {</span>
+<span class="nc" id="L292">            var problem = Problem.builder()</span>
+<span class="nc" id="L293">                    .withTitle(&quot;JWT_REQUIRED&quot;)</span>
+<span class="nc" id="L294">                    .withDetail(&quot;JWT auth token needed!&quot;)</span>
+<span class="nc" id="L295">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L296">                    .build();</span>
 
-<span class="nc" id="L241">            return ResponseEntity</span>
-<span class="nc" id="L242">                    .status(problem.getStatus().getStatusCode())</span>
-<span class="nc" id="L243">                    .body(problem);</span>
+<span class="nc" id="L298">            return ResponseEntity</span>
+<span class="nc" id="L299">                    .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L300">                    .body(problem);</span>
         }
 
-<span class="pc bpc" id="L246" title="2 of 4 branches missed.">        if (maybeEventId.isPresent() &amp;&amp; !maybeEventId.orElseThrow().equals(jwtAuth.eventDetails().id())) {</span>
-<span class="nc" id="L247">            var problem = Problem.builder()</span>
-<span class="nc" id="L248">                    .withTitle(&quot;EVENT_ID_MISMATCH&quot;)</span>
-<span class="nc" id="L249">                    .withDetail(&quot;Event id in path and in JWT token do not match!&quot;)</span>
-<span class="nc" id="L250">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L251">                    .build();</span>
+<span class="pc bpc" id="L303" title="2 of 4 branches missed.">        if (maybeEventId.isPresent() &amp;&amp; !maybeEventId.orElseThrow().equals(jwtAuth.eventDetails().id())) {</span>
+<span class="nc" id="L304">            var problem = Problem.builder()</span>
+<span class="nc" id="L305">                    .withTitle(&quot;EVENT_ID_MISMATCH&quot;)</span>
+<span class="nc" id="L306">                    .withDetail(&quot;Event id in path and in JWT token do not match!&quot;)</span>
+<span class="nc" id="L307">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L308">                    .build();</span>
 
-<span class="nc" id="L253">            return ResponseEntity</span>
-<span class="nc" id="L254">                    .status(problem.getStatus().getStatusCode())</span>
-<span class="nc" id="L255">                    .body(problem);</span>
+<span class="nc" id="L310">            return ResponseEntity</span>
+<span class="nc" id="L311">                    .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L312">                    .body(problem);</span>
         }
 
-<span class="fc" id="L258">        return voteService.voteReceipt(categoryId, jwtAuth)</span>
-<span class="fc" id="L259">                .fold(problem -&gt; {</span>
-<span class="nc" id="L260">                            return ResponseEntity</span>
-<span class="nc" id="L261">                                    .status(problem.getStatus().getStatusCode())</span>
-<span class="nc" id="L262">                                    .body(problem);</span>
+<span class="fc" id="L315">        return voteService.voteReceipt(categoryId, jwtAuth)</span>
+<span class="fc" id="L316">                .fold(problem -&gt; {</span>
+<span class="nc" id="L317">                            return ResponseEntity</span>
+<span class="nc" id="L318">                                    .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L319">                                    .body(problem);</span>
                         },
                         voteReceipt -&gt; {
-<span class="fc" id="L265">                            var cacheControl = CacheControl.maxAge(1, MINUTES)</span>
-<span class="fc" id="L266">                                    .noTransform()</span>
-<span class="fc" id="L267">                                    .mustRevalidate();</span>
+<span class="fc" id="L322">                            var cacheControl = CacheControl.maxAge(1, MINUTES)</span>
+<span class="fc" id="L323">                                    .noTransform()</span>
+<span class="fc" id="L324">                                    .mustRevalidate();</span>
 
-<span class="fc" id="L269">                            return ResponseEntity</span>
-<span class="fc" id="L270">                                    .ok()</span>
-<span class="fc" id="L271">                                    .cacheControl(cacheControl)</span>
-<span class="fc" id="L272">                                    .body(voteReceipt);</span>
+<span class="fc" id="L326">                            return ResponseEntity</span>
+<span class="fc" id="L327">                                    .ok()</span>
+<span class="fc" id="L328">                                    .cacheControl(cacheControl)</span>
+<span class="fc" id="L329">                                    .body(voteReceipt);</span>
                         });
     }
 
@@ -300,49 +357,49 @@ public class VoteResource {
     public ResponseEntity&lt;?&gt; isVoteChangingAvailable(@PathVariable(value = &quot;eventId&quot;, required = false) Optional&lt;String&gt; maybeEventId,
                                                      @PathVariable(&quot;voteId&quot;) String voteId,
                                                      Authentication authentication) {
-<span class="nc bnc" id="L303" title="All 2 branches missed.">        if (!(authentication instanceof JwtAuthenticationToken jwtAuth)) {</span>
-<span class="nc" id="L304">            var problem = Problem.builder()</span>
-<span class="nc" id="L305">                    .withTitle(&quot;JWT_REQUIRED&quot;)</span>
-<span class="nc" id="L306">                    .withDetail(&quot;JWT auth Bearer Auth token needed!&quot;)</span>
-<span class="nc" id="L307">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L308">                    .build();</span>
+<span class="nc bnc" id="L360" title="All 2 branches missed.">        if (!(authentication instanceof JwtAuthenticationToken jwtAuth)) {</span>
+<span class="nc" id="L361">            var problem = Problem.builder()</span>
+<span class="nc" id="L362">                    .withTitle(&quot;JWT_REQUIRED&quot;)</span>
+<span class="nc" id="L363">                    .withDetail(&quot;JWT auth Bearer Auth token needed!&quot;)</span>
+<span class="nc" id="L364">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L365">                    .build();</span>
 
-<span class="nc" id="L310">            return ResponseEntity</span>
-<span class="nc" id="L311">                    .status(problem.getStatus().getStatusCode())</span>
-<span class="nc" id="L312">                    .body(problem);</span>
+<span class="nc" id="L367">            return ResponseEntity</span>
+<span class="nc" id="L368">                    .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L369">                    .body(problem);</span>
         }
 
-<span class="nc bnc" id="L315" title="All 4 branches missed.">        if (maybeEventId.isPresent() &amp;&amp; maybeEventId.orElseThrow().equals(jwtAuth.eventDetails().id())) {</span>
-<span class="nc" id="L316">            var problem = Problem.builder()</span>
-<span class="nc" id="L317">                    .withTitle(&quot;EVENT_ID_MISMATCH&quot;)</span>
-<span class="nc" id="L318">                    .withDetail(&quot;Event id in path and in JWT token do not match!&quot;)</span>
-<span class="nc" id="L319">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L320">                    .build();</span>
+<span class="nc bnc" id="L372" title="All 4 branches missed.">        if (maybeEventId.isPresent() &amp;&amp; maybeEventId.orElseThrow().equals(jwtAuth.eventDetails().id())) {</span>
+<span class="nc" id="L373">            var problem = Problem.builder()</span>
+<span class="nc" id="L374">                    .withTitle(&quot;EVENT_ID_MISMATCH&quot;)</span>
+<span class="nc" id="L375">                    .withDetail(&quot;Event id in path and in JWT token do not match!&quot;)</span>
+<span class="nc" id="L376">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L377">                    .build();</span>
 
-<span class="nc" id="L322">            return ResponseEntity</span>
-<span class="nc" id="L323">                    .status(problem.getStatus().getStatusCode())</span>
-<span class="nc" id="L324">                    .body(problem);</span>
+<span class="nc" id="L379">            return ResponseEntity</span>
+<span class="nc" id="L380">                    .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L381">                    .body(problem);</span>
         }
 
-<span class="nc" id="L327">        return voteService.isVoteChangingPossible(voteId, jwtAuth)</span>
-<span class="nc" id="L328">                .fold(problem -&gt; ResponseEntity</span>
-<span class="nc" id="L329">                        .status(problem.getStatus().getStatusCode())</span>
-<span class="nc" id="L330">                        .body(problem),</span>
+<span class="nc" id="L384">        return voteService.isVoteChangingPossible(voteId, jwtAuth)</span>
+<span class="nc" id="L385">                .fold(problem -&gt; ResponseEntity</span>
+<span class="nc" id="L386">                        .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L387">                        .body(problem),</span>
                         isAvailable -&gt; {
-<span class="nc bnc" id="L332" title="All 2 branches missed.">                            if (isAvailable) {</span>
-<span class="nc" id="L333">                                return ResponseEntity</span>
-<span class="nc" id="L334">                                        .ok()</span>
-<span class="nc" id="L335">                                        .build();</span>
+<span class="nc bnc" id="L389" title="All 2 branches missed.">                            if (isAvailable) {</span>
+<span class="nc" id="L390">                                return ResponseEntity</span>
+<span class="nc" id="L391">                                        .ok()</span>
+<span class="nc" id="L392">                                        .build();</span>
                             }
-<span class="nc" id="L337">                            var problem = Problem.builder()</span>
-<span class="nc" id="L338">                                    .withTitle(&quot;VOTE_CHANGING_NOT_AVAILABLE&quot;)</span>
-<span class="nc" id="L339">                                    .withDetail(&quot;Vote changing is not available for this vote!&quot;)</span>
-<span class="nc" id="L340">                                    .withStatus(NOT_ACCEPTABLE)</span>
-<span class="nc" id="L341">                                    .build();</span>
+<span class="nc" id="L394">                            var problem = Problem.builder()</span>
+<span class="nc" id="L395">                                    .withTitle(&quot;VOTE_CHANGING_NOT_AVAILABLE&quot;)</span>
+<span class="nc" id="L396">                                    .withDetail(&quot;Vote changing is not available for this vote!&quot;)</span>
+<span class="nc" id="L397">                                    .withStatus(NOT_ACCEPTABLE)</span>
+<span class="nc" id="L398">                                    .build();</span>
 
-<span class="nc" id="L343">                            return ResponseEntity</span>
-<span class="nc" id="L344">                                    .status(problem.getStatus().getStatusCode())</span>
-<span class="nc" id="L345">                                    .body(problem);</span>
+<span class="nc" id="L400">                            return ResponseEntity</span>
+<span class="nc" id="L401">                                    .status(problem.getStatus().getStatusCode())</span>
+<span class="nc" id="L402">                                    .body(problem);</span>
                         });
     }
 

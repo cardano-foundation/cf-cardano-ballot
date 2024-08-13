@@ -30,6 +30,7 @@ import org.zalando.problem.Problem;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.Objects;
 
 import static com.bloxbean.cardano.client.util.HexUtil.encodeHexString;
 import static org.cardano.foundation.voting.domain.VoteReceipt.Status.*;
@@ -40,8 +41,8 @@ import static org.cardano.foundation.voting.utils.MoreNumber.isNumeric;
 import static org.zalando.problem.Status.*;
 
 @Service
-<span class="fc" id="L43">@Slf4j</span>
-<span class="fc" id="L44">@RequiredArgsConstructor</span>
+<span class="fc" id="L44">@Slf4j</span>
+<span class="fc" id="L45">@RequiredArgsConstructor</span>
 public class DefaultVoteService implements VoteService {
 
     private final VoteRepository voteRepository;
@@ -55,449 +56,449 @@ public class DefaultVoteService implements VoteService {
     @Transactional(readOnly = true)
     @Timed(value = &quot;service.vote.getVotes&quot;, histogram = true)
     public Either&lt;Problem, List&lt;UserVotes&gt;&gt; getVotes(JwtAuthenticationToken auth) {
-<span class="fc" id="L58">        val jwtEventId = auth.eventDetails().id();</span>
-<span class="fc" id="L59">        val jwtWalletType = auth.getWalletType();</span>
-<span class="fc" id="L60">        val jwtWalletId = auth.getWalletId();</span>
+<span class="fc" id="L59">        val jwtEventId = auth.eventDetails().id();</span>
+<span class="fc" id="L60">        val jwtWalletType = auth.getWalletType();</span>
+<span class="fc" id="L61">        val jwtWalletId = auth.getWalletId();</span>
 
-<span class="pc bpc" id="L62" title="1 of 2 branches missed.">        if (auth.isActionNotAllowed(VOTES)) {</span>
-<span class="nc" id="L63">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L64">                    .withTitle(&quot;ACTION_NOT_ALLOWED&quot;)</span>
-<span class="nc" id="L65">                    .withDetail(&quot;Action VOTES not allowed for the role:&quot; + auth.role().name())</span>
-<span class="nc" id="L66">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L67">                    .build());</span>
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">        if (auth.isActionNotAllowed(VOTES)) {</span>
+<span class="nc" id="L64">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L65">                    .withTitle(&quot;ACTION_NOT_ALLOWED&quot;)</span>
+<span class="nc" id="L66">                    .withDetail(&quot;Action VOTES not allowed for the role:&quot; + auth.role().name())</span>
+<span class="nc" id="L67">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L68">                    .build());</span>
         }
 
-<span class="fc" id="L70">        val userVotesList = voteRepository.getVotesByWalletId(jwtEventId, jwtWalletType, jwtWalletId)</span>
-<span class="fc" id="L71">                .stream().map(p -&gt; {</span>
-<span class="fc" id="L72">                    val cid = p.getCategoryId();</span>
-<span class="fc" id="L73">                    val pid = p.getProposalId();</span>
+<span class="fc" id="L71">        val userVotesList = voteRepository.getVotesByWalletId(jwtEventId, jwtWalletType, jwtWalletId)</span>
+<span class="fc" id="L72">                .stream().map(p -&gt; {</span>
+<span class="fc" id="L73">                    val cid = p.getCategoryId();</span>
+<span class="fc" id="L74">                    val pid = p.getProposalId();</span>
 
-<span class="fc" id="L75">                    return new UserVotes(cid, pid);</span>
-<span class="fc" id="L76">                }).toList();</span>
+<span class="fc" id="L76">                    return new UserVotes(cid, pid);</span>
+<span class="fc" id="L77">                }).toList();</span>
 
-<span class="fc" id="L78">        return Either.right(userVotesList);</span>
+<span class="fc" id="L79">        return Either.right(userVotesList);</span>
     }
 
     @Transactional(readOnly = true)
     @Timed(value = &quot;service.vote.isVoteChangingPossible&quot;, histogram = true)
     public Either&lt;Problem, Boolean&gt; isVoteChangingPossible(String voteId,
                                                            JwtAuthenticationToken auth) {
-<span class="nc" id="L85">        val jwtEventId = auth.eventDetails().id();</span>
+<span class="nc" id="L86">        val jwtEventId = auth.eventDetails().id();</span>
 
-<span class="nc bnc" id="L87" title="All 2 branches missed.">        if (auth.isActionNotAllowed(IS_VOTE_CHANGING_ALLOWED)) {</span>
-<span class="nc" id="L88">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L89">                    .withTitle(&quot;ACTION_NOT_ALLOWED&quot;)</span>
-<span class="nc" id="L90">                    .withDetail(&quot;Action IS_VOTE_CASTING_ALLOWED not allowed for the role:&quot; + auth.role().name())</span>
-<span class="nc" id="L91">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L92">                    .build());</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">        if (auth.isActionNotAllowed(IS_VOTE_CHANGING_ALLOWED)) {</span>
+<span class="nc" id="L89">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L90">                    .withTitle(&quot;ACTION_NOT_ALLOWED&quot;)</span>
+<span class="nc" id="L91">                    .withDetail(&quot;Action IS_VOTE_CASTING_ALLOWED not allowed for the role:&quot; + auth.role().name())</span>
+<span class="nc" id="L92">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L93">                    .build());</span>
         }
-<span class="nc bnc" id="L94" title="All 2 branches missed.">        if (auth.eventDetails().isEventInactive()) {</span>
-<span class="nc" id="L95">            return Either.right(false);</span>
+<span class="nc bnc" id="L95" title="All 2 branches missed.">        if (auth.eventDetails().isEventInactive()) {</span>
+<span class="nc" id="L96">            return Either.right(false);</span>
         }
 
-<span class="nc" id="L98">        val maybeExistingVote = voteRepository.findById(voteId);</span>
-<span class="nc bnc" id="L99" title="All 2 branches missed.">        if (maybeExistingVote.isEmpty()) {</span>
-<span class="nc" id="L100">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L101">                    .withTitle(&quot;VOTE_NOT_FOUND&quot;)</span>
-<span class="nc" id="L102">                    .withDetail(&quot;Vote not found, voteId:&quot; + voteId)</span>
-<span class="nc" id="L103">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L104">                    .build()</span>
+<span class="nc" id="L99">        val maybeExistingVote = voteRepository.findById(voteId);</span>
+<span class="nc bnc" id="L100" title="All 2 branches missed.">        if (maybeExistingVote.isEmpty()) {</span>
+<span class="nc" id="L101">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L102">                    .withTitle(&quot;VOTE_NOT_FOUND&quot;)</span>
+<span class="nc" id="L103">                    .withDetail(&quot;Vote not found, voteId:&quot; + voteId)</span>
+<span class="nc" id="L104">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L105">                    .build()</span>
             );
         }
 
-<span class="nc" id="L108">        val maybeExistingProof = voteMerkleProofService.findLatestProof(jwtEventId, voteId);</span>
-<span class="nc bnc" id="L109" title="All 2 branches missed.">        if (maybeExistingProof.isPresent()) {</span>
-<span class="nc" id="L110">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L111">                    .withTitle(&quot;VOTE_CANNOT_BE_CHANGED&quot;)</span>
-<span class="nc" id="L112">                    .withDetail(&quot;Vote cannot be changed, voteId:&quot; + voteId)</span>
-<span class="nc" id="L113">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L114">                    .build()</span>
+<span class="nc" id="L109">        val maybeExistingProof = voteMerkleProofService.findLatestProof(jwtEventId, voteId);</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">        if (maybeExistingProof.isPresent()) {</span>
+<span class="nc" id="L111">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L112">                    .withTitle(&quot;VOTE_CANNOT_BE_CHANGED&quot;)</span>
+<span class="nc" id="L113">                    .withDetail(&quot;Vote cannot be changed, voteId:&quot; + voteId)</span>
+<span class="nc" id="L114">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L115">                    .build()</span>
             );
         }
 
-<span class="nc" id="L118">        return Either.right(true);</span>
+<span class="nc" id="L119">        return Either.right(true);</span>
     }
 
     @Override
     @Transactional
     @Timed(value = &quot;service.vote.castVote&quot;, histogram = true)
     public Either&lt;Problem, Vote&gt; castVote(Web3AuthenticationToken web3AuthenticationToken) {
-<span class="fc" id="L125">        val concreteDetails = web3AuthenticationToken.getDetails();</span>
-<span class="fc" id="L126">        val details = concreteDetails.getWeb3CommonDetails();</span>
+<span class="fc" id="L126">        val concreteDetails = web3AuthenticationToken.getDetails();</span>
+<span class="fc" id="L127">        val details = concreteDetails.getWeb3CommonDetails();</span>
 
-<span class="fc" id="L128">        val event = details.getEvent();</span>
-<span class="fc" id="L129">        val eventId = event.id();</span>
-<span class="fc" id="L130">        val walletId = details.getWalletId();</span>
-<span class="fc" id="L131">        val walletType = details.getWalletType();</span>
+<span class="fc" id="L129">        val event = details.getEvent();</span>
+<span class="fc" id="L130">        val eventId = event.id();</span>
+<span class="fc" id="L131">        val walletId = details.getWalletId();</span>
+<span class="fc" id="L132">        val walletType = details.getWalletType();</span>
 
-<span class="fc" id="L133">        val castVoteE = unwrapCastCoteEnvelope(concreteDetails);</span>
-<span class="pc bpc" id="L134" title="1 of 2 branches missed.">        if (castVoteE.isLeft()) {</span>
-<span class="nc" id="L135">            return Either.left(castVoteE.getLeft());</span>
+<span class="fc" id="L134">        val castVoteE = unwrapCastCoteEnvelope(concreteDetails);</span>
+<span class="pc bpc" id="L135" title="1 of 2 branches missed.">        if (castVoteE.isLeft()) {</span>
+<span class="nc" id="L136">            return Either.left(castVoteE.getLeft());</span>
         }
 
-<span class="fc" id="L138">        val castVote = castVoteE.get();</span>
-<span class="pc bpc" id="L139" title="1 of 2 branches missed.">        if (details.getAction() != CAST_VOTE) {</span>
-<span class="nc" id="L140">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L141">                    .withTitle(&quot;INVALID_ACTION&quot;)</span>
-<span class="nc" id="L142">                    .withDetail(&quot;Action is not CAST_VOTE, expected action:&quot; + CAST_VOTE.name())</span>
-<span class="nc" id="L143">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L144">                    .build()</span>
+<span class="fc" id="L139">        val castVote = castVoteE.get();</span>
+<span class="pc bpc" id="L140" title="1 of 2 branches missed.">        if (details.getAction() != CAST_VOTE) {</span>
+<span class="nc" id="L141">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L142">                    .withTitle(&quot;INVALID_ACTION&quot;)</span>
+<span class="nc" id="L143">                    .withDetail(&quot;Action is not CAST_VOTE, expected action:&quot; + CAST_VOTE.name())</span>
+<span class="nc" id="L144">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L145">                    .build()</span>
             );
         }
 
-<span class="pc bpc" id="L148" title="1 of 2 branches missed.">        if (event.isEventInactive()) {</span>
-<span class="nc" id="L149">            log.warn(&quot;Event is not active, id:{}&quot;, eventId);</span>
+<span class="pc bpc" id="L149" title="1 of 2 branches missed.">        if (event.isEventInactive()) {</span>
+<span class="nc" id="L150">            log.warn(&quot;Event is not active, id:{}&quot;, eventId);</span>
 
-<span class="nc" id="L151">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L152">                    .withTitle(&quot;EVENT_IS_NOT_ACTIVE&quot;)</span>
-<span class="nc" id="L153">                    .withDetail(&quot;Event is not active (not started or already finished), id:&quot; + eventId)</span>
-<span class="nc" id="L154">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L155">                    .build());</span>
+<span class="nc" id="L152">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L153">                    .withTitle(&quot;EVENT_IS_NOT_ACTIVE&quot;)</span>
+<span class="nc" id="L154">                    .withDetail(&quot;Event is not active (not started or already finished), id:&quot; + eventId)</span>
+<span class="nc" id="L155">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L156">                    .build());</span>
         }
 
 
 
-<span class="pc bpc" id="L160" title="1 of 2 branches missed.">        if (details.getChainTip().isNotSynced()) {</span>
-<span class="nc" id="L161">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L162">                    .withTitle(&quot;CHAIN_FOLLOWER_NOT_SYNCED&quot;)</span>
-<span class="nc" id="L163">                    .withDetail(&quot;Chain follower service not fully synced, please try again later!&quot;)</span>
-<span class="nc" id="L164">                    .withStatus(INTERNAL_SERVER_ERROR)</span>
-<span class="nc" id="L165">                    .build());</span>
+<span class="pc bpc" id="L161" title="1 of 2 branches missed.">        if (details.getChainTip().isNotSynced()) {</span>
+<span class="nc" id="L162">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L163">                    .withTitle(&quot;CHAIN_FOLLOWER_NOT_SYNCED&quot;)</span>
+<span class="nc" id="L164">                    .withDetail(&quot;Chain follower service not fully synced, please try again later!&quot;)</span>
+<span class="nc" id="L165">                    .withStatus(INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L166">                    .build());</span>
         }
 
         // check which is specific for the USER_BASED event type
-<span class="pc bpc" id="L169" title="1 of 2 branches missed.">        if (event.votingEventType() == USER_BASED) {</span>
-<span class="nc" id="L170">            val userVerifiedE = userVerificationClient.isVerified(eventId, walletType, details.getWalletId());</span>
-<span class="nc bnc" id="L171" title="All 2 branches missed.">            if (userVerifiedE.isEmpty()) {</span>
-<span class="nc" id="L172">                return Either.left(Problem.builder()</span>
-<span class="nc" id="L173">                        .withTitle(&quot;ERROR_GETTING_USER_VERIFICATION_STATUS&quot;)</span>
-<span class="nc" id="L174">                        .withDetail(&quot;Unable to get user verification status from user-verification service, reason: user verification service not available&quot;)</span>
-<span class="nc" id="L175">                        .withStatus(INTERNAL_SERVER_ERROR)</span>
-<span class="nc" id="L176">                        .build()</span>
+<span class="pc bpc" id="L170" title="1 of 2 branches missed.">        if (event.votingEventType() == USER_BASED) {</span>
+<span class="nc" id="L171">            val userVerifiedE = userVerificationClient.isVerified(eventId, walletType, details.getWalletId());</span>
+<span class="nc bnc" id="L172" title="All 2 branches missed.">            if (userVerifiedE.isEmpty()) {</span>
+<span class="nc" id="L173">                return Either.left(Problem.builder()</span>
+<span class="nc" id="L174">                        .withTitle(&quot;ERROR_GETTING_USER_VERIFICATION_STATUS&quot;)</span>
+<span class="nc" id="L175">                        .withDetail(&quot;Unable to get user verification status from user-verification service, reason: user verification service not available&quot;)</span>
+<span class="nc" id="L176">                        .withStatus(INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L177">                        .build()</span>
                 );
             }
-<span class="nc" id="L179">            val userVerifiedResponse = userVerifiedE.get();</span>
+<span class="nc" id="L180">            val userVerifiedResponse = userVerifiedE.get();</span>
 
-<span class="nc bnc" id="L181" title="All 2 branches missed.">            if (userVerifiedResponse.isNotYetVerified()) {</span>
-<span class="nc" id="L182">                log.warn(&quot;User is not verified, id:{}&quot;, eventId);</span>
+<span class="nc bnc" id="L182" title="All 2 branches missed.">            if (userVerifiedResponse.isNotYetVerified()) {</span>
+<span class="nc" id="L183">                log.warn(&quot;User is not verified, id:{}&quot;, eventId);</span>
 
-<span class="nc" id="L184">                return Either.left(Problem.builder()</span>
-<span class="nc" id="L185">                        .withTitle(&quot;USER_IS_NOT_VERIFIED&quot;)</span>
-<span class="nc" id="L186">                        .withDetail(&quot;User is not verified, id:&quot; + eventId)</span>
-<span class="nc" id="L187">                        .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L188">                        .build());</span>
+<span class="nc" id="L185">                return Either.left(Problem.builder()</span>
+<span class="nc" id="L186">                        .withTitle(&quot;USER_IS_NOT_VERIFIED&quot;)</span>
+<span class="nc" id="L187">                        .withDetail(&quot;User is not verified, id:&quot; + eventId)</span>
+<span class="nc" id="L188">                        .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L189">                        .build());</span>
             }
         }
 
-<span class="fc" id="L192">        val categoryId = castVote.getCategory();</span>
-<span class="fc" id="L193">        val categoryM = event.categoryDetailsById(categoryId);</span>
-<span class="pc bpc" id="L194" title="1 of 2 branches missed.">        if (categoryM.isEmpty()) {</span>
-<span class="nc" id="L195">            log.warn(&quot;Unrecognised category, id:{}&quot;, categoryId);</span>
+<span class="fc" id="L193">        val categoryId = castVote.getCategory();</span>
+<span class="fc" id="L194">        val categoryM = event.categoryDetailsById(categoryId);</span>
+<span class="pc bpc" id="L195" title="1 of 2 branches missed.">        if (categoryM.isEmpty()) {</span>
+<span class="nc" id="L196">            log.warn(&quot;Unrecognised category, id:{}&quot;, categoryId);</span>
 
-<span class="nc" id="L197">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L198">                    .withTitle(&quot;UNRECOGNISED_CATEGORY&quot;)</span>
-<span class="nc" id="L199">                    .withDetail(&quot;Unrecognised category, id:&quot; + categoryId)</span>
-<span class="nc" id="L200">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L201">                    .build());</span>
+<span class="nc" id="L198">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L199">                    .withTitle(&quot;UNRECOGNISED_CATEGORY&quot;)</span>
+<span class="nc" id="L200">                    .withDetail(&quot;Unrecognised category, id:&quot; + categoryId)</span>
+<span class="nc" id="L201">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L202">                    .build());</span>
         }
-<span class="fc" id="L203">        val category = categoryM.orElseThrow();</span>
+<span class="fc" id="L204">        val category = categoryM.orElseThrow();</span>
 
-<span class="fc" id="L205">        val proposalIdOrName = castVote.getProposal();</span>
+<span class="fc" id="L206">        val proposalIdOrName = castVote.getProposal();</span>
 
         ChainFollowerClient.ProposalDetailsResponse proposal;
-<span class="pc bpc" id="L208" title="1 of 2 branches missed.">        if (category.gdprProtection()) {</span>
-<span class="nc" id="L209">            val maybeProposal = category.findProposalById(proposalIdOrName);</span>
-<span class="nc bnc" id="L210" title="All 2 branches missed.">            if (maybeProposal.isEmpty()) {</span>
-<span class="nc" id="L211">                log.warn(&quot;Unrecognised proposal, proposalId:{}&quot;, proposalIdOrName);</span>
+<span class="pc bpc" id="L209" title="1 of 2 branches missed.">        if (category.gdprProtection()) {</span>
+<span class="nc" id="L210">            val maybeProposal = category.findProposalById(proposalIdOrName);</span>
+<span class="nc bnc" id="L211" title="All 2 branches missed.">            if (maybeProposal.isEmpty()) {</span>
+<span class="nc" id="L212">                log.warn(&quot;Unrecognised proposal, proposalId:{}&quot;, proposalIdOrName);</span>
 
-<span class="nc" id="L213">                return Either.left(Problem.builder()</span>
-<span class="nc" id="L214">                        .withTitle(&quot;UNRECOGNISED_PROPOSAL&quot;)</span>
-<span class="nc" id="L215">                        .withDetail(&quot;Unrecognised proposal, proposal:&quot; + proposalIdOrName)</span>
-<span class="nc" id="L216">                        .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L217">                        .build());</span>
+<span class="nc" id="L214">                return Either.left(Problem.builder()</span>
+<span class="nc" id="L215">                        .withTitle(&quot;UNRECOGNISED_PROPOSAL&quot;)</span>
+<span class="nc" id="L216">                        .withDetail(&quot;Unrecognised proposal, proposal:&quot; + proposalIdOrName)</span>
+<span class="nc" id="L217">                        .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L218">                        .build());</span>
             }
-<span class="nc" id="L219">            proposal = maybeProposal.orElseThrow();</span>
-<span class="nc" id="L220">        } else {</span>
-<span class="fc" id="L221">            val maybeProposal = category.findProposalByName(proposalIdOrName);</span>
-<span class="pc bpc" id="L222" title="1 of 2 branches missed.">            if (maybeProposal.isEmpty()) {</span>
-<span class="nc" id="L223">                log.warn(&quot;Unrecognised proposal, proposalId:{}&quot;, proposalIdOrName);</span>
+<span class="nc" id="L220">            proposal = maybeProposal.orElseThrow();</span>
+<span class="nc" id="L221">        } else {</span>
+<span class="fc" id="L222">            val maybeProposal = category.findProposalByName(proposalIdOrName);</span>
+<span class="pc bpc" id="L223" title="1 of 2 branches missed.">            if (maybeProposal.isEmpty()) {</span>
+<span class="nc" id="L224">                log.warn(&quot;Unrecognised proposal, proposalId:{}&quot;, proposalIdOrName);</span>
 
-<span class="nc" id="L225">                return Either.left(Problem.builder()</span>
-<span class="nc" id="L226">                        .withTitle(&quot;UNRECOGNISED_PROPOSAL&quot;)</span>
-<span class="nc" id="L227">                        .withDetail(&quot;Unrecognised proposal, proposal:&quot; + proposalIdOrName)</span>
-<span class="nc" id="L228">                        .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L229">                        .build());</span>
+<span class="nc" id="L226">                return Either.left(Problem.builder()</span>
+<span class="nc" id="L227">                        .withTitle(&quot;UNRECOGNISED_PROPOSAL&quot;)</span>
+<span class="nc" id="L228">                        .withDetail(&quot;Unrecognised proposal, proposal:&quot; + proposalIdOrName)</span>
+<span class="nc" id="L229">                        .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L230">                        .build());</span>
             }
-<span class="fc" id="L231">            proposal = maybeProposal.orElseThrow();</span>
+<span class="fc" id="L232">            proposal = maybeProposal.orElseThrow();</span>
         }
 
-<span class="fc" id="L234">        String voteId = castVote.getId();</span>
-<span class="pc bpc" id="L235" title="2 of 4 branches missed.">        if (voteId == null || !MoreUUID.isUUIDv4(voteId)) {</span>
-<span class="nc" id="L236">            return Either.left(</span>
-<span class="nc" id="L237">                    Problem.builder()</span>
-<span class="nc" id="L238">                            .withTitle(&quot;INVALID_VOTE_ID&quot;)</span>
-<span class="nc" id="L239">                            .withDetail(&quot;Invalid vote voteId: &quot; + voteId)</span>
-<span class="nc" id="L240">                            .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L241">                            .build());</span>
+<span class="fc" id="L235">        String voteId = castVote.getId();</span>
+<span class="pc bpc" id="L236" title="2 of 4 branches missed.">        if (voteId == null || !MoreUUID.isUUIDv4(voteId)) {</span>
+<span class="nc" id="L237">            return Either.left(</span>
+<span class="nc" id="L238">                    Problem.builder()</span>
+<span class="nc" id="L239">                            .withTitle(&quot;INVALID_VOTE_ID&quot;)</span>
+<span class="nc" id="L240">                            .withDetail(&quot;Invalid vote voteId: &quot; + voteId)</span>
+<span class="nc" id="L241">                            .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L242">                            .build());</span>
         }
 
-<span class="fc" id="L244">        val votedAtSlotStr = castVote.getVotedAt();</span>
-<span class="pc bpc" id="L245" title="1 of 2 branches missed.">        if (!isNumeric(votedAtSlotStr)) {</span>
-<span class="nc" id="L246">            return Either.left(</span>
-<span class="nc" id="L247">                    Problem.builder()</span>
-<span class="nc" id="L248">                            .withTitle(&quot;INVALID_SLOT&quot;)</span>
-<span class="nc" id="L249">                            .withDetail(&quot;Vote's votedAt slot is not numeric!&quot;)</span>
-<span class="nc" id="L250">                            .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L251">                            .build()</span>
+<span class="fc" id="L245">        val votedAtSlotStr = castVote.getVotedAt();</span>
+<span class="pc bpc" id="L246" title="1 of 2 branches missed.">        if (!isNumeric(votedAtSlotStr)) {</span>
+<span class="nc" id="L247">            return Either.left(</span>
+<span class="nc" id="L248">                    Problem.builder()</span>
+<span class="nc" id="L249">                            .withTitle(&quot;INVALID_SLOT&quot;)</span>
+<span class="nc" id="L250">                            .withDetail(&quot;Vote's votedAt slot is not numeric!&quot;)</span>
+<span class="nc" id="L251">                            .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L252">                            .build()</span>
             );
         }
 
-<span class="fc" id="L255">        val votedAtSlot = castVote.getVotedAtSlot();</span>
+<span class="fc" id="L256">        val votedAtSlot = castVote.getVotedAtSlot();</span>
 
-<span class="fc" id="L257">        val requestSlotE = concreteDetails.getRequestSlot();</span>
-<span class="pc bpc" id="L258" title="1 of 2 branches missed.">        if (requestSlotE.isEmpty()) {</span>
-<span class="nc" id="L259">            return Either.left(</span>
-<span class="nc" id="L260">                    Problem.builder()</span>
-<span class="nc" id="L261">                            .withTitle(&quot;INVALID_SLOT&quot;)</span>
-<span class="nc" id="L262">                            .withDetail(&quot;Request slot is not numeric!&quot;)</span>
-<span class="nc" id="L263">                            .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L264">                            .build()</span>
+<span class="fc" id="L258">        val requestSlotE = concreteDetails.getRequestSlot();</span>
+<span class="pc bpc" id="L259" title="1 of 2 branches missed.">        if (requestSlotE.isEmpty()) {</span>
+<span class="nc" id="L260">            return Either.left(</span>
+<span class="nc" id="L261">                    Problem.builder()</span>
+<span class="nc" id="L262">                            .withTitle(&quot;INVALID_SLOT&quot;)</span>
+<span class="nc" id="L263">                            .withDetail(&quot;Request slot is not numeric!&quot;)</span>
+<span class="nc" id="L264">                            .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L265">                            .build()</span>
             );
         }
 
-<span class="fc" id="L268">        val requestSlot = requestSlotE.get();</span>
-<span class="pc bpc" id="L269" title="1 of 2 branches missed.">        if (votedAtSlot != requestSlot) {</span>
-<span class="nc" id="L270">            log.warn(&quot;Slots mismatch, votedAt slot:{}, envelope's slot:{}&quot;, votedAtSlot, concreteDetails.getRequestSlot());</span>
+<span class="fc" id="L269">        val requestSlot = requestSlotE.get();</span>
+<span class="pc bpc" id="L270" title="1 of 2 branches missed.">        if (votedAtSlot != requestSlot) {</span>
+<span class="nc" id="L271">            log.warn(&quot;Slots mismatch, votedAt slot:{}, envelope's slot:{}&quot;, votedAtSlot, concreteDetails.getRequestSlot());</span>
 
-<span class="nc" id="L272">            return Either.left(</span>
-<span class="nc" id="L273">                    Problem.builder()</span>
-<span class="nc" id="L274">                            .withTitle(&quot;SLOT_MISMATCH&quot;)</span>
-<span class="nc" id="L275">                            .withDetail(&quot;Request envelope's slot and votedAt slot mismatch!&quot;)</span>
-<span class="nc" id="L276">                            .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L277">                            .build()</span>
+<span class="nc" id="L273">            return Either.left(</span>
+<span class="nc" id="L274">                    Problem.builder()</span>
+<span class="nc" id="L275">                            .withTitle(&quot;SLOT_MISMATCH&quot;)</span>
+<span class="nc" id="L276">                            .withDetail(&quot;Request envelope's slot and votedAt slot mismatch!&quot;)</span>
+<span class="nc" id="L277">                            .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L278">                            .build()</span>
             );
         }
 
-<span class="fc" id="L281">        val existingVoteM = voteRepository.findByEventIdAndCategoryIdAndWalletTypeAndWalletId(eventId, category.id(), walletType, walletId);</span>
-<span class="pc bpc" id="L282" title="1 of 2 branches missed.">        if (existingVoteM.isPresent()) {</span>
-<span class="nc bnc" id="L283" title="All 2 branches missed.">            if (!event.allowVoteChanging()) {</span>
-<span class="nc" id="L284">                return Either.left(Problem.builder()</span>
-<span class="nc" id="L285">                        .withTitle(&quot;VOTE_CANNOT_BE_CHANGED&quot;)</span>
-<span class="nc" id="L286">                        .withDetail(&quot;Vote cannot be changed for the address: &quot; + walletId + &quot;, within category: &quot; + category.id() + &quot;, for event: &quot; + eventId)</span>
-<span class="nc" id="L287">                        .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L288">                        .build()</span>
+<span class="fc" id="L282">        val existingVoteM = voteRepository.findByEventIdAndCategoryIdAndWalletTypeAndWalletId(eventId, category.id(), walletType, walletId);</span>
+<span class="pc bpc" id="L283" title="1 of 2 branches missed.">        if (existingVoteM.isPresent()) {</span>
+<span class="nc bnc" id="L284" title="All 2 branches missed.">            if (!event.allowVoteChanging()) {</span>
+<span class="nc" id="L285">                return Either.left(Problem.builder()</span>
+<span class="nc" id="L286">                        .withTitle(&quot;VOTE_CANNOT_BE_CHANGED&quot;)</span>
+<span class="nc" id="L287">                        .withDetail(&quot;Vote cannot be changed for the address: &quot; + walletId + &quot;, within category: &quot; + category.id() + &quot;, for event: &quot; + eventId)</span>
+<span class="nc" id="L288">                        .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L289">                        .build()</span>
                 );
             }
-<span class="nc" id="L291">            val existingVote = existingVoteM.orElseThrow();</span>
+<span class="nc" id="L292">            val existingVote = existingVoteM.orElseThrow();</span>
 
-<span class="nc" id="L293">            val maybeLatestProof = voteMerkleProofService.findLatestProof(eventId, existingVoteM.orElseThrow().getId());</span>
-<span class="nc bnc" id="L294" title="All 2 branches missed.">            if (maybeLatestProof.isPresent()) {</span>
-<span class="nc" id="L295">                log.warn(&quot;Cannot change existing vote for the address: &quot; + walletId, &quot;, within category: &quot; + category.id() + &quot;, for event: &quot; + eventId);</span>
+<span class="nc" id="L294">            val maybeLatestProof = voteMerkleProofService.findLatestProof(eventId, existingVoteM.orElseThrow().getId());</span>
+<span class="nc bnc" id="L295" title="All 2 branches missed.">            if (maybeLatestProof.isPresent()) {</span>
+<span class="nc" id="L296">                log.warn(&quot;Cannot change existing vote for the address: &quot; + walletId, &quot;, within category: &quot; + category.id() + &quot;, for event: &quot; + eventId);</span>
 
-<span class="nc" id="L297">                return Either.left(</span>
-<span class="nc" id="L298">                        Problem.builder()</span>
-<span class="nc" id="L299">                                .withTitle(&quot;VOTE_CANNOT_BE_CHANGED&quot;)</span>
-<span class="nc" id="L300">                                .withDetail(&quot;Vote cannot be changed for the address: &quot; + walletId + &quot;, within category: &quot; + category.id() + &quot;, for event: &quot; + eventId)</span>
-<span class="nc" id="L301">                                .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L302">                                .build()</span>
+<span class="nc" id="L298">                return Either.left(</span>
+<span class="nc" id="L299">                        Problem.builder()</span>
+<span class="nc" id="L300">                                .withTitle(&quot;VOTE_CANNOT_BE_CHANGED&quot;)</span>
+<span class="nc" id="L301">                                .withDetail(&quot;Vote cannot be changed for the address: &quot; + walletId + &quot;, within category: &quot; + category.id() + &quot;, for event: &quot; + eventId)</span>
+<span class="nc" id="L302">                                .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L303">                                .build()</span>
                 );
             }
-<span class="nc" id="L305">            existingVote.setId(existingVote.getId());</span>
-<span class="nc" id="L306">            existingVote.setProposalId(proposal.id());</span>
-<span class="nc" id="L307">            existingVote.setVotedAtSlot(castVote.getVotedAtSlot());</span>
-<span class="nc" id="L308">            existingVote.setWalletType(walletType);</span>
-<span class="nc" id="L309">            existingVote.setSignature(concreteDetails.getSignature());</span>
-<span class="nc" id="L310">            existingVote.setPayload(concreteDetails.getPayload());</span>
-<span class="nc" id="L311">            existingVote.setPublicKey(concreteDetails.getPublicKey());</span>
+<span class="nc" id="L306">            existingVote.setId(existingVote.getId());</span>
+<span class="nc" id="L307">            existingVote.setProposalId(proposal.id());</span>
+<span class="nc" id="L308">            existingVote.setVotedAtSlot(castVote.getVotedAtSlot());</span>
+<span class="nc" id="L309">            existingVote.setWalletType(walletType);</span>
+<span class="nc" id="L310">            existingVote.setSignature(concreteDetails.getSignature());</span>
+<span class="nc" id="L311">            existingVote.setPayload(concreteDetails.getPayload());</span>
+<span class="nc" id="L312">            existingVote.setPublicKey(concreteDetails.getPublicKey());</span>
 
-<span class="nc" id="L313">            return Either.right(voteRepository.saveAndFlush(existingVote));</span>
+<span class="nc" id="L314">            return Either.right(voteRepository.saveAndFlush(existingVote));</span>
         }
 
-<span class="fc" id="L316">        val vote = new Vote();</span>
-<span class="fc" id="L317">        vote.setId(voteId);</span>
-<span class="fc" id="L318">        vote.setEventId(event.id());</span>
-<span class="fc" id="L319">        vote.setCategoryId(category.id());</span>
-<span class="fc" id="L320">        vote.setProposalId(proposal.id());</span>
-<span class="fc" id="L321">        vote.setWalletId(walletId);</span>
-<span class="fc" id="L322">        vote.setWalletType(walletType);</span>
-<span class="fc" id="L323">        vote.setVotedAtSlot(castVote.getVotedAtSlot());</span>
-<span class="fc" id="L324">        vote.setSignature(concreteDetails.getSignature());</span>
-<span class="fc" id="L325">        vote.setPayload(concreteDetails.getPayload());</span>
-<span class="fc" id="L326">        vote.setPublicKey(concreteDetails.getPublicKey());</span>
-<span class="fc" id="L327">        vote.setIdNumericHash(UUID.fromString(voteId).hashCode() &amp; 0xFFFFFFF);</span>
+<span class="fc" id="L317">        val vote = new Vote();</span>
+<span class="fc" id="L318">        vote.setId(voteId);</span>
+<span class="fc" id="L319">        vote.setEventId(event.id());</span>
+<span class="fc" id="L320">        vote.setCategoryId(category.id());</span>
+<span class="fc" id="L321">        vote.setProposalId(proposal.id());</span>
+<span class="fc" id="L322">        vote.setWalletId(walletId);</span>
+<span class="fc" id="L323">        vote.setWalletType(walletType);</span>
+<span class="fc" id="L324">        vote.setVotedAtSlot(castVote.getVotedAtSlot());</span>
+<span class="fc" id="L325">        vote.setSignature(concreteDetails.getSignature());</span>
+<span class="fc" id="L326">        vote.setPayload(concreteDetails.getPayload());</span>
+<span class="fc" id="L327">        vote.setPublicKey(concreteDetails.getPublicKey());</span>
+<span class="fc" id="L328">        vote.setIdNumericHash(UUID.fromString(voteId).hashCode() &amp; 0xFFFFFFF);</span>
 
         // KERI wallet type is not supported for account / balance voting events
-<span class="pc bpc" id="L330" title="2 of 4 branches missed.">        if (event.votingEventType() != USER_BASED &amp;&amp; concreteDetails.getWeb3CommonDetails().getWalletType() == KERI) {</span>
-<span class="nc" id="L331">            return Either.left(</span>
-<span class="nc" id="L332">                    Problem.builder()</span>
-<span class="nc" id="L333">                            .withTitle(&quot;KERI_NOT_SUPPORTED&quot;)</span>
-<span class="nc" id="L334">                            .withDetail(&quot;Only Cardano wallet type supported for account / balance voting events is not supported.&quot;)</span>
-<span class="nc" id="L335">                            .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L336">                            .build()</span>
+<span class="pc bpc" id="L331" title="2 of 4 branches missed.">        if (event.votingEventType() != USER_BASED &amp;&amp; concreteDetails.getWeb3CommonDetails().getWalletType() == KERI) {</span>
+<span class="nc" id="L332">            return Either.left(</span>
+<span class="nc" id="L333">                    Problem.builder()</span>
+<span class="nc" id="L334">                            .withTitle(&quot;KERI_NOT_SUPPORTED&quot;)</span>
+<span class="nc" id="L335">                            .withDetail(&quot;Only Cardano wallet type supported for account / balance voting events is not supported.&quot;)</span>
+<span class="nc" id="L336">                            .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L337">                            .build()</span>
             );
         }
 
-<span class="pc bpc" id="L340" title="1 of 2 branches missed.">        if (List.of(STAKE_BASED, BALANCE_BASED).contains(event.votingEventType())) {</span>
-<span class="fc" id="L341">            val accountE = chainFollowerClient.findAccount(eventId, walletType, walletId);</span>
-<span class="pc bpc" id="L342" title="1 of 2 branches missed.">            if (accountE.isEmpty()) {</span>
-<span class="nc" id="L343">                return Either.left(Problem.builder()</span>
-<span class="nc" id="L344">                        .withTitle(&quot;ERROR_GETTING_ACCOUNT&quot;)</span>
-<span class="nc" id="L345">                        .withDetail(&quot;Unable to get account from chain-tip follower service, address:&quot; + walletId)</span>
-<span class="nc" id="L346">                        .withStatus(INTERNAL_SERVER_ERROR)</span>
-<span class="nc" id="L347">                        .build()</span>
+<span class="pc bpc" id="L341" title="1 of 2 branches missed.">        if (List.of(STAKE_BASED, BALANCE_BASED).contains(event.votingEventType())) {</span>
+<span class="fc" id="L342">            val accountE = chainFollowerClient.findAccount(eventId, walletType, walletId);</span>
+<span class="pc bpc" id="L343" title="1 of 2 branches missed.">            if (accountE.isEmpty()) {</span>
+<span class="nc" id="L344">                return Either.left(Problem.builder()</span>
+<span class="nc" id="L345">                        .withTitle(&quot;ERROR_GETTING_ACCOUNT&quot;)</span>
+<span class="nc" id="L346">                        .withDetail(&quot;Unable to get account from chain-tip follower service, address:&quot; + walletId)</span>
+<span class="nc" id="L347">                        .withStatus(INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L348">                        .build()</span>
                 );
             }
-<span class="fc" id="L350">            val maybeAccount = accountE.get();</span>
-<span class="pc bpc" id="L351" title="1 of 2 branches missed.">            if (maybeAccount.isEmpty()) {</span>
-<span class="nc" id="L352">                log.warn(&quot;State account not eligible to vote, e.g. not staked or power is less than equal 0 for the address: &quot; + walletId);</span>
+<span class="fc" id="L351">            val maybeAccount = accountE.get();</span>
+<span class="pc bpc" id="L352" title="1 of 2 branches missed.">            if (maybeAccount.isEmpty()) {</span>
+<span class="nc" id="L353">                log.warn(&quot;State account not eligible to vote, e.g. not staked or power is less than equal 0 for the address: &quot; + walletId);</span>
 
-<span class="nc" id="L354">                return Either.left(</span>
-<span class="nc" id="L355">                        Problem.builder()</span>
-<span class="nc" id="L356">                                .withTitle(&quot;NOT_ELIGIBLE&quot;)</span>
-<span class="nc" id="L357">                                .withDetail(&quot;State account not eligible to vote, e.g. account not staked at snapshot epoch or voting power is less than equal 0 for the address:&quot; + walletId)</span>
-<span class="nc" id="L358">                                .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L359">                                .build()</span>
+<span class="nc" id="L355">                return Either.left(</span>
+<span class="nc" id="L356">                        Problem.builder()</span>
+<span class="nc" id="L357">                                .withTitle(&quot;NOT_ELIGIBLE&quot;)</span>
+<span class="nc" id="L358">                                .withDetail(&quot;State account not eligible to vote, e.g. account not staked at snapshot epoch or voting power is less than equal 0 for the address:&quot; + walletId)</span>
+<span class="nc" id="L359">                                .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L360">                                .build()</span>
                 );
             }
-<span class="fc" id="L362">            val account = maybeAccount.get();</span>
+<span class="fc" id="L363">            val account = maybeAccount.get();</span>
 
             // if we are eligible then we will have voting power
-<span class="fc" id="L365">            val blockchainVotingPowerStr = account.votingPower();</span>
-<span class="pc bpc" id="L366" title="1 of 2 branches missed.">            if (!isNumeric(blockchainVotingPowerStr)) {</span>
-<span class="nc" id="L367">                return Either.left(</span>
-<span class="nc" id="L368">                        Problem.builder()</span>
-<span class="nc" id="L369">                                .withTitle(&quot;INVALID_VOTING_POWER&quot;)</span>
-<span class="nc" id="L370">                                .withDetail(&quot;Invalid blockchain voting power for the address: &quot; + walletId)</span>
-<span class="nc" id="L371">                                .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L372">                                .build()</span>
+<span class="fc" id="L366">            val blockchainVotingPowerStr = account.votingPower();</span>
+<span class="pc bpc" id="L367" title="1 of 2 branches missed.">            if (!isNumeric(blockchainVotingPowerStr)) {</span>
+<span class="nc" id="L368">                return Either.left(</span>
+<span class="nc" id="L369">                        Problem.builder()</span>
+<span class="nc" id="L370">                                .withTitle(&quot;INVALID_VOTING_POWER&quot;)</span>
+<span class="nc" id="L371">                                .withDetail(&quot;Invalid blockchain voting power for the address: &quot; + walletId)</span>
+<span class="nc" id="L372">                                .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L373">                                .build()</span>
                 );
             }
-<span class="fc" id="L375">            val blockchainVotingPower = Long.parseLong(blockchainVotingPowerStr);</span>
+<span class="fc" id="L376">            val blockchainVotingPower = Long.parseLong(blockchainVotingPowerStr);</span>
 
-<span class="pc bpc" id="L377" title="1 of 2 branches missed.">            if (!isNumeric(castVote.getVotingPower().orElseThrow())) {</span>
-<span class="nc" id="L378">                return Either.left(</span>
-<span class="nc" id="L379">                        Problem.builder()</span>
-<span class="nc" id="L380">                                .withTitle(&quot;INVALID_VOTING_POWER&quot;)</span>
-<span class="nc" id="L381">                                .withDetail(&quot;Vote's votingPower is not numeric for the address: &quot; + walletId)</span>
-<span class="nc" id="L382">                                .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L383">                                .build()</span>
+<span class="pc bpc" id="L378" title="1 of 2 branches missed.">            if (!isNumeric(castVote.getVotingPower().orElseThrow())) {</span>
+<span class="nc" id="L379">                return Either.left(</span>
+<span class="nc" id="L380">                        Problem.builder()</span>
+<span class="nc" id="L381">                                .withTitle(&quot;INVALID_VOTING_POWER&quot;)</span>
+<span class="nc" id="L382">                                .withDetail(&quot;Vote's votingPower is not numeric for the address: &quot; + walletId)</span>
+<span class="nc" id="L383">                                .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L384">                                .build()</span>
                 );
             }
-<span class="fc" id="L386">            val signedVotingPower = Long.parseLong(castVote.getVotingPower().orElseThrow());</span>
-<span class="pc bpc" id="L387" title="1 of 2 branches missed.">            if (signedVotingPower != blockchainVotingPower) {</span>
-<span class="nc" id="L388">                return Either.left(</span>
-<span class="nc" id="L389">                        Problem.builder()</span>
-<span class="nc" id="L390">                                .withTitle(&quot;VOTING_POWER_MISMATCH&quot;)</span>
-<span class="nc" id="L391">                                .withDetail(&quot;Signed voting power is not equal to blockchain voting power for the stake address: &quot; + walletId)</span>
-<span class="nc" id="L392">                                .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L393">                                .build()</span>
+<span class="fc" id="L387">            val signedVotingPower = Long.parseLong(castVote.getVotingPower().orElseThrow());</span>
+<span class="pc bpc" id="L388" title="1 of 2 branches missed.">            if (signedVotingPower != blockchainVotingPower) {</span>
+<span class="nc" id="L389">                return Either.left(</span>
+<span class="nc" id="L390">                        Problem.builder()</span>
+<span class="nc" id="L391">                                .withTitle(&quot;VOTING_POWER_MISMATCH&quot;)</span>
+<span class="nc" id="L392">                                .withDetail(&quot;Signed voting power is not equal to blockchain voting power for the stake address: &quot; + walletId)</span>
+<span class="nc" id="L393">                                .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L394">                                .build()</span>
                 );
             }
 
-<span class="fc" id="L397">            vote.setVotingPower(Optional.of(blockchainVotingPower));</span>
+<span class="fc" id="L398">            vote.setVotingPower(Optional.of(blockchainVotingPower));</span>
         }
 
-<span class="pc bpc" id="L400" title="1 of 2 branches missed.">        if (event.votingEventType() == USER_BASED) {</span>
-<span class="nc bnc" id="L401" title="All 2 branches missed.">            if (vote.getVotingPower().isPresent()) {</span>
-<span class="nc" id="L402">                return Either.left(</span>
-<span class="nc" id="L403">                        Problem.builder()</span>
-<span class="nc" id="L404">                                .withTitle(&quot;VOTING_POWER_NOT_SUPPORTED&quot;)</span>
-<span class="nc" id="L405">                                .withDetail(&quot;Voting power makes no sense for USER_BASED events, please remove it from the cast vote's envelope.&quot;)</span>
-<span class="nc" id="L406">                                .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L407">                                .build()</span>
+<span class="pc bpc" id="L401" title="1 of 2 branches missed.">        if (event.votingEventType() == USER_BASED) {</span>
+<span class="nc bnc" id="L402" title="All 2 branches missed.">            if (vote.getVotingPower().isPresent()) {</span>
+<span class="nc" id="L403">                return Either.left(</span>
+<span class="nc" id="L404">                        Problem.builder()</span>
+<span class="nc" id="L405">                                .withTitle(&quot;VOTING_POWER_NOT_SUPPORTED&quot;)</span>
+<span class="nc" id="L406">                                .withDetail(&quot;Voting power makes no sense for USER_BASED events, please remove it from the cast vote's envelope.&quot;)</span>
+<span class="nc" id="L407">                                .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L408">                                .build()</span>
                 );
             }
         }
 
-<span class="fc" id="L412">        return Either.right(voteRepository.saveAndFlush(vote));</span>
+<span class="fc" id="L413">        return Either.right(voteRepository.saveAndFlush(vote));</span>
     }
 
     private Either&lt;Problem, ViewVoteReceiptEnvelope&gt; unwrapViewVoteReceiptEnvelope(Web3ConcreteDetails concreteDetails) {
-<span class="fc" id="L416">        val signedJson = concreteDetails.getSignedJson();</span>
+<span class="fc" id="L417">        val signedJson = concreteDetails.getSignedJson();</span>
 
-<span class="pc bpc" id="L418" title="2 of 3 branches missed.">        switch (concreteDetails) {</span>
-<span class="fc" id="L419">            case CardanoWeb3Details cardanoWeb3Details -&gt; {</span>
-<span class="fc" id="L420">                Either&lt;Problem, CIP93Envelope&lt;ViewVoteReceiptEnvelope&gt;&gt; viewVoteEnvelopeE = jsonService.decodeCIP93ViewVoteReceiptEnvelope(signedJson);</span>
-<span class="pc bpc" id="L421" title="1 of 2 branches missed.">                if (viewVoteEnvelopeE.isLeft()) {</span>
-<span class="nc" id="L422">                    return Either.left(</span>
-<span class="nc" id="L423">                            Problem.builder()</span>
-<span class="nc" id="L424">                                    .withTitle(&quot;INVALID_CIP93_DATA_SIGNATURE&quot;)</span>
-<span class="nc" id="L425">                                    .withDetail(&quot;Error while decoding view vote receipt signature!&quot;)</span>
-<span class="nc" id="L426">                                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L427">                                    .build()</span>
+<span class="pc bpc" id="L419" title="2 of 3 branches missed.">        switch (concreteDetails) {</span>
+<span class="fc" id="L420">            case CardanoWeb3Details cardanoWeb3Details -&gt; {</span>
+<span class="fc" id="L421">                Either&lt;Problem, CIP93Envelope&lt;ViewVoteReceiptEnvelope&gt;&gt; viewVoteEnvelopeE = jsonService.decodeCIP93ViewVoteReceiptEnvelope(signedJson);</span>
+<span class="pc bpc" id="L422" title="1 of 2 branches missed.">                if (viewVoteEnvelopeE.isLeft()) {</span>
+<span class="nc" id="L423">                    return Either.left(</span>
+<span class="nc" id="L424">                            Problem.builder()</span>
+<span class="nc" id="L425">                                    .withTitle(&quot;INVALID_CIP93_DATA_SIGNATURE&quot;)</span>
+<span class="nc" id="L426">                                    .withDetail(&quot;Error while decoding view vote receipt signature!&quot;)</span>
+<span class="nc" id="L427">                                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L428">                                    .build()</span>
                     );
                 }
 
-<span class="fc" id="L431">                return Either.right(viewVoteEnvelopeE.get().getData());</span>
+<span class="fc" id="L432">                return Either.right(viewVoteEnvelopeE.get().getData());</span>
             }
-<span class="nc" id="L433">            case KeriWeb3Details keriWeb3Details -&gt; {</span>
-<span class="nc" id="L434">                Either&lt;Problem, KERIEnvelope&lt;ViewVoteReceiptEnvelope&gt;&gt; viewVoteEnvelopeE = jsonService.decodeKERIViewVoteReceiptEnvelope(signedJson);</span>
-<span class="nc bnc" id="L435" title="All 2 branches missed.">                if (viewVoteEnvelopeE.isLeft()) {</span>
-<span class="nc" id="L436">                    return Either.left(</span>
-<span class="nc" id="L437">                            Problem.builder()</span>
-<span class="nc" id="L438">                                    .withTitle(&quot;INVALID_KERI_DATA_SIGNATURE&quot;)</span>
-<span class="nc" id="L439">                                    .withDetail(&quot;Error while decoding KERI view vote receipt signature!&quot;)</span>
-<span class="nc" id="L440">                                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L441">                                    .build()</span>
+<span class="nc" id="L434">            case KeriWeb3Details keriWeb3Details -&gt; {</span>
+<span class="nc" id="L435">                Either&lt;Problem, KERIEnvelope&lt;ViewVoteReceiptEnvelope&gt;&gt; viewVoteEnvelopeE = jsonService.decodeKERIViewVoteReceiptEnvelope(signedJson);</span>
+<span class="nc bnc" id="L436" title="All 2 branches missed.">                if (viewVoteEnvelopeE.isLeft()) {</span>
+<span class="nc" id="L437">                    return Either.left(</span>
+<span class="nc" id="L438">                            Problem.builder()</span>
+<span class="nc" id="L439">                                    .withTitle(&quot;INVALID_KERI_DATA_SIGNATURE&quot;)</span>
+<span class="nc" id="L440">                                    .withDetail(&quot;Error while decoding KERI view vote receipt signature!&quot;)</span>
+<span class="nc" id="L441">                                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L442">                                    .build()</span>
                     );
                 }
 
-<span class="nc" id="L445">                return Either.right(viewVoteEnvelopeE.get().getData());</span>
+<span class="nc" id="L446">                return Either.right(viewVoteEnvelopeE.get().getData());</span>
             }
             default -&gt; {
-<span class="nc" id="L448">                return Either.left(Problem.builder()</span>
-<span class="nc" id="L449">                        .withTitle(&quot;UNSUPPORTED_WALLET_TYPE&quot;)</span>
-<span class="nc" id="L450">                        .withDetail(&quot;Unsupported web3 details type:&quot; + concreteDetails.getClass().getName())</span>
-<span class="nc" id="L451">                        .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L452">                        .build()</span>
+<span class="nc" id="L449">                return Either.left(Problem.builder()</span>
+<span class="nc" id="L450">                        .withTitle(&quot;UNSUPPORTED_WALLET_TYPE&quot;)</span>
+<span class="nc" id="L451">                        .withDetail(&quot;Unsupported web3 details type:&quot; + concreteDetails.getClass().getName())</span>
+<span class="nc" id="L452">                        .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L453">                        .build()</span>
                 );
             }
         }
     }
 
     private Either&lt;Problem, VoteEnvelope&gt; unwrapCastCoteEnvelope(Web3ConcreteDetails concreteDetails) {
-<span class="fc" id="L459">        val signedJson = concreteDetails.getSignedJson();</span>
+<span class="fc" id="L460">        val signedJson = concreteDetails.getSignedJson();</span>
 
-<span class="pc bpc" id="L461" title="2 of 3 branches missed.">        switch (concreteDetails) {</span>
-<span class="fc" id="L462">            case CardanoWeb3Details cardanoWeb3Details -&gt; {</span>
-<span class="fc" id="L463">                val castVoteRequestBodyJsonE = jsonService.decodeCIP93VoteEnvelope(signedJson);</span>
-<span class="pc bpc" id="L464" title="1 of 2 branches missed.">                if (castVoteRequestBodyJsonE.isLeft()) {</span>
-<span class="nc bnc" id="L465" title="All 2 branches missed.">                    if (castVoteRequestBodyJsonE.isLeft()) {</span>
-<span class="nc" id="L466">                        return Either.left(</span>
-<span class="nc" id="L467">                                Problem.builder()</span>
-<span class="nc" id="L468">                                        .withTitle(&quot;INVALID_CIP93_DATA_SIGNATURE&quot;)</span>
-<span class="nc" id="L469">                                        .withDetail(&quot;Error while decoding cast vote signature!&quot;)</span>
-<span class="nc" id="L470">                                        .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L471">                                        .build()</span>
+<span class="pc bpc" id="L462" title="2 of 3 branches missed.">        switch (concreteDetails) {</span>
+<span class="fc" id="L463">            case CardanoWeb3Details cardanoWeb3Details -&gt; {</span>
+<span class="fc" id="L464">                val castVoteRequestBodyJsonE = jsonService.decodeCIP93VoteEnvelope(signedJson);</span>
+<span class="pc bpc" id="L465" title="1 of 2 branches missed.">                if (castVoteRequestBodyJsonE.isLeft()) {</span>
+<span class="nc bnc" id="L466" title="All 2 branches missed.">                    if (castVoteRequestBodyJsonE.isLeft()) {</span>
+<span class="nc" id="L467">                        return Either.left(</span>
+<span class="nc" id="L468">                                Problem.builder()</span>
+<span class="nc" id="L469">                                        .withTitle(&quot;INVALID_CIP93_DATA_SIGNATURE&quot;)</span>
+<span class="nc" id="L470">                                        .withDetail(&quot;Error while decoding cast vote signature!&quot;)</span>
+<span class="nc" id="L471">                                        .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L472">                                        .build()</span>
                         );
                     }
                 }
 
-<span class="fc" id="L476">                val cip93CastVoteEnvelope = castVoteRequestBodyJsonE.get();</span>
+<span class="fc" id="L477">                val cip93CastVoteEnvelope = castVoteRequestBodyJsonE.get();</span>
 
-<span class="fc" id="L478">                return Either.right(cip93CastVoteEnvelope.getData());</span>
+<span class="fc" id="L479">                return Either.right(cip93CastVoteEnvelope.getData());</span>
             }
-<span class="nc" id="L480">            case KeriWeb3Details keriWeb3Details -&gt; {</span>
-<span class="nc" id="L481">                val castVoteRequestBodyJsonE = jsonService.decodeKERIVoteEnvelope(signedJson);</span>
-<span class="nc bnc" id="L482" title="All 2 branches missed.">                if (castVoteRequestBodyJsonE.isLeft()) {</span>
-<span class="nc" id="L483">                    return Either.left(</span>
-<span class="nc" id="L484">                            Problem.builder()</span>
-<span class="nc" id="L485">                                    .withTitle(&quot;INVALID_KERI_DATA_SIGNATURE&quot;)</span>
-<span class="nc" id="L486">                                    .withDetail(&quot;Error while decoding KERI cast vote signature!&quot;)</span>
-<span class="nc" id="L487">                                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L488">                                    .build()</span>
+<span class="nc" id="L481">            case KeriWeb3Details keriWeb3Details -&gt; {</span>
+<span class="nc" id="L482">                val castVoteRequestBodyJsonE = jsonService.decodeKERIVoteEnvelope(signedJson);</span>
+<span class="nc bnc" id="L483" title="All 2 branches missed.">                if (castVoteRequestBodyJsonE.isLeft()) {</span>
+<span class="nc" id="L484">                    return Either.left(</span>
+<span class="nc" id="L485">                            Problem.builder()</span>
+<span class="nc" id="L486">                                    .withTitle(&quot;INVALID_KERI_DATA_SIGNATURE&quot;)</span>
+<span class="nc" id="L487">                                    .withDetail(&quot;Error while decoding KERI cast vote signature!&quot;)</span>
+<span class="nc" id="L488">                                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L489">                                    .build()</span>
                     );
                 }
-<span class="nc" id="L491">                val keriCastVoteEnvelope = castVoteRequestBodyJsonE.get();</span>
+<span class="nc" id="L492">                val keriCastVoteEnvelope = castVoteRequestBodyJsonE.get();</span>
 
-<span class="nc" id="L493">                return Either.right(keriCastVoteEnvelope.getData());</span>
+<span class="nc" id="L494">                return Either.right(keriCastVoteEnvelope.getData());</span>
             }
             default -&gt; {
-<span class="nc" id="L496">                return Either.left(Problem.builder()</span>
-<span class="nc" id="L497">                        .withTitle(&quot;UNSUPPORTED_WEB3_DETAILS&quot;)</span>
-<span class="nc" id="L498">                        .withDetail(&quot;Unsupported web3 details type:&quot; + concreteDetails.getWeb3CommonDetails().getWalletType())</span>
-<span class="nc" id="L499">                        .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L500">                        .build()</span>
+<span class="nc" id="L497">                return Either.left(Problem.builder()</span>
+<span class="nc" id="L498">                        .withTitle(&quot;UNSUPPORTED_WEB3_DETAILS&quot;)</span>
+<span class="nc" id="L499">                        .withDetail(&quot;Unsupported web3 details type:&quot; + concreteDetails.getWeb3CommonDetails().getWalletType())</span>
+<span class="nc" id="L500">                        .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L501">                        .build()</span>
                 );
             }
         }
@@ -505,192 +506,289 @@ public class DefaultVoteService implements VoteService {
 
     @Override
     @Transactional(readOnly = true)
-    @Timed(value = &quot;service.vote.voteReceipt&quot;, histogram = true)
-    public Either&lt;Problem, VoteReceipt&gt; voteReceipt(Web3AuthenticationToken web3AuthenticationToken) {
-<span class="fc" id="L510">        log.info(&quot;Fetching voter's receipt for the signed data...&quot;);</span>
+    @Timed(value = &quot;service.vote.voteReceipts&quot;, histogram = true)
+    public Either&lt;Problem, List&lt;VoteReceipt&gt;&gt; voteReceipts(JwtAuthenticationToken auth) {
+<span class="fc" id="L511">        log.info(&quot;Fetching voter's receipts for the signed data...&quot;);</span>
+<span class="fc" id="L512">        val jwtWalletId = auth.getWalletId();</span>
+<span class="fc" id="L513">        val jwtWalletType = auth.getWalletType();</span>
+<span class="fc" id="L514">        val eventDetails = auth.eventDetails();</span>
 
-<span class="fc" id="L512">        val concreteDetails = web3AuthenticationToken.getDetails();</span>
-<span class="fc" id="L513">        val commonDetails = web3AuthenticationToken.getDetails().getWeb3CommonDetails();</span>
-
-<span class="fc" id="L515">        val event = commonDetails.getEvent();</span>
-<span class="fc" id="L516">        val walletType = commonDetails.getWalletType();</span>
-<span class="fc" id="L517">        val walletId = commonDetails.getWalletId();</span>
-
-<span class="fc" id="L519">        val viewVoteReceiptEnvelopeE = unwrapViewVoteReceiptEnvelope(concreteDetails);</span>
-<span class="pc bpc" id="L520" title="1 of 2 branches missed.">        if (viewVoteReceiptEnvelopeE.isLeft()) {</span>
-<span class="nc" id="L521">            return Either.left(viewVoteReceiptEnvelopeE.getLeft());</span>
+<span class="pc bpc" id="L516" title="1 of 2 branches missed.">        if (auth.isActionNotAllowed(VIEW_VOTE_RECEIPT)) {</span>
+<span class="nc" id="L517">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L518">                    .withTitle(&quot;ACTION_NOT_ALLOWED&quot;)</span>
+<span class="nc" id="L519">                    .withDetail(&quot;Action VIEW_VOTE_RECEIPT not allowed for the role:&quot; + auth.role().name())</span>
+<span class="nc" id="L520">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L521">                    .build());</span>
         }
 
-<span class="fc" id="L524">        val viewVoteReceiptEnvelope = viewVoteReceiptEnvelopeE.get();</span>
+<span class="fc" id="L524">        val votes = voteRepository.findByEventIdAndWalletTypeAndWalletId(eventDetails.id(), jwtWalletType, jwtWalletId);</span>
+<span class="pc bpc" id="L525" title="1 of 2 branches missed.">        if (votes.isEmpty()) {</span>
+<span class="nc" id="L526">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L527">                    .withTitle(&quot;NO_VOTES_FOUND&quot;)</span>
+<span class="nc" id="L528">                    .withDetail(&quot;No votes found for the wallet: &quot; + jwtWalletId)</span>
+<span class="nc" id="L529">                    .withStatus(NOT_FOUND)</span>
+<span class="nc" id="L530">                    .build());</span>
+        }
 
-<span class="pc bpc" id="L526" title="1 of 2 branches missed.">        if (commonDetails.getAction() != VIEW_VOTE_RECEIPT) {</span>
-<span class="nc" id="L527">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L528">                    .withTitle(&quot;INVALID_ACTION&quot;)</span>
-<span class="nc" id="L529">                    .withDetail(&quot;Action is not VIEW_VOTE_RECEIPT, action:&quot; + commonDetails.getAction())</span>
-<span class="nc" id="L530">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L531">                    .build()</span>
+<span class="fc" id="L533">        List&lt;VoteReceipt&gt; voteReceipts = votes.stream().map(vote -&gt; {</span>
+<span class="fc" id="L534">            val categoryM = eventDetails.categoryDetailsById(vote.getCategoryId());</span>
+<span class="pc bpc" id="L535" title="1 of 2 branches missed.">            if (categoryM.isEmpty()) {</span>
+<span class="nc" id="L536">                log.warn(&quot;Unrecognised category, id:{}&quot;, vote.getCategoryId());</span>
+<span class="nc" id="L537">                return null;</span>
+            }
+<span class="fc" id="L539">            val category = categoryM.orElseThrow();</span>
+
+<span class="fc" id="L541">            val proposalM = category.findProposalById(vote.getProposalId());</span>
+<span class="pc bpc" id="L542" title="1 of 2 branches missed.">            if (proposalM.isEmpty()) {</span>
+<span class="nc" id="L543">                log.warn(&quot;Proposal not found for voteId:{}&quot;, vote.getId());</span>
+<span class="nc" id="L544">                return null;</span>
+            }
+<span class="fc" id="L546">            val proposal = proposalM.orElseThrow();</span>
+<span class="pc bpc" id="L547" title="1 of 2 branches missed.">            val proposalIdOrName = category.gdprProtection() ? proposal.id() : proposal.name();</span>
+
+<span class="fc" id="L549">            val latestVoteMerkleProof = voteMerkleProofService.findLatestProof(eventDetails.id(), vote.getId());</span>
+
+<span class="fc" id="L551">            return latestVoteMerkleProof.map(proof -&gt; {</span>
+<span class="nc" id="L552">                log.info(&quot;Latest merkle proof found for voteId:{}&quot;, vote.getId());</span>
+
+<span class="nc" id="L554">                val transactionDetailsE = chainFollowerClient.getTransactionDetails(proof.getL1TransactionHash());</span>
+<span class="nc bnc" id="L555" title="All 2 branches missed.">                if (transactionDetailsE.isEmpty()) {</span>
+<span class="nc" id="L556">                    log.warn(&quot;Unable to get transaction details from chain-tip follower service, transactionHash:{}&quot;, proof.getL1TransactionHash());</span>
+<span class="nc" id="L557">                    return null;</span>
+                }
+<span class="nc" id="L559">                val transactionDetailsM = transactionDetailsE.get();</span>
+
+<span class="nc" id="L561">                val isL1CommitmentOnChain = transactionDetailsM.map(ChainFollowerClient.TransactionDetailsResponse::finalityScore);</span>
+
+<span class="nc" id="L563">                return VoteReceipt.builder()</span>
+<span class="nc" id="L564">                        .id(vote.getId())</span>
+<span class="nc" id="L565">                        .event(eventDetails.id())</span>
+<span class="nc" id="L566">                        .category(category.id())</span>
+<span class="nc" id="L567">                        .proposal(proposalIdOrName)</span>
+<span class="nc" id="L568">                        .signature(vote.getSignature())</span>
+<span class="nc" id="L569">                        .payload(vote.getPayload())</span>
+<span class="nc" id="L570">                        .publicKey(vote.getPublicKey())</span>
+<span class="nc" id="L571">                        .votedAtSlot(Long.valueOf(vote.getVotedAtSlot()).toString())</span>
+<span class="nc" id="L572">                        .walletId(vote.getWalletId())</span>
+<span class="nc" id="L573">                        .walletType(vote.getWalletType())</span>
+<span class="nc" id="L574">                        .votingPower(vote.getVotingPower().map(String::valueOf))</span>
+<span class="nc" id="L575">                        .status(readMerkleProofStatus(proof, isL1CommitmentOnChain))</span>
+<span class="nc" id="L576">                        .finalityScore(isL1CommitmentOnChain)</span>
+<span class="nc" id="L577">                        .merkleProof(convertMerkleProof(proof, transactionDetailsM))</span>
+<span class="nc" id="L578">                        .build();</span>
+<span class="fc" id="L579">            }).orElseGet(() -&gt; {</span>
+<span class="fc" id="L580">                log.info(&quot;Merkle proof not found yet for voteId:{}&quot;, vote.getId());</span>
+
+<span class="fc" id="L582">                return VoteReceipt.builder()</span>
+<span class="fc" id="L583">                        .id(vote.getId())</span>
+<span class="fc" id="L584">                        .event(eventDetails.id())</span>
+<span class="fc" id="L585">                        .category(category.id())</span>
+<span class="fc" id="L586">                        .proposal(proposalIdOrName)</span>
+<span class="fc" id="L587">                        .signature(vote.getSignature())</span>
+<span class="fc" id="L588">                        .payload(vote.getPayload())</span>
+<span class="fc" id="L589">                        .publicKey(vote.getPublicKey())</span>
+<span class="fc" id="L590">                        .votedAtSlot(Long.valueOf(vote.getVotedAtSlot()).toString())</span>
+<span class="fc" id="L591">                        .walletId(vote.getWalletId())</span>
+<span class="fc" id="L592">                        .walletType(vote.getWalletType())</span>
+<span class="fc" id="L593">                        .votingPower(vote.getVotingPower().map(String::valueOf))</span>
+<span class="fc" id="L594">                        .status(BASIC)</span>
+<span class="fc" id="L595">                        .build();</span>
+            });
+<span class="fc" id="L597">        }).filter(Objects::nonNull).toList();</span>
+
+<span class="fc" id="L599">        return Either.right(voteReceipts);</span>
+    }
+
+
+    @Override
+    @Transactional(readOnly = true)
+    @Timed(value = &quot;service.vote.voteReceipt&quot;, histogram = true)
+    public Either&lt;Problem, VoteReceipt&gt; voteReceipt(Web3AuthenticationToken web3AuthenticationToken) {
+<span class="fc" id="L607">        log.info(&quot;Fetching voter's receipt for the signed data...&quot;);</span>
+
+<span class="fc" id="L609">        val concreteDetails = web3AuthenticationToken.getDetails();</span>
+<span class="fc" id="L610">        val commonDetails = web3AuthenticationToken.getDetails().getWeb3CommonDetails();</span>
+
+<span class="fc" id="L612">        val event = commonDetails.getEvent();</span>
+<span class="fc" id="L613">        val walletType = commonDetails.getWalletType();</span>
+<span class="fc" id="L614">        val walletId = commonDetails.getWalletId();</span>
+
+<span class="fc" id="L616">        val viewVoteReceiptEnvelopeE = unwrapViewVoteReceiptEnvelope(concreteDetails);</span>
+<span class="pc bpc" id="L617" title="1 of 2 branches missed.">        if (viewVoteReceiptEnvelopeE.isLeft()) {</span>
+<span class="nc" id="L618">            return Either.left(viewVoteReceiptEnvelopeE.getLeft());</span>
+        }
+
+<span class="fc" id="L621">        val viewVoteReceiptEnvelope = viewVoteReceiptEnvelopeE.get();</span>
+
+<span class="pc bpc" id="L623" title="1 of 2 branches missed.">        if (commonDetails.getAction() != VIEW_VOTE_RECEIPT) {</span>
+<span class="nc" id="L624">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L625">                    .withTitle(&quot;INVALID_ACTION&quot;)</span>
+<span class="nc" id="L626">                    .withDetail(&quot;Action is not VIEW_VOTE_RECEIPT, action:&quot; + commonDetails.getAction())</span>
+<span class="nc" id="L627">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L628">                    .build()</span>
             );
         }
 
-<span class="fc" id="L535">        val categoryId = viewVoteReceiptEnvelope.getCategory();</span>
+<span class="fc" id="L632">        val categoryId = viewVoteReceiptEnvelope.getCategory();</span>
 
-<span class="fc" id="L537">        return actualVoteReceipt(event, categoryId, walletType, walletId);</span>
+<span class="fc" id="L634">        return actualVoteReceipt(event, categoryId, walletType, walletId);</span>
     }
 
     @Override
     @Transactional(readOnly = true)
     public Either&lt;Problem, VoteReceipt&gt; voteReceipt(String categoryId,
                                                     JwtAuthenticationToken auth) {
-<span class="fc" id="L544">        val jwtWalletId = auth.getWalletId();</span>
-<span class="fc" id="L545">        val jwtWalletType = auth.getWalletType();</span>
+<span class="fc" id="L641">        val jwtWalletId = auth.getWalletId();</span>
+<span class="fc" id="L642">        val jwtWalletType = auth.getWalletType();</span>
+<span class="fc" id="L643">        val eventDetails = auth.eventDetails();</span>
 
-<span class="pc bpc" id="L547" title="1 of 2 branches missed.">        if (auth.isActionNotAllowed(VIEW_VOTE_RECEIPT)) {</span>
-<span class="nc" id="L548">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L549">                    .withTitle(&quot;ACTION_NOT_ALLOWED&quot;)</span>
-<span class="nc" id="L550">                    .withDetail(&quot;Action VIEW_VOTE_RECEIPT not allowed for the role:&quot; + auth.role().name())</span>
-<span class="nc" id="L551">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L552">                    .build());</span>
+<span class="pc bpc" id="L645" title="1 of 2 branches missed.">        if (auth.isActionNotAllowed(VIEW_VOTE_RECEIPT)) {</span>
+<span class="nc" id="L646">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L647">                    .withTitle(&quot;ACTION_NOT_ALLOWED&quot;)</span>
+<span class="nc" id="L648">                    .withDetail(&quot;Action VIEW_VOTE_RECEIPT not allowed for the role:&quot; + auth.role().name())</span>
+<span class="nc" id="L649">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L650">                    .build());</span>
         }
 
-<span class="fc" id="L555">        return actualVoteReceipt(auth.eventDetails(), categoryId, jwtWalletType, jwtWalletId);</span>
+<span class="fc" id="L653">        return actualVoteReceipt(eventDetails, categoryId, jwtWalletType, jwtWalletId);</span>
     }
 
     private Either&lt;Problem, VoteReceipt&gt; actualVoteReceipt(ChainFollowerClient.EventDetailsResponse event,
                                                            String categoryId,
                                                            WalletType walletType,
                                                            String walletId) {
-<span class="fc" id="L562">        val categoryM = event.categoryDetailsById(categoryId);</span>
-<span class="pc bpc" id="L563" title="1 of 2 branches missed.">        if (categoryM.isEmpty()) {</span>
-<span class="nc" id="L564">            log.warn(&quot;Unrecognised category, id:{}&quot;, categoryId);</span>
+<span class="fc" id="L660">        val categoryM = event.categoryDetailsById(categoryId);</span>
+<span class="pc bpc" id="L661" title="1 of 2 branches missed.">        if (categoryM.isEmpty()) {</span>
+<span class="nc" id="L662">            log.warn(&quot;Unrecognised category, id:{}&quot;, categoryId);</span>
 
-<span class="nc" id="L566">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L567">                    .withTitle(&quot;UNRECOGNISED_CATEGORY&quot;)</span>
-<span class="nc" id="L568">                    .withDetail(&quot;Unrecognised category, id:&quot; + categoryId)</span>
-<span class="nc" id="L569">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L570">                    .build());</span>
+<span class="nc" id="L664">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L665">                    .withTitle(&quot;UNRECOGNISED_CATEGORY&quot;)</span>
+<span class="nc" id="L666">                    .withDetail(&quot;Unrecognised category, id:&quot; + categoryId)</span>
+<span class="nc" id="L667">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L668">                    .build());</span>
         }
-<span class="fc" id="L572">        val category = categoryM.orElseThrow();</span>
+<span class="fc" id="L670">        val category = categoryM.orElseThrow();</span>
 
-<span class="fc" id="L574">        val voteM = voteRepository.findByEventIdAndCategoryIdAndWalletTypeAndWalletId(event.id(), category.id(), walletType, walletId);</span>
-<span class="pc bpc" id="L575" title="1 of 2 branches missed.">        if (voteM.isEmpty()) {</span>
-<span class="nc" id="L576">            return Either.left(</span>
-<span class="nc" id="L577">                    Problem.builder()</span>
-<span class="nc" id="L578">                            .withTitle(&quot;VOTE_NOT_FOUND&quot;)</span>
-<span class="nc" id="L579">                            .withDetail(&quot;Not voted yet for stakeKey:&quot; + walletId)</span>
-<span class="nc" id="L580">                            .withStatus(NOT_FOUND)</span>
-<span class="nc" id="L581">                            .build()</span>
+<span class="fc" id="L672">        val voteM = voteRepository.findByEventIdAndCategoryIdAndWalletTypeAndWalletId(event.id(), category.id(), walletType, walletId);</span>
+<span class="pc bpc" id="L673" title="1 of 2 branches missed.">        if (voteM.isEmpty()) {</span>
+<span class="nc" id="L674">            return Either.left(</span>
+<span class="nc" id="L675">                    Problem.builder()</span>
+<span class="nc" id="L676">                            .withTitle(&quot;VOTE_NOT_FOUND&quot;)</span>
+<span class="nc" id="L677">                            .withDetail(&quot;Not voted yet for stakeKey:&quot; + walletId)</span>
+<span class="nc" id="L678">                            .withStatus(NOT_FOUND)</span>
+<span class="nc" id="L679">                            .build()</span>
             );
         }
-<span class="fc" id="L584">        val vote = voteM.orElseThrow();</span>
+<span class="fc" id="L682">        val vote = voteM.orElseThrow();</span>
 
-<span class="fc" id="L586">        val proposalM = category.findProposalById(vote.getProposalId());</span>
-<span class="pc bpc" id="L587" title="1 of 2 branches missed.">        if (proposalM.isEmpty()) {</span>
-<span class="nc" id="L588">            return Either.left(</span>
-<span class="nc" id="L589">                    Problem.builder()</span>
-<span class="nc" id="L590">                            .withTitle(&quot;PROPOSAL_NOT_FOUND&quot;)</span>
-<span class="nc" id="L591">                            .withDetail(&quot;Proposal not found for voteId:&quot; + vote.getId())</span>
-<span class="nc" id="L592">                            .withStatus(NOT_FOUND)</span>
-<span class="nc" id="L593">                            .build()</span>
+<span class="fc" id="L684">        val proposalM = category.findProposalById(vote.getProposalId());</span>
+<span class="pc bpc" id="L685" title="1 of 2 branches missed.">        if (proposalM.isEmpty()) {</span>
+<span class="nc" id="L686">            return Either.left(</span>
+<span class="nc" id="L687">                    Problem.builder()</span>
+<span class="nc" id="L688">                            .withTitle(&quot;PROPOSAL_NOT_FOUND&quot;)</span>
+<span class="nc" id="L689">                            .withDetail(&quot;Proposal not found for voteId:&quot; + vote.getId())</span>
+<span class="nc" id="L690">                            .withStatus(NOT_FOUND)</span>
+<span class="nc" id="L691">                            .build()</span>
             );
         }
-<span class="fc" id="L596">        val proposal = proposalM.orElseThrow();</span>
-<span class="pc bpc" id="L597" title="1 of 2 branches missed.">        val proposalIdOrName = category.gdprProtection() ? proposal.id() : proposal.name();</span>
+<span class="fc" id="L694">        val proposal = proposalM.orElseThrow();</span>
+<span class="pc bpc" id="L695" title="1 of 2 branches missed.">        val proposalIdOrName = category.gdprProtection() ? proposal.id() : proposal.name();</span>
 
-<span class="fc" id="L599">        val latestVoteMerkleProof = voteMerkleProofService.findLatestProof(event.id(), vote.getId());</span>
+<span class="fc" id="L697">        val latestVoteMerkleProof = voteMerkleProofService.findLatestProof(event.id(), vote.getId());</span>
 
-<span class="fc" id="L601">        return latestVoteMerkleProof.map(proof -&gt; {</span>
-<span class="nc" id="L602">            log.info(&quot;Latest merkle proof found for voteId:{}&quot;, vote.getId());</span>
+<span class="fc" id="L699">        return latestVoteMerkleProof.map(proof -&gt; {</span>
+<span class="nc" id="L700">            log.info(&quot;Latest merkle proof found for voteId:{}&quot;, vote.getId());</span>
 
-<span class="nc" id="L604">            val transactionDetailsE = chainFollowerClient.getTransactionDetails(proof.getL1TransactionHash());</span>
-<span class="nc bnc" id="L605" title="All 2 branches missed.">            if (transactionDetailsE.isEmpty()) {</span>
-<span class="nc" id="L606">                return Either.&lt;Problem, VoteReceipt&gt;left(Problem.builder()</span>
-<span class="nc" id="L607">                        .withTitle(&quot;ERROR_GETTING_TRANSACTION_DETAILS&quot;)</span>
-<span class="nc" id="L608">                        .withDetail(&quot;Unable to get transaction details from chain-tip follower service, transactionHash:&quot; + proof.getL1TransactionHash())</span>
-<span class="nc" id="L609">                        .withStatus(INTERNAL_SERVER_ERROR)</span>
-<span class="nc" id="L610">                        .build());</span>
+<span class="nc" id="L702">            val transactionDetailsE = chainFollowerClient.getTransactionDetails(proof.getL1TransactionHash());</span>
+<span class="nc bnc" id="L703" title="All 2 branches missed.">            if (transactionDetailsE.isEmpty()) {</span>
+<span class="nc" id="L704">                return Either.&lt;Problem, VoteReceipt&gt;left(Problem.builder()</span>
+<span class="nc" id="L705">                        .withTitle(&quot;ERROR_GETTING_TRANSACTION_DETAILS&quot;)</span>
+<span class="nc" id="L706">                        .withDetail(&quot;Unable to get transaction details from chain-tip follower service, transactionHash:&quot; + proof.getL1TransactionHash())</span>
+<span class="nc" id="L707">                        .withStatus(INTERNAL_SERVER_ERROR)</span>
+<span class="nc" id="L708">                        .build());</span>
             }
-<span class="nc" id="L612">            val transactionDetailsM = transactionDetailsE.get();</span>
+<span class="nc" id="L710">            val transactionDetailsM = transactionDetailsE.get();</span>
 
-<span class="nc" id="L614">            val isL1CommitmentOnChain = transactionDetailsM.map(ChainFollowerClient.TransactionDetailsResponse::finalityScore);</span>
+<span class="nc" id="L712">            val isL1CommitmentOnChain = transactionDetailsM.map(ChainFollowerClient.TransactionDetailsResponse::finalityScore);</span>
 
-<span class="nc" id="L616">            return Either.&lt;Problem, VoteReceipt&gt;right(VoteReceipt.builder()</span>
-<span class="nc" id="L617">                    .id(vote.getId())</span>
-<span class="nc" id="L618">                    .event(event.id())</span>
-<span class="nc" id="L619">                    .category(category.id())</span>
-<span class="nc" id="L620">                    .proposal(proposalIdOrName)</span>
-<span class="nc" id="L621">                    .signature(vote.getSignature())</span>
-<span class="nc" id="L622">                    .payload(vote.getPayload())</span>
-<span class="nc" id="L623">                    .publicKey(vote.getPublicKey())</span>
-<span class="nc" id="L624">                    .votedAtSlot(Long.valueOf(vote.getVotedAtSlot()).toString())</span>
-<span class="nc" id="L625">                    .walletId(vote.getWalletId())</span>
-<span class="nc" id="L626">                    .walletType(vote.getWalletType())</span>
-<span class="nc" id="L627">                    .votingPower(vote.getVotingPower().map(String::valueOf))</span>
-<span class="nc" id="L628">                    .status(readMerkleProofStatus(proof, isL1CommitmentOnChain))</span>
-<span class="nc" id="L629">                    .finalityScore(isL1CommitmentOnChain)</span>
-<span class="nc" id="L630">                    .merkleProof(convertMerkleProof(proof, transactionDetailsM))</span>
-<span class="nc" id="L631">                    .build());</span>
+<span class="nc" id="L714">            return Either.&lt;Problem, VoteReceipt&gt;right(VoteReceipt.builder()</span>
+<span class="nc" id="L715">                    .id(vote.getId())</span>
+<span class="nc" id="L716">                    .event(event.id())</span>
+<span class="nc" id="L717">                    .category(category.id())</span>
+<span class="nc" id="L718">                    .proposal(proposalIdOrName)</span>
+<span class="nc" id="L719">                    .signature(vote.getSignature())</span>
+<span class="nc" id="L720">                    .payload(vote.getPayload())</span>
+<span class="nc" id="L721">                    .publicKey(vote.getPublicKey())</span>
+<span class="nc" id="L722">                    .votedAtSlot(Long.valueOf(vote.getVotedAtSlot()).toString())</span>
+<span class="nc" id="L723">                    .walletId(vote.getWalletId())</span>
+<span class="nc" id="L724">                    .walletType(vote.getWalletType())</span>
+<span class="nc" id="L725">                    .votingPower(vote.getVotingPower().map(String::valueOf))</span>
+<span class="nc" id="L726">                    .status(readMerkleProofStatus(proof, isL1CommitmentOnChain))</span>
+<span class="nc" id="L727">                    .finalityScore(isL1CommitmentOnChain)</span>
+<span class="nc" id="L728">                    .merkleProof(convertMerkleProof(proof, transactionDetailsM))</span>
+<span class="nc" id="L729">                    .build());</span>
 
-<span class="fc" id="L633">        }).orElseGet(() -&gt; {</span>
-<span class="fc" id="L634">            log.info(&quot;Merkle proof not found yet for voteId:{}&quot;, vote.getId());</span>
+<span class="fc" id="L731">        }).orElseGet(() -&gt; {</span>
+<span class="fc" id="L732">            log.info(&quot;Merkle proof not found yet for voteId:{}&quot;, vote.getId());</span>
 
-<span class="fc" id="L636">            return Either.right(VoteReceipt.builder()</span>
-<span class="fc" id="L637">                    .id(vote.getId())</span>
-<span class="fc" id="L638">                    .event(event.id())</span>
-<span class="fc" id="L639">                    .category(category.id())</span>
-<span class="fc" id="L640">                    .proposal(proposalIdOrName)</span>
-<span class="fc" id="L641">                    .signature(vote.getSignature())</span>
-<span class="fc" id="L642">                    .payload(vote.getPayload())</span>
-<span class="fc" id="L643">                    .publicKey(vote.getPublicKey())</span>
-<span class="fc" id="L644">                    .votedAtSlot(Long.valueOf(vote.getVotedAtSlot()).toString())</span>
-<span class="fc" id="L645">                    .walletId(vote.getWalletId())</span>
-<span class="fc" id="L646">                    .walletType(vote.getWalletType())</span>
-<span class="fc" id="L647">                    .votingPower(vote.getVotingPower().map(String::valueOf))</span>
-<span class="fc" id="L648">                    .status(BASIC)</span>
-<span class="fc" id="L649">                    .build()</span>
+<span class="fc" id="L734">            return Either.right(VoteReceipt.builder()</span>
+<span class="fc" id="L735">                    .id(vote.getId())</span>
+<span class="fc" id="L736">                    .event(event.id())</span>
+<span class="fc" id="L737">                    .category(category.id())</span>
+<span class="fc" id="L738">                    .proposal(proposalIdOrName)</span>
+<span class="fc" id="L739">                    .signature(vote.getSignature())</span>
+<span class="fc" id="L740">                    .payload(vote.getPayload())</span>
+<span class="fc" id="L741">                    .publicKey(vote.getPublicKey())</span>
+<span class="fc" id="L742">                    .votedAtSlot(Long.valueOf(vote.getVotedAtSlot()).toString())</span>
+<span class="fc" id="L743">                    .walletId(vote.getWalletId())</span>
+<span class="fc" id="L744">                    .walletType(vote.getWalletType())</span>
+<span class="fc" id="L745">                    .votingPower(vote.getVotingPower().map(String::valueOf))</span>
+<span class="fc" id="L746">                    .status(BASIC)</span>
+<span class="fc" id="L747">                    .build()</span>
             );
         });
     }
 
     private static VoteReceipt.Status readMerkleProofStatus(VoteMerkleProof merkleProof,
                                                             Optional&lt;ChainFollowerClient.FinalityScore&gt; isL1CommitmentOnChain) {
-<span class="nc bnc" id="L656" title="All 2 branches missed.">        if (merkleProof.isInvalidated()) {</span>
-<span class="nc" id="L657">            return ROLLBACK;</span>
+<span class="nc bnc" id="L754" title="All 2 branches missed.">        if (merkleProof.isInvalidated()) {</span>
+<span class="nc" id="L755">            return ROLLBACK;</span>
         }
 
-<span class="nc bnc" id="L660" title="All 2 branches missed.">        return isL1CommitmentOnChain.isEmpty() ? PARTIAL : FULL;</span>
+<span class="nc bnc" id="L758" title="All 2 branches missed.">        return isL1CommitmentOnChain.isEmpty() ? PARTIAL : FULL;</span>
     }
 
     private VoteReceipt.MerkleProof convertMerkleProof(VoteMerkleProof proof,
                                                        Optional&lt;ChainFollowerClient.TransactionDetailsResponse&gt; transactionDetails) {
-<span class="nc" id="L665">        return VoteReceipt.MerkleProof.builder()</span>
-<span class="nc" id="L666">                .blockHash(transactionDetails.map(ChainFollowerClient.TransactionDetailsResponse::blockHash))</span>
-<span class="nc" id="L667">                .absoluteSlot(transactionDetails.map(ChainFollowerClient.TransactionDetailsResponse::absoluteSlot))</span>
-<span class="nc" id="L668">                .rootHash(proof.getRootHash())</span>
-<span class="nc" id="L669">                .transactionHash(proof.getL1TransactionHash())</span>
-<span class="nc" id="L670">                .steps(convertSteps(proof))</span>
-<span class="nc" id="L671">                .build();</span>
+<span class="nc" id="L763">        return VoteReceipt.MerkleProof.builder()</span>
+<span class="nc" id="L764">                .blockHash(transactionDetails.map(ChainFollowerClient.TransactionDetailsResponse::blockHash))</span>
+<span class="nc" id="L765">                .absoluteSlot(transactionDetails.map(ChainFollowerClient.TransactionDetailsResponse::absoluteSlot))</span>
+<span class="nc" id="L766">                .rootHash(proof.getRootHash())</span>
+<span class="nc" id="L767">                .transactionHash(proof.getL1TransactionHash())</span>
+<span class="nc" id="L768">                .steps(convertSteps(proof))</span>
+<span class="nc" id="L769">                .build();</span>
 
     }
 
     private List&lt;VoteReceipt.MerkleProofItem&gt; convertSteps(VoteMerkleProof proof) {
-<span class="nc" id="L676">        return merkleProofSerdeService.deserialise(proof.getProofItemsJson()).stream().map(item -&gt; {</span>
+<span class="nc" id="L774">        return merkleProofSerdeService.deserialise(proof.getProofItemsJson()).stream().map(item -&gt; {</span>
 
-<span class="nc bnc" id="L678" title="All 2 branches missed.">            if (item instanceof ProofItem.Left pl) {</span>
-<span class="nc" id="L679">                return VoteReceipt.MerkleProofItem.builder()</span>
-<span class="nc" id="L680">                        .type(VoteReceipt.MerkleProofType.L)</span>
-<span class="nc" id="L681">                        .hash(encodeHexString(pl.hash()))</span>
-<span class="nc" id="L682">                        .build();</span>
+<span class="nc bnc" id="L776" title="All 2 branches missed.">            if (item instanceof ProofItem.Left pl) {</span>
+<span class="nc" id="L777">                return VoteReceipt.MerkleProofItem.builder()</span>
+<span class="nc" id="L778">                        .type(VoteReceipt.MerkleProofType.L)</span>
+<span class="nc" id="L779">                        .hash(encodeHexString(pl.hash()))</span>
+<span class="nc" id="L780">                        .build();</span>
             }
 
-<span class="nc bnc" id="L685" title="All 2 branches missed.">            if (item instanceof ProofItem.Right pr) {</span>
-<span class="nc" id="L686">                return VoteReceipt.MerkleProofItem.builder()</span>
-<span class="nc" id="L687">                        .type(VoteReceipt.MerkleProofType.R)</span>
-<span class="nc" id="L688">                        .hash(encodeHexString(pr.hash()))</span>
-<span class="nc" id="L689">                        .build();</span>
+<span class="nc bnc" id="L783" title="All 2 branches missed.">            if (item instanceof ProofItem.Right pr) {</span>
+<span class="nc" id="L784">                return VoteReceipt.MerkleProofItem.builder()</span>
+<span class="nc" id="L785">                        .type(VoteReceipt.MerkleProofType.R)</span>
+<span class="nc" id="L786">                        .hash(encodeHexString(pr.hash()))</span>
+<span class="nc" id="L787">                        .build();</span>
             }
 
-<span class="nc" id="L692">            throw new RuntimeException(&quot;Unknown proof item type:&quot; + item.getClass().getName());</span>
-<span class="nc" id="L693">        }).toList();</span>
+<span class="nc" id="L790">            throw new RuntimeException(&quot;Unknown proof item type:&quot; + item.getClass().getName());</span>
+<span class="nc" id="L791">        }).toList();</span>
     }
 
 }

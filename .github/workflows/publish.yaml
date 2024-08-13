@@ -52,6 +52,17 @@ jobs:
             --DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}" \
             --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}"
 
+      - name: Dispatch successful build event to private repo
+        uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-dispatch-event@main
+        with:
+          EVENT_TYPE: "${{ github.event_name }}-${{ steps.cf-gha-baseline.outputs.TRIGGERING_REF }}-${{ steps.cf-gha-baseline.outputs.BRANCH_NAME }}"
+          GITHUB_TOKEN: ${{ secrets.PRIVATE_REPO_PAT }}
+          GITHUB_REPO: ${{ secrets.PRIVATE_REPO }}
+          TRIGGERING_EVENT: ${{ github.event_name }}
+          TRIGGERING_REF: ${{ steps.cf-gha-baseline.outputs.TRIGGERING_REF }}
+          TRIGGERING_BRANCH: ${{ steps.cf-gha-baseline.outputs.BRANCH_NAME }}
+          GIT_SHORT_COMMIT: ${{ steps.cf-gha-baseline.outputs.GIT_SHORT_COMMIT }}
+
   ui-summit-2024:
     runs-on: ${{ fromJson(vars.RUNS_ON) }}
     env:
@@ -78,3 +89,14 @@ jobs:
             --PUSH=${DOCKER_PUSH} \
             --DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}" \
             --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}"
+
+      - name: Dispatch successful build event to private repo
+        uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-dispatch-event@main
+        with:
+          EVENT_TYPE: "${{ github.event_name }}-${{ steps.cf-gha-baseline.outputs.TRIGGERING_REF }}-${{ steps.cf-gha-baseline.outputs.BRANCH_NAME }}"
+          GITHUB_TOKEN: ${{ secrets.PRIVATE_REPO_PAT }}
+          GITHUB_REPO: ${{ secrets.PRIVATE_REPO }}
+          TRIGGERING_EVENT: ${{ github.event_name }}
+          TRIGGERING_REF: ${{ steps.cf-gha-baseline.outputs.TRIGGERING_REF }}
+          TRIGGERING_BRANCH: ${{ steps.cf-gha-baseline.outputs.BRANCH_NAME }}
+          GIT_SHORT_COMMIT: ${{ steps.cf-gha-baseline.outputs.GIT_SHORT_COMMIT }}

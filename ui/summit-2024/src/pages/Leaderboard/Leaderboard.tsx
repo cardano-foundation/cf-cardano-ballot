@@ -33,7 +33,7 @@ const Leaderboard: React.FC = () => {
   useEffect(() => {
     getStats().then((response) => {
       // @ts-ignore
-        setStats(response.categories);
+      setStats(response.categories);
     });
   }, []);
 
@@ -58,11 +58,11 @@ const Leaderboard: React.FC = () => {
   const totalVotes = stats?.reduce((total, item) => total + item.votes, 0) || 0;
 
   let selectedCategoryValue = -1;
-  if (dataForChart !== undefined && selected !== undefined){
-      selectedCategoryValue = dataForChart[selected].value;
+  if (dataForChart !== undefined && selected !== undefined) {
+    selectedCategoryValue = dataForChart[selected].value;
   }
 
-    const handleSwitch = (option: string) => {
+  const handleSwitch = (option: string) => {
     if (option !== content) {
       setFade(false);
       setTimeout(() => {
@@ -189,7 +189,7 @@ const Leaderboard: React.FC = () => {
                                 lineHeight: "40px",
                               }}
                             >
-                                {totalVotes}
+                              {totalVotes}
                             </Typography>
                             <TableContainer>
                               <Table size="small">
@@ -227,36 +227,37 @@ const Leaderboard: React.FC = () => {
                                   </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                  {stats?.map(
-                                    (item, index) => (
-                                      <TableRow key={index}>
-                                        <TableCell
-                                          component="th"
-                                          scope="row"
-                                          sx={{
-                                            color:
-                                              theme.palette.text
-                                                .neutralLightest,
-                                            textShadow:
-                                              "0px 0px 12px rgba(18, 18, 18, 0.20)",
-                                            fontSize: "12px",
-                                            fontStyle: "normal",
-                                            fontWeight: 700,
-                                            lineHeight: "20px",
-                                            padding: "12px 0px",
-                                          }}
-                                        >
-                                          {item.id}
-                                        </TableCell>
-                                        <TableCell align="left">
-                                          {item.votes}
-                                        </TableCell>
-                                        <TableCell align="left">
-                                            {((item.votes / totalVotes) * 100).toFixed(2)}%
-                                        </TableCell>
-                                      </TableRow>
-                                    ),
-                                  )}
+                                  {stats?.map((item, index) => (
+                                    <TableRow key={index}>
+                                      <TableCell
+                                        component="th"
+                                        scope="row"
+                                        sx={{
+                                          color:
+                                            theme.palette.text.neutralLightest,
+                                          textShadow:
+                                            "0px 0px 12px rgba(18, 18, 18, 0.20)",
+                                          fontSize: "12px",
+                                          fontStyle: "normal",
+                                          fontWeight: 700,
+                                          lineHeight: "20px",
+                                          padding: "12px 0px",
+                                        }}
+                                      >
+                                        {item.id}
+                                      </TableCell>
+                                      <TableCell align="left">
+                                        {item.votes}
+                                      </TableCell>
+                                      <TableCell align="left">
+                                        {(
+                                          (item.votes / totalVotes) *
+                                          100
+                                        ).toFixed(2)}
+                                        %
+                                      </TableCell>
+                                    </TableRow>
+                                  ))}
                                 </TableBody>
                               </Table>
                             </TableContainer>

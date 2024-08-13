@@ -86,6 +86,8 @@ jobs:
     needs:
       - ui-summit-2024
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: ⛮ cf-gha-baseline
         uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-baseline@main

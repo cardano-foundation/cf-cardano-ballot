@@ -188,6 +188,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   };
 
   const submitVote = async () => {
+    console.log("submitVote");
     if (eventCache?.finished) {
       eventBus.publish(EventName.ShowToast, "The event already ended", "error");
       return;
@@ -213,11 +214,16 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
         slotNumber: absoluteSlot.toString(),
       });
 
+      console.log("canonicalVoteInput");
+      console.log(canonicalVoteInput);
       const requestVoteResult = await signWithWallet(
         canonicalVoteInput,
         connectedWallet.address,
         resolveWalletType(connectedWallet.address),
       );
+
+      console.log("requestVoteResult");
+      console.log(requestVoteResult);
 
       if (!requestVoteResult.success) {
         eventBus.publish(
@@ -233,6 +239,9 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
         requestVoteResult.result,
         resolveWalletType(connectedWallet.address),
       );
+
+      console.log("submitVoteResult");
+      console.log(submitVoteResult);
 
       // @ts-ignore
       if (submitVoteResult.error && submitVoteResult.message) {

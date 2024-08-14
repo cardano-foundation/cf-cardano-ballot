@@ -117,6 +117,8 @@ public class KeriVerificationClient {
         int attempt = 0;
 
         while (attempt < attempts) {
+            log.info("attempt nº: {}", attempt);
+            log.info("entity: {}", entity);
             try {
                 val response = restTemplate.exchange(url, GET, entity, String.class);
 

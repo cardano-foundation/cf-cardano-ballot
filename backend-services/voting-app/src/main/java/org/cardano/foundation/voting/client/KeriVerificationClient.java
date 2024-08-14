@@ -69,6 +69,8 @@ public class KeriVerificationClient {
     }
 
     public Either<Problem, Boolean> registerOOBI(String oobi) {
+        log.info("registerOOBI");
+        log.info("oobi url: {}", oobi);
         val url = String.format("%s/oobi", keriVerifierBaseUrl);
 
         val headers = new HttpHeaders();
@@ -100,8 +102,10 @@ public class KeriVerificationClient {
     }
 
     public Either<Problem, String> getOOBI(String oobi, Integer maxAttempts) {
+        log.info("getOOBI");
+        log.info("oobi url: {}. Max attempts {}", oobi, maxAttempts);
         val url = String.format("%s/oobi?url=%s", keriVerifierBaseUrl, oobi);
-
+        log.info("Keria URL to fetch: ", url);
         val headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
 
@@ -119,6 +123,8 @@ public class KeriVerificationClient {
                 }
             } catch (HttpClientErrorException e) {
                 if (e.getStatusCode() != BAD_REQUEST) {
+                    log.error("Error on get oobi: {}. Code: {}",  e.getMessage(), e.getStatusCode());
+                    log.error("Full Error: {}",  e);
                     return Either.left(Problem.builder()
                             .withTitle("OOBI_FETCH_ERROR")
                             .withDetail("Unable to fetch OOBI, reason: " + e.getMessage())

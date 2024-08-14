@@ -103,7 +103,8 @@ public class KeriVerificationClient {
 
     public Either<Problem, String> getOOBI(String oobi, Integer maxAttempts) {
         log.info("getOOBI");
-        log.info("oobi url: {}. Max attempts {}", oobi, maxAttempts);
+        log.info("oobi url: {}", oobi);
+        log.info("Max attempts: {}", maxAttempts);
         val url = String.format("%s/oobi?url=%s", keriVerifierBaseUrl, oobi);
         log.info("keriVerifierBaseUrl: {}", keriVerifierBaseUrl);
         log.info("Keria URL to fetch: {}", url);
@@ -116,8 +117,11 @@ public class KeriVerificationClient {
         int attempt = 0;
 
         while (attempt < attempts) {
+            log.info("attempt nº: {}", attempt);
+            log.info("entity: {}", entity);
             try {
                 val response = restTemplate.exchange(url, GET, entity, String.class);
+                log.info("Keria URL to fetch response: {}", response);
 
                 if (response.getStatusCode().is2xxSuccessful()) {
                     return Either.right(response.getBody());

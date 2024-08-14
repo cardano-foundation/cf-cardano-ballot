@@ -105,7 +105,8 @@ public class KeriVerificationClient {
         log.info("getOOBI");
         log.info("oobi url: {}. Max attempts {}", oobi, maxAttempts);
         val url = String.format("%s/oobi?url=%s", keriVerifierBaseUrl, oobi);
-        log.info("Keria URL to fetch: ", url);
+        log.info("keriVerifierBaseUrl: {}", keriVerifierBaseUrl);
+        log.info("Keria URL to fetch: {}", url);
         val headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
 

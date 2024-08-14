@@ -11,7 +11,6 @@ import { Toast } from "../common/Toast/Toast";
 import { VerifyWalletModal } from "../VerifyWalletModal";
 import { resolveCardanoNetwork } from "../../utils/utils";
 import { env } from "../../common/constants/env";
-import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 import { ConnectWalletButton } from "../ConnectWalletButton/ConnectWalletButton";
 import { ROUTES } from "../../routes";
 import { RightMenu } from "./RightMenu/RightMenu";
@@ -20,6 +19,7 @@ import { useAppDispatch } from "../../store/hooks";
 import { resetUser } from "../../store/reducers/userCache";
 import { LoginModal } from "../LoginModal/LoginModal";
 import { clearUserInSessionStorage } from "../../utils/session";
+import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 
 const Header = () => {
   const dispatch = useAppDispatch();
@@ -267,6 +267,9 @@ const Header = () => {
           setShowConnectWalletModal(open ? open : false)
         }
       />
+      {/*
+            TODO: Fix LoginModal and VerifyWalletModal when adding sign from useCardano, it causes re-rendering
+        */}
       <LoginModal />
       <VerifyWalletModal />
       <Toast

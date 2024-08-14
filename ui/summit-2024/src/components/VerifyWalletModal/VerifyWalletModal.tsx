@@ -58,7 +58,16 @@ const VerifyWalletModal = () => {
   const [verifyCurrentPaths, setVerifyCurrentPaths] = useState<
     VerifyWalletFlow[]
   >([VerifyWalletFlow.INTRO]);
-  const [defaultCountryCode] = useState<MuiTelInputCountry | undefined>("ES");
+
+  const getDefaultCountry = () => {
+    const language = navigator.language;
+    return language.split("-")[1] || "US";
+  };
+
+  const [defaultCountryCode] = useState<MuiTelInputCountry | undefined>(
+    // @ts-ignore
+    getDefaultCountry(),
+  );
   const [phone, setPhone] = useState<string>("");
   const [codes, setCodes] = useState(Array(6).fill(""));
   const [phoneCodeIsBeenSending, setPhoneCodeIsBeenSending] =

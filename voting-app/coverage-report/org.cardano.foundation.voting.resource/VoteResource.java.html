@@ -204,7 +204,7 @@ public class VoteResource {
                         });
     }
 
-    @RequestMapping(value = &quot;/receipts&quot;, method = { GET, HEAD }, produces = &quot;application/json&quot;)
+    @RequestMapping(value = &quot;/receipts&quot;, method = { GET }, produces = &quot;application/json&quot;)
     @Timed(value = &quot;resource.vote.receipts&quot;, histogram = true)
     @Operation(
             summary = &quot;Retrieve all vote receipts for the authenticated user&quot;,

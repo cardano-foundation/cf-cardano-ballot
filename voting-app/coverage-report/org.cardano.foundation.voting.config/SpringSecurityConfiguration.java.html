@@ -90,26 +90,25 @@ import static org.springframework.http.HttpMethod.*;
 <span class="fc" id="L90">                    .requestMatchers(new AntPathRequestMatcher(&quot;/api/vote/receipt&quot;, GET.name())).authenticated()</span>
 <span class="fc" id="L91">                    .requestMatchers(new AntPathRequestMatcher(&quot;/api/vote/receipt&quot;, HEAD.name())).authenticated()</span>
 <span class="fc" id="L92">                    .requestMatchers(new AntPathRequestMatcher(&quot;/api/vote/receipts&quot;, GET.name())).authenticated()</span>
-<span class="fc" id="L93">                    .requestMatchers(new AntPathRequestMatcher(&quot;/api/vote/receipts&quot;, HEAD.name())).authenticated()</span>
                     // SECURED by Web3 auth
-<span class="fc" id="L95">                    .requestMatchers(new AntPathRequestMatcher(&quot;/api/auth/login&quot;, GET.name())).authenticated()</span>
+<span class="fc" id="L94">                    .requestMatchers(new AntPathRequestMatcher(&quot;/api/auth/login&quot;, GET.name())).authenticated()</span>
                     // SECURED by JWT auth
                     //.requestMatchers(new AntPathRequestMatcher(&quot;/api/vote/vote-changing-available/**&quot;, HEAD.name())).authenticated()
 
                     // without auth
-<span class="fc" id="L100">                    .requestMatchers(new AntPathRequestMatcher(&quot;/api/leaderboard/**&quot;, GET.name())).permitAll()</span>
-<span class="fc" id="L101">                    .requestMatchers(new AntPathRequestMatcher(&quot;/api/leaderboard/**&quot;, HEAD.name())).permitAll()</span>
-<span class="fc" id="L102">                    .requestMatchers(new AntPathRequestMatcher(&quot;/actuator/**&quot;, GET.name())).permitAll()</span>
-<span class="fc" id="L103">                    .requestMatchers(new AntPathRequestMatcher(&quot;/h2-console/**&quot;)).permitAll()</span>
-<span class="fc" id="L104">                    .requestMatchers(new AntPathRequestMatcher(&quot;/v3/api-docs/**&quot;)).permitAll()</span>
-<span class="fc" id="L105">                    .requestMatchers(new AntPathRequestMatcher(&quot;/swagger-ui/**&quot;)).permitAll()</span>
-<span class="fc" id="L106">                    .anyRequest().denyAll();</span>
-<span class="fc" id="L107">                })</span>
+<span class="fc" id="L99">                    .requestMatchers(new AntPathRequestMatcher(&quot;/api/leaderboard/**&quot;, GET.name())).permitAll()</span>
+<span class="fc" id="L100">                    .requestMatchers(new AntPathRequestMatcher(&quot;/api/leaderboard/**&quot;, HEAD.name())).permitAll()</span>
+<span class="fc" id="L101">                    .requestMatchers(new AntPathRequestMatcher(&quot;/actuator/**&quot;, GET.name())).permitAll()</span>
+<span class="fc" id="L102">                    .requestMatchers(new AntPathRequestMatcher(&quot;/h2-console/**&quot;)).permitAll()</span>
+<span class="fc" id="L103">                    .requestMatchers(new AntPathRequestMatcher(&quot;/v3/api-docs/**&quot;)).permitAll()</span>
+<span class="fc" id="L104">                    .requestMatchers(new AntPathRequestMatcher(&quot;/swagger-ui/**&quot;)).permitAll()</span>
+<span class="fc" id="L105">                    .anyRequest().denyAll();</span>
+<span class="fc" id="L106">                })</span>
 
-<span class="fc" id="L109">                .exceptionHandling(c -&gt; c.accessDeniedHandler(problemSupport).authenticationEntryPoint(problemSupport))</span>
-<span class="fc" id="L110">                .sessionManagement(AbstractHttpConfigurer::disable);</span>
+<span class="fc" id="L108">                .exceptionHandling(c -&gt; c.accessDeniedHandler(problemSupport).authenticationEntryPoint(problemSupport))</span>
+<span class="fc" id="L109">                .sessionManagement(AbstractHttpConfigurer::disable);</span>
 
-<span class="fc" id="L112">        return http.build();</span>
+<span class="fc" id="L111">        return http.build();</span>
     }
 
 }

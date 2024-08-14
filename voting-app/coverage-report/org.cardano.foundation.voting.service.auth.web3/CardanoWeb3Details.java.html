@@ -48,9 +48,13 @@ public class CardanoWeb3Details implements Web3ConcreteDetails {
 <span class="fc" id="L48">        return signedCIP30.getPublicKey();</span>
     }
 
+    public Optional&lt;String&gt; getOobi() {
+<span class="nc" id="L52">        return Optional.empty();</span>
+    }
+
     @Override
     public String getSignedJson() {
-<span class="fc" id="L53">        return cip30VerificationResult.getMessage(MessageFormat.TEXT);</span>
+<span class="fc" id="L57">        return cip30VerificationResult.getMessage(MessageFormat.TEXT);</span>
     }
 
 }

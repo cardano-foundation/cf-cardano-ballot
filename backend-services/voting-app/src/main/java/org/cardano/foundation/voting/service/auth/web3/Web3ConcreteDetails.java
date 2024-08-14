@@ -22,4 +22,6 @@ public interface Web3ConcreteDetails {
 
     String getSignedJson();
 
+    Optional<String> getOobi();
+
 }

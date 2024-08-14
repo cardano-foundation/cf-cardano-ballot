@@ -19,4 +19,7 @@ public class SignedKERI {
     @NotBlank
     protected String aid;
 
+    @NotBlank
+    protected String oobi;
+
 }

@@ -90,7 +90,6 @@ public class SpringSecurityConfiguration {
                     .requestMatchers(new AntPathRequestMatcher("/api/vote/receipt", GET.name())).authenticated()
                     .requestMatchers(new AntPathRequestMatcher("/api/vote/receipt", HEAD.name())).authenticated()
                     .requestMatchers(new AntPathRequestMatcher("/api/vote/receipts", GET.name())).authenticated()
-                    .requestMatchers(new AntPathRequestMatcher("/api/vote/receipts", HEAD.name())).authenticated()
                     // SECURED by Web3 auth
                     .requestMatchers(new AntPathRequestMatcher("/api/auth/login", GET.name())).authenticated()
                     // SECURED by JWT auth

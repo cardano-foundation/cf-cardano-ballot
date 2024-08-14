@@ -156,8 +156,6 @@ public class DefaultVoteService implements VoteService {
                     .build());
         }
 
-
-
         if (details.getChainTip().isNotSynced()) {
             return Either.left(Problem.builder()
                     .withTitle("CHAIN_FOLLOWER_NOT_SYNCED")

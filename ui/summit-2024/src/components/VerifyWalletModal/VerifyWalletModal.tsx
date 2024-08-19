@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useRef, useState} from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import {
   Box,
@@ -18,7 +18,12 @@ import {
   MuiTelInputCountry,
 } from "mui-tel-input";
 import discordLogo from "../../common/resources/images/discord-icon.svg";
-import {getSignedMessagePromise, openNewTab, resolveCardanoNetwork, signMessageWithWallet} from "../../utils/utils";
+import {
+  getSignedMessagePromise,
+  openNewTab,
+  resolveCardanoNetwork,
+  signMessageWithWallet,
+} from "../../utils/utils";
 import { ErrorMessage } from "../common/ErrorMessage/ErrorMessage";
 import { CustomButton } from "../common/CustomButton/CustomButton";
 import Modal from "../common/Modal/Modal";
@@ -43,7 +48,7 @@ import { VerificationStarted } from "../../store/reducers/userCache/userCache.ty
 import { ToastType } from "../common/Toast/Toast.types";
 import { CustomInput } from "../common/CustomInput/CustomInput";
 import theme from "../../common/styles/theme";
-import {useCardano} from "@cardano-foundation/cardano-connect-with-wallet";
+import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 
 // TODO: env.
 const excludedCountries: MuiTelInputCountry[] | undefined = [];
@@ -86,17 +91,16 @@ const VerifyWalletModal = () => {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   inputRefs.current = [];
 
-    const { signMessage } = useCardano({
-        limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
-    });
+  const { signMessage } = useCardano({
+    limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
+  });
 
-    const signMessagePromisified = useMemo(
-        () => getSignedMessagePromise(signMessage),
-        [signMessage],
-    );
+  const signMessagePromisified = useMemo(
+    () => getSignedMessagePromise(signMessage),
+    [signMessage],
+  );
 
-
-    useEffect(() => {
+  useEffect(() => {
     const openVerifyWalletModal = (
       verificationState: VerifyWalletFlow = VerifyWalletFlow.INTRO,
     ) => {
@@ -209,13 +213,14 @@ const VerifyWalletModal = () => {
   };
 
   const handleVerifyDiscord = async () => {
+      console.log(handleVerifyDiscord);
     setEnableSignDiscordSecret(false);
 
-      const signedMessageResult = await signMessageWithWallet(
-          connectedWallet,
-          inputSecret.trim(),
-          signMessagePromisified,
-      );
+    const signedMessageResult = await signMessageWithWallet(
+      connectedWallet,
+      inputSecret.trim(),
+      signMessagePromisified,
+    );
 
     if (!signedMessageResult.success) {
       eventBus.publish("showToast", "Error while signing", ToastType.Error);

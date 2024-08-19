@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Box, Typography, useMediaQuery, Drawer } from "@mui/material";
 import theme from "../../common/styles/theme";
 import { CustomButton } from "../../components/common/CustomButton/CustomButton";
@@ -36,9 +36,13 @@ import {
 } from "../../store/reducers/votesCache";
 import { ToastType } from "../../components/common/Toast/Toast.types";
 import { resolveWalletType } from "../../common/api/utils";
-import {getSignedMessagePromise, resolveCardanoNetwork, signMessageWithWallet} from "../../utils/utils";
-import {useCardano} from "@cardano-foundation/cardano-connect-with-wallet";
-import {env} from "../../common/constants/env";
+import {
+  getSignedMessagePromise,
+  resolveCardanoNetwork,
+  signMessageWithWallet,
+} from "../../utils/utils";
+import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
+import { env } from "../../common/constants/env";
 
 interface CategoriesProps {
   embedded?: boolean;
@@ -91,8 +95,8 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   );
 
   const signMessagePromisified = useMemo(
-      () => getSignedMessagePromise(signMessage),
-      [signMessage],
+    () => getSignedMessagePromise(signMessage),
+    [signMessage],
   );
 
   useEffect(() => {
@@ -224,9 +228,9 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
       });
 
       const requestVoteResult = await signMessageWithWallet(
-          connectedWallet,
-          canonicalVoteInput,
-          signMessagePromisified,
+        connectedWallet,
+        canonicalVoteInput,
+        signMessagePromisified,
       );
 
       if (!requestVoteResult.success) {

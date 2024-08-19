@@ -2,6 +2,7 @@ import { SignedWeb3Request } from "../types/voting-app-types";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 import { NetworkType } from "../components/ConnectWalletList/ConnectWalletList.types";
 import { resolveWalletType, WalletIdentifierType } from "../common/api/utils";
+import { Buffer } from "buffer";
 
 const addressSlice = (
   address: string,
@@ -49,21 +50,34 @@ export const signMessageWithWallet = async (
   signMessagePromisified,
 ) => {
   try {
+    console.log("signMessageWithWallet");
+    console.log(connectedWallet);
+    console.log(canonicalLoginInput);
     if (
       resolveWalletType(connectedWallet.address) ===
         WalletIdentifierType.KERI &&
       window.cardano &&
       window.cardano["idw_p2p"]
     ) {
+      console.log("idw");
       const api = window.cardano["idw_p2p"];
       const enabledApi = await api.enable();
+      console.log("hey0");
+      console.log("enabledApi");
+      console.log(enabledApi);
       const keriIdentifier = await enabledApi.experimental.getKeriIdentifier();
+      console.log("keriIdentifier");
+      console.log(keriIdentifier);
 
+      console.log("hey1");
       const signedMessage = await enabledApi.experimental.signKeri(
         connectedWallet.address,
         canonicalLoginInput,
       );
+      console.log("signedMessage");
+      console.log(signedMessage);
 
+      console.log("hey3");
       if (signedMessage.error) {
         return {
           success: false,
@@ -74,6 +88,7 @@ export const signMessageWithWallet = async (
         };
       }
 
+      console.log("hey4");
       return {
         success: true,
         result: {

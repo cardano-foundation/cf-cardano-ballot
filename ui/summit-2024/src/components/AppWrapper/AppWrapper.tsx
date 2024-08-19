@@ -56,7 +56,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     const checkWalletVerification = async () => {
       const isVerifiedResult = await getIsVerified(connectedWallet.address);
       // @ts-ignore
-      if (!isVerifiedResult?.error) {
+      if (isVerifiedResult?.verified) {
         // @ts-ignore
         dispatch(setWalletIsVerified(isVerifiedResult.verified));
       } else {
@@ -65,12 +65,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
     };
     if (connectedWallet.address?.length) {
       checkWalletVerification();
-    }
-  }, [connectedWallet.address]);
-
-  useEffect(() => {
-    if (connectedWallet.address?.length && !walletIsVerified) {
-      eventBus.publish(EventName.OpenVerifyWalletModal);
     }
   }, [connectedWallet.address]);
 

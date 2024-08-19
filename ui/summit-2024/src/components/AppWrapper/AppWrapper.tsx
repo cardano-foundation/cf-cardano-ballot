@@ -69,6 +69,12 @@ const AppWrapper = (props: { children: ReactNode }) => {
   }, [connectedWallet.address]);
 
   useEffect(() => {
+    if (connectedWallet.address?.length && !walletIsVerified) {
+      eventBus.publish(EventName.OpenVerifyWalletModal);
+    }
+  }, [connectedWallet.address]);
+
+  useEffect(() => {
     if (stakeAddress && enabledWallet) {
       dispatch(
         setConnectedWallet({

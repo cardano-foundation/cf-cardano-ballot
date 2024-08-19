@@ -1,6 +1,7 @@
 import { SignedWeb3Request } from "../types/voting-app-types";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 import { NetworkType } from "../components/ConnectWalletList/ConnectWalletList.types";
+import { resolveWalletType, WalletIdentifierType } from "../common/api/utils";
 
 const addressSlice = (
   address: string,
@@ -40,6 +41,83 @@ const getSignedMessagePromise = (
         (error: Error) => reject(error),
       );
     });
+};
+
+export const signMessageWithWallet = async (
+  connectedWallet,
+  canonicalLoginInput,
+  signMessagePromisified,
+) => {
+  try {
+    if (
+      resolveWalletType(connectedWallet.address) ===
+        WalletIdentifierType.KERI &&
+      window.cardano &&
+      window.cardano["idw_p2p"]
+    ) {
+      const api = window.cardano["idw_p2p"];
+      const enabledApi = await api.enable();
+      const keriIdentifier = await enabledApi.experimental.getKeriIdentifier();
+
+      const signedMessage = await enabledApi.experimental.signKeri(
+        connectedWallet.address,
+        canonicalLoginInput,
+      );
+
+      if (signedMessage.error) {
+        return {
+          success: false,
+          error:
+            signedMessage.error.code === 2
+              ? "User declined to sign"
+              : signedMessage.error.info,
+        };
+      }
+
+      return {
+        success: true,
+        result: {
+          signature: signedMessage,
+          publicKey: keriIdentifier.id,
+          payload: Buffer.from(canonicalLoginInput, "utf8").toString("hex"),
+          oobi: keriIdentifier.oobi,
+        },
+      };
+    } else {
+      const signedMessage = await signMessagePromisified(canonicalLoginInput);
+
+      if (signedMessage.error) {
+        return {
+          success: false,
+          error:
+            signedMessage.error.code === 2
+              ? "User declined to sign"
+              : signedMessage.error.info,
+        };
+      }
+
+      return {
+        success: true,
+        result: {
+          signature: signedMessage.signature,
+          publicKey: signedMessage.publicKey,
+          payload: Buffer.from(canonicalLoginInput, "utf8").toString("hex"),
+        },
+      };
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      return {
+        success: false,
+        error: error.message,
+      };
+    } else {
+      return {
+        success: false,
+        error: "An unknown error occurred while signing",
+      };
+    }
+  }
 };
 
 const copyToClipboard = async (textToCopy: string) => {

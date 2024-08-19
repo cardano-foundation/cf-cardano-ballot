@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import { Box, Typography, useMediaQuery, Drawer } from "@mui/material";
 import theme from "../../common/styles/theme";
 import { CustomButton } from "../../components/common/CustomButton/CustomButton";
@@ -35,8 +35,10 @@ import {
   setVotes,
 } from "../../store/reducers/votesCache";
 import { ToastType } from "../../components/common/Toast/Toast.types";
-import { useSignatures } from "../../common/hooks/useSignatures";
 import { resolveWalletType } from "../../common/api/utils";
+import {getSignedMessagePromise, resolveCardanoNetwork, signMessageWithWallet} from "../../utils/utils";
+import {useCardano} from "@cardano-foundation/cardano-connect-with-wallet";
+import {env} from "../../common/constants/env";
 
 interface CategoriesProps {
   embedded?: boolean;
@@ -69,8 +71,11 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   const [fadeChecked, setFadeChecked] = useState(true);
 
   const session = getUserInSession();
-  const { signWithWallet } = useSignatures();
   const dispatch = useAppDispatch();
+
+  const { signMessage } = useCardano({
+    limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
+  });
 
   let categoryToRender = categoriesData.find((c) => c.id === selectedCategory);
   if (categoryToRender === undefined) {
@@ -83,6 +88,11 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
 
   const categoryAlreadyVoted = !!userVotes?.find(
     (vote) => vote.categoryId === categoryToRender?.id,
+  );
+
+  const signMessagePromisified = useMemo(
+      () => getSignedMessagePromise(signMessage),
+      [signMessage],
   );
 
   useEffect(() => {
@@ -188,7 +198,6 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   };
 
   const submitVote = async () => {
-    console.log("submitVote");
     if (eventCache?.finished) {
       eventBus.publish(EventName.ShowToast, "The event already ended", "error");
       return;
@@ -214,16 +223,11 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
         slotNumber: absoluteSlot.toString(),
       });
 
-      console.log("canonicalVoteInput");
-      console.log(canonicalVoteInput);
-      const requestVoteResult = await signWithWallet(
-        canonicalVoteInput,
-        connectedWallet.address,
-        resolveWalletType(connectedWallet.address),
+      const requestVoteResult = await signMessageWithWallet(
+          connectedWallet,
+          canonicalVoteInput,
+          signMessagePromisified,
       );
-
-      console.log("requestVoteResult");
-      console.log(requestVoteResult);
 
       if (!requestVoteResult.success) {
         eventBus.publish(
@@ -239,9 +243,6 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
         requestVoteResult.result,
         resolveWalletType(connectedWallet.address),
       );
-
-      console.log("submitVoteResult");
-      console.log(submitVoteResult);
 
       // @ts-ignore
       if (submitVoteResult.error && submitVoteResult.message) {

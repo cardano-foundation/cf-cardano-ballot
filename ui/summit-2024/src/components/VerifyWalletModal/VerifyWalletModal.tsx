@@ -213,7 +213,6 @@ const VerifyWalletModal = () => {
   };
 
   const handleVerifyDiscord = async () => {
-      console.log(handleVerifyDiscord);
     setEnableSignDiscordSecret(false);
 
     const signedMessageResult = await signMessageWithWallet(
@@ -616,7 +615,7 @@ const VerifyWalletModal = () => {
             <CustomButton
               sx={{
                 background: "transparent !important",
-                color: "#03021F",
+                color: theme.palette.text.neutralLightest,
                 border: "1px solid #daeefb",
               }}
               onClick={() => handleVerifyPhoneCode()}

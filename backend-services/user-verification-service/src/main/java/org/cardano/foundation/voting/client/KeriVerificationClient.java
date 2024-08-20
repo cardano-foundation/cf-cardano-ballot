@@ -20,6 +20,7 @@ import java.util.Map;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Component
 @Slf4j
@@ -101,12 +102,7 @@ public class KeriVerificationClient {
     }
 
     public Either<Problem, String> getOOBI(String oobi, Integer maxAttempts) {
-        log.info("getOOBI");
-        log.info("oobi url: {}", oobi);
-        log.info("Max attempts: {}", maxAttempts);
         val url = String.format("%s/oobi?url=%s", keriVerifierBaseUrl, oobi);
-        log.info("keriVerifierBaseUrl: {}", keriVerifierBaseUrl);
-        log.info("Keria URL to fetch: {}", url);
 
         val headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
@@ -117,18 +113,15 @@ public class KeriVerificationClient {
         int attempt = 0;
 
         while (attempt < attempts) {
-            log.info("attempt nº: {}", attempt);
-            log.info("entity: {}", entity);
             try {
                 val response = restTemplate.exchange(url, GET, entity, String.class);
-
-                log.info("Keria URL to fetch response: {}", response);
-
                 if (response.getStatusCode().is2xxSuccessful()) {
                     return Either.right(response.getBody());
                 }
             } catch (HttpClientErrorException e) {
-                if (e.getStatusCode() != BAD_REQUEST) {
+                if (e.getStatusCode() == NOT_FOUND) {
+                    log.info("OOBI not found, continuing attempts...");
+                } else {
                     return Either.left(Problem.builder()
                             .withTitle("OOBI_FETCH_ERROR")
                             .withDetail("Unable to fetch OOBI, reason: " + e.getMessage())
@@ -155,8 +148,9 @@ public class KeriVerificationClient {
         return Either.left(Problem.builder()
                 .withTitle("OOBI_NOT_FOUND")
                 .withDetail("The OOBI was not found after " + attempts + " attempts.")
-                .withStatus(new HttpStatusAdapter(BAD_REQUEST))
+                .withStatus(new HttpStatusAdapter(NOT_FOUND))
                 .build());
     }
+
 
 }

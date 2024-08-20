@@ -70,8 +70,6 @@ public class KeriVerificationClient {
     }
 
     public Either<Problem, Boolean> registerOOBI(String oobi) {
-        log.info("registerOOBI");
-        log.info("oobi url: {}", oobi);
         val url = String.format("%s/oobi", keriVerifierBaseUrl);
 
         val headers = new HttpHeaders();

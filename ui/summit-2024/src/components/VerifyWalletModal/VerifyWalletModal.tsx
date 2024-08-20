@@ -44,7 +44,6 @@ import {
   setWalletIsVerified,
 } from "../../store/reducers/userCache";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { VerificationStarted } from "../../store/reducers/userCache/userCache.types";
 import { ToastType } from "../common/Toast/Toast.types";
 import { CustomInput } from "../common/CustomInput/CustomInput";
 import theme from "../../common/styles/theme";
@@ -158,17 +157,31 @@ const VerifyWalletModal = () => {
       setPhoneCodeIsBeenSending(true);
       sendSmsCode(connectedWallet.address, phone.trim().replace(" ", ""))
         // @ts-ignore
-        .then((response: VerificationStarted) => {
-          handleSetCurrentPath(VerifyWalletFlow.CONFIRM_CODE);
-          dispatch(
-            setVerificationStarted({
-              walletIdentifier: connectedWallet.address,
-              ...response,
-            }),
-          );
-          setPhoneCodeIsSent(true);
-          setCheckImNotARobot(false);
-          setPhoneCodeIsBeenSending(false);
+        .then((response) => {
+          console.log("hey1");
+          console.log(response);
+          // @ts-ignore
+          if (response?.error) {
+            eventBus.publish(
+              EventName.ShowToast,
+              // @ts-ignore
+              response.message || "Error sending sms code",
+              ToastType.Error,
+            );
+            setPhoneCodeIsBeenSending(false);
+          } else {
+            handleSetCurrentPath(VerifyWalletFlow.CONFIRM_CODE);
+            dispatch(
+              // @ts-ignore
+              setVerificationStarted({
+                walletIdentifier: connectedWallet.address,
+                ...response,
+              }),
+            );
+            setPhoneCodeIsSent(true);
+            setCheckImNotARobot(false);
+            setPhoneCodeIsBeenSending(false);
+          }
         })
         .catch(() => {
           setPhoneCodeIsBeenSending(false);
@@ -307,6 +320,16 @@ const VerifyWalletModal = () => {
   };
 
   const renderSelectOption = () => {
+    const handleSelectVerifyWithDiscord = () => {
+      handleSetCurrentPath(VerifyWalletFlow.VERIFY_DISCORD);
+      setInputSecret("");
+    };
+    const handleSelectVerifyWithSMS = () => {
+      setPhoneCodeIsBeenSending(false);
+      handleSetCurrentPath(VerifyWalletFlow.VERIFY_SMS);
+      setPhone("");
+      setCheckImNotARobot(false);
+    };
     return (
       <>
         <Typography
@@ -325,9 +348,7 @@ const VerifyWalletModal = () => {
         </Typography>
         <List>
           <ListItem
-            onClick={() =>
-              handleSetCurrentPath(VerifyWalletFlow.VERIFY_DISCORD)
-            }
+            onClick={() => handleSelectVerifyWithDiscord()}
             sx={{
               borderRadius: "12px",
               border: "1px solid var(--neutral, #737380)",
@@ -367,7 +388,7 @@ const VerifyWalletModal = () => {
             </Typography>
           </ListItem>
           <ListItem
-            onClick={() => handleSetCurrentPath(VerifyWalletFlow.VERIFY_SMS)}
+            onClick={() => handleSelectVerifyWithSMS()}
             sx={{
               borderRadius: "12px",
               border: "1px solid var(--neutral, #737380)",
@@ -633,13 +654,14 @@ const VerifyWalletModal = () => {
 
   const renderDidNotReceiveCode = () => {
     const handleEnterNewNumber = () => {
-      setPhone("");
+      reset();
       handleSetCurrentPath(VerifyWalletFlow.VERIFY_SMS);
     };
     const handleSendCodeAgain = async () => {
       handleSetCurrentPath(VerifyWalletFlow.CONFIRM_CODE);
       setPhoneCodeShowError(false);
       setCodes(Array(6).fill(""));
+      setPhoneCodeShowError(false);
       await handleSendCode();
     };
     return (
@@ -877,7 +899,17 @@ const VerifyWalletModal = () => {
 
   const handleBack = () => {
     if (verifyCurrentPaths.length >= 2) {
-      setVerifyCurrentPaths((prev) => prev.slice(1));
+      const udpatedPaths = verifyCurrentPaths.slice(1);
+      setVerifyCurrentPaths(udpatedPaths);
+
+      if (udpatedPaths[0] === VerifyWalletFlow.VERIFY_SMS) {
+        setPhone("");
+        setPhoneCodeIsSent(false);
+      }
+      if (udpatedPaths[0] === VerifyWalletFlow.CONFIRM_CODE) {
+        setCodes(Array(6).fill(""));
+        setPhoneCodeShowError(false);
+      }
     } else {
       reset();
     }
@@ -892,7 +924,7 @@ const VerifyWalletModal = () => {
         };
       case VerifyWalletFlow.SELECT_METHOD:
         return {
-          title: "Verify Your Wallet",
+          title: "Select Your Method",
           render: renderSelectOption(),
         };
       case VerifyWalletFlow.VERIFY_SMS:

@@ -167,7 +167,7 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
               color="inherit"
               onClick={() => onDisconnectWallet()}
             >
-              <ListItemText primary="Logout" />
+              <ListItemText primary="Disconnect" />
               <ListItemIcon sx={{ minWidth: "auto" }}>
                 <ExitToAppIcon />
               </ListItemIcon>

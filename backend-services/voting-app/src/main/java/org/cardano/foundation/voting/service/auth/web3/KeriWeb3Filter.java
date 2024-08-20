@@ -59,8 +59,7 @@ public class KeriWeb3Filter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest req,
                                     HttpServletResponse res,
                                     FilterChain chain) throws ServletException, IOException {
-        log.info("doFilterInternal");
-        log.info("req: {}", req);
+
         val logonSystemM = loginSystemDetector.detect(req);
         if (logonSystemM.isEmpty()) {
             chain.doFilter(req, res);
@@ -77,11 +76,6 @@ public class KeriWeb3Filter extends OncePerRequestFilter {
         val headerPayloadM = Optional.ofNullable(req.getHeader(X_Ballot_Payload));
         val headerAidM = Optional.ofNullable(req.getHeader(X_Ballot_PublicKey));
         val headerOobiM = Optional.ofNullable(req.getHeader(X_Ballot_Oobi));
-
-        log.info("headerSignatureM: {}", headerSignatureM);
-        log.info("headerPayloadM: {}", headerPayloadM);
-        log.info("headerAidM: {}", headerAidM);
-        log.info("headerOobiM: {}", headerOobiM);
 
         if (headerSignatureM.isEmpty()) {
             val problem = Problem.builder()
@@ -130,7 +124,6 @@ public class KeriWeb3Filter extends OncePerRequestFilter {
         val headerAid = headerAidM.orElseThrow();
         val headerOobi = headerOobiM.orElseThrow();
 
-        log.info("OOBI to get after validate it: ", headerOobi);
         // Step 1: Check if OOBI is already registered
         Either<Problem, String> oobiCheckResult = keriVerificationClient.getOOBI(headerOobi, 1);
         if (oobiCheckResult.isLeft()) {

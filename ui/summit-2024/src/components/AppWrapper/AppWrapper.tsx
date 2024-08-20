@@ -16,8 +16,8 @@ import {
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 import { resolveCardanoNetwork } from "../../utils/utils";
 import { getUserInSession, tokenIsExpired } from "../../utils/session";
-import { submitGetUserVotes } from "../../common/api/voteService";
-import { setVotes } from "../../store/reducers/votesCache";
+import {getVoteReceipts, submitGetUserVotes} from "../../common/api/voteService";
+import {setVoteReceipts, setVotes} from "../../store/reducers/votesCache";
 import { parseError } from "../../common/constants/errors";
 
 const AppWrapper = (props: { children: ReactNode }) => {
@@ -38,8 +38,13 @@ const AppWrapper = (props: { children: ReactNode }) => {
     const updateUserVotes = async () => {
       submitGetUserVotes(session.accessToken)
         .then((response) => {
-          // @ts-ignore
-          dispatch(setVotes(response));
+          if (Array.isArray(response) && response.length) {
+            dispatch(setVotes(response));
+            getVoteReceipts(session.accessToken).then((receipts) => {
+              // @ts-ignore
+              dispatch(setVoteReceipts(receipts));
+            });
+          }
         })
         .catch((e) => {
           if (process.env.NODE_ENV === "development") {
@@ -47,10 +52,18 @@ const AppWrapper = (props: { children: ReactNode }) => {
           }
         });
     };
-    if (connectedWallet.address.length && walletIsVerified && !isExpired) {
-      updateUserVotes();
+
+    const promptLogin = () => {
+      eventBus.publish(EventName.OpenLoginModal);
     }
-  }, [connectedWallet.address, walletIsVerified]);
+
+    const walletIsConnectedAndVerified = connectedWallet.address.length && walletIsVerified;
+    if (walletIsConnectedAndVerified && !isExpired) {
+      updateUserVotes();
+    } else if (walletIsConnectedAndVerified && isExpired){
+      promptLogin();
+    }
+  }, [connectedWallet.address, walletIsVerified, isExpired]);
 
   useEffect(() => {
     const checkWalletVerification = async () => {

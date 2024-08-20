@@ -158,8 +158,6 @@ const VerifyWalletModal = () => {
       sendSmsCode(connectedWallet.address, phone.trim().replace(" ", ""))
         // @ts-ignore
         .then((response) => {
-          console.log("hey1");
-          console.log(response);
           // @ts-ignore
           if (response?.error) {
             eventBus.publish(

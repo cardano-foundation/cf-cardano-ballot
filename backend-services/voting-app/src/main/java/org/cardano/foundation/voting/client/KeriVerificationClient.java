@@ -138,6 +138,7 @@ public class KeriVerificationClient {
                 log.info("response");
                 log.info(response.toString());
                 if (response.getStatusCode().is2xxSuccessful()) {
+                    log.info("OOBI got successfully after {} attempts", String.valueOf(attempt+1));
                     return Either.right(response.getBody());
                 }
             } catch (HttpClientErrorException e) {

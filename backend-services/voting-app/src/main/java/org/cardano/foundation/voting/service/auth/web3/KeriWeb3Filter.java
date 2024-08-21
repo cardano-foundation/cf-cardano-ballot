@@ -145,9 +145,12 @@ public class KeriWeb3Filter extends OncePerRequestFilter {
             if (oobiFetchResultE.isLeft()) {
                 sendBackProblem(objectMapper, res, oobiFetchResultE.getLeft());
                 return;
+            } else {
+                log.info("OOBI successfully got");
             }
         }
 
+        log.info("\nLets verify the signature");
         Either<Problem, Boolean> verificationResult = keriVerificationClient.verifySignature(headerAid, headerSignature, headerSignedJson);
 
         if (verificationResult.isEmpty()) {

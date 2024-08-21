@@ -89,6 +89,7 @@ public class KeriVerificationClient {
 
         val entity = new HttpEntity<Map<String, String>>(requestBody, headers);
 
+
         log.info("\n\nregisterOOBI");
         log.info("oobi");
         log.info(oobi);

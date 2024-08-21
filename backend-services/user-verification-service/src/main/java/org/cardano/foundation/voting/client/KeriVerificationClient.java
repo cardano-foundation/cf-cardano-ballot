@@ -69,7 +69,6 @@ public class KeriVerificationClient {
                     .build());
         } catch (HttpClientErrorException e) {
             log.info("Error on verifySignature");
-            log.info(e);
             log.error("Unable to verify signature, reason: {}", e.getMessage());
 
             return Either.left(Problem.builder()

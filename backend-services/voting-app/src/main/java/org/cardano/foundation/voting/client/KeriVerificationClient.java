@@ -141,6 +141,8 @@ public class KeriVerificationClient {
                     return Either.right(response.getBody());
                 }
             } catch (HttpClientErrorException e) {
+                log.info("HttpClientErrorException.getStatusCode()");
+                log.info(e.getStatusCode().toString());
                 if (e.getStatusCode() == NOT_FOUND) {
                     log.info("OOBI not found, continuing attempts...");
                 } else {

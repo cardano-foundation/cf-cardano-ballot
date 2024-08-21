@@ -125,54 +125,35 @@ public class KeriWeb3Filter extends OncePerRequestFilter {
         val headerOobi = headerOobiM.orElseThrow();
 
         // Step 1: Check if OOBI is already registered
+        log.info("Lets check if the oobi is already registered: {}", headerOobi);
         Either<Problem, String> oobiCheckResult = keriVerificationClient.getOOBI(headerOobi, 1);
+
         if (oobiCheckResult.isLeft()) {
-            sendBackProblem(objectMapper, res, oobiCheckResult.getLeft());
-            return;
-        }
+            log.info("OOBI not registered yet: {}", headerOobi);
+            // Step 2: Register OOBI if not already registered
+            val oobiRegistrationResultE = keriVerificationClient.registerOOBI(headerOobi);
 
-        // Log if OOBI is registered or not
-        log.info("OOBI status: {}", oobiCheckResult.get());
+            if (oobiRegistrationResultE.isLeft()) {
+                sendBackProblem(objectMapper, res, oobiRegistrationResultE.getLeft());
+                return;
+            }
 
-        if (oobiCheckResult.isRight()) {
-            log.info("OOBI already registered: {}", oobiCheckResult);
-            Either<Problem, Boolean> verificationResult = keriVerificationClient.verifySignature(headerAid, headerSignature, headerSignedJson);
+            log.info("OOBI registered successfully: {}", headerOobi);
 
-            if (verificationResult.isEmpty()) {
-                val problem = Problem.builder()
-                        .withTitle("KERI_SIGNATURE_VERIFICATION_FAILED")
-                        .withDetail("Unable to verify KERI header signature, reason: " + verificationResult.swap().get().getDetail())
-                        .withStatus(BAD_REQUEST)
-                        .build();
-
-                sendBackProblem(objectMapper, res, problem);
+            // Step 3: Attempt to verify OOBI registration up to 60 times
+            val oobiFetchResultE = keriVerificationClient.getOOBI(headerOobi, 60);
+            if (oobiFetchResultE.isLeft()) {
+                sendBackProblem(objectMapper, res, oobiFetchResultE.getLeft());
                 return;
             }
         }
 
-        log.info("OOBI not registered yet: {}", headerOobi);
-        // Step 2: Register OOBI if not already registered
-        val oobiRegistrationResultE = keriVerificationClient.registerOOBI(headerOobi);
+        Either<Problem, Boolean> verificationResult = keriVerificationClient.verifySignature(headerAid, headerSignature, headerSignedJson);
 
-        if (oobiRegistrationResultE.isLeft()) {
-            sendBackProblem(objectMapper, res, oobiRegistrationResultE.getLeft());
-            return;
-        }
-
-        log.info("OOBI registered successfully: {}", headerOobi);
-
-        // Step 3: Attempt to verify OOBI registration up to 60 times
-        val oobiFetchResultE = keriVerificationClient.getOOBI(headerOobi, 60);
-        if (oobiFetchResultE.isLeft()) {
-            sendBackProblem(objectMapper, res, oobiFetchResultE.getLeft());
-            return;
-        }
-
-        val keriVerificationResultE = keriVerificationClient.verifySignature(headerAid, headerSignature, headerSignedJson);
-        if (keriVerificationResultE.isEmpty()) {
+        if (verificationResult.isEmpty()) {
             val problem = Problem.builder()
                     .withTitle("KERI_SIGNATURE_VERIFICATION_FAILED")
-                    .withDetail("Unable to verify KERI header signature, reason: " + keriVerificationResultE.swap().get().getDetail())
+                    .withDetail("Unable to verify KERI header signature, reason: " + verificationResult.swap().get().getDetail())
                     .withStatus(BAD_REQUEST)
                     .build();
 

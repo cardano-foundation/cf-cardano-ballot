@@ -57,7 +57,7 @@ public class KeriVerificationClient {
         try {
             val response = restTemplate.exchange(url, POST, entity, String.class);
             log.info("response");
-            log.info(response);
+            log.info(response.toString());
             if (response.getStatusCode().is2xxSuccessful()) {
                 return Either.right(true);
             }
@@ -95,7 +95,7 @@ public class KeriVerificationClient {
         try {
             val response = restTemplate.exchange(url, POST, entity, String.class);
             log.info("response");
-            log.info(response);
+            log.info(response.toString());
             if (response.getStatusCode().is2xxSuccessful()) {
                 return Either.right(true);
             }
@@ -129,13 +129,13 @@ public class KeriVerificationClient {
         log.info("oobi");
         log.info(oobi);
         log.info("maxAttempts");
-        log.info(maxAttempts);
+        log.info(String.valueOf(maxAttempts));
 
         while (attempt < attempts) {
             try {
                 val response = restTemplate.exchange(url, GET, entity, String.class);
                 log.info("response");
-                log.info(response);
+                log.info(response.toString());
                 if (response.getStatusCode().is2xxSuccessful()) {
                     return Either.right(response.getBody());
                 }

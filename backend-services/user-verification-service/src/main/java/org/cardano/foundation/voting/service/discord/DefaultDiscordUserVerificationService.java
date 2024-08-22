@@ -428,7 +428,6 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
 
         // Step 1: Check if OOBI is already registered
         Either<Problem, String> oobiCheckResult = keriVerificationClient.getOOBI(oobi, 1);
-        log.info("oobiCheckResult: {}", oobiCheckResult.get());
         if (oobiCheckResult.isRight()) {
             log.info("OOBI already registered: {}", oobiCheckResult.get());
             Either<Problem, Boolean> verificationResult = keriVerificationClient.verifySignature(walletId, signature, payload);

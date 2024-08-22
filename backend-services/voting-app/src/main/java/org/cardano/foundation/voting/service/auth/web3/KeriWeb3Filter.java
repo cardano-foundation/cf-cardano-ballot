@@ -125,7 +125,6 @@ public class KeriWeb3Filter extends OncePerRequestFilter {
         val headerOobi = headerOobiM.orElseThrow();
 
         // Step 1: Check if OOBI is already registered
-        log.info("Lets check if the oobi is already registered: {}", headerOobi);
         Either<Problem, String> oobiCheckResult = keriVerificationClient.getOOBI(headerOobi, 1);
 
         if (oobiCheckResult.isLeft()) {
@@ -145,12 +144,9 @@ public class KeriWeb3Filter extends OncePerRequestFilter {
             if (oobiFetchResultE.isLeft()) {
                 sendBackProblem(objectMapper, res, oobiFetchResultE.getLeft());
                 return;
-            } else {
-                log.info("OOBI successfully got");
             }
         }
 
-        log.info("\nLets verify the signature");
         Either<Problem, Boolean> verificationResult = keriVerificationClient.verifySignature(headerAid, headerSignature, headerSignedJson);
 
         if (verificationResult.isEmpty()) {

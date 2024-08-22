@@ -471,7 +471,6 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
         }
 
         // Step 4: Verify signature after OOBI registration
-        log.info("\nLets verify the signature");
         val verificationResultE = keriVerificationClient.verifySignature(walletId, signature, payload);
         if (verificationResultE.isLeft()) {
             return Either.left(verificationResultE.getLeft());

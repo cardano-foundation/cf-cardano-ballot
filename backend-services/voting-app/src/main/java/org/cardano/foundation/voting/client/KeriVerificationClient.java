@@ -46,18 +46,8 @@ public class KeriVerificationClient {
 
         val entity = new HttpEntity<Map<String, String>>(requestBody, headers);
 
-        log.info("\n\nnverifySignature");
-        log.info("aid");
-        log.info(aid);
-        log.info("signature");
-        log.info(signature);
-        log.info("payload");
-        log.info(payload);
-
         try {
             val response = restTemplate.exchange(url, POST, entity, String.class);
-            log.info("response");
-            log.info(response.toString());
             if (response.getStatusCode().is2xxSuccessful()) {
                 return Either.right(true);
             }
@@ -89,14 +79,9 @@ public class KeriVerificationClient {
 
         val entity = new HttpEntity<Map<String, String>>(requestBody, headers);
 
-
-        log.info("\n\nregisterOOBI");
-        log.info("oobi");
-        log.info(oobi);
         try {
             val response = restTemplate.exchange(url, POST, entity, String.class);
-            log.info("response");
-            log.info(response.toString());
+
             if (response.getStatusCode().is2xxSuccessful()) {
                 return Either.right(true);
             }
@@ -126,24 +111,13 @@ public class KeriVerificationClient {
         int attempts = (maxAttempts == null) ? 1 : maxAttempts;
         int attempt = 0;
 
-        log.info("\n\ngetOOBI");
-        log.info("oobi");
-        log.info(oobi);
-        log.info("maxAttempts");
-        log.info(String.valueOf(maxAttempts));
-
         while (attempt < attempts) {
             try {
                 val response = restTemplate.exchange(url, GET, entity, String.class);
-                log.info("response");
-                log.info(response.toString());
                 if (response.getStatusCode().is2xxSuccessful()) {
-                    log.info("OOBI got successfully after {} attempts", String.valueOf(attempt+1));
                     return Either.right(response.getBody());
                 }
             } catch (HttpClientErrorException e) {
-                log.info("HttpClientErrorException.getStatusCode()");
-                log.info(e.getStatusCode().toString());
                 if (e.getStatusCode() == NOT_FOUND) {
                     log.info("OOBI not found, continuing attempts...");
                 } else {

@@ -38,8 +38,6 @@ class OOBIEnd:
             raise falcon.HTTPBadRequest(description=f"required field url missing from request")
 
         result = self.hby.db.roobi.get(keys=(oobi,))
-        print("OOBIEnd:")
-        print(result)
         if result:
             resp.status = falcon.HTTP_200
             resp.text = result.cid
@@ -116,11 +114,6 @@ class VerificationEnd:
         payload = getRequiredParam(body, 'payload')
 
         try:
-            print("VerificationEnd:")
-            print(pre)
-            print(signature)
-            print(payload)
-            print(self.hab.kevers[pre])
             kever = self.hab.kevers[pre]
         except KeyError as _:
             resp.status = falcon.HTTP_404

@@ -45,14 +45,6 @@ public class KeriVerificationClient {
         requestBody.put("signature", signature);
         requestBody.put("payload", payload);
 
-        log.info("\n\nnverifySignature");
-        log.info("aid");
-        log.info(aid);
-        log.info("signature");
-        log.info(signature);
-        log.info("payload");
-        log.info(payload);
-
         val entity = new HttpEntity<Map<String, String>>(requestBody, headers);
 
         try {
@@ -68,7 +60,6 @@ public class KeriVerificationClient {
                     .withStatus(new HttpStatusAdapter(response.getStatusCode()))
                     .build());
         } catch (HttpClientErrorException e) {
-            log.info("Error on verifySignature");
             log.error("Unable to verify signature, reason: {}", e.getMessage());
 
             return Either.left(Problem.builder()
@@ -88,16 +79,10 @@ public class KeriVerificationClient {
         val requestBody = new HashMap<String, String>();
         requestBody.put("oobi", oobi);
 
-        log.info("\n\nregisterOOBI");
-        log.info("oobi");
-        log.info(oobi);
-
         val entity = new HttpEntity<Map<String, String>>(requestBody, headers);
         try {
             val response = restTemplate.exchange(url, POST, entity, String.class);
 
-            log.info("response");
-            log.info(response.toString());
             if (response.getStatusCode().is2xxSuccessful()) {
                 return Either.right(true);
             }
@@ -119,12 +104,6 @@ public class KeriVerificationClient {
     public Either<Problem, String> getOOBI(String oobi, Integer maxAttempts) {
         val url = String.format("%s/oobi?url=%s", keriVerifierBaseUrl, oobi);
 
-        log.info("\n\ngetOOBI");
-        log.info("oobi");
-        log.info(oobi);
-        log.info("maxAttempts");
-        log.info(String.valueOf(maxAttempts));
-
         val headers = new HttpHeaders();
         headers.add("Content-Type", "application/json");
 
@@ -136,8 +115,6 @@ public class KeriVerificationClient {
         while (attempt < attempts) {
             try {
                 val response = restTemplate.exchange(url, GET, entity, String.class);
-                log.info("response");
-                log.info(response.toString());
                 if (response.getStatusCode().is2xxSuccessful()) {
                     return Either.right(response.getBody());
                 }

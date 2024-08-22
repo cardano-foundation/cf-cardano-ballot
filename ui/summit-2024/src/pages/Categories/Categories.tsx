@@ -19,7 +19,7 @@ import {
   submitVoteWithDigitalSignature,
   getSlotNumber,
   submitGetUserVotes,
-  getVoteReceipt,
+  getVoteReceipt, getVoteReceipts,
 } from "../../common/api/voteService";
 import { eventBus, EventName } from "../../utils/EventBus";
 import {
@@ -31,7 +31,7 @@ import { parseError } from "../../common/constants/errors";
 import {
   getReceipts,
   getVotes,
-  setVoteReceipt,
+  setVoteReceipt, setVoteReceipts,
   setVotes,
 } from "../../store/reducers/votesCache";
 import { ToastType } from "../../components/common/Toast/Toast.types";
@@ -264,30 +264,21 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
       dispatch(setVotes([...userVotes, { categoryId, proposalId }]));
       // TODO: refactor
       if (session && !tokenIsExpired(session?.expiresAt)) {
-        // @ts-ignore
-        getVoteReceipt(categoryId, session?.accessToken)
-          .then((r) => {
+        getVoteReceipts(session?.accessToken).then((receipts) => {
+          // @ts-ignore
+          if (receipts.error) {
             // @ts-ignore
-            if (r.error) {
-              // @ts-ignore
-              eventBus.publish(EventName.ShowToast, r.message, ToastType.Error);
-              return;
-            }
-            // @ts-ignore
-            dispatch(setVoteReceipt({ categoryId: categoryId, receipt: r }));
-          })
-          .catch((e) => {
-            if (process.env.NODE_ENV === "development") {
-              console.log(
-                `Failed to fetch vote receipt, ${parseError(e.message)}`,
-              );
-            }
-          });
+            eventBus.publish(EventName.ShowToast, r.message, ToastType.Error);
+            return;
+          }
+          // @ts-ignore
+          dispatch(setVoteReceipts(receipts));
+        });
         submitGetUserVotes(session?.accessToken)
-          .then((response) => {
-            if (response) {
+          .then((votes) => {
+            if (votes) {
               // @ts-ignore
-              dispatch(setVotes(response));
+              dispatch(setVotes(votes));
             }
           })
           .catch((e) => {

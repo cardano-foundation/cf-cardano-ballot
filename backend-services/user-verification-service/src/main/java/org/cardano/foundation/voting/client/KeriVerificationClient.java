@@ -116,6 +116,7 @@ public class KeriVerificationClient {
             try {
                 val response = restTemplate.exchange(url, GET, entity, String.class);
                 if (response.getStatusCode().is2xxSuccessful()) {
+                    log.info("OOBI successfully retrieved after {} attempts", attempt+1);
                     return Either.right(response.getBody());
                 }
             } catch (HttpClientErrorException e) {

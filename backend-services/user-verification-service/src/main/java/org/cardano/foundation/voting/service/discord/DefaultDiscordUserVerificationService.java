@@ -465,13 +465,14 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
 
         log.info("OOBI registered successfully: {}", oobiM);
 
-        // Step 3: Attempt to verify OOBI registration up to 10 times
+        // Step 3: Attempt to verify OOBI registration up to 60 times
         val oobiFetchResultE = keriVerificationClient.getOOBI(oobi, 60);
         if (oobiFetchResultE.isLeft()) {
             return Either.left(oobiFetchResultE.getLeft());
         }
 
         // Step 4: Verify signature after OOBI registration
+        log.info("\nLets verify the signature");
         val verificationResultE = keriVerificationClient.verifySignature(walletId, signature, payload);
         if (verificationResultE.isLeft()) {
             return Either.left(verificationResultE.getLeft());

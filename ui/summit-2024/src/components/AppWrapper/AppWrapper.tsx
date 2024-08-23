@@ -53,15 +53,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
         });
     };
 
-    const promptLogin = () => {
-      eventBus.publish(EventName.OpenLoginModal);
-    }
-
     const walletIsConnectedAndVerified = connectedWallet.address.length && walletIsVerified;
     if (walletIsConnectedAndVerified && !isExpired) {
       updateUserVotes();
-    } else if (walletIsConnectedAndVerified && isExpired){
-      promptLogin();
     }
   }, [connectedWallet.address, walletIsVerified, isExpired]);
 

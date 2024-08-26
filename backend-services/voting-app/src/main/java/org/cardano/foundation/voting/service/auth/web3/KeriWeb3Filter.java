@@ -147,6 +147,13 @@ public class KeriWeb3Filter extends OncePerRequestFilter {
             }
         }
 
+        // Step 1.1:Update key state
+        Either<Problem, Boolean> keyStateUpdateResult = keriVerificationClient.updateAndVerifyKeyState(headerAid, 60);
+        if (keyStateUpdateResult.isLeft()) {
+            sendBackProblem(objectMapper, res, keyStateUpdateResult.getLeft());
+            return;
+        }
+
         Either<Problem, Boolean> verificationResult = keriVerificationClient.verifySignature(headerAid, headerSignature, headerSignedJson);
 
         if (verificationResult.isEmpty()) {

@@ -127,6 +127,7 @@ class KeriWeb3FilterTest {
 
         when(keriVerificationClient.getOOBI(anyString(), anyInt())).thenReturn(Either.right("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ"));
         when(keriVerificationClient.registerOOBI(anyString())).thenReturn(Either.right(true));
+        when(keriVerificationClient.updateAndVerifyKeyState(anyString(), anyInt())).thenReturn(Either.right(true));
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.left(mock(Problem.class)));
 
         filter.doFilterInternal(request, response, chain);
@@ -144,6 +145,7 @@ class KeriWeb3FilterTest {
 
         when(keriVerificationClient.getOOBI(anyString(), anyInt())).thenReturn(Either.right("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ"));
         when(keriVerificationClient.registerOOBI(anyString())).thenReturn(Either.right(true));
+        when(keriVerificationClient.updateAndVerifyKeyState(anyString(), anyInt())).thenReturn(Either.right(true));
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
         when(jsonService.decodeGenericKeri(any())).thenReturn(Either.left(mock(Problem.class)));
 
@@ -168,6 +170,7 @@ class KeriWeb3FilterTest {
 
         when(keriVerificationClient.getOOBI(anyString(), anyInt())).thenReturn(Either.right("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ"));
         when(keriVerificationClient.registerOOBI(anyString())).thenReturn(Either.right(true));
+        when(keriVerificationClient.updateAndVerifyKeyState(anyString(), anyInt())).thenReturn(Either.right(true));
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
 
         val genericEnvelope = KERIEnvelope.<Map<String, Object>>builder()
@@ -198,6 +201,7 @@ class KeriWeb3FilterTest {
 
         when(keriVerificationClient.getOOBI(anyString(), anyInt())).thenReturn(Either.right("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ"));
         when(keriVerificationClient.registerOOBI(anyString())).thenReturn(Either.right(true));
+        when(keriVerificationClient.updateAndVerifyKeyState(anyString(), anyInt())).thenReturn(Either.right(true));
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
 
         val genericEnvelope = KERIEnvelope.<Map<String, Object>>builder()
@@ -231,6 +235,7 @@ class KeriWeb3FilterTest {
 
         when(keriVerificationClient.getOOBI(anyString(), anyInt())).thenReturn(Either.right("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ"));
         when(keriVerificationClient.registerOOBI(anyString())).thenReturn(Either.right(true));
+        when(keriVerificationClient.updateAndVerifyKeyState(anyString(), anyInt())).thenReturn(Either.right(true));
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
 
         when(chainFollowerClient.getChainTip()).thenReturn(Either.right(
@@ -270,6 +275,7 @@ class KeriWeb3FilterTest {
 
         when(keriVerificationClient.getOOBI(anyString(), anyInt())).thenReturn(Either.right("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ"));
         when(keriVerificationClient.registerOOBI(anyString())).thenReturn(Either.right(true));
+        when(keriVerificationClient.updateAndVerifyKeyState(anyString(), anyInt())).thenReturn(Either.right(true));
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
 
         when(chainFollowerClient.getChainTip()).thenReturn(Either.left(Problem.builder()
@@ -312,6 +318,7 @@ class KeriWeb3FilterTest {
 
         when(keriVerificationClient.getOOBI(anyString(), anyInt())).thenReturn(Either.right("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ"));
         when(keriVerificationClient.registerOOBI(anyString())).thenReturn(Either.right(true));
+        when(keriVerificationClient.updateAndVerifyKeyState(anyString(), anyInt())).thenReturn(Either.right(true));
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
 
         when(expirationService.isSlotExpired(any(), anyLong())).thenReturn(true);
@@ -354,6 +361,7 @@ class KeriWeb3FilterTest {
 
         when(keriVerificationClient.getOOBI(anyString(), anyInt())).thenReturn(Either.right("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ"));
         when(keriVerificationClient.registerOOBI(anyString())).thenReturn(Either.right(true));
+        when(keriVerificationClient.updateAndVerifyKeyState(anyString(), anyInt())).thenReturn(Either.right(true));
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
 
         when(chainFollowerClient.getChainTip()).thenReturn(Either.right(
@@ -394,6 +402,7 @@ class KeriWeb3FilterTest {
 
         when(keriVerificationClient.getOOBI(anyString(), anyInt())).thenReturn(Either.right("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ"));
         when(keriVerificationClient.registerOOBI(anyString())).thenReturn(Either.right(true));
+        when(keriVerificationClient.updateAndVerifyKeyState(anyString(), anyInt())).thenReturn(Either.right(true));
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
 
         when(chainFollowerClient.getChainTip()).thenReturn(Either.right(
@@ -434,6 +443,7 @@ class KeriWeb3FilterTest {
 
         when(keriVerificationClient.getOOBI(anyString(), anyInt())).thenReturn(Either.right("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ"));
         when(keriVerificationClient.registerOOBI(anyString())).thenReturn(Either.right(true));
+        when(keriVerificationClient.updateAndVerifyKeyState(anyString(), anyInt())).thenReturn(Either.right(true));
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
 
         when(chainFollowerClient.getChainTip()).thenReturn(Either.right(
@@ -474,6 +484,7 @@ class KeriWeb3FilterTest {
 
         when(keriVerificationClient.getOOBI(anyString(), anyInt())).thenReturn(Either.right("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ"));
         when(keriVerificationClient.registerOOBI(anyString())).thenReturn(Either.right(true));
+        when(keriVerificationClient.updateAndVerifyKeyState(anyString(), anyInt())).thenReturn(Either.right(true));
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
 
         when(chainFollowerClient.getChainTip()).thenReturn(Either.right(
@@ -514,6 +525,7 @@ class KeriWeb3FilterTest {
 
         when(keriVerificationClient.getOOBI(anyString(), anyInt())).thenReturn(Either.right("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ"));
         when(keriVerificationClient.registerOOBI(anyString())).thenReturn(Either.right(true));
+        when(keriVerificationClient.updateAndVerifyKeyState(anyString(), anyInt())).thenReturn(Either.right(true));
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
 
         when(chainFollowerClient.getChainTip()).thenReturn(Either.right(
@@ -561,6 +573,7 @@ class KeriWeb3FilterTest {
 
         when(keriVerificationClient.getOOBI(anyString(), anyInt())).thenReturn(Either.right("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ"));
         when(keriVerificationClient.registerOOBI(anyString())).thenReturn(Either.right(true));
+        when(keriVerificationClient.updateAndVerifyKeyState(anyString(), anyInt())).thenReturn(Either.right(true));
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
 
         when(chainFollowerClient.getChainTip()).thenReturn(Either.right(
@@ -603,6 +616,7 @@ class KeriWeb3FilterTest {
 
         when(keriVerificationClient.getOOBI(anyString(), anyInt())).thenReturn(Either.right("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ"));
         when(keriVerificationClient.registerOOBI(anyString())).thenReturn(Either.right(true));
+        when(keriVerificationClient.updateAndVerifyKeyState(anyString(), anyInt())).thenReturn(Either.right(true));
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
 
         when(chainFollowerClient.getChainTip()).thenReturn(Either.right(

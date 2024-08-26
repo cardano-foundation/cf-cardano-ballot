@@ -430,6 +430,13 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
         Either<Problem, String> oobiCheckResult = keriVerificationClient.getOOBI(oobi, 1);
         if (oobiCheckResult.isRight()) {
             log.info("OOBI already registered: {}", oobiCheckResult.get());
+
+            // Step 1.1:Update key state
+            Either<Problem, Boolean> keyStateUpdateResult = keriVerificationClient.updateAndVerifyKeyState(walletId, 60);
+            if (keyStateUpdateResult.isLeft()) {
+                return Either.left(keyStateUpdateResult.getLeft());
+            }
+
             Either<Problem, Boolean> verificationResult = keriVerificationClient.verifySignature(walletId, signature, payload);
 
             if (verificationResult.isLeft()) {
@@ -470,7 +477,12 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
             return Either.left(oobiFetchResultE.getLeft());
         }
 
-        // Step 4: Verify signature after OOBI registration
+        // Step 4: Update key state
+        Either<Problem, Boolean> keyStateUpdateResult = keriVerificationClient.updateAndVerifyKeyState(walletId, 60);
+        if (keyStateUpdateResult.isLeft()) {
+            return Either.left(keyStateUpdateResult.getLeft());
+        }
+        // Step 5: Verify signature after OOBI registration
         val verificationResultE = keriVerificationClient.verifySignature(walletId, signature, payload);
         if (verificationResultE.isLeft()) {
             return Either.left(verificationResultE.getLeft());

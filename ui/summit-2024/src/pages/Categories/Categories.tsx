@@ -19,20 +19,18 @@ import {
   buildCanonicalVoteInputJson,
   submitVoteWithDigitalSignature,
   getSlotNumber,
-  getUserVotes,
+  submitGetUserVotes,
   getVoteReceipt,
 } from "../../common/api/voteService";
 import { eventBus, EventName } from "../../utils/EventBus";
 import {
   getConnectedWallet,
   getWalletIsVerified,
+  getUserVotes,
 } from "../../store/reducers/userCache";
 import { getUserInSession, tokenIsExpired } from "../../utils/session";
 import { parseError } from "../../common/constants/errors";
-import {
-  setVoteReceipt,
-  setVotes,
-} from "../../store/reducers/votesCache/votesCache";
+import { setVoteReceipt, setVotes } from "../../store/reducers/votesCache";
 import { ToastType } from "../../components/common/Toast/Toast.types";
 import { useSignatures } from "../../common/hooks/useSignatures";
 import { resolveWalletType } from "../../common/api/utils";
@@ -46,9 +44,12 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   const eventCache = useAppSelector(getEventCache);
   const connectedWallet = useAppSelector(getConnectedWallet);
   const walletIdentifierIsVerified = useAppSelector(getWalletIsVerified);
+  const userVotes = useAppSelector(getUserVotes);
   const categoriesData = eventCache.categories;
-
   const [showWinners, setShowWinners] = useState(eventCache.finished);
+
+  console.log("userVotes");
+  console.log(userVotes);
 
   const [selectedCategory, setSelectedCategory] = useState(
     categoriesData[0].id,
@@ -69,6 +70,22 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   const session = getUserInSession();
   const { signWithWallet } = useSignatures();
   const dispatch = useAppDispatch();
+
+  let categoryToRender = categoriesData.find((c) => c.id === selectedCategory);
+  if (categoryToRender === undefined) {
+    categoryToRender = categoriesData[0];
+  }
+
+  const nomineeToVote = categoryToRender.proposals?.find(
+    (n) => n.id === selectedNominee,
+  );
+
+  const categoryAlreadyVoted = !!userVotes.find(
+    (vote) => vote.categoryId === categoryToRender?.id,
+  );
+
+  console.log("categoryAlreadyVoted");
+  console.log(categoryAlreadyVoted);
 
   useEffect(() => {
     // Example: http://localhost:3000/categories?category=ambassador&nominee=63123e7f-dfc3-481e-bb9d-fed1d9f6e9b9
@@ -119,6 +136,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   const handleOpenViewReceipt = () => {
     setOpenViewReceipt(true);
   };
+
   const handleOpenActionButton = () => {
     if (showWinners) {
       handleOpenViewReceipt();
@@ -140,6 +158,21 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
         return;
       }
       setOpenVotingModal(true);
+    }
+  };
+  const renderButtonAction = () => {
+    if (categoryAlreadyVoted && !session) {
+      return {
+        label: "Sign In",
+      };
+    } else if (categoryAlreadyVoted) {
+      return {
+        label: "View Receipt",
+      };
+    } else {
+      return {
+        label: "Vote Now",
+      };
     }
   };
 
@@ -202,8 +235,6 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
       }
       eventBus.publish(EventName.ShowToast, "Vote submitted successfully");
 
-      console.log("session");
-      console.log(session);
       if (session && !tokenIsExpired(session?.expiresAt)) {
         // @ts-ignore
         getVoteReceipt(categoryId, session?.accessToken)
@@ -224,7 +255,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
               );
             }
           });
-        getUserVotes(session?.accessToken)
+        submitGetUserVotes(session?.accessToken)
           .then((response) => {
             if (response) {
               // @ts-ignore
@@ -255,15 +286,6 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
       );
     }
   };
-
-  let categoryToRender = categoriesData.find((c) => c.id === selectedCategory);
-  if (categoryToRender === undefined) {
-    categoryToRender = categoriesData[0];
-  }
-
-  const nomineeToVote = categoryToRender.proposals?.find(
-    (n) => n.id === selectedNominee,
-  );
 
   const optionsForMenu = categoriesData.map((category: Category) => {
     return {
@@ -307,7 +329,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
               colorVariant="primary"
               disabled={!selectedNominee}
             >
-              {!showWinners ? <>Vote Now</> : <>View Receipt</>}
+              {renderButtonAction().label}
             </CustomButton>
           </Box>
           {showWinners ? (

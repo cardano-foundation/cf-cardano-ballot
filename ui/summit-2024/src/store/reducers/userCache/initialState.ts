@@ -29,6 +29,7 @@ const initialStateData: UserCacheProps = {
   verificationStarted: initialVerificationStarted,
   userVotes: initialUserVotes,
   isVerified: false,
+  isLogin: false,
 };
 
 export { initialStateData, initialConnectedWallet };

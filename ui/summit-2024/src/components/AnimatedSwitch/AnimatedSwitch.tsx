@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { Box, Typography, styled } from "@mui/material";
-import theme from "../../common/styles/theme";
 
 interface AnimatedSwitchProps {
   defaultValue: string;
+  optionA: string;
+  optionB: string;
   onClickOption: (option: string) => void;
 }
 
@@ -15,12 +16,21 @@ const SwitchContainer = styled(Box)(({ theme }) => ({
   cursor: "pointer",
   userSelect: "none",
   position: "relative",
-  width: "388px",
+  width: "100%",
+  maxWidth: "388px",
   height: "48px",
   background: theme.palette.background.neutralDark,
+  "@media (max-width: 600px)": {
+    height: "40px",
+    maxWidth: "300px",
+  },
+  "@media (max-width: 400px)": {
+    height: "32px",
+    maxWidth: "250px",
+  },
 }));
 
-const Option = styled(Box)<{ selected: boolean }>(() => ({
+const Option = styled(Box)<{ selected: boolean }>(({ theme, selected }) => ({
   flex: 1,
   padding: "12px 24px",
   textAlign: "center",
@@ -30,10 +40,19 @@ const Option = styled(Box)<{ selected: boolean }>(() => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
+  color: selected ? theme.palette.background.default : "inherit",
+  "@media (max-width: 600px)": {
+    padding: "8px 16px",
+    fontSize: "14px",
+  },
+  "@media (max-width: 400px)": {
+    padding: "6px 12px",
+    fontSize: "12px",
+  },
 }));
 
 const AnimatedRectangle = styled(Box)<{ selected: boolean }>(
-  ({ selected }) => ({
+  ({ theme, selected }) => ({
     position: "absolute",
     top: 0,
     left: 0,
@@ -48,6 +67,8 @@ const AnimatedRectangle = styled(Box)<{ selected: boolean }>(
 
 const AnimatedSwitch: React.FC<AnimatedSwitchProps> = ({
   defaultValue,
+  optionA,
+  optionB,
   onClickOption,
 }) => {
   const [selected, setSelected] = useState<string>(defaultValue);
@@ -59,10 +80,10 @@ const AnimatedSwitch: React.FC<AnimatedSwitchProps> = ({
 
   return (
     <SwitchContainer>
-      <AnimatedRectangle selected={selected === "Overall Votes"} />
+      <AnimatedRectangle selected={selected === optionB} />
       <Option
-        selected={selected === "Winners"}
-        onClick={() => handleClick("Winners")}
+        selected={selected === optionA}
+        onClick={() => handleClick(optionA)}
       >
         <Typography
           sx={{
@@ -70,19 +91,22 @@ const AnimatedSwitch: React.FC<AnimatedSwitchProps> = ({
             fontStyle: "normal",
             fontWeight: 500,
             lineHeight: "24px",
+            "@media (max-width: 600px)": {
+              fontSize: "14px",
+              lineHeight: "20px",
+            },
+            "@media (max-width: 400px)": {
+              fontSize: "12px",
+              lineHeight: "18px",
+            },
           }}
-          color={
-            selected === "Winners"
-              ? theme.palette.background.default
-              : "inherit"
-          }
         >
-          Winners
+          {optionA}
         </Typography>
       </Option>
       <Option
-        selected={selected === "Overall Votes"}
-        onClick={() => handleClick("Overall Votes")}
+        selected={selected === optionB}
+        onClick={() => handleClick(optionB)}
       >
         <Typography
           sx={{
@@ -90,14 +114,17 @@ const AnimatedSwitch: React.FC<AnimatedSwitchProps> = ({
             fontStyle: "normal",
             fontWeight: 500,
             lineHeight: "24px",
+            "@media (max-width: 600px)": {
+              fontSize: "14px",
+              lineHeight: "20px",
+            },
+            "@media (max-width: 400px)": {
+              fontSize: "12px",
+              lineHeight: "18px",
+            },
           }}
-          color={
-            selected === "Overall Votes"
-              ? theme.palette.background.default
-              : "inherit"
-          }
         >
-          Overall Votes
+          {optionB}
         </Typography>
       </Option>
     </SwitchContainer>

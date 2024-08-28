@@ -33,8 +33,8 @@ const Cookies = () => {
       sx={{
         position: "fixed",
         bottom: "20px",
-        width: "100%",
-        height: "232px",
+        width: "calc(100% - 40px)",
+        maxHeight: "calc(100% - 40px)",
         maxWidth: "600px",
         left: "50%",
         transform: "translateX(-50%)",
@@ -43,6 +43,7 @@ const Cookies = () => {
         boxShadow: "4px 4px 24px 0px rgba(115, 115, 128, 0.20)",
         zIndex: 1000,
         borderRadius: "20px",
+        overflowY: "auto",
       }}
     >
       <Typography

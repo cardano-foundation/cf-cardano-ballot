@@ -1,10 +1,11 @@
 package org.cardano.foundation.voting.shell;
 
-import com.bloxbean.cardano.client.crypto.KeyGenUtil;
-import com.bloxbean.cardano.client.crypto.VerificationKey;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.domain.*;
+import org.cardano.foundation.voting.domain.CardanoNetwork;
+import org.cardano.foundation.voting.domain.CreateCategoryCommand;
+import org.cardano.foundation.voting.domain.CreateEventCommand;
+import org.cardano.foundation.voting.domain.Proposal;
 import org.cardano.foundation.voting.service.transaction_submit.L1SubmissionService;
 import org.springframework.core.annotation.Order;
 import org.springframework.shell.standard.ShellComponent;
@@ -14,17 +15,10 @@ import org.springframework.shell.standard.ShellOption;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import static org.cardano.foundation.voting.domain.CardanoNetwork.PREPROD;
 import static org.cardano.foundation.voting.domain.SchemaVersion.V11;
-import static org.cardano.foundation.voting.domain.TallyMode.CENTRALISED;
-import static org.cardano.foundation.voting.domain.TallyType.HYDRA;
 import static org.cardano.foundation.voting.domain.VotingEventType.USER_BASED;
-import org.cardano.foundation.voting.domain.Proposal;
-import org.cardano.foundation.voting.domain.CreateEventCommand;
-import org.cardano.foundation.voting.domain.CreateCategoryCommand;
-import com.bloxbean.cardano.client.api.exception.ApiException;
 
 @ShellComponent
 @Slf4j
@@ -46,12 +40,14 @@ public class CardanoSummit2024PreProdCommands {
 
         log.info("Creating CF-Summit 2024 on a PRE-PROD network...");
 
-        long startSlot = 68725647;
-        long endSlot = startSlot + (604800*2); // 2 weeks later
+        long base = 69174337;
+        long startSlot = base + 50400; // (adding 14 hours)
+        long endSlot = base + 345600; // 5 days
+        long proposalsRevealSlot = endSlot + 3600; // 1 hour after the event ends
 
         var createEventCommand = CreateEventCommand.builder()
                 //CF_SUMMIT_2024_7BCC
-                .id(EVENT_NAME + "_" + "11BCC-STG")
+                .id(EVENT_NAME + "_" + "10BAF")
                 .startSlot(Optional.of(startSlot))
                 .endSlot(Optional.of(endSlot))
                 .votingPowerAsset(Optional.empty())
@@ -62,7 +58,7 @@ public class CardanoSummit2024PreProdCommands {
                 .highLevelEventResultsWhileVoting(true)
                 .highLevelCategoryResultsWhileVoting(true)
                 .categoryResultsWhileVoting(false)
-                .proposalsRevealSlot(Optional.of(endSlot + 1))
+                .proposalsRevealSlot(Optional.of(proposalsRevealSlot))
                 .build();
 
         l1SubmissionService.submitEvent(createEventCommand);

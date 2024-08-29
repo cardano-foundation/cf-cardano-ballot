@@ -50,8 +50,8 @@ dependencies {
 
 	runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 
-  implementation("org.flywaydb:flyway-core")
-  implementation("org.flywaydb:flyway-database-postgresql")
+    implementation("org.flywaydb:flyway-core")
+    implementation("org.flywaydb:flyway-database-postgresql")
 
 	implementation("org.zalando:problem-spring-web-starter:0.29.1")
 
@@ -69,10 +69,10 @@ dependencies {
 	implementation("com.bloxbean.cardano:aiken-java-binding:0.0.8")
 	annotationProcessor("com.bloxbean.cardano:cardano-client-annotation-processor:0.5.1")
 
-	implementation("com.bloxbean.cardano:yaci-store-spring-boot-starter:0.1.0-rc4")
-	implementation("com.bloxbean.cardano:yaci-store-blocks-spring-boot-starter:0.1.0-rc4")
-	implementation("com.bloxbean.cardano:yaci-store-transaction-spring-boot-starter:0.1.0-rc4")
-	implementation("com.bloxbean.cardano:yaci-store-metadata-spring-boot-starter:0.1.0-rc4")
+	implementation("com.bloxbean.cardano:yaci-store-spring-boot-starter:0.1.0-rc5")
+	implementation("com.bloxbean.cardano:yaci-store-blocks-spring-boot-starter:0.1.0-rc5")
+	implementation("com.bloxbean.cardano:yaci-store-transaction-spring-boot-starter:0.1.0-rc5")
+	implementation("com.bloxbean.cardano:yaci-store-metadata-spring-boot-starter:0.1.0-rc5")
 
 	implementation("io.blockfrost:blockfrost-java:0.1.3")
 

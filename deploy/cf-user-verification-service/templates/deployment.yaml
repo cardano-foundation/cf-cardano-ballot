@@ -89,6 +89,9 @@ spec:
             - name: LEDGER_FOLLOWER_APP_URL
               value: {{ $.Values.ledgerFollowerAppUrl }}
 
+            - name: KERI_BALLOT_VERIFIER_APP_URL
+              value: {{ $.Values.keriBallotVerifierAppUrl | default "http://cf-keri-ballot-verifier:5667" }}
+
             - name: DISCORD_BOT_EVENT_ID_BINDING
               value: {{ $.Values.discordBotEventIdBinding }}
 

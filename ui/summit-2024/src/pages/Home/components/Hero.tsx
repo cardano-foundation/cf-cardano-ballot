@@ -21,6 +21,8 @@ const Hero = () => {
     navigate(option);
   };
 
+  const showVotingButtons = !eventCache.finished; // If the event is running or has not started running yet
+
   const getAwardHeight = (): string => {
     const isMobilePlus = useMediaQuery(theme.breakpoints.down("sm"));
     let height = "600px";
@@ -62,7 +64,14 @@ const Hero = () => {
               },
             }}
           >
-            Voting Closes {formatISODate(eventCache.eventEndDate)}
+            {eventCache.notStarted
+              ? "Voting Opens " + formatISODate(eventCache.eventStartDate)
+              : eventCache.active
+                ? "Voting Closes " + formatISODate(eventCache.eventEndDate)
+                : !eventCache.proposalsReveal
+                  ? "Results Announced " +
+                    formatISODate(eventCache.proposalsRevealDate)
+                  : "THE RESULTS ARE IN!!!"}
           </Typography>
           <Typography
             variant="h4"
@@ -218,35 +227,53 @@ const Hero = () => {
               alignItems: "center",
             }}
           >
-            <CustomButton
-              onClick={() => handleClickMenu(ROUTES.CATEGORIES)}
-              sx={{
-                width: {
-                  xs: "90%",
-                  sm: "144px",
-                },
-                margin: "10px 0",
-                marginRight: {
-                  sm: "12px",
-                },
-              }}
-              colorVariant="primary"
-            >
-              Start Voting
-            </CustomButton>
-            <CustomButton
-              onClick={() => handleClickMenu(ROUTES.USER_GUIDE)}
-              colorVariant="secondary"
-              sx={{
-                width: {
-                  xs: "90%",
-                  sm: "144px",
-                },
-                margin: "10px 0",
-              }}
-            >
-              How to Vote
-            </CustomButton>
+            {showVotingButtons ? ( // If the event is running or has not started running yet
+              <>
+                <CustomButton
+                  onClick={() => handleClickMenu(ROUTES.CATEGORIES)}
+                  sx={{
+                    width: {
+                      xs: "90%",
+                      sm: "187px",
+                    },
+                    margin: "10px 0",
+                    marginRight: {
+                      sm: "12px",
+                    },
+                  }}
+                  colorVariant="primary"
+                >
+                  {eventCache.notStarted
+                    ? "Preview Categories"
+                    : "Start Voting"}
+                </CustomButton>
+                <CustomButton
+                  onClick={() => handleClickMenu(ROUTES.USER_GUIDE)}
+                  colorVariant="secondary"
+                  sx={{
+                    width: {
+                      xs: "90%",
+                      sm: "144px",
+                    },
+                    margin: "10px 0",
+                  }}
+                >
+                  How to Vote
+                </CustomButton>
+              </>
+            ) : (
+              // If the event has already finished
+              <CustomButton
+                onClick={() => handleClickMenu(ROUTES.LEADERBOARD)}
+                sx={{
+                  width: { xs: "90%", sm: "172px" },
+                  margin: "10px 0",
+                }}
+                colorVariant="primary"
+              >
+                {eventCache.proposalsReveal ? "See Results" : "See Leaderboard"}
+              </CustomButton>
+            )}
           </Box>
         </Grid>
         <Grid item xs={12} sm={7} tablet={7} md={6} lg={8}>

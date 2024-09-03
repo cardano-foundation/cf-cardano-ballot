@@ -23,18 +23,18 @@ const Hero = () => {
 
   const showVotingButtons = !eventCache.finished; // If the event is running or has not started running yet
 
-  const getVotingText = () : string => {  
-    if (eventCache.notStarted) {  
-      return "Voting Opens " + formatISODate(eventCache.eventStartDate);  
-    }  
-    if (eventCache.active) {  
-      return "Voting Closes " + formatISODate(eventCache.eventEndDate);  
-    }  
-    if (eventCache.proposalsReveal) {  
-      return "THE RESULTS ARE IN!!!"  
-    }  
-    return "Results Announced " + formatISODate(eventCache.proposalsRevealDate);  
-  };  
+  const getVotingText = (): string => {
+    if (eventCache.notStarted) {
+      return "Voting Opens " + formatISODate(eventCache.eventStartDate);
+    }
+    if (eventCache.active) {
+      return "Voting Closes " + formatISODate(eventCache.eventEndDate);
+    }
+    if (eventCache.proposalsReveal) {
+      return "THE RESULTS ARE IN!!!";
+    }
+    return "Results Announced " + formatISODate(eventCache.proposalsRevealDate);
+  };
 
   const getAwardHeight = (): string => {
     const isMobilePlus = useMediaQuery(theme.breakpoints.down("sm"));

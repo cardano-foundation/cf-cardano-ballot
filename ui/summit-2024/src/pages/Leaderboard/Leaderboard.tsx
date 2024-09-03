@@ -131,14 +131,14 @@ const Leaderboard: React.FC = () => {
                     formatISODate(eventCache.proposalsRevealDate)}
                 </Typography>
               ) : undefined}
-              {showWinners && (
+              {showWinners ? (
                 <AnimatedSwitch
                   defaultValue="Overall Votes"
                   optionA="Winners"
                   optionB="Overall Votes"
                   onClickOption={handleSwitch}
                 />
-              )}
+              ) : undefined}
             </Box>
             <Fade
               in={fade}

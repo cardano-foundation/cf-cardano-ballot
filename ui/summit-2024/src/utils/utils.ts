@@ -153,14 +153,12 @@ const formatISODate = (isoDate: string): string | undefined => {
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
-    timeZone: "UTC",
     hourCycle: "h23",
-    timeZoneName: "short",
   };
 
   const formatter = new Intl.DateTimeFormat("en-US", options);
 
-  return formatter.format(date);
+  return formatter.format(date) + " UTC";
 };
 
 const calculateTotalVotes = (stats: ByCategoryStats[] | undefined): number => {

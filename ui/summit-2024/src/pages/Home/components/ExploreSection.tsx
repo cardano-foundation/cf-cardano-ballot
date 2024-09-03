@@ -8,6 +8,12 @@ import theme from "../../../common/styles/theme";
 import guideBg from "../../../assets/bg/guideCard.svg";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../../routes";
+import { useEffect, useState } from "react";
+import { ByCategoryStats } from "../../../types/voting-app-types";
+import { getStats } from "../../../common/api/leaderboardService";
+import { calculateTotalVotes } from "../../../utils/utils";
+import { useAppSelector } from "../../../store/hooks";
+import { getEventCache } from "../../../store/reducers/eventCache";
 
 const ExploreSection = () => {
   const isMobile = useIsPortrait();
@@ -15,6 +21,18 @@ const ExploreSection = () => {
   const handleClickMenu = (option: string) => {
     navigate(option);
   };
+  
+  const eventCache = useAppSelector(getEventCache);
+  const [stats, setStats] = useState<ByCategoryStats[]>();
+  const totalVotes = calculateTotalVotes(stats);
+
+  useEffect(() => {
+    getStats().then((response) => {
+      // @ts-ignore
+      setStats(response.categories);
+    });
+  }, []);
+  
   return (
     <Grid
       container
@@ -299,7 +317,7 @@ const ExploreSection = () => {
                 marginLeft: "40px",
               }}
             >
-              1,275
+              {eventCache.notStarted ? "N/A"  : totalVotes}
             </Typography>
           </CardContent>
         </Card>
@@ -309,3 +327,4 @@ const ExploreSection = () => {
 };
 
 export { ExploreSection };
+

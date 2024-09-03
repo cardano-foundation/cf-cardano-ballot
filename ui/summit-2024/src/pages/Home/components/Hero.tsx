@@ -23,6 +23,19 @@ const Hero = () => {
 
   const showVotingButtons = !eventCache.finished; // If the event is running or has not started running yet
 
+  const getVotingText = () : string => {  
+    if (eventCache.notStarted) {  
+      return "Voting Opens " + formatISODate(eventCache.eventStartDate);  
+    }  
+    if (eventCache.active) {  
+      return "Voting Closes " + formatISODate(eventCache.eventEndDate);  
+    }  
+    if (eventCache.proposalsReveal) {  
+      return "THE RESULTS ARE IN!!!"  
+    }  
+    return "Results Announced " + formatISODate(eventCache.proposalsRevealDate);  
+  };  
+
   const getAwardHeight = (): string => {
     const isMobilePlus = useMediaQuery(theme.breakpoints.down("sm"));
     let height = "600px";
@@ -64,14 +77,7 @@ const Hero = () => {
               },
             }}
           >
-            {eventCache.notStarted
-              ? "Voting Opens " + formatISODate(eventCache.eventStartDate)
-              : eventCache.active
-                ? "Voting Closes " + formatISODate(eventCache.eventEndDate)
-                : !eventCache.proposalsReveal
-                  ? "Results Announced " +
-                    formatISODate(eventCache.proposalsRevealDate)
-                  : "THE RESULTS ARE IN!!!"}
+            {getVotingText()}
           </Typography>
           <Typography
             variant="h4"

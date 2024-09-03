@@ -113,8 +113,8 @@ const Leaderboard: React.FC = () => {
               >
                 Leaderboard
               </Typography>
-              
-              {showRevealDate && ( // Shows once the voting has finished and before the reveal
+
+              {showRevealDate ? ( // Shows once the voting has finished and before the reveal
                 <Typography // TODO: Format
                   sx={{
                     color: theme.palette.text.neutralLightest,
@@ -130,7 +130,7 @@ const Leaderboard: React.FC = () => {
                   {"Voting Results " +
                     formatISODate(eventCache.proposalsRevealDate)}
                 </Typography>
-              )}
+              ) : undefined}
               {showWinners && (
                 <AnimatedSwitch
                   defaultValue="Overall Votes"

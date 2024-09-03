@@ -19,7 +19,8 @@ import {
   submitVoteWithDigitalSignature,
   getSlotNumber,
   submitGetUserVotes,
-  getVoteReceipt, getVoteReceipts,
+  getVoteReceipt,
+  getVoteReceipts,
 } from "../../common/api/voteService";
 import { eventBus, EventName } from "../../utils/EventBus";
 import {
@@ -31,7 +32,8 @@ import { parseError } from "../../common/constants/errors";
 import {
   getReceipts,
   getVotes,
-  setVoteReceipt, setVoteReceipts,
+  setVoteReceipt,
+  setVoteReceipts,
   setVotes,
 } from "../../store/reducers/votesCache";
 import { ToastType } from "../../components/common/Toast/Toast.types";
@@ -79,8 +81,11 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   const session = getUserInSession();
   const dispatch = useAppDispatch();
 
-  const showEventDate = eventCache.notStarted || (eventCache.finished && !eventCache.proposalsReveal) // If the event has not started or it's just before the reveal
-  const showVotingButton = eventCache.active || (eventCache.finished && !eventCache.proposalsReveal) // If the event has not started or the results have been revealed we prevent the voting bottom to show up
+  const showEventDate =
+    eventCache.notStarted ||
+    (eventCache.finished && !eventCache.proposalsReveal); // If the event has not started or it's just before the reveal
+  const showVotingButton =
+    eventCache.active || (eventCache.finished && !eventCache.proposalsReveal); // If the event has not started or the results have been revealed we prevent the voting bottom to show up
 
   const { signMessage } = useCardano({
     limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
@@ -365,8 +370,8 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
               Ambassador.
             </Typography>
 
-            {showEventDate && ( // If the event has not started or it's just before the reveal
-              <Typography  // TODO: Formatting 
+            {showEventDate ? ( // If the event has not started or it's just before the reveal
+              <Typography // TODO: Formatting
                 sx={{
                   color: "text.secondary",
                   maxWidth: { xs: "70%", md: "80%" },
@@ -377,9 +382,9 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
                   : "Results Announced " +
                     formatISODate(eventCache.proposalsRevealDate)}
               </Typography>
-            )}
+            ) : undefined}
 
-            {showVotingButton && ( // If the event has not started or the results have been revealed we prevent the voting bottom to show up
+            {showVotingButton ? ( // If the event has not started or the results have been revealed we prevent the voting bottom to show up
               <CustomButton
                 onClick={() => renderActionButton().action()}
                 sx={{
@@ -392,7 +397,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
               >
                 {renderActionButton().label}
               </CustomButton>
-            )}
+            ) : undefined}
           </Box>
           {showWinners ? (
             <Winners

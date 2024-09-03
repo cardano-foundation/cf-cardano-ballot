@@ -31,14 +31,14 @@ const NomineeCard: React.FC<NomineeCardProps> = ({
   const walletIsVerified = useAppSelector(getWalletIsVerified);
   const eventCache = useAppSelector(getEventCache);
 
-  const showSelection =  eventCache.started // Only show the border if the even has started
+  const showSelection = eventCache.started; // Only show the border if the even has started
 
   const votedNominee = !!userVotes.find(
     (vote) => vote.proposalId === nominee.id,
   );
 
   const allowToVote = !categoryAlreadyVoted && walletIsVerified;
-  
+
   return (
     <Grid
       item
@@ -87,15 +87,18 @@ const NomineeCard: React.FC<NomineeCardProps> = ({
             p: { xs: 1, sm: 2 },
           }}
         >
-          {showSelection && (
-            <Box component="div" sx={{ position: "absolute", right: 8, top: 8 }}>
+          {showSelection ? (
+            <Box
+              component="div"
+              sx={{ position: "absolute", right: 8, top: 8 }}
+            >
               {allowToVote || votedNominee ? (
                 <HoverCircle
                   selected={selectedNominee === nominee.id || votedNominee}
                 />
               ) : null}
             </Box>
-          )}
+          ) : undefined}
 
           <Typography
             variant="h6"

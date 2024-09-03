@@ -1,4 +1,4 @@
-import { SignedWeb3Request } from "../types/voting-app-types";
+import { ByCategoryStats, SignedWeb3Request } from "../types/voting-app-types";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 import { NetworkType } from "../components/ConnectWalletList/ConnectWalletList.types";
 import { resolveWalletType, WalletIdentifierType } from "../common/api/utils";
@@ -163,6 +163,10 @@ const formatISODate = (isoDate: string): string | undefined => {
   return formatter.format(date);
 };
 
+const calculateTotalVotes = (stats: ByCategoryStats[] | undefined): number => {
+  return stats?.reduce((total, item) => total + item.votes, 0) || 0;
+};
+
 export {
   addressSlice,
   walletIcon,
@@ -172,4 +176,5 @@ export {
   resolveCardanoNetwork,
   openNewTab,
   formatISODate,
+  calculateTotalVotes,
 };

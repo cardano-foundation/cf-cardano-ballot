@@ -16,7 +16,7 @@ import theme from "../../common/styles/theme";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { PieChart, pieChartDefaultProps } from "react-minimal-pie-chart";
 import leaderboard1Bg from "../../assets/bg/leaderboard1.svg";
-import { addressSlice } from "../../utils/utils";
+import { addressSlice, calculateTotalVotes } from "../../utils/utils";
 import { PageBase } from "../BasePage";
 import AnimatedSwitch from "../../components/AnimatedSwitch/AnimatedSwitch";
 import { Categories } from "../Categories";
@@ -55,7 +55,7 @@ const Leaderboard: React.FC = () => {
     color: colors[index % colors.length],
   }));
 
-  const totalVotes = stats?.reduce((total, item) => total + item.votes, 0) || 0;
+  const totalVotes = calculateTotalVotes(stats);
 
   let selectedCategoryValue = -1;
   if (dataForChart !== undefined && selected !== undefined) {

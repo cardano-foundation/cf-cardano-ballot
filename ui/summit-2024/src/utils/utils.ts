@@ -1,4 +1,4 @@
-import { SignedWeb3Request } from "../types/voting-app-types";
+import { ByCategoryStats, SignedWeb3Request } from "../types/voting-app-types";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 import { NetworkType } from "../components/ConnectWalletList/ConnectWalletList.types";
 import { resolveWalletType, WalletIdentifierType } from "../common/api/utils";
@@ -153,14 +153,16 @@ const formatISODate = (isoDate: string): string | undefined => {
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
-    timeZone: "UTC",
     hourCycle: "h23",
-    timeZoneName: "short",
   };
 
   const formatter = new Intl.DateTimeFormat("en-US", options);
 
-  return formatter.format(date);
+  return formatter.format(date) + " UTC";
+};
+
+const calculateTotalVotes = (stats: ByCategoryStats[] | undefined): number => {
+  return stats?.reduce((total, item) => total + item.votes, 0) || 0;
 };
 
 export {
@@ -172,4 +174,5 @@ export {
   resolveCardanoNetwork,
   openNewTab,
   formatISODate,
+  calculateTotalVotes,
 };

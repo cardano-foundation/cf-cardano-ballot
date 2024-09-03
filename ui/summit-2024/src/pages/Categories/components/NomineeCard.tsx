@@ -7,6 +7,7 @@ import { Proposal } from "../../../store/reducers/eventCache/eventCache.types";
 import { useAppSelector } from "../../../store/hooks";
 import { getVotes } from "../../../store/reducers/votesCache";
 import { getWalletIsVerified } from "../../../store/reducers/userCache";
+import { getEventCache } from "../../../store/reducers/eventCache";
 
 interface NomineeCardProps {
   nominee: Proposal;
@@ -28,12 +29,16 @@ const NomineeCard: React.FC<NomineeCardProps> = ({
 }) => {
   const userVotes = useAppSelector(getVotes);
   const walletIsVerified = useAppSelector(getWalletIsVerified);
+  const eventCache = useAppSelector(getEventCache);
+
+  const showSelection = eventCache.started; // Only show the border if the even has started
 
   const votedNominee = !!userVotes.find(
     (vote) => vote.proposalId === nominee.id,
   );
 
   const allowToVote = !categoryAlreadyVoted && walletIsVerified;
+
   return (
     <Grid
       item
@@ -61,7 +66,7 @@ const NomineeCard: React.FC<NomineeCardProps> = ({
           flexShrink: 0,
           borderRadius: "24px",
           border: `1px solid ${
-            selectedNominee === nominee.id || votedNominee
+            (selectedNominee === nominee.id || votedNominee) && showSelection
               ? theme.palette.secondary.main
               : theme.palette.background.default
           }`,
@@ -82,13 +87,19 @@ const NomineeCard: React.FC<NomineeCardProps> = ({
             p: { xs: 1, sm: 2 },
           }}
         >
-          <Box component="div" sx={{ position: "absolute", right: 8, top: 8 }}>
-            {allowToVote || votedNominee ? (
-              <HoverCircle
-                selected={selectedNominee === nominee.id || votedNominee}
-              />
-            ) : null}
-          </Box>
+          {showSelection ? (
+            <Box
+              component="div"
+              sx={{ position: "absolute", right: 8, top: 8 }}
+            >
+              {allowToVote || votedNominee ? (
+                <HoverCircle
+                  selected={selectedNominee === nominee.id || votedNominee}
+                />
+              ) : null}
+            </Box>
+          ) : undefined}
+
           <Typography
             variant="h6"
             sx={{

@@ -19,7 +19,8 @@ import {
   submitVoteWithDigitalSignature,
   getSlotNumber,
   submitGetUserVotes,
-  getVoteReceipt, getVoteReceipts,
+  getVoteReceipt,
+  getVoteReceipts,
 } from "../../common/api/voteService";
 import { eventBus, EventName } from "../../utils/EventBus";
 import {
@@ -31,7 +32,8 @@ import { parseError } from "../../common/constants/errors";
 import {
   getReceipts,
   getVotes,
-  setVoteReceipt, setVoteReceipts,
+  setVoteReceipt,
+  setVoteReceipts,
   setVotes,
 } from "../../store/reducers/votesCache";
 import { ToastType } from "../../components/common/Toast/Toast.types";
@@ -43,6 +45,7 @@ import {
 } from "../../utils/utils";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 import { env } from "../../common/constants/env";
+import { formatISODate } from "../../utils/utils";
 
 interface CategoriesProps {
   embedded?: boolean;
@@ -56,7 +59,8 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   const receipts = useAppSelector(getReceipts);
   const userVotes = useAppSelector(getVotes);
   const categoriesData = eventCache.categories;
-  const [showWinners, setShowWinners] = useState(eventCache.finished);
+
+  const [showWinners, setShowWinners] = useState(eventCache.proposalsReveal);
 
   const [selectedCategory, setSelectedCategory] = useState(
     categoriesData[0].id,
@@ -76,6 +80,12 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
 
   const session = getUserInSession();
   const dispatch = useAppDispatch();
+
+  const showEventDate =
+    eventCache.notStarted ||
+    (eventCache.finished && !eventCache.proposalsReveal); // If the event has not started or it's just before the reveal
+  const showVotingButton =
+    eventCache.active || (eventCache.finished && !eventCache.proposalsReveal); // If the event has not started or the results have been revealed we prevent the voting bottom to show up
 
   const { signMessage } = useCardano({
     limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
@@ -359,18 +369,35 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
               To commemorate the special commitment and work of a Cardano
               Ambassador.
             </Typography>
-            <CustomButton
-              onClick={() => renderActionButton().action()}
-              sx={{
-                mt: -6,
-                alignSelf: "flex-end",
-                display: isTablet ? "none" : "inline-block",
-              }}
-              colorVariant="primary"
-              disabled={renderActionButton().disabled}
-            >
-              {renderActionButton().label}
-            </CustomButton>
+
+            {showEventDate ? ( // If the event has not started or it's just before the reveal
+              <Typography // TODO: Formatting
+                sx={{
+                  color: "text.secondary",
+                  maxWidth: { xs: "70%", md: "80%" },
+                }}
+              >
+                {eventCache.notStarted
+                  ? "Voting Opens " + formatISODate(eventCache.eventStartDate)
+                  : "Results Announced " +
+                    formatISODate(eventCache.proposalsRevealDate)}
+              </Typography>
+            ) : undefined}
+
+            {showVotingButton ? ( // If the event has not started or the results have been revealed we prevent the voting bottom to show up
+              <CustomButton
+                onClick={() => renderActionButton().action()}
+                sx={{
+                  mt: -6,
+                  alignSelf: "flex-end",
+                  display: isTablet ? "none" : "inline-block",
+                }}
+                colorVariant="primary"
+                disabled={renderActionButton().disabled}
+              >
+                {renderActionButton().label}
+              </CustomButton>
+            ) : undefined}
           </Box>
           {showWinners ? (
             <Winners

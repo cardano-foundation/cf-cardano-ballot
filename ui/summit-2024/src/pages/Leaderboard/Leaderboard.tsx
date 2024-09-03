@@ -16,19 +16,26 @@ import theme from "../../common/styles/theme";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { PieChart, pieChartDefaultProps } from "react-minimal-pie-chart";
 import leaderboard1Bg from "../../assets/bg/leaderboard1.svg";
-import { addressSlice, calculateTotalVotes } from "../../utils/utils";
+import { addressSlice, calculateTotalVotes, formatISODate } from "../../utils/utils";
 import { PageBase } from "../BasePage";
 import AnimatedSwitch from "../../components/AnimatedSwitch/AnimatedSwitch";
 import { Categories } from "../Categories";
 import { getStats } from "../../common/api/leaderboardService";
 import { ByCategoryStats } from "../../types/voting-app-types";
+import { useAppSelector } from "../../store/hooks";
+import { getEventCache } from "../../store/reducers/eventCache";
 
 const Leaderboard: React.FC = () => {
   const [stats, setStats] = useState<ByCategoryStats[]>();
+  const eventCache = useAppSelector(getEventCache);
+
   const [selected, setSelected] = useState<number | undefined>(undefined);
   const [hovered, setHovered] = useState<number | undefined>(undefined);
   const [content, setContent] = useState("Overall Votes");
   const [fade, setFade] = useState(true);
+
+  const showRevealDate = eventCache.finished && !eventCache.proposalsReveal;
+  const showWinners = eventCache.proposalsReveal;
 
   useEffect(() => {
     getStats().then((response) => {
@@ -106,12 +113,32 @@ const Leaderboard: React.FC = () => {
               >
                 Leaderboard
               </Typography>
-              <AnimatedSwitch
-                defaultValue="Overall Votes"
-                optionA="Winners"
-                optionB="Overall Votes"
-                onClickOption={handleSwitch}
-              />
+
+              {showRevealDate ? ( // Shows once the voting has finished and before the reveal
+                <Typography // TODO: Format
+                  sx={{
+                    color: theme.palette.text.neutralLightest,
+                    fontFamily: "Dosis",
+                    fontSize: "32px",
+                    fontStyle: "normal",
+                    fontWeight: 700,
+                    lineHeight: "36px",
+                    textAlign: "left",
+                    marginBottom: { xs: 2, md: 0 },
+                  }}
+                >
+                  {"Voting Results " +
+                    formatISODate(eventCache.proposalsRevealDate)}
+                </Typography>
+              ) : undefined}
+              {showWinners ? (
+                <AnimatedSwitch
+                  defaultValue="Overall Votes"
+                  optionA="Winners"
+                  optionB="Overall Votes"
+                  onClickOption={handleSwitch}
+                />
+              ) : undefined}
             </Box>
             <Fade
               in={fade}

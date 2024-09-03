@@ -244,7 +244,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
         };
       case ConnectWalletFlow.CONNECT_IDENTITY_WALLET:
         return {
-          title: "Use IDW Wallet to connect",
+          title: "Use ID Wallet to connect",
         };
       case ConnectWalletFlow.CONNECT_CIP45_WALLET:
         return {

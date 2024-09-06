@@ -25,7 +25,7 @@ const BioModal: React.FC<BioModalProps> = ({ nominee, isOpen, title, onClose }) 
         title={title ? title : ""}
         leftTitle
         onClose={onClose}
-        width={isMobile ? "auto" : "450px"}
+        width={isMobile ? "300px" : "450px"}
       >
         <Box
           component="div"

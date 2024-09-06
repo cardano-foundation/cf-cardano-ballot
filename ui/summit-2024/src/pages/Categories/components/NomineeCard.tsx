@@ -62,6 +62,9 @@ const NomineeCard: React.FC<NomineeCardProps> = ({
             xs: "100%",
             sm: "340px",
           },
+          minWidth: {
+            xs: "300px"
+          },
           height: "202px",
           flexShrink: 0,
           borderRadius: "24px",

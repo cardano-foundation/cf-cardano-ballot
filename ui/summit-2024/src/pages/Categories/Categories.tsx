@@ -60,7 +60,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   const userVotes = useAppSelector(getVotes);
   const categoriesData = eventCache.categories;
 
-  const [showWinners, setShowWinners] = useState(eventCache.proposalsReveal);
+  const [showWinners] = useState(eventCache.proposalsReveal);
 
   const [selectedCategory, setSelectedCategory] = useState(
     categoriesData[0].id,
@@ -337,9 +337,11 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
     }
   };
 
+  console.log("categoriesData");
+  console.log(categoriesData);
   const optionsForMenu = categoriesData.map((category: Category) => {
     return {
-      label: category.id,
+      label: category.name || category.id,
       content: (
         <>
           <Box
@@ -354,11 +356,10 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
           >
             <Typography
               // TODO: remove after demo
-              onClick={() => setShowWinners(!showWinners)}
               variant="h5"
               sx={{ fontWeight: "bold", fontFamily: "Dosis" }}
             >
-              {category.id} Nominees ({category.proposals?.length})
+              {category.name} Nominees ({category.proposals?.length})
             </Typography>
             <Typography
               sx={{
@@ -366,8 +367,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
                 maxWidth: { xs: "70%", md: "80%" },
               }}
             >
-              To commemorate the special commitment and work of a Cardano
-              Ambassador.
+              {category.desc}
             </Typography>
 
             {showEventDate ? ( // If the event has not started or it's just before the reveal
@@ -466,7 +466,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
           }}
         >
           <Layout
-            title="Categories"
+            title={eventCache?.active ? "Categories" : ""}
             menuOptions={optionsForMenu}
             bottom={bottom}
             mode="change"

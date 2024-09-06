@@ -114,7 +114,7 @@ const NomineeCard: React.FC<NomineeCardProps> = ({
               ml: 1,
             }}
           >
-            {nominee.id}
+            {nominee.name?.length ? nominee.name : nominee.id}
           </Typography>
         </Box>
 

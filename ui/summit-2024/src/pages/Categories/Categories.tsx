@@ -337,8 +337,6 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
     }
   };
 
-  console.log("categoriesData");
-  console.log(categoriesData);
   const optionsForMenu = categoriesData.map((category: Category) => {
     return {
       label: category.name || category.id,

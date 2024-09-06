@@ -136,8 +136,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
       // @ts-ignore
       if (!eventData?.error) {
         const mergedEventData = mergeEventData(eventData, event2024Extended);
-        console.log("mergedEventData");
-        console.log(mergedEventData);
         // @ts-ignore
         dispatch(setEventCache(mergedEventData));
       } else {

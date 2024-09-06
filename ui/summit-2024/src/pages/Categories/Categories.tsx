@@ -6,7 +6,7 @@ import { VoteNowModal } from "./components/VoteNowModal";
 import { ViewReceipt } from "./components/ViewReceipt";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { getEventCache } from "../../store/reducers/eventCache";
-import { Category } from "../../store/reducers/eventCache/eventCache.types";
+import {Category, Proposal} from "../../store/reducers/eventCache/eventCache.types";
 import { PageBase } from "../BasePage";
 import { Nominees } from "./components/Nominees";
 import { Winners } from "./components/Winners";
@@ -73,7 +73,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   const [openVotingModal, setOpenVotingModal] = useState(false);
   const [openViewReceipt, setOpenViewReceipt] = useState(false);
 
-  const [learMoreCategory, setLearMoreCategory] = useState("");
+  const [bioModalContent, setBioModalContent] = useState<Proposal | null>(null);
   const [openLearMoreCategory, setOpenLearMoreCategory] = useState(false);
 
   const [fadeChecked, setFadeChecked] = useState(true);
@@ -151,8 +151,20 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
     }
   };
 
+  const findProposalById = (categories: Category[], proposalId: string) => {
+    for (const category of categories) {
+      for (const proposal of category.proposals) {
+        if (proposal.id === proposalId) {
+          return proposal;
+        }
+      }
+    }
+    return null;
+  };
+
   const handleOpenLearnMoreModal = (nomineeId: string) => {
-    setLearMoreCategory(nomineeId);
+    const bioModalContent = findProposalById(categoriesData, nomineeId);
+    setBioModalContent(bioModalContent);
     setOpenLearMoreCategory(true);
   };
 
@@ -490,8 +502,9 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
           onClose={() => setOpenVotingModal(false)}
         />
         <BioModal
+          nominee={bioModalContent}
           isOpen={openLearMoreCategory}
-          title={learMoreCategory}
+          title={bioModalContent?.name}
           onClose={() => setOpenLearMoreCategory(false)}
         />
         <Drawer

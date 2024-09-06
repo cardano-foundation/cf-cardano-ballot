@@ -46,8 +46,8 @@ public class CardanoSummit2024PreProdCommands {
         long proposalsRevealSlot = endSlot + 3600; // 1 hour after the event ends
 
         var createEventCommand = CreateEventCommand.builder()
-                //CF_SUMMIT_2024_7BCC
-                .id(EVENT_NAME + "_" + "10BAF")
+                //CF_SUMMIT_2024_15BCC
+                .id(EVENT_NAME + "_" + "15BCC")
                 .startSlot(Optional.of(startSlot))
                 .endSlot(Optional.of(endSlot))
                 .votingPowerAsset(Optional.empty())
@@ -76,27 +76,27 @@ public class CardanoSummit2024PreProdCommands {
         log.info("Creating CF-Summit 2024 Ambassador category on a PRE-PROD network...");
 
         Proposal n1 = Proposal.builder()
-                .id("63123e7f-dfc3-481e-bb9d-fed1d9f6e9b9")
+                .id("EC30C7AA-70BB-4036-A353-7C306FF31613")
                 .name("Option 1")
                 .build();
 
         Proposal n2 = Proposal.builder()
-                .id("0299d93e-93f2-4bc8-9b40-6dd09343c443")
+                .id("4582D74F-81D0-4F28-8B18-E70E2A346813")
                 .name("Option 2")
                 .build();
 
         Proposal n3 = Proposal.builder()
-                .id("fd477fac-ad16-4d2a-91a4-0a4288d3d7aa")
+                .id("7FA87520-0AD7-4797-83C7-4C7625AA58AA")
                 .name("Option 3")
                 .build();
 
         Proposal n4 = Proposal.builder()
-                .id("0b755eaf-a588-441f-a9dd-50c4aa478a90")
+                .id("135DF392-D603-41B1-8BE1-C103E23816AD")
                 .name("Option 4")
                 .build();
 
         Proposal n5 = Proposal.builder()
-                .id("2c94cd2e-2ad9-4425-af01-27210afca1e3")
+                .id("AA8C39C4-0795-4F88-A867-3019098D5289")
                 .name("Option 5")
                 .build();
 
@@ -129,31 +129,26 @@ public class CardanoSummit2024PreProdCommands {
         log.info("Creating CF-Summit 2024 Blockchain For Good category on a PRE-PROD network...");
 
         Proposal n1 = Proposal.builder()
-                .id("633199b6-ab4c-49bc-afd8-e8c675d145d0")
+                .id("150C277B-22D7-47F4-B626-AA57C338C479")
                 .name("Option 1")
                 .build();
 
         Proposal n2 = Proposal.builder()
-                .id("d4d33796-7372-410a-b640-7dde093f20e5")
+                .id("7BB2EF27-9BED-4A24-A79B-C79F530D27D2")
                 .name("Option 2")
                 .build();
 
         Proposal n3 = Proposal.builder()
-                .id("2e24b92f-1a34-4799-9eb4-a489be2b63c6")
+                .id("7B9888E9-E5BD-42A1-BCF2-E997FE878E8A")
                 .name("Option 3")
                 .build();
 
         Proposal n4 = Proposal.builder()
-                .id("4cbeb976-20ba-4c20-bdc1-f21bf28c17fd")
+                .id("FD858845-4C44-423C-9898-62836D246E83")
                 .name("Option 4")
                 .build();
 
-        Proposal n5 = Proposal.builder()
-                .id("71f4f082-4512-4e7f-adc6-6092d1b3aa14")
-                .name("Option 5")
-                .build();
-
-        List<Proposal> allProposals = List.of(n1, n2, n3, n4, n5);
+        List<Proposal> allProposals = List.of(n1, n2, n3, n4);
         CreateCategoryCommand createCategoryCommand = CreateCategoryCommand.builder()
                 .id("BLOCKCHAIN_FOR_GOOD")
                 .event(event)
@@ -171,43 +166,48 @@ public class CardanoSummit2024PreProdCommands {
         return "Created CF-Summit 2024 category: " + createCategoryCommand;
     }
 
-    @ShellMethod(key = "04_create-cips-category-pre-prod", value = "Create a CF-Summit 2024 CIPs category on a PRE-PROD network.")
+    @ShellMethod(key = "04_create-innovation-standards-category-pre-prod", value = "Create a CF-Summit 2024 Innovation & Standards category on a PRE-PROD network.")
     @Order(4)
-    public String createCIPsCategory(@ShellOption String event) {
+    public String createInnovationStandarsCategory(@ShellOption String event) {
         if (network != PREPROD) {
             return "This command can only be run on a PRE-PROD network!";
         }
 
-        log.info("Creating CF-Summit 2024 CIPs category on a PRE-PROD network...");
+        log.info("Creating CF-Summit 2024 Innovation & Standards category on a PRE-PROD network...");
 
         Proposal n1 = Proposal.builder()
-                .id("4cf1ea70-87dd-45ee-85a0-2d29720725f7")
+                .id("5D72F48B-8285-4BAC-8846-595B455A3084")
                 .name("Option 1")
                 .build();
 
         Proposal n2 = Proposal.builder()
-                .id("d5116b52-1e82-4c7f-95e5-2a74a9f75492")
+                .id("BAD03444-C2EF-4E76-B502-807A69713F19")
                 .name("Option 2")
                 .build();
 
         Proposal n3 = Proposal.builder()
-                .id("69ee264f-9d02-48ef-98f1-541ffb28756f")
+                .id("AC5A90ED-A2C0-4775-86B4-C47EC39A083B")
                 .name("Option 3")
                 .build();
 
         Proposal n4 = Proposal.builder()
-                .id("70a88fb6-a87f-4ebd-8719-31c461118f3d")
+                .id("6D538F80-F617-402F-9F6C-0A2E7260D33E")
                 .name("Option 4")
                 .build();
 
         Proposal n5 = Proposal.builder()
-                .id("eaafc7a1-8944-4faf-91dd-5ceefa51e8db")
+                .id("F4192CB9-76B8-4C95-96A8-7B1822625877")
                 .name("Option 5")
                 .build();
 
-        List<Proposal> allProposals = List.of(n1, n2, n3, n4, n5);
+        Proposal n6 = Proposal.builder()
+                .id("23D9536B-0ECE-4FE5-90D4-FBF05F7A85DD")
+                .name("Option 6")
+                .build();
+
+        List<Proposal> allProposals = List.of(n1, n2, n3, n4, n5, n6);
         CreateCategoryCommand createCategoryCommand = CreateCategoryCommand.builder()
-                .id("CIPS")
+                .id("INNOVATION_STANDARDS")
                 .event(event)
                 .gdprProtection(true)
                 .schemaVersion(V11)
@@ -223,9 +223,9 @@ public class CardanoSummit2024PreProdCommands {
         return "Created CF-Summit 2024 category: " + createCategoryCommand;
     }
 
-    @ShellMethod(key = "05_create-defi-dex-category-pre-prod", value = "Create a CF-Summit 2024 DeFi / DEX category on a PRE-PROD network.")
+    @ShellMethod(key = "05_create-dex-category-pre-prod", value = "Create a CF-Summit 2024 DEX category on a PRE-PROD network.")
     @Order(5)
-    public String createDeFiDEXCategory(@ShellOption String event) {
+    public String createDEXCategory(@ShellOption String event) {
         if (network != PREPROD) {
             return "This command can only be run on a PRE-PROD network!";
         }
@@ -233,34 +233,39 @@ public class CardanoSummit2024PreProdCommands {
         log.info("Creating CF-Summit 2024 Best DeFi / DEX category on a PRE-PROD network...");
 
         Proposal n1 = Proposal.builder()
-                .id("f71c438d-8247-4064-a5aa-4d21b54c2a5d")
+                .id("CFA2481E-937C-433E-98BD-1AAC9F0FA2B9")
                 .name("Option 1")
                 .build();
 
         Proposal n2 = Proposal.builder()
-                .id("a5f92606-6e15-4f91-8443-7030eb02a274")
+                .id("74404AF7-466B-4679-977C-5F5BDE6446CD")
                 .name("Option 2")
                 .build();
 
         Proposal n3 = Proposal.builder()
-                .id("e9d72191-bda4-437e-af4b-2f979bad5c7f")
+                .id("AD29AA23-00CA-4A4F-B08C-7D4FC8CE69E9")
                 .name("Option 3")
                 .build();
 
         Proposal n4 = Proposal.builder()
-                .id("8cf20a27-8bc8-49f3-8133-ef76e899e1c1")
+                .id("58806B5D-4AD5-4C76-9CF4-2C90D068F6BA")
                 .name("Option 4")
                 .build();
 
         Proposal n5 = Proposal.builder()
-                .id("91871e20-f9aa-422f-9213-3722ac47c1c6")
+                .id("802936AE-8114-4EB9-B1D9-C1780811CCBC")
                 .name("Option 5")
                 .build();
 
-        List<Proposal> allProposals = List.of(n1, n2, n3, n4, n5);
+        Proposal n6 = Proposal.builder()
+                .id("C3897902-424D-4F42-939C-9C37DE7137C5")
+                .name("Option 6")
+                .build();
+
+        List<Proposal> allProposals = List.of(n1, n2, n3, n4, n5, n6);
 
         CreateCategoryCommand createCategoryCommand = CreateCategoryCommand.builder()
-                .id("BEST_DEFI_DEX")
+                .id("DEX")
                 .event(event)
                 .gdprProtection(true)
                 .schemaVersion(V11)
@@ -276,43 +281,48 @@ public class CardanoSummit2024PreProdCommands {
         return "Created CF-Summit 2024 category: " + createCategoryCommand;
     }
 
-    @ShellMethod(key = "06_create-developer-or-developer-tools-category-pre-prod", value = "Create a CF-Summit 2024 Developer or Developer Tools category on a PRE-PROD network.")
+    @ShellMethod(key = "06_create-developer-tooling-category-pre-prod", value = "Create a CF-Summit 2024 Developer & Tooling category on a PRE-PROD network.")
     @Order(6)
-    public String createBestDeveloperOrDeveloperTools(@ShellOption String event) {
+    public String createDeveloperToolingCategory(@ShellOption String event) {
         if (network != PREPROD) {
             return "This command can only be run on a PRE-PROD network!";
         }
 
-        log.info("Creating CF-Summit 2024 Developer or Developer Tools category on a PRE-PROD network...");
+        log.info("Creating CF-Summit 2024 Developer & Tooling category on a PRE-PROD network...");
 
         Proposal n1 = Proposal.builder()
-                .id("f4d6055f-964e-43b4-bc23-83141ca04f9f")
+                .id("865CE0B4-ABF9-4700-A53A-C8E84AD53995")
                 .name("Option 1")
                 .build();
 
         Proposal n2 = Proposal.builder()
-                .id("a00e6d3e-1b06-48f0-b2a0-4f3784e6226c")
+                .id("E6DBAF3C-5DA1-4AEA-9A14-FA81C14CF3C3")
                 .name("Option 2")
                 .build();
 
         Proposal n3 = Proposal.builder()
-                .id("58bb4e29-5124-473b-80e1-c5c8ffa57dbb")
+                .id("3DE5D697-2FF5-4197-9694-78B35EA1CCC3")
                 .name("Option 3")
                 .build();
 
         Proposal n4 = Proposal.builder()
-                .id("a30267e1-314c-4801-aa95-b03dd4d6856e")
+                .id("6F604592-9908-45B3-BCE2-5C63F183AFFF")
                 .name("Option 4")
                 .build();
 
         Proposal n5 = Proposal.builder()
-                .id("ec34567c-2012-4e3b-94ee-8778a6e33a04")
+                .id("7CB41A46-AC83-4F5F-B9D2-DC023209D8EE")
                 .name("Option 5")
                 .build();
+        
+        Proposal n6 = Proposal.builder()
+                .id("86A96F3F-FE17-42E1-9415-9A02DFEFAF66")
+                .name("Option 6")
+                .build();
 
-        List<Proposal> allProposals = List.of(n1, n2, n3, n4, n5);
+        List<Proposal> allProposals = List.of(n1, n2, n3, n4, n5, n6);
         CreateCategoryCommand createCategoryCommand = CreateCategoryCommand.builder()
-                .id("BEST_DEVELOPER_OR_DEVELOPER_TOOLS")
+                .id("DEVELOPER_TOOLING")
                 .event(event)
                 .gdprProtection(true)
                 .schemaVersion(V11)
@@ -330,7 +340,7 @@ public class CardanoSummit2024PreProdCommands {
 
     @ShellMethod(key = "07_create-educational-influencer-category-pre-prod", value = "Create a CF-Summit 2024 Educational Influencer category on a PRE-PROD network.")
     @Order(7)
-    public String createEducationalInfluencer(@ShellOption String event) {
+    public String createEducationalInfluencerCategory(@ShellOption String event) {
         if (network != PREPROD) {
             return "This command can only be run on a PRE-PROD network!";
         }
@@ -338,27 +348,27 @@ public class CardanoSummit2024PreProdCommands {
         log.info("Creating CF-Summit 2024 Educational Influence category on a PRE-PROD network...");
 
         Proposal n1 = Proposal.builder()
-                .id("88af463f-0d9c-4738-baef-bdb80f2c374e")
+                .id("46187CD7-07BD-4B6B-B225-DECA839E87C4")
                 .name("Option 1")
                 .build();
 
         Proposal n2 = Proposal.builder()
-                .id("65cf347e-129a-459b-b192-55ae37e03160")
+                .id("9605C945-845B-4616-B98C-3807263187F7")
                 .name("Option 2")
                 .build();
 
         Proposal n3 = Proposal.builder()
-                .id("1e609753-a83e-4ff6-9cf8-dd90803f0368")
+                .id("E81164D1-550A-47B4-8726-2412E4DF42D0")
                 .name("Option 3")
                 .build();
 
         Proposal n4 = Proposal.builder()
-                .id("9b91f3ed-42be-4650-8e43-6d7a416f9591")
+                .id("9DFF4520-79C1-491A-95F1-C79B583355D7")
                 .name("Option 4")
                 .build();
 
         Proposal n5 = Proposal.builder()
-                .id("702efda6-ceec-413e-8f33-aa206962850c")
+                .id("BBCE94A0-3FDB-4EDA-B0B7-EE256E8B157F")
                 .name("Option 5")
                 .build();
 
@@ -381,44 +391,44 @@ public class CardanoSummit2024PreProdCommands {
         return "Created CF-Summit 2024 category: " + createCategoryCommand;
     }
 
-    @ShellMethod(key = "08_create-marketplace-category-pre-prod", value = "Create a CF-Summit 2024 Marketplace category on a PRE-PROD network.")
+    @ShellMethod(key = "08_create-nft-digital-collectibles-category-pre-prod", value = "Create a CF-Summit 2024 NFT & Digital Collectibles category on a PRE-PROD network.")
     @Order(8)
-    public String createMarketPlaceCategory(@ShellOption String event) {
+    public String createNFTDigitalCollectiblesCategory(@ShellOption String event) {
         if (network != PREPROD) {
             return "This command can only be run on a PRE-PROD network!";
         }
 
-        log.info("Creating CF-Summit 2024 Marketplace category on a PRE-PROD network...");
+        log.info("Creating CF-Summit 2024 NFT & Digital Collectibles category on a PRE-PROD network...");
 
         Proposal n1 = Proposal.builder()
-                .id("33038f64-fff9-44cc-a8e5-d4f5896c8ff6")
+                .id("A31E6D75-2E84-4862-8032-B2BF7BB1887D")
                 .name("Option 1")
                 .build();
 
         Proposal n2 = Proposal.builder()
-                .id("953c7970-6f9d-41a0-8556-b83ff7b481fe")
+                .id("7D6EF0EB-8067-4B3A-84F4-1947029E9700")
                 .name("Option 2")
                 .build();
 
         Proposal n3 = Proposal.builder()
-                .id("107fc947-85f0-442e-b56f-9c10e8b5631a")
+                .id("B70BD431-3C20-4680-8F79-D3A049CD154B")
                 .name("Option 3")
                 .build();
 
         Proposal n4 = Proposal.builder()
-                .id("0752dc99-19fa-4f4c-96c4-25ca3a66a12f")
+                .id("23B353B8-AB9E-46EA-B8E3-3F7B88E2E461")
                 .name("Option 4")
                 .build();
 
         Proposal n5 = Proposal.builder()
-                .id("5b2145cd-8740-4254-942f-889eb3671640")
+                .id("B3BF6FBB-2838-4C39-850D-19F40E19F1AD")
                 .name("Option 5")
                 .build();
 
         List<Proposal> allProposals = List.of(n1, n2, n3, n4, n5);
 
         CreateCategoryCommand createCategoryCommand = CreateCategoryCommand.builder()
-                .id("MARKETPLACE")
+                .id("NFT_DIGITAL_COLLECTIBLES")
                 .event(event)
                 .gdprProtection(true)
                 .schemaVersion(V11)
@@ -434,43 +444,48 @@ public class CardanoSummit2024PreProdCommands {
         return "Created CF-Summit 2024 category: " + createCategoryCommand;
     }
 
-    @ShellMethod(key = "09_create-most-impactful-sspo-category-pre-prod", value = "Create a CF-Summit 2024 Most Impactful SSPO category on a PRE-PROD network.")
+    @ShellMethod(key = "09_create-infrastructure-platform-category-pre-prod", value = "Create a CF-Summit 2024 Infrastructure Platform category on a PRE-PROD network.")
     @Order(9)
-    public String createMostImpactfulSPOCategory(@ShellOption String event) {
+    public String createInfrastructurePlatformCategory(@ShellOption String event) {
         if (network != PREPROD) {
             return "This command can only be run on a PRE-PROD network!";
         }
 
-        log.info("Creating CF-Summit 2024 Most Impactful SSPO category on a PRE-PROD network...");
+        log.info("Creating CF-Summit 2024 Infrastructure Platform category on a PRE-PROD network...");
 
         Proposal n1 = Proposal.builder()
-                .id("6e16cdae-7696-4c41-a5f2-de373a17f488")
+                .id("4C43B867-335E-4B75-A06F-D90F675D6B7C")
                 .name("Option 1")
                 .build();
 
         Proposal n2 = Proposal.builder()
-                .id("46ea36b8-15b6-4d31-8c29-946342595756")
+                .id("C9C434CA-8DC8-462A-8E4D-1200B388F585")
                 .name("Option 2")
                 .build();
 
         Proposal n3 = Proposal.builder()
-                .id("e3a130e7-45c9-47c5-a121-fbdebc6c3e9f")
+                .id("70C455C2-7DCF-48A0-92F1-61B88B8EB0CE")
                 .name("Option 3")
                 .build();
 
         Proposal n4 = Proposal.builder()
-                .id("cfe477d2-e7eb-46a7-a8ee-f721da2de399")
+                .id("7B5CB884-74E5-4B01-A591-4FAA5768F143")
                 .name("Option 4")
                 .build();
 
         Proposal n5 = Proposal.builder()
-                .id("6ee41116-b60c-41d2-974c-c3de31b71a83")
+                .id("A4D294D8-C40D-401C-949C-6DBCD0627759")
                 .name("Option 5")
                 .build();
 
-        List<Proposal> allProposals = List.of(n1, n2, n3, n4, n5);
+        Proposal n6 = Proposal.builder()
+                .id("6B26B538-9E16-4EA5-8AA2-0120FDBA30F2")
+                .name("Option 6")
+                .build();
+
+        List<Proposal> allProposals = List.of(n1, n2, n3, n4, n5, n6);
         CreateCategoryCommand createCategoryCommand = CreateCategoryCommand.builder()
-                .id("MOST_IMPACTFUL_SSPO")
+                .id("INFRASTRUCTURE_PLATFORM")
                 .event(event)
                 .gdprProtection(true)
                 .schemaVersion(V11)
@@ -486,43 +501,48 @@ public class CardanoSummit2024PreProdCommands {
         return "Created CF-Summit 2024 category: " + createCategoryCommand;
     }
 
-    @ShellMethod(key = "10_create-nft-project-category-pre-prod", value = "Create a CF-Summit 2024 NFT Project category on a PRE-PROD network.")
+    @ShellMethod(key = "10_create-dao-tooling-governance-category-pre-prod", value = "Create a CF-Summit 2024 DAO Tooling & Governance category on a PRE-PROD network.")
     @Order(10)
-    public String createNFTProjectCategory(@ShellOption String event) {
+    public String createDAOToolingGovernanceCategory(@ShellOption String event) {
         if (network != PREPROD) {
             return "This command can only be run on a PRE-PROD network!";
         }
 
-        log.info("Creating CF-Summit 2024 NFT Project category on a PRE-PROD network...");
+        log.info("Creating CF-Summit 2024 DAO Tooling & Governance category on a PRE-PROD network...");
 
         Proposal n1 = Proposal.builder()
-                .id("623405b4-a845-4130-b406-b4cf4a1a985d")
+                .id("4D831658-C079-4A99-B08C-6180F18652A1")
                 .name("Option 1")
                 .build();
 
         Proposal n2 = Proposal.builder()
-                .id("9074cf60-d413-4c20-a344-a3f894d2e6c0")
+                .id("1846F0B9-1616-43B2-A919-CF70AEDAB356")
                 .name("Option 2")
                 .build();
 
         Proposal n3 = Proposal.builder()
-                .id("1bae816a-b943-4148-ac58-c4081ef8cac5")
+                .id("0D81F908-2C90-4811-A4DE-ED2E61302AE1")
                 .name("Option 3")
                 .build();
 
         Proposal n4 = Proposal.builder()
-                .id("c0f06200-b04c-4e08-b00b-e050cdcc205c")
+                .id("5278A5CC-AF3D-41A4-837E-10DFDD0CAB63")
                 .name("Option 4")
                 .build();
 
         Proposal n5 = Proposal.builder()
-                .id("02bd8150-91cd-499d-b94c-c0e7b5fd5dc4")
+                .id("D1C06574-6619-4563-BD6B-6FE297A3E777")
                 .name("Option 5")
                 .build();
 
-        List<Proposal> allProposals = List.of(n1, n2, n3, n4, n5);
+        Proposal n6 = Proposal.builder()
+                .id("1A75AED2-2A10-4558-9BE2-31F559242A43")
+                .name("Option 6")
+                .build();
+
+        List<Proposal> allProposals = List.of(n1, n2, n3, n4, n5, n6);
         CreateCategoryCommand createCategoryCommand = CreateCategoryCommand.builder()
-                .id("NFT_PROJECT")
+                .id("DAO_TOOLING_GOVERNANCE")
                 .event(event)
                 .gdprProtection(true)
                 .schemaVersion(V11)
@@ -538,39 +558,107 @@ public class CardanoSummit2024PreProdCommands {
         return "Created CF-Summit 2024 category: " + createCategoryCommand;
     }
 
-    @ShellMethod(key = "11_create-ssi-category-pre-prod", value = "Create a CF-Summit 2024 SSI category on a PRE-PROD network.")
+    @ShellMethod(key = "11_create-defi-platform-category-pre-prod", value = "Create a CF-Summit 2024 DeFi Platform category on a PRE-PROD network.")
     @Order(11)
-    public String createSSICategory(@ShellOption String event) {
+    public String createDEFICategory(@ShellOption String event) {
         if (network != PREPROD) {
             return "This command can only be run on a PRE-PROD network!";
         }
 
-        log.info("Creating CF-Summit 2024 SSI category on a PRE-PROD network...");
+        log.info("Creating CF-Summit 2024 DeFi Platform category on a PRE-PROD network...");
 
         Proposal n1 = Proposal.builder()
-                .id("a910a8af-f63b-4190-90fb-1409fd110526")
+                .id("8FE32CE4-8B75-4815-BDE5-DCC197945671")
                 .name("Option 1")
                 .build();
 
         Proposal n2 = Proposal.builder()
-                .id("0a70b72d-1394-4bdd-bf93-e79ceb0c40a6")
+                .id("00CE32E2-60B3-4052-9C83-8A1547C10A63")
                 .name("Option 2")
                 .build();
 
         Proposal n3 = Proposal.builder()
-                .id("f37bf063-15fc-4959-a6a4-0349a7613ede")
+                .id("648E39DB-AB35-4072-9BAD-E39450961DD8")
                 .name("Option 3")
                 .build();
 
         Proposal n4 = Proposal.builder()
-                .id("57f93799-5123-4ad0-a13f-a7c70387a756")
+                .id("33D87F23-7D57-41B2-86E3-D5C91BFAEC35")
                 .name("Option 4")
                 .build();
 
-        List<Proposal> allProposals = List.of(n1, n2, n3, n4);
+        Proposal n5 = Proposal.builder()
+                .id("D4C62649-9CC3-4288-9C21-62EA8F5899F1")
+                .name("Option 5")
+                .build();
+
+        Proposal n6 = Proposal.builder()
+                .id("EE456364-EA59-4F06-BC37-922572B79404")
+                .name("Option 6")
+                .build();
+
+        List<Proposal> allProposals = List.of(n1, n2, n3, n4, n5, n6);
 
         CreateCategoryCommand createCategoryCommand = CreateCategoryCommand.builder()
-                .id("SSI")
+                .id("DEFI")
+                .event(event)
+                .gdprProtection(true)
+                .schemaVersion(V11)
+                .proposals(allProposals)
+                .build();
+
+        if (allProposals.size() != new HashSet<>(allProposals).size()) {
+            throw new RuntimeException("Duplicate proposals detected!");
+        }
+
+        l1SubmissionService.submitCategory(createCategoryCommand);
+
+        return "Created CF-Summit 2024 category: " + createCategoryCommand;
+    }
+
+    @ShellMethod(key = "12_create-sspo-category-pre-prod", value = "Create a CF-Summit 2024 SSPO category on a PRE-PROD network.")
+    @Order(12)
+    public String createSSPOCategory(@ShellOption String event) {
+        if (network != PREPROD) {
+            return "This command can only be run on a PRE-PROD network!";
+        }
+
+        log.info("Creating CF-Summit 2024 SSPO category on a PRE-PROD network...");
+
+        Proposal n1 = Proposal.builder()
+                .id("470FFE2B-18B6-4ACD-8DBE-0E8B7B2B761C")
+                .name("Option 1")
+                .build();
+
+        Proposal n2 = Proposal.builder()
+                .id("B56B2068-7FC6-4ECB-B339-8BB6F1DCA6F9")
+                .name("Option 2")
+                .build();
+
+        Proposal n3 = Proposal.builder()
+                .id("3FB24A88-424F-4D73-A96C-617533D7DB1C")
+                .name("Option 3")
+                .build();
+
+        Proposal n4 = Proposal.builder()
+                .id("A19FF565-895D-46A4-A86D-2FF16FE796E2")
+                .name("Option 4")
+                .build();
+
+        Proposal n5 = Proposal.builder()
+                .id("82A8C4C1-0B86-4682-A9B0-6B88E75AC0E7")
+                .name("Option 5")
+                .build();
+
+        Proposal n6 = Proposal.builder()
+                .id("D83833A3-9F99-4859-B0B7-545E3827FD09")
+                .name("Option 6")
+                .build();
+
+        List<Proposal> allProposals = List.of(n1, n2, n3, n4, n5, n6);
+
+        CreateCategoryCommand createCategoryCommand = CreateCategoryCommand.builder()
+                .id("SSPO")
                 .event(event)
                 .gdprProtection(true)
                 .schemaVersion(V11)

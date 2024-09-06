@@ -1,7 +1,6 @@
 import React from "react";
-import { useIsPortrait } from "../../../common/hooks/useIsPortrait";
 import Modal from "../../../components/common/Modal/Modal";
-import { Box } from "@mui/material";
+import {Box, useMediaQuery} from "@mui/material";
 import XIcon from "../../../assets/x.svg";
 import LinkedinIcon from "../../../assets/linkedin.svg";
 import theme from "../../../common/styles/theme";
@@ -15,7 +14,7 @@ interface BioModalProps {
 }
 
 const BioModal: React.FC<BioModalProps> = ({ nominee, isOpen, title, onClose }) => {
-  const isMobile = useIsPortrait();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   return (
     <>

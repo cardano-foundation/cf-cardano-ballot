@@ -94,14 +94,16 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
     limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
   });
 
-  let categoryToRender = categoriesData.find((c) => c.id === selectedCategory);
+  let categoryToRender = categoriesData.find((c) => c.name === selectedCategory);
   if (categoryToRender === undefined) {
     categoryToRender = categoriesData[0];
   }
 
-  const nomineeToVote = categoryToRender.proposals.find(
-    (p) => p.id === selectedNominee,
-  );
+
+
+  const nomineeToVote = useMemo(() => {
+    return categoryToRender?.proposals.find(p => p.id === selectedNominee);
+  }, [selectedNominee, categoryToRender]);
 
   const categoryAlreadyVoted = !!userVotes?.find(
     (vote) => vote.categoryId === categoryToRender?.id,
@@ -147,11 +149,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   };
 
   const handleSelectNominee = (id: string) => {
-    if (selectedNominee !== id) {
-      setSelectedNominee(id);
-    } else {
-      setSelectedNominee(undefined);
-    }
+    setSelectedNominee(prevNominee => prevNominee === id ? undefined : id);
   };
 
   const findProposalById = (categories: Category[], proposalId: string) => {
@@ -232,10 +230,11 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
       return;
     }
 
-    const categoryId = categoryToRender?.id;
-    const proposalId = nomineeToVote?.id;
+    const category = categoriesData.find((c) => c.name === selectedCategory);
 
-    if (!categoryId || !proposalId) {
+    const proposalId = category?.proposals?.find(p => p.id === selectedNominee)?.id
+
+    if (!category?.id || !proposalId) {
       eventBus.publish(EventName.ShowToast, "Nominee not selected", "error");
       return;
     }
@@ -245,7 +244,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
       const absoluteSlot = (await getSlotNumber())?.absoluteSlot;
       const canonicalVoteInput = buildCanonicalVoteInputJson({
         voteId: uuidv4(),
-        categoryId: categoryId,
+        categoryId: category.id,
         proposalId: proposalId,
         walletId: connectedWallet.address,
         walletType: resolveWalletType(connectedWallet.address),

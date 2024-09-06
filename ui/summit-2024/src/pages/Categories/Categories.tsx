@@ -285,7 +285,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
       eventBus.publish(EventName.ShowToast, "Vote submitted successfully");
 
       // @ts-ignore
-      dispatch(setVotes([...userVotes, { categoryId, proposalId }]));
+      dispatch(setVotes([...userVotes, { categoryId: category.id, proposalId }]));
       // TODO: refactor
       if (session && !tokenIsExpired(session?.expiresAt)) {
         getVoteReceipts(session?.accessToken).then((receipts) => {

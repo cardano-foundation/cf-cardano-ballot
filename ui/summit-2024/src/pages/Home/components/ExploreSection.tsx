@@ -21,7 +21,7 @@ const ExploreSection = () => {
   const handleClickMenu = (option: string) => {
     navigate(option);
   };
-  
+
   const eventCache = useAppSelector(getEventCache);
   const [stats, setStats] = useState<ByCategoryStats[]>();
   const totalVotes = calculateTotalVotes(stats);
@@ -32,7 +32,7 @@ const ExploreSection = () => {
       setStats(response.categories);
     });
   }, []);
-  
+
   return (
     <Grid
       container
@@ -317,7 +317,7 @@ const ExploreSection = () => {
                 marginLeft: "40px",
               }}
             >
-              {eventCache.notStarted ? "N/A"  : totalVotes}
+              {eventCache.notStarted ? "N/A" : totalVotes}
             </Typography>
           </CardContent>
         </Card>
@@ -327,4 +327,3 @@ const ExploreSection = () => {
 };
 
 export { ExploreSection };
-

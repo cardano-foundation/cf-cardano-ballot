@@ -16,7 +16,11 @@ import theme from "../../common/styles/theme";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { PieChart, pieChartDefaultProps } from "react-minimal-pie-chart";
 import leaderboard1Bg from "../../assets/bg/leaderboard1.svg";
-import { addressSlice, calculateTotalVotes, formatISODate } from "../../utils/utils";
+import {
+  addressSlice,
+  calculateTotalVotes,
+  formatISODate,
+} from "../../utils/utils";
 import { PageBase } from "../BasePage";
 import AnimatedSwitch from "../../components/AnimatedSwitch/AnimatedSwitch";
 import { Categories } from "../Categories";

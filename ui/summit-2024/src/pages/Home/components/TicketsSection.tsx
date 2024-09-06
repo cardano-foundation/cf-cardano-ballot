@@ -8,7 +8,7 @@ const TicketsSection = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const handleButtonClick = () => {
-    window.open('https://summit.cardano.org/registration/', '_blank');
+    window.open("https://summit.cardano.org/registration/", "_blank");
   };
 
   return (
@@ -180,7 +180,10 @@ const TicketsSection = () => {
                     marginTop: "32px",
                   }}
                 >
-                  <CustomButton colorVariant="primary" onClick={handleButtonClick}>
+                  <CustomButton
+                    colorVariant="primary"
+                    onClick={handleButtonClick}
+                  >
                     Get Tickets
                   </CustomButton>
                 </Grid>

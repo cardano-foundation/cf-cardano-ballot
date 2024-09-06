@@ -1,7 +1,7 @@
 import { ReactNode, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { env } from "../../common/constants/env";
-import {getEventCache, setEventCache} from "../../store/reducers/eventCache";
+import { getEventCache, setEventCache } from "../../store/reducers/eventCache";
 import { getEventData } from "../../common/api/eventDataService";
 import { eventBus, EventName } from "../../utils/EventBus";
 import { eventDataFixture } from "../../__fixtures__/event";
@@ -16,8 +16,11 @@ import {
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 import { resolveCardanoNetwork } from "../../utils/utils";
 import { getUserInSession, tokenIsExpired } from "../../utils/session";
-import {getVoteReceipts, submitGetUserVotes} from "../../common/api/voteService";
-import {setVoteReceipts, setVotes} from "../../store/reducers/votesCache";
+import {
+  getVoteReceipts,
+  submitGetUserVotes,
+} from "../../common/api/voteService";
+import { setVoteReceipts, setVotes } from "../../store/reducers/votesCache";
 import { parseError } from "../../common/constants/errors";
 import event2024Extended from "../../common/resources/data/summit2024Content.json";
 
@@ -55,7 +58,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
         });
     };
 
-    const walletIsConnectedAndVerified = connectedWallet.address.length && walletIsVerified;
+    const walletIsConnectedAndVerified =
+      connectedWallet.address.length && walletIsVerified;
     if (walletIsConnectedAndVerified && !isExpired) {
       updateUserVotes();
     }
@@ -68,7 +72,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
       if (isVerifiedResult?.verified) {
         // @ts-ignore
         dispatch(setWalletIsVerified(isVerifiedResult.verified));
-      } else if (eventCache.active){
+      } else if (eventCache.active) {
         eventBus.publish(EventName.OpenVerifyWalletModal);
       }
     };
@@ -92,11 +96,15 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
   const mergeEventData = (eventData, staticData) => {
     const mergedCategories = eventData.categories.map((category) => {
-      const staticCategory = staticData.categories.find((cat) => cat.id === category.id);
+      const staticCategory = staticData.categories.find(
+        (cat) => cat.id === category.id,
+      );
 
       if (staticCategory) {
         const mergedProposals = category.proposals.map((proposal) => {
-          const staticProposal = staticCategory.proposals.find((p) => p.id === proposal.id);
+          const staticProposal = staticCategory.proposals.find(
+            (p) => p.id === proposal.id,
+          );
 
           if (staticProposal) {
             // TODO: update reducer types
@@ -113,9 +121,11 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
         return {
           ...category,
-          name: staticCategory.presentationName?.length ? staticCategory.presentationName : category.id,
+          name: staticCategory.presentationName?.length
+            ? staticCategory.presentationName
+            : category.id,
           desc: staticCategory.desc,
-          proposals: mergedProposals
+          proposals: mergedProposals,
         };
       }
       return category;
@@ -140,14 +150,13 @@ const AppWrapper = (props: { children: ReactNode }) => {
         dispatch(setEventCache(mergedEventData));
       } else {
         eventBus.publish(
-            EventName.ShowToast,
-            "Failed to load event data",
-            ToastType.Error,
+          EventName.ShowToast,
+          "Failed to load event data",
+          ToastType.Error,
         );
       }
     }
   };
-
 
   return <>{props.children}</>;
 };

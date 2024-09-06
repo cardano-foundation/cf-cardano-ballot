@@ -1,10 +1,10 @@
 interface Proposal {
   id: string;
   name: string | null;
-  presentationName?: string,
-  x?: string,
-  linkedin?: string,
-  url?: string
+  presentationName?: string;
+  x?: string;
+  linkedin?: string;
+  url?: string;
 }
 
 interface Category {

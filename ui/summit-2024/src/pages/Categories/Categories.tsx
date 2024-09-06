@@ -6,7 +6,10 @@ import { VoteNowModal } from "./components/VoteNowModal";
 import { ViewReceipt } from "./components/ViewReceipt";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { getEventCache } from "../../store/reducers/eventCache";
-import {Category, Proposal} from "../../store/reducers/eventCache/eventCache.types";
+import {
+  Category,
+  Proposal,
+} from "../../store/reducers/eventCache/eventCache.types";
 import { PageBase } from "../BasePage";
 import { Nominees } from "./components/Nominees";
 import { Winners } from "./components/Winners";

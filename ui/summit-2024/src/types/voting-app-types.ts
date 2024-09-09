@@ -55,14 +55,16 @@ export interface UserVote {
 
 export interface VoteReceipt {
   id: string;
+  walletId: string;
+  walletType: string;
   event: string;
   category: string;
   proposal: string;
   votingPower?: string;
   voterStakingAddress: string;
-  coseSignature: string;
   signature: string;
-  cosePublicKey?: string;
+  payload: string;
+  publicKey?: string;
   status: Status;
   merkleProof: MerkleProof;
   finalityScore?: FinalityScore;

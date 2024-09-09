@@ -26,6 +26,7 @@ import {
 import { eventBus, EventName } from "../../../utils/EventBus";
 import { ToastType } from "../../../components/common/Toast/Toast.types";
 import { parseError } from "../../../common/constants/errors";
+import { verifyVote } from "../../../common/api/verificationService";
 
 const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
   const session = getUserInSession();
@@ -35,6 +36,38 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
   const handleCopy = async (data: string) => {
     await copyToClipboard(data);
     eventBus.publish(EventName.ShowToast, "Copied to clipboard successfully");
+  };
+
+  const verifyVoteProof = () => {
+    if (receipt) {
+      const body = {
+        rootHash: receipt.merkleProof.rootHash,
+        steps: receipt.merkleProof.steps,
+        payload: receipt.payload,
+        walletIdentifier: receipt.walletId,
+        signature: receipt.signature,
+        publicKey: receipt.publicKey,
+      };
+      verifyVote(body)
+        .then((result) => {
+          if ("verified" in result && result.verified) {
+            eventBus.publish(EventName.ShowToast, "Vote verified successfully");
+          } else {
+            eventBus.publish(
+              EventName.ShowToast,
+              "Vote no verified",
+              ToastType.Error,
+            );
+          }
+        })
+        .catch((e) => {
+          eventBus.publish(
+            EventName.ShowToast,
+            parseError(e.message),
+            ToastType.Error,
+          );
+        });
+    }
   };
 
   const refreshReceipt = () => {
@@ -732,6 +765,20 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                     </ListItem>
                   ) : null
                 }
+                <ListItem>
+                  <Typography
+                    onClick={() => verifyVoteProof()}
+                    sx={{
+                      color: theme.palette.text.neutralLightest,
+                      fontSize: "26px",
+                      fontWeight: 500,
+                      lineHeight: "24px",
+                      fontStyle: "normal",
+                    }}
+                  >
+                    Verify
+                  </Typography>
+                </ListItem>
               </List>
             </CustomAccordion>
           </Box>

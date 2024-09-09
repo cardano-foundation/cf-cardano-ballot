@@ -45,7 +45,7 @@ const ExploreSection = () => {
   console.log("eventCache");
   console.log(eventCache);
 
-  const categoriesNames = eventCache.categories.map(c => c.name).join(", ");
+  const categoriesNames = eventCache.categories.map((c) => c.name).join(", ");
 
   return (
     <Grid
@@ -239,36 +239,36 @@ const ExploreSection = () => {
                 Categories
               </Typography>
             </Box>
-              <Box
-                  component="div"
-                  sx={{
-                      width: "100%",
-                      height: "80px",
-                      position: "relative",
-                      overflow: "hidden",
-                      marginBottom: "20px"
-                  }}
+            <Box
+              component="div"
+              sx={{
+                width: "100%",
+                height: "80px",
+                position: "relative",
+                overflow: "hidden",
+                marginBottom: "20px",
+              }}
+            >
+              <Typography
+                sx={{
+                  color: theme.palette.text.neutralLightest,
+                  fontSize: {
+                    xs: "40px",
+                    md: "68px",
+                  },
+                  fontStyle: "normal",
+                  fontWeight: 500,
+                  lineHeight: "86px",
+                  whiteSpace: "nowrap",
+                  display: "inline-block",
+                  position: "absolute",
+                  minWidth: "200%",
+                  animation: `${marquee} 20s linear infinite`,
+                }}
               >
-                  <Typography
-                      sx={{
-                          color: theme.palette.text.neutralLightest,
-                          fontSize: {
-                              xs: "40px",
-                              md: "68px",
-                          },
-                          fontStyle: "normal",
-                          fontWeight: 500,
-                          lineHeight: "86px",
-                          whiteSpace: "nowrap",
-                          display: "inline-block",
-                          position: "absolute",
-                          minWidth: "200%",
-                          animation: `${marquee} 20s linear infinite`,
-                      }}
-                  >
-                      {categoriesNames}
-                  </Typography>
-              </Box>
+                {categoriesNames}
+              </Typography>
+            </Box>
           </CardContent>
         </Card>
       </Grid>

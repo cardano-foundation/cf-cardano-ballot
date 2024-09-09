@@ -10,6 +10,7 @@ enum EventName {
   CloseLoginModal = "closeLoginModal",
   OpenTermsModal = "openTermsModal",
   CloseTermsModal = "closeTermsModal",
+  OpenSupportedWalletsModal = "openSupportedWalletsModal",
 }
 
 class EventBus {

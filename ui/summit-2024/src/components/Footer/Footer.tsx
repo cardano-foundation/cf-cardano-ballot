@@ -80,13 +80,13 @@ const Footer = () => {
                   display: "flex",
                 }}
               >
-                <Typography onClick={()=> handleOpenTerms()}>
+                <Typography onClick={() => handleOpenTerms()}>
                   <Link
                     sx={{
                       color: "text.primary",
                       textDecoration: "underline",
                       marginRight: 1,
-                        cursor: "pointer"
+                      cursor: "pointer",
                     }}
                   >
                     {i18n.t("footer.menu.termsAndConditions")}
@@ -96,7 +96,7 @@ const Footer = () => {
                       color: "text.primary",
                       textDecoration: "underline",
                       marginRight: 1,
-                        cursor: "pointer"
+                      cursor: "pointer",
                     }}
                   >
                     {i18n.t("footer.menu.privacyPolicy")}

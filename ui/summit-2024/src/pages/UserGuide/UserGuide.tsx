@@ -7,6 +7,7 @@ import { PageBase } from "../BasePage";
 import { CustomButton } from "../../components/common/CustomButton/CustomButton";
 import { ROUTES } from "../../routes";
 import { useNavigate } from "react-router-dom";
+import SupportedWalletsList from "./components/SupportedWalletList";
 
 const UserGuide = () => {
   const navigate = useNavigate();
@@ -35,18 +36,22 @@ const UserGuide = () => {
             {userGuideMenu[0].title}
           </Typography>
           <Grid container spacing={2}>
-            {userGuideMenu[0].sections.map((section) => {
-              return (
-                <Grid item xs={12} sm={6}>
-                  <UserGuideCard
-                    number={section.number}
-                    title={section.title}
-                    description={section.description}
-                    link={section.link}
-                  />
-                </Grid>
-              );
-            })}
+            <Grid item xs={12} sm={6}>
+              <UserGuideCard
+                number={userGuideMenu[0].sections[0].number}
+                title={userGuideMenu[0].sections[0].title}
+                description={userGuideMenu[0].sections[0].description}
+                link={userGuideMenu[0].sections[0].link}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <UserGuideCard
+                number={userGuideMenu[0].sections[1].number}
+                title={userGuideMenu[0].sections[1].title}
+                description={userGuideMenu[0].sections[1].description}
+                link={userGuideMenu[0].sections[1].link}
+              />
+            </Grid>
           </Grid>
         </>
       ),
@@ -163,6 +168,7 @@ const UserGuide = () => {
       <PageBase title="User Guide">
         <Layout menuOptions={optionsForScroll} bottom={bottom} mode="scroll" />
       </PageBase>
+      <SupportedWalletsList />
     </>
   );
 };

@@ -5,7 +5,6 @@ import { Leaderboard } from "../pages/Leaderboard";
 import { ReceiptHistory } from "../pages/ReceiptHistory";
 import { NotFound } from "../pages/NotFound";
 import { UserGuide } from "../pages/UserGuide";
-import TermsAndConditions from "../pages/TermsAndPolicy/TermsAndConditions";
 import { Categories } from "../pages/Categories";
 import { getUserInSession, tokenIsExpired } from "../utils/session";
 
@@ -17,8 +16,6 @@ export const ROUTES = {
   RECEIPTS: `${PAGE_PATH}receipts`,
   LEADERBOARD: `${PAGE_PATH}leaderboard`,
   USER_GUIDE: `${PAGE_PATH}user-guide`,
-  TERMS_AND_CONDITIONS: `${PAGE_PATH}terms-and-conditions`,
-  PRIVACY_POLICY: `${PAGE_PATH}privacy-policy`,
   NOMINEES_BY_ID: `${PAGE_PATH}nominees/:categoryId`,
 };
 
@@ -51,10 +48,6 @@ const PageRouter = () => {
         />
         <Route path={ROUTES.LEADERBOARD} element={<Leaderboard />} />
         <Route path={ROUTES.USER_GUIDE} element={<UserGuide />} />
-        <Route
-          path={ROUTES.TERMS_AND_CONDITIONS}
-          element={<TermsAndConditions />}
-        />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>

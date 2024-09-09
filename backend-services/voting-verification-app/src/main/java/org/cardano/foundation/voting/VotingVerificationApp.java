@@ -4,7 +4,6 @@ import io.micrometer.core.aop.TimedAspect;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.springframework.aot.hint.ExecutableMode;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.CommandLineRunner;
@@ -18,7 +17,7 @@ import org.springframework.context.annotation.ImportRuntimeHints;
 
 import static org.springframework.aot.hint.ExecutableMode.INVOKE;
 
-@SpringBootApplication(exclude = {SecurityAutoConfiguration.class, ErrorMvcAutoConfiguration.class})
+@SpringBootApplication(exclude = { SecurityAutoConfiguration.class, ErrorMvcAutoConfiguration.class })
 @ComponentScan(basePackages = {
         "org.cardano.foundation.voting.client",
         "org.cardano.foundation.voting.service",

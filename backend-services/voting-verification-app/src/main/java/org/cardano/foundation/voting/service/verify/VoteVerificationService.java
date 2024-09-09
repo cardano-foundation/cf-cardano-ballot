@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardano.foundation.voting.client.ChainFollowerClient;
-import org.cardano.foundation.voting.client.KeriVerificationClient;
 import org.cardano.foundation.voting.domain.*;
 import org.cardano.foundation.voting.utils.Enums;
 import org.cardanofoundation.cip30.CIP30Verifier;
@@ -32,7 +31,6 @@ import static org.zalando.problem.Status.BAD_REQUEST;
 public class VoteVerificationService {
 
     private final ChainFollowerClient chainFollowerClient;
-    private final KeriVerificationClient keriVerificationClient;
 
     private final Network network;
 
@@ -164,15 +162,6 @@ public class VoteVerificationService {
         }
 
         val payload = voteVerificationRequest.getPayload().orElseThrow();
-
-        val keriVerificationResultE = keriVerificationClient.verifySignature(walletId, signature, payload);
-        if (keriVerificationResultE.isLeft()) {
-            return Either.left(Problem.builder()
-                    .withTitle("INVALID_VOTE")
-                    .withStatus(BAD_REQUEST)
-                    .withDetail("Invalid KERI signature")
-                    .build());
-        }
 
         try {
             val jsonNode = parseJson(new String(HexUtil.decodeHexString(payload)));

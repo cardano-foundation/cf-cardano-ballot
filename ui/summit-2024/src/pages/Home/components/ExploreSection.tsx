@@ -42,8 +42,6 @@ const ExploreSection = () => {
         transform: translateX(-100%);
       }
     `;
-  console.log("eventCache");
-  console.log(eventCache);
 
   const categoriesNames = eventCache.categories.map((c) => c.name).join(", ");
 

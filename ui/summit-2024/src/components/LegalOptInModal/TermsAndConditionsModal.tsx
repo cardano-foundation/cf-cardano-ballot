@@ -9,7 +9,7 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocalStorage } from "../../common/hooks/useLocalStorage";
 import { CB_TERMS_AND_PRIVACY } from "../../common/constants/local";
 import termsData from "../../common/resources/data/termsAndConditions.json";
@@ -18,6 +18,7 @@ import theme from "../../common/styles/theme";
 import { ExtraDetails, List } from "./TermsAndConditionsModal.type";
 import { CustomCheckBox } from "../common/CustomCheckBox/CustomCheckBox";
 import AnimatedSwitch from "../AnimatedSwitch/AnimatedSwitch";
+import { eventBus, EventName } from "../../utils/EventBus";
 
 const TermsAndConditionsModal = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -29,14 +30,33 @@ const TermsAndConditionsModal = () => {
 
   const [currentTab, setCurrentTab] = useState(tabs[0]);
   const [isChecked, setIsChecked] = useState(false);
+  const [forceOpenModal, setForceOpenModal] = useState(false);
   const [termsAndConditionsChecked, setTermsAndConditionsChecked] =
     useLocalStorage(CB_TERMS_AND_PRIVACY, false);
+
+  useEffect(() => {
+    const openModal = () => {
+      setForceOpenModal(true);
+    };
+    eventBus.subscribe(EventName.OpenTermsModal, openModal);
+    return () => {
+      eventBus.unsubscribe(EventName.OpenTermsModal, openModal);
+    };
+  }, []);
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const terms = searchParams.get("terms") === "true";
+    setForceOpenModal(terms);
+  }, [location]);
 
   const handleSetCurrentTab = (option: string) => {
     setCurrentTab(option);
   };
   const handleAccept = () => {
     setTermsAndConditionsChecked(true);
+    setForceOpenModal(false);
+    setIsChecked(false);
   };
   const renderContent = () => {
     const renderListItems = (list: List[]) =>
@@ -395,11 +415,13 @@ const TermsAndConditionsModal = () => {
 
   return (
     <Dialog
-      open={!termsAndConditionsChecked}
+      open={!termsAndConditionsChecked || forceOpenModal}
       keepMounted
       // @ts-ignore
       disableBackdropClick
-      onClose={() => setTermsAndConditionsChecked(false)}
+      onClose={() =>
+        setTermsAndConditionsChecked(false) && setForceOpenModal(false)
+      }
       scroll={"paper"}
       maxWidth={isMobile ? "sm" : "md"}
       sx={{

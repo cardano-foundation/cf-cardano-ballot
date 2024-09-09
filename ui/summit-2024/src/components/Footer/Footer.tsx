@@ -10,8 +10,13 @@ import SupportIcon from "@mui/icons-material/SupportAgent";
 import { env } from "../../common/constants/env";
 import discordLogo from "../../assets/discord.svg";
 import { i18n } from "../../i18n";
+import { eventBus, EventName } from "../../utils/EventBus";
 
 const Footer = () => {
+  const handleOpenTerms = () => {
+    console.log("handleOpenTerms");
+    eventBus.publish(EventName.OpenTermsModal);
+  };
   return (
     <>
       <Box
@@ -75,23 +80,23 @@ const Footer = () => {
                   display: "flex",
                 }}
               >
-                <Typography>
+                <Typography onClick={()=> handleOpenTerms()}>
                   <Link
-                    href="/terms-and-conditions"
                     sx={{
                       color: "text.primary",
                       textDecoration: "underline",
                       marginRight: 1,
+                        cursor: "pointer"
                     }}
                   >
                     {i18n.t("footer.menu.termsAndConditions")}
                   </Link>
                   <Link
-                    href="/privacy-policy"
                     sx={{
                       color: "text.primary",
                       textDecoration: "underline",
                       marginRight: 1,
+                        cursor: "pointer"
                     }}
                   >
                     {i18n.t("footer.menu.privacyPolicy")}

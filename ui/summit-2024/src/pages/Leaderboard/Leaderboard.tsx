@@ -41,11 +41,13 @@ const Leaderboard: React.FC = () => {
   const showRevealDate = eventCache.finished && !eventCache.proposalsReveal;
   const showWinners = eventCache.proposalsReveal;
 
-  const nameMap = new Map(eventCache.categories.map(category => [category.id, category.name]));
+  const nameMap = new Map(
+    eventCache.categories.map((category) => [category.id, category.name]),
+  );
 
-  const extendedStats = stats?.map(item => ({
+  const extendedStats = stats?.map((item) => ({
     ...item,
-    name: nameMap.get(item.id) || null
+    name: nameMap.get(item.id) || null,
   }));
 
   useEffect(() => {
@@ -475,7 +477,11 @@ const Leaderboard: React.FC = () => {
                                         marginTop: "8px",
                                       }}
                                     >
-                                      {addressSlice(entry?.title || "", 12, "end")}
+                                      {addressSlice(
+                                        entry?.title || "",
+                                        12,
+                                        "end",
+                                      )}
                                     </Typography>
                                   </Box>
                                 ))}

@@ -27,28 +27,36 @@ const SUPPORTED_WALLETS = env.SUPPORTED_WALLETS;
 
 const CHROME_STORE_LINKS = {
   typhoncip30: {
-    link: "https://chromewebstore.google.com/webstore/detail/typhon-wallet/kfdniefadaanbjodldohaedphafoffoh", logo: typhonLogo
+    link: "https://chromewebstore.google.com/webstore/detail/typhon-wallet/kfdniefadaanbjodldohaedphafoffoh",
+    logo: typhonLogo,
   },
   gerowallet: {
-    link: "https://chromewebstore.google.com/webstore/detail/gerowallet/bgpipimickeadkjlklgciifhnalhdjhe", logo: geroLogo
+    link: "https://chromewebstore.google.com/webstore/detail/gerowallet/bgpipimickeadkjlklgciifhnalhdjhe",
+    logo: geroLogo,
   },
   flint: {
-    link: "https://chromewebstore.google.com/webstore/detail/flint-wallet/hnhobjmcibchnmglfbldbfabcgaknlkj", logo: flintLogo
+    link: "https://chromewebstore.google.com/webstore/detail/flint-wallet/hnhobjmcibchnmglfbldbfabcgaknlkj",
+    logo: flintLogo,
   },
   nami: {
-    link: "https://chromewebstore.google.com/webstore/detail/nami/lpfcbjknijpeeillifnkikgncikgfhdo", logo: namiLogo
+    link: "https://chromewebstore.google.com/webstore/detail/nami/lpfcbjknijpeeillifnkikgncikgfhdo",
+    logo: namiLogo,
   },
   yoroi: {
-    link: "https://chromewebstore.google.com/webstore/detail/yoroi/ffnbelfdoeiohenkjibnmadjiehjhajb", logo: yoroiLogo
+    link: "https://chromewebstore.google.com/webstore/detail/yoroi/ffnbelfdoeiohenkjibnmadjiehjhajb",
+    logo: yoroiLogo,
   },
   lace: {
-    link: "https://chromewebstore.google.com/webstore/detail/lace/gafhhkghbfjjkeiendhlofajokpaflmk", logo: laceLogo
+    link: "https://chromewebstore.google.com/webstore/detail/lace/gafhhkghbfjjkeiendhlofajokpaflmk",
+    logo: laceLogo,
   },
   eternl: {
-    link: "https://chromewebstore.google.com/webstore/detail/eternl/kmhcihpebfmpgmihbkipmjlmmioameka", logo: eternlLogo
+    link: "https://chromewebstore.google.com/webstore/detail/eternl/kmhcihpebfmpgmihbkipmjlmmioameka",
+    logo: eternlLogo,
   },
   nufi: {
-    link: "https://chromewebstore.google.com/detail/nufi/gpnihlnnodeiiaakbikldcihojploeca", logo: nufiLogo
+    link: "https://chromewebstore.google.com/detail/nufi/gpnihlnnodeiiaakbikldcihojploeca",
+    logo: nufiLogo,
   },
 };
 
@@ -57,14 +65,16 @@ const SupportedWalletsList = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const getWalletData = (name: string) => {
-    const key = Object.keys(CHROME_STORE_LINKS).find(link => link.includes(name));
+    const key = Object.keys(CHROME_STORE_LINKS).find((link) =>
+      link.includes(name),
+    );
     return key ? CHROME_STORE_LINKS[key] : undefined;
-  }
+  };
 
   const handleOpenWallet = (walletName: string) => {
     const walletData = getWalletData(walletName);
     if (walletData?.link) {
-      window.open(walletData.link, "_blank")
+      window.open(walletData.link, "_blank");
     }
   };
 

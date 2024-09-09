@@ -28,13 +28,14 @@ import { ROUTES } from "../../routes";
 type ConnectWalletButtonProps = {
   label: string;
   disableBackdropClick?: boolean;
+  showAddress?: boolean;
   onOpenConnectWalletModal: () => void;
   onOpenVerifyWalletModal: () => void;
   onDisconnectWallet: () => void;
 };
 
 const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
-  const { onOpenConnectWalletModal, onDisconnectWallet } = props;
+  const { onOpenConnectWalletModal, onDisconnectWallet, showAddress } = props;
   const navigate = useNavigate();
   const session = getUserInSession();
   const isMobile = useIsPortrait();
@@ -63,9 +64,20 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
   };
 
   return (
-    <Box component="div" className="button-container">
+    <Box
+      component="div"
+      className="button-container"
+      sx={{
+        width: "100%",
+      }}
+    >
       <Button
-        sx={{ zIndex: "99", padding: isMobile ? "10px 10px" : "16px 20px" }}
+        sx={{
+          zIndex: "99",
+          padding: isMobile ? "10px 10px" : "16px 20px",
+          width: "90%",
+          margin: showAddress ? "20px" : null,
+        }}
         className={`main-button ${
           connectedWallet.address?.length
             ? "connected-button"
@@ -84,7 +96,7 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
         )}
         {connectedWallet.address?.length ? (
           <>
-            {isMobile
+            {!showAddress
               ? null
               : connectedWallet.address
                 ? addressSlice(connectedWallet.address, 5)

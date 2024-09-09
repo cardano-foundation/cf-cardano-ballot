@@ -42,6 +42,7 @@ import {
 import { resolveWalletType } from "../../common/api/utils";
 import { setVotes } from "../../store/reducers/votesCache";
 import { parseError } from "../../common/constants/errors";
+
 const Header = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -346,6 +347,7 @@ const Header = () => {
               >
                 <ConnectWalletButton
                   label={isPortrait ? "" : "Connect Wallet"}
+                  showAddress={!isPortrait}
                   onOpenConnectWalletModal={handleConnectWalletModal}
                   onOpenVerifyWalletModal={handleOpenVerify}
                   onDisconnectWallet={() => onDisconnectWallet()}

@@ -41,6 +41,13 @@ const Leaderboard: React.FC = () => {
   const showRevealDate = eventCache.finished && !eventCache.proposalsReveal;
   const showWinners = eventCache.proposalsReveal;
 
+  const nameMap = new Map(eventCache.categories.map(category => [category.id, category.name]));
+
+  const extendedStats = stats?.map(item => ({
+    ...item,
+    name: nameMap.get(item.id) || null
+  }));
+
   useEffect(() => {
     getStats().then((response) => {
       // @ts-ignore
@@ -60,8 +67,8 @@ const Leaderboard: React.FC = () => {
     "#200E04",
   ];
 
-  const dataForChart = stats?.map((item, index) => ({
-    title: item.id,
+  const dataForChart = extendedStats?.map((item, index) => ({
+    title: item.name,
     value: item.votes,
     color: colors[index % colors.length],
   }));
@@ -118,8 +125,8 @@ const Leaderboard: React.FC = () => {
                 Leaderboard
               </Typography>
 
-              {showRevealDate ? ( // Shows once the voting has finished and before the reveal
-                <Typography // TODO: Format
+              {showRevealDate ? (
+                <Typography
                   sx={{
                     color: theme.palette.text.neutralLightest,
                     fontFamily: "Dosis",
@@ -258,7 +265,7 @@ const Leaderboard: React.FC = () => {
                                   </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                  {stats?.map((item, index) => (
+                                  {extendedStats?.map((item, index) => (
                                     <TableRow key={index}>
                                       <TableCell
                                         component="th"
@@ -275,7 +282,7 @@ const Leaderboard: React.FC = () => {
                                           padding: "12px 0px",
                                         }}
                                       >
-                                        {item.id}
+                                        {item.name}
                                       </TableCell>
                                       <TableCell align="left">
                                         {item.votes}
@@ -468,7 +475,7 @@ const Leaderboard: React.FC = () => {
                                         marginTop: "8px",
                                       }}
                                     >
-                                      {addressSlice(entry.title, 12, "end")}
+                                      {addressSlice(entry?.title || "", 12, "end")}
                                     </Typography>
                                   </Box>
                                 ))}

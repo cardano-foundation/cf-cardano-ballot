@@ -1,4 +1,5 @@
 import { Grid, Typography, Card, CardContent, Box } from "@mui/material";
+import { keyframes } from "@mui/system";
 import HowToVoteOutlinedIcon from "@mui/icons-material/HowToVoteOutlined";
 import folderIcon from "../../../assets/folder.svg";
 import trophyIcon from "../../../assets/trophy.svg";
@@ -32,6 +33,19 @@ const ExploreSection = () => {
       setStats(response.categories);
     });
   }, []);
+
+  const marquee = keyframes`
+      from {
+        transform: translateX(0%);
+      }
+      to {
+        transform: translateX(-100%);
+      }
+    `;
+  console.log("eventCache");
+  console.log(eventCache);
+
+  const categoriesNames = eventCache.categories.map(c => c.name).join(", ");
 
   return (
     <Grid
@@ -95,7 +109,7 @@ const ExploreSection = () => {
               mb: 2,
             }}
           >
-            Year’s Award Summit!2
+            Year’s Award Summit!
           </Typography>
         </Box>
         <Box
@@ -183,13 +197,22 @@ const ExploreSection = () => {
             backgroundPosition: "center",
           }}
         >
-          <CardContent sx={{ position: "relative", zIndex: 2 }}>
+          <CardContent
+            sx={{
+              position: "relative",
+              zIndex: 2,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+              height: "100%",
+            }}
+          >
             <Box
               component="div"
               sx={{
                 display: "flex",
                 alignItems: "center",
-                marginTop: "20px",
+                marginTop: "30px",
               }}
             >
               <img
@@ -216,24 +239,36 @@ const ExploreSection = () => {
                 Categories
               </Typography>
             </Box>
-            <Typography
-              sx={{
-                color: theme.palette.text.neutralLightest,
-                fontSize: {
-                  xs: "40px",
-                  md: "68px",
-                },
-                fontStyle: "normal",
-                fontWeight: 500,
-                lineHeight: "76px",
-                marginTop: "46px",
-                marginLeft: isMobile ? "" : "40px",
-                whiteSpace: "nowrap",
-                maxWidth: "335px",
-              }}
-            >
-              Ambassador, Blockchain for Good, DeFi ..
-            </Typography>
+              <Box
+                  component="div"
+                  sx={{
+                      width: "100%",
+                      height: "80px",
+                      position: "relative",
+                      overflow: "hidden",
+                      marginBottom: "20px"
+                  }}
+              >
+                  <Typography
+                      sx={{
+                          color: theme.palette.text.neutralLightest,
+                          fontSize: {
+                              xs: "40px",
+                              md: "68px",
+                          },
+                          fontStyle: "normal",
+                          fontWeight: 500,
+                          lineHeight: "86px",
+                          whiteSpace: "nowrap",
+                          display: "inline-block",
+                          position: "absolute",
+                          minWidth: "200%",
+                          animation: `${marquee} 20s linear infinite`,
+                      }}
+                  >
+                      {categoriesNames}
+                  </Typography>
+              </Box>
           </CardContent>
         </Card>
       </Grid>

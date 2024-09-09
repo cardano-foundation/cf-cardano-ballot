@@ -94,15 +94,15 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
     limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
   });
 
-  let categoryToRender = categoriesData.find((c) => c.name === selectedCategory);
+  let categoryToRender = categoriesData.find(
+    (c) => c.name === selectedCategory,
+  );
   if (categoryToRender === undefined) {
     categoryToRender = categoriesData[0];
   }
 
-
-
   const nomineeToVote = useMemo(() => {
-    return categoryToRender?.proposals.find(p => p.id === selectedNominee);
+    return categoryToRender?.proposals.find((p) => p.id === selectedNominee);
   }, [selectedNominee, categoryToRender]);
 
   const categoryAlreadyVoted = !!userVotes?.find(
@@ -149,7 +149,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   };
 
   const handleSelectNominee = (id: string) => {
-    setSelectedNominee(prevNominee => prevNominee === id ? undefined : id);
+    setSelectedNominee((prevNominee) => (prevNominee === id ? undefined : id));
   };
 
   const findProposalById = (categories: Category[], proposalId: string) => {
@@ -232,7 +232,9 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
 
     const category = categoriesData.find((c) => c.name === selectedCategory);
 
-    const proposalId = category?.proposals?.find(p => p.id === selectedNominee)?.id
+    const proposalId = category?.proposals?.find(
+      (p) => p.id === selectedNominee,
+    )?.id;
 
     if (!category?.id || !proposalId) {
       eventBus.publish(EventName.ShowToast, "Nominee not selected", "error");
@@ -285,7 +287,9 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
       eventBus.publish(EventName.ShowToast, "Vote submitted successfully");
 
       // @ts-ignore
-      dispatch(setVotes([...userVotes, { categoryId: category.id, proposalId }]));
+      dispatch(
+        setVotes([...userVotes, { categoryId: category.id, proposalId }]),
+      );
       // TODO: refactor
       if (session && !tokenIsExpired(session?.expiresAt)) {
         getVoteReceipts(session?.accessToken).then((receipts) => {

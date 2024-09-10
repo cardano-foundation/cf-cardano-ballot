@@ -8,7 +8,7 @@ plugins {
 	id("io.spring.dependency-management") version "1.1.6"
 	id("org.graalvm.buildtools.native") version "0.9.26"
 	id("cz.habarta.typescript-generator") version "3.2.1263"
-  id("com.github.ben-manes.versions") version "0.48.0"
+    id("com.github.ben-manes.versions") version "0.48.0"
 	jacoco
 }
 
@@ -81,7 +81,7 @@ dependencies {
 	runtimeOnly("org.postgresql:postgresql")
 
 	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.11")
-	implementation("org.cardanofoundation:cf-cardano-conversions-java:1.1.3")
+	implementation("org.cardanofoundation:cf-cardano-conversions-java:1.2.0")
 
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
 

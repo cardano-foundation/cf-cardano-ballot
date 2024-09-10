@@ -24,9 +24,14 @@ public final class VoteSerialisations {
                 yield blake2bHash256(bytes);
             }
             case KERI -> {
-                val bytes = vote.getPayload().map(String::getBytes).orElse(new byte[0]);
+                val message = vote.getSignature().getBytes();
+                val payload = vote.getPayload().map(String::getBytes).orElse(new byte[0]);
 
-                yield blake2bHash256(bytes);
+                val result = new byte[message.length + payload.length];
+
+                System.arraycopy(message, 0, result, 0, payload.length);
+
+                yield blake2bHash256(result);
             }
         };
     }

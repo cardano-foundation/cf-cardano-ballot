@@ -107,7 +107,7 @@ const Leaderboard: React.FC = () => {
                 width: "100%",
                 paddingTop: {
                   xs: content === "Winners" ? "60px" : "20px",
-                  md: "20px",
+                  md: "40px",
                 },
                 paddingBottom: { xs: "26px" },
               }}

@@ -5,6 +5,8 @@ interface Proposal {
   x?: string;
   linkedin?: string;
   url?: string;
+  category?: string;
+  votes?: string;
 }
 
 interface Category {

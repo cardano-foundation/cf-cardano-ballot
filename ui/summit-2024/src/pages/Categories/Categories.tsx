@@ -419,8 +419,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
             <Winners
               fadeChecked={fadeChecked}
               nominees={category.proposals}
-              handleSelectedNominee={handleSelectNominee}
-              selectedNominee={selectedNominee}
+              categoryId={category.id}
               handleOpenLearnMore={handleOpenLearnMoreModal}
             />
           ) : (

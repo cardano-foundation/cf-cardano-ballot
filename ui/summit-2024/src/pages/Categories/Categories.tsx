@@ -62,8 +62,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   const receipts = useAppSelector(getReceipts);
   const userVotes = useAppSelector(getVotes);
   const categoriesData = eventCache.categories;
-
-  const [showWinners] = useState(eventCache.proposalsReveal);
+  const showWinners = eventCache.proposalsReveal;
 
   const [selectedCategory, setSelectedCategory] = useState(
     categoriesData[0].id,

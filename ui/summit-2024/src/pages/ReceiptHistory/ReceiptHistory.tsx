@@ -23,14 +23,41 @@ import { getUserInSession, tokenIsExpired } from "../../utils/session";
 import { getVoteReceipts } from "../../common/api/voteService";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { getReceipts, setVoteReceipts } from "../../store/reducers/votesCache";
+import { getEventCache } from "../../store/reducers/eventCache";
+import { ExtendedVoteReceipt } from "../../types/voting-app-types";
 
 const ReceiptHistory: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [openViewReceipt, setOpenViewReceipt] = useState(false);
   const [copied, setCopied] = React.useState(false);
-  const receipts = useAppSelector(getReceipts);
+  let receipts = useAppSelector(getReceipts);
+  const eventCache = useAppSelector(getEventCache);
+
   const session = getUserInSession();
   const dispatch = useAppDispatch();
+
+  // @ts-ignore
+  const extendedReceipts: ExtendedVoteReceipt = { ...receipts };
+  for (const categoryKey in extendedReceipts) {
+    const votingCategory = extendedReceipts[categoryKey];
+    const categoryDetail = eventCache.categories.find(
+      (category) => category.id === votingCategory.category,
+    );
+
+    if (categoryDetail) {
+      const proposalDetail = categoryDetail.proposals.find(
+        (proposal) => proposal.id === votingCategory.proposal,
+      );
+
+      if (proposalDetail) {
+        extendedReceipts[categoryKey] = {
+          ...votingCategory,
+          categoryName: categoryDetail.name,
+          proposalName: proposalDetail.name,
+        };
+      }
+    }
+  }
 
   useEffect(() => {
     if (!tokenIsExpired(session?.expiresAt)) {
@@ -119,7 +146,7 @@ const ReceiptHistory: React.FC = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {Object.keys(receipts).map((category: string, index) => (
+          {Object.keys(extendedReceipts).map((category: string, index) => (
             <TableRow
               key={index}
               sx={{
@@ -169,7 +196,7 @@ const ReceiptHistory: React.FC = () => {
                       marginLeft: "8px",
                     }}
                   >
-                    {receipts[category].proposal}
+                    {extendedReceipts[category].proposalName}
                   </Typography>
                 </Box>
               </TableCell>
@@ -199,7 +226,7 @@ const ReceiptHistory: React.FC = () => {
                       cursor: "pointer",
                     }}
                   >
-                    {receipts[category].category}
+                    {extendedReceipts[category].categoryName}
                   </Typography>
                 </Box>
               </TableCell>
@@ -228,7 +255,7 @@ const ReceiptHistory: React.FC = () => {
                       marginLeft: "8px",
                     }}
                   >
-                    {receipts[category].votedAtSlot}
+                    {extendedReceipts[category].votedAtSlot}
                   </Typography>
                 </Box>
               </TableCell>

@@ -58,8 +58,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
         });
     };
 
-    const walletIsConnected =
-      connectedWallet.address.length;
+    const walletIsConnected = connectedWallet.address.length;
     if (walletIsConnected && !isExpired) {
       updateUserVotes();
     }

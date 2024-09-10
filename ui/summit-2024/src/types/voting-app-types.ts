@@ -53,6 +53,11 @@ export interface UserVote {
   proposalId: string;
 }
 
+export interface ExtendedVoteReceipt extends VoteReceipt {
+  categoryName?: string;
+  proposalNam?: string;
+}
+
 export interface VoteReceipt {
   id: string;
   walletId: string;

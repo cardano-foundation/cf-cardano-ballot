@@ -431,6 +431,8 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
         if (oobiCheckResult.isRight()) {
             log.info("OOBI already registered: {}", oobiCheckResult.get());
 
+            // TODO: Review this implementation once the KERI watchers are operational.
+            // This solution is temporary and might need adjustments to integrate with the new KERI components
             // Step 1.1:Update key state
             Either<Problem, Boolean> keyStateUpdateResult = keriVerificationClient.updateAndVerifyKeyState(walletId, 60);
             if (keyStateUpdateResult.isLeft()) {

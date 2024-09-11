@@ -15,7 +15,7 @@ import {
 import theme from "../../common/styles/theme";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { PieChart, pieChartDefaultProps } from "react-minimal-pie-chart";
-import leaderboard11Bg from "@assets/leaderboard1.svg";
+import leaderboard1Bg from "../../assets/leaderboard1.svg";
 
 import {
   addressSlice,
@@ -179,66 +179,56 @@ const Leaderboard: React.FC = () => {
                       <Grid container spacing={2}>
                         <Grid item xs={12} md={6}>
                           <Box
+                            component="div"
+                            sx={{
+                              p: "28px",
+                              backgroundImage: `url(${leaderboard1Bg})`,
+                              backgroundSize: "cover",
+                              backgroundPosition: "center",
+                              borderRadius: "24px",
+                              backdropFilter: "blur(5px)",
+                            }}
+                          >
+                            <Box
                               component="div"
                               sx={{
-                                p: "28px",
-                                borderRadius: "24px",
-                                backdropFilter: "blur(5px)",
-                                position: "relative"
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
                               }}
-                          >
-                            <img
-                                src={leaderboard11Bg}
-                                alt="Background"
-                                style={{
-
-                                  position: 'absolute',
-                                  width: '100%',
-                                  height: '100%',
-                                  objectFit: 'cover',
-                                  zIndex: -1,
-                                }}
-                            />
-                            <Box
-                                component="div"
-                                sx={{
-                                  display: "flex",
-                                  justifyContent: "space-between",
-                                  alignItems: "center",
-                                }}
                             >
                               <Typography
-                                  sx={{
-                                    fontFamily: "Dosis",
-                                    color: theme.palette.text.neutralLightest,
-                                    textShadow:
-                                        "0px 0px 12px rgba(18, 18, 18, 0.20)",
-                                    fontSize: "28px",
-                                    fontStyle: "normal",
-                                    fontWeight: 700,
-                                    lineHeight: "32px",
-                                  }}
+                                sx={{
+                                  fontFamily: "Dosis",
+                                  color: theme.palette.text.neutralLightest,
+                                  textShadow:
+                                    "0px 0px 12px rgba(18, 18, 18, 0.20)",
+                                  fontSize: "28px",
+                                  fontStyle: "normal",
+                                  fontWeight: 700,
+                                  lineHeight: "32px",
+                                }}
                               >
                                 Total Votes
                               </Typography>
                               <MoreVertIcon
-                                  sx={{
-                                    cursor: "pointer",
-                                  }}
+                                sx={{
+                                  cursor: "pointer",
+                                }}
                               />
                             </Box>
                             <Typography
-                                sx={{
-                                  my: 2,
-                                  fontFamily: "Dosis",
-                                  color: theme.palette.text.neutralLightest,
-                                  textShadow:
-                                      "0px 0px 12px rgba(18, 18, 18, 0.20)",
-                                  fontSize: "36px",
-                                  fontStyle: "normal",
-                                  fontWeight: 700,
-                                  lineHeight: "40px",
-                                }}
+                              sx={{
+                                my: 2,
+                                fontFamily: "Dosis",
+                                color: theme.palette.text.neutralLightest,
+                                textShadow:
+                                  "0px 0px 12px rgba(18, 18, 18, 0.20)",
+                                fontSize: "36px",
+                                fontStyle: "normal",
+                                fontWeight: 700,
+                                lineHeight: "40px",
+                              }}
                             >
                               {totalVotes}
                             </Typography>
@@ -247,31 +237,31 @@ const Leaderboard: React.FC = () => {
                                 <TableHead>
                                   <TableRow>
                                     <TableCell
-                                        sx={{
-                                          fontWeight: "bold",
-                                          width: "50%",
-                                          padding: "12px 0px",
-                                        }}
+                                      sx={{
+                                        fontWeight: "bold",
+                                        width: "50%",
+                                        padding: "12px 0px",
+                                      }}
                                     >
                                       Category
                                     </TableCell>
                                     <TableCell
-                                        sx={{
-                                          fontWeight: "bold",
-                                          width: "25%",
-                                          padding: "12px 0px",
-                                        }}
-                                        align="left"
+                                      sx={{
+                                        fontWeight: "bold",
+                                        width: "25%",
+                                        padding: "12px 0px",
+                                      }}
+                                      align="left"
                                     >
                                       Votes
                                     </TableCell>
                                     <TableCell
-                                        sx={{
-                                          fontWeight: "bold",
-                                          width: "25%",
-                                          padding: "12px 0px",
-                                        }}
-                                        align="left"
+                                      sx={{
+                                        fontWeight: "bold",
+                                        width: "25%",
+                                        padding: "12px 0px",
+                                      }}
+                                      align="left"
                                     >
                                       Percentage
                                     </TableCell>
@@ -279,35 +269,35 @@ const Leaderboard: React.FC = () => {
                                 </TableHead>
                                 <TableBody>
                                   {extendedStats?.map((item, index) => (
-                                      <TableRow key={index}>
-                                        <TableCell
-                                            component="th"
-                                            scope="row"
-                                            sx={{
-                                              color:
-                                              theme.palette.text.neutralLightest,
-                                              textShadow:
-                                                  "0px 0px 12px rgba(18, 18, 18, 0.20)",
-                                              fontSize: "12px",
-                                              fontStyle: "normal",
-                                              fontWeight: 700,
-                                              lineHeight: "20px",
-                                              padding: "12px 0px",
-                                            }}
-                                        >
-                                          {item.name}
-                                        </TableCell>
-                                        <TableCell align="left">
-                                          {item.votes}
-                                        </TableCell>
-                                        <TableCell align="left">
-                                          {(
-                                              (item.votes / totalVotes) *
-                                              100
-                                          ).toFixed(2)}
-                                          %
-                                        </TableCell>
-                                      </TableRow>
+                                    <TableRow key={index}>
+                                      <TableCell
+                                        component="th"
+                                        scope="row"
+                                        sx={{
+                                          color:
+                                            theme.palette.text.neutralLightest,
+                                          textShadow:
+                                            "0px 0px 12px rgba(18, 18, 18, 0.20)",
+                                          fontSize: "12px",
+                                          fontStyle: "normal",
+                                          fontWeight: 700,
+                                          lineHeight: "20px",
+                                          padding: "12px 0px",
+                                        }}
+                                      >
+                                        {item.name}
+                                      </TableCell>
+                                      <TableCell align="left">
+                                        {item.votes}
+                                      </TableCell>
+                                      <TableCell align="left">
+                                        {(
+                                          (item.votes / totalVotes) *
+                                          100
+                                        ).toFixed(2)}
+                                        %
+                                      </TableCell>
+                                    </TableRow>
                                   ))}
                                 </TableBody>
                               </Table>
@@ -324,8 +314,8 @@ const Leaderboard: React.FC = () => {
                               flexDirection: "column",
                               alignItems: "center",
                               p: "28px",
-                              backgroundImage: `url(${leaderboard11Bg})`,
-                              backgroundSize: "200% 200%",
+                              backgroundImage: `url(${leaderboard1Bg})`,
+                              backgroundSize: "cover",
                               backgroundPosition: "center",
                               borderRadius: "24px",
                               backdropFilter: "blur(5px)",

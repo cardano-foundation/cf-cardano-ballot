@@ -65,7 +65,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   const showWinners = eventCache.proposalsReveal;
 
   const [selectedCategory, setSelectedCategory] = useState(
-    undefined
+      categoriesData[0].name
   );
 
   const [selectedNominee, setSelectedNominee] = useState<string | undefined>(
@@ -118,7 +118,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
       // @ts-ignore
       setSelectedCategory(categoriesData[0].name);
     }
-  }, [categoriesData]);
+  }, [categoriesData.length]);
 
   useEffect(() => {
     // Example: http://localhost:3000/categories?category=ambassador&nominee=63123e7f-dfc3-481e-bb9d-fed1d9f6e9b9
@@ -243,8 +243,13 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
       (p) => p.id === selectedNominee,
     )?.id;
 
-    if (!category?.id || !proposalId) {
-      eventBus.publish(EventName.ShowToast, "Nominee not selected", "error");
+    if (!category?.id) {
+      eventBus.publish(EventName.ShowToast, "Category not selected", ToastType.Error);
+      return;
+    }
+
+    if (!proposalId) {
+      eventBus.publish(EventName.ShowToast, "Nominee not selected", ToastType.Error);
       return;
     }
 

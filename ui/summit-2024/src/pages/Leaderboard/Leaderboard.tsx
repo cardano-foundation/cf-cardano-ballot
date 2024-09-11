@@ -15,7 +15,7 @@ import {
 import theme from "../../common/styles/theme";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { PieChart, pieChartDefaultProps } from "react-minimal-pie-chart";
-import leaderboard1Bg from "../../assets/leaderboard1.svg";
+import leaderboard11Bg from "../../common/resources/images/leaderboard11.svg";
 import {
   addressSlice,
   calculateTotalVotes,
@@ -181,7 +181,7 @@ const Leaderboard: React.FC = () => {
                             component="div"
                             sx={{
                               p: "28px",
-                              backgroundImage: `url(${leaderboard1Bg})`,
+                              backgroundImage: `url(${leaderboard11Bg})`,
                               backgroundSize: "350% 350%",
                               backgroundPosition: "center",
                               borderRadius: "24px",
@@ -313,7 +313,7 @@ const Leaderboard: React.FC = () => {
                               flexDirection: "column",
                               alignItems: "center",
                               p: "28px",
-                              backgroundImage: `url(${leaderboard1Bg})`,
+                              backgroundImage: `url(${leaderboard11Bg})`,
                               backgroundSize: "200% 200%",
                               backgroundPosition: "center",
                               borderRadius: "24px",

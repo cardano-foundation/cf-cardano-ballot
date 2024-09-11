@@ -4,7 +4,7 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
-  base: './',
+  base: "./",
   server: {
     port: 3000
   },
@@ -14,9 +14,11 @@ export default defineConfig({
     },
   },
   build: {
+    outDir: "dist",
+    assetsDir: "assets",
     rollupOptions: {
       output: {
-        assetFileNames: 'assets/[name]-[hash][extname]',
+        assetFileNames: `assets/[name].[hash].[ext]`
       }
     }
   }

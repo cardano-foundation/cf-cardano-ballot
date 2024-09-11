@@ -15,7 +15,8 @@ import {
 import theme from "../../common/styles/theme";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { PieChart, pieChartDefaultProps } from "react-minimal-pie-chart";
-import leaderboard11Bg from "../../common/resources/images/leaderboard11.svg";
+import leaderboard11Bg from "@assets/leaderboard1.svg";
+
 import {
   addressSlice,
   calculateTotalVotes,

@@ -3,8 +3,8 @@ import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { PageBase } from "../BasePage";
 import { CustomButton } from "../../components/common/CustomButton/CustomButton";
 import theme from "../../common/styles/theme";
-import notFoundBg from "../../assets/bg/notFoundBg.svg";
-import ArchBg from "../../assets/bg/archBg.png";
+import notFoundBg from "../../assets/notFoundBg.svg";
+import ArchBg from "../../assets/archBg.png";
 
 const NotFound: React.FC = () => {
   const currentTheme = useTheme();

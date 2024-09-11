@@ -1,6 +1,6 @@
 import { Paper, Typography, Box } from "@mui/material";
 import theme from "../../../common/styles/theme";
-import guideBg from "../../../assets/bg/guideCard.svg";
+import guideBg from "../../../assets/guideCard.svg";
 import { CustomCardProps } from "./UserGuideCard.type";
 import { eventBus, EventName } from "../../../utils/EventBus";
 

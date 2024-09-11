@@ -33,7 +33,7 @@ export const verifyVote = async (payload: {
     JSON.stringify({
       ...payload,
       eventId: env.EVENT_ID,
-      walletType: resolveWalletType(payload.walletIdentifier),
+      walletType: resolveWalletType(payload.walletId),
     }),
   );
 };

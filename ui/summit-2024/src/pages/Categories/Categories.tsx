@@ -172,7 +172,9 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
     setOpenViewReceipt(true);
   };
 
-  const handleSignIn = () => {};
+  const handleLogin = () => {
+    eventBus.publish(EventName.OpenLoginModal);
+  };
 
   const handleViewReceipt = async () => {
     if (!categoryToRender) return;
@@ -335,8 +337,8 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   const renderActionButton = () => {
     if (categoryAlreadyVoted && !session) {
       return {
-        label: "Sign In",
-        action: handleSignIn,
+        label: "Login",
+        action: handleLogin,
         disabled: false,
       };
     } else if (categoryAlreadyVoted) {

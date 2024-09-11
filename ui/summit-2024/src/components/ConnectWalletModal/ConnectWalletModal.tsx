@@ -244,7 +244,8 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
         };
       case ConnectWalletFlow.CONNECT_IDENTITY_WALLET:
         return {
-          title: "Scan the below QR code from the ID wallet by opening Menu / Cardano connect",
+          title:
+            "Scan the below QR code from the ID wallet by opening Menu / Cardano connect",
         };
       case ConnectWalletFlow.CONNECT_CIP45_WALLET:
         return {

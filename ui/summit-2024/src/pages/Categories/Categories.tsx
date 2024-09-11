@@ -65,7 +65,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   const showWinners = eventCache.proposalsReveal;
 
   const [selectedCategory, setSelectedCategory] = useState(
-    categoriesData[0].id,
+    undefined
   );
 
   const [selectedNominee, setSelectedNominee] = useState<string | undefined>(
@@ -114,6 +114,13 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   );
 
   useEffect(() => {
+    if (categoriesData.length && categoriesData[0]?.name) {
+      // @ts-ignore
+      setSelectedCategory(categoriesData[0].name);
+    }
+  }, [categoriesData]);
+
+  useEffect(() => {
     // Example: http://localhost:3000/categories?category=ambassador&nominee=63123e7f-dfc3-481e-bb9d-fed1d9f6e9b9
     const params = new URLSearchParams(window.location.search);
     const categoryParam = params.get("category");
@@ -138,13 +145,12 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   }, [fadeChecked, selectedCategory]);
 
   const handleClickMenuItem = (category: string) => {
-    if (category !== selectedCategory) {
-      setFadeChecked(false);
-      setSelectedCategory(category);
-      setTimeout(() => {
-        setFadeChecked(true);
-      }, 200);
-    }
+    setFadeChecked(false);
+    // @ts-ignore
+    setSelectedCategory(category);
+    setTimeout(() => {
+      setFadeChecked(true);
+    }, 200);
   };
 
   const handleSelectNominee = (id: string) => {
@@ -283,6 +289,12 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
           submitVoteResult.message || "Error while voting",
           ToastType.Error,
         );
+
+        // @ts-ignore
+        if (submitVoteResult.message === "VOTE_CANNOT_BE_CHANGED") {
+          eventBus.publish(EventName.OpenLoginModal);
+        }
+
         return;
       }
       eventBus.publish(EventName.ShowToast, "Vote submitted successfully");

@@ -40,7 +40,7 @@ import {
   submitLogin,
 } from "../../common/api/loginService";
 import { resolveWalletType } from "../../common/api/utils";
-import {clearVotes, setVotes} from "../../store/reducers/votesCache";
+import { clearVotes, setVotes } from "../../store/reducers/votesCache";
 import { parseError } from "../../common/constants/errors";
 
 const Header = () => {

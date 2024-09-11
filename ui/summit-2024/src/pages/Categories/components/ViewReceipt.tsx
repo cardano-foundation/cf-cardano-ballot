@@ -8,7 +8,7 @@ import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
-import OpenInNewOutlinedIcon from '@mui/icons-material/OpenInNewOutlined';
+import OpenInNewOutlinedIcon from "@mui/icons-material/OpenInNewOutlined";
 import { STATE, ViewReceiptProps } from "./ViewReceipt.type";
 import { CustomAccordion } from "../../../components/common/CustomAccordion/CustomAccordion";
 import { JsonView } from "../../../components/common/JsonView/JsonView";

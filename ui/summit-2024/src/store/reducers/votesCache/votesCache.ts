@@ -33,7 +33,8 @@ const votesCacheSlice = createSlice({
   },
 });
 
-const { setVotes, setVoteReceipt, setVoteReceipts, clearVotes } = votesCacheSlice.actions;
+const { setVotes, setVoteReceipt, setVoteReceipts, clearVotes } =
+  votesCacheSlice.actions;
 
 const getVotes = (state: RootState) => state.votesCache.votes;
 const getReceipts = (state: RootState) => state.votesCache.receipts;
@@ -46,5 +47,5 @@ export {
   setVoteReceipts,
   getVotes,
   getReceipts,
-  clearVotes
+  clearVotes,
 };

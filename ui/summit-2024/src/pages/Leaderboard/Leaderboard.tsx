@@ -30,7 +30,7 @@ import { ByCategoryStats } from "../../types/voting-app-types";
 import { useAppSelector } from "../../store/hooks";
 import { getEventCache } from "../../store/reducers/eventCache";
 import Ellipses from "../../assets/ellipse.svg";
-import {useIsPortrait} from "../../common/hooks/useIsPortrait";
+import { useIsPortrait } from "../../common/hooks/useIsPortrait";
 
 const Leaderboard: React.FC = () => {
   const [stats, setStats] = useState<ByCategoryStats[]>();
@@ -501,16 +501,16 @@ const Leaderboard: React.FC = () => {
             </Fade>
           </Container>
           <img
-              src={Ellipses}
-              style={{
-                position: "fixed",
-                right: "0",
-                top: "90%",
-                transform: "translateY(-30%)",
-                zIndex: "-1",
-                width: "70%",
-                height: isMobile ? "auto" : "auto",
-              }}
+            src={Ellipses}
+            style={{
+              position: "fixed",
+              right: "0",
+              top: "90%",
+              transform: "translateY(-30%)",
+              zIndex: "-1",
+              width: "70%",
+              height: isMobile ? "auto" : "auto",
+            }}
           />
         </>
       </PageBase>

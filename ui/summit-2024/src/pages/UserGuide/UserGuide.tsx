@@ -9,11 +9,11 @@ import { ROUTES } from "../../routes";
 import { useNavigate } from "react-router-dom";
 import SupportedWalletsList from "./components/SupportedWalletList";
 import Ellipses from "../../assets/ellipse.svg";
-import {useIsPortrait} from "../../common/hooks/useIsPortrait";
+import { useIsPortrait } from "../../common/hooks/useIsPortrait";
 
 const UserGuide = () => {
   const navigate = useNavigate();
-    const isMobile = useIsPortrait();
+  const isMobile = useIsPortrait();
 
   const handleNavigate = (pathname: string) => {
     navigate(pathname);
@@ -170,18 +170,18 @@ const UserGuide = () => {
     <>
       <PageBase title="User Guide">
         <Layout menuOptions={optionsForScroll} bottom={bottom} mode="scroll" />
-          <img
-              src={Ellipses}
-              style={{
-                  position: "fixed",
-                  right: "0",
-                  top: "90%",
-                  transform: "translateY(-30%)",
-                  zIndex: "-1",
-                  width: "70%",
-                  height: isMobile ? "auto" : "auto",
-              }}
-          />
+        <img
+          src={Ellipses}
+          style={{
+            position: "fixed",
+            right: "0",
+            top: "90%",
+            transform: "translateY(-30%)",
+            zIndex: "-1",
+            width: "70%",
+            height: isMobile ? "auto" : "auto",
+          }}
+        />
       </PageBase>
       <SupportedWalletsList />
     </>

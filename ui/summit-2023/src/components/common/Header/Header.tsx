@@ -544,7 +544,8 @@ const Header: React.FC = () => {
               <span style={{ fontSize: '14px', fontStyle: 'italic', cursor: 'pointer' }}>
                 {' '}
                 <a
-                  href="https://github.com/cardano-foundation/CIPs/pull/395"
+
+                  href="https://developers.cardano.org/docs/governance/cardano-improvement-proposals/cip-0045/"
                   target="_blank"
                   rel="noreferrer"
                 >

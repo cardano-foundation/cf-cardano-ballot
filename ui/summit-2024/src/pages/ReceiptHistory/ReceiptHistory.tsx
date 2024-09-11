@@ -16,7 +16,7 @@ import theme from "../../common/styles/theme";
 import nomineeIcon from "../../assets/nomineeIcon.svg";
 import rightArrowIcon from "../../assets/rightArrowIcon.svg";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import {addressSlice, copyToClipboard} from "../../utils/utils";
+import { addressSlice, copyToClipboard } from "../../utils/utils";
 import { eventBus, EventName } from "../../utils/EventBus";
 import { getUserInSession, tokenIsExpired } from "../../utils/session";
 import { getVoteReceipts } from "../../common/api/voteService";
@@ -269,14 +269,16 @@ const ReceiptHistory: React.FC = () => {
                     display: "flex",
                   }}
                 >
-                    <ContentCopyIcon
-                        onClick={() => handleCopy(extendedReceipts[category].signature)}
-                        sx={{
-                            width: "20px",
-                            height: "20px",
-                            cursor: "pointer",
-                        }}
-                    />
+                  <ContentCopyIcon
+                    onClick={() =>
+                      handleCopy(extendedReceipts[category].signature)
+                    }
+                    sx={{
+                      width: "20px",
+                      height: "20px",
+                      cursor: "pointer",
+                    }}
+                  />
                   <Typography
                     sx={{
                       color: theme.palette.text.neutralLightest,
@@ -290,7 +292,7 @@ const ReceiptHistory: React.FC = () => {
                       marginLeft: "8px",
                     }}
                   >
-                      {addressSlice(extendedReceipts[category].signature)}
+                    {addressSlice(extendedReceipts[category].signature)}
                   </Typography>
                   <Box
                     component="div"

@@ -8,6 +8,7 @@ import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import OpenInNewOutlinedIcon from '@mui/icons-material/OpenInNewOutlined';
 import { STATE, ViewReceiptProps } from "./ViewReceipt.type";
 import { CustomAccordion } from "../../../components/common/CustomAccordion/CustomAccordion";
 import { JsonView } from "../../../components/common/JsonView/JsonView";
@@ -44,7 +45,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
         rootHash: receipt.merkleProof.rootHash,
         steps: receipt.merkleProof.steps,
         payload: receipt.payload,
-        walletIdentifier: receipt.walletId,
+        walletId: receipt.walletId,
         signature: receipt.signature,
         publicKey: receipt.publicKey,
       };
@@ -762,23 +763,39 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                           marginTop: "10px",
                         }}
                       />
+                      <Box
+                        component="div"
+                        sx={{
+                          display: "flex",
+                          justifyContent: "center",
+                          width: "100%",
+                        }}
+                      >
+                        <Box
+                          component="div"
+                          sx={{ display: "flex", alignItems: "center" }}
+                        >
+                          <Typography
+                            onClick={() => verifyVoteProof()}
+                            sx={{
+                              color: theme.palette.text.neutralLightest,
+                              fontSize: "12px",
+                              fontWeight: 500,
+                              lineHeight: "20px",
+                              fontStyle: "normal",
+                              mr: 1,
+                            }}
+                          >
+                            Verify
+                          </Typography>
+                          <OpenInNewOutlinedIcon
+                            sx={{ color: theme.palette.text.neutralLightest }}
+                          />
+                        </Box>
+                      </Box>
                     </ListItem>
                   ) : null
                 }
-                <ListItem>
-                  <Typography
-                    onClick={() => verifyVoteProof()}
-                    sx={{
-                      color: theme.palette.text.neutralLightest,
-                      fontSize: "26px",
-                      fontWeight: 500,
-                      lineHeight: "24px",
-                      fontStyle: "normal",
-                    }}
-                  >
-                    Verify
-                  </Typography>
-                </ListItem>
               </List>
             </CustomAccordion>
           </Box>

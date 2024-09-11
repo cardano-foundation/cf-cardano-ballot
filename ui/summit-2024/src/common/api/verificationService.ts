@@ -24,7 +24,7 @@ export const verifyVote = async (payload: {
   rootHash: string;
   steps: MerkleProofItem[];
   payload: string;
-  walletIdentifier: string;
+  walletId: string;
 }) => {
   return await doRequest<Problem | VoteVerificationResult>(
     HttpMethods.POST,

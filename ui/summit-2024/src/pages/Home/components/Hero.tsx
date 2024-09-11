@@ -56,6 +56,7 @@ const Hero = () => {
         container
         sx={{
           px: "20px",
+            marginTop: "50px"
         }}
       >
         <Grid item xs={12} sm={5} tablet={5} md={6} lg={4}>

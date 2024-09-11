@@ -186,7 +186,7 @@ const Leaderboard: React.FC = () => {
                             sx={{
                               p: "28px",
                               backgroundImage: `url(${leaderboard1Bg})`,
-                              backgroundSize: "200% 300%",
+                              backgroundSize: "cover",
                               backgroundPosition: "center",
                               borderRadius: "24px",
                               backdropFilter: "blur(5px)",

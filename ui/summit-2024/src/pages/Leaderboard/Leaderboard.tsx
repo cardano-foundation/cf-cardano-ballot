@@ -29,10 +29,13 @@ import { getStats } from "../../common/api/leaderboardService";
 import { ByCategoryStats } from "../../types/voting-app-types";
 import { useAppSelector } from "../../store/hooks";
 import { getEventCache } from "../../store/reducers/eventCache";
+import Ellipses from "../../assets/ellipse.svg";
+import {useIsPortrait} from "../../common/hooks/useIsPortrait";
 
 const Leaderboard: React.FC = () => {
   const [stats, setStats] = useState<ByCategoryStats[]>();
   const eventCache = useAppSelector(getEventCache);
+  const isMobile = useIsPortrait();
 
   const [selected, setSelected] = useState<number | undefined>(undefined);
   const [hovered, setHovered] = useState<number | undefined>(undefined);
@@ -497,6 +500,18 @@ const Leaderboard: React.FC = () => {
               </Box>
             </Fade>
           </Container>
+          <img
+              src={Ellipses}
+              style={{
+                position: "fixed",
+                right: "0",
+                top: "90%",
+                transform: "translateY(-30%)",
+                zIndex: "-1",
+                width: "70%",
+                height: isMobile ? "auto" : "auto",
+              }}
+          />
         </>
       </PageBase>
     </>

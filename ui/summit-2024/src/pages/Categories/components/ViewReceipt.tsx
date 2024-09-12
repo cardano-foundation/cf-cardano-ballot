@@ -45,6 +45,8 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
   const verifyVoteProof = async () => {
       console.log("verifyVoteProof");
 
+      console.log("receipt");
+      console.log(receipt);
     if (receipt) {
       const body = {
         rootHash: receipt.merkleProof.rootHash,

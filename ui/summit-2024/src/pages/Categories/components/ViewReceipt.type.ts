@@ -6,7 +6,7 @@ enum STATE {
   BASIC = "BASIC",
   PARTIAL = "PARTIAL",
   ROLLBACK = "ROLLBACK",
-  FULL = "ROLLBACK",
+  FULL = "FULL",
 }
 
 export type { ViewReceiptProps };

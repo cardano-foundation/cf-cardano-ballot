@@ -34,11 +34,6 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
   const receipts = useAppSelector(getReceipts);
   const receipt = receipts[categoryId];
 
-  console.log("receipt");
-  console.log(receipt);
-  console.log("categoryId");
-  console.log(categoryId);
-
   const handleCopy = async (data: string) => {
     await copyToClipboard(data);
     eventBus.publish(EventName.ShowToast, "Copied to clipboard successfully");
@@ -715,7 +710,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                 </ListItem>
                 {
                   // @ts-ignore
-                  receipt?.payload ? (
+                  receipt?.merkleProof ? (
                     <ListItem
                       sx={{
                         display: "flex",
@@ -747,7 +742,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                             fontStyle: "normal",
                           }}
                         >
-                          Payload
+                            Merkle Proof
                         </Typography>
                         <Tooltip title="Data content of the voting transaction." placement="top">
                           <InfoIcon
@@ -760,7 +755,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                       <JsonView
                         data={JSON.stringify(
                           // @ts-ignore
-                          JSON.parse(receipt?.payload),
+                          JSON.parse(receipt?.merkleProof),
                           null,
                           2,
                         )}

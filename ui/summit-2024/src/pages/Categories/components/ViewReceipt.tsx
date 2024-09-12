@@ -54,7 +54,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
         payload: receipt.payload,
         walletId: receipt.walletId,
         signature: receipt.signature,
-        publicKey: receipt.walletId
+        publicKey: receipt.publicKey
       };
       console.log("body");
       console.log(body);

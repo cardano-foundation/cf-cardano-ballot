@@ -26,7 +26,7 @@ export const verifyVote = async (payload: {
   payload: string;
   walletId: string;
   signature: string;
-  publicKey: string;
+  publicKey: string | undefined;
 }) => {
   console.log("VERIFICATION_URL");
   console.log(VERIFICATION_URL);

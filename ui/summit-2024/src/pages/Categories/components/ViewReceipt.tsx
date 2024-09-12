@@ -34,6 +34,11 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
   const receipts = useAppSelector(getReceipts);
   const receipt = receipts[categoryId];
 
+  console.log("receipt");
+  console.log(receipt);
+  console.log("categoryId");
+  console.log(categoryId);
+
   const handleCopy = async (data: string) => {
     await copyToClipboard(data);
     eventBus.publish(EventName.ShowToast, "Copied to clipboard successfully");

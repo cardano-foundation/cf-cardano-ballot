@@ -271,7 +271,7 @@ const Hero = () => {
             ) : (
               // If the event has already finished
               <CustomButton
-                onClick={() => handleClickMenu(ROUTES.LEADERBOARD)}
+                onClick={() => handleClickMenu(ROUTES.CATEGORIES)}
                 sx={{
                   width: { xs: "90%", sm: "172px" },
                   margin: "10px 0",

@@ -8,7 +8,10 @@ import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import ArrowForwardOutlinedIcon from "@mui/icons-material/ArrowForwardOutlined";
+import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
 import OpenInNewOutlinedIcon from "@mui/icons-material/OpenInNewOutlined";
+import ArrowUpwardOutlinedIcon from "@mui/icons-material/ArrowUpwardOutlined";
 import { STATE, ViewReceiptProps } from "./ViewReceipt.type";
 import { CustomAccordion } from "../../../components/common/CustomAccordion/CustomAccordion";
 import { JsonView } from "../../../components/common/JsonView/JsonView";
@@ -74,6 +77,11 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
         });
     }
   };
+
+  const viewOnChainVote = () => {
+      console.log("viewOnChainVote receipt:");
+      console.log(receipt);
+  }
 
   const refreshReceipt = () => {
     if (session && !tokenIsExpired(session?.expiresAt)) {
@@ -151,35 +159,35 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
             />
           ),
           labelBottom: "Refresh Status",
-          iconBottomAction: refreshReceipt,
+          iconBottomAction: refreshReceipt(),
           infoList: [
-                {
-                    title: "Category",
-                    value: receipt?.category,
-                    tooltip: "Category of the voting proposal.",
-                },
-                {
-                    title: "Proposal",
-                    value: receipt?.proposal,
-                    tooltip: "Title of the proposal.",
-                },
-                {
-                    title: "User Address",
-                    // @ts-ignore
-                    value: receipt?.walletId,
-                    tooltip: "Wallet address of the user who voted.",
-                },
-                {
-                    title: "Status",
-                    value: receipt?.status,
-                    tooltip: "Current status of the vote.",
-                },
-                {
-                    title: "Event",
-                    value: receipt?.event,
-                    tooltip: "Specific event related to the voting.",
-                },
-            ],
+            {
+              title: "Category",
+              value: receipt?.category,
+              tooltip: "Category of the voting proposal.",
+            },
+            {
+              title: "Proposal",
+              value: receipt?.proposal,
+              tooltip: "Title of the proposal.",
+            },
+            {
+              title: "User Address",
+              // @ts-ignore
+              value: receipt?.walletId,
+              tooltip: "Wallet address of the user who voted.",
+            },
+            {
+              title: "Status",
+              value: receipt?.status,
+              tooltip: "Current status of the vote.",
+            },
+            {
+              title: "Event",
+              value: receipt?.event,
+              tooltip: "Specific event related to the voting.",
+            },
+          ],
         };
       }
       case STATE.PARTIAL: {
@@ -262,66 +270,107 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
             />
           ),
           labelBottom: "Refresh Status",
-          iconBottomAction: refreshReceipt,
-            infoList: [
-                {
-                    title: "Category",
-                    value: receipt?.category,
-                    tooltip: "Category of the voting proposal.",
-                },
-                {
-                    title: "Proposal",
-                    value: receipt?.proposal,
-                    tooltip: "Title of the proposal.",
-                },
-                {
-                    title: "User Address",
-                    // @ts-ignore
-                    value: receipt?.walletId,
-                    tooltip: "Wallet address of the user who voted.",
-                },
-                {
-                    title: "Status",
-                    value: receipt?.status,
-                    tooltip: "Current status of the vote.",
-                },
-                {
-                    title: "Event",
-                    value: receipt?.event,
-                    tooltip: "Specific event related to the voting.",
-                },
-            ],
+          iconBottomAction: refreshReceipt(),
+          infoList: [
+            {
+              title: "Category",
+              value: receipt?.category,
+              tooltip: "Category of the voting proposal.",
+            },
+            {
+              title: "Proposal",
+              value: receipt?.proposal,
+              tooltip: "Title of the proposal.",
+            },
+            {
+              title: "User Address",
+              // @ts-ignore
+              value: receipt?.walletId,
+              tooltip: "Wallet address of the user who voted.",
+            },
+            {
+              title: "Status",
+              value: receipt?.status,
+              tooltip: "Current status of the vote.",
+            },
+            {
+              title: "Event",
+              value: receipt?.event,
+              tooltip: "Specific event related to the voting.",
+            },
+          ],
         };
       }
       case STATE.FULL: {
-          const statusDescription = (() => {
-              switch (receipt?.finalityScore) {
-                  case "LOW":
-                      return "Your vote is currently being verified. While in LOW, there is the highest chance of a rollback. Check back later to see if verification has completed.";
-                  case "MEDIUM":
-                      return "Your vote is currently being verified. While in MEDIUM, the chance of rollback is still possible. Check back later to see if verification has completed.";
-                  case "HIGH":
-                      return "Your vote is currently being verified. While in HIGH, the chance of a rollback is very unlikely. Check back later to see if verification has completed.";
-                  case "FINAL":
-                      return "Your vote has been successfully verified.";
-                  default:
-                      return "Check back later to see if verification has completed.";
-              }
-          })();
+        const statusDescription = (() => {
+          switch (receipt?.finalityScore) {
+            case "LOW":
+              return {
+                description:
+                  "Your vote is currently being verified. While in LOW, there is the highest chance of a rollback. Check back later to see if verification has completed.",
+                icon: <ArrowDownwardIcon />,
+              };
+            case "MEDIUM":
+              return {
+                description:
+                  "Your vote is currently being verified. While in MEDIUM, the chance of rollback is still possible. Check back later to see if verification has completed.",
+                icon: (
+                  <ArrowForwardOutlinedIcon
+                    sx={{
+                      width: "24px",
+                      height: "24px",
+                      color: "#EE9766",
+                    }}
+                  />
+                ),
+              };
+            case "HIGH":
+              return {
+                description:
+                  "Your vote is currently being verified. While in HIGH, the chance of a rollback is very unlikely. Check back later to see if verification has completed.",
+                icon: (
+                  <ArrowUpwardOutlinedIcon
+                    sx={{
+                      width: "24px",
+                      height: "24px",
+                      color: "#6EBE78",
+                    }}
+                  />
+                ),
+              };
 
+            case "FINAL":
+              return {
+                description: "Your vote has been successfully verified.",
+                icon: (
+                  <CheckCircleOutlineOutlinedIcon
+                    sx={{
+                      width: "24px",
+                      height: "24px",
+                      color: "#6EBE78",
+                    }}
+                  />
+                ),
+              };
+            default:
+              return {
+                description:
+                  "Check back later to see if verification has completed.",
+              };
+          }
+        })();
+
+        const actionButton = receipt?.finalityScore === "FINAL" ? {
+            action: viewOnChainVote(),
+            labelBottom: "View On Chain Vote"
+        } : {
+            action: refreshReceipt(),
+            labelBottom: "Refresh Status"
+        }
         return {
-          leftIcon: (
-            <ArrowDownwardIcon
-              sx={{
-                width: "24px",
-                height: "24px",
-                // @ts-ignore
-                color: theme.palette.error.text,
-              }}
-            />
-          ),
+          leftIcon: statusDescription.icon,
           title: "Assurance",
-          description: statusDescription,
+          description: statusDescription.description,
           iconBottom: (
             <RefreshIcon
               sx={{
@@ -331,36 +380,35 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
               }}
             />
           ),
-          labelBottom: "Refresh Status",
-          iconBottomAction: refreshReceipt,
-            infoList: [
-                {
-                    title: "Category",
-                    value: receipt?.category,
-                    tooltip: "Category of the voting proposal.",
-                },
-                {
-                    title: "Proposal",
-                    value: receipt?.proposal,
-                    tooltip: "Title of the proposal.",
-                },
-                {
-                    title: "User Address",
-                    // @ts-ignore
-                    value: receipt?.walletId,
-                    tooltip: "Wallet address of the user who voted.",
-                },
-                {
-                    title: "Status",
-                    value: receipt?.status,
-                    tooltip: "Current status of the vote.",
-                },
-                {
-                    title: "Event",
-                    value: receipt?.event,
-                    tooltip: "Specific event related to the voting.",
-                },
-            ],
+          labelBottom: actionButton.labelBottom,
+          iconBottomAction: actionButton.action ,
+          infoList: [
+            {
+              title: "Category",
+              value: receipt?.category,
+              tooltip: "Category of the voting proposal.",
+            },
+            {
+              title: "Proposal",
+              value: receipt?.proposal,
+              tooltip: "Title of the proposal.",
+            },
+            {
+              title: "User Address",
+              value: receipt?.walletId,
+              tooltip: "Wallet address of the user who voted.",
+            },
+            {
+              title: "Status",
+              value: receipt?.status,
+              tooltip: "Current status of the vote.",
+            },
+            {
+              title: "Event",
+              value: receipt?.event,
+              tooltip: "Specific event related to the voting.",
+            },
+          ],
         };
       }
       default:
@@ -500,7 +548,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
               </Box>
             </Box>
             <Box
-              onClick={() => content?.iconBottomAction()}
+              onClick={() => content?.iconBottomAction}
               component="div"
               sx={{
                 display: "flex",
@@ -646,7 +694,10 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                     >
                       Voted at Slot
                     </Typography>
-                    <Tooltip title="Blockchain slot when the vote was cast." placement="top">
+                    <Tooltip
+                      title="Blockchain slot when the vote was cast."
+                      placement="top"
+                    >
                       <InfoIcon
                         sx={{
                           cursor: "pointer",
@@ -701,7 +752,10 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                     >
                       Signature
                     </Typography>
-                    <Tooltip title="Digital signature verifying the voter's identity." placement="top">
+                    <Tooltip
+                      title="Digital signature verifying the voter's identity."
+                      placement="top"
+                    >
                       <InfoIcon
                         sx={{
                           cursor: "pointer",
@@ -760,9 +814,12 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                             fontStyle: "normal",
                           }}
                         >
-                            Vote Proof
+                          Vote Proof
                         </Typography>
-                        <Tooltip title="Data content of the voting transaction." placement="top">
+                        <Tooltip
+                          title="Data content of the voting transaction."
+                          placement="top"
+                        >
                           <InfoIcon
                             sx={{
                               cursor: "pointer",
@@ -773,7 +830,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                       <JsonView
                         data={JSON.stringify(
                           // @ts-ignore
-                            receipt?.merkleProof,
+                          receipt?.merkleProof,
                           null,
                           2,
                         )}

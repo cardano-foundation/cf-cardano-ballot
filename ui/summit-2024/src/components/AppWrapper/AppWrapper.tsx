@@ -71,6 +71,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
       if (isVerifiedResult?.verified) {
         // @ts-ignore
         dispatch(setWalletIsVerified(isVerifiedResult.verified));
+        if (!session || tokenIsExpired(session?.expiresAt)) {
+          eventBus.publish(EventName.OpenLoginModal);
+        }
       } else if (eventCache.active) {
         eventBus.publish(EventName.OpenVerifyWalletModal);
       }

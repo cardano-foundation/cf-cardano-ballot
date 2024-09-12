@@ -742,7 +742,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                             fontStyle: "normal",
                           }}
                         >
-                            Merkle Proof
+                            Vote Proof
                         </Typography>
                         <Tooltip title="Data content of the voting transaction." placement="top">
                           <InfoIcon
@@ -755,7 +755,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                       <JsonView
                         data={JSON.stringify(
                           // @ts-ignore
-                          JSON.parse(receipt?.merkleProof),
+                            receipt?.merkleProof,
                           null,
                           2,
                         )}

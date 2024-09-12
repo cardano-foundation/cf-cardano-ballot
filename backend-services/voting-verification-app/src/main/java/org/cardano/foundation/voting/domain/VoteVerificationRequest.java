@@ -18,7 +18,7 @@ public class VoteVerificationRequest {
     @Schema(description = "Root hash of the merkle tree", required = true)
     private String rootHash;
 
-    @NotBlank
+    @NotNull
     @Schema(description = "Cardano or KERI", required = true)
     private WalletType walletType;
 

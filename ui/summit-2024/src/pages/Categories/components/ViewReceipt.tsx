@@ -294,6 +294,21 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
         };
       }
       case STATE.FULL: {
+          const statusDescription = (() => {
+              switch (receipt?.finalityScore) {
+                  case "LOW":
+                      return "Your vote is currently being verified. While in LOW, there is the highest chance of a rollback. Check back later to see if verification has completed.";
+                  case "MEDIUM":
+                      return "Your vote is currently being verified. While in MEDIUM, the chance of rollback is still possible. Check back later to see if verification has completed.";
+                  case "HIGH":
+                      return "Your vote is currently being verified. While in HIGH, the chance of a rollback is very unlikely. Check back later to see if verification has completed.";
+                  case "FINAL":
+                      return "Your vote has been successfully verified.";
+                  default:
+                      return "Check back later to see if verification has completed.";
+              }
+          })();
+
         return {
           leftIcon: (
             <ArrowDownwardIcon
@@ -306,8 +321,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
             />
           ),
           title: "Assurance",
-          description:
-            "Your vote is currently being verified. While in LOW, there is the highest chance of a rollback. Check back later to see if verification has completed.",
+          description: statusDescription,
           iconBottom: (
             <RefreshIcon
               sx={{

@@ -165,7 +165,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
             />
           ),
           labelBottom: "Refresh Status",
-          iconBottomAction: refreshReceipt(),
+          iconBottomAction: refreshReceipt,
           infoList: [
             {
               title: "Category",
@@ -276,7 +276,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
             />
           ),
           labelBottom: "Refresh Status",
-          iconBottomAction: refreshReceipt(),
+          iconBottomAction: refreshReceipt,
           infoList: [
             {
               title: "Category",
@@ -367,11 +367,11 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
         })();
 
         const actionButton = receipt?.finalityScore === "FINAL" ? {
-            action: viewOnChainVote(),
+            action: viewOnChainVote,
             iconBottom: <LinkOutlinedIcon />,
             labelBottom: "View On Chain Vote"
         } : {
-            action: refreshReceipt(),
+            action: refreshReceipt,
             iconBottom: <RefreshIcon
                 sx={{
                     cursor: "pointer",
@@ -553,7 +553,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
               </Box>
             </Box>
             <Box
-              onClick={() => content?.iconBottomAction}
+              onClick={() => content?.iconBottomAction()}
               component="div"
               sx={{
                 display: "flex",

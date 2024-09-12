@@ -149,33 +149,33 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
           labelBottom: "Refresh Status",
           iconBottomAction: refreshReceipt,
           infoList: [
-            {
-              title: "Category",
-              value: receipt?.category,
-              tooltip: "info",
-            },
-            {
-              title: "Proposal",
-              value: receipt?.proposal,
-              tooltip: "info",
-            },
-            {
-              title: "User Address",
-              // @ts-ignore
-              value: receipt?.walletId,
-              tooltip: "info",
-            },
-            {
-              title: "Status",
-              value: receipt?.status,
-              tooltip: "info",
-            },
-            {
-              title: "Event",
-              value: receipt?.event,
-              tooltip: "info",
-            },
-          ],
+                {
+                    title: "Category",
+                    value: receipt?.category,
+                    tooltip: "Category of the voting proposal.",
+                },
+                {
+                    title: "Proposal",
+                    value: receipt?.proposal,
+                    tooltip: "Title of the proposal.",
+                },
+                {
+                    title: "User Address",
+                    // @ts-ignore
+                    value: receipt?.walletId,
+                    tooltip: "Wallet address of the user who voted.",
+                },
+                {
+                    title: "Status",
+                    value: receipt?.status,
+                    tooltip: "Current status of the vote.",
+                },
+                {
+                    title: "Event",
+                    value: receipt?.event,
+                    tooltip: "Specific event related to the voting.",
+                },
+            ],
         };
       }
       case STATE.PARTIAL: {
@@ -207,28 +207,28 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
             {
               title: "Category",
               value: receipt?.category,
-              tooltip: "info",
+              tooltip: "Category of the voting proposal.",
             },
             {
               title: "Proposal",
               value: receipt?.proposal,
-              tooltip: "info",
+              tooltip: "Title of the proposal.",
             },
             {
               title: "User Address",
               // @ts-ignore
               value: receipt?.walletId,
-              tooltip: "info",
+              tooltip: "Wallet address of the user who voted.",
             },
             {
               title: "Status",
               value: receipt?.status,
-              tooltip: "info",
+              tooltip: "Current status of the vote.",
             },
             {
               title: "Event",
               value: receipt?.event,
-              tooltip: "info",
+              tooltip: "Specific event related to the voting.",
             },
           ],
         };
@@ -259,34 +259,34 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
           ),
           labelBottom: "Refresh Status",
           iconBottomAction: refreshReceipt,
-          infoList: [
-            {
-              title: "Category",
-              value: receipt?.category,
-              tooltip: "info",
-            },
-            {
-              title: "Proposal",
-              value: receipt?.proposal,
-              tooltip: "info",
-            },
-            {
-              title: "User Address",
-              // @ts-ignore
-              value: receipt?.walletId,
-              tooltip: "info",
-            },
-            {
-              title: "Status",
-              value: receipt?.status,
-              tooltip: "info",
-            },
-            {
-              title: "Event",
-              value: receipt?.event,
-              tooltip: "info",
-            },
-          ],
+            infoList: [
+                {
+                    title: "Category",
+                    value: receipt?.category,
+                    tooltip: "Category of the voting proposal.",
+                },
+                {
+                    title: "Proposal",
+                    value: receipt?.proposal,
+                    tooltip: "Title of the proposal.",
+                },
+                {
+                    title: "User Address",
+                    // @ts-ignore
+                    value: receipt?.walletId,
+                    tooltip: "Wallet address of the user who voted.",
+                },
+                {
+                    title: "Status",
+                    value: receipt?.status,
+                    tooltip: "Current status of the vote.",
+                },
+                {
+                    title: "Event",
+                    value: receipt?.event,
+                    tooltip: "Specific event related to the voting.",
+                },
+            ],
         };
       }
       case STATE.FULL: {
@@ -315,34 +315,34 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
           ),
           labelBottom: "Refresh Status",
           iconBottomAction: refreshReceipt,
-          infoList: [
-            {
-              title: "Category",
-              value: receipt?.category,
-              tooltip: "info",
-            },
-            {
-              title: "Proposal",
-              value: receipt?.proposal,
-              tooltip: "info",
-            },
-            {
-              title: "User Address",
-              // @ts-ignore
-              value: receipt?.walletId,
-              tooltip: "info",
-            },
-            {
-              title: "Status",
-              value: receipt?.status,
-              tooltip: "info",
-            },
-            {
-              title: "Event",
-              value: receipt.event,
-              tooltip: "info",
-            },
-          ],
+            infoList: [
+                {
+                    title: "Category",
+                    value: receipt?.category,
+                    tooltip: "Category of the voting proposal.",
+                },
+                {
+                    title: "Proposal",
+                    value: receipt?.proposal,
+                    tooltip: "Title of the proposal.",
+                },
+                {
+                    title: "User Address",
+                    // @ts-ignore
+                    value: receipt?.walletId,
+                    tooltip: "Wallet address of the user who voted.",
+                },
+                {
+                    title: "Status",
+                    value: receipt?.status,
+                    tooltip: "Current status of the vote.",
+                },
+                {
+                    title: "Event",
+                    value: receipt?.event,
+                    tooltip: "Specific event related to the voting.",
+                },
+            ],
         };
       }
       default:
@@ -628,7 +628,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                     >
                       Voted at Slot
                     </Typography>
-                    <Tooltip title="info" placement="top">
+                    <Tooltip title="Blockchain slot when the vote was cast." placement="top">
                       <InfoIcon
                         sx={{
                           cursor: "pointer",
@@ -683,7 +683,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                     >
                       Signature
                     </Typography>
-                    <Tooltip title="info" placement="top">
+                    <Tooltip title="Digital signature verifying the voter's identity." placement="top">
                       <InfoIcon
                         sx={{
                           cursor: "pointer",
@@ -744,7 +744,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                         >
                           Payload
                         </Typography>
-                        <Tooltip title="info" placement="top">
+                        <Tooltip title="Data content of the voting transaction." placement="top">
                           <InfoIcon
                             sx={{
                               cursor: "pointer",

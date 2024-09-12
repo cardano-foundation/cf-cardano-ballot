@@ -37,16 +37,14 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
   const receipts = useAppSelector(getReceipts);
   const receipt = receipts[categoryId];
 
-  console.log("receipt");
-  console.log(receipt);
-  console.log(receipts);
-
   const handleCopy = async (data: string) => {
     await copyToClipboard(data);
     eventBus.publish(EventName.ShowToast, "Copied to clipboard successfully");
   };
 
   const verifyVoteProof = async () => {
+      console.log("verifyVoteProof");
+
     if (receipt) {
       const body = {
         rootHash: receipt.merkleProof.rootHash,
@@ -54,10 +52,14 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
         payload: receipt.payload,
         walletId: receipt.walletId,
         signature: receipt.signature,
-        publicKey: receipt.publicKey,
+        publicKey: receipt.walletId
       };
+      console.log("body");
+      console.log(body);
       verifyVote(body)
         .then((result) => {
+            console.log("result");
+            console.log(result);
           if ("verified" in result && result.verified) {
             eventBus.publish(EventName.ShowToast, "Vote verified successfully");
           } else {
@@ -69,6 +71,8 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
           }
         })
         .catch((e) => {
+            console.log("error");
+            console.log(e);
           eventBus.publish(
             EventName.ShowToast,
             parseError(e.message),

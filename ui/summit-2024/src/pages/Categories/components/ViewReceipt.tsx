@@ -87,6 +87,9 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
   const viewOnChainVote = () => {
       console.log("viewOnChainVote receipt:");
       console.log(receipt);
+      if (receipt?.merkleProof?.transactionHash) {
+          window.open(`https://preprod.cardanoscan.io/transaction/${receipt?.merkleProof?.transactionHash}` , "_blank");
+      }
   }
 
   const refreshReceipt = () => {

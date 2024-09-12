@@ -10,7 +10,7 @@ import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import ArrowForwardOutlinedIcon from "@mui/icons-material/ArrowForwardOutlined";
 import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
-import OpenInNewOutlinedIcon from "@mui/icons-material/OpenInNewOutlined";
+import LinkOutlinedIcon from '@mui/icons-material/LinkOutlined';
 import ArrowUpwardOutlinedIcon from "@mui/icons-material/ArrowUpwardOutlined";
 import { STATE, ViewReceiptProps } from "./ViewReceipt.type";
 import { CustomAccordion } from "../../../components/common/CustomAccordion/CustomAccordion";
@@ -46,7 +46,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
     eventBus.publish(EventName.ShowToast, "Copied to clipboard successfully");
   };
 
-  const verifyVoteProof = () => {
+  const verifyVoteProof = async () => {
     if (receipt) {
       const body = {
         rootHash: receipt.merkleProof.rootHash,
@@ -362,25 +362,24 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
 
         const actionButton = receipt?.finalityScore === "FINAL" ? {
             action: viewOnChainVote(),
+            iconBottom: <LinkOutlinedIcon />,
             labelBottom: "View On Chain Vote"
         } : {
             action: refreshReceipt(),
+            iconBottom: <RefreshIcon
+                sx={{
+                    cursor: "pointer",
+                    width: "16px",
+                    height: "16px",
+                }} />,
             labelBottom: "Refresh Status"
         }
         return {
           leftIcon: statusDescription.icon,
           title: "Assurance",
           description: statusDescription.description,
-          iconBottom: (
-            <RefreshIcon
-              sx={{
-                cursor: "pointer",
-                width: "16px",
-                height: "16px",
-              }}
-            />
-          ),
           labelBottom: actionButton.labelBottom,
+          iconBottom: actionButton.iconBottom,
           iconBottomAction: actionButton.action ,
           infoList: [
             {
@@ -837,37 +836,8 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                         sx={{
                           marginTop: "10px",
                         }}
+                        verifyProof={() => verifyVoteProof()}
                       />
-                      <Box
-                        component="div"
-                        sx={{
-                          display: "flex",
-                          justifyContent: "center",
-                          width: "100%",
-                        }}
-                      >
-                        <Box
-                          component="div"
-                          sx={{ display: "flex", alignItems: "center" }}
-                        >
-                          <Typography
-                            onClick={() => verifyVoteProof()}
-                            sx={{
-                              color: theme.palette.text.neutralLightest,
-                              fontSize: "12px",
-                              fontWeight: 500,
-                              lineHeight: "20px",
-                              fontStyle: "normal",
-                              mr: 1,
-                            }}
-                          >
-                            Verify
-                          </Typography>
-                          <OpenInNewOutlinedIcon
-                            sx={{ color: theme.palette.text.neutralLightest }}
-                          />
-                        </Box>
-                      </Box>
                     </ListItem>
                   ) : null
                 }

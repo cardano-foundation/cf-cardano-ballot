@@ -82,8 +82,10 @@ const Leaderboard: React.FC = () => {
   const totalVotes = calculateTotalVotes(stats);
 
   let selectedCategoryValue = -1;
+  let selectedCategoryName = "";
   if (dataForChart !== undefined && selected !== undefined) {
     selectedCategoryValue = dataForChart[selected].value;
+    selectedCategoryName = dataForChart[selected].title || "";
   }
 
   const handleSwitch = (option: string) => {
@@ -412,13 +414,17 @@ const Leaderboard: React.FC = () => {
                                   <Typography
                                     sx={{
                                       color: theme.palette.text.neutralLightest,
-                                      fontSize: "16px",
+                                      fontSize: selectedCategoryName.length
+                                        ? "14px"
+                                        : "16px",
                                       fontStyle: "normal",
                                       fontWeight: 500,
                                       lineHeight: "24px",
                                     }}
                                   >
-                                    Votes
+                                    {selectedCategoryName.length
+                                      ? selectedCategoryName
+                                      : "Total Votes"}
                                   </Typography>
                                   <Typography
                                     variant="h6"

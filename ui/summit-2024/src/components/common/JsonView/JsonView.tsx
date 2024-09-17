@@ -10,7 +10,7 @@ import { eventBus, EventName } from "../../../utils/EventBus";
 interface JsonRendererProps {
   data: string;
   sx?: SxProps<Theme>;
-  verifyProof: () => {}
+  verifyProof: () => {};
 }
 
 const JsonView: React.FC<JsonRendererProps> = ({ data, sx, verifyProof }) => {

@@ -10,7 +10,7 @@ import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import ArrowForwardOutlinedIcon from "@mui/icons-material/ArrowForwardOutlined";
 import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
-import LinkOutlinedIcon from '@mui/icons-material/LinkOutlined';
+import LinkOutlinedIcon from "@mui/icons-material/LinkOutlined";
 import ArrowUpwardOutlinedIcon from "@mui/icons-material/ArrowUpwardOutlined";
 import { STATE, ViewReceiptProps } from "./ViewReceipt.type";
 import { CustomAccordion } from "../../../components/common/CustomAccordion/CustomAccordion";
@@ -50,7 +50,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
         payload: receipt.payload,
         walletId: receipt.walletId,
         signature: receipt.signature,
-        publicKey: receipt.publicKey
+        publicKey: receipt.publicKey,
       };
 
       verifyVote(body)
@@ -76,10 +76,13 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
   };
 
   const viewOnChainVote = () => {
-      if (receipt?.merkleProof?.transactionHash) {
-          window.open(`https://preprod.cardanoscan.io/transaction/${receipt?.merkleProof?.transactionHash}` , "_blank");
-      }
-  }
+    if (receipt?.merkleProof?.transactionHash) {
+      window.open(
+        `https://preprod.cardanoscan.io/transaction/${receipt?.merkleProof?.transactionHash}`,
+        "_blank",
+      );
+    }
+  };
 
   const refreshReceipt = () => {
     if (session && !tokenIsExpired(session?.expiresAt)) {
@@ -358,27 +361,33 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
           }
         })();
 
-        const actionButton = receipt?.finalityScore === "FINAL" ? {
-            action: viewOnChainVote,
-            iconBottom: <LinkOutlinedIcon />,
-            labelBottom: "View On Chain Vote"
-        } : {
-            action: refreshReceipt,
-            iconBottom: <RefreshIcon
-                sx={{
-                    cursor: "pointer",
-                    width: "16px",
-                    height: "16px",
-                }} />,
-            labelBottom: "Refresh Status"
-        }
+        const actionButton =
+          receipt?.finalityScore === "FINAL"
+            ? {
+                action: viewOnChainVote,
+                iconBottom: <LinkOutlinedIcon />,
+                labelBottom: "View On Chain Vote",
+              }
+            : {
+                action: refreshReceipt,
+                iconBottom: (
+                  <RefreshIcon
+                    sx={{
+                      cursor: "pointer",
+                      width: "16px",
+                      height: "16px",
+                    }}
+                  />
+                ),
+                labelBottom: "Refresh Status",
+              };
         return {
           leftIcon: statusDescription.icon,
           title: "Assurance",
           description: statusDescription.description,
           labelBottom: actionButton.labelBottom,
           iconBottom: actionButton.iconBottom,
-          iconBottomAction: actionButton.action ,
+          iconBottomAction: actionButton.action,
           infoList: [
             {
               title: "Category",

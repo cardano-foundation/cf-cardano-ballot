@@ -232,7 +232,6 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   };
 
   const submitVote = async () => {
-
     if (eventCache?.finished) {
       eventBus.publish(EventName.ShowToast, "The event already ended", "error");
       return;
@@ -313,11 +312,12 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
       }
       eventBus.publish(EventName.ShowToast, "Vote submitted successfully");
 
-      const updatedVotes = [...userVotes, { categoryId: category.id, proposalId }];
+      const updatedVotes = [
+        ...userVotes,
+        { categoryId: category.id, proposalId },
+      ];
       // @ts-ignore
-      dispatch(
-        setVotes(updatedVotes),
-      );
+      dispatch(setVotes(updatedVotes));
 
       if (session && !tokenIsExpired(session?.expiresAt)) {
         getVoteReceipts(session?.accessToken).then((receipts) => {

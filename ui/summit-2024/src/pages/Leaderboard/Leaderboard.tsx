@@ -13,7 +13,6 @@ import {
   Fade,
 } from "@mui/material";
 import theme from "../../common/styles/theme";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { PieChart, pieChartDefaultProps } from "react-minimal-pie-chart";
 import leaderboard1Bg from "../../assets/leaderboard1.svg";
 
@@ -216,11 +215,6 @@ const Leaderboard: React.FC = () => {
                               >
                                 Total Votes
                               </Typography>
-                              <MoreVertIcon
-                                sx={{
-                                  cursor: "pointer",
-                                }}
-                              />
                             </Box>
                             <Typography
                               sx={{
@@ -348,11 +342,6 @@ const Leaderboard: React.FC = () => {
                               >
                                 Votes per category
                               </Typography>
-                              <MoreVertIcon
-                                sx={{
-                                  cursor: "pointer",
-                                }}
-                              />
                             </Box>
                             <Box
                               component="div"

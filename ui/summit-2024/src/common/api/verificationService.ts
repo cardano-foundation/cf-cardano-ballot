@@ -28,14 +28,6 @@ export const verifyVote = async (payload: {
   signature: string;
   publicKey: string | undefined;
 }) => {
-  console.log("VERIFICATION_URL");
-  console.log(VERIFICATION_URL);
-  console.log("body2");
-  console.log(JSON.stringify({
-    ...payload,
-    eventId: env.EVENT_ID,
-    walletType: resolveWalletType(payload.walletId),
-  }));
   return await doRequest<Problem | VoteVerificationResult>(
     HttpMethods.POST,
     `${VERIFICATION_URL}`,

@@ -43,10 +43,6 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
   };
 
   const verifyVoteProof = async () => {
-      console.log("verifyVoteProof");
-
-      console.log("receipt");
-      console.log(receipt);
     if (receipt) {
       const body = {
         rootHash: receipt.merkleProof.rootHash,
@@ -56,12 +52,9 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
         signature: receipt.signature,
         publicKey: receipt.publicKey
       };
-      console.log("body");
-      console.log(body);
+
       verifyVote(body)
         .then((result) => {
-            console.log("result");
-            console.log(result);
           if ("verified" in result && result.verified) {
             eventBus.publish(EventName.ShowToast, "Vote verified successfully");
           } else {
@@ -73,8 +66,6 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
           }
         })
         .catch((e) => {
-            console.log("error");
-            console.log(e);
           eventBus.publish(
             EventName.ShowToast,
             parseError(e.message),
@@ -85,8 +76,6 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
   };
 
   const viewOnChainVote = () => {
-      console.log("viewOnChainVote receipt:");
-      console.log(receipt);
       if (receipt?.merkleProof?.transactionHash) {
           window.open(`https://preprod.cardanoscan.io/transaction/${receipt?.merkleProof?.transactionHash}` , "_blank");
       }

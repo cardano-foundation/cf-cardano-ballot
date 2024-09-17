@@ -314,7 +314,7 @@ const Hero = () => {
             <Fade in={true} timeout={3000}>
               <Box component="div">
                 <GLBViewer
-                  glbUrl="/compressed.glb"
+                  glbUrl="/award24-3d.glb"
                   height={getAwardHeight()}
                   width="auto"
                 />

@@ -232,6 +232,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   };
 
   const submitVote = async () => {
+
     if (eventCache?.finished) {
       eventBus.publish(EventName.ShowToast, "The event already ended", "error");
       return;
@@ -312,11 +313,12 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
       }
       eventBus.publish(EventName.ShowToast, "Vote submitted successfully");
 
+      const updatedVotes = [...userVotes, { categoryId: category.id, proposalId }];
       // @ts-ignore
       dispatch(
-        setVotes([...userVotes, { categoryId: category.id, proposalId }]),
+        setVotes(updatedVotes),
       );
-      // TODO: refactor
+
       if (session && !tokenIsExpired(session?.expiresAt)) {
         getVoteReceipts(session?.accessToken).then((receipts) => {
           // @ts-ignore
@@ -330,7 +332,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
         });
         submitGetUserVotes(session?.accessToken)
           .then((votes) => {
-            if (votes) {
+            if (Array.isArray(votes) && votes.length > updatedVotes.length) {
               // @ts-ignore
               dispatch(setVotes(votes));
             }

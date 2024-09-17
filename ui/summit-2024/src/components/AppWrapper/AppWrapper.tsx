@@ -147,7 +147,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     } else {
       const eventData = await getEventData(env.EVENT_ID);
       const eventDataExtended =
-        env.TARGET_NETWORK == NetworkType.MAINNET
+        resolveCardanoNetwork(env.TARGET_NETWORK) == NetworkType.MAINNET
           ? event2024MainnetExtended
           : event2024PreProdExtended;
 

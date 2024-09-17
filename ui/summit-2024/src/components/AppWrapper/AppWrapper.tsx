@@ -24,6 +24,7 @@ import { setVoteReceipts, setVotes } from "../../store/reducers/votesCache";
 import { parseError } from "../../common/constants/errors";
 import event2024PreProdExtended from "../../common/resources/data/summit2024PreProdContent.json";
 import event2024MainnetExtended from "../../common/resources/data/summit2024MainnetContent.json";
+import { NetworkType } from "../ConnectWalletList/ConnectWalletList.types";
 
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
@@ -146,7 +147,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     } else {
       const eventData = await getEventData(env.EVENT_ID);
       const eventDataExtended =
-        env.TARGET_NETWORK == "MAINNET"
+        env.TARGET_NETWORK == NetworkType.MAINNET
           ? event2024MainnetExtended
           : event2024PreProdExtended;
 

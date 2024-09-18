@@ -1,6 +1,6 @@
 import { Grid, Box, Typography, useMediaQuery, Card } from "@mui/material";
 import Logo from "../../../assets/logo.svg";
-import dubaiBg from "../../../assets/dubai-bg.svg";
+import dubaiBg from "@assets/dubai-bg.svg";
 import { CustomButton } from "../../../components/common/CustomButton/CustomButton";
 import theme from "../../../common/styles/theme";
 

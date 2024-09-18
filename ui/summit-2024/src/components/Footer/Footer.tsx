@@ -58,7 +58,7 @@ const Footer = () => {
               >
                 Cardano Summit
               </Link>
-              . All rights reserved
+              . All rights reserved.
             </Typography>
           </Grid>
           <Grid item xs={12} md={8}>

@@ -6,7 +6,7 @@ import trophyIcon from "../../../assets/trophy.svg";
 import { useIsPortrait } from "../../../common/hooks/useIsPortrait";
 import { CustomButton } from "../../../components/common/CustomButton/CustomButton";
 import theme from "../../../common/styles/theme";
-import guideBg from "../../../assets/guideCard.svg";
+import guideBg from "@assets/guideCard.svg";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../../routes";
 import { useEffect, useState } from "react";

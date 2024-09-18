@@ -22,7 +22,9 @@ import {
 } from "../../common/api/voteService";
 import { setVoteReceipts, setVotes } from "../../store/reducers/votesCache";
 import { parseError } from "../../common/constants/errors";
-import event2024Extended from "../../common/resources/data/summit2024Content.json";
+import event2024PreProdExtended from "../../common/resources/data/summit2024PreProdContent.json";
+import event2024MainnetExtended from "../../common/resources/data/summit2024MainnetContent.json";
+import { NetworkType } from "../ConnectWalletList/ConnectWalletList.types";
 
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
@@ -144,10 +146,14 @@ const AppWrapper = (props: { children: ReactNode }) => {
       dispatch(setEventCache(eventDataFixture));
     } else {
       const eventData = await getEventData(env.EVENT_ID);
+      const eventDataExtended =
+        resolveCardanoNetwork(env.TARGET_NETWORK) == NetworkType.MAINNET
+          ? event2024MainnetExtended
+          : event2024PreProdExtended;
 
       // @ts-ignore
       if (!eventData?.error) {
-        const mergedEventData = mergeEventData(eventData, event2024Extended);
+        const mergedEventData = mergeEventData(eventData, eventDataExtended);
         // @ts-ignore
         dispatch(setEventCache(mergedEventData));
       } else {

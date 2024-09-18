@@ -21,6 +21,21 @@ const Hero = () => {
     navigate(option);
   };
 
+  const showVotingButtons = !eventCache.finished; // If the event is running or has not started running yet
+
+  const getVotingText = (): string => {
+    if (eventCache.notStarted) {
+      return "Voting Opens " + formatISODate(eventCache.eventStartDate);
+    }
+    if (eventCache.active) {
+      return "Voting Closes " + formatISODate(eventCache.eventEndDate);
+    }
+    if (eventCache.proposalsReveal) {
+      return "THE RESULTS ARE IN!!!";
+    }
+    return "Results Announced " + formatISODate(eventCache.proposalsRevealDate);
+  };
+
   const getAwardHeight = (): string => {
     const isMobilePlus = useMediaQuery(theme.breakpoints.down("sm"));
     let height = "600px";
@@ -41,6 +56,7 @@ const Hero = () => {
         container
         sx={{
           px: "20px",
+          marginTop: "50px",
         }}
       >
         <Grid item xs={12} sm={5} tablet={5} md={6} lg={4}>
@@ -62,7 +78,7 @@ const Hero = () => {
               },
             }}
           >
-            Voting Closes {formatISODate(eventCache.eventEndDate)}
+            {getVotingText()}
           </Typography>
           <Typography
             variant="h4"
@@ -218,35 +234,53 @@ const Hero = () => {
               alignItems: "center",
             }}
           >
-            <CustomButton
-              onClick={() => handleClickMenu(ROUTES.CATEGORIES)}
-              sx={{
-                width: {
-                  xs: "90%",
-                  sm: "144px",
-                },
-                margin: "10px 0",
-                marginRight: {
-                  sm: "12px",
-                },
-              }}
-              colorVariant="primary"
-            >
-              Start Voting
-            </CustomButton>
-            <CustomButton
-              onClick={() => handleClickMenu(ROUTES.USER_GUIDE)}
-              colorVariant="secondary"
-              sx={{
-                width: {
-                  xs: "90%",
-                  sm: "144px",
-                },
-                margin: "10px 0",
-              }}
-            >
-              How to Vote
-            </CustomButton>
+            {showVotingButtons ? ( // If the event is running or has not started running yet
+              <>
+                <CustomButton
+                  onClick={() => handleClickMenu(ROUTES.CATEGORIES)}
+                  sx={{
+                    width: {
+                      xs: "90%",
+                      sm: "187px",
+                    },
+                    margin: "10px 0",
+                    marginRight: {
+                      sm: "12px",
+                    },
+                  }}
+                  colorVariant="primary"
+                >
+                  {eventCache.notStarted
+                    ? "Preview Categories"
+                    : "Start Voting"}
+                </CustomButton>
+                <CustomButton
+                  onClick={() => handleClickMenu(ROUTES.USER_GUIDE)}
+                  colorVariant="secondary"
+                  sx={{
+                    width: {
+                      xs: "90%",
+                      sm: "144px",
+                    },
+                    margin: "10px 0",
+                  }}
+                >
+                  How to Vote
+                </CustomButton>
+              </>
+            ) : (
+              // If the event has already finished
+              <CustomButton
+                onClick={() => handleClickMenu(ROUTES.CATEGORIES)}
+                sx={{
+                  width: { xs: "90%", sm: "172px" },
+                  margin: "10px 0",
+                }}
+                colorVariant="primary"
+              >
+                {eventCache.proposalsReveal ? "See Results" : "See Leaderboard"}
+              </CustomButton>
+            )}
           </Box>
         </Grid>
         <Grid item xs={12} sm={7} tablet={7} md={6} lg={8}>
@@ -280,7 +314,7 @@ const Hero = () => {
             <Fade in={true} timeout={3000}>
               <Box component="div">
                 <GLBViewer
-                  glbUrl="/compressed.glb"
+                  glbUrl="/award24-3d.glb"
                   height={getAwardHeight()}
                   width="auto"
                 />

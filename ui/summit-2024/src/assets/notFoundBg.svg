@@ -1,0 +1,30 @@
+<svg width="945" height="543" viewBox="0 0 945 543" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g opacity="0.8">
+        <g opacity="0.6" filter="url(#filter0_f_527_8578)">
+            <circle cx="320" cy="320" r="320" transform="matrix(-1 0 0 1 978 300)" fill="#40407D"/>
+        </g>
+        <g opacity="0.6" filter="url(#filter1_f_527_8578)">
+            <ellipse cx="300" cy="220" rx="300" ry="220" transform="matrix(-0.918544 -0.395318 -0.395318 0.918544 952.066 890.191)" fill="#0C7BC5"/>
+        </g>
+        <g opacity="0.6" filter="url(#filter2_f_527_8578)">
+            <ellipse cx="240" cy="340" rx="240" ry="340" transform="matrix(-0.973643 0.228075 0.228075 0.973643 1010.35 588)" fill="#EE9766"/>
+        </g>
+    </g>
+    <defs>
+        <filter id="filter0_f_527_8578" x="38" y="0" width="1240" height="1240" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+            <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+            <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+            <feGaussianBlur stdDeviation="150" result="effect1_foregroundBlur_527_8578"/>
+        </filter>
+        <filter id="filter1_f_527_8578" x="0.493958" y="439.328" width="1178.08" height="1068.7" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+            <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+            <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+            <feGaussianBlur stdDeviation="150" result="effect1_foregroundBlur_527_8578"/>
+        </filter>
+        <filter id="filter2_f_527_8578" x="307.948" y="338.191" width="1092.54" height="1271.17" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+            <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+            <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+            <feGaussianBlur stdDeviation="150" result="effect1_foregroundBlur_527_8578"/>
+        </filter>
+    </defs>
+</svg>

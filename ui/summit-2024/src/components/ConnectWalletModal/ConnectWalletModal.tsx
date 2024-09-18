@@ -161,7 +161,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
         verifyConnection,
         onApiInject,
         onApiEject,
-        [],
+        ["https://dev.btt.cf-identity-wallet.metadata.dev.cf-deployments.org"],
         onP2PConnect,
       );
     }
@@ -244,7 +244,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
         };
       case ConnectWalletFlow.CONNECT_IDENTITY_WALLET:
         return {
-          title: "Use IDW Wallet to connect",
+          title: "",
         };
       case ConnectWalletFlow.CONNECT_CIP45_WALLET:
         return {

@@ -1,13 +1,20 @@
 import { Grid, Typography, Card, CardContent, Box } from "@mui/material";
+import { keyframes } from "@mui/system";
 import HowToVoteOutlinedIcon from "@mui/icons-material/HowToVoteOutlined";
 import folderIcon from "../../../assets/folder.svg";
 import trophyIcon from "../../../assets/trophy.svg";
 import { useIsPortrait } from "../../../common/hooks/useIsPortrait";
 import { CustomButton } from "../../../components/common/CustomButton/CustomButton";
 import theme from "../../../common/styles/theme";
-import guideBg from "../../../assets/bg/guideCard.svg";
+import guideBg from "@assets/guideCard.svg";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../../routes";
+import { useEffect, useState } from "react";
+import { ByCategoryStats } from "../../../types/voting-app-types";
+import { getStats } from "../../../common/api/leaderboardService";
+import { calculateTotalVotes } from "../../../utils/utils";
+import { useAppSelector } from "../../../store/hooks";
+import { getEventCache } from "../../../store/reducers/eventCache";
 
 const ExploreSection = () => {
   const isMobile = useIsPortrait();
@@ -15,6 +22,29 @@ const ExploreSection = () => {
   const handleClickMenu = (option: string) => {
     navigate(option);
   };
+
+  const eventCache = useAppSelector(getEventCache);
+  const [stats, setStats] = useState<ByCategoryStats[]>();
+  const totalVotes = calculateTotalVotes(stats);
+
+  useEffect(() => {
+    getStats().then((response) => {
+      // @ts-ignore
+      setStats(response.categories);
+    });
+  }, []);
+
+  const marquee = keyframes`
+      from {
+        transform: translateX(0%);
+      }
+      to {
+        transform: translateX(-100%);
+      }
+    `;
+
+  const categoriesNames = eventCache.categories.map((c) => c.name).join(", ");
+
   return (
     <Grid
       container
@@ -77,7 +107,7 @@ const ExploreSection = () => {
               mb: 2,
             }}
           >
-            Year’s Award Summit!2
+            Year’s Award Summit!
           </Typography>
         </Box>
         <Box
@@ -165,13 +195,22 @@ const ExploreSection = () => {
             backgroundPosition: "center",
           }}
         >
-          <CardContent sx={{ position: "relative", zIndex: 2 }}>
+          <CardContent
+            sx={{
+              position: "relative",
+              zIndex: 2,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+              height: "100%",
+            }}
+          >
             <Box
               component="div"
               sx={{
                 display: "flex",
                 alignItems: "center",
-                marginTop: "20px",
+                marginTop: "30px",
               }}
             >
               <img
@@ -198,24 +237,36 @@ const ExploreSection = () => {
                 Categories
               </Typography>
             </Box>
-            <Typography
+            <Box
+              component="div"
               sx={{
-                color: theme.palette.text.neutralLightest,
-                fontSize: {
-                  xs: "40px",
-                  md: "68px",
-                },
-                fontStyle: "normal",
-                fontWeight: 500,
-                lineHeight: "76px",
-                marginTop: "46px",
-                marginLeft: isMobile ? "" : "40px",
-                whiteSpace: "nowrap",
-                maxWidth: "335px",
+                width: "100%",
+                height: "80px",
+                position: "relative",
+                overflow: "hidden",
+                marginBottom: "20px",
               }}
             >
-              Ambassador, Blockchain for Good, DeFi ..
-            </Typography>
+              <Typography
+                sx={{
+                  color: theme.palette.text.neutralLightest,
+                  fontSize: {
+                    xs: "40px",
+                    md: "68px",
+                  },
+                  fontStyle: "normal",
+                  fontWeight: 500,
+                  lineHeight: "86px",
+                  whiteSpace: "nowrap",
+                  display: "inline-block",
+                  position: "absolute",
+                  minWidth: "200%",
+                  animation: `${marquee} 20s linear infinite`,
+                }}
+              >
+                {categoriesNames}
+              </Typography>
+            </Box>
           </CardContent>
         </Card>
       </Grid>
@@ -299,7 +350,7 @@ const ExploreSection = () => {
                 marginLeft: "40px",
               }}
             >
-              1,275
+              {eventCache.notStarted ? "N/A" : totalVotes}
             </Typography>
           </CardContent>
         </Card>

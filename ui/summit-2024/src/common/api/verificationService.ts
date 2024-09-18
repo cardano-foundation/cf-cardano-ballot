@@ -23,16 +23,22 @@ export const DISCORD_VERIFICATION_URL = `${env.VOTING_USER_VERIFICATION_SERVER_U
 export const verifyVote = async (payload: {
   rootHash: string;
   steps: MerkleProofItem[];
-  voteCoseSignature: string;
-  voteCosePublicKey: string;
-}) =>
-  await doRequest<Problem | VoteVerificationResult>(
+  payload: string;
+  walletId: string;
+  signature: string;
+  publicKey: string | undefined;
+}) => {
+  return await doRequest<Problem | VoteVerificationResult>(
     HttpMethods.POST,
     `${VERIFICATION_URL}`,
     DEFAULT_CONTENT_TYPE_HEADERS,
-    JSON.stringify(payload),
+    JSON.stringify({
+      ...payload,
+      eventId: env.EVENT_ID,
+      walletType: resolveWalletType(payload.walletId),
+    }),
   );
-
+};
 export const getIsVerified = async (walletIdentifier: string) => {
   return await doRequest<{ verified: boolean }>(
     HttpMethods.GET,

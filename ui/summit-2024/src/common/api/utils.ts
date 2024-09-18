@@ -4,7 +4,7 @@ enum WalletIdentifierType {
 }
 
 const resolveWalletType = (walletIdentifier: string): WalletIdentifierType => {
-  const regex = /^stake_[a-zA-Z0-9]+$/;
+  const regex = /^stake[_]?[a-zA-Z0-9]+$/;
 
   if (regex.test(walletIdentifier)) {
     return WalletIdentifierType.CARDANO;

@@ -244,8 +244,6 @@ export const doRequest = async <T>(
 ) => {
   const allHeaders = { ...headers, ...DEFAULT_CONTENT_TYPE_HEADERS };
 
-  console.log("Body in headers:");
-  console.log(body);
   if (body && bodyInHeader) {
     allHeaders["X-Ballot-Signature"] = JSON.parse(body).signature;
     allHeaders["X-Ballot-Public-Key"] = JSON.parse(body).publicKey;

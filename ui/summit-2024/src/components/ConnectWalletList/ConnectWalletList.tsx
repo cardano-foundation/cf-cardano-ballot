@@ -128,6 +128,12 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
                 textDecorationLine: "underline",
                 cursor: "pointer",
               }}
+              onClick={() => {
+                window.open(
+                  "https://developers.cardano.org/docs/governance/cardano-improvement-proposals/cip-0045/",
+                  "_blank",
+                );
+              }}
             >
               Learn more about CIP-45
             </span>

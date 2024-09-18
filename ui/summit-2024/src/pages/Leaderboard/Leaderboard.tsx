@@ -13,22 +13,45 @@ import {
   Fade,
 } from "@mui/material";
 import theme from "../../common/styles/theme";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { PieChart, pieChartDefaultProps } from "react-minimal-pie-chart";
-import leaderboard1Bg from "../../assets/bg/leaderboard1.svg";
-import { addressSlice } from "../../utils/utils";
+import leaderboard1Bg from "@assets/leaderboard1.svg";
+
+import {
+  addressSlice,
+  calculateTotalVotes,
+  formatISODate,
+} from "../../utils/utils";
 import { PageBase } from "../BasePage";
 import AnimatedSwitch from "../../components/AnimatedSwitch/AnimatedSwitch";
 import { Categories } from "../Categories";
 import { getStats } from "../../common/api/leaderboardService";
 import { ByCategoryStats } from "../../types/voting-app-types";
+import { useAppSelector } from "../../store/hooks";
+import { getEventCache } from "../../store/reducers/eventCache";
+import Ellipses from "../../assets/ellipse.svg";
+import { useIsPortrait } from "../../common/hooks/useIsPortrait";
 
 const Leaderboard: React.FC = () => {
   const [stats, setStats] = useState<ByCategoryStats[]>();
+  const eventCache = useAppSelector(getEventCache);
+  const isMobile = useIsPortrait();
+
   const [selected, setSelected] = useState<number | undefined>(undefined);
   const [hovered, setHovered] = useState<number | undefined>(undefined);
   const [content, setContent] = useState("Overall Votes");
   const [fade, setFade] = useState(true);
+
+  const showRevealDate = eventCache.finished && !eventCache.proposalsReveal;
+  const showWinners = eventCache.proposalsReveal;
+
+  const nameMap = new Map(
+    eventCache.categories.map((category) => [category.id, category.name]),
+  );
+
+  const extendedStats = stats?.map((item) => ({
+    ...item,
+    name: nameMap.get(item.id) || null,
+  }));
 
   useEffect(() => {
     getStats().then((response) => {
@@ -49,17 +72,19 @@ const Leaderboard: React.FC = () => {
     "#200E04",
   ];
 
-  const dataForChart = stats?.map((item, index) => ({
-    title: item.id,
+  const dataForChart = extendedStats?.map((item, index) => ({
+    title: item.name,
     value: item.votes,
     color: colors[index % colors.length],
   }));
 
-  const totalVotes = stats?.reduce((total, item) => total + item.votes, 0) || 0;
+  const totalVotes = calculateTotalVotes(stats);
 
   let selectedCategoryValue = -1;
+  let selectedCategoryName = "";
   if (dataForChart !== undefined && selected !== undefined) {
     selectedCategoryValue = dataForChart[selected].value;
+    selectedCategoryName = dataForChart[selected].title || "";
   }
 
   const handleSwitch = (option: string) => {
@@ -87,7 +112,7 @@ const Leaderboard: React.FC = () => {
                 width: "100%",
                 paddingTop: {
                   xs: content === "Winners" ? "60px" : "20px",
-                  md: "20px",
+                  md: "40px",
                 },
                 paddingBottom: { xs: "26px" },
               }}
@@ -106,12 +131,32 @@ const Leaderboard: React.FC = () => {
               >
                 Leaderboard
               </Typography>
-              <AnimatedSwitch
-                defaultValue="Overall Votes"
-                optionA="Winners"
-                optionB="Overall Votes"
-                onClickOption={handleSwitch}
-              />
+
+              {showRevealDate ? (
+                <Typography
+                  sx={{
+                    color: theme.palette.text.neutralLightest,
+                    fontFamily: "Dosis",
+                    fontSize: "32px",
+                    fontStyle: "normal",
+                    fontWeight: 700,
+                    lineHeight: "36px",
+                    textAlign: "left",
+                    marginBottom: { xs: 2, md: 0 },
+                  }}
+                >
+                  {"Voting Results " +
+                    formatISODate(eventCache.proposalsRevealDate)}
+                </Typography>
+              ) : undefined}
+              {showWinners ? (
+                <AnimatedSwitch
+                  defaultValue="Overall Votes"
+                  optionA="Winners"
+                  optionB="Overall Votes"
+                  onClickOption={handleSwitch}
+                />
+              ) : undefined}
             </Box>
             <Fade
               in={fade}
@@ -142,7 +187,7 @@ const Leaderboard: React.FC = () => {
                             sx={{
                               p: "28px",
                               backgroundImage: `url(${leaderboard1Bg})`,
-                              backgroundSize: "350% 350%",
+                              backgroundSize: "400% 400%",
                               backgroundPosition: "center",
                               borderRadius: "24px",
                               backdropFilter: "blur(5px)",
@@ -170,11 +215,6 @@ const Leaderboard: React.FC = () => {
                               >
                                 Total Votes
                               </Typography>
-                              <MoreVertIcon
-                                sx={{
-                                  cursor: "pointer",
-                                }}
-                              />
                             </Box>
                             <Typography
                               sx={{
@@ -227,7 +267,7 @@ const Leaderboard: React.FC = () => {
                                   </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                  {stats?.map((item, index) => (
+                                  {extendedStats?.map((item, index) => (
                                     <TableRow key={index}>
                                       <TableCell
                                         component="th"
@@ -244,7 +284,7 @@ const Leaderboard: React.FC = () => {
                                           padding: "12px 0px",
                                         }}
                                       >
-                                        {item.id}
+                                        {item.name}
                                       </TableCell>
                                       <TableCell align="left">
                                         {item.votes}
@@ -302,11 +342,6 @@ const Leaderboard: React.FC = () => {
                               >
                                 Votes per category
                               </Typography>
-                              <MoreVertIcon
-                                sx={{
-                                  cursor: "pointer",
-                                }}
-                              />
                             </Box>
                             <Box
                               component="div"
@@ -368,13 +403,17 @@ const Leaderboard: React.FC = () => {
                                   <Typography
                                     sx={{
                                       color: theme.palette.text.neutralLightest,
-                                      fontSize: "16px",
+                                      fontSize: selectedCategoryName.length
+                                        ? "14px"
+                                        : "16px",
                                       fontStyle: "normal",
                                       fontWeight: 500,
                                       lineHeight: "24px",
                                     }}
                                   >
-                                    Votes
+                                    {selectedCategoryName.length
+                                      ? selectedCategoryName
+                                      : "Total Votes"}
                                   </Typography>
                                   <Typography
                                     variant="h6"
@@ -437,7 +476,11 @@ const Leaderboard: React.FC = () => {
                                         marginTop: "8px",
                                       }}
                                     >
-                                      {addressSlice(entry.title, 12, "end")}
+                                      {addressSlice(
+                                        entry?.title || "",
+                                        12,
+                                        "end",
+                                      )}
                                     </Typography>
                                   </Box>
                                 ))}
@@ -452,6 +495,18 @@ const Leaderboard: React.FC = () => {
               </Box>
             </Fade>
           </Container>
+          <img
+            src={Ellipses}
+            style={{
+              position: "fixed",
+              right: "0",
+              top: "90%",
+              transform: "translateY(-30%)",
+              zIndex: "-1",
+              width: "70%",
+              height: isMobile ? "auto" : "auto",
+            }}
+          />
         </>
       </PageBase>
     </>

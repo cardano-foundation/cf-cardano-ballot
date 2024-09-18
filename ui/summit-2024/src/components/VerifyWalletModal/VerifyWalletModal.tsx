@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import {
   Box,
@@ -18,7 +18,12 @@ import {
   MuiTelInputCountry,
 } from "mui-tel-input";
 import discordLogo from "../../common/resources/images/discord-icon.svg";
-import { openNewTab } from "../../utils/utils";
+import {
+  getSignedMessagePromise,
+  openNewTab,
+  resolveCardanoNetwork,
+  signMessageWithWallet,
+} from "../../utils/utils";
 import { ErrorMessage } from "../common/ErrorMessage/ErrorMessage";
 import { CustomButton } from "../common/CustomButton/CustomButton";
 import Modal from "../common/Modal/Modal";
@@ -39,12 +44,10 @@ import {
   setWalletIsVerified,
 } from "../../store/reducers/userCache";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { VerificationStarted } from "../../store/reducers/userCache/userCache.types";
 import { ToastType } from "../common/Toast/Toast.types";
 import { CustomInput } from "../common/CustomInput/CustomInput";
 import theme from "../../common/styles/theme";
-import { resolveWalletType } from "../../common/api/utils";
-import { useSignatures } from "../../common/hooks/useSignatures";
+import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 
 // TODO: env.
 const excludedCountries: MuiTelInputCountry[] | undefined = [];
@@ -82,11 +85,19 @@ const VerifyWalletModal = () => {
     useState<boolean>(true);
   const [inputSecret, setInputSecret] = useState("");
 
-  const { signWithWallet, isLoading, setIsLoading } = useSignatures();
   const userVerificationStarted = useAppSelector(getVerificationStarted);
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   inputRefs.current = [];
+
+  const { signMessage } = useCardano({
+    limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
+  });
+
+  const signMessagePromisified = useMemo(
+    () => getSignedMessagePromise(signMessage),
+    [signMessage],
+  );
 
   useEffect(() => {
     const openVerifyWalletModal = (
@@ -123,7 +134,6 @@ const VerifyWalletModal = () => {
       setPhoneCodeIsSent(false);
       setPhoneCodeShowError(false);
       setEnableSignDiscordSecret(true);
-      setIsLoading(false);
       setPhone("");
       setInputSecret("");
       setCodes(Array(6).fill(""));
@@ -147,17 +157,29 @@ const VerifyWalletModal = () => {
       setPhoneCodeIsBeenSending(true);
       sendSmsCode(connectedWallet.address, phone.trim().replace(" ", ""))
         // @ts-ignore
-        .then((response: VerificationStarted) => {
-          handleSetCurrentPath(VerifyWalletFlow.CONFIRM_CODE);
-          dispatch(
-            setVerificationStarted({
-              walletIdentifier: connectedWallet.address,
-              ...response,
-            }),
-          );
-          setPhoneCodeIsSent(true);
-          setCheckImNotARobot(false);
-          setPhoneCodeIsBeenSending(false);
+        .then((response) => {
+          // @ts-ignore
+          if (response?.error) {
+            eventBus.publish(
+              EventName.ShowToast,
+              // @ts-ignore
+              response.message || "Error sending sms code",
+              ToastType.Error,
+            );
+            setPhoneCodeIsBeenSending(false);
+          } else {
+            handleSetCurrentPath(VerifyWalletFlow.CONFIRM_CODE);
+            dispatch(
+              // @ts-ignore
+              setVerificationStarted({
+                walletIdentifier: connectedWallet.address,
+                ...response,
+              }),
+            );
+            setPhoneCodeIsSent(true);
+            setCheckImNotARobot(false);
+            setPhoneCodeIsBeenSending(false);
+          }
         })
         .catch(() => {
           setPhoneCodeIsBeenSending(false);
@@ -203,10 +225,11 @@ const VerifyWalletModal = () => {
 
   const handleVerifyDiscord = async () => {
     setEnableSignDiscordSecret(false);
-    const signedMessageResult = await signWithWallet(
+
+    const signedMessageResult = await signMessageWithWallet(
+      connectedWallet,
       inputSecret.trim(),
-      connectedWallet.address,
-      resolveWalletType(connectedWallet.address),
+      signMessagePromisified,
     );
 
     if (!signedMessageResult.success) {
@@ -295,6 +318,16 @@ const VerifyWalletModal = () => {
   };
 
   const renderSelectOption = () => {
+    const handleSelectVerifyWithDiscord = () => {
+      handleSetCurrentPath(VerifyWalletFlow.VERIFY_DISCORD);
+      setInputSecret("");
+    };
+    const handleSelectVerifyWithSMS = () => {
+      setPhoneCodeIsBeenSending(false);
+      handleSetCurrentPath(VerifyWalletFlow.VERIFY_SMS);
+      setPhone("");
+      setCheckImNotARobot(false);
+    };
     return (
       <>
         <Typography
@@ -313,9 +346,7 @@ const VerifyWalletModal = () => {
         </Typography>
         <List>
           <ListItem
-            onClick={() =>
-              handleSetCurrentPath(VerifyWalletFlow.VERIFY_DISCORD)
-            }
+            onClick={() => handleSelectVerifyWithDiscord()}
             sx={{
               borderRadius: "12px",
               border: "1px solid var(--neutral, #737380)",
@@ -355,7 +386,7 @@ const VerifyWalletModal = () => {
             </Typography>
           </ListItem>
           <ListItem
-            onClick={() => handleSetCurrentPath(VerifyWalletFlow.VERIFY_SMS)}
+            onClick={() => handleSelectVerifyWithSMS()}
             sx={{
               borderRadius: "12px",
               border: "1px solid var(--neutral, #737380)",
@@ -603,7 +634,7 @@ const VerifyWalletModal = () => {
             <CustomButton
               sx={{
                 background: "transparent !important",
-                color: "#03021F",
+                color: theme.palette.text.neutralLightest,
                 border: "1px solid #daeefb",
               }}
               onClick={() => handleVerifyPhoneCode()}
@@ -621,13 +652,14 @@ const VerifyWalletModal = () => {
 
   const renderDidNotReceiveCode = () => {
     const handleEnterNewNumber = () => {
-      setPhone("");
+      reset();
       handleSetCurrentPath(VerifyWalletFlow.VERIFY_SMS);
     };
     const handleSendCodeAgain = async () => {
       handleSetCurrentPath(VerifyWalletFlow.CONFIRM_CODE);
       setPhoneCodeShowError(false);
       setCodes(Array(6).fill(""));
+      setPhoneCodeShowError(false);
       await handleSendCode();
     };
     return (
@@ -838,7 +870,6 @@ const VerifyWalletModal = () => {
           onClick={() => handleVerifyDiscord()}
           disabled={
             !enableSignDiscordSecret ||
-            isLoading ||
             inputSecret === "" ||
             !validateSecret(inputSecret)
           }
@@ -866,7 +897,17 @@ const VerifyWalletModal = () => {
 
   const handleBack = () => {
     if (verifyCurrentPaths.length >= 2) {
-      setVerifyCurrentPaths((prev) => prev.slice(1));
+      const udpatedPaths = verifyCurrentPaths.slice(1);
+      setVerifyCurrentPaths(udpatedPaths);
+
+      if (udpatedPaths[0] === VerifyWalletFlow.VERIFY_SMS) {
+        setPhone("");
+        setPhoneCodeIsSent(false);
+      }
+      if (udpatedPaths[0] === VerifyWalletFlow.CONFIRM_CODE) {
+        setCodes(Array(6).fill(""));
+        setPhoneCodeShowError(false);
+      }
     } else {
       reset();
     }
@@ -881,7 +922,7 @@ const VerifyWalletModal = () => {
         };
       case VerifyWalletFlow.SELECT_METHOD:
         return {
-          title: "Verify Your Wallet",
+          title: "Select Your Method",
           render: renderSelectOption(),
         };
       case VerifyWalletFlow.VERIFY_SMS:

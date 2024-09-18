@@ -15,22 +15,47 @@ import { ViewReceipt } from "../Categories/components/ViewReceipt";
 import theme from "../../common/styles/theme";
 import nomineeIcon from "../../assets/nomineeIcon.svg";
 import rightArrowIcon from "../../assets/rightArrowIcon.svg";
-import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import { copyToClipboard } from "../../utils/utils";
+import { addressSlice, copyToClipboard } from "../../utils/utils";
 import { eventBus, EventName } from "../../utils/EventBus";
 import { getUserInSession, tokenIsExpired } from "../../utils/session";
 import { getVoteReceipts } from "../../common/api/voteService";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { getReceipts, setVoteReceipts } from "../../store/reducers/votesCache";
+import { getEventCache } from "../../store/reducers/eventCache";
+import { ExtendedVoteReceipt } from "../../types/voting-app-types";
 
 const ReceiptHistory: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [openViewReceipt, setOpenViewReceipt] = useState(false);
-  const [copied, setCopied] = React.useState(false);
-  const receipts = useAppSelector(getReceipts);
+  let receipts = useAppSelector(getReceipts);
+  const eventCache = useAppSelector(getEventCache);
+
   const session = getUserInSession();
   const dispatch = useAppDispatch();
+
+  // @ts-ignore
+  const extendedReceipts: ExtendedVoteReceipt = { ...receipts };
+  for (const categoryKey in extendedReceipts) {
+    const votingCategory = extendedReceipts[categoryKey];
+    const categoryDetail = eventCache.categories.find(
+      (category) => category.id === votingCategory.category,
+    );
+
+    if (categoryDetail) {
+      const proposalDetail = categoryDetail.proposals.find(
+        (proposal) => proposal.id === votingCategory.proposal,
+      );
+
+      if (proposalDetail) {
+        extendedReceipts[categoryKey] = {
+          ...votingCategory,
+          categoryName: categoryDetail.name,
+          proposalName: proposalDetail.name,
+        };
+      }
+    }
+  }
 
   useEffect(() => {
     if (!tokenIsExpired(session?.expiresAt)) {
@@ -54,9 +79,7 @@ const ReceiptHistory: React.FC = () => {
 
   const handleCopy = async (transactionId: string) => {
     await copyToClipboard(transactionId);
-    setCopied(true);
     eventBus.publish(EventName.ShowToast, "Copied to clipboard successfully");
-    setTimeout(() => setCopied(false), 1000);
   };
 
   const ReceiptsList = () => (
@@ -114,12 +137,12 @@ const ReceiptHistory: React.FC = () => {
                 border: "none",
               }}
             >
-              Transaction Hash
+              Signature
             </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {Object.keys(receipts).map((category: string, index) => (
+          {Object.keys(extendedReceipts).map((category: string, index) => (
             <TableRow
               key={index}
               sx={{
@@ -169,7 +192,7 @@ const ReceiptHistory: React.FC = () => {
                       marginLeft: "8px",
                     }}
                   >
-                    {receipts[category].proposal}
+                    {extendedReceipts[category].proposalName}
                   </Typography>
                 </Box>
               </TableCell>
@@ -199,7 +222,7 @@ const ReceiptHistory: React.FC = () => {
                       cursor: "pointer",
                     }}
                   >
-                    {receipts[category].category}
+                    {extendedReceipts[category].categoryName}
                   </Typography>
                 </Box>
               </TableCell>
@@ -228,7 +251,7 @@ const ReceiptHistory: React.FC = () => {
                       marginLeft: "8px",
                     }}
                   >
-                    {receipts[category].votedAtSlot}
+                    {extendedReceipts[category].votedAtSlot}
                   </Typography>
                 </Box>
               </TableCell>
@@ -246,23 +269,16 @@ const ReceiptHistory: React.FC = () => {
                     display: "flex",
                   }}
                 >
-                  {copied ? (
-                    <CheckCircleOutlineIcon
-                      sx={{
-                        width: "20px",
-                        height: "20px",
-                      }}
-                    />
-                  ) : (
-                    <ContentCopyIcon
-                      onClick={() => handleCopy("c56ec4b8b251...1ba5f097eb71")}
-                      sx={{
-                        width: "20px",
-                        height: "20px",
-                        cursor: "pointer",
-                      }}
-                    />
-                  )}
+                  <ContentCopyIcon
+                    onClick={() =>
+                      handleCopy(extendedReceipts[category].signature)
+                    }
+                    sx={{
+                      width: "20px",
+                      height: "20px",
+                      cursor: "pointer",
+                    }}
+                  />
                   <Typography
                     sx={{
                       color: theme.palette.text.neutralLightest,
@@ -276,7 +292,7 @@ const ReceiptHistory: React.FC = () => {
                       marginLeft: "8px",
                     }}
                   >
-                    c56ec4b8b251...1ba5f097eb71
+                    {addressSlice(extendedReceipts[category].signature)}
                   </Typography>
                   <Box
                     component="div"

@@ -1,12 +1,20 @@
 interface Proposal {
   id: string;
   name: string | null;
+  presentationName?: string;
+  x?: string;
+  linkedin?: string;
+  url?: string;
+  category?: string;
+  votes?: string;
 }
 
 interface Category {
   id: string;
   gdprProtection: boolean;
   proposals: Proposal[];
+  desc?: string;
+  name?: string;
 }
 
 interface EventCacheProps {

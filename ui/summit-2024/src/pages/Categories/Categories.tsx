@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Box, Typography, useMediaQuery, Drawer } from "@mui/material";
 import theme from "../../common/styles/theme";
 import { CustomButton } from "../../components/common/CustomButton/CustomButton";
@@ -6,7 +6,10 @@ import { VoteNowModal } from "./components/VoteNowModal";
 import { ViewReceipt } from "./components/ViewReceipt";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { getEventCache } from "../../store/reducers/eventCache";
-import { Category } from "../../store/reducers/eventCache/eventCache.types";
+import {
+  Category,
+  Proposal,
+} from "../../store/reducers/eventCache/eventCache.types";
 import { PageBase } from "../BasePage";
 import { Nominees } from "./components/Nominees";
 import { Winners } from "./components/Winners";
@@ -20,6 +23,7 @@ import {
   getSlotNumber,
   submitGetUserVotes,
   getVoteReceipt,
+  getVoteReceipts,
 } from "../../common/api/voteService";
 import { eventBus, EventName } from "../../utils/EventBus";
 import {
@@ -32,11 +36,19 @@ import {
   getReceipts,
   getVotes,
   setVoteReceipt,
+  setVoteReceipts,
   setVotes,
 } from "../../store/reducers/votesCache";
 import { ToastType } from "../../components/common/Toast/Toast.types";
-import { useSignatures } from "../../common/hooks/useSignatures";
 import { resolveWalletType } from "../../common/api/utils";
+import {
+  getSignedMessagePromise,
+  resolveCardanoNetwork,
+  signMessageWithWallet,
+} from "../../utils/utils";
+import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
+import { env } from "../../common/constants/env";
+import { formatISODate } from "../../utils/utils";
 
 interface CategoriesProps {
   embedded?: boolean;
@@ -50,10 +62,10 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   const receipts = useAppSelector(getReceipts);
   const userVotes = useAppSelector(getVotes);
   const categoriesData = eventCache.categories;
-  const [showWinners, setShowWinners] = useState(eventCache.finished);
+  const showWinners = eventCache.proposalsReveal;
 
   const [selectedCategory, setSelectedCategory] = useState(
-    categoriesData[0].id,
+    categoriesData[0].name,
   );
 
   const [selectedNominee, setSelectedNominee] = useState<string | undefined>(
@@ -63,27 +75,50 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   const [openVotingModal, setOpenVotingModal] = useState(false);
   const [openViewReceipt, setOpenViewReceipt] = useState(false);
 
-  const [learMoreCategory, setLearMoreCategory] = useState("");
+  const [bioModalContent, setBioModalContent] = useState<Proposal | null>(null);
   const [openLearMoreCategory, setOpenLearMoreCategory] = useState(false);
 
   const [fadeChecked, setFadeChecked] = useState(true);
 
   const session = getUserInSession();
-  const { signWithWallet } = useSignatures();
   const dispatch = useAppDispatch();
 
-  let categoryToRender = categoriesData.find((c) => c.id === selectedCategory);
+  const showEventDate =
+    eventCache.notStarted ||
+    (eventCache.finished && !eventCache.proposalsReveal); // If the event has not started or it's just before the reveal
+  const showVotingButton =
+    eventCache.active || (eventCache.finished && !eventCache.proposalsReveal); // If the event has not started or the results have been revealed we prevent the voting bottom to show up
+
+  const { signMessage } = useCardano({
+    limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
+  });
+
+  let categoryToRender = categoriesData.find(
+    (c) => c.name === selectedCategory,
+  );
   if (categoryToRender === undefined) {
     categoryToRender = categoriesData[0];
   }
 
-  const nomineeToVote = categoryToRender.proposals.find(
-    (p) => p.id === selectedNominee,
-  );
+  const nomineeToVote = useMemo(() => {
+    return categoryToRender?.proposals.find((p) => p.id === selectedNominee);
+  }, [selectedNominee, categoryToRender]);
 
   const categoryAlreadyVoted = !!userVotes?.find(
     (vote) => vote.categoryId === categoryToRender?.id,
   );
+
+  const signMessagePromisified = useMemo(
+    () => getSignedMessagePromise(signMessage),
+    [signMessage],
+  );
+
+  useEffect(() => {
+    if (categoriesData.length && categoriesData[0]?.name) {
+      // @ts-ignore
+      setSelectedCategory(categoriesData[0].name);
+    }
+  }, [categoriesData.length]);
 
   useEffect(() => {
     // Example: http://localhost:3000/categories?category=ambassador&nominee=63123e7f-dfc3-481e-bb9d-fed1d9f6e9b9
@@ -110,25 +145,32 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   }, [fadeChecked, selectedCategory]);
 
   const handleClickMenuItem = (category: string) => {
-    if (category !== selectedCategory) {
-      setFadeChecked(false);
-      setSelectedCategory(category);
-      setTimeout(() => {
-        setFadeChecked(true);
-      }, 200);
-    }
+    setFadeChecked(false);
+    // @ts-ignore
+    setSelectedCategory(category);
+    setTimeout(() => {
+      setFadeChecked(true);
+    }, 200);
   };
 
   const handleSelectNominee = (id: string) => {
-    if (selectedNominee !== id) {
-      setSelectedNominee(id);
-    } else {
-      setSelectedNominee(undefined);
+    setSelectedNominee((prevNominee) => (prevNominee === id ? undefined : id));
+  };
+
+  const findProposalById = (categories: Category[], proposalId: string) => {
+    for (const category of categories) {
+      for (const proposal of category.proposals) {
+        if (proposal.id === proposalId) {
+          return proposal;
+        }
+      }
     }
+    return null;
   };
 
   const handleOpenLearnMoreModal = (nomineeId: string) => {
-    setLearMoreCategory(nomineeId);
+    const bioModalContent = findProposalById(categoriesData, nomineeId);
+    setBioModalContent(bioModalContent);
     setOpenLearMoreCategory(true);
   };
 
@@ -136,7 +178,9 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
     setOpenViewReceipt(true);
   };
 
-  const handleSignIn = () => {};
+  const handleLogin = () => {
+    eventBus.publish(EventName.OpenLoginModal);
+  };
 
   const handleViewReceipt = async () => {
     if (!categoryToRender) return;
@@ -193,11 +237,27 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
       return;
     }
 
-    const categoryId = categoryToRender?.id;
-    const proposalId = nomineeToVote?.id;
+    const category = categoriesData.find((c) => c.name === selectedCategory);
 
-    if (!categoryId || !proposalId) {
-      eventBus.publish(EventName.ShowToast, "Nominee not selected", "error");
+    const proposalId = category?.proposals?.find(
+      (p) => p.id === selectedNominee,
+    )?.id;
+
+    if (!category?.id) {
+      eventBus.publish(
+        EventName.ShowToast,
+        "Category not selected",
+        ToastType.Error,
+      );
+      return;
+    }
+
+    if (!proposalId) {
+      eventBus.publish(
+        EventName.ShowToast,
+        "Nominee not selected",
+        ToastType.Error,
+      );
       return;
     }
 
@@ -206,17 +266,17 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
       const absoluteSlot = (await getSlotNumber())?.absoluteSlot;
       const canonicalVoteInput = buildCanonicalVoteInputJson({
         voteId: uuidv4(),
-        categoryId: categoryId,
+        categoryId: category.id,
         proposalId: proposalId,
         walletId: connectedWallet.address,
         walletType: resolveWalletType(connectedWallet.address),
         slotNumber: absoluteSlot.toString(),
       });
 
-      const requestVoteResult = await signWithWallet(
+      const requestVoteResult = await signMessageWithWallet(
+        connectedWallet,
         canonicalVoteInput,
-        connectedWallet.address,
-        resolveWalletType(connectedWallet.address),
+        signMessagePromisified,
       );
 
       if (!requestVoteResult.success) {
@@ -242,38 +302,39 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
           submitVoteResult.message || "Error while voting",
           ToastType.Error,
         );
+
+        // @ts-ignore
+        if (submitVoteResult.message === "VOTE_CANNOT_BE_CHANGED") {
+          eventBus.publish(EventName.OpenLoginModal);
+        }
+
         return;
       }
       eventBus.publish(EventName.ShowToast, "Vote submitted successfully");
 
+      const updatedVotes = [
+        ...userVotes,
+        { categoryId: category.id, proposalId },
+      ];
       // @ts-ignore
-      dispatch(setVotes([...userVotes, { categoryId, proposalId }]));
-      // TODO: refactor
+      dispatch(setVotes(updatedVotes));
+
       if (session && !tokenIsExpired(session?.expiresAt)) {
-        // @ts-ignore
-        getVoteReceipt(categoryId, session?.accessToken)
-          .then((r) => {
+        getVoteReceipts(session?.accessToken).then((receipts) => {
+          // @ts-ignore
+          if (receipts.error) {
             // @ts-ignore
-            if (r.error) {
-              // @ts-ignore
-              eventBus.publish(EventName.ShowToast, r.message, ToastType.Error);
-              return;
-            }
-            // @ts-ignore
-            dispatch(setVoteReceipt({ categoryId: categoryId, receipt: r }));
-          })
-          .catch((e) => {
-            if (process.env.NODE_ENV === "development") {
-              console.log(
-                `Failed to fetch vote receipt, ${parseError(e.message)}`,
-              );
-            }
-          });
+            eventBus.publish(EventName.ShowToast, r.message, ToastType.Error);
+            return;
+          }
+          // @ts-ignore
+          dispatch(setVoteReceipts(receipts));
+        });
         submitGetUserVotes(session?.accessToken)
-          .then((response) => {
-            if (response) {
+          .then((votes) => {
+            if (Array.isArray(votes) && votes.length > updatedVotes.length) {
               // @ts-ignore
-              dispatch(setVotes(response));
+              dispatch(setVotes(votes));
             }
           })
           .catch((e) => {
@@ -303,8 +364,8 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   const renderActionButton = () => {
     if (categoryAlreadyVoted && !session) {
       return {
-        label: "Sign In",
-        action: handleSignIn,
+        label: "Login",
+        action: handleLogin,
         disabled: false,
       };
     } else if (categoryAlreadyVoted) {
@@ -324,7 +385,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
 
   const optionsForMenu = categoriesData.map((category: Category) => {
     return {
-      label: category.id,
+      label: category.name || category.id,
       content: (
         <>
           <Box
@@ -339,11 +400,10 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
           >
             <Typography
               // TODO: remove after demo
-              onClick={() => setShowWinners(!showWinners)}
               variant="h5"
               sx={{ fontWeight: "bold", fontFamily: "Dosis" }}
             >
-              {category.id} Nominees ({category.proposals?.length})
+              {category.name} Nominees ({category.proposals?.length})
             </Typography>
             <Typography
               sx={{
@@ -351,28 +411,43 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
                 maxWidth: { xs: "70%", md: "80%" },
               }}
             >
-              To commemorate the special commitment and work of a Cardano
-              Ambassador.
+              {category.desc}
             </Typography>
-            <CustomButton
-              onClick={() => renderActionButton().action()}
-              sx={{
-                mt: -6,
-                alignSelf: "flex-end",
-                display: isTablet ? "none" : "inline-block",
-              }}
-              colorVariant="primary"
-              disabled={renderActionButton().disabled}
-            >
-              {renderActionButton().label}
-            </CustomButton>
+
+            {showEventDate ? ( // If the event has not started or it's just before the reveal
+              <Typography // TODO: Formatting
+                sx={{
+                  color: "text.secondary",
+                  maxWidth: { xs: "70%", md: "80%" },
+                }}
+              >
+                {eventCache.notStarted
+                  ? "Voting Opens " + formatISODate(eventCache.eventStartDate)
+                  : "Results Announced " +
+                    formatISODate(eventCache.proposalsRevealDate)}
+              </Typography>
+            ) : undefined}
+
+            {showVotingButton ? ( // If the event has not started or the results have been revealed we prevent the voting bottom to show up
+              <CustomButton
+                onClick={() => renderActionButton().action()}
+                sx={{
+                  mt: -6,
+                  alignSelf: "flex-end",
+                  display: isTablet ? "none" : "inline-block",
+                }}
+                colorVariant="primary"
+                disabled={renderActionButton().disabled}
+              >
+                {renderActionButton().label}
+              </CustomButton>
+            ) : undefined}
           </Box>
           {showWinners ? (
             <Winners
               fadeChecked={fadeChecked}
               nominees={category.proposals}
-              handleSelectedNominee={handleSelectNominee}
-              selectedNominee={selectedNominee}
+              categoryId={category.id}
               handleOpenLearnMore={handleOpenLearnMoreModal}
             />
           ) : (
@@ -434,7 +509,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
           }}
         >
           <Layout
-            title="Categories"
+            title={eventCache?.active ? "Categories" : ""}
             menuOptions={optionsForMenu}
             bottom={bottom}
             mode="change"
@@ -460,8 +535,9 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
           onClose={() => setOpenVotingModal(false)}
         />
         <BioModal
+          nominee={bioModalContent}
           isOpen={openLearMoreCategory}
-          title={learMoreCategory}
+          title={bioModalContent?.name}
           onClose={() => setOpenLearMoreCategory(false)}
         />
         <Drawer

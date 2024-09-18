@@ -1,7 +1,7 @@
 import { ReactNode, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { env } from "../../common/constants/env";
-import { setEventCache } from "../../store/reducers/eventCache";
+import { getEventCache, setEventCache } from "../../store/reducers/eventCache";
 import { getEventData } from "../../common/api/eventDataService";
 import { eventBus, EventName } from "../../utils/EventBus";
 import { eventDataFixture } from "../../__fixtures__/event";
@@ -16,14 +16,21 @@ import {
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 import { resolveCardanoNetwork } from "../../utils/utils";
 import { getUserInSession, tokenIsExpired } from "../../utils/session";
-import { submitGetUserVotes } from "../../common/api/voteService";
-import { setVotes } from "../../store/reducers/votesCache";
+import {
+  getVoteReceipts,
+  submitGetUserVotes,
+} from "../../common/api/voteService";
+import { setVoteReceipts, setVotes } from "../../store/reducers/votesCache";
 import { parseError } from "../../common/constants/errors";
+import event2024PreProdExtended from "../../common/resources/data/summit2024PreProdContent.json";
+import event2024MainnetExtended from "../../common/resources/data/summit2024MainnetContent.json";
+import { NetworkType } from "../ConnectWalletList/ConnectWalletList.types";
 
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const session = getUserInSession();
   const isExpired = tokenIsExpired(session?.expiresAt);
+  const eventCache = useAppSelector(getEventCache);
   const walletIsVerified = useAppSelector(getWalletIsVerified);
   const connectedWallet = useAppSelector(getConnectedWallet);
   const { stakeAddress, enabledWallet } = useCardano({
@@ -38,8 +45,13 @@ const AppWrapper = (props: { children: ReactNode }) => {
     const updateUserVotes = async () => {
       submitGetUserVotes(session.accessToken)
         .then((response) => {
-          // @ts-ignore
-          dispatch(setVotes(response));
+          if (Array.isArray(response) && response.length) {
+            dispatch(setVotes(response));
+            getVoteReceipts(session.accessToken).then((receipts) => {
+              // @ts-ignore
+              dispatch(setVoteReceipts(receipts));
+            });
+          }
         })
         .catch((e) => {
           if (process.env.NODE_ENV === "development") {
@@ -47,19 +59,24 @@ const AppWrapper = (props: { children: ReactNode }) => {
           }
         });
     };
-    if (connectedWallet.address.length && walletIsVerified && !isExpired) {
+
+    const walletIsConnected = connectedWallet.address.length;
+    if (walletIsConnected && !isExpired) {
       updateUserVotes();
     }
-  }, [connectedWallet.address, walletIsVerified]);
+  }, [connectedWallet.address, walletIsVerified, isExpired]);
 
   useEffect(() => {
     const checkWalletVerification = async () => {
       const isVerifiedResult = await getIsVerified(connectedWallet.address);
       // @ts-ignore
-      if (!isVerifiedResult?.error) {
+      if (isVerifiedResult?.verified) {
         // @ts-ignore
         dispatch(setWalletIsVerified(isVerifiedResult.verified));
-      } else {
+        if (!session || tokenIsExpired(session?.expiresAt)) {
+          eventBus.publish(EventName.OpenLoginModal);
+        }
+      } else if (eventCache.active) {
         eventBus.publish(EventName.OpenVerifyWalletModal);
       }
     };
@@ -81,15 +98,64 @@ const AppWrapper = (props: { children: ReactNode }) => {
     }
   }, [stakeAddress, connectedWallet.address]);
 
+  const mergeEventData = (eventData, staticData) => {
+    const mergedCategories = eventData.categories.map((category) => {
+      const staticCategory = staticData.categories.find(
+        (cat) => cat.id === category.id,
+      );
+
+      if (staticCategory) {
+        const mergedProposals = category.proposals.map((proposal) => {
+          const staticProposal = staticCategory.proposals.find(
+            (p) => p.id === proposal.id,
+          );
+
+          if (staticProposal) {
+            // TODO: update reducer types
+            return {
+              ...proposal,
+              name: staticProposal.presentationName || proposal.name,
+              x: staticProposal.x || null,
+              linkedin: staticProposal.linkedin || null,
+              url: staticProposal.url || null,
+            };
+          }
+          return proposal;
+        });
+
+        return {
+          ...category,
+          name: staticCategory.presentationName?.length
+            ? staticCategory.presentationName
+            : category.id,
+          desc: staticCategory.desc,
+          proposals: mergedProposals,
+        };
+      }
+      return category;
+    });
+
+    return {
+      ...eventData,
+      categories: mergedCategories,
+    };
+  };
+
   const initApp = async () => {
     if (env.USING_FIXTURES) {
       dispatch(setEventCache(eventDataFixture));
     } else {
       const eventData = await getEventData(env.EVENT_ID);
+      const eventDataExtended =
+        resolveCardanoNetwork(env.TARGET_NETWORK) == NetworkType.MAINNET
+          ? event2024MainnetExtended
+          : event2024PreProdExtended;
+
       // @ts-ignore
       if (!eventData?.error) {
+        const mergedEventData = mergeEventData(eventData, eventDataExtended);
         // @ts-ignore
-        dispatch(setEventCache(eventData));
+        dispatch(setEventCache(mergedEventData));
       } else {
         eventBus.publish(
           EventName.ShowToast,

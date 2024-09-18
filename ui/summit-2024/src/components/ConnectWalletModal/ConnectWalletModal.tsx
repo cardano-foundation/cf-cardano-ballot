@@ -161,7 +161,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
         verifyConnection,
         onApiInject,
         onApiEject,
-        [],
+        ["https://dev.btt.cf-identity-wallet.metadata.dev.cf-deployments.org"],
         onP2PConnect,
       );
     }

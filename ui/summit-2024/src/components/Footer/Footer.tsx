@@ -14,7 +14,6 @@ import { eventBus, EventName } from "../../utils/EventBus";
 
 const Footer = () => {
   const handleOpenTerms = () => {
-    console.log("handleOpenTerms");
     eventBus.publish(EventName.OpenTermsModal);
   };
   return (
@@ -80,7 +79,7 @@ const Footer = () => {
                   display: "flex",
                 }}
               >
-                <Typography onClick={() => handleOpenTerms()}>
+                <Typography >
                   <Link
                     sx={{
                       color: "text.primary",
@@ -88,6 +87,7 @@ const Footer = () => {
                       marginRight: 1,
                       cursor: "pointer",
                     }}
+                    onClick={() => handleOpenTerms()}
                   >
                     {i18n.t("footer.menu.termsAndConditions")}
                   </Link>
@@ -98,6 +98,7 @@ const Footer = () => {
                       marginRight: 1,
                       cursor: "pointer",
                     }}
+                    onClick={() => handleOpenTerms()}
                   >
                     {i18n.t("footer.menu.privacyPolicy")}
                   </Link>

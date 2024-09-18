@@ -30,6 +30,7 @@ import org.zalando.problem.Problem;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.Objects;
 
 import static com.bloxbean.cardano.client.util.HexUtil.encodeHexString;
 import static org.cardano.foundation.voting.domain.VoteReceipt.Status.*;
@@ -154,8 +155,6 @@ public class DefaultVoteService implements VoteService {
                     .withStatus(BAD_REQUEST)
                     .build());
         }
-
-
 
         if (details.getChainTip().isNotSynced()) {
             return Either.left(Problem.builder()
@@ -505,6 +504,102 @@ public class DefaultVoteService implements VoteService {
 
     @Override
     @Transactional(readOnly = true)
+    @Timed(value = "service.vote.voteReceipts", histogram = true)
+    public Either<Problem, List<VoteReceipt>> voteReceipts(JwtAuthenticationToken auth) {
+        log.info("Fetching voter's receipts for the signed data...");
+        val jwtWalletId = auth.getWalletId();
+        val jwtWalletType = auth.getWalletType();
+        val eventDetails = auth.eventDetails();
+
+        if (auth.isActionNotAllowed(VIEW_VOTE_RECEIPT)) {
+            return Either.left(Problem.builder()
+                    .withTitle("ACTION_NOT_ALLOWED")
+                    .withDetail("Action VIEW_VOTE_RECEIPT not allowed for the role:" + auth.role().name())
+                    .withStatus(BAD_REQUEST)
+                    .build());
+        }
+
+        val votes = voteRepository.findByEventIdAndWalletTypeAndWalletId(eventDetails.id(), jwtWalletType, jwtWalletId);
+        if (votes.isEmpty()) {
+            return Either.left(Problem.builder()
+                    .withTitle("NO_VOTES_FOUND")
+                    .withDetail("No votes found for the wallet: " + jwtWalletId)
+                    .withStatus(NOT_FOUND)
+                    .build());
+        }
+
+        List<VoteReceipt> voteReceipts = votes.stream().map(vote -> {
+            val categoryM = eventDetails.categoryDetailsById(vote.getCategoryId());
+            if (categoryM.isEmpty()) {
+                log.warn("Unrecognised category, id:{}", vote.getCategoryId());
+                return null;
+            }
+            val category = categoryM.orElseThrow();
+
+            val proposalM = category.findProposalById(vote.getProposalId());
+            if (proposalM.isEmpty()) {
+                log.warn("Proposal not found for voteId:{}", vote.getId());
+                return null;
+            }
+            val proposal = proposalM.orElseThrow();
+            val proposalIdOrName = category.gdprProtection() ? proposal.id() : proposal.name();
+
+            val latestVoteMerkleProof = voteMerkleProofService.findLatestProof(eventDetails.id(), vote.getId());
+
+            return latestVoteMerkleProof.map(proof -> {
+                log.info("Latest merkle proof found for voteId:{}", vote.getId());
+
+                val transactionDetailsE = chainFollowerClient.getTransactionDetails(proof.getL1TransactionHash());
+                if (transactionDetailsE.isEmpty()) {
+                    log.warn("Unable to get transaction details from chain-tip follower service, transactionHash:{}", proof.getL1TransactionHash());
+                    return null;
+                }
+                val transactionDetailsM = transactionDetailsE.get();
+
+                val isL1CommitmentOnChain = transactionDetailsM.map(ChainFollowerClient.TransactionDetailsResponse::finalityScore);
+
+                return VoteReceipt.builder()
+                        .id(vote.getId())
+                        .event(eventDetails.id())
+                        .category(category.id())
+                        .proposal(proposalIdOrName)
+                        .signature(vote.getSignature())
+                        .payload(vote.getPayload())
+                        .publicKey(vote.getPublicKey())
+                        .votedAtSlot(Long.valueOf(vote.getVotedAtSlot()).toString())
+                        .walletId(vote.getWalletId())
+                        .walletType(vote.getWalletType())
+                        .votingPower(vote.getVotingPower().map(String::valueOf))
+                        .status(readMerkleProofStatus(proof, isL1CommitmentOnChain))
+                        .finalityScore(isL1CommitmentOnChain)
+                        .merkleProof(convertMerkleProof(proof, transactionDetailsM))
+                        .build();
+            }).orElseGet(() -> {
+                log.info("Merkle proof not found yet for voteId:{}", vote.getId());
+
+                return VoteReceipt.builder()
+                        .id(vote.getId())
+                        .event(eventDetails.id())
+                        .category(category.id())
+                        .proposal(proposalIdOrName)
+                        .signature(vote.getSignature())
+                        .payload(vote.getPayload())
+                        .publicKey(vote.getPublicKey())
+                        .votedAtSlot(Long.valueOf(vote.getVotedAtSlot()).toString())
+                        .walletId(vote.getWalletId())
+                        .walletType(vote.getWalletType())
+                        .votingPower(vote.getVotingPower().map(String::valueOf))
+                        .status(BASIC)
+                        .build();
+            });
+        }).filter(Objects::nonNull).toList();
+
+        return Either.right(voteReceipts);
+    }
+
+
+    @Override
+    @Transactional(readOnly = true)
     @Timed(value = "service.vote.voteReceipt", histogram = true)
     public Either<Problem, VoteReceipt> voteReceipt(Web3AuthenticationToken web3AuthenticationToken) {
         log.info("Fetching voter's receipt for the signed data...");
@@ -543,6 +638,7 @@ public class DefaultVoteService implements VoteService {
                                                     JwtAuthenticationToken auth) {
         val jwtWalletId = auth.getWalletId();
         val jwtWalletType = auth.getWalletType();
+        val eventDetails = auth.eventDetails();
 
         if (auth.isActionNotAllowed(VIEW_VOTE_RECEIPT)) {
             return Either.left(Problem.builder()
@@ -552,7 +648,7 @@ public class DefaultVoteService implements VoteService {
                     .build());
         }
 
-        return actualVoteReceipt(auth.eventDetails(), categoryId, jwtWalletType, jwtWalletId);
+        return actualVoteReceipt(eventDetails, categoryId, jwtWalletType, jwtWalletId);
     }
 
     private Either<Problem, VoteReceipt> actualVoteReceipt(ChainFollowerClient.EventDetailsResponse event,

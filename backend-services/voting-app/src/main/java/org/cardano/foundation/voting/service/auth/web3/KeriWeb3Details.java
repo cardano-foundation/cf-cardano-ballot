@@ -45,6 +45,11 @@ public class KeriWeb3Details implements Web3ConcreteDetails {
     }
 
     @Override
+    public Optional<String> getOobi() {
+        return Optional.of(signedKERI.getOobi());
+    }
+
+    @Override
     public Optional<String> getPublicKey() {
         return Optional.of(signedKERI.getAid());
     }

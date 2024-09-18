@@ -48,6 +48,10 @@ public class CardanoWeb3Details implements Web3ConcreteDetails {
         return signedCIP30.getPublicKey();
     }
 
+    public Optional<String> getOobi() {
+        return Optional.empty();
+    }
+
     @Override
     public String getSignedJson() {
         return cip30VerificationResult.getMessage(MessageFormat.TEXT);

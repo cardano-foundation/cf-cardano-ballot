@@ -8,6 +8,8 @@ import org.cardano.foundation.voting.domain.WalletType;
 import javax.annotation.Nullable;
 import java.util.Optional;
 
+import static jakarta.persistence.EnumType.STRING;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -51,7 +53,7 @@ public class Vote extends AbstractTimestampEntity {
     @Column(name = "wallet_type", nullable = false)
     @Getter
     @Setter
-    @Enumerated(EnumType.STRING)
+    @Enumerated(STRING)
     private WalletType walletType;
 
     @Column(name = "signature", nullable = false, columnDefinition = "text", length = 2048)
@@ -59,7 +61,7 @@ public class Vote extends AbstractTimestampEntity {
     @Setter
     private String signature;
 
-    @Column(name = "signature", columnDefinition = "text", length = 2048)
+    @Column(name = "payload", columnDefinition = "text", length = 2048)
     @Nullable // in case of Cardano Wallet, payload is inside of signature
     private String payload;
 

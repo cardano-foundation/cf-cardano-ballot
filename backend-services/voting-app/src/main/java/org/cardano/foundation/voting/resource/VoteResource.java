@@ -204,6 +204,63 @@ public class VoteResource {
                         });
     }
 
+    @RequestMapping(value = "/receipts", method = { GET }, produces = "application/json")
+    @Timed(value = "resource.vote.receipts", histogram = true)
+    @Operation(
+            summary = "Retrieve all vote receipts for the authenticated user",
+            description = "Allows users to retrieve all vote receipts for their votes. Requires JWT authentication.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Vote receipts retrieved successfully.",
+                            content = @Content(
+                                    mediaType = "application/json", schema = @Schema(implementation = VoteReceipt.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Bad request, possibly due to missing JWT authentication.",
+                            content = {
+                                    @Content(mediaType = "application/json",
+                                            schema = @Schema(implementation = Problem.class))
+                            }
+                    ),
+                    @ApiResponse(responseCode = "500", description = "Internal server error")
+            }
+    )
+    public ResponseEntity<?> getAllVoteReceipts(Authentication authentication) {
+        if (!(authentication instanceof JwtAuthenticationToken jwtAuth)) {
+            var problem = Problem.builder()
+                    .withTitle("JWT_REQUIRED")
+                    .withDetail("JWT auth token needed!")
+                    .withStatus(BAD_REQUEST)
+                    .build();
+
+            return ResponseEntity
+                    .status(problem.getStatus().getStatusCode())
+                    .body(problem);
+        }
+
+        return voteService.voteReceipts(jwtAuth)
+                .fold(problem -> {
+                            log.warn("Failed to retrieve vote receipts, problem: {}", problem);
+
+                            return ResponseEntity
+                                    .status(problem.getStatus().getStatusCode())
+                                    .body(problem);
+                        },
+                        voteReceipts -> {
+                            var cacheControl = CacheControl.maxAge(1, MINUTES)
+                                    .noTransform()
+                                    .mustRevalidate();
+
+                            return ResponseEntity
+                                    .ok()
+                                    .cacheControl(cacheControl)
+                                    .body(voteReceipts);
+                        });
+    }
+
     @RequestMapping(value = "/receipt/{eventId}/{categoryId}", method = { HEAD, GET }, produces = "application/json")
     @Timed(value = "resource.vote.receipt.jwt", histogram = true)
     @Operation(

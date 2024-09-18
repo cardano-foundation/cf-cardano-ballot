@@ -3,7 +3,7 @@ package org.cardano.foundation.voting.domain;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Cardano networks")
-public enum CardanoNetwork {
+public enum Network {
 
     MAIN, // main-net
     PREPROD, // preprod-net

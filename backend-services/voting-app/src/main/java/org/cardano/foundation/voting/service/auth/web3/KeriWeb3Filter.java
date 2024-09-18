@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import io.vavr.control.Either;
 
 import static com.bloxbean.cardano.client.util.HexUtil.decodeHexString;
 import static org.cardano.foundation.voting.domain.Role.VOTER;
@@ -73,6 +74,7 @@ public class KeriWeb3Filter extends OncePerRequestFilter {
         val headerSignatureM = Optional.ofNullable(req.getHeader(X_Ballot_Signature));
         val headerPayloadM = Optional.ofNullable(req.getHeader(X_Ballot_Payload));
         val headerAidM = Optional.ofNullable(req.getHeader(X_Ballot_PublicKey));
+        val headerOobiM = Optional.ofNullable(req.getHeader(X_Ballot_Oobi));
 
         if (headerSignatureM.isEmpty()) {
             val problem = Problem.builder()
@@ -104,9 +106,66 @@ public class KeriWeb3Filter extends OncePerRequestFilter {
             sendBackProblem(objectMapper, res, problem);
             return;
         }
+
+        if (headerOobiM.isEmpty()) {
+            val problem = Problem.builder()
+                    .withTitle("NO_LOGIN_HTTP_HEADERS_SET")
+                    .withDetail("X-Ballot-Oobi http header must be set.")
+                    .withStatus(BAD_REQUEST)
+                    .build();
+
+            sendBackProblem(objectMapper, res, problem);
+            return;
+        }
+
         val headerSignature = headerSignatureM.orElseThrow();
         val headerSignedJson = new String(decodeHexString(headerPayloadM.orElseThrow()));
         val headerAid = headerAidM.orElseThrow();
+        val headerOobi = headerOobiM.orElseThrow();
+
+        // Step 1: Check if OOBI is already registered
+        Either<Problem, String> oobiCheckResult = keriVerificationClient.getOOBI(headerOobi, 1);
+        if (oobiCheckResult.isLeft()) {
+            sendBackProblem(objectMapper, res, oobiCheckResult.getLeft());
+            return;
+        }
+
+        // Log if OOBI is registered or not
+        log.info("OOBI status: {}", oobiCheckResult.get());
+
+        if (oobiCheckResult.isRight()) {
+            log.info("OOBI already registered: {}", oobiCheckResult);
+            Either<Problem, Boolean> verificationResult = keriVerificationClient.verifySignature(headerAid, headerSignature, headerSignedJson);
+
+            if (verificationResult.isEmpty()) {
+                val problem = Problem.builder()
+                        .withTitle("KERI_SIGNATURE_VERIFICATION_FAILED")
+                        .withDetail("Unable to verify KERI header signature, reason: " + verificationResult.swap().get().getDetail())
+                        .withStatus(BAD_REQUEST)
+                        .build();
+
+                sendBackProblem(objectMapper, res, problem);
+                return;
+            }
+        }
+
+        log.info("OOBI not registered yet: {}", headerOobi);
+        // Step 2: Register OOBI if not already registered
+        val oobiRegistrationResultE = keriVerificationClient.registerOOBI(headerOobi);
+
+        if (oobiRegistrationResultE.isLeft()) {
+            sendBackProblem(objectMapper, res, oobiRegistrationResultE.getLeft());
+            return;
+        }
+
+        log.info("OOBI registered successfully: {}", headerOobi);
+
+        // Step 3: Attempt to verify OOBI registration up to 60 times
+        val oobiFetchResultE = keriVerificationClient.getOOBI(headerOobi, 60);
+        if (oobiFetchResultE.isLeft()) {
+            sendBackProblem(objectMapper, res, oobiFetchResultE.getLeft());
+            return;
+        }
 
         val keriVerificationResultE = keriVerificationClient.verifySignature(headerAid, headerSignature, headerSignedJson);
         if (keriVerificationResultE.isEmpty()) {
@@ -314,7 +373,7 @@ public class KeriWeb3Filter extends OncePerRequestFilter {
 
         val eventDetails = eventDetailsM.orElseThrow();
 
-        val signedKERI = new SignedKERI(headerSignature, headerSignedJson, headerAid);
+        val signedKERI = new SignedKERI(headerSignature, headerSignedJson, headerAid, headerOobi);
 
         val web3Details = Web3CommonDetails.builder()
                 .event(eventDetails)

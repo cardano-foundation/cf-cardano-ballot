@@ -8,7 +8,7 @@ plugins {
 	id("io.spring.dependency-management") version "1.1.6"
 	id("org.graalvm.buildtools.native") version "0.9.26"
 	id("cz.habarta.typescript-generator") version "3.2.1263"
-  id("com.github.ben-manes.versions") version "0.48.0"
+    id("com.github.ben-manes.versions") version "0.48.0"
 	jacoco
 }
 
@@ -50,8 +50,8 @@ dependencies {
 
 	runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 
-  implementation("org.flywaydb:flyway-core")
-  implementation("org.flywaydb:flyway-database-postgresql")
+    implementation("org.flywaydb:flyway-core")
+    implementation("org.flywaydb:flyway-database-postgresql")
 
 	implementation("org.zalando:problem-spring-web-starter:0.29.1")
 
@@ -69,10 +69,10 @@ dependencies {
 	implementation("com.bloxbean.cardano:aiken-java-binding:0.0.8")
 	annotationProcessor("com.bloxbean.cardano:cardano-client-annotation-processor:0.5.1")
 
-	implementation("com.bloxbean.cardano:yaci-store-spring-boot-starter:0.1.0-rc4")
-	implementation("com.bloxbean.cardano:yaci-store-blocks-spring-boot-starter:0.1.0-rc4")
-	implementation("com.bloxbean.cardano:yaci-store-transaction-spring-boot-starter:0.1.0-rc4")
-	implementation("com.bloxbean.cardano:yaci-store-metadata-spring-boot-starter:0.1.0-rc4")
+	implementation("com.bloxbean.cardano:yaci-store-spring-boot-starter:0.1.0-rc5")
+	implementation("com.bloxbean.cardano:yaci-store-blocks-spring-boot-starter:0.1.0-rc5")
+	implementation("com.bloxbean.cardano:yaci-store-transaction-spring-boot-starter:0.1.0-rc5")
+	implementation("com.bloxbean.cardano:yaci-store-metadata-spring-boot-starter:0.1.0-rc5")
 
 	implementation("io.blockfrost:blockfrost-java:0.1.3")
 
@@ -81,7 +81,7 @@ dependencies {
 	runtimeOnly("org.postgresql:postgresql")
 
 	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.11")
-	implementation("org.cardanofoundation:cf-cardano-conversions-java:1.1.3")
+	implementation("org.cardanofoundation:cf-cardano-conversions-java:1.2.0")
 
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
 

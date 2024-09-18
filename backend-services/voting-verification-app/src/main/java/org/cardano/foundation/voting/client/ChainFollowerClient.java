@@ -4,7 +4,7 @@ package org.cardano.foundation.voting.client;
 import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.cardano.foundation.voting.domain.CardanoNetwork;
+import org.cardano.foundation.voting.domain.Network;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -25,7 +25,7 @@ public class ChainFollowerClient {
 
     private final RestTemplate restTemplate;
 
-    private final CardanoNetwork network;
+    private final Network network;
 
     @Value("${ledger.follower.app.base.url}")
     private String ledgerFollowerBaseUrl;
@@ -88,6 +88,6 @@ public class ChainFollowerClient {
 
     }
 
-    record MerkleRootHashResponse(boolean isPresent, CardanoNetwork network) { }
+    record MerkleRootHashResponse(boolean isPresent, Network network) { }
 
 }

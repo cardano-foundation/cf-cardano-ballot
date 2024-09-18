@@ -53,17 +53,6 @@ jobs:
             --DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}" \
             --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}"
 
-      - name: Dispatch successful build event to private repo
-        uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-dispatch-event@main
-        with:
-          EVENT_TYPE: "${{ github.event_name }}-${{ steps.cf-gha-baseline.outputs.TRIGGERING_REF }}-${{ steps.cf-gha-baseline.outputs.BRANCH_NAME }}"
-          GITHUB_TOKEN: ${{ secrets.PRIVATE_REPO_PAT }}
-          GITHUB_REPO: ${{ secrets.PRIVATE_REPO }}
-          TRIGGERING_EVENT: ${{ github.event_name }}
-          TRIGGERING_REF: ${{ steps.cf-gha-baseline.outputs.TRIGGERING_REF }}
-          TRIGGERING_BRANCH: ${{ steps.cf-gha-baseline.outputs.BRANCH_NAME }}
-          GIT_SHORT_COMMIT: ${{ steps.cf-gha-baseline.outputs.GIT_SHORT_COMMIT }}
-
   ui-summit-2024:
     runs-on: ${{ fromJson(vars.RUNS_ON) }}
     env:
@@ -92,6 +81,26 @@ jobs:
             --DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}" \
             --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}"
 
+  dispatch-build-success-event:
+    runs-on: ${{ fromJson(vars.RUNS_ON) }}
+    needs:
+      - ui-summit-2024
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: ⛮ cf-gha-baseline
+        uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-baseline@main
+        id: cf-gha-baseline
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PRIVATE_DOCKER_REGISTRY_URL: ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}
+          PRIVATE_DOCKER_REGISTRY_USER: ${{ env.PRIVATE_DOCKER_REGISTRY_USER }}
+          PRIVATE_DOCKER_REGISTRY_PASS: ${{ env.PRIVATE_DOCKER_REGISTRY_PASS }}
+          HUB_DOCKER_COM_USER: ${{ secrets.HUB_DOCKER_COM_USER }}
+          HUB_DOCKER_COM_PASS: ${{ secrets.HUB_DOCKER_COM_PASS }}
+          DOCKER_REGISTRIES: "${{ secrets.DOCKER_REGISTRIES }}"
+
       - name: Dispatch successful build event to private repo
         uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-dispatch-event@main
         with:
@@ -101,4 +110,5 @@ jobs:
           TRIGGERING_EVENT: ${{ github.event_name }}
           TRIGGERING_REF: ${{ steps.cf-gha-baseline.outputs.TRIGGERING_REF }}
           TRIGGERING_BRANCH: ${{ steps.cf-gha-baseline.outputs.BRANCH_NAME }}
+          TRIGGERING_GHRUNID: ${{ github.run_id }}
           GIT_SHORT_COMMIT: ${{ steps.cf-gha-baseline.outputs.GIT_SHORT_COMMIT }}

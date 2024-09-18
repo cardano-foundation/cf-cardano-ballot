@@ -111,9 +111,9 @@ spec:
               value: {{ $.Values.ledgerFollowerAppUrl }}
 
             - name: CARDANO_NODE_IP
-              value: {{ $.Values.cardanoNodeIp }}
+              value: {{ $.Values.cardanoNodeIp | default "preprod-node.world.dev.cardano.org" | quote }}
             - name: CARDANO_NODE_PORT
-              value: {{ $.Values.cardanoNodePort }}
+              value: {{ $.Values.cardanoNodePort | default "30000" | quote }}
 
           ports:
             - name: http

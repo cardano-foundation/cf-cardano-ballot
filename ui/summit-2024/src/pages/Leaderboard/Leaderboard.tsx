@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import theme from "../../common/styles/theme";
 import { PieChart, pieChartDefaultProps } from "react-minimal-pie-chart";
-import leaderboard1Bg from "../../assets/leaderboard1.svg";
+import leaderboard1Bg from "@assets/leaderboard1.svg";
 
 import {
   addressSlice,
@@ -187,7 +187,7 @@ const Leaderboard: React.FC = () => {
                             sx={{
                               p: "28px",
                               backgroundImage: `url(${leaderboard1Bg})`,
-                              backgroundSize: "cover",
+                              backgroundSize: "400% 400%",
                               backgroundPosition: "center",
                               borderRadius: "24px",
                               backdropFilter: "blur(5px)",

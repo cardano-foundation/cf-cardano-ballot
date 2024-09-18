@@ -11,7 +11,7 @@ import {
   Typography,
 } from "@mui/material";
 import awardImg from "../../../assets/awardWinner.svg";
-import winnerBg from "../../../assets/winnerBg.svg";
+import winnerBg from "@assets/winnerBg.svg";
 import votesIcon from "../../../assets/votesIcon.svg";
 import positionIcon from "../../../assets/positionIcon.svg";
 import nomineeIcon from "../../../assets/nomineeIcon.svg";

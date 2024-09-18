@@ -2,7 +2,7 @@ import React from "react";
 import { Grid, Paper, Typography, Box } from "@mui/material";
 import HoverCircle from "../../../components/common/HoverCircle/HoverCircle";
 import theme from "../../../common/styles/theme";
-import nomineeBg from "../../../assets/nomineeCard.svg";
+import nomineeBg from "@assets/nomineeCard.svg";
 import { Proposal } from "../../../store/reducers/eventCache/eventCache.types";
 import { useAppSelector } from "../../../store/hooks";
 import { getVotes } from "../../../store/reducers/votesCache";

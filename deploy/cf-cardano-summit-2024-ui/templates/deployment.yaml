@@ -40,7 +40,7 @@ spec:
             - name: VITE_MATOMO_BASE_URL
               value: {{ .Values.matomoBaseUrl | default "https://example.com" }}
             - name: VITE_MATOMO_PROJECT_ID
-              value: {{ .Values.matomoProjectId | default "0" | quote }}
+              value: {{ .Values.matomoProjectId | default "1" | quote }}
             - name: VITE_TARGET_NETWORK
               value: {{ .Values.targetNetwork | default "PREPROD" }}
             - name: VITE_EVENT_ID

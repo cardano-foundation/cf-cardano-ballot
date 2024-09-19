@@ -29,8 +29,9 @@ public class BlockchainDataConfig {
     @Bean
     @Profile( value = { "prod", "dev--preprod" } )
     public BlockchainTransactionSubmissionService cardanoSummitTransactionSubmissionService(HttpClient httpClient,
-                                                                                            @Value("${cardano.tx.submit.api.url}") String cardanoSubmitApiUrl) {
-        return new CardanoSubmitApiBlockchainTransactionSubmissionService(cardanoSubmitApiUrl, httpClient);
+                                                                                            @Value("${cardano.tx.submit.api.url}") String cardanoSubmitApiUrl,
+                                                                                            @Value("${blockfrost.api.key}") String blockfrostApiKey) {
+        return new CardanoSubmitApiBlockchainTransactionSubmissionService(cardanoSubmitApiUrl, httpClient, blockfrostApiKey);
     }
 
 }

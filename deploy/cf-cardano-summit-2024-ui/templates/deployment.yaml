@@ -44,7 +44,7 @@ spec:
             - name: VITE_EVENT_ID
               value: {{ .Values.eventId | default "CF_SUMMIT_2024_8BCC" }}
             - name: VITE_SUPPORTED_WALLETS
-              value: {{ .Values.supportedWallets | default "flint,eternl,nami,typhon,yoroi,nufi,gerowallet,lace" }}
+              value: {{ .Values.supportedWallets | default "eternl,nami,typhon,yoroi,nufi,gerowallet,lace" }}
             - name: VITE_SHOW_WINNERS
               value: {{ .Values.showWinners | default "false" | quote }}
             - name: VITE_SHOW_HYDRA_TALLY

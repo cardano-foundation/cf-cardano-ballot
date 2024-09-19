@@ -79,7 +79,7 @@ const Footer = () => {
                   display: "flex",
                 }}
               >
-                <Typography >
+                <Typography>
                   <Link
                     sx={{
                       color: "text.primary",
@@ -103,7 +103,19 @@ const Footer = () => {
                     {i18n.t("footer.menu.privacyPolicy")}
                   </Link>
                   <span>
-                    Version {env.APP_VERSION}(
+                    <span
+                        style={{
+                            cursor: "pointer"
+                        }}
+                      onClick={() =>
+                        window.open(
+                          `https://github.com/cardano-foundation/cf-cardano-ballot/commit/${env.APP_VERSION}`,
+                        )
+                      }
+                    >
+                      Version {env.APP_VERSION}
+                    </span>
+                    (
                     <Link
                       href="https://status.voting.summit.cardano.org/"
                       target="_blank"

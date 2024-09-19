@@ -18,7 +18,7 @@ const MATOMO_BASE_URL =
 const MATOMO_PROJECT_ID =
   window._env_?.VITE_MATOMO_PROJECT_ID ||
   import.meta.env.VITE_MATOMO_PROJECT_ID ||
-  "none";
+  "0";
 const DISCORD_CHANNEL_URL =
   window._env_?.VITE_DISCORD_CHANNEL_URL ||
   import.meta.env.VITE_DISCORD_CHANNEL_URL;

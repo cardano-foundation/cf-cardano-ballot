@@ -49,6 +49,7 @@ import {
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 import { env } from "../../common/constants/env";
 import { formatISODate } from "../../utils/utils";
+import { useMatomo } from "@datapunt/matomo-tracker-react";
 
 interface CategoriesProps {
   embedded?: boolean;
@@ -82,6 +83,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
 
   const session = getUserInSession();
   const dispatch = useAppDispatch();
+  const { trackEvent } = useMatomo();
 
   const showEventDate =
     eventCache.notStarted ||
@@ -308,9 +310,20 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
           eventBus.publish(EventName.OpenLoginModal);
         }
 
+        trackEvent({
+          category: "vote-failed",
+          action: "click-event",
+          // @ts-ignore
+          name: submitVoteResult.message,
+        });
         return;
       }
       eventBus.publish(EventName.ShowToast, "Vote submitted successfully");
+      trackEvent({
+        category: "vote-successfully",
+        action: "click-event",
+        name: proposalId,
+      });
 
       const updatedVotes = [
         ...userVotes,

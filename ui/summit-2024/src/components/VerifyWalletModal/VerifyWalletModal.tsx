@@ -48,6 +48,7 @@ import { ToastType } from "../common/Toast/Toast.types";
 import { CustomInput } from "../common/CustomInput/CustomInput";
 import theme from "../../common/styles/theme";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
+import { useMatomo } from "@datapunt/matomo-tracker-react";
 
 // TODO: env.
 const excludedCountries: MuiTelInputCountry[] | undefined = [];
@@ -55,7 +56,7 @@ const excludedCountries: MuiTelInputCountry[] | undefined = [];
 const VerifyWalletModal = () => {
   const connectedWallet = useAppSelector(getConnectedWallet);
   const dispatch = useAppDispatch();
-
+  const { trackEvent } = useMatomo();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [verifyCurrentPaths, setVerifyCurrentPaths] = useState<
@@ -167,6 +168,7 @@ const VerifyWalletModal = () => {
               ToastType.Error,
             );
             setPhoneCodeIsBeenSending(false);
+            trackEvent({ category: "sms-sent-error", action: "backend-event" });
           } else {
             handleSetCurrentPath(VerifyWalletFlow.CONFIRM_CODE);
             dispatch(
@@ -179,6 +181,7 @@ const VerifyWalletModal = () => {
             setPhoneCodeIsSent(true);
             setCheckImNotARobot(false);
             setPhoneCodeIsBeenSending(false);
+            trackEvent({ category: "sms-sent", action: "backend-event" });
           }
         })
         .catch(() => {
@@ -206,6 +209,10 @@ const VerifyWalletModal = () => {
             "Phone number verified successfully",
           );
           setIsOpen(false);
+          trackEvent({
+            category: "phone-number-verified",
+            action: "backend-event",
+          });
         } else {
           setPhoneCodeShowError(true);
           eventBus.publish(
@@ -215,6 +222,10 @@ const VerifyWalletModal = () => {
           );
           setPhoneCodeIsBeenConfirming(false);
           handleSetCurrentPath(VerifyWalletFlow.DID_NOT_RECEIVE_CODE);
+          trackEvent({
+            category: "phone-number-verified-failed",
+            action: "backend-event",
+          });
         }
       })
       .catch(() => {
@@ -250,12 +261,17 @@ const VerifyWalletModal = () => {
         verifyDiscordResult.message || "Error while verifying",
         ToastType.Error,
       );
+      trackEvent({
+        category: "discord-verification-failed",
+        action: "backend-event",
+      });
       return;
     }
     // @ts-ignore
     dispatch(setWalletIsVerified(verifyDiscordResult.verified));
     eventBus.publish(EventName.ShowToast, "Wallet verified successfully");
     handleCloseModal();
+    trackEvent({ category: "discord-verified", action: "backend-event" });
   };
 
   const renderStartVerification = () => {

@@ -3,12 +3,18 @@ import Logo from "../../../assets/logo.svg";
 import dubaiBg from "@assets/dubai-bg.svg";
 import { CustomButton } from "../../../components/common/CustomButton/CustomButton";
 import theme from "../../../common/styles/theme";
+import { useMatomo } from "@datapunt/matomo-tracker-react";
 
 const TicketsSection = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const { trackEvent } = useMatomo();
 
   const handleButtonClick = () => {
     window.open("https://summit.cardano.org/registration/", "_blank");
+    trackEvent({
+      category: "open-buy-summit-tickets",
+      action: "click-event",
+    });
   };
 
   return (

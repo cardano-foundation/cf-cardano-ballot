@@ -10,9 +10,6 @@ import App from "./App";
 import { store } from "./store";
 import { env } from "./common/constants/env";
 
-console.log("env.MATOMO_PROJECT_ID");
-console.log(env.MATOMO_PROJECT_ID);
-console.log(parseInt(env.MATOMO_PROJECT_ID, 10));
 const instance = createInstance({
   urlBase: env.MATOMO_BASE_URL,
   siteId: parseInt(env.MATOMO_PROJECT_ID, 10),

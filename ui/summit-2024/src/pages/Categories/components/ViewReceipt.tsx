@@ -21,7 +21,7 @@ import {
   setVoteReceipt,
   setVotes,
 } from "../../../store/reducers/votesCache";
-import { copyToClipboard } from "../../../utils/utils";
+import { copyToClipboard, resolveCardanoNetwork } from "../../../utils/utils";
 import { getUserInSession, tokenIsExpired } from "../../../utils/session";
 import {
   getVoteReceipt,
@@ -31,6 +31,8 @@ import { eventBus, EventName } from "../../../utils/EventBus";
 import { ToastType } from "../../../components/common/Toast/Toast.types";
 import { parseError } from "../../../common/constants/errors";
 import { verifyVote } from "../../../common/api/verificationService";
+import { env } from "../../../common/constants/env";
+import { NetworkType } from "../../../components/ConnectWalletList/ConnectWalletList.types";
 
 const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
   const session = getUserInSession();
@@ -77,10 +79,11 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
 
   const viewOnChainVote = () => {
     if (receipt?.merkleProof?.transactionHash) {
-      window.open(
-        `https://preprod.cardanoscan.io/transaction/${receipt?.merkleProof?.transactionHash}`,
-        "_blank",
-      );
+      let url = `https://explorer.cardano.org/transaction?id=${receipt?.merkleProof?.transactionHash}`;
+      if (resolveCardanoNetwork(env.TARGET_NETWORK) === NetworkType.TESTNET) {
+        url = `https://preprod.cardanoscan.io/transaction/${receipt?.merkleProof?.transactionHash}`;
+      }
+      window.open(url, "_blank");
     }
   };
 
@@ -204,7 +207,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
           ),
           title: "In Progress",
           description:
-            "Your transaction has been sent and is awaiting confirmation from the Cardano network (this could be 5-10 minutes). Once this has been confirmed you’ll be able to verify your vote.",
+            "Your transaction has been sent and is awaiting for the event's grace period to finish. Once it ends you'll be able to verify your vote.",
           iconBottom: (
             <RefreshIcon
               sx={{
@@ -260,7 +263,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
           ),
           title: "In Progress",
           description:
-            "Your transaction has been sent and is awaiting confirmation from the Cardano network (this could be 5-10 minutes). Once this has been confirmed you’ll be able to verify your vote.",
+            "Your transaction has been sent and is awaiting for the event's grace period to finish. Once it ends you'll be able to verify your vote.",
           iconBottom: (
             <RefreshIcon
               sx={{

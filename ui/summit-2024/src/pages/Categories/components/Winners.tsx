@@ -67,10 +67,12 @@ const Winners: React.FC<WinnersProps> = ({
     (v) => v.categoryId === categoryId,
   )?.proposalId;
 
-  let nominees =
+  const nominees =
     extendedCategoryData.find((c) => c.id === categoryId)?.proposals || [];
-  const winner = nominees[0];
-  nominees.shift();
+
+  const maxVotes = Math.max(...nominees.map((n) => n.votes || 0));
+  const winners = nominees.filter((n) => n.votes === maxVotes);
+  const remainingNominees = nominees.filter((n) => n.votes !== maxVotes);
 
   useEffect(() => {
     getVotingResults().then((response) => {
@@ -169,7 +171,7 @@ const Winners: React.FC<WinnersProps> = ({
             zIndex: 3,
           }}
         >
-          {votedFor === winner.id ? (
+          {winners.find((w) => w.id === votedFor) ? (
             <TickIcon circleSize={28} tickSize={20} />
           ) : null}
         </Box>
@@ -188,32 +190,45 @@ const Winners: React.FC<WinnersProps> = ({
             marginBottom: "40px",
           }}
         >
-          Winner!
+          Winner
+          {winners.length > 1 ? "s" : ""}!
         </Typography>
-        <Box component="div" display="flex" justifyContent="center" mt={2}>
-          <img src={awardImg} alt="Placeholder" height={148} />
-        </Box>
-        <Typography
-          onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) =>
-            handleLearnMoreClick(event, "")
-          }
-          align="center"
+        <Box
+          component="div"
+          display="flex"
+          justifyContent="center"
           mt={2}
           sx={{
-            color: theme.palette.text.neutralLightest,
-            textAlign: "center",
-            textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
-            fontFamily: "Dosis",
-            fontSize: "28px",
-            fontStyle: "normal",
-            fontWeight: 700,
-            lineHeight: "32px",
-            marginTop: "40px",
-            cursor: "pointer",
+            marginBottom: "30px",
           }}
         >
-          {winner?.name}
-        </Typography>
+          <img src={awardImg} alt="Placeholder" height={148} />
+        </Box>
+        {winners.map((winner) => {
+          return (
+            <Typography
+              onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) =>
+                handleLearnMoreClick(event, "")
+              }
+              align="center"
+              mt={2}
+              sx={{
+                color: theme.palette.text.neutralLightest,
+                textAlign: "center",
+                textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
+                fontFamily: "Dosis",
+                fontSize: "28px",
+                fontStyle: "normal",
+                fontWeight: 700,
+                lineHeight: "32px",
+                marginTop: "10px",
+                cursor: "pointer",
+              }}
+            >
+              {winner?.name}
+            </Typography>
+          );
+        })}
         <Box
           component="div"
           sx={{
@@ -275,10 +290,9 @@ const Winners: React.FC<WinnersProps> = ({
                 marginTop: "4px",
               }}
             >
-              {winner?.votes}
+              {winners[0].votes}
             </Typography>
           </Box>
-
           <Box
             component="div"
             sx={{
@@ -421,7 +435,7 @@ const Winners: React.FC<WinnersProps> = ({
           </TableRow>
         </TableHead>
         <TableBody>
-          {nominees?.map((nominee, index) => (
+          {remainingNominees?.map((nominee, index) => (
             <TableRow
               key={index}
               sx={{

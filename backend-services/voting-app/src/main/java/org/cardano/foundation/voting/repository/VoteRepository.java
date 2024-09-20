@@ -25,6 +25,11 @@ public interface VoteRepository extends JpaRepository<Vote, String> {
                                                                       WalletType walletType,
                                                                       String walletId);
 
+    @Query("SELECT v FROM Vote v WHERE v.eventId = :eventId AND v.walletType = :walletType AND v.walletId = :walletId ORDER BY v.votedAtSlot, v.idNumericHash ASC")
+    List<Vote> findByEventIdAndWalletTypeAndWalletId(@Param("eventId") String eventId,
+                                                     @Param("walletType") WalletType walletType,
+                                                     @Param("walletId") String walletId);
+
     @Query("SELECT COUNT(v) AS totalVoteCount, SUM(v.votingPower) AS totalVotingPower FROM Vote v WHERE v.eventId = :eventId")
     List<HighLevelEventVoteCount> getHighLevelEventStats(@Param("eventId") String eventId);
 

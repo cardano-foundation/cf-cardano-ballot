@@ -19,11 +19,22 @@ public class VoteVerificationRequest {
     private String rootHash;
 
     @NotBlank
-    @Schema(description = "COSE signature of the vote", required = true)
-    protected String voteCoseSignature;
+    @Schema(description = "Cardano or KERI", required = true)
+    private WalletType walletType;
+
+    @NotBlank
+    @Schema(description = "aid or stake address", required = true)
+    private String walletId;
+
+    @Schema(description = "payload")
+    protected Optional<String> payload;
+
+    @NotBlank
+    @Schema(description = "Signature of the vote", required = true)
+    protected String signature;
 
     @Schema(description = "Public key for the vote")
-    protected Optional<@NotBlank String> voteCosePublicKey;
+    protected Optional<@NotBlank String> publicKey;
 
     @Builder.Default
     @Schema(description = "Merkle proof")

@@ -39,12 +39,14 @@ spec:
               value: {{ .Values.discordBotUrl | default "https://discord.com/channels/example" }}
             - name: VITE_MATOMO_BASE_URL
               value: {{ .Values.matomoBaseUrl | default "https://example.com" }}
+            - name: VITE_MATOMO_PROJECT_ID
+              value: {{ .Values.matomoProjectId | default "1" | quote }}
             - name: VITE_TARGET_NETWORK
               value: {{ .Values.targetNetwork | default "PREPROD" }}
             - name: VITE_EVENT_ID
               value: {{ .Values.eventId | default "CF_SUMMIT_2024_8BCC" }}
             - name: VITE_SUPPORTED_WALLETS
-              value: {{ .Values.supportedWallets | default "flint,eternl,nami,typhon,yoroi,nufi,gerowallet,lace" }}
+              value: {{ .Values.supportedWallets | default "eternl,nami,typhon,yoroi,nufi,gerowallet,lace" }}
             - name: VITE_SHOW_WINNERS
               value: {{ .Values.showWinners | default "false" | quote }}
             - name: VITE_SHOW_HYDRA_TALLY

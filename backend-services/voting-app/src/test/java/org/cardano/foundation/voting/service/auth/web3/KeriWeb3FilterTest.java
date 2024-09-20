@@ -123,6 +123,10 @@ class KeriWeb3FilterTest {
         when(request.getHeader(X_Ballot_Signature)).thenReturn("signature");
         when(request.getHeader(X_Ballot_Payload)).thenReturn("7061796C6F6164");
         when(request.getHeader(X_Ballot_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
+        when(request.getHeader(X_Ballot_Oobi)).thenReturn("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ");
+
+        when(keriVerificationClient.getOOBI(anyString(), anyInt())).thenReturn(Either.right("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ"));
+        when(keriVerificationClient.registerOOBI(anyString())).thenReturn(Either.right(true));
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.left(mock(Problem.class)));
 
         filter.doFilterInternal(request, response, chain);
@@ -136,6 +140,10 @@ class KeriWeb3FilterTest {
         when(request.getHeader(X_Ballot_Signature)).thenReturn("signature");
         when(request.getHeader(X_Ballot_Payload)).thenReturn("7061796C6F6164");
         when(request.getHeader(X_Ballot_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
+        when(request.getHeader(X_Ballot_Oobi)).thenReturn("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ");
+
+        when(keriVerificationClient.getOOBI(anyString(), anyInt())).thenReturn(Either.right("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ"));
+        when(keriVerificationClient.registerOOBI(anyString())).thenReturn(Either.right(true));
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
         when(jsonService.decodeGenericKeri(any())).thenReturn(Either.left(mock(Problem.class)));
 
@@ -156,7 +164,10 @@ class KeriWeb3FilterTest {
         when(request.getHeader(X_Ballot_Signature)).thenReturn("signature");
         when(request.getHeader(X_Ballot_Payload)).thenReturn("7061796C6F6164");
         when(request.getHeader(X_Ballot_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
+        when(request.getHeader(X_Ballot_Oobi)).thenReturn("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ");
 
+        when(keriVerificationClient.getOOBI(anyString(), anyInt())).thenReturn(Either.right("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ"));
+        when(keriVerificationClient.registerOOBI(anyString())).thenReturn(Either.right(true));
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
 
         val genericEnvelope = KERIEnvelope.<Map<String, Object>>builder()
@@ -183,7 +194,10 @@ class KeriWeb3FilterTest {
         when(request.getHeader(X_Ballot_Signature)).thenReturn("signature");
         when(request.getHeader(X_Ballot_Payload)).thenReturn("7061796C6F6164");
         when(request.getHeader(X_Ballot_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
+        when(request.getHeader(X_Ballot_Oobi)).thenReturn("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ");
 
+        when(keriVerificationClient.getOOBI(anyString(), anyInt())).thenReturn(Either.right("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ"));
+        when(keriVerificationClient.registerOOBI(anyString())).thenReturn(Either.right(true));
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
 
         val genericEnvelope = KERIEnvelope.<Map<String, Object>>builder()
@@ -213,7 +227,10 @@ class KeriWeb3FilterTest {
         when(request.getHeader(X_Ballot_Signature)).thenReturn("signature");
         when(request.getHeader(X_Ballot_Payload)).thenReturn("7061796C6F6164");
         when(request.getHeader(X_Ballot_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
+        when(request.getHeader(X_Ballot_Oobi)).thenReturn("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ");
 
+        when(keriVerificationClient.getOOBI(anyString(), anyInt())).thenReturn(Either.right("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ"));
+        when(keriVerificationClient.registerOOBI(anyString())).thenReturn(Either.right(true));
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
 
         when(chainFollowerClient.getChainTip()).thenReturn(Either.right(
@@ -249,7 +266,10 @@ class KeriWeb3FilterTest {
         when(request.getHeader(X_Ballot_Signature)).thenReturn("signature");
         when(request.getHeader(X_Ballot_Payload)).thenReturn("7061796C6F6164");
         when(request.getHeader(X_Ballot_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
+        when(request.getHeader(X_Ballot_Oobi)).thenReturn("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ");
 
+        when(keriVerificationClient.getOOBI(anyString(), anyInt())).thenReturn(Either.right("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ"));
+        when(keriVerificationClient.registerOOBI(anyString())).thenReturn(Either.right(true));
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
 
         when(chainFollowerClient.getChainTip()).thenReturn(Either.left(Problem.builder()
@@ -288,7 +308,10 @@ class KeriWeb3FilterTest {
         when(request.getHeader(X_Ballot_Signature)).thenReturn("signature");
         when(request.getHeader(X_Ballot_Payload)).thenReturn("7061796C6F6164");
         when(request.getHeader(X_Ballot_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
+        when(request.getHeader(X_Ballot_Oobi)).thenReturn("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ");
 
+        when(keriVerificationClient.getOOBI(anyString(), anyInt())).thenReturn(Either.right("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ"));
+        when(keriVerificationClient.registerOOBI(anyString())).thenReturn(Either.right(true));
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
 
         when(expirationService.isSlotExpired(any(), anyLong())).thenReturn(true);
@@ -327,7 +350,10 @@ class KeriWeb3FilterTest {
         when(request.getHeader(X_Ballot_Signature)).thenReturn("signature");
         when(request.getHeader(X_Ballot_Payload)).thenReturn("7061796C6F6164");
         when(request.getHeader(X_Ballot_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
+        when(request.getHeader(X_Ballot_Oobi)).thenReturn("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ");
 
+        when(keriVerificationClient.getOOBI(anyString(), anyInt())).thenReturn(Either.right("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ"));
+        when(keriVerificationClient.registerOOBI(anyString())).thenReturn(Either.right(true));
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
 
         when(chainFollowerClient.getChainTip()).thenReturn(Either.right(
@@ -364,7 +390,10 @@ class KeriWeb3FilterTest {
         when(request.getHeader(X_Ballot_Signature)).thenReturn("signature");
         when(request.getHeader(X_Ballot_Payload)).thenReturn("7061796C6F6164");
         when(request.getHeader(X_Ballot_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
+        when(request.getHeader(X_Ballot_Oobi)).thenReturn("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ");
 
+        when(keriVerificationClient.getOOBI(anyString(), anyInt())).thenReturn(Either.right("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ"));
+        when(keriVerificationClient.registerOOBI(anyString())).thenReturn(Either.right(true));
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
 
         when(chainFollowerClient.getChainTip()).thenReturn(Either.right(
@@ -401,7 +430,10 @@ class KeriWeb3FilterTest {
         when(request.getHeader(X_Ballot_Signature)).thenReturn("signature");
         when(request.getHeader(X_Ballot_Payload)).thenReturn("7061796C6F6164");
         when(request.getHeader(X_Ballot_PublicKey)).thenReturn("AIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
+        when(request.getHeader(X_Ballot_Oobi)).thenReturn("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ");
 
+        when(keriVerificationClient.getOOBI(anyString(), anyInt())).thenReturn(Either.right("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ"));
+        when(keriVerificationClient.registerOOBI(anyString())).thenReturn(Either.right(true));
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
 
         when(chainFollowerClient.getChainTip()).thenReturn(Either.right(
@@ -438,7 +470,10 @@ class KeriWeb3FilterTest {
         when(request.getHeader(X_Ballot_Signature)).thenReturn("signature");
         when(request.getHeader(X_Ballot_Payload)).thenReturn("7061796C6F6164");
         when(request.getHeader(X_Ballot_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
+        when(request.getHeader(X_Ballot_Oobi)).thenReturn("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ");
 
+        when(keriVerificationClient.getOOBI(anyString(), anyInt())).thenReturn(Either.right("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ"));
+        when(keriVerificationClient.registerOOBI(anyString())).thenReturn(Either.right(true));
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
 
         when(chainFollowerClient.getChainTip()).thenReturn(Either.right(
@@ -475,7 +510,10 @@ class KeriWeb3FilterTest {
         when(request.getHeader(X_Ballot_Signature)).thenReturn("signature");
         when(request.getHeader(X_Ballot_Payload)).thenReturn("7061796C6F6164");
         when(request.getHeader(X_Ballot_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
+        when(request.getHeader(X_Ballot_Oobi)).thenReturn("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ");
 
+        when(keriVerificationClient.getOOBI(anyString(), anyInt())).thenReturn(Either.right("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ"));
+        when(keriVerificationClient.registerOOBI(anyString())).thenReturn(Either.right(true));
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
 
         when(chainFollowerClient.getChainTip()).thenReturn(Either.right(
@@ -519,7 +557,10 @@ class KeriWeb3FilterTest {
         when(request.getHeader(X_Ballot_Signature)).thenReturn("signature");
         when(request.getHeader(X_Ballot_Payload)).thenReturn("7061796C6F6164");
         when(request.getHeader(X_Ballot_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
+        when(request.getHeader(X_Ballot_Oobi)).thenReturn("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ");
 
+        when(keriVerificationClient.getOOBI(anyString(), anyInt())).thenReturn(Either.right("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ"));
+        when(keriVerificationClient.registerOOBI(anyString())).thenReturn(Either.right(true));
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
 
         when(chainFollowerClient.getChainTip()).thenReturn(Either.right(
@@ -558,7 +599,10 @@ class KeriWeb3FilterTest {
         when(request.getHeader(X_Ballot_Signature)).thenReturn("signature");
         when(request.getHeader(X_Ballot_Payload)).thenReturn("7061796C6F6164");
         when(request.getHeader(X_Ballot_PublicKey)).thenReturn("EIA1PcKQkcW6mvs2kVwVpvaf6SMuBHLMCrx57WPW6UPO");
+        when(request.getHeader(X_Ballot_Oobi)).thenReturn("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ");
 
+        when(keriVerificationClient.getOOBI(anyString(), anyInt())).thenReturn(Either.right("http://localhost:3902/oobi/EBfYGHqQUk-iHVRDW5r3LKb2y5VpF1id8OF-RGXfcyRm/agent/EBfZKfhCQEssQXFUoIMk0otn3OB1DcCCxss6dBNWu2FZ"));
+        when(keriVerificationClient.registerOOBI(anyString())).thenReturn(Either.right(true));
         when(keriVerificationClient.verifySignature(any(), any(), any())).thenReturn(Either.right(true));
 
         when(chainFollowerClient.getChainTip()).thenReturn(Either.right(

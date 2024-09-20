@@ -110,6 +110,11 @@ spec:
             - name: LEDGER_FOLLOWER_APP_URL
               value: {{ $.Values.ledgerFollowerAppUrl }}
 
+            - name: CARDANO_NODE_IP
+              value: {{ $.Values.cardanoNodeIp | default "preprod-node.world.dev.cardano.org" | quote }}
+            - name: CARDANO_NODE_PORT
+              value: {{ $.Values.cardanoNodePort | default "30000" | quote }}
+
           ports:
             - name: http
               containerPort: {{ $.Values.service.port }}

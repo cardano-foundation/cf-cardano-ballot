@@ -33,17 +33,6 @@ spec:
             - name: CARDANO_NETWORK
               value: {{ .Values.network | default "preprod" | upper}}
 
-            - name: CARDANO_NODE_IP
-              value: {{ .Values.yaci.cardanoNodeHost | default "preprod-node.world.dev.cardano.org" }}
-            - name: CARDANO_NODE_PORT
-              value: {{ .Values.yaci.cardanoNodePort | default 30000 | quote }}
-            - name: CARDANO_NODE_PROTOCOL_MAGIC
-              value: {{ .Values.yaci.cardanoNodeProtocolMagic | default 1 | quote }}
-            - name: YACI_STORE_CARDANO_SYNC_START_BLOCK_HASH
-              value: {{ .Values.yaci.startBlockHash }}
-            - name: YACI_STORE_CARDANO_SYNC_START_SLOT
-              value: {{ .Values.yaci.startSlotNumber | quote }}
-
             - name: CARDANO_NODE_HOST
               value: {{ $.Values.yaci.cardanoNodeHost | default "preprod-node.world.dev.cardano.org" }}
             - name: CARDANO_NODE_PORT
@@ -139,6 +128,9 @@ spec:
 
             - name: ROLLBACK_HANDLING_ENABLED
               value: {{ $.Values.rollbackHandlingEnabled | default "true" | quote }}
+
+            - name: KERI_BALLOT_VERIFIER_APP_URL
+              value: {{ .Values.keriBallotVerifierAppUrl | default "http://cf-keri-ballot-verifier:5667" }}
 
           ports:
             - name: http

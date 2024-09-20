@@ -4,6 +4,7 @@ import lombok.val;
 import org.cardano.foundation.voting.repository.VoteRepository;
 import org.cardanofoundation.cip30.CIP30Verifier;
 
+import java.nio.ByteBuffer;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -24,9 +25,15 @@ public final class VoteSerialisations {
                 yield blake2bHash256(bytes);
             }
             case KERI -> {
-                val bytes = vote.getPayload().map(String::getBytes).orElse(new byte[0]);
+                val message = vote.getSignature().getBytes();
+                val payload = vote.getPayload().map(String::getBytes).orElse(new byte[0]);
+                val totalLength = message.length + payload.length;
 
-                yield blake2bHash256(bytes);
+                val buffer = ByteBuffer.allocate(totalLength);
+                buffer.put(message);
+                buffer.put(payload);
+
+                yield blake2bHash256(buffer.array());
             }
         };
     }

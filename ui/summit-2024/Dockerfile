@@ -1,5 +1,5 @@
 FROM node:18 AS build
-
+ARG VITE_VERSION=0.0.1
 # Add a work directory
 WORKDIR /app
 # Cache and Install dependencies

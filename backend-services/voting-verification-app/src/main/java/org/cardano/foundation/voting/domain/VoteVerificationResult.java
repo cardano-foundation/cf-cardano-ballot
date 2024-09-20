@@ -12,7 +12,10 @@ public class VoteVerificationResult {
     @Schema(description = "Indicates if the vote is verified or not", example = "true")
     private boolean isVerified;
 
-    @Schema(description = "Cardano network ", required = true)
-    private CardanoNetwork network;
+    @Schema(description = "cardano or keri", required = true, example = "CARDANO")
+    private WalletType walletType;
+
+    @Schema(description = "Network ", required = true, example = "MAINNET")
+    private Network network;
 
 }

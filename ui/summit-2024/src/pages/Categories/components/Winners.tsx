@@ -208,7 +208,7 @@ const Winners: React.FC<WinnersProps> = ({
           return (
             <Typography
               onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) =>
-                handleLearnMoreClick(event, "")
+                handleLearnMoreClick(event, winner.id)
               }
               align="center"
               mt={2}

@@ -98,7 +98,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
             eventBus.publish(EventName.ShowToast, r.message, ToastType.Error);
             return;
           }
-          if (JSON.stringify(r) === JSON.stringify(receipts[categoryId])) {
+          if (JSON.stringify(r) === JSON.stringify(receipt)) {
             eventBus.publish(
               EventName.ShowToast,
               "No changes detected in the receipt",

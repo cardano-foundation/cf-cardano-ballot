@@ -19,6 +19,9 @@ public class CardanoSubmitApiBlockchainTransactionSubmissionService implements B
     @Value("${cardano.tx.submit.api.url}")
     private String cardanoSubmitApiUrl;
 
+    @Value("${blockfrost.api.key}")
+    private String blockfrostApiKey;
+
     @Override
     @SneakyThrows
     public String submitTransaction(byte[] txData) {
@@ -26,6 +29,7 @@ public class CardanoSubmitApiBlockchainTransactionSubmissionService implements B
                 .uri(URI.create(cardanoSubmitApiUrl))
                 .POST(HttpRequest.BodyPublishers.ofByteArray(txData))
                 .header("Content-Type", "application/cbor")
+                .header("project_id", blockfrostApiKey)
                 .build();
 
         var r = httpClient.send(txTransactionSubmitPostRequest, HttpResponse.BodyHandlers.ofString());

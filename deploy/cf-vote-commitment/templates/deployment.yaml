@@ -110,6 +110,9 @@ spec:
             - name: LEDGER_FOLLOWER_APP_URL
               value: {{ $.Values.ledgerFollowerAppUrl }}
 
+            - name: ROLLBACK_HANDLING_ENABLED
+              value: {{ $.Values.rollbackHandlingEnabled | default "true" | quote }}
+
             - name: CARDANO_NODE_IP
               value: {{ $.Values.cardanoNodeIp | default "preprod-node.world.dev.cardano.org" | quote }}
             - name: CARDANO_NODE_PORT

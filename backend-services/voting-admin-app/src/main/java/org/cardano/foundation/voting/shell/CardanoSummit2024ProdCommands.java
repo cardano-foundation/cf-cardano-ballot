@@ -25,7 +25,7 @@ import static org.cardano.foundation.voting.domain.VotingEventType.USER_BASED;
 @RequiredArgsConstructor
 public class CardanoSummit2024ProdCommands {
 
-    private final static String EVENT_NAME = "TEST_2024";
+    private final static String EVENT_NAME = "CARDANO_SUMMIT_AWARDS_2024";
 
     private final L1SubmissionService l1SubmissionService;
 
@@ -40,16 +40,16 @@ public class CardanoSummit2024ProdCommands {
 
         log.info("Creating CF-Summit 2024 on a MAIN network...");
 
-        long startSlot = 135076509; // 18/09/2024 07:00:00 UTC
-        long endSlot = 135166509; // 19/09/2024 08:00:00 UTC
-        long proposalsRevealSlot = 135170109; // 19/09/2024 09:00:00 UTC
+        long startSlot = 135591309; // 24/09/2024 06:00:00 UTC
+        long endSlot = 136858508; // 08/10/2024 21:59:59 UTC
+        long proposalsRevealSlot = 138233708; // 24/10/2024 19:59:59 UTC
 
         var createEventCommand = CreateEventCommand.builder()
                 .id(EVENT_NAME)
                 .startSlot(Optional.of(startSlot))
                 .endSlot(Optional.of(endSlot))
                 .votingPowerAsset(Optional.empty())
-                .organisers("Testing")
+                .organisers("Cardano Foundation")
                 .votingEventType(USER_BASED)
                 .schemaVersion(V11)
                 .allowVoteChanging(false)

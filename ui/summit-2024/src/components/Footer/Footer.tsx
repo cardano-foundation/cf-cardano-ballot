@@ -139,7 +139,7 @@ const Footer = () => {
                     </span>
                     (
                     <Link
-                      href="https://status.voting.summit.cardano.org/"
+                      href="https://status2024.voting.summit.cardano.org"
                       target="_blank"
                       rel="noopener"
                       sx={{

@@ -356,7 +356,6 @@ const Header = () => {
 
                 {isPortrait ? (
                   <IconButton
-                    color="inherit"
                     onClick={() => setMenuIsOpen(true)}
                     sx={{
                       marginLeft: "auto",
@@ -364,6 +363,10 @@ const Header = () => {
                       borderRadius: "12px",
                       background:
                         "linear-gradient(258deg, #EE9766 0%, #40407D 187.58%, #0C7BC5 249.97%)",
+                      color: theme.palette.background.default,
+                      '&:hover': {
+                        color: theme.palette.text.neutralLight
+                      }
                     }}
                   >
                     <MenuOutlinedIcon />

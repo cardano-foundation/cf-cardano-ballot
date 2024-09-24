@@ -96,8 +96,8 @@ const Layout: React.FC<LayoutProps> = ({
                   },
                   marginTop: "14px",
                   position: "fixed",
-                  top: 72,
-                  zIndex: 1200,
+                  top: 82,
+                  zIndex: 1092,
                   background: theme.palette.background.default,
                 }}
               >

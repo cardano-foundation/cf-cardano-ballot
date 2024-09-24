@@ -73,7 +73,7 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
     >
       <Button
         sx={{
-          zIndex: "99",
+          zIndex: 1300,
           padding: isMobile ? "10px 10px" : "16px 20px",
           width: "90%",
           margin: showAddress ? "20px" : null,

@@ -147,7 +147,6 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   }, [fadeChecked, selectedCategory]);
 
   const handleClickMenuItem = (category: string) => {
-    console.info(`Selected category option: ${category}`);
     setFadeChecked(false);
     // @ts-ignore
     setSelectedCategory(category);
@@ -250,9 +249,6 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
       (p) => p.id === selectedNominee,
     )?.id;
 
-    console.info(`Selected Category: ${selectedCategory}`);
-    console.info(`Category Data: ${JSON.stringify(category)}`);
-
     if (!category?.id) {
       eventBus.publish(
         EventName.ShowToast,
@@ -282,8 +278,6 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
         walletType: resolveWalletType(connectedWallet.address),
         slotNumber: absoluteSlot.toString(),
       });
-
-      console.info(`Canonical Vote: ${JSON.stringify(canonicalVoteInput)}`);
 
       const requestVoteResult = await signMessageWithWallet(
         connectedWallet,

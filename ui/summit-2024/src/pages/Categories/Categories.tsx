@@ -147,8 +147,6 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   }, [fadeChecked, selectedCategory]);
 
   const handleClickMenuItem = (category: string) => {
-    console.log("handleClickMenuItem");
-    console.log(category);
     setFadeChecked(false);
     // @ts-ignore
     setSelectedCategory(category);

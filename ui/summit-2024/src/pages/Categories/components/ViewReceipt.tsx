@@ -15,7 +15,7 @@ import ArrowUpwardOutlinedIcon from "@mui/icons-material/ArrowUpwardOutlined";
 import { STATE, ViewReceiptProps } from "./ViewReceipt.type";
 import { CustomAccordion } from "../../../components/common/CustomAccordion/CustomAccordion";
 import { JsonView } from "../../../components/common/JsonView/JsonView";
-import {useAppDispatch, useAppSelector} from "../../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getReceipts,
   setVoteReceipt,
@@ -39,7 +39,6 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
   const dispatch = useAppDispatch();
   const receipts = useAppSelector(getReceipts);
   const receipt = receipts[categoryId];
-
 
   const handleCopy = async (data: string) => {
     await copyToClipboard(data);
@@ -380,7 +379,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
         })();
 
         const actionButton =
-            receipt?.status === STATE.FULL
+          receipt?.status === STATE.FULL
             ? {
                 action: viewOnChainVote,
                 iconBottom: <LinkOutlinedIcon />,

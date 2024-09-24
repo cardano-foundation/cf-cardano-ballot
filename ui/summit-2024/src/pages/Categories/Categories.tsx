@@ -147,6 +147,8 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
   }, [fadeChecked, selectedCategory]);
 
   const handleClickMenuItem = (category: string) => {
+    console.log("handleClickMenuItem");
+    console.log(category);
     setFadeChecked(false);
     // @ts-ignore
     setSelectedCategory(category);
@@ -239,7 +241,11 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
       return;
     }
 
-    const category = categoriesData.find((c) => c.name === selectedCategory);
+    const category = categoriesData.find(
+      (c) =>
+        c.name === selectedCategory ||
+        c.id === selectedCategory?.toUpperCase().replace(/\s+/g, "_"),
+    );
 
     const proposalId = category?.proposals?.find(
       (p) => p.id === selectedNominee,

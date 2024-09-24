@@ -89,7 +89,6 @@ const BioModal: React.FC<BioModalProps> = ({
           <IconButton
             sx={{
               padding: "16px",
-              border: `1px solid ${theme.palette.text.neutralLightest}`,
               borderRadius: "12px",
               cursor: "pointer",
               marginRight: "12px",

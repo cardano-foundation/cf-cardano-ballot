@@ -83,21 +83,19 @@ const BioModal: React.FC<BioModalProps> = ({
               }}
               onClick={() => window.open(nominee.linkedin, "_blank")}
             >
-              <img src={LinkedinIcon} alt="X Icon" />
+              <img src={LinkedinIcon} alt="LinkedIn Icon" />
             </Box>
           ) : null}
-        </Box>
-        <Box
-          component="div"
-          sx={{
-            width: "53px",
-
-            borderRadius: "12px",
-            cursor: "pointer",
-          }}
-          onClick={() => handleCopyToClipBoard()}
-        >
-          <IconButton>
+          <IconButton
+            sx={{
+              padding: "16px",
+              border: `1px solid ${theme.palette.text.neutralLightest}`,
+              borderRadius: "12px",
+              cursor: "pointer",
+              marginRight: "12px",
+            }}
+            onClick={() => handleCopyToClipBoard()}
+          >
             <ShareOutlinedIcon
               sx={{
                 width: "32px",
@@ -112,6 +110,7 @@ const BioModal: React.FC<BioModalProps> = ({
             colorVariant="secondary"
             sx={{
               width: "100%",
+              mt: "12px",
             }}
             onClick={() => window.open(nominee.url, "_blank")}
           >

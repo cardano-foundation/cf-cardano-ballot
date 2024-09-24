@@ -19,6 +19,7 @@ import { getEventCache } from "../../../store/reducers/eventCache";
 const ExploreSection = () => {
   const isMobile = useIsPortrait();
   const navigate = useNavigate();
+
   const handleClickMenu = (option: string) => {
     navigate(option);
   };
@@ -180,6 +181,7 @@ const ExploreSection = () => {
       </Grid>
       <Grid item xs={12} sm={6} md={4}>
         <Card
+          onClick={() => handleClickMenu(ROUTES.CATEGORIES)}
           sx={{
             position: "relative",
             height: "272px",
@@ -193,6 +195,7 @@ const ExploreSection = () => {
             backgroundImage: `url(${guideBg})`,
             backgroundSize: "180% 160%",
             backgroundPosition: "center",
+            cursor: "pointer"
           }}
         >
           <CardContent
@@ -272,6 +275,7 @@ const ExploreSection = () => {
       </Grid>
       <Grid item xs={12} sm={6} md={4}>
         <Card
+          onClick={() => handleClickMenu(ROUTES.LEADERBOARD)}
           sx={{
             position: "relative",
             height: "272px",
@@ -285,6 +289,7 @@ const ExploreSection = () => {
             backgroundImage: `url(${guideBg})`,
             backgroundSize: "180% 160%",
             backgroundPosition: "center",
+            cursor: "pointer"
           }}
         >
           <CardContent sx={{ position: "relative", zIndex: 2 }}>

@@ -195,7 +195,7 @@ const ExploreSection = () => {
             backgroundImage: `url(${guideBg})`,
             backgroundSize: "180% 160%",
             backgroundPosition: "center",
-            cursor: "pointer"
+            cursor: "pointer",
           }}
         >
           <CardContent
@@ -289,7 +289,7 @@ const ExploreSection = () => {
             backgroundImage: `url(${guideBg})`,
             backgroundSize: "180% 160%",
             backgroundPosition: "center",
-            cursor: "pointer"
+            cursor: "pointer",
           }}
         >
           <CardContent sx={{ position: "relative", zIndex: 2 }}>

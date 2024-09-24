@@ -1,12 +1,16 @@
 import React from "react";
 import Modal from "../../../components/common/Modal/Modal";
-import { Box, useMediaQuery } from "@mui/material";
+import { Box, IconButton, useMediaQuery } from "@mui/material";
 import XIcon from "../../../assets/x.svg";
 import LinkedinIcon from "../../../assets/linkedin.svg";
 import theme from "../../../common/styles/theme";
 import { CustomButton } from "../../../components/common/CustomButton/CustomButton";
+import { copyToClipboard } from "../../../utils/utils";
+import { eventBus, EventName } from "../../../utils/EventBus";
+import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
 
 interface BioModalProps {
+  categoryId: string;
   nominee: any;
   isOpen: boolean;
   title: string | null | undefined;
@@ -14,12 +18,20 @@ interface BioModalProps {
 }
 
 const BioModal: React.FC<BioModalProps> = ({
+  categoryId,
   nominee,
   isOpen,
   title,
   onClose,
 }) => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const baseUrl = `${window.location.protocol}//${window.location.host}`;
+  const urlToCopy = `${baseUrl}/categories?category=${categoryId}&nominee=${nominee?.id}`;
+
+  const handleCopyToClipBoard = () => {
+    copyToClipboard(urlToCopy);
+    eventBus.publish(EventName.ShowToast, "Copied to clipboard");
+  };
 
   return (
     <>
@@ -74,6 +86,26 @@ const BioModal: React.FC<BioModalProps> = ({
               <img src={LinkedinIcon} alt="X Icon" />
             </Box>
           ) : null}
+        </Box>
+        <Box
+          component="div"
+          sx={{
+            width: "53px",
+
+            borderRadius: "12px",
+            cursor: "pointer",
+          }}
+          onClick={() => handleCopyToClipBoard()}
+        >
+          <IconButton>
+            <ShareOutlinedIcon
+              sx={{
+                width: "32px",
+                height: "32px",
+                color: theme.palette.text.neutralLight,
+              }}
+            />
+          </IconButton>
         </Box>
         {nominee?.url ? (
           <CustomButton

@@ -41,6 +41,7 @@ const TicketsSection = () => {
         >
           <Grid item xs={12}>
             <Card
+              onClick={handleButtonClick}
               sx={{
                 position: "relative",
                 overflow: "hidden",
@@ -57,6 +58,7 @@ const TicketsSection = () => {
                   xs: "16px",
                   sm: "60px",
                 },
+                cursor: "pointer",
               }}
             >
               <Box

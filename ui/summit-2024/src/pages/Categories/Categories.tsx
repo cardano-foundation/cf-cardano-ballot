@@ -552,6 +552,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
           onClose={() => setOpenVotingModal(false)}
         />
         <BioModal
+          categoryId={categoryToRender.id}
           nominee={bioModalContent}
           isOpen={openLearMoreCategory}
           title={bioModalContent?.name}

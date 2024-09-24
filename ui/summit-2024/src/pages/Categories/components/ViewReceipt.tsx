@@ -342,7 +342,20 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                   />
                 ),
               };
-
+            case "VERY_HIGH":
+              return {
+                description:
+                  "Your vote is currently being verified. While in VERY HIGH, the chance of a rollback is very unlikely. Check back later to see if verification has completed.",
+                icon: (
+                  <ArrowUpwardOutlinedIcon
+                    sx={{
+                      width: "24px",
+                      height: "24px",
+                      color: "#6EBE78",
+                    }}
+                  />
+                ),
+              };
             case "FINAL":
               return {
                 description: "Your vote has been successfully verified.",

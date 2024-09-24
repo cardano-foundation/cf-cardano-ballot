@@ -74,6 +74,10 @@
   line-height: 20px;
   height: 44px;
 
+  &:hover {
+    background-color: #282828;
+  }
+
   .MuiTypography-root {
     font-size: 12px;
   }

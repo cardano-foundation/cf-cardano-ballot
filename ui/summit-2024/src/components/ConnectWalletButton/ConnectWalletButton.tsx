@@ -165,7 +165,7 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
                 color="inherit"
                 onClick={handleOpenVoteReceipts}
               >
-                <ListItemText primary="Votes Receipts" />
+                <ListItemText primary="Vote Receipts" />
               </ListItem>
             ) : null}
             <ListItem

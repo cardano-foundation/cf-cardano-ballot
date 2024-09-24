@@ -309,9 +309,13 @@ const Header = () => {
                   <Typography
                     sx={{
                       color: "inherit",
-                      px: "24px",
+                      padding:" 16px 24px",
                       textDecoration: "none",
+                      borderRadius: "12px",
                       cursor: "pointer",
+                      "&:hover": {
+                        backgroundColor: "#282828",
+                      }
                     }}
                     onClick={() => handleClickMenu(ROUTES.CATEGORIES)}
                   >
@@ -320,9 +324,13 @@ const Header = () => {
                   <Typography
                     sx={{
                       color: "inherit",
+                      padding:" 16px 24px",
                       textDecoration: "none",
-                      px: "24px",
+                      borderRadius: "12px",
                       cursor: "pointer",
+                      "&:hover": {
+                        backgroundColor: "#282828",
+                      }
                     }}
                     onClick={() => handleClickMenu(ROUTES.LEADERBOARD)}
                   >
@@ -331,9 +339,13 @@ const Header = () => {
                   <Typography
                     sx={{
                       color: "inherit",
+                      padding:" 16px 24px",
                       textDecoration: "none",
-                      px: "24px",
+                      borderRadius: "12px",
                       cursor: "pointer",
+                      "&:hover": {
+                        backgroundColor: "#282828",
+                      }
                     }}
                     onClick={() => handleClickMenu(ROUTES.USER_GUIDE)}
                   >

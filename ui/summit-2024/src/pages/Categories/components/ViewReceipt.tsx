@@ -15,7 +15,7 @@ import ArrowUpwardOutlinedIcon from "@mui/icons-material/ArrowUpwardOutlined";
 import { STATE, ViewReceiptProps } from "./ViewReceipt.type";
 import { CustomAccordion } from "../../../components/common/CustomAccordion/CustomAccordion";
 import { JsonView } from "../../../components/common/JsonView/JsonView";
-import { useAppSelector } from "../../../store/hooks";
+import {useAppDispatch, useAppSelector} from "../../../store/hooks";
 import {
   getReceipts,
   setVoteReceipt,
@@ -36,8 +36,10 @@ import { NetworkType } from "../../../components/ConnectWalletList/ConnectWallet
 
 const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
   const session = getUserInSession();
+  const dispatch = useAppDispatch();
   const receipts = useAppSelector(getReceipts);
   const receipt = receipts[categoryId];
+
 
   const handleCopy = async (data: string) => {
     await copyToClipboard(data);

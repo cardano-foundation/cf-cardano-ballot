@@ -380,7 +380,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
         })();
 
         const actionButton =
-          receipt?.finalityScore === "FINAL"
+            receipt?.status === STATE.FULL
             ? {
                 action: viewOnChainVote,
                 iconBottom: <LinkOutlinedIcon />,

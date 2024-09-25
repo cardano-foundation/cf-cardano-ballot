@@ -92,14 +92,13 @@ const Modal = (props: ModalProps) => {
           </IconButton>
         ) : null}
         <Typography
-          variant="h6"
           component="div"
           sx={{
             flex: 1,
             maxWidth: "320px",
             textAlign: props.leftTitle ? "left" : "center",
             fontFamily: "Dosis",
-            weight: 700,
+            fontWeight: 700,
             fontSize: "28px",
             lineHeight: "32px",
           }}

@@ -80,7 +80,7 @@ const Layout: React.FC<LayoutProps> = ({
       }}
     >
       <Grid container>
-        <Grid item xs={12} md={2.4} lg={2} sx={{}}>
+        <Grid item xs={12} md={2.4} lg={2}>
           {isMobile ? (
             <>
               <Box

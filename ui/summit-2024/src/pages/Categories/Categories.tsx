@@ -416,7 +416,6 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
             }}
           >
             <Typography
-              // TODO: remove after demo
               variant="h5"
               sx={{ fontWeight: "bold", fontFamily: "Dosis" }}
             >

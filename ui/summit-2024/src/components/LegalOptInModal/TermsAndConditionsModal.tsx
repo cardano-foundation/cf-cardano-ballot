@@ -54,6 +54,14 @@ const TermsAndConditionsModal = () => {
   const handleSetCurrentTab = (option: string) => {
     setCurrentTab(option);
   };
+
+  const handleDecline = () => {
+    eventBus.publish(
+      EventName.ShowToast,
+      "To use the app, you must accept the Terms and Conditions and Privacy Policy",
+    );
+  };
+
   const handleAccept = () => {
     setTermsAndConditionsChecked(true);
     setForceOpenModal(false);
@@ -514,6 +522,7 @@ const TermsAndConditionsModal = () => {
             Accept
           </Button>
           <Button
+            onClick={() => handleDecline()}
             variant="outlined"
             sx={{
               padding: "16px 24px",

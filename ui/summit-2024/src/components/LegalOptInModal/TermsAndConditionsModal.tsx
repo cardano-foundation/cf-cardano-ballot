@@ -29,10 +29,11 @@ const TermsAndConditionsModal = () => {
   ];
 
   const [currentTab, setCurrentTab] = useState(tabs[0]);
-  const [isChecked, setIsChecked] = useState(false);
+
   const [forceOpenModal, setForceOpenModal] = useState(false);
   const [termsAndConditionsChecked, setTermsAndConditionsChecked] =
     useLocalStorage(CB_TERMS_AND_PRIVACY, false);
+  const [isChecked, setIsChecked] = useState(termsAndConditionsChecked);
 
   useEffect(() => {
     const openModal = () => {
@@ -53,6 +54,14 @@ const TermsAndConditionsModal = () => {
   const handleSetCurrentTab = (option: string) => {
     setCurrentTab(option);
   };
+
+  const handleDecline = () => {
+    eventBus.publish(
+      EventName.ShowToast,
+      "To use the app, you must accept the Terms and Conditions and Privacy Policy",
+    );
+  };
+
   const handleAccept = () => {
     setTermsAndConditionsChecked(true);
     setForceOpenModal(false);
@@ -513,6 +522,7 @@ const TermsAndConditionsModal = () => {
             Accept
           </Button>
           <Button
+            onClick={() => handleDecline()}
             variant="outlined"
             sx={{
               padding: "16px 24px",

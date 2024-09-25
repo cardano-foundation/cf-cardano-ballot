@@ -309,9 +309,13 @@ const Header = () => {
                   <Typography
                     sx={{
                       color: "inherit",
-                      px: "24px",
+                      padding: " 16px 24px",
                       textDecoration: "none",
+                      borderRadius: "12px",
                       cursor: "pointer",
+                      "&:hover": {
+                        backgroundColor: "#282828",
+                      },
                     }}
                     onClick={() => handleClickMenu(ROUTES.CATEGORIES)}
                   >
@@ -320,9 +324,13 @@ const Header = () => {
                   <Typography
                     sx={{
                       color: "inherit",
+                      padding: " 16px 24px",
                       textDecoration: "none",
-                      px: "24px",
+                      borderRadius: "12px",
                       cursor: "pointer",
+                      "&:hover": {
+                        backgroundColor: "#282828",
+                      },
                     }}
                     onClick={() => handleClickMenu(ROUTES.LEADERBOARD)}
                   >
@@ -331,9 +339,13 @@ const Header = () => {
                   <Typography
                     sx={{
                       color: "inherit",
+                      padding: " 16px 24px",
                       textDecoration: "none",
-                      px: "24px",
+                      borderRadius: "12px",
                       cursor: "pointer",
+                      "&:hover": {
+                        backgroundColor: "#282828",
+                      },
                     }}
                     onClick={() => handleClickMenu(ROUTES.USER_GUIDE)}
                   >
@@ -356,7 +368,6 @@ const Header = () => {
 
                 {isPortrait ? (
                   <IconButton
-                    color="inherit"
                     onClick={() => setMenuIsOpen(true)}
                     sx={{
                       marginLeft: "auto",
@@ -364,6 +375,10 @@ const Header = () => {
                       borderRadius: "12px",
                       background:
                         "linear-gradient(258deg, #EE9766 0%, #40407D 187.58%, #0C7BC5 249.97%)",
+                      color: theme.palette.background.default,
+                      "&:hover": {
+                        color: theme.palette.text.neutralLight,
+                      },
                     }}
                   >
                     <MenuOutlinedIcon />

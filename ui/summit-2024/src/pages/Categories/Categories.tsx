@@ -239,7 +239,11 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
       return;
     }
 
-    const category = categoriesData.find((c) => c.name === selectedCategory);
+    const category = categoriesData.find(
+      (c) =>
+        c.name === selectedCategory ||
+        c.id === selectedCategory?.toUpperCase().replace(/\s+/g, "_"),
+    );
 
     const proposalId = category?.proposals?.find(
       (p) => p.id === selectedNominee,
@@ -412,7 +416,6 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
             }}
           >
             <Typography
-              // TODO: remove after demo
               variant="h5"
               sx={{ fontWeight: "bold", fontFamily: "Dosis" }}
             >
@@ -548,6 +551,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
           onClose={() => setOpenVotingModal(false)}
         />
         <BioModal
+          categoryId={categoryToRender.id}
           nominee={bioModalContent}
           isOpen={openLearMoreCategory}
           title={bioModalContent?.name}

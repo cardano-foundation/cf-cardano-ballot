@@ -38,7 +38,7 @@ const Nominees: React.FC<NomineesProps> = ({
         <Grid
           container
           spacing={2}
-          justifyContent="center"
+          justifyContent="left"
           alignItems="flex-start"
         >
           {nominees?.length &&

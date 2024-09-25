@@ -80,7 +80,7 @@ const Layout: React.FC<LayoutProps> = ({
       }}
     >
       <Grid container>
-        <Grid item xs={12} md={2.4} lg={2} sx={{}}>
+        <Grid item xs={12} md={2.4} lg={2}>
           {isMobile ? (
             <>
               <Box
@@ -96,8 +96,8 @@ const Layout: React.FC<LayoutProps> = ({
                   },
                   marginTop: "14px",
                   position: "fixed",
-                  top: 72,
-                  zIndex: 1200,
+                  top: 82,
+                  zIndex: 1092,
                   background: theme.palette.background.default,
                 }}
               >
@@ -153,12 +153,13 @@ const Layout: React.FC<LayoutProps> = ({
                   overflowY: "auto",
                   maxHeight: "calc(100vh - 102px)",
                   borderRight: "1px solid #737380",
+                  paddingRight: "8px",
                 }}
               >
                 {title ? (
                   <ListItem
                     sx={{
-                      paddingLeft: "0px",
+                      paddingLeft: "10px",
                       marginBottom: "16px",
                     }}
                   >
@@ -181,63 +182,41 @@ const Layout: React.FC<LayoutProps> = ({
                     onClick={() => handleClickMenuItem(option.label)}
                     key={index}
                     sx={{
-                      paddingLeft: "0px",
+                      marginTop: "12px",
+                      paddingLeft: "10px",
+                      paddingRight: "0px",
+                      paddingTop: "8px",
+                      paddingBottom: "8px",
+                      cursor: "pointer",
+                      transition: "background-color 0.3s",
+                      backgroundColor:
+                        option.label === selectedOption
+                          ? theme.palette.secondary.main
+                          : "transparent",
+                      "&:hover": {
+                        backgroundColor: theme.palette.action.hover,
+                      },
+                      display: "flex",
+                      alignItems: "center",
+                      width: "100%",
+                      borderRadius: "12px",
                     }}
                   >
-                    {option.label === selectedOption ? (
-                      <>
-                        <Box
-                          component="div"
-                          sx={{
-                            display: "flex",
-                            padding: "8px 12px",
-                            alignItems: "center",
-                            gap: "10px",
-                            alignSelf: "stretch",
-                            borderRadius: "12px",
-                            background: theme.palette.secondary.main,
-                            color: theme.palette.background.default,
-                            fontSize: "16px",
-                            fontStyle: "normal",
-                            fontWeight: 500,
-                            lineHeight: "24px",
-                            cursor: "pointer",
-                            width: "100%",
-                          }}
-                        >
-                          <Typography
-                            sx={{
-                              gap: "10px",
-                              alignSelf: "stretch",
-                              borderRadius: "12px",
-                              fontSize: "16px",
-                              fontStyle: "normal",
-                              fontWeight: 500,
-                              lineHeight: "24px",
-                              cursor: "pointer",
-                              width: "100%",
-                            }}
-                          >
-                            {option.label}
-                          </Typography>
-                        </Box>
-                      </>
-                    ) : (
-                      <>
-                        <Typography
-                          sx={{
-                            color: theme.palette.text.neutralLightest,
-                            fontSize: "16px",
-                            fontStyle: "normal",
-                            fontWeight: 500,
-                            lineHeight: "24px",
-                            cursor: "pointer",
-                          }}
-                        >
-                          {option.label}
-                        </Typography>
-                      </>
-                    )}
+                    <Typography
+                      sx={{
+                        color:
+                          option.label === selectedOption
+                            ? theme.palette.background.default
+                            : theme.palette.text.neutralLightest,
+                        fontSize: "16px",
+                        fontWeight: 500,
+                        lineHeight: "24px",
+                        flexGrow: 1,
+                        textAlign: "left",
+                      }}
+                    >
+                      {option.label}
+                    </Typography>
                   </ListItem>
                 ))}
               </List>

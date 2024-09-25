@@ -521,6 +521,7 @@ const VerifyWalletModal = () => {
         </Box>
 
         <Box
+          onClick={() => setCheckImNotARobot(!checkImNotARobot)}
           component="div"
           sx={{ display: "flex", alignItems: "center", marginTop: "4px" }}
         >

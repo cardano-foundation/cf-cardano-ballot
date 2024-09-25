@@ -29,10 +29,11 @@ const TermsAndConditionsModal = () => {
   ];
 
   const [currentTab, setCurrentTab] = useState(tabs[0]);
-  const [isChecked, setIsChecked] = useState(false);
+
   const [forceOpenModal, setForceOpenModal] = useState(false);
   const [termsAndConditionsChecked, setTermsAndConditionsChecked] =
     useLocalStorage(CB_TERMS_AND_PRIVACY, false);
+  const [isChecked, setIsChecked] = useState(termsAndConditionsChecked);
 
   useEffect(() => {
     const openModal = () => {

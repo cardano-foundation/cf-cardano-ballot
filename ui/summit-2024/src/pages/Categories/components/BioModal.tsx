@@ -1,13 +1,13 @@
 import React from "react";
 import Modal from "../../../components/common/Modal/Modal";
-import { Box, IconButton, useMediaQuery } from "@mui/material";
+import { Box, useMediaQuery } from "@mui/material";
 import XIcon from "../../../assets/x.svg";
 import LinkedinIcon from "../../../assets/linkedin.svg";
+import ShareIcon from "../../../assets/share.svg";
 import theme from "../../../common/styles/theme";
 import { CustomButton } from "../../../components/common/CustomButton/CustomButton";
 import { copyToClipboard } from "../../../utils/utils";
 import { eventBus, EventName } from "../../../utils/EventBus";
-import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
 
 interface BioModalProps {
   categoryId: string;
@@ -53,7 +53,7 @@ const BioModal: React.FC<BioModalProps> = ({
               component="div"
               sx={{
                 mr: "12px",
-                padding: "16px",
+                padding: "15px",
                 border: `1px solid ${theme.palette.text.neutralLightest}`,
                 display: "flex",
                 justifyContent: "center",
@@ -72,7 +72,7 @@ const BioModal: React.FC<BioModalProps> = ({
               component="div"
               sx={{
                 mr: "12px",
-                padding: "16px",
+                padding: "15px",
                 border: `1px solid ${theme.palette.text.neutralLightest}`,
                 display: "flex",
                 justifyContent: "center",
@@ -86,23 +86,20 @@ const BioModal: React.FC<BioModalProps> = ({
               <img src={LinkedinIcon} alt="LinkedIn Icon" />
             </Box>
           ) : null}
-          <IconButton
+          <Box
+            component="div"
             sx={{
-              padding: "16px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: "8px",
               borderRadius: "12px",
               cursor: "pointer",
-              marginRight: "12px",
             }}
             onClick={() => handleCopyToClipBoard()}
           >
-            <ShareOutlinedIcon
-              sx={{
-                width: "32px",
-                height: "32px",
-                color: theme.palette.text.neutralLight,
-              }}
-            />
-          </IconButton>
+            <img src={ShareIcon} alt="Share Icon" />
+          </Box>
         </Box>
         {nominee?.url ? (
           <CustomButton

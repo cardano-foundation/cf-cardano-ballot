@@ -3,7 +3,7 @@ import { CB_COOKIES } from "../../common/constants/local";
 import { Box, Typography } from "@mui/material";
 import theme from "../../common/styles/theme";
 import { CustomButton } from "../common/CustomButton/CustomButton";
-import {eventBus, EventName} from "../../utils/EventBus";
+import { eventBus, EventName } from "../../utils/EventBus";
 
 export enum CookiesStatus {
   ACCEPT = "ACCEPT",
@@ -23,7 +23,7 @@ const Cookies = () => {
   };
 
   const handlePrivacyPolicy = () => {
-      eventBus.publish(EventName.OpenTermsModal);
+    eventBus.publish(EventName.OpenTermsModal);
   };
 
   if (!showCookies) return null;

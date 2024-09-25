@@ -59,9 +59,16 @@ const TicketsSection = () => {
                   sm: "60px",
                 },
                 cursor: "pointer",
+                "&:hover": {
+                  "& > .backdrop": {
+                    backdropFilter: "blur(6px)",
+                    background: "rgba(18, 18, 18, 0.55)",
+                  },
+                },
               }}
             >
               <Box
+                className="backdrop"
                 component="div"
                 sx={{
                   position: "absolute",
@@ -70,7 +77,7 @@ const TicketsSection = () => {
                   width: "100%",
                   height: "100%",
                   background: "rgba(18, 18, 18, 0.50)",
-                  backdropFilter: "blur(3px)",
+                  backdropFilter: "blur(4px)",
                   zIndex: 0,
                 }}
               />

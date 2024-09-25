@@ -153,7 +153,7 @@ const Layout: React.FC<LayoutProps> = ({
                   overflowY: "auto",
                   maxHeight: "calc(100vh - 102px)",
                   borderRight: "1px solid #737380",
-                  paddingRight: "8px"
+                  paddingRight: "8px",
                 }}
               >
                 {title ? (

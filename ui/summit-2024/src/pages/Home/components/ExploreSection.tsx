@@ -196,9 +196,16 @@ const ExploreSection = () => {
             backgroundSize: "180% 160%",
             backgroundPosition: "center",
             cursor: "pointer",
+            "&:hover": {
+              "& > .backdrop": {
+                backdropFilter: "blur(6px)",
+                background: "rgba(18, 18, 18, 0.25)",
+              },
+            },
           }}
         >
           <CardContent
+            className="backdrop"
             sx={{
               position: "relative",
               zIndex: 2,
@@ -206,6 +213,8 @@ const ExploreSection = () => {
               flexDirection: "column",
               justifyContent: "space-between",
               height: "100%",
+              background: "rgba(18, 18, 18, 0.20)",
+              backdropFilter: "blur(4px)",
             }}
           >
             <Box
@@ -290,9 +299,27 @@ const ExploreSection = () => {
             backgroundSize: "180% 160%",
             backgroundPosition: "center",
             cursor: "pointer",
+            "&:hover": {
+              "& > .backdrop": {
+                backdropFilter: "blur(4px)",
+                background: "rgba(18, 18, 18, 0.25)",
+              },
+            },
           }}
         >
-          <CardContent sx={{ position: "relative", zIndex: 2 }}>
+          <CardContent
+            className="backdrop"
+            sx={{
+              position: "relative",
+              zIndex: 2,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+              height: "100%",
+              background: "rgba(18, 18, 18, 0.20)",
+              backdropFilter: "blur(2px)",
+            }}
+          >
             <Box
               component="div"
               sx={{

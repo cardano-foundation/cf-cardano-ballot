@@ -150,7 +150,7 @@ const ReceiptHistory: React.FC = () => {
                 borderRadius: "8px",
                 overflow: "hidden",
                 height: "72px",
-                cursor: "pointer"
+                cursor: "pointer",
               }}
             >
               <TableCell

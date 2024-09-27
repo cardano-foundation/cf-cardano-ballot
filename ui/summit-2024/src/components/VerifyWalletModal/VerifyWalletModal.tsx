@@ -650,9 +650,18 @@ const VerifyWalletModal = () => {
           <Grid item xs={12}>
             <CustomButton
               sx={{
-                background: phoneCodeIsBeenConfirming || codes.includes("") ? "transparent !important" : "",
-                color: phoneCodeIsBeenConfirming || codes.includes("") ? theme.palette.text.neutralLightest : null,
-                border: phoneCodeIsBeenConfirming || codes.includes("") ? "1px solid #daeefb" : null,
+                background:
+                  phoneCodeIsBeenConfirming || codes.includes("")
+                    ? "transparent !important"
+                    : "",
+                color:
+                  phoneCodeIsBeenConfirming || codes.includes("")
+                    ? theme.palette.text.neutralLightest
+                    : null,
+                border:
+                  phoneCodeIsBeenConfirming || codes.includes("")
+                    ? "1px solid #daeefb"
+                    : null,
               }}
               onClick={() => handleVerifyPhoneCode()}
               fullWidth={true}

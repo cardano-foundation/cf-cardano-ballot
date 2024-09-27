@@ -9,7 +9,8 @@ enum EventName {
   OpenLoginModal = "openLoginModal",
   CloseLoginModal = "closeLoginModal",
   OpenTermsModal = "openTermsModal",
-  CloseTermsModal = "closeTermsModal",
+  CloseCheckWalletModal = "CloseCheckWalletModal",
+  OpenCheckWalletModal = "OpenCheckWalletModal",
   OpenSupportedWalletsModal = "openSupportedWalletsModal",
 }
 

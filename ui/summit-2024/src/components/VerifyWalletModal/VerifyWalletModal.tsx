@@ -58,10 +58,10 @@ const VerifyWalletModal = () => {
   const dispatch = useAppDispatch();
   const { trackEvent } = useMatomo();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const [isOpen, setIsOpen] = useState<boolean>(true);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [verifyCurrentPaths, setVerifyCurrentPaths] = useState<
     VerifyWalletFlow[]
-  >([VerifyWalletFlow.CONFIRM_CODE]);
+  >([VerifyWalletFlow.INTRO]);
 
   const getDefaultCountry = () => {
     const language = navigator.language;

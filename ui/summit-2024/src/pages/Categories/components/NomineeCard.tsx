@@ -78,7 +78,7 @@ const NomineeCard: React.FC<NomineeCardProps> = ({
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          cursor: allowToVote ? "auto" : "pointer",
+          cursor: "pointer",
           backgroundImage: `url(${nomineeBg})`,
           backgroundSize: "160% 160%",
           backgroundPosition: "center",

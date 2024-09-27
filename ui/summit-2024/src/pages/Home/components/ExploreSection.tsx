@@ -215,6 +215,7 @@ const ExploreSection = () => {
               height: "100%",
               background: "rgba(18, 18, 18, 0.20)",
               backdropFilter: "blur(4px)",
+              cursor: "pointer",
             }}
           >
             <Box
@@ -318,6 +319,7 @@ const ExploreSection = () => {
               height: "100%",
               background: "rgba(18, 18, 18, 0.20)",
               backdropFilter: "blur(2px)",
+              cursor: "pointer",
             }}
           >
             <Box

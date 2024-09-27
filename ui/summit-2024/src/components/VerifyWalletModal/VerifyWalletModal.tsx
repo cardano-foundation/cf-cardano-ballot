@@ -58,10 +58,10 @@ const VerifyWalletModal = () => {
   const dispatch = useAppDispatch();
   const { trackEvent } = useMatomo();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(true);
   const [verifyCurrentPaths, setVerifyCurrentPaths] = useState<
     VerifyWalletFlow[]
-  >([VerifyWalletFlow.INTRO]);
+  >([VerifyWalletFlow.CONFIRM_CODE]);
 
   const getDefaultCountry = () => {
     const language = navigator.language;
@@ -650,9 +650,9 @@ const VerifyWalletModal = () => {
           <Grid item xs={12}>
             <CustomButton
               sx={{
-                background: "transparent !important",
-                color: theme.palette.text.neutralLightest,
-                border: "1px solid #daeefb",
+                background: phoneCodeIsBeenConfirming || codes.includes("") ? "transparent !important" : "",
+                color: phoneCodeIsBeenConfirming || codes.includes("") ? theme.palette.text.neutralLightest : null,
+                border: phoneCodeIsBeenConfirming || codes.includes("") ? "1px solid #daeefb" : null,
               }}
               onClick={() => handleVerifyPhoneCode()}
               fullWidth={true}

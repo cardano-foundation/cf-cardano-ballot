@@ -279,11 +279,15 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
         slotNumber: absoluteSlot.toString(),
       });
 
+      eventBus.publish(EventName.OpenCheckWalletModal);
+
       const requestVoteResult = await signMessageWithWallet(
         connectedWallet,
         canonicalVoteInput,
         signMessagePromisified,
       );
+
+      eventBus.publish(EventName.CloseCheckWalletModal);
 
       if (!requestVoteResult.success) {
         eventBus.publish(
@@ -320,6 +324,9 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
           // @ts-ignore
           name: submitVoteResult.message,
         });
+
+        eventBus.publish(EventName.CloseCheckWalletModal);
+
         return;
       }
       eventBus.publish(EventName.ShowToast, "Vote submitted successfully");
@@ -375,6 +382,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
         e.message && e.message.length ? parseError(e.message) : "Action failed",
         "error",
       );
+      eventBus.publish(EventName.CloseCheckWalletModal);
     }
   };
 

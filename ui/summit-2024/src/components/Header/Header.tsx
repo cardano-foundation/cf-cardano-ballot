@@ -42,6 +42,7 @@ import {
 import { resolveWalletType } from "../../common/api/utils";
 import { clearVotes, setVotes } from "../../store/reducers/votesCache";
 import { parseError } from "../../common/constants/errors";
+import { CheckWalletModal } from "../CheckWalletModal/CheckWalletModal";
 
 const Header = () => {
   const dispatch = useAppDispatch();
@@ -56,6 +57,8 @@ const Header = () => {
   const [toastOpen, setToastOpen] = useState(false);
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
+  const [isCheckWalletModalOpen, setIsCheckWalletModalOpen] =
+    useState<boolean>(false);
   const isPortrait = useIsPortrait();
 
   const { disconnect, signMessage } = useCardano({
@@ -410,6 +413,11 @@ const Header = () => {
         handleLogin={() => handleLogin()}
         isLogging={isLogging}
         isOpen={isLoginModalOpen}
+      />
+      <CheckWalletModal
+        isOpen={isCheckWalletModalOpen}
+        handleOpenModal={() => setIsCheckWalletModalOpen(true)}
+        handleCloseModal={() => setIsCheckWalletModalOpen(false)}
       />
       <VerifyWalletModal />
       <Toast

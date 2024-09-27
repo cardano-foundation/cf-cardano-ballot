@@ -144,11 +144,13 @@ const ReceiptHistory: React.FC = () => {
         <TableBody>
           {Object.keys(extendedReceipts).map((category: string, index) => (
             <TableRow
+              onClick={() => handleReceiptClick(category)}
               key={index}
               sx={{
                 borderRadius: "8px",
                 overflow: "hidden",
                 height: "72px",
+                cursor: "pointer",
               }}
             >
               <TableCell

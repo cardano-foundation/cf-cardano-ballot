@@ -58,7 +58,7 @@ const Header = () => {
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
   const [isCheckWalletModalOpen, setIsCheckWalletModalOpen] =
-    useState<boolean>(true);
+    useState<boolean>(false);
   const isPortrait = useIsPortrait();
 
   const { disconnect, signMessage } = useCardano({

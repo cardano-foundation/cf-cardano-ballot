@@ -40,8 +40,8 @@ public class KeriWeb3Details implements Web3ConcreteDetails {
     }
 
     @Override
-    public Optional<String> getPayload() {
-        return Optional.of(signedKERI.getPayload());
+    public String getPayload() {
+        return signedKERI.getPayload();
     }
 
     @Override

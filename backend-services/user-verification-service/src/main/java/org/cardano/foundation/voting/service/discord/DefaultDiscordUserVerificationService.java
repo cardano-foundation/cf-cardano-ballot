@@ -428,9 +428,17 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
 
         // Step 1: Check if OOBI is already registered
         Either<Problem, String> oobiCheckResult = keriVerificationClient.getOOBI(oobi, 1);
-
         if (oobiCheckResult.isRight()) {
-            log.info("OOBI already registered: {}", oobiCheckResult);
+            log.info("OOBI already registered: {}", oobiCheckResult.get());
+
+            // TODO: Review this implementation once the KERI watchers are operational.
+            // This solution is temporary and might need adjustments to integrate with the new KERI components
+            // Step 1.1:Update key state
+            Either<Problem, Boolean> keyStateUpdateResult = keriVerificationClient.updateAndVerifyKeyState(walletId, 60);
+            if (keyStateUpdateResult.isLeft()) {
+                return Either.left(keyStateUpdateResult.getLeft());
+            }
+
             Either<Problem, Boolean> verificationResult = keriVerificationClient.verifySignature(walletId, signature, payload);
 
             if (verificationResult.isLeft()) {
@@ -465,13 +473,18 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
 
         log.info("OOBI registered successfully: {}", oobiM);
 
-        // Step 3: Attempt to verify OOBI registration up to 10 times
+        // Step 3: Attempt to verify OOBI registration up to 60 times
         val oobiFetchResultE = keriVerificationClient.getOOBI(oobi, 60);
         if (oobiFetchResultE.isLeft()) {
             return Either.left(oobiFetchResultE.getLeft());
         }
 
-        // Step 4: Verify signature after OOBI registration
+        // Step 4: Update key state
+        Either<Problem, Boolean> keyStateUpdateResult = keriVerificationClient.updateAndVerifyKeyState(walletId, 60);
+        if (keyStateUpdateResult.isLeft()) {
+            return Either.left(keyStateUpdateResult.getLeft());
+        }
+        // Step 5: Verify signature after OOBI registration
         val verificationResultE = keriVerificationClient.verifySignature(walletId, signature, payload);
         if (verificationResultE.isLeft()) {
             return Either.left(verificationResultE.getLeft());

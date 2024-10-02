@@ -20,9 +20,10 @@ import java.util.Map;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @Component
-<span class="fc" id="L25">@Slf4j</span>
+<span class="fc" id="L26">@Slf4j</span>
 @RequiredArgsConstructor
 public class KeriVerificationClient {
 
@@ -34,120 +35,206 @@ public class KeriVerificationClient {
     public Either&lt;Problem, Boolean&gt; verifySignature(String aid,
                                                     String signature,
                                                     String payload) {
-<span class="nc" id="L37">        val url = String.format(&quot;%s/verify&quot;, keriVerifierBaseUrl);</span>
+<span class="nc" id="L38">        val url = String.format(&quot;%s/verify&quot;, keriVerifierBaseUrl);</span>
 
-<span class="nc" id="L39">        val headers = new HttpHeaders();</span>
-<span class="nc" id="L40">        headers.add(&quot;Content-Type&quot;, &quot;application/json&quot;);</span>
+<span class="nc" id="L40">        val headers = new HttpHeaders();</span>
+<span class="nc" id="L41">        headers.add(&quot;Content-Type&quot;, &quot;application/json&quot;);</span>
 
-<span class="nc" id="L42">        val requestBody = new HashMap&lt;String, String&gt;();</span>
-<span class="nc" id="L43">        requestBody.put(&quot;pre&quot;, aid);</span>
-<span class="nc" id="L44">        requestBody.put(&quot;signature&quot;, signature);</span>
-<span class="nc" id="L45">        requestBody.put(&quot;payload&quot;, payload);</span>
+<span class="nc" id="L43">        val requestBody = new HashMap&lt;String, String&gt;();</span>
+<span class="nc" id="L44">        requestBody.put(&quot;pre&quot;, aid);</span>
+<span class="nc" id="L45">        requestBody.put(&quot;signature&quot;, signature);</span>
+<span class="nc" id="L46">        requestBody.put(&quot;payload&quot;, payload);</span>
 
-<span class="nc" id="L47">        val entity = new HttpEntity&lt;Map&lt;String, String&gt;&gt;(requestBody, headers);</span>
+<span class="nc" id="L48">        val entity = new HttpEntity&lt;Map&lt;String, String&gt;&gt;(requestBody, headers);</span>
 
         try {
-<span class="nc" id="L50">            val response = restTemplate.exchange(url, POST, entity, String.class);</span>
+<span class="nc" id="L51">            val response = restTemplate.exchange(url, POST, entity, String.class);</span>
 
-<span class="nc bnc" id="L52" title="All 2 branches missed.">            if (response.getStatusCode().is2xxSuccessful()) {</span>
-<span class="nc" id="L53">                return Either.right(true);</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">            if (response.getStatusCode().is2xxSuccessful()) {</span>
+<span class="nc" id="L54">                return Either.right(true);</span>
             }
 
-<span class="nc" id="L56">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L57">                    .withTitle(&quot;KERI_VERIFICATION_FAILED&quot;)</span>
-<span class="nc" id="L58">                    .withDetail(&quot;The Keri-specific condition was not met.&quot;)</span>
-<span class="nc" id="L59">                    .withStatus(new HttpStatusAdapter(response.getStatusCode()))</span>
-<span class="nc" id="L60">                    .build());</span>
-<span class="nc" id="L61">        } catch (HttpClientErrorException e) {</span>
-<span class="nc" id="L62">            log.error(&quot;Unable to verify signature, reason: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L57">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L58">                    .withTitle(&quot;KERI_VERIFICATION_FAILED&quot;)</span>
+<span class="nc" id="L59">                    .withDetail(&quot;The Keri-specific condition was not met.&quot;)</span>
+<span class="nc" id="L60">                    .withStatus(new HttpStatusAdapter(response.getStatusCode()))</span>
+<span class="nc" id="L61">                    .build());</span>
+<span class="nc" id="L62">        } catch (HttpClientErrorException e) {</span>
+<span class="nc" id="L63">            log.error(&quot;Unable to verify signature, reason: {}&quot;, e.getMessage());</span>
 
-<span class="nc" id="L64">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L65">                    .withTitle(&quot;KERI_VERIFICATION_ERROR&quot;)</span>
-<span class="nc" id="L66">                    .withDetail(&quot;Unable to verify signature, reason: &quot; + e.getMessage())</span>
-<span class="nc" id="L67">                    .withStatus(new HttpStatusAdapter(e.getStatusCode()))</span>
-<span class="nc" id="L68">                    .build());</span>
+<span class="nc" id="L65">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L66">                    .withTitle(&quot;KERI_VERIFICATION_ERROR&quot;)</span>
+<span class="nc" id="L67">                    .withDetail(&quot;Unable to verify signature, reason: &quot; + e.getMessage())</span>
+<span class="nc" id="L68">                    .withStatus(new HttpStatusAdapter(e.getStatusCode()))</span>
+<span class="nc" id="L69">                    .build());</span>
         }
     }
 
     public Either&lt;Problem, Boolean&gt; registerOOBI(String oobi) {
-<span class="nc" id="L73">        val url = String.format(&quot;%s/oobi&quot;, keriVerifierBaseUrl);</span>
+<span class="nc" id="L74">        val url = String.format(&quot;%s/oobi&quot;, keriVerifierBaseUrl);</span>
 
-<span class="nc" id="L75">        val headers = new HttpHeaders();</span>
-<span class="nc" id="L76">        headers.add(&quot;Content-Type&quot;, &quot;application/json&quot;);</span>
+<span class="nc" id="L76">        val headers = new HttpHeaders();</span>
+<span class="nc" id="L77">        headers.add(&quot;Content-Type&quot;, &quot;application/json&quot;);</span>
 
-<span class="nc" id="L78">        val requestBody = new HashMap&lt;String, String&gt;();</span>
-<span class="nc" id="L79">        requestBody.put(&quot;oobi&quot;, oobi);</span>
+<span class="nc" id="L79">        val requestBody = new HashMap&lt;String, String&gt;();</span>
+<span class="nc" id="L80">        requestBody.put(&quot;oobi&quot;, oobi);</span>
 
-<span class="nc" id="L81">        val entity = new HttpEntity&lt;Map&lt;String, String&gt;&gt;(requestBody, headers);</span>
+<span class="nc" id="L82">        val entity = new HttpEntity&lt;Map&lt;String, String&gt;&gt;(requestBody, headers);</span>
         try {
-<span class="nc" id="L83">            val response = restTemplate.exchange(url, POST, entity, String.class);</span>
+<span class="nc" id="L84">            val response = restTemplate.exchange(url, POST, entity, String.class);</span>
 
-<span class="nc bnc" id="L85" title="All 2 branches missed.">            if (response.getStatusCode().is2xxSuccessful()) {</span>
-<span class="nc" id="L86">                return Either.right(true);</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">            if (response.getStatusCode().is2xxSuccessful()) {</span>
+<span class="nc" id="L87">                return Either.right(true);</span>
             }
 
-<span class="nc" id="L89">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L90">                    .withTitle(&quot;OOBI_REGISTRATION_FAILED&quot;)</span>
-<span class="nc" id="L91">                    .withDetail(&quot;Failed to register OOBI.&quot;)</span>
-<span class="nc" id="L92">                    .withStatus(new HttpStatusAdapter(response.getStatusCode()))</span>
-<span class="nc" id="L93">                    .build());</span>
-<span class="nc" id="L94">        } catch (HttpClientErrorException e) {</span>
-<span class="nc" id="L95">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L96">                    .withTitle(&quot;OOBI_REGISTRATION_ERROR&quot;)</span>
-<span class="nc" id="L97">                    .withDetail(&quot;Unable to register OOBI, reason: &quot; + e.getMessage())</span>
-<span class="nc" id="L98">                    .withStatus(new HttpStatusAdapter(e.getStatusCode()))</span>
-<span class="nc" id="L99">                    .build());</span>
+<span class="nc" id="L90">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L91">                    .withTitle(&quot;OOBI_REGISTRATION_FAILED&quot;)</span>
+<span class="nc" id="L92">                    .withDetail(&quot;Failed to register OOBI.&quot;)</span>
+<span class="nc" id="L93">                    .withStatus(new HttpStatusAdapter(response.getStatusCode()))</span>
+<span class="nc" id="L94">                    .build());</span>
+<span class="nc" id="L95">        } catch (HttpClientErrorException e) {</span>
+<span class="nc" id="L96">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L97">                    .withTitle(&quot;OOBI_REGISTRATION_ERROR&quot;)</span>
+<span class="nc" id="L98">                    .withDetail(&quot;Unable to register OOBI, reason: &quot; + e.getMessage())</span>
+<span class="nc" id="L99">                    .withStatus(new HttpStatusAdapter(e.getStatusCode()))</span>
+<span class="nc" id="L100">                    .build());</span>
         }
     }
 
     public Either&lt;Problem, String&gt; getOOBI(String oobi, Integer maxAttempts) {
-<span class="nc" id="L104">        val url = String.format(&quot;%s/oobi?url=%s&quot;, keriVerifierBaseUrl, oobi);</span>
+<span class="nc" id="L105">        val url = String.format(&quot;%s/oobi?url=%s&quot;, keriVerifierBaseUrl, oobi);</span>
 
-<span class="nc" id="L106">        val headers = new HttpHeaders();</span>
-<span class="nc" id="L107">        headers.add(&quot;Content-Type&quot;, &quot;application/json&quot;);</span>
+<span class="nc" id="L107">        val headers = new HttpHeaders();</span>
+<span class="nc" id="L108">        headers.add(&quot;Content-Type&quot;, &quot;application/json&quot;);</span>
 
-<span class="nc" id="L109">        val entity = new HttpEntity&lt;Void&gt;(headers);</span>
+<span class="nc" id="L110">        val entity = new HttpEntity&lt;Void&gt;(headers);</span>
 
-<span class="nc bnc" id="L111" title="All 2 branches missed.">        int attempts = (maxAttempts == null) ? 1 : maxAttempts;</span>
-<span class="nc" id="L112">        int attempt = 0;</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">        int attempts = (maxAttempts == null) ? 1 : maxAttempts;</span>
+<span class="nc" id="L113">        int attempt = 0;</span>
 
-<span class="nc bnc" id="L114" title="All 2 branches missed.">        while (attempt &lt; attempts) {</span>
+<span class="nc bnc" id="L115" title="All 2 branches missed.">        while (attempt &lt; attempts) {</span>
             try {
-<span class="nc" id="L116">                val response = restTemplate.exchange(url, GET, entity, String.class);</span>
-
+<span class="nc" id="L117">                val response = restTemplate.exchange(url, GET, entity, String.class);</span>
 <span class="nc bnc" id="L118" title="All 2 branches missed.">                if (response.getStatusCode().is2xxSuccessful()) {</span>
-<span class="nc" id="L119">                    return Either.right(response.getBody());</span>
+<span class="nc" id="L119">                    log.info(&quot;OOBI successfully retrieved after {} attempts&quot;, attempt+1);</span>
+<span class="nc" id="L120">                    return Either.right(response.getBody());</span>
                 }
-<span class="nc" id="L121">            } catch (HttpClientErrorException e) {</span>
-<span class="nc bnc" id="L122" title="All 2 branches missed.">                if (e.getStatusCode() != BAD_REQUEST) {</span>
-<span class="nc" id="L123">                    return Either.left(Problem.builder()</span>
-<span class="nc" id="L124">                            .withTitle(&quot;OOBI_FETCH_ERROR&quot;)</span>
-<span class="nc" id="L125">                            .withDetail(&quot;Unable to fetch OOBI, reason: &quot; + e.getMessage())</span>
-<span class="nc" id="L126">                            .withStatus(new HttpStatusAdapter(e.getStatusCode()))</span>
-<span class="nc" id="L127">                            .build());</span>
+<span class="nc" id="L122">            } catch (HttpClientErrorException e) {</span>
+<span class="nc bnc" id="L123" title="All 2 branches missed.">                if (e.getStatusCode() == NOT_FOUND) {</span>
+<span class="nc" id="L124">                    log.info(&quot;OOBI not found, continuing attempts... &quot;+attempt);</span>
+                } else {
+<span class="nc" id="L126">                    return Either.left(Problem.builder()</span>
+<span class="nc" id="L127">                            .withTitle(&quot;OOBI_FETCH_ERROR&quot;)</span>
+<span class="nc" id="L128">                            .withDetail(&quot;Unable to fetch OOBI, reason: &quot; + e.getMessage())</span>
+<span class="nc" id="L129">                            .withStatus(new HttpStatusAdapter(e.getStatusCode()))</span>
+<span class="nc" id="L130">                            .build());</span>
                 }
-<span class="nc" id="L129">            }</span>
+<span class="nc" id="L132">            }</span>
 
-<span class="nc" id="L131">            attempt++;</span>
-<span class="nc bnc" id="L132" title="All 2 branches missed.">            if (attempt &lt; attempts) {</span>
+<span class="nc" id="L134">            attempt++;</span>
+<span class="nc bnc" id="L135" title="All 2 branches missed.">            if (attempt &lt; attempts) {</span>
                 try {
-<span class="nc" id="L134">                    Thread.sleep(1000);</span>
-<span class="nc" id="L135">                } catch (InterruptedException e) {</span>
-<span class="nc" id="L136">                    Thread.currentThread().interrupt();</span>
-<span class="nc" id="L137">                    return Either.left(Problem.builder()</span>
-<span class="nc" id="L138">                            .withTitle(&quot;INTERRUPTED_ERROR&quot;)</span>
-<span class="nc" id="L139">                            .withDetail(&quot;Thread was interrupted while waiting to retry.&quot;)</span>
-<span class="nc" id="L140">                            .withStatus(new HttpStatusAdapter(BAD_REQUEST))</span>
-<span class="nc" id="L141">                            .build());</span>
-<span class="nc" id="L142">                }</span>
+<span class="nc" id="L137">                    Thread.sleep(1000);</span>
+<span class="nc" id="L138">                } catch (InterruptedException e) {</span>
+<span class="nc" id="L139">                    Thread.currentThread().interrupt();</span>
+<span class="nc" id="L140">                    return Either.left(Problem.builder()</span>
+<span class="nc" id="L141">                            .withTitle(&quot;INTERRUPTED_ERROR&quot;)</span>
+<span class="nc" id="L142">                            .withDetail(&quot;Thread was interrupted while waiting to retry.&quot;)</span>
+<span class="nc" id="L143">                            .withStatus(new HttpStatusAdapter(BAD_REQUEST))</span>
+<span class="nc" id="L144">                            .build());</span>
+<span class="nc" id="L145">                }</span>
             }
         }
 
-<span class="nc" id="L146">        return Either.left(Problem.builder()</span>
-<span class="nc" id="L147">                .withTitle(&quot;OOBI_NOT_FOUND&quot;)</span>
-<span class="nc" id="L148">                .withDetail(&quot;The OOBI was not found after &quot; + attempts + &quot; attempts.&quot;)</span>
-<span class="nc" id="L149">                .withStatus(new HttpStatusAdapter(BAD_REQUEST))</span>
-<span class="nc" id="L150">                .build());</span>
+<span class="nc" id="L149">        return Either.left(Problem.builder()</span>
+<span class="nc" id="L150">                .withTitle(&quot;OOBI_NOT_FOUND&quot;)</span>
+<span class="nc" id="L151">                .withDetail(&quot;The OOBI was not found after &quot; + attempts + &quot; attempts.&quot;)</span>
+<span class="nc" id="L152">                .withStatus(new HttpStatusAdapter(NOT_FOUND))</span>
+<span class="nc" id="L153">                .build());</span>
+    }
+
+    public Either&lt;Problem, Boolean&gt; updateAndVerifyKeyState(String aid, Integer maxAttempts) {
+<span class="nc" id="L157">        val updateUrl = String.format(&quot;%s/keystate&quot;, keriVerifierBaseUrl);</span>
+<span class="nc" id="L158">        val verifyUrl = String.format(&quot;%s/keystate/%s&quot;, keriVerifierBaseUrl, aid);</span>
+
+<span class="nc" id="L160">        val headers = new HttpHeaders();</span>
+<span class="nc" id="L161">        headers.add(&quot;Content-Type&quot;, &quot;application/json&quot;);</span>
+
+<span class="nc" id="L163">        val requestBody = new HashMap&lt;String, String&gt;();</span>
+<span class="nc" id="L164">        requestBody.put(&quot;pre&quot;, aid);</span>
+
+<span class="nc" id="L166">        val entity = new HttpEntity&lt;Map&lt;String, String&gt;&gt;(requestBody, headers);</span>
+
+        // Attempt to update the key state
+        try {
+<span class="nc" id="L170">            val response = restTemplate.exchange(updateUrl, POST, entity, String.class);</span>
+<span class="nc bnc" id="L171" title="All 2 branches missed.">            if (response.getStatusCode().is2xxSuccessful()) {</span>
+<span class="nc" id="L172">                log.info(&quot;Key state updated successfully for aid: {}&quot;, aid);</span>
+<span class="nc" id="L173">                return verifyKeyState(verifyUrl, maxAttempts);</span>
+            } else {
+<span class="nc" id="L175">                return Either.left(Problem.builder()</span>
+<span class="nc" id="L176">                        .withTitle(&quot;KEY_STATE_UPDATE_FAILED&quot;)</span>
+<span class="nc" id="L177">                        .withDetail(&quot;Failed to update key state.&quot;)</span>
+<span class="nc" id="L178">                        .withStatus(new HttpStatusAdapter(response.getStatusCode()))</span>
+<span class="nc" id="L179">                        .build());</span>
+            }
+<span class="nc" id="L181">        } catch (HttpClientErrorException e) {</span>
+<span class="nc" id="L182">            log.error(&quot;Unable to update key state, reason: {}&quot;, e.getMessage());</span>
+<span class="nc" id="L183">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L184">                    .withTitle(&quot;KEY_STATE_UPDATE_ERROR&quot;)</span>
+<span class="nc" id="L185">                    .withDetail(&quot;Unable to update key state, reason: &quot; + e.getMessage())</span>
+<span class="nc" id="L186">                    .withStatus(new HttpStatusAdapter(e.getStatusCode()))</span>
+<span class="nc" id="L187">                    .build());</span>
+        }
+    }
+
+    private Either&lt;Problem, Boolean&gt; verifyKeyState(String url, Integer maxAttempts) {
+<span class="nc" id="L192">        val headers = new HttpHeaders();</span>
+<span class="nc" id="L193">        headers.add(&quot;Content-Type&quot;, &quot;application/json&quot;);</span>
+<span class="nc" id="L194">        val entity = new HttpEntity&lt;Void&gt;(headers);</span>
+
+<span class="nc bnc" id="L196" title="All 2 branches missed.">        int attempts = (maxAttempts == null) ? 1 : maxAttempts;</span>
+<span class="nc" id="L197">        int attempt = 0;</span>
+
+<span class="nc bnc" id="L199" title="All 2 branches missed.">        while (attempt &lt; attempts) {</span>
+            try {
+<span class="nc" id="L201">                val response = restTemplate.exchange(url, GET, entity, String.class);</span>
+<span class="nc bnc" id="L202" title="All 2 branches missed.">                if (response.getStatusCode().is2xxSuccessful()) {</span>
+<span class="nc" id="L203">                    log.info(&quot;Key state verified successfully after {} attempts&quot;, attempt + 1);</span>
+<span class="nc" id="L204">                    return Either.right(true);</span>
+                }
+<span class="nc" id="L206">            } catch (HttpClientErrorException e) {</span>
+<span class="nc bnc" id="L207" title="All 2 branches missed.">                if (e.getStatusCode() == NOT_FOUND) {</span>
+<span class="nc" id="L208">                    log.info(&quot;Key state not found, continuing attempts... &quot; + (attempt + 1));</span>
+                } else {
+<span class="nc" id="L210">                    return Either.left(Problem.builder()</span>
+<span class="nc" id="L211">                            .withTitle(&quot;KEY_STATE_VERIFICATION_ERROR&quot;)</span>
+<span class="nc" id="L212">                            .withDetail(&quot;Unable to verify key state, reason: &quot; + e.getMessage())</span>
+<span class="nc" id="L213">                            .withStatus(new HttpStatusAdapter(e.getStatusCode()))</span>
+<span class="nc" id="L214">                            .build());</span>
+                }
+<span class="nc" id="L216">            }</span>
+
+<span class="nc" id="L218">            attempt++;</span>
+<span class="nc bnc" id="L219" title="All 2 branches missed.">            if (attempt &lt; attempts) {</span>
+                try {
+<span class="nc" id="L221">                    Thread.sleep(1000);</span>
+<span class="nc" id="L222">                } catch (InterruptedException e) {</span>
+<span class="nc" id="L223">                    Thread.currentThread().interrupt();</span>
+<span class="nc" id="L224">                    return Either.left(Problem.builder()</span>
+<span class="nc" id="L225">                            .withTitle(&quot;INTERRUPTED_ERROR&quot;)</span>
+<span class="nc" id="L226">                            .withDetail(&quot;Thread was interrupted while waiting to retry.&quot;)</span>
+<span class="nc" id="L227">                            .withStatus(new HttpStatusAdapter(NOT_FOUND))</span>
+<span class="nc" id="L228">                            .build());</span>
+<span class="nc" id="L229">                }</span>
+            }
+        }
+
+<span class="nc" id="L233">        return Either.left(Problem.builder()</span>
+<span class="nc" id="L234">                .withTitle(&quot;KEY_STATE_VERIFICATION_FAILED&quot;)</span>
+<span class="nc" id="L235">                .withDetail(&quot;The key state verification failed after &quot; + attempts + &quot; attempts.&quot;)</span>
+<span class="nc" id="L236">                .withStatus(new HttpStatusAdapter(NOT_FOUND))</span>
+<span class="nc" id="L237">                .build());</span>
     }
 
 }

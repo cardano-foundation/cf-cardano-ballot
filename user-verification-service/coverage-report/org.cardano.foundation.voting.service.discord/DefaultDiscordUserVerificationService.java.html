@@ -428,112 +428,125 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
 
         // Step 1: Check if OOBI is already registered
 <span class="nc" id="L430">        Either&lt;Problem, String&gt; oobiCheckResult = keriVerificationClient.getOOBI(oobi, 1);</span>
+<span class="nc bnc" id="L431" title="All 2 branches missed.">        if (oobiCheckResult.isRight()) {</span>
+<span class="nc" id="L432">            log.info(&quot;OOBI already registered: {}&quot;, oobiCheckResult.get());</span>
 
-<span class="nc bnc" id="L432" title="All 2 branches missed.">        if (oobiCheckResult.isRight()) {</span>
-<span class="nc" id="L433">            log.info(&quot;OOBI already registered: {}&quot;, oobiCheckResult);</span>
-<span class="nc" id="L434">            Either&lt;Problem, Boolean&gt; verificationResult = keriVerificationClient.verifySignature(walletId, signature, payload);</span>
-
-<span class="nc bnc" id="L436" title="All 2 branches missed.">            if (verificationResult.isLeft()) {</span>
-<span class="nc" id="L437">                return Either.left(verificationResult.getLeft());</span>
+            // TODO: Review this implementation once the KERI watchers are operational.
+            // This solution is temporary and might need adjustments to integrate with the new KERI components
+            // Step 1.1:Update key state
+<span class="nc" id="L437">            Either&lt;Problem, Boolean&gt; keyStateUpdateResult = keriVerificationClient.updateAndVerifyKeyState(walletId, 60);</span>
+<span class="nc bnc" id="L438" title="All 2 branches missed.">            if (keyStateUpdateResult.isLeft()) {</span>
+<span class="nc" id="L439">                return Either.left(keyStateUpdateResult.getLeft());</span>
             }
 
-<span class="nc bnc" id="L440" title="All 2 branches missed.">            if (!verificationResult.get()) {</span>
-<span class="nc" id="L441">                return Either.left(Problem.builder()</span>
-<span class="nc" id="L442">                        .withTitle(&quot;KERI_VERIFICATION_FAILED&quot;)</span>
-<span class="nc" id="L443">                        .withDetail(&quot;The Keri verification failed.&quot;)</span>
-<span class="nc" id="L444">                        .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L445">                        .build());</span>
+<span class="nc" id="L442">            Either&lt;Problem, Boolean&gt; verificationResult = keriVerificationClient.verifySignature(walletId, signature, payload);</span>
+
+<span class="nc bnc" id="L444" title="All 2 branches missed.">            if (verificationResult.isLeft()) {</span>
+<span class="nc" id="L445">                return Either.left(verificationResult.getLeft());</span>
             }
 
-<span class="nc" id="L448">            log.info(&quot;Keri signature {} verified for walletId {} with payload {}&quot;, signatureM, walletId, payload);</span>
-<span class="nc" id="L449">            pendingVerification.setWalletId(Optional.of(walletId));</span>
-<span class="nc" id="L450">            pendingVerification.setWalletType(request.getWalletType());</span>
-<span class="nc" id="L451">            pendingVerification.setUpdatedAt(LocalDateTime.now(clock));</span>
-<span class="nc" id="L452">            pendingVerification.setStatus(VERIFIED);</span>
-<span class="nc" id="L453">            userVerificationRepository.save(pendingVerification);</span>
+<span class="nc bnc" id="L448" title="All 2 branches missed.">            if (!verificationResult.get()) {</span>
+<span class="nc" id="L449">                return Either.left(Problem.builder()</span>
+<span class="nc" id="L450">                        .withTitle(&quot;KERI_VERIFICATION_FAILED&quot;)</span>
+<span class="nc" id="L451">                        .withDetail(&quot;The Keri verification failed.&quot;)</span>
+<span class="nc" id="L452">                        .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L453">                        .build());</span>
+            }
 
-<span class="nc" id="L455">            return Either.right(new IsVerifiedResponse(true));</span>
+<span class="nc" id="L456">            log.info(&quot;Keri signature {} verified for walletId {} with payload {}&quot;, signatureM, walletId, payload);</span>
+<span class="nc" id="L457">            pendingVerification.setWalletId(Optional.of(walletId));</span>
+<span class="nc" id="L458">            pendingVerification.setWalletType(request.getWalletType());</span>
+<span class="nc" id="L459">            pendingVerification.setUpdatedAt(LocalDateTime.now(clock));</span>
+<span class="nc" id="L460">            pendingVerification.setStatus(VERIFIED);</span>
+<span class="nc" id="L461">            userVerificationRepository.save(pendingVerification);</span>
+
+<span class="nc" id="L463">            return Either.right(new IsVerifiedResponse(true));</span>
         }
 
-<span class="nc" id="L458">        log.info(&quot;OOBI not registered yet: {}&quot;, oobiM);</span>
+<span class="nc" id="L466">        log.info(&quot;OOBI not registered yet: {}&quot;, oobiM);</span>
         // Step 2: Register OOBI if not already registered
-<span class="nc" id="L460">        val oobiRegistrationResultE = keriVerificationClient.registerOOBI(oobi);</span>
+<span class="nc" id="L468">        val oobiRegistrationResultE = keriVerificationClient.registerOOBI(oobi);</span>
 
-<span class="nc bnc" id="L462" title="All 2 branches missed.">        if (oobiRegistrationResultE.isLeft()) {</span>
-<span class="nc" id="L463">            return Either.left(oobiRegistrationResultE.getLeft());</span>
+<span class="nc bnc" id="L470" title="All 2 branches missed.">        if (oobiRegistrationResultE.isLeft()) {</span>
+<span class="nc" id="L471">            return Either.left(oobiRegistrationResultE.getLeft());</span>
         }
 
-<span class="nc" id="L466">        log.info(&quot;OOBI registered successfully: {}&quot;, oobiM);</span>
+<span class="nc" id="L474">        log.info(&quot;OOBI registered successfully: {}&quot;, oobiM);</span>
 
-        // Step 3: Attempt to verify OOBI registration up to 10 times
-<span class="nc" id="L469">        val oobiFetchResultE = keriVerificationClient.getOOBI(oobi, 60);</span>
-<span class="nc bnc" id="L470" title="All 2 branches missed.">        if (oobiFetchResultE.isLeft()) {</span>
-<span class="nc" id="L471">            return Either.left(oobiFetchResultE.getLeft());</span>
+        // Step 3: Attempt to verify OOBI registration up to 60 times
+<span class="nc" id="L477">        val oobiFetchResultE = keriVerificationClient.getOOBI(oobi, 60);</span>
+<span class="nc bnc" id="L478" title="All 2 branches missed.">        if (oobiFetchResultE.isLeft()) {</span>
+<span class="nc" id="L479">            return Either.left(oobiFetchResultE.getLeft());</span>
         }
 
-        // Step 4: Verify signature after OOBI registration
-<span class="nc" id="L475">        val verificationResultE = keriVerificationClient.verifySignature(walletId, signature, payload);</span>
-<span class="nc bnc" id="L476" title="All 2 branches missed.">        if (verificationResultE.isLeft()) {</span>
-<span class="nc" id="L477">            return Either.left(verificationResultE.getLeft());</span>
+        // Step 4: Update key state
+<span class="nc" id="L483">        Either&lt;Problem, Boolean&gt; keyStateUpdateResult = keriVerificationClient.updateAndVerifyKeyState(walletId, 60);</span>
+<span class="nc bnc" id="L484" title="All 2 branches missed.">        if (keyStateUpdateResult.isLeft()) {</span>
+<span class="nc" id="L485">            return Either.left(keyStateUpdateResult.getLeft());</span>
+        }
+        // Step 5: Verify signature after OOBI registration
+<span class="nc" id="L488">        val verificationResultE = keriVerificationClient.verifySignature(walletId, signature, payload);</span>
+<span class="nc bnc" id="L489" title="All 2 branches missed.">        if (verificationResultE.isLeft()) {</span>
+<span class="nc" id="L490">            return Either.left(verificationResultE.getLeft());</span>
         }
 
-<span class="nc bnc" id="L480" title="All 2 branches missed.">        if (!verificationResultE.get()) {</span>
-<span class="nc" id="L481">            return Either.left(Problem.builder()</span>
-<span class="nc" id="L482">                    .withTitle(&quot;KERI_VERIFICATION_FAILED&quot;)</span>
-<span class="nc" id="L483">                    .withDetail(&quot;The Keri verification failed.&quot;)</span>
-<span class="nc" id="L484">                    .withStatus(BAD_REQUEST)</span>
-<span class="nc" id="L485">                    .build());</span>
+<span class="nc bnc" id="L493" title="All 2 branches missed.">        if (!verificationResultE.get()) {</span>
+<span class="nc" id="L494">            return Either.left(Problem.builder()</span>
+<span class="nc" id="L495">                    .withTitle(&quot;KERI_VERIFICATION_FAILED&quot;)</span>
+<span class="nc" id="L496">                    .withDetail(&quot;The Keri verification failed.&quot;)</span>
+<span class="nc" id="L497">                    .withStatus(BAD_REQUEST)</span>
+<span class="nc" id="L498">                    .build());</span>
         }
 
-<span class="nc" id="L488">        log.info(&quot;Keri signature {} verified for walletId {} with payload {}&quot;, signatureM, walletId, payload);</span>
-<span class="nc" id="L489">        pendingVerification.setWalletId(Optional.of(walletId));</span>
-<span class="nc" id="L490">        pendingVerification.setWalletType(request.getWalletType());</span>
-<span class="nc" id="L491">        pendingVerification.setUpdatedAt(LocalDateTime.now(clock));</span>
-<span class="nc" id="L492">        pendingVerification.setStatus(VERIFIED);</span>
-<span class="nc" id="L493">        userVerificationRepository.save(pendingVerification);</span>
+<span class="nc" id="L501">        log.info(&quot;Keri signature {} verified for walletId {} with payload {}&quot;, signatureM, walletId, payload);</span>
+<span class="nc" id="L502">        pendingVerification.setWalletId(Optional.of(walletId));</span>
+<span class="nc" id="L503">        pendingVerification.setWalletType(request.getWalletType());</span>
+<span class="nc" id="L504">        pendingVerification.setUpdatedAt(LocalDateTime.now(clock));</span>
+<span class="nc" id="L505">        pendingVerification.setStatus(VERIFIED);</span>
+<span class="nc" id="L506">        userVerificationRepository.save(pendingVerification);</span>
 
-<span class="nc" id="L495">        return Either.right(new IsVerifiedResponse(true));</span>
+<span class="nc" id="L508">        return Either.right(new IsVerifiedResponse(true));</span>
     }
 
     @Override
     @Transactional(readOnly = true)
     public Either&lt;Problem, IsVerifiedResponse&gt; isVerifiedBasedOnWalletId(IsVerifiedRequest isVerifiedRequest) {
-<span class="nc" id="L501">        val eventId = isVerifiedRequest.getEventId();</span>
-<span class="nc" id="L502">        val walletType = isVerifiedRequest.getWalletType();</span>
-<span class="nc" id="L503">        val walletId = isVerifiedRequest.getWalletId();</span>
+<span class="nc" id="L514">        val eventId = isVerifiedRequest.getEventId();</span>
+<span class="nc" id="L515">        val walletType = isVerifiedRequest.getWalletType();</span>
+<span class="nc" id="L516">        val walletId = isVerifiedRequest.getWalletId();</span>
 
-<span class="nc" id="L505">        val isVerified = userVerificationRepository.findCompletedVerifications(eventId, walletType, walletId)</span>
-<span class="nc" id="L506">                .stream().findFirst()</span>
-<span class="nc" id="L507">                .map(uv -&gt; new IsVerifiedResponse(true)).orElse(new IsVerifiedResponse(false));</span>
+<span class="nc" id="L518">        val isVerified = userVerificationRepository.findCompletedVerifications(eventId, walletType, walletId)</span>
+<span class="nc" id="L519">                .stream().findFirst()</span>
+<span class="nc" id="L520">                .map(uv -&gt; new IsVerifiedResponse(true)).orElse(new IsVerifiedResponse(false));</span>
 
-<span class="nc" id="L509">        return Either.right(isVerified);</span>
+<span class="nc" id="L522">        return Either.right(isVerified);</span>
     }
 
     @Override
     @Transactional(readOnly = true)
     public Either&lt;Problem, IsVerifiedResponse&gt; isVerifiedBasedOnDiscordIdHash(String eventId, String discordIdHash) {
-<span class="fc" id="L515">        val isVerified = userVerificationRepository.findCompletedVerificationBasedOnDiscordUserHash(eventId, discordIdHash)</span>
-<span class="pc" id="L516">                .map(uv -&gt; new IsVerifiedResponse(true)).orElse(new IsVerifiedResponse(false));</span>
+<span class="fc" id="L528">        val isVerified = userVerificationRepository.findCompletedVerificationBasedOnDiscordUserHash(eventId, discordIdHash)</span>
+<span class="pc" id="L529">                .map(uv -&gt; new IsVerifiedResponse(true)).orElse(new IsVerifiedResponse(false));</span>
 
-<span class="fc" id="L518">        return Either.right(isVerified);</span>
+<span class="fc" id="L531">        return Either.right(isVerified);</span>
     }
 
     @Override
     @Transactional
     public void removeUserVerification(DiscordUserVerification userVerification) {
-<span class="nc" id="L524">        userVerificationRepository.delete(userVerification);</span>
-<span class="nc" id="L525">    }</span>
+<span class="nc" id="L537">        userVerificationRepository.delete(userVerification);</span>
+<span class="nc" id="L538">    }</span>
 
     @Override
     @Transactional(readOnly = true)
     public List&lt;DiscordUserVerification&gt; findAllForEvent(String eventId) {
-<span class="nc" id="L530">        return userVerificationRepository.findAllForEvent(eventId);</span>
+<span class="nc" id="L543">        return userVerificationRepository.findAllForEvent(eventId);</span>
     }
 
     @Override
     @Transactional(readOnly = true)
     public List&lt;DiscordUserVerification&gt; findAllPending(String eventId) {
-<span class="nc" id="L536">        return userVerificationRepository.findAllPending(eventId);</span>
+<span class="nc" id="L549">        return userVerificationRepository.findAllPending(eventId);</span>
     }
 
 }

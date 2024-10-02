@@ -33,10 +33,12 @@ class OOBIEnd:
     def on_get(self, req, resp):
         # This should be a path param but is causing issues, query will do.
         oobi = req.params.get('url')
+
         if oobi is None or oobi == "":
             raise falcon.HTTPBadRequest(description=f"required field url missing from request")
 
         result = self.hby.db.roobi.get(keys=(oobi,))
+
         if result:
             resp.status = falcon.HTTP_200
             resp.text = result.cid

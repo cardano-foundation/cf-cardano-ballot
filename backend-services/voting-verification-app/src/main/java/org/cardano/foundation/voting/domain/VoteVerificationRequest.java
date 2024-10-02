@@ -2,6 +2,7 @@ package org.cardano.foundation.voting.domain;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public class VoteVerificationRequest {
     @Schema(description = "Root hash of the merkle tree", required = true)
     private String rootHash;
 
-    @NotBlank
+    @NotNull
     @Schema(description = "Cardano or KERI", required = true)
     private WalletType walletType;
 

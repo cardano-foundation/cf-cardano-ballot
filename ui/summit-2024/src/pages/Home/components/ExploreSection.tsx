@@ -108,7 +108,7 @@ const ExploreSection = () => {
               mb: 2,
             }}
           >
-            Year’s Award Summit!
+            Year’s Summit Awards!
           </Typography>
         </Box>
         <Box
@@ -156,7 +156,7 @@ const ExploreSection = () => {
               mb: 2,
             }}
           >
-            Award Summit!
+            Summit Awards!
           </Typography>
         </Box>
         <Box

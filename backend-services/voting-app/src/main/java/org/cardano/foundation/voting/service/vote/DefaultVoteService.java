@@ -28,9 +28,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.Objects;
 
 import static com.bloxbean.cardano.client.util.HexUtil.encodeHexString;
 import static org.cardano.foundation.voting.domain.VoteReceipt.Status.*;
@@ -306,7 +306,7 @@ public class DefaultVoteService implements VoteService {
             existingVote.setVotedAtSlot(castVote.getVotedAtSlot());
             existingVote.setWalletType(walletType);
             existingVote.setSignature(concreteDetails.getSignature());
-            existingVote.setPayload(concreteDetails.getPayload());
+            existingVote.setPayload(Optional.of(concreteDetails.getPayload()));
             existingVote.setPublicKey(concreteDetails.getPublicKey());
 
             return Either.right(voteRepository.saveAndFlush(existingVote));
@@ -321,7 +321,7 @@ public class DefaultVoteService implements VoteService {
         vote.setWalletType(walletType);
         vote.setVotedAtSlot(castVote.getVotedAtSlot());
         vote.setSignature(concreteDetails.getSignature());
-        vote.setPayload(concreteDetails.getPayload());
+        vote.setPayload(Optional.of(concreteDetails.getPayload()));
         vote.setPublicKey(concreteDetails.getPublicKey());
         vote.setIdNumericHash(UUID.fromString(voteId).hashCode() & 0xFFFFFFF);
 
@@ -412,7 +412,7 @@ public class DefaultVoteService implements VoteService {
     }
 
     private Either<Problem, ViewVoteReceiptEnvelope> unwrapViewVoteReceiptEnvelope(Web3ConcreteDetails concreteDetails) {
-        val signedJson = concreteDetails.getSignedJson();
+        val signedJson = concreteDetails.getPayload();
 
         switch (concreteDetails) {
             case CardanoWeb3Details cardanoWeb3Details -> {
@@ -455,7 +455,7 @@ public class DefaultVoteService implements VoteService {
     }
 
     private Either<Problem, VoteEnvelope> unwrapCastCoteEnvelope(Web3ConcreteDetails concreteDetails) {
-        val signedJson = concreteDetails.getSignedJson();
+        val signedJson = concreteDetails.getPayload();
 
         switch (concreteDetails) {
             case CardanoWeb3Details cardanoWeb3Details -> {

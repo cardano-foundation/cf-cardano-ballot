@@ -21,6 +21,7 @@ public class CardanoWeb3Details implements Web3ConcreteDetails {
     private Cip30VerificationResult cip30VerificationResult;
     private CIP93Envelope<Map<String, Object>> envelope;
     private SignedCIP30 signedCIP30;
+    private String payload;
 
     public String getUri() {
         return envelope.getUri();
@@ -40,8 +41,12 @@ public class CardanoWeb3Details implements Web3ConcreteDetails {
         return signedCIP30.getSignature();
     }
 
-    public Optional<String> getPayload() {
-        return Optional.empty();
+    public String getPayload() {
+        if (cip30VerificationResult.isHashed()) {
+            return payload;
+        }
+
+        return cip30VerificationResult.getMessage(MessageFormat.TEXT);
     }
 
     public Optional<String> getPublicKey() {

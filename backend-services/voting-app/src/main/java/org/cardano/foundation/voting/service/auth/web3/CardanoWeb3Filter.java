@@ -30,10 +30,12 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+import static com.bloxbean.cardano.client.crypto.Blake2bUtil.blake2bHash224;
+import static com.bloxbean.cardano.client.util.HexUtil.decodeHexString;
+import static com.bloxbean.cardano.client.util.HexUtil.encodeHexString;
 import static org.cardano.foundation.voting.domain.Role.VOTER;
 import static org.cardano.foundation.voting.domain.web3.WalletType.CARDANO;
-import static org.cardano.foundation.voting.resource.Headers.X_Ballot_PublicKey;
-import static org.cardano.foundation.voting.resource.Headers.X_Ballot_Signature;
+import static org.cardano.foundation.voting.resource.Headers.*;
 import static org.cardano.foundation.voting.service.auth.LoginSystem.CARDANO_CIP93;
 import static org.cardano.foundation.voting.service.auth.web3.MoreFilters.sendBackProblem;
 import static org.cardano.foundation.voting.utils.MoreNumber.isNumeric;
@@ -77,6 +79,7 @@ public class CardanoWeb3Filter extends OncePerRequestFilter {
 
         val signatureM = Optional.ofNullable(req.getHeader(X_Ballot_Signature));
         val publicKey = req.getHeader(X_Ballot_PublicKey);
+        val payloadM = Optional.ofNullable(req.getHeader(X_Ballot_Payload));
 
         if (signatureM.isEmpty()) {
             val problem = Problem.builder()
@@ -122,7 +125,37 @@ public class CardanoWeb3Filter extends OncePerRequestFilter {
 
         val walletId = maybeAddress.orElseThrow();
 
-        val cipBody = cipVerificationResult.getMessage(MessageFormat.TEXT);
+        var cipBody = cipVerificationResult.getMessage(MessageFormat.TEXT);
+        if (cipVerificationResult.isHashed() && payloadM.isEmpty()) {
+            val problem = Problem.builder()
+                    .withTitle("HASHED_CONTENT_NO_PAYLOAD")
+                    .withDetail("Payload was not sent along with the request and CIP-30 signature contains is hashed!")
+                    .withStatus(BAD_REQUEST)
+                    .build();
+
+            sendBackProblem(objectMapper, res, problem);
+            return;
+        }
+
+        if (cipVerificationResult.isHashed()) {
+            val cipBodyHash = cipVerificationResult.getMessage(MessageFormat.HEX);
+            val payload = payloadM.orElseThrow();
+
+            val payloadHash = encodeHexString(blake2bHash224(decodeHexString(payload)));
+
+            if (!cipBodyHash.equals(payloadHash)) {
+                val problem = Problem.builder()
+                        .withTitle("CIP_30_HASH_MISMATCH")
+                        .withDetail("Signed hash does not match our precalculated hash!")
+                        .withStatus(BAD_REQUEST)
+                        .build();
+
+                sendBackProblem(objectMapper, res, problem);
+                return;
+            }
+
+            cipBody = new String(decodeHexString(payload)); // flip cipBody to be payload for further processing
+        }
 
         val cip93EnvelopeE = jsonService.decodeGenericCIP93(cipBody);
         if (cip93EnvelopeE.isEmpty()) {
@@ -318,6 +351,7 @@ public class CardanoWeb3Filter extends OncePerRequestFilter {
                 .web3CommonDetails(commonWeb3Details)
                 .envelope(genericEnvelope)
                 .signedCIP30(signedWeb3Request)
+                .payload(cipBody)
                 .cip30VerificationResult(cipVerificationResult)
                 .build();
 

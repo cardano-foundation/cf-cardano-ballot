@@ -16,7 +16,7 @@ public interface Web3ConcreteDetails {
 
     String getSignature();
 
-    Optional<String> getPayload();
+    String getPayload();
 
     Optional<String> getPublicKey();
 

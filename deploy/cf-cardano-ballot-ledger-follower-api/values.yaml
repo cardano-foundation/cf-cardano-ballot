@@ -7,6 +7,14 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
+localCardanoNode:
+  enabled: false
+  image:
+    repository: ghcr.io/blinklabs-io/cardano-node
+    tag: main-amd64
+  mithrilRestore: "true"
+  tolerations: null
+  affinity: null
 
 service:
   type: ClusterIP

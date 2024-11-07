@@ -15,6 +15,8 @@ import { useAppDispatch } from "../../store/hooks";
 import { setConnectedWallet } from "../../store/reducers/userCache";
 import { ToastType } from "../common/Toast/Toast.types";
 import { initialConnectedWallet } from "../../store/reducers/userCache/initialState";
+import { clearUserInSessionStorage } from "../../utils/session";
+import { useMatomo } from "@datapunt/matomo-tracker-react";
 
 const ConnectWalletModal = (props: ConnectWalletProps) => {
   const dispatch = useAppDispatch();
@@ -44,7 +46,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
   } = useCardano({
     limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
   });
-
+  const { trackEvent } = useMatomo();
   const isMobile = useIsPortrait();
 
   const onConnectWalletError = (e: Error) => {
@@ -102,6 +104,11 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
               `${name} Wallet connected successfully`,
             );
             props.handleCloseConnectWalletModal();
+            trackEvent({
+              category: "connect-keri-wallet",
+              action: "click-event",
+              name: "idw_p2p",
+            });
           } else {
             eventBus.publish(
               EventName.ShowToast,
@@ -128,6 +135,11 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
                   `${name} Wallet connected successfully`,
                 );
                 props.handleCloseConnectWalletModal();
+                trackEvent({
+                  category: "connect-cardano-wallet",
+                  action: "click-event",
+                  name: name,
+                });
               }
             },
             (e: Error) => {
@@ -145,6 +157,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
           `${name} Wallet disconnected successfully`,
         );
         disconnect();
+        clearUserInSessionStorage();
       };
 
       const onP2PConnect = (): void => {
@@ -159,7 +172,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
         verifyConnection,
         onApiInject,
         onApiEject,
-        [],
+        ["https://dev.btt.cf-identity-wallet.metadata.dev.cf-deployments.org"],
         onP2PConnect,
       );
     }
@@ -179,6 +192,11 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
         );
         eventBus.publish(EventName.CloseConnectWalletModal);
         eventBus.publish(EventName.ShowToast, "Wallet connected successfully");
+        trackEvent({
+          category: "connect-cardano-wallet",
+          action: "click-event",
+          name: walletName,
+        });
       },
       onConnectError,
     );
@@ -209,6 +227,11 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
                     address: keriIdentifier.id,
                   }),
                 );
+                trackEvent({
+                  category: "connect-keri-wallet",
+                  action: "click-event",
+                  name: "idw_p2p",
+                });
               } else {
                 eventBus.publish(
                   EventName.ShowToast,
@@ -242,7 +265,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
         };
       case ConnectWalletFlow.CONNECT_IDENTITY_WALLET:
         return {
-          title: "Use IDW Wallet to connect",
+          title: "",
         };
       case ConnectWalletFlow.CONNECT_CIP45_WALLET:
         return {

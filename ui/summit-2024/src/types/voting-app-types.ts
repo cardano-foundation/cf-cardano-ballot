@@ -48,20 +48,28 @@ export interface LoginResult {
   expiresAt: Date;
 }
 
-export interface UserVotes {
+export interface UserVote {
   categoryId: string;
   proposalId: string;
 }
 
+export interface ExtendedVoteReceipt extends VoteReceipt {
+  categoryName?: string;
+  proposalNam?: string;
+}
+
 export interface VoteReceipt {
   id: string;
+  walletId: string;
+  walletType: string;
   event: string;
   category: string;
   proposal: string;
   votingPower?: string;
   voterStakingAddress: string;
-  coseSignature: string;
-  cosePublicKey?: string;
+  signature: string;
+  payload: string;
+  publicKey?: string;
   status: Status;
   merkleProof: MerkleProof;
   finalityScore?: FinalityScore;

@@ -1,20 +1,51 @@
 import { Grid, Typography, Card, CardContent, Box } from "@mui/material";
+import { keyframes } from "@mui/system";
 import HowToVoteOutlinedIcon from "@mui/icons-material/HowToVoteOutlined";
 import folderIcon from "../../../assets/folder.svg";
 import trophyIcon from "../../../assets/trophy.svg";
 import { useIsPortrait } from "../../../common/hooks/useIsPortrait";
 import { CustomButton } from "../../../components/common/CustomButton/CustomButton";
 import theme from "../../../common/styles/theme";
-import guideBg from "../../../assets/bg/guideCard.svg";
+import guideBg from "@assets/guideCard.svg";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../../../routes";
+import { useEffect, useState } from "react";
+import { ByCategoryStats } from "../../../types/voting-app-types";
+import { getStats } from "../../../common/api/leaderboardService";
+import { calculateTotalVotes } from "../../../utils/utils";
+import { useAppSelector } from "../../../store/hooks";
+import { getEventCache } from "../../../store/reducers/eventCache";
 
 const ExploreSection = () => {
   const isMobile = useIsPortrait();
   const navigate = useNavigate();
+
   const handleClickMenu = (option: string) => {
     navigate(option);
   };
+
+  const eventCache = useAppSelector(getEventCache);
+  const [stats, setStats] = useState<ByCategoryStats[]>();
+  const totalVotes = calculateTotalVotes(stats);
+
+  useEffect(() => {
+    getStats().then((response) => {
+      // @ts-ignore
+      setStats(response.categories);
+    });
+  }, []);
+
+  const marquee = keyframes`
+      from {
+        transform: translateX(0%);
+      }
+      to {
+        transform: translateX(-100%);
+      }
+    `;
+
+  const categoriesNames = eventCache.categories.map((c) => c.name).join(", ");
+
   return (
     <Grid
       container
@@ -77,7 +108,7 @@ const ExploreSection = () => {
               mb: 2,
             }}
           >
-            Year’s Award Summit!2
+            Year’s Summit Awards!
           </Typography>
         </Box>
         <Box
@@ -125,7 +156,7 @@ const ExploreSection = () => {
               mb: 2,
             }}
           >
-            Award Summit!
+            Summit Awards!
           </Typography>
         </Box>
         <Box
@@ -150,6 +181,7 @@ const ExploreSection = () => {
       </Grid>
       <Grid item xs={12} sm={6} md={4}>
         <Card
+          onClick={() => handleClickMenu(ROUTES.CATEGORIES)}
           sx={{
             position: "relative",
             height: "272px",
@@ -163,15 +195,35 @@ const ExploreSection = () => {
             backgroundImage: `url(${guideBg})`,
             backgroundSize: "180% 160%",
             backgroundPosition: "center",
+            cursor: "pointer",
+            "&:hover": {
+              "& > .backdrop": {
+                backdropFilter: "blur(6px)",
+                background: "rgba(18, 18, 18, 0.25)",
+              },
+            },
           }}
         >
-          <CardContent sx={{ position: "relative", zIndex: 2 }}>
+          <CardContent
+            className="backdrop"
+            sx={{
+              position: "relative",
+              zIndex: 2,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+              height: "100%",
+              background: "rgba(18, 18, 18, 0.20)",
+              backdropFilter: "blur(4px)",
+              cursor: "pointer",
+            }}
+          >
             <Box
               component="div"
               sx={{
                 display: "flex",
                 alignItems: "center",
-                marginTop: "20px",
+                marginTop: "30px",
               }}
             >
               <img
@@ -198,29 +250,42 @@ const ExploreSection = () => {
                 Categories
               </Typography>
             </Box>
-            <Typography
+            <Box
+              component="div"
               sx={{
-                color: theme.palette.text.neutralLightest,
-                fontSize: {
-                  xs: "40px",
-                  md: "68px",
-                },
-                fontStyle: "normal",
-                fontWeight: 500,
-                lineHeight: "76px",
-                marginTop: "46px",
-                marginLeft: isMobile ? "" : "40px",
-                whiteSpace: "nowrap",
-                maxWidth: "335px",
+                width: "100%",
+                height: "80px",
+                position: "relative",
+                overflow: "hidden",
+                marginBottom: "20px",
               }}
             >
-              Ambassador, Blockchain for Good, DeFi ..
-            </Typography>
+              <Typography
+                sx={{
+                  color: theme.palette.text.neutralLightest,
+                  fontSize: {
+                    xs: "40px",
+                    md: "68px",
+                  },
+                  fontStyle: "normal",
+                  fontWeight: 500,
+                  lineHeight: "86px",
+                  whiteSpace: "nowrap",
+                  display: "inline-block",
+                  position: "absolute",
+                  minWidth: "200%",
+                  animation: `${marquee} 20s linear infinite`,
+                }}
+              >
+                {categoriesNames}
+              </Typography>
+            </Box>
           </CardContent>
         </Card>
       </Grid>
       <Grid item xs={12} sm={6} md={4}>
         <Card
+          onClick={() => handleClickMenu(ROUTES.LEADERBOARD)}
           sx={{
             position: "relative",
             height: "272px",
@@ -234,9 +299,29 @@ const ExploreSection = () => {
             backgroundImage: `url(${guideBg})`,
             backgroundSize: "180% 160%",
             backgroundPosition: "center",
+            cursor: "pointer",
+            "&:hover": {
+              "& > .backdrop": {
+                backdropFilter: "blur(4px)",
+                background: "rgba(18, 18, 18, 0.25)",
+              },
+            },
           }}
         >
-          <CardContent sx={{ position: "relative", zIndex: 2 }}>
+          <CardContent
+            className="backdrop"
+            sx={{
+              position: "relative",
+              zIndex: 2,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+              height: "100%",
+              background: "rgba(18, 18, 18, 0.20)",
+              backdropFilter: "blur(2px)",
+              cursor: "pointer",
+            }}
+          >
             <Box
               component="div"
               sx={{
@@ -299,7 +384,7 @@ const ExploreSection = () => {
                 marginLeft: "40px",
               }}
             >
-              1,275
+              {eventCache.notStarted ? "N/A" : totalVotes}
             </Typography>
           </CardContent>
         </Card>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Fade,
@@ -10,30 +10,77 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { Proposal } from "../../../store/reducers/eventCache/eventCache.types";
 import awardImg from "../../../assets/awardWinner.svg";
-import winnerBg from "../../../assets/bg/winnerBg.svg";
+import winnerBg from "@assets/winnerBg.svg";
 import votesIcon from "../../../assets/votesIcon.svg";
 import positionIcon from "../../../assets/positionIcon.svg";
 import nomineeIcon from "../../../assets/nomineeIcon.svg";
 import tickIcon from "../../../assets/tickIcon.svg";
 import theme from "../../../common/styles/theme";
+import { useAppSelector } from "../../../store/hooks";
+import { getEventCache } from "../../../store/reducers/eventCache";
+import { getVotingResults } from "../../../common/api/leaderboardService";
+import { Proposal } from "../../../store/reducers/eventCache/eventCache.types";
+import { getVotes } from "../../../store/reducers/votesCache";
 
 interface WinnersProps {
   fadeChecked: boolean;
   nominees: Proposal[];
-  selectedNominee: string | undefined;
-  handleSelectedNominee: (nomineeId: string) => void;
+  categoryId: string;
   handleOpenLearnMore: (nomineeId: string) => void;
 }
 
 const Winners: React.FC<WinnersProps> = ({
   fadeChecked,
-  nominees,
-  selectedNominee,
-  handleSelectedNominee,
+  categoryId,
   handleOpenLearnMore,
 }) => {
+  const userVotes = useAppSelector(getVotes);
+  const eventCache = useAppSelector(getEventCache);
+  const [votingResults, setVotingResults] = useState([]);
+
+  const votesMap = votingResults?.reduce(
+    (acc, category) => {
+      // @ts-ignore
+      Object.keys(category.proposals).forEach((proposalId) => {
+        // @ts-ignore
+        acc[proposalId] = category.proposals[proposalId].votes;
+      });
+      return acc;
+    },
+    {} as { [key: string]: number },
+  );
+
+  const extendedCategoryData = eventCache.categories.map((category) => {
+    return {
+      ...category,
+      proposals: category.proposals
+        .map((proposal) => ({
+          ...proposal,
+          votes: votesMap[proposal.id] || 0,
+        }))
+        .sort((a, b) => b.votes! - a.votes!),
+    };
+  });
+
+  const votedFor = userVotes.find(
+    (v) => v.categoryId === categoryId,
+  )?.proposalId;
+
+  const nominees =
+    extendedCategoryData.find((c) => c.id === categoryId)?.proposals || [];
+
+  const maxVotes = Math.max(...nominees.map((n) => n.votes || 0));
+  const winners = nominees.filter((n) => n.votes === maxVotes);
+  const remainingNominees = nominees.filter((n) => n.votes !== maxVotes);
+
+  useEffect(() => {
+    getVotingResults().then((response) => {
+      // @ts-ignore
+      setVotingResults(response);
+    });
+  }, []);
+
   const handleLearnMoreClick = (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>,
     nomineeId: string,
@@ -124,9 +171,10 @@ const Winners: React.FC<WinnersProps> = ({
             zIndex: 3,
           }}
         >
-          <TickIcon circleSize={28} tickSize={20} />
+          {winners.find((w) => w.id === votedFor) ? (
+            <TickIcon circleSize={28} tickSize={20} />
+          ) : null}
         </Box>
-
         <Typography
           variant="h4"
           align="center"
@@ -142,32 +190,45 @@ const Winners: React.FC<WinnersProps> = ({
             marginBottom: "40px",
           }}
         >
-          Winner!
+          Winner
+          {winners.length > 1 ? "s" : ""}!
         </Typography>
-        <Box component="div" display="flex" justifyContent="center" mt={2}>
-          <img src={awardImg} alt="Placeholder" height={148} />
-        </Box>
-        <Typography
-          onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) =>
-            handleLearnMoreClick(event, nominees[0].id)
-          }
-          align="center"
+        <Box
+          component="div"
+          display="flex"
+          justifyContent="center"
           mt={2}
           sx={{
-            color: theme.palette.text.neutralLightest,
-            textAlign: "center",
-            textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
-            fontFamily: "Dosis",
-            fontSize: "28px",
-            fontStyle: "normal",
-            fontWeight: 700,
-            lineHeight: "32px",
-            marginTop: "40px",
-            cursor: "pointer",
+            marginBottom: "30px",
           }}
         >
-          {nominees[0].id}
-        </Typography>
+          <img src={awardImg} alt="Placeholder" height={148} />
+        </Box>
+        {winners.map((winner) => {
+          return (
+            <Typography
+              onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) =>
+                handleLearnMoreClick(event, winner.id)
+              }
+              align="center"
+              mt={2}
+              sx={{
+                color: theme.palette.text.neutralLightest,
+                textAlign: "center",
+                textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
+                fontFamily: "Dosis",
+                fontSize: "28px",
+                fontStyle: "normal",
+                fontWeight: 700,
+                lineHeight: "32px",
+                marginTop: "10px",
+                cursor: "pointer",
+              }}
+            >
+              {winner?.name}
+            </Typography>
+          );
+        })}
         <Box
           component="div"
           sx={{
@@ -229,10 +290,9 @@ const Winners: React.FC<WinnersProps> = ({
                 marginTop: "4px",
               }}
             >
-              100
+              {winners[0].votes}
             </Typography>
           </Box>
-
           <Box
             component="div"
             sx={{
@@ -375,9 +435,8 @@ const Winners: React.FC<WinnersProps> = ({
           </TableRow>
         </TableHead>
         <TableBody>
-          {[...nominees, ...nominees, ...nominees].map((nominee, index) => (
+          {remainingNominees?.map((nominee, index) => (
             <TableRow
-              onClick={() => handleSelectedNominee(nominee.id)}
               key={index}
               sx={{
                 borderRadius: "8px",
@@ -391,15 +450,15 @@ const Winners: React.FC<WinnersProps> = ({
                 sx={{
                   background: theme.palette.background.neutralDark,
                   borderLeft:
-                    selectedNominee === nominee.id
+                    votedFor === nominee.id
                       ? `1px solid ${theme.palette.secondary.main}`
                       : `1px solid transparent`,
                   borderTop:
-                    selectedNominee === nominee.id
+                    votedFor === nominee.id
                       ? `1px solid ${theme.palette.secondary.main}`
                       : `1px solid transparent`,
                   borderBottom:
-                    selectedNominee === nominee.id
+                    votedFor === nominee.id
                       ? `1px solid ${theme.palette.secondary.main}`
                       : `1px solid transparent`,
                   borderRight: "none",
@@ -443,7 +502,7 @@ const Winners: React.FC<WinnersProps> = ({
                       marginLeft: "8px",
                     }}
                   >
-                    #{index + 1}
+                    #{index + 2}
                   </Typography>
                 </Box>
               </TableCell>
@@ -451,11 +510,11 @@ const Winners: React.FC<WinnersProps> = ({
                 sx={{
                   background: theme.palette.background.neutralDark,
                   borderTop:
-                    selectedNominee === nominee.id
+                    votedFor === nominee.id
                       ? `1px solid ${theme.palette.secondary.main}`
                       : `1px solid transparent`,
                   borderBottom:
-                    selectedNominee === nominee.id
+                    votedFor === nominee.id
                       ? `1px solid ${theme.palette.secondary.main}`
                       : `1px solid transparent`,
                   borderRight: "none",
@@ -494,7 +553,7 @@ const Winners: React.FC<WinnersProps> = ({
                       cursor: "pointer",
                     }}
                   >
-                    {nominee.id}
+                    {nominee.name}
                   </Typography>
                 </Box>
               </TableCell>
@@ -502,11 +561,11 @@ const Winners: React.FC<WinnersProps> = ({
                 sx={{
                   background: theme.palette.background.neutralDark,
                   borderTop:
-                    selectedNominee === nominee.id
+                    votedFor === nominee.id
                       ? `1px solid ${theme.palette.secondary.main}`
                       : `1px solid transparent`,
                   borderBottom:
-                    selectedNominee === nominee.id
+                    votedFor === nominee.id
                       ? `1px solid ${theme.palette.secondary.main}`
                       : `1px solid transparent`,
                   borderLeft: "none",
@@ -537,7 +596,7 @@ const Winners: React.FC<WinnersProps> = ({
                       marginLeft: "8px",
                     }}
                   >
-                    100
+                    {nominee.votes}
                   </Typography>
                 </Box>
               </TableCell>
@@ -547,15 +606,15 @@ const Winners: React.FC<WinnersProps> = ({
                   borderTopRightRadius: "20px",
                   borderBottomRightRadius: "20px",
                   borderTop:
-                    selectedNominee === nominee.id
+                    votedFor === nominee.id
                       ? `1px solid ${theme.palette.secondary.main}`
                       : `1px solid transparent`,
                   borderBottom:
-                    selectedNominee === nominee.id
+                    votedFor === nominee.id
                       ? `1px solid ${theme.palette.secondary.main}`
                       : `1px solid transparent`,
                   borderRight:
-                    selectedNominee === nominee.id
+                    votedFor === nominee.id
                       ? `1px solid ${theme.palette.secondary.main}`
                       : `1px solid transparent`,
                   borderLeft: "none",
@@ -567,7 +626,7 @@ const Winners: React.FC<WinnersProps> = ({
                     width: "24px",
                   }}
                 >
-                  {selectedNominee === nominee.id ? (
+                  {votedFor === nominee.id ? (
                     <TickIcon circleSize={24} tickSize={16} />
                   ) : null}
                 </Box>

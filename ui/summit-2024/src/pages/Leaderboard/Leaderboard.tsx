@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -13,20 +13,52 @@ import {
   Fade,
 } from "@mui/material";
 import theme from "../../common/styles/theme";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { PieChart, pieChartDefaultProps } from "react-minimal-pie-chart";
-import leaderboard1Bg from "../../assets/bg/leaderboard1.svg";
-import { addressSlice } from "../../utils/utils";
-import { categoriesData } from "../../__fixtures__/leaderboard";
+import leaderboard1Bg from "@assets/leaderboard1.svg";
+
+import {
+  addressSlice,
+  calculateTotalVotes,
+  formatISODate,
+} from "../../utils/utils";
 import { PageBase } from "../BasePage";
 import AnimatedSwitch from "../../components/AnimatedSwitch/AnimatedSwitch";
 import { Categories } from "../Categories";
+import { getStats } from "../../common/api/leaderboardService";
+import { ByCategoryStats } from "../../types/voting-app-types";
+import { useAppSelector } from "../../store/hooks";
+import { getEventCache } from "../../store/reducers/eventCache";
+import Ellipses from "../../assets/ellipse.svg";
+import { useIsPortrait } from "../../common/hooks/useIsPortrait";
 
 const Leaderboard: React.FC = () => {
+  const [stats, setStats] = useState<ByCategoryStats[]>();
+  const eventCache = useAppSelector(getEventCache);
+  const isMobile = useIsPortrait();
+
   const [selected, setSelected] = useState<number | undefined>(undefined);
   const [hovered, setHovered] = useState<number | undefined>(undefined);
   const [content, setContent] = useState("Overall Votes");
   const [fade, setFade] = useState(true);
+
+  const showRevealDate = eventCache.finished && !eventCache.proposalsReveal;
+  const showWinners = eventCache.proposalsReveal;
+
+  const nameMap = new Map(
+    eventCache.categories.map((category) => [category.id, category.name]),
+  );
+
+  const extendedStats = stats?.map((item) => ({
+    ...item,
+    name: nameMap.get(item.id) || null,
+  }));
+
+  useEffect(() => {
+    getStats().then((response) => {
+      // @ts-ignore
+      setStats(response.categories);
+    });
+  }, []);
 
   const colors = [
     "#F8D6C3",
@@ -40,11 +72,20 @@ const Leaderboard: React.FC = () => {
     "#200E04",
   ];
 
-  const dataForChart = categoriesData.map((item, index) => ({
-    title: item.category,
+  const dataForChart = extendedStats?.map((item, index) => ({
+    title: item.name,
     value: item.votes,
     color: colors[index % colors.length],
   }));
+
+  const totalVotes = calculateTotalVotes(stats);
+
+  let selectedCategoryValue = -1;
+  let selectedCategoryName = "";
+  if (dataForChart !== undefined && selected !== undefined) {
+    selectedCategoryValue = dataForChart[selected].value;
+    selectedCategoryName = dataForChart[selected].title || "";
+  }
 
   const handleSwitch = (option: string) => {
     if (option !== content) {
@@ -71,7 +112,7 @@ const Leaderboard: React.FC = () => {
                 width: "100%",
                 paddingTop: {
                   xs: content === "Winners" ? "60px" : "20px",
-                  md: "20px",
+                  md: "40px",
                 },
                 paddingBottom: { xs: "26px" },
               }}
@@ -84,16 +125,38 @@ const Leaderboard: React.FC = () => {
                   fontStyle: "normal",
                   fontWeight: 700,
                   lineHeight: "36px",
-                  textAlign: "left", // Alineación izquierda en todas las pantallas
-                  marginBottom: { xs: 2, md: 0 }, // Espacio entre el texto y el switch en pantallas pequeñas
+                  textAlign: "left",
+                  marginBottom: { xs: 2, md: 0 },
                 }}
               >
                 Leaderboard
               </Typography>
-              <AnimatedSwitch
-                defaultValue="Overall Votes"
-                onClickOption={handleSwitch}
-              />
+
+              {showRevealDate ? (
+                <Typography
+                  sx={{
+                    color: theme.palette.text.neutralLightest,
+                    fontFamily: "Dosis",
+                    fontSize: "32px",
+                    fontStyle: "normal",
+                    fontWeight: 700,
+                    lineHeight: "36px",
+                    textAlign: "left",
+                    marginBottom: { xs: 2, md: 0 },
+                  }}
+                >
+                  {"Voting Results " +
+                    formatISODate(eventCache.proposalsRevealDate)}
+                </Typography>
+              ) : undefined}
+              {showWinners ? (
+                <AnimatedSwitch
+                  defaultValue="Overall Votes"
+                  optionA="Winners"
+                  optionB="Overall Votes"
+                  onClickOption={handleSwitch}
+                />
+              ) : undefined}
             </Box>
             <Fade
               in={fade}
@@ -124,7 +187,7 @@ const Leaderboard: React.FC = () => {
                             sx={{
                               p: "28px",
                               backgroundImage: `url(${leaderboard1Bg})`,
-                              backgroundSize: "200% 200%",
+                              backgroundSize: "400% 400%",
                               backgroundPosition: "center",
                               borderRadius: "24px",
                               backdropFilter: "blur(5px)",
@@ -152,11 +215,6 @@ const Leaderboard: React.FC = () => {
                               >
                                 Total Votes
                               </Typography>
-                              <MoreVertIcon
-                                sx={{
-                                  cursor: "pointer",
-                                }}
-                              />
                             </Box>
                             <Typography
                               sx={{
@@ -171,7 +229,7 @@ const Leaderboard: React.FC = () => {
                                 lineHeight: "40px",
                               }}
                             >
-                              1,000
+                              {totalVotes}
                             </Typography>
                             <TableContainer>
                               <Table size="small">
@@ -209,36 +267,37 @@ const Leaderboard: React.FC = () => {
                                   </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                  {Array.from({ length: 10 }).map(
-                                    (_, index) => (
-                                      <TableRow key={index}>
-                                        <TableCell
-                                          component="th"
-                                          scope="row"
-                                          sx={{
-                                            color:
-                                              theme.palette.text
-                                                .neutralLightest,
-                                            textShadow:
-                                              "0px 0px 12px rgba(18, 18, 18, 0.20)",
-                                            fontSize: "12px",
-                                            fontStyle: "normal",
-                                            fontWeight: 700,
-                                            lineHeight: "20px",
-                                            padding: "12px 0px",
-                                          }}
-                                        >
-                                          Category {index + 1}
-                                        </TableCell>
-                                        <TableCell align="left">
-                                          {100 + index}
-                                        </TableCell>
-                                        <TableCell align="left">
-                                          {10 + index}%
-                                        </TableCell>
-                                      </TableRow>
-                                    ),
-                                  )}
+                                  {extendedStats?.map((item, index) => (
+                                    <TableRow key={index}>
+                                      <TableCell
+                                        component="th"
+                                        scope="row"
+                                        sx={{
+                                          color:
+                                            theme.palette.text.neutralLightest,
+                                          textShadow:
+                                            "0px 0px 12px rgba(18, 18, 18, 0.20)",
+                                          fontSize: "12px",
+                                          fontStyle: "normal",
+                                          fontWeight: 700,
+                                          lineHeight: "20px",
+                                          padding: "12px 0px",
+                                        }}
+                                      >
+                                        {item.name}
+                                      </TableCell>
+                                      <TableCell align="left">
+                                        {item.votes}
+                                      </TableCell>
+                                      <TableCell align="left">
+                                        {(
+                                          (item.votes / totalVotes) *
+                                          100
+                                        ).toFixed(2)}
+                                        %
+                                      </TableCell>
+                                    </TableRow>
+                                  ))}
                                 </TableBody>
                               </Table>
                             </TableContainer>
@@ -283,11 +342,6 @@ const Leaderboard: React.FC = () => {
                               >
                                 Votes per category
                               </Typography>
-                              <MoreVertIcon
-                                sx={{
-                                  cursor: "pointer",
-                                }}
-                              />
                             </Box>
                             <Box
                               component="div"
@@ -305,7 +359,8 @@ const Leaderboard: React.FC = () => {
                                 }}
                               >
                                 <PieChart
-                                  data={dataForChart.map((entry, index) => ({
+                                  // @ts-ignore
+                                  data={dataForChart?.map((entry, index) => ({
                                     ...entry,
                                     color:
                                       hovered === index
@@ -348,13 +403,17 @@ const Leaderboard: React.FC = () => {
                                   <Typography
                                     sx={{
                                       color: theme.palette.text.neutralLightest,
-                                      fontSize: "16px",
+                                      fontSize: selectedCategoryName.length
+                                        ? "14px"
+                                        : "16px",
                                       fontStyle: "normal",
                                       fontWeight: 500,
                                       lineHeight: "24px",
                                     }}
                                   >
-                                    Votes
+                                    {selectedCategoryName.length
+                                      ? selectedCategoryName
+                                      : "Total Votes"}
                                   </Typography>
                                   <Typography
                                     variant="h6"
@@ -368,9 +427,9 @@ const Leaderboard: React.FC = () => {
                                       lineHeight: "32px",
                                     }}
                                   >
-                                    {selected !== undefined
-                                      ? `${dataForChart[selected].value} Votes`
-                                      : "1,000"}
+                                    {selectedCategoryValue > 0
+                                      ? `${selectedCategoryValue} Votes`
+                                      : totalVotes}
                                   </Typography>
                                 </Box>
                               </Box>
@@ -384,7 +443,7 @@ const Leaderboard: React.FC = () => {
                                   flexWrap: "wrap",
                                 }}
                               >
-                                {dataForChart.map((entry, index) => (
+                                {dataForChart?.map((entry, index) => (
                                   <Box
                                     component="div"
                                     key={index}
@@ -417,7 +476,11 @@ const Leaderboard: React.FC = () => {
                                         marginTop: "8px",
                                       }}
                                     >
-                                      {addressSlice(entry.title, 12, "end")}
+                                      {addressSlice(
+                                        entry?.title || "",
+                                        12,
+                                        "end",
+                                      )}
                                     </Typography>
                                   </Box>
                                 ))}
@@ -432,6 +495,18 @@ const Leaderboard: React.FC = () => {
               </Box>
             </Fade>
           </Container>
+          <img
+            src={Ellipses}
+            style={{
+              position: "fixed",
+              right: "0",
+              top: "90%",
+              transform: "translateY(-30%)",
+              zIndex: "-1",
+              width: "70%",
+              height: isMobile ? "auto" : "auto",
+            }}
+          />
         </>
       </PageBase>
     </>

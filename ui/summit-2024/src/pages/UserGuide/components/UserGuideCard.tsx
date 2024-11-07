@@ -1,7 +1,8 @@
-import { Paper, Typography, Box, Link } from "@mui/material";
+import { Paper, Typography, Box } from "@mui/material";
 import theme from "../../../common/styles/theme";
-import guideBg from "../../../assets/bg/guideCard.svg";
+import guideBg from "@assets/guideCard.svg";
 import { CustomCardProps } from "./UserGuideCard.type";
+import { eventBus, EventName } from "../../../utils/EventBus";
 
 const UserGuideCard = ({
   number,
@@ -9,6 +10,10 @@ const UserGuideCard = ({
   description,
   link,
 }: CustomCardProps) => {
+  const handleOpenSupportedWallets = () => {
+    eventBus.publish(EventName.OpenSupportedWalletsModal);
+  };
+
   return (
     <Paper
       elevation={3}
@@ -93,18 +98,11 @@ const UserGuideCard = ({
               lineHeight: "24px",
               textDecorationLine: "underline",
               marginBottom: "24px",
+              cursor: "pointer",
             }}
+            onClick={() => handleOpenSupportedWallets()}
           >
-            <Link
-              href={link.url}
-              target="_blank"
-              rel="noopener"
-              sx={{
-                color: theme.palette.secondary.main,
-              }}
-            >
-              {link.label}
-            </Link>
+            {link.label}
           </Typography>
         )}
       </Box>

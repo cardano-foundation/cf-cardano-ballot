@@ -1,0 +1,508 @@
+{
+  "categories": [
+    {
+      "id": "AMBASSADOR",
+      "presentationName": "Ambassador",
+      "desc": "Recognizes an individual who has significantly contributed to promoting and expanding the Cardano ecosystem.",
+      "proposals": [
+        {
+          "id": "E4EB1F0C-427A-4B94-B965-C6F46CA09845",
+          "presentationName": "Andreas Sosilo",
+          "x": "https://x.com/andreassosilo",
+          "linkedin": "",
+          "url": ""
+        },
+        {
+          "id": "7D2B42A7-B28B-463D-A673-C992CC462413",
+          "presentationName": "Mauro Andreoli",
+          "x": "https://x.com/MauroAndreoliA ",
+          "linkedin": "",
+          "url": ""
+        },
+        {
+          "id": "A50DF74D-C89D-46A1-B90F-DA073CCD5CA3",
+          "presentationName": "Ha Nguyen",
+          "x": "https://x.com/Hahero7",
+          "linkedin": "",
+          "url": ""
+        },
+        {
+          "id": "538FBA40-E852-417A-9716-7D794D4BE8DB",
+          "presentationName": "Felix Weber",
+          "x": "https://x.com/CatalystSwarm",
+          "linkedin": "",
+          "url": ""
+        },
+        {
+          "id": "21910627-D2E5-4429-89EA-102484C1925D",
+          "presentationName": "Guillermo Moratorio",
+          "x": "https://x.com/WoodlandPools",
+          "linkedin": "",
+          "url": ""
+        }
+      ]
+    },
+    {
+      "id": "BLOCKCHAIN_FOR_GOOD",
+      "presentationName": "Blockchain for Good",
+      "desc": "Recognizes a project or stake pool operator (SPO) doing exceptional environmental or humanitarian work.",
+      "proposals": [
+        {
+          "id": "72F103B0-5DBB-44F9-BC56-AB991B784FCC",
+          "presentationName": "Empowa",
+          "x": "https://x.com/empowa_io",
+          "linkedin": "https://www.linkedin.com/company/empowa/",
+          "url": "https://empowa.io/"
+        },
+        {
+          "id": "2976E410-916C-4564-A158-78E04EE03B4C",
+          "presentationName": "Socious",
+          "x": "https://x.com/SociousDAO",
+          "linkedin": "https://www.linkedin.com/company/socious-io/",
+          "url": "https://socious.io/"
+        },
+        {
+          "id": "092C7ED2-40EC-4544-AFDB-BCF2A0B9DE64",
+          "presentationName": "ADA4Good SPO",
+          "x": "https://x.com/Ada4goodP",
+          "linkedin": "",
+          "url": "https://www.ada4good.com"
+        },
+        {
+          "id": "C95EF71B-CA9F-40A5-BF9D-789C78EB8D57",
+          "presentationName": "Landano International",
+          "x": "https://x.com/landanodapp",
+          "linkedin": "https://www.linkedin.com/company/landano/",
+          "url": "https://www.landano.io/"
+        }
+      ]
+    },
+    {
+      "id": "INNOVATION_STANDARDS",
+      "presentationName": "Innovation & Standards",
+      "desc": "Honors and expands the former \"Standards (CIPs)\" category to recognize an innovative project pushing the boundaries of what is possible on Cardano.",
+      "proposals": [
+        {
+          "id": "2E2676E5-5D72-400C-AF66-ED53A957A86E",
+          "presentationName": "ZKFold",
+          "x": "https://x.com/zkFold",
+          "linkedin": "https://www.linkedin.com/company/zkfold/",
+          "url": "https://zkfold.io/"
+        },
+        {
+          "id": "923437B0-75BA-4AF0-9EB8-43AABBF696C5",
+          "presentationName": "Unbox",
+          "x": "https://x.com/Unbox_Universe",
+          "linkedin": "https://www.linkedin.com/company/unboxuniverse/",
+          "url": "https://www.unboxuniverse.com/"
+        },
+        {
+          "id": "00DAE5F3-ABCF-41A3-9E5B-70B41A2958BC",
+          "presentationName": "Vacuumlabs",
+          "x": "https://x.com/vacuumlabs",
+          "linkedin": "https://www.linkedin.com/company/vacuumlabs/",
+          "url": "https://vacuumlabs.com/"
+        },
+        {
+          "id": "0E724D70-BBBD-4310-B6E5-EF2D7F5BF154",
+          "presentationName": "Harmonic Labs",
+          "x": "https://x.com/hlabs_tech",
+          "linkedin": "",
+          "url": "https://www.harmoniclabs.tech/"
+        },
+        {
+          "id": "B1727049-7F0F-421C-B1CE-A0CEB29AD189",
+          "presentationName": "NEWM",
+          "x": "https://x.com/projectNEWM",
+          "linkedin": "https://www.linkedin.com/company/projectnewm/",
+          "url": "https://newm.io/"
+        },
+        {
+          "id": "5332AD46-5317-4E02-9069-4908F56881E4",
+          "presentationName": "Anastasia Labs",
+          "x": "https://x.com/AnastasiaLabs",
+          "linkedin": "https://www.linkedin.com/company/anastasialabs/",
+          "url": "https://anastasialabs.com/"
+        }
+      ]
+    },
+    {
+      "id": "DEX",
+      "presentationName": "DEX",
+      "desc": "Recognizes a decentralized exchange (DEX) or project that contributes to liquidity provision on Cardano.",
+      "proposals": [
+        {
+          "id": "882F424F-D628-4C27-B072-076A615C8CB7",
+          "presentationName": "Minswap",
+          "x": "https://x.com/MinswapDEX",
+          "linkedin": "https://www.linkedin.com/company/minswap",
+          "url": "https://minswap.org/analytics/dao-treasury"
+        },
+        {
+          "id": "EB3756EE-4DE6-499F-AD97-24AD799A181A",
+          "presentationName": "Sundae Labs",
+          "x": "https://x.com/SundaeSwap",
+          "linkedin": "https://www.linkedin.com/company/sundaeswap-labs/",
+          "url": "https://sundaeswap.finance"
+        },
+        {
+          "id": "7225D86F-0AE2-4AEF-8678-19F658794D0A",
+          "presentationName": "DexHunter",
+          "x": "https://x.com/DexHunterIO",
+          "linkedin": "https://www.linkedin.com/company/dexhunter/",
+          "url": "https://app.dexhunter.io/"
+        },
+        {
+          "id": "BC20C916-BFAA-4347-8EC6-2B6F1E699EB0",
+          "presentationName": "WingRiders",
+          "x": "https://x.com/wingriderscom",
+          "linkedin": "https://www.linkedin.com/company/wingriders/",
+          "url": "https://www.wingriders.com/"
+        },
+        {
+          "id": "AE33E741-1E1A-4681-9B11-0949D511F502",
+          "presentationName": "Splash Labs Inc.",
+          "x": "https://x.com/splashprotocol",
+          "linkedin": "",
+          "url": "https://www.splash.trade/"
+        },
+        {
+          "id": "7AEC510B-FA86-472E-8E92-66C8E71F1BED",
+          "presentationName": "MuesliSwap",
+          "x": "https://x.com/MuesliSwapTeam",
+          "linkedin": "",
+          "url": "https://www.muesliswap.com/"
+        }
+      ]
+    },
+    {
+      "id": "DEVELOPER_TOOLING",
+      "presentationName": "Developer & Tooling",
+      "desc": "Recognizes an individual or team and the tools they create to enhance the Cardano development experience.",
+      "proposals": [
+        {
+          "id": "FB8501FE-0D1C-4D9D-8219-62881819C277",
+          "presentationName": "MeshJS",
+          "x": "https://x.com/meshsdk",
+          "linkedin": "https://www.linkedin.com/company/meshjs",
+          "url": "https://meshjs.dev/"
+        },
+        {
+          "id": "040A201A-0E1D-4607-921A-E7FC154DEE0D",
+          "presentationName": "Aiken",
+          "x": "https://x.com/aiken_eng",
+          "linkedin": "",
+          "url": "https://aiken-lang.org/"
+        },
+        {
+          "id": "8B260B9A-5928-487B-91B6-21EBE484A956",
+          "presentationName": "Zhaata - DexHunter",
+          "x": "https://x.com/ZhaataC",
+          "linkedin": "",
+          "url": "https://app.dexhunter.io/"
+        },
+        {
+          "id": "6A0AEC7B-85AD-45B2-98B8-2E436A718F45",
+          "presentationName": "Pi Lanningham - SundaeSwap",
+          "x": "https://x.com/Quantumplation",
+          "linkedin": "",
+          "url": "https://www.314pool.com/"
+        },
+        {
+          "id": "6F4D3D8B-531A-4FB3-AC41-CB0937AFE059",
+          "presentationName": "Dennis Mittmann - IAMX",
+          "x": "https://x.com/DennisMittmann",
+          "linkedin": "",
+          "url": "https://iamx.id/"
+        },
+        {
+          "id": "3F10573E-6564-48BB-851F-A40C9BC6E248",
+          "presentationName": "Raul Padilla - FluidTokens",
+          "x": "https://x.com/ElRaulito_cnft",
+          "linkedin": "",
+          "url": "https://linktr.ee/fluidtokens"
+        }
+      ]
+    },
+    {
+      "id": "EDUCATIONAL_INFLUENCER",
+      "presentationName": "Educational Influencer",
+      "desc": "Recognizes an individual or account vastly contributing to blockchain education by creating content that helps others learn about Cardano.",
+      "proposals": [
+        {
+          "id": "968AEB62-DADD-4D79-B6D6-B2A013982874",
+          "presentationName": "Lido Nation",
+          "x": "https://x.com/LidoNation",
+          "linkedin": "https://www.linkedin.com/company/lido-nation",
+          "url": "https://lidonation.com"
+        },
+        {
+          "id": "E3531D81-1F35-42D7-A175-EBC353E0E365",
+          "presentationName": "Gimbalabs",
+          "x": "https://x.com/gimbalabs",
+          "linkedin": "https://www.linkedin.com/company/gimbalabs",
+          "url": "https://plutuspbl.io/"
+        },
+        {
+          "id": "C16D8E47-F220-4B51-8024-EA184D867898",
+          "presentationName": "Farid - Dapp Central",
+          "x": "https://x.com/dapp_central",
+          "linkedin": "",
+          "url": "https://www.dappcentral.net/"
+        },
+        {
+          "id": "8ED763AF-39BA-4D88-B933-1E3320DB179A",
+          "presentationName": "Cardano Whale",
+          "x": "https://x.com/cardano_whale",
+          "linkedin": "",
+          "url": ""
+        },
+        {
+          "id": "2CE60EE3-BF09-45FC-9DE1-970785C14B5F",
+          "presentationName": "Peter Bui",
+          "x": "https://x.com/petebui",
+          "linkedin": "",
+          "url": "https://linktr.ee/peterbui"
+        }
+      ]
+    },
+    {
+      "id": "NFT_DIGITAL_COLLECTIBLES",
+      "presentationName": "NFT & Digital Collectibles",
+      "desc": "Recognizes a project related to non-fungible tokens (NFTs) or digital collectibles, encompassing categories as diverse as marketplaces, art, music, gaming, or others.",
+      "proposals": [
+        {
+          "id": "EDCB0046-E576-4CD4-965C-D442086B2EC5",
+          "presentationName": "Hosky",
+          "x": "https://x.com/hoskytoken",
+          "linkedin": "",
+          "url": "https://hosky.io"
+        },
+        {
+          "id": "2967D6F9-AE00-4B2D-94DA-82CBDE18FC88",
+          "presentationName": "GOAT Tribe",
+          "x": "https://x.com/adaGOATS",
+          "linkedin": "",
+          "url": "https://www.goattribe.io/"
+        },
+        {
+          "id": "68E4D3AB-FA69-4DA5-850F-290A8DC21C89",
+          "presentationName": "OREMOB by OreOreOre",
+          "x": "https://x.com/ore_times_3",
+          "linkedin": "",
+          "url": "https://oremob.io/"
+        },
+        {
+          "id": "0E39800C-C9AB-4543-B9F8-12BD8ED3808F",
+          "presentationName": "Clay Nation",
+          "x": "https://x.com/claymates",
+          "linkedin": "https://www.linkedin.com/company/claynation/",
+          "url": "https://www.clayspace.io/"
+        },
+        {
+          "id": "5CEC4D99-886C-4BE7-B6C8-BEED71682F75",
+          "presentationName": "Book.io",
+          "x": "https://x.com/book_io",
+          "linkedin": "https://www.linkedin.com/company/book-io/",
+          "url": "https://book.io/"
+        }
+      ]
+    },
+    {
+      "id": "INFRASTRUCTURE_PLATFORM",
+      "presentationName": "Infrastructure Platform",
+      "desc": "Recognizes an essential infrastructure project that supports the Cardano ecosystem.",
+      "proposals": [
+        {
+          "id": "86A61885-556E-4320-AD16-79D87793544A",
+          "presentationName": "Demeter by TxPipe",
+          "x": "https://x.com/DemeterRun",
+          "linkedin": "",
+          "url": "https://demeter.run/"
+        },
+        {
+          "id": "6C6092EB-D04D-411F-BDDE-87DDF71C375A",
+          "presentationName": "Maestro",
+          "x": "https://x.com/GoMaestroOrg",
+          "linkedin": "https://www.linkedin.com/company/gomaestro/",
+          "url": "https://www.gomaestro.org/"
+        },
+        {
+          "id": "49C9BFC5-70F1-43AB-AC7F-15265F6A20F5",
+          "presentationName": "Blockfrost",
+          "x": "https://x.com/blockfrost_io",
+          "linkedin": "",
+          "url": "https://blockfrost.io/"
+        },
+        {
+          "id": "CFBDA700-ABB9-420C-9828-798A9BC7B6A9",
+          "presentationName": "Ada Anvil",
+          "x": "https://x.com/ada_anvil",
+          "linkedin": "https://www.linkedin.com/company/anvil-development-agency-inc/about/",
+          "url": "https://ada-anvil.io/"
+        },
+        {
+          "id": "85D2E32F-BD87-4A8A-9736-46E9A64EEC8A",
+          "presentationName": "dcSpark",
+          "x": "https://x.com/dcspark_io",
+          "linkedin": "https://www.linkedin.com/company/dcspark/",
+          "url": "https://www.dcspark.io"
+        },
+        {
+          "id": "C975CC1D-28A3-47F1-8FFE-9E0C897079DA",
+          "presentationName": "NMKR",
+          "x": "https://x.com/nmkr_io",
+          "linkedin": "https://www.linkedin.com/company/nmkrio/",
+          "url": "https://www.nmkr.io/"
+        }
+      ]
+    },
+    {
+      "id": "DAO_TOOLING_GOVERNANCE",
+      "presentationName": "DAO Tooling & Governance",
+      "desc": "Recognizes a decentralized autonomous organization (DAO) for the importance of their tooling and governance solutions within the Cardano ecosystem.",
+      "proposals": [
+        {
+          "id": "64C38356-E099-40CF-9F5D-30EED973B89A",
+          "presentationName": "Clarity",
+          "x": "https://x.com/Clarity_DAO",
+          "linkedin": "https://www.linkedin.com/company/clarityprotocol/",
+          "url": "https://www.clarity.vote/"
+        },
+        {
+          "id": "55C832E9-C3EE-4029-8DC2-F73C29379316",
+          "presentationName": "Liqwid",
+          "x": "https://x.com/liqwidfinance",
+          "linkedin": "https://www.linkedin.com/company/liqwid-labs/",
+          "url": "https://liqwid.finance/"
+        },
+        {
+          "id": "B18E350C-D561-41D9-9C72-C42C7BE6DB8D",
+          "presentationName": "Summon Platform",
+          "x": "https://x.com/SummonPlatform",
+          "linkedin": "https://www.linkedin.com/company/summonplatform/",
+          "url": "https://summonplatform.io/"
+        },
+        {
+          "id": "D791ECA4-19C2-45B9-9A3F-DEE509D5ADA0",
+          "presentationName": "Minswap",
+          "x": "https://x.com/MinswapDEX",
+          "linkedin": "https://www.linkedin.com/company/minswap",
+          "url": "https://minswap.org/"
+        },
+        {
+          "id": "36384CB0-3517-483D-8AA5-AA8F9E51159B",
+          "presentationName": "Indigo",
+          "x": "https://x.com/Indigo_protocol",
+          "linkedin": "https://www.linkedin.com/company/indigolabsinc/",
+          "url": "https://indigoprotocol.io"
+        },
+        {
+          "id": "ECFA5481-3B31-4DAE-B3B7-145ED3525FEE",
+          "presentationName": "Optim Finance",
+          "x": "https://x.com/optimfi",
+          "linkedin": "",
+          "url": "https://optim.finance/"
+        }
+      ]
+    },
+    {
+      "id": "DEFI",
+      "presentationName": "DeFi Platform",
+      "desc": "Specifically recognizes a decentralized finance (DeFi) project offering superlative solutions in the form of lending platforms, yield aggregators, or other options.",
+      "proposals": [
+        {
+          "id": "A37B8E3B-99ED-4596-9349-E31015DCFA43",
+          "presentationName": "Indigo",
+          "x": "https://x.com/Indigo_protocol",
+          "linkedin": "https://www.linkedin.com/company/indigolabsinc/",
+          "url": "https://indigoprotocol.io"
+        },
+        {
+          "id": "FDB103DC-EA4F-48BD-85EF-877F21C3FEC8",
+          "presentationName": "Lenfi",
+          "x": "https://x.com/LenfiOfficial",
+          "linkedin": "https://www.linkedin.com/company/lenfi/",
+          "url": "https://lenfi.io/"
+        },
+        {
+          "id": "9E1B84B1-1F5F-4CD9-92A5-264E30C69BA9",
+          "presentationName": "Liqwid",
+          "x": "https://x.com/liqwidfinance",
+          "linkedin": "https://www.linkedin.com/company/liqwid-labs/",
+          "url": "https://liqwid.finance/"
+        },
+        {
+          "id": "5DF10439-EDBE-4AD3-A033-833906220AD8",
+          "presentationName": "Optim Finance",
+          "x": "https://x.com/optimfi",
+          "linkedin": "",
+          "url": "https://dao.optim.finance/"
+        },
+        {
+          "id": "26364D11-DD33-42FA-8AA9-48DB223B660E",
+          "presentationName": "VyFinance",
+          "x": "https://x.com/VyFiOfficial",
+          "linkedin": "https://www.linkedin.com/company/vyfinance/",
+          "url": "https://app.vyfi.io/"
+        },
+        {
+          "id": "B1F3D716-D10F-43F2-9462-D5D1445324E6",
+          "presentationName": "FluidTokens",
+          "x": "https://x.com/FluidTokens",
+          "linkedin": "https://www.linkedin.com/company/fluidtokens/",
+          "url": "https://fluidtokens.com/"
+        }
+      ]
+    },
+    {
+      "id": "SSPO",
+      "presentationName": "SSPO",
+      "desc": "Recognizes the remarkable work done by a single stake pool operator (SSPO) and their vital contributions to the Cardano ecosystem.",
+      "proposals": [
+        {
+          "id": "10C26123-3E3F-4503-861B-3EE0E3ADA21A",
+          "presentationName": "PRIDE",
+          "x": "https://x.com/StakeWithPride",
+          "linkedin": "",
+          "url": "https://www.stakewithpride.org"
+        },
+        {
+          "id": "5C1F4FE1-8126-40BB-9C65-CBB9286CC1F0",
+          "presentationName": "Cardanistas",
+          "x": "https://x.com/cardanistas",
+          "linkedin": "",
+          "url": "https://www.youtube.com/cardanistas"
+        },
+        {
+          "id": "42BBA522-2222-4671-930A-59FC5F1940CB",
+          "presentationName": "Malu",
+          "x": "https://x.com/Cryptofly777",
+          "linkedin": "",
+          "url": "https://www.youtube.com/channel/UCP_US45irp84HHE1j5E8SCg"
+        },
+        {
+          "id": "F34DAB95-603B-4F92-A70C-48016C13D28F",
+          "presentationName": "Vietnam Cardano Community",
+          "x": "https://x.com/VietnamCardano",
+          "linkedin": "",
+          "url": "https://linktr.ee/cardanoadavietnam"
+        },
+        {
+          "id": "A3CA5296-A6B3-45BF-B047-11D685B1DDEF",
+          "presentationName": "Dapp Central",
+          "x": "https://x.com/dapp_central",
+          "linkedin": "",
+          "url": "https://www.dappcentral.net/"
+        },
+        {
+          "id": "D7C37AFD-13A7-4AE3-8312-3888F9A3DB77",
+          "presentationName": "DRMZ Pool",
+          "x": "https://x.com/rodg_drmz",
+          "linkedin": "",
+          "url": "https://www.web3ineducation.com/"
+        }
+      ]
+    }
+  ]
+}

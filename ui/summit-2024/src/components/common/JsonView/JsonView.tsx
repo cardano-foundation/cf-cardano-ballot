@@ -10,9 +10,10 @@ import { eventBus, EventName } from "../../../utils/EventBus";
 interface JsonRendererProps {
   data: string;
   sx?: SxProps<Theme>;
+  verifyProof: () => {};
 }
 
-const JsonView: React.FC<JsonRendererProps> = ({ data, sx }) => {
+const JsonView: React.FC<JsonRendererProps> = ({ data, sx, verifyProof }) => {
   const [copied, setCopied] = React.useState(false);
 
   const handleCopy = async () => {
@@ -89,6 +90,7 @@ const JsonView: React.FC<JsonRendererProps> = ({ data, sx }) => {
           padding: "10px 24px",
           cursor: "pointer",
         }}
+        onClick={() => verifyProof()}
       >
         <Typography
           sx={{

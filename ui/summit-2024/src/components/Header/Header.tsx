@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { AppBar, Box, Toolbar, Typography, IconButton } from "@mui/material";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
@@ -9,33 +9,66 @@ import { ToastType } from "../common/Toast/Toast.types";
 import { ConnectWalletModal } from "../ConnectWalletModal/ConnectWalletModal";
 import { Toast } from "../common/Toast/Toast";
 import { VerifyWalletModal } from "../VerifyWalletModal";
-import { resolveCardanoNetwork } from "../../utils/utils";
+import {
+  getSignedMessagePromise,
+  resolveCardanoNetwork,
+  signMessageWithWallet,
+} from "../../utils/utils";
 import { env } from "../../common/constants/env";
-import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 import { ConnectWalletButton } from "../ConnectWalletButton/ConnectWalletButton";
 import { ROUTES } from "../../routes";
 import { RightMenu } from "./RightMenu/RightMenu";
 import theme from "../../common/styles/theme";
-import { useAppDispatch } from "../../store/hooks";
-import { resetUser } from "../../store/reducers/userCache";
-import {LoginModal} from "../LoginModal/LoginModal";
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import {
+  getConnectedWallet,
+  resetUser,
+  setIsLogin,
+} from "../../store/reducers/userCache";
+import { LoginModal } from "../LoginModal/LoginModal";
+import {
+  clearUserInSessionStorage,
+  saveUserInSession,
+} from "../../utils/session";
+import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
+import {
+  getSlotNumber,
+  submitGetUserVotes,
+} from "../../common/api/voteService";
+import {
+  buildCanonicalLoginJson,
+  submitLogin,
+} from "../../common/api/loginService";
+import { resolveWalletType } from "../../common/api/utils";
+import { clearVotes, setVotes } from "../../store/reducers/votesCache";
+import { parseError } from "../../common/constants/errors";
+import { CheckWalletModal } from "../CheckWalletModal/CheckWalletModal";
 
 const Header = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
+  const connectedWallet = useAppSelector(getConnectedWallet);
   const [showConnectWalletModal, setShowConnectWalletModal] =
     useState<boolean>(false);
+  const [isLogging, setIsLogging] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastType, setToastType] = useState<ToastType>(ToastType.Common);
   const [toastOpen, setToastOpen] = useState(false);
   const [menuIsOpen, setMenuIsOpen] = useState(false);
-
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
+  const [isCheckWalletModalOpen, setIsCheckWalletModalOpen] =
+    useState<boolean>(false);
   const isPortrait = useIsPortrait();
 
-  const { disconnect } = useCardano({
+  const { disconnect, signMessage } = useCardano({
     limitNetwork: resolveCardanoNetwork(env.TARGET_NETWORK),
   });
+
+  const signMessagePromisified = useMemo(
+    () => getSignedMessagePromise(signMessage),
+    [signMessage],
+  );
 
   useEffect(() => {
     const openConnectWalletModal = () => {
@@ -53,7 +86,21 @@ const Header = () => {
       );
     };
   }, []);
+  useEffect(() => {
+    const openLoginModal = () => {
+      setIsLoginModalOpen(true);
+    };
+    const closeVerifyWalletModal = () => {
+      setIsLoginModalOpen(false);
+    };
+    eventBus.subscribe(EventName.OpenLoginModal, openLoginModal);
+    eventBus.subscribe(EventName.CloseLoginModal, closeVerifyWalletModal);
 
+    return () => {
+      eventBus.unsubscribe(EventName.OpenLoginModal, openLoginModal);
+      eventBus.unsubscribe(EventName.CloseLoginModal, closeVerifyWalletModal);
+    };
+  }, []);
   useEffect(() => {
     const showToastListener = (message: string, type?: ToastType) => {
       showToast(message, type || ToastType.Common);
@@ -114,15 +161,93 @@ const Header = () => {
 
   const handleOpenVerify = () => {};
 
-  const handleLogin = () => {};
-
   const onDisconnectWallet = () => {
     dispatch(resetUser());
+    dispatch(clearVotes());
     disconnect();
+    clearUserInSessionStorage();
   };
 
   const handleClickMenu = (option: string) => {
     if (option !== location.pathname) navigate(option);
+  };
+
+  const handleCloseLoginModal = async () => {
+    setIsLogging(false);
+    setIsLoginModalOpen(false);
+  };
+
+  const handleLogin = async () => {
+    try {
+      setIsLogging(true);
+      // @ts-ignore
+      const absoluteSlot = (await getSlotNumber())?.absoluteSlot;
+      const canonicalLoginInput = buildCanonicalLoginJson({
+        walletId: connectedWallet.address,
+        walletType: resolveWalletType(connectedWallet.address),
+        slotNumber: absoluteSlot.toString(),
+      });
+
+      const loginSignatureResult = await signMessageWithWallet(
+        connectedWallet,
+        canonicalLoginInput,
+        signMessagePromisified,
+      );
+
+      if (!loginSignatureResult.success) {
+        eventBus.publish(
+          EventName.ShowToast,
+          loginSignatureResult.error || "Error while signing",
+          ToastType.Error,
+        );
+        return;
+      }
+
+      submitLogin(
+        // @ts-ignore
+        loginSignatureResult.result,
+        resolveWalletType(connectedWallet.address),
+      )
+        .then((response) => {
+          const newSession = {
+            // @ts-ignore
+            accessToken: response.accessToken,
+            // @ts-ignore
+            expiresAt: response.expiresAt,
+          };
+          saveUserInSession(newSession);
+          dispatch(setIsLogin(true));
+          eventBus.publish(EventName.ShowToast, "Login successfully");
+          submitGetUserVotes(newSession?.accessToken)
+            .then((uVotes) => {
+              if (uVotes) {
+                // @ts-ignore
+                dispatch(setVotes(uVotes));
+              }
+              handleCloseLoginModal();
+            })
+            .catch((e) => {
+              setIsLogging(false);
+              eventBus.publish(
+                EventName.ShowToast,
+                parseError(e.message),
+                ToastType.Error,
+              );
+            });
+        })
+        .catch((e) => {
+          setIsLogging(false);
+          eventBus.publish(
+            EventName.ShowToast,
+            parseError(e.message),
+            ToastType.Error,
+          );
+        });
+    } catch (e) {
+      setIsLogging(false);
+      // @ts-ignore
+      eventBus.publish(EventName.ShowToast, e.message, ToastType.Error);
+    }
   };
 
   return (
@@ -187,9 +312,13 @@ const Header = () => {
                   <Typography
                     sx={{
                       color: "inherit",
-                      px: "24px",
+                      padding: " 16px 24px",
                       textDecoration: "none",
+                      borderRadius: "12px",
                       cursor: "pointer",
+                      "&:hover": {
+                        backgroundColor: "#282828",
+                      },
                     }}
                     onClick={() => handleClickMenu(ROUTES.CATEGORIES)}
                   >
@@ -198,9 +327,13 @@ const Header = () => {
                   <Typography
                     sx={{
                       color: "inherit",
+                      padding: " 16px 24px",
                       textDecoration: "none",
-                      px: "24px",
+                      borderRadius: "12px",
                       cursor: "pointer",
+                      "&:hover": {
+                        backgroundColor: "#282828",
+                      },
                     }}
                     onClick={() => handleClickMenu(ROUTES.LEADERBOARD)}
                   >
@@ -209,9 +342,13 @@ const Header = () => {
                   <Typography
                     sx={{
                       color: "inherit",
+                      padding: " 16px 24px",
                       textDecoration: "none",
-                      px: "24px",
+                      borderRadius: "12px",
                       cursor: "pointer",
+                      "&:hover": {
+                        backgroundColor: "#282828",
+                      },
                     }}
                     onClick={() => handleClickMenu(ROUTES.USER_GUIDE)}
                   >
@@ -226,15 +363,14 @@ const Header = () => {
               >
                 <ConnectWalletButton
                   label={isPortrait ? "" : "Connect Wallet"}
+                  showAddress={!isPortrait}
                   onOpenConnectWalletModal={handleConnectWalletModal}
                   onOpenVerifyWalletModal={handleOpenVerify}
-                  onLogin={handleLogin}
                   onDisconnectWallet={() => onDisconnectWallet()}
                 />
 
                 {isPortrait ? (
                   <IconButton
-                    color="inherit"
                     onClick={() => setMenuIsOpen(true)}
                     sx={{
                       marginLeft: "auto",
@@ -242,6 +378,10 @@ const Header = () => {
                       borderRadius: "12px",
                       background:
                         "linear-gradient(258deg, #EE9766 0%, #40407D 187.58%, #0C7BC5 249.97%)",
+                      color: theme.palette.background.default,
+                      "&:hover": {
+                        color: theme.palette.text.neutralLight,
+                      },
                     }}
                   >
                     <MenuOutlinedIcon />
@@ -268,7 +408,17 @@ const Header = () => {
           setShowConnectWalletModal(open ? open : false)
         }
       />
-      <LoginModal />
+      <LoginModal
+        handleCloseModal={() => handleCloseLoginModal()}
+        handleLogin={() => handleLogin()}
+        isLogging={isLogging}
+        isOpen={isLoginModalOpen}
+      />
+      <CheckWalletModal
+        isOpen={isCheckWalletModalOpen}
+        handleOpenModal={() => setIsCheckWalletModalOpen(true)}
+        handleCloseModal={() => setIsCheckWalletModalOpen(false)}
+      />
       <VerifyWalletModal />
       <Toast
         isOpen={toastOpen}

@@ -1,5 +1,6 @@
 package org.cardano.foundation.voting.service.auth.web3;
 
+import com.bloxbean.cardano.client.util.HexUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.vavr.control.Either;
 import jakarta.servlet.FilterChain;
@@ -30,8 +31,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.cardano.foundation.voting.domain.ChainNetwork.*;
-import static org.cardano.foundation.voting.resource.Headers.X_Ballot_PublicKey;
-import static org.cardano.foundation.voting.resource.Headers.X_Ballot_Signature;
+import static org.cardano.foundation.voting.resource.Headers.*;
 import static org.cardano.foundation.voting.service.auth.LoginSystem.CARDANO_CIP93;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -48,8 +48,7 @@ class CardanoWeb3FilterTest {
     private ExpirationService expirationService;
     private ChainFollowerClient chainFollowerClient;
     private LoginSystemDetector loginSystemDetector;
-
-    private final ChainNetwork chainNetworkStartedOn = PREPROD;
+    private ChainNetwork chainNetworkStartedOn = PREPROD;
 
     @BeforeEach
     void setUp() throws IOException {
@@ -577,6 +576,158 @@ class CardanoWeb3FilterTest {
         assertThat(cardanoDetails.getWeb3CommonDetails().getAction()).isEqualTo(Web3Action.LOGIN);
         assertThat(cardanoDetails.getWeb3CommonDetails().getNetwork()).isEqualTo(chainNetworkStartedOn);
         assertThat(cardanoDetails.getEnvelope()).isNotNull();
+    }
+
+    @Test
+    void doFilterInternal_shouldAuthenticate_whenAllConditionsMetWithHashedContent() throws ServletException, IOException {
+        chainNetworkStartedOn = MAIN;
+        filter = new CardanoWeb3Filter(jsonService, expirationService, objectMapper, chainFollowerClient, chainNetworkStartedOn, loginSystemDetector);
+
+        val payloadAsHex = "7b22616374696f6e223a224c4f47494e222c22616374696f6e54657874223a224c6f67696e222c2264617461223a7b226576656e74223a2243415244414e4f5f53554d4d49545f4157415244535f32303234222c226e6574776f726b223a224d41494e222c22726f6c65223a22564f544552222c2277616c6c65744964223a227374616b6531757970617970326e797a793636746d637a36796a757468353970796d3064663833726a706b30373538666871726e6371387663647a222c2277616c6c657454797065223a2243415244414e4f227d2c22736c6f74223a22313336303638393432227d";
+        //{"action":"LOGIN","actionText":"Login","data":{"event":"CARDANO_SUMMIT_AWARDS_2024","network":"MAIN","role":"VOTER","walletId":"stake1uypayp2nyzy66tmcz6yjuth59pym0df83rjpk0758fhqrncq8vcdz","walletType":"CARDANO"},"slot":"136068942"}
+
+        val genericEnvelope = CIP93Envelope.<Map<String, Object>>builder()
+                .action("LOGIN")
+                .slot("136068942")
+                .data(Map.of(
+                        "event", "CARDANO_SUMMIT_AWARDS_2024",
+                        "walletId", "stake1uypayp2nyzy66tmcz6yjuth59pym0df83rjpk0758fhqrncq8vcdz",
+                        "walletType", WalletType.CARDANO.name(),
+                        "network", "MAIN",
+                        "role", "VOTER"
+                        )
+                )
+                .build();
+
+        when(loginSystemDetector.detect(request)).thenReturn(Optional.of(CARDANO_CIP93));
+        when(request.getHeader(X_Ballot_Signature)).thenReturn("84582aa201276761646472657373581de103d205532089ad2f7816892e2ef42849b7b52788e41b3fd43a6e01cfa166686173686564f5581c1c1afc33a1ed48205eadcbbda2fc8e61442af2e04673616f21b7d0385840954858f672e9ca51975655452d79a8f106011e9535a2ebfb909f7bbcce5d10d246ae62df2da3a7790edd8f93723cbdfdffc5341d08135b1a40e7a998e8b2ed06");
+        when(request.getHeader(X_Ballot_Payload)).thenReturn(payloadAsHex);
+        when(request.getHeader(X_Ballot_PublicKey)).thenReturn("a4010103272006215820c13745be35c2dfc3fa9523140030dda5b5346634e405662b1aae5c61389c55b3");
+
+        val cip30VerificationResult = mock(Cip30VerificationResult.class);
+        when(cip30VerificationResult.isValid()).thenReturn(true);
+        when(cip30VerificationResult.getAddress(any())).thenReturn(Optional.of("stake1uypayp2nyzy66tmcz6yjuth59pym0df83rjpk0758fhqrncq8vcdz"));
+
+        when(chainFollowerClient.getChainTip()).thenReturn(Either.right(
+                new ChainFollowerClient.ChainTipResponse("hash", 512, 136068942, true, MAIN))
+        );
+
+        when(chainFollowerClient.getEventDetails(any())).thenReturn(Either.right(Optional.of(mock(ChainFollowerClient.EventDetailsResponse.class))));
+
+        when(jsonService.decodeGenericCIP93(any())).thenReturn(Either.right(genericEnvelope));
+
+        filter.doFilterInternal(request, response, chain);
+
+        verify(chain, times(1)).doFilter(request, response);
+
+        assertThat(SecurityContextHolder.getContext().getAuthentication()).isNotNull();
+        assertThat(SecurityContextHolder.getContext().getAuthentication().getPrincipal()).isEqualTo("stake1uypayp2nyzy66tmcz6yjuth59pym0df83rjpk0758fhqrncq8vcdz");
+
+        val cardanoDetails = (CardanoWeb3Details) SecurityContextHolder.getContext().getAuthentication().getDetails();
+
+        assertThat(cardanoDetails.getSignedCIP30().getSignature()).isEqualTo("84582aa201276761646472657373581de103d205532089ad2f7816892e2ef42849b7b52788e41b3fd43a6e01cfa166686173686564f5581c1c1afc33a1ed48205eadcbbda2fc8e61442af2e04673616f21b7d0385840954858f672e9ca51975655452d79a8f106011e9535a2ebfb909f7bbcce5d10d246ae62df2da3a7790edd8f93723cbdfdffc5341d08135b1a40e7a998e8b2ed06");
+        assertThat(cardanoDetails.getSignedCIP30().getPublicKey()).isEqualTo(Optional.of("a4010103272006215820c13745be35c2dfc3fa9523140030dda5b5346634e405662b1aae5c61389c55b3"));
+        assertThat(cardanoDetails.getWeb3CommonDetails().getAction()).isEqualTo(Web3Action.LOGIN);
+        assertThat(cardanoDetails.getWeb3CommonDetails().getNetwork()).isEqualTo(MAIN);
+        assertThat(cardanoDetails.getPayload()).isEqualTo(new String(HexUtil.decodeHexString(payloadAsHex)));
+        assertThat(cardanoDetails.getEnvelope()).isNotNull();
+    }
+
+    // CIP30 is a data sign with hash only but hashes do not properly match
+    @Test
+    void doFilterInternal_shouldNotAuthenticate_whenHashesMismatch() throws IOException, ServletException {
+        chainNetworkStartedOn = MAIN;
+        filter = new CardanoWeb3Filter(jsonService, expirationService, objectMapper, chainFollowerClient, chainNetworkStartedOn, loginSystemDetector);
+
+        //{"action":"LOGIN","actionText":"Login","data":{"event":"CARDANO_SUMMIT_AWARDS_2024","network":"MAIN","role":"VOTER","walletId":"stake1uypayp2nyzy66tmcz6yjuth59pym0df83rjpk0758fhqrncq8vcdz","walletType":"CARDANO"},"slot":"136068943"}
+
+        val genericEnvelope = CIP93Envelope.<Map<String, Object>>builder()
+                .action("LOGIN")
+                .slot("136068943")
+                .data(Map.of(
+                                "event", "CARDANO_SUMMIT_AWARDS_2024",
+                                "walletId", "stake1uypayp2nyzy66tmcz6yjuth59pym0df83rjpk0758fhqrncq8vcdz",
+                                "walletType", WalletType.CARDANO.name(),
+                                "network", "MAIN",
+                                "role", "VOTER"
+                        )
+                )
+                .build();
+
+        when(loginSystemDetector.detect(request)).thenReturn(Optional.of(CARDANO_CIP93));
+        when(request.getHeader(X_Ballot_Signature)).thenReturn("84582aa201276761646472657373581de103d205532089ad2f7816892e2ef42849b7b52788e41b3fd43a6e01cfa166686173686564f5581c1c1afc33a1ed48205eadcbbda2fc8e61442af2e04673616f21b7d0385840954858f672e9ca51975655452d79a8f106011e9535a2ebfb909f7bbcce5d10d246ae62df2da3a7790edd8f93723cbdfdffc5341d08135b1a40e7a998e8b2ed06");
+        when(request.getHeader(X_Ballot_Payload)).thenReturn("7B22616374696F6E223A224C4F47494E222C22616374696F6E54657874223A224C6F67696E222C2264617461223A7B226576656E74223A2243415244414E4F5F53554D4D49545F4157415244535F32303234222C226E6574776F726B223A224D41494E222C22726F6C65223A22564F544552222C2277616C6C65744964223A227374616B6531757970617970326E797A793636746D637A36796A757468353970796D3064663833726A706B30373538666871726E6371387663647A222C2277616C6C657454797065223A2243415244414E4F227D2C22736C6F74223A22313336303638393433227D");
+        when(request.getHeader(X_Ballot_PublicKey)).thenReturn("a4010103272006215820c13745be35c2dfc3fa9523140030dda5b5346634e405662b1aae5c61389c55b3");
+
+        val cip30VerificationResult = mock(Cip30VerificationResult.class);
+        when(cip30VerificationResult.isValid()).thenReturn(true);
+        when(cip30VerificationResult.getAddress(any())).thenReturn(Optional.of("stake1uypayp2nyzy66tmcz6yjuth59pym0df83rjpk0758fhqrncq8vcdz"));
+
+        when(chainFollowerClient.getChainTip()).thenReturn(Either.right(
+                new ChainFollowerClient.ChainTipResponse("hash", 512, 136068943, true, MAIN))
+        );
+
+        when(chainFollowerClient.getEventDetails(any())).thenReturn(Either.right(Optional.of(mock(ChainFollowerClient.EventDetailsResponse.class))));
+
+        when(jsonService.decodeGenericCIP93(any())).thenReturn(Either.right(genericEnvelope));
+
+        filter.doFilterInternal(request, response, chain);
+
+        val problemCaptor = ArgumentCaptor.forClass(Problem.class);
+
+        verify(objectMapper, times(1)).writeValueAsString(problemCaptor.capture());
+        val capturedProblem = problemCaptor.getValue();
+
+        assertThat(capturedProblem.getTitle()).isEqualTo("CIP_30_HASH_MISMATCH");
+        assertThat(capturedProblem.getStatus()).isEqualTo(BAD_REQUEST);
+    }
+
+    // CIP30 is a data sign with hash only but lets say we forgot to send the payload...
+    @Test
+    void doFilterInternal_shouldNotAuthenticate_whenPayloadNotSent() throws IOException, ServletException {
+        chainNetworkStartedOn = MAIN;
+        filter = new CardanoWeb3Filter(jsonService, expirationService, objectMapper, chainFollowerClient, chainNetworkStartedOn, loginSystemDetector);
+
+        //{"action":"LOGIN","actionText":"Login","data":{"event":"CARDANO_SUMMIT_AWARDS_2024","network":"MAIN","role":"VOTER","walletId":"stake1uypayp2nyzy66tmcz6yjuth59pym0df83rjpk0758fhqrncq8vcdz","walletType":"CARDANO"},"slot":"136068943"}
+
+        val genericEnvelope = CIP93Envelope.<Map<String, Object>>builder()
+                .action("LOGIN")
+                .slot("136068943")
+                .data(Map.of(
+                                "event", "CARDANO_SUMMIT_AWARDS_2024",
+                                "walletId", "stake1uypayp2nyzy66tmcz6yjuth59pym0df83rjpk0758fhqrncq8vcdz",
+                                "walletType", WalletType.CARDANO.name(),
+                                "network", "MAIN",
+                                "role", "VOTER"
+                        )
+                )
+                .build();
+
+        when(loginSystemDetector.detect(request)).thenReturn(Optional.of(CARDANO_CIP93));
+        when(request.getHeader(X_Ballot_Signature)).thenReturn("84582aa201276761646472657373581de103d205532089ad2f7816892e2ef42849b7b52788e41b3fd43a6e01cfa166686173686564f5581c1c1afc33a1ed48205eadcbbda2fc8e61442af2e04673616f21b7d0385840954858f672e9ca51975655452d79a8f106011e9535a2ebfb909f7bbcce5d10d246ae62df2da3a7790edd8f93723cbdfdffc5341d08135b1a40e7a998e8b2ed06");
+        when(request.getHeader(X_Ballot_PublicKey)).thenReturn("a4010103272006215820c13745be35c2dfc3fa9523140030dda5b5346634e405662b1aae5c61389c55b3");
+
+        val cip30VerificationResult = mock(Cip30VerificationResult.class);
+        when(cip30VerificationResult.isValid()).thenReturn(true);
+        when(cip30VerificationResult.getAddress(any())).thenReturn(Optional.of("stake1uypayp2nyzy66tmcz6yjuth59pym0df83rjpk0758fhqrncq8vcdz"));
+
+        when(chainFollowerClient.getChainTip()).thenReturn(Either.right(
+                new ChainFollowerClient.ChainTipResponse("hash", 512, 136068943, true, MAIN))
+        );
+
+        when(chainFollowerClient.getEventDetails(any())).thenReturn(Either.right(Optional.of(mock(ChainFollowerClient.EventDetailsResponse.class))));
+
+        when(jsonService.decodeGenericCIP93(any())).thenReturn(Either.right(genericEnvelope));
+
+        filter.doFilterInternal(request, response, chain);
+
+        val problemCaptor = ArgumentCaptor.forClass(Problem.class);
+
+        verify(objectMapper, times(1)).writeValueAsString(problemCaptor.capture());
+        val capturedProblem = problemCaptor.getValue();
+
+        assertThat(capturedProblem.getTitle()).isEqualTo("HASHED_CONTENT_NO_PAYLOAD");
+        assertThat(capturedProblem.getStatus()).isEqualTo(BAD_REQUEST);
     }
 
 }

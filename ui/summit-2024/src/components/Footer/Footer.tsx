@@ -10,8 +10,38 @@ import SupportIcon from "@mui/icons-material/SupportAgent";
 import { env } from "../../common/constants/env";
 import discordLogo from "../../assets/discord.svg";
 import { i18n } from "../../i18n";
+import { eventBus, EventName } from "../../utils/EventBus";
+import { useMatomo } from "@datapunt/matomo-tracker-react";
 
 const Footer = () => {
+  const { trackEvent } = useMatomo();
+
+  const handleOpenTerms = () => {
+    eventBus.publish(EventName.OpenTermsModal);
+    trackEvent({
+      category: "open-terms-from-footer",
+      action: "click-event",
+    });
+  };
+
+  const handleJoinDiscord = () => {
+    window.open(env.DISCORD_SUPPORT_CHANNEL_URL, "_blank");
+    trackEvent({
+      category: "click-join-discord",
+      action: "click-event",
+    });
+  };
+
+  const handleOpenGithubCommit = () => {
+    window.open(
+      `https://github.com/cardano-foundation/cf-cardano-ballot/commit/${env.APP_VERSION}`,
+    );
+    trackEvent({
+      category: "click-open-github-commit",
+      action: "click-event",
+    });
+  };
+
   return (
     <>
       <Box
@@ -77,29 +107,39 @@ const Footer = () => {
               >
                 <Typography>
                   <Link
-                    href="/terms-and-conditions"
                     sx={{
                       color: "text.primary",
                       textDecoration: "underline",
                       marginRight: 1,
+                      cursor: "pointer",
                     }}
+                    onClick={() => handleOpenTerms()}
                   >
                     {i18n.t("footer.menu.termsAndConditions")}
                   </Link>
                   <Link
-                    href="/privacy-policy"
                     sx={{
                       color: "text.primary",
                       textDecoration: "underline",
                       marginRight: 1,
+                      cursor: "pointer",
                     }}
+                    onClick={() => handleOpenTerms()}
                   >
                     {i18n.t("footer.menu.privacyPolicy")}
                   </Link>
                   <span>
-                    Version {env.APP_VERSION}(
+                    <span
+                      style={{
+                        cursor: "pointer",
+                      }}
+                      onClick={() => handleOpenGithubCommit()}
+                    >
+                      Version {env.APP_VERSION}
+                    </span>
+                    (
                     <Link
-                      href="https://status.voting.summit.cardano.org/"
+                      href="https://status2024.voting.summit.cardano.org"
                       target="_blank"
                       rel="noopener"
                       sx={{
@@ -130,9 +170,7 @@ const Footer = () => {
               >
                 <Tooltip title="Get support" placement="top">
                   <IconButton
-                    onClick={() =>
-                      window.open(env.DISCORD_SUPPORT_CHANNEL_URL, "_blank")
-                    }
+                    onClick={() => handleJoinDiscord()}
                     sx={{ p: 0, color: "secondary.main", marginRight: "40px" }}
                   >
                     <SupportIcon sx={{ color: "text.primary" }} />
@@ -140,9 +178,7 @@ const Footer = () => {
                 </Tooltip>
                 <Tooltip title="Join our Discord" placement="top">
                   <IconButton
-                    onClick={() =>
-                      window.open(env.DISCORD_SUPPORT_CHANNEL_URL, "_blank")
-                    }
+                    onClick={() => handleJoinDiscord()}
                     sx={{ p: 0, color: "secondary.main" }}
                   >
                     <img

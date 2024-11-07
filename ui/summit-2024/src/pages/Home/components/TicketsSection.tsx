@@ -1,11 +1,22 @@
 import { Grid, Box, Typography, useMediaQuery, Card } from "@mui/material";
 import Logo from "../../../assets/logo.svg";
-import dubaiBg from "../../../assets/dubai-bg.svg";
+import dubaiBg from "@assets/dubai-bg.svg";
 import { CustomButton } from "../../../components/common/CustomButton/CustomButton";
 import theme from "../../../common/styles/theme";
+import { useMatomo } from "@datapunt/matomo-tracker-react";
 
 const TicketsSection = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const { trackEvent } = useMatomo();
+
+  const handleButtonClick = () => {
+    window.open("https://summit.cardano.org/registration/", "_blank");
+    trackEvent({
+      category: "open-buy-summit-tickets",
+      action: "click-event",
+    });
+  };
+
   return (
     <>
       <Grid
@@ -30,6 +41,7 @@ const TicketsSection = () => {
         >
           <Grid item xs={12}>
             <Card
+              onClick={handleButtonClick}
               sx={{
                 position: "relative",
                 overflow: "hidden",
@@ -46,9 +58,17 @@ const TicketsSection = () => {
                   xs: "16px",
                   sm: "60px",
                 },
+                cursor: "pointer",
+                "&:hover": {
+                  "& > .backdrop": {
+                    backdropFilter: "blur(6px)",
+                    background: "rgba(18, 18, 18, 0.55)",
+                  },
+                },
               }}
             >
               <Box
+                className="backdrop"
                 component="div"
                 sx={{
                   position: "absolute",
@@ -57,7 +77,7 @@ const TicketsSection = () => {
                   width: "100%",
                   height: "100%",
                   background: "rgba(18, 18, 18, 0.50)",
-                  backdropFilter: "blur(3px)",
+                  backdropFilter: "blur(4px)",
                   zIndex: 0,
                 }}
               />
@@ -88,6 +108,7 @@ const TicketsSection = () => {
                       sx={{
                         marginTop: { xs: "30px", md: "0px" },
                       }}
+                      onClick={handleButtonClick}
                     >
                       Get Tickets
                     </CustomButton>
@@ -174,7 +195,10 @@ const TicketsSection = () => {
                     marginTop: "32px",
                   }}
                 >
-                  <CustomButton colorVariant="primary">
+                  <CustomButton
+                    colorVariant="primary"
+                    onClick={handleButtonClick}
+                  >
                     Get Tickets
                   </CustomButton>
                 </Grid>

@@ -1,7 +1,7 @@
 {
-  "name": "vite-project",
+  "name": "cardano-ballot",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,6 +11,7 @@
     "prettier": "npx prettier --write 'src/**/*.{ts,tsx,scss}'"
   },
   "dependencies": {
+    "buffer": "^6.0.3",
     "@cardano-foundation/cardano-connect-with-wallet": "^0.2.9",
     "@commitlint/cli": "^17.6.6",
     "@commitlint/config-conventional": "^17.6.6",

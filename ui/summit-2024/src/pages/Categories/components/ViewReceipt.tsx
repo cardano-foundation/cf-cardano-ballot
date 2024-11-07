@@ -8,17 +8,139 @@ import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import ArrowForwardOutlinedIcon from "@mui/icons-material/ArrowForwardOutlined";
+import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
+import LinkOutlinedIcon from "@mui/icons-material/LinkOutlined";
+import ArrowUpwardOutlinedIcon from "@mui/icons-material/ArrowUpwardOutlined";
 import { STATE, ViewReceiptProps } from "./ViewReceipt.type";
 import { CustomAccordion } from "../../../components/common/CustomAccordion/CustomAccordion";
 import { JsonView } from "../../../components/common/JsonView/JsonView";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import {
+  getReceipts,
+  setVoteReceipt,
+  setVotes,
+} from "../../../store/reducers/votesCache";
+import { copyToClipboard, resolveCardanoNetwork } from "../../../utils/utils";
+import { getUserInSession, tokenIsExpired } from "../../../utils/session";
+import {
+  getVoteReceipt,
+  submitGetUserVotes,
+} from "../../../common/api/voteService";
+import { eventBus, EventName } from "../../../utils/EventBus";
+import { ToastType } from "../../../components/common/Toast/Toast.types";
+import { parseError } from "../../../common/constants/errors";
+import { verifyVote } from "../../../common/api/verificationService";
+import { env } from "../../../common/constants/env";
+import { NetworkType } from "../../../components/ConnectWalletList/ConnectWalletList.types";
 
-const jsonExample = {
-  example: "example",
-  example2: "example2",
-};
-const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
+const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
+  const session = getUserInSession();
+  const dispatch = useAppDispatch();
+  const receipts = useAppSelector(getReceipts);
+  const receipt = receipts[categoryId];
+
+  const handleCopy = async (data: string) => {
+    await copyToClipboard(data);
+    eventBus.publish(EventName.ShowToast, "Copied to clipboard successfully");
+  };
+
+  const verifyVoteProof = async () => {
+    if (receipt) {
+      const body = {
+        rootHash: receipt.merkleProof.rootHash,
+        steps: receipt.merkleProof.steps,
+        payload: receipt.payload,
+        walletId: receipt.walletId,
+        signature: receipt.signature,
+        publicKey: receipt.publicKey,
+      };
+
+      verifyVote(body)
+        .then((result) => {
+          if ("verified" in result && result.verified) {
+            eventBus.publish(EventName.ShowToast, "Vote verified successfully");
+          } else {
+            eventBus.publish(
+              EventName.ShowToast,
+              "Vote no verified",
+              ToastType.Error,
+            );
+          }
+        })
+        .catch((e) => {
+          eventBus.publish(
+            EventName.ShowToast,
+            parseError(e.message),
+            ToastType.Error,
+          );
+        });
+    }
+  };
+
+  const viewOnChainVote = () => {
+    if (receipt?.merkleProof?.transactionHash) {
+      let url = `https://explorer.cardano.org/transaction?id=${receipt?.merkleProof?.transactionHash}`;
+      if (resolveCardanoNetwork(env.TARGET_NETWORK) === NetworkType.TESTNET) {
+        url = `https://preprod.cardanoscan.io/transaction/${receipt?.merkleProof?.transactionHash}`;
+      }
+      window.open(url, "_blank");
+    }
+  };
+
+  const refreshReceipt = () => {
+    if (session && !tokenIsExpired(session?.expiresAt)) {
+      // @ts-ignore
+      getVoteReceipt(categoryId, session?.accessToken)
+        .then((r) => {
+          // @ts-ignore
+          if (r.error) {
+            // @ts-ignore
+            eventBus.publish(EventName.ShowToast, r.message, ToastType.Error);
+            return;
+          }
+          if (JSON.stringify(r) === JSON.stringify(receipt)) {
+            eventBus.publish(
+              EventName.ShowToast,
+              "No changes detected in the receipt",
+            );
+          } else {
+            eventBus.publish(
+              EventName.ShowToast,
+              "Receipt updated successfully!",
+            );
+            // @ts-ignore
+            dispatch(setVoteReceipt({ categoryId: categoryId, receipt: r }));
+          }
+        })
+        .catch((e) => {
+          if (process.env.NODE_ENV === "development") {
+            console.log(
+              `Failed to fetch vote receipt, ${parseError(e.message)}`,
+            );
+          }
+        });
+      submitGetUserVotes(session?.accessToken)
+        .then((response) => {
+          if (response) {
+            // @ts-ignore
+            dispatch(setVotes(response));
+          }
+        })
+        .catch((e) => {
+          if (process.env.NODE_ENV === "development") {
+            console.log(`Failed to fetch user votes, ${parseError(e.message)}`);
+          }
+        });
+    } else {
+      eventBus.publish(
+        EventName.OpenLoginModal,
+        "Login to see your vote receipt.",
+      );
+    }
+  };
   const getContent = () => {
-    switch (state) {
+    switch (receipt?.status) {
       case STATE.BASIC: {
         return {
           leftIcon: (
@@ -42,36 +164,33 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
             />
           ),
           labelBottom: "Refresh Status",
+          iconBottomAction: refreshReceipt,
           infoList: [
             {
-              title: "Event",
-              value: "Ambassador - Cardano Summit 2024",
-              tooltip: "info",
+              title: "Category",
+              value: receipt?.category,
+              tooltip: "Category of the voting proposal.",
             },
             {
               title: "Proposal",
-              value: "Plutus Bear Pop-Tart",
-              tooltip: "info",
+              value: receipt?.proposal,
+              tooltip: "Title of the proposal.",
             },
             {
-              title: "Voting Power",
-              value: "9,997k ADA",
-              tooltip: "info",
-            },
-            {
-              title: "Voter Staking Address",
-              value: "stake123...456spyqyg890",
-              tooltip: "info",
+              title: "User Address",
+              // @ts-ignore
+              value: receipt?.walletId,
+              tooltip: "Wallet address of the user who voted.",
             },
             {
               title: "Status",
-              value: "Ambassador - Cardano Summit 2024",
-              tooltip: "info",
+              value: receipt?.status,
+              tooltip: "Current status of the vote.",
             },
             {
               title: "Event",
-              value: state,
-              tooltip: "info",
+              value: receipt?.event,
+              tooltip: "Specific event related to the voting.",
             },
           ],
         };
@@ -89,7 +208,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
           ),
           title: "In Progress",
           description:
-            "Your transaction has been sent and is awaiting confirmation from the Cardano network (this could be 5-10 minutes). Once this has been confirmed you’ll be able to verify your vote.",
+            "Your transaction has been sent and is awaiting for the event's grace period to finish. Once it ends you'll be able to verify your vote.",
           iconBottom: (
             <RefreshIcon
               sx={{
@@ -100,36 +219,33 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
             />
           ),
           labelBottom: "Refresh Status",
+          iconBottomAction: refreshReceipt,
           infoList: [
             {
-              title: "Event",
-              value: "Ambassador - Cardano Summit 2024",
-              tooltip: "info",
+              title: "Category",
+              value: receipt?.category,
+              tooltip: "Category of the voting proposal.",
             },
             {
               title: "Proposal",
-              value: "Plutus Bear Pop-Tart",
-              tooltip: "info",
+              value: receipt?.proposal,
+              tooltip: "Title of the proposal.",
             },
             {
-              title: "Voting Power",
-              value: "9,997k ADA",
-              tooltip: "info",
-            },
-            {
-              title: "Voter Staking Address",
-              value: "stake123...456spyqyg890",
-              tooltip: "info",
+              title: "User Address",
+              // @ts-ignore
+              value: receipt?.walletId,
+              tooltip: "Wallet address of the user who voted.",
             },
             {
               title: "Status",
-              value: "Ambassador - Cardano Summit 2024",
-              tooltip: "info",
+              value: receipt?.status,
+              tooltip: "Current status of the vote.",
             },
             {
               title: "Event",
-              value: state,
-              tooltip: "info",
+              value: receipt?.event,
+              tooltip: "Specific event related to the voting.",
             },
           ],
         };
@@ -148,7 +264,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
           ),
           title: "In Progress",
           description:
-            "Your transaction has been sent and is awaiting confirmation from the Cardano network (this could be 5-10 minutes). Once this has been confirmed you’ll be able to verify your vote.",
+            "Your transaction has been sent and is awaiting for the event's grace period to finish. Once it ends you'll be able to verify your vote.",
           iconBottom: (
             <RefreshIcon
               sx={{
@@ -159,95 +275,161 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
             />
           ),
           labelBottom: "Refresh Status",
+          iconBottomAction: refreshReceipt,
           infoList: [
             {
-              title: "Event",
-              value: "Ambassador - Cardano Summit 2024",
-              tooltip: "info",
+              title: "Category",
+              value: receipt?.category,
+              tooltip: "Category of the voting proposal.",
             },
             {
               title: "Proposal",
-              value: "Plutus Bear Pop-Tart",
-              tooltip: "info",
+              value: receipt?.proposal,
+              tooltip: "Title of the proposal.",
             },
             {
-              title: "Voting Power",
-              value: "9,997k ADA",
-              tooltip: "info",
-            },
-            {
-              title: "Voter Staking Address",
-              value: "stake123...456spyqyg890",
-              tooltip: "info",
+              title: "User Address",
+              // @ts-ignore
+              value: receipt?.walletId,
+              tooltip: "Wallet address of the user who voted.",
             },
             {
               title: "Status",
-              value: "Ambassador - Cardano Summit 2024",
-              tooltip: "info",
+              value: receipt?.status,
+              tooltip: "Current status of the vote.",
             },
             {
               title: "Event",
-              value: state,
-              tooltip: "info",
+              value: receipt?.event,
+              tooltip: "Specific event related to the voting.",
             },
           ],
         };
       }
       case STATE.FULL: {
+        const statusDescription = (() => {
+          switch (receipt?.finalityScore) {
+            case "LOW":
+              return {
+                description:
+                  "Your vote is currently being verified. While in LOW, there is the highest chance of a rollback. Check back later to see if verification has completed.",
+                icon: <ArrowDownwardIcon />,
+              };
+            case "MEDIUM":
+              return {
+                description:
+                  "Your vote is currently being verified. While in MEDIUM, the chance of rollback is still possible. Check back later to see if verification has completed.",
+                icon: (
+                  <ArrowForwardOutlinedIcon
+                    sx={{
+                      width: "24px",
+                      height: "24px",
+                      color: "#EE9766",
+                    }}
+                  />
+                ),
+              };
+            case "HIGH":
+              return {
+                description:
+                  "Your vote is currently being verified. While in HIGH, the chance of a rollback is very unlikely. Check back later to see if verification has completed.",
+                icon: (
+                  <ArrowUpwardOutlinedIcon
+                    sx={{
+                      width: "24px",
+                      height: "24px",
+                      color: "#6EBE78",
+                    }}
+                  />
+                ),
+              };
+            case "VERY_HIGH":
+              return {
+                description:
+                  "Your vote is currently being verified. While in VERY HIGH, the chance of a rollback is very unlikely. Check back later to see if verification has completed.",
+                icon: (
+                  <ArrowUpwardOutlinedIcon
+                    sx={{
+                      width: "24px",
+                      height: "24px",
+                      color: "#6EBE78",
+                    }}
+                  />
+                ),
+              };
+            case "FINAL":
+              return {
+                description: "Your vote has been successfully verified.",
+                icon: (
+                  <CheckCircleOutlineOutlinedIcon
+                    sx={{
+                      width: "24px",
+                      height: "24px",
+                      color: "#6EBE78",
+                    }}
+                  />
+                ),
+              };
+            default:
+              return {
+                description:
+                  "Check back later to see if verification has completed.",
+              };
+          }
+        })();
+
+        const actionButton =
+          receipt?.status === STATE.FULL
+            ? {
+                action: viewOnChainVote,
+                iconBottom: <LinkOutlinedIcon />,
+                labelBottom: "View On Chain Vote",
+              }
+            : {
+                action: refreshReceipt,
+                iconBottom: (
+                  <RefreshIcon
+                    sx={{
+                      cursor: "pointer",
+                      width: "16px",
+                      height: "16px",
+                    }}
+                  />
+                ),
+                labelBottom: "Refresh Status",
+              };
         return {
-          leftIcon: (
-            <ArrowDownwardIcon
-              sx={{
-                width: "24px",
-                height: "24px",
-                // @ts-ignore
-                color: theme.palette.error.text,
-              }}
-            />
-          ),
+          leftIcon: statusDescription.icon,
           title: "Assurance",
-          description:
-            "Your vote is currently being verified. While in LOW, there is the highest chance of a rollback. Check back later to see if verification has completed.",
-          iconBottom: (
-            <RefreshIcon
-              sx={{
-                cursor: "pointer",
-                width: "16px",
-                height: "16px",
-              }}
-            />
-          ),
-          labelBottom: "Refresh Status",
+          description: statusDescription.description,
+          labelBottom: actionButton.labelBottom,
+          iconBottom: actionButton.iconBottom,
+          iconBottomAction: actionButton.action,
           infoList: [
             {
-              title: "Event",
-              value: "Ambassador - Cardano Summit 2024",
-              tooltip: "info",
+              title: "Category",
+              value: receipt?.category,
+              tooltip: "Category of the voting proposal.",
             },
             {
               title: "Proposal",
-              value: "Plutus Bear Pop-Tart",
-              tooltip: "info",
+              value: receipt?.proposal,
+              tooltip: "Title of the proposal.",
             },
             {
-              title: "Voting Power",
-              value: "9,997k ADA",
-              tooltip: "info",
-            },
-            {
-              title: "Voter Staking Address",
-              value: "stake123...456spyqyg890",
-              tooltip: "info",
+              title: "User Address",
+              value: receipt?.walletId,
+              tooltip: "Wallet address of the user who voted.",
             },
             {
               title: "Status",
-              value: "Ambassador - Cardano Summit 2024",
-              tooltip: "info",
+              value: receipt?.status,
+              tooltip: "Current status of the vote.",
             },
             {
               title: "Event",
-              value: state,
-              tooltip: "info",
+              value: receipt?.event,
+              tooltip: "Specific event related to the voting.",
             },
           ],
         };
@@ -389,6 +571,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
               </Box>
             </Box>
             <Box
+              onClick={() => content?.iconBottomAction()}
               component="div"
               sx={{
                 display: "flex",
@@ -419,6 +602,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
             {content?.infoList?.map((item) => {
               return (
                 <ListItem
+                  onClick={() => handleCopy(item.value)}
                   sx={{
                     display: "flex",
                     width: "394px",
@@ -429,6 +613,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
                     border: `1px solid ${theme.palette.background.darker}`,
                     background: theme.palette.background.default,
                     marginTop: "8px",
+                    cursor: "pointer",
                   }}
                 >
                   <Box
@@ -461,12 +646,15 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
                   </Box>
                   <Typography
                     sx={{
-                      width: "100%",
+                      width: "90%",
                       color: theme.palette.text.neutralLight,
                       fontSize: "12px",
                       fontWeight: 500,
                       lineHeight: "20px",
                       fontStyle: "normal",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
                     }}
                   >
                     {item.value}
@@ -496,6 +684,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
             >
               <List>
                 <ListItem
+                  onClick={() => handleCopy(receipt?.votedAtSlot)}
                   sx={{
                     display: "flex",
                     width: "394px",
@@ -528,7 +717,10 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
                     >
                       Voted at Slot
                     </Typography>
-                    <Tooltip title="info" placement="top">
+                    <Tooltip
+                      title="Blockchain slot when the vote was cast."
+                      placement="top"
+                    >
                       <InfoIcon
                         sx={{
                           cursor: "pointer",
@@ -546,10 +738,11 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
                       fontStyle: "normal",
                     }}
                   >
-                    453241
+                    {receipt?.votedAtSlot}
                   </Typography>
                 </ListItem>
                 <ListItem
+                  onClick={() => handleCopy(receipt?.signature)}
                   sx={{
                     display: "flex",
                     width: "394px",
@@ -580,9 +773,12 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
                         fontStyle: "normal",
                       }}
                     >
-                      ID
+                      Signature
                     </Typography>
-                    <Tooltip title="info" placement="top">
+                    <Tooltip
+                      title="Digital signature verifying the voter's identity."
+                      placement="top"
+                    >
                       <InfoIcon
                         sx={{
                           cursor: "pointer",
@@ -592,65 +788,83 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ state, close }) => {
                   </Box>
                   <Typography
                     sx={{
-                      width: "100%",
+                      width: "90%",
                       color: theme.palette.text.neutralLight,
                       fontSize: "12px",
                       fontWeight: 500,
                       lineHeight: "20px",
                       fontStyle: "normal",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
                     }}
                   >
-                    e51fdf09...4c836052b4f0
+                    {/*@ts-ignore */}
+                    {receipt?.signature}
                   </Typography>
                 </ListItem>
-                <ListItem
-                  sx={{
-                    display: "flex",
-                    width: "394px",
-                    padding: "12px 16px",
-                    flexDirection: "column",
-                    alignItems: "flex-start",
-                    borderRadius: "12px",
-                    border: `1px solid ${theme.palette.background.darker}`,
-                    background: theme.palette.background.default,
-                    marginTop: "8px",
-                  }}
-                >
-                  <Box
-                    component="div"
-                    sx={{
-                      display: "flex",
-                      width: "100%",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Typography
+                {
+                  // @ts-ignore
+                  receipt?.merkleProof ? (
+                    <ListItem
                       sx={{
-                        color: theme.palette.text.neutralLightest,
-                        fontSize: "16px",
-                        fontWeight: 500,
-                        lineHeight: "24px",
-                        fontStyle: "normal",
+                        display: "flex",
+                        width: "394px",
+                        padding: "12px 16px",
+                        flexDirection: "column",
+                        alignItems: "flex-start",
+                        borderRadius: "12px",
+                        border: `1px solid ${theme.palette.background.darker}`,
+                        background: theme.palette.background.default,
+                        marginTop: "8px",
                       }}
                     >
-                      Vote Proof
-                    </Typography>
-                    <Tooltip title="info" placement="top">
-                      <InfoIcon
+                      <Box
+                        component="div"
                         sx={{
-                          cursor: "pointer",
+                          display: "flex",
+                          width: "100%",
+                          justifyContent: "space-between",
+                          alignItems: "center",
                         }}
+                      >
+                        <Typography
+                          sx={{
+                            color: theme.palette.text.neutralLightest,
+                            fontSize: "16px",
+                            fontWeight: 500,
+                            lineHeight: "24px",
+                            fontStyle: "normal",
+                          }}
+                        >
+                          Vote Proof
+                        </Typography>
+                        <Tooltip
+                          title="Data content of the voting transaction."
+                          placement="top"
+                        >
+                          <InfoIcon
+                            sx={{
+                              cursor: "pointer",
+                            }}
+                          />
+                        </Tooltip>
+                      </Box>
+                      <JsonView
+                        data={JSON.stringify(
+                          // @ts-ignore
+                          receipt?.merkleProof,
+                          null,
+                          2,
+                        )}
+                        sx={{
+                          marginTop: "10px",
+                        }}
+                        verifyProof={() => verifyVoteProof()}
                       />
-                    </Tooltip>
-                  </Box>
-                  <JsonView
-                    data={JSON.stringify(jsonExample, null, 2)}
-                    sx={{
-                      marginTop: "10px",
-                    }}
-                  />
-                </ListItem>
+                    </ListItem>
+                  ) : null
+                }
               </List>
             </CustomAccordion>
           </Box>

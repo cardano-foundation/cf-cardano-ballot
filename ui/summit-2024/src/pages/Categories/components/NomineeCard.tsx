@@ -2,11 +2,16 @@ import React from "react";
 import { Grid, Paper, Typography, Box } from "@mui/material";
 import HoverCircle from "../../../components/common/HoverCircle/HoverCircle";
 import theme from "../../../common/styles/theme";
-import nomineeBg from "../../../assets/bg/nomineeCard.svg";
+import nomineeBg from "@assets/nomineeCard.svg";
 import { Proposal } from "../../../store/reducers/eventCache/eventCache.types";
+import { useAppSelector } from "../../../store/hooks";
+import { getVotes } from "../../../store/reducers/votesCache";
+import { getWalletIsVerified } from "../../../store/reducers/userCache";
+import { getEventCache } from "../../../store/reducers/eventCache";
 
 interface NomineeCardProps {
   nominee: Proposal;
+  categoryAlreadyVoted: boolean;
   selectedNominee: string | undefined;
   handleSelectNominee: (id: string) => void;
   handleLearnMoreClick: (
@@ -18,9 +23,22 @@ interface NomineeCardProps {
 const NomineeCard: React.FC<NomineeCardProps> = ({
   nominee,
   selectedNominee,
+  categoryAlreadyVoted,
   handleSelectNominee,
   handleLearnMoreClick,
 }) => {
+  const userVotes = useAppSelector(getVotes);
+  const walletIsVerified = useAppSelector(getWalletIsVerified);
+  const eventCache = useAppSelector(getEventCache);
+
+  const showSelection = eventCache.started; // Only show the border if the even has started
+
+  const votedNominee = !!userVotes.find(
+    (vote) => vote.proposalId === nominee.id,
+  );
+
+  const allowToVote = !categoryAlreadyVoted && walletIsVerified;
+
   return (
     <Grid
       item
@@ -34,7 +52,9 @@ const NomineeCard: React.FC<NomineeCardProps> = ({
       }}
     >
       <Paper
-        onClick={() => handleSelectNominee(nominee.id)}
+        onClick={() => {
+          allowToVote ? handleSelectNominee(nominee.id) : null;
+        }}
         elevation={3}
         sx={{
           width: "100%",
@@ -42,11 +62,14 @@ const NomineeCard: React.FC<NomineeCardProps> = ({
             xs: "100%",
             sm: "340px",
           },
+          minWidth: {
+            xs: "300px",
+          },
           height: "202px",
           flexShrink: 0,
           borderRadius: "24px",
           border: `1px solid ${
-            selectedNominee === nominee.id
+            (selectedNominee === nominee.id || votedNominee) && showSelection
               ? theme.palette.secondary.main
               : theme.palette.background.default
           }`,
@@ -67,9 +90,19 @@ const NomineeCard: React.FC<NomineeCardProps> = ({
             p: { xs: 1, sm: 2 },
           }}
         >
-          <Box component="div" sx={{ position: "absolute", right: 8, top: 8 }}>
-            <HoverCircle selected={selectedNominee === nominee.id} />
-          </Box>
+          {showSelection ? (
+            <Box
+              component="div"
+              sx={{ position: "absolute", right: 8, top: 8 }}
+            >
+              {allowToVote || votedNominee ? (
+                <HoverCircle
+                  selected={selectedNominee === nominee.id || votedNominee}
+                />
+              ) : null}
+            </Box>
+          ) : undefined}
+
           <Typography
             variant="h6"
             sx={{
@@ -84,7 +117,7 @@ const NomineeCard: React.FC<NomineeCardProps> = ({
               ml: 1,
             }}
           >
-            {nominee.id}
+            {nominee.name?.length ? nominee.name : nominee.id}
           </Typography>
         </Box>
 

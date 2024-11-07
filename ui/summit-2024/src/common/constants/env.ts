@@ -15,6 +15,10 @@ const MATOMO_BASE_URL =
   window._env_?.VITE_MATOMO_BASE_URL ||
   import.meta.env.VITE_MATOMO_BASE_URL ||
   "none";
+const MATOMO_PROJECT_ID =
+  window._env_?.VITE_MATOMO_PROJECT_ID ||
+  import.meta.env.VITE_MATOMO_PROJECT_ID ||
+  "1";
 const DISCORD_CHANNEL_URL =
   window._env_?.VITE_DISCORD_CHANNEL_URL ||
   import.meta.env.VITE_DISCORD_CHANNEL_URL;
@@ -55,6 +59,7 @@ export const env = {
   APP_VERSION,
   SUPPORTED_WALLETS,
   MATOMO_BASE_URL,
+  MATOMO_PROJECT_ID,
   FRONTEND_URL,
   COMMIT_HASH,
   DISCORD_CHANNEL_URL,

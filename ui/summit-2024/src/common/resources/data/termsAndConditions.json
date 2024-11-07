@@ -1,6 +1,6 @@
 {
   "title": "Terms and Conditions",
-  "date": "Last updated: August, 2023",
+  "date": "Last updated: August, 2024",
   "sections": [
     {
       "title": "Interpretation and Definitions",
@@ -13,7 +13,7 @@
           "title": "Definitions",
           "content": ["For the purposes of these Terms and Conditions:"],
           "definitions": {
-            "Website": "<b>Website</b> means the server provided by the Company to You on any electronic device, named <b>Cardano Summit 2023.</b>",
+            "Website": "<b>Website</b> means the server provided by the Company to You on any electronic device, named <b>Cardano Summit 2024.</b>",
             "Country": "<b>Country</b> refers to Switzerland.",
             "Company": "<b>Company</b> refers to Cardano Foundation, Dammstrasse 16, 6300 Zug, Switzerland, and is referred to as either 'the Company,' 'We,' 'Us,' or 'Our' in this Agreement.",
             "Device": "<b>Device</b> means any device that can access the Service such as a computer, a mobile phone, or a digital tablet.",
@@ -133,7 +133,7 @@
       "list": [
         {
           "number": "2.1",
-          "content": ["2.1 The Web Application is a platform that offers a verified e-voting platform. The Web Application Cardano Ballot is only being made available for the Cardano Summit 2023 as is designed only for the Summit use case. This is a platform where users can choose between two methods of registration and authentication. One method is via email and SMS, the other is via a Cardano Wallet and Discord bot.  (User Discord account required). The site provides a facility for users to generate ballots and submit votes for the Cardano Summit 2023. The process will be anonymously recorded on the Cardano blockchain."]
+          "content": ["2.1 The Web Application is a platform that offers a verified e-voting platform. The Web Application Cardano Ballot is only being made available for the Cardano Summit 2024 as is designed only for the Summit use case. This is a platform where users can choose between two methods of registration and authentication. One method is via email and SMS, the other is via a Cardano Wallet and Discord bot.  (User Discord account required). The site provides a facility for users to generate ballots and submit votes for the Cardano Summit 2024. The process will be anonymously recorded on the Cardano blockchain."]
         },
         {
           "number": "2.2",

@@ -42,8 +42,8 @@ const Model = ({ glbUrl, isInteracting, setIsInteracting }: ModelProps) => {
     <group
       // @ts-ignore
       ref={ref}
-      scale={[12, 12, 12]}
-      position={[0, -1.6, 0]}
+      scale={[2, 2, 2]}
+      position={[0, -0.8, 0]}
       rotation={[0, Math.PI / 2, 0]}
       onDoubleClick={handleDoubleClick}
       onPointerOver={onPointerOver}

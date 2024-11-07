@@ -1,49 +1,23 @@
-import React, {useEffect, useState} from "react";
+import React from "react";
 import { Box, Typography } from "@mui/material";
 import { CustomButton } from "../common/CustomButton/CustomButton";
 import Modal from "../common/Modal/Modal";
 import { useIsPortrait } from "../../common/hooks/useIsPortrait";
 import theme from "../../common/styles/theme";
-import {eventBus, EventName} from "../../utils/EventBus";
 
-const LoginModal: React.FC = () => {
+interface CategoriesProps {
+  isOpen: boolean;
+  isLogging: boolean;
+  handleLogin: () => void;
+  handleCloseModal: () => void;
+}
+const LoginModal: React.FC<CategoriesProps> = ({
+  isOpen,
+  isLogging,
+  handleLogin,
+  handleCloseModal,
+}) => {
   const isMobile = useIsPortrait();
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [isLogging, setIsLogging] = useState<boolean>(false);
-
-    useEffect(() => {
-        const openLoginModal = () => {
-            setIsOpen(true);
-        };
-        const closeVerifyWalletModal = () => {
-            setIsOpen(false);
-        };
-        eventBus.subscribe(EventName.OpenLoginModal, openLoginModal);
-        eventBus.subscribe(
-            EventName.CloseLoginModal,
-            closeVerifyWalletModal,
-        );
-
-        return () => {
-            eventBus.unsubscribe(
-                EventName.OpenLoginModal,
-                openLoginModal,
-            );
-            eventBus.unsubscribe(
-                EventName.CloseLoginModal,
-                closeVerifyWalletModal,
-            );
-        };
-    }, []);
-
-  const handleLogin = () => {
-    setIsLogging(true);
-  };
-  const handleCloseModal= () => {
-    setIsOpen(false);
-    setIsLogging(false);
-  };
-
   return (
     <>
       <Modal
@@ -59,7 +33,7 @@ const LoginModal: React.FC = () => {
           sx={{
             width: {
               xs: "100%",
-              sm: "450px",
+              sm: "400px",
             },
             display: "flex",
             justifyContent: "center",
@@ -84,8 +58,8 @@ const LoginModal: React.FC = () => {
             colorVariant="primary"
             sx={{
               minWidth: "256px",
-              mt: "50px",
-              mb: "20px",
+              mt: "24px",
+              mb: "28px",
             }}
             disabled={isLogging}
           >

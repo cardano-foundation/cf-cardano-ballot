@@ -14,7 +14,7 @@ import VerifiedIcon from "@mui/icons-material/Verified";
 import "./ConnectWalletButton.scss";
 import { getUserInSession, tokenIsExpired } from "../../utils/session";
 import { addressSlice } from "../../utils/utils";
-import { eventBus } from "../../utils/EventBus";
+import { eventBus, EventName } from "../../utils/EventBus";
 import { useIsPortrait } from "../../common/hooks/useIsPortrait";
 import { useAppSelector } from "../../store/hooks";
 import { getEventCache } from "../../store/reducers/eventCache";
@@ -28,21 +28,21 @@ import { ROUTES } from "../../routes";
 type ConnectWalletButtonProps = {
   label: string;
   disableBackdropClick?: boolean;
+  showAddress?: boolean;
   onOpenConnectWalletModal: () => void;
   onOpenVerifyWalletModal: () => void;
   onDisconnectWallet: () => void;
-  onLogin: () => void;
 };
 
 const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
-  const { onOpenConnectWalletModal, onLogin, onDisconnectWallet } = props;
+  const { onOpenConnectWalletModal, onDisconnectWallet, showAddress } = props;
   const navigate = useNavigate();
+  const session = getUserInSession();
   const isMobile = useIsPortrait();
   const eventCache = useAppSelector(getEventCache);
   const walletIsVerified = useAppSelector(getWalletIsVerified);
   const connectedWallet = useAppSelector(getConnectedWallet);
 
-  const session = getUserInSession();
   const isExpired = tokenIsExpired(session?.expiresAt);
 
   const handleConnectWallet = () => {
@@ -52,7 +52,11 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
   };
 
   const handleVerifyWallet = () => {
-    eventBus.publish("openVerifyWalletModal");
+    eventBus.publish(EventName.OpenVerifyWalletModal);
+  };
+
+  const handleOpenLoginModal = () => {
+    eventBus.publish(EventName.OpenLoginModal);
   };
 
   const handleOpenVoteReceipts = () => {
@@ -60,9 +64,20 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
   };
 
   return (
-    <Box component="div" className="button-container">
+    <Box
+      component="div"
+      className="button-container"
+      sx={{
+        width: "100%",
+      }}
+    >
       <Button
-        sx={{ zIndex: "99", padding: isMobile ? "10px 10px" : "16px 20px" }}
+        sx={{
+          zIndex: 1300,
+          padding: isMobile ? "10px 10px" : "16px 20px",
+          width: "90%",
+          margin: showAddress ? "20px" : null,
+        }}
         className={`main-button ${
           connectedWallet.address?.length
             ? "connected-button"
@@ -81,7 +96,7 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
         )}
         {connectedWallet.address?.length ? (
           <>
-            {isMobile
+            {!showAddress
               ? null
               : connectedWallet.address
                 ? addressSlice(connectedWallet.address, 5)
@@ -132,10 +147,25 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
                 sx={{ zIndex: "99" }}
                 className="menu-button"
                 color="inherit"
-                onClick={() => onLogin()}
+                onClick={() => handleOpenLoginModal()}
                 disabled={session && !isExpired}
               >
                 Login
+              </ListItem>
+            ) : null}
+            {!tokenIsExpired(session?.expiresAt) ? (
+              <ListItem
+                sx={{
+                  zIndex: "99",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  width: "100%",
+                }}
+                className="menu-button last-button"
+                color="inherit"
+                onClick={handleOpenVoteReceipts}
+              >
+                <ListItemText primary="Vote Receipts" />
               </ListItem>
             ) : null}
             <ListItem
@@ -147,22 +177,9 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
               }}
               className="menu-button last-button"
               color="inherit"
-              onClick={handleOpenVoteReceipts}
-            >
-              <ListItemText primary="Votes Receipts" />
-            </ListItem>
-            <ListItem
-              sx={{
-                zIndex: "99",
-                display: "flex",
-                justifyContent: "space-between",
-                width: "100%",
-              }}
-              className="menu-button last-button"
-              color="inherit"
               onClick={() => onDisconnectWallet()}
             >
-              <ListItemText primary="Logout" />
+              <ListItemText primary="Disconnect" />
               <ListItemIcon sx={{ minWidth: "auto" }}>
                 <ExitToAppIcon />
               </ListItemIcon>

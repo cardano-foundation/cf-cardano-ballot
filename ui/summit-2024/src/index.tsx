@@ -12,7 +12,7 @@ import { env } from "./common/constants/env";
 
 const instance = createInstance({
   urlBase: env.MATOMO_BASE_URL,
-  siteId: 1,
+  siteId: parseInt(env.MATOMO_PROJECT_ID, 10),
   trackerUrl: `${env.MATOMO_BASE_URL}/matomo.php`,
   srcUrl: `${env.MATOMO_BASE_URL}/matomo.js`,
   disabled: false,

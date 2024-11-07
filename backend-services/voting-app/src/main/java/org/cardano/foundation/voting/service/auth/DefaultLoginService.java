@@ -81,7 +81,7 @@ public class DefaultLoginService implements LoginService {
     }
 
     private Either<Problem, LoginEnvelope> unwrapLoginVoteEnvelope(Web3ConcreteDetails concreteDetails) {
-        val jsonBody = concreteDetails.getSignedJson();
+        val jsonBody = concreteDetails.getPayload();
 
         val jsonPayloadE = jsonService.decodeCIP93LoginEnvelope(jsonBody);
         if (jsonPayloadE.isLeft()) {

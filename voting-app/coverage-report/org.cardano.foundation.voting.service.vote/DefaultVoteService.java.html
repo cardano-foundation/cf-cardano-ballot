@@ -28,9 +28,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.zalando.problem.Problem;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.Objects;
 
 import static com.bloxbean.cardano.client.util.HexUtil.encodeHexString;
 import static org.cardano.foundation.voting.domain.VoteReceipt.Status.*;
@@ -306,7 +306,7 @@ public class DefaultVoteService implements VoteService {
 <span class="nc" id="L306">            existingVote.setVotedAtSlot(castVote.getVotedAtSlot());</span>
 <span class="nc" id="L307">            existingVote.setWalletType(walletType);</span>
 <span class="nc" id="L308">            existingVote.setSignature(concreteDetails.getSignature());</span>
-<span class="nc" id="L309">            existingVote.setPayload(concreteDetails.getPayload());</span>
+<span class="nc" id="L309">            existingVote.setPayload(Optional.of(concreteDetails.getPayload()));</span>
 <span class="nc" id="L310">            existingVote.setPublicKey(concreteDetails.getPublicKey());</span>
 
 <span class="nc" id="L312">            return Either.right(voteRepository.saveAndFlush(existingVote));</span>
@@ -321,7 +321,7 @@ public class DefaultVoteService implements VoteService {
 <span class="fc" id="L321">        vote.setWalletType(walletType);</span>
 <span class="fc" id="L322">        vote.setVotedAtSlot(castVote.getVotedAtSlot());</span>
 <span class="fc" id="L323">        vote.setSignature(concreteDetails.getSignature());</span>
-<span class="fc" id="L324">        vote.setPayload(concreteDetails.getPayload());</span>
+<span class="fc" id="L324">        vote.setPayload(Optional.of(concreteDetails.getPayload()));</span>
 <span class="fc" id="L325">        vote.setPublicKey(concreteDetails.getPublicKey());</span>
 <span class="fc" id="L326">        vote.setIdNumericHash(UUID.fromString(voteId).hashCode() &amp; 0xFFFFFFF);</span>
 
@@ -412,7 +412,7 @@ public class DefaultVoteService implements VoteService {
     }
 
     private Either&lt;Problem, ViewVoteReceiptEnvelope&gt; unwrapViewVoteReceiptEnvelope(Web3ConcreteDetails concreteDetails) {
-<span class="fc" id="L415">        val signedJson = concreteDetails.getSignedJson();</span>
+<span class="fc" id="L415">        val signedJson = concreteDetails.getPayload();</span>
 
 <span class="pc bpc" id="L417" title="2 of 3 branches missed.">        switch (concreteDetails) {</span>
 <span class="fc" id="L418">            case CardanoWeb3Details cardanoWeb3Details -&gt; {</span>
@@ -455,7 +455,7 @@ public class DefaultVoteService implements VoteService {
     }
 
     private Either&lt;Problem, VoteEnvelope&gt; unwrapCastCoteEnvelope(Web3ConcreteDetails concreteDetails) {
-<span class="fc" id="L458">        val signedJson = concreteDetails.getSignedJson();</span>
+<span class="fc" id="L458">        val signedJson = concreteDetails.getPayload();</span>
 
 <span class="pc bpc" id="L460" title="2 of 3 branches missed.">        switch (concreteDetails) {</span>
 <span class="fc" id="L461">            case CardanoWeb3Details cardanoWeb3Details -&gt; {</span>

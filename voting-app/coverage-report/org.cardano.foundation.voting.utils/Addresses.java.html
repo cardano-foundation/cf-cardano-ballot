@@ -65,8 +65,8 @@ import static org.zalando.problem.Status.BAD_REQUEST;
     }
 
     private static Either&lt;Problem, Boolean&gt; checkStakeAddressNetwork(ChainNetwork network, String walletId) {
-<span class="pc bpc" id="L68" title="1 of 4 branches missed.">        if (isMainnet(walletId) &amp;&amp; network.isMainnet()) {</span>
-<span class="nc" id="L69">            return Either.right(true);</span>
+<span class="fc bfc" id="L68" title="All 4 branches covered.">        if (isMainnet(walletId) &amp;&amp; network.isMainnet()) {</span>
+<span class="fc" id="L69">            return Either.right(true);</span>
         }
 
 <span class="pc bpc" id="L72" title="1 of 4 branches missed.">        if (isTestnet(walletId) &amp;&amp; network.isTestnet()) {</span>

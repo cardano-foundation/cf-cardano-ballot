@@ -60,7 +60,7 @@ public class Vote extends AbstractTimestampEntity {
     private String signature;
 
     @Column(name = &quot;payload&quot;, nullable = false, columnDefinition = &quot;text&quot;, length = 2048)
-    @Nullable
+    @Nullable // TODO remove nullable since payload is now always required
     private String payload;
 
     @Column(name = &quot;public_key&quot;)

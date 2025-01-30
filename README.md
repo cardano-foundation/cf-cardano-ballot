@@ -45,7 +45,7 @@
 
 ## Requirements
 - Node.js 18.x LTS
-- Java 17 LTS
+- Java 21 LTS
 - Postgres DB 14.x or H2 file db (local development / community running)
 - Docker
 

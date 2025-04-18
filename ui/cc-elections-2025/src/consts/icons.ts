@@ -1,0 +1,13 @@
+export const ICONS = {
+  arrowCircleRight: "/icons/ArrowCircleRight.svg",
+  discordIcon: "/icons/Discord.svg",
+  externalLinkIcon: "/icons/ExternalLink.svg",
+  filterIcon: "/icons/Filter.svg",
+  questionMarkCircleIcon: "/icons/QuestionMarkCircle.svg",
+  searchIcon: "/icons/Search.svg",
+  sortDescendingIcon: "/icons/SortDescending.svg",
+  userIcon: "/icons/User.svg",
+  userAddIcon: "/icons/UserAdd.svg",
+  userGroupIcon: "/icons/UserGroup.svg",
+  x_twitterIcon: "/icons/X-twitter.svg",
+};

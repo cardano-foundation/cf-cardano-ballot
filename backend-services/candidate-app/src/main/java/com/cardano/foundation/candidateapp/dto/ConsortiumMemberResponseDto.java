@@ -19,7 +19,7 @@ public class ConsortiumMemberResponseDto {
     private String socialTelegram;
     private String socialOther;
 
-    private String xVerification;
+    private String XVerification;
     private String conflictOfInterest;
     private String drepId;
     private String stakeId;

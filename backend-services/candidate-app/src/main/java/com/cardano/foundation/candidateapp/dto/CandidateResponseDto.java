@@ -38,7 +38,7 @@ public class CandidateResponseDto {
 
     private Integer weeklyCommitmentHours;
 
-    private String xVerification;
+    private String XVerification;
     private String conflictOfInterest;
     private String drepId;
     private String stakeId;

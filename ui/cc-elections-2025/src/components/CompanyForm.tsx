@@ -1,11 +1,12 @@
+import { useContext } from "react";
 import Box from "@mui/material/Box";
 import {useNavigate} from "react-router-dom";
 import {TopNav} from "./TopNav.tsx";
 import Typography from "@mui/material/Typography";
 import {Layout} from "./Layout/Layout.tsx";
-import styles from "./molecules/FormCard.module.scss";
-import {Button} from "./atoms";
-import {ICONS} from "../consts";
+import { Button } from "@atoms";
+import { ICONS } from "@consts";
+import { CompanyFormContext } from "@context";
 
 import { FormStep1 } from "./CompanyFormSteps/FormStep1.tsx";
 import { FormStep2 } from "./CompanyFormSteps/FormStep2.tsx";
@@ -16,8 +17,10 @@ import { FormStep6 } from "./CompanyFormSteps/FormStep6.tsx";
 import { FormStep7 } from "./CompanyFormSteps/FormStep7.tsx";
 
 import type { FormContextType, CompanyFormData } from '../types/formData';
-import {useContext} from "react";
-import FormContext from "../context/CompanyFormContext.tsx";
+
+import styles from "./molecules/FormCard.module.scss";
+import { usePostCompany } from "@hooks";
+import { CandidateBody } from "@models";
 
 type CompanyFormDataProps = keyof CompanyFormData;
 
@@ -35,7 +38,9 @@ export const Form = () => {
     title,
     req,
     setError
-  } = useContext(FormContext) as FormContextType<CompanyFormData>;
+  } = useContext(CompanyFormContext) as FormContextType<CompanyFormData>;
+
+  const { mutate, isLoading } = usePostCompany();
 
   const display = [
     <FormStep1 />,
@@ -94,8 +99,39 @@ export const Form = () => {
   }
 
   const handleSubmit = () => {
-    //send data to backend
-    console.log(data);
+
+    const body: CandidateBody = {
+      candidate: {
+        candidateType: "company",
+        name: data.name,
+        email: data.email,
+        country: data.country,
+        socialX: data.socialX,
+        socialLinkedin: data.socialLinkedin,
+        socialDiscord: data.socialDiscord,
+        socialTelegram: data.socialTelegram,
+        socialOther: data.socialOther,
+        publicContact: data.publicContact,
+        about: data.about,
+        bio: data.bio,
+        additionalInfo: data.additionalInfo,
+        videoPresentationLink: data.videoPresentationLink,
+        reasonToServe: data.reasonToServe,
+        governanceExperience: data.governanceExperience,
+        communicationStrategy: data.communicationStrategy,
+        ecosystemContributions: data.ecosystemContributions,
+        legalExpertise: data.legalExpertise,
+        weeklyCommitmentHours: Number(data.weeklyCommitmentHours),
+        conflictOfInterest: data.conflictOfInterest,
+        drepId: data.drepId,
+        stakeId: data.stakeId,
+        xverification: data.xverification,
+      },
+      registrationNumber: data.registrationNumber,
+      keyContactPerson: data.keyContactPerson,
+      socialWebsite: "",
+    };
+    mutate(body);
     navigate('/thankYou');
   }
 
@@ -115,6 +151,7 @@ export const Form = () => {
                 variant="text"
                 endIcon={<img src={ICONS.arrowCircleRight} alt="" />}
                 onClick={isSubmit ? handleSubmit : handleNext}
+                isLoading={isLoading}
               >
                 {isSubmit ? 'Submit' : 'Next'}
               </Button>

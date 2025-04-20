@@ -1,46 +1,78 @@
 import Box from "@mui/material/Box";
-import { TextArea } from "../molecules/Field/TextArea.tsx";
-import useFormContext from "../../hooks/useCompanyFormContext";
+import Typography from "@mui/material/Typography";
+import { Input } from "../molecules/Field/Input.tsx";
+import { useConsortiumFormContext } from "@hooks";
 
 
 export const FormStep6 = () => {
-  const { data, handleChange } = useFormContext();
+  const { data, error, handleChange } = useConsortiumFormContext();
+
+
   return (
     <Box sx={{ paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      <TextArea
-        id="reasonToServe"
-        label={'Why do you wish to serve on the Constitutional Committee?'}
-        name="reasonToServe"
+      <Input
+        errorMessage={error && error.name ? 'This field is required.' : ''}
+        id="name"
+        label={'Name of Consortium*'}
+        name="name"
         onChange={handleChange}
-        value={data.reasonToServe}
+        value={data.name}
       />
-      <TextArea
-        id="governanceExperience"
-        label={'Describe your experience with Cardano governance or blockchain governance in general'}
-        name="governanceExperience"
+      <Input
+        errorMessage={error && error.email ? 'Enter a valid e-mail address' : ''}
+        helpfulText={'Your email address will not be made public'}
+        id="email'"
+        label={'Email*'}
+        name="email"
         onChange={handleChange}
-        value={data.governanceExperience}
+        value={data.email}
       />
-      <TextArea
-        id="communicationStrategy"
-        label={'How will you communicate with the Cardano community about your descision making?'}
-        name="communicationStrategy"
+      <Input
+        errorMessage={error && error.country ? 'This field is required.' : ''}
+        id="country"
+        label={'Country of Registration*'}
+        name="country"
         onChange={handleChange}
-        value={data.communicationStrategy}
+        value={data.country}
       />
-      <TextArea
-        id="ecosystemContributions"
-        label={'Cardano Ecosystem Contributions'}
-        name="ecosystemContributions"
+      <Box>
+        <Typography variant="subtitle2">Social media (Will be made public)</Typography>
+        <Box sx={{ paddingTop: '4px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <Input
+            name="socialX"
+            onChange={handleChange}
+            value={data.socialX}
+          />
+          <Input
+            name="socialLinkedin"
+            onChange={handleChange}
+            value={data.socialLinkedin}
+          />
+          <Input
+            name="socialDiscord"
+            onChange={handleChange}
+            value={data.socialDiscord}
+          />
+          <Input
+            name="socialTelegram"
+            onChange={handleChange}
+            value={data.socialTelegram}
+          />
+          <Input
+            name="socialOther"
+            onChange={handleChange}
+            value={data.socialOther}
+          />
+        </Box>
+      </Box>
+      <Input
+        errorMessage={error && error.publicContact   ? 'This field is required.' : ''}
+        helpfulText={'Social media handles or email address where you would like to be contacted by the Cardano Community (Will be made public)'}
+        id="publicContact"
+        label={'Public Point of Contact*'}
+        name="publicContact"
         onChange={handleChange}
-        value={data.ecosystemContributions}
-      />
-      <TextArea
-        id="legalExpertise"
-        label={'Do you have any expertise in constitutional law or law in general?  If so please describe.'}
-        name="legalExpertise"
-        onChange={handleChange}
-        value={data.legalExpertise}
+        value={data.publicContact}
       />
     </Box>
   );

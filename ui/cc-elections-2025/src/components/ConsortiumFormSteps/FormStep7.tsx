@@ -1,50 +1,44 @@
 import Box from "@mui/material/Box";
 import { Input } from "../molecules/Field/Input.tsx";
 import { TextArea } from "../molecules/Field/TextArea.tsx";
-import useFormContext from "../../hooks/useCompanyFormContext";
+import { useConsortiumFormContext } from "@hooks";
 
 
 export const FormStep7 = () => {
-  const { data, handleChange } = useFormContext();
+  const { data, handleChange } = useConsortiumFormContext();
   return (
     <Box sx={{ paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      <Input
-        helpfulText={'A light version of KYC/KYB to verify that the applicant is who they claim to be using a video call. Much like how Catalyst is doing it.'}
-        id="liveliness"
-        label={'Liveliness verification'}
-        name="liveliness"
+      <TextArea
+        helpfulText={'Short introduction about yourself and your candidacy'}
+        id="about"
+        label={'Introduce your consortium'}
+        name="about"
         onChange={handleChange}
-        value={data.liveliness}
-      />
-      <Input
-        helpfulText={'Write your X handle here and send a DM to @IntersectMBO to verify ownershop of the account'}
-        id="xverification"
-        label={'X verification'}
-        name="xverification"
-        onChange={handleChange}
-        value={data.xverification}
+        value={data.about}
       />
       <TextArea
-        helpfulText={'Are you acting as DRep, as SPO, or both, or would have any other role that could be percieved as conflict of interest as a Constitutional Committee member?'}
-        id="conflictOfInterest"
-        label={'Conflict of Interest'}
-        name="conflictOfInterest"
+        helpfulText={'Extended information about your consortium'}
+        id="bio"
+        label={'Bio'}
+        name="bio"
         onChange={handleChange}
-        value={data.conflictOfInterest}
+        value={data.bio}
+      />
+      <TextArea
+        helpfulText={'Any other relevant information that might not fit in elsewhere'}
+        id="additionalInfo"
+        label={'Additional information'}
+        name="additionalInfo"
+        onChange={handleChange}
+        value={data.additionalInfo}
       />
       <Input
-        id="drepId"
-        label={'If DRep, please provide DRep ID'}
-        name="drepId"
+        helpfulText={'Must be able to embedd. Youtube is recommended'}
+        id="videoPresentationLink"
+        label={'Video presentation link'}
+        name="videoPresentationLink"
         onChange={handleChange}
-        value={data.drepId}
-      />
-      <Input
-        id="stakeId"
-        label={'If SPO, please provide Stake ID'}
-        name="stakeId"
-        onChange={handleChange}
-        value={data.stakeId}
+        value={data.videoPresentationLink}
       />
     </Box>
   );

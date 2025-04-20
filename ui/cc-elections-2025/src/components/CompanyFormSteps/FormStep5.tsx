@@ -1,11 +1,11 @@
 import Box from "@mui/material/Box";
 import { Input } from "../molecules/Field/Input.tsx";
 import { TextArea } from "../molecules/Field/TextArea.tsx";
-import useFormContext from "../../hooks/useCompanyFormContext";
+import { useCompanyFormContext } from "@hooks";
 
 
 export const FormStep5 = () => {
-  const { data, handleChange } = useFormContext();
+  const { data, handleChange } = useCompanyFormContext();
   return (
     <Box sx={{ paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <TextArea

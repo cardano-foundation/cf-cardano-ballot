@@ -24,12 +24,12 @@ export const ChooseForm = () => {
       iconUrl: ICONS.userGroupIcon,
       handleClick: () => navigate('/companyCandidate'),
     },
-    // {
-    //   title: 'Consortium Candidate',
-    //   subTitle: 'This is the card subtitle',
-    //   iconUrl: ICONS.userGroupIcon,
-    //   handleClick: () => navigate('/consortiumCandidate'),
-    // }
+    {
+      title: 'Consortium Candidate',
+      subTitle: 'This is the card subtitle',
+      iconUrl: ICONS.userGroupIcon,
+      handleClick: () => navigate('/consortiumCandidate'),
+    }
   ];
 
   return (

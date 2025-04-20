@@ -1,7 +1,7 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { Input } from "../molecules/Field/Input.tsx";
-import useFormContext from "../../hooks/useFormContext.ts";
+import { useFormContext } from "@hooks";
 
 
 export const FormStep4 = () => {
@@ -25,7 +25,14 @@ export const FormStep4 = () => {
         onChange={handleChange}
         value={data.email}
       />
-      <Input id="country" label={'Country of Residency'} name="country" onChange={handleChange} value={data.country} />
+      <Input
+        errorMessage={error && error.country ? 'This field is required.' : ''}
+        id="country"
+        label={'Country of Residency*'}
+        name="country"
+        onChange={handleChange}
+        value={data.country}
+      />
       <Box>
         <Typography variant="subtitle2">Social media (Will be made public)</Typography>
         <Box sx={{ paddingTop: '4px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -57,9 +64,10 @@ export const FormStep4 = () => {
         </Box>
       </Box>
       <Input
+        errorMessage={error && error.publicContact   ? 'This field is required.' : ''}
         helpfulText={'Social media handles or email address where you would like to be contacted by the Cardano Community (Will be made public)'}
         id="publicContact"
-        label={'Public Point of Contact'}
+        label={'Public Point of Contact*'}
         name="publicContact"
         onChange={handleChange}
         value={data.publicContact}

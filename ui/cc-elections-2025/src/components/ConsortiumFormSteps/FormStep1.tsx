@@ -1,11 +1,11 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { Checkbox } from "../molecules/Field/Checkbox.tsx";
-import useFormContext from "../../hooks/useCompanyFormContext";
+import { useConsortiumFormContext } from "@hooks";
 
 
 export const FormStep1 = () => {
-  const { data, handleChange, error } = useFormContext();
+  const { data, handleChange, error } = useConsortiumFormContext();
 
   return (
     <Box sx={{ paddingTop: '32px', display: 'flex', flexDirection: 'column', gap: '32px' }}>

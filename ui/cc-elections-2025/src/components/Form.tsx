@@ -17,7 +17,9 @@ import { FormStep7 } from "./IndividualFormSteps/FormStep7.tsx";
 
 import type { IndividualFormData, FormContextType } from '../types/formData';
 import {useContext} from "react";
-import FormContext from "../context/FormContext.tsx";
+import { FormContext } from "@context";
+import {usePostIndividual} from "@hooks";
+import { CandidateBody } from "@models";
 
 type IndividualFormDataProps = keyof IndividualFormData;
 
@@ -38,6 +40,8 @@ export const Form = () => {
     req,
     setError
   } = useContext(FormContext) as FormContextType<IndividualFormData>;
+
+  const { mutate, isLoading } = usePostIndividual()
 
   const display = [
     <FormStep1 />,
@@ -98,8 +102,37 @@ export const Form = () => {
   }
 
   const handleSubmit = () => {
-    //send data to backend
-    console.log(data);
+
+    const body: CandidateBody = {
+      candidate: {
+        candidateType: "individual",
+        name: data.name,
+        email: data.email,
+        country: data.country,
+        socialX: data.socialX,
+        socialLinkedin: data.socialLinkedin,
+        socialDiscord: data.socialDiscord,
+        socialTelegram: data.socialTelegram,
+        socialOther: data.socialOther,
+        publicContact: data.publicContact,
+        about: data.about,
+        bio: data.bio,
+        additionalInfo: data.additionalInfo,
+        videoPresentationLink: data.videoPresentationLink,
+        reasonToServe: data.reasonToServe,
+        governanceExperience: data.governanceExperience,
+        communicationStrategy: data.communicationStrategy,
+        ecosystemContributions: data.ecosystemContributions,
+        legalExpertise: data.legalExpertise,
+        weeklyCommitmentHours: Number(data.weeklyCommitmentHours),
+        conflictOfInterest: data.conflictOfInterest,
+        drepId: data.drepId,
+        stakeId: data.stakeId,
+        xverification: data.xverification,
+      }
+    };
+
+    mutate(body);
     navigate('/thankYou');
   }
 
@@ -119,6 +152,7 @@ export const Form = () => {
                 variant="text"
                 endIcon={<img src={ICONS.arrowCircleRight} alt="" />}
                 onClick={isSubmit ? handleSubmit : handleNext}
+                isLoading={isLoading}
               >
                 {isSubmit ? 'Submit' : 'Next'}
               </Button>

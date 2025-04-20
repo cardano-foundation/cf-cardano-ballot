@@ -35,12 +35,7 @@ export type CompanyFormData = {
   name: string;
   registrationNumber: string;
   keyContactPerson: string;
-  xtwitter: string;
-  linkedin: string;
-  discord: string;
-  telegram: string;
-  website: string;
-  other: string;
+  socialWebsite: string;
   email: string;
   country: string;
   socialX: string;
@@ -89,6 +84,7 @@ export type ConsortumFormData = {
   ecosystemContributions: string;
   legalExpertise: string;
   members: ConsortumMemberFormData[];
+  membersAmount: number;
 }
 
 export type ConsortumMemberFormData = {
@@ -118,6 +114,7 @@ export type FormContextType<T> = {
   data: T;
   setData: React.Dispatch<React.SetStateAction<T>>;
   handleChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  handleMemberChange?: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, index: number) => void;
   error: ErrObject;
   setError: React.Dispatch<React.SetStateAction<ErrObject>>;
   req: string[][];

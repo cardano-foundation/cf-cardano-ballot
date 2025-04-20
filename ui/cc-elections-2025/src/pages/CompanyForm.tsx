@@ -1,11 +1,11 @@
-import { FormProvider } from "../context/CompanyFormContext.tsx";
+import { CompanyFormProvider } from "@context";
 import { Form } from "../components/CompanyForm.tsx";
 
 export const CompanyForm = () => {
 
   return (
-    <FormProvider>
+    <CompanyFormProvider>
       <Form/>
-    </FormProvider>
+    </CompanyFormProvider>
   )
 }

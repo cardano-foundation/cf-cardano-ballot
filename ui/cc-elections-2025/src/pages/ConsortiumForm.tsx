@@ -1,10 +1,10 @@
-import {FormProvider} from "../context/FormContext.tsx";
-import { Form } from "../components/Form.tsx";
+import { ConsortiumFormProvider } from "@context";
+import { Form } from "../components/ConsortiumForm";
 
 export const ConsortiumForm = () => {
   return (
-    <FormProvider>
-      <Form/>
-    </FormProvider>
+    <ConsortiumFormProvider>
+      <Form />
+    </ConsortiumFormProvider>
   )
 }

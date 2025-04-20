@@ -1,7 +1,7 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { Checkbox } from "../molecules/Field/Checkbox.tsx";
-import useFormContext from "../../hooks/useFormContext.ts";
+import { useFormContext } from "@hooks";
 
 
 export const FormStep1 = () => {

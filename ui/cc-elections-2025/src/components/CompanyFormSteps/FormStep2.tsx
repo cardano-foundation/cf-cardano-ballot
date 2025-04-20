@@ -2,11 +2,11 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
 import {Input} from "../molecules/Field/Input.tsx";
-import useFormContext from "../../hooks/useCompanyFormContext";
+import { useCompanyFormContext } from "@hooks";
 
 
 export const FormStep2 = () => {
-  const { data, handleChange } = useFormContext();
+  const { data, handleChange } = useCompanyFormContext();
   return (
     <Box sx={{ paddingTop: '32px', display: 'flex', flexDirection: 'column', gap: '32px' }}>
       <Typography variant="body1">

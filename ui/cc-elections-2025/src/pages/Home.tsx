@@ -2,83 +2,21 @@ import { useNavigate } from "react-router-dom";
 
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
+import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
 import Link from '@mui/material/Link';
 import Typography from "@mui/material/Typography";
 
-import { ICONS } from "../consts"
+import { ICONS } from "@consts"
 import { Layout } from '../components/Layout/Layout';
-import { Button } from '../components/atoms';
+import { Button } from '@atoms';
 import { CandidatesList } from "../components/CandidatesList.tsx";
-import {IndividualCandidate} from "../types/apiData.ts";
+import {useGetAllCandidates} from "@hooks";
 
 export const Home = () => {
   const  navigate = useNavigate();
 
-  const candidates: IndividualCandidate[] = [
-    {
-      "candidate": {
-        "id": 40991,
-        "candidateType": "individual",
-        "name": "Biblo Baggins",
-        "email": "bilbo.baggins@shiremail.com",
-        "country": "",
-        "socialX": "",
-        "socialLinkedin": "",
-        "socialDiscord": "",
-        "socialTelegram": "",
-        "socialOther": "",
-        "publicContact": "",
-        "about": "Desription. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis ac vulputate purus. Aenean nec justo quis nulla auctor molestie in nec orci. Sed ac tellus nisi. Donec porttitor ipsum ac nulla luctus fermentum. Vestibulum eget nisi pretium leo volutpat tincidunt vitae non risus. Quisque aliquam ultrices aliquam. Mauris id massa pulvinar, volutpat enim vitae, congue ex. Quisque ultrices magna quis tincidunt dictum.",
-        "bio": "",
-        "additionalInfo": "",
-        "videoPresentationLink": "",
-        "reasonToServe": "",
-        "governanceExperience": "",
-        "communicationStrategy": "",
-        "ecosystemContributions": "",
-        "legalExpertise": "",
-        "weeklyCommitmentHours": 1073741824,
-        "conflictOfInterest": "",
-        "drepId": "",
-        "stakeId": "",
-        "createdAt": "2025-04-18T09:18:07.162Z",
-        "updatedAt": "2025-04-18T09:18:07.162Z",
-        "xverification": ""
-      }
-    },
-    {
-      "candidate": {
-        "id": 40928,
-        "candidateType": "individual",
-        "name": "John Snow",
-        "email": "john.snow@shiremail.com",
-        "country": "",
-        "socialX": "",
-        "socialLinkedin": "",
-        "socialDiscord": "",
-        "socialTelegram": "",
-        "socialOther": "",
-        "publicContact": "",
-        "about": "Desription. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis ac vulputate purus. Aenean nec justo quis nulla auctor molestie in nec orci. Sed ac tellus nisi. Donec porttitor ipsum ac nulla luctus fermentum. Vestibulum eget nisi pretium leo volutpat tincidunt vitae non risus. Quisque aliquam ultrices aliquam. Mauris id massa pulvinar, volutpat enim vitae, congue ex. Quisque ultrices magna quis tincidunt dictum.",
-        "bio": "",
-        "additionalInfo": "",
-        "videoPresentationLink": "",
-        "reasonToServe": "",
-        "governanceExperience": "",
-        "communicationStrategy": "",
-        "ecosystemContributions": "",
-        "legalExpertise": "",
-        "weeklyCommitmentHours": 1073741824,
-        "conflictOfInterest": "",
-        "drepId": "",
-        "stakeId": "",
-        "createdAt": "2025-04-18T09:18:07.162Z",
-        "updatedAt": "2025-04-18T09:18:07.162Z",
-        "xverification": ""
-      }
-    },
-  ];
+  const { allCandidates, isAllCandidatesLoading } = useGetAllCandidates();
 
   return (
     <Layout>
@@ -138,7 +76,20 @@ export const Home = () => {
             </Box>
           </Box>
 
-          <CandidatesList candidates={candidates} />
+          {!allCandidates || isAllCandidatesLoading ? (
+            <Box
+              sx={{
+                alignItems: "center",
+                display: "flex",
+                flex: 1,
+                justifyContent: "center",
+              }}
+            >
+              <CircularProgress color="secondary" />
+            </Box>
+          ) : (
+            <CandidatesList candidates={allCandidates} />
+          )}
 
         </Box>
       </Box>

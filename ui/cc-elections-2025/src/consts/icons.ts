@@ -1,5 +1,6 @@
 export const ICONS = {
   arrowCircleRight: "/icons/ArrowCircleRight.svg",
+  arrowLeftIcon: "/icons/ArrowLeft.svg",
   discordIcon: "/icons/Discord.svg",
   externalLinkIcon: "/icons/ExternalLink.svg",
   filterIcon: "/icons/Filter.svg",

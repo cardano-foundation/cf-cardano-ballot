@@ -1,0 +1,25 @@
+FROM node:18 AS build
+
+ARG VITE_BASE_URL
+ENV VITE_BASE_URL=${VITE_BASE_URL}
+
+WORKDIR /app
+
+COPY package.json . package-lock.json ./
+
+RUN npm install --legacy-peer-deps
+RUN npm install --save-dev vitest @types/jest --legacy-peer-deps
+
+COPY . .
+
+RUN npx vite build
+
+
+FROM nginx:alpine AS production
+WORKDIR /usr/share/nginx/html
+
+RUN rm -rf ./*
+
+COPY --from=build /app/dist .
+
+CMD ["nginx", "-g", "daemon off;"]

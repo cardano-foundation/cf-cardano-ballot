@@ -102,6 +102,8 @@ This will launch main voting-app on port: 9091 by default.
 For a detailed description and interactive interface of the API, visit the Swagger UI documentation here:
 [http://localhost:9091/swagger-ui/index.html](http://localhost:9091/swagger-ui/index.html)
 
+---
+
 ### Candidate App
 ```shell
 cd cf-cardano-ballot/backend-services/candidate-app
@@ -116,8 +118,31 @@ cd cf-cardano-ballot/backend-services/candidate-app
 
 This will launch main candidate-app on port: 9095 by default and will connect to H2 Database (does not require db container).
 
+#### Config: CORS Allowed Origins
+
+In `application.yml`:
+
+```yaml
+cors:
+  allowed:
+    origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
+```
+
+Defines allowed origins for cross-origin requests. Defaults to `http://localhost:3000` if the environment variable isn't set.
+
+You can specify **multiple origins** (including ports), separated by commas:
+
+```shell
+export CORS_ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173,https://yourdomain.com
+```
+
+Useful for enabling access from different dev or deployment frontends.
+
+
 For a detailed description and interactive interface of the API, visit the Swagger UI documentation here:
 [http://localhost:9095/swagger-ui/index.html](http://localhost:9095/swagger-ui/index.html)
+
+---
 
 ### Voting Verification
 ```shell

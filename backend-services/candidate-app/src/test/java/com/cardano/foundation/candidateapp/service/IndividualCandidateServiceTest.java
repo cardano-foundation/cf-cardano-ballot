@@ -38,12 +38,10 @@ class IndividualCandidateServiceTest {
         CandidateRequestDto dto = CandidateRequestDto.builder()
                 .name("Test User")
                 .email("test@example.com")
-                .candidateType(CandidateType.individual)
                 .build();
         CandidateResponseDto responseDto = CandidateResponseDto.builder()
                 .name("Test User")
                 .email("test@example.com")
-                .candidateType(CandidateType.individual)
                 .build();
 
         Candidate candidateEntity = new Candidate();

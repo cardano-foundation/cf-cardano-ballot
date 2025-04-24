@@ -1,10 +1,8 @@
 package com.cardano.foundation.candidateapp.dto;
 
-import com.cardano.foundation.candidateapp.model.CandidateType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 @Getter
@@ -13,15 +11,15 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class CandidateRequestDto {
-    @NotNull
-    private CandidateType candidateType;
     @NotBlank
     private String name;
     @NotBlank
     @Email
     private String email;
-    @NotBlank
     private String country;
+
+    private String coldCredentials;
+    private String governanceActionRationale;
 
     private String socialX;
     private String socialLinkedin;
@@ -29,7 +27,6 @@ public class CandidateRequestDto {
     private String socialTelegram;
     private String socialOther;
 
-    @NotBlank
     private String publicContact;
 
     private String about;

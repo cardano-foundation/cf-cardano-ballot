@@ -1,6 +1,5 @@
 package com.cardano.foundation.candidateapp.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Getter
@@ -9,9 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class ConsortiumMemberRequestDto {
-    @NotBlank
     private String name;
-    @NotBlank
     private String country;
     private String bio;
 

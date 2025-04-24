@@ -19,11 +19,7 @@ public class CompanyCandidate {
     @JoinColumn(name = "candidate_id")
     private Candidate candidate;
 
-    @Column(nullable = false)
     private String registrationNumber;
-
-    @Column(nullable = false)
     private String keyContactPerson;
-
     private String socialWebsite;
 }

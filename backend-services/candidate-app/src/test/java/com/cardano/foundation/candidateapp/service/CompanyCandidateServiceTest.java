@@ -38,12 +38,10 @@ class CompanyCandidateServiceTest {
         CandidateRequestDto dto = CandidateRequestDto.builder()
                 .name("Acme Inc.")
                 .email("contact@acme.com")
-                .candidateType(CandidateType.company)
                 .build();
         CandidateResponseDto responseDto = CandidateResponseDto.builder()
                 .name("Acme Inc.")
                 .email("contact@acme.com")
-                .candidateType(CandidateType.company)
                 .build();
 
         Candidate entity = new Candidate();

@@ -31,13 +31,11 @@ class CompanyCandidateControllerValidationTest {
     }
 
     @Test
-    void shouldReturn400ForMissingRegistrationNumber() throws Exception {
+    void shouldReturn400ForMissingRequiredFields() throws Exception {
         String json = """
         {
           "candidate": {
             "candidateType": "company",
-            "name": "Test Co",
-            "email": "contact@test.co",
             "country": "Poland",
             "publicContact": "test handle"
           },
@@ -49,6 +47,8 @@ class CompanyCandidateControllerValidationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.fieldErrors.registrationNumber").value("must not be blank"));
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.fieldErrors.['candidate.name']").value("must not be blank"))
+                .andExpect(jsonPath("$.fieldErrors.['candidate.email']").value("must not be blank"));
     }
 }

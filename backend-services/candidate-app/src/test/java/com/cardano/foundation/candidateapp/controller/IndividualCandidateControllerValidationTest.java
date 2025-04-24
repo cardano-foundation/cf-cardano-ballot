@@ -47,9 +47,7 @@ class IndividualCandidateControllerValidationTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.fieldErrors.['candidate.name']").value("must not be blank"))
-                .andExpect(jsonPath("$.fieldErrors.['candidate.email']").value("must not be blank"))
-                .andExpect(jsonPath("$.fieldErrors.['candidate.country']").value("must not be blank"))
-                .andExpect(jsonPath("$.fieldErrors.['candidate.publicContact']").value("must not be blank"));
+                .andExpect(jsonPath("$.fieldErrors.['candidate.email']").value("must not be blank"));
     }
 
     @Test

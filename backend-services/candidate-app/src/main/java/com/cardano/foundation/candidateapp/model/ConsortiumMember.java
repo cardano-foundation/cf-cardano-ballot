@@ -20,12 +20,8 @@ public class ConsortiumMember {
     @JoinColumn(name = "consortium_id")
     private ConsortiumCandidate consortium;
 
-    @Column(nullable = false)
     private String name;
-
-    @Column(nullable = false)
     private String country;
-
     private String bio;
 
     @Column(name = "social_x")

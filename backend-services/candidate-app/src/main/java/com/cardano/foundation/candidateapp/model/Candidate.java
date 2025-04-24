@@ -27,9 +27,10 @@ public class Candidate {
 
     @Column(nullable = false)
     private String email;
-
-    @Column(nullable = false)
     private String country;
+
+    private String coldCredentials;
+    private String governanceActionRationale;
 
     @Column(name = "social_x")
     private String socialX;
@@ -38,7 +39,6 @@ public class Candidate {
     private String socialTelegram;
     private String socialOther;
 
-    @Column(nullable = false)
     private String publicContact;
 
     private String about;

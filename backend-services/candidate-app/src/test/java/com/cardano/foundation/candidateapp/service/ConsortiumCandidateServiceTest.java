@@ -33,12 +33,10 @@ class ConsortiumCandidateServiceTest {
         CandidateRequestDto candidateDto = CandidateRequestDto.builder()
                 .name("DAO United")
                 .email("dao@united.io")
-                .candidateType(CandidateType.consortium)
                 .build();
         CandidateResponseDto responseCandidateDto = CandidateResponseDto.builder()
                 .name("DAO United")
                 .email("dao@united.io")
-                .candidateType(CandidateType.consortium)
                 .build();
 
         ConsortiumMemberRequestDto memberDto = ConsortiumMemberRequestDto.builder()

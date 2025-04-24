@@ -17,6 +17,9 @@ public class CandidateResponseDto {
     private String email;
     private String country;
 
+    private String coldCredentials;
+    private String governanceActionRationale;
+
     private String socialX;
     private String socialLinkedin;
     private String socialDiscord;

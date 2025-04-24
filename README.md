@@ -27,16 +27,17 @@
 
 # Features
 
-| **Event Types**    | |   **Backend Service Modules**  | | **Cardano Standards, Libraries and Components** |           
-|----------------|---------------|---------------|---------------|---------------|
-|  User-based | |  Admin | | [CIP-45](https://github.com/cardano-foundation/CIPs/pull/395) - Decentralized WebRTC d'App Wallet Communication  | 
-|  Stake-based | | Voting App |  | [CIP-93](https://cips.cardano.org/cips/cip93/) - Authenticated Web3 HTTP Requests  | 
-| | | Ledger Follower | | [CIP-30](https://cips.cardano.org/cips/cip30/) - Cardano dApp-Wallet Web Bridge | 
-| | | Vote Commitment | | [CIP-08](https://cips.cardano.org/cips/cip8/) - Message Signing |
-| | | Vote Verification | |  Cardano Foundation - [cardano-connect-with-wallet](https://github.com/cardano-foundation/cardano-connect-with-wallet) |  
-| | | User Verification | |  [Bloxbean Projects](https://github.com/bloxbean)  | 
-| | | Hydra Tally | |  [Aiken](https://aiken-lang.org/) - A Modern Smart Contract Platform for Cardano  | 
-| | | | | [Hydra](https://hydra.family/head-protocol/) - Head Protocol|
+| **Event Types**    | | **Backend Service Modules** | | **Cardano Standards, Libraries and Components** |           
+|----------------|---------------|-----------------------------|---------------|---------------|
+|  User-based | | Admin                       | | [CIP-45](https://github.com/cardano-foundation/CIPs/pull/395) - Decentralized WebRTC d'App Wallet Communication  | 
+|  Stake-based | | Voting App                  |  | [CIP-93](https://cips.cardano.org/cips/cip93/) - Authenticated Web3 HTTP Requests  | 
+| | | Ledger Follower             | | [CIP-30](https://cips.cardano.org/cips/cip30/) - Cardano dApp-Wallet Web Bridge | 
+| | | Vote Commitment             | | [CIP-08](https://cips.cardano.org/cips/cip8/) - Message Signing |
+| | | Vote Verification           | |  Cardano Foundation - [cardano-connect-with-wallet](https://github.com/cardano-foundation/cardano-connect-with-wallet) |  
+| | | User Verification           | |  [Bloxbean Projects](https://github.com/bloxbean)  | 
+| | | Hydra Tally                 | |  [Aiken](https://aiken-lang.org/) - A Modern Smart Contract Platform for Cardano  | 
+| | |                             | | [Hydra](https://hydra.family/head-protocol/) - Head Protocol|
+| | | Candidate App               | |  [CIP-93](https://cips.cardano.org/cips/cip93/) - Authenticated Web3 HTTP Requests  | 
 
 
 
@@ -61,6 +62,7 @@ from database constructs merkle tree and at periodic, configurable intervals sen
   - [voting-ledger-follower-app](backend-services/voting-ledger-follower-app) - Ledger Follower Application that is listening to the Cardano blockchain to fetch information about event data and user stake amounts in case of stake-based voting.
   - [voting-verification-app](backend-services/voting-verification-app) - Application to be used by the community / voters to independently verify and check vote proofs.
   - [keri-ballot-verifier](backend-services/keri-ballot-verifier) - A Python microservice to verify the votes from Cardano Ballot signed using KERI identifiers.
+  - [candidate-app](backend-services/candidate-app) - Spring Boot application for managing candidates.
 
 - [ui](ui) - Contains React applications for Cardano Ballopt event user interfaces:
   - [cip-1694](ui/cip-1694) - Frontend application for the CIP-1694 pre-ratification polling event.
@@ -99,6 +101,48 @@ cd cf-cardano-ballot/backend-services/voting-app
 This will launch main voting-app on port: 9091 by default.
 For a detailed description and interactive interface of the API, visit the Swagger UI documentation here:
 [http://localhost:9091/swagger-ui/index.html](http://localhost:9091/swagger-ui/index.html)
+
+---
+
+### Candidate App
+```shell
+cd cf-cardano-ballot/backend-services/candidate-app
+./gradlew bootRun 
+```
+
+This will launch main candidate-app on port: 9095 by default and will connect to PosgreSQL Database (requires db container).
+```shell
+cd cf-cardano-ballot/backend-services/candidate-app
+./gradlew bootRun --args='--spring.profiles.active=h2'
+```
+
+This will launch main candidate-app on port: 9095 by default and will connect to H2 Database (does not require db container).
+
+#### Config: CORS Allowed Origins
+
+In `application.yml`:
+
+```yaml
+cors:
+  allowed:
+    origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
+```
+
+Defines allowed origins for cross-origin requests. Defaults to `http://localhost:3000` if the environment variable isn't set.
+
+You can specify **multiple origins** (including ports), separated by commas:
+
+```shell
+export CORS_ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173,https://yourdomain.com
+```
+
+Useful for enabling access from different dev or deployment frontends.
+
+
+For a detailed description and interactive interface of the API, visit the Swagger UI documentation here:
+[http://localhost:9095/swagger-ui/index.html](http://localhost:9095/swagger-ui/index.html)
+
+---
 
 ### Voting Verification
 ```shell

@@ -1,0 +1,87 @@
+package com.cardano.foundation.candidateapp.service;
+
+import com.cardano.foundation.candidateapp.dto.*;
+import com.cardano.foundation.candidateapp.exception.ResourceNotFoundException;
+import com.cardano.foundation.candidateapp.mapper.*;
+import com.cardano.foundation.candidateapp.model.*;
+import com.cardano.foundation.candidateapp.repository.*;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class ConsortiumCandidateServiceTest {
+    @Mock CandidateRepository candidateRepo;
+    @Mock ConsortiumCandidateRepository consortiumRepo;
+    @Mock ConsortiumMemberRepository memberRepo;
+    @Mock CandidateMapper candidateMapper;
+    @Mock ConsortiumCandidateMapper consortiumMapper;
+    @Mock ConsortiumMemberMapper memberMapper;
+
+    @InjectMocks
+    ConsortiumCandidateService service;
+
+    @Test
+    void shouldCreateConsortiumCandidateWithMembers() {
+        CandidateRequestDto candidateDto = CandidateRequestDto.builder()
+                .name("DAO United")
+                .email("dao@united.io")
+                .build();
+        CandidateResponseDto responseCandidateDto = CandidateResponseDto.builder()
+                .name("DAO United")
+                .email("dao@united.io")
+                .build();
+
+        ConsortiumMemberRequestDto memberDto = ConsortiumMemberRequestDto.builder()
+                .name("Alice")
+                .country("Germany")
+                .build();
+        ConsortiumMemberResponseDto responseMemberDto = ConsortiumMemberResponseDto.builder()
+                .name("Alice")
+                .country("Germany")
+                .build();
+
+        ConsortiumCandidateRequestDto input = ConsortiumCandidateRequestDto.builder()
+                .candidate(candidateDto)
+                .members(List.of(memberDto))
+                .build();
+
+        Candidate entity = new Candidate();
+        entity.setId(1L);
+
+        ConsortiumCandidate savedConsortium = new ConsortiumCandidate();
+        savedConsortium.setCandidate(entity);
+
+        when(consortiumMapper.toDto(any())).thenReturn(
+                ConsortiumCandidateResponseDto.builder()
+                        .candidate(responseCandidateDto)
+                        .members(List.of(responseMemberDto))
+                        .build()
+        );
+        when(candidateMapper.toEntity(candidateDto)).thenReturn(entity);
+        when(candidateRepo.save(entity)).thenReturn(entity);
+        when(consortiumRepo.save(any())).thenReturn(savedConsortium);
+        when(memberMapper.toEntity(memberDto)).thenReturn(new ConsortiumMember());
+
+        ConsortiumCandidateResponseDto result = service.create(input);
+
+        assertNotNull(result);
+        verify(candidateRepo).save(entity);
+        verify(memberRepo).saveAll(any());
+    }
+
+    @Test
+    void shouldThrowWhenNotFound() {
+        when(consortiumRepo.findById(42L)).thenReturn(Optional.empty());
+
+        RuntimeException ex = assertThrows(ResourceNotFoundException.class, () -> service.getById(42L));
+        assertEquals("Consortium candidate not found", ex.getMessage());
+    }
+}

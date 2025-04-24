@@ -18,7 +18,7 @@ export const Layout = ({ children }: LayoutProps) => (
       flex={{ xs: '1', md: 'none' }}
       className={styles.content}
       maxWidth="100%"
-      width={{ xs: '100%', md: '100%', lg: '1520px' }}
+      width={{ xs: '100%', md: '100%', lg: '1440px' }}
     >
       {children}
     </Grid>

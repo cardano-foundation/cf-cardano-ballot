@@ -5,8 +5,8 @@ import {
   FormErrorMessage,
   FormHelpfulText,
   Input as InputBase,
-} from "../../atoms";
-import { testIdFromLabel } from "../../../utils";
+} from "@atoms";
+import { testIdFromLabel } from "@utils";
 
 import { InputFieldProps } from "./types";
 

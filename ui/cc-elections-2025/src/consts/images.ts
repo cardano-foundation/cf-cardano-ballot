@@ -1,4 +1,4 @@
 export const IMAGES = {
-  appLogo: "/images/Logo.svg",
+  appLogo: "/images/Logo.png",
   thankyou: "/images/ThankYou.png",
 };

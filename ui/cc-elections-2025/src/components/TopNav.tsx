@@ -1,9 +1,9 @@
 import { AppBar, Box, Button } from "@mui/material";
-import { IMAGES, ICONS } from '../consts';
+import { IMAGES } from '../consts';
 
 export const TopNav = () => {
   return (
-    <AppBar position="static" sx={{ bgcolor: 'transparent', borderRadius: 0, padding: '40px 32px', boxShadow: 'none' }}>
+    <AppBar position="static" sx={{ bgcolor: 'transparent', borderRadius: 0, padding: '24px 64px', boxShadow: 'none' }}>
       <Box
         sx={{
           display: "flex",
@@ -16,18 +16,8 @@ export const TopNav = () => {
           alt="app-logo"
           src={IMAGES.appLogo}
         />
-        <Button
-          variant="text"
-          endIcon={<img src={ICONS.externalLinkIcon} alt="" />}
-          sx={{
-            color: "#212A3D",
-            fontSize: '18px',
-            lineHeight: 1,
-            fontWeight: 400,
-            padding: '12px 12px 12px 16px',
-          }}
-        >
-          Support
+        <Button variant="contained" color="secondary" onClick={() => null}>
+          Button
         </Button>
       </Box>
     </AppBar>

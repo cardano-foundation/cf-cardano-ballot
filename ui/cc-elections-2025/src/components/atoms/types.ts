@@ -8,6 +8,7 @@ import {
   SxProps,
 } from "@mui/material";
 import * as TooltipMUI from "@mui/material/Tooltip";
+import {BaseSelectProps} from "@mui/material/Select/Select";
 
 export type ButtonProps = Omit<MUIButtonProps, "size"> & {
   isLoading?: boolean;
@@ -43,6 +44,11 @@ export type InputProps = InputBaseProps & {
   dataTestId?: string;
   errorMessage?: string;
 };
+
+export type SelectProps = BaseSelectProps & {
+  dataTestId?: string;
+  errorMessage?: string;
+}
 
 export type SpacerProps = {
   x?: number;

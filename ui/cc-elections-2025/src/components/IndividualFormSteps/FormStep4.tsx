@@ -1,11 +1,17 @@
+import { useMemo } from "react";
+import countryList from 'react-select-country-list';
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+import MenuItem from '@mui/material/MenuItem';
 import { Input } from "../molecules/Field/Input.tsx";
+import { Select } from "../molecules/Field/Select.tsx";
 import { useFormContext } from "@hooks";
 
 
 export const FormStep4 = () => {
   const { data, error, handleChange } = useFormContext();
+  const options = useMemo(() => countryList().getData(), [])
+
   return (
     <Box sx={{ paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <Input
@@ -25,14 +31,22 @@ export const FormStep4 = () => {
         onChange={handleChange}
         value={data.email}
       />
-      <Input
+      <Select
         errorMessage={error && error.country ? 'This field is required.' : ''}
         id="country"
         label={'Country of Residency*'}
         name="country"
         onChange={handleChange}
+        displayEmpty={true}
         value={data.country}
-      />
+      >
+        <MenuItem disabled value="">
+          Choose from list
+        </MenuItem>
+        {options.map((option) => (
+          <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
+        ))}
+      </Select>
       <Box>
         <Typography variant="subtitle2">Social media (Will be made public)</Typography>
         <Box sx={{ paddingTop: '4px', display: 'flex', flexDirection: 'column', gap: '12px' }}>

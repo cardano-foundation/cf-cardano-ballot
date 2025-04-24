@@ -6,6 +6,7 @@ export const ICONS = {
   filterIcon: "/icons/Filter.svg",
   questionMarkCircleIcon: "/icons/QuestionMarkCircle.svg",
   searchIcon: "/icons/Search.svg",
+  selectArrowIcon: "/icons/SelectArrow.svg",
   sortDescendingIcon: "/icons/SortDescending.svg",
   userIcon: "/icons/User.svg",
   userAddIcon: "/icons/UserAdd.svg",

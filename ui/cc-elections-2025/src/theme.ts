@@ -25,7 +25,7 @@ export const theme = createTheme({
     MuiCssBaseline: {
       styleOverrides: {
         ":root": {
-          fonfFamily: "Poppins, Arial",
+          fontFamily: "Poppins, Arial",
         },
       },
     },
@@ -35,6 +35,20 @@ export const theme = createTheme({
           borderRadius: `12px !important`,
         },
       },
+    },
+    MuiSelect: {
+      styleOverrides: {
+        select: {
+          padding: "4px 0 5px",
+        },
+      }
+    },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        notchedOutline: {
+          borderWidth: 0,
+        },
+      }
     },
     MuiInputBase: {
       styleOverrides: {
@@ -207,7 +221,7 @@ export const theme = createTheme({
     positiveGreen: "#5CC165",
     primary: { main: "#3052F5" },
     primaryBlue: "#0033AD",
-    secondary: { main: "rgb(255, 100, 10)" },
+    secondary: { main: "#D63F1E" },
     secondaryBlue: "#6F99FF",
     specialCyan: "#1C94B2",
     specialCyanBorder: "#77BFD1",

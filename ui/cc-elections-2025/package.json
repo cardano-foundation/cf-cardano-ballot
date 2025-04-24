@@ -14,11 +14,13 @@
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^7.0.2",
     "@mui/material": "^7.0.2",
+    "@types/react-select-country-list": "^2.2.3",
     "axios": "^1.4.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-query": "^3.39.3",
     "react-router-dom": "^6.13.0",
+    "react-select-country-list": "^2.2.3",
     "sass": "^1.86.3"
   },
   "devDependencies": {

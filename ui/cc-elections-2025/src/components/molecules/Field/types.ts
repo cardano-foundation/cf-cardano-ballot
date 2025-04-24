@@ -5,7 +5,8 @@ import {
   InputProps,
   TextAreaProps,
   TypographyProps,
-} from "../../atoms";
+  SelectProps,
+} from "@atoms";
 
 export type InputFieldProps = InputProps & {
   errorDataTestId?: string;
@@ -35,6 +36,18 @@ export type TextAreaFieldProps = TextAreaProps & {
   helpfulText?: string;
   helpfulTextStyle?: MUITypographyProps;
   hideLabel?: boolean;
+  label?: string;
+  labelStyles?: TypographyProps;
+  layoutStyles?: BoxProps;
+};
+
+export type SelectFieldProps = SelectProps & {
+  errorDataTestId?: string;
+  errorMessage?: string;
+  errorStyles?: MUITypographyProps;
+  helpfulTextDataTestId?: string;
+  helpfulText?: string;
+  helpfulTextStyle?: MUITypographyProps;
   label?: string;
   labelStyles?: TypographyProps;
   layoutStyles?: BoxProps;

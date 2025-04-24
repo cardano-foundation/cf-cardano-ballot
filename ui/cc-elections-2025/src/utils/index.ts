@@ -1,3 +1,4 @@
+export * from "./getInitials.ts"
 export * from "./openInNewTab";
 export * from "./parseBoolean";
 export * from "./removeDuplicatedProposals";

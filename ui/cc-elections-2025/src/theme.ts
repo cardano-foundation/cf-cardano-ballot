@@ -152,6 +152,15 @@ export const theme = createTheme({
         elevation: 2,
       },
     },
+    MuiLink: {
+      styleOverrides: {
+        root: {
+          fontFamily: "Poppins, Arial",
+          fontSize: "14px",
+          lineHeight: 1.5,
+        },
+      },
+    }
   },
   typography: {
     fontFamily: "Poppins, Arial",
@@ -168,6 +177,11 @@ export const theme = createTheme({
     },
     h3: {
       fontSize: "19px",
+      fontWeight: 500,
+      lineHeight: 1.3,
+    },
+    h4: {
+      fontSize: "16px",
       fontWeight: 500,
       lineHeight: 1.3,
     },
@@ -196,6 +210,14 @@ export const theme = createTheme({
       fontWeight: 500,
       lineHeight: 1.5,
       letterSpacing: "0.4px",
+    },
+    overline: {
+      fontSize: "11px",
+      fontWeight: 500,
+      lineHeight: "16px",
+      letterSpacing: "0.5px",
+      textTransform: "uppercase",
+      color: "#506288",
     },
     allVariants: {
       color: "#212a3d",

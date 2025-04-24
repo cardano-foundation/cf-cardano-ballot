@@ -7,12 +7,13 @@ import IconButton from '@mui/material/IconButton';
 import Link from '@mui/material/Link';
 import Typography from "@mui/material/Typography";
 
-import { ICONS } from "@consts"
-import { Layout } from '../components/Layout/Layout';
 import { Button } from '@atoms';
-import { CandidatesList } from "../components/CandidatesList.tsx";
-import {useGetAllCandidates} from "@hooks";
-import {TopNav} from "@/components/TopNav.tsx";
+import { ICONS } from "@consts"
+import { useGetAllCandidates } from "@hooks";
+
+import { CandidatesList } from "@/components/CandidatesList.tsx";
+import { Layout } from '@/components/Layout/Layout';
+import { TopNav } from "@/components/TopNav.tsx";
 
 export const Home = () => {
   const  navigate = useNavigate();
@@ -74,10 +75,8 @@ export const Home = () => {
               <Typography variant="body2">Guides can be found <Link href="#">here</Link>.</Typography>
             </Box>
           </Box>
-
-          <Box sx={{ padding: '40px 0 24px' }}>
-
-            {!allCandidates || isAllCandidatesLoading ? (
+          {!allCandidates || isAllCandidatesLoading ? (
+            <Box sx={{ padding: '40px 0 24px' }}>
               <Box
                 sx={{
                   alignItems: "center",
@@ -88,11 +87,10 @@ export const Home = () => {
               >
                 <CircularProgress color="secondary" />
               </Box>
-            ) : (
-              <CandidatesList candidates={allCandidates} />
-            )}
-
-          </Box>
+            </Box>
+          ) : (
+            <CandidatesList candidates={allCandidates} />
+          )}
         </Box>
       </Box>
     </Layout>

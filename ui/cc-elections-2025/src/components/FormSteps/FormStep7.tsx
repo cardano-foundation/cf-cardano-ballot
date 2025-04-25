@@ -1,21 +1,30 @@
 import Box from "@mui/material/Box";
-import { Input } from "../molecules/Field/Input.tsx";
-import { TextArea } from "../molecules/Field/TextArea.tsx";
-import { useCompanyFormContext } from "@hooks";
+import MenuItem from '@mui/material/MenuItem';
+import { Input } from "@/components/molecules/Field/Input";
+import { Select } from "@/components/molecules/Field/Select";
+import { TextArea } from "@/components/molecules/Field/TextArea";
 
+import { useRegisterFormContext } from "@hooks";
 
 export const FormStep7 = () => {
-  const { data, handleChange } = useCompanyFormContext();
+  const { data, handleChange } = useRegisterFormContext();
   return (
     <Box sx={{ paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      <Input
+      <Select
         helpfulText={'A light version of KYC/KYB to verify that the applicant is who they claim to be using a video call. Much like how Catalyst is doing it.'}
         id="liveliness"
         label={'Liveliness verification'}
         name="liveliness"
         onChange={handleChange}
+        displayEmpty={true}
         value={data.liveliness}
-      />
+      >
+        <MenuItem disabled value="">
+          Please select
+        </MenuItem>
+        <MenuItem value="yes">Yes</MenuItem>
+        <MenuItem value="no">No</MenuItem>
+      </Select>
       <Input
         helpfulText={'Write your X handle here and send a DM to @IntersectMBO to verify ownershop of the account'}
         id="xverification"

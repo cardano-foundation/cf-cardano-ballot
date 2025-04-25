@@ -69,7 +69,7 @@ export const Home = () => {
                 <img alt="" src={ICONS.userAddIcon} />
                 <Typography variant="subtitle2">4 more days to candidate yourself</Typography>
               </Box>
-              <Button sx={{ borderRadius: 0 }} onClick={() => navigate('/chooseForm')}>Apply as a candidate</Button>
+              <Button sx={{ borderRadius: 0 }} onClick={() => navigate('/registerCandidate')}>Apply as a candidate</Button>
             </Box>
             <Box>
               <Typography variant="body2">Guides can be found <Link href="#">here</Link>.</Typography>

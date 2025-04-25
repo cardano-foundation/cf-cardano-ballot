@@ -69,6 +69,7 @@ export const theme = createTheme({
           fontWeight: 500,
           lineHeight: 1.5,
           letterSpacing: "0.4px",
+          whiteSpace: "normal",
         },
       },
     },
@@ -80,9 +81,9 @@ export const theme = createTheme({
           padding: "12px 24px",
           fontWeight: 700,
         },
-        outlined: (props) => ({
-          borderColor: props.theme.palette.lightBlue,
-        }),
+        outlined: {
+          borderColor: "#D9DEE8",
+        },
       },
     },
     MuiChip: {

@@ -1,11 +1,11 @@
 import Box from "@mui/material/Box";
-import { Input } from "../molecules/Field/Input.tsx";
-import { TextArea } from "../molecules/Field/TextArea.tsx";
-import { useFormContext } from "@hooks";
+import { Input } from "@/components/molecules/Field/Input";
+import { TextArea } from "@/components/molecules/Field/TextArea";
 
+import { useRegisterFormContext } from "@hooks";
 
 export const FormStep6 = () => {
-  const { data, handleChange } = useFormContext();
+  const { candidateType, data, handleChange } = useRegisterFormContext();
   return (
     <Box sx={{ paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <TextArea
@@ -43,13 +43,15 @@ export const FormStep6 = () => {
         onChange={handleChange}
         value={data.legalExpertise}
       />
-      <Input
-        id="weeklyCommitmentHours"
-        label={'Estimate the average number of hours per week you can dedicate to the committee'}
-        name="weeklyCommitmentHours"
-        onChange={handleChange}
-        value={data.weeklyCommitmentHours}
-      />
+      {candidateType === 'individual' && (
+        <Input
+          id="weeklyCommitmentHours"
+          label={'Estimate the average number of hours per week you can dedicate to the committee'}
+          name="weeklyCommitmentHours"
+          onChange={handleChange}
+          value={data.weeklyCommitmentHours}
+        />
+      )}
     </Box>
   );
 }

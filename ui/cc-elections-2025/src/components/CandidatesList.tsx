@@ -7,10 +7,10 @@ import { Input, SearchIcon } from '@atoms';
 import { ICONS } from "@consts";
 import { getInitials } from "@utils";
 import { CandidatesListItem } from "./CandidatesListItem/CandidatesListItem.tsx";
-import { IndividualCandidate } from "../types/apiData.ts";
+import { Candidate } from "@models";
 
 type CandidatesListProps = {
-  candidates: IndividualCandidate[];
+  candidates: Candidate[];
 };
 
 export const CandidatesList = ({ candidates }: CandidatesListProps) => {

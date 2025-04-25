@@ -1,26 +1,15 @@
-export type IndividualFormData = {
-  termsAndCondition: boolean;
-  coldCredential: string;
-  rationale: string;
+import { MemberBody } from "@models";
+import { SelectChangeEvent } from "@mui/material";
+
+export type ConsortiumMemberFormData = {
   name: string;
-  email: string;
   country: string;
+  bio: string;
   socialX: string;
   socialLinkedin: string;
   socialDiscord: string;
   socialTelegram: string;
   socialOther: string;
-  publicContact: string;
-  about: string;
-  bio: string;
-  additionalInfo: string;
-  videoPresentationLink: string;
-  reasonToServe: string;
-  governanceExperience: string;
-  communicationStrategy: string;
-  ecosystemContributions: string;
-  legalExpertise: string;
-  weeklyCommitmentHours: string;
   liveliness: string;
   conflictOfInterest: string;
   drepId: string;
@@ -28,10 +17,10 @@ export type IndividualFormData = {
   xverification: string;
 }
 
-export type CompanyFormData = {
+export type RegisterFormData = {
   termsAndCondition: boolean;
   coldCredential: string;
-  rationale: string;
+  governanceActionRationale: string;
   name: string;
   registrationNumber: string;
   keyContactPerson: string;
@@ -59,48 +48,8 @@ export type CompanyFormData = {
   drepId: string;
   stakeId: string;
   xverification: string;
-}
-
-export type ConsortumFormData = {
-  termsAndCondition: boolean;
-  coldCredential: string;
-  rationale: string;
-  name: string;
-  email: string;
-  country: string;
-  socialX: string;
-  socialLinkedin: string;
-  socialDiscord: string;
-  socialTelegram: string;
-  socialOther: string;
-  publicContact: string;
-  about: string;
-  bio: string;
-  additionalInfo: string;
-  videoPresentationLink: string;
-  reasonToServe: string;
-  governanceExperience: string;
-  communicationStrategy: string;
-  ecosystemContributions: string;
-  legalExpertise: string;
-  members: ConsortumMemberFormData[];
+  members: ConsortiumMemberFormData[];
   membersAmount: number;
-}
-
-export type ConsortumMemberFormData = {
-  name: string;
-  country: string;
-  bio: string;
-  socialX: string;
-  socialLinkedin: string;
-  socialDiscord: string;
-  socialTelegram: string;
-  socialOther: string;
-  liveliness: string;
-  conflictOfInterest: string;
-  drepId: string;
-  stakeId: string;
-  xverification: string;
 }
 
 export type ErrObject = {
@@ -108,14 +57,29 @@ export type ErrObject = {
 }
 
 export type FormContextType<T> = {
-  title: string[];
-  page: number;
-  setPage: React.Dispatch<React.SetStateAction<number>>;
+  candidateType: "individual" | "company" | "consortium" | null;
   data: T;
-  setData: React.Dispatch<React.SetStateAction<T>>;
-  handleChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
-  handleMemberChange?: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, index: number) => void;
   error: ErrObject;
-  setError: React.Dispatch<React.SetStateAction<ErrObject>>;
+  handleChange: (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<unknown>,
+  ) => void;
+  handleMemberChange?: (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<unknown>,
+    index: number,
+  ) => void;
+  memberInit: MemberBody;
+  page: number;
   req: string[][];
+  setCandidateType: React.Dispatch<React.SetStateAction<"individual" | "company" | "consortium" | null>>;
+  setData: React.Dispatch<React.SetStateAction<T>>;
+  setError: React.Dispatch<React.SetStateAction<ErrObject>>;
+  setPage: React.Dispatch<React.SetStateAction<number>>;
+  title: string[];
+}
+
+export type TitlesType = {
+  noContext: string[];
+  individual: string[];
+  company: string[];
+  consortium: string[];
 }

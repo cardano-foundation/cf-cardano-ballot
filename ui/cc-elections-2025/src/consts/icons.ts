@@ -1,9 +1,11 @@
 export const ICONS = {
+  arrowCircleLeft: "/icons/ArrowCircleLeft.svg",
   arrowCircleRight: "/icons/ArrowCircleRight.svg",
   arrowLeftIcon: "/icons/ArrowLeft.svg",
   discordIcon: "/icons/Discord.svg",
   externalLinkIcon: "/icons/ExternalLink.svg",
   filterIcon: "/icons/Filter.svg",
+  plusIcon: "/icons/Plus.svg",
   questionMarkCircleIcon: "/icons/QuestionMarkCircle.svg",
   searchIcon: "/icons/Search.svg",
   selectArrowIcon: "/icons/SelectArrow.svg",

@@ -1,6 +1,7 @@
 FROM gradle:jdk21-alpine AS build
 WORKDIR /app
 COPY . /app
+RUN chmod +x gradlew
 RUN ./gradlew clean build
 
 FROM openjdk:21-jdk-slim AS runtime

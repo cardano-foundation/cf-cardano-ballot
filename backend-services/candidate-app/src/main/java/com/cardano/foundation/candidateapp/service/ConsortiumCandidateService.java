@@ -24,7 +24,6 @@ public class ConsortiumCandidateService {
     private final ConsortiumCandidateRepository consortiumRepo;
     private final ConsortiumMemberRepository memberRepo;
     private final CandidateMapper candidateMapper;
-    private final ConsortiumCandidateMapper consortiumMapper;
     private final ConsortiumMemberMapper memberMapper;
 
     public ConsortiumCandidateResponseDto create(ConsortiumCandidateRequestDto dto) {
@@ -44,7 +43,10 @@ public class ConsortiumCandidateService {
                 }).collect(Collectors.toList());
 
         List<ConsortiumMember> savedMembers = memberRepo.saveAll(members);
-        return consortiumMapper.toDto(savedConsortium); // members will be mapped inside mapper
+        return ConsortiumCandidateResponseDto.builder()
+                .candidate(candidateMapper.toDto(savedConsortium.getCandidate()))
+                .members(savedMembers.stream().map(memberMapper::toDto).collect(Collectors.toList()))
+                .build();
     }
 
     public ConsortiumCandidateResponseDto getById(Long id) {

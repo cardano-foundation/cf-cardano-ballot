@@ -30,6 +30,7 @@ public class ConsortiumMember {
     private String socialDiscord;
     private String socialTelegram;
     private String socialOther;
+    private String socialWebsite;
 
     @Column(name = "x_verification")
     private String XVerification;

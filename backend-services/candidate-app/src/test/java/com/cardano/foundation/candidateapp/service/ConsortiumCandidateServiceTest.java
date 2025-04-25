@@ -22,7 +22,6 @@ class ConsortiumCandidateServiceTest {
     @Mock ConsortiumCandidateRepository consortiumRepo;
     @Mock ConsortiumMemberRepository memberRepo;
     @Mock CandidateMapper candidateMapper;
-    @Mock ConsortiumCandidateMapper consortiumMapper;
     @Mock ConsortiumMemberMapper memberMapper;
 
     @InjectMocks
@@ -59,12 +58,6 @@ class ConsortiumCandidateServiceTest {
         ConsortiumCandidate savedConsortium = new ConsortiumCandidate();
         savedConsortium.setCandidate(entity);
 
-        when(consortiumMapper.toDto(any())).thenReturn(
-                ConsortiumCandidateResponseDto.builder()
-                        .candidate(responseCandidateDto)
-                        .members(List.of(responseMemberDto))
-                        .build()
-        );
         when(candidateMapper.toEntity(candidateDto)).thenReturn(entity);
         when(candidateRepo.save(entity)).thenReturn(entity);
         when(consortiumRepo.save(any())).thenReturn(savedConsortium);

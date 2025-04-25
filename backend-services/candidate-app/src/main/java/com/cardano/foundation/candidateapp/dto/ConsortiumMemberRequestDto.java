@@ -17,6 +17,7 @@ public class ConsortiumMemberRequestDto {
     private String socialDiscord;
     private String socialTelegram;
     private String socialOther;
+    private String socialWebsite;
 
     private String XVerification;
     private String conflictOfInterest;

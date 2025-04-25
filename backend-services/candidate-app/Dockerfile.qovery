@@ -7,4 +7,9 @@ RUN ./gradlew clean build -x test
 FROM openjdk:21-jdk-slim AS runtime
 WORKDIR /app
 COPY --from=build /app/build/libs/*SNAPSHOT.jar /app/app.jar
-ENTRYPOINT ["java", "-jar", "app.jar"]
+CMD java \
+  -Dspring.datasource.url=${SPRING_DATASOURCE_URL} \
+  -Dspring.datasource.username=${SPRING_DATASOURCE_USERNAME} \
+  -Dspring.datasource.password=${SPRING_DATASOURCE_PASSWORD} \
+  -Dserver.port=${SERVER_PORT} \
+  -jar app.jar

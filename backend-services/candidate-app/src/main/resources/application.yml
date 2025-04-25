@@ -14,7 +14,7 @@ spring:
       idle-timeout: ${DB_IDLE_TIMEOUT:30000}
   flyway:
     locations: classpath:db/migration/postgresql
-    username: ${SPRING_DATASOURCE_USERNAME}
+    user: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
     url: ${SPRING_DATASOURCE_URL}
     baselineOnMigrate: true

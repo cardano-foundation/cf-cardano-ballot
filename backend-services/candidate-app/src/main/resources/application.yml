@@ -18,7 +18,7 @@ spring:
     password: ${SPRING_DATASOURCE_PASSWORD}
     url: ${SPRING_DATASOURCE_URL}
     baselineOnMigrate: true
-    enabled: false
+    enabled: true
 
 cors:
   allowed:

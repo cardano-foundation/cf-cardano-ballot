@@ -5,18 +5,18 @@ spring:
   application:
     name: candidate-app
   datasource:
-    username: postgres
-    password: postgres
-    url: jdbc:postgresql://0.0.0.0:5432/
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    url: ${SPRING_DATASOURCE_URL}
     hikari:
       minimum-idle: ${DB_MIN_IDLE:3}
       maximum-pool-size: ${DB_MAX_POOL_SIZE:10}
       idle-timeout: ${DB_IDLE_TIMEOUT:30000}
   flyway:
     locations: classpath:db/migration/postgresql
-    url: jdbc:postgresql://0.0.0.0:5432/
-    user: postgres
-    password: postgres
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    url: ${SPRING_DATASOURCE_URL}
     baselineOnMigrate: true
     enabled: true
 

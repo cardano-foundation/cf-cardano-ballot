@@ -33,7 +33,12 @@ export const ThankYou = () => {
             <Typography variant="h1">Thank You!</Typography>
             <img src={IMAGES.thankyou} alt="thank you" />
             <Typography variant="body1" sx={{ color: '#506288' }}>Your subbmision has been received!</Typography>
-            <Button onClick={handleButtonClick} sx={{ marginTop: '24px', width: '100%' }}>Go to Ballot!</Button>
+            <Button
+              variant="text"
+              onClick={handleButtonClick}
+            >
+              Back to main page
+            </Button>
           </Box>
         </Box>
       </Box>

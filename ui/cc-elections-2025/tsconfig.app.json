@@ -32,6 +32,8 @@
       "@hooks": ["./src/hooks/index.ts"],
       "@mock": ["./src/mock/index.ts"],
       "@atoms": ["./src/components/atoms/index.ts"],
+      "@molecules": ["./src/components/molecules/index.ts"],
+      "@organisms": ["./src/components/organisms/index.ts"],
       "@services": ["./src/services/index.ts"],
       "@context": ["./src/context/index.ts"],
       "@models": ["./src/models/index.ts"],

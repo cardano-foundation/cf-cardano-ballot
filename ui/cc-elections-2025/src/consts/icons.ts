@@ -2,6 +2,7 @@ export const ICONS = {
   arrowCircleLeft: "/icons/ArrowCircleLeft.svg",
   arrowCircleRight: "/icons/ArrowCircleRight.svg",
   arrowLeftIcon: "/icons/ArrowLeft.svg",
+  closeIcon: "/icons/Close.svg",
   discordIcon: "/icons/Discord.svg",
   externalLinkIcon: "/icons/ExternalLink.svg",
   filterIcon: "/icons/Filter.svg",

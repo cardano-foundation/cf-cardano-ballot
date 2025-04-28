@@ -9,6 +9,7 @@ import Typography from "@mui/material/Typography";
 
 import { Button } from '@atoms';
 import { ICONS } from "@consts"
+import { useCardano, useModal } from "@context";
 import { useGetAllCandidates } from "@hooks";
 
 import { CandidatesList } from "@/components/CandidatesList.tsx";
@@ -17,6 +18,8 @@ import { TopNav } from "@/components/TopNav.tsx";
 
 export const Home = () => {
   const  navigate = useNavigate();
+  const { openModal } = useModal();
+  const { isEnabled } = useCardano();
 
   const { allCandidates, isAllCandidatesLoading } = useGetAllCandidates();
 
@@ -69,7 +72,11 @@ export const Home = () => {
                 <img alt="" src={ICONS.userAddIcon} />
                 <Typography variant="subtitle2">4 more days to candidate yourself</Typography>
               </Box>
-              <Button sx={{ borderRadius: 0 }} onClick={() => navigate('/registerCandidate')}>Apply as a candidate</Button>
+              <Button sx={{ borderRadius: 0 }} onClick={() => {
+                isEnabled ? navigate('/registerCandidate') : openModal({ type: "chooseWallet" });
+              }}>
+                {isEnabled ? 'Apply as a candidate' : 'Connect to apply as a candidate'}
+              </Button>
             </Box>
             <Box>
               <Typography variant="body2">Guides can be found <Link href="#">here</Link>.</Typography>

@@ -46,6 +46,8 @@ public class CandidateResponseDto {
     private String drepId;
     private String stakeId;
 
+    private String walletAddress;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

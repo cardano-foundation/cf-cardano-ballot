@@ -59,6 +59,8 @@ public class Candidate {
     private String drepId;
     private String stakeId;
 
+    private String walletAddress;
+
     @Column(updatable = false)
     private LocalDateTime createdAt;
 

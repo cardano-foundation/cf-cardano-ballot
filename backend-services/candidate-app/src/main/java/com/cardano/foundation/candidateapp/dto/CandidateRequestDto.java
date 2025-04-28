@@ -47,4 +47,7 @@ public class CandidateRequestDto {
     private String conflictOfInterest;
     private String drepId;
     private String stakeId;
+
+    @NotBlank
+    private String walletAddress;
 }

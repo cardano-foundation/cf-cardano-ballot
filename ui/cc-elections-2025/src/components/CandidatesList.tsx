@@ -1,10 +1,11 @@
+import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import InputAdornment from '@mui/material/InputAdornment';
-import IconButton from "@mui/material/IconButton";
+// import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 
 import { Input, SearchIcon } from '@atoms';
-import { ICONS } from "@consts";
+// import { ICONS } from "@consts";
 import { getInitials } from "@utils";
 import { CandidatesListItem } from "./CandidatesListItem/CandidatesListItem.tsx";
 import { Candidate } from "@models";
@@ -14,6 +15,17 @@ type CandidatesListProps = {
 };
 
 export const CandidatesList = ({ candidates }: CandidatesListProps) => {
+  const [search, setSearch] = useState<string>('');
+  const [filteredCandidates, setFilteredCandidates] = useState<Candidate[]>(candidates);
+
+  useEffect(() => {
+    if(search.length > 2) {
+      filteredCandidates.length && setFilteredCandidates(candidates.filter((candidate) => candidate.candidate.name.toLowerCase().includes(search.toLowerCase())));
+    } else {
+      filteredCandidates.length && setFilteredCandidates(candidates);
+    }
+  }, [search]);
+
   return (
     <Box>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: '40px 0 24px' }}>
@@ -25,22 +37,24 @@ export const CandidatesList = ({ candidates }: CandidatesListProps) => {
             type="text"
             sx={{ width: '322px', backgroundColor: 'white', padding: '11px 12px' }}
             placeholder="Search ..."
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
             startAdornment={
               <InputAdornment position={"start"}>
                 <SearchIcon />
               </InputAdornment>
             }
           />
-          <IconButton>
-            <img src={ICONS.filterIcon} alt="" />
-          </IconButton>
-          <IconButton>
-            <img src={ICONS.sortDescendingIcon} alt="" />
-          </IconButton>
+          {/*<IconButton>*/}
+          {/*  <img src={ICONS.filterIcon} alt="" />*/}
+          {/*</IconButton>*/}
+          {/*<IconButton>*/}
+          {/*  <img src={ICONS.sortDescendingIcon} alt="" />*/}
+          {/*</IconButton>*/}
         </Box>
       </Box>
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '43px', paddingBottom: '48px' }}>
-        {candidates.map((candidate) => (
+        {filteredCandidates.map((candidate) => (
           <CandidatesListItem
             bio={candidate.candidate.about}
             candidateType={candidate.candidate.candidateType}

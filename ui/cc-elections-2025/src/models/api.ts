@@ -23,6 +23,7 @@ export type CandidateBody = {
     conflictOfInterest: string;
     drepId: string;
     stakeId: string;
+    walletAddress: string;
     xverification: string;
   };
   registrationNumber?: string;
@@ -73,6 +74,7 @@ export type Candidate = {
     conflictOfInterest: string;
     drepId: string;
     stakeId: string;
+    walletAddress: string;
     createdAt: string;
     updatedAt: string;
     xverification: string;

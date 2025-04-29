@@ -1,56 +1,79 @@
 import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
-import InputAdornment from '@mui/material/InputAdornment';
-// import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 
-import { Input, SearchIcon } from '@atoms';
-// import { ICONS } from "@consts";
 import { getInitials } from "@utils";
 import { CandidatesListItem } from "./CandidatesListItem/CandidatesListItem.tsx";
 import { Candidate } from "@models";
+import {DataActionsBar} from "@/components/molecules";
 
 type CandidatesListProps = {
   candidates: Candidate[];
 };
 
 export const CandidatesList = ({ candidates }: CandidatesListProps) => {
-  const [search, setSearch] = useState<string>('');
   const [filteredCandidates, setFilteredCandidates] = useState<Candidate[]>(candidates);
+  const [sortOpen, setSortOpen] = useState<boolean>(false);
+  const [chosenSorting, setChosenSorting] = useState<string>("Random");
+  const [searchText, setSearchText] = useState<string>("");
+  const [filterOpen, setFilterOpen] = useState<boolean>(false);
+  const [chosenFilters, setChosenFilters] = useState<string[]>([]);
+
+  const filterOptions = [
+    { key: "Individual", label: "Individual" },
+    { key: "Company", label: "Company" },
+    { key: "Consortium", label: "Consortium" },
+  ];
+
+  const sortOptions = [
+    { key: "Random", label: "Random" },
+    { key: "Name", label: "Name" },
+  ];
 
   useEffect(() => {
-    if(search.length > 2) {
-      filteredCandidates.length && setFilteredCandidates(candidates.filter((candidate) => candidate.candidate.name.toLowerCase().includes(search.toLowerCase())));
-    } else {
-      filteredCandidates.length && setFilteredCandidates(candidates);
+    setFilteredCandidates(candidates);
+  }, [candidates]);
+
+  useEffect(() => {
+    let candidatesTemp = candidates
+      .filter((candidate) => candidate.candidate.name.toLowerCase().includes(searchText.toLowerCase()));
+
+    if(chosenFilters.length > 0) {
+      candidatesTemp = candidatesTemp.filter((candidate) => chosenFilters.map(filter => filter.toLowerCase()).includes(candidate.candidate.candidateType));
     }
-  }, [search]);
+
+    if (chosenSorting === "Random") {
+      setFilteredCandidates(candidatesTemp);
+    } else if (chosenSorting === "Name") {
+      setFilteredCandidates(candidatesTemp.sort((a, b) => a.candidate.name.localeCompare(b.candidate.name)));
+    }
+  }, [chosenSorting, searchText, chosenFilters]);
+
+  console.log(filteredCandidates);
 
   return (
     <Box>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: '40px 0 24px' }}>
         <Typography variant="h2">Candidates List</Typography>
-        <Box sx={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
-          <Input
-            id="search"
-            name="search"
-            type="text"
-            sx={{ width: '322px', backgroundColor: 'white', padding: '11px 12px' }}
-            placeholder="Search ..."
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            startAdornment={
-              <InputAdornment position={"start"}>
-                <SearchIcon />
-              </InputAdornment>
-            }
+        <Box>
+          <DataActionsBar
+            chosenSorting={chosenSorting}
+            closeSorts={() => setSortOpen(false)}
+            closeFilters={() => setFilterOpen(false)}
+            searchText={searchText}
+            setChosenSorting={setChosenSorting}
+            setSearchText={setSearchText}
+            setSortOpen={setSortOpen}
+            sortOpen={sortOpen}
+            filterOptions={filterOptions}
+            filtersTitle={'Candidate Type'}
+            sortOptions={sortOptions}
+            filtersOpen={filterOpen}
+            setFiltersOpen={setFilterOpen}
+            setChosenFilters={setChosenFilters}
+            chosenFilters={chosenFilters}
+            chosenFiltersLength={chosenFilters.length}
           />
-          {/*<IconButton>*/}
-          {/*  <img src={ICONS.filterIcon} alt="" />*/}
-          {/*</IconButton>*/}
-          {/*<IconButton>*/}
-          {/*  <img src={ICONS.sortDescendingIcon} alt="" />*/}
-          {/*</IconButton>*/}
         </Box>
       </Box>
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '43px', paddingBottom: '48px' }}>
@@ -60,7 +83,7 @@ export const CandidatesList = ({ candidates }: CandidatesListProps) => {
             candidateType={candidate.candidate.candidateType}
             id={candidate.candidate.id}
             initials={getInitials(candidate.candidate.name)}
-            key={candidate.candidate.name}
+            key={candidate.candidate.id}
             name={candidate.candidate.name}
           />
         ))}

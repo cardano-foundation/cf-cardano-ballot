@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom";
 
 import Box from '@mui/material/Box';
-import Chip from '@mui/material/Chip';
+// import Chip from '@mui/material/Chip';
 import CircularProgress from '@mui/material/CircularProgress';
-import IconButton from '@mui/material/IconButton';
+// import IconButton from '@mui/material/IconButton';
 import Link from '@mui/material/Link';
 import Typography from "@mui/material/Typography";
 
@@ -30,14 +30,14 @@ export const Home = () => {
         <Box sx={{ padding: '0 64px' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '24px 0' }}>
             <Typography variant="h1">2025 Constitutional Committee elections</Typography>
-            <IconButton>
-              <img src={ICONS.questionMarkCircleIcon} alt="" />
-            </IconButton>
+            {/*<IconButton>*/}
+            {/*  <img src={ICONS.questionMarkCircleIcon} alt="" />*/}
+            {/*</IconButton>*/}
           </Box>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: '16px', backgroundColor: 'white', borderRadius: '16px', padding: '20px 24px 32px 24px', boxShadow: '0px 20px 25px -5px #212A3D14' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
               <Typography variant="h2">Details</Typography>
-              <Chip label="Vote type goes here" />
+              {/*<Chip label="Vote type goes here" />*/}
             </Box>
             <Box>
               <Typography variant="caption">CONTEXT</Typography>

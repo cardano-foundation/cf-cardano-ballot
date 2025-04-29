@@ -1,10 +1,10 @@
 import { Dispatch, FC, SetStateAction } from "react";
-import { Box, InputBase } from "@mui/material";
-import Search from "@mui/icons-material/Search";
+import { Box } from "@mui/material";
 
 import { DataActionsFilters, DataActionsSorting } from "@molecules";
 import { OrderActionsChip } from "./OrderActionsChip";
-import { theme } from "@/theme";
+import InputAdornment from "@mui/material/InputAdornment";
+import {Input, SearchIcon} from "@atoms";
 
 type DataActionsBarProps = {
   chosenFilters?: string[];
@@ -52,39 +52,22 @@ export const DataActionsBar: FC<DataActionsBarProps> = ({ ...props }) => {
     sortOpen,
     sortOptions = [],
   } = props;
-  const {
-    palette: { boxShadow2 },
-  } = theme;
 
   return (
-    <Box alignItems="center" display="flex" justifyContent="space-between">
-      <InputBase
-        inputProps={{ "data-testid": "search-input" }}
-        onChange={(e) => setSearchText(e.target.value)}
-        placeholder="Search..."
+    <Box sx={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
+      <Input
+        id="search"
+        name="search"
+        type="text"
+        sx={{ width: '322px', backgroundColor: 'white', padding: '11px 12px' }}
+        placeholder="Search ..."
         value={searchText}
+        onChange={(event) => setSearchText(event.target.value)}
         startAdornment={
-          <Search
-            style={{
-              color: "#99ADDE",
-              height: 16,
-              marginRight: 4,
-              width: 16,
-            }}
-          />
+          <InputAdornment position={"start"}>
+            <SearchIcon />
+          </InputAdornment>
         }
-        sx={{
-          bgcolor: "white",
-          border: 1,
-          borderColor: "secondaryBlue",
-          borderRadius: 50,
-          boxShadow: `2px 2px 20px 0px ${boxShadow2}`,
-          fontSize: 11,
-          fontWeight: 500,
-          height: 48,
-          padding: "16px 24px",
-          maxWidth: 500,
-        }}
       />
       <OrderActionsChip
         chosenFiltersLength={chosenFiltersLength}

@@ -8,8 +8,7 @@ export const useGetAllCandidates = () => {
     [],
     getAllCandidates,
     {
-      refetchOnWindowFocus: true,
-      keepPreviousData: true,
+      refetchOnMount: true,
     },
   );
 

@@ -325,9 +325,6 @@ function useCardano() {
         const result = await context.enable(walletName);
         if (!result.error) {
           closeModal();
-          if (result.stakeKey) {
-            console.log("stake key set");
-          }
           setItemToLocalStorage(`${NETWORK_INFO_KEY}_${walletName}`, true);
           return result;
         }

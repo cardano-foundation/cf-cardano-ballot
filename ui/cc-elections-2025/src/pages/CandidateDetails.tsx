@@ -96,7 +96,7 @@ export const CandidateDetails = () => {
                     {socialLinks.length && (
                       <Box sx={{ display: 'flex' }}>
                         {socialLinks.map((socialLink) => (
-                          <Box sx={{ flex: '0 0 33.3333%', padding: '8px 0' }}>
+                          <Box sx={{ flex: '0 0 33.3333%', padding: '8px 0' }} key={socialLink.type}>
                             <Typography variant="overline">{socialLink.type}</Typography>
                             <Box>
                               <Link href={socialLink.link}>{socialLink.link}</Link>
@@ -120,7 +120,6 @@ export const CandidateDetails = () => {
                         name={member.name}
                         email={'bilbo.baggins@shiremail.com'}
                         initials={getInitials(member.name)}
-                        website={'https://www.mywesbite.com/'}
                         socialLinkedin={member.socialLinkedin}
                         socialDiscord={member.socialDiscord}
                       />

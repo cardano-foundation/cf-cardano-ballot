@@ -15,7 +15,7 @@ import { FormStep7 } from "./FormSteps/FormStep7.tsx";
 
 import { Button } from "@atoms";
 import { ICONS } from "@consts";
-import { RegisterFormContext } from "@context";
+import { RegisterFormContext, useCardano } from "@context";
 import { usePostCandidate } from "@hooks";
 import { CandidateBody } from "@models";
 
@@ -42,6 +42,8 @@ export const Form = () => {
     setError,
     candidateType,
   } = useContext(RegisterFormContext) as FormContextType<RegisterFormData>;
+
+  const { address } = useCardano();
 
   const postCandidate = usePostCandidate(!candidateType ? 'individual' : candidateType);
 
@@ -155,6 +157,7 @@ export const Form = () => {
         conflictOfInterest: data.conflictOfInterest,
         drepId: data.drepId,
         stakeId: data.stakeId,
+        walletAddress: address ? address : '',
         xverification: data.xverification,
       },
       registrationNumber: candidateType === 'company' ? data.registrationNumber : undefined,

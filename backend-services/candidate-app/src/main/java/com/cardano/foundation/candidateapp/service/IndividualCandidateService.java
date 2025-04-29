@@ -27,6 +27,7 @@ public class IndividualCandidateService {
 
     public IndividualCandidateResponseDto create(IndividualCandidateRequestDto dto) {
         Candidate candidate = candidateMapper.toEntity(dto.getCandidate());
+        candidate.setVerified(false);
         candidate.setCandidateType(CandidateType.individual);
 
         Candidate savedCandidate = candidateRepo.save(candidate);

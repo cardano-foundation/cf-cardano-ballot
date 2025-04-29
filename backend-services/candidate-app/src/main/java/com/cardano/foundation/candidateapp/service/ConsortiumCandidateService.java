@@ -29,6 +29,7 @@ public class ConsortiumCandidateService {
     public ConsortiumCandidateResponseDto create(ConsortiumCandidateRequestDto dto) {
         Candidate candidate = candidateMapper.toEntity(dto.getCandidate());
         candidate.setCandidateType(CandidateType.consortium);
+        candidate.setVerified(false);
         Candidate savedCandidate = candidateRepo.save(candidate);
 
         ConsortiumCandidate consortium = new ConsortiumCandidate();

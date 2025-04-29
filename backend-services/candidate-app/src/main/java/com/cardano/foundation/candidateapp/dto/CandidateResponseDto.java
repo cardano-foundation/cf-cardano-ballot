@@ -47,6 +47,7 @@ public class CandidateResponseDto {
     private String stakeId;
 
     private String walletAddress;
+    private boolean verified;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

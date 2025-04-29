@@ -28,6 +28,7 @@ public class CompanyCandidateService {
     public CompanyCandidateResponseDto create(CompanyCandidateRequestDto dto) {
         Candidate candidate = candidateMapper.toEntity(dto.getCandidate());
         candidate.setCandidateType(CandidateType.company);
+        candidate.setVerified(false);
         Candidate savedCandidate = candidateRepo.save(candidate);
 
         CompanyCandidate company = new CompanyCandidate();

@@ -60,6 +60,8 @@ public class Candidate {
     private String stakeId;
 
     private String walletAddress;
+    @Column(name = "is_verified")
+    private boolean verified;
 
     @Column(updatable = false)
     private LocalDateTime createdAt;

@@ -1,32 +1,37 @@
 import Box from "@mui/material/Box";
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormHelperText from '@mui/material/FormHelperText';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
 import Typography from "@mui/material/Typography";
-import { Checkbox } from "@/components/molecules/Field/Checkbox";
 
 import { useRegisterFormContext } from "@hooks";
 
 export const FormStep3 = () => {
-  const { data, handleChange, error } = useRegisterFormContext();
+  const { candidateType, setCandidateType, error } = useRegisterFormContext();
 
   return (
-    <Box sx={{ paddingTop: '32px', display: 'flex', flexDirection: 'column', gap: '32px' }}>
-      <Box>
-        <Typography variant="body1">
-          Welcome to the application form for those who aspire to become members of the Constitutional Committee (CC). The CC plays a vital role in shaping the future of the Cardano ecosystem by interpreting and upholding the Cardano Constitution.
-        </Typography>
-        <Typography variant="body1">
-          This application is open to all interested parties, including individuals, companies, and consortia, who are committed to contributing to the governance of Cardano. We seek candidates who possess a strong understanding of blockchain technology, a keen interest in decentralized governance, and a dedication to the principles outlined in the Cardano Constitution.
-        </Typography>
-      </Box>
-      <Checkbox
-        checked={data.termsAndCondition}
-        errorMessage={error && error.termsAndCondition ? 'This field is required.' : ''}
-        label={'*I have read and agree to the'}
-        link={'https://docs.google.com/document/d/1lMQRDfcn3ncisXQYXpnNyZAkcdMk9dXb6N8_PRYnh8g/edit?usp=sharing'}
-        linkText={'guidelines'}
-        name="termsAndCondition"
-        value={data.termsAndCondition}
-        onChange={handleChange}
-      />
-    </Box>
-  )
+    <FormControl error={error['candidateType']}>
+      <RadioGroup name="candidateType" value={candidateType} onChange={(event) => {
+        setCandidateType(event.target.value as "individual" | "company" | "consortium");
+      }}>
+        <Box sx={{ padding: '24px 0', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <Box sx={{ backgroundColor: '#ffffff', borderRadius: '16px', boxShadow: '0px 20px 25px -5px #212A3D14', padding: '16px' }}>
+            <FormControlLabel value="individual" control={<Radio />} label={'Individual candidate'} />
+            <Typography variant="body2" sx={{ marginLeft: '31px' }}>Select this option if you are applying as a single person.</Typography>
+          </Box>
+          <Box sx={{ backgroundColor: '#ffffff', borderRadius: '16px', boxShadow: '0px 20px 25px -5px #212A3D14', padding: '16px' }}>
+            <FormControlLabel value="company" control={<Radio />} label={'Company'} />
+            <Typography variant="body2" sx={{ marginLeft: '31px' }}>Select this option if you are applying on behalf of a single, registered business or organization.</Typography>
+          </Box>
+          <Box sx={{ backgroundColor: '#ffffff', borderRadius: '16px', boxShadow: '0px 20px 25px -5px #212A3D14', padding: '16px' }}>
+            <FormControlLabel value="consortium" control={<Radio />} label={'Consortium'} />
+            <Typography variant="body2" sx={{ marginLeft: '31px' }}>Choose this if you are applying as a collaborative group made up of multiple distinct individuals and/or organizations.</Typography>
+          </Box>
+        </Box>
+        {error['candidateType'] && <FormHelperText>Please select an option</FormHelperText>}
+      </RadioGroup>
+    </FormControl>
+  );
 }

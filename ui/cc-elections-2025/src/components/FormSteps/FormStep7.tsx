@@ -7,16 +7,16 @@ import { TextArea } from "@/components/molecules/Field/TextArea";
 import { useRegisterFormContext } from "@hooks";
 
 export const FormStep7 = () => {
-  const { data, handleChange } = useRegisterFormContext();
+  const { candidateType, data, handleChange } = useRegisterFormContext();
   return (
     <Box sx={{ paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <Select
-        helpfulText={'A light version of KYC/KYB to verify that the applicant is who they claim to be using a video call. Much like how Catalyst is doing it.'}
+        displayEmpty={true}
         id="liveliness"
         label={'Liveliness verification'}
         name="liveliness"
         onChange={handleChange}
-        displayEmpty={true}
+        tooltipText={'This optional field allows you to request a call with staff involved in the election process should you wish to verify your identity or in case you have any questions about the application. Should you choose to verify your identity, a "verified" tag will be attached to your profile.'}
         value={data.liveliness}
       >
         <MenuItem disabled value="">
@@ -33,28 +33,32 @@ export const FormStep7 = () => {
         onChange={handleChange}
         value={data.xverification}
       />
-      <TextArea
-        helpfulText={'Are you acting as DRep, as SPO, or both, or would have any other role that could be percieved as conflict of interest as a Constitutional Committee member?'}
-        id="conflictOfInterest"
-        label={'Conflict of Interest'}
-        name="conflictOfInterest"
-        onChange={handleChange}
-        value={data.conflictOfInterest}
-      />
-      <Input
-        id="drepId"
-        label={'If DRep, please provide DRep ID'}
-        name="drepId"
-        onChange={handleChange}
-        value={data.drepId}
-      />
-      <Input
-        id="stakeId"
-        label={'If SPO, please provide Stake ID'}
-        name="stakeId"
-        onChange={handleChange}
-        value={data.stakeId}
-      />
+      {candidateType !== 'consortium' && (
+        <>
+          <TextArea
+            helpfulText={'Are you acting as DRep, as SPO, or both, or would have any other role that could be percieved as conflict of interest as a Constitutional Committee member?'}
+            id="conflictOfInterest"
+            label={'Conflict of Interest'}
+            name="conflictOfInterest"
+            onChange={handleChange}
+            value={data.conflictOfInterest}
+          />
+          <Input
+            id="drepId"
+            label={'If DRep, please provide DRep ID'}
+            name="drepId"
+            onChange={handleChange}
+            value={data.drepId}
+          />
+          <Input
+            id="stakeId"
+            label={'If SPO, please provide Stake ID'}
+            name="stakeId"
+            onChange={handleChange}
+            value={data.stakeId}
+          />
+        </>
+      )}
     </Box>
   );
 }

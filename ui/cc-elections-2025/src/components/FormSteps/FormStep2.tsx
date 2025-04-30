@@ -1,37 +1,44 @@
 import Box from "@mui/material/Box";
-import FormControl from '@mui/material/FormControl';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormHelperText from '@mui/material/FormHelperText';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
+import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
+import { Input } from "@/components/molecules/Field/Input";
 
 import { useRegisterFormContext } from "@hooks";
 
+
 export const FormStep2 = () => {
-  const { candidateType, setCandidateType, error } = useRegisterFormContext();
+  const { data, handleChange } = useRegisterFormContext();
 
   return (
-    <FormControl error={error['candidateType']}>
-      <RadioGroup name="candidateType" value={candidateType} onChange={(event) => {
-        setCandidateType(event.target.value as "individual" | "company" | "consortium");
-      }}>
-        <Box sx={{ padding: '24px 0', display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          <Box sx={{ backgroundColor: '#ffffff', borderRadius: '16px', boxShadow: '0px 20px 25px -5px #212A3D14', padding: '16px' }}>
-            <FormControlLabel value="individual" control={<Radio />} label={'Individual candidate'} />
-            <Typography variant="body2" sx={{ marginLeft: '31px' }}>Select this option if you are applying as a single person.</Typography>
+    <>
+      <Box sx={{ padding: '24px 0', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <Typography variant="h3">Governance Action Rationale</Typography>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+          <Box>
+            <Typography variant="body1">
+              In addition to the main application requirements, candidates have the opportunity to undertake an optional three-step task. Completing this task allows applicants to demonstrate key skills relevant to the CC role: technical proficiency in credential management (Steps 1 & 2) and the analytical ability to evaluate governance actions within Cardano's framework (Step 3), all performed in the SanchoNet environment. The overall objective is to successfully generate cold credentials, authorize hot credentials using them, and then use the hot credentials to evaluate, vote on, and justify a position on a governance action on SanchoNet, submitting a copy of their rationale to the form.
+            </Typography>
+            <Box sx={{ marginTop: '16px' }}>
+              <Link
+                href="https://docs.google.com/document/u/1/d/1u7fh-CS1LPYldI3vghZZWrrXCvsLrU1f--MRCTW7ZR4/edit"
+                variant="body2"
+                target="_blank"
+                rel="noopenner"
+              >
+                Read the full task descriptions here.
+              </Link>
+            </Box>
           </Box>
-          <Box sx={{ backgroundColor: '#ffffff', borderRadius: '16px', boxShadow: '0px 20px 25px -5px #212A3D14', padding: '16px' }}>
-            <FormControlLabel value="company" control={<Radio />} label={'Company'} />
-            <Typography variant="body2" sx={{ marginLeft: '31px' }}>Choose this if you are applying as a collaborative group made up of multiple distinct individuals and/or organizations.</Typography>
-          </Box>
-          <Box sx={{ backgroundColor: '#ffffff', borderRadius: '16px', boxShadow: '0px 20px 25px -5px #212A3D14', padding: '16px' }}>
-            <FormControlLabel value="consortium" control={<Radio />} label={'Consortium'} />
-            <Typography variant="body2" sx={{ marginLeft: '31px' }}>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed risus ac ligula malesuada finibus.</Typography>
-          </Box>
+
+          <Input
+            id="governanceActionRationale"
+            label={'Paste your submitted vote rationale here'}
+            name="governanceActionRationale"
+            onChange={handleChange}
+            value={data.governanceActionRationale}
+          />
         </Box>
-        {error['candidateType'] && <FormHelperText>Please select an option</FormHelperText>}
-      </RadioGroup>
-    </FormControl>
-  );
+      </Box>
+    </>
+  )
 }

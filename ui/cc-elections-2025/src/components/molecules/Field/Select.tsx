@@ -1,4 +1,4 @@
-import { Box, InputLabel } from "@mui/material";
+import { Box, InputLabel, Tooltip } from "@mui/material";
 
 import {
   FormErrorMessage,
@@ -8,6 +8,7 @@ import {
 import { useRef} from "react";
 import { SelectFieldProps } from "./types";
 import { testIdFromLabel } from "@utils";
+import { ICONS } from "@consts";
 
 export const Select = ({
   id,
@@ -19,6 +20,7 @@ export const Select = ({
   helpfulTextStyle,
   label,
   layoutStyles,
+  tooltipText,
   ...rest
 }: SelectFieldProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -27,10 +29,15 @@ export const Select = ({
     <Box sx={{ width: "100%", ...layoutStyles }}>
       {label && (
         <InputLabel
-          sx={{ mb: '4px' }}
+          sx={{ mb: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}
           htmlFor={id}
         >
           {label}
+          {tooltipText && (
+            <Tooltip title={tooltipText}>
+              <img src={ICONS.infoIcon} alt="info" />
+            </Tooltip>
+          )}
         </InputLabel>
       )}
       <SelectBase

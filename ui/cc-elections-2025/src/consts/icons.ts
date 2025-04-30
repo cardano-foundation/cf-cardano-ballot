@@ -6,6 +6,7 @@ export const ICONS = {
   discordIcon: "/icons/Discord.svg",
   externalLinkIcon: "/icons/ExternalLink.svg",
   filterIcon: "/icons/Filter.svg",
+  infoIcon: "/icons/Info.svg",
   plusIcon: "/icons/Plus.svg",
   questionMarkCircleIcon: "/icons/QuestionMarkCircle.svg",
   searchIcon: "/icons/Search.svg",

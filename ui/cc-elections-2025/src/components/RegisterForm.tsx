@@ -48,7 +48,7 @@ export const Form = () => {
     'Candidate' :
     candidateType?.charAt(0).toUpperCase() + candidateType?.slice(1));
 
-  const steps = [`${informationTitle} Informations`, 'Members informations', 'Additional Informations', 'Verifications'];
+  const steps = ['Members informations', `${informationTitle} Informations`, 'Additional Informations', 'Verifications'];
 
   const { address } = useCardano();
 
@@ -77,7 +77,7 @@ export const Form = () => {
       navigate("/");
     } else {
       setPage(prev => {
-        if (page === 5 && candidateType !== 'consortium') {
+        if (page === 4 && candidateType !== 'consortium') {
           return prev - 2;
         }
         return prev - 1
@@ -100,7 +100,7 @@ export const Form = () => {
     if (Object.keys(errors).length > 0) {
       setError(errors);
     } else {
-      if (candidateType === null && page === 1) {
+      if (candidateType === null && page === 2) {
         setError(errors => ({
           ...errors,
           candidateType: true,
@@ -108,7 +108,7 @@ export const Form = () => {
       } else {
         setError(() => ({}));
         setPage(prev => {
-          if (page === 3 && candidateType !== 'consortium') {
+          if (page === 2 && candidateType !== 'consortium') {
             return prev + 2;
           }
           return prev + 1
@@ -193,7 +193,7 @@ export const Form = () => {
           <Box className={styles.container}>
             <Typography variant="h1">
               {
-                page === 3 ?
+                page === 4 ?
                   `${informationTitle} ${title[page]}`
                   : title[page]
               }

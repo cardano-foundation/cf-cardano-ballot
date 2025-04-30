@@ -53,4 +53,5 @@ export type SelectFieldProps = SelectProps & {
   label?: string;
   labelStyles?: TypographyProps;
   layoutStyles?: BoxProps;
+  tooltipText?: string;
 };

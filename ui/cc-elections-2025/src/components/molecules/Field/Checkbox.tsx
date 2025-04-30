@@ -44,7 +44,7 @@ export const Checkbox = ({
           }
           label={label}
         />
-        {link && linkText && <Link variant="body1" href={link}>{linkText}</Link>}
+        {link && linkText && <Link variant="body1" target="_blank" rel="noopener" href={link}>{linkText}</Link>}
         <FormHelpfulText
           helpfulText={helpfulText}
           helpfulTextStyle={helpfulTextStyle}

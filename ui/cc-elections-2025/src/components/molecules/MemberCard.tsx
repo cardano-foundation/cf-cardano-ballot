@@ -57,7 +57,7 @@ export const MemberCard = (
         </Box>
       </Box>
       <Box sx={{ padding: '8px 0' }}>
-        <Typography variant="overline">Country of Residency</Typography>
+        <Typography variant="overline">Geographic Representation</Typography>
         <Typography variant="body1" color="#506288">
           {country}
         </Typography>
@@ -71,10 +71,7 @@ export const MemberCard = (
       <Box>
         {socialLinks.map((socialLink) => (
           <Box sx={{ padding: '8px 0' }} key={socialLink.type}>
-            <Typography variant="overline">{socialLink.type}</Typography>
-            <Box>
-              <Link href={socialLink.link}>{socialLink.link}</Link>
-            </Box>
+            <Link variant="overline" href={socialLink.link}>{socialLink.type}</Link>
           </Box>
         ))}
       </Box>

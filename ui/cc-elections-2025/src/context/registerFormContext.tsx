@@ -12,11 +12,11 @@ type FormProviderProps = {
 export const RegisterFormProvider = ({ children }: FormProviderProps) => {
 
   const title = [
-    'Optional steps to complete before applying',
-    'Apply as a candidate',
     'Constitutional Committee application',
-    'Informations',
+    'Optional Tasks to Demonstrate Capabilities',
+    'What type of candidate are you?',
     'Members Informations',
+    'Informations',
     'Additional candidate information',
     'Verifications',
   ]
@@ -38,11 +38,11 @@ export const RegisterFormProvider = ({ children }: FormProviderProps) => {
   };
 
   const req = [
-    [],
-    [],
     ['termsAndCondition'],
-    ['name', 'email', 'bio'],
     [],
+    [],
+    [],
+    ['name', 'email', 'bio', 'about'],
     [],
     [],
   ];

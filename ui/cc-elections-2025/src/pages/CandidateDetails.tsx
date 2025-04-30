@@ -6,6 +6,7 @@ import Chip from "@mui/material/Chip";
 import CircularProgress from "@mui/material/CircularProgress";
 import Divider from '@mui/material/Divider';
 import Link from "@mui/material/Link";
+import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 
 import { ICONS } from "@consts";
@@ -41,16 +42,7 @@ export const CandidateDetails = () => {
   const members = candidate?.members;
 
   const chipText = (candidateType: "individual" | "company" | "consortium") => {
-    switch (candidateType) {
-      case "individual":
-        return "Individual";
-      case "company":
-        return "Company";
-      case "consortium":
-        return "Group";
-      default:
-        return "Individual";
-    }
+    return candidateType?.charAt(0).toUpperCase() + candidateType?.slice(1);
   };
 
   return (
@@ -95,7 +87,11 @@ export const CandidateDetails = () => {
                         }}>
                           {getInitials(candidate.candidate.name)}
                         </Avatar>
-                        {candidate.candidate.verified && <img src={ICONS.verifiedIcon} alt="verified" style={{ position: 'absolute', bottom: '0', right: '0' }}/>}
+                        {candidate.candidate.verified && (
+                          <Tooltip title={'Verified applicant'}>
+                            <img src={ICONS.verifiedIcon} alt="verified" style={{ position: 'absolute', bottom: '0', right: '0' }}/>
+                          </Tooltip>
+                        )}
                       </Box>
                     )}
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: '6px', justifyContent: 'center' }}>
@@ -115,34 +111,29 @@ export const CandidateDetails = () => {
                           />
                         )}
                       </Box>
-                      {candidateType === "company" && <Typography variant="body1">{candidate?.registrationNumber}</Typography>}
                     </Box>
                   </Box>
 
                   <Box sx={{ paddingRight: '16px', paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '12px'}}>
-                    <Box>
-                      <Typography variant="overline">COLD CREDENTIAL</Typography>
-                      <Typography variant="body1" sx={{ paddingTop: '6px' }}>84aebcfd3e00d0f87af918fc4b5e00135f407e379893df7e7d392c6a</Typography>
-                    </Box>
                     <Box>
                       <Typography variant="caption">GOVERNANCE ACTION RATIONALE</Typography>
                       <Typography variant="body1" color="#506288" sx={{ paddingBottom: '16px' }}>
                         {candidate?.candidate.governanceActionRationale}
                       </Typography>
                       <Typography variant="caption">
-                        The applicant has provided a written rationale for the fictitious governance action detailed <Link href={'#'}>here</Link>.
+                        The applicant has provided a written rationale for the fictitious governance action detailed <Link variant="caption" target="_blank" rel="noopener" href="https://ipfs.io/ipfs/bafkreiew3wxdtgytkrtg3h7jzlspgfiktpxz7x3onz2yaa345ekrg7jz5q">here</Link>.
                       </Typography>
                     </Box>
                     <Box sx={{ padding: '8px 0' }}>
                       <Typography variant="overline">Public Point of Contact</Typography>
-                      <Typography variant="body2">
-                        <Link href={`mailto: ${candidate?.candidate.publicContact}`}>{candidate?.candidate.publicContact}</Link>
-                      </Typography>
+                      <Box>
+                        <Link variant="body2" target="_blank" rel="noopener" href={`mailto: ${candidate?.candidate.publicContact}`}>{candidate?.candidate.publicContact}</Link>
+                      </Box>
                     </Box>
                     <Divider />
                     {candidateType !== 'consortium' && (
                       <Box sx={{ padding: '8px 0' }}>
-                        <Typography variant="overline">Country of Residency</Typography>
+                        <Typography variant="overline">Geographic Representation</Typography>
                         <Typography variant="body1" color="#506288">
                           {candidate?.candidate.country}
                         </Typography>
@@ -167,44 +158,26 @@ export const CandidateDetails = () => {
                       </Typography>
                     </Box>
                     <Box sx={{ display: 'flex', gap: '40px' }}>
-                      <Box sx={{ padding: '8px 0' }}>
-                        <Typography variant="overline">VIDEO</Typography>
-                        <Typography variant="body2">
-                          {candidate?.candidate.videoPresentationLink && (
-                            <Link href={candidate?.candidate.videoPresentationLink}>
-                              {candidate?.candidate.videoPresentationLink}
-                            </Link>
-                          )}
-                        </Typography>
-                      </Box>
-                      <Box sx={{ padding: '8px 0' }}>
-                        <Typography variant="overline">WEBSITE</Typography>
-                        <Typography variant="body2">
-                          {false && (
-                            <Link href={'#'}></Link>
-                          )}
-                        </Typography>
-                      </Box>
-                      <Box sx={{ padding: '8px 0' }}>
-                        <Typography variant="overline">DISCORD</Typography>
-                        <Typography variant="body2">
-                          {candidate?.candidate.socialDiscord && (
-                            <Link href={candidate?.candidate.socialDiscord}>
-                              {candidate?.candidate.socialDiscord}
-                            </Link>
-                          )}
-                        </Typography>
-                      </Box>
-                      <Box sx={{ padding: '8px 0' }}>
-                        <Typography variant="overline">LINKEDIN</Typography>
-                        <Typography variant="body2">
-                          {candidate?.candidate.socialLinkedin && (
-                            <Link href={candidate?.candidate.socialLinkedin}>
-                              {candidate?.candidate.socialLinkedin}
-                            </Link>
-                          )}
-                        </Typography>
-                      </Box>
+                      {candidate?.candidate.videoPresentationLink && (
+                        <Box sx={{ padding: '8px 0' }}>
+                          <Link variant="overline" href={candidate?.candidate.videoPresentationLink}>VIDEO</Link>
+                        </Box>
+                      )}
+                      {false && (
+                        <Box sx={{ padding: '8px 0' }}>
+                          <Link variant="overline" href={'#'}>WEBSITE</Link>
+                        </Box>
+                      )}
+                      {candidate?.candidate.socialDiscord && (
+                        <Box sx={{ padding: '8px 0' }}>
+                          <Link variant="overline" href={candidate?.candidate.socialDiscord}>DISCORD</Link>
+                        </Box>
+                      )}
+                      {candidate?.candidate.socialLinkedin && (
+                        <Box sx={{ padding: '8px 0' }}>
+                          <Link variant="overline" href={candidate?.candidate.socialLinkedin}>LINKEDIN</Link>
+                        </Box>
+                      )}
                     </Box>
                   </Box>
                 </Box>
@@ -243,38 +216,38 @@ export const CandidateDetails = () => {
                   </Box>
                   <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '0 16px' }}>
                     <Box>
-                      <Typography variant="caption">Why do you wish to serve on the Constitutional Committee?</Typography>
+                      <Typography variant="subtitle2">Why do you wish to serve on the Constitutional Committee?</Typography>
                       <Box sx={{ paddingBottom: '16px'}}>
                         <Typography variant="body1">{candidate?.candidate.reasonToServe}</Typography>
                       </Box>
                     </Box>
                     <Box>
-                      <Typography variant="caption">EXPERIENCE</Typography>
+                      <Typography variant="subtitle2">EXPERIENCE</Typography>
                       <Box sx={{ paddingBottom: '16px'}}>
                         <Typography variant="body1">{candidate?.candidate.governanceExperience}</Typography>
                       </Box>
                     </Box>
                     <Box>
-                      <Typography variant="caption">How will you communicate with the Cardano community about your descision making?</Typography>
+                      <Typography variant="subtitle2">How will you communicate with the Cardano community about your descision making?</Typography>
                       <Box sx={{ paddingBottom: '16px'}}>
                         <Typography variant="body1">{candidate?.candidate.communicationStrategy}</Typography>
                       </Box>
                     </Box>
                     <Box>
-                      <Typography variant="caption">Cardano Ecosystem Contributions</Typography>
+                      <Typography variant="subtitle2">Cardano Ecosystem Contributions</Typography>
                       <Box sx={{ paddingBottom: '16px'}}>
                         <Typography variant="body1">{candidate?.candidate.ecosystemContributions}</Typography>
                       </Box>
                     </Box>
                     <Box>
-                      <Typography variant="caption">Do you have any expertise in constitutional law or law in general? If so please describe</Typography>
+                      <Typography variant="subtitle2">Do you have any expertise in constitutional law or law in general? If so please describe</Typography>
                       <Box sx={{ paddingBottom: '16px'}}>
                         <Typography variant="body1">{candidate?.candidate.legalExpertise}</Typography>
                       </Box>
                     </Box>
                     {candidateType === 'individual' && (
                       <Box>
-                        <Typography variant="caption">Estimate the average number of hours per week you can dedicate to the committe</Typography>
+                        <Typography variant="subtitle2">Estimate the average number of hours per week you can dedicate to the committe</Typography>
                         <Box sx={{ paddingBottom: '16px'}}>
                           <Typography variant="body1">{candidate?.candidate.weeklyCommitmentHours && `${candidate?.candidate.weeklyCommitmentHours} h`}</Typography>
                         </Box>

@@ -25,16 +25,7 @@ export const CandidatesListItem = (props: CandidatesListItemProps) => {
   };
 
   const chipText = (candidateType: "individual" | "company" | "consortium") => {
-    switch (candidateType) {
-      case "individual":
-        return "Individual";
-      case "company":
-        return "Company";
-      case "consortium":
-        return "Group";
-      default:
-        return "Individual";
-    }
+    return candidateType?.charAt(0).toUpperCase() + candidateType?.slice(1);
   };
 
   return (

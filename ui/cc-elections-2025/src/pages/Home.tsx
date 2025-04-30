@@ -22,6 +22,8 @@ export const Home = () => {
 
   const steps = ['Application', 'Vote', 'Results'];
 
+  const daysToApply = Math.floor((Date.parse('2025-05-31T10:30:00Z') - Date.now())/(24 * 60 * 60 * 1000));
+
   const { allCandidates, isAllCandidatesLoading } = useGetAllCandidates();
 
   return (
@@ -41,7 +43,8 @@ export const Home = () => {
               <Typography variant="caption">CONTEXT</Typography>
               <Box sx={{ paddingBottom: '16px' }}>
                 <Typography variant="body1" color="#506288">
-                  Desription. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis ac vulputate purus. Aenean nec justo quis nulla auctor molestie in nec orci. Sed ac tellus nisi. Donec porttitor ipsum ac nulla luctus fermentum. Vestibulum eget nisi pretium leo volutpat tincidunt vitae non risus. Quisque aliquam ultrices aliquam. Mauris id massa pulvinar, volutpat enim vitae, congue ex. Quisque ultrices magna quis tincidunt dictum.
+                  Welcome to the application form for those who aspire to become members of the Constitutional Committee (CC). The CC plays a vital role in shaping the future of the Cardano ecosystem by interpreting and upholding the Cardano Constitution.
+                  This application is open to all interested parties, including individuals, companies, and consortia, who are committed to contributing to the governance of Cardano.
                 </Typography>
               </Box>
             </Box>
@@ -49,26 +52,28 @@ export const Home = () => {
               <Box sx={{ width: '267px', padding: '12px 0' }}>
                 <Typography variant="caption">APPLICATION PERIOD</Typography>
                 <Typography variant="body1">
-                  May 1, 2024 10:30AM (UTC) - May 31, 2024 10:30AM (UTC)
+                  May 5, 2024 10:30AM (UTC) - May 31, 2024 10:30AM (UTC)
                 </Typography>
               </Box>
               <Box sx={{ width: '267px', padding: '12px 0' }}>
                 <Typography variant="caption">VOTING PERIOD</Typography>
                 <Typography variant="body1">
-                  June 1, 2024 10:30AM (UTC) - June 31, 2024 10:30AM (UTC)
+                  June 10, 2024 10:30AM (UTC) - June 30, 2024 10:30AM (UTC)
                 </Typography>
               </Box>
               <Box sx={{ width: '267px', padding: '12px 0' }}>
                 <Typography variant="caption">RESULTS SHOWN</Typography>
                 <Typography variant="body1">
-                  July 1, 2024 10:30AM (UTC)
+                  July 4, 2024 10:30AM (UTC)
                 </Typography>
               </Box>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#FDE1CE', borderRadius: '4px', padding: '8px 16px' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px'}}>
                 <img alt="" src={ICONS.userAddIcon} />
-                <Typography variant="subtitle2">4 more days to candidate yourself</Typography>
+                <Typography variant="subtitle2">
+                  {`${daysToApply} more days to candidate yourself`}
+                </Typography>
               </Box>
               <Button sx={{ borderRadius: 0 }} onClick={() => {
                 isEnabled ? navigate('/registerCandidate') : openModal({ type: "chooseWallet" });

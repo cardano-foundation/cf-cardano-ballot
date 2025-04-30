@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { AppBar, Box, Button } from "@mui/material";
+import { AppBar, Box, Button, Link } from "@mui/material";
 
 import { useCardano, useModal } from "@context";
 import { WalletInfoCard } from "@/components/molecules";
@@ -25,10 +25,12 @@ export const TopNav = ({title, navigateBack}: TopNavProps) => {
           alignItems: "center",
         }}
       >
-        <img
-          alt="app-logo"
-          src={IMAGES.appLogo}
-        />
+        <Link href="/">
+          <img
+            alt="app-logo"
+            src={IMAGES.appLogo}
+          />
+        </Link>
         <Box sx={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'space-between', padding: '0 32px' }}>
           <Box sx={{ display: 'flex', gap: '8px' }}>
             {navigateBack && (

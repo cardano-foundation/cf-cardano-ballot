@@ -1,6 +1,7 @@
 export * from "./basicReducer";
 export * from "./callAll";
 export * from "./checkIsMaintenanceOn";
+export * from "./geographicRepresentationList";
 export * from "./getDRepID";
 export * from "./getInitials";
 export * from "./localStorage";

@@ -3,8 +3,6 @@ import { useNavigate } from "react-router-dom";
 import Box from '@mui/material/Box';
 // import Chip from '@mui/material/Chip';
 import CircularProgress from '@mui/material/CircularProgress';
-// import IconButton from '@mui/material/IconButton';
-import Link from '@mui/material/Link';
 import Typography from "@mui/material/Typography";
 
 import { Button } from '@atoms';
@@ -77,9 +75,6 @@ export const Home = () => {
               }}>
                 {isEnabled ? 'Apply as a candidate' : 'Connect to apply as a candidate'}
               </Button>
-            </Box>
-            <Box>
-              <Typography variant="body2">Guides can be found <Link href="#">here</Link>.</Typography>
             </Box>
           </Box>
           {!allCandidates || isAllCandidatesLoading ? (

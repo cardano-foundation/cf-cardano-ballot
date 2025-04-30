@@ -41,7 +41,7 @@ export const RegisterFormProvider = ({ children }: FormProviderProps) => {
     [],
     [],
     ['termsAndCondition'],
-    ['name', 'email'],
+    ['name', 'email', 'bio'],
     [],
     [],
     [],

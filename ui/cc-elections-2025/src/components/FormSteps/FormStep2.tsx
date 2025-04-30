@@ -19,11 +19,11 @@ export const FormStep2 = () => {
         <Box sx={{ padding: '24px 0', display: 'flex', flexDirection: 'column', gap: '24px' }}>
           <Box sx={{ backgroundColor: '#ffffff', borderRadius: '16px', boxShadow: '0px 20px 25px -5px #212A3D14', padding: '16px' }}>
             <FormControlLabel value="individual" control={<Radio />} label={'Individual candidate'} />
-            <Typography variant="body2" sx={{ marginLeft: '31px' }}>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed risus ac ligula malesuada finibus.</Typography>
+            <Typography variant="body2" sx={{ marginLeft: '31px' }}>Select this option if you are applying as a single person.</Typography>
           </Box>
           <Box sx={{ backgroundColor: '#ffffff', borderRadius: '16px', boxShadow: '0px 20px 25px -5px #212A3D14', padding: '16px' }}>
             <FormControlLabel value="company" control={<Radio />} label={'Company'} />
-            <Typography variant="body2" sx={{ marginLeft: '31px' }}>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam sed risus ac ligula malesuada finibus.</Typography>
+            <Typography variant="body2" sx={{ marginLeft: '31px' }}>Choose this if you are applying as a collaborative group made up of multiple distinct individuals and/or organizations.</Typography>
           </Box>
           <Box sx={{ backgroundColor: '#ffffff', borderRadius: '16px', boxShadow: '0px 20px 25px -5px #212A3D14', padding: '16px' }}>
             <FormControlLabel value="consortium" control={<Radio />} label={'Consortium'} />

@@ -89,7 +89,6 @@ export const FormStep4 = () => {
   return (
     <Box sx={{ paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '48px' }}>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-        <Typography variant="h3">Lorem Ipsum</Typography>
         <Input
           errorMessage={error && error.name ? 'This field is required.' : ''}
           id="name"
@@ -157,13 +156,11 @@ export const FormStep4 = () => {
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
         {candidateType === 'company' && (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            <Typography variant="h3">Lorem Ipsum</Typography>
             {renderEmail()}
             {renderCountry()}
             {renderPublicContact()}
           </Box>
         )}
-        <Typography variant="h3">Lorem Ipsum</Typography>
         <TextArea
           helpfulText={'Short introduction about yourself and your candidacy'}
           id="about"
@@ -173,9 +170,10 @@ export const FormStep4 = () => {
           value={data.about}
         />
         <TextArea
+          errorMessage={error && error.name ? 'This field is required.' : ''}
           helpfulText={'Extended information about yourself, your relevant experience, technical and governance background etc'}
           id="bio"
-          label={'Bio'}
+          label={'Bio*'}
           name="bio"
           onChange={handleChange}
           value={data.bio}

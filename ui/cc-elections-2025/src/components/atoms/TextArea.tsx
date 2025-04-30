@@ -21,7 +21,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
   (
     {
       errorMessage,
-      maxLength = 500,
+      maxLength,
       onBlur,
       onFocus,
       isModifiedLayout,

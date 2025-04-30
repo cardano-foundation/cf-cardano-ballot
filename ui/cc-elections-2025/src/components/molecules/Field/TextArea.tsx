@@ -19,7 +19,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaFieldProps>(
       hideLabel,
       label,
       layoutStyles,
-      maxLength = 500,
+      maxLength,
       onBlur,
       onFocus,
       ...props
@@ -80,7 +80,6 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaFieldProps>(
           }}
         >
           <TextAreaBase
-            errorMessage={errorMessage}
             maxLength={maxLength}
             {...props}
             ref={textAreaRef}
@@ -94,7 +93,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaFieldProps>(
             }}
             variant="caption"
           >
-            {props?.value?.toString()?.length ?? 0}/{maxLength}
+            {!!maxLength && (`${props?.value?.toString()?.length ?? 0}/${maxLength}`)}
           </Typography>
         </Box>
         <FormHelpfulText

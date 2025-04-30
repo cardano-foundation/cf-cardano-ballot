@@ -20,9 +20,9 @@ export const FormStep3 = () => {
       <Checkbox
         checked={data.termsAndCondition}
         errorMessage={error && error.termsAndCondition ? 'This field is required.' : ''}
-        label={'*I agree to'}
-        link={'#'}
-        linkText={'terms & conditions'}
+        label={'*I have read and agree to the'}
+        link={'https://docs.google.com/document/d/1lMQRDfcn3ncisXQYXpnNyZAkcdMk9dXb6N8_PRYnh8g/edit?usp=sharing'}
+        linkText={'guidelines'}
         name="termsAndCondition"
         value={data.termsAndCondition}
         onChange={handleChange}

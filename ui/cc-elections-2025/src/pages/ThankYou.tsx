@@ -18,7 +18,7 @@ export const ThankYou = () => {
   return (
     <Layout>
       <Box>
-        <TopNav />
+        <TopNav title="Apply as a candidate" navigateBack={false} />
         <Box sx={{ display: 'flex', gap: '24px', marginTop: '56px', justifyContent: 'center' }}>
           <Box sx={{
             display: 'flex',

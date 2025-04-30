@@ -55,6 +55,8 @@ export type Candidate = {
     name: string;
     email: string;
     country: string;
+    coldCredential: string;
+    governanceActionRationale: string;
     socialX: string;
     socialLinkedin: string;
     socialDiscord: string;
@@ -75,6 +77,7 @@ export type Candidate = {
     drepId: string;
     stakeId: string;
     walletAddress: string;
+    verified: boolean;
     createdAt: string;
     updatedAt: string;
     xverification: string;

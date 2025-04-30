@@ -5,7 +5,8 @@ import Link from "@mui/material/Link";
 
 type MemberCardProps = {
   name: string;
-  email: string;
+  country: string;
+  bio: string;
   website?: string;
   socialLinkedin?: string;
   socialDiscord?: string;
@@ -14,7 +15,8 @@ type MemberCardProps = {
 
 export const MemberCard = (
   {
-    email,
+    bio,
+    country,
     initials,
     name,
     socialDiscord,
@@ -33,17 +35,40 @@ export const MemberCard = (
       borderRadius: '16px',
       boxShadow: '0px 20px 25px -5px #212A3D14',
       display: 'flex',
-      gap: '16px',
+      flexDirection: 'column',
+      gap: '6px',
       minWidth: '300px',
       padding: '24px',
-      width: 'calc(33.33% - 77px)',
+      width: 'calc(50% - 70px)',
     }}>
-      <Avatar sx={{ width: 48, height: 48 }}>{initials}</Avatar>
-      <Box>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+      <Box sx={{ display: 'flex', gap: '12px' }}>
+        <Avatar
+          sx={{
+            width: 48,
+            height: 48,
+            color: '#3052F5',
+            backgroundColor: '#EDEBFF',
+          }}
+        >
+          {initials}
+        </Avatar>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: '6px', justifyContent: 'center' }}>
           <Typography variant="h4">{name}</Typography>
-          <Typography variant="body2">{email}</Typography>
         </Box>
+      </Box>
+      <Box sx={{ padding: '8px 0' }}>
+        <Typography variant="overline">Country of Residency</Typography>
+        <Typography variant="body1" color="#506288">
+          {country}
+        </Typography>
+      </Box>
+      <Box>
+        <Typography variant="caption">BIO</Typography>
+        <Typography variant="body1" color="#506288" sx={{ paddingBottom: '16px' }}>
+          {bio}
+        </Typography>
+      </Box>
+      <Box>
         {socialLinks.map((socialLink) => (
           <Box sx={{ padding: '8px 0' }} key={socialLink.type}>
             <Typography variant="overline">{socialLink.type}</Typography>

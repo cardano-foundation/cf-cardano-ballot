@@ -14,5 +14,6 @@ export const ICONS = {
   userIcon: "/icons/User.svg",
   userAddIcon: "/icons/UserAdd.svg",
   userGroupIcon: "/icons/UserGroup.svg",
+  verifiedIcon: "/icons/Verified.svg",
   x_twitterIcon: "/icons/X-twitter.svg",
 };

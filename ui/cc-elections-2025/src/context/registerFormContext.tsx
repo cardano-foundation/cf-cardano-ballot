@@ -15,8 +15,8 @@ export const RegisterFormProvider = ({ children }: FormProviderProps) => {
     'Optional steps to complete before applying',
     'Apply as a candidate',
     'Constitutional Committee application',
-    'Members Informations',
     'Informations',
+    'Members Informations',
     'Additional candidate information',
     'Verifications',
   ]
@@ -41,8 +41,8 @@ export const RegisterFormProvider = ({ children }: FormProviderProps) => {
     [],
     [],
     ['termsAndCondition'],
-    [],
     ['name', 'email'],
+    [],
     [],
     [],
   ];
@@ -100,15 +100,11 @@ export const RegisterFormProvider = ({ children }: FormProviderProps) => {
     return (event as React.ChangeEvent<HTMLInputElement>).target.checked !== undefined;
   }
 
-  const isSelectChangeEvent = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<unknown>): event is SelectChangeEvent<unknown> => {
-    return (event as SelectChangeEvent<unknown>).target.value !== undefined;
-  }
-
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<unknown>,
   ) => {
     if (event.target) {
-      const type = isSelectChangeEvent(event) ? 'select' : event.target.type;
+      const type = isEventInputElement(event) ? event.target.type : 'select';
 
       const name = event.target.name;
       const value = type === 'checkbox' && isEventInputElement(event) ? event.target.checked : event.target.value;
@@ -122,7 +118,7 @@ export const RegisterFormProvider = ({ children }: FormProviderProps) => {
     index: number,
   ) => {
     if (event.target) {
-      const type = isSelectChangeEvent(event) ? 'select' : event.target.type;
+      const type = isEventInputElement(event) ? event.target.type : 'select';
 
       const name = event.target.name;
       const value = type === 'checkbox' && isEventInputElement(event) ? event.target.checked : event.target.value;

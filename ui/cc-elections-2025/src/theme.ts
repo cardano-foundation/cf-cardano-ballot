@@ -153,15 +153,6 @@ export const theme = createTheme({
         elevation: 2,
       },
     },
-    MuiLink: {
-      styleOverrides: {
-        root: {
-          fontFamily: "Poppins, Arial",
-          fontSize: "14px",
-          lineHeight: 1.5,
-        },
-      },
-    }
   },
   typography: {
     fontFamily: "Poppins, Arial",

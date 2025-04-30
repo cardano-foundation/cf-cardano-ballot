@@ -1,10 +1,14 @@
-import { Box, InputLabel } from "@mui/material";
+import {
+  Box,
+  FormControlLabel,
+  Checkbox as MuiCheckbox,
+  Link
+} from "@mui/material";
 
 import {
-  Checkbox as CheckboxBase,
   FormErrorMessage,
   FormHelpfulText,
-} from "../../atoms";
+} from "@atoms";
 
 import { CheckboxFieldProps } from "./types";
 
@@ -17,6 +21,8 @@ export const Checkbox = ({
   layoutStyles,
   onChange,
   value,
+  link,
+  linkText,
   ...rest
 }: CheckboxFieldProps) => {
   return (
@@ -31,16 +37,14 @@ export const Checkbox = ({
           width: "fit-content",
         }}
       >
-        <CheckboxBase
-          {...{ onChange, value }}
-          errorMessage={errorMessage}
-          {...rest}
+        <FormControlLabel
+          sx={{ marginRight: '4px' }}
+          control={
+            <MuiCheckbox {...{ onChange, value }} {...rest} />
+          }
+          label={label}
         />
-        {label && (
-          <InputLabel sx={{ fontSize: '16px', fontWeight: 400, letterSpacing: '0.5px'}}>
-            {label}
-          </InputLabel>
-        )}
+        {link && linkText && <Link variant="body1" href={link}>{linkText}</Link>}
         <FormHelpfulText
           helpfulText={helpfulText}
           helpfulTextStyle={helpfulTextStyle}

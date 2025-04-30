@@ -15,24 +15,24 @@ import { useGetAllCandidates } from "@hooks";
 import { CandidatesList } from "@/components/CandidatesList.tsx";
 import { Layout } from '@/components/Layout/Layout';
 import { TopNav } from "@/components/TopNav.tsx";
+import { CCStepper } from "@/components/molecules/CCStepper.tsx";
 
 export const Home = () => {
   const  navigate = useNavigate();
   const { openModal } = useModal();
   const { isEnabled } = useCardano();
 
+  const steps = ['Application', 'Vote', 'Results'];
+
   const { allCandidates, isAllCandidatesLoading } = useGetAllCandidates();
 
   return (
     <Layout>
-      <TopNav />
+      <TopNav title="2025 Constitutional Committee elections" navigateBack={false} />
       <Box>
         <Box sx={{ padding: '0 64px' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '24px 0' }}>
-            <Typography variant="h1">2025 Constitutional Committee elections</Typography>
-            {/*<IconButton>*/}
-            {/*  <img src={ICONS.questionMarkCircleIcon} alt="" />*/}
-            {/*</IconButton>*/}
+          <Box sx={{ padding: '24px 0' }}>
+            <CCStepper activeStep={0} steps={steps} />
           </Box>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: '16px', backgroundColor: 'white', borderRadius: '16px', padding: '20px 24px 32px 24px', boxShadow: '0px 20px 25px -5px #212A3D14' }}>
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>

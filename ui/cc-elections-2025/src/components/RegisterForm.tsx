@@ -18,6 +18,7 @@ import { ICONS } from "@consts";
 import { RegisterFormContext, useCardano } from "@context";
 import { usePostCandidate } from "@hooks";
 import { CandidateBody } from "@models";
+import { CCStepper } from "@/components/molecules/CCStepper.tsx";
 
 import type { RegisterFormData, FormContextType } from '../types/formData';
 
@@ -42,6 +43,12 @@ export const Form = () => {
     setError,
     candidateType,
   } = useContext(RegisterFormContext) as FormContextType<RegisterFormData>;
+
+  const informationTitle = candidateType && (candidateType === 'individual' ?
+    'Candidate' :
+    candidateType?.charAt(0).toUpperCase() + candidateType?.slice(1));
+
+  const steps = [`${informationTitle} Informations`, 'Members informations', 'Additional Informations', 'Verifications'];
 
   const { address } = useCardano();
 
@@ -70,7 +77,7 @@ export const Form = () => {
       navigate("/");
     } else {
       setPage(prev => {
-        if (page === 4 && candidateType !== 'consortium') {
+        if (page === 5 && candidateType !== 'consortium') {
           return prev - 2;
         }
         return prev - 1
@@ -101,7 +108,7 @@ export const Form = () => {
       } else {
         setError(() => ({}));
         setPage(prev => {
-          if (page === 2 && candidateType !== 'consortium') {
+          if (page === 3 && candidateType !== 'consortium') {
             return prev + 2;
           }
           return prev + 1
@@ -173,15 +180,21 @@ export const Form = () => {
   return (
     <Layout>
       <Box>
-        <TopNav />
+        <TopNav title="Apply as a candidate" navigateBack={false} />
+        {page > 2 && (
+          <Box sx={{ maxWidth: '1440px', padding: '24px 0'}}>
+            <CCStepper
+              activeStep={candidateType !== 'consortium' && page > 3 ? page - 4 : page - 3}
+              steps={candidateType !== 'consortium' ? steps.filter(v => !v.includes('Members')) : steps}
+            />
+          </Box>
+        )}
         <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '24px', marginBottom: '56px' }}>
           <Box className={styles.container}>
             <Typography variant="h1">
               {
-                page === 4 ?
-                  `${candidateType && (candidateType === 'individual' ?
-                    'Candidate' : 
-                    candidateType?.charAt(0).toUpperCase() + candidateType?.slice(1))} ${title[page]}`
+                page === 3 ?
+                  `${informationTitle} ${title[page]}`
                   : title[page]
               }
             </Typography>

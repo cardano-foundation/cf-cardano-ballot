@@ -49,8 +49,6 @@ export const CandidatesList = ({ candidates }: CandidatesListProps) => {
     }
   }, [chosenSorting, searchText, chosenFilters]);
 
-  console.log(filteredCandidates);
-
   return (
     <Box>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: '40px 0 24px' }}>
@@ -85,6 +83,7 @@ export const CandidatesList = ({ candidates }: CandidatesListProps) => {
             initials={getInitials(candidate.candidate.name)}
             key={candidate.candidate.id}
             name={candidate.candidate.name}
+            verified={candidate.candidate.verified}
           />
         ))}
       </Box>

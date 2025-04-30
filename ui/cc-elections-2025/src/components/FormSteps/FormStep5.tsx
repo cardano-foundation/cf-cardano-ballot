@@ -1,202 +1,151 @@
-import { useMemo } from "react";
+import { Fragment, useMemo } from "react";
 import countryList from 'react-select-country-list';
 import Box from "@mui/material/Box";
+import Divider from '@mui/material/Divider';
+import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
-import MenuItem from '@mui/material/MenuItem';
-import { Input } from "@/components/molecules/Field/Input";
-import { Select } from "@/components/molecules/Field/Select";
-import { TextArea } from "@/components/molecules/Field/TextArea";
 
+import { Input } from "@/components/molecules/Field/Input";
+import { TextArea } from "@/components/molecules/Field/TextArea";
+import { Select } from "@/components/molecules/Field/Select";
+import { Button } from "@atoms";
+
+import { ICONS } from "@consts";
 import { useRegisterFormContext } from "@hooks";
 
 export const FormStep5 = () => {
-  const { candidateType, data, error, handleChange } = useRegisterFormContext();
+  const { data, setData, memberInit, handleMemberChange } = useRegisterFormContext();
   const options = useMemo(() => countryList().getData(), []);
 
-  const nameLabel = () => {
-    switch (candidateType) {
-      case 'individual':
-        return 'Name or Alias*';
-      case 'company':
-        return 'Company Name*';
-      case 'consortium':
-        return 'Name of Consortium*';
-      default:
-        return '';
-    }
-  };
-
-  const aboutLabel = () => {
-    switch (candidateType) {
-      case 'individual':
-        return 'Introduce yourself';
-      case 'company':
-        return 'Introduce your company';
-      case 'consortium':
-        return 'Introduce your consortium';
-      default:
-        return '';
-    }
-  };
-
-  const renderEmail = () => {
-    return (
-      <Input
-        errorMessage={error && error.email ? 'Enter a valid e-mail address' : ''}
-        helpfulText={'Your email address will not be made public'}
-        id="email'"
-        label={'Email*'}
-        name="email"
-        onChange={handleChange}
-        value={data.email}
-      />
-    );
-  }
-
-  const renderCountry = () => {
-    return (
-      <Select
-        id="country"
-        label={'Country of Residency'}
-        name="country"
-        onChange={handleChange}
-        displayEmpty={true}
-        value={data.country}
-      >
-        <MenuItem disabled value="">
-          Choose from list
-        </MenuItem>
-        {options.map((option) => (
-          <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
-        ))}
-      </Select>
-    )
-  }
-
-  const renderPublicContact = () => {
-    return (
-      <Input
-        helpfulText={'Social media handles or email address where you would like to be contacted by the Cardano Community (Will be made public)'}
-        id="publicContact"
-        label={'Public Point of Contact'}
-        name="publicContact"
-        onChange={handleChange}
-        value={data.publicContact}
-      />
-    )
+  const handleOnClick = () => {
+    if (data.membersAmount >= 5) return;
+    setData(prevData => ({...prevData, members: [...prevData.members, memberInit ], membersAmount: prevData.membersAmount + 1}));
   }
 
   return (
-    <Box sx={{ paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '48px' }}>
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-        <Typography variant="h3">Lorem Ipsum</Typography>
-        <Input
-          errorMessage={error && error.name ? 'This field is required.' : ''}
-          id="name"
-          label={nameLabel()}
-          name="name"
-          onChange={handleChange}
-          value={data.name}
-        />
-        {candidateType === 'company' ? (
-          <>
-            <Input
-              id="registrationNumber"
-              label={'Registration Number'}
-              name="registrationNumber"
-              onChange={handleChange}
-              value={data.registrationNumber}
-            />
-            <Input
-              id="keyContactPerson"
-              label={'Key Contact Person'}
-              name="keyContactPerson"
-              onChange={handleChange}
-              value={data.keyContactPerson}
-            />
-          </>
-        ) : renderEmail()}
-        {candidateType === 'individual' && renderCountry()}
-        <Box>
-          <Typography variant="subtitle2">Social media (Will be made public)</Typography>
-          <Box sx={{ paddingTop: '4px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <Input
-              name="socialX"
-              onChange={handleChange}
-              placeholder={'X (Twitter)'}
-              value={data.socialX}
-            />
-            <Input
-              name="socialLinkedin"
-              onChange={handleChange}
-              placeholder={'LinkedIn'}
-              value={data.socialLinkedin}
-            />
-            <Input
-              name="socialDiscord"
-              onChange={handleChange}
-              placeholder={'Discord'}
-              value={data.socialDiscord}
-            />
-            <Input
-              name="socialTelegram"
-              onChange={handleChange}
-              placeholder={'Telegram'}
-              value={data.socialTelegram}
-            />
-            <Input
-              name="socialOther"
-              onChange={handleChange}
-              placeholder={'Other'}
-              value={data.socialOther}
-            />
+    <Box sx={{ paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      {Array.from({ length: data.membersAmount }).map((_item, index) => (
+        <Fragment key={index}>
+          <Typography variant={"h3"}>{`Member ${index + 1}`}</Typography>
+          <Input
+            id="name"
+            label={'Name or Alias'}
+            name="name"
+            onChange={(event) => handleMemberChange && handleMemberChange(event, index)}
+            value={data.members[index].name}
+          />
+          <Select
+            id="country"
+            label={'Country of Residency'}
+            name="country"
+            onChange={(event) => handleMemberChange && handleMemberChange(event, index)}
+            displayEmpty={true}
+            value={data.members[index].country}
+          >
+            <MenuItem disabled value="">
+              Choose from list
+            </MenuItem>
+            {options.map((option) => (
+              <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
+            ))}
+          </Select>
+          <TextArea
+            helpfulText={'Extended information about your company, your relevant experience, technical and governance background etc'}
+            id="bio"
+            label={'Member bio'}
+            name="bio"
+            onChange={(event) => handleMemberChange && handleMemberChange(event, index)}
+            value={data.members[index].bio}
+          />
+          <Box>
+            <Typography variant="subtitle2">Social media (Will be made public)</Typography>
+            <Box sx={{ paddingTop: '4px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <Input
+                name="socialX"
+                onChange={
+                  (event) => handleMemberChange && handleMemberChange(event, index)
+                }
+                placeholder={'X (Twitter)'}
+                value={data.members[index].socialX}
+              />
+              <Input
+                name="socialLinkedin"
+                onChange={(event) => handleMemberChange && handleMemberChange(event, index)}
+                placeholder={'LinkedIn'}
+                value={data.members[index].socialLinkedin}
+              />
+              <Input
+                name="socialDiscord"
+                onChange={(event) => handleMemberChange && handleMemberChange(event, index)}
+                placeholder={'Discord'}
+                value={data.members[index].socialDiscord}
+              />
+              <Input
+                name="socialTelegram"
+                onChange={(event) => handleMemberChange && handleMemberChange(event, index)}
+                placeholder={'Telegram'}
+                value={data.members[index].socialTelegram}
+              />
+              <Input
+                name="socialOther"
+                onChange={(event) => handleMemberChange && handleMemberChange(event, index)}
+                placeholder={'Other'}
+                value={data.members[index].socialOther}
+              />
+            </Box>
           </Box>
+          <Input
+            helpfulText={'Write your X handle here and send a DM to @IntersectMBO to verify ownershop of the account'}
+            id="xverification"
+            label={'X verification'}
+            name="xverification"
+            onChange={(event) => handleMemberChange && handleMemberChange(event, index)}
+            value={data.members[index].xverification}
+          />
+          <Input
+            helpfulText={'A light version of KYC/KYB to verify that the applicant is who they claim to be using a video call. Much like how Catalyst is doing it.'}
+            id="liveliness"
+            label={'Liveliness verification'}
+            name="liveliness"
+            onChange={(event) => handleMemberChange && handleMemberChange(event, index)}
+            value={data.members[index].liveliness}
+          />
+          <TextArea
+            helpfulText={'Are you acting as DRep, as SPO, or both, or would have any other role that could be percieved as conflict of interest as a Constitutional Committee member?'}
+            id="conflictOfInterest"
+            label={'Conflict of Interest'}
+            name="conflictOfInterest"
+            onChange={(event) => handleMemberChange && handleMemberChange(event, index)}
+            value={data.members[index].conflictOfInterest}
+          />
+          <Input
+            id="drepId"
+            label={'If DRep, please provide DRep ID'}
+            name="drepId"
+            onChange={(event) => handleMemberChange && handleMemberChange(event, index)}
+            value={data.members[index].drepId}
+          />
+          <Input
+            id="stakeId"
+            label={'If SPO, please provide Stake ID'}
+            name="stakeId"
+            onChange={(event) => handleMemberChange && handleMemberChange(event, index)}
+            value={data.members[index].stakeId}
+          />
+          <Divider />
+        </Fragment>
+      ))}
+      {data.membersAmount < 5 && (
+        <Box sx={{ textAlign: "center" }}>
+          <Button
+            variant="outlined"
+            onClick={handleOnClick}
+            endIcon={<img src={ICONS.plusIcon} alt="" />}
+          >
+            Add member
+          </Button>
         </Box>
-        {candidateType !== 'company' && renderPublicContact()}
-      </Box>
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-        {candidateType === 'company' && (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            <Typography variant="h3">Lorem Ipsum</Typography>
-            {renderEmail()}
-            {renderCountry()}
-            {renderPublicContact()}
-          </Box>
-        )}
-        <Typography variant="h3">Lorem Ipsum</Typography>
-        <TextArea
-          helpfulText={'Short introduction about yourself and your candidacy'}
-          id="about"
-          label={aboutLabel()}
-          name="about"
-          onChange={handleChange}
-          value={data.about}
-        />
-        <TextArea
-          helpfulText={'Extended information about yourself, your relevant experience, technical and governance background etc'}
-          id="bio"
-          label={'Bio'}
-          name="bio"
-          onChange={handleChange}
-          value={data.bio}
-        />
-        <TextArea
-          helpfulText={'Any other relevant information that might not fit in elsewhere'}
-          id="additionalInfo"
-          label={'Additional information'}
-          name="additionalInfo"
-          onChange={handleChange}
-          value={data.additionalInfo}
-        />
-        <Input
-          helpfulText={'Must be able to embedd. Youtube is recommended'}
-          id="videoPresentationLink"
-          label={'Video link'}
-          name="videoPresentationLink"
-          onChange={handleChange}
-          value={data.videoPresentationLink}
-        />
-      </Box>
+      )}
     </Box>
   );
 }

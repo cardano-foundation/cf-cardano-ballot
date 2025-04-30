@@ -6,6 +6,7 @@ import Chip from "@mui/material/Chip";
 import Typography from '@mui/material/Typography';
 
 import { Button } from '@atoms';
+import { ICONS } from "@consts";
 
 type CandidatesListItemProps = {
   id: number;
@@ -13,6 +14,7 @@ type CandidatesListItemProps = {
   initials: string;
   bio: string;
   candidateType: "individual" | "company" | "consortium";
+  verified: boolean;
 };
 
 export const CandidatesListItem = (props: CandidatesListItemProps) => {
@@ -45,12 +47,31 @@ export const CandidatesListItem = (props: CandidatesListItemProps) => {
     }}>
       <Box sx={{ display: 'flex', padding: '16px 12px 8px 24px', gap: '8px', justifyContent: 'space-between', alignItems: 'center' }}>
         <Box sx={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-          <Avatar sx={{ width: 56, height: 56 }}>{props.initials}</Avatar>
+          <Box sx={{ position: 'relative'}}>
+            <Avatar
+              sx={{
+                width: 56,
+                height: 56,
+                color: props.candidateType === "individual" ? '#582603' : props.candidateType === "company" ? '#13491B' : '#3052F5',
+                backgroundColor: props.candidateType === "individual" ? '#FDE1CE' : props.candidateType === "company" ? '#CEF3D4' : '#EDEBFF',
+              }}
+            >
+              {props.initials}
+            </Avatar>
+            {props.verified && <img src={ICONS.verifiedIcon} alt="verified" style={{ position: 'absolute', bottom: '0', right: '-5px' }}/>}
+          </Box>
           <Typography variant="h3">
             {props.name}
           </Typography>
         </Box>
-        <Chip label={chipText(props.candidateType)} sx={{ borderRadius: '100px' }} />
+        <Chip
+          label={chipText(props.candidateType)}
+          sx={{
+            borderRadius: '100px',
+            color: props.candidateType === "individual" ? '#803705' : props.candidateType === "company" ? '#13491B' : '#3052F5',
+            backgroundColor: props.candidateType === "individual" ? '#FEF3EB' : props.candidateType === "company" ? '#EBFAED' : '#EDEBFF',
+          }}
+        />
       </Box>
       <Box sx={{ padding: '20px 24px 16px' }}>
         <Typography variant="body1">

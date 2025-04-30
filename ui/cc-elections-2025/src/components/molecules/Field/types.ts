@@ -28,6 +28,8 @@ export type CheckboxFieldProps = CheckboxProps & {
   label?: string;
   labelStyles?: TypographyProps;
   layoutStyles?: BoxProps;
+  link?: string;
+  linkText?: string;
 };
 
 export type TextAreaFieldProps = TextAreaProps & {

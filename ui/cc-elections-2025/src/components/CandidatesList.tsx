@@ -74,7 +74,7 @@ export const CandidatesList = ({ candidates }: CandidatesListProps) => {
           />
         </Box>
       </Box>
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '43px', paddingBottom: '48px' }}>
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '24px', paddingBottom: '48px' }}>
         {filteredCandidates.map((candidate) => (
           <CandidatesListItem
             bio={candidate.candidate.about}

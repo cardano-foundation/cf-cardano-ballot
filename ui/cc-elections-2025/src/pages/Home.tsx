@@ -30,7 +30,7 @@ export const Home = () => {
     <Layout>
       <TopNav title="2025 Constitutional Committee elections" navigateBack={false} />
       <Box>
-        <Box sx={{ padding: '0 64px' }}>
+        <Box sx={{ padding: { xxs: '0 16px', md: '0 32px', xl: '0 64px'} }}>
           <Box sx={{ padding: '24px 0' }}>
             <CCStepper activeStep={0} steps={steps} />
           </Box>
@@ -48,7 +48,7 @@ export const Home = () => {
                 </Typography>
               </Box>
             </Box>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: '65px' }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: '24px', flexWrap: 'wrap' }}>
               <Box sx={{ width: '267px', padding: '12px 0' }}>
                 <Typography variant="caption">APPLICATION PERIOD</Typography>
                 <Typography variant="body1">
@@ -68,7 +68,17 @@ export const Home = () => {
                 </Typography>
               </Box>
             </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#FDE1CE', borderRadius: '4px', padding: '8px 16px' }}>
+            <Box sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              rowGap: '8px',
+              columnGap: '16px',
+              backgroundColor: '#FDE1CE',
+              borderRadius: '4px',
+              padding: '8px 16px'
+            }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px'}}>
                 <img alt="" src={ICONS.userAddIcon} />
                 <Typography variant="subtitle2">

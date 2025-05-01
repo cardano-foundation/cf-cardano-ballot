@@ -37,9 +37,9 @@ export const MemberCard = (
       display: 'flex',
       flexDirection: 'column',
       gap: '6px',
-      minWidth: '300px',
+      minWidth: '258px',
       padding: '24px',
-      width: 'calc(50% - 70px)',
+      width: { xxs: '100%', md: 'calc(50% - 60px)' },
     }}>
       <Box sx={{ display: 'flex', gap: '12px' }}>
         <Avatar

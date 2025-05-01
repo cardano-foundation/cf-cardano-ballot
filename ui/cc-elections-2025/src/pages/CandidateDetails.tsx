@@ -49,7 +49,7 @@ export const CandidateDetails = () => {
     <Layout>
       <TopNav title={'Candidate Details'} navigateBack={true} />
       <Box>
-        <Box sx={{ padding: '0 64px' }}>
+        <Box sx={{ padding: { xxs: '0 16px', md: '0 32px', xl: '0 64px'} }}>
 
           {!allCandidates || isAllCandidatesLoading ? (
             <Box
@@ -75,43 +75,42 @@ export const CandidateDetails = () => {
                   padding: '20px 24px 32px 24px',
                   boxShadow: '0px 20px 25px -5px #212A3D14',
                 }}>
-
-                  <Box sx={{ display: 'flex', gap: '16px'}}>
-                    {candidate && (
-                      <Box sx={{position: 'relative'}}>
-                        <Avatar sx={{
-                          width: 68,
-                          height: 68,
-                          color: candidateType === "individual" ? '#582603' : candidateType === "company" ? '#13491B' : '#3052F5',
-                          backgroundColor: candidateType === "individual" ? '#FDE1CE' : candidateType === "company" ? '#CEF3D4' : '#EDEBFF',
-                        }}>
-                          {getInitials(candidate.candidate.name)}
-                        </Avatar>
-                        {candidate.candidate.verified && (
-                          <Tooltip title={'Verified applicant'}>
-                            <img src={ICONS.verifiedIcon} alt="verified" style={{ position: 'absolute', bottom: '0', right: '0' }}/>
-                          </Tooltip>
-                        )}
-                      </Box>
-                    )}
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: '6px', justifyContent: 'center' }}>
-                      <Box sx={{
-                        display: 'flex',
-                        gap: '24px',
-                      }}>
-                        <Typography variant="h2">{candidate?.candidate.name}</Typography>
-                        {candidateType && (
-                          <Chip
-                            label={chipText(candidateType)}
-                            sx={{
-                              borderRadius: '100px',
-                              color: candidateType === "individual" ? '#803705' : candidateType === "company" ? '#13491B' : '#3052F5',
-                              backgroundColor: candidateType === "individual" ? '#FEF3EB' : candidateType === "company" ? '#EBFAED' : '#EDEBFF',
-                            }}
-                          />
-                        )}
-                      </Box>
+                  <Box sx={{
+                    display: 'flex',
+                    gap: '24px',
+                    alignItems: 'center',
+                    flexWrap: 'wrap-reverse',
+                  }}>
+                    <Box sx={{ display: 'flex', gap: '16px', alignItems: 'center'}}>
+                      {candidate && (
+                        <Box sx={{position: 'relative'}}>
+                          <Avatar sx={{
+                            width: 68,
+                            height: 68,
+                            color: candidateType === "individual" ? '#582603' : candidateType === "company" ? '#13491B' : '#3052F5',
+                            backgroundColor: candidateType === "individual" ? '#FDE1CE' : candidateType === "company" ? '#CEF3D4' : '#EDEBFF',
+                          }}>
+                            {getInitials(candidate.candidate.name)}
+                          </Avatar>
+                          {candidate.candidate.verified && (
+                            <Tooltip title={'Verified applicant'}>
+                              <img src={ICONS.verifiedIcon} alt="verified" style={{ position: 'absolute', bottom: '0', right: '0' }}/>
+                            </Tooltip>
+                          )}
+                        </Box>
+                      )}
+                      <Typography variant="h2">{candidate?.candidate.name}</Typography>
                     </Box>
+                    {candidateType && (
+                      <Chip
+                        label={chipText(candidateType)}
+                        sx={{
+                          borderRadius: '100px',
+                          color: candidateType === "individual" ? '#803705' : candidateType === "company" ? '#13491B' : '#3052F5',
+                          backgroundColor: candidateType === "individual" ? '#FEF3EB' : candidateType === "company" ? '#EBFAED' : '#EDEBFF',
+                        }}
+                      />
+                    )}
                   </Box>
 
                   <Box sx={{ paddingRight: '16px', paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '12px'}}>
@@ -187,7 +186,7 @@ export const CandidateDetails = () => {
                     <Box sx={{ padding: '24px 0 12px' }}>
                       <Typography variant="h2">Members</Typography>
                     </Box>
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '43px' }}>
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '24px' }}>
                       {members.map((member) => (
                         <MemberCard
                           name={member.name}

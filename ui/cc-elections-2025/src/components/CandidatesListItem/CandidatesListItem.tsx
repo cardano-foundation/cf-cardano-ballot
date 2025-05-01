@@ -33,10 +33,10 @@ export const CandidatesListItem = (props: CandidatesListItemProps) => {
       backgroundColor: 'white',
       borderRadius: '16px',
       boxShadow: '0px 20px 25px -5px #212A3D14',
-      minWidth: '340px',
-      width: 'calc(33.33% - 29px)',
+      minWidth: '300px',
+      width: { xs: '100%', md: 'calc(50% - 12px)', lg: 'calc(33.33% - 16px)' },
     }}>
-      <Box sx={{ display: 'flex', padding: '16px 12px 8px 24px', gap: '8px', justifyContent: 'space-between', alignItems: 'center' }}>
+      <Box sx={{ display: 'flex', padding: '16px 12px 8px 24px', gap: '8px', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap-reverse' }}>
         <Box sx={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
           <Box sx={{ position: 'relative'}}>
             <Avatar

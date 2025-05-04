@@ -29,6 +29,7 @@ export const RegisterFormProvider = ({ children }: FormProviderProps) => {
     socialLinkedin: '',
     socialDiscord: '',
     socialTelegram: '',
+    socialWebsite: '',
     socialOther: '',
     liveliness: '',
     conflictOfInterest: '',
@@ -42,7 +43,7 @@ export const RegisterFormProvider = ({ children }: FormProviderProps) => {
     [],
     [],
     [],
-    ['name', 'email', 'bio', 'about'],
+    ['name', 'email', 'bio', 'about', 'videoPresentationLink', 'socialLinkedin', 'socialX', 'socialDiscord', 'socialTelegram'],
     [],
     [],
   ];

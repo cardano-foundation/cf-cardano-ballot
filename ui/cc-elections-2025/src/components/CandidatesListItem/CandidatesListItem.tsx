@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Chip from "@mui/material/Chip";
+import Tooltip from "@mui/material/Tooltip";
 import Typography from '@mui/material/Typography';
 
 import { Button } from '@atoms';
@@ -49,7 +50,11 @@ export const CandidatesListItem = (props: CandidatesListItemProps) => {
             >
               {props.initials}
             </Avatar>
-            {props.verified && <img src={ICONS.verifiedIcon} alt="verified" style={{ position: 'absolute', bottom: '0', right: '-5px' }}/>}
+            {props.verified && (
+              <Tooltip title={'Verified applicant'}>
+                <img src={ICONS.verifiedIcon} alt="verified" style={{ position: 'absolute', bottom: '0', right: '-5px' }}/>
+              </Tooltip>
+            )}
           </Box>
           <Typography variant="h3">
             {props.name}

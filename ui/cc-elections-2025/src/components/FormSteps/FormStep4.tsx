@@ -14,7 +14,7 @@ import { useRegisterFormContext } from "@hooks";
 import { geographicRepresentationList } from "@utils";
 
 export const FormStep4 = () => {
-  const { data, setData, memberInit, handleMemberChange } = useRegisterFormContext();
+  const { data, error, setData, memberInit, handleMemberChange } = useRegisterFormContext();
   const options = useMemo(() => geographicRepresentationList(), []);
 
   const handleOnClick = () => {
@@ -28,6 +28,7 @@ export const FormStep4 = () => {
         <Fragment key={index}>
           <Typography variant={"h3"}>{`Member ${index + 1}`}</Typography>
           <Input
+            errorMessage={error && error.members && error.members[index] && error.members[index].name ? 'This field is required.' : ''}
             id="name"
             label={'Name or Alias*'}
             name="name"
@@ -50,7 +51,7 @@ export const FormStep4 = () => {
             ))}
           </Select>
           <TextArea
-            // errorMessage={error && error.members ? 'This field is required.' : ''}
+            errorMessage={error && error.members && error.members[index] && error.members[index].bio ? 'This field is required.' : ''}
             helpfulText={'Extended information about your company, your relevant experience, technical and governance background etc'}
             id="bio"
             label={'Member bio*'}
@@ -88,6 +89,12 @@ export const FormStep4 = () => {
                 value={data.members[index].socialTelegram}
               />
               <Input
+                name="socialWebsite"
+                onChange={(event) => handleMemberChange && handleMemberChange(event, index)}
+                placeholder={'Website'}
+                value={data.members[index].socialWebsite}
+              />
+              <Input
                 name="socialOther"
                 onChange={(event) => handleMemberChange && handleMemberChange(event, index)}
                 placeholder={'Other'}
@@ -120,7 +127,7 @@ export const FormStep4 = () => {
           <Divider />
         </Fragment>
       ))}
-      {data.membersAmount < 5 && (
+      {data.membersAmount < 20 && (
         <Box sx={{ textAlign: "center" }}>
           <Button
             variant="outlined"

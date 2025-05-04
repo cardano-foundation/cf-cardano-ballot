@@ -45,7 +45,7 @@ export const TopNav = ({title, navigateBack}: TopNavProps) => {
         }}>
           <Box sx={{ display: 'flex', gap: '8px' }}>
             {navigateBack && (
-              <IconButton onClick={() => navigate(-1)}>
+              <IconButton onClick={() => navigate('/')}>
                 <img src={ICONS.arrowLeftIcon} alt="" />
               </IconButton>
             )}

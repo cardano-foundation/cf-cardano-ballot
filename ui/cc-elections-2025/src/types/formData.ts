@@ -9,6 +9,7 @@ export type ConsortiumMemberFormData = {
   socialLinkedin: string;
   socialDiscord: string;
   socialTelegram: string;
+  socialWebsite: string;
   socialOther: string;
   liveliness: string;
   conflictOfInterest: string;
@@ -53,7 +54,18 @@ export type RegisterFormData = {
 }
 
 export type ErrObject = {
-  [key: string]: boolean;
+  members?: { name?: boolean, bio?: boolean }[];
+  termsAndCondition?: boolean;
+  name?: boolean;
+  email?: boolean;
+  about?: boolean;
+  bio?: boolean;
+  videoPresentationLink? : boolean;
+  socialLinkedin?: boolean;
+  socialX?: boolean;
+  socialDiscord?: boolean;
+  socialTelegram?: boolean;
+  candidateType?: boolean;
 }
 
 export type FormContextType<T> = {

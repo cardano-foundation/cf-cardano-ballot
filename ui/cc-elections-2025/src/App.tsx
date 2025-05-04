@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 
-import { Modal } from "@atoms";
+import { Modal, ScrollToTop } from "@atoms";
 import { useCardano, useModal } from "@context";
 import { useWalletConnectionListener } from "@hooks";
 
@@ -48,6 +48,7 @@ export const App = () => {
 
   return (
     <>
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/candidateDetails/:id" element={<CandidateDetails />} />

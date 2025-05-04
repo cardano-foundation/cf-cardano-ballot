@@ -156,25 +156,40 @@ export const CandidateDetails = () => {
                         {candidate?.candidate.additionalInfo}
                       </Typography>
                     </Box>
-                    <Box sx={{ display: 'flex', gap: '40px' }}>
+                    <Box sx={{display: 'flex', columnGap: '40px', flexWrap: 'wrap'}}>
                       {candidate?.candidate.videoPresentationLink && (
-                        <Box sx={{ padding: '8px 0' }}>
-                          <Link variant="overline" href={candidate?.candidate.videoPresentationLink}>VIDEO</Link>
+                        <Box sx={{padding: '8px 0'}}>
+                          <Link variant="overline" href={candidate?.candidate.videoPresentationLink} target="_blank" rel="noopener">YOUTUBE</Link>
                         </Box>
                       )}
-                      {false && (
-                        <Box sx={{ padding: '8px 0' }}>
-                          <Link variant="overline" href={'#'}>WEBSITE</Link>
-                        </Box>
-                      )}
+                      {/*{candidate?.candidate.socialWebsite && (*/}
+                      {/*  <Box sx={{ padding: '8px 0' }}>*/}
+                      {/*    <Link variant="overline" href={candidate?.candidate.socialWebsite} target="_blank" rel="noopener">WEBSITE</Link>*/}
+                      {/*  </Box>*/}
+                      {/*)}*/}
                       {candidate?.candidate.socialDiscord && (
                         <Box sx={{ padding: '8px 0' }}>
-                          <Link variant="overline" href={candidate?.candidate.socialDiscord}>DISCORD</Link>
+                          <Link variant="overline" href={candidate?.candidate.socialDiscord} target="_blank" rel="noopener">DISCORD</Link>
                         </Box>
                       )}
                       {candidate?.candidate.socialLinkedin && (
                         <Box sx={{ padding: '8px 0' }}>
-                          <Link variant="overline" href={candidate?.candidate.socialLinkedin}>LINKEDIN</Link>
+                          <Link variant="overline" href={candidate?.candidate.socialLinkedin} target="_blank" rel="noopener">LINKEDIN</Link>
+                        </Box>
+                      )}
+                      {candidate?.candidate.socialX && (
+                        <Box sx={{ padding: '8px 0' }}>
+                          <Link variant="overline" href={candidate?.candidate.socialX} target="_blank" rel="noopener">X (TWITTER)</Link>
+                        </Box>
+                      )}
+                      {candidate?.candidate.socialTelegram && (
+                        <Box sx={{ padding: '8px 0' }}>
+                          <Link variant="overline" href={candidate?.candidate.socialTelegram} target="_blank" rel="noopener">TELEGRAM</Link>
+                        </Box>
+                      )}
+                      {candidate?.candidate.socialOther && (
+                        <Box sx={{ padding: '8px 0' }}>
+                          <Link variant="overline" href={candidate?.candidate.socialOther} target="_blank" rel="noopener">OTHER</Link>
                         </Box>
                       )}
                     </Box>
@@ -195,6 +210,10 @@ export const CandidateDetails = () => {
                           initials={getInitials(member.name)}
                           socialLinkedin={member.socialLinkedin}
                           socialDiscord={member.socialDiscord}
+                          website={member.socialWebsite}
+                          socialX={member.socialX}
+                          socialTelegram={member.socialTelegram}
+                          socialOther={member.socialOther}
                         />
                       ))}
                     </Box>

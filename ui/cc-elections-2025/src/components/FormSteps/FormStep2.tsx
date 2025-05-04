@@ -1,7 +1,7 @@
 import Box from "@mui/material/Box";
 import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
-import { Input } from "@/components/molecules/Field/Input";
+import { TextArea } from "@/components/molecules/Field/TextArea";
 
 import { useRegisterFormContext } from "@hooks";
 
@@ -30,11 +30,11 @@ export const FormStep2 = () => {
             </Box>
           </Box>
 
-          <Input
+          <TextArea
             id="governanceActionRationale"
-            label={'Paste your submitted vote rationale here'}
+            label={'Submit your rationale here'}
             name="governanceActionRationale"
-            onChange={handleChange}
+            onChange={(event) => handleChange(event)}
             value={data.governanceActionRationale}
           />
         </Box>

@@ -4,6 +4,8 @@ export type CandidateBody = {
     name: string;
     email: string;
     country: string;
+    coldCredential: string;
+    governanceActionRationale: string;
     socialX: string;
     socialLinkedin: string;
     socialDiscord: string;
@@ -40,6 +42,7 @@ export type MemberBody = {
   socialLinkedin: string;
   socialDiscord: string;
   socialTelegram: string;
+  socialWebsite: string;
   socialOther: string;
   liveliness: string;
   conflictOfInterest: string;
@@ -97,6 +100,7 @@ export type Member = {
   socialLinkedin: string;
   socialDiscord: string;
   socialTelegram: string;
+  socialWebsite: string;
   socialOther: string;
   liveliness: string;
   conflictOfInterest: string;

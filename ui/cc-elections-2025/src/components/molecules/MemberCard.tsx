@@ -10,6 +10,9 @@ type MemberCardProps = {
   website?: string;
   socialLinkedin?: string;
   socialDiscord?: string;
+  socialX?: string;
+  socialTelegram?: string;
+  socialOther?: string;
   initials: string;
 }
 
@@ -21,13 +24,19 @@ export const MemberCard = (
     name,
     socialDiscord,
     socialLinkedin,
-    website
+    website,
+    socialX,
+    socialTelegram,
+    socialOther,
   }: MemberCardProps
 ) => {
   const socialLinks: { type: string, link: string }[] = [];
   website && website.length && socialLinks.push({ type: 'Website', link: website});
   socialDiscord && socialDiscord.length && socialLinks.push({ type: 'Discord', link: socialDiscord});
   socialLinkedin && socialLinkedin.length && socialLinks.push({ type: 'Linkedin', link: socialLinkedin});
+  socialX && socialX.length && socialLinks.push({ type: 'X (Twitter)', link: socialX});
+  socialTelegram && socialTelegram.length && socialLinks.push({ type: 'Telegram', link: socialTelegram});
+  socialOther && socialOther.length && socialLinks.push({ type: 'Other', link: socialOther});
 
   return (
     <Box sx={{

@@ -114,29 +114,39 @@ export const FormStep5 = () => {
           <Typography variant="subtitle2">Social media (Will be made public)</Typography>
           <Box sx={{ paddingTop: '4px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <Input
+              errorMessage={error && error.socialX ? 'Enter a valid X URL' : ''}
               name="socialX"
               onChange={handleChange}
               placeholder={'X (Twitter)'}
               value={data.socialX}
             />
             <Input
+              errorMessage={error && error.socialLinkedin ? 'Enter a valid LinkedIn URL' : ''}
               name="socialLinkedin"
               onChange={handleChange}
               placeholder={'LinkedIn'}
               value={data.socialLinkedin}
             />
             <Input
+              errorMessage={error && error.socialDiscord ? 'Enter a valid Discord URL' : ''}
               name="socialDiscord"
               onChange={handleChange}
               placeholder={'Discord'}
               value={data.socialDiscord}
             />
             <Input
+              errorMessage={error && error.socialTelegram ? 'Enter a valid Telegram URL' : ''}
               name="socialTelegram"
               onChange={handleChange}
               placeholder={'Telegram'}
               value={data.socialTelegram}
             />
+            {/*<Input*/}
+            {/*  name="socialWebsite"*/}
+            {/*  onChange={handleChange}*/}
+            {/*  placeholder={'Website'}*/}
+            {/*  value={data.socialWebsite}*/}
+            {/*/>*/}
             <Input
               name="socialOther"
               onChange={handleChange}
@@ -156,7 +166,7 @@ export const FormStep5 = () => {
           </Box>
         )}
         <TextArea
-          errorMessage={error && error.name ? 'This field is required.' : ''}
+          errorMessage={error && error.about ? 'This field is required.' : ''}
           helpfulText={'Short introduction about yourself and your candidacy'}
           id="about"
           label={aboutLabel()}
@@ -165,7 +175,7 @@ export const FormStep5 = () => {
           value={data.about}
         />
         <TextArea
-          errorMessage={error && error.name ? 'This field is required.' : ''}
+          errorMessage={error && error.bio ? 'This field is required.' : ''}
           helpfulText={'Extended information about yourself, your relevant experience, technical and governance background etc'}
           id="bio"
           label={'Bio*'}
@@ -182,7 +192,7 @@ export const FormStep5 = () => {
           value={data.additionalInfo}
         />
         <Input
-          helpfulText={'Must be able to embedd. Youtube is recommended'}
+          errorMessage={error && error.videoPresentationLink ? 'Enter a valid Youtube URL' : ''}
           id="videoPresentationLink"
           label={'Video link'}
           name="videoPresentationLink"

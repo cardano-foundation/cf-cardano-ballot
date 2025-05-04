@@ -27,9 +27,17 @@ import styles from "./molecules/FormCard.module.scss";
 type RegisterFormDataProps = keyof RegisterFormData;
 
 type FormErrors = {
+  members?: { name?: boolean, bio?: boolean }[];
   termsAndCondition?: boolean;
   name?: boolean;
   email?: boolean;
+  about?: boolean;
+  bio?: boolean;
+  videoPresentationLink? : boolean;
+  socialLinkedin?: boolean;
+  socialX?: boolean;
+  socialDiscord?: boolean;
+  socialTelegram?: boolean;
 };
 
 export const Form = () => {
@@ -72,6 +80,10 @@ export const Form = () => {
     navigate("/");
   }
 
+  const scrollToTop = () => {
+    window.scrollTo(0, 0);
+  };
+
   const handleBack = () => {
     if(page === 0) {
       navigate("/");
@@ -97,6 +109,20 @@ export const Form = () => {
 
     const errors = validate(filtered);
 
+    if (page === 3) {
+      const membersErrors: FormErrors['members'] = [];
+      data.members.forEach((member, index) => {
+        if (member.name === '')
+          membersErrors[index] = { name: true };
+        if (member.bio === '')
+          membersErrors[index] = {...membersErrors[index], bio: true};
+      });
+
+      if (membersErrors.length > 0) {
+        errors.members = membersErrors;
+      }
+    }
+
     if (Object.keys(errors).length > 0) {
       setError(errors);
     } else {
@@ -114,6 +140,7 @@ export const Form = () => {
           return prev + 1
         });
       }
+      scrollToTop();
     }
   }
 
@@ -122,12 +149,32 @@ export const Form = () => {
 
     (Object.entries(val) as [string, (string | boolean)][]).forEach(([key , value]) => {
       if (key === 'email') {
-        if(!(/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value as string))) {
+        if (!(/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value as string))) {
           errors.email = true;
+        }
+      } else if(key === 'videoPresentationLink') {
+        if (!(/(?:http?s?:\/\/)?(?:www.)?(?:m.)?(?:music.)?youtu(?:\.?be)(?:\.com)?(?:(?:\w*.?:\/\/)?\w*.?\w*-?.?\w*\/(?:embed|e|v|watch|.*\/)?\??(?:feature=\w*\.?\w*)?&?(?:v=)?\/?)([\w\d_-]{11})(?:\S+)?/.test(value as string)) && value !== '') {
+          errors.videoPresentationLink = true;
+        }
+      } else if(key === 'socialLinkedin') {
+        if (!(/(^https?:\/\/(www.|[a-z]{2}.)?linkedin.com\/(mwlite\/|m\/)?in\/([A-Za-z0-9-_%]+)\/?$)/.test(value as string)) && value !== '') {
+          errors.socialLinkedin = true;
+        }
+      } else if(key === 'socialX') {
+        if (!(/(^https?:\/\/x.com\/([A-Za-z0-9_]{1,15})\/?$)/.test(value as string)) && value !== '') {
+          errors.socialX = true;
+        }
+      } else if(key === 'socialDiscord') {
+        if (!(/(^https?:\/\/discord(app)?.com\/users\/\d{17,20}\/?$)/.test(value as string)) && value !== '') {
+          errors.socialDiscord = true;
+        }
+      } else if(key === 'socialTelegram') {
+        if (!(/(^https?:\/\/(t.me|telegram.me)\/[a-zA-Z0-9_]{5,32}\/?$)/.test(value as string)) && value !== '') {
+          errors.socialTelegram = true;
         }
       } else {
         if (value === '' || value === false) {
-          errors[key as keyof FormErrors]= true;
+          errors[key as keyof Omit<FormErrors, 'members'>]= true;
         }
       }
     });
@@ -145,6 +192,8 @@ export const Form = () => {
         name: data.name,
         email: data.email,
         country: data.country,
+        coldCredential: data.coldCredential,
+        governanceActionRationale: data.governanceActionRationale,
         socialX: data.socialX,
         socialLinkedin: data.socialLinkedin,
         socialDiscord: data.socialDiscord,

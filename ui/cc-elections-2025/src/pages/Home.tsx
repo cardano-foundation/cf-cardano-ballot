@@ -52,7 +52,7 @@ export const Home = () => {
               <Box sx={{ width: '267px', padding: '12px 0' }}>
                 <Typography variant="caption">APPLICATION PERIOD</Typography>
                 <Typography variant="body1">
-                  May 5, 2024 10:30AM (UTC) - May 31, 2024 10:30AM (UTC)
+                  May 5, 2024 06:00PM (UTC) - May 31, 2024 10:30AM (UTC)
                 </Typography>
               </Box>
               <Box sx={{ width: '267px', padding: '12px 0' }}>

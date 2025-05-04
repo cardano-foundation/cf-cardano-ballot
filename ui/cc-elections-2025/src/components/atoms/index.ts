@@ -7,6 +7,7 @@ export * from "./modal/Modal";
 export * from "./modal/ModalContents";
 export * from "./modal/ModalHeader";
 export * from "./modal/ModalWrapper";
+export * from "./ScrollToTop";
 export * from "./SearchIcon";
 export * from "./Select";
 export * from "./SelectIcon";

@@ -38,7 +38,7 @@ export const FormStep6 = () => {
       />
       <TextArea
         id="legalExpertise"
-        label={'Do you have any expertise in constitutional law or law in general?  If so please describe.'}
+        label={'Do you have any expertise in constitutional law or law in general?  If so please describe'}
         name="legalExpertise"
         onChange={handleChange}
         value={data.legalExpertise}

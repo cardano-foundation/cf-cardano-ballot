@@ -18,7 +18,7 @@ export const FormStep4 = () => {
   const options = useMemo(() => geographicRepresentationList(), []);
 
   const handleOnClick = () => {
-    if (data.membersAmount >= 5) return;
+    if (data.membersAmount >= 20) return;
     setData(prevData => ({...prevData, members: [...prevData.members, memberInit ], membersAmount: prevData.membersAmount + 1}));
   }
 

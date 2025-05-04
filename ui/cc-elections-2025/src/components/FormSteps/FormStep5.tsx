@@ -114,28 +114,28 @@ export const FormStep5 = () => {
           <Typography variant="subtitle2">Social media (Will be made public)</Typography>
           <Box sx={{ paddingTop: '4px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <Input
-              errorMessage={error && error.socialX ? 'Enter a valid X URL' : ''}
+              errorMessage={error && error.socialX ? 'Enter a valid X URL: https://x.com/Your_Username' : ''}
               name="socialX"
               onChange={handleChange}
               placeholder={'X (Twitter)'}
               value={data.socialX}
             />
             <Input
-              errorMessage={error && error.socialLinkedin ? 'Enter a valid LinkedIn URL' : ''}
+              errorMessage={error && error.socialLinkedin ? 'Enter a valid LinkedIn URL: https://www.linkedin.com/in/Your_Username' : ''}
               name="socialLinkedin"
               onChange={handleChange}
               placeholder={'LinkedIn'}
               value={data.socialLinkedin}
             />
             <Input
-              errorMessage={error && error.socialDiscord ? 'Enter a valid Discord URL' : ''}
+              errorMessage={error && error.socialDiscord ? 'Enter a valid Discord URL: https://discordapp.com/users/Your_User_ID' : ''}
               name="socialDiscord"
               onChange={handleChange}
               placeholder={'Discord'}
               value={data.socialDiscord}
             />
             <Input
-              errorMessage={error && error.socialTelegram ? 'Enter a valid Telegram URL' : ''}
+              errorMessage={error && error.socialTelegram ? 'Enter a valid Telegram URL: https://t.me/Your_Username' : ''}
               name="socialTelegram"
               onChange={handleChange}
               placeholder={'Telegram'}
@@ -192,7 +192,7 @@ export const FormStep5 = () => {
           value={data.additionalInfo}
         />
         <Input
-          errorMessage={error && error.videoPresentationLink ? 'Enter a valid Youtube URL' : ''}
+          errorMessage={error && error.videoPresentationLink ? 'Enter a valid YouTube URL' : ''}
           id="videoPresentationLink"
           label={'Video link'}
           name="videoPresentationLink"

@@ -77,7 +77,7 @@ export const FormStep5 = () => {
     return (
       <Input
         errorMessage={error && error.publicContact ? 'Enter a valid e-mail address' : ''}
-        helpfulText={'E-mail address where you would like to be contacted by the Cardano Community (Will be made public)'}
+        helpfulText={'Email address where you would like to be contacted by the Cardano Community (Will be made public)'}
         id="publicContact"
         label={'Public Point of Contact'}
         name="publicContact"

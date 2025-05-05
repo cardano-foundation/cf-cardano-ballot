@@ -20,7 +20,7 @@ export const FormStep2 = () => {
             </Typography>
             <Box sx={{ marginTop: '16px' }}>
               <Link
-                href="https://docs.google.com/document/u/1/d/1u7fh-CS1LPYldI3vghZZWrrXCvsLrU1f--MRCTW7ZR4/edit"
+                href="https://docs.intersectmbo.org/cardano/cardano-governance/cardano-constitution/2025-constitutional-committee-elections/multi-stage-task-for-constitutional-committee-applicants"
                 variant="body2"
                 target="_blank"
                 rel="noopenner"

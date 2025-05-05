@@ -76,6 +76,7 @@ export const FormStep5 = () => {
   const renderPublicContact = () => {
     return (
       <Input
+        errorMessage={error && error.publicContact ? 'Enter a valid e-mail address' : ''}
         helpfulText={'Social media handles or email address where you would like to be contacted by the Cardano Community (Will be made public)'}
         id="publicContact"
         label={'Public Point of Contact'}
@@ -142,13 +143,14 @@ export const FormStep5 = () => {
               value={data.socialTelegram}
             />
             <Input
+              errorMessage={error && error.socialWebsite ? 'Enter a valid URL' : ''}
               name="socialWebsite"
               onChange={handleChange}
               placeholder={'Website'}
               value={data.socialWebsite}
             />
             <Input
-              errorMessage={error && error.socialTelegram ? 'Enter a valid URL' : ''}
+              errorMessage={error && error.socialOther ? 'Enter a valid URL' : ''}
               name="socialOther"
               onChange={handleChange}
               placeholder={'Other'}

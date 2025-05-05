@@ -79,7 +79,7 @@ export const MemberCard = (
           {bio}
         </Typography>
       </Box>
-      <Box>
+      <Box sx={{display: 'flex', columnGap: '40px', flexWrap: 'wrap'}}>
         {socialLinks.map((socialLink) => (
           <Box sx={{ padding: '8px 0' }} key={socialLink.type}>
             <Link variant="overline" href={socialLink.link}>{socialLink.type}</Link>

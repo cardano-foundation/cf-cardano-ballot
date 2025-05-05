@@ -27,7 +27,7 @@ import styles from "./molecules/FormCard.module.scss";
 type RegisterFormDataProps = keyof RegisterFormData;
 
 type FormErrors = {
-  members?: { name?: boolean, bio?: boolean }[];
+  members?: { name?: boolean, bio?: boolean, socialLinkedin?: boolean, socialX?: boolean, socialDiscord?: boolean, socialTelegram?: boolean, socialOther?: boolean, socialWebsite?: boolean }[];
   termsOfUse?: boolean;
   guidelines?: boolean;
   privacyPolicy?: boolean;
@@ -42,6 +42,7 @@ type FormErrors = {
   socialDiscord?: boolean;
   socialTelegram?: boolean;
   socialOther?: boolean;
+  socialWebsite?: boolean;
 };
 
 export const Form = () => {
@@ -120,6 +121,18 @@ export const Form = () => {
           membersErrors[index] = { name: true };
         if (member.bio === '')
           membersErrors[index] = {...membersErrors[index], bio: true};
+        if (!(/(^https?:\/\/(www.|[a-z]{2}.)?linkedin.com\/(mwlite\/|m\/)?in\/([A-Za-z0-9-_%]+)\/?$)/.test(member.socialLinkedin)) && member.socialLinkedin !== '')
+          membersErrors[index] = {...membersErrors[index], socialLinkedin: true};
+        if (!(/(^https?:\/\/x.com\/([A-Za-z0-9_]{1,15})\/?$)/.test(member.socialX)) && member.socialX !== '')
+          membersErrors[index] = {...membersErrors[index], socialX: true};
+        if (!(/(^https?:\/\/discord(app)?.com\/users\/\d{17,20}\/?$)/.test(member.socialDiscord)) && member.socialDiscord !== '')
+          membersErrors[index] = {...membersErrors[index], socialDiscord: true};
+        if (!(/(^https?:\/\/(t.me|telegram.me)\/[a-zA-Z0-9_]{5,32}\/?$)/.test(member.socialTelegram)) && member.socialTelegram !== '')
+          membersErrors[index] = {...membersErrors[index], socialTelegram: true};
+        if (!(/^(https?:\/\/)?([\w\-]+\.)+[\w\-]+(\/[\w\-._~:\/?#[\]@!$&'()*+,;=]*)?$/.test(member.socialOther)) && member.socialOther !== '')
+          membersErrors[index] = {...membersErrors[index], socialOther: true};
+        if (!(/^(https?:\/\/)?([\w\-]+\.)+[\w\-]+(\/[\w\-._~:\/?#[\]@!$&'()*+,;=]*)?$/.test(member.socialWebsite)) && member.socialWebsite !== '')
+          membersErrors[index] = {...membersErrors[index], socialWebsite: true};
       });
 
       if (membersErrors.length > 0) {
@@ -179,6 +192,10 @@ export const Form = () => {
       } else if(key === 'socialOther') {
         if (!(/^(https?:\/\/)?([\w\-]+\.)+[\w\-]+(\/[\w\-._~:\/?#[\]@!$&'()*+,;=]*)?$/.test(value as string)) && value !== '') {
           errors.socialOther = true;
+        }
+      } else if(key === 'socialWebsite') {
+        if (!(/^(https?:\/\/)?([\w\-]+\.)+[\w\-]+(\/[\w\-._~:\/?#[\]@!$&'()*+,;=]*)?$/.test(value as string)) && value !== '') {
+          errors.socialWebsite = true;
         }
       } else if (key === 'publicContact') {
         if (!(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value as string)) && value !== '') {

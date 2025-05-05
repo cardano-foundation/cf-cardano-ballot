@@ -56,7 +56,7 @@ export type RegisterFormData = {
 }
 
 export type ErrObject = {
-  members?: { name?: boolean, bio?: boolean }[];
+  members?: { name?: boolean, bio?: boolean, socialLinkedin?: boolean, socialX?: boolean, socialDiscord?: boolean, socialTelegram?: boolean, socialOther?: boolean, socialWebsite?: boolean }[];
   guidelines?: boolean;
   termsOfUse?: boolean;
   privacyPolicy?: boolean;
@@ -69,6 +69,9 @@ export type ErrObject = {
   socialX?: boolean;
   socialDiscord?: boolean;
   socialTelegram?: boolean;
+  socialOther?: boolean;
+  socialWebsite?: boolean;
+  publicContact?: boolean;
   candidateType?: boolean;
 }
 

@@ -28,7 +28,7 @@ export const FormStep4 = () => {
         <Fragment key={index}>
           <Typography variant={"h3"}>{`Member ${index + 1}`}</Typography>
           <Input
-            errorMessage={error && error.members && error.members[index] && error.members[index].name ? 'This field is required.' : ''}
+            errorMessage={error && error.members && error.members[index].name ? 'This field is required.' : ''}
             id="name"
             label={'Name or Alias*'}
             name="name"
@@ -51,7 +51,7 @@ export const FormStep4 = () => {
             ))}
           </Select>
           <TextArea
-            errorMessage={error && error.members && error.members[index] && error.members[index].bio ? 'This field is required.' : ''}
+            errorMessage={error && error.members && error.members[index].bio ? 'This field is required.' : ''}
             helpfulText={'Extended information about your company, your relevant experience, technical and governance background etc'}
             id="bio"
             label={'Member bio*'}
@@ -63,6 +63,7 @@ export const FormStep4 = () => {
             <Typography variant="subtitle2">Social media (Will be made public)</Typography>
             <Box sx={{ paddingTop: '4px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <Input
+                errorMessage={error && error.members && error.members[index].socialX ? 'Enter a valid X URL: https://x.com/Your_Username' : ''}
                 name="socialX"
                 onChange={
                   (event) => handleMemberChange && handleMemberChange(event, index)
@@ -71,30 +72,35 @@ export const FormStep4 = () => {
                 value={data.members[index].socialX}
               />
               <Input
+                errorMessage={error && error.members && error.members[index].socialLinkedin ? 'Enter a valid LinkedIn URL: https://www.linkedin.com/in/Your_Username' : ''}
                 name="socialLinkedin"
                 onChange={(event) => handleMemberChange && handleMemberChange(event, index)}
                 placeholder={'LinkedIn'}
                 value={data.members[index].socialLinkedin}
               />
               <Input
+                errorMessage={error && error.members && error.members[index].socialDiscord ? 'Enter a valid Discord URL: https://discordapp.com/users/Your_User_ID' : ''}
                 name="socialDiscord"
                 onChange={(event) => handleMemberChange && handleMemberChange(event, index)}
                 placeholder={'Discord'}
                 value={data.members[index].socialDiscord}
               />
               <Input
+                errorMessage={error && error.members && error.members[index].socialTelegram ? 'Enter a valid Telegram URL: https://t.me/Your_Username' : ''}
                 name="socialTelegram"
                 onChange={(event) => handleMemberChange && handleMemberChange(event, index)}
                 placeholder={'Telegram'}
                 value={data.members[index].socialTelegram}
               />
               <Input
+                errorMessage={error && error.members && error.members[index].socialWebsite ? 'Enter a valid URL' : ''}
                 name="socialWebsite"
                 onChange={(event) => handleMemberChange && handleMemberChange(event, index)}
                 placeholder={'Website'}
                 value={data.members[index].socialWebsite}
               />
               <Input
+                errorMessage={error && error.members && error.members[index].socialOther ? 'Enter a valid URL' : ''}
                 name="socialOther"
                 onChange={(event) => handleMemberChange && handleMemberChange(event, index)}
                 placeholder={'Other'}

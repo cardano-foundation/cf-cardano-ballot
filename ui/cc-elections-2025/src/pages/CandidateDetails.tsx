@@ -31,14 +31,6 @@ export const CandidateDetails = () => {
 
   const candidateType = candidate?.candidate.candidateType;
 
-  const socialDiscord = candidate?.candidate.socialDiscord;
-  const socialLinkedin = candidate?.candidate.socialLinkedin;
-
-  const socialLinks: { type: string, link: string }[] = [];
-  // socialLinks.push({ type: 'Website', link: ''});
-  socialDiscord && socialDiscord.length && socialLinks.push({ type: 'Discord', link: socialDiscord});
-  socialLinkedin && socialLinkedin.length && socialLinks.push({ type: 'Linkedin', link: socialLinkedin});
-
   const members = candidate?.members;
 
   const chipText = (candidateType: "individual" | "company" | "consortium") => {
@@ -280,6 +272,30 @@ export const CandidateDetails = () => {
                         </Box>
                       </Box>
                     )}
+                    {candidate?.candidate.conflictOfInterest && (
+                      <Box>
+                        <Typography variant="subtitle2">Conflict of Interest</Typography>
+                        <Box sx={{ paddingBottom: '16px'}}>
+                          <Typography variant="body1">{candidate?.candidate.conflictOfInterest}</Typography>
+                        </Box>
+                      </Box>
+                    )}
+                    {candidate?.candidate.drepId && (
+                      <Box>
+                        <Typography variant="subtitle2">DRep ID</Typography>
+                        <Box sx={{ paddingBottom: '16px'}}>
+                          <Typography variant="body1">{candidate?.candidate.drepId}</Typography>
+                        </Box>
+                      </Box>
+                    )}
+                    {candidate?.candidate.stakeId && (
+                      <Box>
+                        <Typography variant="subtitle2">Stake ID</Typography>
+                        <Box sx={{ paddingBottom: '16px'}}>
+                          <Typography variant="body1">{candidate?.candidate.stakeId}</Typography>
+                        </Box>
+                      </Box>
+                    )}
                   </Box>
                 </Box>
 
@@ -296,7 +312,7 @@ export const CandidateDetails = () => {
                     <Box sx={{ padding: '0 16px' }}>
                       <Typography variant="h3">GOVERNANCE ACTION RATIONALE</Typography>
                     </Box>
-                    <Box>
+                    <Box sx={{ padding: '0 16px' }}>
                       <Typography variant="body1" color="#506288" sx={{ paddingBottom: '16px' }}>
                         {candidate?.candidate.governanceActionRationale}
                       </Typography>

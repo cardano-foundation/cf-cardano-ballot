@@ -2,7 +2,11 @@ ALTER TABLE candidates ALTER COLUMN weekly_commitment_hours TYPE TEXT USING week
 
 ALTER TABLE candidates ADD COLUMN social_website TEXT;
 
-UPDATE candidates SET social_website = company_candidates.social_website FROM company_candidates
-WHERE candidates.id = company_candidates.candidate_id;
+UPDATE candidates
+SET social_website = (
+    SELECT cc.social_website
+    FROM company_candidates cc
+    WHERE cc.candidate_id = candidates.id
+);
 
 ALTER TABLE company_candidates DROP COLUMN social_website;

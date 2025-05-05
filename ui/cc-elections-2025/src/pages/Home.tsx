@@ -44,8 +44,15 @@ export const Home = () => {
               <Typography variant="caption">CONTEXT</Typography>
               <Box sx={{ paddingBottom: '16px' }}>
                 <Typography variant="body1" color="#506288">
-                  Welcome to the application form for those who aspire to become members of the Constitutional Committee (CC). The CC plays a vital role in shaping the future of the Cardano ecosystem by interpreting and upholding the Cardano Constitution.
-                  This application is open to all interested parties, including individuals, companies, and consortia, who are committed to contributing to the governance of Cardano.
+                  This vote is to allow the Cardano community to elect a Constitutional Committee(CC) and then submit a governance action.
+                  
+                  The Interim Constitutional Committee term expires on 1st September 2025.
+                  
+                  The Constitutional Committee plays a vital role in shaping the future of the Cardano ecosystem by interpreting and upholding the Cardano Constitution. 
+                  
+                  Anyone committed to contributing to the governance of Cardano can apply to become a Constitutional Committee member, including individuals, companies, and consortia.
+                  
+                  Any ADA holder can participate in the vote.
                 </Typography>
               </Box>
             </Box>

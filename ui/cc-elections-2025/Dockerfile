@@ -22,4 +22,6 @@ RUN rm -rf ./*
 
 COPY --from=build /app/dist .
 
+COPY default.conf /etc/nginx/conf.d/default.conf
+
 CMD ["nginx", "-g", "daemon off;"]

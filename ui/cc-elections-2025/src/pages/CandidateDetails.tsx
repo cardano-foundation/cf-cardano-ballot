@@ -199,6 +199,9 @@ export const CandidateDetails = () => {
                           bio={member.bio}
                           country={member.country}
                           initials={getInitials(member.name)}
+                          conflictOfInterest={member.conflictOfInterest}
+                          drepId={member.drepId}
+                          stakeId={member.stakeId}
                           socialLinkedin={member.socialLinkedin}
                           socialDiscord={member.socialDiscord}
                           website={member.socialWebsite}
@@ -211,93 +214,105 @@ export const CandidateDetails = () => {
                   </>
                 )}
 
-                <Box sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '16px',
-                  backgroundColor: 'white',
-                  borderRadius: '16px',
-                  padding: '20px 24px 32px 24px',
-                  boxShadow: '0px 20px 25px -5px #212A3D14',
-                }}>
-                  <Box sx={{ padding: '0 16px' }}>
-                    <Typography variant="h3">Additional candidate information</Typography>
+                {(
+                  candidate?.candidate.reasonToServe ||
+                  candidate?.candidate.governanceExperience ||
+                  candidate?.candidate.communicationStrategy ||
+                  candidate?.candidate.ecosystemContributions ||
+                  candidate?.candidate.legalExpertise ||
+                  (candidateType === 'individual' && candidate?.candidate.weeklyCommitmentHours) ||
+                  candidate?.candidate.conflictOfInterest ||
+                  candidate?.candidate.drepId ||
+                  candidate?.candidate.stakeId
+                ) && (
+                  <Box sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '16px',
+                    backgroundColor: 'white',
+                    borderRadius: '16px',
+                    padding: '20px 24px 32px 24px',
+                    boxShadow: '0px 20px 25px -5px #212A3D14',
+                  }}>
+                    <Box sx={{ padding: '0 16px' }}>
+                      <Typography variant="h3">Additional candidate information</Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '0 16px' }}>
+                      {candidate?.candidate.reasonToServe && (
+                        <Box>
+                          <Typography variant="subtitle2">Why do you wish to serve on the Constitutional Committee?</Typography>
+                          <Box sx={{ paddingBottom: '16px'}}>
+                            <Typography variant="body1">{candidate?.candidate.reasonToServe}</Typography>
+                          </Box>
+                        </Box>
+                      )}
+                      {candidate?.candidate.governanceExperience && (
+                        <Box>
+                          <Typography variant="subtitle2">EXPERIENCE</Typography>
+                          <Box sx={{ paddingBottom: '16px'}}>
+                            <Typography variant="body1">{candidate?.candidate.governanceExperience}</Typography>
+                          </Box>
+                        </Box>
+                      )}
+                      {candidate?.candidate.communicationStrategy && (
+                        <Box>
+                          <Typography variant="subtitle2">How will you communicate with the Cardano community about your descision making?</Typography>
+                          <Box sx={{ paddingBottom: '16px'}}>
+                            <Typography variant="body1">{candidate?.candidate.communicationStrategy}</Typography>
+                          </Box>
+                        </Box>
+                      )}
+                      {candidate?.candidate.ecosystemContributions && (
+                        <Box>
+                          <Typography variant="subtitle2">Cardano Ecosystem Contributions</Typography>
+                          <Box sx={{ paddingBottom: '16px'}}>
+                            <Typography variant="body1">{candidate?.candidate.ecosystemContributions}</Typography>
+                          </Box>
+                        </Box>
+                      )}
+                      {candidate?.candidate.legalExpertise && (
+                        <Box>
+                          <Typography variant="subtitle2">Do you have any expertise in constitutional law or law in general? If so please describe</Typography>
+                          <Box sx={{ paddingBottom: '16px'}}>
+                            <Typography variant="body1">{candidate?.candidate.legalExpertise}</Typography>
+                          </Box>
+                        </Box>
+                      )}
+                      {candidateType === 'individual' && candidate?.candidate.weeklyCommitmentHours && (
+                        <Box>
+                          <Typography variant="subtitle2">Estimate the average number of hours per week you can dedicate to the committe</Typography>
+                          <Box sx={{ paddingBottom: '16px'}}>
+                            <Typography variant="body1">{candidate?.candidate.weeklyCommitmentHours}</Typography>
+                          </Box>
+                        </Box>
+                      )}
+                      {candidate?.candidate.conflictOfInterest && (
+                        <Box>
+                          <Typography variant="subtitle2">Conflict of Interest</Typography>
+                          <Box sx={{ paddingBottom: '16px'}}>
+                            <Typography variant="body1">{candidate?.candidate.conflictOfInterest}</Typography>
+                          </Box>
+                        </Box>
+                      )}
+                      {candidate?.candidate.drepId && (
+                        <Box>
+                          <Typography variant="subtitle2">DRep ID</Typography>
+                          <Box sx={{ paddingBottom: '16px'}}>
+                            <Typography variant="body1">{candidate?.candidate.drepId}</Typography>
+                          </Box>
+                        </Box>
+                      )}
+                      {candidate?.candidate.stakeId && (
+                        <Box>
+                          <Typography variant="subtitle2">Stake ID</Typography>
+                          <Box sx={{ paddingBottom: '16px'}}>
+                            <Typography variant="body1">{candidate?.candidate.stakeId}</Typography>
+                          </Box>
+                        </Box>
+                      )}
+                    </Box>
                   </Box>
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: '10px', padding: '0 16px' }}>
-                    {candidate?.candidate.reasonToServe && (
-                      <Box>
-                        <Typography variant="subtitle2">Why do you wish to serve on the Constitutional Committee?</Typography>
-                        <Box sx={{ paddingBottom: '16px'}}>
-                          <Typography variant="body1">{candidate?.candidate.reasonToServe}</Typography>
-                        </Box>
-                      </Box>
-                    )}
-                    {candidate?.candidate.governanceExperience && (
-                      <Box>
-                        <Typography variant="subtitle2">EXPERIENCE</Typography>
-                        <Box sx={{ paddingBottom: '16px'}}>
-                          <Typography variant="body1">{candidate?.candidate.governanceExperience}</Typography>
-                        </Box>
-                      </Box>
-                    )}
-                    {candidate?.candidate.communicationStrategy && (
-                      <Box>
-                        <Typography variant="subtitle2">How will you communicate with the Cardano community about your descision making?</Typography>
-                        <Box sx={{ paddingBottom: '16px'}}>
-                          <Typography variant="body1">{candidate?.candidate.communicationStrategy}</Typography>
-                        </Box>
-                      </Box>
-                    )}
-                    {candidate?.candidate.ecosystemContributions && (
-                      <Box>
-                        <Typography variant="subtitle2">Cardano Ecosystem Contributions</Typography>
-                        <Box sx={{ paddingBottom: '16px'}}>
-                          <Typography variant="body1">{candidate?.candidate.ecosystemContributions}</Typography>
-                        </Box>
-                      </Box>
-                    )}
-                    {candidate?.candidate.legalExpertise && (
-                      <Box>
-                        <Typography variant="subtitle2">Do you have any expertise in constitutional law or law in general? If so please describe</Typography>
-                        <Box sx={{ paddingBottom: '16px'}}>
-                          <Typography variant="body1">{candidate?.candidate.legalExpertise}</Typography>
-                        </Box>
-                      </Box>
-                    )}
-                    {candidateType === 'individual' && candidate?.candidate.weeklyCommitmentHours && (
-                      <Box>
-                        <Typography variant="subtitle2">Estimate the average number of hours per week you can dedicate to the committe</Typography>
-                        <Box sx={{ paddingBottom: '16px'}}>
-                          <Typography variant="body1">{candidate?.candidate.weeklyCommitmentHours}</Typography>
-                        </Box>
-                      </Box>
-                    )}
-                    {candidate?.candidate.conflictOfInterest && (
-                      <Box>
-                        <Typography variant="subtitle2">Conflict of Interest</Typography>
-                        <Box sx={{ paddingBottom: '16px'}}>
-                          <Typography variant="body1">{candidate?.candidate.conflictOfInterest}</Typography>
-                        </Box>
-                      </Box>
-                    )}
-                    {candidate?.candidate.drepId && (
-                      <Box>
-                        <Typography variant="subtitle2">DRep ID</Typography>
-                        <Box sx={{ paddingBottom: '16px'}}>
-                          <Typography variant="body1">{candidate?.candidate.drepId}</Typography>
-                        </Box>
-                      </Box>
-                    )}
-                    {candidate?.candidate.stakeId && (
-                      <Box>
-                        <Typography variant="subtitle2">Stake ID</Typography>
-                        <Box sx={{ paddingBottom: '16px'}}>
-                          <Typography variant="body1">{candidate?.candidate.stakeId}</Typography>
-                        </Box>
-                      </Box>
-                    )}
-                  </Box>
-                </Box>
+                )}
 
                 {candidate?.candidate.governanceActionRationale && (
                   <Box sx={{

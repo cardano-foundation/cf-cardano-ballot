@@ -7,6 +7,9 @@ type MemberCardProps = {
   name: string;
   country: string;
   bio: string;
+  conflictOfInterest?: string;
+  drepId?: string;
+  stakeId?: string;
   website?: string;
   socialLinkedin?: string;
   socialDiscord?: string;
@@ -22,6 +25,9 @@ export const MemberCard = (
     country,
     initials,
     name,
+    stakeId,
+    drepId,
+    conflictOfInterest,
     socialDiscord,
     socialLinkedin,
     website,
@@ -79,6 +85,30 @@ export const MemberCard = (
           {bio}
         </Typography>
       </Box>
+      {conflictOfInterest && (
+        <Box>
+          <Typography variant="caption">Conflict of Interest</Typography>
+          <Typography variant="body1" color="#506288" sx={{ paddingBottom: '16px' }}>
+            {conflictOfInterest}
+          </Typography>
+        </Box>
+      )}
+      {drepId && (
+        <Box>
+          <Typography variant="caption">DRep ID</Typography>
+          <Typography variant="body1" color="#506288" sx={{ paddingBottom: '16px' }}>
+            {drepId}
+          </Typography>
+        </Box>
+      )}
+      {stakeId && (
+        <Box>
+          <Typography variant="caption">Stake ID</Typography>
+          <Typography variant="body1" color="#506288" sx={{ paddingBottom: '16px' }}>
+            {stakeId}
+          </Typography>
+        </Box>
+      )}
       <Box sx={{display: 'flex', columnGap: '40px', flexWrap: 'wrap'}}>
         {socialLinks.map((socialLink) => (
           <Box sx={{ padding: '8px 0' }} key={socialLink.type}>

@@ -44,8 +44,8 @@ export const CandidatesListItem = (props: CandidatesListItemProps) => {
               sx={{
                 width: 56,
                 height: 56,
-                color: props.candidateType === "individual" ? '#582603' : props.candidateType === "company" ? '#13491B' : '#3052F5',
-                backgroundColor: props.candidateType === "individual" ? '#FDE1CE' : props.candidateType === "company" ? '#CEF3D4' : '#EDEBFF',
+                color: '#3052F5',
+                backgroundColor: '#EDEBFF',
               }}
             >
               {props.initials}
@@ -64,8 +64,8 @@ export const CandidatesListItem = (props: CandidatesListItemProps) => {
           label={chipText(props.candidateType)}
           sx={{
             borderRadius: '100px',
-            color: props.candidateType === "individual" ? '#803705' : props.candidateType === "company" ? '#13491B' : '#3052F5',
-            backgroundColor: props.candidateType === "individual" ? '#FEF3EB' : props.candidateType === "company" ? '#EBFAED' : '#EDEBFF',
+            color: '#212A3D',
+            backgroundColor: '#EDEBFF',
           }}
         />
       </Box>

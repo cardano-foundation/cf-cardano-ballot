@@ -79,8 +79,8 @@ export const CandidateDetails = () => {
                           <Avatar sx={{
                             width: 68,
                             height: 68,
-                            color: candidateType === "individual" ? '#582603' : candidateType === "company" ? '#13491B' : '#3052F5',
-                            backgroundColor: candidateType === "individual" ? '#FDE1CE' : candidateType === "company" ? '#CEF3D4' : '#EDEBFF',
+                            color: '#3052F5',
+                            backgroundColor: '#EDEBFF',
                           }}>
                             {getInitials(candidate.candidate.name)}
                           </Avatar>
@@ -98,8 +98,8 @@ export const CandidateDetails = () => {
                         label={chipText(candidateType)}
                         sx={{
                           borderRadius: '100px',
-                          color: candidateType === "individual" ? '#803705' : candidateType === "company" ? '#13491B' : '#3052F5',
-                          backgroundColor: candidateType === "individual" ? '#FEF3EB' : candidateType === "company" ? '#EBFAED' : '#EDEBFF',
+                          color: '#212A3D',
+                          backgroundColor: '#EDEBFF',
                         }}
                       />
                     )}

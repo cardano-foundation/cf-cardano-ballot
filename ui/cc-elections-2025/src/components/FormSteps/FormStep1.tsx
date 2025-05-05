@@ -21,7 +21,7 @@ export const FormStep1 = () => {
         checked={data.termsAndCondition}
         errorMessage={error && error.termsAndCondition ? 'This field is required.' : ''}
         label={'*I have read and agree to the'}
-        link={'https://drive.google.com/file/d/1jXndnAequzbrIOOzCDhHOChpReP7Rsty/view'}
+        link={'https://docs.intersectmbo.org/cardano/cardano-governance/cardano-constitution/2025-constitutional-committee-elections/guidelines-for-participation-in-a-constitutional-committee-election'}
         linkText={'guidelines'}
         name="termsAndCondition"
         value={data.termsAndCondition}

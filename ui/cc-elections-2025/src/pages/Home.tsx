@@ -93,7 +93,7 @@ export const Home = () => {
               </Button>
             </Box>
             <Box>
-              <Typography variant="body2">Guides can be found <Link variant="body2" target="_blank" rel="noopener" href="https://drive.google.com/file/d/1_Q88vnoITBM4NKXGsCispk6jy2VzuRa4/view?usp=sharing">here</Link>.</Typography>
+              <Typography variant="body2">Guides can be found <Link variant="body2" target="_blank" rel="noopener" href="https://docs.intersectmbo.org/cardano/cardano-governance/cardano-constitution/2025-constitutional-committee-elections/guide-for-applicants">here</Link>.</Typography>
             </Box>
           </Box>
           {!allCandidates || isAllCandidatesLoading ? (

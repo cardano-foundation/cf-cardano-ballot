@@ -195,6 +195,7 @@ export const CandidateDetails = () => {
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '24px' }}>
                       {members.map((member) => (
                         <MemberCard
+                          key={member.id}
                           name={member.name}
                           bio={member.bio}
                           country={member.country}

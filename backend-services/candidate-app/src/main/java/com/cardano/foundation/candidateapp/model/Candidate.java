@@ -38,6 +38,7 @@ public class Candidate {
     private String socialDiscord;
     private String socialTelegram;
     private String socialOther;
+    private String socialWebsite;
 
     private String publicContact;
 
@@ -51,7 +52,7 @@ public class Candidate {
     private String communicationStrategy;
     private String ecosystemContributions;
     private String legalExpertise;
-    private Integer weeklyCommitmentHours;
+    private String weeklyCommitmentHours;
 
     @Column(name = "x_verification")
     private String XVerification;

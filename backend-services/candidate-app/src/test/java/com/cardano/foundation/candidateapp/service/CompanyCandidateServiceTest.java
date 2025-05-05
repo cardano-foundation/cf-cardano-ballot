@@ -55,9 +55,9 @@ class CompanyCandidateServiceTest {
         when(candidateMapper.toEntity(dto)).thenReturn(entity);
         when(candidateRepo.save(any())).thenReturn(entity);
         when(companyRepo.save(any())).thenReturn(company);
-        when(companyMapper.toDto(any())).thenReturn(new CompanyCandidateResponseDto(responseDto, "REG-123", "John Doe", null));
+        when(companyMapper.toDto(any())).thenReturn(new CompanyCandidateResponseDto(responseDto, "REG-123", "John Doe"));
 
-        CompanyCandidateResponseDto result = service.create(new CompanyCandidateRequestDto(dto, "REG-123", "John Doe", null));
+        CompanyCandidateResponseDto result = service.create(new CompanyCandidateRequestDto(dto, "REG-123", "John Doe"));
 
         assertEquals("Acme Inc.", result.getCandidate().getName());
         verify(candidateRepo).save(any());

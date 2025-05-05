@@ -35,7 +35,6 @@ public class CompanyCandidateService {
         company.setCandidate(savedCandidate);
         company.setRegistrationNumber(dto.getRegistrationNumber());
         company.setKeyContactPerson(dto.getKeyContactPerson());
-        company.setSocialWebsite(dto.getSocialWebsite());
 
         return companyMapper.toDto(companyRepo.save(company));
     }
@@ -62,7 +61,6 @@ public class CompanyCandidateService {
         existing.setCandidate(saved);
         existing.setRegistrationNumber(dto.getRegistrationNumber());
         existing.setKeyContactPerson(dto.getKeyContactPerson());
-        existing.setSocialWebsite(dto.getSocialWebsite());
 
         return companyMapper.toDto(companyRepo.save(existing));
     }

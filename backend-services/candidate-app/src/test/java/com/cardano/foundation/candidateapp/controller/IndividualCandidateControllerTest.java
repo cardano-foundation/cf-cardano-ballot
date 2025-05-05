@@ -1,6 +1,8 @@
 package com.cardano.foundation.candidateapp.controller;
 
+import com.cardano.foundation.candidateapp.dto.CandidateRequestDto;
 import com.cardano.foundation.candidateapp.dto.CandidateResponseDto;
+import com.cardano.foundation.candidateapp.dto.CompanyCandidateRequestDto;
 import com.cardano.foundation.candidateapp.dto.IndividualCandidateResponseDto;
 import com.cardano.foundation.candidateapp.model.CandidateType;
 import com.cardano.foundation.candidateapp.service.IndividualCandidateService;
@@ -49,6 +51,7 @@ class IndividualCandidateControllerTest {
                 .email("jane@x.com")
                 .publicContact("jane@x.com")
                 .country("Country")
+                .walletAddress("walletAddress")
                 .candidateType(CandidateType.individual)
                 .build();
 
@@ -61,7 +64,8 @@ class IndividualCandidateControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.candidate.name").value("Jane Doe"));
+                .andExpect(jsonPath("$.candidate.name").value("Jane Doe"))
+                .andExpect(jsonPath("$.candidate.walletAddress").value("walletAddress"));
 
         verify(service).create(any());
     }

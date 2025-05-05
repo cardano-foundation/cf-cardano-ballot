@@ -1,7 +1,6 @@
 package com.cardano.foundation.candidateapp.dto;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
@@ -26,6 +25,7 @@ public class CandidateRequestDto {
     private String socialDiscord;
     private String socialTelegram;
     private String socialOther;
+    private String socialWebsite;
 
     private String publicContact;
 
@@ -40,8 +40,7 @@ public class CandidateRequestDto {
     private String ecosystemContributions;
     private String legalExpertise;
 
-    @Min(0)
-    private Integer weeklyCommitmentHours;
+    private String weeklyCommitmentHours;
 
     private String XVerification;
     private String conflictOfInterest;

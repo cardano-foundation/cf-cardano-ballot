@@ -15,5 +15,4 @@ public class CompanyCandidateRequestDto {
     private CandidateRequestDto candidate;
     private String registrationNumber;
     private String keyContactPerson;
-    private String socialWebsite;
 }

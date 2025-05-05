@@ -21,5 +21,4 @@ public class CompanyCandidate {
 
     private String registrationNumber;
     private String keyContactPerson;
-    private String socialWebsite;
 }

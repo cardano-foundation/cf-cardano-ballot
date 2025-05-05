@@ -44,6 +44,7 @@ class ConsortiumCandidateControllerTest {
                 .email("dao@united.org")
                 .country("Country")
                 .publicContact("dao@united.org")
+                .walletAddress("walletAddress")
                 .candidateType(CandidateType.consortium)
                 .build();
 
@@ -68,6 +69,7 @@ class ConsortiumCandidateControllerTest {
                         .content(objectMapper.writeValueAsString(input)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.candidate.name").value("DAO United"))
+                .andExpect(jsonPath("$.candidate.walletAddress").value("walletAddress"))
                 .andExpect(jsonPath("$.members[0].name").value("Alice"))
                 .andExpect(jsonPath("$.members[1].name").value("Alice2"));
     }

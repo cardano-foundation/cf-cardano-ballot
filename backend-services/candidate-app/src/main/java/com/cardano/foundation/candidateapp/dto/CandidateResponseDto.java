@@ -25,6 +25,7 @@ public class CandidateResponseDto {
     private String socialDiscord;
     private String socialTelegram;
     private String socialOther;
+    private String socialWebsite;
 
     private String publicContact;
 
@@ -39,7 +40,7 @@ public class CandidateResponseDto {
     private String ecosystemContributions;
     private String legalExpertise;
 
-    private Integer weeklyCommitmentHours;
+    private String weeklyCommitmentHours;
 
     private String XVerification;
     private String conflictOfInterest;

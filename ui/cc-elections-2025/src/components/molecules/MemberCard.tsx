@@ -65,12 +65,14 @@ export const MemberCard = (
           <Typography variant="h4">{name}</Typography>
         </Box>
       </Box>
-      <Box sx={{ padding: '8px 0' }}>
-        <Typography variant="overline">Geographic Representation</Typography>
-        <Typography variant="body1" color="#506288">
-          {country}
-        </Typography>
-      </Box>
+      {country && (
+        <Box sx={{ padding: '8px 0' }}>
+          <Typography variant="overline">Geographic Representation</Typography>
+          <Typography variant="body1" color="#506288">
+            {country}
+          </Typography>
+        </Box>
+      )}
       <Box>
         <Typography variant="caption">BIO</Typography>
         <Typography variant="body1" color="#506288" sx={{ paddingBottom: '16px' }}>

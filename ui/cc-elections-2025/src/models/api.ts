@@ -10,6 +10,7 @@ export type CandidateBody = {
     socialLinkedin: string;
     socialDiscord: string;
     socialTelegram: string;
+    socialWebsite: string;
     socialOther: string;
     publicContact: string;
     about: string;
@@ -21,7 +22,7 @@ export type CandidateBody = {
     communicationStrategy: string;
     ecosystemContributions: string;
     legalExpertise: string;
-    weeklyCommitmentHours: number;
+    weeklyCommitmentHours: string;
     conflictOfInterest: string;
     drepId: string;
     stakeId: string;
@@ -30,7 +31,6 @@ export type CandidateBody = {
   };
   registrationNumber?: string;
   keyContactPerson?: string;
-  socialWebsite?: string;
   members?: MemberBody[];
 }
 
@@ -64,6 +64,7 @@ export type Candidate = {
     socialLinkedin: string;
     socialDiscord: string;
     socialTelegram: string;
+    socialWebsite: string;
     socialOther: string;
     publicContact: string;
     about: string;
@@ -87,7 +88,6 @@ export type Candidate = {
   };
   registrationNumber?: string;
   keyContactPerson?: string;
-  socialWebsite?: string;
   members?: Member[];
 }
 

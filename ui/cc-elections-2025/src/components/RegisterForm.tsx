@@ -28,16 +28,20 @@ type RegisterFormDataProps = keyof RegisterFormData;
 
 type FormErrors = {
   members?: { name?: boolean, bio?: boolean }[];
-  termsAndCondition?: boolean;
+  termsOfUse?: boolean;
+  guidelines?: boolean;
+  privacyPolicy?: boolean;
   name?: boolean;
   email?: boolean;
   about?: boolean;
   bio?: boolean;
   videoPresentationLink? : boolean;
+  publicContact?: boolean;
   socialLinkedin?: boolean;
   socialX?: boolean;
   socialDiscord?: boolean;
   socialTelegram?: boolean;
+  socialOther?: boolean;
 };
 
 export const Form = () => {
@@ -172,6 +176,14 @@ export const Form = () => {
         if (!(/(^https?:\/\/(t.me|telegram.me)\/[a-zA-Z0-9_]{5,32}\/?$)/.test(value as string)) && value !== '') {
           errors.socialTelegram = true;
         }
+      } else if(key === 'socialOther') {
+        if (!(/^(https?:\/\/)?([\w\-]+\.)+[\w\-]+(\/[\w\-._~:\/?#[\]@!$&'()*+,;=]*)?$/.test(value as string)) && value !== '') {
+          errors.socialOther = true;
+        }
+      } else if (key === 'publicContact') {
+        if (!(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value as string)) && value !== '') {
+          errors.publicContact = true;
+        }
       } else {
         if (value === '' || value === false) {
           errors[key as keyof Omit<FormErrors, 'members'>]= true;
@@ -198,6 +210,7 @@ export const Form = () => {
         socialLinkedin: data.socialLinkedin,
         socialDiscord: data.socialDiscord,
         socialTelegram: data.socialTelegram,
+        socialWebsite: data.socialWebsite,
         socialOther: data.socialOther,
         publicContact: data.publicContact,
         about: data.about,
@@ -209,7 +222,7 @@ export const Form = () => {
         communicationStrategy: data.communicationStrategy,
         ecosystemContributions: data.ecosystemContributions,
         legalExpertise: data.legalExpertise,
-        weeklyCommitmentHours: Number(data.weeklyCommitmentHours),
+        weeklyCommitmentHours: data.weeklyCommitmentHours,
         conflictOfInterest: data.conflictOfInterest,
         drepId: data.drepId,
         stakeId: data.stakeId,
@@ -218,7 +231,6 @@ export const Form = () => {
       },
       registrationNumber: candidateType === 'company' ? data.registrationNumber : undefined,
       keyContactPerson: candidateType === 'company' ? data.keyContactPerson : undefined,
-      socialWebsite: candidateType === 'company' ? "" : undefined,
       members: candidateType === 'consortium' ? data.members : undefined,
     };
 

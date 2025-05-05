@@ -141,13 +141,14 @@ export const FormStep5 = () => {
               placeholder={'Telegram'}
               value={data.socialTelegram}
             />
-            {/*<Input*/}
-            {/*  name="socialWebsite"*/}
-            {/*  onChange={handleChange}*/}
-            {/*  placeholder={'Website'}*/}
-            {/*  value={data.socialWebsite}*/}
-            {/*/>*/}
             <Input
+              name="socialWebsite"
+              onChange={handleChange}
+              placeholder={'Website'}
+              value={data.socialWebsite}
+            />
+            <Input
+              errorMessage={error && error.socialTelegram ? 'Enter a valid URL' : ''}
               name="socialOther"
               onChange={handleChange}
               placeholder={'Other'}

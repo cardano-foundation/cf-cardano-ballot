@@ -149,7 +149,7 @@ export const Form = () => {
 
     (Object.entries(val) as [string, (string | boolean)][]).forEach(([key , value]) => {
       if (key === 'email') {
-        if (!(/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value as string))) {
+        if (!(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value as string))) {
           errors.email = true;
         }
       } else if(key === 'videoPresentationLink') {

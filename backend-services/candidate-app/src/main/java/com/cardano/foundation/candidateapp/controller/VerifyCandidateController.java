@@ -12,15 +12,15 @@ public class VerifyCandidateController {
 
     private final VerifyCandidateService service;
 
-    @GetMapping("/verify/{id}")
-    public ResponseEntity<Void> verify(@PathVariable Long id) {
-        service.verify(id);
-        return ResponseEntity.ok().build();
-    }
+//    @GetMapping("/verify/{id}")
+//    public ResponseEntity<Void> verify(@PathVariable Long id) {
+//        service.verify(id);
+//        return ResponseEntity.ok().build();
+//    }
 
-    @GetMapping("/unverify/{id}")
-    public ResponseEntity<Void> unverify(@PathVariable Long id) {
-        service.unverify(id);
-        return ResponseEntity.ok().build();
-    }
+//    @GetMapping("/unverify/{id}")
+//    public ResponseEntity<Void> unverify(@PathVariable Long id) {
+//        service.unverify(id);
+//        return ResponseEntity.ok().build();
+//    }
 }

@@ -26,7 +26,7 @@ export const FormStep7 = () => {
         <MenuItem value="no">No</MenuItem>
       </Select>
       <Input
-        helpfulText={'Write your X handle here and send a DM to @IntersectMBO to verify ownershop of the account'}
+        helpfulText={'Write your X handle here and send a DM to @IntersectMBO to verify ownership of the account'}
         id="xverification"
         label={'X verification'}
         name="xverification"

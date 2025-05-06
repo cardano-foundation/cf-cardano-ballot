@@ -7,6 +7,7 @@ export const ICONS = {
   externalLinkIcon: "/icons/ExternalLink.svg",
   filterIcon: "/icons/Filter.svg",
   infoIcon: "/icons/Info.svg",
+  minusIcon: "/icons/Minus.svg",
   plusIcon: "/icons/Plus.svg",
   questionMarkCircleIcon: "/icons/QuestionMarkCircle.svg",
   searchIcon: "/icons/Search.svg",

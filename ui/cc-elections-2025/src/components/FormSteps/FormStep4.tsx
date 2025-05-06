@@ -17,9 +17,14 @@ export const FormStep4 = () => {
   const { data, error, setData, memberInit, handleMemberChange } = useRegisterFormContext();
   const options = useMemo(() => geographicRepresentationList(), []);
 
-  const handleOnClick = () => {
+  const handleAddClick = () => {
     if (data.membersAmount >= 20) return;
     setData(prevData => ({...prevData, members: [...prevData.members, memberInit ], membersAmount: prevData.membersAmount + 1}));
+  }
+
+  const handleRemoveClick = () => {
+    if (data.membersAmount <= 2) return;
+    setData(prevData => ({...prevData, members: prevData.members.slice(0, -1), membersAmount: prevData.membersAmount - 1}));
   }
 
   return (
@@ -133,17 +138,28 @@ export const FormStep4 = () => {
           <Divider />
         </Fragment>
       ))}
-      {data.membersAmount < 20 && (
-        <Box sx={{ textAlign: "center" }}>
+
+      <Box sx={{ display: "flex", gap: "16px", justifyContent: "center" }}>
+        {data.membersAmount < 20 && (
           <Button
             variant="outlined"
-            onClick={handleOnClick}
+            onClick={handleAddClick}
             endIcon={<img src={ICONS.plusIcon} alt="" />}
           >
             Add member
           </Button>
-        </Box>
-      )}
+        )}
+        {data.membersAmount > 2 && (
+          <Button
+            variant="outlined"
+            onClick={handleRemoveClick}
+            endIcon={<img src={ICONS.minusIcon} alt="" />}
+          >
+            Remove member
+          </Button>
+        )}
+      </Box>
+
     </Box>
   );
 }

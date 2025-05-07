@@ -73,21 +73,21 @@ export const MemberCard = (
       </Box>
       {country && (
         <Box sx={{ padding: '8px 0' }}>
-          <Typography variant="overline">Geographic Representation</Typography>
+          <Typography variant="subtitle2">GEOGRAPHIC REPRESENTATION</Typography>
           <Typography variant="body1" color="#506288">
             {country}
           </Typography>
         </Box>
       )}
       <Box>
-        <Typography variant="caption">BIO</Typography>
+        <Typography variant="subtitle2">BIO</Typography>
         <Typography variant="body1" color="#506288" sx={{ paddingBottom: '16px' }}>
           {bio}
         </Typography>
       </Box>
       {conflictOfInterest && (
         <Box>
-          <Typography variant="caption">Conflict of Interest</Typography>
+          <Typography variant="subtitle2">CONFLICT OF INTEREST</Typography>
           <Typography variant="body1" color="#506288" sx={{ paddingBottom: '16px' }}>
             {conflictOfInterest}
           </Typography>
@@ -95,7 +95,7 @@ export const MemberCard = (
       )}
       {drepId && (
         <Box>
-          <Typography variant="caption">DRep ID</Typography>
+          <Typography variant="subtitle2">DREP ID</Typography>
           <Typography variant="body1" color="#506288" sx={{ paddingBottom: '16px' }}>
             {drepId}
           </Typography>
@@ -103,7 +103,7 @@ export const MemberCard = (
       )}
       {stakeId && (
         <Box>
-          <Typography variant="caption">Stake ID</Typography>
+          <Typography variant="subtitle2">STAKE ID</Typography>
           <Typography variant="body1" color="#506288" sx={{ paddingBottom: '16px' }}>
             {stakeId}
           </Typography>

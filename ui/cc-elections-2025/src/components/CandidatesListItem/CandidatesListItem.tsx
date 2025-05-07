@@ -56,21 +56,23 @@ export const CandidatesListItem = (props: CandidatesListItemProps) => {
               </Tooltip>
             )}
           </Box>
-          <Typography variant="h3">
+          <Typography variant="h3" sx={{ wordWrap: 'break-word' }}>
             {props.name}
           </Typography>
         </Box>
-        <Chip
-          label={chipText(props.candidateType)}
-          sx={{
-            borderRadius: '100px',
-            color: '#212A3D',
-            backgroundColor: '#EDEBFF',
-          }}
-        />
+        <Box>
+          <Chip
+            label={chipText(props.candidateType)}
+            sx={{
+              borderRadius: '100px',
+              color: '#212A3D',
+              backgroundColor: '#EDEBFF',
+            }}
+          />
+        </Box>
       </Box>
       <Box sx={{ padding: '20px 24px 16px' }}>
-        <Typography variant="body1">
+        <Typography variant="body1" sx={{ wordWrap: 'break-word' }}>
           {props.bio.length > 140 ? `${props.bio.substring(0, 140)}...` : props.bio}
         </Typography>
       </Box>

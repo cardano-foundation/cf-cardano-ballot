@@ -1,4 +1,5 @@
 import Box from "@mui/material/Box";
+import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import { Checkbox } from "@/components/molecules/Field/Checkbox";
 
@@ -19,35 +20,45 @@ export const FormStep1 = () => {
       </Box>
       <Box>
         <Checkbox
-          checked={data.guidelines}
-          errorMessage={error && error.guidelines ? 'This field is required.' : ''}
-          label={'*I have read and agree to the'}
-          link={'https://docs.intersectmbo.org/cardano/cardano-governance/cardano-constitution/2025-constitutional-committee-elections/guidelines-for-participation-in-a-constitutional-committee-election'}
-          linkText={'guidelines'}
-          name="guidelines"
-          value={data.guidelines}
-          onChange={handleChange}
-        />
-        <Checkbox
           checked={data.termsOfUse}
           errorMessage={error && error.termsOfUse ? 'This field is required.' : ''}
-          label={'*I have read and agree to the'}
-          link={'https://docs.intersectmbo.org/legal/policies-and-conditions/terms-of-use'}
-          linkText={'Terms of Use'}
+          label={'*I have read and agree to the guidelines, Terms of Use, and Privacy Policy'}
           name="termsOfUse"
           value={data.termsOfUse}
           onChange={handleChange}
         />
-        <Checkbox
-          checked={data.privacyPolicy}
-          errorMessage={error && error.privacyPolicy ? 'This field is required.' : ''}
-          label={'*I have read and agree to the'}
-          link={'https://docs.intersectmbo.org/legal/policies-and-conditions/privacy-policy'}
-          linkText={'Privacy Policy'}
-          name="privacyPolicy"
-          value={data.privacyPolicy}
-          onChange={handleChange}
-        />
+        <Box sx={{ marginTop: '16px' }}>
+          <Box>
+            <Link
+              href="https://docs.intersectmbo.org/cardano/cardano-governance/cardano-constitution/2025-constitutional-committee-elections/guidelines-for-participation-in-a-constitutional-committee-election"
+              target="_blank"
+              rel="noopenner"
+              variant="body2"
+            >
+              Read the guidelines
+            </Link>
+          </Box>
+          <Box>
+            <Link
+              href="https://docs.intersectmbo.org/legal/policies-and-conditions/terms-of-use"
+              target="_blank"
+              rel="noopenner"
+              variant="body2"
+            >
+              Read the Terms of Use
+            </Link>
+          </Box>
+          <Box>
+            <Link
+              href="https://docs.intersectmbo.org/legal/policies-and-conditions/privacy-policy"
+              target="_blank"
+              rel="noopenner"
+              variant="body2"
+            >
+              Read the Privacy Policy
+            </Link>
+          </Box>
+        </Box>
       </Box>
     </Box>
   )

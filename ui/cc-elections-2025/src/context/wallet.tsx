@@ -313,7 +313,7 @@ const CardanoProvider = (props: Props) => {
 
 function useCardano() {
   const context = useContext(CardanoContext);
-  const { closeModal } = useModal();
+  const { openModal, closeModal } = useModal();
 
   if (context === undefined) {
     throw new Error("useCardano must be used within a CardanoProvider");
@@ -328,8 +328,20 @@ function useCardano() {
           setItemToLocalStorage(`${NETWORK_INFO_KEY}_${walletName}`, true);
           return result;
         }
-      } catch (e) {
+      } catch (e: any) {
         await context.disconnectWallet();
+        openModal({
+          type: "statusModal",
+          state: {
+            status: "warning",
+            message: e.error.message,
+            onSubmit: () => {
+              closeModal();
+            },
+            title: 'Oops!',
+            dataTestId: "wallet-connection-error-modal",
+          },
+        });
         throw e;
       }
     },

@@ -39,7 +39,7 @@ export const theme = createTheme({
     MuiSelect: {
       styleOverrides: {
         select: {
-          padding: "4px 0 5px",
+          padding: "4px 16px 5px",
         },
       }
     },
@@ -191,6 +191,7 @@ export const theme = createTheme({
       fontSize: "14px",
       fontWeight: 700,
       lineHeight: 1.5,
+      textTransform: "none",
     },
     caption: {
       fontSize: "12px",

@@ -19,9 +19,7 @@ export type ConsortiumMemberFormData = {
 }
 
 export type RegisterFormData = {
-  guidelines: boolean;
   termsOfUse: boolean;
-  privacyPolicy: boolean;
   coldCredential: string;
   governanceActionRationale: string;
   name: string;
@@ -57,9 +55,7 @@ export type RegisterFormData = {
 
 export type ErrObject = {
   members?: { name?: boolean, bio?: boolean, socialLinkedin?: boolean, socialX?: boolean, socialDiscord?: boolean, socialTelegram?: boolean, socialOther?: boolean, socialWebsite?: boolean }[];
-  guidelines?: boolean;
   termsOfUse?: boolean;
-  privacyPolicy?: boolean;
   name?: boolean;
   email?: boolean;
   about?: boolean;

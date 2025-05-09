@@ -29,7 +29,11 @@ export const WalletOptionButton: FC<WalletOption> = ({
   const enableByWalletName = useCallback(async () => {
     if (isEnableLoading) return;
 
-    await enable(name);
+    const result = await enable(name);
+
+    if (result?.stakeKey) {
+      return;
+    }
 
   }, [enable, isEnableLoading]);
 

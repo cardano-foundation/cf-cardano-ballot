@@ -3,6 +3,7 @@ import { createContext, useContext, useMemo, useReducer } from "react";
 import { type MuiModalChildren } from "@atoms";
 import {
   ChooseWalletModal,
+  StatusModal
 } from "@organisms";
 import { basicReducer, callAll, BasicReducer } from "@utils";
 
@@ -32,6 +33,9 @@ const modals: Record<ModalType, ContextModal> = {
   },
   chooseWallet: {
     component: <ChooseWalletModal />,
+  },
+  statusModal: {
+    component: <StatusModal />,
   },
 };
 

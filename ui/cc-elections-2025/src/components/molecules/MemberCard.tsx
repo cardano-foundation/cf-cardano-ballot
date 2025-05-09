@@ -37,11 +37,11 @@ export const MemberCard = (
   }: MemberCardProps
 ) => {
   const socialLinks: { type: string, link: string }[] = [];
-  website && website.length && socialLinks.push({ type: 'Website', link: website});
-  socialDiscord && socialDiscord.length && socialLinks.push({ type: 'Discord', link: socialDiscord});
-  socialLinkedin && socialLinkedin.length && socialLinks.push({ type: 'Linkedin', link: socialLinkedin});
   socialX && socialX.length && socialLinks.push({ type: 'X (Twitter)', link: socialX});
+  socialLinkedin && socialLinkedin.length && socialLinks.push({ type: 'Linkedin', link: socialLinkedin});
+  socialDiscord && socialDiscord.length && socialLinks.push({ type: 'Discord', link: socialDiscord});
   socialTelegram && socialTelegram.length && socialLinks.push({ type: 'Telegram', link: socialTelegram});
+  website && website.length && socialLinks.push({ type: 'Website', link: website});
   socialOther && socialOther.length && socialLinks.push({ type: 'Other', link: socialOther});
 
   return (
@@ -112,7 +112,7 @@ export const MemberCard = (
       <Box sx={{display: 'flex', columnGap: '40px', flexWrap: 'wrap'}}>
         {socialLinks.map((socialLink) => (
           <Box sx={{ padding: '8px 0' }} key={socialLink.type}>
-            <Link variant="overline" href={socialLink.link}>{socialLink.type}</Link>
+            <Link variant="body2" href={socialLink.link} target="_blank" rel="noopener">{socialLink.type}</Link>
           </Box>
         ))}
       </Box>

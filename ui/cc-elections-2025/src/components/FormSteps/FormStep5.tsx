@@ -195,8 +195,8 @@ export const FormStep5 = () => {
           value={data.additionalInfo}
         />
         <Input
-          errorMessage={error && error.videoPresentationLink ? 'Enter a valid YouTube URL' : ''}
-          helpfulText={'Share a video (as a YouTube link) to present yourself and your application'}
+          errorMessage={error && error.videoPresentationLink ? 'Enter a valid YouTube or X post URL' : ''}
+          helpfulText={'Share a video (as a YouTube link or X post) to present yourself and your application'}
           id="videoPresentationLink"
           label={'Video link'}
           name="videoPresentationLink"

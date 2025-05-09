@@ -19,6 +19,7 @@ import { RegisterFormContext, useCardano } from "@context";
 import { usePostCandidate } from "@hooks";
 import { CandidateBody } from "@models";
 import { CCStepper } from "@/components/molecules/CCStepper.tsx";
+import { Footer } from "@organisms";
 
 import type { RegisterFormData, FormContextType } from '../types/formData';
 
@@ -29,8 +30,6 @@ type RegisterFormDataProps = keyof RegisterFormData;
 type FormErrors = {
   members?: { name?: boolean, bio?: boolean, socialLinkedin?: boolean, socialX?: boolean, socialDiscord?: boolean, socialTelegram?: boolean, socialOther?: boolean, socialWebsite?: boolean }[];
   termsOfUse?: boolean;
-  guidelines?: boolean;
-  privacyPolicy?: boolean;
   name?: boolean;
   email?: boolean;
   about?: boolean;
@@ -170,7 +169,9 @@ export const Form = () => {
           errors.email = true;
         }
       } else if(key === 'videoPresentationLink') {
-        if (!(/(?:http?s?:\/\/)?(?:www.)?(?:m.)?(?:music.)?youtu(?:\.?be)(?:\.com)?(?:(?:\w*.?:\/\/)?\w*.?\w*-?.?\w*\/(?:embed|e|v|watch|.*\/)?\??(?:feature=\w*\.?\w*)?&?(?:v=)?\/?)([\w\d_-]{11})(?:\S+)?/.test(value as string)) && value !== '') {
+        if (!(/(?:http?s?:\/\/)?(?:www.)?(?:m.)?(?:music.)?youtu(?:\.?be)(?:\.com)?(?:(?:\w*.?:\/\/)?\w*.?\w*-?.?\w*\/(?:embed|e|v|watch|.*\/)?\??(?:feature=\w*\.?\w*)?&?(?:v=)?\/?)([\w\d_-]{11})(?:\S+)?/.test(value as string)) &&
+          !(/^https?:\/\/(www\.)?(x\.com|twitter\.com)\/[a-zA-Z0-9_]{1,15}\/status\/(\d+)$/.test(value as string)) &&
+          value !== '') {
           errors.videoPresentationLink = true;
         }
       } else if(key === 'socialLinkedin') {
@@ -256,54 +257,57 @@ export const Form = () => {
   }
 
   return (
-    <Layout>
-      <Box>
-        <TopNav title="Apply as a candidate" navigateBack={false} />
-        {page > 2 && (
-          <Box sx={{ maxWidth: '1440px', padding: '24px 0'}}>
-            <CCStepper
-              activeStep={candidateType !== 'consortium' && page > 3 ? page - 4 : page - 3}
-              steps={candidateType !== 'consortium' ? steps.filter(v => !v.includes('Members')) : steps}
-            />
-          </Box>
-        )}
-        <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '24px', marginBottom: '56px' }}>
-          <Box className={styles.container}>
-            <Typography variant="h1">
-              {
-                page === 4 ?
-                  `${informationTitle} ${title[page]}`
-                  : title[page]
-              }
-            </Typography>
-            {display[page]}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', paddingTop: '16px' }}>
-              <Button variant="text" onClick={handleDiscard}>
-                Discard
-              </Button>
-              <Box sx={{ display: 'flex', gap: '12px' }}>
-                {page > 1 && (
+    <Box sx={{ backgroundColor: '#f2f4f8', minHeight: '100vh' }}>
+      <TopNav title="Apply as a candidate" navigateBack={false} />
+      <Layout>
+        <Box>
+          {page > 2 && (
+            <Box sx={{ maxWidth: '1440px', padding: '24px 0'}}>
+              <CCStepper
+                activeStep={candidateType !== 'consortium' && page > 3 ? page - 4 : page - 3}
+                steps={candidateType !== 'consortium' ? steps.filter(v => !v.includes('Members')) : steps}
+              />
+            </Box>
+          )}
+          <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '24px', marginBottom: '24px' }}>
+            <Box className={styles.container}>
+              <Typography variant="h1">
+                {
+                  page === 4 ?
+                    `${informationTitle} ${title[page]}`
+                    : title[page]
+                }
+              </Typography>
+              {display[page]}
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', paddingTop: '16px' }}>
+                <Button variant="text" onClick={handleDiscard}>
+                  Discard
+                </Button>
+                <Box sx={{ display: 'flex', gap: '12px' }}>
+                  {page > 1 && (
+                    <Button
+                      variant="text"
+                      onClick={handleBack}
+                      startIcon={<img src={ICONS.arrowCircleLeft} alt="" />}
+                    >
+                      Back
+                    </Button>
+                  )}
                   <Button
                     variant="text"
-                    onClick={handleBack}
-                    startIcon={<img src={ICONS.arrowCircleLeft} alt="" />}
+                    endIcon={<img src={ICONS.arrowCircleRight} alt="" />}
+                    onClick={isSubmit ? handleSubmit : handleNext}
+                    isLoading={postCandidate && postCandidate.isLoading}
                   >
-                    Back
+                    {isSubmit ? 'Submit' : 'Next'}
                   </Button>
-                )}
-                <Button
-                  variant="text"
-                  endIcon={<img src={ICONS.arrowCircleRight} alt="" />}
-                  onClick={isSubmit ? handleSubmit : handleNext}
-                  isLoading={postCandidate && postCandidate.isLoading}
-                >
-                  {isSubmit ? 'Submit' : 'Next'}
-                </Button>
+                </Box>
               </Box>
             </Box>
           </Box>
         </Box>
-      </Box>
-    </Layout>
+      </Layout>
+      <Footer />
+    </Box>
   )
 }

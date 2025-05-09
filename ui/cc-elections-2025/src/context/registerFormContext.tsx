@@ -39,7 +39,7 @@ export const RegisterFormProvider = ({ children }: FormProviderProps) => {
   };
 
   const req = [
-    ['guidelines', 'privacyPolicy', 'termsOfUse'],
+    ['termsOfUse'],
     [],
     [],
     [],
@@ -68,8 +68,6 @@ export const RegisterFormProvider = ({ children }: FormProviderProps) => {
   const [error, setError] = useState<ErrObject>({});
 
   const [data, setData] = useState<RegisterFormData>({
-    guidelines: false,
-    privacyPolicy: false,
     termsOfUse: false,
     coldCredential: '',
     governanceActionRationale: '',

@@ -20,7 +20,7 @@ export const Select = ({ errorMessage, dataTestId, sx, ...rest }: SelectProps) =
         SelectIcon
       }
       sx={{
-        padding: "8px 16px",
+        padding: "8px 0",
         width: "100%",
         "& input.Mui-disabled": {
           WebkitTextFillColor: "#4C495B",

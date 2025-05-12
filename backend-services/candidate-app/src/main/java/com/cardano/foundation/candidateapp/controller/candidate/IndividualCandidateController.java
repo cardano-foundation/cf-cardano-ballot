@@ -1,8 +1,8 @@
 package com.cardano.foundation.candidateapp.controller.candidate;
 
-import com.cardano.foundation.candidateapp.dto.IndividualCandidateRequestDto;
-import com.cardano.foundation.candidateapp.dto.IndividualCandidateResponseDto;
-import com.cardano.foundation.candidateapp.service.IndividualCandidateService;
+import com.cardano.foundation.candidateapp.dto.candidate.IndividualCandidateRequestDto;
+import com.cardano.foundation.candidateapp.dto.candidate.IndividualCandidateResponseDto;
+import com.cardano.foundation.candidateapp.service.candidate.IndividualCandidateService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -1,7 +1,7 @@
 package com.cardano.foundation.candidateapp.controller;
 
 import com.cardano.foundation.candidateapp.controller.candidate.CompanyCandidateController;
-import com.cardano.foundation.candidateapp.service.CompanyCandidateService;
+import com.cardano.foundation.candidateapp.service.candidate.CompanyCandidateService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;

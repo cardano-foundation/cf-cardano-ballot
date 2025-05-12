@@ -1,10 +1,16 @@
 package com.cardano.foundation.candidateapp.service;
 
-import com.cardano.foundation.candidateapp.dto.*;
+import com.cardano.foundation.candidateapp.dto.candidate.*;
 import com.cardano.foundation.candidateapp.exception.ResourceNotFoundException;
-import com.cardano.foundation.candidateapp.mapper.*;
-import com.cardano.foundation.candidateapp.model.*;
-import com.cardano.foundation.candidateapp.repository.*;
+import com.cardano.foundation.candidateapp.mapper.candidate.CandidateMapper;
+import com.cardano.foundation.candidateapp.mapper.candidate.ConsortiumMemberMapper;
+import com.cardano.foundation.candidateapp.model.candidate.Candidate;
+import com.cardano.foundation.candidateapp.model.candidate.ConsortiumCandidate;
+import com.cardano.foundation.candidateapp.model.candidate.ConsortiumMember;
+import com.cardano.foundation.candidateapp.repository.candidate.CandidateRepository;
+import com.cardano.foundation.candidateapp.repository.candidate.ConsortiumCandidateRepository;
+import com.cardano.foundation.candidateapp.repository.candidate.ConsortiumMemberRepository;
+import com.cardano.foundation.candidateapp.service.candidate.ConsortiumCandidateService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
@@ -18,11 +24,16 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ConsortiumCandidateServiceTest {
-    @Mock CandidateRepository candidateRepo;
-    @Mock ConsortiumCandidateRepository consortiumRepo;
-    @Mock ConsortiumMemberRepository memberRepo;
-    @Mock CandidateMapper candidateMapper;
-    @Mock ConsortiumMemberMapper memberMapper;
+    @Mock
+    CandidateRepository candidateRepo;
+    @Mock
+    ConsortiumCandidateRepository consortiumRepo;
+    @Mock
+    ConsortiumMemberRepository memberRepo;
+    @Mock
+    CandidateMapper candidateMapper;
+    @Mock
+    ConsortiumMemberMapper memberMapper;
 
     @InjectMocks
     ConsortiumCandidateService service;

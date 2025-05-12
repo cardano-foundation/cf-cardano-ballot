@@ -1,8 +1,7 @@
 package com.cardano.foundation.candidateapp.controller.candidate;
 
-import com.cardano.foundation.candidateapp.service.VerifyCandidateService;
+import com.cardano.foundation.candidateapp.service.candidate.VerifyCandidateService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

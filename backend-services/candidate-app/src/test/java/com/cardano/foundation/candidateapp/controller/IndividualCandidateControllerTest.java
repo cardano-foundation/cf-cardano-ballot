@@ -1,10 +1,10 @@
 package com.cardano.foundation.candidateapp.controller;
 
 import com.cardano.foundation.candidateapp.controller.candidate.IndividualCandidateController;
-import com.cardano.foundation.candidateapp.dto.CandidateResponseDto;
-import com.cardano.foundation.candidateapp.dto.IndividualCandidateResponseDto;
-import com.cardano.foundation.candidateapp.model.CandidateType;
-import com.cardano.foundation.candidateapp.service.IndividualCandidateService;
+import com.cardano.foundation.candidateapp.dto.candidate.CandidateResponseDto;
+import com.cardano.foundation.candidateapp.dto.candidate.IndividualCandidateResponseDto;
+import com.cardano.foundation.candidateapp.model.candidate.CandidateType;
+import com.cardano.foundation.candidateapp.service.candidate.IndividualCandidateService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

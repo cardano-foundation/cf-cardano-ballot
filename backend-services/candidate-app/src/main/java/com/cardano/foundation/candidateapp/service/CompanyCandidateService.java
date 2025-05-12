@@ -25,10 +25,11 @@ public class CompanyCandidateService {
     private final CandidateMapper candidateMapper;
     private final CompanyCandidateMapper companyMapper;
 
-    public CompanyCandidateResponseDto create(CompanyCandidateRequestDto dto) {
+    public CompanyCandidateResponseDto create(CompanyCandidateRequestDto dto, boolean isDraft) {
         Candidate candidate = candidateMapper.toEntity(dto.getCandidate());
         candidate.setCandidateType(CandidateType.company);
         candidate.setVerified(false);
+        candidate.setDraft(isDraft);
         Candidate savedCandidate = candidateRepo.save(candidate);
 
         CompanyCandidate company = new CompanyCandidate();
@@ -39,18 +40,30 @@ public class CompanyCandidateService {
         return companyMapper.toDto(companyRepo.save(company));
     }
 
-    public List<CompanyCandidateResponseDto> getAll() {
-        return companyRepo.findAll().stream().map(companyMapper::toDto).collect(Collectors.toList());
+    public List<CompanyCandidateResponseDto> getAll(boolean isDraft) {
+        return companyRepo.findAll().stream()
+                .filter(e -> e.getCandidate().isDraft() == isDraft)
+                .map(companyMapper::toDto)
+                .collect(Collectors.toList());
     }
 
-    public CompanyCandidateResponseDto getById(Long id) {
-        return companyMapper.toDto(
-                companyRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Company candidate not found"))
+    public List<CompanyCandidateResponseDto> getAllByWalletAddress(String walletAddress, boolean isDraft) {
+        return companyRepo.findAllByCandidate_WalletAddress(walletAddress).stream()
+                .filter(e -> e.getCandidate().isDraft() == isDraft)
+                .map(companyMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public CompanyCandidateResponseDto getById(Long id, boolean isDraft) {
+        return companyMapper.toDto(companyRepo.findById(id)
+                        .filter(e -> e.getCandidate().isDraft() == isDraft)
+                        .orElseThrow(() -> new ResourceNotFoundException("Company candidate not found"))
         );
     }
 
-    public CompanyCandidateResponseDto update(Long id, CompanyCandidateRequestDto dto) {
+    public CompanyCandidateResponseDto update(Long id, CompanyCandidateRequestDto dto, boolean isDraft) {
         CompanyCandidate existing = companyRepo.findById(id)
+                .filter(e -> e.getCandidate().isDraft() == isDraft)
                 .orElseThrow(() -> new ResourceNotFoundException("Company candidate not found"));
 
         Candidate updatedCandidate = candidateMapper.toEntity(dto.getCandidate());
@@ -65,7 +78,28 @@ public class CompanyCandidateService {
         return companyMapper.toDto(companyRepo.save(existing));
     }
 
-    public void delete(Long id) {
+    public CompanyCandidateResponseDto publish(Long id, CompanyCandidateRequestDto dto) {
+        CompanyCandidate existing = companyRepo.findById(id)
+                .filter(e -> e.getCandidate().isDraft())
+                .orElseThrow(() -> new ResourceNotFoundException("Company candidate not found"));
+
+        Candidate updatedCandidate = candidateMapper.toEntity(dto.getCandidate());
+        updatedCandidate.setId(existing.getCandidate().getId());
+        updatedCandidate.setCandidateType(CandidateType.company);
+        updatedCandidate.setDraft(false);
+        Candidate saved = candidateRepo.save(updatedCandidate);
+
+        existing.setCandidate(saved);
+        existing.setRegistrationNumber(dto.getRegistrationNumber());
+        existing.setKeyContactPerson(dto.getKeyContactPerson());
+
+        return companyMapper.toDto(companyRepo.save(existing));
+    }
+
+    public void delete(Long id, boolean isDraft) {
+        companyRepo.findById(id)
+            .filter(e -> e.getCandidate().isDraft() == isDraft)
+            .orElseThrow(() -> new ResourceNotFoundException("Company candidate not found"));
         candidateRepo.deleteById(id);
     }
 }

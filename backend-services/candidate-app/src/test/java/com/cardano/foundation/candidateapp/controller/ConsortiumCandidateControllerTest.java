@@ -1,5 +1,6 @@
 package com.cardano.foundation.candidateapp.controller;
 
+import com.cardano.foundation.candidateapp.controller.candidate.ConsortiumCandidateController;
 import com.cardano.foundation.candidateapp.dto.*;
 import com.cardano.foundation.candidateapp.model.CandidateType;
 import com.cardano.foundation.candidateapp.service.ConsortiumCandidateService;
@@ -17,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -62,7 +64,7 @@ class ConsortiumCandidateControllerTest {
                 .members(List.of(member, member2))
                 .build();
 
-        when(service.create(any())).thenReturn(input);
+        when(service.create(any(), anyBoolean())).thenReturn(input);
 
         mockMvc.perform(post("/api/consortia")
                         .contentType(MediaType.APPLICATION_JSON)

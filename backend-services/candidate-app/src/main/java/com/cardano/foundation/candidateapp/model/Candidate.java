@@ -64,6 +64,9 @@ public class Candidate {
     @Column(name = "is_verified")
     private boolean verified;
 
+    @Column(name = "is_draft")
+    private boolean draft;
+
     @Column(updatable = false)
     private LocalDateTime createdAt;
 

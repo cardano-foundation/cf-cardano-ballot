@@ -1,5 +1,6 @@
 package com.cardano.foundation.candidateapp.controller;
 
+import com.cardano.foundation.candidateapp.controller.candidate.IndividualCandidateController;
 import com.cardano.foundation.candidateapp.service.IndividualCandidateService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.Resource;

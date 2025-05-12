@@ -1,4 +1,4 @@
-package com.cardano.foundation.candidateapp.controller;
+package com.cardano.foundation.candidateapp.controller.candidate;
 
 import com.cardano.foundation.candidateapp.service.VerifyCandidateService;
 import lombok.RequiredArgsConstructor;

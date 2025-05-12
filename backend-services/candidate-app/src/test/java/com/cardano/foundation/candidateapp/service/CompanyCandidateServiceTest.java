@@ -57,7 +57,7 @@ class CompanyCandidateServiceTest {
         when(companyRepo.save(any())).thenReturn(company);
         when(companyMapper.toDto(any())).thenReturn(new CompanyCandidateResponseDto(responseDto, "REG-123", "John Doe"));
 
-        CompanyCandidateResponseDto result = service.create(new CompanyCandidateRequestDto(dto, "REG-123", "John Doe"));
+        CompanyCandidateResponseDto result = service.create(new CompanyCandidateRequestDto(dto, "REG-123", "John Doe"), false);
 
         assertEquals("Acme Inc.", result.getCandidate().getName());
         verify(candidateRepo).save(any());
@@ -68,7 +68,7 @@ class CompanyCandidateServiceTest {
     void shouldThrowWhenNotFound() {
         when(companyRepo.findById(999L)).thenReturn(Optional.empty());
 
-        RuntimeException ex = assertThrows(ResourceNotFoundException.class, () -> service.getById(999L));
+        RuntimeException ex = assertThrows(ResourceNotFoundException.class, () -> service.getById(999L, false));
         assertEquals("Company candidate not found", ex.getMessage());
     }
 }

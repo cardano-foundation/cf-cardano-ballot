@@ -1,8 +1,7 @@
 package com.cardano.foundation.candidateapp.controller;
 
-import com.cardano.foundation.candidateapp.dto.CandidateRequestDto;
+import com.cardano.foundation.candidateapp.controller.candidate.IndividualCandidateController;
 import com.cardano.foundation.candidateapp.dto.CandidateResponseDto;
-import com.cardano.foundation.candidateapp.dto.CompanyCandidateRequestDto;
 import com.cardano.foundation.candidateapp.dto.IndividualCandidateResponseDto;
 import com.cardano.foundation.candidateapp.model.CandidateType;
 import com.cardano.foundation.candidateapp.service.IndividualCandidateService;
@@ -58,7 +57,7 @@ class IndividualCandidateControllerTest {
         IndividualCandidateResponseDto request = new IndividualCandidateResponseDto(candidate);
         IndividualCandidateResponseDto response = new IndividualCandidateResponseDto(candidate);
 
-        when(service.create(any())).thenReturn(response);
+        when(service.create(any(), anyBoolean())).thenReturn(response);
 
         mockMvc.perform(post("/api/individuals")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -67,6 +66,6 @@ class IndividualCandidateControllerTest {
                 .andExpect(jsonPath("$.candidate.name").value("Jane Doe"))
                 .andExpect(jsonPath("$.candidate.walletAddress").value("walletAddress"));
 
-        verify(service).create(any());
+        verify(service).create(any(), anyBoolean());
     }
 }

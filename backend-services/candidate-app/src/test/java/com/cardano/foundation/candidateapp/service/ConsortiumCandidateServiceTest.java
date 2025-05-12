@@ -63,7 +63,7 @@ class ConsortiumCandidateServiceTest {
         when(consortiumRepo.save(any())).thenReturn(savedConsortium);
         when(memberMapper.toEntity(memberDto)).thenReturn(new ConsortiumMember());
 
-        ConsortiumCandidateResponseDto result = service.create(input);
+        ConsortiumCandidateResponseDto result = service.create(input, false);
 
         assertNotNull(result);
         verify(candidateRepo).save(entity);
@@ -74,7 +74,7 @@ class ConsortiumCandidateServiceTest {
     void shouldThrowWhenNotFound() {
         when(consortiumRepo.findById(42L)).thenReturn(Optional.empty());
 
-        RuntimeException ex = assertThrows(ResourceNotFoundException.class, () -> service.getById(42L));
+        RuntimeException ex = assertThrows(ResourceNotFoundException.class, () -> service.getById(42L, false));
         assertEquals("Consortium candidate not found", ex.getMessage());
     }
 }

@@ -57,7 +57,7 @@ class IndividualCandidateServiceTest {
         when(individualRepository.save(any())).thenReturn(individual);
         when(individualMapper.toDto(any())).thenReturn(new IndividualCandidateResponseDto(responseDto));
 
-        IndividualCandidateResponseDto result = service.create(new IndividualCandidateRequestDto(dto));
+        IndividualCandidateResponseDto result = service.create(new IndividualCandidateRequestDto(dto), false);
 
         assertNotNull(result);
         assertEquals("Test User", result.getCandidate().getName());
@@ -69,7 +69,7 @@ class IndividualCandidateServiceTest {
     void shouldThrowWhenCandidateNotFound() {
         when(individualRepository.findById(42L)).thenReturn(Optional.empty());
 
-        RuntimeException ex = assertThrows(ResourceNotFoundException.class, () -> service.getById(42L));
+        RuntimeException ex = assertThrows(ResourceNotFoundException.class, () -> service.getById(42L, false));
         assertEquals("Individual candidate not found", ex.getMessage());
     }
 }

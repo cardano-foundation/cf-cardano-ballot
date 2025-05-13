@@ -1,17 +1,18 @@
 package com.cardano.foundation.candidateapp.service;
 
-import com.cardano.foundation.candidateapp.dto.CandidateRequestDto;
-import com.cardano.foundation.candidateapp.dto.CandidateResponseDto;
-import com.cardano.foundation.candidateapp.dto.IndividualCandidateRequestDto;
-import com.cardano.foundation.candidateapp.dto.IndividualCandidateResponseDto;
+import com.cardano.foundation.candidateapp.dto.candidate.CandidateRequestDto;
+import com.cardano.foundation.candidateapp.dto.candidate.CandidateResponseDto;
+import com.cardano.foundation.candidateapp.dto.candidate.IndividualCandidateRequestDto;
+import com.cardano.foundation.candidateapp.dto.candidate.IndividualCandidateResponseDto;
 import com.cardano.foundation.candidateapp.exception.ResourceNotFoundException;
-import com.cardano.foundation.candidateapp.mapper.CandidateMapper;
-import com.cardano.foundation.candidateapp.mapper.IndividualCandidateMapper;
-import com.cardano.foundation.candidateapp.model.Candidate;
-import com.cardano.foundation.candidateapp.model.CandidateType;
-import com.cardano.foundation.candidateapp.model.IndividualCandidate;
-import com.cardano.foundation.candidateapp.repository.CandidateRepository;
-import com.cardano.foundation.candidateapp.repository.IndividualCandidateRepository;
+import com.cardano.foundation.candidateapp.mapper.candidate.CandidateMapper;
+import com.cardano.foundation.candidateapp.mapper.candidate.IndividualCandidateMapper;
+import com.cardano.foundation.candidateapp.model.candidate.Candidate;
+import com.cardano.foundation.candidateapp.model.candidate.CandidateType;
+import com.cardano.foundation.candidateapp.model.candidate.IndividualCandidate;
+import com.cardano.foundation.candidateapp.repository.candidate.CandidateRepository;
+import com.cardano.foundation.candidateapp.repository.candidate.IndividualCandidateRepository;
+import com.cardano.foundation.candidateapp.service.candidate.IndividualCandidateService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
@@ -57,7 +58,7 @@ class IndividualCandidateServiceTest {
         when(individualRepository.save(any())).thenReturn(individual);
         when(individualMapper.toDto(any())).thenReturn(new IndividualCandidateResponseDto(responseDto));
 
-        IndividualCandidateResponseDto result = service.create(new IndividualCandidateRequestDto(dto));
+        IndividualCandidateResponseDto result = service.create(new IndividualCandidateRequestDto(dto), false);
 
         assertNotNull(result);
         assertEquals("Test User", result.getCandidate().getName());
@@ -69,7 +70,7 @@ class IndividualCandidateServiceTest {
     void shouldThrowWhenCandidateNotFound() {
         when(individualRepository.findById(42L)).thenReturn(Optional.empty());
 
-        RuntimeException ex = assertThrows(ResourceNotFoundException.class, () -> service.getById(42L));
+        RuntimeException ex = assertThrows(ResourceNotFoundException.class, () -> service.getById(42L, false));
         assertEquals("Individual candidate not found", ex.getMessage());
     }
 }

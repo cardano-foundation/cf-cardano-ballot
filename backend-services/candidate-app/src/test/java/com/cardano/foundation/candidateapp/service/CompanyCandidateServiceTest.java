@@ -1,17 +1,17 @@
 package com.cardano.foundation.candidateapp.service;
 
-import com.cardano.foundation.candidateapp.dto.CandidateRequestDto;
-import com.cardano.foundation.candidateapp.dto.CandidateResponseDto;
-import com.cardano.foundation.candidateapp.dto.CompanyCandidateRequestDto;
-import com.cardano.foundation.candidateapp.dto.CompanyCandidateResponseDto;
+import com.cardano.foundation.candidateapp.dto.candidate.CandidateRequestDto;
+import com.cardano.foundation.candidateapp.dto.candidate.CandidateResponseDto;
+import com.cardano.foundation.candidateapp.dto.candidate.CompanyCandidateRequestDto;
+import com.cardano.foundation.candidateapp.dto.candidate.CompanyCandidateResponseDto;
 import com.cardano.foundation.candidateapp.exception.ResourceNotFoundException;
-import com.cardano.foundation.candidateapp.mapper.CandidateMapper;
-import com.cardano.foundation.candidateapp.mapper.CompanyCandidateMapper;
-import com.cardano.foundation.candidateapp.model.Candidate;
-import com.cardano.foundation.candidateapp.model.CandidateType;
-import com.cardano.foundation.candidateapp.model.CompanyCandidate;
-import com.cardano.foundation.candidateapp.repository.CandidateRepository;
-import com.cardano.foundation.candidateapp.repository.CompanyCandidateRepository;
+import com.cardano.foundation.candidateapp.mapper.candidate.CandidateMapper;
+import com.cardano.foundation.candidateapp.mapper.candidate.CompanyCandidateMapper;
+import com.cardano.foundation.candidateapp.model.candidate.Candidate;
+import com.cardano.foundation.candidateapp.model.candidate.CompanyCandidate;
+import com.cardano.foundation.candidateapp.repository.candidate.CandidateRepository;
+import com.cardano.foundation.candidateapp.repository.candidate.CompanyCandidateRepository;
+import com.cardano.foundation.candidateapp.service.candidate.CompanyCandidateService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
@@ -57,7 +57,7 @@ class CompanyCandidateServiceTest {
         when(companyRepo.save(any())).thenReturn(company);
         when(companyMapper.toDto(any())).thenReturn(new CompanyCandidateResponseDto(responseDto, "REG-123", "John Doe"));
 
-        CompanyCandidateResponseDto result = service.create(new CompanyCandidateRequestDto(dto, "REG-123", "John Doe"));
+        CompanyCandidateResponseDto result = service.create(new CompanyCandidateRequestDto(dto, "REG-123", "John Doe"), false);
 
         assertEquals("Acme Inc.", result.getCandidate().getName());
         verify(candidateRepo).save(any());
@@ -68,7 +68,7 @@ class CompanyCandidateServiceTest {
     void shouldThrowWhenNotFound() {
         when(companyRepo.findById(999L)).thenReturn(Optional.empty());
 
-        RuntimeException ex = assertThrows(ResourceNotFoundException.class, () -> service.getById(999L));
+        RuntimeException ex = assertThrows(ResourceNotFoundException.class, () -> service.getById(999L, false));
         assertEquals("Company candidate not found", ex.getMessage());
     }
 }

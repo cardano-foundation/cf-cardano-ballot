@@ -1,4 +1,4 @@
-import { Fragment, useMemo } from "react";
+import {Fragment, useMemo, useRef, useImperativeHandle} from "react";
 import Box from "@mui/material/Box";
 import Divider from '@mui/material/Divider';
 import MenuItem from "@mui/material/MenuItem";
@@ -13,9 +13,23 @@ import { ICONS } from "@consts";
 import { useRegisterFormContext } from "@hooks";
 import { geographicRepresentationList } from "@utils";
 
-export const FormStep4 = () => {
+import type { Step4RefsType } from '@/types/formData.ts';
+
+type FormStep4Props = {
+  ref: React.Ref<Step4RefsType>;
+}
+
+export const FormStep4 = ({ ref }: FormStep4Props) => {
   const { data, error, setData, memberInit, handleMemberChange } = useRegisterFormContext();
   const options = useMemo(() => geographicRepresentationList(), []);
+
+  const inputRefs = useRef<Record<number, Record<string, HTMLInputElement | HTMLTextAreaElement | null>>>({});
+
+  useImperativeHandle(ref, () => ({
+    focusField: (index: number, name: string) => {
+      inputRefs.current[index]?.[name]?.focus();
+    },
+  }));
 
   const handleAddClick = () => {
     if (data.membersAmount >= 20) return;
@@ -39,6 +53,10 @@ export const FormStep4 = () => {
             name="name"
             onChange={(event) => handleMemberChange && handleMemberChange(event, index)}
             value={data.members[index].name}
+            ref={(el) => {
+              if (!inputRefs.current[index]) inputRefs.current[index] = {};
+              inputRefs.current[index].name = el;
+            }}
           />
           <Select
             id="country"
@@ -63,6 +81,10 @@ export const FormStep4 = () => {
             name="bio"
             onChange={(event) => handleMemberChange && handleMemberChange(event, index)}
             value={data.members[index].bio}
+            ref={(el) => {
+              if (!inputRefs.current[index]) inputRefs.current[index] = {};
+              inputRefs.current[index].bio = el;
+            }}
           />
           <Box>
             <Typography variant="subtitle2">Social media (Will be made public)</Typography>
@@ -75,6 +97,10 @@ export const FormStep4 = () => {
                 }
                 placeholder={'X (Twitter)'}
                 value={data.members[index].socialX}
+                ref={(el) => {
+                  if (!inputRefs.current[index]) inputRefs.current[index] = {};
+                  inputRefs.current[index].socialX = el;
+                }}
               />
               <Input
                 errorMessage={error && error.members && error.members[index] && error.members[index].socialLinkedin ? 'Enter a valid LinkedIn URL: https://www.linkedin.com/in/Your_Username' : ''}
@@ -82,6 +108,10 @@ export const FormStep4 = () => {
                 onChange={(event) => handleMemberChange && handleMemberChange(event, index)}
                 placeholder={'LinkedIn'}
                 value={data.members[index].socialLinkedin}
+                ref={(el) => {
+                  if (!inputRefs.current[index]) inputRefs.current[index] = {};
+                  inputRefs.current[index].socialLinkedin = el;
+                }}
               />
               <Input
                 errorMessage={error && error.members && error.members[index] && error.members[index].socialDiscord ? 'Enter a valid Discord URL: https://discordapp.com/users/Your_User_ID' : ''}
@@ -89,6 +119,10 @@ export const FormStep4 = () => {
                 onChange={(event) => handleMemberChange && handleMemberChange(event, index)}
                 placeholder={'Discord'}
                 value={data.members[index].socialDiscord}
+                ref={(el) => {
+                  if (!inputRefs.current[index]) inputRefs.current[index] = {};
+                  inputRefs.current[index].socialDiscord = el;
+                }}
               />
               <Input
                 errorMessage={error && error.members && error.members[index] && error.members[index].socialTelegram ? 'Enter a valid Telegram URL: https://t.me/Your_Username' : ''}
@@ -96,6 +130,10 @@ export const FormStep4 = () => {
                 onChange={(event) => handleMemberChange && handleMemberChange(event, index)}
                 placeholder={'Telegram'}
                 value={data.members[index].socialTelegram}
+                ref={(el) => {
+                  if (!inputRefs.current[index]) inputRefs.current[index] = {};
+                  inputRefs.current[index].socialTelegram = el;
+                }}
               />
               <Input
                 errorMessage={error && error.members && error.members[index] && error.members[index].socialWebsite ? 'Enter a valid URL' : ''}
@@ -103,6 +141,10 @@ export const FormStep4 = () => {
                 onChange={(event) => handleMemberChange && handleMemberChange(event, index)}
                 placeholder={'Website'}
                 value={data.members[index].socialWebsite}
+                ref={(el) => {
+                  if (!inputRefs.current[index]) inputRefs.current[index] = {};
+                  inputRefs.current[index].socialWebsite = el;
+                }}
               />
               <Input
                 errorMessage={error && error.members && error.members[index] && error.members[index].socialOther ? 'Enter a valid URL' : ''}
@@ -110,6 +152,10 @@ export const FormStep4 = () => {
                 onChange={(event) => handleMemberChange && handleMemberChange(event, index)}
                 placeholder={'Other'}
                 value={data.members[index].socialOther}
+                ref={(el) => {
+                  if (!inputRefs.current[index]) inputRefs.current[index] = {};
+                  inputRefs.current[index].socialOther = el;
+                }}
               />
             </Box>
           </Box>
@@ -144,7 +190,7 @@ export const FormStep4 = () => {
           <Button
             variant="outlined"
             onClick={handleAddClick}
-            endIcon={<img src={ICONS.plusIcon} alt="" />}
+            endIcon={<img src={ICONS.plusIcon} alt="plus" />}
           >
             Add member
           </Button>
@@ -153,7 +199,7 @@ export const FormStep4 = () => {
           <Button
             variant="outlined"
             onClick={handleRemoveClick}
-            endIcon={<img src={ICONS.minusIcon} alt="" />}
+            endIcon={<img src={ICONS.minusIcon} alt="minus" />}
           >
             Remove member
           </Button>

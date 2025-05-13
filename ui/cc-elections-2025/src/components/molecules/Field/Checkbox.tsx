@@ -2,7 +2,6 @@ import {
   Box,
   FormControlLabel,
   Checkbox as MuiCheckbox,
-  Link
 } from "@mui/material";
 
 import {
@@ -21,8 +20,6 @@ export const Checkbox = ({
   layoutStyles,
   onChange,
   value,
-  link,
-  linkText,
   ...rest
 }: CheckboxFieldProps) => {
   return (
@@ -40,11 +37,10 @@ export const Checkbox = ({
         <FormControlLabel
           sx={{ marginRight: '4px' }}
           control={
-            <MuiCheckbox {...{ onChange, value }} {...rest} />
+            <MuiCheckbox id={rest.id} {...{ onChange, value }} {...rest} />
           }
           label={label}
         />
-        {link && linkText && <Link variant="body1" target="_blank" rel="noopener" href={link}>{linkText}</Link>}
         <FormHelpfulText
           helpfulText={helpfulText}
           helpfulTextStyle={helpfulTextStyle}

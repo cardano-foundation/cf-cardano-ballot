@@ -27,6 +27,6 @@ export const geographicRepresentationList = () => {
     "Western Asia",
     "Western Europe",
     "Worldwide"
-  ]
+  ];
   return list.map(item => ({ value: item, label: item }));
 }

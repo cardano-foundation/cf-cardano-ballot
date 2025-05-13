@@ -68,26 +68,26 @@ export const MemberCard = (
           {initials}
         </Avatar>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: '6px', justifyContent: 'center' }}>
-          <Typography variant="h4">{name}</Typography>
+          <Typography variant="h4" component="h3">{name}</Typography>
         </Box>
       </Box>
       {country && (
         <Box sx={{ padding: '8px 0' }}>
-          <Typography variant="subtitle2">GEOGRAPHIC REPRESENTATION</Typography>
+          <Typography variant="subtitle2" component="h4">GEOGRAPHIC REPRESENTATION</Typography>
           <Typography variant="body1" color="#506288">
             {country}
           </Typography>
         </Box>
       )}
       <Box>
-        <Typography variant="subtitle2">BIO</Typography>
+        <Typography variant="subtitle2" component="h4">BIO</Typography>
         <Typography variant="body1" color="#506288" sx={{ paddingBottom: '16px' }}>
           {bio}
         </Typography>
       </Box>
       {conflictOfInterest && (
         <Box>
-          <Typography variant="subtitle2">CONFLICT OF INTEREST</Typography>
+          <Typography variant="subtitle2" component="h4">CONFLICT OF INTEREST</Typography>
           <Typography variant="body1" color="#506288" sx={{ paddingBottom: '16px' }}>
             {conflictOfInterest}
           </Typography>
@@ -95,7 +95,7 @@ export const MemberCard = (
       )}
       {drepId && (
         <Box>
-          <Typography variant="subtitle2">DREP ID</Typography>
+          <Typography variant="subtitle2" component="h4">DREP ID</Typography>
           <Typography variant="body1" color="#506288" sx={{ paddingBottom: '16px' }}>
             {drepId}
           </Typography>
@@ -103,7 +103,7 @@ export const MemberCard = (
       )}
       {stakeId && (
         <Box>
-          <Typography variant="subtitle2">STAKE ID</Typography>
+          <Typography variant="subtitle2" component="h4">STAKE ID</Typography>
           <Typography variant="body1" color="#506288" sx={{ paddingBottom: '16px' }}>
             {stakeId}
           </Typography>

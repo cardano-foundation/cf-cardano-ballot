@@ -67,6 +67,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaFieldProps>(
       >
         {label && (
           <InputLabel
+            htmlFor={props.id}
             sx={{ mb: '4px', ...(hideLabel && { fontSize: 0, lineHeight: 0 }) }}
           >
             {label}

@@ -92,9 +92,10 @@ export type FormContextType<T> = {
   title: string[];
 }
 
-export type TitlesType = {
-  noContext: string[];
-  individual: string[];
-  company: string[];
-  consortium: string[];
+export type Step4RefsType = {
+  focusField: (index: number, name: string) => void;
+}
+
+export type Step5RefsType = {
+  focusField: (name: string) => void;
 }

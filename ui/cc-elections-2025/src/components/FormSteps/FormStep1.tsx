@@ -20,6 +20,7 @@ export const FormStep1 = () => {
       </Box>
       <Box>
         <Checkbox
+          id="termsOfUse"
           checked={data.termsOfUse}
           errorMessage={error && error.termsOfUse ? 'This field is required.' : ''}
           label={'*I have read and agree to the guidelines, Terms of Use, and Privacy Policy'}

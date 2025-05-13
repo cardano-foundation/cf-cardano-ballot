@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useImperativeHandle, useRef } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import MenuItem from '@mui/material/MenuItem';
@@ -8,10 +8,23 @@ import { TextArea } from "@/components/molecules/Field/TextArea";
 
 import { useRegisterFormContext } from "@hooks";
 import { geographicRepresentationList } from "@utils";
+import type { Step5RefsType } from '@/types/formData.ts';
 
-export const FormStep5 = () => {
+type FormStep5Props = {
+  ref: React.Ref<Step5RefsType>;
+}
+
+export const FormStep5 = ({ ref }: FormStep5Props) => {
   const { candidateType, data, error, handleChange } = useRegisterFormContext();
   const options = useMemo(() => geographicRepresentationList(), []);
+
+  const inputRefs = useRef<Record<string, HTMLInputElement | HTMLTextAreaElement | null>>({});
+
+  useImperativeHandle(ref, () => ({
+    focusField: (name: string) => {
+      inputRefs.current[name]?.focus();
+    },
+  }));
 
   const nameLabel = () => {
     switch (candidateType) {
@@ -49,6 +62,7 @@ export const FormStep5 = () => {
         name="email"
         onChange={handleChange}
         value={data.email}
+        ref={(el) => { inputRefs.current['email'] = el }}
       />
     );
   }
@@ -83,6 +97,7 @@ export const FormStep5 = () => {
         name="publicContact"
         onChange={handleChange}
         value={data.publicContact}
+        ref={(el) => { inputRefs.current['publicContact'] = el }}
       />
     )
   }
@@ -97,6 +112,7 @@ export const FormStep5 = () => {
           name="name"
           onChange={handleChange}
           value={data.name}
+          ref={(el) => { inputRefs.current['name'] = el }}
         />
         {candidateType === 'company' ? (
           <>
@@ -120,6 +136,7 @@ export const FormStep5 = () => {
               onChange={handleChange}
               placeholder={'X (Twitter)'}
               value={data.socialX}
+              ref={(el) => { inputRefs.current['socialX'] = el }}
             />
             <Input
               errorMessage={error && error.socialLinkedin ? 'Enter a valid LinkedIn URL: https://www.linkedin.com/in/Your_Username' : ''}
@@ -127,6 +144,7 @@ export const FormStep5 = () => {
               onChange={handleChange}
               placeholder={'LinkedIn'}
               value={data.socialLinkedin}
+              ref={(el) => {inputRefs.current['socialLinkedin'] = el}}
             />
             <Input
               errorMessage={error && error.socialDiscord ? 'Enter a valid Discord URL: https://discordapp.com/users/Your_User_ID' : ''}
@@ -134,6 +152,7 @@ export const FormStep5 = () => {
               onChange={handleChange}
               placeholder={'Discord'}
               value={data.socialDiscord}
+              ref={(el) => {inputRefs.current['socialDiscord'] = el}}
             />
             <Input
               errorMessage={error && error.socialTelegram ? 'Enter a valid Telegram URL: https://t.me/Your_Username' : ''}
@@ -141,6 +160,7 @@ export const FormStep5 = () => {
               onChange={handleChange}
               placeholder={'Telegram'}
               value={data.socialTelegram}
+              ref={(el) => {inputRefs.current['socialTelegram'] = el}}
             />
             <Input
               errorMessage={error && error.socialWebsite ? 'Enter a valid URL' : ''}
@@ -148,6 +168,7 @@ export const FormStep5 = () => {
               onChange={handleChange}
               placeholder={'Website'}
               value={data.socialWebsite}
+              ref={(el) => {inputRefs.current['socialWebsite'] = el}}
             />
             <Input
               errorMessage={error && error.socialOther ? 'Enter a valid URL' : ''}
@@ -155,6 +176,7 @@ export const FormStep5 = () => {
               onChange={handleChange}
               placeholder={'Other'}
               value={data.socialOther}
+              ref={(el) => {inputRefs.current['socialOther'] = el}}
             />
           </Box>
         </Box>
@@ -176,6 +198,7 @@ export const FormStep5 = () => {
           name="about"
           onChange={handleChange}
           value={data.about}
+          ref={(el) => { inputRefs.current['about'] = el }}
         />
         <TextArea
           errorMessage={error && error.bio ? 'This field is required.' : ''}
@@ -185,6 +208,7 @@ export const FormStep5 = () => {
           name="bio"
           onChange={handleChange}
           value={data.bio}
+          ref={(el) => { inputRefs.current['bio'] = el }}
         />
         <TextArea
           helpfulText={'Any other relevant information that might not fit in elsewhere'}
@@ -202,8 +226,9 @@ export const FormStep5 = () => {
           name="videoPresentationLink"
           onChange={handleChange}
           value={data.videoPresentationLink}
+          ref={(el) => {inputRefs.current['videoPresentationLink'] = el}}
         />
       </Box>
     </Box>
   );
-}
+};

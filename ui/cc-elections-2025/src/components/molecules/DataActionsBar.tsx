@@ -7,7 +7,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 import {Input, SearchIcon} from "@atoms";
 
 type DataActionsBarProps = {
-  chosenFilters?: string[];
+  chosenFilters?: string[][];
   chosenFiltersLength?: number;
   chosenSorting: string;
   closeFilters?: () => void;
@@ -15,12 +15,12 @@ type DataActionsBarProps = {
   filterOptions?: {
     key: string;
     label: string;
-  }[];
+  }[][];
   filtersOpen?: boolean;
-  filtersTitle?: string;
+  filtersTitle?: string[];
   isFiltering?: boolean;
   searchText: string;
-  setChosenFilters?: Dispatch<SetStateAction<string[]>>;
+  setChosenFilters?: Dispatch<SetStateAction<string[][]>>;
   setChosenSorting: Dispatch<SetStateAction<string>>;
   setFiltersOpen?: Dispatch<SetStateAction<boolean>>;
   setSearchText: Dispatch<SetStateAction<string>>;

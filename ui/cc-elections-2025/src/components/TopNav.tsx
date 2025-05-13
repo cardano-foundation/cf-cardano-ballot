@@ -65,7 +65,7 @@ export const TopNav = ({title, navigateBack}: TopNavProps) => {
             <Box sx={{ display: 'flex', gap: '8px' }}>
               {navigateBack && (
                 <IconButton onClick={() => navigate('/')}>
-                  <img src={ICONS.arrowLeftIcon} alt="" />
+                  <img src={ICONS.arrowLeftIcon} alt="arrow left" />
                 </IconButton>
               )}
               <Typography

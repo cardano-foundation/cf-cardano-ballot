@@ -52,10 +52,12 @@ export const OrderActionsChip = (props: Props) => {
             }
           }}
           data-testid="filters-button"
+          aria-label="Filter candidates"
         >
           <img
             alt="filter"
             src={ICONS.filterIcon}
+            aria-hidden="true"
           />
           {!filtersOpen && chosenFiltersLength > 0 && (
             <Box
@@ -89,8 +91,13 @@ export const OrderActionsChip = (props: Props) => {
           setSortOpen(!sortOpen);
         }}
         data-testid="sort-button"
+        aria-label="Sort candidates"
       >
-        <img src={ICONS.sortDescendingIcon} alt="" />
+        <img
+          src={ICONS.sortDescendingIcon}
+          alt=""
+          aria-hidden="true"
+        />
       </IconButton>
       {children}
     </Box>

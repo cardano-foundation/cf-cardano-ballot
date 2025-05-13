@@ -90,8 +90,8 @@ export const Home = () => {
                 padding: '8px 16px'
               }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px'}}>
-                  <img alt="" src={ICONS.userAddIcon} />
-                  <Typography variant="subtitle2">
+                  <img alt="add user" src={ICONS.userAddIcon} />
+                  <Typography variant="subtitle2" component="p">
                     {`${daysToApply} more days to candidate yourself`}
                   </Typography>
                 </Box>
@@ -105,22 +105,24 @@ export const Home = () => {
                 <Typography variant="body2">Guides can be found <Link variant="body2" target="_blank" rel="noopener" href="https://docs.intersectmbo.org/cardano/cardano-governance/cardano-constitution/2025-constitutional-committee-elections/guide-for-applicants">here</Link>.</Typography>
               </Box>
             </Box>
-            {!allCandidates || isAllCandidatesLoading ? (
-              <Box sx={{ padding: '40px 0 24px' }}>
-                <Box
-                  sx={{
-                    alignItems: "center",
-                    display: "flex",
-                    flex: 1,
-                    justifyContent: "center",
-                  }}
-                >
-                  <CircularProgress color="secondary" />
+            <Box aria-busy={isAllCandidatesLoading}>
+              {!allCandidates || isAllCandidatesLoading ? (
+                <Box sx={{ padding: '40px 0 24px' }}>
+                  <Box
+                    sx={{
+                      alignItems: "center",
+                      display: "flex",
+                      flex: 1,
+                      justifyContent: "center",
+                    }}
+                  >
+                    <CircularProgress aria-label="Loading" color="secondary" />
+                  </Box>
                 </Box>
-              </Box>
-            ) : (
-              <CandidatesList candidates={allCandidates} />
-            )}
+              ) : (
+                <CandidatesList candidates={allCandidates} />
+              )}
+            </Box>
           </Box>
         </Box>
       </Layout>

@@ -38,7 +38,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <InputBase
         id={id}
-        inputProps={{ "data-testid": dataTestId }}
+        inputProps={{ "data-testid": dataTestId, "aria-label": "Search" }}
         inputRef={inputRef}
         sx={{
           padding: "8px 16px",

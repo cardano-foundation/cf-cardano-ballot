@@ -40,7 +40,7 @@ export const RegisterFormProvider = ({ children }: FormProviderProps) => {
 
   const req = [
     ['termsOfUse'],
-    [],
+    ['governanceActionRationale'],
     [],
     [],
     [

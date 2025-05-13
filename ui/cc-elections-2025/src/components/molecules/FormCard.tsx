@@ -24,7 +24,7 @@ export const FormCard = ({ children, title }: FormCardProps) => {
         </Button>
         <Button
           variant="text"
-          endIcon={<img src={ICONS.arrowCircleRight} alt="" />}
+          endIcon={<img src={ICONS.arrowCircleRight} alt="arrow right" />}
         >
           Next
         </Button>

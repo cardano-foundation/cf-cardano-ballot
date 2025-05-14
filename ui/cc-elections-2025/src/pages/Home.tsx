@@ -68,7 +68,7 @@ export const Home = () => {
                 <Box sx={{ width: '267px', padding: '12px 0' }}>
                   <Typography variant="caption">VOTING PERIOD</Typography>
                   <Typography variant="body1">
-                    June 10, 2025 6:00 PM (UTC) - June 30, 2025 6:00 PM (UTC)
+                    June 5, 2025 6:00 PM (UTC) - June 30, 2025 6:00 PM (UTC)
                   </Typography>
                 </Box>
                 <Box sx={{ width: '267px', padding: '12px 0' }}>

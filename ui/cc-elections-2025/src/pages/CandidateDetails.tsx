@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import ReactJson from 'react-json-view';
-import { TwitterVideoEmbed } from 'react-twitter-embed';
+import { Tweet } from 'react-tweet';
 import YouTube from 'react-youtube';
 
 import Avatar from "@mui/material/Avatar";
@@ -219,7 +219,7 @@ export const CandidateDetails = () => {
                         <YouTube videoId={youtubeParam[1]} opts={{height: '315', width: '560',}} />
                       )}
                       {twitterParam && twitterParam[3] && (
-                        <TwitterVideoEmbed id={twitterParam[3]} />
+                        <Tweet id={twitterParam[3]} />
                       )}
                     </Box>
                   </Box>

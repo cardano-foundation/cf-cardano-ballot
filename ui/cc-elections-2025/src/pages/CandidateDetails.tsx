@@ -365,7 +365,7 @@ export const CandidateDetails = () => {
                       <Box sx={{ padding: '0 16px' }}>
                         <Typography variant="h3">Governance Action Rationale</Typography>
                       </Box>
-                      <Box sx={{ padding: '0 16px', wordWrap: 'break-word' }}>
+                      <Box sx={{ padding: '0 16px', overflowWrap: 'anywhere' }}>
                         {governanceActionRationale ? (
                           <Box sx={{ paddingBottom: '16px' }}>
                             <ReactJson src={governanceActionRationale} />

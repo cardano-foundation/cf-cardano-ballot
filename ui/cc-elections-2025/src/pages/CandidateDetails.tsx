@@ -218,8 +218,8 @@ export const CandidateDetails = () => {
                       {youtubeParam && youtubeParam[1] && (
                         <YouTube videoId={youtubeParam[1]} opts={{height: '315', width: '560',}} />
                       )}
-                      {twitterParam && twitterParam[2] && (
-                        <TwitterVideoEmbed id={twitterParam[2]} />
+                      {twitterParam && twitterParam[3] && (
+                        <TwitterVideoEmbed id={twitterParam[3]} />
                       )}
                     </Box>
                   </Box>

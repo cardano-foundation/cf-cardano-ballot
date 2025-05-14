@@ -246,14 +246,6 @@ export const Form = () => {
           errors.email = true;
           if (!focus) focus = 'email';
         }
-      } else if (key === 'governanceActionRationale') {
-        if (value !== '') {
-          try {
-            JSON.parse(value as string);
-          } catch (error) {
-            errors.governanceActionRationale = true;
-          }
-        }
       } else {
         if (value === '' || value === false) {
           errors[key as keyof Omit<FormErrors, 'members'>]= true;

@@ -220,7 +220,7 @@ export const FormStep5 = ({ ref }: FormStep5Props) => {
         />
         <Input
           errorMessage={error && error.videoPresentationLink ? 'Enter a valid YouTube or X post URL' : ''}
-          helpfulText={'Share a video (as a YouTube link or X post) to present yourself and your application'}
+          helpfulText={'(Optional) To help voters get a better sense of you and your candidacy, feel free to include a video (as a YouTube link or X post) introducing yourself. This also helps voters confirm active participation.'}
           id="videoPresentationLink"
           label={'Video link'}
           name="videoPresentationLink"

@@ -1,7 +1,5 @@
 import Box from "@mui/material/Box";
-import MenuItem from '@mui/material/MenuItem';
 import { Input } from "@/components/molecules/Field/Input";
-import { Select } from "@/components/molecules/Field/Select";
 import { TextArea } from "@/components/molecules/Field/TextArea";
 
 import { useRegisterFormContext } from "@hooks";
@@ -10,21 +8,6 @@ export const FormStep7 = () => {
   const { candidateType, data, handleChange } = useRegisterFormContext();
   return (
     <Box sx={{ paddingTop: '16px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      <Select
-        displayEmpty={true}
-        id="liveliness"
-        label={'Liveliness verification'}
-        name="liveliness"
-        onChange={handleChange}
-        tooltipText={'This optional field allows you to request a call with staff involved in the election process should you wish to verify your identity or in case you have any questions about the application. Should you choose to verify your identity, a "verified" tag will be attached to your profile.'}
-        value={data.liveliness}
-      >
-        <MenuItem disabled value="">
-          Please select
-        </MenuItem>
-        <MenuItem value="yes">Yes</MenuItem>
-        <MenuItem value="no">No</MenuItem>
-      </Select>
       <Input
         helpfulText={'Write your X handle here and send a DM to @IntersectMBO to verify ownership of the account'}
         id="xverification"

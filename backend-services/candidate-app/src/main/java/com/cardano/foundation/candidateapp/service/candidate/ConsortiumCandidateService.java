@@ -117,6 +117,7 @@ public class ConsortiumCandidateService {
         updatedCandidate.setId(existing.getCandidate().getId());
         updatedCandidate.setCandidateType(CandidateType.consortium);
         updatedCandidate.setDraft(saveAsDraft);
+        updatedCandidate.setConsortiumCandidate(existing);
         Candidate savedCandidate = candidateRepo.save(updatedCandidate);
 
         existing.setCandidate(savedCandidate);

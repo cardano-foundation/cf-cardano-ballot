@@ -59,7 +59,6 @@ public class IndividualCandidateService {
                 .orElseThrow(() -> new ResourceNotFoundException("Individual candidate not found"));
         return individualMapper.toDto(entity);
     }
-
     public IndividualCandidateResponseDto update(Long id, IndividualCandidateRequestDto dto, boolean isDraft) {
         IndividualCandidate existing = individualRepo.findById(id)
                 .filter(e -> e.getCandidate().isDraft() == isDraft)
@@ -68,6 +67,7 @@ public class IndividualCandidateService {
         Candidate updatedCandidate = candidateMapper.toEntity(dto.getCandidate());
         updatedCandidate.setId(existing.getCandidate().getId());
         updatedCandidate.setCandidateType(CandidateType.individual);
+        updatedCandidate.setIndividualCandidate(existing);
 
         Candidate saved = candidateRepo.save(updatedCandidate);
 
@@ -84,6 +84,7 @@ public class IndividualCandidateService {
         updatedCandidate.setId(existing.getCandidate().getId());
         updatedCandidate.setCandidateType(CandidateType.individual);
         updatedCandidate.setDraft(false);
+        updatedCandidate.setIndividualCandidate(existing);
 
         Candidate saved = candidateRepo.save(updatedCandidate);
 

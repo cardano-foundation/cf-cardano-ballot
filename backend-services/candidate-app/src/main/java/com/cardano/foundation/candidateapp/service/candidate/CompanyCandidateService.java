@@ -69,6 +69,7 @@ public class CompanyCandidateService {
         Candidate updatedCandidate = candidateMapper.toEntity(dto.getCandidate());
         updatedCandidate.setId(existing.getCandidate().getId());
         updatedCandidate.setCandidateType(CandidateType.company);
+        updatedCandidate.setCompanyCandidate(existing);
         Candidate saved = candidateRepo.save(updatedCandidate);
 
         existing.setCandidate(saved);
@@ -87,6 +88,7 @@ public class CompanyCandidateService {
         updatedCandidate.setId(existing.getCandidate().getId());
         updatedCandidate.setCandidateType(CandidateType.company);
         updatedCandidate.setDraft(false);
+        updatedCandidate.setCompanyCandidate(existing);
         Candidate saved = candidateRepo.save(updatedCandidate);
 
         existing.setCandidate(saved);

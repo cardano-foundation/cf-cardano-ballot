@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useEffect, useState } from "react";
+import { createContext, ReactNode, useState } from "react";
 import { ErrObject, FormContextType, RegisterFormData } from "@/types/formData.ts";
 import { MemberBody } from "@models";
 import { SelectChangeEvent } from "@mui/material";
@@ -101,14 +101,6 @@ export const RegisterFormProvider = ({ children }: FormProviderProps) => {
     members: [],
     membersAmount: 0,
   });
-
-  useEffect(() => {
-    if (candidateType === 'consortium') {
-      setData(prevData => ({...prevData, members: Array.from({ length: 2 }, () => memberInit), membersAmount: 2}));
-    } else {
-      setData(prevData => ({...prevData, members: [], membersAmount: 0}));
-    }
-  }, [candidateType]);
 
   const isEventInputElement = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>  | SelectChangeEvent<unknown>): event is React.ChangeEvent<HTMLInputElement> => {
     return (event as React.ChangeEvent<HTMLInputElement>).target.checked !== undefined;

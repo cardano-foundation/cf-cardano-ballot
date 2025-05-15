@@ -1,3 +1,6 @@
+export * from "./deleteCompanies";
+export * from "./deleteConsortia";
+export * from "./deleteIndividual";
 export * from "./getAllCandidates";
 export * from "./getCompanies";
 export * from "./getConsortia";
@@ -6,3 +9,6 @@ export * from "./getIndividuals";
 export * from "./postCompanies";
 export * from "./postConsortia";
 export * from "./postIndividual";
+export * from "./putCompanies";
+export * from "./putConsortia";
+export * from "./putIndividual";

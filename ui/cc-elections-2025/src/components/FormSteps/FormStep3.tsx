@@ -8,7 +8,11 @@ import Typography from "@mui/material/Typography";
 
 import { useRegisterFormContext } from "@hooks";
 
-export const FormStep3 = () => {
+type FormStep3Props = {
+  disabled: boolean;
+}
+
+export const FormStep3 = ({ disabled }: FormStep3Props) => {
   const { candidateType, setCandidateType, error } = useRegisterFormContext();
 
   return (
@@ -18,15 +22,15 @@ export const FormStep3 = () => {
       }}>
         <Box sx={{ padding: '24px 0', display: 'flex', flexDirection: 'column', gap: '24px' }}>
           <Box sx={{ backgroundColor: '#ffffff', borderRadius: '16px', boxShadow: '0px 20px 25px -5px #212A3D14', padding: '16px' }}>
-            <FormControlLabel value="individual" control={<Radio />} label={'Individual candidate'} />
+            <FormControlLabel value="individual" disabled={disabled} control={<Radio />} label={'Individual candidate'} />
             <Typography variant="body2" sx={{ marginLeft: '31px' }}>Select this option if you are applying as a single person.</Typography>
           </Box>
           <Box sx={{ backgroundColor: '#ffffff', borderRadius: '16px', boxShadow: '0px 20px 25px -5px #212A3D14', padding: '16px' }}>
-            <FormControlLabel value="company" control={<Radio />} label={'Company'} />
+            <FormControlLabel value="company" disabled={disabled} control={<Radio />} label={'Company'} />
             <Typography variant="body2" sx={{ marginLeft: '31px' }}>Select this option if you are applying on behalf of a single, registered business or organization.</Typography>
           </Box>
           <Box sx={{ backgroundColor: '#ffffff', borderRadius: '16px', boxShadow: '0px 20px 25px -5px #212A3D14', padding: '16px' }}>
-            <FormControlLabel value="consortium" control={<Radio />} label={'Consortium'} />
+            <FormControlLabel value="consortium" disabled={disabled} control={<Radio />} label={'Consortium'} />
             <Typography variant="body2" sx={{ marginLeft: '31px' }}>Choose this if you are applying as a collaborative group made up of multiple distinct individuals and/or organizations.</Typography>
           </Box>
         </Box>

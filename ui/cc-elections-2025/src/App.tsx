@@ -5,10 +5,13 @@ import { Modal, ScrollToTop } from "@atoms";
 import { useCardano, useModal } from "@context";
 import { useWalletConnectionListener } from "@hooks";
 
-import { Home } from '@pages';
-import { ThankYou } from '@pages';
-import { CandidateDetails } from '@pages';
-import { RegisterForm } from "@pages";
+import {
+  CandidateDetails,
+  EditCandicate,
+  Home,
+  RegisterForm,
+  ThankYou,
+} from '@pages';
 
 import {
   callAll,
@@ -53,6 +56,7 @@ export const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/candidateDetails/:id" element={<CandidateDetails />} />
         {isEnabled && <Route path="/registerCandidate" element={<RegisterForm />} />}
+        {isEnabled && <Route path="/editCandidate/:id" element={<EditCandicate />} /> }
         <Route path="/thankYou" element={<ThankYou />} />
       </Routes>
       {modals[modal.type]?.component && (

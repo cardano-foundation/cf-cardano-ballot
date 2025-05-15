@@ -101,6 +101,7 @@ export const CandidatesList = ({ candidates }: CandidatesListProps) => {
             key={candidate.candidate.id}
             name={candidate.candidate.name}
             verified={candidate.candidate.verified}
+            walletAddress={candidate.candidate.walletAddress}
           />
         ))}
       </Box>

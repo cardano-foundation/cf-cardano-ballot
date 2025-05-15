@@ -8,6 +8,8 @@ import Typography from '@mui/material/Typography';
 
 import { Button } from '@atoms';
 import { ICONS } from "@consts";
+import { useDeleteCandidate } from "@hooks";
+import {useCardano, useModal} from "@context";
 
 type CandidatesListItemProps = {
   id: number;
@@ -16,14 +18,41 @@ type CandidatesListItemProps = {
   bio: string;
   candidateType: "individual" | "company" | "consortium";
   verified: boolean;
+  walletAddress: string;
 };
 
 export const CandidatesListItem = (props: CandidatesListItemProps) => {
-  const  navigate = useNavigate();
+  const navigate = useNavigate();
+  const { closeModal, openModal } = useModal();
+  const { isEnabled, address } = useCardano();
+  const deleteCandidate = useDeleteCandidate(props.candidateType);
 
   const handleClick = () => {
     navigate(`/candidateDetails/${props.id}`);
   };
+
+  const handleEdit = () => {
+    navigate(`/editCandidate/${props.id}`);
+  }
+
+  const handleDelete = () => {
+    openModal({
+      type: "statusModal",
+      state: {
+        status: "info",
+        title: 'Are you sure you want to delete this candidate?',
+        message: 'This action cannot be undone.',
+        cancelText: 'Cancel',
+        onCancel: () => closeModal(),
+        buttonText: 'Delete',
+        onSubmit: () => {
+          deleteCandidate.mutate(props.id);
+          closeModal();
+        },
+        dataTestId: "delete-confirm-modal",
+      },
+    });
+  }
 
   const chipText = (candidateType: "individual" | "company" | "consortium") => {
     return candidateType?.charAt(0).toUpperCase() + candidateType?.slice(1);
@@ -76,8 +105,14 @@ export const CandidatesListItem = (props: CandidatesListItemProps) => {
           {props.bio.length > 140 ? `${props.bio.substring(0, 140)}...` : props.bio}
         </Typography>
       </Box>
-      <Box sx={{ paddingBottom: '20px', paddingRight: '24px', paddingLeft: '24px' }}>
+      <Box sx={{ paddingBottom: '20px', paddingRight: '24px', paddingLeft: '24px', display: 'flex', justifyContent: 'space-between' }}>
         <Button variant="text" onClick={handleClick}>Read more</Button>
+        {isEnabled && address === props.walletAddress && (
+          <>
+            <Button variant="contained" onClick={handleEdit}>Edit</Button>
+            <Button variant="contained" onClick={handleDelete}>Delete</Button>
+          </>
+        )}
       </Box>
     </Box>
   )

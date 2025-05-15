@@ -1,4 +1,5 @@
 import { Box, Button, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 import {
   gray,
@@ -8,11 +9,12 @@ import { Card } from "./Card";
 
 export const WalletInfoCard = () => {
   const { address, disconnectWallet } = useCardano();
+  const  navigate = useNavigate();
 
   const onClickDisconnect = async () => {
     await disconnectWallet();
 
-    window.location.reload();
+    navigate("/");
   };
 
   return (

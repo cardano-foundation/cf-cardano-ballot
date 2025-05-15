@@ -5,7 +5,7 @@ import { getAllCandidates } from "@services";
 export const useGetAllCandidates = () => {
 
   const { data, isLoading } = useQuery(
-    [],
+    'allCandidates',
     getAllCandidates,
     {
       refetchOnMount: true,

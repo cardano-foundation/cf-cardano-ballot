@@ -1,4 +1,4 @@
-import { useContext, useRef } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -16,16 +16,21 @@ import { FormStep7 } from "./FormSteps/FormStep7.tsx";
 import { Button } from "@atoms";
 import { ICONS } from "@consts";
 import { RegisterFormContext, useCardano } from "@context";
-import { usePostCandidate } from "@hooks";
-import { CandidateBody } from "@models";
+import {useGetAllCandidates, usePostCandidate, usePutCandidate} from "@hooks";
+import { CandidateBody} from "@models";
 import { CCStepper } from "@/components/molecules/CCStepper.tsx";
 import { Footer } from "@organisms";
 
 import type { RegisterFormData, FormContextType, Step4RefsType, Step5RefsType } from '../types/formData';
 
 import styles from "./molecules/FormCard.module.scss";
+import CircularProgress from "@mui/material/CircularProgress";
 
 type RegisterFormDataProps = keyof RegisterFormData;
+
+type FormProps = {
+  id?: number;
+};
 
 type FormErrors = {
   members?: { name?: boolean, bio?: boolean, socialLinkedin?: boolean, socialX?: boolean, socialDiscord?: boolean, socialTelegram?: boolean, socialOther?: boolean, socialWebsite?: boolean }[];
@@ -45,22 +50,84 @@ type FormErrors = {
   socialWebsite?: boolean;
 };
 
-export const Form = () => {
+export const Form = ({ id }: FormProps) => {
+
+  const {
+    setData,
+    page,
+    setPage,
+    data,
+    title,
+    memberInit,
+    req,
+    setError,
+    candidateType,
+    setCandidateType,
+  } = useContext(RegisterFormContext) as FormContextType<RegisterFormData>;
+
+  const { allCandidates, isAllCandidatesLoading } = useGetAllCandidates();
+
+  useEffect(() => {
+    if (id) {
+      if (allCandidates) {
+        const candidate = allCandidates.find(item => item.candidate.id === id);
+        if (candidate) {
+          const item = candidate.candidate;
+          setData({
+            termsOfUse: true,
+            coldCredential: '',
+            governanceActionRationale: item.governanceActionRationale,
+            name: item.name,
+            registrationNumber: '',
+            keyContactPerson: candidate.keyContactPerson ? candidate.keyContactPerson : '',
+            socialWebsite: item.socialWebsite,
+            email: item.email,
+            country: item.country,
+            socialX: item.socialX,
+            socialLinkedin: item.socialLinkedin,
+            socialDiscord: item.socialDiscord,
+            socialTelegram: item.socialTelegram,
+            socialOther: item.socialOther,
+            publicContact: item.publicContact,
+            about: item.about,
+            bio: item.bio,
+            additionalInfo: item.additionalInfo,
+            videoPresentationLink: item.videoPresentationLink,
+            reasonToServe: item.reasonToServe,
+            governanceExperience: item.governanceExperience,
+            communicationStrategy: item.communicationStrategy,
+            ecosystemContributions: item.ecosystemContributions,
+            legalExpertise: item.legalExpertise,
+            weeklyCommitmentHours: item.weeklyCommitmentHours,
+            liveliness: '',
+            conflictOfInterest: item.conflictOfInterest,
+            drepId: item.drepId,
+            stakeId: item.stakeId,
+            xverification: item.xverification,
+            members: candidate.members ? candidate.members : [],
+            membersAmount: candidate.members ? candidate.members.length : 0,
+          });
+          setCandidateType(item.candidateType);
+          setPage(1);
+        }
+      }
+    }
+  }, [allCandidates]);
+
+  useEffect(() => {
+    if (!id) {
+      if (candidateType === 'consortium') {
+        setData(prevData => ({...prevData, members: Array.from({length: 2}, () => memberInit), membersAmount: 2}));
+      } else {
+        setData(prevData => ({...prevData, members: [], membersAmount: 0}));
+      }
+    }
+  }, [candidateType]);
 
   const step4Ref = useRef<Step4RefsType>(null);
   const step5Ref = useRef<Step5RefsType>(null);
 
   let fieldToFocus: { index: number, name: string };
-
-  const {
-    page,
-    setPage,
-    data,
-    title,
-    req,
-    setError,
-    candidateType,
-  } = useContext(RegisterFormContext) as FormContextType<RegisterFormData>;
 
   const informationTitle = candidateType && (candidateType === 'individual' ?
     'Candidate' :
@@ -71,11 +138,12 @@ export const Form = () => {
   const { address } = useCardano();
 
   const postCandidate = usePostCandidate(!candidateType ? 'individual' : candidateType);
+  const putCandidate = usePutCandidate(!candidateType ? 'individual' : candidateType);
 
   const display = [
     <FormStep1 />,
     <FormStep2 />,
-    <FormStep3 />,
+    <FormStep3 disabled={!!id} />,
     <FormStep4 ref={step4Ref} />,
     <FormStep5 ref={step5Ref} />,
     <FormStep6 />,
@@ -298,7 +366,11 @@ export const Form = () => {
       members: candidateType === 'consortium' ? data.members : undefined,
     };
 
-    postCandidate.mutate(body);
+    if (id) {
+      putCandidate.mutate({id, individual: body})
+    } else {
+      postCandidate.mutate(body);
+    }
     navigate('/thankYou');
   }
 
@@ -306,52 +378,65 @@ export const Form = () => {
     <Box sx={{ backgroundColor: '#f2f4f8', minHeight: '100vh' }}>
       <TopNav title="Apply as a candidate" navigateBack={false} />
       <Layout>
-        <Box>
-          {page > 2 && (
-            <Box sx={{ maxWidth: '1440px', padding: '24px 0'}}>
-              <CCStepper
-                activeStep={candidateType !== 'consortium' && page > 3 ? page - 4 : page - 3}
-                steps={candidateType !== 'consortium' ? steps.filter(v => !v.includes('Members')) : steps}
-              />
-            </Box>
-          )}
-          <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '24px', marginBottom: '24px' }}>
-            <Box className={styles.container}>
-              <Typography variant="h1" component="h2">
-                {
-                  page === 4 ?
-                    `${informationTitle} ${title[page]}`
-                    : title[page]
-                }
-              </Typography>
-              {display[page]}
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', paddingTop: '16px' }}>
-                <Button variant="text" onClick={handleDiscard}>
-                  Discard
-                </Button>
-                <Box sx={{ display: 'flex', gap: '12px' }}>
-                  {page > 1 && (
+        {id && (!allCandidates || isAllCandidatesLoading) ? (
+          <Box
+            sx={{
+              alignItems: "center",
+              display: "flex",
+              flex: 1,
+              justifyContent: "center",
+            }}
+          >
+            <CircularProgress color="secondary" />
+          </Box>
+        ) : (
+          <Box>
+            {page > 2 && (
+              <Box sx={{ maxWidth: '1440px', padding: '24px 0'}}>
+                <CCStepper
+                  activeStep={candidateType !== 'consortium' && page > 3 ? page - 4 : page - 3}
+                  steps={candidateType !== 'consortium' ? steps.filter(v => !v.includes('Members')) : steps}
+                />
+              </Box>
+            )}
+            <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '24px', marginBottom: '24px' }}>
+              <Box className={styles.container}>
+                <Typography variant="h1" component="h2">
+                  {
+                    page === 4 ?
+                      `${informationTitle} ${title[page]}`
+                      : title[page]
+                  }
+                </Typography>
+                {display[page]}
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', paddingTop: '16px' }}>
+                  <Button variant="text" onClick={handleDiscard}>
+                    Discard
+                  </Button>
+                  <Box sx={{ display: 'flex', gap: '12px' }}>
+                    {page > 1 && (
+                      <Button
+                        variant="text"
+                        onClick={handleBack}
+                        startIcon={<img src={ICONS.arrowCircleLeft} alt="arrow left" />}
+                      >
+                        Back
+                      </Button>
+                    )}
                     <Button
                       variant="text"
-                      onClick={handleBack}
-                      startIcon={<img src={ICONS.arrowCircleLeft} alt="arrow left" />}
+                      endIcon={<img src={ICONS.arrowCircleRight} alt="arrow right" />}
+                      onClick={isSubmit ? handleSubmit : handleNext}
+                      isLoading={postCandidate && postCandidate.isLoading}
                     >
-                      Back
+                      {isSubmit ? 'Submit' : 'Next'}
                     </Button>
-                  )}
-                  <Button
-                    variant="text"
-                    endIcon={<img src={ICONS.arrowCircleRight} alt="arrow right" />}
-                    onClick={isSubmit ? handleSubmit : handleNext}
-                    isLoading={postCandidate && postCandidate.isLoading}
-                  >
-                    {isSubmit ? 'Submit' : 'Next'}
-                  </Button>
+                  </Box>
                 </Box>
               </Box>
             </Box>
           </Box>
-        </Box>
+        )}
       </Layout>
       <Footer />
     </Box>

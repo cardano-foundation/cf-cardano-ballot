@@ -24,7 +24,7 @@ export const FormStep6 = () => {
       />
       <TextArea
         id="communicationStrategy"
-        label={'How will you communicate with the Cardano community about your descision making?'}
+        label={'How will you communicate with the Cardano community about your decision making?'}
         name="communicationStrategy"
         onChange={handleChange}
         value={data.communicationStrategy}
@@ -38,7 +38,7 @@ export const FormStep6 = () => {
       />
       <TextArea
         id="legalExpertise"
-        label={'Do you have any expertise in constitutional law or law in general?  If so please describe'}
+        label={'Do you have any expertise in constitutional law or law in general? If so please describe'}
         name="legalExpertise"
         onChange={handleChange}
         value={data.legalExpertise}

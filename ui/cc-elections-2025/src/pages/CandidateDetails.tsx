@@ -346,7 +346,7 @@ export const CandidateDetails = () => {
                         )}
                         {candidate.communicationStrategy && (
                           <Box>
-                            <Typography variant="subtitle2" component="h4">HOW WILL YOU COMMUNICATE WITH THE CARDANO COMMUNITY ABOUT YOUR DESCISION MAKING?</Typography>
+                            <Typography variant="subtitle2" component="h4">HOW WILL YOU COMMUNICATE WITH THE CARDANO COMMUNITY ABOUT YOUR DECISION MAKING?</Typography>
                             <Box sx={{ paddingBottom: '16px', wordWrap: 'break-word' }}>
                               <Typography variant="body1" color="#506288">{candidate.communicationStrategy}</Typography>
                             </Box>
@@ -362,7 +362,7 @@ export const CandidateDetails = () => {
                         )}
                         {candidate.legalExpertise && (
                           <Box>
-                            <Typography variant="subtitle2" component="h4">DO YOU HAVE ANY EXPERTISE IN CONSTITUTIONAL LAW OR LAW IN GENERAL? IF SO PLEASE DESCRIBE</Typography>
+                            <Typography variant="subtitle2" component="h4">DO YOU HAVE ANY EXPERTISE IN CONSTITUTIONAL LAW OR LAW IN GENERAL? IF SO, PLEASE DESCRIBE</Typography>
                             <Box sx={{ paddingBottom: '16px', wordWrap: 'break-word' }}>
                               <Typography variant="body1" color="#506288">{candidate.legalExpertise}</Typography>
                             </Box>
@@ -370,7 +370,7 @@ export const CandidateDetails = () => {
                         )}
                         {candidateType === 'individual' && candidate.weeklyCommitmentHours && (
                           <Box>
-                            <Typography variant="subtitle2" component="h4">ESTIMATE THE AVERAGE NUMBER OF HOURS PER WEEK YOU CAN DEDICATE TO THE COMMITTE</Typography>
+                            <Typography variant="subtitle2" component="h4">ESTIMATE THE AVERAGE NUMBER OF HOURS PER WEEK YOU CAN DEDICATE TO THE COMMITTEE</Typography>
                             <Box sx={{ paddingBottom: '16px', wordWrap: 'break-word' }}>
                               <Typography variant="body1" color="#506288">{candidate.weeklyCommitmentHours}</Typography>
                             </Box>

@@ -119,8 +119,8 @@ export const CandidateDetails = () => {
                       boxShadow: '0px 20px 25px -5px #212A3D14',
                     }}>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Button variant="contained" onClick={handleEdit}>Edit</Button>
-                        <Button variant="contained" onClick={handleDelete}>Delete</Button>
+                        <Button variant="text" onClick={handleEdit}>Edit</Button>
+                        <Button variant="text" color="error" onClick={handleDelete}>Delete</Button>
                       </Box>
                     </Box>
                   )}

@@ -109,8 +109,8 @@ export const CandidatesListItem = (props: CandidatesListItemProps) => {
         <Button variant="text" onClick={handleClick}>Read more</Button>
         {isEnabled && address === props.walletAddress && (
           <>
-            <Button variant="contained" onClick={handleEdit}>Edit</Button>
-            <Button variant="contained" onClick={handleDelete}>Delete</Button>
+            <Button variant="text" onClick={handleEdit}>Edit</Button>
+            <Button variant="text" onClick={handleDelete}>Delete</Button>
           </>
         )}
       </Box>

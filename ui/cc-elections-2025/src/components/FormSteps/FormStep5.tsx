@@ -147,7 +147,7 @@ export const FormStep5 = ({ ref }: FormStep5Props) => {
               ref={(el) => {inputRefs.current['socialLinkedin'] = el}}
             />
             <Input
-              errorMessage={error && error.socialDiscord ? 'Enter a valid Discord URL: https://discordapp.com/users/Your_User_ID' : ''}
+              errorMessage={error && error.socialDiscord ? 'Enter a valid Discord URL: https://discordapp.com/users/Your_User_ID; Your_User_ID is a unique 17 or 18-digit number identifying a user. You can find your user ID by enabling Developer Mode in Discord, then right-clicking your profile to copy the ID.' : ''}
               name="socialDiscord"
               onChange={handleChange}
               placeholder={'Discord'}

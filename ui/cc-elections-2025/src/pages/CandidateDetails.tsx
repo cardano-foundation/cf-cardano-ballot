@@ -39,6 +39,11 @@ export const CandidateDetails = () => {
   if (allCandidates) {
     candidateItem = allCandidates.find(item => item.candidate.id === Number(id));
   }
+
+  // 🔧 SAFELY call hook using fallback to avoid conditional call
+  const candidateType = candidateItem?.candidate.candidateType ?? "individual";
+  const deleteCandidate = useDeleteCandidate(candidateType);
+
   if (!candidateItem) {
     return null;
   }
@@ -46,10 +51,6 @@ export const CandidateDetails = () => {
   const candidate = candidateItem.candidate;
 
   const members = candidateItem.members;
-
-  const deleteCandidate = useDeleteCandidate(candidate.candidateType);
-
-  const candidateType = candidate.candidateType;
 
   const chipText = (candidateType: "individual" | "company" | "consortium") => {
     return candidateType?.charAt(0).toUpperCase() + candidateType?.slice(1);

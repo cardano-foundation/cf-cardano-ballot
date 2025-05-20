@@ -8,6 +8,8 @@ ARG VITE_IS_DEV
 ENV VITE_IS_DEV=${VITE_IS_DEV}
 ARG VITE_IPFS_GATEWAY
 ENV VITE_IPFS_GATEWAY=${VITE_IPFS_GATEWAY}
+ARG MINIFY
+ENV MINIFY=${MINIFY}
 
 WORKDIR /app
 
@@ -18,8 +20,11 @@ RUN npm install --save-dev vitest @types/jest --legacy-peer-deps
 
 COPY . .
 
-RUN npx vite build --mode production
-
+RUN if [ "$MINIFY" = "false" ]; then \
+      npx vite build --mode development --minify false; \
+    else \
+      npx vite build --mode production; \
+    fi
 
 FROM nginx:alpine AS production
 WORKDIR /usr/share/nginx/html

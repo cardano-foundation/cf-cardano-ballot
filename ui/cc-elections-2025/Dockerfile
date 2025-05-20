@@ -24,6 +24,8 @@ RUN npx vite build --mode production
 FROM nginx:alpine AS production
 WORKDIR /usr/share/nginx/html
 
+ENV NODE_ENV=production
+
 RUN rm -rf ./*
 
 COPY --from=build /app/dist .

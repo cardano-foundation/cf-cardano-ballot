@@ -92,7 +92,7 @@ export const CandidateDetails = () => {
     <Box sx={{ backgroundColor: '#f2f4f8', minHeight: '100vh' }}>
       <TopNav title={'Candidate Details'} navigateBack={true} />
       <Layout>
-        <Box>
+        <Box sx={{ wordWrap: 'break-word', whiteSpace: 'pre-line' }}>
           <Box sx={{ padding: { xxs: '0 16px', md: '0 32px', xl: '0 64px'} }}>
 
             {!allCandidates || isAllCandidatesLoading ? (

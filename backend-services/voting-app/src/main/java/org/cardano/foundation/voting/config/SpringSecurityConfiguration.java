@@ -80,6 +80,7 @@ public class SpringSecurityConfiguration {
                     requests
                     // SECURED by Web3 auth
                     .requestMatchers(new AntPathRequestMatcher("/api/vote/cast", POST.name())).authenticated()
+                    .requestMatchers(new AntPathRequestMatcher("/api/vote/candidate/cast", POST.name())).authenticated()
                     // SECURED by JWT auth
                     .requestMatchers(new AntPathRequestMatcher("/api/vote/votes/**", GET.name())).authenticated()
                     // SECURED by JWT auth
@@ -88,6 +89,7 @@ public class SpringSecurityConfiguration {
 
                     // SECURED by Web3 auth
                     .requestMatchers(new AntPathRequestMatcher("/api/vote/receipt", GET.name())).authenticated()
+                    .requestMatchers(new AntPathRequestMatcher("/api/vote/candidate/receipt", GET.name())).authenticated()
                     .requestMatchers(new AntPathRequestMatcher("/api/vote/receipt", HEAD.name())).authenticated()
                     .requestMatchers(new AntPathRequestMatcher("/api/vote/receipts", GET.name())).authenticated()
                     // SECURED by Web3 auth
@@ -98,6 +100,8 @@ public class SpringSecurityConfiguration {
                     // without auth
                     .requestMatchers(new AntPathRequestMatcher("/api/leaderboard/**", GET.name())).permitAll()
                     .requestMatchers(new AntPathRequestMatcher("/api/leaderboard/**", HEAD.name())).permitAll()
+                    .requestMatchers(new AntPathRequestMatcher("/api/leaderboard/candidate/**", GET.name())).permitAll()
+                    .requestMatchers(new AntPathRequestMatcher("/api/leaderboard/candidate/**", HEAD.name())).permitAll()
                     .requestMatchers(new AntPathRequestMatcher("/actuator/**", GET.name())).permitAll()
                     .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
                     .requestMatchers(new AntPathRequestMatcher("/v3/api-docs/**")).permitAll()

@@ -47,7 +47,7 @@ public class Category extends AbstractTimestampEntity {
     private long absoluteSlot;
 
     public boolean isValid() {
-        return proposals.size() > 1;
+        return !proposals.isEmpty();
     }
 
 }

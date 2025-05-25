@@ -30,4 +30,12 @@ public interface LeaderboardWinnersService {
 
     Either<Problem, List<Leaderboard.ByProposalsInCategoryStats>> getCategoryLeaderboardForAllCategories(ChainFollowerClient.EventDetailsResponse eventDetails,
                                                                                                          boolean forceLeaderboard);
+
+    Either<Problem, Optional<Leaderboard.ByCandidatesInCategoryStats>> getCategoryLeaderboardCandidate(String event,
+                                                                                                       String category,
+                                                                                                       boolean forceLeaderboard);
+
+    Either<Problem, Optional<Leaderboard.ByCandidatesInCategoryStats>> getCategoryLeaderboardCandidate(ChainFollowerClient.EventDetailsResponse eventDetails,
+                                                                                                       ChainFollowerClient.CategoryDetailsResponse category,
+                                                                                                       boolean forceLeaderboard);
 }

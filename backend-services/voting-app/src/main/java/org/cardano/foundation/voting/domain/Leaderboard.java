@@ -13,13 +13,21 @@ import java.util.Map;
 @Builder
 public class Leaderboard {
 
-    // per category
     @Builder
     @Getter
     public static class ByProposalsInCategoryStats {
 
         private String category;
         private Map<String, Votes> proposals;
+
+    }
+
+    @Builder
+    @Getter
+    public static class ByCandidatesInCategoryStats {
+
+        private String category;
+        private Map<String, Votes> candidates;
 
     }
 
@@ -44,6 +52,7 @@ public class Leaderboard {
     }
 
     @Getter
+    @Setter
     @Builder
     @AllArgsConstructor
     public static class Votes {

@@ -40,6 +40,8 @@ public interface VoteRepository extends JpaRepository<Vote, String> {
     List<CategoryLevelStats> getCategoryLevelStats(@Param("eventId") String eventId,
                                                    @Param("categoryId") String categoryId);
 
+    List<Vote> findAllByEventIdAndCategoryId(String eventId, String categoryId);
+
     interface CategoryProposalProjection {
 
         String getCategoryId();

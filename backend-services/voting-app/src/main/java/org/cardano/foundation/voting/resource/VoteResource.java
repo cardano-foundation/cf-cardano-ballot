@@ -14,7 +14,7 @@ import org.cardano.foundation.voting.domain.UserVotes;
 import org.cardano.foundation.voting.domain.VoteReceipt;
 import org.cardano.foundation.voting.service.auth.jwt.JwtAuthenticationToken;
 import org.cardano.foundation.voting.service.auth.web3.Web3AuthenticationToken;
-import org.cardano.foundation.voting.service.vote.VoteService;
+import org.cardano.foundation.voting.service.vote.DefaultVoteService;
 import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -37,7 +37,7 @@ import static org.zalando.problem.Status.NOT_ACCEPTABLE;
 @Tag(name = "Vote", description = "Operations related to voting")
 public class VoteResource {
 
-    private final VoteService voteService;
+    private final DefaultVoteService voteService;
 
     @RequestMapping(value = "/votes/{eventId}", method = GET, produces = "application/json")
     @Timed(value = "resource.vote.votes", histogram = true)

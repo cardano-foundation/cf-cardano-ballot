@@ -270,29 +270,6 @@ public class CandidateVoteService {
                                 .build()
                 );
             }
-            try {
-                val options = objectMapper.readValue(concreteDetails.getPayload(), CandidatePayload.class).getData().getVotes();
-                val existingVoteOptions = objectMapper.readValue(existingVote.getPayload().get(), CandidatePayload.class).getData().getVotes();
-
-                if (existingVoteOptions.size() == MAX_VOTES || !new HashSet<>(options).containsAll(existingVoteOptions)) {
-                    log.warn("Cannot change existing vote for the address: " + walletId, ", within category: " + category.id() + ", for event: " + eventId);
-
-                    return Either.left(
-                            Problem.builder()
-                                    .withTitle("VOTE_CANNOT_BE_CHANGED")
-                                    .withDetail("Vote cannot be changed for the address: " + walletId + ", within category: " + category.id() + ", for event: " + eventId)
-                                    .withStatus(BAD_REQUEST)
-                                    .build()
-                    );
-                }
-            } catch (JsonProcessingException e) {
-                return Either.left(Problem.builder()
-                        .withTitle("INVALID_CANDIDATE_VOTE_STRUCTURE")
-                        .withDetail("Invalid candidate vote structure. It should be non empty list of candidate ids eg. 'votes: [1,4,7,9,13]'.")
-                        .withStatus(BAD_REQUEST)
-                        .build()
-                );
-            }
             existingVote.setId(existingVote.getId());
             existingVote.setProposalId(proposal.id());
             existingVote.setVotedAtSlot(castVote.getVotedAtSlot());

@@ -3,7 +3,7 @@ import { Route, Routes } from "react-router-dom";
 
 import { Modal, ScrollToTop } from "@atoms";
 import { useCardano, useModal } from "@context";
-import { useWalletConnectionListener } from "@hooks";
+import { useDateNow, useWalletConnectionListener } from "@hooks";
 
 import {
   CandidateDetails,
@@ -23,6 +23,16 @@ import {
 export const App = () => {
   const { enable, isEnabled } = useCardano();
   const { modal, openModal, modals } = useModal();
+
+  const now = useDateNow();
+
+  const applyEndTime = Date.parse(import.meta.env.VITE_APPLY_END_DATE) - now;
+
+  const isApplyActive = applyEndTime > 0;
+
+  const isEditActive = Date.parse(import.meta.env.VITE_EDIT_END_DATE) > now;
+
+  const isVoteActive = now >= Date.parse(import.meta.env.VITE_EDIT_END_DATE) && Date.parse(import.meta.env.VITE_VOTE_END_DATE) > now;
 
   useWalletConnectionListener();
 
@@ -53,10 +63,19 @@ export const App = () => {
     <>
       <ScrollToTop />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/candidateDetails/:id" element={<CandidateDetails />} />
-        {isEnabled && <Route path="/registerCandidate" element={<RegisterForm />} />}
-        {isEnabled && <Route path="/editCandidate/:id" element={<EditCandicate />} /> }
+        <Route
+          path="/"
+          element={
+            <Home
+              applyEndTime={applyEndTime}
+              isEditActive={isEditActive}
+              isVoteActive={isVoteActive}
+            />
+          }
+        />
+        <Route path="/candidateDetails/:id" element={<CandidateDetails isEditActive={isEditActive} />} />
+        {isEnabled && isApplyActive && <Route path="/registerCandidate" element={<RegisterForm />} />}
+        {isEnabled && isEditActive && <Route path="/editCandidate/:id" element={<EditCandicate />} /> }
         <Route path="/thankYou" element={<ThankYou />} />
       </Routes>
       {modals[modal.type]?.component && (

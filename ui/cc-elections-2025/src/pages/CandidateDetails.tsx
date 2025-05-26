@@ -24,7 +24,11 @@ import { Footer } from "@organisms";
 import {Button} from "@atoms";
 import {useCardano, useModal} from "@context";
 
-export const CandidateDetails = () => {
+type CandidateDetailsProps = {
+  isEditActive: boolean;
+}
+
+export const CandidateDetails = ({ isEditActive }: CandidateDetailsProps) => {
   const { id } = useParams();
   const { closeModal, openModal } = useModal();
   const navigate = useNavigate();
@@ -109,7 +113,7 @@ export const CandidateDetails = () => {
             ) : (
               <>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                  {isEnabled && address === candidate.walletAddress && (
+                  {isEnabled && isEditActive && address === candidate.walletAddress && (
                     <Box sx={{
                       display: 'flex',
                       flexDirection: 'column',

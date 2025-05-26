@@ -19,6 +19,7 @@ type CandidatesListItemProps = {
   candidateType: "individual" | "company" | "consortium";
   verified: boolean;
   walletAddress: string;
+  isEditActive: boolean;
 };
 
 export const CandidatesListItem = (props: CandidatesListItemProps) => {
@@ -107,7 +108,7 @@ export const CandidatesListItem = (props: CandidatesListItemProps) => {
       </Box>
       <Box sx={{ paddingBottom: '20px', paddingRight: '24px', paddingLeft: '24px', display: 'flex', justifyContent: 'space-between' }}>
         <Button variant="text" onClick={handleClick}>Read more</Button>
-        {isEnabled && address === props.walletAddress && (
+        {isEnabled && props.isEditActive && address === props.walletAddress && (
           <>
             <Button variant="text" onClick={handleEdit}>Edit</Button>
             <Button variant="text" color="error" onClick={handleDelete}>Delete</Button>

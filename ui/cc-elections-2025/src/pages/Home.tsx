@@ -17,14 +17,22 @@ import { Layout } from '@/components/Layout/Layout';
 import { TopNav } from "@/components/TopNav.tsx";
 import { CCStepper } from "@/components/molecules/CCStepper.tsx";
 
-export const Home = () => {
+type HomeProps = {
+  applyEndTime: number;
+  isVoteActive: boolean;
+  isEditActive: boolean;
+}
+
+export const Home = ({ applyEndTime, isEditActive }: HomeProps) => {
   const  navigate = useNavigate();
   const { openModal } = useModal();
   const { isEnabled } = useCardano();
 
   const steps = ['Application', 'Vote', 'Results'];
 
-  const daysToApply = Math.floor((Date.parse('2025-05-31T10:30:00Z') - Date.now())/(24 * 60 * 60 * 1000));
+  const daysToApply = Math.floor((applyEndTime)/(24 * 60 * 60 * 1000));
+
+  const isApplyActive = applyEndTime > 0;
 
   const { allCandidates, isAllCandidatesLoading } = useGetAllCandidates();
 
@@ -78,29 +86,31 @@ export const Home = () => {
                   </Typography>
                 </Box>
               </Box>
-              <Box sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                flexWrap: 'wrap',
-                rowGap: '8px',
-                columnGap: '16px',
-                backgroundColor: '#FDE1CE',
-                borderRadius: '4px',
-                padding: '8px 16px'
-              }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px'}}>
-                  <img alt="add user" src={ICONS.userAddIcon} />
-                  <Typography variant="subtitle2" component="p">
-                    {`${daysToApply} more days to candidate yourself`}
-                  </Typography>
-                </Box>
-                <Button sx={{ borderRadius: 0 }} onClick={() => {
-                  isEnabled ? navigate('/registerCandidate') : openModal({ type: "chooseWallet" });
+              {isApplyActive && (
+                <Box sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                  rowGap: '8px',
+                  columnGap: '16px',
+                  backgroundColor: '#FDE1CE',
+                  borderRadius: '4px',
+                  padding: '8px 16px'
                 }}>
-                  {isEnabled ? 'Apply as a candidate' : 'Connect to apply as a candidate'}
-                </Button>
-              </Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px'}}>
+                    <img alt="add user" src={ICONS.userAddIcon} />
+                    <Typography variant="subtitle2" component="p">
+                      {`${daysToApply} more days to candidate yourself`}
+                    </Typography>
+                  </Box>
+                  <Button sx={{ borderRadius: 0 }} onClick={() => {
+                    isEnabled ? navigate('/registerCandidate') : openModal({ type: "chooseWallet" });
+                  }}>
+                    {isEnabled ? 'Apply as a candidate' : 'Connect to apply as a candidate'}
+                  </Button>
+                </Box>
+              )}
               <Box>
                 <Typography variant="body2">Guides can be found <Link variant="body2" target="_blank" rel="noopener" href="https://docs.intersectmbo.org/cardano/cardano-governance/cardano-constitution/2025-constitutional-committee-elections/guide-for-applicants">here</Link>.</Typography>
               </Box>
@@ -120,7 +130,10 @@ export const Home = () => {
                   </Box>
                 </Box>
               ) : (
-                <CandidatesList candidates={allCandidates} />
+                <CandidatesList
+                  candidates={allCandidates}
+                  isEditActive={isEditActive}
+                />
               )}
             </Box>
           </Box>

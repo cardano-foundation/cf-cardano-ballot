@@ -9,9 +9,10 @@ import {DataActionsBar} from "@/components/molecules";
 
 type CandidatesListProps = {
   candidates: Candidate[];
+  isEditActive: boolean;
 };
 
-export const CandidatesList = ({ candidates }: CandidatesListProps) => {
+export const CandidatesList = ({ candidates, isEditActive }: CandidatesListProps) => {
   const [filteredCandidates, setFilteredCandidates] = useState<Candidate[]>(candidates);
   const [sortOpen, setSortOpen] = useState<boolean>(false);
   const [chosenSorting, setChosenSorting] = useState<string>("Random");
@@ -102,6 +103,7 @@ export const CandidatesList = ({ candidates }: CandidatesListProps) => {
             name={candidate.candidate.name}
             verified={candidate.candidate.verified}
             walletAddress={candidate.candidate.walletAddress}
+            isEditActive={isEditActive}
           />
         ))}
       </Box>

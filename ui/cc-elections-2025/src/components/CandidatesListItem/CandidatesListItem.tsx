@@ -81,7 +81,7 @@ export const CandidatesListItem = (props: CandidatesListItemProps) => {
               {props.initials}
             </Avatar>
             {props.verified && (
-              <Tooltip title={'Verified applicant'}>
+              <Tooltip title={'Authenticated X account'}>
                 <img src={ICONS.verifiedIcon} alt="verified" style={{ position: 'absolute', bottom: '0', right: '-5px' }}/>
               </Tooltip>
             )}

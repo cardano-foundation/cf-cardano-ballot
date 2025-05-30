@@ -157,7 +157,7 @@ export const CandidateDetails = ({ isEditActive }: CandidateDetailsProps) => {
                               {getInitials(candidate.name)}
                             </Avatar>
                             {candidate.verified && (
-                              <Tooltip title={'Verified applicant'}>
+                              <Tooltip title={'Authenticated X account'}>
                                 <img src={ICONS.verifiedIcon} alt="verified" style={{ position: 'absolute', bottom: '0', right: '0' }}/>
                               </Tooltip>
                             )}

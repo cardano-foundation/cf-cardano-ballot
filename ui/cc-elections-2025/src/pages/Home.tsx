@@ -62,7 +62,7 @@ export const Home = ({ applyEndTime, isEditActive }: HomeProps) => {
 
                     Anyone committed to contributing to the governance of Cardano can apply to become a Constitutional Committee member, including individuals, companies, and consortia.
 
-                    Any Ada holder can participate in the vote (as long as they have staked their Ada before the end of epoch 563 on Sunday, 8th June 9:45 PM UTC, as the snapshot will be taken at the beginning of epoch 564).
+                    Any Ada holder can participate in the vote (as long as they have staked their Ada before the end of epoch 562 on Sunday, 8th June 9:45 PM UTC, as the snapshot will be taken at the beginning of epoch 563).
                   </Typography>
                 </Box>
               </Box>

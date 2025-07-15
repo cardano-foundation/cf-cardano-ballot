@@ -4,11 +4,10 @@ import cz.habarta.typescript.generator.TypeScriptOutputKind
 
 plugins {
 	java
-	id("org.springframework.boot") version "3.3.0"
-	id("io.spring.dependency-management") version "1.1.6"
-	id("org.graalvm.buildtools.native") version "0.9.26"
+	id("org.springframework.boot") version "3.3.6"
+	id("io.spring.dependency-management") version "1.1.7"
 	id("cz.habarta.typescript-generator") version "3.2.1263"
-    id("com.github.ben-manes.versions") version "0.48.0"
+    id("com.github.ben-manes.versions") version "0.52.0"
 	jacoco
 }
 
@@ -35,7 +34,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
-	testImplementation("io.rest-assured:rest-assured:5.4.0")
+	testImplementation("io.rest-assured:rest-assured:5.5.5")
 	testImplementation("org.wiremock:wiremock-standalone:3.9.1")
 
 	implementation("org.springframework.boot:spring-boot-starter-cache")
@@ -55,40 +54,39 @@ dependencies {
 
 	implementation("org.zalando:problem-spring-web-starter:0.29.1")
 
-	compileOnly("org.projectlombok:lombok:1.18.34")
-	annotationProcessor("org.projectlombok:lombok:1.18.34")
+	compileOnly("org.projectlombok:lombok:1.18.38")
+	annotationProcessor("org.projectlombok:lombok:1.18.38")
 
-	testCompileOnly("org.projectlombok:lombok:1.18.34")
-	testAnnotationProcessor("org.projectlombok:lombok:1.18.34")
+	testCompileOnly("org.projectlombok:lombok:1.18.38")
+	testAnnotationProcessor("org.projectlombok:lombok:1.18.38")
 
 	implementation("com.querydsl:querydsl-jpa")
     annotationProcessor("com.querydsl:querydsl-apt")
 
-	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.1")
-	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.1")
-	implementation("com.bloxbean.cardano:aiken-java-binding:0.0.8")
-	annotationProcessor("com.bloxbean.cardano:cardano-client-annotation-processor:0.5.1")
+	implementation("com.bloxbean.cardano:cardano-client-crypto:0.6.6")
+	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.6.6")
+	implementation("com.bloxbean.cardano:aiken-java-binding:0.1.0")
+	annotationProcessor("com.bloxbean.cardano:cardano-client-annotation-processor:0.6.6")
 
-	implementation("com.bloxbean.cardano:yaci-store-spring-boot-starter:0.1.0-rc5")
-	implementation("com.bloxbean.cardano:yaci-store-blocks-spring-boot-starter:0.1.0-rc5")
-	implementation("com.bloxbean.cardano:yaci-store-transaction-spring-boot-starter:0.1.0-rc5")
-	implementation("com.bloxbean.cardano:yaci-store-metadata-spring-boot-starter:0.1.0-rc5")
+	implementation("com.bloxbean.cardano:yaci-store-spring-boot-starter:0.1.4")
+	implementation("com.bloxbean.cardano:yaci-store-blocks-spring-boot-starter:0.1.4")
+	implementation("com.bloxbean.cardano:yaci-store-transaction-spring-boot-starter:0.1.4")
+	implementation("com.bloxbean.cardano:yaci-store-metadata-spring-boot-starter:0.1.4")
 
 	implementation("io.blockfrost:blockfrost-java:0.1.3")
 
-	implementation("io.vavr:vavr:0.10.4")
+	implementation("io.vavr:vavr:0.10.6")
 
 	runtimeOnly("org.postgresql:postgresql")
 
-	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.11")
+	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.12")
 	implementation("org.cardanofoundation:cf-cardano-conversions-java:1.2.0")
 
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
 
 	implementation("me.paulschwarz:spring-dotenv:4.0.0")
 
-	// spring-boot overridden dependencies:
-    runtimeOnly("com.h2database:h2:2.2.224") // GraalVM compatibility
+    runtimeOnly("com.h2database:h2")
 }
 
 tasks.withType<Test> {
@@ -138,4 +136,26 @@ tasks.register<Copy>("buildAndCopyTypescriptTypes") {
 		println("buildAndCopyTypescriptTypes ui_project_name param NOT set. Skipping.")
 	}
 
+}
+
+fun isNonStable(version: String): Boolean {
+	val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.uppercase().contains(it) }
+	val regex = "^[0-9,.v-]+(-r)?$".toRegex()
+	val isStable = stableKeyword || regex.matches(version)
+
+	return isStable.not()
+}
+
+
+// https://github.com/ben-manes/gradle-versions-plugin
+tasks.named("dependencyUpdates", com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask::class.java).configure {
+	resolutionStrategy {
+		componentSelection {
+			all {
+				if (isNonStable(candidate.version)) {
+					reject("Release candidate")
+				}
+			}
+		}
+	}
 }

@@ -4,12 +4,11 @@ import cz.habarta.typescript.generator.TypeScriptOutputKind
 
 plugins {
 	java
-	id("org.springframework.boot") version "3.2.0"
-	id("io.spring.dependency-management") version "1.1.3"
-	id("org.graalvm.buildtools.native") version "0.9.27"
+	id("org.springframework.boot") version "3.3.6"
+	id("io.spring.dependency-management") version "1.1.7"
     id("org.flywaydb.flyway") version "9.22.1"
     id("cz.habarta.typescript-generator") version "3.2.1263"
-    id("com.github.ben-manes.versions") version "0.48.0"
+    id("com.github.ben-manes.versions") version "0.52.0"
     jacoco
 }
 
@@ -32,12 +31,28 @@ repositories {
     maven { url = uri("https://repo.spring.io/milestone") }
 }
 
+val lombokVersion: String by project
+val restAssuredVersion: String by project
+val wiremockVersion: String by project
+val problemSpringWebVersion: String by project
+val guavaVersion: String by project
+val junitJupiterVersion: String by project
+val nimbusJoseJwtVersion: String by project
+val tinkVersion: String by project
+val cardanoClientVersion: String by project
+val blockfrostJavaVersion: String by project
+val vavrVersion: String by project
+val merkleTreeJavaVersion: String by project
+val cip30DataSignatureParserVersion: String by project
+val springdocVersion: String by project
+val springDotenvVersion: String by project
+
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    testImplementation("io.rest-assured:rest-assured:5.3.2")
-    testImplementation("org.wiremock:wiremock-standalone:3.3.1")
+    testImplementation("io.rest-assured:rest-assured:$restAssuredVersion")
+    testImplementation("org.wiremock:wiremock-standalone:$wiremockVersion")
 
     testCompileOnly("org.springframework.boot:spring-boot-starter-test")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
@@ -45,7 +60,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-security")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    implementation("org.zalando:problem-spring-web-starter:0.29.1")
+    implementation("org.zalando:problem-spring-web-starter:$problemSpringWebVersion")
 
     runtimeOnly("org.springframework.boot:spring-boot-properties-migrator")
 
@@ -53,39 +68,60 @@ dependencies {
 
     implementation("org.flywaydb:flyway-core")
 
-    implementation("com.google.guava:guava:32.1.2-jre")
+    implementation("com.google.guava:guava:$guavaVersion")
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
+    testImplementation("org.junit.jupiter:junit-jupiter:$junitJupiterVersion")
 
-    compileOnly("org.projectlombok:lombok:1.18.30")
-    annotationProcessor("org.projectlombok:lombok:1.18.30")
+    compileOnly("org.projectlombok:lombok:$lombokVersion")
+    annotationProcessor("org.projectlombok:lombok:$lombokVersion")
 
-    testCompileOnly("org.projectlombok:lombok:1.18.30")
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
+    testCompileOnly("org.projectlombok:lombok:$lombokVersion")
+    testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
 
     implementation("com.querydsl:querydsl-jpa")
     annotationProcessor("com.querydsl:querydsl-apt")
 
-    implementation("com.nimbusds:nimbus-jose-jwt:9.35")
-    implementation("com.google.crypto.tink:tink:1.11.0")
+    implementation("com.nimbusds:nimbus-jose-jwt:$nimbusJoseJwtVersion")
+    implementation("com.google.crypto.tink:tink:$tinkVersion")
 
-	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0")
+	implementation("com.bloxbean.cardano:cardano-client-cip30:$cardanoClientVersion")
 
-    implementation("io.blockfrost:blockfrost-java:0.1.3")
+    implementation("io.blockfrost:blockfrost-java:$blockfrostJavaVersion")
 
-    implementation("io.vavr:vavr:0.10.4")
+    implementation("io.vavr:vavr:$vavrVersion")
 
     runtimeOnly("org.postgresql:postgresql")
 
-    implementation("org.cardanofoundation:merkle-tree-java:0.0.7")
-    implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.12")
+    implementation("org.cardanofoundation:merkle-tree-java:$merkleTreeJavaVersion")
+    implementation("org.cardanofoundation:cip30-data-signature-parser:$cip30DataSignatureParserVersion")
 
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springdocVersion")
 
-    implementation("me.paulschwarz:spring-dotenv:4.0.0")
+    implementation("me.paulschwarz:spring-dotenv:$springDotenvVersion")
 
     // spring-boot overridden dependencies:
-    runtimeOnly("com.h2database:h2:2.2.224") // GraalVM compatibility
+    runtimeOnly("com.h2database:h2")
+}
+
+fun isNonStable(version: String): Boolean {
+	val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.uppercase().contains(it) }
+	val regex = "^[0-9,.v-]+(-r)?$".toRegex()
+	val isStable = stableKeyword || regex.matches(version)
+
+	return isStable.not()
+}
+
+// https://github.com/ben-manes/gradle-versions-plugin
+tasks.named("dependencyUpdates", com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask::class.java).configure {
+	resolutionStrategy {
+		componentSelection {
+			all {
+				if (isNonStable(candidate.version)) {
+					reject("Release candidate")
+				}
+			}
+		}
+	}
 }
 
 tasks.withType<Test> {

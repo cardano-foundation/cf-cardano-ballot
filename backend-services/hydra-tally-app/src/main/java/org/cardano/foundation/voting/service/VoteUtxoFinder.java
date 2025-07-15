@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardano.foundation.voting.domain.UTxOCategoryResult;
 import org.cardano.foundation.voting.domain.UTxOVote;
+import org.cardano.foundation.voting.domain.converter.CategoryResultsDatumConverter;
+import org.cardano.foundation.voting.domain.converter.VoteDatumConverter;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -22,8 +24,8 @@ public class VoteUtxoFinder {
 
     private final UtxoSupplier utxoSupplier;
     private final PlutusScriptLoader plutusScriptLoader;
-    private final org.cardano.foundation.voting.domain.VoteDatumConverter voteDatumConverter;
-    private final org.cardano.foundation.voting.domain.CategoryResultsDatumConverter categoryResultsDatumConverter;
+    private final VoteDatumConverter voteDatumConverter;
+    private final CategoryResultsDatumConverter categoryResultsDatumConverter;
 
     public List<UTxOVote> getUtxosWithVotes(String contractEventId,
                                             String contractOrganiser,

@@ -1,0 +1,8 @@
+name = "cardano-foundation/cf-summit2023-hydra-tally-app"
+version = "0.0.1"
+licences = []
+description = "CF Summit 2023 Hydra Tally App"
+
+dependencies = [
+  { name = "Cardano-Fans/acca", version = "038428f0a2b81c4013e69c65570b57781cae6a51", source = "github" }
+]

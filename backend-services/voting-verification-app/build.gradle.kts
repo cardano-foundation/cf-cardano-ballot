@@ -4,12 +4,11 @@ import cz.habarta.typescript.generator.TypeScriptOutputKind
 
 plugins {
 	java
-	id("org.springframework.boot") version "3.2.0"
-	id("io.spring.dependency-management") version "1.1.3"
-	id("org.graalvm.buildtools.native") version "0.9.26"
-  id("org.flywaydb.flyway") version "9.22.1"
+	id("org.springframework.boot") version "3.3.6"
+	id("io.spring.dependency-management") version "1.1.7"
+        id("org.flywaydb.flyway") version "9.22.1"
 	id("cz.habarta.typescript-generator") version "3.2.1263"
-  id("com.github.ben-manes.versions") version "0.48.0"
+        id("com.github.ben-manes.versions") version "0.52.0"
 }
 
 springBoot {
@@ -31,9 +30,22 @@ repositories {
 	maven { url = uri("https://repo.spring.io/milestone") }
 }
 
+val lombokVersion: String by project
+val restAssuredVersion: String by project
+val wiremockVersion: String by project
+val problemSpringWebVersion: String by project
+val cardanoClientVersion: String by project
+val vavrVersion: String by project
+val cip30DataSignatureParserVersion: String by project
+val springdocVersion: String by project
+val guavaVersion: String by project
+val junitJupiterVersion: String by project
+val springDotenvVersion: String by project
+val merkleTreeJavaVersion: String by project
+
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter")
-    implementation("org.springframework.boot:spring-boot-starter-aop")
+        implementation("org.springframework.boot:spring-boot-starter")
+        implementation("org.springframework.boot:spring-boot-starter-aop")
 	testCompileOnly("org.springframework.boot:spring-boot-starter-test")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -45,28 +57,55 @@ dependencies {
 
 	runtimeOnly("io.micrometer:micrometer-registry-prometheus")
 
-	implementation("org.zalando:problem-spring-web-starter:0.29.1")
+	implementation("org.zalando:problem-spring-web-starter:$problemSpringWebVersion")
 
-	compileOnly("org.projectlombok:lombok:1.18.30")
-	annotationProcessor("org.projectlombok:lombok:1.18.30")
+	compileOnly("org.projectlombok:lombok:$lombokVersion")
+	annotationProcessor("org.projectlombok:lombok:$lombokVersion")
 
-	testCompileOnly("org.projectlombok:lombok:1.18.30")
-	testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
+	testCompileOnly("org.projectlombok:lombok:$lombokVersion")
+	testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
 
 	implementation("com.querydsl:querydsl-jpa")
-    annotationProcessor("com.querydsl:querydsl-apt")
+        annotationProcessor("com.querydsl:querydsl-apt")
 
-    implementation("com.bloxbean.cardano:cardano-client-address:0.5.0")
-	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0")
+        implementation("com.bloxbean.cardano:cardano-client-address:$cardanoClientVersion")
+	implementation("com.bloxbean.cardano:cardano-client-cip30:$cardanoClientVersion")
 
-	implementation("io.vavr:vavr:0.10.4")
+	implementation("io.vavr:vavr:$vavrVersion")
 
-	implementation("org.cardanofoundation:merkle-tree-java:0.0.7")
-	implementation("org.cardanofoundation:cip30-data-signature-parser:0.0.11")
+	implementation("org.cardanofoundation:merkle-tree-java:$merkleTreeJavaVersion")
+	implementation("org.cardanofoundation:cip30-data-signature-parser:$cip30DataSignatureParserVersion")
 
-	implementation("me.paulschwarz:spring-dotenv:4.0.0")
+	implementation("me.paulschwarz:spring-dotenv:$springDotenvVersion")
 
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
+        implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springdocVersion")
+
+	implementation("com.google.guava:guava:$guavaVersion")
+
+	testImplementation("org.junit.jupiter:junit-jupiter:$junitJupiterVersion")
+	testImplementation("io.rest-assured:rest-assured:$restAssuredVersion")
+	testImplementation("org.wiremock:wiremock-standalone:$wiremockVersion")
+}
+
+fun isNonStable(version: String): Boolean {
+	val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.uppercase().contains(it) }
+	val regex = "^[0-9,.v-]+(-r)?$".toRegex()
+	val isStable = stableKeyword || regex.matches(version)
+
+	return isStable.not()
+}
+
+// https://github.com/ben-manes/gradle-versions-plugin
+tasks.named("dependencyUpdates", com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask::class.java).configure {
+	resolutionStrategy {
+		componentSelection {
+			all {
+				if (isNonStable(candidate.version)) {
+					reject("Release candidate")
+				}
+			}
+		}
+	}
 }
 
 tasks.withType<Test> {

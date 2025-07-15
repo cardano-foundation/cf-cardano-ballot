@@ -19,9 +19,10 @@ import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardano.foundation.voting.domain.CategoryResultsDatum;
-import org.cardano.foundation.voting.domain.CategoryResultsDatumConverter;
 import org.cardano.foundation.voting.domain.CreateVoteBatchRedeemer;
 import org.cardano.foundation.voting.domain.UTxOVote;
+import org.cardano.foundation.voting.domain.converter.CategoryResultsDatumConverter;
+import org.cardano.foundation.voting.domain.converter.CreateVoteBatchRedeemerConverter;
 import org.cardano.foundation.voting.utils.BalanceUtil;
 import org.cardanofoundation.hydra.cardano.client.lib.submit.TransactionSubmissionService;
 import org.cardanofoundation.hydra.cardano.client.lib.wallet.WalletSupplier;
@@ -73,7 +74,7 @@ public class HydraVoteBatcher {
     private Network network;
 
     @Autowired
-    private org.cardano.foundation.voting.domain.CreateVoteBatchRedeemerConverter createVoteBatchRedeemerConverter;
+    private CreateVoteBatchRedeemerConverter createVoteBatchRedeemerConverter;
 
 
     public void batchVotesPerCategory(String contractEventId,

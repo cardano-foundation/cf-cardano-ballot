@@ -19,9 +19,10 @@ import io.vavr.control.Either;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.cardano.foundation.voting.domain.CategoryResultsDatum;
-import org.cardano.foundation.voting.domain.CategoryResultsDatumConverter;
 import org.cardano.foundation.voting.domain.ReduceVoteBatchRedeemer;
 import org.cardano.foundation.voting.domain.UTxOCategoryResult;
+import org.cardano.foundation.voting.domain.converter.CategoryResultsDatumConverter;
+import org.cardano.foundation.voting.domain.converter.ReduceVoteBatchRedeemerConverter;
 import org.cardanofoundation.hydra.cardano.client.lib.submit.TransactionSubmissionService;
 import org.cardanofoundation.hydra.cardano.client.lib.wallet.WalletSupplier;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,7 +75,7 @@ public class HydraVoteBatchReducer {
     private CategoryResultsDatumConverter categoryResultsDatumConverter;
 
     @Autowired
-    private org.cardano.foundation.voting.domain.ReduceVoteBatchRedeemerConverter reduceVoteBatchRedeemerConverter;
+    private ReduceVoteBatchRedeemerConverter reduceVoteBatchRedeemerConverter;
 
     public void batchVotesPerCategory(String contractEventId,
                                       String contractOrganiser,

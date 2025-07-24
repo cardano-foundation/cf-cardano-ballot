@@ -73,6 +73,7 @@ dependencies {
     testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
 
     implementation("org.flywaydb:flyway-core")
+    implementation("org.flywaydb:flyway-database-postgresql")
 
     implementation("com.googlecode.libphonenumber:libphonenumber:$libphonenumberVersion")
 

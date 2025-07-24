@@ -42,6 +42,7 @@ voting-app:
   DO functions+DOCKER_TAG_N_PUSH \
      --PUSH=$PUSH \
      --DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME} \
+     --DOCKER_REGISTRIES="${DOCKER_REGISTRIES}" \
      --DOCKER_IMAGES_EXTRA_TAGS="${DOCKER_IMAGES_EXTRA_TAGS}"
 
   # FIXME: not working as there is some scoping issue with earthly, see:
@@ -66,6 +67,7 @@ vote-commitment-app:
   DO functions+DOCKER_TAG_N_PUSH \
      --PUSH=$PUSH \
      --DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME} \
+     --DOCKER_REGISTRIES="${DOCKER_REGISTRIES}" \
      --DOCKER_IMAGES_EXTRA_TAGS="${DOCKER_IMAGES_EXTRA_TAGS}"
 
 voting-ledger-follower-app:
@@ -81,6 +83,7 @@ voting-ledger-follower-app:
   DO functions+DOCKER_TAG_N_PUSH \
      --PUSH=$PUSH \
      --DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME} \
+     --DOCKER_REGISTRIES="${DOCKER_REGISTRIES}" \
      --DOCKER_IMAGES_EXTRA_TAGS="${DOCKER_IMAGES_EXTRA_TAGS}"
 
 voting-verification-app:
@@ -96,6 +99,7 @@ voting-verification-app:
   DO functions+DOCKER_TAG_N_PUSH \
      --PUSH=$PUSH \
      --DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME} \
+     --DOCKER_REGISTRIES="${DOCKER_REGISTRIES}" \
      --DOCKER_IMAGES_EXTRA_TAGS="${DOCKER_IMAGES_EXTRA_TAGS}"
 
 user-verification-service:
@@ -111,6 +115,7 @@ user-verification-service:
   DO functions+DOCKER_TAG_N_PUSH \
      --PUSH=$PUSH \
      --DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME} \
+     --DOCKER_REGISTRIES="${DOCKER_REGISTRIES}" \
      --DOCKER_IMAGES_EXTRA_TAGS="${DOCKER_IMAGES_EXTRA_TAGS}"
 
 ui-summit-2024:
@@ -127,6 +132,7 @@ ui-summit-2024:
   DO functions+DOCKER_TAG_N_PUSH \
      --PUSH=$PUSH \
      --DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME} \
+     --DOCKER_REGISTRIES="${DOCKER_REGISTRIES}" \
      --DOCKER_IMAGES_EXTRA_TAGS="${DOCKER_IMAGES_EXTRA_TAGS}"
 
 voting-admin-app:
@@ -142,6 +148,7 @@ voting-admin-app:
   DO functions+DOCKER_TAG_N_PUSH \
      --PUSH=$PUSH \
      --DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME} \
+     --DOCKER_REGISTRIES="${DOCKER_REGISTRIES}" \
      --DOCKER_IMAGES_EXTRA_TAGS="${DOCKER_IMAGES_EXTRA_TAGS}"
 
 keri-ballot-verifier:
@@ -157,4 +164,5 @@ keri-ballot-verifier:
   DO functions+DOCKER_TAG_N_PUSH \
      --PUSH=$PUSH \
      --DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME} \
+     --DOCKER_REGISTRIES="${DOCKER_REGISTRIES}" \
      --DOCKER_IMAGES_EXTRA_TAGS="${DOCKER_IMAGES_EXTRA_TAGS}"

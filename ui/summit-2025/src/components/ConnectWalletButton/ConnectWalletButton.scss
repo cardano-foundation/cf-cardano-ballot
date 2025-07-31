@@ -1,0 +1,128 @@
+.button-container {
+  position: relative;
+  z-index: 1300;
+  .main-button {
+    position: relative;
+    z-index: 1301;
+    border-radius: 8px;
+    border: 1px solid var(--orange, #FF6444);
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    color: var(--orange, #FF6444);
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 20px;
+    text-transform: none;
+  }
+  .main-button:hover {
+    border-color: var(--neutralLightest, #FF9277);
+    color: var(--neutralLightest, #FF9277);
+    background-color: transparent;
+  }
+  &:hover .disconnect-wrapper {
+    display: block;
+  }
+
+  &:hover .arrow-icon svg {
+    transform: rotate(180deg);
+  }
+}
+
+.arrow-icon {
+  display: inline-flex;
+  align-items: center;
+
+  svg {
+    transition: transform 0.3s ease-in-out;
+    transform: rotate(0deg);
+  }
+}
+
+.disconnect-wrapper {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 100%;
+  display: none;
+  background-color: #3E4C73;
+  border-radius: 8px;
+
+  .disconnect-button {
+    width: 100%;
+    text-transform: none;
+  }
+}
+@media (max-width: 1287px) {
+  .disconnect-wrapper {
+    right: 0;
+  }
+}
+
+.menu-button {
+  width: 100%;
+  text-transform: none;
+  cursor: pointer;
+  display: flex;
+  padding: 8px 20px;
+  align-items: center;
+  gap: 8px;
+  align-self: stretch;
+  border-radius: 8px;
+  color: var(--neutralLightest, #faf9f6);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 20px;
+  height: 44px;
+
+  &:hover {
+    background-color: #050C25;
+  }
+
+  .MuiTypography-root {
+    font-size: 12px;
+  }
+}
+.verify-button.MuiButton-root {
+  width: 100%;
+  display: inline-flex;
+  padding: 14px;
+  align-items: flex-start;
+  gap: 8px;
+  border-radius: 4px;
+  background-color: var(--color-light-green) !important;
+  transition: transform 0.3s ease;
+  color: var(--color-ultra-dark-blue);
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  text-transform: none;
+
+  span {
+    padding-top: 3px;
+  }
+}
+
+.connected-button.MuiButton-root {
+  border-radius: 12px;
+  border: 1px solid #FAF2EB;
+  display: inline-flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  text-transform: none;
+  color: #FAF2EB;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+}
+
+.connected-button.MuiButton-root:hover {
+  border: 1px solid #FAF2EB;
+  color: #FAF2EB;
+}

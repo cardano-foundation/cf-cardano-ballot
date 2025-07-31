@@ -11,7 +11,7 @@ COPY . .
 RUN npm run build
 
 # Bundle static assets with nginx
-FROM nginx:alpine as production
+FROM nginx:alpine AS production
 EXPOSE 80
 WORKDIR /app
 

@@ -30,7 +30,7 @@ const BioModal: React.FC<BioModalProps> = ({
 
   const handleCopyToClipBoard = () => {
     copyToClipboard(urlToCopy);
-    eventBus.publish(EventName.ShowToast, "Copied to clipboard");
+    eventBus.publish(EventName.ShowToast, "Copied to clipboard.");
   };
 
   return (

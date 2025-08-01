@@ -86,7 +86,7 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
   const handleCopyToClipboard = async () => {
     if (!props.meerkatAddress) return;
     await copyToClipboard(props.meerkatAddress);
-    eventBus.publish(EventName.ShowToast, "Copied to clipboard");
+    eventBus.publish(EventName.ShowToast, "Copied to clipboard.");
   };
 
   const renderContent = () => {

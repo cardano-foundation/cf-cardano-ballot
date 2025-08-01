@@ -19,7 +19,7 @@ const JsonView: React.FC<JsonRendererProps> = ({ data, sx, verifyProof }) => {
   const handleCopy = async () => {
     await copyToClipboard(data);
     setCopied(true);
-    eventBus.publish(EventName.ShowToast, "Copied to clipboard successfully");
+    eventBus.publish(EventName.ShowToast, "Copied to clipboard successfully.");
     setTimeout(() => setCopied(false), 1000);
   };
 

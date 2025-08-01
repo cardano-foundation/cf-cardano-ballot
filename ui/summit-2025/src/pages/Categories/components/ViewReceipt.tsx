@@ -42,7 +42,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
 
   const handleCopy = async (data: string) => {
     await copyToClipboard(data);
-    eventBus.publish(EventName.ShowToast, "Copied to clipboard successfully");
+    eventBus.publish(EventName.ShowToast, "Copied to clipboard successfully.");
   };
 
   const verifyVoteProof = async () => {
@@ -59,7 +59,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
       verifyVote(body)
         .then((result) => {
           if ("verified" in result && result.verified) {
-            eventBus.publish(EventName.ShowToast, "Vote verified successfully");
+            eventBus.publish(EventName.ShowToast, "Vote verified successfully.");
           } else {
             eventBus.publish(
               EventName.ShowToast,

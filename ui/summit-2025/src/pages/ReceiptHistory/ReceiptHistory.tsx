@@ -79,7 +79,7 @@ const ReceiptHistory: React.FC = () => {
 
   const handleCopy = async (transactionId: string) => {
     await copyToClipboard(transactionId);
-    eventBus.publish(EventName.ShowToast, "Copied to clipboard successfully");
+    eventBus.publish(EventName.ShowToast, "Copied to clipboard successfully.");
   };
 
   const ReceiptsList = () => (

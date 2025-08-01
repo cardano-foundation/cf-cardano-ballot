@@ -244,7 +244,7 @@ const VerifyWalletModal = () => {
     );
 
     if (!signedMessageResult.success) {
-      eventBus.publish("showToast", "Error while signing", ToastType.Error);
+      eventBus.publish("showToast", "Error while signing.", ToastType.Error);
       return;
     }
     const parsedSecret = inputSecret.split("|")[1];
@@ -258,7 +258,7 @@ const VerifyWalletModal = () => {
     if ("error" in verifyDiscordResult && verifyDiscordResult.error) {
       eventBus.publish(
         "showToast",
-        verifyDiscordResult.message || "Error while verifying",
+        verifyDiscordResult.message || "Error while verifying.",
         ToastType.Error,
       );
       trackEvent({
@@ -269,7 +269,7 @@ const VerifyWalletModal = () => {
     }
     // @ts-ignore
     dispatch(setWalletIsVerified(verifyDiscordResult.verified));
-    eventBus.publish(EventName.ShowToast, "Wallet verified successfully");
+    eventBus.publish(EventName.ShowToast, "Wallet verified successfully.");
     handleCloseModal();
     trackEvent({ category: "discord-verified", action: "backend-event" });
   };
@@ -300,9 +300,9 @@ const VerifyWalletModal = () => {
               cursor: "pointer",
             }}
           >
-            To vote you will need to verify your wallet. If you would prefer,
-            you can do this later. Just select your wallet and click the ‘Verify
-            Wallet’ option.{" "}
+            To vote, you will need to verify your wallet. If you prefer,
+            you can do this later. Just select your wallet and click your preferred 
+            verification option.{" "}
           </Typography>
           <Button
             onClick={() => handleSetCurrentPath(VerifyWalletFlow.SELECT_METHOD)}
@@ -867,8 +867,7 @@ const VerifyWalletModal = () => {
             marginTop: "16px",
           }}
         >
-          To verify your address you need to sign a secret message. You will get
-          the secret from our friendly Discord bot.
+          To verify your wallet, you need to sign a secret message. You will get the secret message from our friendly Discord bot.
         </Typography>
         <Typography
           style={{
@@ -908,7 +907,19 @@ const VerifyWalletModal = () => {
             marginTop: "16px",
           }}
         >
-          2. Open the{" "}
+          2. Copy your stake address.
+        </Typography>
+        <Typography
+          style={{
+            fontSize: "16px",
+            fontStyle: "normal",
+            fontWeight: 500,
+            lineHeight: "24px",
+            wordWrap: "break-word",
+            marginTop: "16px",
+          }}
+        >
+          3. Send your stake address as a private message to our{" "}
           <Link
             sx={{
               color: theme.palette.secondary.main,
@@ -921,9 +932,34 @@ const VerifyWalletModal = () => {
             }}
             onClick={() => openNewTab(env.DISCORD_BOT_URL)}
           >
-            Wallet Verification channel
-          </Link>{" "}
-          and follow the instructions in Discord.
+            WalletVerificationBot channel
+          </Link>
+        </Typography>
+        <Typography
+          style={{
+            fontSize: "16px",
+            fontStyle: "normal",
+            fontWeight: 500,
+            lineHeight: "24px",
+            wordWrap: "break-word",
+            marginTop: "16px",
+          }}
+        >
+          4. Get the secret key from the chat with our{" "}
+          <Link
+            sx={{
+              color: theme.palette.secondary.main,
+              fontSize: "16px",
+              fontStyle: "normal",
+              fontWeight: 500,
+              lineHeight: "24px",
+              textDecorationLine: "underline",
+              cursor: "pointer",
+            }}
+            onClick={() => openNewTab(env.DISCORD_BOT_URL)}
+          >
+            WalletVerificationBot channel
+          </Link>
         </Typography>
         <Typography
           className="verify-wallet-modal-description"

@@ -191,7 +191,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
           }),
         );
         eventBus.publish(EventName.CloseConnectWalletModal);
-        eventBus.publish(EventName.ShowToast, "Wallet connected successfully");
+        eventBus.publish(EventName.ShowToast, "Wallet connected successfully.");
         trackEvent({
           category: "connect-cardano-wallet",
           action: "click-event",
@@ -261,7 +261,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
       case ConnectWalletFlow.SELECT_WALLET:
         return {
           title:
-            "In order to vote, first you will need to connect your Wallet.",
+            "In order to vote, first you need to connect your Wallet.",
         };
       case ConnectWalletFlow.CONNECT_IDENTITY_WALLET:
         return {

@@ -234,7 +234,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
 
   const submitVote = async () => {
     if (eventCache?.finished) {
-      eventBus.publish(EventName.ShowToast, "The event already ended", "error");
+      eventBus.publish(EventName.ShowToast, "The event already ended.", "error");
       return;
     }
 
@@ -328,7 +328,7 @@ const Categories: React.FC<CategoriesProps> = ({ embedded }) => {
 
         return;
       }
-      eventBus.publish(EventName.ShowToast, "Vote submitted successfully");
+      eventBus.publish(EventName.ShowToast, "Vote submitted successfully.");
       trackEvent({
         category: "vote-successfully",
         action: "click-event",

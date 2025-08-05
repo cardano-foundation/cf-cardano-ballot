@@ -217,7 +217,7 @@ const Header = () => {
           };
           saveUserInSession(newSession);
           dispatch(setIsLogin(true));
-          eventBus.publish(EventName.ShowToast, "Login successfully");
+          eventBus.publish(EventName.ShowToast, "Login successful.");
           submitGetUserVotes(newSession?.accessToken)
             .then((uVotes) => {
               if (uVotes) {

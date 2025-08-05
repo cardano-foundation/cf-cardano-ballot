@@ -319,7 +319,7 @@ const Hero = () => {
             mb: "12px",
           }}
         >
-          Your Voice. Your Impact.
+          Get an Overview of This Year’s Ballot
         </Typography>
         <Typography
           variant="h2"
@@ -334,7 +334,7 @@ const Hero = () => {
             mb: {xs: "24px", sm: "40px"}
           }}
         >
-          An Overview of This Year’s Ballot
+          Your Voice. Your Impact.
         </Typography>
       </Box>
 

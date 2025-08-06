@@ -167,12 +167,12 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
       };
 
       initDappConnect(
-        "Cardano Summit 2024",
+        "Cardano Summit 2025",
         env.FRONTEND_URL,
         verifyConnection,
         onApiInject,
         onApiEject,
-        ["https://dev.btt.cf-identity-wallet.metadata.dev.cf-deployments.org"],
+        ["wss://tracker.webtorrent.dev:443/announce", "https://dev.btt.cf-identity-wallet.metadata.dev.cf-deployments.org"],
         onP2PConnect,
       );
     }

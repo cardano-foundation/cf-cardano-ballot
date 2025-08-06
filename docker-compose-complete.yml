@@ -89,7 +89,7 @@ services:
     ports:
       - "443:443"
       - "80:80"
-        #- "8080:8080"
+      - "127.0.0.1:8080:8080"
     volumes:
       - "/var/lib/letsencrypt:/letsencrypt"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
@@ -145,7 +145,7 @@ services:
   voting-ui:
     restart: unless-stopped
     container_name: voting-ui
-    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-ui-summit-2025:0.1.0-develop-129b778
+    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-ui-summit-2025:0.1.0-develop-aac2484
     ports:
       - 8082:80
     environment:
@@ -153,9 +153,13 @@ services:
       VITE_VOTING_LEDGER_FOLLOWER_APP_SERVER_URL: "${FOLLOWER_APP_URL}"
       VITE_VOTING_VERIFICATION_APP_SERVER_URL: "${VOTING_VERIFICATION_APP_URL}"
       VITE_USER_VERIFICATION_SERVER_URL: "${USER_VERIFICATION_APP_URL}"
-      VITE_DISCORD_SUPPORT_CHANNEL_URL: "https://discord.gg/${GUILD_ID}/${CHANNEL_ID}" # TODO: which channel? for now same as bot url
-      VITE_DISCORD_CHANNEL_URL: "https://discord.gg/${INVITE_ID}/" # TODO: not sure if this is really an invite?
-      VITE_DISCORD_BOT_URL: "https://discord.gg/${GUILD_ID}/${CHANNEL_ID}"
+
+      VITE_DISCORD_SUPPORT_CHANNEL_URL: "https://discord.com/${GUILD_ID}/${CHANNEL_ID}" # TODO: which channel? for now same as bot url
+      VITE_DISCORD_CHANNEL_URL: "https://discord.gg/${INVITE_ID}"
+      VITE_DISCORD_BOT_URL: "https://discord.com/channels/${GUILD_ID}/${CHANNEL_ID}"
+
+      VITE_SUPPORTED_WALLETS: "eternl,nami,typhon,yoroi,nufi,gerowallet,lace"
+
 
       # Only for prod?
       # VITE_MATOMO_BASE_URL: {{ .Values.matomoBaseUrl | default "https://example.com" }}
@@ -293,9 +297,10 @@ services:
       AWS_SNS_SECRET_ACCESS_KEY: "${AWS_SNS_SECRET_ACCESS_KEY}"
       AWS_SNS_REGION: "${AWS_SNS_REGION}"
 
+      DISCORD_BOT_EVENT_ID_BINDING: "${EVENT_ID}"
+      DISCORD_BOT_USERNAME: "${DISCORD_BOT_BASIC_AUTH_USER}"
+      DISCORD_BOT_PASSWORD: "${DISCORD_BOT_BASIC_AUTH_PASSWORD}"
 
-      DISCORD_BOT_EVENT_ID_BINDING: ""
-            
       LEDGER_FOLLOWER_APP_URL: "${FOLLOWER_APP_URL}"
       # KERI_BALLOT_VERIFIER_APP_URL: 
     networks:
@@ -303,11 +308,11 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.user-verification-backend-http.entrypoints=web"
-      - "traefik.http.routers.user-verification-backend-http.rule=Host(`${USER_VERIFICATION_APP_URL:-user-verification.dev.cf-summit-2025.cf-deployments.org}`)"
-      - "traefik.http.routers.user-verification-backend-https.rule=Host(`${USER_VERIFICATION_APP_URL:-user-verification.dev.cf-summit-2025.cf-deployments.org}`)"
+      - "traefik.http.routers.user-verification-backend-http.rule=Host(`${USER_VERIFICATION_APP_DOMAIN:-user-verification.dev.cf-summit-2025.cf-deployments.org}`)"
+      - "traefik.http.routers.user-verification-backend-https.rule=Host(`${USER_VERIFICATION_APP_DOMAIN:-user-verification.dev.cf-summit-2025.cf-deployments.org}`)"
       - "traefik.http.routers.user-verification-backend-https.entrypoints=websecure"
       - "traefik.http.routers.user-verification-backend-https.tls=true"
-      - "traefik.http.services.user-verification-backend-https.loadbalancer.server.port=9092"
+      - "traefik.http.services.user-verification-backend-https.loadbalancer.server.port=9093"
       - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.X-Forwarded-Proto=https"
 
 
@@ -321,12 +326,11 @@ services:
       CHANNEL_ID: "${CHANNEL_ID}"
       VERIFIED_ROLE_ID: "${VERIFIED_ROLE_ID}"
 
-      # no basic auth for us?
-      BACKEND_BASE_URL: "${VOTING_UI_URL}"
+      BACKEND_BASE_URL: "${USER_VERIFICATION_APP_URL}/api/discord/user-verification"
       BACKEND_BASIC_AUTH_ENABLED: "${BACKEND_BASIC_AUTH_ENABLED}"
-      # BACKEND_BASIC_AUTH_USER: "${BACKEND_BASIC_AUTH_USER}"
-      # BACKEND_BASIC_AUTH_PASSWORD: "${BACKEND_BASIC_AUTH_PASSWORD}"
-      # DISCORD_VERIFICATION_BOT_SALT: "${DISCORD_VERIFICATION_BOT_SALT}"
+      BACKEND_BASIC_AUTH_USER: "${DISCORD_BOT_BASIC_AUTH_USER}"
+      BACKEND_BASIC_AUTH_PASSWORD: "${DISCORD_BOT_BASIC_AUTH_PASSWORD}"
+      DISCORD_VERIFICATION_BOT_SALT: "${DISCORD_VERIFICATION_BOT_SALT}"
 
       FRONTEND_URL: "${VOTING_UI_URL}"
   # TODO: on dev?

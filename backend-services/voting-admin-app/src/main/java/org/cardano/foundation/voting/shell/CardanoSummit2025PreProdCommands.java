@@ -31,7 +31,7 @@ public class CardanoSummit2025PreProdCommands {
 
     private final CardanoNetwork network;
 
-    @ShellMethod(key = "01_create-cf-summit04-event-pre-prod", value = "Create a CF-Summit 2025 voting event on a PRE-PROD network.")
+    @ShellMethod(key = "01_create-cf-summit05-event-pre-prod", value = "Create a CF-Summit 2025 voting event on a PRE-PROD network.")
     @Order(1)
     public String createCFSummit2025Event() {
         if (network != PREPROD) {
@@ -45,7 +45,7 @@ public class CardanoSummit2025PreProdCommands {
         long proposalsRevealSlot = 99576000; // 15/08/2025 12:00:00
 
         var createEventCommand = CreateEventCommand.builder()
-                .id(EVENT_NAME + "_" + "18BCC")
+                .id(EVENT_NAME + "_" + "19BCC")
                 .startSlot(Optional.of(startSlot))
                 .endSlot(Optional.of(endSlot))
                 .votingPowerAsset(Optional.empty())

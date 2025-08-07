@@ -175,7 +175,6 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
         [
           "wss://tracker.webtorrent.dev:443/announce",
           "wss://dev.btt.cf-identity-wallet.metadata.dev.cf-deployments.org/announce",
-          "https://dev.btt.cf-identity-wallet.metadata.dev.cf-deployments.org",
         ],
         onP2PConnect,
       );

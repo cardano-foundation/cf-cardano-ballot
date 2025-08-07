@@ -74,11 +74,11 @@ const Hero = () => {
     if (isMobile) {
       height = "350px";
     } else if (isMobilePlus) {
-      height = "350px";
+      height = "600px";
     } else if (isTablet) {
-      height = "400px";
+      height = "800px";
     } else if (isDesktop) {
-      height = "550px";
+      height = "900px";
     }
     return height;
   };
@@ -121,8 +121,8 @@ const Hero = () => {
                 height: "100%",
                 display: "flex",
                 position: "absolute",
-                bottom: "-50px",
-                right: "-50px",
+                bottom: "-150px",
+                right: "-100px",
                 justifyContent: "center",
                 alignItems: "center",
               }}
@@ -130,7 +130,7 @@ const Hero = () => {
               <Fade in={true} timeout={3000}>
                 <Box component="div">
                   <GLBViewer
-                    glbUrl="/award24-3d.glb"
+                    glbUrl="/award25-3d.glb"
                     height={getAwardHeight()}
                     width="auto"
                   />

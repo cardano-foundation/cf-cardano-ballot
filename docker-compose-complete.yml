@@ -145,7 +145,7 @@ services:
   voting-ui:
     restart: unless-stopped
     container_name: voting-ui
-    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-ui-summit-2025:0.1.0-develop-aac2484
+    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-ui-summit-2025:0.1.0-develop-294a581
     ports:
       - 8082:80
     environment:
@@ -236,28 +236,28 @@ services:
       - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.X-Forwarded-Proto=https"
 
 
-        # voting-verification-api:
-        #   restart: unless-stopped
-        #   container_name: voting-verification-api
-        #   image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-voting-verification-app:PR601-f4928db
-        #   ports: 
-        #     - 9092:9092
-        #   environment:
-        #     CARDANO_NETWORK: "${CARDANO_NETWORK}"
-        #     # TODO
-        #     CORS_ALLOWED_ORIGINS: "$VOTING_UI_URL"
-        #     LEDGER_FOLLOWER_APP_URL: "${FOLLOWER_APP_URL}"
-        #   networks:
-        #     - web
-        #   labels:
-        #     - "traefik.enable=true"
-        #     - "traefik.http.routers.voting-verification-backend-http.entrypoints=web"
-        #     - "traefik.http.routers.voting-verification-backend-http.rule=Host(`${VOTING_VERIFICATION_APP_DOMAIN:-verification-api.dev.cf-summit-2025.cf-deployments.org}`)"
-        #     - "traefik.http.routers.voting-verification-backend-https.rule=Host(`${VOTING_VERIFICATION_APP_DOMAIN:-verification-api.dev.cf-summit-2025.cf-deployments.org}`)"
-        #     - "traefik.http.routers.voting-verification-backend-https.entrypoints=websecure"
-        #     - "traefik.http.routers.voting-verification-backend-https.tls=true"
-        #     - "traefik.http.services.voting-verification-backend-https.loadbalancer.server.port=9092"
-        #     - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.X-Forwarded-Proto=https"
+  voting-verification-api:
+    restart: unless-stopped
+    container_name: voting-verification-api
+    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-voting-verification-app:PR601-f4928db
+    ports: 
+      - 9092:9092
+    environment:
+      CARDANO_NETWORK: "${CARDANO_NETWORK}"
+      # TODO
+      CORS_ALLOWED_ORIGINS: "$VOTING_UI_URL"
+      LEDGER_FOLLOWER_APP_URL: "${FOLLOWER_APP_URL}"
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.voting-verification-backend-http.entrypoints=web"
+      - "traefik.http.routers.voting-verification-backend-http.rule=Host(`${VOTING_VERIFICATION_APP_DOMAIN:-verification-api.dev.cf-summit-2025.cf-deployments.org}`)"
+      - "traefik.http.routers.voting-verification-backend-https.rule=Host(`${VOTING_VERIFICATION_APP_DOMAIN:-verification-api.dev.cf-summit-2025.cf-deployments.org}`)"
+      - "traefik.http.routers.voting-verification-backend-https.entrypoints=websecure"
+      - "traefik.http.routers.voting-verification-backend-https.tls=true"
+      - "traefik.http.services.voting-verification-backend-https.loadbalancer.server.port=9092"
+      - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.X-Forwarded-Proto=https"
 
         # voting-verification-ui:
         #   restart: unless-stopped
@@ -302,6 +302,9 @@ services:
       DISCORD_BOT_PASSWORD: "${DISCORD_BOT_BASIC_AUTH_PASSWORD}"
 
       LEDGER_FOLLOWER_APP_URL: "${FOLLOWER_APP_URL}"
+
+      # TODO: fix in backend default config and remove here
+      FRIENDLY_CUSTOM_NAME: "Cardano Summit 2025"
       # KERI_BALLOT_VERIFIER_APP_URL: 
     networks:
       - web
@@ -356,9 +359,9 @@ services:
 
       LEDGER_FOLLOWER_APP_URL: "${FOLLOWER_APP_URL}"
 
-      ## Postgres
-      DB_SCHEMA: "vote-commitment"
-      DB_URL: "jdbc:postgresql://postgres:5432/postgres?currentSchema=vote-commitment"
+      ## Postgres, schema must match voting-app schema!
+      DB_SCHEMA: "voting"
+      DB_URL: "jdbc:postgresql://postgres:5432/postgres?currentSchema=voting"
       DB_DRIVER: "${DB_DRIVER}"
       DB_DIALECT: "${DB_DIALECT}"
       POSTGRES_HOST: "${POSTGRES_HOST}"
@@ -367,6 +370,7 @@ services:
       DB_USERNAME: "${DB_USERNAME}"
       DB_PASSWORD: "${DB_PASSWORD}"
       H2_CONSOLE_ENABLED: "${H2_CONSOLE_ENABLED}"
+
     networks:
       - web
 

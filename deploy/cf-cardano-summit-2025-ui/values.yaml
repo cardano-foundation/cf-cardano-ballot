@@ -1,0 +1,33 @@
+replicaCount: 1
+
+image:
+  repository: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-ui-summit-2025
+  tag: "latest"
+  pullPolicy: Always
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  additionalDomains: []
+#    - beta.explorer.cardano.org
+
+resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+showWinners: "false"
+showHydraTally: "false"
+usingFixtures: "false"

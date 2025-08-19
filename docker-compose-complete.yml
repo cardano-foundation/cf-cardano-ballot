@@ -127,7 +127,7 @@ services:
       YACI_STORE_CARDANO_SYNC_START_BLOCK_HASH: "${YACI_STORE_CARDANO_SYNC_START_BLOCK_HASH}"
       YACI_STORE_CARDANO_SYNC_START_SLOT: "${YACI_STORE_CARDANO_SYNC_START_SLOT}"
 
-      CORS_ALLOWED_ORIGINS: "$VOTING_UI_URL"
+      CORS_ALLOWED_ORIGINS: "$VOTING_UI_URL,http://localhost:3000"
     ports:
       - 9090:9090
     networks:
@@ -194,7 +194,7 @@ services:
       YACI_STORE_CARDANO_SYNC_START_SLOT: "${YACI_STORE_CARDANO_SYNC_START_SLOT}"
 
       # TODO: fill with ui urls
-      CORS_ALLOWED_ORIGINS: "$VOTING_UI_URL"
+      CORS_ALLOWED_ORIGINS: "$VOTING_UI_URL,http://localhost:3000"
 
       VOTING_METADATA_LABEL: "11113"
 
@@ -221,8 +221,7 @@ services:
       LEADERBOARD_FORCE_RESULTS: "false"
       ROLLBACK_HANDLING_ENABLED: "true"
 
-      # TODO: do we need this?
-      # KERI_BALLOT_VERIFIER_APP_URL: # {{ .Values.keriBallotVerifierAppUrl | default "http://cf-keri-ballot-verifier:5667" }}
+      KERI_BALLOT_VERIFIER_APP_URL: "${KERI_BALLOT_VERIFIER_APP_URL:-http://keri-ballot-verifier:5667}"
     networks:
       - web
     labels:
@@ -245,7 +244,7 @@ services:
     environment:
       CARDANO_NETWORK: "${CARDANO_NETWORK}"
       # TODO
-      CORS_ALLOWED_ORIGINS: "$VOTING_UI_URL"
+      CORS_ALLOWED_ORIGINS: "$VOTING_UI_URL,http://localhost:3000"
       LEDGER_FOLLOWER_APP_URL: "${FOLLOWER_APP_URL}"
     networks:
       - web
@@ -291,7 +290,7 @@ services:
       DB_PASSWORD: "${DB_PASSWORD}"
       H2_CONSOLE_ENABLED: "${H2_CONSOLE_ENABLED}"
 
-      CORS_ALLOWED_ORIGINS: "$VOTING_UI_URL"
+      CORS_ALLOWED_ORIGINS: "$VOTING_UI_URL,http://localhost:3000"
 
       AWS_SNS_ACCESS_KEY_ID: "${AWS_SNS_ACCESS_KEY_ID}"
       AWS_SNS_SECRET_ACCESS_KEY: "${AWS_SNS_SECRET_ACCESS_KEY}"
@@ -336,8 +335,19 @@ services:
       DISCORD_VERIFICATION_BOT_SALT: "${DISCORD_VERIFICATION_BOT_SALT}"
 
       FRONTEND_URL: "${VOTING_UI_URL}"
-  # TODO: on dev?
-  # keri-ballot-verifier
+
+  keri-ballot-verifier:
+    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-keri-ballot-verifier:PR601-f4928db
+    restart: unless-stopped
+    container_name: keri-ballot-verifier
+    environment:
+       VERIFIER_URL: "http://keri-ballot-verifier::5666"
+       VERIFIER_PORT: "5666"
+       VERIFIER_ADMIN_PORT: "5667"
+       VERIFIER_CONFIG_DIR: "/usr/local/var/keri"
+       VERIFIER_STORE_DIR: "/usr/local/var/keri/store"
+    networks:
+      - web
 
   vote-commitment:
     image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-vote-commitment-app:PR601-f4928db

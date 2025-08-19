@@ -39,7 +39,7 @@ const JsonView: React.FC<JsonRendererProps> = ({ data, sx, verifyProof }) => {
           sx={{
             fontFamily: "monospace",
             whiteSpace: "pre-wrap",
-            color: theme.palette.text.neutralLight,
+            color: theme.palette.text.neutralLightest,
             fontSize: "12px",
             fontWeight: 500,
             lineHeight: "20px",
@@ -81,7 +81,7 @@ const JsonView: React.FC<JsonRendererProps> = ({ data, sx, verifyProof }) => {
       <Box
         component="div"
         sx={{
-          borderTop: `1px solid ${theme.palette.background.disabled}`,
+          borderTop: `1px solid ${theme.palette.background.default}`,
           width: "100%",
           background: theme.palette.background.neutralDark,
           display: "flex",

@@ -46,7 +46,7 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 Selector labels
 */}}
 {{- define "summit-2025-ui.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "summit-2024-ui.name" . }}
+app.kubernetes.io/name: {{ include "summit-2025-ui.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 

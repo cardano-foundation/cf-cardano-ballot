@@ -14,6 +14,7 @@ import QrCodeOutlinedIcon from "@mui/icons-material/QrCodeOutlined";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import PhonelinkOutlinedIcon from "@mui/icons-material/PhonelinkOutlined";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
+import { checkIsMobile } from '@cardano-foundation/cardano-connect-with-wallet-core';
 import {
   copyToClipboard,
   resolveCardanoNetwork,
@@ -72,11 +73,6 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
   const handleShowConnectIdentityWallet = () => {
     setPeerConnectOption(ConnectWalletFlow.CONNECT_IDENTITY_WALLET);
     setCurrentPath(ConnectWalletFlow.CONNECT_IDENTITY_WALLET);
-  };
-
-  const handleShowConnectP2PWallet = () => {
-    setPeerConnectOption(ConnectWalletFlow.CONNECT_CIP45_WALLET);
-    setCurrentPath(ConnectWalletFlow.CONNECT_CIP45_WALLET);
   };
 
   const handleAccept = () => {
@@ -431,56 +427,35 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
               No extension wallets installed
             </Typography>
           )}
-          <ListItem
+          {checkIsMobile() &&
+            typeof (window as any).cardano === 'undefined' && <Typography
             sx={{
-              display: "flex",
-              padding: "12px",
-              alignItems: "center",
-              gap: "10px",
-              borderRadius: "8px",
-              border: `1px solid ${theme.palette.text.primary}`,
-              mt: 2,
-              justifyContent: "space-between",
-              cursor: "pointer",
               color: theme.palette.text.primary,
-              transition: "color 0.3s, border 0.3s",
-              "&:hover": {
-                color: "#D3DCF5",
-                border: "1px solid #D3DCF5",
-              },
+              fontSize: "16px",
+              fontWeight: 600,
+              lineHeight: "22px",
+              p: 2,
             }}
-            onClick={() => handleShowConnectP2PWallet()}
           >
-            <Box
-              component="div"
-              sx={{ display: "flex", alignItems: "center", gap: 2 }}
+            If you are on a mobile device, tap this copy icon{" "}
+            <IconButton
+              onClick={() => copyToClipboard(window.location.origin)}
+              sx={{
+                color: theme.palette.text.primary,
+                padding: "2px",
+                margin: "0 2px",
+                verticalAlign: "middle",
+                "&:hover": {
+                  backgroundColor: "rgba(255, 255, 255, 0.1)",
+                },
+              }}
+              size="small"
             >
-              <ListItemAvatar sx={{height:20}}>
-                <PhonelinkOutlinedIcon sx={{ width: 20, height: 20 }} />
-              </ListItemAvatar>
-              <Typography
-                sx={{
-                  color: "inherit",
-                  fontSize: "16px",
-                  fontWeight: 600,
-                  lineHeight: "20px",
-                }}
-              >
-                Connect P2P Wallet
-              </Typography>
-            </Box>
-            <IconButton edge="end" size="small" sx={{ ml: "auto", padding: 0, color: "inherit" }}>
-              <QrCodeOutlinedIcon
-                sx={{
-                  width: "16px",
-                  height: "16px",
-                  flexShrink: 0,
-                  ml: "auto",
-                  color: "inherit",
-                }}
-              />
-            </IconButton>
-          </ListItem>
+              <ContentCopyIcon fontSize="small" />
+            </IconButton>{" "}
+            to copy the URL, then open one of the supported wallets listed above
+            and paste the URL into the wallet's in-app dApp browser.
+          </Typography>}
         </List>
         <Box
           component="div"

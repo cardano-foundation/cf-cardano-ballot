@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "buffer": "^6.0.3",
-    "@cardano-foundation/cardano-connect-with-wallet": "^0.2.9",
+    "@cardano-foundation/cardano-connect-with-wallet": "^0.2.14",
+    "@cardano-foundation/cardano-connect-with-wallet-core": "^0.2.8",
     "@commitlint/cli": "^17.6.6",
     "@commitlint/config-conventional": "^17.6.6",
     "@datapunt/matomo-tracker-react": "^0.5.1",

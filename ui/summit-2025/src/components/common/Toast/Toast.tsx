@@ -36,7 +36,11 @@ const Toast = ({ message, isOpen, type, onClose }: ToastProps) => {
           Icon: CheckCircleIcon,
         };
       default:
-        return {};
+        return {
+          backgroundColor: "#030617",
+          color: theme.palette.text.primary,
+          Icon: CheckCircleIcon,
+        };
     }
   };
 
@@ -47,10 +51,12 @@ const Toast = ({ message, isOpen, type, onClose }: ToastProps) => {
       open={isOpen}
       onClose={onClose}
       anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      autoHideDuration={3000}
+      autoHideDuration={300000}
       ContentProps={{
         sx: {
+          backgroundImage: "none",
           backgroundColor: backgroundColor,
+          boxShadow: "none",
           color: color,
           fontWeight: "600",
           fontSize: "16px",

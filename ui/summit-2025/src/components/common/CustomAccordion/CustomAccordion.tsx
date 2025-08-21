@@ -39,8 +39,9 @@ const CustomAccordion: React.FC<CustomAccordionProps> = ({
           alignItems: "center",
           padding: "8px 16px",
           cursor: "pointer",
-          background: theme.palette.background.neutralDark,
-          borderRadius: "12px",
+          background: theme.palette.background.default,
+          border: `1px solid ${theme.palette.background.neutralDark}`,
+          borderRadius: "8px",
         }}
         onClick={toggleAccordion}
       >
@@ -60,9 +61,6 @@ const CustomAccordion: React.FC<CustomAccordionProps> = ({
       <Box
         component="div"
         ref={contentRef}
-        sx={{
-          marginTop: "20px",
-        }}
       >
         {expanded && <>{children}</>}
       </Box>

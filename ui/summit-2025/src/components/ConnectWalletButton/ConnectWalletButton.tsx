@@ -86,7 +86,7 @@ const ConnectWalletButton = (props: ConnectWalletButtonProps) => {
         color="inherit"
         onClick={() => handleConnectWallet()}
       >
-        <Box component="div" sx={{display: "flex", gap: "8px"}}>
+        <Box component="div" sx={{display: "flex", alignItems: "center", gap: "8px"}}>
           {connectedWallet.address?.length ? (
             <Avatar
               src={connectedWallet.icon}

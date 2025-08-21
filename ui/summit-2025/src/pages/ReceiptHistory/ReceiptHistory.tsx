@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
-  Box,
+  Box, Container,
   Drawer,
   Table,
   TableBody,
@@ -13,7 +13,6 @@ import {
 import { PageBase } from "../BasePage";
 import { ViewReceipt } from "../Categories/components/ViewReceipt";
 import theme from "../../common/styles/theme";
-import nomineeIcon from "../../assets/nomineeIcon.svg";
 import rightArrowIcon from "../../assets/rightArrowIcon.svg";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { addressSlice, copyToClipboard } from "../../utils/utils";
@@ -85,59 +84,60 @@ const ReceiptHistory: React.FC = () => {
   const ReceiptsList = () => (
     <TableContainer>
       <Table sx={{ borderCollapse: "separate", borderSpacing: "0 4px" }}>
-        <TableHead sx={{ background: "transparent" }}>
-          <TableRow>
+        <TableHead sx={{ background: "transparent", padding: "8px 28px" }}>
+          <TableRow sx={{ background: "transparent", padding: "8px 28px" }}>
             <TableCell
               sx={{
-                color: theme.palette.text.neutralLightest,
-                textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
+                color: theme.palette.text.primary,
                 fontSize: "12px",
                 fontStyle: "normal",
-                fontWeight: 700,
+                fontWeight: 600,
                 lineHeight: "20px",
                 border: "none",
+                padding: "8px 28px"
               }}
             >
               Voted For
             </TableCell>
             <TableCell
               sx={{
-                color: theme.palette.text.neutralLightest,
-                textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
+                color: theme.palette.text.primary,
                 fontSize: "12px",
                 fontStyle: "normal",
-                fontWeight: 700,
+                fontWeight: 600,
                 lineHeight: "20px",
                 border: "none",
+                padding: "8px 28px"
               }}
             >
               Category Name
             </TableCell>
             <TableCell
               sx={{
-                color: theme.palette.text.neutralLightest,
-                textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
+                color: theme.palette.text.primary,
                 fontSize: "12px",
                 fontStyle: "normal",
-                fontWeight: 700,
+                fontWeight: 600,
                 lineHeight: "20px",
                 border: "none",
+                padding: "8px 28px"
               }}
             >
-              Voted At Slot
+              Voted at Slot
             </TableCell>
             <TableCell
               sx={{
-                color: theme.palette.text.neutralLightest,
-                textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
+                display: { xs: "none", tablet: "flex" },
+                color: theme.palette.text.primary,
                 fontSize: "12px",
                 fontStyle: "normal",
-                fontWeight: 700,
+                fontWeight: 600,
                 lineHeight: "20px",
                 border: "none",
+                padding: "8px 28px"
               }}
             >
-              Signature
+              Transaction Hash
             </TableCell>
           </TableRow>
         </TableHead>
@@ -155,18 +155,14 @@ const ReceiptHistory: React.FC = () => {
             >
               <TableCell
                 sx={{
-                  background: theme.palette.background.neutralDark,
                   border: "none",
-                  borderTopLeftRadius: "20px",
-                  borderBottomLeftRadius: "20px",
                   color: theme.palette.text.neutralLightest,
                   textAlign: "center",
-                  fontFamily: "Tomorrow",
-                  fontSize: "20px",
+                  fontSize: "16px",
                   fontStyle: "normal",
-                  fontWeight: 700,
+                  fontWeight: 600,
                   lineHeight: "24px",
-                  padding: "28px 24px",
+                  padding: "20px 28px",
                 }}
               >
                 <Box
@@ -175,23 +171,9 @@ const ReceiptHistory: React.FC = () => {
                     display: "flex",
                   }}
                 >
-                  <img
-                    src={nomineeIcon}
-                    alt="Total Votes"
-                    width="24"
-                    height="24"
-                  />
                   <Typography
                     sx={{
-                      color: theme.palette.text.neutralLightest,
-                      textAlign: "center",
-                      fontFamily: "Tomorrow",
-                      textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
-                      fontSize: "20px",
-                      fontStyle: "normal",
-                      fontWeight: 700,
-                      lineHeight: "24px",
-                      marginLeft: "8px",
+                      fontWeight: 600,
                     }}
                   >
                     {extendedReceipts[category].proposalName}
@@ -200,8 +182,14 @@ const ReceiptHistory: React.FC = () => {
               </TableCell>
               <TableCell
                 sx={{
-                  background: theme.palette.background.neutralDark,
                   border: "none",
+                  color: theme.palette.text.neutralLightest,
+                  textAlign: "center",
+                  fontSize: "16px",
+                  fontStyle: "normal",
+                  fontWeight: 600,
+                  lineHeight: "24px",
+                  padding: "20px 28px",
                 }}
               >
                 <Box
@@ -212,16 +200,7 @@ const ReceiptHistory: React.FC = () => {
                 >
                   <Typography
                     sx={{
-                      color: theme.palette.text.neutralLightest,
-                      textAlign: "center",
-                      fontFamily: "Tomorrow",
-                      textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
-                      fontSize: "20px",
-                      fontStyle: "normal",
-                      fontWeight: 700,
-                      lineHeight: "24px",
-                      marginLeft: "8px",
-                      cursor: "pointer",
+                      fontWeight: 600,
                     }}
                   >
                     {extendedReceipts[category].categoryName}
@@ -230,8 +209,14 @@ const ReceiptHistory: React.FC = () => {
               </TableCell>
               <TableCell
                 sx={{
-                  background: theme.palette.background.neutralDark,
                   border: "none",
+                  color: theme.palette.text.neutralLightest,
+                  textAlign: "center",
+                  fontSize: "16px",
+                  fontStyle: "normal",
+                  fontWeight: 600,
+                  lineHeight: "24px",
+                  padding: "20px 28px",
                 }}
               >
                 <Box
@@ -242,15 +227,7 @@ const ReceiptHistory: React.FC = () => {
                 >
                   <Typography
                     sx={{
-                      color: theme.palette.text.neutralLightest,
-                      textAlign: "center",
-                      fontFamily: "Tomorrow",
-                      textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
-                      fontSize: "20px",
-                      fontStyle: "normal",
-                      fontWeight: 700,
-                      lineHeight: "24px",
-                      marginLeft: "8px",
+                      fontWeight: 600,
                     }}
                   >
                     {extendedReceipts[category].votedAtSlot}
@@ -259,16 +236,22 @@ const ReceiptHistory: React.FC = () => {
               </TableCell>
               <TableCell
                 sx={{
-                  background: theme.palette.background.neutralDark,
+                  display: { xs: "none", tablet: "flex" },
                   border: "none",
-                  borderTopRightRadius: "20px",
-                  borderBottomRightRadius: "20px",
+                  color: theme.palette.text.neutralLightest,
+                  textAlign: "center",
+                  fontSize: "16px",
+                  fontStyle: "normal",
+                  fontWeight: 600,
+                  lineHeight: "24px",
+                  padding: "20px 28px",
                 }}
               >
                 <Box
                   component="div"
                   sx={{
                     display: "flex",
+                    alignItems: "center",
                   }}
                 >
                   <ContentCopyIcon
@@ -283,37 +266,23 @@ const ReceiptHistory: React.FC = () => {
                   />
                   <Typography
                     sx={{
-                      color: theme.palette.text.neutralLightest,
-                      textAlign: "center",
-                      fontFamily: "Tomorrow",
-                      textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
-                      fontSize: "20px",
-                      fontStyle: "normal",
-                      fontWeight: 700,
-                      lineHeight: "24px",
+                      fontWeight: 600,
                       marginLeft: "8px",
                     }}
                   >
                     {addressSlice(extendedReceipts[category].signature)}
                   </Typography>
-                  <Box
-                    component="div"
-                    sx={{
-                      marginLeft: "auto",
-                      marginRight: "28px",
+                  <img
+                    onClick={() => handleReceiptClick(category)}
+                    src={rightArrowIcon}
+                    alt="Total Votes"
+                    width="24"
+                    height="24"
+                    style={{
+                      cursor: "pointer",
+                      marginLeft: "16px"
                     }}
-                  >
-                    <img
-                      onClick={() => handleReceiptClick(category)}
-                      src={rightArrowIcon}
-                      alt="Total Votes"
-                      width="24"
-                      height="24"
-                      style={{
-                        cursor: "pointer",
-                      }}
-                    />
-                  </Box>
+                  />
                 </Box>
               </TableCell>
             </TableRow>
@@ -326,37 +295,39 @@ const ReceiptHistory: React.FC = () => {
   return (
     <>
       <PageBase title="Categories">
-        <Box
-          component="div"
-          sx={{
-            height: "28px",
-          }}
-        />
-        <Typography
-          sx={{
-            color: theme.palette.text.neutralLightest,
-            fontSize: "32px",
-            fontStyle: "normal",
-            fontWeight: 700,
-            fontFamily: "Tomorrow",
-            lineHeight: "36px",
-            marginTop: "60px",
-            marginBottom: "32px",
-          }}
-        >
-          Vote Receipt History
-        </Typography>
-        <ReceiptsList />
-        <Drawer
-          open={openViewReceipt}
-          anchor="right"
-          onClose={() => setOpenViewReceipt(false)}
-        >
-          <ViewReceipt
-            categoryId={selectedCategory}
-            close={() => setOpenViewReceipt(false)}
+        <Container>
+          <Box
+            component="div"
+            sx={{
+              height: "28px",
+            }}
           />
-        </Drawer>
+          <Typography
+            sx={{
+              color: "#fff",
+              fontSize: "44px",
+              fontStyle: "normal",
+              fontWeight: 500,
+              fontFamily: "Tomorrow",
+              lineHeight: "44px",
+              marginTop: "24px",
+              marginBottom: "44px",
+            }}
+          >
+            Vote Receipt History
+          </Typography>
+          <ReceiptsList />
+          <Drawer
+            open={openViewReceipt}
+            anchor="right"
+            onClose={() => setOpenViewReceipt(false)}
+          >
+            <ViewReceipt
+              categoryId={selectedCategory}
+              close={() => setOpenViewReceipt(false)}
+            />
+          </Drawer>
+        </Container>
       </PageBase>
     </>
   );

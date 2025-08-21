@@ -148,6 +148,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
               sx={{
                 width: "24px",
                 height: "24px",
+                color: theme.palette.text.neutralLightest,
               }}
             />
           ),
@@ -157,6 +158,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
           iconBottom: (
             <RefreshIcon
               sx={{
+                color: theme.palette.text.neutralLightest,
                 cursor: "pointer",
                 width: "16px",
                 height: "16px",
@@ -202,7 +204,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
               sx={{
                 width: "24px",
                 height: "24px",
-                color: "#EE9766",
+                color: "#FFC940",
               }}
             />
           ),
@@ -212,6 +214,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
           iconBottom: (
             <RefreshIcon
               sx={{
+                color: theme.palette.text.neutralLightest,
                 cursor: "pointer",
                 width: "16px",
                 height: "16px",
@@ -258,7 +261,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                 width: "24px",
                 height: "24px",
                 // @ts-ignore
-                color: theme.palette.error.text,
+                color: "#FF4D4D",
               }}
             />
           ),
@@ -268,6 +271,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
           iconBottom: (
             <RefreshIcon
               sx={{
+                color: theme.palette.text.neutralLightest,
                 cursor: "pointer",
                 width: "16px",
                 height: "16px",
@@ -313,7 +317,13 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
               return {
                 description:
                   "Your vote is currently being verified. While in LOW, there is the highest chance of a rollback. Check back later to see if verification has completed.",
-                icon: <ArrowDownwardIcon />,
+                icon: <ArrowDownwardIcon
+                  sx={{
+                    width: "24px",
+                    height: "24px",
+                    color: "#FF4D4D",
+                  }}
+                />,
               };
             case "MEDIUM":
               return {
@@ -324,7 +334,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                     sx={{
                       width: "24px",
                       height: "24px",
-                      color: "#EE9766",
+                      color: "#FFC940",
                     }}
                   />
                 ),
@@ -338,7 +348,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                     sx={{
                       width: "24px",
                       height: "24px",
-                      color: "#6EBE78",
+                      color: "#34C759",
                     }}
                   />
                 ),
@@ -352,7 +362,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                     sx={{
                       width: "24px",
                       height: "24px",
-                      color: "#6EBE78",
+                      color: "#34C759",
                     }}
                   />
                 ),
@@ -365,7 +375,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                     sx={{
                       width: "24px",
                       height: "24px",
-                      color: "#6EBE78",
+                      color: "#34C759",
                     }}
                   />
                 ),
@@ -382,7 +392,9 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
           receipt?.status === STATE.FULL
             ? {
                 action: viewOnChainVote,
-                iconBottom: <LinkOutlinedIcon />,
+                iconBottom: <LinkOutlinedIcon sx={{
+                  color: theme.palette.text.neutralLightest,
+                }} />,
                 labelBottom: "View On Chain Vote",
               }
             : {
@@ -390,6 +402,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                 iconBottom: (
                   <RefreshIcon
                     sx={{
+                      color: theme.palette.text.neutralLightest,
                       cursor: "pointer",
                       width: "16px",
                       height: "16px",
@@ -453,8 +466,8 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
           sx={{
             display: "flex",
             justifyContent: "center",
-            alignItems: "center",
-            padding: 1,
+            alignItems: "start",
+            padding: "8px",
             width: "450px",
           }}
         >
@@ -464,10 +477,11 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
               color: theme.palette.text.neutralLightest,
               textAlign: "center",
               fontFamily: "Tomorrow",
-              fontSize: "28px",
-              fontWeight: 700,
+              fontSize: "32px",
+              fontWeight: 500,
               lineHeight: "32px",
-              marginTop: "28px",
+              marginY: "16px",
+              marginRight: "-36px"
             }}
           >
             Vote Receipt
@@ -477,8 +491,8 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
             onClick={() => close()}
             sx={{
               display: "inline-flex",
-              padding: "12px",
-              borderRadius: "12px",
+              padding: "8px",
+              borderRadius: "8px",
               background: theme.palette.background.neutralDark,
               cursor: "pointer",
               "&:hover": {
@@ -487,7 +501,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
               },
             }}
           >
-            <CloseIcon />
+            <CloseIcon sx={{width: "20px", height: "20px"}} />
           </Box>
         </Box>
         <Box
@@ -503,7 +517,6 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
               alignItems: "center",
               alignSelf: "stretch",
               color: theme.palette.text.neutralLight,
-              fontFamily: "Roboto",
               fontSize: "12px",
               fontWeight: 500,
               lineHeight: "20px",
@@ -518,7 +531,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                 flexDirection: "row",
                 justifyContent: "space-between",
                 width: "100%",
-                borderBottom: `1px solid ${theme.palette.background.disabled}`,
+                borderBottom: `1px solid ${theme.palette.background.default}`,
               }}
             >
               <Box
@@ -528,7 +541,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                   justifyContent: "center",
                   alignItems: "center",
                   width: "60px",
-                  borderRight: `1px solid ${theme.palette.background.disabled}`,
+                  borderRight: `1px solid ${theme.palette.background.default}`,
                 }}
               >
                 {content?.leftIcon}
@@ -549,7 +562,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                     color: theme.palette.text.neutralLightest,
                     fontSize: "16px",
                     fontStyle: "normal",
-                    fontWeight: 500,
+                    fontWeight: 600,
                     lineHeight: "24px",
                   }}
                 >
@@ -557,10 +570,10 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                 </Typography>
                 <Typography
                   sx={{
-                    color: theme.palette.text.neutralLight,
+                    color: theme.palette.text.neutralLightest,
                     fontSize: "12px",
                     fontStyle: "normal",
-                    fontWeight: 500,
+                    fontWeight: 600,
                     lineHeight: "20px",
                     marginRight: "12px",
                     marginTop: "4px",
@@ -585,10 +598,10 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
               <Typography
                 sx={{
                   marginLeft: 1,
-                  color: theme.palette.text.neutralLight,
+                  color: theme.palette.text.neutralLightest,
                   fontSize: "12px",
                   fontStyle: "normal",
-                  fontWeight: 500,
+                  fontWeight: 600,
                   lineHeight: "20px",
                   cursor: "pointer",
                 }}
@@ -610,7 +623,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                     flexDirection: "column",
                     alignItems: "flex-start",
                     borderRadius: "12px",
-                    border: `1px solid ${theme.palette.background.darker}`,
+                    border: `1px solid ${theme.palette.background.neutralDark}`,
                     background: theme.palette.background.default,
                     marginTop: "8px",
                     cursor: "pointer",
@@ -629,9 +642,10 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                       sx={{
                         color: theme.palette.text.neutralLightest,
                         fontSize: "16px",
-                        fontWeight: 500,
+                        fontWeight: 600,
                         lineHeight: "24px",
                         fontStyle: "normal",
+                        marginBottom: "4px",
                       }}
                     >
                       {item.title}
@@ -639,6 +653,8 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                     <Tooltip title={item.tooltip} placement="top">
                       <InfoIcon
                         sx={{
+                          width: "20px",
+                          height: "20px",
                           cursor: "pointer",
                         }}
                       />
@@ -647,9 +663,9 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                   <Typography
                     sx={{
                       width: "90%",
-                      color: theme.palette.text.neutralLight,
+                      color: theme.palette.text.neutralLightest,
                       fontSize: "12px",
-                      fontWeight: 500,
+                      fontWeight: 600,
                       lineHeight: "20px",
                       fontStyle: "normal",
                       whiteSpace: "nowrap",
@@ -692,7 +708,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                     flexDirection: "column",
                     alignItems: "flex-start",
                     borderRadius: "12px",
-                    border: `1px solid ${theme.palette.background.darker}`,
+                    border: `1px solid ${theme.palette.background.neutralDark}`,
                     background: theme.palette.background.default,
                     marginTop: "8px",
                   }}
@@ -710,7 +726,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                       sx={{
                         color: theme.palette.text.neutralLightest,
                         fontSize: "16px",
-                        fontWeight: 500,
+                        fontWeight: 600,
                         lineHeight: "24px",
                         fontStyle: "normal",
                       }}
@@ -723,6 +739,8 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                     >
                       <InfoIcon
                         sx={{
+                          width: "20px",
+                          height: "20px",
                           cursor: "pointer",
                         }}
                       />
@@ -731,11 +749,12 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                   <Typography
                     sx={{
                       width: "100%",
-                      color: theme.palette.text.neutralLight,
+                      color: theme.palette.text.neutralLightest,
                       fontSize: "12px",
-                      fontWeight: 500,
+                      fontWeight: 600,
                       lineHeight: "20px",
                       fontStyle: "normal",
+                      marginTop: "4px",
                     }}
                   >
                     {receipt?.votedAtSlot}
@@ -750,7 +769,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                     flexDirection: "column",
                     alignItems: "flex-start",
                     borderRadius: "12px",
-                    border: `1px solid ${theme.palette.background.darker}`,
+                    border: `1px solid ${theme.palette.background.neutralDark}`,
                     background: theme.palette.background.default,
                     marginTop: "8px",
                   }}
@@ -768,7 +787,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                       sx={{
                         color: theme.palette.text.neutralLightest,
                         fontSize: "16px",
-                        fontWeight: 500,
+                        fontWeight: 600,
                         lineHeight: "24px",
                         fontStyle: "normal",
                       }}
@@ -781,6 +800,8 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                     >
                       <InfoIcon
                         sx={{
+                          width: "20px",
+                          height: "20px",
                           cursor: "pointer",
                         }}
                       />
@@ -789,14 +810,15 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                   <Typography
                     sx={{
                       width: "90%",
-                      color: theme.palette.text.neutralLight,
+                      color: theme.palette.text.neutralLightest,
                       fontSize: "12px",
-                      fontWeight: 500,
+                      fontWeight: 600,
                       lineHeight: "20px",
                       fontStyle: "normal",
                       whiteSpace: "nowrap",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
+                      marginTop: "4px",
                     }}
                   >
                     {/*@ts-ignore */}
@@ -814,7 +836,7 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                         flexDirection: "column",
                         alignItems: "flex-start",
                         borderRadius: "12px",
-                        border: `1px solid ${theme.palette.background.darker}`,
+                        border: `1px solid ${theme.palette.background.neutralDark}`,
                         background: theme.palette.background.default,
                         marginTop: "8px",
                       }}
@@ -845,6 +867,8 @@ const ViewReceipt: React.FC<ViewReceiptProps> = ({ categoryId, close }) => {
                         >
                           <InfoIcon
                             sx={{
+                              width: "20px",
+                              height: "20px",
                               cursor: "pointer",
                             }}
                           />

@@ -12,7 +12,7 @@ import OpenInNewOutlinedIcon from "@mui/icons-material/OpenInNewOutlined";
 import QrCodeOutlinedIcon from "@mui/icons-material/QrCodeOutlined";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
 import { resolveCardanoNetwork, walletIcon } from "../../utils/utils";
-import IDWLogo from "../../assets/idw.png";
+import VeridianLogo from "../../assets/veridian.svg";
 import { env } from "../../common/constants/env";
 
 type PeerConnectProps = {
@@ -76,7 +76,7 @@ const PeerConnect = (props: PeerConnectProps) => {
             sx={{ display: "flex", alignItems: "center", gap: 2 }}
           >
             <ListItemAvatar>
-              <Avatar src={IDWLogo} sx={{ width: 24, height: 24 }} />
+              <Avatar src={VeridianLogo} sx={{ width: 24, height: 24 }} />
             </ListItemAvatar>
             <Typography
               sx={{

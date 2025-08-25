@@ -10,7 +10,6 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import awardImg from "../../../assets/award2025.png";
 import tickIcon from "../../../assets/tickIcon.svg";
 import theme from "../../../common/styles/theme";
 import { useAppSelector } from "../../../store/hooks";
@@ -18,6 +17,7 @@ import { getEventCache } from "../../../store/reducers/eventCache";
 import { getVotingResults } from "../../../common/api/leaderboardService";
 import { Proposal } from "../../../store/reducers/eventCache/eventCache.types";
 import { getVotes } from "../../../store/reducers/votesCache";
+import GLBViewerWinners from "../../../components/GLBViewer/GLBViewerWinners";
 
 interface WinnersProps {
   fadeChecked: boolean;
@@ -195,7 +195,12 @@ const Winners: React.FC<WinnersProps> = ({
             marginBottom: "30px",
           }}
         >
-          <img src={awardImg} alt="Placeholder" height={300} />
+          {/*<img src={awardImg} alt="Placeholder" height={300} />*/}
+          <GLBViewerWinners
+            glbUrl="/award25-3d.glb"
+            height="300px"
+            width="auto"
+          />
         </Box>
         {winners.map((winner) => {
           return (

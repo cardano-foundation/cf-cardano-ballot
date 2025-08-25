@@ -10,11 +10,7 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import awardImg from "../../../assets/awardWinner.svg";
-import winnerBg from "@assets/winnerBg.svg";
-import votesIcon from "../../../assets/votesIcon.svg";
-import positionIcon from "../../../assets/positionIcon.svg";
-import nomineeIcon from "../../../assets/nomineeIcon.svg";
+import awardImg from "../../../assets/award2025.png";
 import tickIcon from "../../../assets/tickIcon.svg";
 import theme from "../../../common/styles/theme";
 import { useAppSelector } from "../../../store/hooks";
@@ -129,7 +125,7 @@ const Winners: React.FC<WinnersProps> = ({
         overflow: "hidden",
         padding: "4px",
         background:
-          "linear-gradient(45deg, #0C7BC5 0%, #40407D 50%, #EE9766 100%)",
+          "linear-gradient(90deg, #2867ED 0%, #FF6444 100%)",
         position: "sticky",
         top: 144,
         overflowY: "auto",
@@ -137,9 +133,7 @@ const Winners: React.FC<WinnersProps> = ({
       }}
     >
       <Box
-        component="img"
-        src={winnerBg}
-        alt="Background"
+        component="div"
         sx={{
           position: "absolute",
           top: 0,
@@ -158,7 +152,7 @@ const Winners: React.FC<WinnersProps> = ({
           borderRadius: "24px",
           color: "white",
           zIndex: 2,
-          backgroundColor: "rgba(0, 0, 0, 0.5)",
+          backgroundColor: theme.palette.background.neutralDark,
           padding: "28px",
         }}
       >
@@ -181,12 +175,11 @@ const Winners: React.FC<WinnersProps> = ({
           sx={{
             color: theme.palette.text.neutralLightest,
             textAlign: "center",
-            textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
             fontFamily: "Tomorrow",
-            fontSize: "36px",
+            fontSize: "44px",
             fontStyle: "normal",
-            fontWeight: 700,
-            lineHeight: "40px",
+            fontWeight: 500,
+            lineHeight: "44px",
             marginBottom: "40px",
           }}
         >
@@ -202,7 +195,7 @@ const Winners: React.FC<WinnersProps> = ({
             marginBottom: "30px",
           }}
         >
-          <img src={awardImg} alt="Placeholder" height={148} />
+          <img src={awardImg} alt="Placeholder" height={300} />
         </Box>
         {winners.map((winner) => {
           return (
@@ -215,11 +208,10 @@ const Winners: React.FC<WinnersProps> = ({
               sx={{
                 color: theme.palette.text.neutralLightest,
                 textAlign: "center",
-                textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
                 fontFamily: "Tomorrow",
-                fontSize: "28px",
+                fontSize: "32px",
                 fontStyle: "normal",
-                fontWeight: 700,
+                fontWeight: 500,
                 lineHeight: "32px",
                 marginTop: "10px",
                 cursor: "pointer",
@@ -244,7 +236,6 @@ const Winners: React.FC<WinnersProps> = ({
               display: "flex",
               alignItems: "center",
               flexDirection: "column",
-              marginRight: { sm: "48px" },
             }}
           >
             <Box
@@ -254,75 +245,13 @@ const Winners: React.FC<WinnersProps> = ({
                 alignItems: "center",
               }}
             >
-              <img
-                src={votesIcon}
-                alt="Total Votes Icon"
-                width="24"
-                height="24"
-              />
               <Typography
                 sx={{
                   color: theme.palette.text.neutralLightest,
                   textAlign: "center",
-                  fontFamily: "Tomorrow",
-                  textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
                   fontSize: "16px",
                   fontStyle: "normal",
-                  fontWeight: 500,
-                  lineHeight: "24px",
-                  marginLeft: "8px",
-                }}
-              >
-                Total Votes
-              </Typography>
-            </Box>
-
-            <Typography
-              sx={{
-                color: theme.palette.text.neutralLightest,
-                textAlign: "center",
-                fontFamily: "Tomorrow",
-                textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
-                fontSize: "24px",
-                fontStyle: "normal",
-                fontWeight: 700,
-                lineHeight: "28px",
-                marginTop: "4px",
-              }}
-            >
-              {winners[0].votes}
-            </Typography>
-          </Box>
-          <Box
-            component="div"
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              flexDirection: "column",
-            }}
-          >
-            <Box
-              component="div"
-              sx={{
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <img
-                src={positionIcon}
-                alt="Total Votes Icon"
-                width="24"
-                height="24"
-              />
-              <Typography
-                sx={{
-                  color: theme.palette.text.neutralLightest,
-                  textAlign: "center",
-                  fontFamily: "Tomorrow",
-                  textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
-                  fontSize: "16px",
-                  fontStyle: "normal",
-                  fontWeight: 500,
+                  fontWeight: 600,
                   lineHeight: "24px",
                   marginLeft: "8px",
                 }}
@@ -336,15 +265,60 @@ const Winners: React.FC<WinnersProps> = ({
                 color: theme.palette.text.neutralLightest,
                 textAlign: "center",
                 fontFamily: "Tomorrow",
-                textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
                 fontSize: "24px",
                 fontStyle: "normal",
-                fontWeight: 700,
-                lineHeight: "28px",
+                fontWeight: 500,
+                lineHeight: "24px",
                 marginTop: "4px",
               }}
             >
               #1
+            </Typography>
+          </Box>
+          <Box
+            component="div"
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              flexDirection: "column",
+              marginLeft: { sm: "48px" },
+            }}
+          >
+            <Box
+              component="div"
+              sx={{
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <Typography
+                sx={{
+                  color: theme.palette.text.neutralLightest,
+                  textAlign: "center",
+                  fontSize: "16px",
+                  fontStyle: "normal",
+                  fontWeight: 600,
+                  lineHeight: "24px",
+                  marginLeft: "8px",
+                }}
+              >
+                Total Votes
+              </Typography>
+            </Box>
+
+            <Typography
+              sx={{
+                color: theme.palette.text.neutralLightest,
+                textAlign: "center",
+                fontFamily: "Tomorrow",
+                fontSize: "24px",
+                fontStyle: "normal",
+                fontWeight: 500,
+                lineHeight: "24px",
+                marginTop: "4px",
+              }}
+            >
+              {winners[0].votes}
             </Typography>
           </Box>
         </Box>
@@ -368,17 +342,17 @@ const Winners: React.FC<WinnersProps> = ({
             <TableCell
               sx={{
                 color: theme.palette.text.neutralLightest,
-                textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
                 textAlign: "center",
                 fontSize: "12px",
                 fontStyle: "normal",
-                fontWeight: 700,
+                fontWeight: 600,
                 lineHeight: "20px",
                 border: "none",
                 width: {
                   xs: "20%",
                   sm: "15%",
                 },
+                padding: "8px 28px"
               }}
             >
               Position
@@ -386,10 +360,9 @@ const Winners: React.FC<WinnersProps> = ({
             <TableCell
               sx={{
                 color: theme.palette.text.neutralLightest,
-                textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
                 fontSize: "12px",
                 fontStyle: "normal",
-                fontWeight: 700,
+                fontWeight: 600,
                 lineHeight: "20px",
                 border: "none",
                 maxWidth: "137px",
@@ -397,6 +370,7 @@ const Winners: React.FC<WinnersProps> = ({
                   xs: "40%",
                   sm: "55%",
                 },
+                padding: "8px 28px"
               }}
             >
               Nominee
@@ -404,15 +378,15 @@ const Winners: React.FC<WinnersProps> = ({
             <TableCell
               sx={{
                 color: theme.palette.text.neutralLightest,
-                textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
                 fontSize: "12px",
                 fontStyle: "normal",
-                fontWeight: 700,
+                fontWeight: 600,
                 lineHeight: "20px",
                 border: "none",
                 width: {
                   xs: "20%",
                 },
+                padding: "8px 28px"
               }}
             >
               Votes
@@ -420,16 +394,16 @@ const Winners: React.FC<WinnersProps> = ({
             <TableCell
               sx={{
                 color: theme.palette.text.neutralLightest,
-                textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
                 fontSize: "12px",
                 fontStyle: "normal",
-                fontWeight: 700,
+                fontWeight: 600,
                 lineHeight: "20px",
                 border: "none",
                 width: {
                   xs: "10%",
                   sm: "10%",
                 },
+                padding: "8px 28px"
               }}
             ></TableCell>
           </TableRow>
@@ -464,42 +438,25 @@ const Winners: React.FC<WinnersProps> = ({
                   borderRight: "none",
                   borderTopLeftRadius: "20px",
                   borderBottomLeftRadius: "20px",
-                  color: theme.palette.text.neutralLightest,
-                  textAlign: "center",
-                  fontFamily: "Tomorrow",
-                  fontSize: "20px",
-                  fontStyle: "normal",
-                  fontWeight: 700,
-                  lineHeight: "24px",
-                  padding: "28px 24px",
+                  padding: "24px 28px",
                 }}
               >
                 <Box
                   component="div"
                   sx={{
                     display: "flex",
-                    justifyContent: "center",
+                    justifyContent: "start",
                     alignItems: "center",
                     width: "100%",
                   }}
                 >
-                  <img
-                    src={positionIcon}
-                    alt="Total Votes"
-                    width="24"
-                    height="24"
-                  />
                   <Typography
                     sx={{
                       color: theme.palette.text.neutralLightest,
-                      textAlign: "center",
-                      fontFamily: "Tomorrow",
-                      textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
-                      fontSize: "20px",
+                      fontSize: "16px",
                       fontStyle: "normal",
-                      fontWeight: 700,
+                      fontWeight: 600,
                       lineHeight: "24px",
-                      marginLeft: "8px",
                     }}
                   >
                     #{index + 2}
@@ -522,6 +479,7 @@ const Winners: React.FC<WinnersProps> = ({
                   overflow: "hidden",
                   textOverflow: "ellipsis",
                   whiteSpace: "nowrap",
+                  padding: "24px 28px",
                 }}
               >
                 <Box
@@ -530,12 +488,6 @@ const Winners: React.FC<WinnersProps> = ({
                     display: "flex",
                   }}
                 >
-                  <img
-                    src={nomineeIcon}
-                    alt="Total Votes"
-                    width="24"
-                    height="24"
-                  />
                   <Typography
                     onClick={(
                       event: React.MouseEvent<HTMLDivElement, MouseEvent>,
@@ -543,13 +495,10 @@ const Winners: React.FC<WinnersProps> = ({
                     sx={{
                       color: theme.palette.text.neutralLightest,
                       textAlign: "center",
-                      fontFamily: "Tomorrow",
-                      textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
-                      fontSize: "20px",
+                      fontSize: "16px",
                       fontStyle: "normal",
-                      fontWeight: 700,
+                      fontWeight: 600,
                       lineHeight: "24px",
-                      marginLeft: "8px",
                       cursor: "pointer",
                     }}
                   >
@@ -569,6 +518,7 @@ const Winners: React.FC<WinnersProps> = ({
                       ? `1px solid ${theme.palette.secondary.main}`
                       : `1px solid transparent`,
                   borderLeft: "none",
+                  padding: "24px 28px",
                 }}
               >
                 <Box
@@ -577,23 +527,14 @@ const Winners: React.FC<WinnersProps> = ({
                     display: "flex",
                   }}
                 >
-                  <img
-                    src={votesIcon}
-                    alt="Total Votes"
-                    width="24"
-                    height="24"
-                  />
                   <Typography
                     sx={{
                       color: theme.palette.text.neutralLightest,
                       textAlign: "center",
-                      fontFamily: "Tomorrow",
-                      textShadow: "0px 0px 12px rgba(18, 18, 18, 0.20)",
-                      fontSize: "20px",
+                      fontSize: "16px",
                       fontStyle: "normal",
-                      fontWeight: 700,
+                      fontWeight: 600,
                       lineHeight: "24px",
-                      marginLeft: "8px",
                     }}
                   >
                     {nominee.votes}
@@ -618,6 +559,7 @@ const Winners: React.FC<WinnersProps> = ({
                       ? `1px solid ${theme.palette.secondary.main}`
                       : `1px solid transparent`,
                   borderLeft: "none",
+                  padding: "24px 28px",
                 }}
               >
                 <Box

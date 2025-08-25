@@ -145,7 +145,7 @@ services:
   voting-ui:
     restart: unless-stopped
     container_name: voting-ui
-    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-ui-summit-2025:0.1.0-PR601-7fdb402
+    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-ui-summit-2025:0.1.0-PR601-3392e66
     ports:
       - 8082:80
     environment:

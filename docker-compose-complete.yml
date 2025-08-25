@@ -320,7 +320,7 @@ services:
 
   discord-bot:
     restart: unless-stopped
-    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-discord-wallet-verification-bot:latest
+    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-discord-wallet-verification-bot:1.1.0-PR5-287e75a
     container_name: discord-bot
     environment:
       DISCORD_TOKEN: "${DISCORD_TOKEN}"

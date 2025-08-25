@@ -20,7 +20,7 @@ import {
   resolveCardanoNetwork,
   walletIcon,
 } from "../../utils/utils";
-import IDWLogo from "../../assets/idw.png";
+import VeridianLogo from "../../assets/veridian.svg";
 import { env } from "../../common/constants/env";
 import { ConnectWalletFlow, NetworkType } from "./ConnectWalletList.types";
 import QRCode from "react-qr-code";
@@ -282,7 +282,7 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
               sx={{ display: "flex", alignItems: "center", gap: 2 }}
             >
               <ListItemAvatar>
-                <Avatar src={IDWLogo} sx={{ width: 20, height: 20 }} />
+                <Avatar src={VeridianLogo} sx={{ width: 20, height: 20 }} />
               </ListItemAvatar>
               <Typography
                 sx={{

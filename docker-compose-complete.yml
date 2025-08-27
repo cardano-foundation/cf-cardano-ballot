@@ -304,7 +304,7 @@ services:
 
       # TODO: fix in backend default config and remove here
       FRIENDLY_CUSTOM_NAME: "Cardano Summit 2025"
-      # KERI_BALLOT_VERIFIER_APP_URL: 
+      KERI_BALLOT_VERIFIER_APP_URL: "${KERI_BALLOT_VERIFIER_APP_URL:-http://keri-ballot-verifier:5667}"
     networks:
       - web
     labels:
@@ -341,7 +341,7 @@ services:
     restart: unless-stopped
     container_name: keri-ballot-verifier
     environment:
-       VERIFIER_URL: "http://keri-ballot-verifier::5666"
+       VERIFIER_URL: "http://keri-ballot-verifier:5666"
        VERIFIER_PORT: "5666"
        VERIFIER_ADMIN_PORT: "5667"
        VERIFIER_CONFIG_DIR: "/usr/local/var/keri"

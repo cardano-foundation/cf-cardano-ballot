@@ -145,7 +145,7 @@ services:
   voting-ui:
     restart: unless-stopped
     container_name: voting-ui
-    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-ui-summit-2025:0.1.0-develop-d73cc6d
+    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-ui-summit-2025:0.1.0-PR601-5485157
     ports:
       - 8082:80
     environment:
@@ -158,7 +158,7 @@ services:
       VITE_DISCORD_CHANNEL_URL: "https://discord.gg/${INVITE_ID}"
       VITE_DISCORD_BOT_URL: "https://discord.com/channels/${GUILD_ID}/${CHANNEL_ID}"
 
-      VITE_SUPPORTED_WALLETS: "eternl,nami,typhon,yoroi,nufi,gerowallet,lace"
+      VITE_SUPPORTED_WALLETS: "eternl,nami,typhon,yoroi,nufi,gerowallet,lace,vespr"
 
 
       # Only for prod?

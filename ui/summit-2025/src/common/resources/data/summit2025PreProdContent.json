@@ -1,0 +1,76 @@
+{
+  "categories": [
+    {
+      "id": "INFRASTRUCTURE_PLATFORM",
+      "presentationName": "Infrastructure Platform",
+      "desc": "Recognizing the platforms and services that form the backbone of Cardano — from middleware to wallets and APIs. This award goes to projects that enable builders and make Cardano data easily accessible.",
+      "proposals": []
+    },
+    {
+      "id": "IMPACTFUL_SPO",
+      "presentationName": "Impactful SPO",
+      "desc": "Celebrating stake pool operators who go beyond block production and contribute to decentralization, education, social impact, or community development while maintaining operational excellence.",
+      "proposals": []
+    },
+    {
+      "id": "IMPACTFUL_NATIVE_ASSET",
+      "presentationName": "Impactful Native Asset",
+      "desc": "Awarded to the token — fungible or non-fungible — that captured the community's imagination and generated significant on-chain activity. A category to honor a meme coin, governance token, utility token, or NFT project that created both cultural and economic impact.",
+      "proposals": []
+    },
+    {
+      "id": "DEVELOPER_TOOLING_EXCELLENCE",
+      "presentationName": "Developer & Tooling Excellence",
+      "desc": "For projects and teams building developer frameworks, SDKs, libraries, and tools that make building on Cardano easier, faster, and more powerful. This category highlights the builders who empower other builders.",
+      "proposals": []
+    },
+    {
+      "id": "GOVERNANCE_CHAMPION",
+      "presentationName": "Governance Champion",
+      "desc": "Recognizing individuals or teams who have advanced Cardano's governance and championed decentralized decision-making, from CIP authors and creators of DRep tooling to Intersect contributors and Catalyst leaders.",
+      "proposals": []
+    },
+    {
+      "id": "EDUCATIONAL_INFLUENCER",
+      "presentationName": "Educational Influencer",
+      "desc": "Celebrating educators, ambassadors and thought leaders who produce high-quality, accessible content that drives adoption and literacy in the Cardano ecosystem.",
+      "proposals": []
+    },
+    {
+      "id": "DEX",
+      "presentationName": "DEX",
+      "desc": "Awarded to the decentralized exchange that led the way in liquidity, UX, innovation, and transaction volume on Cardano. This category celebrates protocols that make decentralized token trading accessible and efficient.",
+      "proposals": []
+    },
+    {
+      "id": "LENDING_PROTOCOL",
+      "presentationName": "Lending Protocol",
+      "desc": "Recognizing the lending and borrowing platforms that enable capital efficiency, unlock DeFi utility, and drive sustainable on-chain activity while also delivering safety.",
+      "proposals": []
+    },
+    {
+      "id": "AGGREGATOR",
+      "presentationName": "Aggregator",
+      "desc": "For platforms that unify liquidity, data, or services across Cardano DeFi, helping users find the best swaps, yields, or execution paths, and providing both efficiency and a great user experience.",
+      "proposals": []
+    },
+    {
+      "id": "STABLECOIN",
+      "presentationName": "Stablecoin",
+      "desc": "Celebrating the stablecoin protocol or project that has driven adoption, liquidity, and real-world use cases on Cardano. This includes algorithmic, collateral-backed, and fiat-backed stablecoins.",
+      "proposals": []
+    },
+    {
+      "id": "TOOLS_ANALYTICS",
+      "presentationName": "Tools & Analytics",
+      "desc": "Awarded to platforms providing data, dashboards, explorers, or monitoring tools that help users and developers make informed decisions. From DeFi dashboards to chain indexers, this category celebrates clarity and transparency.",
+      "proposals": []
+    },
+    {
+      "id": "OTHER_DAPPS",
+      "presentationName": "Other dApps",
+      "desc": "A wildcard category for impactful Cardano DApps outside DeFi, DEX, lending, or stablecoin categories. Includes applications such as gaming, metaverse, identity, or niche uses.",
+      "proposals": []
+    }
+  ]
+}

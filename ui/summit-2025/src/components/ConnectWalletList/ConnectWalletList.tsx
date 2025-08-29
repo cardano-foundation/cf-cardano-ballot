@@ -415,17 +415,19 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
               </ListItem>
             ))
           ) : (
-            <Typography
-              sx={{
-                color: theme.palette.text.primary,
-                fontSize: "16px",
-                fontWeight: 600,
-                lineHeight: "22px",
-                p: 2,
-              }}
-            >
-              No extension wallets installed
-            </Typography>
+            <>
+              {!checkIsMobile() && (<Typography
+                sx={{
+                  color: theme.palette.text.primary,
+                  fontSize: "16px",
+                  fontWeight: 600,
+                  lineHeight: "22px",
+                  p: 2,
+                }}
+              >
+                No extension wallets installed
+              </Typography>)}
+            </>
           )}
           {checkIsMobile() &&
             typeof (window as any).cardano === 'undefined' && <Typography

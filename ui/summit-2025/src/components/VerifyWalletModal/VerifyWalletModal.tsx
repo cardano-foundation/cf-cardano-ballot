@@ -907,45 +907,7 @@ const VerifyWalletModal = () => {
             marginTop: "16px",
           }}
         >
-          2. Copy your stake address.
-        </Typography>
-        <Typography
-          style={{
-            fontSize: "16px",
-            fontStyle: "normal",
-            fontWeight: 500,
-            lineHeight: "24px",
-            wordWrap: "break-word",
-            marginTop: "16px",
-          }}
-        >
-          3. Send your stake address as a private message to our{" "}
-          <Link
-            sx={{
-              color: theme.palette.secondary.main,
-              fontSize: "16px",
-              fontStyle: "normal",
-              fontWeight: 500,
-              lineHeight: "24px",
-              textDecorationLine: "underline",
-              cursor: "pointer",
-            }}
-            onClick={() => openNewTab(env.DISCORD_BOT_URL)}
-          >
-            WalletVerificationBot channel
-          </Link>
-        </Typography>
-        <Typography
-          style={{
-            fontSize: "16px",
-            fontStyle: "normal",
-            fontWeight: 500,
-            lineHeight: "24px",
-            wordWrap: "break-word",
-            marginTop: "16px",
-          }}
-        >
-          4. Get the secret key from the chat with our{" "}
+          2. Get the secret key from the chat with our{" "}
           <Link
             sx={{
               color: theme.palette.secondary.main,

@@ -46,7 +46,43 @@
       "id": "IMPACTFUL_SPO",
       "presentationName": "Impactful SPO",
       "desc": "Celebrating stake pool operators who go beyond block production and contribute to decentralization, education, social impact, or community development while maintaining operational excellence.",
-      "proposals": []
+      "proposals": [
+        {
+          "id": "D7269417-DD20-4B4E-B71C-242B936BDC7A",
+          "presentationName": "ATADA",
+          "x": "https://x.com/ATADA_Stakepool",
+          "linkedin": "",
+          "url": "https://www.stakepool.at/"
+        },
+        {
+          "id": "3703C915-B689-4177-8924-846080E866F1",
+          "presentationName": "BTBF",
+          "x": "https://x.com/btbfpark",
+          "linkedin": "",
+          "url": "https://xstakepool.com/"
+        },
+        {
+          "id": "026200E0-CCB9-43C6-96DD-84D9273D07EF",
+          "presentationName": "PRIDE",
+          "x": "https://x.com/StakeWithPride",
+          "linkedin": "",
+          "url": "https://www.stakewithpride.org/"
+        },
+        {
+          "id": "26871D43-31D3-47DA-9B02-7F3710FD5C09",
+          "presentationName": "YAM",
+          "x": "https://x.com/maureenyam",
+          "linkedin": "",
+          "url": ""
+        },
+        {
+          "id": "81F7ED68-BB39-418D-99C2-8E75FCA993DF",
+          "presentationName": "STAT",
+          "x": "https://x.com/ada_stat",
+          "linkedin": "",
+          "url": "https://adastat.net/about"
+        }
+      ]
     },
     {
       "id": "IMPACTFUL_NATIVE_ASSET",
@@ -462,10 +498,10 @@
         },
         {
           "id": "A53A4552-9550-4D11-9291-375E67FD2E1F",
-          "presentationName": "",
-          "x": "",
+          "presentationName": "Docufi3d",
+          "x": "https://x.com/docufi3d",
           "linkedin": "",
-          "url": ""
+          "url": "https://docufi3d.com/"
         }
       ]
     }

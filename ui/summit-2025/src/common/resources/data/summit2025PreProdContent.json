@@ -4,7 +4,43 @@
       "id": "INFRASTRUCTURE_PLATFORM",
       "presentationName": "Infrastructure Platform",
       "desc": "Recognizing the platforms and services that form the backbone of Cardano — from middleware to wallets and APIs. This award goes to projects that enable builders and make Cardano data easily accessible.",
-      "proposals": []
+      "proposals": [
+        {
+          "id": "1C70E403-E1E9-4825-8246-8A2EB39E4F69",
+          "presentationName": "NMKR Studio",
+          "x": "https://x.com/nmkr_io",
+          "linkedin": "",
+          "url": "https://www.nmkr.io/"
+        },
+        {
+          "id": "19AB33EB-51AC-4998-8A74-5504409EAA5B",
+          "presentationName": "Blockfrost",
+          "x": "https://x.com/blockfrost_io",
+          "linkedin": "https://ee.linkedin.com/company/blockfrost",
+          "url": "https://blockfrost.io/"
+        },
+        {
+          "id": "15821ABB-C4F2-45E9-9812-B1A16FABE45D",
+          "presentationName": "Empowa",
+          "x": "https://x.com/empowa_io",
+          "linkedin": "https://www.linkedin.com/company/empowa-io",
+          "url": "empowa.io"
+        },
+        {
+          "id": "11C09DAC-EFFC-4D86-8BC3-0C5D5D0DB2EE",
+          "presentationName": "Koios",
+          "x": "https://x.com/CardanoKoios",
+          "linkedin": "",
+          "url": "https://koios.rest/"
+        },
+        {
+          "id": "187B055D-B5A1-4198-9D02-2EF7D2289628",
+          "presentationName": "Anvil",
+          "x": "https://x.com/AnvilDevAgency",
+          "linkedin": "",
+          "url": "https://ada-anvil.io/"
+        }
+      ]
     },
     {
       "id": "IMPACTFUL_SPO",
@@ -16,61 +52,422 @@
       "id": "IMPACTFUL_NATIVE_ASSET",
       "presentationName": "Impactful Native Asset",
       "desc": "Awarded to the token — fungible or non-fungible — that captured the community's imagination and generated significant on-chain activity. A category to honor a meme coin, governance token, utility token, or NFT project that created both cultural and economic impact.",
-      "proposals": []
+      "proposals": [
+        {
+          "id": "AC9E6846-5BAD-4F44-B139-E33C6E87150C",
+          "presentationName": "SNEK (Snek)",
+          "x": "https://x.com/snek",
+          "linkedin": "",
+          "url": "https://www.snek.com/"
+        },
+        {
+          "id": "4BBD1EB4-0412-4059-AC65-7E6A66F9E3BB",
+          "presentationName": "HOSKY (Hosky)",
+          "x": "https://x.com/hoskytoken",
+          "linkedin": "",
+          "url": "https://hosky.io/"
+        },
+        {
+          "id": "323FA3BE-0870-43F3-AC55-6BE75D7352C4",
+          "presentationName": "IAG (Iagon)",
+          "x": "https://x.com/IagonOfficial",
+          "linkedin": "",
+          "url": "https://iagon.com"
+        },
+        {
+          "id": "400A215B-D7A4-4875-8572-C106AF397CAC",
+          "presentationName": "FLOW (Flow)",
+          "x": "https://x.com/flowdefi",
+          "linkedin": "",
+          "url": "https://flowlending.org/"
+
+        },
+        {
+          "id": "5F551EBE-A9D6-4BDC-9FA8-862740EFEC49",
+          "presentationName": "STRIKE (Strike Finance)",
+          "x": "https://x.com/strikecardano",
+          "linkedin": "",
+          "url": "https://app.strikefinance.org"
+        }
+      ]
     },
     {
       "id": "DEVELOPER_TOOLING_EXCELLENCE",
       "presentationName": "Developer & Tooling Excellence",
       "desc": "For projects and teams building developer frameworks, SDKs, libraries, and tools that make building on Cardano easier, faster, and more powerful. This category highlights the builders who empower other builders.",
-      "proposals": []
+      "proposals": [
+        {
+          "id": "E899C3BF-B9AB-4C27-8045-A31F359F3F57",
+          "presentationName": "Martin Lang (ATADA)",
+          "x": "https://x.com/ATADA_Stakepool",
+          "linkedin": "",
+          "url": "https://www.stakepool.at/"
+        },
+        {
+          "id": "56C1B597-7300-4709-8EC0-9B554726E4D1",
+          "presentationName": "Mesh",
+          "x": "https://x.com/meshsdk",
+          "linkedin": "",
+          "url": "https://meshjs.dev"
+        },
+        {
+          "id": "443AD304-5F2D-4EA6-93BC-A159D6C13F23",
+          "presentationName": "PyCardano",
+          "x": "https://x.com/PyCardano",
+          "linkedin": "",
+          "url": "https://github.com/Python-Cardano"
+        },
+        {
+          "id": "722DBEDD-5404-4859-B525-0AF4D1F78978",
+          "presentationName": "TxPipe",
+          "x": "https://x.com/txpipe_tools",
+          "linkedin": "",
+          "url": "https://txpipe.io"
+        },
+        {
+          "id": "C3540297-0508-43F2-8639-69F3DF56290B",
+          "presentationName": "Blink Labs",
+          "x": "https://x.com/blinklabs_io",
+          "linkedin": "",
+          "url": "https://blinklabs.io"
+        }
+      ]
     },
     {
       "id": "GOVERNANCE_CHAMPION",
       "presentationName": "Governance Champion",
       "desc": "Recognizing individuals or teams who have advanced Cardano's governance and championed decentralized decision-making, from CIP authors and creators of DRep tooling to Intersect contributors and Catalyst leaders.",
-      "proposals": []
+      "proposals": [
+        {
+          "id": "B3AD4801-9721-477B-8CC1-FAF0D1DCCFAD",
+          "presentationName": "Mike Hornan",
+          "x": "https://x.com/Hornan7",
+          "linkedin": "",
+          "url": "https://able-pool.io/"
+        },
+        {
+          "id": "35EF5B7D-B94C-4F73-88C6-7A33089A1A31",
+          "presentationName": "Tempo.Vote",
+          "x": "https://x.com/tempo_vote",
+          "linkedin": "",
+          "url": "https://tempo.vote"
+        },
+        {
+          "id": "68ABBE19-1031-4CE9-88DA-772E26147B2A",
+          "presentationName": "SyncAI Network",
+          "x": "https://x.com/SyncAI_Network",
+          "linkedin": "",
+          "url": "https://syncgovhub.com"
+        },
+        {
+          "id": "9E7CC44D-ED4C-4141-A39F-B6967AAF0163",
+          "presentationName": "Lloyd Duhon",
+          "x": "https://x.com/radioastro",
+          "linkedin": "https://www.linkedin.com/in/lloyd-duhon",
+          "url": ""
+        },
+        {
+          "id": "B30932A0-E44E-4311-9A27-8726034DF2E2",
+          "presentationName": "Jenny Brito",
+          "x": "https://x.com/Jennycitalinda",
+          "linkedin": "https://www.linkedin.com/in/jenny-brito-6064311b",
+          "url": ""
+        }
+      ]
     },
     {
       "id": "EDUCATIONAL_INFLUENCER",
       "presentationName": "Educational Influencer",
       "desc": "Celebrating educators, ambassadors and thought leaders who produce high-quality, accessible content that drives adoption and literacy in the Cardano ecosystem.",
-      "proposals": []
+      "proposals": [
+        {
+          "id": "49BA3D43-0053-4009-BBB1-F1F2D5823C25",
+          "presentationName": "Mauro Andreoli",
+          "x": "https://x.com/MauroAndreoliA",
+          "linkedin": "https://ar.linkedin.com/in/mauro-agust%C3%ADn-andreoli-7b58621a0",
+          "url": ""
+        },
+        {
+          "id": "2023E637-A800-4538-832C-0ED5F2DE8A8C",
+          "presentationName": "Catalyst Africa Town Hall",
+          "x": "https://x.com/africa_townhall",
+          "linkedin": "",
+          "url": "https://www.catalystafrica.org/"
+        },
+        {
+          "id": "A7153F79-ACE9-4A50-B25C-C90AA742AA9D",
+          "presentationName": "Lily Brodi",
+          "x": "https://x.com/lilybrodi",
+          "linkedin": "https://ca.linkedin.com/in/lily-brodi-19755696",
+          "url": ""
+        },
+        {
+          "id": "352BD705-83D9-46EB-80E0-D2A207A0E351",
+          "presentationName": "Olympus Insights",
+          "x": "https://x.com/OlympusInsights",
+          "linkedin": "",
+          "url": "https://app.oli4education.io"
+        },
+        {
+          "id": "E6ACB8EB-CC05-4A18-8A83-7C6BA23EA432",
+          "presentationName": "",
+          "x": "",
+          "linkedin": "",
+          "url": ""
+        }
+      ]
     },
     {
       "id": "DEX",
       "presentationName": "DEX",
       "desc": "Awarded to the decentralized exchange that led the way in liquidity, UX, innovation, and transaction volume on Cardano. This category celebrates protocols that make decentralized token trading accessible and efficient.",
-      "proposals": []
+      "proposals": [
+        {
+          "id": "5F121335-2D9D-493C-801B-5913A48FA11C",
+          "presentationName": "Minswap",
+          "x": "https://x.com/MinswapDEX",
+          "linkedin": "",
+          "url": "https://minswap.org/"
+        },
+        {
+          "id": "1035C0FC-56FB-48CA-B7C7-A962D5976633",
+          "presentationName": "SundaeSwap",
+          "x": "https://x.com/SundaeSwap",
+          "linkedin": "",
+          "url": "https://sundae.fi/"
+        },
+        {
+          "id": "86BDC1C8-1303-4125-83AB-CA2B978A19C8",
+          "presentationName": "WingRiders",
+          "x": "https://x.com/wingriderscom",
+          "linkedin": "",
+          "url": "https://www.wingriders.com/"
+        },
+        {
+          "id": "A14C00B8-CCCD-4404-8BCC-F6154E5D155A",
+          "presentationName": "CSWAP",
+          "x": "https://x.com/CswapDEX",
+          "linkedin": "",
+          "url": "https://cswap.trade"
+        },
+        {
+          "id": "B8E0E2B2-272D-4134-94A5-885B0A7BC4EF",
+          "presentationName": "VyFinance",
+          "x": "https://x.com/VyFiOfficial",
+          "linkedin": "",
+          "url": "https://app.vyfi.io"
+        }
+      ]
     },
     {
       "id": "LENDING_PROTOCOL",
       "presentationName": "Lending Protocol",
       "desc": "Recognizing the lending and borrowing platforms that enable capital efficiency, unlock DeFi utility, and drive sustainable on-chain activity while also delivering safety.",
-      "proposals": []
+      "proposals": [
+        {
+          "id": "C919DD11-63A0-47D3-9BBC-46CD67AF1B1C",
+          "presentationName": "Danogo",
+          "x": "https://x.com/DanogoFinance",
+          "linkedin": "",
+          "url": "https://danogo.io"
+        },
+        {
+          "id": "38504A4C-6D52-42A3-A020-9F2968CD9D95",
+          "presentationName": "Flow",
+          "x": "https://x.com/flowdefi",
+          "linkedin": "",
+          "url": "https://flowlending.org/"
+        },
+        {
+          "id": "644D157C-736C-4AE3-AC94-E29BD23DAC3D",
+          "presentationName": "Levvy",
+          "x": "https://x.com/levvyfinance",
+          "linkedin": "",
+          "url": "https://levvy.fi"
+        },
+        {
+          "id": "F8666032-44F3-4627-BAF5-43D974F07C62",
+          "presentationName": "Liqwid",
+          "x": "https://x.com/liqwidfinance",
+          "linkedin": "",
+          "url": "https://Liqwid.finance/"
+        },
+        {
+          "id": "ABCBBF53-F072-4878-A20B-BF160E96EA11",
+          "presentationName": "Fluid Tokens",
+          "x": "https://x.com/fluidtokens",
+          "linkedin": "",
+          "url": "https://fluidtokens.com/"
+        }
+      ]
     },
     {
       "id": "AGGREGATOR",
       "presentationName": "Aggregator",
       "desc": "For platforms that unify liquidity, data, or services across Cardano DeFi, helping users find the best swaps, yields, or execution paths, and providing both efficiency and a great user experience.",
-      "proposals": []
+      "proposals": [
+        {
+          "id": "6573BD70-6ED5-4EC3-BBF6-26CC150C6CA8",
+          "presentationName": "DexHunter",
+          "x": "https://x.com/DexHunterIO",
+          "linkedin": "",
+          "url": "https://app.dexhunter.io"
+        },
+        {
+          "id": "43BE8FCD-FF22-40D1-90E7-0B52BFFE9BDD",
+          "presentationName": "Fetch",
+          "x": "https://x.com/HOSKYFetch",
+          "linkedin": "",
+          "url": "https://fetch.hosky.io"
+        },
+        {
+          "id": "BD241B16-DB36-4955-A191-EB91E91638CB",
+          "presentationName": "SteelSwap",
+          "x": "https://x.com/SteelSwap",
+          "linkedin": "",
+          "url": "https://steelswap.io"
+        },
+        {
+          "id": "2153E5E7-40B1-4591-8D26-B4CF41C6FF7F",
+          "presentationName": "Danogo",
+          "x": "https://x.com/DanogoFinance",
+          "linkedin": "",
+          "url": "https://danogo.io"
+        },
+        {
+          "id": "253B62CF-50E9-4C87-97F5-7BE8079041F8",
+          "presentationName": "Minswap Aggregator",
+          "x": "https://x.com/MinswapDEX",
+          "linkedin": "",
+          "url": "https://minswap.org/"
+        }
+      ]
     },
     {
       "id": "STABLECOIN",
       "presentationName": "Stablecoin",
       "desc": "Celebrating the stablecoin protocol or project that has driven adoption, liquidity, and real-world use cases on Cardano. This includes algorithmic, collateral-backed, and fiat-backed stablecoins.",
-      "proposals": []
+      "proposals": [
+        {
+          "id": "58CE38A1-39AC-4576-B4FF-ED7D4F167920",
+          "presentationName": "USDM",
+          "x": "https://x.com/USDMOfficial",
+          "linkedin": "",
+          "url": "https://moneta.global"
+        },
+        {
+          "id": "3CDB8A6A-1F24-46C3-96B4-447D786E963F",
+          "presentationName": "USDA",
+          "x": "https://x.com/AnzensOfficial",
+          "linkedin": "",
+          "url": "https://www.anzens.com/"
+        },
+        {
+          "id": "C9D45939-93FB-4372-BE40-DB0D8E7F198D",
+          "presentationName": "DJED",
+          "x": "https://x.com/DjedStablecoin",
+          "linkedin": "",
+          "url": "https://djed.xyz"
+        },
+        {
+          "id": "DD27584C-37CC-4B35-B9BC-BB7144C1A989",
+          "presentationName": "iUSD",
+          "x": "https://x.com/Indigo_protocol",
+          "linkedin": "",
+          "url": "https://indigoprotocol.io/"
+        },
+        {
+          "id": "B30E9D94-8387-4B43-9EEF-BBC4A947C387",
+          "presentationName": "MyUSD",
+          "x": "https://x.com/_mynth_",
+          "linkedin": "",
+          "url": "https://www.mynth.ai/"
+        }
+      ]
     },
     {
       "id": "TOOLS_ANALYTICS",
       "presentationName": "Tools & Analytics",
       "desc": "Awarded to platforms providing data, dashboards, explorers, or monitoring tools that help users and developers make informed decisions. From DeFi dashboards to chain indexers, this category celebrates clarity and transparency.",
-      "proposals": []
+      "proposals": [
+        {
+          "id": "55850CB0-D0BF-4243-84D1-5B776BA8F2FB",
+          "presentationName": "Adastat",
+          "x": "https://x.com/ada_stat",
+          "linkedin": "",
+          "url": "https://adastat.net"
+        },
+        {
+          "id": "3C360193-1BD5-4747-92E8-CE4D34452B6B",
+          "presentationName": "TapTools",
+          "x": "https://x.com/TapTools",
+          "linkedin": "",
+          "url": "https://taptools.io"
+        },
+        {
+          "id": "863F3035-2481-47AB-A996-75A8F870BA1F",
+          "presentationName": "Cexplorer",
+          "x": "https://x.com/cexplorer_io",
+          "linkedin": "",
+          "url": "https://cexplorer.io"
+        },
+        {
+          "id": "097CF594-960F-4ECF-813C-3EDF4EBF2BC3",
+          "presentationName": "BendingAI",
+          "x": "https://x.com/BendingAI",
+          "linkedin": "",
+          "url": "https://bending.ai/"
+        },
+        {
+          "id": "33EB2501-C07C-4AA9-BA2A-A8D5C6CED363",
+          "presentationName": "Cardanoscan",
+          "x": "https://x.com/cardanoscanio",
+          "linkedin": "",
+          "url": "https://cardanoscan.io/"
+        }
+      ]
     },
     {
       "id": "OTHER_DAPPS",
       "presentationName": "Other dApps",
       "desc": "A wildcard category for impactful Cardano DApps outside DeFi, DEX, lending, or stablecoin categories. Includes applications such as gaming, metaverse, identity, or niche uses.",
-      "proposals": []
+      "proposals": [
+        {
+          "id": "938A437D-31E2-4C3E-85ED-0A084BA4D58C",
+          "presentationName": "Titans",
+          "x": "https://x.com/Titans_33",
+          "linkedin": "",
+          "url": ""
+        },
+        {
+          "id": "D0048DB7-07CA-4DEB-ACF5-C168048D97BE",
+          "presentationName": "Atrium",
+          "x": "https://x.com/atrium_lab",
+          "linkedin": "",
+          "url": "https://atrium.io"
+        },
+        {
+          "id": "396D54CD-AAAF-4DB1-89FB-306BDAB30C00",
+          "presentationName": "Walkers",
+          "x": "https://x.com/WalkersCNFT",
+          "linkedin": "",
+          "url": "https://www.walkerscardano.xyz/"
+        },
+        {
+          "id": "A8B62120-8072-4867-A068-46A8701F2772",
+          "presentationName": "Bodega Market",
+          "x": "https://x.com/BodegaCardano",
+          "linkedin": "",
+          "url": "https://v3.bodegamarket.io/"
+        },
+        {
+          "id": "A53A4552-9550-4D11-9291-375E67FD2E1F",
+          "presentationName": "",
+          "x": "",
+          "linkedin": "",
+          "url": ""
+        }
+      ]
     }
   ]
 }

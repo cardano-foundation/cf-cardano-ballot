@@ -1,0 +1,11 @@
+{{- if .Values.vercel.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "summit-2025-ui.fullname" . }}-vercel
+  labels:
+    {{- include "summit-2025-ui.labels" . | nindent 4 }}
+spec:
+  type: ExternalName
+  externalName: {{ .Values.service.vercel.externalName }}
+{{ end }}

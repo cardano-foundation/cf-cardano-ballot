@@ -1,5 +1,11 @@
 replicaCount: 1
 
+# host ui in kubernetes
+ui:
+  enabled: true
+vercel: 
+  enabled: false
+
 image:
   repository: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-ui-summit-2025
   tag: "latest"
@@ -12,11 +18,14 @@ fullnameOverride: ""
 service:
   type: ClusterIP
   port: 80
+  vercel:
+    externalName: 
 
 ingress:
   enabled: true
   additionalDomains: []
-#    - beta.explorer.cardano.org
+  vercel:
+    domain:
 
 resources: {}
   # limits:

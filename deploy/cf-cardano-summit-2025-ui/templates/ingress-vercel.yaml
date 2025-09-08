@@ -1,0 +1,28 @@
+{{- if .Values.vercel.enabled -}}
+{{- $fullName := include "summit-2025-ui.fullname" . -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}-vercel
+  labels:
+    {{- include "summit-2025-ui.labels" . | nindent 4 }}
+  {{- with .Values.ingress.vercel.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  rules:
+    - host: "{{ .Values.ingress.vercel.domain }}"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ $fullName }}-vercel
+                port:
+                  number: 443
+  tls:
+    - hosts:
+        - "{{ .Values.ingress.vercel.domain }}"
+{{ end }}

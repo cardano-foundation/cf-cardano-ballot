@@ -8,6 +8,8 @@ metadata:
     {{- include "summit-2025-ui.labels" . | nindent 4 }}
   {{- with .Values.ingress.vercel.annotations }}
   annotations:
+    # some nginx-ingress annotations are supported by traefik as well
+    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:

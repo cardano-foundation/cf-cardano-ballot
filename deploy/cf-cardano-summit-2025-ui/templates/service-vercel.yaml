@@ -8,4 +8,9 @@ metadata:
 spec:
   type: ExternalName
   externalName: {{ .Values.service.vercel.externalName }}
+  ports:
+    - port: 443
+      targetPort: 443
+      protocol: TCP
+      name: https
 {{ end }}

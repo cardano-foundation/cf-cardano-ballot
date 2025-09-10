@@ -1,4 +1,4 @@
-FROM gradle:jdk21-alpine AS build
+FROM gradle:8-jdk21-alpine AS build
 WORKDIR /app
 COPY . /app
 RUN gradle bootJar

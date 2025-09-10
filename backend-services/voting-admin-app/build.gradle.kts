@@ -1,9 +1,8 @@
 plugins {
 	java
-	id("io.spring.dependency-management") version "1.1.3"
-    id("org.graalvm.buildtools.native") version "0.9.27"
-    id("com.github.ben-manes.versions") version "0.48.0"
-	id("org.springframework.boot") version "3.1.2"
+	id("io.spring.dependency-management") version "1.1.7"
+    id("com.github.ben-manes.versions") version "0.52.0"
+	id("org.springframework.boot") version "3.3.6"
 }
 
 group = "org.cardano.foundation"
@@ -21,36 +20,63 @@ repositories {
 	maven { url = uri("https://repo.spring.io/milestone") }
 }
 
-extra["springShellVersion"] = "3.1.2"
+val lombokVersion: String by project
+val springShellVersion: String by project
+val cardanoClientVersion: String by project
+val nimbusJoseJwtVersion: String by project
+val tinkVersion: String by project
+val blockfrostJavaVersion: String by project
+val springDotenvVersion: String by project
 
 dependencies {
 	implementation("org.springframework.shell:spring-shell-starter")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 
-	compileOnly("org.projectlombok:lombok:1.18.30")
-	annotationProcessor("org.projectlombok:lombok:1.18.30")
+	compileOnly("org.projectlombok:lombok:$lombokVersion")
+	annotationProcessor("org.projectlombok:lombok:$lombokVersion")
 
-	testCompileOnly("org.projectlombok:lombok:1.18.30")
-	testAnnotationProcessor("org.projectlombok:lombok:1.18.30")
+	testCompileOnly("org.projectlombok:lombok:$lombokVersion")
+	testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
 
-	implementation("com.bloxbean.cardano:cardano-client-crypto:0.5.0")
-	implementation("com.bloxbean.cardano:cardano-client-address:0.5.0")
-	implementation("com.bloxbean.cardano:cardano-client-metadata:0.5.0")
-	implementation("com.bloxbean.cardano:cardano-client-quicktx:0.5.0")
-	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:0.5.0")
-	implementation("com.bloxbean.cardano:cardano-client-cip30:0.5.0")
+	implementation("com.bloxbean.cardano:cardano-client-crypto:$cardanoClientVersion")
+	implementation("com.bloxbean.cardano:cardano-client-address:$cardanoClientVersion")
+	implementation("com.bloxbean.cardano:cardano-client-metadata:$cardanoClientVersion")
+	implementation("com.bloxbean.cardano:cardano-client-quicktx:$cardanoClientVersion")
+	implementation("com.bloxbean.cardano:cardano-client-backend-blockfrost:$cardanoClientVersion")
+	implementation("com.bloxbean.cardano:cardano-client-cip30:$cardanoClientVersion")
 
-	implementation("com.nimbusds:nimbus-jose-jwt:9.34")
-	implementation("com.google.crypto.tink:tink:1.10.0")
+	implementation("com.nimbusds:nimbus-jose-jwt:$nimbusJoseJwtVersion")
+	implementation("com.google.crypto.tink:tink:$tinkVersion")
 
-	implementation("io.blockfrost:blockfrost-java:0.1.3")
+	implementation("io.blockfrost:blockfrost-java:$blockfrostJavaVersion")
 
-	implementation("me.paulschwarz:spring-dotenv:4.0.0")
+	implementation("me.paulschwarz:spring-dotenv:$springDotenvVersion")
 }
 
 dependencyManagement {
 	imports {
-		mavenBom("org.springframework.shell:spring-shell-dependencies:${property("springShellVersion")}")
+		mavenBom("org.springframework.shell:spring-shell-dependencies:$springShellVersion")
+	}
+}
+
+fun isNonStable(version: String): Boolean {
+	val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.uppercase().contains(it) }
+	val regex = "^[0-9,.v-]+(-r)?$".toRegex()
+	val isStable = stableKeyword || regex.matches(version)
+
+	return isStable.not()
+}
+
+// https://github.com/ben-manes/gradle-versions-plugin
+tasks.named("dependencyUpdates", com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask::class.java).configure {
+	resolutionStrategy {
+		componentSelection {
+			all {
+				if (isNonStable(candidate.version)) {
+					reject("Release candidate")
+				}
+			}
+		}
 	}
 }
 

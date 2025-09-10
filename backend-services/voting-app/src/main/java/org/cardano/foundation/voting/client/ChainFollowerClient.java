@@ -81,7 +81,7 @@ public class ChainFollowerClient {
     }
 
     public Either<Problem, ChainTipResponse> getChainTip() {
-        var url = String.format("%s/api/blockchain/tip", ledgerFollowerBaseUrl);
+        val url = String.format("%s/api/blockchain/tip", ledgerFollowerBaseUrl);
 
         try {
             return Either.right(restTemplate.getForObject(url, ChainTipResponse.class));
@@ -98,7 +98,7 @@ public class ChainFollowerClient {
     public Either<Problem, Optional<AccountResponse>> findAccount(String eventName,
                                                                   WalletType walletType,
                                                                   String walletId) {
-        var url = String.format("%s/api/account/{event}/{walletType}/{walletId}", ledgerFollowerBaseUrl);
+        val url = String.format("%s/api/account/{event}/{walletType}/{walletId}", ledgerFollowerBaseUrl);
 
         try {
             @Nullable

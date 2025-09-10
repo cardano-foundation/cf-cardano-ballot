@@ -1,9 +1,9 @@
 package org.cardano.foundation.voting.config;
 
-import org.cardano.foundation.voting.domain.CategoryResultsDatumConverter;
-import org.cardano.foundation.voting.domain.CreateVoteBatchRedeemerConverter;
-import org.cardano.foundation.voting.domain.ReduceVoteBatchRedeemerConverter;
-import org.cardano.foundation.voting.domain.VoteDatumConverter;
+import org.cardano.foundation.voting.domain.converter.CategoryResultsDatumConverter;
+import org.cardano.foundation.voting.domain.converter.CreateVoteBatchRedeemerConverter;
+import org.cardano.foundation.voting.domain.converter.ReduceVoteBatchRedeemerConverter;
+import org.cardano.foundation.voting.domain.converter.VoteDatumConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

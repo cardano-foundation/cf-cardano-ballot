@@ -1,0 +1,393 @@
+services:
+
+  postgres:
+    restart: unless-stopped
+    container_name: postgres
+    image: postgres:17
+    environment:
+      POSTGRES_USER: "${DB_USERNAME}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD}"
+      POSTGRES_DB: "${POSTGRES_DB}"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - web
+
+  yaci-cli:
+    restart: unless-stopped
+    container_name: yaci-cli
+    image: bloxbean/yaci-cli:0.10.6
+    networks:
+      - web 
+    env_file:
+      - ./yaci-config/env
+      - ./yaci-config/node.properties
+    volumes:
+      - ./yaci-config/node.properties:/app/config/node.properties
+      - yaci-data:/clusters
+    ports:
+      - "3001:3001"
+      - "8081:8080"
+    entrypoint: [ "/app/yaci-cli", "create-node", "-o", "--start" ]
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.yaci-bf-http.entrypoints=web"
+      - "traefik.http.routers.yaci-bf-http.rule=host(`${YACI_BLOCKFROST_DOMAIN:-yaci-blockfrost.dev.cf-summit-2025.cf-deployments.org}`)"
+      - "traefik.http.routers.yaci-bf-https.rule=host(`${YACI_BLOCKFROST_DOMAIN:-yaci-blockfrost.dev.cf-summit-2025.cf-deployments.org}`)"
+      - "traefik.http.routers.yaci-bf-https.entrypoints=websecure"
+      - "traefik.http.routers.yaci-bf-https.tls=true"
+      - "traefik.http.services.yaci-bf-https.loadbalancer.server.port=8080"
+      - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.x-forwarded-proto=https"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "100"
+
+  yaci-viewer:
+    restart: unless-stopped
+    image: bloxbean/yaci-viewer:0.10.6
+    container_name: yaci-viewer
+    ports:
+      - "5173:5173"
+    env_file:
+      - ./yaci-config/env
+    environment:
+      PUBLIC_INDEXER_BASE_URL: ${PUBLIC_INDEXER_BASE_URL:-http://yaci-cli:8080/api/v1}
+      PUBLIC_INDEXER_WS_URL: ${PUBLIC_INDEXER_WS_URL:-ws://yaci-blockfrost.dev.cf-summit-2025.cf-deployments.org/ws/liveblocks}
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.yaci-viewer-http.entrypoints=web"
+      - "traefik.http.routers.yaci-viewer-http.rule=Host(`${YACI_VIEWER_DOMAIN:-yaci-viewer.dev.cf-summit-2025.cf-deployments.org}`)"
+      - "traefik.http.routers.yaci-viewer-https.rule=Host(`${YACI_VIEWER_DOMAIN:-yaci-viewer.dev.cf-summit-2025.cf-deployments.org}`)"
+      - "traefik.http.routers.yaci-viewer-https.entrypoints=websecure"
+      - "traefik.http.routers.yaci-viewer-https.tls=true"
+      - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.X-Forwarded-Proto=https"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "100"
+
+  traefik:
+    # profiles: [traefik]
+    restart: unless-stopped
+    image: traefik:v2.11
+    container_name: "traefik"
+    command:
+      - "--log.level=DEBUG"
+      - "--accesslog.filepath=/dev/stdout"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+    ports:
+      - "443:443"
+      - "80:80"
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - "/var/lib/letsencrypt:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    networks:
+      - web
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "100"
+
+  follower:
+    restart: unless-stopped
+    container_name: follower
+    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-voting-ledger-follower-app:PR601-f4928db
+    environment:
+      DB_SCHEMA: "follower"
+      DB_URL: "jdbc:postgresql://postgres:5432/postgres?currentSchema=follower"
+      DB_DRIVER: "${DB_DRIVER}"
+      DB_DIALECT: "${DB_DIALECT}"
+      POSTGRES_HOST: "${POSTGRES_HOST}"
+      POSTGRES_PORT: "${POSTGRES_PORT}"
+      POSTGRES_DB: "${POSTGRES_DB}"
+      DB_USERNAME: "${DB_USERNAME}"
+      DB_PASSWORD: "${DB_PASSWORD}"
+      H2_CONSOLE_ENABLED: "${H2_CONSOLE_ENABLED}"
+
+      CARDANO_NETWORK: "${CARDANO_NETWORK}"
+      CARDANO_NODE_HOST: "${STORE_CARDANO_HOST}"
+      CARDANO_NODE_PORT: "${STORE_CARDANO_PORT}"
+      BLOCKFROST_URL: "${BLOCKFROST_URL}"
+      BLOCKFROST_PASSWORD: "${BLOCKFROST_PASSWORD}"
+      ORGANISER_STAKE_ADDRESS: "${ORGANISER_STAKE_ADDRESS}"
+      BIND_ON_EVENT_IDS: "${EVENT_ID}"
+      YACI_STORE_CARDANO_SYNC_START_BLOCK_HASH: "${YACI_STORE_CARDANO_SYNC_START_BLOCK_HASH}"
+      YACI_STORE_CARDANO_SYNC_START_SLOT: "${YACI_STORE_CARDANO_SYNC_START_SLOT}"
+
+      CORS_ALLOWED_ORIGINS: "$VOTING_UI_URL,http://localhost:3000"
+    ports:
+      - 9090:9090
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.follower-app-http.entrypoints=web"
+      - "traefik.http.routers.follower-app-http.rule=Host(`${FOLLOWER_APP_DOMAIN:-follower-api.dev.cf-summit-2025.cf-deployments.org}`)"
+      - "traefik.http.routers.follower-app-https.rule=Host(`${FOLLOWER_APP_DOMAIN:-follower-api.dev.cf-summit-2025.cf-deployments.org}`)"
+      - "traefik.http.routers.follower-app-https.entrypoints=websecure"
+      - "traefik.http.routers.follower-app-https.tls=true"
+      - "traefik.http.services.follower-app-https.loadbalancer.server.port=9090"
+      - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.X-Forwarded-Proto=https"
+
+  voting-ui:
+    restart: unless-stopped
+    container_name: voting-ui
+    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-ui-summit-2025:0.1.0-PR601-5485157
+    ports:
+      - 8082:80
+    environment:
+      VITE_VOTING_APP_SERVER_URL: "${VOTING_APP_URL}"
+      VITE_VOTING_LEDGER_FOLLOWER_APP_SERVER_URL: "${FOLLOWER_APP_URL}"
+      VITE_VOTING_VERIFICATION_APP_SERVER_URL: "${VOTING_VERIFICATION_APP_URL}"
+      VITE_USER_VERIFICATION_SERVER_URL: "${USER_VERIFICATION_APP_URL}"
+
+      VITE_DISCORD_SUPPORT_CHANNEL_URL: "https://discord.com/${GUILD_ID}/${CHANNEL_ID}" # TODO: which channel? for now same as bot url
+      VITE_DISCORD_CHANNEL_URL: "https://discord.gg/${INVITE_ID}"
+      VITE_DISCORD_BOT_URL: "https://discord.com/channels/${GUILD_ID}/${CHANNEL_ID}"
+
+      VITE_SUPPORTED_WALLETS: "eternl,nami,typhon,yoroi,nufi,gerowallet,lace,vespr"
+
+
+      # Only for prod?
+      # VITE_MATOMO_BASE_URL: {{ .Values.matomoBaseUrl | default "https://example.com" }}
+      # VITE_MATOMO_PROJECT_ID: {{ .Values.matomoProjectId | default "1" | quote }}
+
+      VITE_TARGET_NETWORK: "${CARDANO_NETWORK}"
+      VITE_EVENT_ID: "${EVENT_ID}"
+      VITE_WEB_URL: "${VOTING_UI_URL}"
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.voting-ui-http.entrypoints=web"
+      - "traefik.http.routers.voting-ui-http.rule=Host(`${DOMAIN:-dev.cf-summit-2025.cf-deployments.org}`)"
+      - "traefik.http.routers.voting-ui-https.rule=Host(`${DOMAIN:-dev.cf-summit-2025.cf-deployments.org}`)"
+      - "traefik.http.routers.voting-ui-https.entrypoints=websecure"
+      - "traefik.http.routers.voting-ui-https.tls=true"
+      - "traefik.http.services.voting-ui-https.loadbalancer.server.port=80"
+      - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.X-Forwarded-Proto=https"
+
+  voting-app:
+    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-voting-app:PR601-f4928db
+    restart: unless-stopped
+    container_name: voting-app
+    ports:
+      - 9091:9091
+    environment:
+      # SPRING_PROFILES_ACTIVE:  
+
+      # TODO: value for dev?
+      YACI_STORE_CARDANO_SYNC_START_BLOCK_HASH: "${YACI_STORE_CARDANO_SYNC_START_BLOCK_HASH}"
+      YACI_STORE_CARDANO_SYNC_START_SLOT: "${YACI_STORE_CARDANO_SYNC_START_SLOT}"
+
+      # TODO: fill with ui urls
+      CORS_ALLOWED_ORIGINS: "$VOTING_UI_URL,http://localhost:3000"
+
+      VOTING_METADATA_LABEL: "11113"
+
+      ORGANISER_STAKE_ADDRESS: "${ORGANISER_STAKE_ADDRESS}"
+      ORGANISER_MNEMONIC_PHRASE: "${ORGANISER_MNEMONIC_PHRASE}"
+
+      USER_VERIFICATION_APP_URL: "${USER_VERIFICATION_APP_URL}"
+      LEDGER_FOLLOWER_APP_URL: "${FOLLOWER_APP_URL}"
+
+      ## Postgres
+      DB_SCHEMA: "voting"
+      DB_URL: "jdbc:postgresql://postgres:5432/postgres?currentSchema=voting"
+      DB_DRIVER: "${DB_DRIVER}"
+      DB_DIALECT: "${DB_DIALECT}"
+      POSTGRES_HOST: "${POSTGRES_HOST}"
+      POSTGRES_PORT: "${POSTGRES_PORT}"
+      POSTGRES_DB: "${POSTGRES_DB}"
+      DB_USERNAME: "${DB_USERNAME}"
+      DB_PASSWORD: "${DB_PASSWORD}"
+      H2_CONSOLE_ENABLED: "${H2_CONSOLE_ENABLED}"
+
+      USE_JWT: "false"
+      # CARDANO_JWT_SECRET:
+      LEADERBOARD_FORCE_RESULTS: "false"
+      ROLLBACK_HANDLING_ENABLED: "true"
+
+      KERI_BALLOT_VERIFIER_APP_URL: "${KERI_BALLOT_VERIFIER_APP_URL:-http://keri-ballot-verifier:5667}"
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.voting-backend-http.entrypoints=web"
+      - "traefik.http.routers.voting-backend-http.rule=Host(`${VOTING_APP_DOMAIN:-api.dev.cf-summit-2025.cf-deployments.org}`)"
+      - "traefik.http.routers.voting-backend-https.rule=Host(`${VOTING_APP_DOMAIN:-api.dev.cf-summit-2025.cf-deployments.org}`)"
+      - "traefik.http.routers.voting-backend-https.entrypoints=websecure"
+      - "traefik.http.routers.voting-backend-https.tls=true"
+      - "traefik.http.services.voting-backend-https.loadbalancer.server.port=9091"
+      - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.X-Forwarded-Proto=https"
+
+
+  voting-verification-api:
+    restart: unless-stopped
+    container_name: voting-verification-api
+    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-voting-verification-app:PR601-f4928db
+    ports: 
+      - 9092:9092
+    environment:
+      CARDANO_NETWORK: "${CARDANO_NETWORK}"
+      # TODO
+      CORS_ALLOWED_ORIGINS: "$VOTING_UI_URL,http://localhost:3000"
+      LEDGER_FOLLOWER_APP_URL: "${FOLLOWER_APP_URL}"
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.voting-verification-backend-http.entrypoints=web"
+      - "traefik.http.routers.voting-verification-backend-http.rule=Host(`${VOTING_VERIFICATION_APP_DOMAIN:-verification-api.dev.cf-summit-2025.cf-deployments.org}`)"
+      - "traefik.http.routers.voting-verification-backend-https.rule=Host(`${VOTING_VERIFICATION_APP_DOMAIN:-verification-api.dev.cf-summit-2025.cf-deployments.org}`)"
+      - "traefik.http.routers.voting-verification-backend-https.entrypoints=websecure"
+      - "traefik.http.routers.voting-verification-backend-https.tls=true"
+      - "traefik.http.services.voting-verification-backend-https.loadbalancer.server.port=9092"
+      - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.X-Forwarded-Proto=https"
+
+        # voting-verification-ui:
+        #   restart: unless-stopped
+        #   container_name: voting-verification-ui
+        #   image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/voting-verification-app-ui # PR601-cebaba1
+        #   ports: 
+        #     - 8083:80
+        #   environment:
+        #     REACT_APP_VOTING_APP_SERVER_URL: "${VOTING_APP_URL}"
+        #     REACT_APP_VOTING_LEDGER_FOLLOWER_APP_SERVER_URL: "${FOLLOWER_APP_URL}"
+        #     REACT_APP_VOTING_VERIFICATION_APP_SERVER_URL: "${VOTING_VERIFICATION_APP_URL}"
+        #   networks:
+        #     - web
+        #   # TODO: labels: which domain???
+  
+  user-verification:
+    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-user-verification-service:PR601-f4928db
+    container_name: user-verification
+    ports: 
+      - 9093:9093
+    environment:
+      ## Postgres
+      DB_SCHEMA: "user-verification"
+      DB_URL: "jdbc:postgresql://postgres:5432/postgres?currentSchema=user-verification"
+      DB_DRIVER: "${DB_DRIVER}"
+      DB_DIALECT: "${DB_DIALECT}"
+      POSTGRES_HOST: "${POSTGRES_HOST}"
+      POSTGRES_PORT: "${POSTGRES_PORT}"
+      POSTGRES_DB: "${POSTGRES_DB}"
+      DB_USERNAME: "${DB_USERNAME}"
+      DB_PASSWORD: "${DB_PASSWORD}"
+      H2_CONSOLE_ENABLED: "${H2_CONSOLE_ENABLED}"
+
+      CORS_ALLOWED_ORIGINS: "$VOTING_UI_URL,http://localhost:3000"
+
+      AWS_SNS_ACCESS_KEY_ID: "${AWS_SNS_ACCESS_KEY_ID}"
+      AWS_SNS_SECRET_ACCESS_KEY: "${AWS_SNS_SECRET_ACCESS_KEY}"
+      AWS_SNS_REGION: "${AWS_SNS_REGION}"
+
+      DISCORD_BOT_EVENT_ID_BINDING: "${EVENT_ID}"
+      DISCORD_BOT_USERNAME: "${DISCORD_BOT_BASIC_AUTH_USER}"
+      DISCORD_BOT_PASSWORD: "${DISCORD_BOT_BASIC_AUTH_PASSWORD}"
+
+      LEDGER_FOLLOWER_APP_URL: "${FOLLOWER_APP_URL}"
+
+      # TODO: fix in backend default config and remove here
+      FRIENDLY_CUSTOM_NAME: "Cardano Summit 2025"
+      KERI_BALLOT_VERIFIER_APP_URL: "${KERI_BALLOT_VERIFIER_APP_URL:-http://keri-ballot-verifier:5667}"
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.user-verification-backend-http.entrypoints=web"
+      - "traefik.http.routers.user-verification-backend-http.rule=Host(`${USER_VERIFICATION_APP_DOMAIN:-user-verification.dev.cf-summit-2025.cf-deployments.org}`)"
+      - "traefik.http.routers.user-verification-backend-https.rule=Host(`${USER_VERIFICATION_APP_DOMAIN:-user-verification.dev.cf-summit-2025.cf-deployments.org}`)"
+      - "traefik.http.routers.user-verification-backend-https.entrypoints=websecure"
+      - "traefik.http.routers.user-verification-backend-https.tls=true"
+      - "traefik.http.services.user-verification-backend-https.loadbalancer.server.port=9093"
+      - "traefik.http.middlewares.https-redirect.headers.customrequestheaders.X-Forwarded-Proto=https"
+
+
+  discord-bot:
+    restart: unless-stopped
+    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-discord-wallet-verification-bot:1.1.0-PR5-287e75a
+    container_name: discord-bot
+    environment:
+      DISCORD_TOKEN: "${DISCORD_TOKEN}"
+      GUILD_ID: "${GUILD_ID}"
+      CHANNEL_ID: "${CHANNEL_ID}"
+      VERIFIED_ROLE_ID: "${VERIFIED_ROLE_ID}"
+
+      BACKEND_BASE_URL: "${USER_VERIFICATION_APP_URL}/api/discord/user-verification"
+      BACKEND_BASIC_AUTH_ENABLED: "${BACKEND_BASIC_AUTH_ENABLED}"
+      BACKEND_BASIC_AUTH_USER: "${DISCORD_BOT_BASIC_AUTH_USER}"
+      BACKEND_BASIC_AUTH_PASSWORD: "${DISCORD_BOT_BASIC_AUTH_PASSWORD}"
+      DISCORD_VERIFICATION_BOT_SALT: "${DISCORD_VERIFICATION_BOT_SALT}"
+
+      FRONTEND_URL: "${VOTING_UI_URL}"
+
+  keri-ballot-verifier:
+    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-keri-ballot-verifier:PR601-f4928db
+    restart: unless-stopped
+    container_name: keri-ballot-verifier
+    environment:
+       VERIFIER_URL: "http://keri-ballot-verifier:5666"
+       VERIFIER_PORT: "5666"
+       VERIFIER_ADMIN_PORT: "5667"
+       VERIFIER_CONFIG_DIR: "/usr/local/var/keri"
+       VERIFIER_STORE_DIR: "/usr/local/var/keri/store"
+    networks:
+      - web
+
+  vote-commitment:
+    image: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-vote-commitment-app:PR601-f4928db
+    restart: unless-stopped
+    container_name: vote-commitment
+    environment:
+      # SPRING_PROFILES_ACTIVE:
+      CARDANO_NETWORK: "${CARDANO_NETWORK}"
+
+      BLOCKFROST_URL: "${BLOCKFROST_URL}"
+      BLOCKFROST_PASSWORD: "${BLOCKFROST_PASSWORD}"
+      TX_SUBMIT_URL: "${TX_SUBMIT_URL}"
+
+      VOTING_METADATA_LABEL: "11113"
+
+      USER_VERIFICATION_APP_URL: "${USER_VERIFICATION_APP_URL}"
+      ORGANISER_STAKE_ADDRESS: "${ORGANISER_STAKE_ADDRESS}"
+      ORGANISER_MNEMONIC_PHRASE: "${ORGANISER_MNEMONIC_PHRASE}"
+
+      LEDGER_FOLLOWER_APP_URL: "${FOLLOWER_APP_URL}"
+
+      ## Postgres, schema must match voting-app schema!
+      DB_SCHEMA: "voting"
+      DB_URL: "jdbc:postgresql://postgres:5432/postgres?currentSchema=voting"
+      DB_DRIVER: "${DB_DRIVER}"
+      DB_DIALECT: "${DB_DIALECT}"
+      POSTGRES_HOST: "${POSTGRES_HOST}"
+      POSTGRES_PORT: "${POSTGRES_PORT}"
+      POSTGRES_DB: "${POSTGRES_DB}"
+      DB_USERNAME: "${DB_USERNAME}"
+      DB_PASSWORD: "${DB_PASSWORD}"
+      H2_CONSOLE_ENABLED: "${H2_CONSOLE_ENABLED}"
+
+    networks:
+      - web
+
+volumes:
+  yaci-data:
+  postgres-data:
+
+networks:
+  web:
+    name: web

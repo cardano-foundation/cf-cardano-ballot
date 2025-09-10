@@ -54,10 +54,10 @@ jobs:
             --DOCKER_REGISTRIES="${{ secrets.DOCKER_REGISTRIES }}" \
             --DOCKER_IMAGES_EXTRA_TAGS="${EARTHLY_DOCKER_IMAGES_EXTRA_TAGS}"
 
-  ui-summit-2024:
+  ui-summit-2025:
     runs-on: ${{ fromJson(vars.RUNS_ON) }}
     env:
-      APP_NAME: ui-summit-2024
+      APP_NAME: ui-summit-2025
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -66,7 +66,7 @@ jobs:
         uses: cardano-foundation/cf-gha-workflows/./actions/cf-gha-baseline@main
         id: cf-gha-baseline
         with:
-          working-directory: ./ui/summit-2024
+          working-directory: ./ui/summit-2025
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PRIVATE_DOCKER_REGISTRY_URL: ${{ env.PRIVATE_DOCKER_REGISTRY_URL }}
           PRIVATE_DOCKER_REGISTRY_USER: ${{ env.PRIVATE_DOCKER_REGISTRY_USER }}
@@ -86,7 +86,7 @@ jobs:
   dispatch-build-success-event:
     runs-on: ${{ fromJson(vars.RUNS_ON) }}
     needs:
-      - ui-summit-2024
+      - ui-summit-2025
     steps:
       - name: Checkout
         uses: actions/checkout@v4

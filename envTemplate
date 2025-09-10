@@ -1,0 +1,70 @@
+DOMAIN=
+VOTING_APP_DOMAIN=api.$DOMAIN
+FOLLOWER_APP_DOMAIN=follower-api.$DOMAIN
+VOTING_VERIFICATION_APP_DOMAIN=verification-api.$DOMAIN
+USER_VERIFICATION_APP_DOMAIN=user-verification.$DOMAIN
+
+YACI_VIEWER_DOMAIN=yaci-viewer.$DOMAIN
+YACI_BLOCKFROST_DOMAIN=yaci-blockfrost.$DOMAIN
+
+VOTING_UI_URL=https://${DOMAIN}
+VOTING_APP_URL=https://${VOTING_APP_DOMAIN}
+FOLLOWER_APP_URL=https://$FOLLOWER_APP_DOMAIN
+VOTING_VERIFICATION_APP_URL=https://$VOTING_VERIFICATION_APP_DOMAIN
+USER_VERIFICATION_UI_URL="http://localhost:8083"
+USER_VERIFICATION_APP_URL="https://${USER_VERIFICATION_APP_DOMAIN}"
+
+ORGANISER_STAKE_ADDRESS=
+ORGANISER_MNEMONIC_PHRASE=
+
+AWS_SNS_ACCESS_KEY_ID=
+AWS_SNS_SECRET_ACCESS_KEY=
+AWS_SNS_REGION=
+
+# Event ID which must be created using the admin app beforehand.
+EVENT_ID=
+
+CARDANO_NETWORK="preprod"
+STORE_CARDANO_HOST="preprod-node.play.dev.cardano.org"
+STORE_CARDANO_PORT="3001"
+
+BLOCKFROST_URL="https://cardano-preprod.blockfrost.io/api/v0/"
+BLOCKFROST_PASSWORD=
+TX_SUBMIT_URL="https://cardano-preprod.blockfrost.io/api/v0/tx/submit"
+
+
+#####
+# YACI
+#####
+YACI_STORE_CARDANO_SYNC_START_BLOCK_HASH=
+YACI_STORE_CARDANO_SYNC_START_SLOT=
+PUBLIC_INDEXER_BASE_URL=https://${YACI_BLOCKFROST_DOMAIN}/api/v1
+PUBLIC_INDEXER_WS_URL=wss://${YACI_BLOCKFROST_DOMAIN}/ws/liveblocks
+
+DB_DRIVER="org.postgresql.Driver"
+DB_DIALECT="org.hibernate.dialect.PostgreSQLDialect"
+POSTGRES_HOST="postgres"
+POSTGRES_PORT="5432"
+POSTGRES_DB="postgres"
+DB_USERNAME=
+DB_PASSWORD=
+H2_CONSOLE_ENABLED="false"
+
+#####
+# DISCORD BOT
+#####
+DISCORD_TOKEN=
+# CF Discord Server ID
+GUILD_ID=
+# CF Discord Channel for Bot interaction
+CHANNEL_ID=
+# CF Discord Channel role showing that account was verified with a phone number
+VERIFIED_ROLE_ID=
+INVITE_ID=
+
+# Needs to be enabled, backend always has basic auth configured
+BACKEND_BASIC_AUTH_ENABLED=
+DISCORD_BOT_BASIC_AUTH_USER=
+DISCORD_BOT_BASIC_AUTH_PASSWORD=
+DISCORD_VERIFICATION_BOT_SALT=
+

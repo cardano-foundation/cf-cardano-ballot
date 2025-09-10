@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "summit-2025-ui.fullname" . }}
+  labels:
+    {{- include "summit-2025-ui.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "summit-2025-ui.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "summit-2025-ui.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: VITE_VOTING_APP_SERVER_URL
+              value: {{ .Values.votingAppServerUrl | default "http://localhost:9091" }}
+            - name: VITE_VOTING_LEDGER_FOLLOWER_APP_SERVER_URL
+              value: {{ .Values.votingLedgerFollowerAppServerUrl | default "http://localhost:9090" }}
+            - name: VITE_VOTING_VERIFICATION_APP_SERVER_URL
+              value: {{ .Values.votingVerificationAppServerUrl | default "http://localhost:9092" }}
+            - name: VITE_USER_VERIFICATION_SERVER_URL
+              value: {{ .Values.userVerificationServerUrl | default "http://localhost:9093" }}
+            - name: VITE_DISCORD_SUPPORT_CHANNEL_URL
+              value: {{ .Values.discordSupportChannelUrl | default "https://discord.gg/example" }}
+            - name: VITE_DISCORD_CHANNEL_URL
+              value: {{ .Values.discordChannelUrl | default "https://discord.gg/example" }}
+            - name: VITE_DISCORD_BOT_URL
+              value: {{ .Values.discordBotUrl | default "https://discord.com/channels/example" }}
+            - name: VITE_MATOMO_BASE_URL
+              value: {{ .Values.matomoBaseUrl | default "https://example.com" }}
+            - name: VITE_MATOMO_PROJECT_ID
+              value: {{ .Values.matomoProjectId | default "1" | quote }}
+            - name: VITE_TARGET_NETWORK
+              value: {{ .Values.targetNetwork | default "PREPROD" }}
+            - name: VITE_EVENT_ID
+              value: {{ .Values.eventId | default "CF_SUMMIT_2025_8BCC" }}
+            - name: VITE_SUPPORTED_WALLETS
+              value: {{ .Values.supportedWallets | default "eternl,nami,typhon,yoroi,nufi,gerowallet,lace,vespr" }}
+            - name: VITE_SHOW_WINNERS
+              value: {{ .Values.showWinners | default "false" | quote }}
+            - name: VITE_SHOW_HYDRA_TALLY
+              value: {{ .Values.showHydraTally | default "false" | quote }}
+            - name: VITE_USING_FIXTURES
+              value: {{ .Values.usingFixtures | default "false" | quote }}
+            - name: VITE_COMMIT_HASH
+              value: {{ .Values.image.tag | default "latest" }}
+            - name: VITE_WEB_URL
+              {{ if .Values.webUrl }}
+              value: {{ .Values.webUrl }}
+              {{ else }}
+              value: "https://{{ .Values.domain }}"
+              {{ end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+#          livenessProbe:
+#            httpGet:
+#              path: /
+#              port: http
+#          readinessProbe:
+#            httpGet:
+#              path: /
+#              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}

@@ -1,4 +1,3 @@
-{{- if .Values.ui.enabled -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -76,4 +75,3 @@ spec:
 #              port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-{{ end }}

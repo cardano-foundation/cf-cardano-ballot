@@ -1,11 +1,5 @@
 replicaCount: 1
 
-# host ui in kubernetes
-ui:
-  enabled: true
-vercel: 
-  enabled: false
-
 image:
   repository: pro.registry.gitlab.metadata.dev.cf-deployments.org/base-infrastructure/docker-registry/cf-ui-summit-2025
   tag: "latest"

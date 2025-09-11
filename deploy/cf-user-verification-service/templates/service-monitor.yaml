@@ -5,7 +5,7 @@ kind: ServiceMonitor
 metadata:
   name: {{ include "user-verification-service.fullname" . }}
   labels:
-    release: prometheus-stack
+    release: cf-eks-monitoring
     {{- include "user-verification-service.labels" . | nindent 4 }}
 spec:
   endpoints:

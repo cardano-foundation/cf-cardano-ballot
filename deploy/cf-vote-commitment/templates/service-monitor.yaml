@@ -5,7 +5,7 @@ kind: ServiceMonitor
 metadata:
   name: {{ include "cf-vote-commitment.fullname" . }}
   labels:
-    release: prometheus-stack
+    release: cf-eks-monitoring
     {{- include "cf-vote-commitment.labels" . | nindent 4 }}
 spec:
   endpoints:

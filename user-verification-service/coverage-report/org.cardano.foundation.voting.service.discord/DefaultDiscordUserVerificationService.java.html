@@ -148,7 +148,7 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
 <span class="nc" id="L148">                    .build());</span>
         }
 
-<span class="pc bpc" id="L151" title="2 of 3 branches missed.">        return switch (walletType) {</span>
+<span class="pc bpc" id="L151" title="1 of 2 branches missed.">        return switch (walletType) {</span>
 <span class="fc" id="L152">            case CARDANO -&gt; handleCardanoVerification(request, eventId, walletType, walletId);</span>
 <span class="nc" id="L153">            case KERI -&gt; handleKeriVerification(request, eventId, walletType, walletId);</span>
         };
@@ -550,4 +550,4 @@ public class DefaultDiscordUserVerificationService implements DiscordUserVerific
     }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

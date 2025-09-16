@@ -23,6 +23,7 @@ import {
 import { setVoteReceipts, setVotes } from "../../store/reducers/votesCache";
 import { parseError } from "../../common/constants/errors";
 import event2025PreProdExtended from "../../common/resources/data/summit2025PreProdContent.json";
+import event2025MainnetExtended from "../../common/resources/data/summit2025MainnetContent.json";
 import { NetworkType } from "../ConnectWalletList/ConnectWalletList.types";
 
 const AppWrapper = (props: { children: ReactNode }) => {
@@ -147,7 +148,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
       const eventData = await getEventData(env.EVENT_ID);
       const eventDataExtended =
         resolveCardanoNetwork(env.TARGET_NETWORK) == NetworkType.MAINNET
-          ? event2025PreProdExtended
+          ? event2025MainnetExtended 
           : event2025PreProdExtended;
 
       // @ts-ignore

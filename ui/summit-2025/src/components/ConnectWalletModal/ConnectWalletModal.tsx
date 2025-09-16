@@ -74,7 +74,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
     if (dAppConnect.current === null) {
       const verifyConnection = (
         walletInfo: IWalletInfo,
-        callback: (granted: boolean, autoconnect: boolean) => void,
+        callback: (granted: boolean, autoconnect: boolean) => void
       ) => {
         setPeerConnectWalletInfo(walletInfo);
         setCurrentPath(ConnectWalletFlow.ACCEPT_CONNECTION);
@@ -97,11 +97,11 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
                 icon: api.icon,
                 requestAutoconnect: true,
                 version: api.version,
-              }),
+              })
             );
             eventBus.publish(
               EventName.ShowToast,
-              `${name} Wallet connected successfully`,
+              `${name} Wallet connected successfully`
             );
             props.handleCloseConnectWalletModal();
             trackEvent({
@@ -113,7 +113,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
             eventBus.publish(
               EventName.ShowToast,
               `Timeout while connecting P2P ${name} wallet`,
-              ToastType.Error,
+              ToastType.Error
             );
           }
         } else {
@@ -127,12 +127,12 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
                     name: enabledWallet,
                     icon: window.cardano[name].icon,
                     version: window.cardano[name].version,
-                  }),
+                  })
                 );
 
                 eventBus.publish(
                   EventName.ShowToast,
-                  `${name} Wallet connected successfully`,
+                  `${name} Wallet connected successfully`
                 );
                 props.handleCloseConnectWalletModal();
                 trackEvent({
@@ -144,7 +144,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
             },
             (e: Error) => {
               eventBus.publish(EventName.ShowToast, e.message, ToastType.Error);
-            },
+            }
           ).catch((e) => console.error(e));
         }
       };
@@ -154,7 +154,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
         setPeerConnectWalletInfo(undefined);
         eventBus.publish(
           EventName.ShowToast,
-          `${name} Wallet disconnected successfully`,
+          `${name} Wallet disconnected successfully`
         );
         disconnect();
         clearUserInSessionStorage();
@@ -176,7 +176,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
           "wss://tracker.webtorrent.dev:443/announce",
           "wss://dev.btt.cf-identity-wallet.metadata.dev.cf-deployments.org/announce",
         ],
-        onP2PConnect,
+        onP2PConnect
       );
     }
   }, []);
@@ -191,7 +191,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
             name: walletName,
             icon: window.cardano[walletName].icon,
             version: window.cardano[walletName].version,
-          }),
+          })
         );
         eventBus.publish(EventName.CloseConnectWalletModal);
         eventBus.publish(EventName.ShowToast, "Wallet connected successfully.");
@@ -201,7 +201,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
           name: walletName,
         });
       },
-      onConnectError,
+      onConnectError
     );
   };
 
@@ -228,7 +228,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
                   setConnectedWallet({
                     ...peerConnectWalletInfo,
                     address: keriIdentifier.id,
-                  }),
+                  })
                 );
                 trackEvent({
                   category: "connect-keri-wallet",
@@ -239,7 +239,7 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
                 eventBus.publish(
                   EventName.ShowToast,
                   `Timeout while connecting P2P ${peerConnectWalletInfo.name} wallet`,
-                  ToastType.Error,
+                  ToastType.Error
                 );
               }
               handleModalClose();
@@ -263,10 +263,17 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
     switch (connectCurrentPaths[0]) {
       case ConnectWalletFlow.SELECT_WALLET:
         return {
-          title:
-            "In order to vote, first you need to connect your Wallet.",
+          title: "In order to vote, first you need to connect your Wallet.",
         };
       case ConnectWalletFlow.CONNECT_IDENTITY_WALLET:
+        return {
+          title: "",
+        };
+      case ConnectWalletFlow.SETUP_IDENTITY_WALLET:
+        return {
+          title: "",
+        };
+      case ConnectWalletFlow.SETUP_CONNECT_URL:
         return {
           title: "",
         };
@@ -292,6 +299,10 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
         title={
           connectCurrentPaths[0] === ConnectWalletFlow.CONNECT_IDENTITY_WALLET
             ? "Connect Identity Wallet"
+            : connectCurrentPaths[0] === ConnectWalletFlow.SETUP_IDENTITY_WALLET
+            ? "Set up Veridian Wallet"
+            : connectCurrentPaths[0] === ConnectWalletFlow.SETUP_CONNECT_URL
+            ? "Set up Veridian Wallet"
             : "Connect Peer Wallet"
         }
         onClose={() => handleModalClose()}

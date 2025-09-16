@@ -14,7 +14,7 @@ import QrCodeOutlinedIcon from "@mui/icons-material/QrCodeOutlined";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import PhonelinkOutlinedIcon from "@mui/icons-material/PhonelinkOutlined";
 import { useCardano } from "@cardano-foundation/cardano-connect-with-wallet";
-import { checkIsMobile } from '@cardano-foundation/cardano-connect-with-wallet-core';
+import { checkIsMobile } from "@cardano-foundation/cardano-connect-with-wallet-core";
 import {
   copyToClipboard,
   resolveCardanoNetwork,
@@ -63,7 +63,7 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
   });
 
   const availableWallets = installedExtensions.filter((installedWallet) =>
-    SUPPORTED_WALLETS.includes(installedWallet),
+    SUPPORTED_WALLETS.includes(installedWallet)
   );
 
   useEffect(() => {
@@ -73,6 +73,21 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
   const handleShowConnectIdentityWallet = () => {
     setPeerConnectOption(ConnectWalletFlow.CONNECT_IDENTITY_WALLET);
     setCurrentPath(ConnectWalletFlow.CONNECT_IDENTITY_WALLET);
+  };
+
+  const handleShowSetUpIdentityWallet = () => {
+    setPeerConnectOption(ConnectWalletFlow.SETUP_IDENTITY_WALLET);
+    setCurrentPath(ConnectWalletFlow.SETUP_IDENTITY_WALLET);
+  };
+
+  const handleShowSetUpConnectUrl = () => {
+    setPeerConnectOption(ConnectWalletFlow.SETUP_CONNECT_URL);
+    setCurrentPath(ConnectWalletFlow.SETUP_CONNECT_URL);
+  };
+
+  const handleConnectWallet = () => {
+    setPeerConnectOption(ConnectWalletFlow.CONNECT_CIP45_WALLET);
+    setCurrentPath(ConnectWalletFlow.CONNECT_CIP45_WALLET);
   };
 
   const handleAccept = () => {
@@ -85,17 +100,175 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
     eventBus.publish(EventName.ShowToast, "Copied to clipboard.");
   };
 
+  const handleCopyBootUrl = async () => {
+    await copyToClipboard("booturl");
+    eventBus.publish(EventName.ShowToast, "Boot URL copied to clipboard.");
+  };
+
   const renderContent = () => {
     switch (peerConnectOption) {
       case ConnectWalletFlow.SELECT_WALLET:
         return renderSelectWallet();
       case ConnectWalletFlow.CONNECT_IDENTITY_WALLET:
         return renderCIP45ConnectWallet();
+      case ConnectWalletFlow.SETUP_IDENTITY_WALLET:
+        return renderSetupIdentityWallet();
+      case ConnectWalletFlow.SETUP_CONNECT_URL:
+        return renderSetupConnectUrl();
       case ConnectWalletFlow.CONNECT_CIP45_WALLET:
         return renderCIP45ConnectWallet();
       case ConnectWalletFlow.ACCEPT_CONNECTION:
         return renderAcceptConnection();
     }
+  };
+
+  const renderSetupIdentityWallet = () => {
+    return (
+      <>
+        <Box
+          component="div"
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          sx={{ mt: 4, mb: 4 }}
+        >
+          <Typography
+            variant="body1"
+            sx={{
+              textAlign: "center",
+              fontSize: "16px",
+              marginBottom: "40px",
+            }}
+          >
+            Scan the Boot URL QR code or copy the link to install and prepare
+            your wallet.
+          </Typography>
+          <Box
+            component="div"
+            sx={{
+              backgroundColor: "white",
+              display: "flex",
+              justifyContent: "center",
+              marginBottom: "16px",
+              padding: "5px",
+            }}
+          >
+            <QRCode
+              size={256}
+              style={{ height: "auto", width: "200px" }}
+              value={"https://veridian.cardanofoundation.org/boot"}
+              viewBox={"0 0 256 256"}
+            />
+          </Box>
+          <Box
+            component="div"
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              color: "text.primary",
+              fontSize: "16px",
+              fontWeight: "medium",
+              textTransform: "none",
+              padding: "8px 16px",
+              cursor: "pointer",
+              borderRadius: "4px",
+              "&:hover": {
+                opacity: 0.9,
+              },
+            }}
+            onClick={() => handleCopyBootUrl()}
+          >
+            <ContentCopyIcon sx={{ marginRight: "8px", width: "20px" }} />
+            Copy Boot URL
+          </Box>
+          <CustomButton
+            onClick={() => handleShowSetUpConnectUrl()}
+            colorVariant="primary"
+            fullWidth={true}
+            sx={{
+              marginTop: "24px",
+            }}
+          >
+            Next
+          </CustomButton>
+        </Box>
+      </>
+    );
+  };
+
+  const renderSetupConnectUrl = () => {
+    return (
+      <>
+        <Box
+          component="div"
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          sx={{ mt: 4, mb: 4 }}
+        >
+          <Typography
+            variant="body1"
+            sx={{
+              textAlign: "center",
+              fontSize: "16px",
+              marginBottom: "40px",
+            }}
+          >
+            Scan the Connect URL QR code or copy the link.
+          </Typography>
+          <Box
+            component="div"
+            sx={{
+              backgroundColor: "white",
+              display: "flex",
+              justifyContent: "center",
+              marginBottom: "16px",
+              padding: "5px",
+            }}
+          >
+            <QRCode
+              size={256}
+              style={{ height: "auto", width: "200px" }}
+              value={props.meerkatAddress || ""}
+              viewBox={"0 0 256 256"}
+            />
+          </Box>
+          <Box
+            component="div"
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              color: "text.primary",
+              fontSize: "16px",
+              fontWeight: "medium",
+              textTransform: "none",
+              padding: "8px 16px",
+              cursor: "pointer",
+              borderRadius: "4px",
+              "&:hover": {
+                opacity: 0.9,
+              },
+            }}
+            onClick={() => handleCopyToClipboard()}
+          >
+            <ContentCopyIcon sx={{ marginRight: "8px", width: "20px" }} />
+            Copy Connect URL
+          </Box>
+          <CustomButton
+            onClick={() => handleConnectWallet()}
+            colorVariant="primary"
+            fullWidth={true}
+            sx={{
+              marginTop: "24px",
+            }}
+          >
+            Connect Wallet
+          </CustomButton>
+        </Box>
+      </>
+    );
   };
 
   const renderCIP45ConnectWallet = () => {
@@ -127,7 +300,7 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
               onClick={() => {
                 window.open(
                   "https://developers.cardano.org/docs/governance/cardano-improvement-proposals/cip-0045/",
-                  "_blank",
+                  "_blank"
                 );
               }}
             >
@@ -275,6 +448,60 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
                 border: `1px solid ${theme.palette.text.primary}`,
               },
             }}
+            onClick={() => handleShowSetUpIdentityWallet()}
+          >
+            <Box
+              component="div"
+              sx={{ display: "flex", alignItems: "center", gap: 2 }}
+            >
+              <ListItemAvatar>
+                <Avatar src={VeridianLogo} sx={{ width: 20, height: 20 }} />
+              </ListItemAvatar>
+              <Typography
+                sx={{
+                  color: "inherit",
+                  fontSize: "16px",
+                  fontWeight: 600,
+                  lineHeight: "20px",
+                }}
+              >
+                Set up Veridian Wallet
+              </Typography>
+            </Box>
+            <IconButton
+              edge="end"
+              size="small"
+              sx={{ ml: "auto", padding: 0, color: "inherit" }}
+            >
+              <QrCodeOutlinedIcon
+                sx={{
+                  width: "16px",
+                  height: "16px",
+                  flexShrink: 0,
+                  ml: "auto",
+                  color: "inherit",
+                }}
+              />
+            </IconButton>
+          </ListItem>
+          <ListItem
+            sx={{
+              display: "flex",
+              padding: "12px",
+              alignItems: "center",
+              gap: "10px",
+              borderRadius: "8px",
+              border: `1px solid ${theme.palette.secondary.main}`,
+              mt: 2,
+              justifyContent: "space-between",
+              cursor: "pointer",
+              color: theme.palette.secondary.main,
+              transition: "color 0.3s, border 0.3s",
+              "&:hover": {
+                color: theme.palette.text.primary,
+                border: `1px solid ${theme.palette.text.primary}`,
+              },
+            }}
             onClick={() => handleShowConnectIdentityWallet()}
           >
             <Box
@@ -292,10 +519,14 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
                   lineHeight: "20px",
                 }}
               >
-                Connect Identity Wallet
+                Connect Veridian Wallet
               </Typography>
             </Box>
-            <IconButton edge="end" size="small" sx={{ ml: "auto", padding: 0, color: "inherit" }}>
+            <IconButton
+              edge="end"
+              size="small"
+              sx={{ ml: "auto", padding: 0, color: "inherit" }}
+            >
               <QrCodeOutlinedIcon
                 sx={{
                   width: "16px",
@@ -310,7 +541,7 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
           <Divider
             sx={{
               my: "24px",
-              '&::before, &::after': {
+              "&::before, &::after": {
                 borderColor: theme.palette.text.primary,
               },
             }}
@@ -401,7 +632,11 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
                     Wallet
                   </Typography>
                 </Box>
-                <IconButton edge="end" size="small" sx={{ ml: "auto", padding: 0, color: "inherit" }}>
+                <IconButton
+                  edge="end"
+                  size="small"
+                  sx={{ ml: "auto", padding: 0, color: "inherit" }}
+                >
                   <OpenInNewOutlinedIcon
                     sx={{
                       width: "16px",
@@ -416,7 +651,24 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
             ))
           ) : (
             <>
-              {!checkIsMobile() && (<Typography
+              {!checkIsMobile() && (
+                <Typography
+                  sx={{
+                    color: theme.palette.text.primary,
+                    fontSize: "16px",
+                    fontWeight: 600,
+                    lineHeight: "22px",
+                    p: 2,
+                  }}
+                >
+                  No extension wallets installed
+                </Typography>
+              )}
+            </>
+          )}
+          {checkIsMobile() &&
+            typeof (window as any).cardano === "undefined" && (
+              <Typography
                 sx={{
                   color: theme.palette.text.primary,
                   fontSize: "16px",
@@ -425,39 +677,26 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
                   p: 2,
                 }}
               >
-                No extension wallets installed
-              </Typography>)}
-            </>
-          )}
-          {checkIsMobile() &&
-            typeof (window as any).cardano === 'undefined' && <Typography
-            sx={{
-              color: theme.palette.text.primary,
-              fontSize: "16px",
-              fontWeight: 600,
-              lineHeight: "22px",
-              p: 2,
-            }}
-          >
-            If you are on a mobile device, tap this copy icon{" "}
-            <IconButton
-              onClick={() => copyToClipboard(window.location.origin)}
-              sx={{
-                color: theme.palette.text.primary,
-                padding: "2px",
-                margin: "0 2px",
-                verticalAlign: "middle",
-                "&:hover": {
-                  backgroundColor: "rgba(255, 255, 255, 0.1)",
-                },
-              }}
-              size="small"
-            >
-              <ContentCopyIcon fontSize="small" />
-            </IconButton>{" "}
-            to copy the URL, then open one of the supported wallets listed above
-            and paste the URL into the wallet's in-app dApp browser.
-          </Typography>}
+                If you are on a mobile device, tap this copy icon{" "}
+                <IconButton
+                  onClick={() => copyToClipboard(window.location.origin)}
+                  sx={{
+                    color: theme.palette.text.primary,
+                    padding: "2px",
+                    margin: "0 2px",
+                    verticalAlign: "middle",
+                    "&:hover": {
+                      backgroundColor: "rgba(255, 255, 255, 0.1)",
+                    },
+                  }}
+                  size="small"
+                >
+                  <ContentCopyIcon fontSize="small" />
+                </IconButton>{" "}
+                to copy the URL, then open one of the supported wallets listed
+                above and paste the URL into the wallet's in-app dApp browser.
+              </Typography>
+            )}
         </List>
         <Box
           component="div"

@@ -8,55 +8,55 @@ import org.cardano.foundation.voting.domain.web3.WalletType;
 import javax.annotation.Nullable;
 import java.util.Optional;
 
-<span class="fc" id="L11">@NoArgsConstructor</span>
-<span class="nc" id="L12">@AllArgsConstructor</span>
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = &quot;vote&quot;)
-<span class="nc" id="L15">@Builder</span>
+@Builder
 <span class="fc" id="L16">@Slf4j</span>
-<span class="nc" id="L17">@ToString(exclude = { &quot;signature&quot;, &quot;payload&quot;, &quot;publicKey&quot;} )</span>
+@ToString(exclude = { &quot;signature&quot;, &quot;payload&quot;, &quot;publicKey&quot;} )
 public class Vote extends AbstractTimestampEntity {
 
     @Id
     @Column(name = &quot;id&quot;, nullable = false)
-<span class="fc" id="L22">    @Getter</span>
-<span class="fc" id="L23">    @Setter</span>
+    @Getter
+    @Setter
     private String id;
 
     @Column(name = &quot;id_numeric_hash&quot;, nullable = false)
-<span class="nc" id="L27">    @Getter</span>
-<span class="fc" id="L28">    @Setter</span>
+    @Getter
+    @Setter
     private long idNumericHash;
 
     @Column(name = &quot;event_id&quot;, nullable = false)
-<span class="nc" id="L32">    @Getter</span>
-<span class="fc" id="L33">    @Setter</span>
+    @Getter
+    @Setter
     private String eventId;
 
     @Column(name = &quot;category_id&quot;, nullable = false)
-<span class="fc" id="L37">    @Getter</span>
-<span class="fc" id="L38">    @Setter</span>
+    @Getter
+    @Setter
     private String categoryId;
 
     @Column(name = &quot;proposal_id&quot;, nullable = false)
-<span class="fc" id="L42">    @Getter</span>
-<span class="fc" id="L43">    @Setter</span>
+    @Getter
+    @Setter
     private String proposalId;
 
     @Column(name = &quot;wallet_id&quot;, nullable = false)
-<span class="fc" id="L47">    @Getter</span>
-<span class="fc" id="L48">    @Setter</span>
+    @Getter
+    @Setter
     private String walletId;
 
     @Column(name = &quot;wallet_type&quot;, nullable = false)
-<span class="fc" id="L52">    @Getter</span>
-<span class="fc" id="L53">    @Setter</span>
+    @Getter
+    @Setter
     @Enumerated(EnumType.STRING)
     private WalletType walletType;
 
     @Column(name = &quot;signature&quot;, nullable = false, columnDefinition = &quot;text&quot;, length = 2048)
-<span class="fc" id="L58">    @Getter</span>
-<span class="fc" id="L59">    @Setter</span>
+    @Getter
+    @Setter
     private String signature;
 
     @Column(name = &quot;payload&quot;, nullable = false, columnDefinition = &quot;text&quot;, length = 2048)
@@ -73,8 +73,8 @@ public class Vote extends AbstractTimestampEntity {
     private Long votingPower;
 
     @Column(name = &quot;voted_at_slot&quot;, nullable = false)
-<span class="fc" id="L76">    @Getter</span>
-<span class="fc" id="L77">    @Setter</span>
+    @Getter
+    @Setter
     private long votedAtSlot;
 
     public Optional&lt;String&gt; getPublicKey() {
@@ -103,4 +103,4 @@ public class Vote extends AbstractTimestampEntity {
 
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

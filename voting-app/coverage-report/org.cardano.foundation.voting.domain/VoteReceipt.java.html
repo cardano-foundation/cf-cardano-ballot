@@ -8,41 +8,41 @@ import org.cardano.foundation.voting.domain.web3.WalletType;
 import java.util.List;
 import java.util.Optional;
 
-<span class="nc bnc" id="L11" title="All 118 branches missed.">@Data</span>
-<span class="pc bpc" id="L12" title="4 of 8 branches missed.">@Builder</span>
+@Data
+@Builder
 public class VoteReceipt {
 
-<span class="fc" id="L15">    private String id;</span>
+    private String id;
 
-<span class="fc" id="L17">    private String event;</span>
+    private String event;
 
-<span class="fc" id="L19">    private String category;</span>
+    private String category;
 
-<span class="fc" id="L21">    private String proposal;</span>
-
-    @Builder.Default
-<span class="pc" id="L24">    private Optional&lt;String&gt; votingPower = Optional.empty();</span>
-
-<span class="fc" id="L26">    private String walletId;</span>
-
-<span class="fc" id="L28">    private WalletType walletType;</span>
-
-<span class="fc" id="L30">    private String signature;</span>
+    private String proposal;
 
     @Builder.Default
-<span class="pc" id="L33">    private Optional&lt;String&gt; payload = Optional.empty();</span>
+    private Optional&lt;String&gt; votingPower = Optional.empty();
+
+    private String walletId;
+
+    private WalletType walletType;
+
+    private String signature;
 
     @Builder.Default
-<span class="pc" id="L36">    private Optional&lt;String&gt; publicKey = Optional.empty();</span>
-
-<span class="fc" id="L38">    private Status status;</span>
-
-<span class="fc" id="L40">    private MerkleProof merkleProof;</span>
+    private Optional&lt;String&gt; payload = Optional.empty();
 
     @Builder.Default
-<span class="fc" id="L43">    private Optional&lt;ChainFollowerClient.FinalityScore&gt; finalityScore = Optional.empty();</span>
+    private Optional&lt;String&gt; publicKey = Optional.empty();
 
-<span class="fc" id="L45">    private String votedAtSlot;</span>
+    private Status status;
+
+    private MerkleProof merkleProof;
+
+    @Builder.Default
+    private Optional&lt;ChainFollowerClient.FinalityScore&gt; finalityScore = Optional.empty();
+
+    private String votedAtSlot;
 
 <span class="fc" id="L47">    public enum Status {</span>
 <span class="fc" id="L48">        BASIC, // without merkle proof committed to L1 yet</span>
@@ -56,30 +56,30 @@ public class VoteReceipt {
 <span class="fc" id="L56">        FULL // with merkle proof committed to L1 and visible on chain</span>
     }
 
-<span class="nc bnc" id="L59" title="All 46 branches missed.">    @Data</span>
-<span class="nc bnc" id="L60" title="All 4 branches missed.">    @Builder</span>
+    @Data
+    @Builder
     public static class MerkleProof {
 
-<span class="nc" id="L63">        private String transactionHash;</span>
+        private String transactionHash;
 
         @Builder.Default
-<span class="nc" id="L66">        private Optional&lt;Long&gt; absoluteSlot = Optional.empty();</span>
+        private Optional&lt;Long&gt; absoluteSlot = Optional.empty();
 
         @Builder.Default
-<span class="nc" id="L69">        private Optional&lt;String&gt; blockHash = Optional.empty();</span>
+        private Optional&lt;String&gt; blockHash = Optional.empty();
 
-<span class="nc" id="L71">        private String rootHash;</span>
+        private String rootHash;
 
-<span class="nc" id="L73">        private List&lt;MerkleProofItem&gt; steps;</span>
+        private List&lt;MerkleProofItem&gt; steps;
 
     }
 
-<span class="nc bnc" id="L77" title="All 22 branches missed.">    @Data</span>
-<span class="nc" id="L78">    @Builder</span>
+    @Data
+    @Builder
     public static class MerkleProofItem {
 
-<span class="nc" id="L81">        private MerkleProofType type;</span>
-<span class="nc" id="L82">        private String hash;</span>
+        private MerkleProofType type;
+        private String hash;
 
     }
 
@@ -88,4 +88,4 @@ public class VoteReceipt {
     }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

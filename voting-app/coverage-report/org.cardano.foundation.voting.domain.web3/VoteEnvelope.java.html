@@ -5,26 +5,26 @@ import lombok.Getter;
 
 import java.util.Optional;
 
-<span class="pc bnc" id="L8" title="All 4 branches missed.">@Builder</span>
+@Builder
 @Getter
 public class VoteEnvelope {
 
-<span class="fc" id="L12">    private String id;</span>
-<span class="nc" id="L13">    private String walletId;</span>
-<span class="nc" id="L14">    private String event;</span>
-<span class="fc" id="L15">    private String category;</span>
-<span class="fc" id="L16">    private String proposal;</span>
+    private String id;
+    private String walletId;
+    private String event;
+    private String category;
+    private String proposal;
     @Builder.Default
-<span class="nc" id="L18">    private Optional&lt;String&gt; proposalText = Optional.empty(); // proposal text is only available for GDPR sensitive events, e.g. where proposal is simply an ID</span>
-<span class="nc" id="L19">    private String network;</span>
-<span class="fc" id="L20">    private String votedAt;</span>
+    private Optional&lt;String&gt; proposalText = Optional.empty(); // proposal text is only available for GDPR sensitive events, e.g. where proposal is simply an ID
+    private String network;
+    private String votedAt;
 
     @Builder.Default
-<span class="pc" id="L23">    private Optional&lt;String&gt; votingPower = Optional.empty(); // voting power is only available for STAKE_BASED or BALANCE_BASED events</span>
+    private Optional&lt;String&gt; votingPower = Optional.empty(); // voting power is only available for STAKE_BASED or BALANCE_BASED events
 
     public long getVotedAtSlot() {
 <span class="fc" id="L26">        return Long.parseLong(votedAt);</span>
     }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

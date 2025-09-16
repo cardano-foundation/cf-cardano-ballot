@@ -130,7 +130,7 @@ import static org.zalando.problem.Status.*;
 
 <span class="nc" id="L131">        var votingResults = votingResultsE.get();</span>
 
-<span class="nc bnc" id="L133" title="All 3 branches missed.">        var byProposalsInCategoryStatsM = switch (eventDetails.votingEventType()) {</span>
+<span class="nc bnc" id="L133" title="All 2 branches missed.">        var byProposalsInCategoryStatsM = switch (eventDetails.votingEventType()) {</span>
             case STAKE_BASED, BALANCE_BASED -&gt; {
 <span class="nc" id="L135">                var proposalResults = votingResults.results().entrySet().stream().collect(toMap(Map.Entry::getKey, e -&gt; {</span>
 <span class="nc" id="L136">                    var score = e.getValue();</span>
@@ -224,7 +224,7 @@ import static org.zalando.problem.Status.*;
 
 <span class="nc" id="L225">        var votingResults = votingResultsE.get();</span>
 
-<span class="nc bnc" id="L227" title="All 3 branches missed.">        var byProposalsInCategoryStatsM = switch (eventDetails.votingEventType()) {</span>
+<span class="nc bnc" id="L227" title="All 2 branches missed.">        var byProposalsInCategoryStatsM = switch (eventDetails.votingEventType()) {</span>
             case STAKE_BASED, BALANCE_BASED -&gt; {
 <span class="nc" id="L229">                var proposalResults = votingResults.results().entrySet().stream().collect(toMap(Map.Entry::getKey, e -&gt; {</span>
 <span class="nc" id="L230">                    var score = e.getValue();</span>
@@ -318,7 +318,7 @@ import static org.zalando.problem.Status.*;
 <span class="nc" id="L318">        var allResults = votingResults</span>
 <span class="nc" id="L319">                .stream()</span>
 <span class="nc" id="L320">                .map(l1CategoryResults -&gt; {</span>
-<span class="nc bnc" id="L321" title="All 3 branches missed.">                    return switch (eventDetails.votingEventType()) {</span>
+<span class="nc bnc" id="L321" title="All 2 branches missed.">                    return switch (eventDetails.votingEventType()) {</span>
                         case STAKE_BASED, BALANCE_BASED -&gt; {
 <span class="nc" id="L323">                            var proposalResults = l1CategoryResults.results().entrySet().stream().collect(toMap(Map.Entry::getKey, e -&gt; {</span>
 <span class="nc" id="L324">                                var score = e.getValue();</span>
@@ -369,4 +369,4 @@ import static org.zalando.problem.Status.*;
     }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

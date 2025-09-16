@@ -25,7 +25,7 @@ import java.util.Optional;
 
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
-<span class="fc" id="L28">@RequiredArgsConstructor</span>
+@RequiredArgsConstructor
 @Component
 <span class="fc" id="L30">@Slf4j</span>
 public class ChainFollowerClient {
@@ -81,7 +81,7 @@ public class ChainFollowerClient {
     }
 
     public Either&lt;Problem, ChainTipResponse&gt; getChainTip() {
-<span class="fc" id="L84">        var url = String.format(&quot;%s/api/blockchain/tip&quot;, ledgerFollowerBaseUrl);</span>
+<span class="fc" id="L84">        val url = String.format(&quot;%s/api/blockchain/tip&quot;, ledgerFollowerBaseUrl);</span>
 
         try {
 <span class="fc" id="L87">            return Either.right(restTemplate.getForObject(url, ChainTipResponse.class));</span>
@@ -98,7 +98,7 @@ public class ChainFollowerClient {
     public Either&lt;Problem, Optional&lt;AccountResponse&gt;&gt; findAccount(String eventName,
                                                                   WalletType walletType,
                                                                   String walletId) {
-<span class="fc" id="L101">        var url = String.format(&quot;%s/api/account/{event}/{walletType}/{walletId}&quot;, ledgerFollowerBaseUrl);</span>
+<span class="fc" id="L101">        val url = String.format(&quot;%s/api/account/{event}/{walletType}/{walletId}&quot;, ledgerFollowerBaseUrl);</span>
 
         try {
             @Nullable
@@ -276,4 +276,4 @@ public class ChainFollowerClient {
     }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

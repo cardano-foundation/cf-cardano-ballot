@@ -13,14 +13,14 @@ import java.util.Map;
 import java.util.Optional;
 
 @Getter
-<span class="pc" id="L16">@Builder</span>
+@Builder
 public class CardanoWeb3Details implements Web3ConcreteDetails {
 
-<span class="fc" id="L19">    private Web3CommonDetails web3CommonDetails;</span>
+    private Web3CommonDetails web3CommonDetails;
 
-<span class="nc" id="L21">    private Cip30VerificationResult cip30VerificationResult;</span>
-<span class="fc" id="L22">    private CIP93Envelope&lt;Map&lt;String, Object&gt;&gt; envelope;</span>
-<span class="fc" id="L23">    private SignedCIP30 signedCIP30;</span>
+    private Cip30VerificationResult cip30VerificationResult;
+    private CIP93Envelope&lt;Map&lt;String, Object&gt;&gt; envelope;
+    private SignedCIP30 signedCIP30;
     private String payload;
 
     public String getUri() {
@@ -63,4 +63,4 @@ public class CardanoWeb3Details implements Web3ConcreteDetails {
     }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

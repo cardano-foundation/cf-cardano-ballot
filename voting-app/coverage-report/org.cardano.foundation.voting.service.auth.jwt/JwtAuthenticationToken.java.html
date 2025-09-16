@@ -14,20 +14,20 @@ import org.springframework.security.core.GrantedAuthority;
 import javax.annotation.Nullable;
 import java.util.Collection;
 
-<span class="fc" id="L17">@Setter</span>
+@Setter
 @Getter
 @Accessors(fluent = true)
 public class JwtAuthenticationToken extends AbstractAuthenticationToken {
 
-<span class="nc" id="L22">    private final JwtPrincipal principal;</span>
+    private final JwtPrincipal principal;
 
-<span class="fc" id="L24">    private ChainFollowerClient.EventDetailsResponse eventDetails;</span>
+    private ChainFollowerClient.EventDetailsResponse eventDetails;
 
-<span class="nc" id="L26">    private WalletType walletType;</span>
+    private WalletType walletType;
 
-<span class="nc" id="L28">    private String walletId;</span>
+    private String walletId;
 
-<span class="nc" id="L30">    private Role role;</span>
+    private Role role;
 
     public JwtAuthenticationToken(JwtPrincipal principal,
                                   Collection&lt;? extends GrantedAuthority&gt; authorities) {
@@ -73,4 +73,4 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
     }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

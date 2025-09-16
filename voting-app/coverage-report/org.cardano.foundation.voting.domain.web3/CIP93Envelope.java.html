@@ -10,16 +10,16 @@ import java.util.Optional;
 
 import static org.zalando.problem.Status.BAD_REQUEST;
 
-<span class="pc" id="L13">@Builder</span>
+@Builder
 @Getter
 public class CIP93Envelope&lt;T&gt; {
 
-<span class="nc" id="L17">    private String uri;</span>
-<span class="nc" id="L18">    private String action;</span>
-<span class="nc" id="L19">    private String actionText;</span>
-<span class="fc" id="L20">    private String slot;</span>
+    private String uri;
+    private String action;
+    private String actionText;
+    private String slot;
 
-<span class="fc" id="L22">    private T data;</span>
+    private T data;
 
     public Either&lt;Problem, Long&gt; getSlotAsLong() {
         try {
@@ -38,4 +38,4 @@ public class CIP93Envelope&lt;T&gt; {
     }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

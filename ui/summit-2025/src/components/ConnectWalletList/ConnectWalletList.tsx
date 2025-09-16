@@ -157,7 +157,7 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
             <QRCode
               size={256}
               style={{ height: "auto", width: "200px" }}
-              value={"https://veridian.cardanofoundation.org/boot"}
+              value={"https://keria-boot.pro.cf-summit-2025.eu-west-1.backend.voting.summit.cardano.org/"}
               viewBox={"0 0 256 256"}
             />
           </Box>
@@ -231,7 +231,7 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
             <QRCode
               size={256}
               style={{ height: "auto", width: "200px" }}
-              value={props.meerkatAddress || ""}
+              value={"https://keria.pro.cf-summit-2025.eu-west-1.backend.voting.summit.cardano.org"}
               viewBox={"0 0 256 256"}
             />
           </Box>

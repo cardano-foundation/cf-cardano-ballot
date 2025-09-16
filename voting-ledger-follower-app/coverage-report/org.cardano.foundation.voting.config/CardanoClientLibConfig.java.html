@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Configuration;
 
     @Bean
     public Network network(ChainNetwork chainNetwork) {
-<span class="pc bpc" id="L27" title="4 of 5 branches missed.">        return switch(chainNetwork) {</span>
+<span class="pc bpc" id="L27" title="3 of 4 branches missed.">        return switch(chainNetwork) {</span>
 <span class="nc" id="L28">            case MAIN -&gt; Networks.mainnet();</span>
 <span class="fc" id="L29">            case PREPROD -&gt; Networks.preprod();</span>
 <span class="nc" id="L30">            case PREVIEW -&gt; Networks.preview();</span>
@@ -39,4 +39,4 @@ import org.springframework.context.annotation.Configuration;
     }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

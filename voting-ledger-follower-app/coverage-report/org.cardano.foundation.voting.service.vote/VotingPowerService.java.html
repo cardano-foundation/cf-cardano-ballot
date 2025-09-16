@@ -20,7 +20,7 @@ public class VotingPowerService {
     @Timed(value = &quot;service.voting_power.getVotingPower&quot;, histogram = true)
     public Either&lt;Problem, Long&gt; getVotingPower(Event event,
                                                 String stakeAddress) {
-<span class="pc bpc" id="L23" title="3 of 4 branches missed.">        return switch (event.getVotingEventType()) {</span>
+<span class="pc bpc" id="L23" title="2 of 3 branches missed.">        return switch (event.getVotingEventType()) {</span>
             case USER_BASED -&gt; {
 <span class="nc" id="L25">                yield Either.left(Problem.builder()</span>
 <span class="nc" id="L26">                        .withTitle(&quot;VOTING_POWER_NOT_SUPPORTED&quot;)</span>
@@ -67,4 +67,4 @@ public class VotingPowerService {
     }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

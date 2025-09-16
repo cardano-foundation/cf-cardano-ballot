@@ -42,7 +42,7 @@ public class EventAdditionalInfoService {
 <span class="fc" id="L42">        var currentAbsoluteSlot = chainTip.getAbsoluteSlot();</span>
 <span class="fc" id="L43">        var epochNo = chainTip.getEpochNo();</span>
 
-<span class="pc bpc" id="L45" title="2 of 3 branches missed.">        return switch (event.getVotingEventType()) {</span>
+<span class="pc bpc" id="L45" title="1 of 2 branches missed.">        return switch (event.getVotingEventType()) {</span>
 <span class="pc bpc" id="L46" title="2 of 4 branches missed.">            case STAKE_BASED, BALANCE_BASED -&gt;  (epochNo &gt;= event.getStartEpoch().orElseThrow() &amp;&amp; epochNo &lt;= event.getEndEpoch().orElseThrow());</span>
 <span class="nc bnc" id="L47" title="All 4 branches missed.">            case USER_BASED -&gt; (currentAbsoluteSlot &gt;= event.getStartSlot().orElseThrow() &amp;&amp; currentAbsoluteSlot &lt;= event.getEndSlot().orElseThrow());</span>
         };
@@ -56,7 +56,7 @@ public class EventAdditionalInfoService {
 <span class="fc" id="L56">        var currentAbsoluteSlot = chainTip.getAbsoluteSlot();</span>
 <span class="fc" id="L57">        var currentEpochNo = chainTip.getEpochNo();</span>
 
-<span class="pc bpc" id="L59" title="2 of 3 branches missed.">        return switch (event.getVotingEventType()) {</span>
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">        return switch (event.getVotingEventType()) {</span>
 <span class="pc bpc" id="L60" title="1 of 2 branches missed.">            case STAKE_BASED, BALANCE_BASED -&gt; (currentEpochNo &gt;= event.getStartEpoch().orElseThrow());</span>
 <span class="nc bnc" id="L61" title="All 2 branches missed.">            case USER_BASED -&gt; (currentAbsoluteSlot &gt;= event.getStartSlot().orElseThrow());</span>
         };
@@ -66,7 +66,7 @@ public class EventAdditionalInfoService {
 <span class="fc" id="L66">        var currentAbsoluteSlot = chainTip.getAbsoluteSlot();</span>
 <span class="fc" id="L67">        var currentEpochNo = chainTip.getEpochNo();</span>
 
-<span class="pc bpc" id="L69" title="2 of 3 branches missed.">        return switch (event.getVotingEventType()) {</span>
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">        return switch (event.getVotingEventType()) {</span>
 <span class="pc bpc" id="L70" title="1 of 2 branches missed.">            case STAKE_BASED, BALANCE_BASED -&gt; (currentEpochNo &gt; event.getEndEpoch().orElseThrow());</span>
 <span class="nc bnc" id="L71" title="All 2 branches missed.">            case USER_BASED -&gt; (currentAbsoluteSlot &gt; event.getEndSlot().orElseThrow());</span>
         };
@@ -76,7 +76,7 @@ public class EventAdditionalInfoService {
 <span class="fc" id="L76">        var currentAbsoluteSlot = chainTip.getAbsoluteSlot();</span>
 <span class="fc" id="L77">        var currentEpochNo = chainTip.getEpochNo();</span>
 
-<span class="pc bpc" id="L79" title="2 of 3 branches missed.">        return switch (event.getVotingEventType()) {</span>
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">        return switch (event.getVotingEventType()) {</span>
 <span class="pc bpc" id="L80" title="1 of 2 branches missed.">            case STAKE_BASED, BALANCE_BASED -&gt; (currentEpochNo &gt;= event.getProposalsRevealEpoch().orElseThrow());</span>
 <span class="nc bnc" id="L81" title="All 2 branches missed.">            case USER_BASED -&gt; (currentAbsoluteSlot &gt;= event.getProposalsRevealSlot().orElseThrow());</span>
         };
@@ -88,7 +88,7 @@ public class EventAdditionalInfoService {
 
 <span class="fc" id="L89">        var isEventStarted = isEventStarted(event, chainTip);</span>
 
-<span class="pc bpc" id="L91" title="2 of 3 branches missed.">        return switch (event.getVotingEventType()) {</span>
+<span class="pc bpc" id="L91" title="1 of 2 branches missed.">        return switch (event.getVotingEventType()) {</span>
             case STAKE_BASED, BALANCE_BASED -&gt; {
 <span class="fc" id="L93">                var endEpoch = event.getEndEpoch().orElseThrow();</span>
 <span class="fc" id="L94">                var endEpochWithDelay = endEpoch + additionalCommitmentsDelayEpochs;</span>
@@ -105,7 +105,7 @@ public class EventAdditionalInfoService {
     }
 
     private boolean isUserBased(Event event) {
-<span class="pc bpc" id="L108" title="2 of 3 branches missed.">        return switch (event.getVotingEventType()) {</span>
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">        return switch (event.getVotingEventType()) {</span>
 <span class="fc" id="L109">            case STAKE_BASED, BALANCE_BASED -&gt;  false;</span>
 <span class="nc" id="L110">            case USER_BASED -&gt; true;</span>
         };
@@ -187,4 +187,4 @@ public class EventAdditionalInfoService {
     }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.9.202303310957</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.13.202504020838</span></div></body></html>

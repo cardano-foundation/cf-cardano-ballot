@@ -31,6 +31,10 @@ out/
 
 ### VS Code ###
 .vscode/
+.classpath
+.project
+.settings
+.factorypath
 
 ### Yaci-Store
 logs/*

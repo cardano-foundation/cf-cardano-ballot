@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   create_release:
-    runs-on: self-hosted
+    runs-on: arc-runner-set
     steps:
       - name: 🚀 release-please-action
         uses: google-github-actions/release-please-action@v3

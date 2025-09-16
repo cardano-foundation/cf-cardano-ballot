@@ -11,7 +11,7 @@ on:
 
 jobs:
   test:
-    runs-on: self-hosted
+    runs-on: arc-runner-set
     strategy:
       matrix:
         service: ['user-verification-service', 'voting-app', 'voting-ledger-follower-app']        
@@ -86,7 +86,7 @@ jobs:
           target-folder: ${{ matrix.service }}/coverage-report/
   
   pytest:
-    runs-on: self-hosted
+    runs-on: arc-runner-set
     steps:
       - name: Checkout
         uses: actions/checkout@v3

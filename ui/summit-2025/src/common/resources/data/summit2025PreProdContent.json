@@ -212,9 +212,9 @@
       ]
     },
     {
-      "id": "EDUCATIONAL_INFLUENCER",
-      "presentationName": "Educational Influencer",
-      "desc": "Celebrating educators, ambassadors and thought leaders who produce high-quality, accessible content that drives adoption and literacy in the Cardano ecosystem.",
+      "id": "AMBASSADORS_EDUCATION",
+      "presentationName": "Ambassadors & Education",
+      "desc": "Celebrating ambassadors, educators and thought leaders who produce high-quality, accessible content that drives adoption and literacy in the Cardano ecosystem.",
       "proposals": [
         {
           "id": "49BA3D43-0053-4009-BBB1-F1F2D5823C25",
@@ -243,13 +243,6 @@
           "x": "https://x.com/OlympusInsights",
           "linkedin": "",
           "url": "https://app.oli4education.io"
-        },
-        {
-          "id": "E6ACB8EB-CC05-4A18-8A83-7C6BA23EA432",
-          "presentationName": "",
-          "x": "",
-          "linkedin": "",
-          "url": ""
         }
       ]
     },

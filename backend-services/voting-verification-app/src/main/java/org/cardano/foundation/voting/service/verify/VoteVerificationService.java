@@ -164,7 +164,7 @@ public class VoteVerificationService {
         val payload = voteVerificationRequest.getPayload().orElseThrow();
 
         try {
-            val jsonNode = parseJson(new String(HexUtil.decodeHexString(payload)));
+            val jsonNode = parseJson(payload);
             val dataNode = jsonNode.get("data");
             val event = dataNode.get("event").asText();
 

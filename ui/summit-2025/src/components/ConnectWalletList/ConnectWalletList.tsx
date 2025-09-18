@@ -216,7 +216,7 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
               marginBottom: "40px",
             }}
           >
-            Scan the Connect URL QR code or copy the link.
+            Scan the Connect URL QR code or copy the link to link your Veridian wallet with the Ballot app.
           </Typography>
           <Box
             component="div"

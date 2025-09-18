@@ -101,8 +101,13 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
   };
 
   const handleCopyBootUrl = async () => {
-    await copyToClipboard("booturl");
+    await copyToClipboard(env.VERIDIAN_BOOT_URL);
     eventBus.publish(EventName.ShowToast, "Boot URL copied to clipboard.");
+  };
+
+  const handleCopyConnectUrl = async () => {
+    await copyToClipboard(env.VERIDIAN_CONNECT_URL);
+    eventBus.publish(EventName.ShowToast, "Connect URL copied to clipboard.");
   };
 
   const renderContent = () => {
@@ -157,7 +162,7 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
             <QRCode
               size={256}
               style={{ height: "auto", width: "200px" }}
-              value={"https://keria-boot.pro.cf-summit-2025.eu-west-1.backend.voting.summit.cardano.org/"}
+              value={env.VERIDIAN_BOOT_URL}
               viewBox={"0 0 256 256"}
             />
           </Box>
@@ -216,7 +221,8 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
               marginBottom: "40px",
             }}
           >
-            Scan the Connect URL QR code or copy the link to link your Veridian wallet with the Ballot app.
+            Scan the Connect URL QR code or copy the link to link your Veridian
+            wallet with the Ballot app.
           </Typography>
           <Box
             component="div"
@@ -231,7 +237,7 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
             <QRCode
               size={256}
               style={{ height: "auto", width: "200px" }}
-              value={"https://keria.pro.cf-summit-2025.eu-west-1.backend.voting.summit.cardano.org"}
+              value={env.VERIDIAN_CONNECT_URL}
               viewBox={"0 0 256 256"}
             />
           </Box>
@@ -251,7 +257,7 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
                 opacity: 0.9,
               },
             }}
-            onClick={() => handleCopyToClipboard()}
+            onClick={() => handleCopyConnectUrl()}
           >
             <ContentCopyIcon sx={{ marginRight: "8px", width: "20px" }} />
             Copy Connect URL

@@ -47,6 +47,12 @@ const SHOW_WINNERS =
 const SHOW_HYDRA_TALLY =
   window._env_?.VITE_SHOW_HYDRA_TALLY === "true" ||
   import.meta.env.VITE_SHOW_HYDRA_TALLY === "true";
+const VERIDIAN_BOOT_URL =
+  window._env_?.VITE_VERIDIAN_BOOT_URL ||
+  import.meta.env.VITE_VERIDIAN_BOOT_URL;
+const VERIDIAN_CONNECT_URL =
+  window._env_?.VITE_VERIDIAN_CONNECT_URL ||
+  import.meta.env.VITE_VERIDIAN_CONNECT_URL;
 
 export const env = {
   VOTING_APP_SERVER_URL,
@@ -67,4 +73,6 @@ export const env = {
   DISCORD_SUPPORT_CHANNEL_URL,
   SHOW_WINNERS,
   SHOW_HYDRA_TALLY,
+  VERIDIAN_BOOT_URL,
+  VERIDIAN_CONNECT_URL,
 };

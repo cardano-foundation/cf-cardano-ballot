@@ -34,7 +34,7 @@ const Footer = () => {
 
   const handleOpenGithubCommit = () => {
     window.open(
-      `https://github.com/cardano-foundation/cf-cardano-ballot/commit/${env.APP_VERSION}`,
+      `https://github.com/cardano-foundation/cf-cardano-ballot/commit/${env.APP_VERSION}`
     );
     trackEvent({
       category: "click-open-github-commit",
@@ -105,7 +105,13 @@ const Footer = () => {
                   display: "flex",
                 }}
               >
-                <Typography sx={{display: "flex", flexWrap: "wrap", justifyContent: "center"}}>
+                <Typography
+                  sx={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    justifyContent: "center",
+                  }}
+                >
                   <Link
                     sx={{
                       color: "text.primary",
@@ -139,7 +145,7 @@ const Footer = () => {
                     </span>
                     (
                     <Link
-                      href="https://status2024.voting.summit.cardano.org"
+                      href="https://status2025.backend.voting.summit.cardano.org"
                       target="_blank"
                       rel="noopener"
                       sx={{

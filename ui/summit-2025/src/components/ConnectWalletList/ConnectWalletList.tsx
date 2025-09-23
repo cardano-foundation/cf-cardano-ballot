@@ -147,7 +147,8 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
             }}
           >
             Scan the Boot URL QR code or copy the link to install and prepare
-            your wallet.
+            your wallet. This wallet will cease to function after the event
+            ends.
           </Typography>
           <Box
             component="div"
@@ -304,10 +305,7 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
                 cursor: "pointer",
               }}
               onClick={() => {
-                window.open(
-                  "https://developers.cardano.org/docs/governance/cardano-improvement-proposals/cip-0045/",
-                  "_blank"
-                );
+                window.open("https://cips.cardano.org/cip/CIP-0045", "_blank");
               }}
             >
               Learn more about CIP-45

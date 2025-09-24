@@ -21,6 +21,8 @@ import {
   walletIcon,
 } from "../../utils/utils";
 import VeridianLogo from "../../assets/veridian.svg";
+import VeridianAppStore from "../../assets/veridian-app-store.png";
+import VeridianGooglePlay from "../../assets/veridian-google-play.png";
 import { env } from "../../common/constants/env";
 import { ConnectWalletFlow, NetworkType } from "./ConnectWalletList.types";
 import QRCode from "react-qr-code";
@@ -76,6 +78,11 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
   };
 
   const handleShowSetUpIdentityWallet = () => {
+    setPeerConnectOption(ConnectWalletFlow.INSTALL_VERIDIAN_APP);
+    setCurrentPath(ConnectWalletFlow.INSTALL_VERIDIAN_APP);
+  };
+
+  const handleShowSetUpIdentityWalletFromInstall = () => {
     setPeerConnectOption(ConnectWalletFlow.SETUP_IDENTITY_WALLET);
     setCurrentPath(ConnectWalletFlow.SETUP_IDENTITY_WALLET);
   };
@@ -116,6 +123,8 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
         return renderSelectWallet();
       case ConnectWalletFlow.CONNECT_IDENTITY_WALLET:
         return renderCIP45ConnectWallet();
+      case ConnectWalletFlow.INSTALL_VERIDIAN_APP:
+        return renderInstallVeridianApp();
       case ConnectWalletFlow.SETUP_IDENTITY_WALLET:
         return renderSetupIdentityWallet();
       case ConnectWalletFlow.SETUP_CONNECT_URL:
@@ -125,6 +134,100 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
       case ConnectWalletFlow.ACCEPT_CONNECTION:
         return renderAcceptConnection();
     }
+  };
+
+  const renderInstallVeridianApp = () => {
+    return (
+      <>
+        <Box
+          component="div"
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          sx={{ mt: 4, mb: 4 }}
+        >
+          <Typography
+            variant="body1"
+            sx={{
+              textAlign: "center",
+              fontSize: "16px",
+              marginBottom: "40px",
+            }}
+          >
+            First, install the Veridian wallet app on your mobile device to get
+            started.
+          </Typography>
+          <Box
+            component="div"
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "16px",
+              alignItems: "center",
+              marginBottom: "40px",
+            }}
+          >
+            <Box
+              component="a"
+              href="https://apps.apple.com/app/veridian-wallet/id6478544143"
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{
+                display: "block",
+                cursor: "pointer",
+                transition: "transform 0.2s",
+                "&:hover": {
+                  transform: "scale(1.05)",
+                },
+              }}
+            >
+              <img
+                src={VeridianAppStore}
+                alt="Download Veridian on the App Store"
+                style={{
+                  width: "200px",
+                  height: "auto",
+                }}
+              />
+            </Box>
+            <Box
+              component="a"
+              href="https://play.google.com/store/apps/details?id=com.veridian.wallet"
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{
+                display: "block",
+                cursor: "pointer",
+                transition: "transform 0.2s",
+                "&:hover": {
+                  transform: "scale(1.05)",
+                },
+              }}
+            >
+              <img
+                src={VeridianGooglePlay}
+                alt="Get Veridian on Google Play"
+                style={{
+                  width: "200px",
+                  height: "auto",
+                }}
+              />
+            </Box>
+          </Box>
+          <CustomButton
+            onClick={() => handleShowSetUpIdentityWalletFromInstall()}
+            colorVariant="primary"
+            fullWidth={true}
+            sx={{
+              marginTop: "24px",
+            }}
+          >
+            Next
+          </CustomButton>
+        </Box>
+      </>
+    );
   };
 
   const renderSetupIdentityWallet = () => {
@@ -146,9 +249,8 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
               marginBottom: "40px",
             }}
           >
-            Scan the Boot URL QR code or copy the link to install and prepare
-            your wallet. This wallet will cease to function after the event
-            ends.
+            Scan the Boot URL QR code or copy the link to prepare your wallet.
+            This wallet will cease to function after the event ends.
           </Typography>
           <Box
             component="div"

@@ -269,6 +269,10 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
         return {
           title: "",
         };
+      case ConnectWalletFlow.INSTALL_VERIDIAN_APP:
+        return {
+          title: "",
+        };
       case ConnectWalletFlow.SETUP_IDENTITY_WALLET:
         return {
           title: "",
@@ -299,6 +303,8 @@ const ConnectWalletModal = (props: ConnectWalletProps) => {
         title={
           connectCurrentPaths[0] === ConnectWalletFlow.CONNECT_IDENTITY_WALLET
             ? "Connect Identity Wallet"
+            : connectCurrentPaths[0] === ConnectWalletFlow.INSTALL_VERIDIAN_APP
+            ? "Set up Veridian Wallet"
             : connectCurrentPaths[0] === ConnectWalletFlow.SETUP_IDENTITY_WALLET
             ? "Set up Veridian Wallet"
             : connectCurrentPaths[0] === ConnectWalletFlow.SETUP_CONNECT_URL

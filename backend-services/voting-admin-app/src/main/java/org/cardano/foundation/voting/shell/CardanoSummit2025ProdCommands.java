@@ -25,7 +25,7 @@ import static org.cardano.foundation.voting.domain.VotingEventType.USER_BASED;
 @RequiredArgsConstructor
 public class CardanoSummit2025ProdCommands {
 
-    private final static String EVENT_NAME = "CF_SUMMIT_2025";
+    private final static String EVENT_NAME = "CARDANO_SUMMIT_AWARDS_2025";
 
     private final L1SubmissionService l1SubmissionService;
 
@@ -40,13 +40,13 @@ public class CardanoSummit2025ProdCommands {
 
         log.info("Creating CF-Summit 2025 on a MAIN network...");
 
-        // mainnet test event
-        long startSlot = 166349709; // 15/09/2025 06:00:00
-        long endSlot = 166716909; // 19/09/2025 12:00:00
-        long proposalsRevealSlot = 166720509; // 19/09/2025 13:00:00
+        // mainnet event
+        long startSlot = 167141709; // 24/09/2025 10:00:00
+        long endSlot = 168956109; // 15/10/2025 10:00:00
+        long proposalsRevealSlot = 171486909; // 13/11/2025 17:00:00
 
         var createEventCommand = CreateEventCommand.builder()
-                .id(EVENT_NAME + "_" + "24BCC")
+                .id(EVENT_NAME)
                 .startSlot(Optional.of(startSlot))
                 .endSlot(Optional.of(endSlot))
                 .votingPowerAsset(Optional.empty())

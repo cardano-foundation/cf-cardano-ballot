@@ -170,7 +170,7 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
           >
             <Box
               component="a"
-              href="https://apps.apple.com/app/veridian-wallet/id6478544143"
+              href="https://apps.apple.com/us/app/veridian-wallet/id6590628073"
               target="_blank"
               rel="noopener noreferrer"
               sx={{
@@ -193,7 +193,7 @@ const ConnectWalletList = (props: ConnectWalletListProps) => {
             </Box>
             <Box
               component="a"
-              href="https://play.google.com/store/apps/details?id=com.veridian.wallet"
+              href="https://play.google.com/store/apps/details?id=org.cardanofoundation.idw"
               target="_blank"
               rel="noopener noreferrer"
               sx={{

@@ -58,7 +58,7 @@ const TermsAndConditionsModal = () => {
   const handleDecline = () => {
     eventBus.publish(
       EventName.ShowToast,
-      "To use the app, you must accept the Terms and Conditions and Privacy Policy",
+      "To use the app, you must accept the Terms and Conditions and Privacy Policy"
     );
   };
 
@@ -177,7 +177,7 @@ const TermsAndConditionsModal = () => {
                             }}
                             dangerouslySetInnerHTML={{ __html: value }}
                           />
-                        ),
+                        )
                       )}
                   </Box>
                 ))}
@@ -361,9 +361,8 @@ const TermsAndConditionsModal = () => {
                   fontWeight: 500,
                   lineHeight: "24px",
                 }}
-              >
-                {paragraph}
-              </Typography>
+                dangerouslySetInnerHTML={{ __html: paragraph }}
+              />
             ))}
 
             {privacyData.sections.map((section, index) => (
@@ -407,9 +406,8 @@ const TermsAndConditionsModal = () => {
                           lineHeight: "24px",
                           mt: 1,
                         }}
-                      >
-                        {content}
-                      </Typography>
+                        dangerouslySetInnerHTML={{ __html: content }}
+                      />
                     ))}
                     {subsection.extras && renderExtras(subsection.extras)}
                   </Box>
@@ -456,9 +454,7 @@ const TermsAndConditionsModal = () => {
           onClickOption={(option: string) => handleSetCurrentTab(option)}
         />
       </DialogTitle>
-      <DialogContent
-        sx={{ backgroundColor: theme.palette.background.default }}
-      >
+      <DialogContent sx={{ backgroundColor: theme.palette.background.default }}>
         <DialogContentText sx={{ width: isMobile ? "auto" : "800px" }}>
           {renderContent()}
         </DialogContentText>
@@ -551,7 +547,7 @@ const TermsAndConditionsModal = () => {
               "&:disabled": {
                 backgroundColor: "#A0AEDB",
                 color: theme.palette.text.neutralLight,
-              }
+              },
             }}
           >
             Accept

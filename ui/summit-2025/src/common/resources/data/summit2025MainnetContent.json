@@ -133,10 +133,10 @@
       "proposals": [
         {
           "id": "9631292F-3F7D-4081-8437-126A298F459F",
-          "presentationName": "Martin Lang (ATADA)",
+          "presentationName": "Cardano-Signer / SPO-Scripts",
           "x": "https://x.com/ATADA_Stakepool",
           "linkedin": "",
-          "url": "https://www.stakepool.at/"
+          "url": "https://github.com/gitmachtl/"
         },
         {
           "id": "50A20202-365A-438F-9934-B800FB675946",

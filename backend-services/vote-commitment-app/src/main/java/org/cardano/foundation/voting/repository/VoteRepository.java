@@ -18,6 +18,8 @@ public interface VoteRepository extends JpaRepository<Vote, String> {
 
     interface CompactVote {
 
+        String getId();
+
         String getSignature();
 
         WalletType getWalletType();

@@ -1,6 +1,7 @@
 package org.cardano.foundation.voting.service.merkle_tree;
 
 import io.vavr.Value;
+import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -8,24 +9,30 @@ import org.cardano.foundation.voting.client.ChainFollowerClient;
 import org.cardano.foundation.voting.domain.L1MerkleCommitment;
 import org.cardano.foundation.voting.domain.L1SubmissionData;
 import org.cardano.foundation.voting.domain.entity.VoteMerkleProof;
+import org.cardano.foundation.voting.domain.web3.VoteEnvelope;
 import org.cardano.foundation.voting.repository.VoteRepository;
 import org.cardano.foundation.voting.service.json.JsonService;
 import org.cardano.foundation.voting.service.transaction_submit.L1SubmissionService;
 import org.cardano.foundation.voting.service.vote.VoteService;
 import org.cardanofoundation.cip30.CIP30Verifier;
+import org.cardanofoundation.cip30.Cip30VerificationResult;
 import org.cardanofoundation.merkle.MerkleTree;
 import org.cardanofoundation.merkle.ProofItem;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
+import org.zalando.problem.Problem;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import static com.bloxbean.cardano.client.crypto.Blake2bUtil.blake2bHash224;
 import static com.bloxbean.cardano.client.util.HexUtil.encodeHexString;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.cardano.foundation.voting.domain.VoteSerialisations.VOTE_SERIALISER;
 import static org.cardano.foundation.voting.domain.VoteSerialisations.createSerialiserFunction;
 import static org.cardanofoundation.cip30.MessageFormat.TEXT;
+import static org.cardanofoundation.cip30.MessageFormat.HEX;
 
 @Service
 @Slf4j
@@ -219,23 +226,19 @@ public class VoteCommitmentService {
             return;
         }
 
-        val voteSignedJsonPayload = cip30VerificationResult.getMessage(TEXT);
+        val voteEnvelopeE = verifyVote(vote, cip30VerificationResult);
 
-        val cip93EnvelopeE = jsonService.decodeCIP93VoteEnvelope(voteSignedJsonPayload);
-
-        if (cip93EnvelopeE.isEmpty()) {
-            log.error("Invalid voteSignedJsonPayload for vote:{}", vote.getSignature());
-            return;
+        if (voteEnvelopeE.isLeft()) {
+            log.warn("Invalid vote, issue: {}", voteEnvelopeE.getLeft());
         }
-        val voteEnvelopeCIP93Envelope = cip93EnvelopeE.get();
-        val voteId = voteEnvelopeCIP93Envelope.getData().getId();
+        val voteEnvelope = voteEnvelopeE.get();
 
         val proofItemsJson = merkleProofSerdeService.serialiseAsString(proofItems);
 
         val voteMerkleProof = VoteMerkleProof.builder()
-                .voteId(voteId)
-                .voteIdNumericHash(UUID.fromString(voteId).hashCode() & 0xFFFFFFF)
-                .eventId(voteEnvelopeCIP93Envelope.getData().getEvent())
+                .voteId(voteEnvelope.getId())
+                .voteIdNumericHash(UUID.fromString(vote.getId()).hashCode() & 0xFFFFFFF)
+                .eventId(voteEnvelope.getEvent())
                 .rootHash(merkleRootHash)
                 .absoluteSlot(l1SubmissionData.slot())
                 .proofItemsJson(proofItemsJson)
@@ -244,6 +247,60 @@ public class VoteCommitmentService {
                 .build();
 
         voteMerkleProofService.store(voteMerkleProof);
+    }
+
+    Either<Problem, VoteEnvelope> verifyVote(VoteRepository.CompactVote vote,
+                                             Cip30VerificationResult cip30VerificationResult) {
+        if (cip30VerificationResult.isHashed() && vote.getPayload().isEmpty()) {
+            log.warn("Vote is hashed but we don't have a payload either..., invalid voteId: {}", vote.getId());
+
+            return Either.left(Problem.builder()
+                    .withTitle("INVALID_VOTE")
+                    .withDetail("Hashed vote and external payload also missing, voteId: %s".formatted(vote.getId()))
+                    .build()
+            );
+        }
+
+        if (cip30VerificationResult.isHashed() && vote.getPayload().isPresent()) {
+            val blake224PayloadHashInSignature = cip30VerificationResult.getMessage(HEX);
+            val payload = vote.getPayload().get();
+
+            val blake224PayloadHashInPayload = encodeHexString(blake2bHash224(payload.getBytes(UTF_8)));
+
+            if (!blake224PayloadHashInSignature.equals(blake224PayloadHashInPayload)) {
+                return Either.left(Problem.builder()
+                        .withTitle("INVALID_VOTE")
+                        .withDetail("vote hash in signature does not match payload signature, voteId: %s".formatted(vote.getId()))
+                        .build());
+            }
+
+            val cip93EnvelopeE = jsonService.decodeCIP93VoteEnvelope(payload);
+
+            if (cip93EnvelopeE.isLeft()) {
+                log.error("Unable to parse json for vote: {}", vote.getSignature());
+
+                return Either.left(Problem.builder()
+                        .withTitle("INVALID_VOTE")
+                        .withDetail("Unable to parse JSON in voteId: %s".formatted(vote.getId()))
+                        .build());
+            }
+
+            return Either.right(cip93EnvelopeE.get().getData());
+        }
+
+        val voteSignedJsonPayload = cip30VerificationResult.getMessage(TEXT);
+        val cip93EnvelopeE = jsonService.decodeCIP93VoteEnvelope(voteSignedJsonPayload);
+
+        if (cip93EnvelopeE.isLeft()) {
+            log.error("Unable to parse json for vote: {}", vote.getSignature());
+
+            return Either.left(Problem.builder()
+                    .withTitle("INVALID_VOTE")
+                    .withDetail("Unable to parse JSON in voteId: %s".formatted(vote.getId()))
+                    .build());
+        }
+
+        return Either.right(cip93EnvelopeE.get().getData());
     }
 
 }

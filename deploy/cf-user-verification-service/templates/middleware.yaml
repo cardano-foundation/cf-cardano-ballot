@@ -1,0 +1,17 @@
+{{- if .Values.ingress.enabled -}}
+{{- $fullName := include "user-verification-service.fullname" . -}}
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ $fullName }}
+  labels:
+    {{- include "user-verification-service.labels" . | nindent 4 }}
+spec:
+  rateLimit:
+    sourceCriterion:
+      ipStrategy:
+        depth: 0
+    average: 10
+    period: 1s
+    burst: 20
+{{ end }}

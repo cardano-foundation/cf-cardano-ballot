@@ -10,6 +10,7 @@ metadata:
   {{- with .Values.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
+    traefik.ingress.kubernetes.io/router.middlewares: {{ $fullName }}
   {{- end }}
 spec:
   rules:

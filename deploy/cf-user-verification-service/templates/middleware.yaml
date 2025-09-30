@@ -9,9 +9,8 @@ metadata:
 spec:
   rateLimit:
     sourceCriterion:
-      ipStrategy:
-        depth: 0
+      requestHeaderName: Cloudfront-Viewer-Address
     average: 10
-    period: 1s
-    burst: 20
+    period: 1h
+    burst: 10
 {{ end }}

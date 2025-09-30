@@ -10,8 +10,8 @@ metadata:
   {{- with .Values.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
-    traefik.ingress.kubernetes.io/router.middlewares: {{ $fullName }}
   {{- end }}
+    traefik.ingress.kubernetes.io/router.middlewares: {{ printf "%s-%s@kubernetescrd" .Release.Namespace $fullName }}
 spec:
   rules:
     - host: "user-verification.{{ .Values.domain }}"

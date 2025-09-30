@@ -9,7 +9,7 @@ metadata:
 spec:
   rateLimit:
     sourceCriterion:
-      requestHeaderName: Cloudfront-Viewer-Address
+      requestHeaderName: X-Viewer-Ip
     average: 10
     period: 1h
     burst: 10

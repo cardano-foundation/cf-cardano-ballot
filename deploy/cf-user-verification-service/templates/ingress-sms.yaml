@@ -1,0 +1,45 @@
+{{- if and .Values.ingress.enabled .Values.ingress.ratelimit.enabled -}}
+{{- $fullName := include "user-verification-service.fullname" . -}}
+{{- $svcPort := .Values.service.port -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}-sms
+  labels:
+    {{- include "user-verification-service.labels" . | nindent 4 }}
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: {{ printf "%s-%s@kubernetescrd" .Release.Namespace $fullName }}
+  {{- with .Values.ingress.annotations }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  rules:
+    - host: "user-verification.{{ .Values.domain }}"
+      http:
+        paths:
+          - path: /api/sms/user-verification/start-verification
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ $fullName }}
+                port:
+                  number: {{ $svcPort }}
+    {{- range $domain := .Values.ingress.additionalDomains }}
+    - host: {{ $domain }}
+      http:
+        paths:
+          - path: /api/sms/user-verification/start-verification
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ $fullName }}
+                port:
+                  number: {{ $svcPort }}
+    {{- end }}
+  tls:
+    - hosts:
+        - "user-verification.{{ .Values.domain }}"
+{{ with .Values.ingress.additionalDomains }}
+        {{- toYaml . | nindent 8 }}
+{{ end }}
+{{ end }}

@@ -15,6 +15,11 @@ service:
 
 ingress:
   enabled: true
+  ratelimit:
+    enabled: false
+    average: 20
+    period: 1h
+    burst: 20
   disableActuatorEndpoint: true
   additionalDomains: []
 

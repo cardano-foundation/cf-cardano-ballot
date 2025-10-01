@@ -1,4 +1,4 @@
-{{- if .Values.ingress.enabled -}}
+{{- if and .Values.ingress.enabled .Values.ingress.ratelimit.enabled -}}
 {{- $fullName := include "user-verification-service.fullname" . -}}
 {{- $svcPort := .Values.service.port -}}
 apiVersion: networking.k8s.io/v1
@@ -11,21 +11,13 @@ metadata:
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
+    traefik.ingress.kubernetes.io/router.middlewares: {{ printf "%s-%s@kubernetescrd" .Release.Namespace $fullName }}
 spec:
   rules:
     - host: "user-verification.{{ .Values.domain }}"
       http:
         paths:
-{{ if .Values.ingress.disableActuatorEndpoint }}
-          - path: /actuator
-            pathType: Prefix
-            backend:
-              service:
-                name: nginx-not-found
-                port:
-                  number: 80
-{{ end }}
-          - path: /
+          - path: /api/sms/user-verification/start-verification
             pathType: Prefix
             backend:
               service:
@@ -36,16 +28,7 @@ spec:
     - host: {{ $domain }}
       http:
         paths:
-{{ if $.Values.ingress.disableActuatorEndpoint }}
-          - path: /actuator
-            pathType: Prefix
-            backend:
-              service:
-                name: nginx-not-found
-                port:
-                  number: 80
-{{ end }}
-          - path: /
+          - path: /api/sms/user-verification/start-verification
             pathType: Prefix
             backend:
               service:

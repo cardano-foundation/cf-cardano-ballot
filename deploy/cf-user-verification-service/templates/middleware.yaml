@@ -1,4 +1,4 @@
-{{- if .Values.ingress.enabled -}}
+{{- if and .Values.ingress.enabled .Values.ingress.ratelimit.enabled -}}
 {{- $fullName := include "user-verification-service.fullname" . -}}
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
@@ -10,7 +10,7 @@ spec:
   rateLimit:
     sourceCriterion:
       requestHeaderName: X-Viewer-Ip
-    average: 10
-    period: 1h
-    burst: 10
+    average: {{ .Values.ingress.ratelimit.average | default 20 }}
+    period: {{ .Values.ingress.ratelimit.period | default "1h" }}
+    burst: {{ .Values.ingress.ratelimit.burst | default 20 }}
 {{ end }}

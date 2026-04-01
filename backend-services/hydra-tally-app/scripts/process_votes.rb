@@ -7,8 +7,8 @@ if ARGV.length < 2
 end
 
 # Get event_id and organiser from command line arguments
-event_id = ARGV[1]
-organiser = ARGV[2]
+event_id = ARGV[0]
+organiser = ARGV[1]
 
 # Read CSV file
 csv_file = 'votes.csv'  # Replace with your actual CSV file path
